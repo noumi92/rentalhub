@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "465105544329",
+    "project_id": "renthub-dev",
+    "storage_bucket": "renthub-dev.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:465105544329:android:cfe112ff765a36eda05258",
+        "android_client_info": {
+          "package_name": "pk.rentalhub.rentalhub"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "465105544329-m662r20vfi5gopgd70849iocmimmpudb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "pk.rentalhub.rentalhub",
+            "certificate_hash": "0412e0ec2fca15d6bde3afc15c35fae753acd56c"
+          }
+        },
+        {
+          "client_id": "465105544329-g0kd9ifh3e90ngrc8u5bk6bto0quqbo8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyANnzXW-wamG2MDbVAa435cSAESmqV3P-s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "465105544329-g0kd9ifh3e90ngrc8u5bk6bto0quqbo8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
