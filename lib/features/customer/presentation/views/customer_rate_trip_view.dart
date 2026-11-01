@@ -186,3 +186,4 @@ class _CustomerRateTripViewState extends State<CustomerRateTripView> {
     );
   }
 }
+

@@ -85,3 +85,4 @@ class FuelOdometerInputWidget extends StatelessWidget {
     );
   }
 }
+

@@ -154,3 +154,4 @@ class BookingTicketCard extends StatelessWidget {
     );
   }
 }
+

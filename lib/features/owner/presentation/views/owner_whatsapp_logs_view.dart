@@ -135,3 +135,4 @@ class _OwnerWhatsAppLogsViewState extends State<OwnerWhatsAppLogsView> {
     );
   }
 }
+

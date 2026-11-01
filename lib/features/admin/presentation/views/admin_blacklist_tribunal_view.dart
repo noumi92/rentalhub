@@ -218,3 +218,4 @@ class _AdminBlacklistTribunalViewState extends State<AdminBlacklistTribunalView>
     );
   }
 }
+

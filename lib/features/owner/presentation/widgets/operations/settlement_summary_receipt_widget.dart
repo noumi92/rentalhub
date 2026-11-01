@@ -94,3 +94,4 @@ class SettlementSummaryReceiptWidget extends StatelessWidget {
     );
   }
 }
+

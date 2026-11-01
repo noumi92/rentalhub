@@ -135,3 +135,4 @@ class BookingApprovedView extends StatelessWidget {
     );
   }
 }
+

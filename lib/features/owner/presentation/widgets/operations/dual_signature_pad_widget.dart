@@ -105,3 +105,4 @@ class DualSignaturePadWidget extends StatelessWidget {
     );
   }
 }
+

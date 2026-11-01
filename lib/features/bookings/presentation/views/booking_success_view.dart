@@ -196,3 +196,4 @@ class BookingSuccessView extends StatelessWidget {
     );
   }
 }
+

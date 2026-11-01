@@ -137,3 +137,4 @@ class DigitalQrPassWidget extends StatelessWidget {
     );
   }
 }
+

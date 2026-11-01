@@ -134,3 +134,4 @@ class BookingSummaryCard extends StatelessWidget {
     );
   }
 }
+

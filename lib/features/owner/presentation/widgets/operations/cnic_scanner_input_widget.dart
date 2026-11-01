@@ -108,3 +108,4 @@ class CnicScannerInputWidget extends StatelessWidget {
     );
   }
 }
+

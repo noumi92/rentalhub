@@ -93,3 +93,4 @@ class WalletTransactionTile extends StatelessWidget {
     );
   }
 }
+

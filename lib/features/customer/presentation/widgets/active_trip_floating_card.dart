@@ -168,3 +168,4 @@ class ActiveTripFloatingCard extends StatelessWidget {
     );
   }
 }
+
