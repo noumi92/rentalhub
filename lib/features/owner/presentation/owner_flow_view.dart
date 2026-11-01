@@ -1543,35 +1543,273 @@ class _OwnerFlowViewState extends State<OwnerFlowView> {
   }
 
   // ==========================================
-  // ANC-09 / O-01: Shop Onboarding
   // ==========================================
+  // ANC-09 / O-01: Shop Onboarding (Stitch UI)
+  // ==========================================
+  int _onboardingStep = 1;
+
   Widget _buildOnboardingScreen() {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.only(bottom: 90),
+        padding: const EdgeInsets.only(bottom: 100),
         child: Column(
           children: [
             CurvedHeader(
               title: 'Register as Shop Owner',
-              subtitle: 'Step 1 of 3 • Basic Shop Details',
-              height: 200,
+              subtitle: 'Step $_onboardingStep of 3 • Expand Fleet Across Pakistan',
+              height: 210,
               showBack: true,
-              onBack: () => setState(() => _activeScreen = 'dashboard'),
+              onBack: () {
+                if (_onboardingStep > 1) {
+                  setState(() => _onboardingStep--);
+                } else {
+                  setState(() => _activeScreen = 'dashboard');
+                }
+              },
             ),
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  _buildFormField('Shop / Garage Name', 'Al-Falah Rent a Car'),
-                  _buildFormField('Owner Full Name', 'Muhammad Bilal'),
-                  _buildFormField('CNIC Number', '35201-9876543-1'),
-                  _buildFormField('WhatsApp Mobile', '+92 300 1234567'),
-                  _buildFormField(
-                    'City / Operating Area',
-                    'Lahore • Gulberg III',
-                  ),
-                ],
+            Transform.translate(
+              offset: const Offset(0, -20),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  children: [
+                    // 3-Step Stepper Pill Bar (Matching Stitch ANC-09)
+                    Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(30),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.06),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              decoration: BoxDecoration(
+                                color: _onboardingStep >= 1
+                                    ? AppColors.midnightNavy
+                                    : Colors.transparent,
+                                borderRadius: BorderRadius.circular(24),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  CircleAvatar(
+                                    radius: 9,
+                                    backgroundColor: _onboardingStep >= 1
+                                        ? AppColors.sunsetOrange
+                                        : Colors.grey.shade400,
+                                    child: const Text('1',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.bold)),
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    'Details',
+                                    style: TextStyle(
+                                      color: _onboardingStep >= 1
+                                          ? Colors.white
+                                          : Colors.grey.shade600,
+                                      fontSize: 11.5,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              decoration: BoxDecoration(
+                                color: _onboardingStep >= 2
+                                    ? AppColors.midnightNavy
+                                    : Colors.transparent,
+                                borderRadius: BorderRadius.circular(24),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  CircleAvatar(
+                                    radius: 9,
+                                    backgroundColor: _onboardingStep >= 2
+                                        ? AppColors.sunsetOrange
+                                        : Colors.grey.shade400,
+                                    child: const Text('2',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.bold)),
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    'Location',
+                                    style: TextStyle(
+                                      color: _onboardingStep >= 2
+                                          ? Colors.white
+                                          : Colors.grey.shade600,
+                                      fontSize: 11.5,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              decoration: BoxDecoration(
+                                color: _onboardingStep >= 3
+                                    ? AppColors.midnightNavy
+                                    : Colors.transparent,
+                                borderRadius: BorderRadius.circular(24),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  CircleAvatar(
+                                    radius: 9,
+                                    backgroundColor: _onboardingStep >= 3
+                                        ? AppColors.sunsetOrange
+                                        : Colors.grey.shade400,
+                                    child: const Text('3',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.bold)),
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    'Payout',
+                                    style: TextStyle(
+                                      color: _onboardingStep >= 3
+                                          ? Colors.white
+                                          : Colors.grey.shade600,
+                                      fontSize: 11.5,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Step 1 Content: Shop & Identity Credentials
+                    if (_onboardingStep == 1) ...[
+                      Card(
+                        elevation: 2,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16)),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Row(
+                                children: [
+                                  Icon(Icons.storefront,
+                                      color: AppColors.midnightNavy, size: 20),
+                                  SizedBox(width: 8),
+                                  Text('Shop & Identity Credentials',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14)),
+                                ],
+                              ),
+                              const Divider(height: 24),
+                              _buildFormField('Shop / Fleet Legal Name', 'Al-Falah Rent a Car'),
+                              _buildFormField('Owner Full Name', 'Muhammad Bilal'),
+                              _buildFormField('CNIC Number', '35201-9876543-1'),
+                              _buildFormField('WhatsApp Mobile', '+92 300 1234567'),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+
+                    // Step 2 Content: Operating Location & Landmark
+                    if (_onboardingStep == 2) ...[
+                      Card(
+                        elevation: 2,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16)),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Row(
+                                children: [
+                                  Icon(Icons.location_on,
+                                      color: AppColors.sunsetOrange, size: 20),
+                                  SizedBox(width: 8),
+                                  Text('Physical Shop Location & GPS',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14)),
+                                ],
+                              ),
+                              const Divider(height: 24),
+                              _buildFormField('Operating City', 'Lahore'),
+                              _buildFormField('Street Address', 'Shop #4, Main Boulevard, Gulberg III'),
+                              _buildFormField('Prominent Landmark', 'Opposite Pace Shopping Mall'),
+                              _buildFormField('GPS Coordinates', '31.5204° N, 74.3587° E (Calibrated)'),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+
+                    // Step 3 Content: Payout Configuration (JazzCash / EasyPaisa / Meezan IBAN)
+                    if (_onboardingStep == 3) ...[
+                      Card(
+                        elevation: 2,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16)),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Row(
+                                children: [
+                                  Icon(Icons.account_balance_wallet,
+                                      color: AppColors.emeraldGreen, size: 20),
+                                  SizedBox(width: 8),
+                                  Text('Verified Payout Accounts',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14)),
+                                ],
+                              ),
+                              const Divider(height: 24),
+                              _buildFormField('JazzCash Mobile Wallet', '0300-1234567 (Title: Muhammad Bilal)'),
+                              _buildFormField('EasyPaisa Account', '0300-1234567 (Title: Muhammad Bilal)'),
+                              _buildFormField('Bank IBAN (Direct Transfer)', 'PK82MEZN0001234567890123 (Meezan Bank Ltd)'),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
               ),
             ),
           ],
@@ -1584,12 +1822,21 @@ class _OwnerFlowViewState extends State<OwnerFlowView> {
           width: double.infinity,
           child: ElevatedButton(
             onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Onboarding details saved!')),
-              );
-              setState(() => _activeScreen = 'dashboard');
+              if (_onboardingStep < 3) {
+                setState(() => _onboardingStep++);
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Shop onboarding completed! Host verified.'),
+                    backgroundColor: AppColors.emeraldGreen,
+                  ),
+                );
+                setState(() => _activeScreen = 'dashboard');
+              }
             },
-            child: const Text('Save & Launch Host Dashboard →'),
+            child: Text(_onboardingStep < 3
+                ? 'Continue to Step ${_onboardingStep + 1} →'
+                : 'Save & Launch Host Dashboard ✓'),
           ),
         ),
       ),

@@ -130,7 +130,7 @@ class _LoginViewState extends State<LoginView> {
                                 child: const Text(
                                   'New to RentalHub? Choose Role & Register',
                                   style: TextStyle(
-                                    color: AppColors.primaryIndigo,
+                                    color: AppColors.primary,
                                     fontWeight: FontWeight.w700,
                                     fontSize: 13,
                                   ),
@@ -149,7 +149,7 @@ class _LoginViewState extends State<LoginView> {
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(14),
                         border: Border.all(
-                          color: AppColors.borderGrey.withValues(alpha: 0.6),
+                          color: AppColors.border.withValues(alpha: 0.6),
                         ),
                       ),
                       child: Column(
@@ -160,7 +160,7 @@ class _LoginViewState extends State<LoginView> {
                               Icon(
                                 Icons.explore_rounded,
                                 size: 18,
-                                color: AppColors.primaryIndigo,
+                                color: AppColors.primary,
                               ),
                               SizedBox(width: 8),
                               Text(
@@ -184,7 +184,7 @@ class _LoginViewState extends State<LoginView> {
                                       size: 16),
                                   label: const Text('Customer App'),
                                   style: OutlinedButton.styleFrom(
-                                    foregroundColor: AppColors.primaryIndigo,
+                                    foregroundColor: AppColors.primary,
                                     padding: const EdgeInsets.symmetric(
                                         vertical: 10),
                                   ),
