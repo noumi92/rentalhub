@@ -11,6 +11,7 @@ class UserEntity extends Equatable {
   final double trustScore;
   final int totalTrips;
   final bool isBlacklisted;
+  final bool isOnboardingCompleted;
 
   const UserEntity({
     required this.uid,
@@ -23,10 +24,14 @@ class UserEntity extends Equatable {
     this.trustScore = 5.0,
     this.totalTrips = 0,
     this.isBlacklisted = false,
+    this.isOnboardingCompleted = false,
   });
 
   bool get hasSelectedRole =>
       role != null && (role == 'customer' || role == 'owner');
+
+  bool get hasProfileInfo =>
+      fullName.trim().isNotEmpty && phoneNumber.trim().isNotEmpty;
 
   UserEntity copyWith({
     String? uid,

@@ -61,19 +61,19 @@ class RoleSelectorCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
+                  Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    spacing: 6,
+                    runSpacing: 2,
                     children: [
-                      Flexible(
-                        child: Text(
-                          title,
-                          style: const TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w800,
-                            color: AppColors.midnightNavy,
-                          ),
+                      Text(
+                        title,
+                        style: const TextStyle(
+                          fontSize: 14.5,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.midnightNavy,
                         ),
                       ),
-                      const SizedBox(width: 6),
                       Text(
                         urduSubtitle,
                         style: const TextStyle(

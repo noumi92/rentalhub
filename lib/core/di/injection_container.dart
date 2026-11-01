@@ -1,8 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart' as fb;
+import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../constants/api_endpoints.dart';
 import '../network/cpanel_storage_client.dart';
+import '../network/firestore_service.dart';
 import '../../features/auth/data/datasources/auth_remote_data_source.dart';
 import '../../features/auth/data/repositories/auth_repository_impl.dart';
 import '../../features/auth/domain/repositories/auth_repository.dart';
@@ -58,9 +62,33 @@ Future<void> initDependencies() async {
     ),
   );
 
-  // 3. Auth Feature
+  // 3. Cloud Firestore Service
+  FirebaseFirestore? firestoreInstance;
+  try {
+    firestoreInstance = FirebaseFirestore.instance;
+  } catch (e) {
+    debugPrint('FirebaseFirestore instance registration notice: $e');
+  }
+  sl.registerLazySingleton<FirestoreService>(
+    () => FirestoreService(firestore: firestoreInstance),
+  );
+
+  // 3.5 Firebase Auth
+  fb.FirebaseAuth? firebaseAuthInstance;
+  try {
+    firebaseAuthInstance = fb.FirebaseAuth.instance;
+  } catch (e) {
+    debugPrint('FirebaseAuth instance registration notice: $e');
+  }
+
+  // 4. Auth Feature
   sl.registerLazySingleton<AuthRemoteDataSource>(
-    () => AuthRemoteDataSource(prefs: sl<SharedPreferences>()),
+    () => AuthRemoteDataSource(
+      prefs: sl<SharedPreferences>(),
+      auth: firebaseAuthInstance,
+      firestoreService: sl<FirestoreService>(),
+      storageClient: sl<CPanelStorageClient>(),
+    ),
   );
   sl.registerLazySingleton<AuthRepository>(
     () => AuthRepositoryImpl(remoteDataSource: sl<AuthRemoteDataSource>()),

@@ -18,6 +18,18 @@ class ShopDetailView extends StatelessWidget {
     this.onBack,
   });
 
+  String _getCarImage(MockVehicle v) {
+    final nameLower = v.name.toLowerCase();
+    if (nameLower.contains('civic')) {
+      return 'assets/images/honda_civic_hero.png';
+    } else if (nameLower.contains('corolla') || nameLower.contains('yaris')) {
+      return 'assets/images/toyota_corolla.png';
+    } else if (nameLower.contains('sportage') || nameLower.contains('br-v')) {
+      return 'assets/images/red_civic.png';
+    }
+    return 'assets/images/white_sedan_hero.png';
+  }
+
   @override
   Widget build(BuildContext context) {
     final vehicles = MockDatabase.vehicles
@@ -71,75 +83,133 @@ class ShopDetailView extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     ...displayVehicles.map((vehicle) {
+                      final carAsset = _getCarImage(vehicle);
+
                       return Card(
-                        margin: const EdgeInsets.only(bottom: 12),
+                        margin: const EdgeInsets.only(bottom: 16),
+                        elevation: 2,
+                        clipBehavior: Clip.antiAlias,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          side: const BorderSide(color: AppColors.border),
+                        ),
                         child: InkWell(
                           onTap: () => onVehicleSelected?.call(vehicle),
-                          borderRadius: BorderRadius.circular(16),
-                          child: Padding(
-                            padding: const EdgeInsets.all(14),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Car Photo Preview
+                              Container(
+                                height: 130,
+                                width: double.infinity,
+                                color: Colors.white,
+                                child: Stack(
+                                  alignment: Alignment.center,
                                   children: [
-                                    Expanded(
-                                      child: Text(
-                                        '${vehicle.name} (${vehicle.modelYear})',
-                                        style: const TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w800,
-                                          color: AppColors.midnightNavy,
+                                    Image.asset(
+                                      carAsset,
+                                      height: 120,
+                                      fit: BoxFit.contain,
+                                      errorBuilder: (_, __, ___) => Image.asset(
+                                        'assets/images/white_sedan_hero.png',
+                                        fit: BoxFit.contain,
+                                      ),
+                                    ),
+                                    // Availability Pill
+                                    Positioned(
+                                      top: 10,
+                                      right: 10,
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 8, vertical: 4),
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFFF0FDF4),
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                          border: Border.all(
+                                              color: const Color(0xFF86EFAC)),
+                                        ),
+                                        child: const Text(
+                                          'Available',
+                                          style: TextStyle(
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.w700,
+                                            color: AppColors.emeraldGreen,
+                                          ),
                                         ),
                                       ),
                                     ),
-                                    PakistaniPlateWidget(
-                                      plateNumber: vehicle.plateNumber,
-                                      isCompact: true,
-                                    ),
                                   ],
                                 ),
-                                const SizedBox(height: 8),
-                                Wrap(
-                                  spacing: 10,
-                                  runSpacing: 6,
+                              ),
+
+                              Padding(
+                                padding: const EdgeInsets.all(14),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    _specChip(
-                                        Icons.event_seat_rounded,
-                                        '${vehicle.seats} Seats'),
-                                    _specChip(Icons.settings_rounded,
-                                        vehicle.transmission),
-                                    _specChip(Icons.local_gas_station_rounded,
-                                        vehicle.fuelType),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            '${vehicle.name} (${vehicle.modelYear})',
+                                            style: const TextStyle(
+                                              fontSize: 15.5,
+                                              fontWeight: FontWeight.w800,
+                                              color: AppColors.midnightNavy,
+                                            ),
+                                          ),
+                                        ),
+                                        PakistaniPlateWidget(
+                                          plateNumber: vehicle.plateNumber,
+                                          isCompact: true,
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Wrap(
+                                      spacing: 10,
+                                      runSpacing: 6,
+                                      children: [
+                                        _specChip(Icons.event_seat_rounded,
+                                            '${vehicle.seats} Seats'),
+                                        _specChip(Icons.settings_rounded,
+                                            vehicle.transmission),
+                                        _specChip(
+                                            Icons.local_gas_station_rounded,
+                                            vehicle.fuelType),
+                                      ],
+                                    ),
+                                    const Divider(height: 18),
+                                    Wrap(
+                                      alignment: WrapAlignment.spaceBetween,
+                                      spacing: 8,
+                                      runSpacing: 4,
+                                      children: [
+                                        Text(
+                                          'Self: Rs. ${vehicle.selfDriveDailyRate}/day',
+                                          style: const TextStyle(
+                                            fontSize: 12.5,
+                                            fontWeight: FontWeight.w800,
+                                            color: AppColors.midnightNavy,
+                                          ),
+                                        ),
+                                        Text(
+                                          'With Driver: Rs. ${vehicle.withDriverDailyRate}/day',
+                                          style: const TextStyle(
+                                            fontSize: 12.5,
+                                            fontWeight: FontWeight.w800,
+                                            color: AppColors.sunsetOrange,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ],
                                 ),
-                                const Divider(height: 18),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      'Self: Rs. ${vehicle.selfDriveDailyRate}/day',
-                                      style: const TextStyle(
-                                        fontSize: 12.5,
-                                        fontWeight: FontWeight.w800,
-                                        color: AppColors.midnightNavy,
-                                      ),
-                                    ),
-                                    Text(
-                                      'With Driver: Rs. ${vehicle.withDriverDailyRate}/day',
-                                      style: const TextStyle(
-                                        fontSize: 12.5,
-                                        fontWeight: FontWeight.w800,
-                                        color: AppColors.sunsetOrange,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         ),
                       );

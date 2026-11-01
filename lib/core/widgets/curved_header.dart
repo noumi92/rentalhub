@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
+import 'custom_curved_header.dart';
 import 'verified_badge.dart';
 
 class CurvedHeader extends StatelessWidget {
@@ -32,19 +33,12 @@ class CurvedHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       width: double.infinity,
       constraints: BoxConstraints(minHeight: height),
       decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            AppColors.midnightNavyDark,
-            AppColors.midnightNavy,
-            AppColors.midnightNavyLight,
-          ],
-        ),
         borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(28),
           bottomRight: Radius.circular(28),
@@ -57,14 +51,21 @@ class CurvedHeader extends StatelessWidget {
           ),
         ],
       ),
-      child: SafeArea(
-        bottom: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 44, 20, 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
+      child: ClipRRect(
+        borderRadius: const BorderRadius.only(
+          bottomLeft: Radius.circular(28),
+          bottomRight: Radius.circular(28),
+        ),
+        child: CustomPaint(
+          painter: CurvedGradientHeaderPainter(isDark: isDark),
+          child: SafeArea(
+            bottom: false,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 44, 20, 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
               if (showGreeting && !showBack) ...[
                 Row(
                   children: [
@@ -185,6 +186,8 @@ class CurvedHeader extends StatelessWidget {
           ),
         ),
       ),
+    ),
+    ),
     );
   }
 }

@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/di/injection_container.dart';
+import '../../../../core/error/exceptions.dart';
+import '../../../../core/routing/auth_route_guard.dart';
 import '../../../../core/routing/route_names.dart';
+import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/custom_curved_header.dart';
 import '../../../../core/widgets/debounced_button.dart';
+import '../../data/datasources/auth_remote_data_source.dart';
 import 'widgets/auth_text_field.dart';
 import 'widgets/google_sign_in_button.dart';
 
@@ -20,12 +25,80 @@ class _LoginViewState extends State<LoginView> {
   final _emailController =
       TextEditingController(text: 'ahmed.raza@rentalhub.pk');
   final _passwordController = TextEditingController(text: 'password123');
+  bool _isLoading = false;
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  void _handleEmailSignIn() async {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
+
+    if (email.isEmpty || !RegExp(r'^[^@]+@[^@]+\.[^@]+$').hasMatch(email)) {
+      AppFeedback.showError(context, 'Please enter a valid email address.');
+      return;
+    }
+    if (password.isEmpty || password.length < 6) {
+      AppFeedback.showError(context, 'Password must be at least 6 characters.');
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    try {
+      if (sl.isRegistered<AuthRemoteDataSource>()) {
+        await sl<AuthRemoteDataSource>().signInWithEmail(
+          email: email,
+          password: password,
+        );
+      }
+
+      if (!mounted) return;
+      AppFeedback.showSuccess(context, 'Signed in successfully!');
+      if (widget.onSignedIn != null) {
+        widget.onSignedIn!();
+      } else {
+        context.go(AuthRouteGuard.resolveAuthDestination());
+      }
+    } catch (e) {
+      if (!mounted) return;
+      final errorMessage = e is ServerException ? e.message : e.toString();
+      AppFeedback.showError(context, errorMessage);
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  void _handleGoogleSignIn() async {
+    setState(() => _isLoading = true);
+
+    try {
+      if (sl.isRegistered<AuthRemoteDataSource>()) {
+        await sl<AuthRemoteDataSource>().signInWithGoogle();
+      }
+
+      if (!mounted) return;
+      AppFeedback.showSuccess(context, 'Signed in with Google!');
+      if (widget.onSignedIn != null) {
+        widget.onSignedIn!();
+      } else {
+        context.go(AuthRouteGuard.resolveAuthDestination());
+      }
+    } catch (e) {
+      if (!mounted) return;
+      final errorMessage = e is ServerException ? e.message : e.toString();
+      AppFeedback.showError(context, errorMessage);
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
   }
 
   @override
@@ -75,15 +148,39 @@ class _LoginViewState extends State<LoginView> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
-                              'Sign In to Your Account',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w800,
-                                color: AppColors.midnightNavy,
+                            // Real Matching Car Showcase
+                            Center(
+                              child: Container(
+                                height: 105,
+                                margin: const EdgeInsets.only(bottom: 12),
+                                child: Image.asset(
+                                  'assets/images/white_sedan_hero.png',
+                                  fit: BoxFit.contain,
+                                ),
                               ),
                             ),
-                            const SizedBox(height: 16),
+                            const Center(
+                              child: Text(
+                                'Welcome to RentalHub',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w800,
+                                  color: AppColors.midnightNavy,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            const Center(
+                              child: Text(
+                                'Sign in to rent a car near you',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: AppColors.textSecondary,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 18),
                             AuthTextField(
                               controller: _emailController,
                               label: 'Email Address',
@@ -103,29 +200,27 @@ class _LoginViewState extends State<LoginView> {
                             DebouncedButton(
                               text: 'Sign In with Email',
                               icon: Icons.login_rounded,
-                              onPressed: () async {
-                                if (widget.onSignedIn != null) {
-                                  widget.onSignedIn!();
-                                } else {
-                                  context.go(RouteNames.onboardingRole);
-                                }
-                              },
+                              isLoading: _isLoading,
+                              onPressed: () async => _handleEmailSignIn(),
                             ),
                             const SizedBox(height: 12),
                             GoogleSignInButton(
-                              onPressed: () {
-                                if (widget.onSignedIn != null) {
-                                  widget.onSignedIn!();
-                                } else {
-                                  context.go(RouteNames.onboardingRole);
-                                }
-                              },
+                              isLoading: _isLoading,
+                              onPressed: _handleGoogleSignIn,
                             ),
                             const SizedBox(height: 16),
                             Center(
                               child: TextButton(
-                                onPressed: () {
-                                  context.go(RouteNames.onboardingRole);
+                                onPressed: () async {
+                                  if (sl.isRegistered<AuthRemoteDataSource>()) {
+                                    final auth = sl<AuthRemoteDataSource>();
+                                    if (!auth.isLoggedIn) {
+                                      await auth.setLoggedIn(true);
+                                    }
+                                  }
+                                  if (context.mounted) {
+                                    context.go(RouteNames.onboardingProfile);
+                                  }
                                 },
                                 child: const Text(
                                   'New to RentalHub? Choose Role & Register',
@@ -139,88 +234,6 @@ class _LoginViewState extends State<LoginView> {
                             ),
                           ],
                         ),
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    // Production Quick Navigation
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(14),
-                        border: Border.all(
-                          color: AppColors.border.withValues(alpha: 0.6),
-                        ),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Row(
-                            children: [
-                              Icon(
-                                Icons.explore_rounded,
-                                size: 18,
-                                color: AppColors.primary,
-                              ),
-                              SizedBox(width: 8),
-                              Text(
-                                'Explore Platform Portals',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w700,
-                                  color: AppColors.midnightNavy,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 12),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: OutlinedButton.icon(
-                                  onPressed: () =>
-                                      context.go(RouteNames.customerHome),
-                                  icon: const Icon(Icons.directions_car,
-                                      size: 16),
-                                  label: const Text('Customer App'),
-                                  style: OutlinedButton.styleFrom(
-                                    foregroundColor: AppColors.primary,
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 10),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: OutlinedButton.icon(
-                                  onPressed: () =>
-                                      context.go(RouteNames.ownerDashboard),
-                                  icon: const Icon(Icons.storefront, size: 16),
-                                  label: const Text('Owner Portal'),
-                                  style: OutlinedButton.styleFrom(
-                                    foregroundColor: AppColors.emeraldGreen,
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 10),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: OutlinedButton.icon(
-                                  onPressed: () =>
-                                      context.go(RouteNames.adminDashboard),
-                                  icon: const Icon(Icons.shield, size: 16),
-                                  label: const Text('Web Admin'),
-                                  style: OutlinedButton.styleFrom(
-                                    foregroundColor: AppColors.midnightNavy,
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 10),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
                       ),
                     ),
                     const SizedBox(height: 32),

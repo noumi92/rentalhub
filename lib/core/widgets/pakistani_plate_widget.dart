@@ -22,7 +22,7 @@ class PakistaniPlateWidget extends StatelessWidget {
     final String stripLabel = isIslamabad ? 'ICT' : 'PK';
 
     return Container(
-      height: isCompact ? 26 : 32,
+      constraints: BoxConstraints(minHeight: isCompact ? 26 : 32),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(5),
@@ -35,20 +35,24 @@ class PakistaniPlateWidget extends StatelessWidget {
           ),
         ],
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: isCompact ? 22 : 26,
-            decoration: BoxDecoration(
-              color: stripColor,
-              borderRadius: const BorderRadius.horizontal(
-                left: Radius.circular(3.5),
+      child: IntrinsicHeight(
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Container(
+              width: isCompact ? 22 : 26,
+              padding: const EdgeInsets.symmetric(vertical: 2),
+              decoration: BoxDecoration(
+                color: stripColor,
+                borderRadius: const BorderRadius.horizontal(
+                  left: Radius.circular(3.5),
+                ),
               ),
-            ),
-            alignment: Alignment.center,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              alignment: Alignment.center,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(
                   Icons.shield_rounded,
@@ -81,6 +85,7 @@ class PakistaniPlateWidget extends StatelessWidget {
             ),
           ),
         ],
+      ),
       ),
     );
   }

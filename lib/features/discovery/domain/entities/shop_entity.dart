@@ -23,6 +23,14 @@ class ShopEntity extends Equatable {
   final int availableCount;
   final bool isVerified;
   final List<Map<String, dynamic>> bankAccounts;
+  final String? logoUrl;
+  final String? headerUrl;
+  final List<String> fleetPhotos;
+  final Map<String, dynamic> kycDocuments;
+  final String verificationStatus;
+  final String? ownerName;
+  final String? cnicNumber;
+  final String? openingHours;
 
   const ShopEntity({
     required this.shopId,
@@ -37,6 +45,14 @@ class ShopEntity extends Equatable {
     this.availableCount = 8,
     this.isVerified = true,
     this.bankAccounts = const [],
+    this.logoUrl,
+    this.headerUrl,
+    this.fleetPhotos = const [],
+    this.kycDocuments = const {},
+    this.verificationStatus = 'approved',
+    this.ownerName,
+    this.cnicNumber,
+    this.openingHours,
   });
 
   @override
@@ -53,6 +69,14 @@ class ShopEntity extends Equatable {
         availableCount,
         isVerified,
         bankAccounts,
+        logoUrl,
+        headerUrl,
+        fleetPhotos,
+        kycDocuments,
+        verificationStatus,
+        ownerName,
+        cnicNumber,
+        openingHours,
       ];
 }
 

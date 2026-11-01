@@ -12,6 +12,7 @@ class UserModel extends UserEntity {
     super.trustScore,
     super.totalTrips,
     super.isBlacklisted,
+    super.isOnboardingCompleted,
   });
 
   factory UserModel.fromMap(Map<String, dynamic> data, {String? id}) {
@@ -26,6 +27,7 @@ class UserModel extends UserEntity {
       trustScore: (data['trust_score'] ?? 5.0).toDouble(),
       totalTrips: data['total_trips'] ?? 0,
       isBlacklisted: data['is_blacklisted'] ?? false,
+      isOnboardingCompleted: data['is_onboarding_completed'] ?? false,
     );
   }
 
@@ -41,6 +43,7 @@ class UserModel extends UserEntity {
       'trust_score': trustScore,
       'total_trips': totalTrips,
       'is_blacklisted': isBlacklisted,
+      'is_onboarding_completed': isOnboardingCompleted,
       'updated_at': DateTime.now().toIso8601String(),
     };
   }

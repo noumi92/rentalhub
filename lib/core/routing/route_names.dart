@@ -6,7 +6,9 @@ class RouteNames {
   static const String onboardingProfile = '/onboarding/profile';
 
   // Customer Routes
+  static const String customerLocationPrompt = '/customer/location-prompt';
   static const String customerHome = '/customer/home';
+  static const String customerHomeMap = '/customer/home/map';
   static const String customerVehicleDetail = '/customer/vehicle/:id';
   static const String customerReviewBooking = '/customer/review/:id';
   static const String customerPaymentProof = '/customer/payment/:id';

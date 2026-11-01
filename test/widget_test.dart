@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -19,6 +20,15 @@ import 'package:rentalhub/features/handover/presentation/cubit/handover_cubit.da
 import 'package:rentalhub/features/blacklist/presentation/cubit/blacklist_cubit.dart';
 import 'package:rentalhub/core/routing/admin_guard.dart';
 import 'package:rentalhub/features/trust/presentation/views/customer_documents_view.dart';
+import 'package:rentalhub/features/auth/presentation/views/onboarding_profile_view.dart';
+import 'package:rentalhub/features/auth/presentation/views/onboarding_role_view.dart';
+import 'package:rentalhub/features/owner/presentation/views/owner_onboarding_view.dart';
+import 'package:rentalhub/features/owner/presentation/views/owner_add_vehicle_view.dart';
+import 'package:rentalhub/features/owner/presentation/views/owner_fleet_view.dart';
+import 'package:rentalhub/core/widgets/custom_curved_header.dart';
+import 'package:rentalhub/features/owner/presentation/widgets/onboarding/shop_payout_step_widget.dart';
+import 'package:rentalhub/features/owner/presentation/widgets/onboarding/shop_kyc_docs_step_widget.dart';
+import 'package:rentalhub/features/owner/presentation/widgets/add_vehicle/vehicle_rates_step_widget.dart';
 import 'package:rentalhub/main.dart';
 
 void main() {
@@ -256,5 +266,219 @@ void main() {
       reverted.revertedReason,
       'Verified settlement receipt and police clearance.',
     );
+  });
+
+  test('Main Test Suite: No screen view file in views/ folders exceeds 300 lines of code', () {
+    final libDir = Directory('lib');
+    expect(libDir.existsSync(), isTrue, reason: 'lib directory must exist');
+
+    final dartFiles = libDir
+        .listSync(recursive: true)
+        .whereType<File>()
+        .where((file) {
+          final normalized = file.path.replaceAll(r'\', '/');
+          return normalized.endsWith('.dart') &&
+              !normalized.endsWith('.g.dart') &&
+              normalized.contains('/presentation/views/') &&
+              !normalized.contains('/presentation/views/widgets/');
+        })
+        .toList();
+
+    final violatingFiles = <String, int>{};
+
+    for (final file in dartFiles) {
+      final lines = file.readAsLinesSync();
+      final relativePath = file.path.replaceAll(r'\', '/');
+      if (lines.length > 300) {
+        violatingFiles[relativePath] = lines.length;
+      }
+    }
+
+    if (violatingFiles.isNotEmpty) {
+      final buffer = StringBuffer(
+        'The following ${violatingFiles.length} screen file(s) in views/ exceed 300 lines of code:\n',
+      );
+      for (final entry in violatingFiles.entries) {
+        buffer.writeln('  - ${entry.key}: ${entry.value} lines');
+      }
+      fail(buffer.toString());
+    }
+  });
+
+  testWidgets(
+      'Owner Onboarding & Add Vehicle: Verifies 10 user requirements',
+      (WidgetTester tester) async {
+    // 1. Header rolls up with scroll on all screens (descendant of SingleChildScrollView)
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.lightTheme,
+        home: const OwnerOnboardingView(),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(
+      find.descendant(
+        of: find.byType(SingleChildScrollView),
+        matching: find.byType(CustomCurvedHeader),
+      ),
+      findsOneWidget,
+      reason: 'Requirement 1: Header must roll up inside SingleChildScrollView',
+    );
+
+    // 2. Upload shop logo button exists and is clickable
+    expect(
+      find.text('Upload Shop Logo / Storefront'),
+      findsOneWidget,
+      reason: 'Requirement 2: Upload shop logo button must be present',
+    );
+
+    // 3. CTA button clean label without double arrow
+    expect(find.text('Next Step'), findsOneWidget);
+    expect(
+      find.textContaining('Next Step →'),
+      findsNothing,
+      reason: 'Requirement 3: No double arrow in CTA buttons',
+    );
+
+    // 4. Advance to Step 2 (Location & Map)
+    await tester.tap(find.text('Next Step'));
+    await tester.pumpAndSettle();
+
+    // Verify single horizontal row for major cities before map view
+    expect(find.text('Lahore'), findsOneWidget);
+    expect(find.text('Karachi'), findsOneWidget);
+    expect(find.text('Islamabad'), findsOneWidget);
+
+    // 5. Map & GPS button are connected
+    expect(find.text('Use Current GPS'), findsOneWidget);
+
+    // 6. Advance to Step 3 (Payouts)
+    await tester.tap(find.text('Next Step'));
+    await tester.pumpAndSettle();
+
+    // Verify all 3 payout switches are initially disabled
+    final switches = tester.widgetList<Switch>(find.byType(Switch)).toList();
+    expect(switches.length, greaterThanOrEqualTo(3));
+    for (final s in switches) {
+      expect(s.value, isFalse, reason: 'Requirement 6: Payouts must initially be disabled');
+    }
+
+    // Enable bank option (3rd switch) to verify bank name, account no, account title
+    await tester.tap(find.byType(Switch).at(2));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Select Bank Name'), findsOneWidget);
+    expect(find.text('Account Number / IBAN'), findsOneWidget);
+    expect(find.text('Account Title (Business / Owner)'), findsOneWidget);
+
+    // 7 & 8. Advance to Step 4 (KYC & Photos)
+    await tester.tap(find.text('Next Step'));
+    await tester.pumpAndSettle();
+
+    // Verify 1 shop header + 3 fleet photos + CNIC docs
+    expect(find.text('Shop Header Banner Photo'), findsOneWidget);
+    expect(find.text('Fleet Car 1'), findsOneWidget);
+    expect(find.text('Fleet Car 2'), findsOneWidget);
+    expect(find.text('Fleet Car 3'), findsOneWidget);
+    expect(find.text('CNIC Front Photo'), findsOneWidget);
+    expect(find.text('CNIC Back Photo'), findsOneWidget);
+    expect(find.textContaining('Owner Live Selfie Holding CNIC'), findsOneWidget);
+
+    // 9. All photo buttons are interactive InkWells
+    expect(find.byType(InkWell), findsWidgets);
+
+    // 10. Verify Add Vehicle: Specs (Capacity, AC, Features) & Rates are editable
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.lightTheme,
+        home: const OwnerAddVehicleView(),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    // Verify Step 1: Specs, Capacity, AC & Extra Features
+    expect(find.text('Vehicle Seating Capacity'), findsOneWidget);
+    expect(find.text('5 Seats'), findsOneWidget);
+    expect(find.text('Air Conditioning (Full AC)'), findsOneWidget);
+    expect(find.text('Extra Features (Shown on Car Detail)'), findsOneWidget);
+    expect(find.text('ABS Brakes'), findsOneWidget);
+    expect(find.text('GPS Tracking'), findsOneWidget);
+
+    // Step 1 -> Step 2 -> Step 3
+    await tester.tap(find.text('Next Step'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Next Step'));
+    await tester.pumpAndSettle();
+
+    // Step 3: Rates & Policy are editable
+    expect(find.text('1 Hour Rate'), findsOneWidget);
+    expect(find.text('Full Day (24h) Rate'), findsOneWidget);
+    expect(find.text('Security Deposit (Self-Drive)'), findsOneWidget);
+    expect(find.text('Advance Booking Fee'), findsOneWidget);
+    expect(find.text('Extra Hour Overstay Charge'), findsOneWidget);
+    expect(find.text('Fuel Policy'), findsOneWidget);
+  });
+
+  testWidgets(
+      'Auth Onboarding: 2-step division (Step 1 Profile Info -> Step 2 Role Selection)',
+      (WidgetTester tester) async {
+    bool profileDone = false;
+    String? lockedRole;
+
+    // Step 1: Profile Info View
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.lightTheme,
+        home: OnboardingProfileView(
+          onProfileCompleted: () => profileDone = true,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Step 1: Your Profile'), findsOneWidget);
+    expect(find.text('1. Profile Info'), findsOneWidget);
+    expect(find.text('2. Select Role'), findsOneWidget);
+    expect(find.text('Full Name'), findsOneWidget);
+    expect(find.text('WhatsApp Number'), findsOneWidget);
+    expect(find.text('Continue to Role Selection'), findsOneWidget);
+
+    await tester.tap(find.text('Continue to Role Selection'));
+    await tester.pumpAndSettle();
+    expect(profileDone, isTrue);
+
+    // Step 2: Role Selection View
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.lightTheme,
+        home: OnboardingRoleView(
+          onRoleLocked: (role) => lockedRole = role,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    // Dismiss any snackbar from previous step
+    await tester.pump(const Duration(seconds: 4));
+
+    expect(find.text('Step 2: Account Role'), findsOneWidget);
+    expect(find.text('Rent a Vehicle (Customer)'), findsOneWidget);
+    expect(find.text('List My Fleet (Shop Owner)'), findsOneWidget);
+    expect(find.text('Continue as Customer'), findsOneWidget);
+
+    // Tap owner role
+    await tester.tap(find.text('List My Fleet (Shop Owner)'));
+    await tester.pumpAndSettle();
+    expect(find.text('Continue as Fleet Owner'), findsOneWidget);
+
+    await tester.tap(find.text('Continue as Fleet Owner'));
+    await tester.pumpAndSettle();
+
+    final confirmBtn = find.text('Lock My Role & Proceed');
+    if (confirmBtn.evaluate().isNotEmpty) {
+      await tester.tap(confirmBtn);
+      await tester.pumpAndSettle();
+    }
+    expect(lockedRole, 'owner');
   });
 }

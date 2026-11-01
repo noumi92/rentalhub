@@ -30,20 +30,19 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyAhsIr1jlCNhAz3PajTMqRXJSNV2mqbYDg',
-    appId: '1:465105544329:web:5f3e842efdb8a9f0a05258',
-    messagingSenderId: '465105544329',
-    projectId: 'renthub-dev',
-    authDomain: 'renthub-dev.firebaseapp.com',
-    storageBucket: 'renthub-dev.firebasestorage.app',
-    measurementId: 'G-059Y9665W3',
+    apiKey: 'AIzaSyBdzyUnc6nB08b-qjBSRJIXLCyUtMXLXiM',
+    appId: '1:139498327816:web:ddcbc9a7adc99a9485a6bd',
+    messagingSenderId: '139498327816',
+    projectId: 'rentalhub-dev-pk',
+    authDomain: 'rentalhub-dev-pk.firebaseapp.com',
+    storageBucket: 'rentalhub-dev-pk.firebasestorage.app',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyANnzXW-wamG2MDbVAa435cSAESmqV3P-s',
-    appId: '1:465105544329:android:cfe112ff765a36eda05258',
-    messagingSenderId: '465105544329',
-    projectId: 'renthub-dev',
-    storageBucket: 'renthub-dev.firebasestorage.app',
+    apiKey: 'AIzaSyBgtrxfnbhm9-9Lp28_aRHkIhG4Av78hPU',
+    appId: '1:139498327816:android:5851f5a83201a6a285a6bd',
+    messagingSenderId: '139498327816',
+    projectId: 'rentalhub-dev-pk',
+    storageBucket: 'rentalhub-dev-pk.firebasestorage.app',
   );
 }

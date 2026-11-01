@@ -36,11 +36,33 @@ dependencies:
   intl: ^0.20.2
   firebase_auth: ^5.7.0
   cloud_firestore: ^5.6.12
+  image_picker: ^1.2.4
+  geolocator: ^14.1.2
+  flutter_map: ^8.3.2
+  latlong2: ^0.10.1
+  flutter_native_splash: ^2.4.4
+  google_sign_in: ^6.2.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
 
+flutter_native_splash:
+  color: "#0F1336"
+  image: assets/images/rentalhub_splash_logo.png
+  color_dark: "#0F1336"
+  image_dark: assets/images/rentalhub_splash_logo.png
+  android_12:
+    color: "#0F1336"
+    color_dark: "#0F1336"
+    image: assets/images/rentalhub_splash_logo.png
+    image_dark: assets/images/rentalhub_splash_logo.png
+  fullscreen: true
+  android: true
+  ios: true
+
 flutter:
   uses-material-design: true
+  assets:
+    - assets/images/

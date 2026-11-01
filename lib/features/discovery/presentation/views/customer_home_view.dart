@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/routing/route_names.dart';
 import '../../../../core/widgets/custom_curved_header.dart';
 import '../../data/datasources/discovery_remote_data_source.dart';
 import '../../data/repositories/discovery_repository_impl.dart';
 import '../../domain/entities/shop_entity.dart';
 import '../../domain/usecases/get_nearby_shops_usecase.dart';
 import '../cubit/discovery_cubit.dart';
+import 'shop_detail_view.dart';
+import 'vehicle_detail_view.dart';
 import 'widgets/empty_radar_state.dart';
 import 'widgets/radius_filter_pills.dart';
 import 'widgets/shop_list_card.dart';
@@ -86,10 +90,10 @@ class _CustomerHomeBody extends StatelessWidget {
                   ),
                   actions: [
                     IconButton(
-                      tooltip: isMap ? 'Switch to List' : 'Switch to Map',
-                      onPressed: () => cubit.toggleMapView(!isMap),
-                      icon: Icon(
-                        isMap ? Icons.view_list_rounded : Icons.map_rounded,
+                      tooltip: 'Switch to Interactive Map',
+                      onPressed: () => context.go(RouteNames.customerHomeMap),
+                      icon: const Icon(
+                        Icons.map_rounded,
                         color: AppColors.sunsetOrange,
                       ),
                     ),
@@ -136,7 +140,32 @@ class _CustomerHomeBody extends StatelessWidget {
                           ...shops.map(
                             (shop) => ShopListCard(
                               shop: shop,
-                              onTap: () => onShopSelected?.call(shop),
+                              onTap: () {
+                                if (onShopSelected != null) {
+                                  onShopSelected?.call(shop);
+                                } else {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) => ShopDetailView(
+                                        shop: shop,
+                                        onBack: () =>
+                                            Navigator.of(context).pop(),
+                                        onVehicleSelected: (vehicle) {
+                                          Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                              builder: (_) => VehicleDetailView(
+                                                vehicle: vehicle,
+                                                onBack: () =>
+                                                    Navigator.of(context).pop(),
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                  );
+                                }
+                              },
                             ),
                           ),
                       ],

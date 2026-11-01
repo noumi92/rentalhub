@@ -37,20 +37,7 @@ class CustomCurvedHeader extends StatelessWidget {
     return Container(
       width: double.infinity,
       constraints: BoxConstraints(minHeight: height + topPadding),
-      padding: EdgeInsets.only(
-        top: topPadding + 10,
-        left: AppDimensions.paddingHorizontal,
-        right: AppDimensions.paddingHorizontal,
-        bottom: 32, // Extra bottom space for -24.0 card overlap
-      ),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: isDark
-              ? const [Color(0xFF0B0D26), Color(0xFF16194F)]
-              : const [AppColors.primaryDark, Color(0xFF242875)],
-        ),
         borderRadius: const BorderRadius.vertical(
           bottom: Radius.circular(AppDimensions.headerBottomRadius),
         ),
@@ -62,113 +49,229 @@ class CustomCurvedHeader extends StatelessWidget {
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (showProfileGreeting) ...[
-            Row(
+      child: ClipRRect(
+        borderRadius: const BorderRadius.vertical(
+          bottom: Radius.circular(AppDimensions.headerBottomRadius),
+        ),
+        child: CustomPaint(
+          painter: CurvedGradientHeaderPainter(isDark: isDark),
+          child: Padding(
+            padding: EdgeInsets.only(
+              top: topPadding + 10,
+              left: AppDimensions.paddingHorizontal,
+              right: AppDimensions.paddingHorizontal,
+              bottom: 32, // Extra bottom space for -24.0 card overlap
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Container(
-                  width: 38,
-                  height: 38,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: AppColors.sunsetOrange.withValues(alpha: 0.2),
-                    border: Border.all(
-                      color: AppColors.sunsetOrange,
-                      width: 1.5,
-                    ),
-                  ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    userName.isNotEmpty ? userName[0].toUpperCase() : 'U',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w800,
-                      fontSize: 15,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                if (showProfileGreeting) ...[
+                  Row(
                     children: [
-                      Row(
-                        children: [
-                          Flexible(
-                            child: Text(
-                              'Hi, $userName',
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w800,
+                      Container(
+                        width: 38,
+                        height: 38,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: AppColors.sunsetOrange.withValues(alpha: 0.2),
+                          border: Border.all(
+                            color: AppColors.sunsetOrange,
+                            width: 1.5,
+                          ),
+                        ),
+                        alignment: Alignment.center,
+                        child: Text(
+                          userName.isNotEmpty ? userName[0].toUpperCase() : 'U',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w800,
+                            fontSize: 15,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Wrap(
+                              crossAxisAlignment: WrapCrossAlignment.center,
+                              spacing: 6,
+                              children: [
+                                Text(
+                                  'Hi, $userName',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
+                                Text(
+                                  '($urduGreeting)',
+                                  style: const TextStyle(
+                                    color: AppColors.textLavender,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 2),
+                            VerifiedBadge(isVerified: isVerified),
+                          ],
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: onNotificationTap,
+                        icon: Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            const Icon(
+                              Icons.notifications_none_rounded,
+                              color: Colors.white,
+                              size: 22,
+                            ),
+                            Positioned(
+                              right: 1,
+                              top: 1,
+                              child: Container(
+                                width: 8,
+                                height: 8,
+                                decoration: const BoxDecoration(
+                                  color: AppColors.sunsetOrange,
+                                  shape: BoxShape.circle,
+                                ),
                               ),
                             ),
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            '($urduGreeting)',
-                            style: const TextStyle(
-                              color: AppColors.textLavender,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 2),
-                      VerifiedBadge(isVerified: isVerified),
-                    ],
-                  ),
-                ),
-                IconButton(
-                  onPressed: onNotificationTap,
-                  icon: Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      const Icon(
-                        Icons.notifications_none_rounded,
-                        color: Colors.white,
-                        size: 22,
-                      ),
-                      Positioned(
-                        right: 1,
-                        top: 1,
-                        child: Container(
-                          width: 8,
-                          height: 8,
-                          decoration: const BoxDecoration(
-                            color: AppColors.sunsetOrange,
-                            shape: BoxShape.circle,
-                          ),
+                          ],
                         ),
                       ),
                     ],
                   ),
+                  const SizedBox(height: 12),
+                ],
+                Row(
+                  children: [
+                    if (leadingWidget != null) leadingWidget!,
+                    if (leadingWidget != null) const SizedBox(width: 12),
+                    Expanded(child: titleWidget),
+                    if (actions != null) ...actions!,
+                  ],
                 ),
+                if (bottomWidget != null) ...[
+                  const SizedBox(height: 14),
+                  bottomWidget!,
+                ],
               ],
             ),
-            const SizedBox(height: 12),
-          ],
-          Row(
-            children: [
-              if (leadingWidget != null) leadingWidget!,
-              if (leadingWidget != null) const SizedBox(width: 12),
-              Expanded(child: titleWidget),
-              if (actions != null) ...actions!,
-            ],
           ),
-          if (bottomWidget != null) ...[
-            const SizedBox(height: 14),
-            bottomWidget!,
-          ],
-        ],
+        ),
       ),
     );
   }
+}
+
+/// Organic layered curved gradient painter inspired by modern fintech header design
+/// (ui_ref.jpg), utilizing RentalHub's brand palette (Midnight Navy & Indigo).
+class CurvedGradientHeaderPainter extends CustomPainter {
+  final bool isDark;
+
+  const CurvedGradientHeaderPainter({this.isDark = false});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final rect = Offset.zero & size;
+
+    // 1. Base gradient fill (Deep Midnight Navy to Rich Indigo)
+    final baseGradient = LinearGradient(
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+      colors: isDark
+          ? const [Color(0xFF090B20), Color(0xFF101338), Color(0xFF16194F)]
+          : const [
+              Color(0xFF0F1336), // Deep midnight navy
+              Color(0xFF16194F), // Primary dark
+              Color(0xFF22286E), // Rich indigo base
+            ],
+      stops: const [0.0, 0.55, 1.0],
+    );
+
+    final basePaint = Paint()..shader = baseGradient.createShader(rect);
+    canvas.drawRect(rect, basePaint);
+
+    // 2. Large top-right organic sweeping curve (matching ui_ref.jpg curved layer)
+    final arcPaint1 = Paint()
+      ..shader = RadialGradient(
+        center: const Alignment(0.95, -0.6),
+        radius: 1.15,
+        colors: [
+          (isDark ? const Color(0xFF2B338A) : const Color(0xFF2E3792))
+              .withValues(alpha: 0.55),
+          (isDark ? const Color(0xFF1D2362) : const Color(0xFF1F256C))
+              .withValues(alpha: 0.15),
+          Colors.transparent,
+        ],
+        stops: const [0.0, 0.65, 1.0],
+      ).createShader(rect);
+
+    final path1 = Path();
+    path1.moveTo(size.width * 0.35, 0);
+    path1.quadraticBezierTo(
+      size.width * 0.45,
+      size.height * 0.65,
+      size.width,
+      size.height * 0.88,
+    );
+    path1.lineTo(size.width, 0);
+    path1.close();
+    canvas.drawPath(path1, arcPaint1);
+
+    // 3. Secondary soft layered organic curve sweeping down from center-right
+    final arcPaint2 = Paint()
+      ..shader = LinearGradient(
+        begin: Alignment.topRight,
+        end: Alignment.bottomLeft,
+        colors: [
+          (isDark ? const Color(0xFF3B46B6) : const Color(0xFF3843AC))
+              .withValues(alpha: 0.28),
+          Colors.transparent,
+        ],
+      ).createShader(rect);
+
+    final path2 = Path();
+    path2.moveTo(size.width * 0.58, 0);
+    path2.cubicTo(
+      size.width * 0.68,
+      size.height * 0.42,
+      size.width * 0.88,
+      size.height * 0.72,
+      size.width,
+      size.height * 0.52,
+    );
+    path2.lineTo(size.width, 0);
+    path2.close();
+    canvas.drawPath(path2, arcPaint2);
+
+    // 4. Subtle top-left ambient illumination behind user avatar / brand logo
+    final glowPaint = Paint()
+      ..shader = RadialGradient(
+        center: const Alignment(-0.85, -0.7),
+        radius: 0.65,
+        colors: [
+          (isDark ? const Color(0xFF2B338A) : const Color(0xFF2E3896))
+              .withValues(alpha: 0.40),
+          Colors.transparent,
+        ],
+        stops: const [0.0, 1.0],
+      ).createShader(rect);
+
+    canvas.drawRect(rect, glowPaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CurvedGradientHeaderPainter oldDelegate) =>
+      oldDelegate.isDark != isDark;
 }
 
 /// Wrapper that applies the DOC-2 mandated -24.0 negative top margin overlap

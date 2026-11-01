@@ -24,6 +24,7 @@ class MockVehicle {
   final bool hasBluetooth;
   final bool hasAirbags;
   final bool hasSunroof;
+  final List<String> features;
   final String status; // 'Available', 'Rented', 'Maintenance'
   final String imageUrl;
   final Color brandColor;
@@ -52,6 +53,7 @@ class MockVehicle {
     this.hasBluetooth = true,
     this.hasAirbags = true,
     this.hasSunroof = false,
+    this.features = const ['ABS Brakes', 'Dual Airbags', 'Bluetooth Audio', 'Power Windows', 'GPS Tracking'],
     this.status = 'Available',
     required this.imageUrl,
     this.brandColor = const Color(0xFFDC2626),
@@ -67,6 +69,66 @@ class MockVehicle {
   int get overtimeHourlyRate => 300;
   int get outstationAllowance => 2000;
   int get securityDeposit => deposit;
+
+  MockVehicle copyWith({
+    String? id,
+    String? make,
+    String? model,
+    int? year,
+    String? plate,
+    String? city,
+    String? shopName,
+    String? shopAddress,
+    double? rating,
+    int? tripCount,
+    int? dailyRate,
+    int? hourlyRate1,
+    int? hourlyRate3,
+    int? hourlyRate6,
+    int? deposit,
+    String? fuelType,
+    String? transmission,
+    int? seats,
+    String? category,
+    bool? hasAC,
+    bool? hasBluetooth,
+    bool? hasAirbags,
+    bool? hasSunroof,
+    List<String>? features,
+    String? status,
+    String? imageUrl,
+    Color? brandColor,
+  }) {
+    return MockVehicle(
+      id: id ?? this.id,
+      make: make ?? this.make,
+      model: model ?? this.model,
+      year: year ?? this.year,
+      plate: plate ?? this.plate,
+      city: city ?? this.city,
+      shopName: shopName ?? this.shopName,
+      shopAddress: shopAddress ?? this.shopAddress,
+      rating: rating ?? this.rating,
+      tripCount: tripCount ?? this.tripCount,
+      dailyRate: dailyRate ?? this.dailyRate,
+      hourlyRate1: hourlyRate1 ?? this.hourlyRate1,
+      hourlyRate3: hourlyRate3 ?? this.hourlyRate3,
+      hourlyRate6: hourlyRate6 ?? this.hourlyRate6,
+      deposit: deposit ?? this.deposit,
+      fuelType: fuelType ?? this.fuelType,
+      transmission: transmission ?? this.transmission,
+      seats: seats ?? this.seats,
+      category: category ?? this.category,
+      hasAC: hasAC ?? this.hasAC,
+      hasBluetooth: hasBluetooth ?? this.hasBluetooth,
+      hasAirbags: hasAirbags ?? this.hasAirbags,
+      hasSunroof: hasSunroof ?? this.hasSunroof,
+      features: features ?? this.features,
+      status: status ?? this.status,
+      imageUrl: imageUrl ?? this.imageUrl,
+      brandColor: brandColor ?? this.brandColor,
+    );
+  }
 }
 
 class MockShop {

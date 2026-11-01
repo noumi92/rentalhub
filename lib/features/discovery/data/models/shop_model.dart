@@ -14,6 +14,14 @@ class ShopModel extends ShopEntity {
     super.availableCount,
     super.isVerified,
     required super.bankAccounts,
+    super.logoUrl,
+    super.headerUrl,
+    super.fleetPhotos,
+    super.kycDocuments,
+    super.verificationStatus,
+    super.ownerName,
+    super.cnicNumber,
+    super.openingHours,
   });
 
   factory ShopModel.fromMap(Map<String, dynamic> d, {String? id}) {
@@ -32,6 +40,14 @@ class ShopModel extends ShopEntity {
       availableCount: d['available_count'] ?? 8,
       isVerified: d['is_verified'] ?? true,
       bankAccounts: List<Map<String, dynamic>>.from(d['bank_accounts'] ?? []),
+      logoUrl: d['logo_url'],
+      headerUrl: d['header_url'],
+      fleetPhotos: List<String>.from(d['fleet_photos'] ?? []),
+      kycDocuments: Map<String, dynamic>.from(d['kyc_documents'] ?? {}),
+      verificationStatus: d['verification_status'] ?? (d['is_verified'] == true ? 'approved' : 'pending'),
+      ownerName: d['owner_name'],
+      cnicNumber: d['cnic_number'],
+      openingHours: d['opening_hours'],
     );
   }
 
@@ -50,6 +66,14 @@ class ShopModel extends ShopEntity {
       'available_count': availableCount,
       'is_verified': isVerified,
       'bank_accounts': bankAccounts,
+      if (logoUrl != null) 'logo_url': logoUrl,
+      if (headerUrl != null) 'header_url': headerUrl,
+      'fleet_photos': fleetPhotos,
+      'kyc_documents': kycDocuments,
+      'verification_status': verificationStatus,
+      if (ownerName != null) 'owner_name': ownerName,
+      if (cnicNumber != null) 'cnic_number': cnicNumber,
+      if (openingHours != null) 'opening_hours': openingHours,
     };
   }
 }

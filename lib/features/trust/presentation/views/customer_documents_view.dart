@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/utils/pakistani_validators.dart';
+import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/custom_curved_header.dart';
 import '../../../../core/widgets/debounced_button.dart';
 import 'widgets/document_slot_tile.dart';
@@ -110,6 +112,16 @@ class _CustomerDocumentsViewState extends State<CustomerDocumentsView> {
                           text: 'Submit Encrypted KYC to cPanel Vault',
                           icon: Icons.cloud_upload_rounded,
                           onPressed: () async {
+                            final cnicErr = PakistaniValidators.validateCnic(_cnicController.text);
+                            if (cnicErr != null) {
+                              AppFeedback.showError(context, cnicErr);
+                              return;
+                            }
+                            if (!_cnicFront || !_cnicBack) {
+                              AppFeedback.showWarning(context, 'Please upload both front and back photos of your NADRA CNIC.');
+                              return;
+                            }
+                            AppFeedback.showSuccess(context, 'Encrypted KYC documents submitted to private vault!');
                             widget.onSubmitted?.call();
                           },
                         ),

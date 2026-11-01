@@ -24,6 +24,15 @@ android {
         versionName = flutter.versionName
     }
 
+    signingConfigs {
+        getByName("debug") {
+            storeFile = file("rentalhub-debug.keystore")
+            storePassword = "android"
+            keyAlias = "rentalhubdebug"
+            keyPassword = "android"
+        }
+    }
+
     buildTypes {
         release {
             signingConfig = signingConfigs.getByName("debug")

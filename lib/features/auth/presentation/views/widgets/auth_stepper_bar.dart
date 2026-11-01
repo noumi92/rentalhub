@@ -1,0 +1,95 @@
+import 'package:flutter/material.dart';
+import '../../../../../core/constants/app_colors.dart';
+
+class AuthStepperBar extends StatelessWidget {
+  final int currentStep; // 1 or 2
+
+  const AuthStepperBar({super.key, required this.currentStep});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      color: Colors.white,
+      child: Row(
+        children: [
+          Expanded(
+            child: _stepPill(
+              step: 1,
+              title: '1. Profile Info',
+              isDone: currentStep > 1,
+              isCurrent: currentStep == 1,
+              icon: Icons.person_rounded,
+            ),
+          ),
+          Container(
+            width: 20,
+            height: 2,
+            margin: const EdgeInsets.symmetric(horizontal: 6),
+            color: currentStep > 1 ? AppColors.emeraldGreen : AppColors.border,
+          ),
+          Expanded(
+            child: _stepPill(
+              step: 2,
+              title: '2. Select Role',
+              isDone: false,
+              isCurrent: currentStep == 2,
+              icon: Icons.verified_user_rounded,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _stepPill({
+    required int step,
+    required String title,
+    required bool isDone,
+    required bool isCurrent,
+    required IconData icon,
+  }) {
+    final color = isDone
+        ? AppColors.emeraldGreen
+        : isCurrent
+            ? AppColors.sunsetOrange
+            : AppColors.textMuted;
+
+    return Row(
+      children: [
+        Container(
+          width: 26,
+          height: 26,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: isDone || isCurrent ? color : AppColors.backgroundLight,
+            border: Border.all(color: color, width: 1.5),
+          ),
+          child: Center(
+            child: isDone
+                ? const Icon(Icons.check, size: 15, color: Colors.white)
+                : Icon(
+                    icon,
+                    size: 13,
+                    color: isCurrent ? Colors.white : AppColors.textMuted,
+                  ),
+          ),
+        ),
+        const SizedBox(width: 6),
+        Flexible(
+          child: Text(
+            title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: 11.5,
+              fontWeight: isCurrent ? FontWeight.w800 : FontWeight.w600,
+              color: isCurrent ? AppColors.midnightNavy : AppColors.textMuted,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+

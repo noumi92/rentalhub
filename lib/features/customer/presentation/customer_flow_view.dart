@@ -3,6 +3,11 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/models/mock_data.dart';
 import '../../../core/widgets/curved_header.dart';
 import '../../../core/widgets/pakistani_plate_widget.dart';
+import '../../discovery/domain/entities/shop_entity.dart';
+import '../../discovery/presentation/views/widgets/location_permission_dialog.dart';
+import '../../discovery/presentation/views/widgets/shop_map_view.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart' as ll;
 
 class CustomerFlowView extends StatefulWidget {
   final String initialAnchor;
@@ -30,10 +35,49 @@ class _CustomerFlowViewState extends State<CustomerFlowView> {
   String _enteredTxId = 'TX98412850';
   bool _proofAttached = true;
 
+  // Discovery Map & Geo-Location State
+  bool _isMapView = false;
+  double _selectedRadiusKm = 3.0;
+  bool _hasPromptedLocation = false;
+  String _activeLocationText = 'Gulberg III, Lahore • GPS Active';
+  MockShop _selectedShop = MockDatabase.shops.first;
+  final MapController _homeMapController = MapController();
+
   @override
   void initState() {
     super.initState();
     _setScreenFromAnchor(widget.initialAnchor);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!_hasPromptedLocation && mounted && _activeScreen == 'discovery') {
+        _promptLocationPermission();
+      }
+    });
+  }
+
+  void _promptLocationPermission() {
+    _hasPromptedLocation = true;
+    LocationPermissionDialog.show(
+      context,
+      onAllow: () {
+        setState(() {
+          _activeLocationText = 'Gulberg III, Lahore • GPS Active';
+        });
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('GPS Location Enabled: Accurate 1–5 km discovery active ✓'),
+              backgroundColor: AppColors.emeraldGreen,
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
+      },
+      onManualCity: () {
+        setState(() {
+          _activeLocationText = 'Lahore • City Center';
+        });
+      },
+    );
   }
 
   void _setScreenFromAnchor(String anchor) {
@@ -59,9 +103,14 @@ class _CustomerFlowViewState extends State<CustomerFlowView> {
       case 'ANC-08':
         _activeScreen = 'rate';
         break;
+      case 'ANC-01-MAP':
+        _activeScreen = 'discovery';
+        _isMapView = true;
+        break;
       case 'ANC-01':
       default:
         _activeScreen = 'discovery';
+        _isMapView = false;
         break;
     }
   }
@@ -132,7 +181,7 @@ class _CustomerFlowViewState extends State<CustomerFlowView> {
         children: [
           CurvedHeader(
             title: 'RentalHub',
-            subtitle: 'Verified Car Rentals Near You in Pakistan',
+            subtitle: _activeLocationText,
             height: 250,
             leading: Container(
               padding: const EdgeInsets.all(8),
@@ -144,6 +193,14 @@ class _CustomerFlowViewState extends State<CustomerFlowView> {
                   color: AppColors.sunsetOrange, size: 20),
             ),
             actions: [
+              IconButton(
+                icon: Icon(
+                  _isMapView ? Icons.view_list_rounded : Icons.map_rounded,
+                  color: AppColors.sunsetOrange,
+                ),
+                tooltip: _isMapView ? 'Switch to List' : 'Switch to Map',
+                onPressed: () => setState(() => _isMapView = !_isMapView),
+              ),
               IconButton(
                 icon: const Icon(Icons.verified_user_outlined,
                     color: AppColors.emeraldGreen),
@@ -235,88 +292,197 @@ class _CustomerFlowViewState extends State<CustomerFlowView> {
             ),
           ),
 
-          // Verified Rental Shops Section
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Verified Rental Shops (Gulberg III)',
-                  style: TextStyle(
-                      fontSize: 16,
+          if (_isMapView) ...[
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Nearby Showrooms Map',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.midnightNavy,
+                        ),
+                      ),
+                      Row(
+                        children: [1.0, 2.0, 3.0, 5.0, 10.0].map((km) {
+                          final isSelected = _selectedRadiusKm == km;
+                          return GestureDetector(
+                            onTap: () => setState(() => _selectedRadiusKm = km),
+                            child: Container(
+                              margin: const EdgeInsets.only(left: 5),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 7,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: isSelected
+                                    ? AppColors.sunsetOrange
+                                    : AppColors.primaryContainer,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                '${km.toInt()}km',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w700,
+                                  color: isSelected
+                                      ? Colors.white
+                                      : AppColors.midnightNavy,
+                                ),
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  ShopMapView(
+                    shops: MockDatabase.shops
+                        .map((s) => ShopEntity(
+                              shopId: s.id,
+                              ownerId: 'owner-${s.id}',
+                              shopName: s.name,
+                              phoneNumber: s.ownerPhone,
+                              address: s.address,
+                              city: s.city,
+                              geoLocation: const GeoPointEntity(31.5204, 74.3587),
+                              distanceKm: s.id == 'shop-01'
+                                  ? 1.2
+                                  : (s.id == 'shop-02' ? 2.5 : 4.1),
+                              rating: s.rating,
+                              isVerified: s.isVerified,
+                              availableCount: s.fleetCount,
+                            ))
+                        .where((s) => s.distanceKm <= _selectedRadiusKm)
+                        .toList(),
+                    radiusKm: _selectedRadiusKm,
+                    onShopSelected: (shop) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                              'Selected: ${shop.shopName} (${shop.distanceKm} km away)'),
+                          backgroundColor: AppColors.midnightNavy,
+                          duration: const Duration(seconds: 2),
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 14),
+                  const Text(
+                    'Showrooms in Radar Range',
+                    style: TextStyle(
+                      fontSize: 14,
                       fontWeight: FontWeight.w800,
-                      color: AppColors.midnightNavy),
-                ),
-                TextButton(
-                  onPressed: () {},
-                  child: const Text('View All',
-                      style: TextStyle(
-                          color: AppColors.sunsetOrange,
-                          fontWeight: FontWeight.w700)),
-                ),
-              ],
+                      color: AppColors.midnightNavy,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-          SizedBox(
-            height: 120,
-            child: ListView.separated(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              scrollDirection: Axis.horizontal,
-              itemCount: MockDatabase.shops.length,
-              separatorBuilder: (_, __) => const SizedBox(width: 12),
-              itemBuilder: (context, index) {
-                final shop = MockDatabase.shops[index];
-                return _buildShopCard(shop);
-              },
+            SizedBox(
+              height: 120,
+              child: ListView.separated(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                scrollDirection: Axis.horizontal,
+                itemCount: MockDatabase.shops.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 12),
+                itemBuilder: (context, index) {
+                  final shop = MockDatabase.shops[index];
+                  return _buildShopCard(shop);
+                },
+              ),
             ),
-          ),
-
-          // Available Vehicles Section
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Expanded(
-                  child: Text(
-                    'Featured Fleet Ready for Instant Rent',
+          ] else ...[
+            // Verified Rental Shops Section
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Verified Rental Shops (Gulberg III)',
                     style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w800,
                         color: AppColors.midnightNavy),
-                    overflow: TextOverflow.ellipsis,
                   ),
-                ),
-                const SizedBox(width: 8),
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: AppColors.emeraldSoftBg,
-                    borderRadius: BorderRadius.circular(8),
+                  TextButton(
+                    onPressed: () {},
+                    child: const Text('View All',
+                        style: TextStyle(
+                            color: AppColors.sunsetOrange,
+                            fontWeight: FontWeight.w700)),
                   ),
-                  child: const Text('NADRA Protected',
-                      style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.emeraldGreen)),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
+            SizedBox(
+              height: 120,
+              child: ListView.separated(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                scrollDirection: Axis.horizontal,
+                itemCount: MockDatabase.shops.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 12),
+                itemBuilder: (context, index) {
+                  final shop = MockDatabase.shops[index];
+                  return _buildShopCard(shop);
+                },
+              ),
+            ),
 
-          ListView.separated(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: MockDatabase.vehicles.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 14),
-            itemBuilder: (context, index) {
-              final vehicle = MockDatabase.vehicles[index];
-              return _buildVehicleCard(vehicle);
-            },
-          ),
+            // Available Vehicles Section
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Expanded(
+                    child: Text(
+                      'Featured Fleet Ready for Instant Rent',
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.midnightNavy),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: AppColors.emeraldSoftBg,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Text('NADRA Protected',
+                        style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.emeraldGreen)),
+                  ),
+                ],
+              ),
+            ),
+
+            ListView.separated(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: MockDatabase.vehicles.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 14),
+              itemBuilder: (context, index) {
+                final vehicle = MockDatabase.vehicles[index];
+                return _buildVehicleCard(vehicle);
+              },
+            ),
+          ],
         ],
       ),
     );
@@ -556,14 +722,20 @@ class _CustomerFlowViewState extends State<CustomerFlowView> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        vehicle.fullName,
-                        style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w800,
-                            color: AppColors.midnightNavy),
+                      Expanded(
+                        child: Text(
+                          vehicle.fullName,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w800,
+                              color: AppColors.midnightNavy),
+                        ),
                       ),
+                      const SizedBox(width: 8),
                       Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           const Icon(Icons.star, color: Colors.amber, size: 16),
                           const SizedBox(width: 2),
@@ -603,19 +775,24 @@ class _CustomerFlowViewState extends State<CustomerFlowView> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text('QuickRide Hourly Package',
-                              style: TextStyle(
-                                  fontSize: 10, color: AppColors.textMuted)),
-                          Text('From PKR ${vehicle.hourlyRate1}/hr',
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  color: AppColors.sunsetOrange,
-                                  fontSize: 12)),
-                        ],
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text('QuickRide Hourly Package',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                    fontSize: 10, color: AppColors.textMuted)),
+                            Text('From PKR ${vehicle.hourlyRate1}/hr',
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                    color: AppColors.sunsetOrange,
+                                    fontSize: 12)),
+                          ],
+                        ),
                       ),
+                      const SizedBox(width: 8),
                       ElevatedButton(
                         onPressed: () {
                           setState(() {
