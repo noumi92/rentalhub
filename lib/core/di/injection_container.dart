@@ -53,7 +53,7 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton<CPanelStorageClient>(
     () => CPanelStorageClient(
       baseUrl: ApiEndpoints.cpanelBaseUrl,
-      apiSecretKey: 'RENTALHUB_HMAC_MASTER_KEY_2026',
+      apiSecretKey: 'RENTALHUB_HMAC_SECURE_STORAGE_SECRET_2026',
       httpClient: sl<http.Client>(),
     ),
   );

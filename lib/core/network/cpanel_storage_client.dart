@@ -16,13 +16,14 @@ class CPanelStorageClient {
     http.Client? httpClient,
   }) : _httpClient = httpClient ?? http.Client();
 
-  /// Generates HMAC-SHA256 bearer token from user UID and current timestamp
-  String generateAuthToken(String userUid) {
-    final timestamp = DateTime.now().millisecondsSinceEpoch.toString();
-    final message = '$userUid:$timestamp';
+  /// Generates base64-encoded timestamp:hmac bearer token matched with cPanel upload.php
+  String generateAuthToken([String? userUid]) {
+    final timestampInSeconds =
+        (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString();
     final hmac = Hmac(sha256, utf8.encode(apiSecretKey));
-    final digest = hmac.convert(utf8.encode(message));
-    return '$message:${digest.toString()}';
+    final digest = hmac.convert(utf8.encode(timestampInSeconds)).toString();
+    final message = '$timestampInSeconds:$digest';
+    return base64Encode(utf8.encode(message));
   }
 
   /// Uploads media file to cPanel secure storage endpoint
@@ -34,22 +35,24 @@ class CPanelStorageClient {
     final uri = Uri.parse('$baseUrl${ApiEndpoints.uploadEndpoint}');
     final request = http.MultipartRequest('POST', uri)
       ..headers['Authorization'] = 'Bearer ${generateAuthToken(userUid)}'
-      ..fields['folder'] = folder
-      ..files.add(await http.MultipartFile.fromPath('media_file', file.path));
+      ..fields['category'] = folder
+      ..files.add(await http.MultipartFile.fromPath('file', file.path));
 
     final streamedResponse = await _httpClient.send(request);
     final responseBody = await streamedResponse.stream.bytesToString();
 
     if (streamedResponse.statusCode == 200) {
       final json = jsonDecode(responseBody) as Map<String, dynamic>;
-      return json['file_key'] as String; // e.g. 'kyc/cnic_front_35201.jpg'
+      return (json['url'] ?? json['filename'] ?? '') as String;
     } else {
-      throw ServerException(message: 'cPanel upload failed (${streamedResponse.statusCode}): $responseBody');
+      throw ServerException(
+          message:
+              'cPanel upload failed (${streamedResponse.statusCode}): $responseBody');
     }
   }
 
   /// Generates a short-lived signed URL for private media viewing
-  String getSignedMediaUrl(String fileKey, String userUid) {
+  String getSignedMediaUrl(String fileKey, [String? userUid]) {
     final token = generateAuthToken(userUid);
     return '$baseUrl${ApiEndpoints.mediaEndpoint}?key=${Uri.encodeComponent(fileKey)}&auth=${Uri.encodeComponent(token)}';
   }
