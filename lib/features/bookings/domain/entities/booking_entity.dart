@@ -13,9 +13,16 @@ class BookingEntity extends Equatable {
   final int advanceRequired;
   final int advancePaid;
   final int remainingBalance;
-  final String status; // 'requested' | 'approved' | 'payment_submitted' | 'paid' | 'active' | 'completed' | 'rejected'
+  final String status; // 'requested' | 'approved' | 'payment_submitted' | 'paid' | 'active' | 'completed' | 'rejected' | 'cancelled'
   final String? paymentProofUrl;
   final String? transactionId;
+  final String? vehicleName;
+  final String? vehiclePlate;
+  final String? shopName;
+  final String? shopPhone;
+  final String? customerName;
+  final String? customerPhone;
+  final String? notes;
 
   const BookingEntity({
     required this.bookingId,
@@ -33,6 +40,13 @@ class BookingEntity extends Equatable {
     this.status = 'requested',
     this.paymentProofUrl,
     this.transactionId,
+    this.vehicleName,
+    this.vehiclePlate,
+    this.shopName,
+    this.shopPhone,
+    this.customerName,
+    this.customerPhone,
+    this.notes,
   });
 
   BookingEntity copyWith({
@@ -40,6 +54,13 @@ class BookingEntity extends Equatable {
     int? advancePaid,
     String? paymentProofUrl,
     String? transactionId,
+    String? vehicleName,
+    String? vehiclePlate,
+    String? shopName,
+    String? shopPhone,
+    String? customerName,
+    String? customerPhone,
+    String? notes,
   }) {
     return BookingEntity(
       bookingId: bookingId,
@@ -57,6 +78,13 @@ class BookingEntity extends Equatable {
       status: status ?? this.status,
       paymentProofUrl: paymentProofUrl ?? this.paymentProofUrl,
       transactionId: transactionId ?? this.transactionId,
+      vehicleName: vehicleName ?? this.vehicleName,
+      vehiclePlate: vehiclePlate ?? this.vehiclePlate,
+      shopName: shopName ?? this.shopName,
+      shopPhone: shopPhone ?? this.shopPhone,
+      customerName: customerName ?? this.customerName,
+      customerPhone: customerPhone ?? this.customerPhone,
+      notes: notes ?? this.notes,
     );
   }
 
@@ -77,6 +105,12 @@ class BookingEntity extends Equatable {
         status,
         paymentProofUrl,
         transactionId,
+        vehicleName,
+        vehiclePlate,
+        shopName,
+        shopPhone,
+        customerName,
+        customerPhone,
+        notes,
       ];
 }
-

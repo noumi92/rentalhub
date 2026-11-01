@@ -11,6 +11,8 @@ class AppColors {
   static const Color midnightNavyDark = primaryDark;
   static const Color midnightNavy = primary;
   static const Color midnightNavyLight = primaryLight;
+  static const Color royalNavy = primary;
+  static const Color lavenderMist = primaryContainer;
   static const Color navySurface = Color(0xFF0F172A);
 
   // Accent Palette (Vibrant Sunset Orange)
@@ -22,6 +24,7 @@ class AppColors {
   static const Color sunsetOrange = secondary;
   static const Color orangeLight = secondaryLight;
   static const Color orangeSoftBg = secondaryContainer;
+  static const Color softOrangeTint = secondaryContainer;
   static const Color orangeGlow = Color(0xFFFFA066);
 
   // Status & Utility Colors
@@ -29,6 +32,7 @@ class AppColors {
   static const Color successContainer = Color(0xFFECFDF5);
   static const Color emeraldGreen = success;
   static const Color emeraldSoftBg = successContainer;
+  static const Color slateGray = onSurfaceVariantLight;
 
   static const Color error = Color(0xFFEF4444);
   static const Color errorDark = Color(0xFFDC2626);

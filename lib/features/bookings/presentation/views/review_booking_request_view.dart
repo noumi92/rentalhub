@@ -1,0 +1,208 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import '../../../../core/constants/app_colors.dart';
+import '../../../../core/di/injection_container.dart';
+import '../../../../core/widgets/app_feedback.dart';
+import '../../../../core/widgets/custom_curved_header.dart';
+import '../../../../core/widgets/debounced_button.dart';
+import '../../data/datasources/booking_remote_data_source.dart';
+import '../../domain/entities/booking_entity.dart';
+import '../widgets/advance_deposit_notice_card.dart';
+import '../widgets/booking_summary_card.dart';
+
+class ReviewBookingRequestView extends StatefulWidget {
+  final Map<String, dynamic> bookingDraft;
+  final Function(BookingEntity booking)? onRequestCreated;
+  final VoidCallback? onBack;
+
+  const ReviewBookingRequestView({
+    super.key,
+    required this.bookingDraft,
+    this.onRequestCreated,
+    this.onBack,
+  });
+
+  @override
+  State<ReviewBookingRequestView> createState() =>
+      _ReviewBookingRequestViewState();
+}
+
+class _ReviewBookingRequestViewState extends State<ReviewBookingRequestView> {
+  final _notesController = TextEditingController();
+  bool _isSubmitting = false;
+
+  @override
+  void dispose() {
+    _notesController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submitRequest() async {
+    setState(() => _isSubmitting = true);
+    try {
+      String customerId = 'cust-101';
+      String customerName = 'Valued Customer';
+      String customerPhone = '+923001234567';
+      try {
+        final user = FirebaseAuth.instance.currentUser;
+        if (user != null) {
+          customerId = user.uid;
+          customerName = user.displayName ?? customerName;
+          customerPhone = user.phoneNumber ?? customerPhone;
+        }
+      } catch (_) {}
+
+      final draft = widget.bookingDraft;
+      final ds = sl<BookingRemoteDataSource>();
+
+      final booking = await ds.createBookingRequest(
+        customerId: customerId,
+        shopId: draft['shopId'] as String? ?? 'shop-default',
+        vehicleId: draft['carId'] as String? ?? 'car-default',
+        packageType: draft['packageType'] as String? ?? '24h',
+        isWithDriver: draft['isWithDriver'] as bool? ?? false,
+        pickupTime: draft['pickupTime'] as DateTime? ?? DateTime.now(),
+        returnTime: draft['returnTime'] as DateTime? ??
+            DateTime.now().add(const Duration(days: 1)),
+        totalAmount: draft['totalAmount'] as int? ?? 5000,
+        advanceRequired: draft['advanceRequired'] as int? ?? 1000,
+        vehicleName: draft['carName'] as String?,
+        vehiclePlate: draft['plateNumber'] as String?,
+        shopName: draft['shopName'] as String?,
+        customerName: customerName,
+        customerPhone: customerPhone,
+        notes: _notesController.text.trim(),
+      );
+
+      if (mounted) {
+        AppFeedback.showSuccess(context, 'Reservation request sent to showroom!');
+        widget.onRequestCreated?.call(booking);
+      }
+    } catch (e) {
+      if (mounted) {
+        AppFeedback.showError(context, 'Failed to submit booking: $e');
+      }
+    } finally {
+      if (mounted) setState(() => _isSubmitting = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final d = widget.bookingDraft;
+    return Scaffold(
+      backgroundColor: AppColors.backgroundLight,
+      body: SafeArea(
+        child: Column(
+          children: [
+            CustomCurvedHeader(
+              height: 100,
+              leadingWidget: widget.onBack != null
+                  ? IconButton(
+                      icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                          color: Colors.white, size: 20),
+                      onPressed: widget.onBack,
+                    )
+                  : null,
+              titleWidget: const Text(
+                'Review Reservation',
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w900),
+              ),
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    BookingSummaryCard(
+                      carName: d['carName'] as String? ?? 'Vehicle',
+                      plateNumber: d['plateNumber'] as String? ?? 'PAK-1234',
+                      shopName: d['shopName'] as String? ?? 'Rental Showroom',
+                      isWithDriver: d['isWithDriver'] as bool? ?? false,
+                      packageType: d['packageType'] as String? ?? '24h',
+                      pickupTime:
+                          d['pickupTime'] as DateTime? ?? DateTime.now(),
+                      returnTime: d['returnTime'] as DateTime? ??
+                          DateTime.now().add(const Duration(days: 1)),
+                      totalAmount: d['totalAmount'] as int? ?? 5000,
+                      advanceRequired: d['advanceRequired'] as int? ?? 1000,
+                    ),
+                    const SizedBox(height: 14),
+                    AdvanceDepositNoticeCard(
+                      isWithDriver: d['isWithDriver'] as bool? ?? false,
+                    ),
+                    const SizedBox(height: 14),
+                    Container(
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: AppColors.border),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Special Instructions for Showroom',
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.midnightNavy,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          TextField(
+                            controller: _notesController,
+                            maxLines: 2,
+                            decoration: InputDecoration(
+                              hintText:
+                                  'E.g. Clean car required, airport terminal pickup...',
+                              hintStyle: const TextStyle(
+                                  fontSize: 12, color: AppColors.textSecondary),
+                              filled: true,
+                              fillColor: AppColors.backgroundLight,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide:
+                                    const BorderSide(color: AppColors.border),
+                              ),
+                              contentPadding: const EdgeInsets.all(10),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                  ],
+                ),
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                      color: Color(0x14000000),
+                      blurRadius: 10,
+                      offset: Offset(0, -3))
+                ],
+              ),
+              child: DebouncedButton(
+                text: _isSubmitting ? 'Sending Request...' : 'Send Request to Owner',
+                icon: Icons.send_rounded,
+                isLoading: _isSubmitting,
+                onPressed: _submitRequest,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
