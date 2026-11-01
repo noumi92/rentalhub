@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/models/mock_data.dart';
-import '../../../core/widgets/demo_hud_bar.dart';
 
 class AdminFlowView extends StatefulWidget {
   final String initialAnchor;
@@ -80,13 +79,6 @@ class _AdminFlowViewState extends State<AdminFlowView> {
                 ),
               ),
             ],
-          ),
-
-          // Floating Top HUD Switcher
-          const Positioned(
-            top: 10,
-            right: 20,
-            child: DemoHudBar(),
           ),
         ],
       ),

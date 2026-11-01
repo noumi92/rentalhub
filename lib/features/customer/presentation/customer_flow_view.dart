@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/models/mock_data.dart';
 import '../../../core/widgets/curved_header.dart';
-import '../../../core/widgets/demo_hud_bar.dart';
 import '../../../core/widgets/pakistani_plate_widget.dart';
 
 class CustomerFlowView extends StatefulWidget {
@@ -86,13 +85,6 @@ class _CustomerFlowViewState extends State<CustomerFlowView> {
           // Main Scrollable Flow Content
           Positioned.fill(
             child: _buildCurrentScreen(),
-          ),
-          // Top Floating HUD Role Switcher
-          const Positioned(
-            top: 40,
-            left: 0,
-            right: 0,
-            child: Center(child: DemoHudBar()),
           ),
           // Floating Bottom Navigation (Visible on Discovery and Active Dashboard)
           if (_activeScreen == 'discovery' || _activeScreen == 'active')

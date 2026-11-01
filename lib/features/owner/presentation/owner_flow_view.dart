@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/curved_header.dart';
-import '../../../core/widgets/demo_hud_bar.dart';
 import '../../../core/widgets/fuel_gauge_widget.dart';
 import '../../../core/widgets/signature_pad.dart';
 import '../../../core/widgets/vehicle_damage_schematic_widget.dart';
@@ -87,12 +86,6 @@ class _OwnerFlowViewState extends State<OwnerFlowView> {
       body: Stack(
         children: [
           Positioned.fill(child: _buildCurrentScreen()),
-          const Positioned(
-            top: 40,
-            left: 0,
-            right: 0,
-            child: Center(child: DemoHudBar()),
-          ),
           if (_activeScreen == 'dashboard' || _activeScreen == 'fleet')
             Positioned(
               bottom: 16,

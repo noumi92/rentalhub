@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/routing/route_names.dart';
 import '../../../../core/widgets/custom_curved_header.dart';
 import '../../../../core/widgets/debounced_button.dart';
 import 'widgets/role_selector_card.dart';
@@ -115,7 +117,15 @@ class _OnboardingRoleViewState extends State<OnboardingRoleView> {
                               'Lock Permanent Role (${_selectedRole.toUpperCase()})',
                           icon: Icons.verified_user_rounded,
                           onPressed: () async {
-                            widget.onRoleLocked?.call(_selectedRole);
+                            if (widget.onRoleLocked != null) {
+                              widget.onRoleLocked!(_selectedRole);
+                            } else {
+                              if (_selectedRole == 'customer') {
+                                context.go(RouteNames.customerHome);
+                              } else {
+                                context.go(RouteNames.ownerDashboard);
+                              }
+                            }
                           },
                         ),
                       ],

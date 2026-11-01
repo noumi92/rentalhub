@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'route_names.dart';
+import '../../features/auth/presentation/views/login_view.dart';
+import '../../features/auth/presentation/views/onboarding_role_view.dart';
 import '../../features/customer/presentation/customer_flow_view.dart';
 import '../../features/owner/presentation/owner_flow_view.dart';
 import '../../features/admin/presentation/admin_flow_view.dart';
@@ -11,8 +13,30 @@ class AppRouter {
 
   static final GoRouter router = GoRouter(
     navigatorKey: rootNavigatorKey,
-    initialLocation: RouteNames.customerHome,
+    initialLocation: RouteNames.auth,
     routes: [
+      // Authentication & Onboarding Routes
+      GoRoute(
+        path: RouteNames.auth,
+        builder: (context, state) => LoginView(
+          onSignedIn: () => router.go(RouteNames.onboardingRole),
+        ),
+      ),
+      GoRoute(
+        path: RouteNames.onboardingRole,
+        builder: (context, state) => OnboardingRoleView(
+          onRoleLocked: (role) {
+            if (role == 'customer') {
+              router.go(RouteNames.customerHome);
+            } else if (role == 'owner') {
+              router.go(RouteNames.ownerDashboard);
+            } else {
+              router.go(RouteNames.adminDashboard);
+            }
+          },
+        ),
+      ),
+
       // Customer Routes
       GoRoute(
         path: RouteNames.customerHome,
