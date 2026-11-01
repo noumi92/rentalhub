@@ -7,6 +7,35 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:139498327816:android:595c16e47ce1447b85a6bd",
+        "android_client_info": {
+          "package_name": "com.primedigit.renthub.rent_hub"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "139498327816-k5sjvum2hpuo30oiooh7u6ap8nsu71m7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBgtrxfnbhm9-9Lp28_aRHkIhG4Av78hPU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "139498327816-k5sjvum2hpuo30oiooh7u6ap8nsu71m7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:139498327816:android:5851f5a83201a6a285a6bd",
         "android_client_info": {
           "package_name": "pk.rentalhub.rentalhub"
