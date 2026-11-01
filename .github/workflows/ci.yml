@@ -99,7 +99,7 @@ jobs:
 
   deploy_cpanel_storage:
     name: Deploy Storage Server to cPanel
-    needs: [build_android, build_web_admin]
+    needs: lint_and_test
     if: github.ref == 'refs/heads/master' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
     steps:
@@ -144,10 +144,10 @@ jobs:
           if [ "$PROTO" = "sftp" ]; then
             lftp -u "$CPANEL_USER","$CPANEL_PASS" -p "$PORT" "sftp://$CPANEL_SERVER" <<EOF
           set sftp:auto-confirm yes
-          set net:timeout 20
-          set net:max-retries 2
-          mkdir -p public_html/storage
-          mirror -R --verbose backend/cpanel_storage/ public_html/storage/
+          set net:timeout 30
+          set net:max-retries 3
+          mkdir -p storage
+          mirror -R --verbose backend/cpanel_storage/ storage/
           quit
           EOF
           else
@@ -155,10 +155,10 @@ jobs:
           set ftp:ssl-allow true
           set ssl:verify-certificate no
           set ftp:passive-mode true
-          set net:timeout 20
-          set net:max-retries 2
-          mkdir -p public_html/storage
-          mirror -R --verbose backend/cpanel_storage/ public_html/storage/
+          set net:timeout 30
+          set net:max-retries 3
+          mkdir -p storage
+          mirror -R --verbose backend/cpanel_storage/ storage/
           quit
           EOF
           fi
