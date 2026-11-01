@@ -1,0 +1,126 @@
+name: RentalHub CI/CD Pipeline
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+
+jobs:
+  lint_and_test:
+    name: Lint & Automated Test Suite
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Install Dependencies
+        run: flutter pub get
+
+      - name: Analyze Project (Lint)
+        run: flutter analyze
+
+      - name: Run Unit & Overflow Tests
+        run: flutter test
+
+  build_android:
+    name: Build Android APK
+    needs: lint_and_test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Install Dependencies
+        run: flutter pub get
+
+      - name: Build Debug APK
+        run: flutter build apk --debug
+
+      - name: Upload Debug APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug-apk
+          path: build/app/outputs/flutter-apk/app-debug.apk
+
+  build_web_admin:
+    name: Build Flutter Web Admin Panel
+    needs: lint_and_test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Install Dependencies
+        run: flutter pub get
+
+      - name: Compile Flutter Web Bundle
+        run: flutter build web --release --base-href "/admin/"
+
+      - name: Copy Admin SPA .htaccess
+        run: cp web/.htaccess build/web/.htaccess || true
+
+      - name: Upload Web Admin Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: admin-web-bundle
+          path: build/web/
+
+  deploy_cpanel_storage:
+    name: Deploy Storage Server to cPanel
+    needs: [build_android, build_web_admin]
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Check cPanel Secrets
+        id: check_secrets
+        run: |
+          if [ -n "${{ secrets.CPANEL_FTP_SERVER }}" ]; then
+            echo "has_cpanel=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_cpanel=false" >> $GITHUB_OUTPUT
+            echo "CPANEL_FTP_SERVER secret not configured. Skipping automated cPanel deployment."
+          fi
+
+      - name: Deploy Storage Backend via FTP
+        if: steps.check_secrets.outputs.has_cpanel == 'true'
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.CPANEL_FTP_SERVER }}
+          username: ${{ secrets.CPANEL_FTP_USERNAME }}
+          password: ${{ secrets.CPANEL_FTP_PASSWORD }}
+          server-dir: public_html/storage/
+          local-dir: backend/cpanel_storage/
