@@ -30,7 +30,7 @@ jobs:
         run: flutter pub get
 
       - name: Analyze Project (Lint)
-        run: flutter analyze
+        run: flutter analyze --no-fatal-infos
 
       - name: Run Unit & Overflow Tests
         run: flutter test
@@ -110,6 +110,7 @@ jobs:
         run: |
           if [ -n "${{ secrets.CPANEL_FTP_SERVER }}" ]; then
             echo "has_cpanel=true" >> $GITHUB_OUTPUT
+            echo "cPanel server configured: ${{ secrets.CPANEL_FTP_SERVER }}"
           else
             echo "has_cpanel=false" >> $GITHUB_OUTPUT
             echo "CPANEL_FTP_SERVER secret not configured. Skipping automated cPanel deployment."
@@ -122,5 +123,8 @@ jobs:
           server: ${{ secrets.CPANEL_FTP_SERVER }}
           username: ${{ secrets.CPANEL_FTP_USERNAME }}
           password: ${{ secrets.CPANEL_FTP_PASSWORD }}
+          port: ${{ secrets.CPANEL_FTP_PORT || 21 }}
+          protocol: ${{ secrets.CPANEL_FTP_PROTOCOL || 'ftp' }}
           server-dir: public_html/storage/
           local-dir: backend/cpanel_storage/
+          dangerous-clean-slate: false

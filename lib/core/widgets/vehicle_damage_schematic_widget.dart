@@ -12,6 +12,18 @@ class VehicleDamageSchematicWidget extends StatefulWidget {
   final List<DamagePin> initialPins;
   final ValueChanged<List<DamagePin>>? onPinsChanged;
 
+  // Available vehicle inspection zones
+  static const List<String> zones = [
+    'Front Bumper',
+    'Hood / Bonnet',
+    'Left Fender',
+    'Right Fender',
+    'Roof Panel',
+    'Rear Left Door',
+    'Rear Right Door',
+    'Rear Trunk / Bumper',
+  ];
+
   const VehicleDamageSchematicWidget({
     super.key,
     this.initialPins = const [
@@ -29,18 +41,6 @@ class VehicleDamageSchematicWidget extends StatefulWidget {
 class _VehicleDamageSchematicWidgetState
     extends State<VehicleDamageSchematicWidget> {
   late List<DamagePin> _pins;
-
-  // Available vehicle inspection zones
-  static const List<String> zones = [
-    'Front Bumper',
-    'Hood / Bonnet',
-    'Left Fender',
-    'Right Fender',
-    'Roof Panel',
-    'Rear Left Door',
-    'Rear Right Door',
-    'Rear Trunk / Bumper',
-  ];
 
   @override
   void initState() {
