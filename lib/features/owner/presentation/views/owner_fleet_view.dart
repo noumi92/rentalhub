@@ -9,7 +9,8 @@ import '../widgets/fleet/fleet_vehicle_card.dart';
 import 'owner_add_vehicle_view.dart';
 
 class OwnerFleetView extends StatefulWidget {
-  const OwnerFleetView({super.key});
+  final VoidCallback? onAddVehicle;
+  const OwnerFleetView({super.key, this.onAddVehicle});
 
   @override
   State<OwnerFleetView> createState() => _OwnerFleetViewState();
@@ -37,6 +38,10 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
   }
 
   void _openAddVehicle() async {
+    if (widget.onAddVehicle != null) {
+      widget.onAddVehicle!();
+      return;
+    }
     final addedVehicle = await Navigator.of(context).push<MockVehicle>(
       MaterialPageRoute(
         builder: (_) => OwnerAddVehicleView(
