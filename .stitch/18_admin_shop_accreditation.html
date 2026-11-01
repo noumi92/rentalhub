@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RentalHub - Shop Verification &amp; Accreditation Queue</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Theme Configuration -->
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "tertiary-fixed": "#6ffbbe",
+            "inverse-primary": "#bfc2ff",
+            "on-secondary": "#ffffff",
+            "on-error-container": "#93000a",
+            "error-container": "#ffdad6",
+            "surface-container-highest": "#e0e2e7",
+            "on-background": "#181c20",
+            "surface-dim": "#d8dadf",
+            "secondary-fixed": "#ffdbcf",
+            "error": "#ba1a1a",
+            "secondary-fixed-dim": "#ffb59b",
+            "on-surface-variant": "#464650",
+            "on-secondary-fixed": "#380d00",
+            "primary-container": "#1a1d5a",
+            "on-tertiary": "#ffffff",
+            "on-primary-fixed": "#101251",
+            "primary": "#020246",
+            "inverse-on-surface": "#eff1f6",
+            "surface-container-lowest": "#ffffff",
+            "outline-variant": "#c7c5d1",
+            "on-surface": "#181c20",
+            "on-primary-fixed-variant": "#3d417e",
+            "inverse-surface": "#2d3135",
+            "primary-fixed-dim": "#bfc2ff",
+            "secondary-container": "#fd5a05",
+            "outline": "#777681",
+            "on-primary": "#ffffff",
+            "background": "#f7f9fe",
+            "on-tertiary-fixed-variant": "#005236",
+            "on-secondary-container": "#501600",
+            "tertiary-fixed-dim": "#4edea3",
+            "on-secondary-fixed-variant": "#812900",
+            "surface-bright": "#f7f9fe",
+            "surface-container-low": "#f1f4f9",
+            "on-tertiary-container": "#009f6e",
+            "secondary": "#a93800",
+            "tertiary-container": "#002b1b",
+            "on-primary-container": "#8386c9",
+            "surface-container-high": "#e6e8ed",
+            "primary-fixed": "#e0e0ff",
+            "tertiary": "#00130a",
+            "surface-variant": "#e0e2e7",
+            "surface-tint": "#555998",
+            "on-error": "#ffffff",
+            "surface-container": "#eceef3",
+            "surface": "#f7f9fe",
+            "on-tertiary-fixed": "#002113"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-sm": "0.75rem",
+            "space-xs": "0.5rem",
+            "space-2xl": "2rem",
+            "margin": "1rem",
+            "gutter-sm": "0.5rem",
+            "space-lg": "1.25rem",
+            "space-xl": "1.5rem",
+            "margin-lg": "1.5rem",
+            "gutter": "1rem",
+            "space-md": "1rem",
+            "space-3xl": "3rem",
+            "space-xxs": "0.25rem"
+          },
+          "fontFamily": {
+            "price-display": ["Plus Jakarta Sans"],
+            "label-md": ["Plus Jakarta Sans"],
+            "display-lg": ["Plus Jakarta Sans"],
+            "title-md": ["Plus Jakarta Sans"],
+            "headline-lg": ["Plus Jakarta Sans"],
+            "body-md": ["Inter"],
+            "headline-sm": ["Plus Jakarta Sans"],
+            "headline-lg-mobile": ["Plus Jakarta Sans"],
+            "body-lg": ["Inter"],
+            "headline-md": ["Plus Jakarta Sans"],
+            "body-sm": ["Inter"],
+            "label-lg": ["Plus Jakarta Sans"],
+            "label-sm": ["Plus Jakarta Sans"]
+          },
+          "fontSize": {
+            "price-display": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+            "display-lg": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "title-md": ["15px", { "lineHeight": "22px", "fontWeight": "600" }],
+            "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+            "headline-sm": ["16px", { "lineHeight": "24px", "fontWeight": "600" }],
+            "headline-lg-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "700" }],
+            "body-sm": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+            "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "700" }],
+            "label-sm": ["10px", { "lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "700" }]
+          }
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-background text-on-surface antialiased font-body-md text-body-md min-h-screen">
+<!-- ========================================================================= -->
+<!-- 1. LEFT SIDEBAR (SideNavBar Component Blueprint)                         -->
+<!-- ========================================================================= -->
+<aside class="fixed top-0 left-0 h-screen w-[260px] z-40 bg-primary border-r border-outline-variant/20 shadow-md">
+<div class="flex flex-col justify-between h-full p-4 w-[260px]">
+<!-- Top Brand Anchor -->
+<div>
+<div class="flex items-center gap-3 px-2 py-3 mb-6">
+<div class="w-10 h-10 rounded-xl bg-secondary-container flex items-center justify-center text-on-secondary shadow-lg shadow-secondary-container/30">
+<span class="material-symbols-outlined" data-icon="shield" style="font-variation-settings: 'FILL' 1;">shield</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5">
+<span class="text-headline-sm font-headline-sm font-extrabold text-surface-container-lowest leading-none">RentalHub</span>
+<span class="px-1.5 py-0.5 rounded text-[9px] font-bold tracking-wider bg-secondary-container text-on-secondary uppercase">ROOT</span>
+</div>
+<span class="text-[11px] font-label-md text-outline-variant font-medium tracking-wide mt-1">Super Admin Console</span>
+</div>
+</div>
+<!-- Section Label -->
+<p class="px-3 text-label-sm font-label-sm uppercase text-outline tracking-wider mb-2">National Operator Registry</p>
+<!-- Navigation Links (6 tabs from JSON Blueprint) -->
+<nav class="space-y-1">
+<!-- Overview Dashboard (Inactive) -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-outline-variant hover:text-surface-container-lowest hover:bg-primary-container/40 transition-colors font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>Overview Dashboard</span>
+</a>
+<!-- Shop Accreditations (ACTIVE - Matching Current Page Intent) -->
+<a class="flex items-center justify-between px-3 py-2.5 rounded-lg bg-primary-container text-surface-container-lowest font-label-md text-label-md shadow-sm" href="#">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary-container" data-icon="verified_user" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+<span>Shop Accreditations</span>
+</div>
+<span class="px-2 py-0.5 rounded-full text-label-sm font-label-sm bg-secondary-container text-on-secondary">12</span>
+</a>
+<!-- National Blacklist Registry (Inactive) -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-outline-variant hover:text-surface-container-lowest hover:bg-primary-container/40 transition-colors font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined" data-icon="gavel">gavel</span>
+<span>National Blacklist Registry</span>
+</a>
+<!-- Fleet Telemetry Monitor (Inactive) -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-outline-variant hover:text-surface-container-lowest hover:bg-primary-container/40 transition-colors font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined" data-icon="location_on">location_on</span>
+<span>Fleet Telemetry Monitor</span>
+</a>
+<!-- Dispute Tribunal (Inactive) -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-outline-variant hover:text-surface-container-lowest hover:bg-primary-container/40 transition-colors font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined" data-icon="shield">shield</span>
+<span>Dispute Tribunal</span>
+</a>
+<!-- Host Subscriptions (Inactive) -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-outline-variant hover:text-surface-container-lowest hover:bg-primary-container/40 transition-colors font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined" data-icon="subscriptions">subscriptions</span>
+<span>Host Subscriptions</span>
+</a>
+</nav>
+</div>
+<!-- Bottom System & User Anchor -->
+<div class="pt-4 border-t border-outline-variant/15 space-y-3">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-outline-variant hover:text-surface-container-lowest hover:bg-primary-container/40 transition-colors font-body-sm text-body-sm" href="#">
+<span class="material-symbols-outlined" data-icon="admin_panel_settings">admin_panel_settings</span>
+<span>Super Admin Console</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-outline-variant hover:text-surface-container-lowest hover:bg-primary-container/40 transition-colors font-body-sm text-body-sm" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span>Security Settings</span>
+</a>
+<!-- Admin Profile Pill -->
+<div class="flex items-center gap-3 p-2.5 rounded-xl bg-primary-container/70 border border-outline-variant/10">
+<div class="relative">
+<div class="w-9 h-9 rounded-full bg-secondary-container/20 border border-secondary-container/50 flex items-center justify-center text-secondary-container font-label-md text-label-md">
+              SA
+            </div>
+<span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-on-tertiary-container rounded-full ring-2 ring-primary"></span>
+</div>
+<div class="flex flex-col min-w-0 flex-1">
+<span class="text-label-md font-label-md text-surface-container-lowest truncate">Master Super Admin</span>
+<span class="text-[11px] font-body-sm text-outline-variant truncate">superadmin@rentalhub.pk</span>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<!-- ========================================================================= -->
+<!-- 2. TOP NAVIGATION BAR (TopNavBar Component Blueprint)                     -->
+<!-- ========================================================================= -->
+<header class="docked full-width top-0 sticky z-30 bg-surface-container-lowest border-b border-outline-variant/30 shadow-sm ml-[260px] w-[calc(100%-260px)]">
+<div class="flex items-center justify-between px-6 py-3">
+<!-- Search on Left with Shortcut Pill -->
+<div class="flex items-center gap-4 flex-1 max-w-xl">
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-outline" data-icon="search">search</span>
+<input class="w-full pl-10 pr-20 py-2 bg-surface-container-low rounded-full border border-outline-variant/50 font-body-md text-body-md text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="Search shop name, owner CNIC, NTN, city..." type="text"/>
+<div class="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 px-1.5 py-0.5 rounded bg-surface-container border border-outline-variant/60 text-outline text-[11px] font-label-sm">
+<span>Ctrl</span><span>K</span>
+</div>
+</div>
+</div>
+<!-- Hub Selector & Operation Indicators -->
+<div class="flex items-center gap-5">
+<!-- Regional Hub Selector -->
+<div class="flex items-center gap-1.5 px-3 py-1.5 bg-surface-container-low rounded-full border border-outline-variant/40">
+<span class="material-symbols-outlined text-outline" data-icon="location_on">location_on</span>
+<select class="bg-transparent border-none text-on-surface font-label-md text-label-md pr-6 py-0 focus:ring-0 cursor-pointer">
+<option>All Pakistan</option>
+<option>Lahore Hub</option>
+<option>Karachi Hub</option>
+<option>Islamabad Hub</option>
+<option>Peshawar Hub</option>
+</select>
+</div>
+<!-- Operations Health Badge -->
+<div class="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full bg-on-tertiary-container/10 border border-on-tertiary-container/20">
+<span class="w-2 h-2 rounded-full bg-on-tertiary-container animate-pulse"></span>
+<span class="font-label-md text-label-md text-on-tertiary-container">Operations Health: 99.8%</span>
+</div>
+<!-- Action Icons (notifications, tune, help_outline) -->
+<div class="flex items-center gap-1">
+<button class="relative p-2 rounded-full hover:bg-surface-container text-on-surface-variant transition-colors" title="Notifications">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-4 h-4 rounded-full bg-secondary-container text-on-secondary font-label-sm text-[10px] flex items-center justify-center">4</span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-container text-on-surface-variant transition-colors" title="Tune Configuration">
+<span class="material-symbols-outlined" data-icon="tune">tune</span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-container text-on-surface-variant transition-colors" title="Help">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+</button>
+</div>
+<!-- Freeze Emergency Safety CTA -->
+<button class="px-3.5 py-1.5 rounded-full bg-error-container text-on-error-container hover:bg-error/20 font-label-md text-label-md flex items-center gap-1.5 transition-colors">
+<span class="material-symbols-outlined text-[18px]" data-icon="lock">lock</span>
+<span>Emergency Freeze</span>
+</button>
+</div>
+</div>
+</header>
+<!-- ========================================================================= -->
+<!-- 3. MAIN CONTENT CANVAS (Accreditation Queue Workspace)                    -->
+<!-- ========================================================================= -->
+<main class="ml-[260px] p-8 min-h-[calc(100vh-65px)] bg-background">
+<div class="max-w-[1380px] mx-auto space-y-6">
+<!-- Breadcrumbs & Meta -->
+<nav class="flex items-center gap-2 text-outline font-label-md text-label-md">
+<a class="hover:text-primary transition-colors" href="#">Home</a>
+<span class="text-outline-variant">/</span>
+<a class="hover:text-primary transition-colors" href="#">Operations</a>
+<span class="text-outline-variant">/</span>
+<span class="text-primary font-bold">Shop Accreditations</span>
+</nav>
+<!-- Section Header -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div>
+<div class="flex items-center gap-3">
+<h1 class="text-headline-lg font-headline-lg text-primary tracking-tight">Shop Accreditation Queue</h1>
+<span class="px-3 py-1 rounded-full bg-secondary-container/15 text-secondary-container border border-secondary-container/30 font-label-md text-label-md flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-secondary-container"></span>
+              12 Clearances Pending Review
+            </span>
+</div>
+<p class="text-body-md font-body-md text-on-surface-variant mt-1.5 max-w-3xl">
+            Verify SECP company registrations, FBR NTN tax compliance, and local police character clearances for host rental operators across Pakistan.
+          </p>
+</div>
+<!-- Top Actions -->
+<div class="flex items-center gap-3 self-start md:self-auto">
+<button class="px-4 py-2.5 rounded-full border border-primary-container text-primary-container hover:bg-primary-container/5 font-label-lg text-label-lg flex items-center gap-2 transition-colors">
+<span class="material-symbols-outlined text-[20px]" data-icon="download">download</span>
+<span>Export Compliance CSV</span>
+</button>
+<button class="px-5 py-2.5 rounded-full bg-secondary-container text-on-secondary hover:bg-secondary transition-transform active:scale-95 font-label-lg text-label-lg flex items-center gap-2 shadow-sm">
+<span class="material-symbols-outlined text-[20px]" data-icon="bolt">bolt</span>
+<span>Bulk Fast-Track Verify</span>
+</button>
+</div>
+</div>
+<!-- Quick Operational Metrics Bento Cluster -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+<!-- Metric 1 -->
+<div class="p-4 rounded-xl bg-surface-container-lowest border border-outline-variant/40 shadow-sm flex items-center justify-between">
+<div>
+<p class="text-label-sm font-label-sm uppercase text-outline tracking-wider">Total Accredited Shops</p>
+<p class="text-headline-md font-headline-md text-primary mt-1 font-extrabold">184</p>
+<p class="text-body-sm font-body-sm text-on-tertiary-container flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-[16px]" data-icon="trending_up">trending_up</span>
+              +14 this month
+            </p>
+</div>
+<div class="w-12 h-12 rounded-xl bg-primary/5 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[28px]" data-icon="storefront">storefront</span>
+</div>
+</div>
+<!-- Metric 2 -->
+<div class="p-4 rounded-xl bg-surface-container-lowest border border-outline-variant/40 shadow-sm flex items-center justify-between">
+<div>
+<p class="text-label-sm font-label-sm uppercase text-outline tracking-wider">Pending Inquest</p>
+<p class="text-headline-md font-headline-md text-secondary-container mt-1 font-extrabold">12</p>
+<p class="text-body-sm font-body-sm text-secondary flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-[16px]" data-icon="schedule">schedule</span>
+              3 urgent expedites
+            </p>
+</div>
+<div class="w-12 h-12 rounded-xl bg-secondary-container/10 flex items-center justify-center text-secondary-container">
+<span class="material-symbols-outlined text-[28px]" data-icon="pending_actions">pending_actions</span>
+</div>
+</div>
+<!-- Metric 3 -->
+<div class="p-4 rounded-xl bg-surface-container-lowest border border-outline-variant/40 shadow-sm flex items-center justify-between">
+<div>
+<p class="text-label-sm font-label-sm uppercase text-outline tracking-wider">NADRA Match Rate</p>
+<p class="text-headline-md font-headline-md text-primary mt-1 font-extrabold">99.2%</p>
+<p class="text-body-sm font-body-sm text-on-tertiary-container flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-[16px]" data-icon="verified">verified</span>
+              Bio-hash authentic
+            </p>
+</div>
+<div class="w-12 h-12 rounded-xl bg-tertiary-fixed/30 flex items-center justify-center text-tertiary-container">
+<span class="material-symbols-outlined text-[28px]" data-icon="fingerprint">fingerprint</span>
+</div>
+</div>
+<!-- Metric 4 -->
+<div class="p-4 rounded-xl bg-surface-container-lowest border border-outline-variant/40 shadow-sm flex items-center justify-between">
+<div>
+<p class="text-label-sm font-label-sm uppercase text-outline tracking-wider">Avg Turnaround</p>
+<p class="text-headline-md font-headline-md text-primary mt-1 font-extrabold">4.2 Hours</p>
+<p class="text-body-sm font-body-sm text-on-surface-variant flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-[16px]" data-icon="history">history</span>
+              SLA Goal: &lt; 8.0 hrs
+            </p>
+</div>
+<div class="w-12 h-12 rounded-xl bg-surface-container-highest flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined text-[28px]" data-icon="speed">speed</span>
+</div>
+</div>
+</div>
+<!-- Queue Filters Tabs -->
+<div class="flex items-center justify-between border-b border-outline-variant/30 pb-2">
+<div class="flex items-center gap-2 overflow-x-auto pb-1">
+<!-- Active Tab -->
+<button class="px-4 py-2 rounded-full bg-primary-container text-surface-container-lowest font-label-md text-label-md flex items-center gap-2 shadow-sm">
+<span>All Pending</span>
+<span class="w-5 h-5 rounded-full bg-secondary-container text-on-secondary text-[11px] flex items-center justify-center font-bold">12</span>
+</button>
+<!-- Inactive Tab 2 -->
+<button class="px-4 py-2 rounded-full bg-surface-container-lowest border border-outline-variant/50 text-on-surface-variant hover:text-primary font-label-md text-label-md flex items-center gap-2 transition-colors">
+<span>High Fleet (&gt;20 Cars)</span>
+<span class="px-1.5 py-0.2 rounded-full bg-surface-container text-on-surface-variant text-[11px]">4</span>
+</button>
+<!-- Inactive Tab 3 -->
+<button class="px-4 py-2 rounded-full bg-surface-container-lowest border border-outline-variant/50 text-on-surface-variant hover:text-primary font-label-md text-label-md flex items-center gap-2 transition-colors">
+<span>Police Cert Pending</span>
+<span class="px-1.5 py-0.2 rounded-full bg-error-container text-on-error-container text-[11px]">3</span>
+</button>
+<!-- Inactive Tab 4 -->
+<button class="px-4 py-2 rounded-full bg-surface-container-lowest border border-outline-variant/50 text-on-surface-variant hover:text-primary font-label-md text-label-md flex items-center gap-2 transition-colors">
+<span>SECP &amp; NTN Verified</span>
+<span class="px-1.5 py-0.2 rounded-full bg-tertiary-fixed/40 text-on-tertiary-container text-[11px]">7</span>
+</button>
+<!-- Inactive Tab 5 -->
+<button class="px-4 py-2 rounded-full bg-surface-container-lowest border border-outline-variant/50 text-on-surface-variant hover:text-primary font-label-md text-label-md flex items-center gap-2 transition-colors">
+<span>Expedited Priority</span>
+<span class="px-1.5 py-0.2 rounded-full bg-secondary-fixed text-on-secondary-fixed text-[11px]">2</span>
+</button>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 rounded-lg border border-outline-variant/40 bg-surface-container-lowest hover:bg-surface-container text-on-surface-variant text-label-sm font-label-sm flex items-center gap-1.5 transition-colors">
+<span class="material-symbols-outlined text-[18px]" data-icon="filter_list">filter_list</span>
+<span>More Filters</span>
+</button>
+</div>
+</div>
+<!-- Main Accreditation Data Table Container -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant/40 shadow-sm overflow-hidden">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant/30 text-outline text-label-sm font-label-sm uppercase tracking-wider">
+<th class="py-3.5 px-4 font-bold">Shop Entity</th>
+<th class="py-3.5 px-4 font-bold">Owner Identity &amp; CNIC</th>
+<th class="py-3.5 px-4 font-bold">City &amp; Operating Hub</th>
+<th class="py-3.5 px-4 font-bold">Fleet Size</th>
+<th class="py-3.5 px-4 font-bold">Compliance Documents</th>
+<th class="py-3.5 px-4 font-bold">Submission</th>
+<th class="py-3.5 px-4 font-bold">Compliance Risk</th>
+<th class="py-3.5 px-4 font-bold text-right pr-6">Review Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/20 font-body-md text-body-md">
+<!-- ======================== ROW 1 ======================== -->
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-4 px-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-primary-container text-surface-container-lowest flex items-center justify-center font-headline-sm font-headline-sm">
+                      LW
+                    </div>
+<div>
+<span class="font-headline-sm text-headline-sm text-primary block">Lahore Wheels &amp; Rentals</span>
+<span class="text-body-sm font-body-sm text-on-surface-variant">Private Limited Fleet • SECP Reg #019284</span>
+</div>
+</div>
+</td>
+<td class="py-4 px-4">
+<div class="flex items-center gap-1.5">
+<span class="font-title-md text-title-md text-on-surface font-semibold">Muhammad Tariq</span>
+<span class="material-symbols-outlined text-on-tertiary-container text-[18px]" data-icon="verified" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+<div class="text-body-sm font-body-sm text-outline font-mono mt-0.5">35201-8931201-9</div>
+<span class="inline-block mt-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-on-tertiary-container/10 text-on-tertiary-container">NADRA Bio-Verified</span>
+</td>
+<td class="py-4 px-4">
+<div class="flex items-center gap-1.5 text-on-surface font-medium">
+<span class="material-symbols-outlined text-[16px] text-secondary-container" data-icon="location_on">location_on</span>
+<span>Lahore</span>
+</div>
+<span class="text-body-sm font-body-sm text-on-surface-variant block mt-0.5">Gulberg III Hub</span>
+</td>
+<td class="py-4 px-4">
+<span class="font-title-md text-title-md text-on-surface font-bold">24 Vehicles</span>
+<span class="text-body-sm font-body-sm text-outline block mt-0.5">18 Sedans, 6 SUVs</span>
+</td>
+<td class="py-4 px-4">
+<div class="flex flex-col gap-1.5">
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-label-sm font-label-sm bg-on-tertiary-container/15 text-on-tertiary-container w-fit">
+<span class="material-symbols-outlined text-[14px]" data-icon="check_circle">check_circle</span>
+                      SECP &amp; NTN Verified
+                    </span>
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-label-sm font-label-sm bg-surface-container text-on-surface-variant w-fit">
+<span class="material-symbols-outlined text-[14px]" data-icon="shield">shield</span>
+                      Police Cert Valid
+                    </span>
+</div>
+</td>
+<td class="py-4 px-4">
+<span class="font-title-md text-title-md text-on-surface">2 hours ago</span>
+<span class="text-body-sm font-body-sm text-outline block mt-0.5">Oct 29, 10:45 AM</span>
+</td>
+<td class="py-4 px-4">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-label-sm font-label-sm bg-on-tertiary-container/15 text-on-tertiary-container font-semibold">
+<span class="material-symbols-outlined text-[16px]" data-icon="verified_user">verified_user</span>
+                    Low Risk
+                  </span>
+</td>
+<td class="py-4 px-4 text-right pr-6">
+<div class="flex items-center justify-end gap-2">
+<button class="px-3 py-1.5 rounded-full bg-primary-container text-surface-container-lowest hover:bg-primary font-label-md text-label-md transition-colors shadow-sm">
+                      Inspect Dossier
+                    </button>
+<button class="px-3 py-1.5 rounded-full bg-on-tertiary-container text-on-tertiary hover:bg-tertiary-container font-label-md text-label-md flex items-center gap-1 transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[16px]" data-icon="check">check</span>
+<span>Accredit Shop</span>
+</button>
+<button class="p-1.5 rounded-full text-error hover:bg-error-container transition-colors" title="Reject Dossier">
+<span class="material-symbols-outlined text-[18px]" data-icon="close">close</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- ======================== ROW 2 ======================== -->
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-4 px-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container-highest text-primary flex items-center justify-center font-headline-sm font-headline-sm">
+                      CE
+                    </div>
+<div>
+<span class="font-headline-sm text-headline-sm text-primary block">Capital Executive Cruisers</span>
+<span class="text-body-sm font-body-sm text-on-surface-variant">Sole Proprietorship • Reg #048291</span>
+</div>
+</div>
+</td>
+<td class="py-4 px-4">
+<div class="flex items-center gap-1.5">
+<span class="font-title-md text-title-md text-on-surface font-semibold">Usman Shah</span>
+<span class="material-symbols-outlined text-on-tertiary-container text-[18px]" data-icon="verified" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+<div class="text-body-sm font-body-sm text-outline font-mono mt-0.5">61101-4491023-5</div>
+<span class="inline-block mt-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-surface-container text-on-surface-variant">NADRA Verified</span>
+</td>
+<td class="py-4 px-4">
+<div class="flex items-center gap-1.5 text-on-surface font-medium">
+<span class="material-symbols-outlined text-[16px] text-secondary-container" data-icon="location_on">location_on</span>
+<span>Islamabad</span>
+</div>
+<span class="text-body-sm font-body-sm text-on-surface-variant block mt-0.5">Sector F-10</span>
+</td>
+<td class="py-4 px-4">
+<span class="font-title-md text-title-md text-on-surface font-bold">18 Vehicles</span>
+<span class="text-body-sm font-body-sm text-outline block mt-0.5">Luxury &amp; Executive</span>
+</td>
+<td class="py-4 px-4">
+<div class="flex flex-col gap-1.5">
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-label-sm font-label-sm bg-secondary-fixed text-on-secondary-fixed-variant w-fit font-medium">
+<span class="material-symbols-outlined text-[14px]" data-icon="warning">warning</span>
+                      Police Character Certificate Pending
+                    </span>
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-label-sm font-label-sm bg-surface-container text-on-surface-variant w-fit">
+<span class="material-symbols-outlined text-[14px]" data-icon="check_circle">check_circle</span>
+                      NTN Active
+                    </span>
+</div>
+</td>
+<td class="py-4 px-4">
+<span class="font-title-md text-title-md text-on-surface">5 hours ago</span>
+<span class="text-body-sm font-body-sm text-outline block mt-0.5">Oct 29, 07:30 AM</span>
+</td>
+<td class="py-4 px-4">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-label-sm font-label-sm bg-secondary-fixed text-on-secondary-fixed-variant font-semibold">
+<span class="material-symbols-outlined text-[16px]" data-icon="info">info</span>
+                    Moderate Risk
+                  </span>
+</td>
+<td class="py-4 px-4 text-right pr-6">
+<div class="flex items-center justify-end gap-2">
+<button class="px-3 py-1.5 rounded-full bg-primary-container text-surface-container-lowest hover:bg-primary font-label-md text-label-md transition-colors shadow-sm">
+                      Inspect Dossier
+                    </button>
+<button class="px-3 py-1.5 rounded-full border border-secondary text-secondary hover:bg-secondary-fixed/30 font-label-md text-label-md transition-colors">
+                      Request Resubmit
+                    </button>
+<button class="p-1.5 rounded-full text-outline hover:bg-surface-container transition-colors" title="More Options">
+<span class="material-symbols-outlined text-[18px]" data-icon="more_vert">more_vert</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- ======================== ROW 3 ======================== -->
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-4 px-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-primary-container text-surface-container-lowest flex items-center justify-center font-headline-sm font-headline-sm">
+                      KC
+                    </div>
+<div>
+<span class="font-headline-sm text-headline-sm text-primary block">Karachi Coastline Drive</span>
+<span class="text-body-sm font-body-sm text-on-surface-variant">Partnership Fleet • SECP Reg #009382</span>
+</div>
+</div>
+</td>
+<td class="py-4 px-4">
+<div class="flex items-center gap-1.5">
+<span class="font-title-md text-title-md text-on-surface font-semibold">Farhan Ali</span>
+<span class="material-symbols-outlined text-on-tertiary-container text-[18px]" data-icon="verified" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+<div class="text-body-sm font-body-sm text-outline font-mono mt-0.5">42201-9018273-3</div>
+<span class="inline-block mt-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-on-tertiary-container/10 text-on-tertiary-container">NADRA Bio-Verified</span>
+</td>
+<td class="py-4 px-4">
+<div class="flex items-center gap-1.5 text-on-surface font-medium">
+<span class="material-symbols-outlined text-[16px] text-secondary-container" data-icon="location_on">location_on</span>
+<span>Karachi</span>
+</div>
+<span class="text-body-sm font-body-sm text-on-surface-variant block mt-0.5">Clifton Block 4</span>
+</td>
+<td class="py-4 px-4">
+<span class="font-title-md text-title-md text-on-surface font-bold">35 Vehicles</span>
+<span class="text-body-sm font-body-sm text-outline block mt-0.5">Economy to Commercial</span>
+</td>
+<td class="py-4 px-4">
+<div class="flex flex-col gap-1.5">
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-label-sm font-label-sm bg-on-tertiary-container/15 text-on-tertiary-container w-fit">
+<span class="material-symbols-outlined text-[14px]" data-icon="check_circle">check_circle</span>
+                      Complete Dossier
+                    </span>
+<div class="flex items-center gap-1 text-[11px] text-outline">
+<span>FBR Active Filer</span>
+<span>•</span>
+<span>Police Clearance 100%</span>
+</div>
+</div>
+</td>
+<td class="py-4 px-4">
+<span class="font-title-md text-title-md text-on-surface">1 day ago</span>
+<span class="text-body-sm font-body-sm text-outline block mt-0.5">Oct 28, 04:15 PM</span>
+</td>
+<td class="py-4 px-4">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-label-sm font-label-sm bg-on-tertiary-container/15 text-on-tertiary-container font-semibold">
+<span class="material-symbols-outlined text-[16px]" data-icon="verified_user">verified_user</span>
+                    Low Risk
+                  </span>
+</td>
+<td class="py-4 px-4 text-right pr-6">
+<div class="flex items-center justify-end gap-2">
+<button class="px-3 py-1.5 rounded-full bg-primary-container text-surface-container-lowest hover:bg-primary font-label-md text-label-md transition-colors shadow-sm">
+                      Inspect Dossier
+                    </button>
+<button class="px-3 py-1.5 rounded-full bg-on-tertiary-container text-on-tertiary hover:bg-tertiary-container font-label-md text-label-md flex items-center gap-1 transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[16px]" data-icon="check">check</span>
+<span>Accredit Shop</span>
+</button>
+<button class="p-1.5 rounded-full text-error hover:bg-error-container transition-colors" title="Reject Dossier">
+<span class="material-symbols-outlined text-[18px]" data-icon="close">close</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- ======================== ROW 4 ======================== -->
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-4 px-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container-highest text-primary flex items-center justify-center font-headline-sm font-headline-sm">
+                      PA
+                    </div>
+<div>
+<span class="font-headline-sm text-headline-sm text-primary block">Peshawar AutoClub Rentals</span>
+<span class="text-body-sm font-body-sm text-on-surface-variant">Sole Proprietor • SECP Pending</span>
+</div>
+</div>
+</td>
+<td class="py-4 px-4">
+<div class="flex items-center gap-1.5">
+<span class="font-title-md text-title-md text-on-surface font-semibold">Sher Khan</span>
+<span class="material-symbols-outlined text-on-tertiary-container text-[18px]" data-icon="verified" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+<div class="text-body-sm font-body-sm text-outline font-mono mt-0.5">17301-8849201-5</div>
+<span class="inline-block mt-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-surface-container text-on-surface-variant">NADRA Verified</span>
+</td>
+<td class="py-4 px-4">
+<div class="flex items-center gap-1.5 text-on-surface font-medium">
+<span class="material-symbols-outlined text-[16px] text-secondary-container" data-icon="location_on">location_on</span>
+<span>Peshawar</span>
+</div>
+<span class="text-body-sm font-body-sm text-on-surface-variant block mt-0.5">University Road</span>
+</td>
+<td class="py-4 px-4">
+<span class="font-title-md text-title-md text-on-surface font-bold">12 Vehicles</span>
+<span class="text-body-sm font-body-sm text-outline block mt-0.5">SUVs &amp; Pickups</span>
+</td>
+<td class="py-4 px-4">
+<div class="flex flex-col gap-1.5">
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-label-sm font-label-sm bg-primary-fixed text-on-primary-fixed-variant w-fit font-medium">
+<span class="material-symbols-outlined text-[14px]" data-icon="receipt_long">receipt_long</span>
+                      Tax Assessment 2024
+                    </span>
+<span class="text-[11px] text-outline">Awaiting Chamber Clearance</span>
+</div>
+</td>
+<td class="py-4 px-4">
+<span class="font-title-md text-title-md text-on-surface">2 days ago</span>
+<span class="text-body-sm font-body-sm text-outline block mt-0.5">Oct 27, 11:20 AM</span>
+</td>
+<td class="py-4 px-4">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-label-sm font-label-sm bg-secondary-fixed text-on-secondary-fixed-variant font-semibold">
+<span class="material-symbols-outlined text-[16px]" data-icon="info">info</span>
+                    Moderate Risk
+                  </span>
+</td>
+<td class="py-4 px-4 text-right pr-6">
+<div class="flex items-center justify-end gap-2">
+<button class="px-3 py-1.5 rounded-full bg-primary-container text-surface-container-lowest hover:bg-primary font-label-md text-label-md transition-colors shadow-sm">
+                      Inspect Dossier
+                    </button>
+<button class="px-3 py-1.5 rounded-full bg-on-tertiary-container text-on-tertiary hover:bg-tertiary-container font-label-md text-label-md flex items-center gap-1 transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[16px]" data-icon="check">check</span>
+<span>Accredit Shop</span>
+</button>
+<button class="p-1.5 rounded-full text-error hover:bg-error-container transition-colors" title="Reject Dossier">
+<span class="material-symbols-outlined text-[18px]" data-icon="close">close</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Table Pagination Footer -->
+<div class="flex items-center justify-between px-6 py-4 border-t border-outline-variant/30 bg-surface-container-low/40">
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+            Showing <span class="font-bold text-on-surface">1</span> to <span class="font-bold text-on-surface">4</span> of <span class="font-bold text-on-surface">12</span> pending partner shops
+          </p>
+<div class="flex items-center gap-2">
+<button class="px-3 py-1.5 rounded-lg border border-outline-variant/50 text-outline hover:text-on-surface hover:bg-surface-container-lowest disabled:opacity-50 text-label-md font-label-md transition-colors flex items-center gap-1" disabled="">
+<span class="material-symbols-outlined text-[16px]" data-icon="chevron_left">chevron_left</span>
+<span>Previous</span>
+</button>
+<button class="w-8 h-8 rounded-lg bg-primary-container text-surface-container-lowest font-label-md text-label-md flex items-center justify-center">
+              1
+            </button>
+<button class="w-8 h-8 rounded-lg border border-outline-variant/50 text-on-surface-variant hover:bg-surface-container-lowest font-label-md text-label-md flex items-center justify-center transition-colors">
+              2
+            </button>
+<button class="px-3 py-1.5 rounded-lg border border-outline-variant/50 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-lowest text-label-md font-label-md transition-colors flex items-center gap-1">
+<span>Next</span>
+<span class="material-symbols-outlined text-[16px]" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

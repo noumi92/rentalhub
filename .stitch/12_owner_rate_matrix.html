@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RentalHub - Set Vehicle Rates &amp; Tiers</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-tertiary": "#ffffff",
+            "on-secondary-fixed": "#380d00",
+            "tertiary": "#00130a",
+            "surface-container-lowest": "#ffffff",
+            "on-secondary": "#ffffff",
+            "on-background": "#181c20",
+            "surface-tint": "#555998",
+            "secondary-fixed": "#ffdbcf",
+            "inverse-on-surface": "#eff1f6",
+            "on-error-container": "#93000a",
+            "surface-dim": "#d8dadf",
+            "inverse-primary": "#bfc2ff",
+            "primary-container": "#1a1d5a",
+            "on-tertiary-fixed-variant": "#005236",
+            "on-primary-container": "#8386c9",
+            "tertiary-fixed": "#6ffbbe",
+            "primary": "#020246",
+            "on-primary": "#ffffff",
+            "surface-container-high": "#e6e8ed",
+            "on-tertiary-container": "#009f6e",
+            "on-surface-variant": "#464650",
+            "on-surface": "#181c20",
+            "inverse-surface": "#2d3135",
+            "tertiary-fixed-dim": "#4edea3",
+            "primary-fixed": "#e0e0ff",
+            "on-tertiary-fixed": "#002113",
+            "surface-container-low": "#f1f4f9",
+            "surface": "#f7f9fe",
+            "surface-bright": "#f7f9fe",
+            "on-primary-fixed-variant": "#3d417e",
+            "on-error": "#ffffff",
+            "on-secondary-fixed-variant": "#812900",
+            "secondary": "#a93800",
+            "outline": "#777681",
+            "on-primary-fixed": "#101251",
+            "surface-variant": "#e0e2e7",
+            "outline-variant": "#c7c5d1",
+            "surface-container": "#eceef3",
+            "surface-container-highest": "#e0e2e7",
+            "error-container": "#ffdad6",
+            "primary-fixed-dim": "#bfc2ff",
+            "secondary-fixed-dim": "#ffb59b",
+            "secondary-container": "#fd5a05",
+            "error": "#ba1a1a",
+            "tertiary-container": "#002b1b",
+            "background": "#f7f9fe",
+            "on-secondary-container": "#501600"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "gutter-sm": "0.5rem",
+            "space-2xl": "2rem",
+            "space-xl": "1.5rem",
+            "space-lg": "1.25rem",
+            "space-xs": "0.5rem",
+            "space-3xl": "3rem",
+            "margin": "1rem",
+            "margin-lg": "1.5rem",
+            "space-xxs": "0.25rem",
+            "space-sm": "0.75rem",
+            "gutter": "1rem",
+            "space-md": "1rem"
+          },
+          "fontFamily": {
+            "headline-lg": ["Plus Jakarta Sans"],
+            "display-lg": ["Plus Jakarta Sans"],
+            "label-lg": ["Plus Jakarta Sans"],
+            "headline-lg-mobile": ["Plus Jakarta Sans"],
+            "body-sm": ["Inter"],
+            "headline-md": ["Plus Jakarta Sans"],
+            "label-md": ["Plus Jakarta Sans"],
+            "body-lg": ["Inter"],
+            "title-md": ["Plus Jakarta Sans"],
+            "label-sm": ["Plus Jakarta Sans"],
+            "headline-sm": ["Plus Jakarta Sans"],
+            "price-display": ["Plus Jakarta Sans"],
+            "body-md": ["Inter"]
+          },
+          "fontSize": {
+            "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "display-lg": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "700" }],
+            "headline-lg-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "body-sm": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "700" }],
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+            "title-md": ["15px", { "lineHeight": "22px", "fontWeight": "600" }],
+            "label-sm": ["10px", { "lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "700" }],
+            "headline-sm": ["16px", { "lineHeight": "24px", "fontWeight": "600" }],
+            "price-display": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface antialiased flex justify-center min-h-screen">
+<!-- Mobile Viewport Wrapper (393px width styled for modern Android) -->
+<div class="w-full max-w-[393px] bg-surface relative flex flex-col pb-28 shadow-2xl min-h-screen border-x border-outline-variant/20">
+<!-- Android Status Bar -->
+<div class="bg-primary text-on-primary px-margin py-space-xs flex justify-between items-center text-label-sm font-label-sm select-none z-30">
+<span>12:45</span>
+<div class="flex items-center gap-1.5">
+<span class="text-[10px] font-bold">5G</span>
+<span class="material-symbols-outlined text-[14px]">wifi</span>
+<span class="material-symbols-outlined text-[14px]">battery_full</span>
+</div>
+</div>
+<!-- TopAppBar Shared Component Anchor -->
+<header class="bg-primary text-on-primary docked full-width top-0 shadow-sm border-b border-outline-variant/20 flex justify-between items-center w-full px-margin py-space-sm z-20">
+<div class="flex items-center gap-space-xs">
+<button aria-label="Go back" class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-primary-container/50 text-on-primary active:scale-[0.98] transition-transform duration-150" type="button">
+<span class="material-symbols-outlined text-[20px]">arrow_back</span>
+</button>
+<span class="text-headline-sm font-headline-sm tracking-tight">Step 2 of 3: Pricing &amp; Rates</span>
+</div>
+<button class="text-label-md font-label-md text-on-primary/90 hover:bg-primary-container/50 px-space-xs py-1 rounded-full active:scale-[0.98] transition-transform duration-150" type="button">
+        Save &amp; Exit
+      </button>
+</header>
+<!-- Rich Header Canopy & Step Navigation Indicator -->
+<div class="bg-primary pt-2 pb-9 px-margin rounded-b-[28px] text-on-primary shadow-md">
+<!-- Car Context & Identity Pill -->
+<div class="flex items-center justify-between bg-primary-container/80 rounded-xl px-space-sm py-space-xs border border-outline-variant/20">
+<div class="flex items-center gap-space-xs">
+<div class="w-7 h-7 rounded-lg bg-surface-container-lowest/10 flex items-center justify-center text-secondary-fixed">
+<span class="material-symbols-outlined text-[16px]">directions_car</span>
+</div>
+<div>
+<div class="text-label-md font-label-md leading-tight text-on-primary">Honda Civic Oriel 2021</div>
+<div class="text-[11px] font-body-sm text-on-primary/70">LEA-4820 • Midnight Red</div>
+</div>
+</div>
+<span class="text-[11px] font-label-sm bg-on-tertiary-container/20 text-tertiary-fixed px-2 py-0.5 rounded-full border border-tertiary-fixed/30 flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+          Verified
+        </span>
+</div>
+<!-- 3-Step Pill Progress Bar -->
+<div class="mt-4 flex items-center gap-2">
+<!-- Step 1: Done -->
+<div class="flex-1">
+<div class="h-1.5 w-full bg-tertiary-fixed-dim rounded-full"></div>
+<p class="text-[10px] font-label-sm text-on-primary/60 mt-1">1. Specs</p>
+</div>
+<!-- Step 2: Active -->
+<div class="flex-1">
+<div class="h-1.5 w-full bg-secondary-container rounded-full ring-2 ring-secondary-container/40"></div>
+<p class="text-[10px] font-label-sm text-secondary-fixed mt-1 font-bold">2. Rates</p>
+</div>
+<!-- Step 3: Upcoming -->
+<div class="flex-1">
+<div class="h-1.5 w-full bg-outline-variant/30 rounded-full"></div>
+<p class="text-[10px] font-label-sm text-on-primary/40 mt-1">3. Photos</p>
+</div>
+</div>
+</div>
+<!-- Content Body with Overlapping Cards -->
+<main class="px-margin -mt-5 space-y-space-md z-10 flex-1">
+<!-- Section 1: Rental Mode Options -->
+<section class="bg-surface-container-lowest rounded-xl p-space-md border border-outline-variant/30 shadow-[0px_4px_16px_-2px_rgba(22,25,79,0.06)]">
+<div class="flex items-center justify-between mb-3">
+<h2 class="text-headline-sm font-headline-sm text-primary">Operating Modes</h2>
+<span class="text-label-sm font-label-sm text-on-surface-variant bg-surface-container-high px-2 py-0.5 rounded-full">Dual Allowed</span>
+</div>
+<div class="space-y-space-xs">
+<!-- Card 1: Self-Drive Rental (Active State with Accent Ring) -->
+<div class="border-2 border-secondary-container bg-surface-container-low/40 rounded-xl p-3 flex items-start gap-3 relative transition-all">
+<div class="w-9 h-9 rounded-full bg-secondary-container text-on-secondary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">sports_motorsports</span>
+</div>
+<div class="flex-1 pr-6">
+<div class="flex items-center gap-1.5">
+<span class="text-title-md font-title-md text-primary">Self-Drive Rental</span>
+<span class="text-[10px] bg-secondary-container/10 text-secondary font-label-sm px-1.5 rounded">Active</span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant mt-0.5 leading-snug">
+                Renters drive themselves. Identity &amp; license verified.
+              </p>
+</div>
+<div class="absolute top-3 right-3 text-secondary-container">
+<span class="material-symbols-outlined text-[22px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+</div>
+<!-- Card 2: With Chauffeur / Driver -->
+<div class="border border-outline-variant/40 bg-surface-container-lowest rounded-xl p-3 flex items-start gap-3 relative hover:border-outline transition-all">
+<div class="w-9 h-9 rounded-full bg-surface-container text-on-surface-variant flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">directions_car</span>
+</div>
+<div class="flex-1 pr-10">
+<span class="text-title-md font-title-md text-on-surface">With Chauffeur / Driver</span>
+<p class="text-body-sm font-body-sm text-on-surface-variant mt-0.5 leading-snug">
+                Includes host driver. Driver allowance separate.
+              </p>
+</div>
+<!-- Custom Toggle Switch Component -->
+<label class="absolute top-3 right-3 inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-9 h-5 bg-outline-variant/40 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary-container"></div>
+</label>
+</div>
+</div>
+</section>
+<!-- Section 2: Daily Rates Matrix (In-City vs Out-of-City) -->
+<section class="bg-surface-container-lowest rounded-xl p-space-md border border-outline-variant/30 shadow-[0px_4px_16px_-2px_rgba(22,25,79,0.06)]">
+<div class="flex items-center justify-between mb-1">
+<h2 class="text-headline-sm font-headline-sm text-primary">24-Hour Daily Rental Rates</h2>
+<span class="text-label-sm font-label-sm text-primary-container font-bold bg-primary-fixed px-2 py-0.5 rounded">PKR Currency</span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant mb-3">Set flat base pricing according to operational zones.</p>
+<!-- Side-by-side Dual Rate Cards -->
+<div class="grid grid-cols-2 gap-space-xs">
+<!-- Left: In-City Rate -->
+<div class="bg-surface-container-low rounded-xl p-3 border border-outline-variant/30 flex flex-col justify-between">
+<div>
+<div class="flex items-center gap-1 text-on-surface-variant text-[11px] font-label-sm">
+<span class="material-symbols-outlined text-[13px] text-tertiary-fixed-variant">location_city</span>
+<span>In-City Rate</span>
+</div>
+<div class="mt-2">
+<div class="text-[11px] font-label-sm text-outline">Per 24h</div>
+<div class="text-price-display font-price-display text-primary leading-tight mt-0.5">
+<span class="text-[12px] font-label-md font-bold text-on-surface-variant">PKR </span>9,000
+                </div>
+</div>
+</div>
+<div class="mt-2 pt-2 border-t border-outline-variant/20 flex items-center justify-between text-body-sm font-body-sm text-on-surface-variant">
+<span>Within Lahore limits</span>
+<span class="material-symbols-outlined text-[14px] text-primary cursor-pointer">edit</span>
+</div>
+</div>
+<!-- Right: Out-of-City Rate -->
+<div class="bg-surface-container-low rounded-xl p-3 border border-outline-variant/30 flex flex-col justify-between">
+<div>
+<div class="flex items-center gap-1 text-on-surface-variant text-[11px] font-label-sm">
+<span class="material-symbols-outlined text-[13px] text-secondary">alt_route</span>
+<span>Out-of-City Rate</span>
+</div>
+<div class="mt-2">
+<div class="text-[11px] font-label-sm text-outline">Per 24h</div>
+<div class="text-price-display font-price-display text-primary leading-tight mt-0.5">
+<span class="text-[12px] font-label-md font-bold text-on-surface-variant">PKR </span>12,000
+                </div>
+</div>
+</div>
+<div class="mt-2 pt-2 border-t border-outline-variant/20 flex items-center justify-between text-body-sm font-body-sm text-on-surface-variant">
+<span>Inter-city / Motorway</span>
+<span class="material-symbols-outlined text-[14px] text-primary cursor-pointer">edit</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 3: Micro-Rental Hourly Packages -->
+<section class="bg-surface-container-lowest rounded-xl p-space-md border border-outline-variant/30 shadow-[0px_4px_16px_-2px_rgba(22,25,79,0.06)]">
+<div class="flex items-center justify-between mb-1">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px] text-secondary-container">bolt</span>
+<h2 class="text-headline-sm font-headline-sm text-primary">RentalHub QuickRide™</h2>
+</div>
+<span class="text-[10px] font-label-sm bg-secondary-fixed text-on-secondary-fixed px-2 py-0.5 rounded-full font-bold">Highest Demand in Lahore</span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant mb-3">Earn more during off-peak hours with micro durations.</p>
+<div class="space-y-space-xs">
+<!-- 1-Hour Quick Booking -->
+<div class="p-3 rounded-xl border border-outline-variant/30 bg-surface-container-low/20 flex items-center justify-between">
+<div class="space-y-0.5">
+<div class="flex items-center gap-2">
+<span class="text-title-md font-title-md text-on-surface">1-Hour Quick Booking</span>
+<span class="text-label-md font-label-md text-primary font-bold">PKR 1,500</span>
+</div>
+<div class="flex items-center gap-1 text-[11px] font-body-sm text-on-tertiary-container font-medium">
+<span class="material-symbols-outlined text-[13px]">local_gas_station</span>
+<span>Fuel included (Fair usage)</span>
+</div>
+</div>
+<label class="inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-8 h-4.5 bg-outline-variant/40 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-3.5 after:w-3.5 after:transition-all peer-checked:bg-secondary-container"></div>
+</label>
+</div>
+<!-- 3-Hour Standard Trip (Highlighted with Popular Badge) -->
+<div class="p-3 rounded-xl border-2 border-primary-container/30 bg-surface-container-low/50 relative flex items-center justify-between">
+<div class="space-y-0.5">
+<div class="flex items-center gap-2">
+<span class="text-title-md font-title-md text-primary font-bold">3-Hour Standard Trip</span>
+<span class="text-[10px] bg-primary text-on-primary font-label-sm px-1.5 py-0.2 rounded">POPULAR</span>
+</div>
+<div class="text-label-md font-label-md text-primary font-extrabold">PKR 3,500</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant text-[11px]">Ideal for airport runs &amp; business meetings</p>
+</div>
+<label class="inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-8 h-4.5 bg-outline-variant/40 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-3.5 after:w-3.5 after:transition-all peer-checked:bg-secondary-container"></div>
+</label>
+</div>
+<!-- 6-Hour Half-Day Tour -->
+<div class="p-3 rounded-xl border border-outline-variant/30 bg-surface-container-low/20 flex items-center justify-between">
+<div class="space-y-0.5">
+<div class="flex items-center gap-2">
+<span class="text-title-md font-title-md text-on-surface">6-Hour Half-Day Tour</span>
+<span class="text-label-md font-label-md text-primary font-bold">PKR 6,000</span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant text-[11px]">Up to 60 km included</p>
+</div>
+<label class="inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-8 h-4.5 bg-outline-variant/40 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-3.5 after:w-3.5 after:transition-all peer-checked:bg-secondary-container"></div>
+</label>
+</div>
+</div>
+</section>
+<!-- Section 4: Mandatory Advance Security Deposit -->
+<section class="bg-surface-container-lowest rounded-xl p-space-md border border-outline-variant/30 shadow-[0px_4px_16px_-2px_rgba(22,25,79,0.06)]">
+<div class="flex items-center gap-2 mb-2">
+<div class="w-7 h-7 rounded-lg bg-tertiary-fixed/30 text-on-tertiary-fixed-variant flex items-center justify-center">
+<span class="material-symbols-outlined text-[16px]">verified_user</span>
+</div>
+<h2 class="text-headline-sm font-headline-sm text-primary">Reservation Hold Deposit</h2>
+</div>
+<div class="bg-surface-container-low rounded-xl p-3 border border-outline-variant/30 flex items-center justify-between mb-3">
+<div>
+<div class="text-[11px] font-label-sm text-on-surface-variant">Recommended Host Deposit</div>
+<div class="text-price-display font-price-display text-primary">PKR 1,000</div>
+</div>
+<button class="text-label-md font-label-md text-primary bg-surface-container-lowest border border-outline-variant px-3 py-1.5 rounded-lg hover:bg-surface-container active:scale-[0.98]" type="button">
+            Edit Deposit
+          </button>
+</div>
+<!-- Regional Trust Notice -->
+<div class="bg-primary/5 rounded-xl p-3 border border-primary/10 flex items-start gap-2.5">
+<span class="material-symbols-outlined text-primary text-[18px] shrink-0 mt-0.5">info</span>
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="text-label-sm font-label-sm text-primary font-bold uppercase tracking-wider">Instant Hold Guarantee</span>
+<span class="bg-surface-container-lowest text-[10px] font-label-sm text-on-surface-variant px-1.5 py-0.5 rounded border border-outline-variant/30">JazzCash / EasyPaisa</span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant text-[11px] leading-relaxed">
+              Collected digitally via JazzCash / EasyPaisa / Bank Transfer upon host acceptance to lock reservation and deter no-shows.
+            </p>
+</div>
+</div>
+</section>
+<!-- Section 5: Mileage & Fuel Guidelines -->
+<section class="bg-surface-container-lowest rounded-xl p-space-md border border-outline-variant/30 shadow-[0px_4px_16px_-2px_rgba(22,25,79,0.06)] space-y-space-sm">
+<h2 class="text-headline-sm font-headline-sm text-primary">Mileage &amp; Fuel Guidelines</h2>
+<div class="divide-y divide-outline-variant/20 text-body-md font-body-md">
+<!-- Daily Mileage Allowance -->
+<div class="py-2 flex items-center justify-between">
+<div class="space-y-0.5">
+<div class="text-label-md font-label-md text-on-surface">Daily Mileage Allowance</div>
+<div class="text-body-sm font-body-sm text-on-surface-variant">150 km / day included</div>
+</div>
+<div class="text-right">
+<span class="text-label-md font-label-md text-secondary font-bold">PKR 35</span>
+<span class="text-[11px] font-body-sm text-on-surface-variant"> / extra km</span>
+</div>
+</div>
+<!-- Fuel Policy -->
+<div class="pt-2 flex items-start justify-between gap-3">
+<div class="space-y-0.5">
+<div class="text-label-md font-label-md text-on-surface">Fuel Policy</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant text-[11px]">
+                Level-to-Level return recorded digitally during handover photo inspection.
+              </p>
+</div>
+<span class="text-label-sm font-label-sm text-on-surface bg-surface-container-high px-2 py-1 rounded-full whitespace-nowrap">
+              Exact Level
+            </span>
+</div>
+</div>
+</section>
+</main>
+<!-- Sticky Bottom Navigation Shell (BottomNavBar Shared Component Conformance) -->
+<div class="fixed bottom-0 left-0 w-full z-50 flex justify-between items-center px-margin py-space-md bg-surface dark:bg-surface-container-highest border-t border-outline-variant/30 shadow-lg max-w-[393px] mx-auto right-0">
+<!-- Inactive Action: Close / Exit (Icon matching destination_count 2) -->
+<button aria-label="Close" class="flex items-center justify-center text-on-surface-variant dark:text-on-surface-variant px-4 py-3 hover:bg-surface-container-high active:scale-[0.98] transition-all duration-200 rounded-full" type="button">
+<span class="material-symbols-outlined text-[24px]">close</span>
+</button>
+<!-- Active Action: Forward CTA with summary and arrow_forward icon -->
+<button class="flex items-center justify-center bg-secondary-container dark:bg-secondary-container text-on-secondary-container rounded-full px-6 py-3 font-label-lg text-label-lg shadow-md hover:bg-surface-container-high active:scale-[0.98] transition-all duration-200 gap-2" type="button">
+<span class="text-on-primary font-bold">Next: Photos</span>
+<span class="material-symbols-outlined text-[20px] text-on-primary">arrow_forward</span>
+</button>
+</div>
+</div>
+</body></html>

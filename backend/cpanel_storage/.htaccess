@@ -1,0 +1,25 @@
+# ==============================================================================
+# RentalHub cPanel Secure Storage .htaccess
+# ==============================================================================
+
+# Disable directory browsing
+Options -Indexes
+
+# Prevent PHP script execution inside upload folders to thwart web shell attacks
+<FilesMatch "\.(php|phtml|php3|php4|php5|php7|phps|cgi|pl|sh|bash|py)$">
+    Order Deny,Allow
+    Deny from all
+</FilesMatch>
+
+# Allow access to upload.php explicitly
+<Files "upload.php">
+    Order Allow,Deny
+    Allow from all
+</Files>
+
+# Set CORS headers for authorized clients
+<IfModule mod_headers.c>
+    Header set Access-Control-Allow-Origin "*"
+    Header set Access-Control-Allow-Methods "POST, GET, OPTIONS"
+    Header set Access-Control-Allow-Headers "Authorization, Content-Type, Origin, Accept"
+</IfModule>

@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RentalHub - Register Your Rental Shop</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts: Plus Jakarta Sans & Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-secondary-fixed-variant": "#812900",
+            "on-tertiary": "#ffffff",
+            "tertiary-container": "#002b1b",
+            "on-error": "#ffffff",
+            "on-background": "#181c20",
+            "on-primary-fixed": "#101251",
+            "on-primary-container": "#8386c9",
+            "surface-container-lowest": "#ffffff",
+            "surface-container-high": "#e6e8ed",
+            "on-surface": "#181c20",
+            "inverse-on-surface": "#eff1f6",
+            "on-tertiary-fixed-variant": "#005236",
+            "on-secondary": "#ffffff",
+            "on-tertiary-fixed": "#002113",
+            "outline-variant": "#c7c5d1",
+            "surface-container-low": "#f1f4f9",
+            "secondary-container": "#fd5a05",
+            "on-secondary-container": "#501600",
+            "inverse-surface": "#2d3135",
+            "on-secondary-fixed": "#380d00",
+            "tertiary": "#00130a",
+            "tertiary-fixed": "#6ffbbe",
+            "surface-tint": "#555998",
+            "on-primary": "#ffffff",
+            "primary-fixed-dim": "#bfc2ff",
+            "on-error-container": "#93000a",
+            "background": "#f7f9fe",
+            "primary": "#020246",
+            "on-surface-variant": "#464650",
+            "primary-fixed": "#e0e0ff",
+            "on-primary-fixed-variant": "#3d417e",
+            "surface-variant": "#e0e2e7",
+            "secondary": "#a93800",
+            "error": "#ba1a1a",
+            "surface": "#f7f9fe",
+            "on-tertiary-container": "#009f6e",
+            "primary-container": "#1a1d5a",
+            "outline": "#777681",
+            "surface-dim": "#d8dadf",
+            "error-container": "#ffdad6",
+            "surface-container-highest": "#e0e2e7",
+            "surface-container": "#eceef3",
+            "tertiary-fixed-dim": "#4edea3",
+            "inverse-primary": "#bfc2ff",
+            "surface-bright": "#f7f9fe",
+            "secondary-fixed-dim": "#ffb59b",
+            "secondary-fixed": "#ffdbcf"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "2xl": "1rem",
+            "3xl": "1.25rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-3xl": "3rem",
+            "space-md": "1rem",
+            "space-xl": "1.5rem",
+            "margin-lg": "1.5rem",
+            "space-xxs": "0.25rem",
+            "space-sm": "0.75rem",
+            "space-lg": "1.25rem",
+            "space-xs": "0.5rem",
+            "space-2xl": "2rem",
+            "margin": "1rem",
+            "gutter-sm": "0.5rem",
+            "gutter": "1rem"
+          },
+          "fontFamily": {
+            "headline-lg-mobile": ["Plus Jakarta Sans"],
+            "body-sm": ["Inter"],
+            "body-md": ["Inter"],
+            "headline-md": ["Plus Jakarta Sans"],
+            "price-display": ["Plus Jakarta Sans"],
+            "label-md": ["Plus Jakarta Sans"],
+            "headline-lg": ["Plus Jakarta Sans"],
+            "headline-sm": ["Plus Jakarta Sans"],
+            "title-md": ["Plus Jakarta Sans"],
+            "label-sm": ["Plus Jakarta Sans"],
+            "label-lg": ["Plus Jakarta Sans"],
+            "display-lg": ["Plus Jakarta Sans"],
+            "body-lg": ["Inter"]
+          },
+          "fontSize": {
+            "headline-lg-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "body-sm": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+            "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "700" }],
+            "price-display": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+            "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "headline-sm": ["16px", { "lineHeight": "24px", "fontWeight": "600" }],
+            "title-md": ["15px", { "lineHeight": "22px", "fontWeight": "600" }],
+            "label-sm": ["10px", { "lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "700" }],
+            "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "700" }],
+            "display-lg": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    /* Ambient smooth scroll & card shadows */
+    .level-1-card {
+      box-shadow: 0px 4px 16px -2px rgba(22, 25, 79, 0.06);
+    }
+    .level-2-dock {
+      box-shadow: 0px -4px 20px -2px rgba(22, 25, 79, 0.08);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface antialiased font-body-md flex justify-center min-h-screen">
+<!-- Mobile Viewport Container (Android 393px × 852px nominal frame) -->
+<div class="w-full max-w-[420px] bg-surface relative flex flex-col min-h-screen shadow-2xl overflow-x-hidden pb-36">
+<!-- Top Navigation Anchor (TopAppBar Executed Exactly from Shared Component JSON) -->
+<!-- JSON: style_bg_color: bg-primary dark:bg-primary-container, style_separation_logic: shadow-md, style_shell_layout: flex justify-between items-center w-full px-space-md py-space-sm, style_component_shape: docked full-width top-0 rounded-b-2xl -->
+<header class="bg-primary shadow-md w-full px-space-md py-space-sm text-on-primary sticky top-0 z-40">
+<!-- Android Mock Status Bar -->
+<div class="flex justify-between items-center text-on-primary text-label-sm font-label-sm pt-space-xs pb-space-sm opacity-90">
+<span>12:45</span>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[15px]" data-icon="signal_cellular_alt">signal_cellular_alt</span>
+<span class="material-symbols-outlined text-[15px]" data-icon="wifi">wifi</span>
+<span class="material-symbols-outlined text-[15px]" data-icon="battery_full">battery_full</span>
+</div>
+</div>
+<!-- TopAppBar Navigation Cluster -->
+<div class="flex justify-between items-center w-full pb-space-xs">
+<button aria-label="Go Back" class="w-10 h-10 rounded-full flex items-center justify-center bg-primary-container/60 hover:bg-primary-container text-on-primary active:scale-95 transition-transform duration-150" type="button">
+<span class="material-symbols-outlined text-xl" data-icon="arrow_back">arrow_back</span>
+</button>
+<h1 class="text-headline-sm font-headline-sm font-bold text-on-primary tracking-tight">Partner Onboarding</h1>
+<button aria-label="Support Help" class="w-10 h-10 rounded-full flex items-center justify-center bg-primary-container/60 hover:bg-primary-container text-on-primary active:scale-95 transition-transform duration-150" type="button">
+<span class="material-symbols-outlined text-xl" data-icon="help_outline">help_outline</span>
+</button>
+</div>
+</header>
+<!-- Deep Midnight Navy Hero Header with Curved Base -->
+<div class="bg-gradient-to-b from-primary via-primary-container to-primary-container px-space-md pt-space-md pb-12 rounded-b-[28px] text-on-primary shadow-lg relative -mt-1">
+<!-- Step Count Capsule Badge -->
+<div class="inline-flex items-center gap-1.5 px-space-sm py-1 rounded-full bg-surface-container-lowest/15 backdrop-blur-md border border-white/20 mb-space-sm">
+<span class="w-2 h-2 rounded-full bg-secondary-container animate-pulse"></span>
+<span class="text-label-sm font-label-sm text-surface-bright tracking-wider">Step 1 of 3 • Basic Shop Details</span>
+</div>
+<!-- Primary Screen Title -->
+<h2 class="text-headline-lg-mobile font-headline-lg-mobile text-on-primary mb-space-xs tracking-tight">
+        Register as Shop Owner
+      </h2>
+<!-- Value Proposition Subtitle -->
+<p class="text-body-md font-body-md text-primary-fixed-dim leading-relaxed max-w-[340px]">
+        Expand your rental fleet reach across Pakistan with RentalHub host protection.
+      </p>
+</div>
+<!-- Content Canvas (Overlapping Navy Header by -24px) -->
+<main class="px-space-md -mt-6 z-10 space-y-space-md">
+<!-- Progress Stepper Component (Visual 3-Step Pill Bar) -->
+<nav aria-label="Onboarding Progress" class="bg-surface-container-lowest rounded-full p-1.5 level-1-card border border-surface-variant flex items-center justify-between">
+<!-- Step 1: Active -->
+<div class="flex-1 flex items-center justify-center gap-1.5 py-2 px-space-xs rounded-full bg-primary text-on-primary">
+<span class="w-4 h-4 rounded-full bg-secondary-container text-on-secondary flex items-center justify-center text-[10px] font-bold">1</span>
+<span class="text-label-sm font-label-sm font-bold text-on-primary tracking-tight">Details</span>
+<span class="material-symbols-outlined text-[13px] text-tertiary-fixed" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<!-- Stepper Divider -->
+<div class="w-3 h-0.5 bg-surface-variant"></div>
+<!-- Step 2: Location (Pending) -->
+<div class="flex-1 flex items-center justify-center gap-1 py-2 px-space-xs rounded-full text-on-surface-variant">
+<span class="w-4 h-4 rounded-full border border-outline text-outline flex items-center justify-center text-[10px] font-semibold">2</span>
+<span class="text-label-sm font-label-sm text-on-surface-variant">Location</span>
+</div>
+<!-- Stepper Divider -->
+<div class="w-3 h-0.5 bg-surface-variant"></div>
+<!-- Step 3: Payout (Pending) -->
+<div class="flex-1 flex items-center justify-center gap-1 py-2 px-space-xs rounded-full text-on-surface-variant">
+<span class="w-4 h-4 rounded-full border border-outline text-outline flex items-center justify-center text-[10px] font-semibold">3</span>
+<span class="text-label-sm font-label-sm text-on-surface-variant">Payout</span>
+</div>
+</nav>
+<!-- CARD 1: Shop & Identity Credentials -->
+<section class="bg-surface-container-lowest rounded-2xl p-space-md level-1-card border border-surface-variant space-y-space-md">
+<div class="flex items-center justify-between border-b border-surface-container pb-space-xs">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-xl" data-icon="storefront">storefront</span>
+<h3 class="text-headline-sm font-headline-sm text-primary">Shop &amp; Identity Credentials</h3>
+</div>
+<span class="text-label-sm font-label-sm text-secondary-container bg-secondary-container/10 px-2 py-0.5 rounded-full">Mandatory</span>
+</div>
+<!-- Field: Shop Business Name -->
+<div class="space-y-1">
+<label class="block text-label-md font-label-md text-on-surface" for="shop-name">Shop / Fleet Legal Name</label>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3.5 text-outline text-xl pointer-events-none" data-icon="storefront">storefront</span>
+<input class="w-full pl-11 pr-3.5 py-3 rounded-xl border border-surface-variant bg-surface-bright text-body-md font-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" id="shop-name" placeholder="e.g. Royal Motors" type="text" value="Al-Falah Rent a Car"/>
+</div>
+</div>
+<!-- Field: Owner Full Name -->
+<div class="space-y-1">
+<label class="block text-label-md font-label-md text-on-surface" for="owner-name">Owner Full Name</label>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3.5 text-outline text-xl pointer-events-none" data-icon="person">person</span>
+<input class="w-full pl-11 pr-3.5 py-3 rounded-xl border border-surface-variant bg-surface-bright text-body-md font-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" id="owner-name" placeholder="Full Name" type="text" value="Muhammad Bilal"/>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant pl-1">As printed on official government ID</p>
+</div>
+<!-- Field: CNIC Number -->
+<div class="space-y-1">
+<div class="flex items-center justify-between">
+<label class="text-label-md font-label-md text-on-surface" for="cnic-number">CNIC Number</label>
+<span class="inline-flex items-center gap-1 text-[11px] font-label-sm text-tertiary-container bg-tertiary-fixed-dim/30 px-2 py-0.5 rounded-full border border-tertiary-fixed">
+<span class="material-symbols-outlined text-[13px] text-tertiary-container" data-icon="verified">verified</span>
+              NADRA Format
+            </span>
+</div>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3.5 text-outline text-xl pointer-events-none" data-icon="badge">badge</span>
+<input class="w-full pl-11 pr-3.5 py-3 rounded-xl border border-surface-variant bg-surface-bright text-body-md font-body-md text-on-surface tracking-wider focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" id="cnic-number" maxlength="15" placeholder="xxxxx-xxxxxxx-x" type="text" value="35201-9876543-1"/>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant pl-1 flex items-start gap-1 pt-0.5">
+<span class="material-symbols-outlined text-outline text-sm" data-icon="info">info</span>
+<span>Must match your bank account title for automated payouts</span>
+</p>
+</div>
+</section>
+<!-- CARD 2: Contact & Operating Hub -->
+<section class="bg-surface-container-lowest rounded-2xl p-space-md level-1-card border border-surface-variant space-y-space-md">
+<div class="flex items-center gap-2 border-b border-surface-container pb-space-xs">
+<span class="material-symbols-outlined text-primary text-xl" data-icon="pin_drop">pin_drop</span>
+<h3 class="text-headline-sm font-headline-sm text-primary">Contact &amp; Operating Hub</h3>
+</div>
+<!-- Field: WhatsApp Mobile Number -->
+<div class="space-y-1">
+<div class="flex items-center justify-between">
+<label class="text-label-md font-label-md text-on-surface" for="contact-phone">Mobile / WhatsApp Number</label>
+<span class="inline-flex items-center gap-1 text-[11px] font-label-sm text-on-tertiary-container bg-tertiary-container/10 px-2 py-0.5 rounded-full">
+<span class="material-symbols-outlined text-xs" data-icon="check_circle">check_circle</span>
+              WhatsApp Verified
+            </span>
+</div>
+<div class="relative flex items-center">
+<div class="absolute left-3 flex items-center gap-1.5 pointer-events-none border-r border-surface-variant pr-2">
+<!-- Pakistan Mini Flag Emblem -->
+<svg aria-hidden="true" class="w-5 h-3.5 rounded-xs" viewbox="0 0 640 480">
+<rect fill="#00401A" height="480" width="640"></rect>
+<rect fill="#FFFFFF" height="480" width="160"></rect>
+<circle cx="430" cy="240" fill="#FFFFFF" r="100"></circle>
+<circle cx="460" cy="225" fill="#00401A" r="90"></circle>
+<polygon fill="#FFFFFF" points="430,170 437,192 460,192 441,206 448,228 430,214 412,228 419,206 400,192 423,192"></polygon>
+</svg>
+</div>
+<input class="w-full pl-16 pr-3.5 py-3 rounded-xl border border-surface-variant bg-surface-bright text-body-md font-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all font-mono" id="contact-phone" placeholder="+92 3xx xxxxxxx" type="tel" value="+92 300 1234567"/>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant pl-1">Used for instant booking dispatch and customer pickup alerts</p>
+</div>
+<!-- City Selector with Quick Chips -->
+<div class="space-y-2">
+<label class="block text-label-md font-label-md text-on-surface" for="city-select">Base City</label>
+<div class="relative">
+<select class="w-full px-3.5 py-3 rounded-xl border border-surface-variant bg-surface-bright text-body-md font-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary appearance-none cursor-pointer" id="city-select">
+<option selected="">Lahore</option>
+<option>Karachi</option>
+<option>Islamabad</option>
+<option>Rawalpindi</option>
+<option>Peshawar</option>
+<option>Faisalabad</option>
+</select>
+<span class="material-symbols-outlined absolute right-3.5 top-3.5 text-outline pointer-events-none" data-icon="expand_more">expand_more</span>
+</div>
+<!-- Quick City Filter Pills -->
+<div class="flex items-center gap-2 pt-1 overflow-x-auto pb-1 no-scrollbar">
+<button class="px-3 py-1 rounded-full text-label-sm font-label-sm bg-primary text-on-primary" type="button">
+              Lahore
+            </button>
+<button class="px-3 py-1 rounded-full text-label-sm font-label-sm bg-surface-container text-on-surface-variant hover:bg-surface-variant transition-colors" type="button">
+              Karachi
+            </button>
+<button class="px-3 py-1 rounded-full text-label-sm font-label-sm bg-surface-container text-on-surface-variant hover:bg-surface-variant transition-colors" type="button">
+              Islamabad
+            </button>
+<button class="px-3 py-1 rounded-full text-label-sm font-label-sm bg-surface-container text-on-surface-variant hover:bg-surface-variant transition-colors" type="button">
+              Rawalpindi
+            </button>
+</div>
+</div>
+<!-- Operating Area / Fleet Hub -->
+<div class="space-y-1">
+<label class="block text-label-md font-label-md text-on-surface" for="operating-area">Operating Area / Fleet Hub</label>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3.5 text-secondary-container text-xl pointer-events-none" data-icon="location_on">location_on</span>
+<input class="w-full pl-11 pr-3.5 py-3 rounded-xl border border-surface-variant bg-surface-bright text-body-md font-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" id="operating-area" placeholder="e.g. Blue Area, DHA Phase 5" type="text" value="Gulberg III &amp; Main Boulevard"/>
+</div>
+</div>
+</section>
+<!-- CARD 3: Business Verification & Trust -->
+<section class="bg-surface-container-lowest rounded-2xl p-space-md level-1-card border border-surface-variant space-y-space-md">
+<div class="flex items-center justify-between border-b border-surface-container pb-space-xs">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-xl" data-icon="verified_user">verified_user</span>
+<h3 class="text-headline-sm font-headline-sm text-primary">Business Verification &amp; Trust</h3>
+</div>
+<span class="text-label-sm font-label-sm text-outline">Recommended</span>
+</div>
+<!-- Dashed Document Upload Container -->
+<div class="border-2 border-dashed border-outline-variant rounded-xl p-space-md bg-surface-container-low text-center flex flex-col items-center justify-center gap-2 hover:bg-surface-container transition-colors cursor-pointer group">
+<div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-2xl" data-icon="upload_file">upload_file</span>
+</div>
+<div class="space-y-0.5">
+<p class="text-label-md font-label-md text-primary">Upload Business Registration / NTN (Optional)</p>
+<p class="text-body-sm font-body-sm text-on-surface-variant max-w-[270px]">
+              Get the Verified Host Badge &amp; priority search ranking. PDF, JPG, PNG up to 5MB
+            </p>
+</div>
+<button class="mt-1 px-4 py-1.5 rounded-full bg-surface-container-lowest border border-outline-variant text-label-sm font-label-sm text-primary flex items-center gap-1.5 shadow-sm" type="button">
+<span class="material-symbols-outlined text-sm" data-icon="photo_camera">photo_camera</span>
+            Select File
+          </button>
+</div>
+<!-- Trust Badge Banner -->
+<div class="rounded-xl p-3 bg-tertiary-container/5 border border-on-tertiary-container/30 flex items-start gap-2.5">
+<span class="material-symbols-outlined text-on-tertiary-container text-xl mt-0.5" data-icon="shield">shield</span>
+<div>
+<p class="text-label-md font-label-md text-on-tertiary-fixed-variant">Verified Partner Benefits</p>
+<p class="text-body-sm font-body-sm text-on-surface-variant leading-snug">
+              0% fraud liability guarantee with biometric NADRA checks on every renter.
+            </p>
+</div>
+</div>
+</section>
+</main>
+<!-- Sticky Bottom Navigation Dock (Conforms to Android persistent action dock guidelines) -->
+<!-- Shared Component BottomNavBar Integration & Destination Rule: This is a linear Onboarding flow, with the primary Step Action Button anchored above persistent category review -->
+<footer class="fixed bottom-0 left-0 right-0 max-w-[420px] mx-auto bg-surface-container-lowest border-t border-surface-variant level-2-dock px-space-md py-space-sm z-50">
+<!-- Primary Action CTA Button (Sunset Orange) -->
+<button class="w-full h-[54px] rounded-2xl bg-secondary-container hover:bg-secondary active:scale-[0.98] text-on-secondary text-label-lg font-label-lg flex items-center justify-center gap-2 shadow-lg transition-all duration-150" type="button">
+<span>Next: Set Physical Location</span>
+<span class="material-symbols-outlined text-xl" data-icon="arrow_forward">arrow_forward</span>
+</button>
+<!-- Bottom Navigation Anchor Representation (Shared Component Integration: Destination count 3, active on 'Details') -->
+<div class="mt-2 pt-1 border-t border-surface-container flex justify-around items-center">
+<!-- Details (Active Navigation - Strict JSON match: label 'Details', icon 'storefront', active state style) -->
+<button aria-current="page" class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary rounded-full px-space-md py-space-xs transition-colors" type="button">
+<span class="material-symbols-outlined text-sm" data-icon="storefront" style="font-variation-settings: 'FILL' 1;">storefront</span>
+<span class="text-label-sm font-label-sm mt-0.5">Details</span>
+</button>
+<!-- Location (Inactive Navigation) -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary px-space-md py-space-xs transition-colors" type="button">
+<span class="material-symbols-outlined text-sm" data-icon="pin_drop">pin_drop</span>
+<span class="text-label-sm font-label-sm mt-0.5">Location</span>
+</button>
+<!-- Payout (Inactive Navigation) -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary px-space-md py-space-xs transition-colors" type="button">
+<span class="material-symbols-outlined text-sm" data-icon="account_balance">account_balance</span>
+<span class="text-label-sm font-label-sm mt-0.5">Payout</span>
+</button>
+</div>
+<!-- Android Home Navigation Indicator Bar -->
+<div class="w-32 h-1 bg-on-surface/20 rounded-full mx-auto mt-2.5"></div>
+</footer>
+</div>
+</body></html>

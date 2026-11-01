@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RentalHub - Customer Discovery</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-error": "#ffffff",
+            "on-tertiary": "#ffffff",
+            "on-error-container": "#93000a",
+            "surface-tint": "#555998",
+            "error": "#ba1a1a",
+            "tertiary": "#00130a",
+            "on-primary-container": "#8386c9",
+            "surface-container-lowest": "#ffffff",
+            "on-tertiary-fixed-variant": "#005236",
+            "tertiary-fixed": "#6ffbbe",
+            "on-secondary": "#ffffff",
+            "primary-fixed": "#e0e0ff",
+            "surface-container-low": "#f1f4f9",
+            "outline-variant": "#c7c5d1",
+            "secondary-container": "#fd5a05",
+            "on-secondary-fixed-variant": "#812900",
+            "on-tertiary-fixed": "#002113",
+            "on-primary": "#ffffff",
+            "surface-container-high": "#e6e8ed",
+            "on-surface": "#181c20",
+            "on-secondary-fixed": "#380d00",
+            "outline": "#777681",
+            "primary": "#020246",
+            "secondary-fixed-dim": "#ffb59b",
+            "on-primary-fixed": "#101251",
+            "background": "#f7f9fe",
+            "on-primary-fixed-variant": "#3d417e",
+            "secondary": "#a93800",
+            "on-secondary-container": "#501600",
+            "tertiary-container": "#002b1b",
+            "inverse-on-surface": "#eff1f6",
+            "surface": "#f7f9fe",
+            "surface-bright": "#f7f9fe",
+            "on-tertiary-container": "#009f6e",
+            "inverse-surface": "#2d3135",
+            "tertiary-fixed-dim": "#4edea3",
+            "surface-dim": "#d8dadf",
+            "surface-container": "#eceef3",
+            "surface-container-highest": "#e0e2e7",
+            "secondary-fixed": "#ffdbcf",
+            "on-surface-variant": "#464650",
+            "surface-variant": "#e0e2e7",
+            "error-container": "#ffdad6",
+            "primary-container": "#1a1d5a",
+            "inverse-primary": "#bfc2ff",
+            "primary-fixed-dim": "#bfc2ff",
+            "on-background": "#181c20"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "gutter": "1rem",
+            "margin-lg": "1.5rem",
+            "space-md": "1rem",
+            "space-lg": "1.25rem",
+            "space-xxs": "0.25rem",
+            "space-xs": "0.5rem",
+            "margin": "1rem",
+            "space-sm": "0.75rem",
+            "space-xl": "1.5rem",
+            "space-2xl": "2rem",
+            "space-3xl": "3rem",
+            "gutter-sm": "0.5rem"
+          },
+          "fontFamily": {
+            "label-lg": ["Plus Jakarta Sans"],
+            "title-md": ["Plus Jakarta Sans"],
+            "body-lg": ["Inter"],
+            "label-sm": ["Plus Jakarta Sans"],
+            "headline-sm": ["Plus Jakarta Sans"],
+            "price-display": ["Plus Jakarta Sans"],
+            "headline-lg-mobile": ["Plus Jakarta Sans"],
+            "label-md": ["Plus Jakarta Sans"],
+            "display-lg": ["Plus Jakarta Sans"],
+            "headline-md": ["Plus Jakarta Sans"],
+            "headline-lg": ["Plus Jakarta Sans"],
+            "body-md": ["Inter"],
+            "body-sm": ["Inter"]
+          },
+          "fontSize": {
+            "label-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "700"}],
+            "title-md": ["15px", {"lineHeight": "22px", "fontWeight": "600"}],
+            "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+            "label-sm": ["10px", {"lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "700"}],
+            "headline-sm": ["16px", {"lineHeight": "24px", "fontWeight": "600"}],
+            "price-display": ["22px", {"lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+            "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+            "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+            "display-lg": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+            "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "700"}],
+            "headline-lg": ["28px", {"lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+            "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+            "body-sm": ["12px", {"lineHeight": "16px", "fontWeight": "400"}]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .material-symbols-fill {
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    /* Hide scrollbars for smooth filter touch row */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface antialiased flex justify-center min-h-screen">
+<!-- Mobile Container Emulation -->
+<main class="w-full max-w-[440px] bg-background min-h-screen relative flex flex-col pb-32 shadow-2xl">
+<!-- Android System Status Bar -->
+<header class="bg-primary text-on-primary px-space-md pt-space-xs pb-space-xxs flex justify-between items-center text-label-sm font-label-sm select-none z-30">
+<span class="tracking-normal font-bold">12:45 PM</span>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[15px]" data-icon="wifi">wifi</span>
+<span class="material-symbols-outlined text-[15px]" data-icon="signal_cellular_alt">signal_cellular_alt</span>
+<span class="font-bold text-[10px] tracking-tight">5G</span>
+<span class="material-symbols-outlined text-[16px]" data-icon="battery_full">battery_full</span>
+</div>
+</header>
+<!-- Shared Component: TopAppBar with Immersive Curved Midnight Header -->
+<section class="bg-primary dark:bg-primary-container text-on-primary dark:text-on-primary-container docked full-width top rounded-b-[28px] shadow-lg dark:shadow-none w-full px-space-md pt-space-md pb-10 relative overflow-hidden">
+<!-- Ambient subtle background aesthetic lighting ring -->
+<div class="absolute -right-16 -top-16 w-56 h-56 rounded-full bg-primary-container opacity-50 blur-2xl pointer-events-none"></div>
+<!-- Top Row: Profile, Greetings & Quick Actions -->
+<div class="flex justify-between items-center w-full relative z-10">
+<!-- Leading Profile & User Identity -->
+<div class="flex items-center gap-space-sm">
+<div class="relative">
+<div class="w-11 h-11 rounded-full border-2 border-surface-container-lowest overflow-hidden shadow-md bg-primary-container flex items-center justify-center">
+<img class="w-full h-full object-cover" data-alt="Close-up professional headshot of a young Pakistani male driver and entrepreneur named Ahmed, wearing modern navy casual business attire, smiling warmly in soft diffused daylight in an urban automotive studio setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDtXr9Z7W6_sCa0s63CF_GBRNs7lonTwsZIuuhWSe7vWuSQbry8hHrPsVkd5HkRHQcWiKs4etjGW8iB6Sc4mkirtpPzGzRWWe_LcvZLzLlGw4rYNAVd9g-fh-265YiPeYNAqtclNCIwhzrpPalAjW_urVsjSUZ8HAGcNkwlYyc-MjAMFrC8__m2cPnC40a7VubXkGa1DV-2VPXvnRkTwbGrVaExDryTJpPZq2ccPySm1r88rkDJaR_L6cpYmGswnYugmmjkA3W1BSfm"/>
+</div>
+<!-- Emerald Verified Badge -->
+<div class="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-tertiary-fixed text-tertiary-container flex items-center justify-center shadow">
+<span class="material-symbols-outlined text-[11px] font-bold" data-icon="check" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+</div>
+<div class="flex flex-col">
+<h1 class="text-headline-lg-mobile font-headline-lg-mobile text-on-primary leading-tight">Good afternoon, Ahmed</h1>
+<div class="flex items-center gap-1 text-outline-variant mt-0.5">
+<span class="material-symbols-outlined text-[13px] text-secondary-container" data-icon="location_on">location_on</span>
+<span class="text-label-md font-label-md">Gulberg III, Lahore</span>
+<span class="material-symbols-outlined text-[14px]" data-icon="keyboard_arrow_down">keyboard_arrow_down</span>
+</div>
+</div>
+</div>
+<!-- Trailing Action Cluster -->
+<div class="flex items-center gap-space-xs">
+<button aria-label="Search" class="w-9 h-9 rounded-full bg-primary-container/80 flex items-center justify-center text-on-primary hover:bg-primary-container transition-colors active:scale-95 duration-150">
+<span class="material-symbols-outlined text-[19px]" data-icon="search">search</span>
+</button>
+<button aria-label="Notifications" class="w-9 h-9 rounded-full bg-primary-container/80 flex items-center justify-center text-on-primary hover:bg-primary-container transition-colors active:scale-95 duration-150 relative">
+<span class="material-symbols-outlined text-[19px]" data-icon="notifications">notifications</span>
+<!-- Vibrant Orange Badge -->
+<span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-secondary-container ring-2 ring-primary"></span>
+</button>
+</div>
+</div>
+<!-- Quick Search Bar inside curved header structure -->
+<div class="mt-space-md relative z-10">
+<div class="bg-surface-container-lowest/10 backdrop-blur-md border border-surface-container-lowest/20 rounded-full px-space-md py-2 flex items-center justify-between text-outline-variant">
+<div class="flex items-center gap-2 flex-1">
+<span class="material-symbols-outlined text-[18px] text-surface-container-lowest" data-icon="search">search</span>
+<span class="text-body-sm font-body-sm text-surface-container-lowest/80">Search cars, vendors or drivers...</span>
+</div>
+<div class="flex items-center gap-1.5 border-l border-surface-container-lowest/20 pl-space-xs">
+<span class="material-symbols-outlined text-[17px] text-surface-container-lowest" data-icon="tune">tune</span>
+<span class="text-label-sm font-label-sm text-surface-container-lowest">Filter</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Floating Hero Section: Active Booking Card -->
+<section class="px-space-md -mt-6 relative z-20">
+<div class="bg-surface-container-lowest rounded-2xl p-space-md shadow-xl border border-surface-container-highest flex flex-col gap-space-sm">
+<!-- Header row: Active Booking Badge & Countdown -->
+<div class="flex justify-between items-center">
+<div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-tertiary-fixed/30 border border-tertiary-fixed text-on-tertiary-fixed-variant">
+<span class="w-2 h-2 rounded-full bg-on-tertiary-container animate-pulse"></span>
+<span class="text-label-sm font-label-sm uppercase tracking-wider">Active Booking</span>
+</div>
+<div class="flex items-center gap-1 text-secondary font-bold text-label-md font-label-md bg-secondary-fixed/40 px-2 py-0.5 rounded-full">
+<span class="material-symbols-outlined text-[14px]" data-icon="schedule">schedule</span>
+<span>01:45:20 left</span>
+</div>
+</div>
+<!-- Middle Car Spec Content -->
+<div class="flex items-center justify-between gap-space-sm pt-1">
+<div class="flex-1">
+<div class="flex items-center gap-1 text-outline text-label-sm font-label-sm">
+<span class="material-symbols-outlined text-[14px]" data-icon="storefront">storefront</span>
+<span>Al-Falah Rent a Car</span>
+</div>
+<h2 class="text-headline-sm font-headline-sm text-primary mt-0.5">Toyota Corolla GLi</h2>
+<p class="text-body-sm font-body-sm text-on-surface-variant">1.3 Automatic â€¢ Pure White</p>
+<div class="flex items-center gap-2 mt-1.5">
+<span class="text-label-sm font-label-sm bg-surface-container-low px-2 py-0.5 rounded text-primary-container font-semibold">Self-Drive</span>
+<span class="text-label-sm font-label-sm text-outline">Reg: LEB-21-4409</span>
+</div>
+</div>
+<!-- Car Thumbnail Graphic -->
+<div class="w-28 h-20 rounded-xl overflow-hidden bg-surface-container-low border border-surface-container flex items-center justify-center p-1 relative flex-shrink-0">
+<img class="w-full h-full object-contain" data-alt="A clean modern white Toyota Corolla sedan photographed from a three-quarters front angle against a bright minimalist studio background with soft studio lighting reflections and sharp automotive contours." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAm1f_VNrz6WQKT2Eerk6PwnEMssUi8yKjdHa4vymDM48OXw9tEfewaivA3XPb59VpcvmmOaTtSYu_bwxU1zc9KGa-P-THGXNJyc1pF-crCMdYDTYFueuMo_f6L7VJX2IK-WAzD-_kaYI-VJB_99Id3SJFpLPbhzY7aUFCEHcFIXNyswyGcN6NOVxmL3Cs9fdLzyVLfr9HWd7SZnSq8hDWbJYq7tbG8dCpc6NUUMuHhcfbtrvJMGMbmAEaQC_j8DXFSyWOpqbZT8ABu"/>
+</div>
+</div>
+<!-- Action CTAs: QR Pass & Directions -->
+<div class="grid grid-cols-2 gap-space-sm pt-space-xs border-t border-surface-container">
+<button class="border-2 border-primary-container text-primary-container font-label-lg text-label-lg rounded-xl py-2 px-space-xs flex items-center justify-center gap-1.5 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[18px]" data-icon="qr_code_2">qr_code_2</span>
+<span>Show QR Pass</span>
+</button>
+<button class="bg-secondary-container hover:bg-secondary text-on-primary font-label-lg text-label-lg rounded-xl py-2 px-space-xs flex items-center justify-center gap-1.5 shadow-md shadow-secondary-container/30 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[18px]" data-icon="directions">directions</span>
+<span>Directions</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Middle Section: Discovery Radius & Hubs -->
+<section class="mt-space-lg px-space-md flex flex-col gap-space-sm">
+<!-- Section Header with View Switcher -->
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-1.5">
+<div class="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[17px]" data-icon="near_me">near_me</span>
+</div>
+<h2 class="text-headline-sm font-headline-sm text-primary">Nearby Rental Hubs</h2>
+</div>
+<!-- View Switcher (List | Map Toggle) -->
+<div class="bg-surface-container p-0.5 rounded-full flex items-center text-label-sm font-label-sm">
+<button class="bg-surface-container-lowest text-primary px-3 py-1 rounded-full shadow-sm flex items-center gap-1 font-bold">
+<span class="material-symbols-outlined text-[14px]" data-icon="view_list">view_list</span>
+<span>List</span>
+</button>
+<button class="text-outline hover:text-on-surface px-3 py-1 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="map">map</span>
+<span>Map</span>
+</button>
+</div>
+</div>
+<!-- Radius Filter Pills Horizontal Scroll -->
+<div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
+<span class="text-label-sm font-label-sm text-outline flex-shrink-0 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="tune">tune</span>
+          Radius:
+        </span>
+<button class="rounded-full px-3.5 py-1 text-label-md font-label-md bg-surface-container-lowest border border-outline-variant text-primary-container hover:bg-surface-container-low transition-colors flex-shrink-0">1 km</button>
+<button class="rounded-full px-3.5 py-1 text-label-md font-label-md bg-surface-container-lowest border border-outline-variant text-primary-container hover:bg-surface-container-low transition-colors flex-shrink-0">2 km</button>
+<button class="rounded-full px-3.5 py-1 text-label-md font-label-md bg-surface-container-lowest border border-outline-variant text-primary-container hover:bg-surface-container-low transition-colors flex-shrink-0">3 km</button>
+<!-- Active 5 km Pill -->
+<button class="rounded-full px-3.5 py-1 text-label-md font-label-md bg-primary-container text-on-primary font-bold shadow-sm flex-shrink-0 flex items-center gap-1">
+<span>5 km</span>
+<span class="material-symbols-outlined text-[13px]" data-icon="check">check</span>
+</button>
+<button class="rounded-full px-3.5 py-1 text-label-md font-label-md bg-surface-container-lowest border border-outline-variant text-primary-container hover:bg-surface-container-low transition-colors flex-shrink-0">10 km</button>
+</div>
+</section>
+<!-- Rental List Content Grid -->
+<section class="mt-space-sm px-space-md flex flex-col gap-space-md">
+<!-- Primary Vendor Discovery Card: Al-Falah Rent a Car -->
+<article class="bg-surface-container-lowest rounded-2xl p-space-md shadow-md border border-surface-container-highest flex flex-col gap-space-sm relative transition-all duration-200 hover:shadow-lg">
+<div class="flex items-start justify-between gap-space-sm">
+<div class="flex items-center gap-3">
+<!-- Vendor Storefront Thumbnail -->
+<div class="w-14 h-14 rounded-xl overflow-hidden bg-surface-container-low border border-surface-container-highest flex-shrink-0 relative">
+<img class="w-full h-full object-cover" data-alt="Modern showroom storefront of a premier Pakistani car rental vendor with luxury sedans visible inside through glass windows with illuminated neon signage and pristine fleet parking." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCWK0Gh1bsbmNrj4zbDsCWxDZHEdifdcY8vnBr_NGBdHiq3QAgtIwInwnr1eImnCp4BtR2LXmiVdGVZBtaHjLgZFWHgO4sO9VqN9HSO6USeMJTlSKVJICzDhcOZ3f6QHXVaQzSgFlYXS5DCQESoMuK6By-XecIpX5Y0ii60JOg7Q7gtybq9R3ebLqcsC8LWbZIAB5V9IMksAqFp5VHV0fPMN1VRlt5vjRcEWkKtqiTlXKnxUfdd0ve_cPWjJrc0CF85LyVZByGanW6z"/>
+</div>
+<!-- Title & Verified Badge -->
+<div>
+<div class="flex items-center gap-1.5 flex-wrap">
+<h3 class="text-headline-sm font-headline-sm text-primary leading-tight">Al-Falah Rent a Car</h3>
+<!-- Verified Badge -->
+<span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed text-[10px] font-bold">
+<span class="material-symbols-outlined text-[12px]" data-icon="verified" data-weight="fill" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span>Verified</span>
+</span>
+</div>
+<p class="text-body-sm font-body-sm text-outline mt-0.5">Main Boulevard, Gulberg III â€¢ Fleet Operator</p>
+</div>
+</div>
+<!-- Bookmark / Favorite disc -->
+<button aria-label="Favorite" class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-outline hover:text-secondary-container transition-colors">
+<span class="material-symbols-outlined text-[18px]" data-icon="favorite">favorite</span>
+</button>
+</div>
+<!-- Rating, Distance, Availability Meta Row -->
+<div class="flex items-center gap-2 flex-wrap text-label-md font-label-md">
+<div class="flex items-center gap-1 bg-surface-container-low px-2 py-1 rounded-lg text-on-surface">
+<span class="material-symbols-outlined text-[14px] text-amber-500" data-icon="star" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-bold">4.7</span>
+<span class="text-outline text-label-sm font-label-sm">(128)</span>
+</div>
+<div class="flex items-center gap-1 bg-surface-container-low px-2 py-1 rounded-lg text-primary-container">
+<span class="material-symbols-outlined text-[14px] text-secondary-container" data-icon="location_on">location_on</span>
+<span>1.2 km away</span>
+</div>
+<div class="flex items-center gap-1 bg-tertiary-fixed/30 px-2 py-1 rounded-lg text-on-tertiary-fixed-variant font-bold">
+<span class="material-symbols-outlined text-[14px]" data-icon="directions_car">directions_car</span>
+<span>12 cars available</span>
+</div>
+</div>
+<!-- Pricing snippet + Action Buttons Footer -->
+<div class="flex items-center justify-between pt-space-xs border-t border-surface-container mt-1">
+<div>
+<span class="text-label-sm font-label-sm text-outline block">Starting from</span>
+<span class="text-title-md font-title-md font-bold text-primary">PKR 5,500 <span class="text-body-sm font-normal text-outline">/day</span></span>
+</div>
+<!-- Direct Quick Contact Action Buttons -->
+<div class="flex items-center gap-2">
+<!-- Call Icon Button -->
+<button aria-label="Call Vendor" class="w-10 h-10 rounded-full bg-primary-container text-on-primary flex items-center justify-center shadow hover:opacity-95 active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-[18px]" data-icon="call">call</span>
+</button>
+<!-- WhatsApp Icon Button -->
+<button aria-label="WhatsApp Vendor" class="h-10 px-3.5 rounded-full bg-[#10B981] hover:bg-[#0E9F6E] text-on-primary font-label-md font-label-md flex items-center gap-1.5 shadow active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[17px]" data-icon="chat" data-weight="fill" style="font-variation-settings: 'FILL' 1;">chat</span>
+<span>WhatsApp</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Secondary Vendor Discovery Card: Rehman Motors & Rentals -->
+<article class="bg-surface-container-lowest rounded-2xl p-space-md shadow-md border border-surface-container-highest flex flex-col gap-space-sm relative transition-all duration-200 hover:shadow-lg">
+<div class="flex items-start justify-between gap-space-sm">
+<div class="flex items-center gap-3">
+<!-- Vendor Storefront Thumbnail -->
+<div class="w-14 h-14 rounded-xl overflow-hidden bg-surface-container-low border border-surface-container-highest flex-shrink-0 relative">
+<img class="w-full h-full object-cover" data-alt="Commercial vehicle rental dealership in Lahore with an organized fleet of SUVs and executive crossover vehicles parked neatly under clear midday sunshine." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBk3p5LGu7AhcpN66guxGZRUqOLmB8aRrwO8SzFT1w2Py_MVi7oUTat6fKwmWfODpXL1YhP4-VcIuFtPA86QrwWQ4WcTy06b5krKT4ZpFjt7qWLxpKb8OQdi16ABTuzzyYyIJl4HZ_WJ_7JK8mtCYes3bjKaEJM166WDbmKssFgR04MhDsVGCgbh-l2fAO5j-efI_in0CI4Enw2womNp97HRODNBBB8yCyFUNmM7Ej3Qfa6jLjBc4ZjHzhF6s2GnYaYRhY6E4nlUlc3"/>
+</div>
+<!-- Title & Verified Badge -->
+<div>
+<div class="flex items-center gap-1.5 flex-wrap">
+<h3 class="text-headline-sm font-headline-sm text-primary leading-tight">Rehman Motors &amp; Rentals</h3>
+<!-- Verified Badge -->
+<span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed text-[10px] font-bold">
+<span class="material-symbols-outlined text-[12px]" data-icon="verified" data-weight="fill" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span>Verified</span>
+</span>
+</div>
+<p class="text-body-sm font-body-sm text-outline mt-0.5">MM Alam Road, Gulberg II â€¢ Corporate Fleet</p>
+</div>
+</div>
+<button aria-label="Favorite" class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-outline hover:text-secondary-container transition-colors">
+<span class="material-symbols-outlined text-[18px]" data-icon="favorite">favorite</span>
+</button>
+</div>
+<!-- Rating, Distance, Availability Meta Row -->
+<div class="flex items-center gap-2 flex-wrap text-label-md font-label-md">
+<div class="flex items-center gap-1 bg-surface-container-low px-2 py-1 rounded-lg text-on-surface">
+<span class="material-symbols-outlined text-[14px] text-amber-500" data-icon="star" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-bold">4.8</span>
+<span class="text-outline text-label-sm font-label-sm">(94)</span>
+</div>
+<div class="flex items-center gap-1 bg-surface-container-low px-2 py-1 rounded-lg text-primary-container">
+<span class="material-symbols-outlined text-[14px] text-secondary-container" data-icon="location_on">location_on</span>
+<span>2.4 km away</span>
+</div>
+<div class="flex items-center gap-1 bg-tertiary-fixed/30 px-2 py-1 rounded-lg text-on-tertiary-fixed-variant font-bold">
+<span class="material-symbols-outlined text-[14px]" data-icon="directions_car">directions_car</span>
+<span>8 cars available</span>
+</div>
+</div>
+<!-- Pricing snippet + Action Buttons Footer -->
+<div class="flex items-center justify-between pt-space-xs border-t border-surface-container mt-1">
+<div>
+<span class="text-label-sm font-label-sm text-outline block">Starting from</span>
+<span class="text-title-md font-title-md font-bold text-primary">PKR 7,000 <span class="text-body-sm font-normal text-outline">/day</span></span>
+</div>
+<!-- Direct Quick Contact Action Buttons -->
+<div class="flex items-center gap-2">
+<!-- Call Icon Button -->
+<button aria-label="Call Vendor" class="w-10 h-10 rounded-full bg-primary-container text-on-primary flex items-center justify-center shadow hover:opacity-95 active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-[18px]" data-icon="call">call</span>
+</button>
+<!-- WhatsApp Icon Button -->
+<button aria-label="WhatsApp Vendor" class="h-10 px-3.5 rounded-full bg-[#10B981] hover:bg-[#0E9F6E] text-on-primary font-label-md font-label-md flex items-center gap-1.5 shadow active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[17px]" data-icon="chat" data-weight="fill" style="font-variation-settings: 'FILL' 1;">chat</span>
+<span>WhatsApp</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Trust & Verification Banner -->
+<aside class="rounded-xl p-space-md bg-primary-container text-on-primary flex items-center justify-between gap-space-sm relative overflow-hidden">
+<div class="relative z-10">
+<div class="flex items-center gap-1 text-tertiary-fixed text-label-sm font-label-sm uppercase tracking-wide">
+<span class="material-symbols-outlined text-[15px]" data-icon="security">security</span>
+<span>RentalHub Guarantee</span>
+</div>
+<p class="text-title-md font-title-md font-bold mt-0.5">100% Verified Fleet Operators</p>
+<p class="text-body-sm font-body-sm text-surface-container-highest/80 mt-0.5">Checked token taxes, authentic documentation, and GPS installed.</p>
+</div>
+<div class="w-12 h-12 rounded-full bg-surface-container-lowest/10 flex items-center justify-center flex-shrink-0 text-tertiary-fixed">
+<span class="material-symbols-outlined text-[28px]" data-icon="verified_user">verified_user</span>
+</div>
+</aside>
+</section>
+<!-- Shared Component: BottomNavBar -->
+<!-- Floating rounded bar: docked full-width bottom-0 mx-margin-lg mb-margin-lg rounded-full shadow-2xl bg-primary -->
+<nav class="fixed bottom-0 left-0 right-0 max-w-[440px] mx-auto z-50 px-margin-lg pb-margin-lg pointer-events-none">
+<div class="bg-primary dark:bg-primary-container text-secondary-container dark:text-secondary-fixed shadow-2xl dark:shadow-none rounded-full px-space-md py-2 flex justify-between items-center w-full pointer-events-auto">
+<!-- Tab 1: Home (Active based on Discovery Intent) -->
+<button class="flex flex-col items-center justify-center text-secondary-container dark:text-secondary-fixed font-bold p-space-xs active:scale-90 transition-transform duration-150">
+<span class="material-symbols-outlined text-[22px]" data-icon="home" data-weight="fill" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="text-label-sm font-label-sm">Home</span>
+</button>
+<!-- Tab 2: Shops -->
+<button class="flex flex-col items-center justify-center text-outline-variant dark:text-outline p-space-xs hover:text-on-primary transition-colors active:scale-90 duration-150">
+<span class="material-symbols-outlined text-[22px]" data-icon="storefront">storefront</span>
+<span class="text-label-sm font-label-sm">Shops</span>
+</button>
+<!-- Tab 3: Book (Elevated prominent center action button) -->
+<div class="relative -top-4">
+<button aria-label="Book Car" class="w-12 h-12 rounded-full bg-secondary-container text-on-primary flex items-center justify-center shadow-lg shadow-secondary-container/40 active:scale-90 transition-transform duration-150 border-4 border-background">
+<span class="material-symbols-outlined text-[26px]" data-icon="add_circle" data-weight="fill" style="font-variation-settings: 'FILL' 1;">add_circle</span>
+</button>
+</div>
+<!-- Tab 4: Bookings -->
+<button class="flex flex-col items-center justify-center text-outline-variant dark:text-outline p-space-xs hover:text-on-primary transition-colors active:scale-90 duration-150">
+<span class="material-symbols-outlined text-[22px]" data-icon="calendar_month">calendar_month</span>
+<span class="text-label-sm font-label-sm">Bookings</span>
+</button>
+<!-- Tab 5: Profile -->
+<button class="flex flex-col items-center justify-center text-outline-variant dark:text-outline p-space-xs hover:text-on-primary transition-colors active:scale-90 duration-150">
+<span class="material-symbols-outlined text-[22px]" data-icon="person">person</span>
+<span class="text-label-sm font-label-sm">Profile</span>
+</button>
+</div>
+</nav>
+</main>
+</body></html>

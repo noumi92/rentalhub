@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RentalHub - Host Control Hub</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts: Plus Jakarta Sans & Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-container-lowest": "#ffffff",
+            "on-secondary-fixed-variant": "#812900",
+            "inverse-primary": "#bfc2ff",
+            "on-primary-fixed-variant": "#3d417e",
+            "on-tertiary-fixed-variant": "#005236",
+            "surface-container": "#eceef3",
+            "outline-variant": "#c7c5d1",
+            "secondary-fixed-dim": "#ffb59b",
+            "on-error-container": "#93000a",
+            "on-tertiary-container": "#009f6e",
+            "primary-container": "#1a1d5a",
+            "surface-dim": "#d8dadf",
+            "on-primary": "#ffffff",
+            "on-background": "#181c20",
+            "on-primary-container": "#8386c9",
+            "on-secondary-fixed": "#380d00",
+            "tertiary": "#00130a",
+            "outline": "#777681",
+            "surface-container-high": "#e6e8ed",
+            "secondary-container": "#fd5a05",
+            "on-tertiary-fixed": "#002113",
+            "secondary": "#a93800",
+            "surface-variant": "#e0e2e7",
+            "on-tertiary": "#ffffff",
+            "on-secondary-container": "#501600",
+            "tertiary-container": "#002b1b",
+            "surface-bright": "#f7f9fe",
+            "inverse-on-surface": "#eff1f6",
+            "primary-fixed-dim": "#bfc2ff",
+            "on-error": "#ffffff",
+            "surface-container-highest": "#e0e2e7",
+            "on-surface": "#181c20",
+            "on-secondary": "#ffffff",
+            "background": "#f7f9fe",
+            "tertiary-fixed-dim": "#4edea3",
+            "tertiary-fixed": "#6ffbbe",
+            "surface": "#f7f9fe",
+            "primary": "#020246",
+            "surface-tint": "#555998",
+            "inverse-surface": "#2d3135",
+            "primary-fixed": "#e0e0ff",
+            "error-container": "#ffdad6",
+            "secondary-fixed": "#ffdbcf",
+            "surface-container-low": "#f1f4f9",
+            "on-surface-variant": "#464650",
+            "error": "#ba1a1a",
+            "on-primary-fixed": "#101251"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "gutter": "1rem",
+            "space-3xl": "3rem",
+            "gutter-sm": "0.5rem",
+            "space-sm": "0.75rem",
+            "margin": "1rem",
+            "space-xxs": "0.25rem",
+            "space-2xl": "2rem",
+            "margin-lg": "1.5rem",
+            "space-xl": "1.5rem",
+            "space-md": "1rem",
+            "space-lg": "1.25rem",
+            "space-xs": "0.5rem"
+          },
+          "fontFamily": {
+            "headline-sm": ["Plus Jakarta Sans"],
+            "label-sm": ["Plus Jakarta Sans"],
+            "headline-md": ["Plus Jakarta Sans"],
+            "label-md": ["Plus Jakarta Sans"],
+            "body-lg": ["Inter"],
+            "title-md": ["Plus Jakarta Sans"],
+            "display-lg": ["Plus Jakarta Sans"],
+            "body-sm": ["Inter"],
+            "headline-lg": ["Plus Jakarta Sans"],
+            "headline-lg-mobile": ["Plus Jakarta Sans"],
+            "price-display": ["Plus Jakarta Sans"],
+            "label-lg": ["Plus Jakarta Sans"],
+            "body-md": ["Inter"]
+          },
+          "fontSize": {
+            "headline-sm": ["16px", { "lineHeight": "24px", "fontWeight": "600" }],
+            "label-sm": ["10px", { "lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "700" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "700" }],
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+            "title-md": ["15px", { "lineHeight": "22px", "fontWeight": "600" }],
+            "display-lg": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "body-sm": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+            "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "headline-lg-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "price-display": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "700" }],
+            "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      line-height: 1;
+      text-transform: none;
+      letter-spacing: normal;
+      word-wrap: normal;
+      white-space: nowrap;
+      direction: ltr;
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface antialiased min-h-screen flex justify-center selection:bg-secondary selection:text-on-secondary">
+<!-- Mobile Device Simulation Frame (393px width constraint) -->
+<main class="w-full max-w-[430px] min-h-screen bg-background relative pb-28 shadow-2xl flex flex-col">
+<!-- Top Curved Executive Header (230px, Deep Midnight Navy) -->
+<header class="bg-primary text-on-primary pt-6 pb-12 px-space-md rounded-b-[28px] shadow-lg relative z-0">
+<!-- Top Bar: Shop Identity & Action Bar -->
+<div class="flex justify-between items-center w-full mb-space-md">
+<!-- Leading: Shop Crest & Info -->
+<div class="flex items-center gap-space-xs">
+<div class="w-10 h-10 rounded-full bg-surface-container-lowest/10 border border-surface-container-lowest/20 flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined" data-icon="directions_car">directions_car</span>
+</div>
+<div>
+<h1 class="text-headline-sm font-headline-sm font-bold text-on-primary leading-tight">Al-Falah Rent a Car</h1>
+<div class="flex items-center gap-1.5 mt-0.5">
+<span class="inline-flex items-center gap-0.5 bg-tertiary-fixed-dim/20 text-tertiary-fixed-dim text-label-sm font-label-sm px-1.5 py-0.5 rounded-full">
+<span class="material-symbols-outlined text-[10px]" data-icon="check_circle">check_circle</span>
+                Verified Host
+              </span>
+<span class="text-label-sm font-label-sm text-outline-variant flex items-center">
+<span class="material-symbols-outlined text-[11px] text-secondary-fixed text-amber-300" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+                4.7
+              </span>
+<span class="text-label-sm font-label-sm text-outline-variant">• Gulberg III, LHE</span>
+</div>
+</div>
+</div>
+<!-- Trailing Action Icons -->
+<div class="flex items-center gap-space-xs">
+<button aria-label="Notifications" class="relative w-9 h-9 rounded-full bg-surface-container-lowest/10 border border-surface-container-lowest/15 flex items-center justify-center text-on-primary active:scale-95 transition-transform duration-150" type="button">
+<span class="material-symbols-outlined text-[20px]" data-icon="notifications">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-2 h-2 bg-secondary-container rounded-full ring-2 ring-primary"></span>
+</button>
+<button aria-label="Garage Menu" class="w-9 h-9 rounded-full bg-surface-container-lowest/10 border border-surface-container-lowest/15 flex items-center justify-center text-on-primary active:scale-95 transition-transform duration-150" type="button">
+<span class="material-symbols-outlined text-[20px]" data-icon="garage">garage</span>
+</button>
+</div>
+</div>
+<!-- Active Fleet Counter Badge with Pulsing Live Indicator -->
+<div class="inline-flex items-center gap-2 bg-surface-container-lowest/10 backdrop-blur-md border border-surface-container-lowest/15 px-space-sm py-1.5 rounded-full mb-1">
+<span class="relative flex h-2.5 w-2.5">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-tertiary-fixed-dim opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-tertiary-fixed-dim"></span>
+</span>
+<span class="text-label-md font-label-md text-on-primary">14 / 18 Vehicles on Road</span>
+</div>
+</header>
+<!-- Content Canvas (Overlapping KPI Grid by 24px) -->
+<div class="px-space-md -mt-6 relative z-10 space-y-space-lg">
+<!-- KPI Cards Grid (2x2 Layout) -->
+<section aria-label="Fleet Performance Metrics" class="grid grid-cols-2 gap-space-xs">
+<!-- Top Left: Active Rentals Today -->
+<article class="bg-primary-container text-on-primary p-space-sm rounded-xl border border-surface-container-lowest/10 shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between mb-1">
+<span class="text-label-sm font-label-sm text-on-primary-container">Active Rentals Today</span>
+<span class="material-symbols-outlined text-[16px] text-tertiary-fixed-dim" data-icon="speed">speed</span>
+</div>
+<div>
+<div class="text-headline-lg-mobile font-headline-lg-mobile font-bold tracking-tight text-on-primary">14 <span class="text-label-md font-label-md font-normal text-on-primary-container">Vehicles</span></div>
+<p class="text-label-sm font-label-sm text-tertiary-fixed-dim mt-0.5 font-medium">78% Fleet Occupancy</p>
+</div>
+</article>
+<!-- Top Right: Pending Requests -->
+<article class="bg-surface-container-lowest p-space-sm rounded-xl border border-surface-container-high shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between mb-1">
+<span class="text-label-sm font-label-sm text-on-surface-variant">Pending Requests</span>
+<span class="bg-secondary-container text-on-secondary px-1.5 py-0.2 rounded-full text-label-sm font-label-sm">3 New</span>
+</div>
+<div>
+<div class="text-headline-lg-mobile font-headline-lg-mobile font-bold text-on-surface">3</div>
+<a class="inline-flex items-center gap-0.5 text-label-sm font-label-sm font-bold text-secondary-container hover:underline mt-0.5" href="#requests">
+              Review Now
+              <span class="material-symbols-outlined text-[13px]" data-icon="arrow_forward">arrow_forward</span>
+</a>
+</div>
+</article>
+<!-- Bottom Left: Today's Transacted Revenue -->
+<article class="bg-surface-container-lowest p-space-sm rounded-xl border border-surface-container-high shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between mb-1">
+<span class="text-label-sm font-label-sm text-on-surface-variant">Transacted Revenue</span>
+<span class="material-symbols-outlined text-[16px] text-on-tertiary-container" data-icon="payments">payments</span>
+</div>
+<div>
+<div class="text-title-md font-title-md font-bold text-on-surface">PKR 38,500</div>
+<span class="inline-flex items-center gap-0.5 text-label-sm font-label-sm text-on-tertiary-container font-semibold mt-0.5">
+<span class="material-symbols-outlined text-[12px]" data-icon="trending_up">trending_up</span>
+              +12% vs yesterday
+            </span>
+</div>
+</article>
+<!-- Bottom Right: Pending Handovers -->
+<article class="bg-surface-container-lowest p-space-sm rounded-xl border border-surface-container-high shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between mb-1">
+<span class="text-label-sm font-label-sm text-on-surface-variant">Handovers</span>
+<span class="bg-amber-100 text-amber-800 text-[9px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wider">2 Due Now</span>
+</div>
+<div>
+<div class="text-title-md font-title-md font-bold text-on-surface">2 Slotted</div>
+<p class="text-label-sm font-label-sm text-on-surface-variant mt-0.5">Next: 02:00 PM slot</p>
+</div>
+</article>
+</section>
+<!-- Quick Actions Row -->
+<section aria-label="Host Quick Operations">
+<h2 class="text-headline-sm font-headline-sm font-bold text-on-surface mb-space-xs">Quick Actions</h2>
+<div class="grid grid-cols-4 gap-2">
+<!-- + Add Car -->
+<button class="flex flex-col items-center group active:scale-95 transition-transform duration-150 text-center" type="button">
+<div class="w-12 h-12 rounded-full bg-secondary-container text-on-secondary flex items-center justify-center shadow-md mb-1.5 group-hover:opacity-90">
+<span class="material-symbols-outlined text-[24px]" data-icon="add">add</span>
+</div>
+<span class="text-label-sm font-label-sm text-on-surface leading-tight font-medium">+ Add Car</span>
+</button>
+<!-- Walk-in Booking -->
+<button class="flex flex-col items-center group active:scale-95 transition-transform duration-150 text-center" type="button">
+<div class="w-12 h-12 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-md mb-1.5 group-hover:opacity-90">
+<span class="material-symbols-outlined text-[22px]" data-icon="assignment">assignment</span>
+</div>
+<span class="text-label-sm font-label-sm text-on-surface leading-tight font-medium">Walk-in</span>
+</button>
+<!-- Check Blacklist -->
+<button class="flex flex-col items-center group active:scale-95 transition-transform duration-150 text-center" type="button">
+<div class="w-12 h-12 rounded-full bg-error-container text-error flex items-center justify-center shadow-md mb-1.5 group-hover:opacity-90">
+<span class="material-symbols-outlined text-[22px]" data-icon="gshield">gshield</span>
+</div>
+<span class="text-label-sm font-label-sm text-on-surface leading-tight font-medium">Blacklist</span>
+</button>
+<!-- Handover Pass -->
+<button class="flex flex-col items-center group active:scale-95 transition-transform duration-150 text-center" type="button">
+<div class="w-12 h-12 rounded-full bg-surface-container-high text-primary flex items-center justify-center shadow-md mb-1.5 group-hover:opacity-90">
+<span class="material-symbols-outlined text-[22px]" data-icon="qr_code_scanner">qr_code_scanner</span>
+</div>
+<span class="text-label-sm font-label-sm text-on-surface leading-tight font-medium">Handover</span>
+</button>
+</div>
+</section>
+<!-- Active Rentals Live Feed Section -->
+<section aria-label="Live Fleet Stream">
+<div class="flex justify-between items-center mb-space-xs">
+<div class="flex items-center gap-1.5">
+<h2 class="text-headline-sm font-headline-sm font-bold text-on-surface">Live Rentals on Road</h2>
+<span class="bg-surface-container text-primary font-bold text-label-sm font-label-sm px-2 py-0.5 rounded-full">14</span>
+</div>
+<a class="text-label-md font-label-md font-bold text-primary hover:underline" href="#view-all">View All</a>
+</div>
+<div class="space-y-space-sm">
+<!-- Rental Card 1: Honda Civic 2021 -->
+<article class="bg-surface-container-lowest rounded-xl border border-surface-container-high shadow-sm p-space-sm flex flex-col gap-3">
+<div class="flex gap-space-sm">
+<!-- Vehicle Thumbnail -->
+<div class="relative w-24 h-20 rounded-lg overflow-hidden flex-shrink-0 bg-surface-container-low border border-surface-container">
+<img alt="Red Honda Civic 2021 fleet vehicle on road" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/AEtjO1W4zSEshPzA0Ga-NK5hdLynINrjp5w6Q8-aNOenVIgCCv_wvwKpHsHi3AkRVggQe4ZjjsmOl3fwjX8NYUjvWNu-ywIhaUo6-MSPDKPZylM1nEwSU76ePe2vLfA2WYM512Jy7BEqkSYmLK7cvIOx38CIBjoK_Urb2mKk9EM5e8qS6t0yVLE-H7qv3hrKhBjDxslP0__P4GKAWYSR9jR0c6tPnRJTEQTGk3AOyxuMSqwR2cBN_vQlw-GF-amq"/>
+<span class="absolute bottom-1 left-1 bg-primary/80 backdrop-blur-sm text-on-primary text-[9px] font-bold px-1 rounded">LEA-4820</span>
+</div>
+<!-- Main Details -->
+<div class="flex-1 min-w-0 flex flex-col justify-between">
+<div>
+<div class="flex items-start justify-between gap-1">
+<h3 class="text-title-md font-title-md font-bold text-on-surface truncate">Honda Civic 2021</h3>
+<span class="inline-flex items-center text-[10px] font-bold text-tertiary-fixed-dim bg-tertiary-container px-1.5 py-0.5 rounded">Active</span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-[13px]" data-icon="person">person</span>
+                    Ahmed Khan <span class="text-outline text-[11px]">(35201-*****-1)</span>
+</p>
+</div>
+<!-- Return Timer Pill -->
+<div class="flex items-center gap-1.5 text-label-sm font-label-sm font-semibold text-secondary-container bg-secondary-fixed/30 px-2 py-0.5 rounded-full w-fit">
+<span class="material-symbols-outlined text-[12px]" data-icon="schedule">schedule</span>
+                  2h 45m remaining (6:00 PM)
+                </div>
+</div>
+</div>
+<!-- Verification & Action Row -->
+<div class="pt-2 border-t border-surface-container-high flex items-center justify-between gap-2">
+<span class="inline-flex items-center gap-1 text-[11px] text-tertiary-fixed-dim font-bold bg-tertiary-container/30 px-2 py-1 rounded-md">
+<span class="material-symbols-outlined text-[12px]" data-icon="verified_user">verified_user</span>
+                Handover Verified
+              </span>
+<div class="flex items-center gap-1.5">
+<button aria-label="Track GPS" class="px-2.5 py-1 bg-surface-container-low text-primary text-label-sm font-label-sm rounded-full font-bold flex items-center gap-1 active:scale-95 transition-transform duration-150" type="button">
+<span class="material-symbols-outlined text-[14px]" data-icon="near_me">near_me</span>
+                  GPS
+                </button>
+<button aria-label="Call Renter" class="px-2.5 py-1 bg-surface-container-low text-primary text-label-sm font-label-sm rounded-full font-bold flex items-center gap-1 active:scale-95 transition-transform duration-150" type="button">
+<span class="material-symbols-outlined text-[14px]" data-icon="call">call</span>
+                  Call
+                </button>
+<button class="px-2.5 py-1 bg-primary text-on-primary text-label-sm font-label-sm rounded-full font-bold active:scale-95 transition-transform duration-150" type="button">
+                  Extend
+                </button>
+</div>
+</div>
+</article>
+<!-- Rental Card 2: Toyota Corolla 2022 -->
+<article class="bg-surface-container-lowest rounded-xl border border-surface-container-high shadow-sm p-space-sm flex flex-col gap-3">
+<div class="flex gap-space-sm">
+<!-- Vehicle Thumbnail with Placeholder URL & Strict descriptive Prompt -->
+<div class="relative w-24 h-20 rounded-lg overflow-hidden flex-shrink-0 bg-surface-container-low border border-surface-container">
+<img class="w-full h-full object-cover" data-alt="A pristine white metallic Toyota Corolla 2022 parked inside a bright, modern executive car rental depot. The lighting is crisp and diffuse, reflecting softly off the polished showroom floor. The vehicle displays sharp automotive contours with deep blue and warm accents in the clean background. The atmosphere is professional, organized, and authoritative." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBrAqjq0k81jbFejsTWSp1v7RoPLhnN38y7nP98H5EsRy_WVsTuFlT2Kf1eYfoeSkM3VKJ9UeiLH-W8KMUaOIva8jvyntdTEomIF7RRUDoVlwX8eC_FN_Mao33pNdx5WApkAMULem8iNM6DY_ts2RrBZVhJHgmv6Dwgp5gx5flJDXuJTV98UDkiL-O-vrmmoQoS7hvPHA6lwTZffeOeRl1lXKPUfPLVuIEuZg8JJ4yhdSn-cy0AwhYLTaCzS3UEsIJlG9fT8QBihbwm"/>
+<span class="absolute bottom-1 left-1 bg-primary/80 backdrop-blur-sm text-on-primary text-[9px] font-bold px-1 rounded">ICT-9912</span>
+</div>
+<!-- Main Details -->
+<div class="flex-1 min-w-0 flex flex-col justify-between">
+<div>
+<div class="flex items-start justify-between gap-1">
+<h3 class="text-title-md font-title-md font-bold text-on-surface truncate">Toyota Corolla 2022</h3>
+<span class="inline-flex items-center text-[10px] font-bold text-primary bg-primary-fixed px-1.5 py-0.5 rounded">On Trip</span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-[13px]" data-icon="person">person</span>
+                    Usman Ali <span class="text-outline text-[11px]">(61101-*****-3)</span>
+</p>
+</div>
+<!-- Return Due -->
+<div class="flex items-center gap-1.5 text-label-sm font-label-sm font-medium text-on-surface-variant bg-surface-container px-2 py-0.5 rounded-full w-fit">
+<span class="material-symbols-outlined text-[12px]" data-icon="calendar_today">calendar_today</span>
+                  Due: Tomorrow 10:00 AM
+                </div>
+</div>
+</div>
+<!-- Verification & Deposit Row -->
+<div class="pt-2 border-t border-surface-container-high flex items-center justify-between gap-2">
+<span class="inline-flex items-center gap-1 text-[11px] text-tertiary-fixed-dim font-bold bg-tertiary-container/30 px-2 py-1 rounded-md">
+<span class="material-symbols-outlined text-[12px]" data-icon="security">security</span>
+                Deposit: PKR 15,000 Verified
+              </span>
+<div class="flex items-center gap-1.5">
+<button aria-label="Track GPS" class="px-2.5 py-1 bg-surface-container-low text-primary text-label-sm font-label-sm rounded-full font-bold flex items-center gap-1 active:scale-95 transition-transform duration-150" type="button">
+<span class="material-symbols-outlined text-[14px]" data-icon="near_me">near_me</span>
+                  GPS
+                </button>
+<button aria-label="Call Renter" class="px-2.5 py-1 bg-surface-container-low text-primary text-label-sm font-label-sm rounded-full font-bold flex items-center gap-1 active:scale-95 transition-transform duration-150" type="button">
+<span class="material-symbols-outlined text-[14px]" data-icon="call">call</span>
+                  Call
+                </button>
+</div>
+</div>
+</article>
+</div>
+</section>
+</div>
+<!-- Floating Docked Bottom Navigation Bar (Shared Components Mandate & Logic) -->
+<nav aria-label="Host Navigation" class="fixed bottom-0 left-0 w-full z-50 bg-surface-container-lowest text-primary shadow-lg flex justify-around items-center px-space-xs py-space-xs">
+<!-- Item 1: Dashboard (ACTIVE MATCH) -->
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-space-sm py-space-xxs active:scale-95 transition-transform duration-150" href="#dashboard">
+<span class="material-symbols-outlined text-[20px]" data-icon="dashboard" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="text-label-sm font-label-sm font-bold text-on-secondary">Dashboard</span>
+</a>
+<!-- Item 2: Requests -->
+<a class="relative flex flex-col items-center justify-center text-on-surface-variant px-space-xs py-space-xxs active:scale-95 transition-transform duration-150 hover:bg-surface-container-low rounded-lg" href="#requests">
+<span class="material-symbols-outlined text-[20px]" data-icon="inbox">inbox</span>
+<span class="text-label-sm font-label-sm">Requests</span>
+<span class="absolute top-0.5 right-1.5 w-4 h-4 bg-error text-on-error rounded-full text-[9px] font-bold flex items-center justify-center">3</span>
+</a>
+<!-- Item 3: Fleet -->
+<a class="relative flex flex-col items-center justify-center text-on-surface-variant px-space-xs py-space-xxs active:scale-95 transition-transform duration-150 hover:bg-surface-container-low rounded-lg" href="#fleet">
+<span class="material-symbols-outlined text-[20px]" data-icon="directions_car">directions_car</span>
+<span class="text-label-sm font-label-sm">Fleet</span>
+<span class="absolute top-0.5 right-1 px-1 bg-surface-container-highest text-primary rounded-full text-[8px] font-bold">18</span>
+</a>
+<!-- Item 4: Finance -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-space-xs py-space-xxs active:scale-95 transition-transform duration-150 hover:bg-surface-container-low rounded-lg" href="#finance">
+<span class="material-symbols-outlined text-[20px]" data-icon="payments">payments</span>
+<span class="text-label-sm font-label-sm">Finance</span>
+</a>
+<!-- Item 5: Profile -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-space-xs py-space-xxs active:scale-95 transition-transform duration-150 hover:bg-surface-container-low rounded-lg" href="#profile">
+<span class="material-symbols-outlined text-[20px]" data-icon="person">person</span>
+<span class="text-label-sm font-label-sm">Profile</span>
+</a>
+</nav>
+</main>
+</body></html>

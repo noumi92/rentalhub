@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RentalHub - Review &amp; Submit Request</title>
+<!-- Google Fonts & Material Symbols -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-container": "#eceef3",
+            "on-primary-fixed-variant": "#3d417e",
+            "primary-fixed-dim": "#bfc2ff",
+            "outline": "#777681",
+            "tertiary-fixed-dim": "#4edea3",
+            "primary": "#020246",
+            "on-surface-variant": "#464650",
+            "on-tertiary-fixed-variant": "#005236",
+            "surface": "#f7f9fe",
+            "inverse-surface": "#2d3135",
+            "secondary": "#a93800",
+            "on-error-container": "#93000a",
+            "inverse-primary": "#bfc2ff",
+            "error": "#ba1a1a",
+            "secondary-fixed-dim": "#ffb59b",
+            "on-secondary-container": "#501600",
+            "surface-dim": "#d8dadf",
+            "secondary-fixed": "#ffdbcf",
+            "surface-container-lowest": "#ffffff",
+            "on-secondary": "#ffffff",
+            "secondary-container": "#fd5a05",
+            "on-primary": "#ffffff",
+            "on-surface": "#181c20",
+            "on-secondary-fixed": "#380d00",
+            "on-tertiary": "#ffffff",
+            "inverse-on-surface": "#eff1f6",
+            "surface-tint": "#555998",
+            "on-tertiary-fixed": "#002113",
+            "primary-fixed": "#e0e0ff",
+            "tertiary-container": "#002b1b",
+            "on-primary-container": "#8386c9",
+            "on-secondary-fixed-variant": "#812900",
+            "on-primary-fixed": "#101251",
+            "error-container": "#ffdad6",
+            "tertiary-fixed": "#6ffbbe",
+            "tertiary": "#00130a",
+            "surface-container-highest": "#e0e2e7",
+            "outline-variant": "#c7c5d1",
+            "surface-container-low": "#f1f4f9",
+            "surface-variant": "#e0e2e7",
+            "on-error": "#ffffff",
+            "surface-bright": "#f7f9fe",
+            "on-tertiary-container": "#009f6e",
+            "on-background": "#181c20",
+            "background": "#f7f9fe",
+            "surface-container-high": "#e6e8ed",
+            "primary-container": "#1a1d5a"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-sm": "0.75rem",
+            "space-xxs": "0.25rem",
+            "space-md": "1rem",
+            "space-xs": "0.5rem",
+            "margin-lg": "1.5rem",
+            "space-3xl": "3rem",
+            "space-lg": "1.25rem",
+            "gutter": "1rem",
+            "space-xl": "1.5rem",
+            "space-2xl": "2rem",
+            "margin": "1rem",
+            "gutter-sm": "0.5rem"
+          },
+          "fontFamily": {
+            "headline-md": ["Plus Jakarta Sans"],
+            "label-lg": ["Plus Jakarta Sans"],
+            "headline-lg": ["Plus Jakarta Sans"],
+            "body-sm": ["Inter"],
+            "headline-sm": ["Plus Jakarta Sans"],
+            "body-lg": ["Inter"],
+            "title-md": ["Plus Jakarta Sans"],
+            "label-sm": ["Plus Jakarta Sans"],
+            "price-display": ["Plus Jakarta Sans"],
+            "label-md": ["Plus Jakarta Sans"],
+            "display-lg": ["Plus Jakarta Sans"],
+            "body-md": ["Inter"],
+            "headline-lg-mobile": ["Plus Jakarta Sans"]
+          },
+          "fontSize": {
+            "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "700" }],
+            "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "700" }],
+            "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "body-sm": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+            "headline-sm": ["16px", { "lineHeight": "24px", "fontWeight": "600" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+            "title-md": ["15px", { "lineHeight": "22px", "fontWeight": "600" }],
+            "label-sm": ["10px", { "lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "700" }],
+            "price-display": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+            "display-lg": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+            "headline-lg-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+  </style>
+</head>
+<body class="bg-surface font-body-md text-on-surface antialiased flex justify-center selection:bg-secondary selection:text-on-secondary min-h-screen">
+<!-- Mobile Shell (393px × 852px) -->
+<main class="w-full max-w-[420px] bg-background min-h-screen relative flex flex-col pb-36 shadow-2xl border-x border-outline-variant/30">
+<!-- Top Header & Android Status Bar -->
+<header class="bg-gradient-to-b from-primary to-primary-container text-on-primary rounded-b-[28px] shadow-md pt-3 pb-6 px-margin transition-all">
+<!-- Android Status Bar -->
+<div class="flex items-center justify-between text-on-primary/80 text-label-sm font-label-sm mb-3 px-1">
+<span class="tracking-tight font-medium">12:45 PM</span>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]" data-icon="wifi">wifi</span>
+<span class="material-symbols-outlined text-[16px]" data-icon="signal_cellular_4_bar">signal_cellular_4_bar</span>
+<span class="material-symbols-outlined text-[16px]" data-icon="battery_full">battery_full</span>
+</div>
+</div>
+<!-- TopAppBar Shared Component Blueprint Execution -->
+<div class="flex justify-between items-center w-full py-space-xs">
+<div class="flex items-center gap-3">
+<button aria-label="Go back" class="w-10 h-10 rounded-full bg-surface-container-lowest/10 hover:bg-surface-container-lowest/20 active:scale-95 transition-transform flex items-center justify-center text-on-primary backdrop-blur-sm" type="button">
+<span class="material-symbols-outlined text-[20px]" data-icon="arrow_back">arrow_back</span>
+</button>
+<div>
+<h1 class="text-headline-sm font-headline-sm font-bold text-on-primary leading-tight">Review Booking Request</h1>
+<p class="text-label-md font-label-md text-on-primary-container">Step 2 of 3 • Vendor Confirmation</p>
+</div>
+</div>
+<!-- Trailing Booking Reference Action Badge -->
+<div class="bg-surface-container-lowest/15 backdrop-blur-md px-2.5 py-1 rounded-full border border-surface-container-lowest/20">
+<span class="text-label-sm font-label-sm text-on-primary tracking-wider">BK-84920</span>
+</div>
+</div>
+</header>
+<!-- Main Content Flow -->
+<div class="px-margin flex flex-col gap-space-md mt-space-md">
+<!-- 1. Vehicle & Host Card -->
+<section class="bg-surface-container-lowest rounded-xl p-space-md border border-outline-variant/40 shadow-sm transition-all hover:shadow-md">
+<div class="flex gap-space-md items-start">
+<div class="relative w-28 h-20 rounded-lg overflow-hidden flex-shrink-0 bg-surface-container">
+<img alt="Honda Civic Oriel Red" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/AEtjO1W4zSEshPzA0Ga-NK5hdLynINrjp5w6Q8-aNOenVIgCCv_wvwKpHsHi3AkRVggQe4ZjjsmOl3fwjX8NYUjvWNu-ywIhaUo6-MSPDKPZylM1nEwSU76ePe2vLfA2WYM512Jy7BEqkSYmLK7cvIOx38CIBjoK_Urb2mKk9EM5e8qS6t0yVLE-H7qv3hrKhBjDxslP0__P4GKAWYSR9jR0c6tPnRJTEQTGk3AOyxuMSqwR2cBN_vQlw-GF-amq"/>
+<span class="absolute top-1.5 left-1.5 bg-tertiary-container/85 backdrop-blur-sm text-tertiary-fixed text-[9px] font-label-sm px-1.5 py-0.5 rounded-full uppercase tracking-wider flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[10px]" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+              Verified
+            </span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between">
+<h2 class="text-headline-sm font-headline-sm text-primary truncate">Honda Civic Oriel 2021</h2>
+</div>
+<div class="flex items-center gap-1.5 mt-0.5">
+<span class="material-symbols-outlined text-[14px] text-tertiary-container" data-icon="verified" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span class="text-body-sm font-body-sm text-on-surface-variant font-medium truncate">Al-Falah Rent a Car</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant text-[11px] mt-1">
+<span class="material-symbols-outlined text-[13px]" data-icon="location_on">location_on</span>
+<span class="truncate">Gulberg III, Lahore</span>
+</div>
+</div>
+</div>
+<div class="flex flex-wrap gap-1.5 mt-space-sm pt-space-xs border-t border-surface-container-high/60">
+<span class="bg-surface-container-low text-primary text-[11px] font-label-md px-2.5 py-1 rounded-full border border-outline-variant/30 flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]" data-icon="schedule">schedule</span>
+            3-Hour Package (City Errand)
+          </span>
+<span class="bg-surface-container-low text-primary text-[11px] font-label-md px-2.5 py-1 rounded-full border border-outline-variant/30 flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]" data-icon="steering_wheel_norm">directions_car</span>
+            Self-Drive
+          </span>
+<span class="bg-surface-container-low text-on-surface-variant text-[11px] font-label-md px-2.5 py-1 rounded-full border border-outline-variant/30">
+            Sedan • Auto
+          </span>
+</div>
+</section>
+<!-- 2. Rental Schedule Card -->
+<section class="bg-surface-container-lowest rounded-xl p-space-md border border-outline-variant/40 shadow-sm">
+<div class="flex items-center justify-between mb-space-sm">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-lg bg-primary-fixed flex items-center justify-center text-on-primary-fixed">
+<span class="material-symbols-outlined text-[16px]" data-icon="calendar_month">calendar_month</span>
+</div>
+<h3 class="text-headline-sm font-headline-sm text-primary">Trip Schedule</h3>
+</div>
+<button class="text-secondary text-label-md font-label-md flex items-center gap-0.5 hover:underline" type="button">
+<span>Edit</span>
+<span class="material-symbols-outlined text-[14px]" data-icon="edit">edit</span>
+</button>
+</div>
+<div class="space-y-3 bg-surface-container-low/70 rounded-lg p-space-sm border border-surface-container-high">
+<div class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-[18px] text-primary mt-0.5" data-icon="access_time">access_time</span>
+<div>
+<p class="text-label-md font-label-md text-on-surface">Tue, Oct 29, 2024</p>
+<p class="text-body-sm font-body-sm text-on-surface-variant">02:00 PM – 05:00 PM <span class="font-semibold text-primary">(3 Hours Duration)</span></p>
+</div>
+</div>
+<div class="h-[1px] bg-outline-variant/30"></div>
+<div class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-[18px] text-primary mt-0.5" data-icon="storefront">storefront</span>
+<div>
+<p class="text-label-md font-label-md text-on-surface">Pickup &amp; Return Location</p>
+<p class="text-body-sm font-body-sm text-on-surface-variant">Al-Falah Hub, Main Boulevard, Gulberg III, Lahore</p>
+</div>
+</div>
+</div>
+</section>
+<!-- 3. Price Breakdown Card -->
+<section class="bg-surface-container-lowest rounded-xl p-space-md border border-outline-variant/40 shadow-sm">
+<div class="flex items-center justify-between mb-space-sm">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-lg bg-primary-fixed flex items-center justify-center text-on-primary-fixed">
+<span class="material-symbols-outlined text-[16px]" data-icon="receipt_long">receipt_long</span>
+</div>
+<h3 class="text-headline-sm font-headline-sm text-primary">Price Summary</h3>
+</div>
+<span class="text-label-sm font-label-sm text-on-surface-variant bg-surface-container px-2 py-0.5 rounded-full">Pakistani Rupee</span>
+</div>
+<div class="space-y-2.5 text-body-md font-body-md text-on-surface">
+<div class="flex justify-between items-center">
+<span class="text-on-surface-variant">Base Rental Fee (3 Hours)</span>
+<span class="font-semibold text-primary">PKR 3,500</span>
+</div>
+<div class="flex justify-between items-center text-body-sm font-body-sm">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span>Guaranteed Mileage Allowance</span>
+<span class="material-symbols-outlined text-[14px] text-outline cursor-pointer" data-icon="help_outline">help_outline</span>
+</div>
+<span class="text-on-tertiary-container font-medium bg-tertiary-fixed/30 px-2 py-0.5 rounded text-[11px]">Up to 40 km included (Free)</span>
+</div>
+<div class="flex justify-between items-center text-body-sm font-body-sm">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span>Security Advance Deposit (Hold)</span>
+<span class="text-[10px] font-label-sm text-secondary bg-secondary-fixed/50 px-1.5 py-0.5 rounded">Payable upon approval</span>
+</div>
+<span class="font-semibold text-primary">PKR 1,000</span>
+</div>
+<div class="h-[1px] bg-outline-variant/40 my-2"></div>
+<div class="flex justify-between items-baseline pt-0.5">
+<span class="text-headline-sm font-headline-sm text-primary">Total Package Cost</span>
+<span class="text-price-display font-price-display text-primary">PKR 3,500</span>
+</div>
+<div class="bg-surface-container-low rounded-lg p-2.5 flex items-center justify-between mt-2 border border-surface-container-high">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-primary" data-icon="payments">payments</span>
+<span class="text-body-sm font-body-sm font-medium text-on-surface">Pay Due at Pickup</span>
+</div>
+<span class="text-label-lg font-label-lg text-primary bg-surface-container-lowest px-2.5 py-0.5 rounded shadow-sm">PKR 2,500</span>
+</div>
+</div>
+</section>
+<!-- 4. Advance Notice Callout Banner -->
+<section class="bg-[#FFF3EB] border border-[#FFD8BE] text-[#A33B00] rounded-xl p-3.5 flex items-start gap-3 shadow-sm">
+<span class="material-symbols-outlined text-[20px] text-secondary mt-0.5 flex-shrink-0" data-icon="shield">shield</span>
+<div class="flex-1">
+<h4 class="text-label-lg font-label-lg text-secondary">Advance Policy Guarantee</h4>
+<p class="text-body-sm font-body-sm text-[#812900] mt-1 leading-relaxed">
+            No payment is deducted right now. Once Al-Falah Rent a Car accepts your reservation, you will deposit PKR 1,000 via JazzCash/EasyPaisa to secure the vehicle.
+          </p>
+</div>
+</section>
+<!-- 5. Special Instructions / Notes Input -->
+<section class="bg-surface-container-lowest rounded-xl p-space-md border border-outline-variant/40 shadow-sm">
+<label class="block text-headline-sm font-headline-sm text-primary mb-1" for="host-notes">
+          Notes for Vehicle Host <span class="text-body-sm font-normal text-on-surface-variant">(Optional)</span>
+</label>
+<p class="text-body-sm font-body-sm text-on-surface-variant mb-space-xs">
+          Mention specific flight arrivals, custom pickup notes, or trip requests.
+        </p>
+<textarea class="w-full text-body-md font-body-md rounded-xl border-1.5 border-outline-variant/60 focus:border-primary focus:ring-1 focus:ring-primary placeholder:text-outline p-3 resize-none bg-surface-container-lowest text-on-surface" id="host-notes" placeholder="Add a message or flight/train delay notice for host..." rows="3"></textarea>
+<!-- Quick selection chips -->
+<div class="flex flex-wrap gap-1.5 mt-2.5">
+<button class="text-label-sm font-label-sm bg-surface-container hover:bg-surface-container-high text-on-surface-variant px-2.5 py-1 rounded-full transition-colors active:scale-95" type="button">
+            + Flight arrival
+          </button>
+<button class="text-label-sm font-label-sm bg-surface-container hover:bg-surface-container-high text-on-surface-variant px-2.5 py-1 rounded-full transition-colors active:scale-95" type="button">
+            + Late return possibility
+          </button>
+<button class="text-label-sm font-label-sm bg-surface-container hover:bg-surface-container-high text-on-surface-variant px-2.5 py-1 rounded-full transition-colors active:scale-95" type="button">
+            + Baby seat request
+          </button>
+</div>
+</section>
+<!-- 6. Host Cancellation & Trust Policy -->
+<section class="flex items-center gap-2.5 px-space-xs py-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px] text-tertiary-container flex-shrink-0" data-icon="policy">policy</span>
+<p class="text-body-sm font-body-sm leading-tight">
+<strong class="text-primary font-semibold">Free cancellation</strong> up to 2 hours prior to scheduled pickup time. Zero fee applied.
+        </p>
+</section>
+</div>
+<!-- Sticky Bottom Navigation Bar / Floating Action Dock -->
+<div class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[420px] bg-surface-container-lowest/95 backdrop-blur-md px-margin py-3.5 shadow-2xl border-t border-outline-variant/30 flex items-center justify-between z-50">
+<div class="flex flex-col">
+<span class="text-[11px] font-label-sm text-on-surface-variant uppercase tracking-wider">Estimated Total</span>
+<div class="flex items-baseline gap-1">
+<span class="text-headline-md font-headline-md text-primary font-bold">PKR 3,500</span>
+</div>
+<span class="text-[10px] font-label-sm text-secondary font-medium">PKR 1,000 advance on approval</span>
+</div>
+<button class="bg-secondary-container hover:bg-secondary active:scale-95 text-on-secondary font-label-lg text-label-lg py-3.5 px-5 rounded-xl flex items-center gap-2 shadow-lg shadow-orange-500/25 transition-all" type="button">
+<span>Send Request to Host</span>
+<span class="material-symbols-outlined text-[18px]" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</main>
+<script>
+    // Lightweight micro-interaction for quick message chips
+    document.querySelectorAll('button[class*="rounded-full"]').forEach(chip => {
+      chip.addEventListener('click', function(e) {
+        const textarea = document.getElementById('host-notes');
+        if (textarea && this.innerText.startsWith('+')) {
+          const textToAdd = this.innerText.replace('+', '').trim();
+          if (textarea.value) {
+            textarea.value += ', ' + textToAdd;
+          } else {
+            textarea.value = textToAdd;
+          }
+          textarea.focus();
+        }
+      });
+    });
+  </script>
+</body></html>

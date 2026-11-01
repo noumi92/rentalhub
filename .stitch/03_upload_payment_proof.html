@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RentalHub - Upload Payment Proof</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts: Plus Jakarta Sans & Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-tint": "#555998",
+            "on-secondary-container": "#501600",
+            "on-secondary-fixed-variant": "#812900",
+            "on-error": "#ffffff",
+            "secondary-fixed": "#ffdbcf",
+            "tertiary-fixed-dim": "#4edea3",
+            "inverse-surface": "#2d3135",
+            "outline-variant": "#c7c5d1",
+            "surface-dim": "#d8dadf",
+            "tertiary": "#00130a",
+            "tertiary-container": "#002b1b",
+            "surface-container": "#eceef3",
+            "on-tertiary-fixed": "#002113",
+            "secondary-container": "#fd5a05",
+            "secondary": "#a93800",
+            "on-primary": "#ffffff",
+            "inverse-primary": "#bfc2ff",
+            "surface-container-high": "#e6e8ed",
+            "primary-fixed": "#e0e0ff",
+            "primary": "#020246",
+            "on-tertiary": "#ffffff",
+            "background": "#f7f9fe",
+            "surface-container-highest": "#e0e2e7",
+            "tertiary-fixed": "#6ffbbe",
+            "error-container": "#ffdad6",
+            "surface-variant": "#e0e2e7",
+            "surface-container-low": "#f1f4f9",
+            "on-tertiary-container": "#009f6e",
+            "secondary-fixed-dim": "#ffb59b",
+            "primary-container": "#1a1d5a",
+            "on-primary-fixed": "#101251",
+            "on-error-container": "#93000a",
+            "on-primary-container": "#8386c9",
+            "outline": "#777681",
+            "primary-fixed-dim": "#bfc2ff",
+            "on-surface": "#181c20",
+            "on-background": "#181c20",
+            "surface": "#f7f9fe",
+            "on-secondary": "#ffffff",
+            "surface-bright": "#f7f9fe",
+            "on-surface-variant": "#464650",
+            "error": "#ba1a1a",
+            "on-secondary-fixed": "#380d00",
+            "inverse-on-surface": "#eff1f6",
+            "on-tertiary-fixed-variant": "#005236",
+            "surface-container-lowest": "#ffffff",
+            "on-primary-fixed-variant": "#3d417e"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-2xl": "2rem",
+            "gutter-sm": "0.5rem",
+            "margin": "1rem",
+            "space-md": "1rem",
+            "margin-lg": "1.5rem",
+            "space-lg": "1.25rem",
+            "gutter": "1rem",
+            "space-xl": "1.5rem",
+            "space-sm": "0.75rem",
+            "space-3xl": "3rem",
+            "space-xs": "0.5rem",
+            "space-xxs": "0.25rem"
+          },
+          "fontFamily": {
+            "headline-sm": ["Plus Jakarta Sans"],
+            "title-md": ["Plus Jakarta Sans"],
+            "headline-lg": ["Plus Jakarta Sans"],
+            "display-lg": ["Plus Jakarta Sans"],
+            "label-md": ["Plus Jakarta Sans"],
+            "headline-md": ["Plus Jakarta Sans"],
+            "price-display": ["Plus Jakarta Sans"],
+            "label-lg": ["Plus Jakarta Sans"],
+            "headline-lg-mobile": ["Plus Jakarta Sans"],
+            "label-sm": ["Plus Jakarta Sans"],
+            "body-sm": ["Inter"],
+            "body-lg": ["Inter"],
+            "body-md": ["Inter"]
+          },
+          "fontSize": {
+            "headline-sm": ["16px", { "lineHeight": "24px", "fontWeight": "600" }],
+            "title-md": ["15px", { "lineHeight": "22px", "fontWeight": "600" }],
+            "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "display-lg": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "700" }],
+            "price-display": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "700" }],
+            "headline-lg-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "label-sm": ["10px", { "lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "700" }],
+            "body-sm": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+            "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    /* Hide scrollbars smoothly for native mobile look */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface antialiased flex justify-center items-center min-h-screen py-0 sm:py-6 selection:bg-secondary/20">
+<!-- Mobile Device Frame Container (393px × 852px viewport) -->
+<div class="relative w-full max-w-[393px] h-[852px] bg-background flex flex-col overflow-hidden sm:rounded-[40px] sm:shadow-2xl sm:border-[6px] sm:border-primary-container/20">
+<!-- Top Navigation Anchor (Shared Component: TopAppBar with Curved Bottom & Status Bar) -->
+<header class="bg-primary-container text-on-primary rounded-b-[28px] shadow-md flex-shrink-0 z-30 relative overflow-hidden">
+<!-- Ambient subtle background glow -->
+<div class="absolute -top-16 -right-16 w-44 h-44 bg-surface-tint/20 rounded-full blur-2xl pointer-events-none"></div>
+<!-- Android System Status Bar Simulation -->
+<div class="flex justify-between items-center px-margin pt-space-xs text-on-primary/80 font-label-md text-label-md">
+<span>12:45 PM</span>
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[16px]">wifi</span>
+<span class="material-symbols-outlined text-[16px]">signal_cellular_alt</span>
+<span class="material-symbols-outlined text-[16px]">battery_full</span>
+</div>
+</div>
+<!-- App Header Bar Content -->
+<div class="flex justify-between items-center w-full px-margin py-space-sm">
+<button aria-label="Go back" class="w-10 h-10 rounded-full flex items-center justify-center text-on-primary hover:bg-primary-container/20 active:scale-95 transition-transform duration-150" type="button">
+<span class="material-symbols-outlined text-[24px]">arrow_back</span>
+</button>
+<!-- Brand / Screen Anchor Title -->
+<div class="flex-1 text-center px-space-xs">
+<h1 class="font-headline-sm text-headline-sm font-bold text-on-primary leading-tight">Advance Payment</h1>
+<p class="font-body-sm text-body-sm text-on-primary-container">Verification &amp; Booking Confirmation</p>
+</div>
+<!-- Trailing Booking Reference Pill -->
+<div class="flex items-center">
+<span class="font-label-md text-label-md bg-on-primary/10 text-on-primary px-space-xs py-space-xxs rounded-full border border-on-primary/20 backdrop-blur-sm">
+            BK-7892
+          </span>
+</div>
+</div>
+<!-- Prominent Booking Meta Info Badge -->
+<div class="px-margin pb-space-md pt-space-xxs flex justify-center">
+<div class="inline-flex items-center gap-space-xs bg-surface-container-lowest/10 backdrop-blur-md border border-surface-container-lowest/20 rounded-full px-space-md py-space-xxs">
+<span class="material-symbols-outlined text-secondary-fixed text-[16px]" style="font-variation-settings: 'FILL' 1;">confirmation_number</span>
+<span class="font-label-md text-label-md font-bold text-on-primary tracking-wide">Booking #RH-84920</span>
+<span class="w-1.5 h-1.5 rounded-full bg-secondary-fixed"></span>
+<span class="font-label-md text-label-md font-bold text-secondary-fixed">Rs 1,000 Advance</span>
+</div>
+</div>
+</header>
+<!-- Content Body (Scrollable canvas, 8pt spatial grid) -->
+<main class="flex-1 overflow-y-auto no-scrollbar px-margin py-space-md space-y-space-md">
+<!-- 1. Notice Banner (Soft warm warning/info container) -->
+<section aria-label="Deposit instructions" class="bg-secondary-fixed/30 border border-secondary-fixed-dim/70 rounded-xl p-space-md flex items-start gap-space-sm shadow-sm">
+<div class="w-8 h-8 rounded-full bg-secondary-container text-on-secondary flex items-center justify-center flex-shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">info</span>
+</div>
+<div class="flex-1">
+<p class="font-title-md text-title-md text-on-secondary-container font-bold mb-space-xxs">Reservation Hold Deposit</p>
+<p class="font-body-sm text-body-sm text-on-secondary-container leading-relaxed">
+            Please deposit the required advance of <strong class="font-bold">PKR 1,000</strong> to hold this vehicle reservation. Upload the transfer screenshot below for vendor verification.
+          </p>
+</div>
+</section>
+<!-- 2. Owner Bank & Wallet Accounts Card -->
+<section class="bg-surface-container-lowest rounded-xl border border-outline-variant/40 p-space-md shadow-sm space-y-space-md">
+<!-- Vendor Identification & Verified Operator Badge -->
+<div class="flex items-center justify-between border-b border-surface-container pb-space-sm">
+<div>
+<span class="font-label-sm text-label-sm text-outline tracking-wider block">PAY TO VEHICLE HOST</span>
+<div class="flex items-center gap-space-xs mt-space-xxs">
+<h2 class="font-headline-sm text-headline-sm font-bold text-primary">Al-Falah Rent a Car</h2>
+<span class="inline-flex items-center gap-space-xxs bg-tertiary-fixed/30 text-on-tertiary-container px-space-xs py-0.5 rounded-full border border-tertiary-fixed-dim/40">
+<span class="material-symbols-outlined text-[13px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span class="font-label-sm text-label-sm font-bold">VERIFIED</span>
+</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline text-[22px]">account_balance</span>
+</div>
+<div class="space-y-space-sm">
+<!-- JazzCash Option -->
+<div class="bg-surface-container-low rounded-xl p-space-sm border border-outline-variant/30 flex items-center justify-between hover:border-primary-container/40 transition-colors">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-container-lowest border border-outline-variant/40 flex items-center justify-center font-title-md font-bold text-secondary">
+                JC
+              </div>
+<div>
+<div class="flex items-center gap-space-xs">
+<span class="font-label-md text-label-md font-bold text-primary">JazzCash Wallet</span>
+<span class="text-on-surface-variant font-body-sm text-body-sm">(Muhammad Bilal)</span>
+</div>
+<div class="font-title-md text-title-md font-bold text-on-surface tracking-wider mt-0.5" id="jazzcash-num">
+                  0300-1234567
+                </div>
+</div>
+</div>
+<button class="inline-flex items-center gap-space-xxs bg-surface-container-lowest border border-outline-variant/50 hover:bg-surface-container-high active:scale-95 text-primary rounded-full px-space-sm py-space-xs transition-all" onclick="copyText('03001234567', this)" type="button">
+<span class="material-symbols-outlined text-[15px]">content_copy</span>
+<span class="font-label-md text-label-md font-bold">Copy</span>
+</button>
+</div>
+<!-- EasyPaisa Option -->
+<div class="bg-surface-container-low rounded-xl p-space-sm border border-outline-variant/30 flex items-center justify-between hover:border-primary-container/40 transition-colors">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-container-lowest border border-outline-variant/40 flex items-center justify-center font-title-md font-bold text-on-tertiary-container">
+                EP
+              </div>
+<div>
+<div class="flex items-center gap-space-xs">
+<span class="font-label-md text-label-md font-bold text-primary">EasyPaisa Wallet</span>
+<span class="text-on-surface-variant font-body-sm text-body-sm">(Muhammad Bilal)</span>
+</div>
+<div class="font-title-md text-title-md font-bold text-on-surface tracking-wider mt-0.5" id="easypaisa-num">
+                  0333-9876543
+                </div>
+</div>
+</div>
+<button class="inline-flex items-center gap-space-xxs bg-surface-container-lowest border border-outline-variant/50 hover:bg-surface-container-high active:scale-95 text-primary rounded-full px-space-sm py-space-xs transition-all" onclick="copyText('03339876543', this)" type="button">
+<span class="material-symbols-outlined text-[15px]">content_copy</span>
+<span class="font-label-md text-label-md font-bold">Copy</span>
+</button>
+</div>
+<!-- Meezan Bank Option -->
+<div class="bg-surface-container-low rounded-xl p-space-sm border border-outline-variant/30 space-y-space-xs hover:border-primary-container/40 transition-colors">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-container-lowest border border-outline-variant/40 flex items-center justify-center font-title-md font-bold text-primary">
+                  MB
+                </div>
+<div>
+<div class="flex items-center gap-space-xs">
+<span class="font-label-md text-label-md font-bold text-primary">Meezan Bank</span>
+<span class="text-on-surface-variant font-body-sm text-body-sm">(Al-Falah Motors)</span>
+</div>
+<div class="font-body-md text-body-md font-semibold text-on-surface">
+                    A/C: 01020304050607
+                  </div>
+</div>
+</div>
+<button class="inline-flex items-center gap-space-xxs bg-surface-container-lowest border border-outline-variant/50 hover:bg-surface-container-high active:scale-95 text-primary rounded-full px-space-sm py-space-xs transition-all" onclick="copyText('01020304050607', this)" type="button">
+<span class="material-symbols-outlined text-[15px]">content_copy</span>
+<span class="font-label-md text-label-md font-bold">Copy</span>
+</button>
+</div>
+<div class="pt-space-xs border-t border-outline-variant/20 flex items-center justify-between text-on-surface-variant">
+<div class="truncate mr-2">
+<span class="font-label-sm text-label-sm text-outline block">IBAN NUMBER</span>
+<span class="font-body-sm text-body-sm font-semibold text-on-surface font-mono">PK45MEZN0001020304050607</span>
+</div>
+<button aria-label="Copy IBAN" class="text-primary hover:text-secondary p-1 active:scale-95 transition-transform" onclick="copyText('PK45MEZN0001020304050607', this)" type="button">
+<span class="material-symbols-outlined text-[18px]">copy_all</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- 3. Screenshot Upload Card (Dashed dropzone) -->
+<section class="bg-surface-container-lowest rounded-xl border border-outline-variant/40 p-space-md shadow-sm">
+<label class="block font-label-md text-label-md text-primary font-bold mb-space-xs flex items-center gap-space-xxs">
+<span class="material-symbols-outlined text-[18px] text-secondary">image</span>
+<span>Upload Payment Screenshot</span>
+<span class="text-error font-bold">*</span>
+</label>
+<!-- Dropzone interactive trigger -->
+<div class="cursor-pointer border-2 border-dashed border-primary/30 bg-surface-container-low hover:bg-surface-container transition-all duration-200 rounded-xl p-space-lg text-center flex flex-col items-center justify-center group relative overflow-hidden" id="dropzone" onclick="triggerFileInput()">
+<input accept="image/png, image/jpeg" class="hidden" id="fileInput" onchange="handleFileSelected(event)" type="file"/>
+<div class="flex flex-col items-center" id="upload-placeholder">
+<div class="w-14 h-14 rounded-full bg-primary/5 text-primary flex items-center justify-center mb-space-sm group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[30px]">cloud_upload</span>
+</div>
+<p class="font-headline-sm text-headline-sm text-primary font-bold">
+              Tap to upload receipt / screenshot
+            </p>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">
+              Select directly from your gallery
+            </p>
+<div class="mt-space-sm inline-flex items-center gap-space-xxs bg-surface-container-lowest px-space-sm py-0.5 rounded-full border border-outline-variant/30 text-outline font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px]">attach_file</span>
+<span>PNG, JPG up to 5MB</span>
+</div>
+</div>
+<!-- Uploaded state preview (hidden initially, toggleable) -->
+<div class="hidden flex-col items-center w-full" id="upload-preview">
+<div class="w-12 h-12 rounded-full bg-tertiary-fixed text-on-tertiary-fixed flex items-center justify-center mb-space-xs">
+<span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<span class="font-title-md text-title-md font-bold text-primary truncate max-w-[240px]" id="file-name">receipt_jazzcash_1000.jpg</span>
+<span class="font-body-sm text-body-sm text-on-tertiary-container font-semibold mt-0.5">Ready for submission</span>
+<button class="mt-space-xs font-label-sm text-label-sm text-error underline" onclick="event.stopPropagation(); resetFileUpload();" type="button">
+              Replace file
+            </button>
+</div>
+</div>
+</section>
+<!-- 4. Transaction ID (TxID) Input Field -->
+<section class="bg-surface-container-lowest rounded-xl border border-outline-variant/40 p-space-md shadow-sm">
+<label class="block font-label-md text-label-md text-primary font-bold mb-space-xs flex items-center justify-between" for="txid-input">
+<span class="flex items-center gap-space-xxs">
+<span class="material-symbols-outlined text-[18px] text-primary">pin</span>
+<span>Transaction Reference / TID</span>
+</span>
+<span class="font-label-sm text-label-sm text-outline font-normal">Optional</span>
+</label>
+<div class="relative">
+<input class="w-full bg-surface-container-low rounded-xl border border-outline-variant/40 focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 py-space-sm pl-space-md pr-10 font-body-md text-body-md text-on-surface placeholder:text-outline transition-all duration-150 outline-none" id="txid-input" placeholder="e.g. 2938472910" type="text"/>
+<div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-outline">
+<span class="material-symbols-outlined text-[20px]">tag</span>
+</div>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-space-xs flex items-center gap-space-xxs">
+<span class="material-symbols-outlined text-[15px] text-outline">help_outline</span>
+<span>Found in your bank/wallet SMS or receipt notification</span>
+</p>
+</section>
+<!-- 5. Security Reassurance Badge -->
+<div class="py-space-xs flex items-center justify-center gap-space-xs text-on-surface-variant text-center">
+<span class="material-symbols-outlined text-on-tertiary-container text-[18px]" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+<span class="font-label-md text-label-md font-semibold text-outline">100% Encrypted &amp; Protected by RentalHub Guarantee</span>
+</div>
+<!-- Spacing buffer to clear sticky bottom dock smoothly -->
+<div class="h-10"></div>
+</main>
+<!-- Bottom Sticky Dock (Docked primary transactional action) -->
+<div class="bg-surface-container-lowest/95 backdrop-blur-md border-t border-outline-variant/30 px-margin py-space-sm pb-space-md flex-shrink-0 z-40 shadow-[0_-8px_20px_rgba(2,2,70,0.06)]">
+<div class="flex items-center justify-between mb-space-xs px-1">
+<span class="font-label-sm text-label-sm text-outline">Total Advance to Pay:</span>
+<span class="font-price-display text-price-display font-extrabold text-primary">PKR 1,000</span>
+</div>
+<!-- Vibrant Sunset Orange CTA Button -->
+<button class="w-full bg-secondary-container text-on-secondary font-label-lg text-label-lg py-3.5 px-space-md rounded-full shadow-lg shadow-secondary-container/25 hover:bg-secondary active:scale-[0.98] transition-all duration-150 flex items-center justify-center gap-space-xs font-bold" id="submit-cta" onclick="simulateSubmission()" type="button">
+<span class="material-symbols-outlined text-[20px]">task_alt</span>
+<span>Submit Payment Proof for Approval</span>
+</button>
+</div>
+<!-- Notification Toast for Copy / Submission feedback -->
+<div class="absolute top-20 left-1/2 -translate-x-1/2 bg-inverse-surface text-inverse-on-surface px-space-md py-space-xs rounded-full font-label-md text-label-md shadow-lg pointer-events-none opacity-0 transition-opacity duration-300 z-50 flex items-center gap-space-xs" id="toast">
+<span class="material-symbols-outlined text-[16px] text-tertiary-fixed">check_circle</span>
+<span id="toast-msg">Copied to clipboard</span>
+</div>
+</div>
+<script>
+    function triggerFileInput() {
+      document.getElementById('fileInput').click();
+    }
+
+    function handleFileSelected(e) {
+      if (e.target.files && e.target.files[0]) {
+        const file = e.target.files[0];
+        document.getElementById('file-name').textContent = file.name;
+        document.getElementById('upload-placeholder').classList.add('hidden');
+        document.getElementById('upload-preview').classList.remove('hidden');
+        document.getElementById('dropzone').classList.remove('border-dashed');
+        document.getElementById('dropzone').classList.add('border-solid', 'border-on-tertiary-container/50', 'bg-tertiary-fixed/10');
+        showToast('Receipt attached successfully!');
+      }
+    }
+
+    function resetFileUpload() {
+      document.getElementById('fileInput').value = '';
+      document.getElementById('upload-preview').classList.add('hidden');
+      document.getElementById('upload-placeholder').classList.remove('hidden');
+      document.getElementById('dropzone').classList.add('border-dashed');
+      document.getElementById('dropzone').classList.remove('border-solid', 'border-on-tertiary-container/50', 'bg-tertiary-fixed/10');
+    }
+
+    function copyText(val, btnEl) {
+      navigator.clipboard.writeText(val).then(() => {
+        showToast(`Copied ${val} to clipboard`);
+        const originalText = btnEl.innerHTML;
+        btnEl.innerHTML = `<span class="material-symbols-outlined text-[15px] text-on-tertiary-container">done</span><span class="font-label-md text-label-md font-bold text-on-tertiary-container">Done</span>`;
+        setTimeout(() => {
+          btnEl.innerHTML = originalText;
+        }, 2000);
+      }).catch(() => {
+        showToast(`Copied to clipboard`);
+      });
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toast-msg');
+      toastMsg.textContent = message;
+      toast.classList.remove('opacity-0');
+      toast.classList.add('opacity-100');
+      setTimeout(() => {
+        toast.classList.remove('opacity-100');
+        toast.classList.add('opacity-0');
+      }, 2400);
+    }
+
+    function simulateSubmission() {
+      const cta = document.getElementById('submit-cta');
+      cta.disabled = true;
+      cta.innerHTML = `<span class="material-symbols-outlined text-[20px] animate-spin">progress_activity</span><span>Submitting Proof...</span>`;
+      setTimeout(() => {
+        cta.innerHTML = `<span class="material-symbols-outlined text-[20px]">check_circle</span><span>Proof Sent for Approval!</span>`;
+        cta.classList.remove('bg-secondary-container');
+        cta.classList.add('bg-tertiary-container', 'text-tertiary-fixed');
+        showToast('Payment submitted! Awaiting host confirmation.');
+      }, 1500);
+    }
+  </script>
+</body></html>

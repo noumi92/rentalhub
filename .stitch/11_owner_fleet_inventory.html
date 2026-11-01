@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RentalHub - Garage Fleet Inventory</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS v3 -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "secondary-fixed-dim": "#ffb59b",
+            "error": "#ba1a1a",
+            "tertiary-container": "#002b1b",
+            "error-container": "#ffdad6",
+            "surface-tint": "#555998",
+            "on-primary": "#ffffff",
+            "tertiary-fixed-dim": "#4edea3",
+            "outline-variant": "#c7c5d1",
+            "background": "#f7f9fe",
+            "on-primary-fixed": "#101251",
+            "tertiary": "#00130a",
+            "on-secondary-fixed-variant": "#812900",
+            "inverse-on-surface": "#eff1f6",
+            "on-secondary": "#ffffff",
+            "surface-variant": "#e0e2e7",
+            "on-tertiary": "#ffffff",
+            "secondary": "#a93800",
+            "on-tertiary-fixed": "#002113",
+            "on-surface": "#181c20",
+            "on-background": "#181c20",
+            "on-error": "#ffffff",
+            "primary": "#020246",
+            "outline": "#777681",
+            "on-primary-fixed-variant": "#3d417e",
+            "secondary-container": "#fd5a05",
+            "inverse-surface": "#2d3135",
+            "on-secondary-fixed": "#380d00",
+            "on-error-container": "#93000a",
+            "surface-dim": "#d8dadf",
+            "surface-bright": "#f7f9fe",
+            "secondary-fixed": "#ffdbcf",
+            "tertiary-fixed": "#6ffbbe",
+            "primary-container": "#1a1d5a",
+            "primary-fixed-dim": "#bfc2ff",
+            "surface-container-high": "#e6e8ed",
+            "on-surface-variant": "#464650",
+            "on-tertiary-fixed-variant": "#005236",
+            "inverse-primary": "#bfc2ff",
+            "surface-container-low": "#f1f4f9",
+            "on-tertiary-container": "#009f6e",
+            "on-primary-container": "#8386c9",
+            "surface-container-highest": "#e0e2e7",
+            "surface": "#f7f9fe",
+            "on-secondary-container": "#501600",
+            "surface-container-lowest": "#ffffff",
+            "primary-fixed": "#e0e0ff",
+            "surface-container": "#eceef3"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "gutter-sm": "0.5rem",
+            "margin-lg": "1.5rem",
+            "space-md": "1rem",
+            "space-sm": "0.75rem",
+            "space-xxs": "0.25rem",
+            "space-xl": "1.5rem",
+            "gutter": "1rem",
+            "space-2xl": "2rem",
+            "space-xs": "0.5rem",
+            "margin": "1rem",
+            "space-3xl": "3rem",
+            "space-lg": "1.25rem"
+          },
+          "fontFamily": {
+            "label-lg": ["Plus Jakarta Sans"],
+            "label-md": ["Plus Jakarta Sans"],
+            "title-md": ["Plus Jakarta Sans"],
+            "label-sm": ["Plus Jakarta Sans"],
+            "headline-md": ["Plus Jakarta Sans"],
+            "price-display": ["Plus Jakarta Sans"],
+            "body-md": ["Inter"],
+            "headline-lg": ["Plus Jakarta Sans"],
+            "display-lg": ["Plus Jakarta Sans"],
+            "body-sm": ["Inter"],
+            "body-lg": ["Inter"],
+            "headline-lg-mobile": ["Plus Jakarta Sans"],
+            "headline-sm": ["Plus Jakarta Sans"]
+          },
+          "fontSize": {
+            "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "700" }],
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+            "title-md": ["15px", { "lineHeight": "22px", "fontWeight": "600" }],
+            "label-sm": ["10px", { "lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "700" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "700" }],
+            "price-display": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+            "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "display-lg": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "body-sm": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+            "headline-lg-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "headline-sm": ["16px", { "lineHeight": "24px", "fontWeight": "600" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    /* Hide scrollbar for neat horizontal scroll */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface antialiased min-h-screen flex justify-center selection:bg-secondary-fixed selection:text-on-secondary-fixed">
+<!-- Mobile Viewport Canvas Container (393px typical Android / max-w-md responsive) -->
+<main class="w-full max-w-[420px] bg-background min-h-screen flex flex-col relative pb-28 shadow-2xl">
+<!-- Top Status Bar Simulation -->
+<div class="bg-[#16194F] px-space-md pt-2 pb-1 flex justify-between items-center text-white/80 font-label-sm text-label-sm tracking-wider">
+<span>09:41</span>
+<div class="flex items-center space-x-1.5">
+<span class="material-symbols-outlined text-[14px]">signal_cellular_alt</span>
+<span class="material-symbols-outlined text-[14px]">wifi</span>
+<span class="material-symbols-outlined text-[14px]">battery_full</span>
+</div>
+</div>
+<!-- Anchor Header (TopAppBar JSON Execution & Design Specifications) -->
+<header class="bg-gradient-to-b from-[#16194F] to-[#1B1E5C] text-on-primary rounded-b-[28px] shadow-lg pt-space-sm pb-space-lg px-space-md relative z-20">
+<!-- Top Action Bar Row -->
+<div class="flex justify-between items-center mb-space-sm">
+<div class="flex items-center space-x-2">
+<button aria-label="Menu" class="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 active:scale-[0.98] transition-all">
+<span class="material-symbols-outlined text-white text-[20px]">directions_car</span>
+</button>
+<div class="flex flex-col">
+<h1 class="font-headline-md text-headline-md tracking-tight text-white leading-tight">18 Registered Vehicles</h1>
+<p class="font-body-sm text-body-sm text-primary-fixed-dim opacity-90">Al-Falah Rent a Car • Lahore</p>
+</div>
+</div>
+<!-- + Add Car Action Button -->
+<button class="bg-[#F95700] hover:bg-secondary text-white font-label-md text-label-md px-3.5 py-2 rounded-full shadow-md flex items-center space-x-1 active:scale-[0.98] transition-transform">
+<span class="font-bold">+ Add Car</span>
+</button>
+</div>
+<!-- Integrated Search & Filter Row inside Header -->
+<div class="mt-space-md flex items-center space-x-2">
+<div class="relative flex-1">
+<span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-white/50 text-[20px]">search</span>
+<input class="w-full bg-white/10 text-white placeholder-white/50 font-body-sm text-body-sm pl-10 pr-3 py-2.5 rounded-full border border-white/15 focus:outline-none focus:ring-2 focus:ring-[#F95700] focus:bg-white/15 transition-all" placeholder="Search make, model, plate LEA..." type="text"/>
+</div>
+<button aria-label="Filters" class="w-10 h-10 rounded-full bg-white/10 border border-white/15 flex items-center justify-center text-white hover:bg-white/20 active:scale-[0.98] transition-all">
+<span class="material-symbols-outlined text-[20px]">tune</span>
+</button>
+</div>
+</header>
+<!-- Horizontal Status Filter Chips -->
+<section class="px-space-md pt-space-md pb-space-xs no-scrollbar flex items-center space-x-2 overflow-x-auto">
+<!-- Active Chip: All (18) -->
+<button class="flex-shrink-0 px-4 py-2 rounded-full bg-[#16194F] text-white font-label-md text-label-md shadow-sm active:scale-[0.98] transition-transform">
+        All (18)
+      </button>
+<!-- Available (4) -->
+<button class="flex-shrink-0 px-3.5 py-2 rounded-full bg-surface-container-lowest border border-outline-variant text-on-surface-variant font-label-md text-label-md flex items-center space-x-1.5 shadow-sm active:scale-[0.98] transition-transform">
+<span class="w-2 h-2 rounded-full bg-[#10B981]"></span>
+<span>Available (4)</span>
+</button>
+<!-- Rented Out (14) -->
+<button class="flex-shrink-0 px-3.5 py-2 rounded-full bg-surface-container-lowest border border-outline-variant text-on-surface-variant font-label-md text-label-md flex items-center space-x-1.5 shadow-sm active:scale-[0.98] transition-transform">
+<span class="w-2 h-2 rounded-full bg-[#F95700]"></span>
+<span>Rented Out (14)</span>
+</button>
+<!-- Maintenance (0) -->
+<button class="flex-shrink-0 px-3.5 py-2 rounded-full bg-surface-container-low border border-outline-variant text-outline font-label-md text-label-md flex items-center space-x-1.5 opacity-70">
+<span class="w-2 h-2 rounded-full bg-outline"></span>
+<span>Maintenance (0)</span>
+</button>
+</section>
+<!-- Fleet Inventory Cards Feed -->
+<section class="px-space-md pt-space-xs space-y-4 flex-1">
+<!-- CARD 1: Honda Civic Oriel (Active Rental) with Prompted Image Asset Reference -->
+<article class="bg-surface-container-lowest rounded-2xl border border-outline-variant/60 shadow-sm overflow-hidden flex flex-col transition-all hover:shadow-md">
+<!-- Vehicle Hero Photo Box -->
+<div class="relative w-full aspect-[16/9] bg-surface-container overflow-hidden">
+<img alt="Honda Civic Oriel 2021 in Rallye Red" class="w-full h-full object-cover object-center" src="https://lh3.googleusercontent.com/aida/AEtjO1W4zSEshPzA0Ga-NK5hdLynINrjp5w6Q8-aNOenVIgCCv_wvwKpHsHi3AkRVggQe4ZjjsmOl3fwjX8NYUjvWNu-ywIhaUo6-MSPDKPZylM1nEwSU76ePe2vLfA2WYM512Jy7BEqkSYmLK7cvIOx38CIBjoK_Urb2mKk9EM5e8qS6t0yVLE-H7qv3hrKhBjDxslP0__P4GKAWYSR9jR0c6tPnRJTEQTGk3AOyxuMSqwR2cBN_vQlw-GF-amq"/>
+<!-- Badges Overlay -->
+<div class="absolute top-2.5 left-2.5 flex items-center space-x-1.5">
+<span class="px-2.5 py-1 rounded-full bg-white/90 backdrop-blur-md font-label-sm text-label-sm font-bold text-on-primary-fixed uppercase tracking-wider shadow-sm">
+              LEA-4820
+            </span>
+<span class="px-2.5 py-1 rounded-full bg-[#F95700] text-white font-label-sm text-label-sm font-bold flex items-center space-x-1 shadow-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+<span>RENTED OUT</span>
+</span>
+</div>
+<div class="absolute top-2.5 right-2.5">
+<span class="px-2.5 py-1 rounded-full bg-[#16194F]/80 backdrop-blur-md text-white font-label-sm text-label-sm flex items-center space-x-1">
+<span class="material-symbols-outlined text-[13px] text-[#10B981]">sensors</span>
+<span>GPS Active</span>
+</span>
+</div>
+<!-- Price Badge Bottom Right -->
+<div class="absolute bottom-2.5 right-2.5 px-3 py-1 rounded-lg bg-[#16194F]/90 backdrop-blur-md text-white">
+<span class="font-price-display text-[15px] font-bold">PKR 9,000</span>
+<span class="font-body-sm text-[11px] text-primary-fixed-dim">/day</span>
+</div>
+</div>
+<!-- Card Body Content -->
+<div class="p-space-md flex flex-col space-y-3">
+<div class="flex justify-between items-start">
+<div>
+<h2 class="font-headline-sm text-headline-sm text-primary font-bold">Honda Civic Oriel 2021</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant flex items-center space-x-1.5 mt-0.5">
+<span>1.8L i-VTEC</span>
+<span>•</span>
+<span>Sunroof</span>
+<span>•</span>
+<span>Automatic</span>
+</p>
+</div>
+<button aria-label="More options" class="w-8 h-8 rounded-full hover:bg-surface-container flex items-center justify-center text-outline">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+<!-- Rental Ledger Strip -->
+<div class="bg-surface-container-low rounded-xl p-3 border border-outline-variant/40 space-y-2">
+<div class="flex items-center justify-between font-body-sm text-body-sm">
+<span class="text-on-surface-variant flex items-center space-x-1">
+<span class="material-symbols-outlined text-[16px] text-primary">person</span>
+<span class="font-medium text-on-surface">Ahmed Khan</span>
+</span>
+<span class="font-label-sm text-label-sm text-outline">CNIC: 35201-*****•1</span>
+</div>
+<div class="flex items-center justify-between pt-1 border-t border-outline-variant/30">
+<div class="flex items-center space-x-1 text-secondary font-label-md text-label-md">
+<span class="material-symbols-outlined text-[15px] text-[#F95700]">timer</span>
+<span>Due: Today, 6:00 PM</span>
+</div>
+<span class="px-2 py-0.5 rounded bg-secondary-fixed/50 text-[#812900] font-label-sm text-label-sm font-bold">
+                2h 45m left
+              </span>
+</div>
+</div>
+<!-- Quick Actions Footer -->
+<div class="grid grid-cols-2 gap-2 pt-1">
+<button class="py-2.5 px-3 rounded-full bg-[#16194F] hover:bg-primary-container text-white font-label-md text-label-md flex items-center justify-center space-x-1.5 shadow-sm active:scale-[0.98] transition-transform">
+<span class="material-symbols-outlined text-[16px]">navigation</span>
+<span>Live Tracker</span>
+</button>
+<button class="py-2.5 px-3 rounded-full border border-[#16194F] text-[#16194F] hover:bg-surface-container-high font-label-md text-label-md flex items-center justify-center space-x-1.5 active:scale-[0.98] transition-transform">
+<span class="material-symbols-outlined text-[16px]">call</span>
+<span>Contact Renter</span>
+</button>
+</div>
+</div>
+</article>
+<!-- CARD 2: Toyota Corolla Grande (Available Vehicle) -->
+<article class="bg-surface-container-lowest rounded-2xl border border-outline-variant/60 shadow-sm overflow-hidden flex flex-col transition-all hover:shadow-md">
+<!-- Vehicle Hero Photo Box -->
+<div class="relative w-full aspect-[16/9] bg-surface-container overflow-hidden">
+<img class="w-full h-full object-cover object-center" data-alt="A pristine white Toyota Corolla Grande sedan parked inside a clean modern automotive showroom in Lahore Pakistan. The car gleams under soft diffused high-key studio lighting with reflective floor tiles. The aesthetic is clean, professional, and corporate with subtle deep midnight blue accents reflecting off the metallic paint." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDCmD45BzdtT8Ge1fZihJiTLuRr8tsqRcoKy0b3pPvSTzJ6q9m9zI_RTO_XXEjgXWZCwUiq6DXCtDHQ8GmnB2waDebyG2lUGrc8sUB2wc9xsUbTgg34CIqgmGrMMJJ_ZJuKN5w4U_npCMR0Sy6nYCigKJKMq1IMYpdX81kbp4IFrQE3NBxFx957cnZGrzBW_vPtDNWY3QnjkEEu0B6JaMj-eWhxVswllsmKBs23pw-JlcBSoxj8qDG_JPHXUH3aQ4eUwPRa49np1ySO"/>
+<!-- Badges Overlay -->
+<div class="absolute top-2.5 left-2.5 flex items-center space-x-1.5">
+<span class="px-2.5 py-1 rounded-full bg-white/90 backdrop-blur-md font-label-sm text-label-sm font-bold text-on-primary-fixed uppercase tracking-wider shadow-sm">
+              ICT-9912
+            </span>
+<span class="px-2.5 py-1 rounded-full bg-[#10B981] text-white font-label-sm text-label-sm font-bold flex items-center space-x-1 shadow-sm">
+<span class="material-symbols-outlined text-[13px]" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span>AVAILABLE IN SHOP</span>
+</span>
+</div>
+<!-- Price Badge Bottom Right -->
+<div class="absolute bottom-2.5 right-2.5 px-3 py-1 rounded-lg bg-[#16194F]/90 backdrop-blur-md text-white">
+<span class="font-price-display text-[15px] font-bold">PKR 8,500</span>
+<span class="font-body-sm text-[11px] text-primary-fixed-dim">/day</span>
+</div>
+</div>
+<!-- Card Body Content -->
+<div class="p-space-md flex flex-col space-y-3">
+<div class="flex justify-between items-start">
+<div>
+<h2 class="font-headline-sm text-headline-sm text-primary font-bold">Toyota Corolla Grande 2022</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant flex items-center space-x-1.5 mt-0.5">
+<span>1.8L Dual VVT-i</span>
+<span>•</span>
+<span>Automatic</span>
+<span>•</span>
+<span>Pearl White</span>
+</p>
+</div>
+<button aria-label="More options" class="w-8 h-8 rounded-full hover:bg-surface-container flex items-center justify-center text-outline">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+<!-- Facility Status Tag Row -->
+<div class="flex flex-wrap gap-1.5">
+<span class="px-2.5 py-1 rounded-lg bg-surface-container text-on-surface-variant font-label-sm text-label-sm flex items-center space-x-1">
+<span class="material-symbols-outlined text-[14px] text-primary">garage</span>
+<span>Garage: Gulberg III</span>
+</span>
+<span class="px-2.5 py-1 rounded-lg bg-surface-container text-on-surface-variant font-label-sm text-label-sm flex items-center space-x-1">
+<span class="material-symbols-outlined text-[14px] text-on-tertiary-container">verified</span>
+<span>Cleaned &amp; Inspected</span>
+</span>
+<span class="px-2.5 py-1 rounded-lg bg-surface-container text-on-surface-variant font-label-sm text-label-sm flex items-center space-x-1">
+<span class="material-symbols-outlined text-[14px] text-outline">local_gas_station</span>
+<span>Tank Full</span>
+</span>
+</div>
+<!-- Quick Actions Footer -->
+<div class="grid grid-cols-2 gap-2 pt-1">
+<button class="py-2.5 px-3 rounded-full bg-[#F95700] hover:bg-secondary text-white font-label-md text-label-md flex items-center justify-center space-x-1.5 shadow-sm active:scale-[0.98] transition-transform">
+<span class="material-symbols-outlined text-[16px]">key</span>
+<span>Walk-in Rent</span>
+</button>
+<button class="py-2.5 px-3 rounded-full border border-outline text-on-surface-variant hover:bg-surface-container-high font-label-md text-label-md flex items-center justify-center space-x-1.5 active:scale-[0.98] transition-transform">
+<span class="material-symbols-outlined text-[16px]">tune</span>
+<span>Edit Rates</span>
+</button>
+</div>
+</div>
+</article>
+<!-- CARD 3: Suzuki Alto VXL (Rented Out Vehicle) -->
+<article class="bg-surface-container-lowest rounded-2xl border border-outline-variant/60 shadow-sm overflow-hidden flex flex-col transition-all hover:shadow-md">
+<!-- Vehicle Hero Photo Box -->
+<div class="relative w-full aspect-[16/9] bg-surface-container overflow-hidden">
+<img class="w-full h-full object-cover object-center" data-alt="A modern metallic silver Suzuki Alto city car photographed outdoors on an urban boulevard in Islamabad under bright morning light. The vehicle is sharp, clean, and in mint condition with a sharp depth of field emphasizing executive reliability and everyday commercial fleet utility with deep navy accents in the background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZwTUWs7lMTjCzikNvqzBeM7eVtu5Jdr4nD3qY5K0ZJZ-Ak8QzfEyoDe1dn5Hd5tT5jqiixdUjGO8wY8kPMsThKIZRnb9CNGoCzKHEd-9FoTtbUMv4Z_qOlQCV9E467B8b2abEeaDm4BBEEbtG4XZgFCXih6tBuWTo8tX4Lf80hWYbGCY5nAmCFswHayVglL0IlzRBa_FnOy6QutYBTA2FPtYQnq12tsik9byiKCyDBfc-AoBJJ15lGqOQ62AIwlSwHbMHA_w9oh4K"/>
+<!-- Badges Overlay -->
+<div class="absolute top-2.5 left-2.5 flex items-center space-x-1.5">
+<span class="px-2.5 py-1 rounded-full bg-white/90 backdrop-blur-md font-label-sm text-label-sm font-bold text-on-primary-fixed uppercase tracking-wider shadow-sm">
+              LHR-1029
+            </span>
+<span class="px-2.5 py-1 rounded-full bg-[#F95700] text-white font-label-sm text-label-sm font-bold flex items-center space-x-1 shadow-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-white"></span>
+<span>RENTED OUT</span>
+</span>
+</div>
+<!-- Price Badge Bottom Right -->
+<div class="absolute bottom-2.5 right-2.5 px-3 py-1 rounded-lg bg-[#16194F]/90 backdrop-blur-md text-white">
+<span class="font-price-display text-[15px] font-bold">PKR 3,500</span>
+<span class="font-body-sm text-[11px] text-primary-fixed-dim">/day</span>
+</div>
+</div>
+<!-- Card Body Content -->
+<div class="p-space-md flex flex-col space-y-3">
+<div class="flex justify-between items-start">
+<div>
+<h2 class="font-headline-sm text-headline-sm text-primary font-bold">Suzuki Alto VXL 2023</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant flex items-center space-x-1.5 mt-0.5">
+<span>660cc AGS</span>
+<span>•</span>
+<span>Silver Metallic</span>
+<span>•</span>
+<span>Economy Fleet</span>
+</p>
+</div>
+<button aria-label="More options" class="w-8 h-8 rounded-full hover:bg-surface-container flex items-center justify-center text-outline">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+<!-- Rental Ledger Strip -->
+<div class="bg-surface-container-low rounded-xl p-3 border border-outline-variant/40 space-y-2">
+<div class="flex items-center justify-between font-body-sm text-body-sm">
+<span class="text-on-surface-variant flex items-center space-x-1">
+<span class="material-symbols-outlined text-[16px] text-primary">person</span>
+<span class="font-medium text-on-surface">Usman Ali</span>
+</span>
+<span class="font-label-sm text-label-sm text-outline">Self-Drive City</span>
+</div>
+<div class="flex items-center justify-between pt-1 border-t border-outline-variant/30">
+<div class="flex items-center space-x-1 text-on-surface-variant font-label-md text-label-md">
+<span class="material-symbols-outlined text-[15px] text-outline">event</span>
+<span>Return: Tomorrow 10:00 AM</span>
+</div>
+<span class="px-2 py-0.5 rounded bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm font-semibold">
+                On Schedule
+              </span>
+</div>
+</div>
+<!-- Quick Actions Footer -->
+<div class="grid grid-cols-2 gap-2 pt-1">
+<button class="py-2.5 px-3 rounded-full bg-[#16194F] hover:bg-primary-container text-white font-label-md text-label-md flex items-center justify-center space-x-1.5 shadow-sm active:scale-[0.98] transition-transform">
+<span class="material-symbols-outlined text-[16px]">location_on</span>
+<span>Track GPS</span>
+</button>
+<button class="py-2.5 px-3 rounded-full border border-[#16194F] text-[#16194F] hover:bg-surface-container-high font-label-md text-label-md flex items-center justify-center space-x-1.5 active:scale-[0.98] transition-transform">
+<span class="material-symbols-outlined text-[16px]">description</span>
+<span>Agreement</span>
+</button>
+</div>
+</div>
+</article>
+</section>
+<!-- Floating Bottom Navigation Bar (Mandatory Shared Component JSON Alignment) -->
+<!-- Destination count: 5 | Labels: ["Dashboard", "Requests", "Fleet", "Finance", "Profile"] -->
+<!-- Active Tab: "Fleet" (Current intent matches Fleet Inventory management) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-space-sm py-space-xs shadow-lg bg-surface-container-lowest dark:bg-inverse-surface border-t border-outline-variant/40 max-w-[420px] mx-auto right-0">
+<!-- Item 1: Dashboard -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant px-space-xs py-space-xxs hover:text-primary transition-colors duration-150 active:scale-[0.98]" href="#dashboard">
+<span class="material-symbols-outlined text-[22px]">dashboard</span>
+<span class="font-label-sm text-label-sm mt-0.5">Dashboard</span>
+</a>
+<!-- Item 2: Requests (with badge '3') -->
+<a class="relative flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant px-space-xs py-space-xxs hover:text-primary transition-colors duration-150 active:scale-[0.98]" href="#requests">
+<div class="relative">
+<span class="material-symbols-outlined text-[22px]">notifications</span>
+<span class="absolute -top-1 -right-2 bg-[#F95700] text-white text-[9px] font-bold px-1.5 py-0.2 rounded-full leading-tight">3</span>
+</div>
+<span class="font-label-sm text-label-sm mt-0.5">Requests</span>
+</a>
+<!-- Item 3: Fleet (ACTIVE STATE strictly applied per JSON style_active_navigation) -->
+<a class="flex flex-col items-center justify-center bg-primary dark:bg-primary-container text-on-primary dark:text-on-primary-container rounded-full px-space-sm py-space-xxs shadow-md active:scale-[0.98] transition-transform" href="#fleet">
+<span class="material-symbols-outlined text-[22px]" data-weight="fill" style="font-variation-settings: 'FILL' 1;">directions_car</span>
+<span class="font-label-sm text-label-sm mt-0.5 font-bold">Fleet</span>
+</a>
+<!-- Item 4: Finance -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant px-space-xs py-space-xxs hover:text-primary transition-colors duration-150 active:scale-[0.98]" href="#finance">
+<span class="material-symbols-outlined text-[22px]">account_balance_wallet</span>
+<span class="font-label-sm text-label-sm mt-0.5">Finance</span>
+</a>
+<!-- Item 5: Profile -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant px-space-xs py-space-xxs hover:text-primary transition-colors duration-150 active:scale-[0.98]" href="#profile">
+<span class="material-symbols-outlined text-[22px]">person</span>
+<span class="font-label-sm text-label-sm mt-0.5">Profile</span>
+</a>
+</nav>
+</main>
+<script>
+    // Lightweight micro-interaction for status filter switching
+    document.querySelectorAll('section button').forEach(button => {
+      button.addEventListener('click', function() {
+        if (!this.innerText.includes('All') && !this.innerText.includes('Available') && !this.innerText.includes('Rented')) return;
+        // Visual indicator switch feedback
+        this.classList.add('scale-95');
+        setTimeout(() => this.classList.remove('scale-95'), 150);
+      });
+    });
+  </script>
+</body></html>

@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RentalHub - Incoming Reservation Requests</title>
+<!-- Google Fonts: Plus Jakarta Sans & Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS v3 -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "primary-container": "#1a1d5a",
+            "on-tertiary-container": "#009f6e",
+            "on-primary": "#ffffff",
+            "primary-fixed-dim": "#bfc2ff",
+            "tertiary-container": "#002b1b",
+            "error": "#ba1a1a",
+            "tertiary": "#00130a",
+            "surface-container-lowest": "#ffffff",
+            "surface-container": "#eceef3",
+            "error-container": "#ffdad6",
+            "on-tertiary-fixed-variant": "#005236",
+            "inverse-primary": "#bfc2ff",
+            "surface-variant": "#e0e2e7",
+            "surface-tint": "#555998",
+            "on-tertiary-fixed": "#002113",
+            "on-tertiary": "#ffffff",
+            "on-primary-fixed": "#101251",
+            "on-error": "#ffffff",
+            "surface": "#f7f9fe",
+            "on-secondary": "#ffffff",
+            "on-error-container": "#93000a",
+            "secondary-fixed": "#ffdbcf",
+            "on-surface": "#181c20",
+            "on-background": "#181c20",
+            "tertiary-fixed-dim": "#4edea3",
+            "inverse-surface": "#2d3135",
+            "outline": "#777681",
+            "on-primary-fixed-variant": "#3d417e",
+            "on-primary-container": "#8386c9",
+            "secondary": "#a93800",
+            "surface-container-highest": "#e0e2e7",
+            "surface-bright": "#f7f9fe",
+            "on-secondary-fixed": "#380d00",
+            "on-secondary-fixed-variant": "#812900",
+            "secondary-container": "#fd5a05",
+            "primary-fixed": "#e0e0ff",
+            "tertiary-fixed": "#6ffbbe",
+            "outline-variant": "#c7c5d1",
+            "primary": "#020246",
+            "surface-container-low": "#f1f4f9",
+            "secondary-fixed-dim": "#ffb59b",
+            "on-secondary-container": "#501600",
+            "inverse-on-surface": "#eff1f6",
+            "surface-container-high": "#e6e8ed",
+            "on-surface-variant": "#464650",
+            "surface-dim": "#d8dadf",
+            "background": "#f7f9fe"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "gutter-sm": "0.5rem",
+            "gutter": "1rem",
+            "space-xs": "0.5rem",
+            "margin": "1rem",
+            "space-xxs": "0.25rem",
+            "margin-lg": "1.5rem",
+            "space-xl": "1.5rem",
+            "space-sm": "0.75rem",
+            "space-lg": "1.25rem",
+            "space-3xl": "3rem",
+            "space-2xl": "2rem",
+            "space-md": "1rem"
+          },
+          "fontFamily": {
+            "title-md": ["Plus Jakarta Sans"],
+            "price-display": ["Plus Jakarta Sans"],
+            "label-lg": ["Plus Jakarta Sans"],
+            "headline-lg-mobile": ["Plus Jakarta Sans"],
+            "body-md": ["Inter"],
+            "body-lg": ["Inter"],
+            "headline-lg": ["Plus Jakarta Sans"],
+            "label-sm": ["Plus Jakarta Sans"],
+            "headline-md": ["Plus Jakarta Sans"],
+            "headline-sm": ["Plus Jakarta Sans"],
+            "display-lg": ["Plus Jakarta Sans"],
+            "label-md": ["Plus Jakarta Sans"],
+            "body-sm": ["Inter"]
+          },
+          "fontSize": {
+            "title-md": ["15px", { "lineHeight": "22px", "fontWeight": "600" }],
+            "price-display": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "700" }],
+            "headline-lg-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+            "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "label-sm": ["10px", { "lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "700" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "700" }],
+            "headline-sm": ["16px", { "lineHeight": "24px", "fontWeight": "600" }],
+            "display-lg": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+            "body-sm": ["12px", { "lineHeight": "16px", "fontWeight": "400" }]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      display: none;
+    }
+    .custom-scroll {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-[#F4F6FB] text-on-surface antialiased flex justify-center min-h-screen">
+<!-- Mobile Viewport Container (393px width simulated canvas) -->
+<div class="w-full max-w-[420px] bg-[#F4F6FB] min-h-screen relative flex flex-col pb-24 shadow-2xl overflow-x-hidden">
+<!-- Top Sticky Shell / Curved Brand Header -->
+<header class="bg-primary text-on-primary rounded-b-[28px] shadow-md px-4 pt-3 pb-6 relative z-20">
+<!-- Simulated Android Status Bar -->
+<div class="flex justify-between items-center text-on-primary opacity-90 text-[11px] font-title-md tracking-wider px-1 pt-0.5 pb-2">
+<span class="font-bold">12:45 PM</span>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[14px]">signal_cellular_alt</span>
+<span class="text-[10px] font-bold tracking-tight">5G</span>
+<span class="material-symbols-outlined text-[15px] -rotate-90">battery_full</span>
+<span class="text-[10px] font-bold">98%</span>
+</div>
+</div>
+<!-- TopAppBar Shared Component Anchor -->
+<div class="flex justify-between items-center w-full px-1 py-2">
+<div class="flex items-center gap-3">
+<button class="w-9 h-9 rounded-full bg-primary-container text-on-primary flex items-center justify-center active:scale-95 transition-all duration-150">
+<span class="material-symbols-outlined text-[20px]">directions_car</span>
+</button>
+<div>
+<h1 class="text-headline-sm font-headline-sm text-on-primary tracking-tight">Reservation Requests</h1>
+<p class="text-body-sm font-body-sm text-on-primary-container text-[11px]">RentalHub Host Operations</p>
+</div>
+</div>
+<button class="relative w-9 h-9 rounded-full bg-primary-container text-on-primary flex items-center justify-center hover:bg-inverse-surface active:scale-95 transition-all duration-150">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+<span class="absolute top-1 right-1 w-2.5 h-2.5 bg-secondary-container rounded-full ring-2 ring-primary"></span>
+</button>
+</div>
+<!-- Header Summary & Urgent Triage Notice -->
+<div class="mt-4 px-1">
+<div class="flex items-center justify-between gap-2">
+<div>
+<h2 class="text-headline-lg-mobile font-headline-lg-mobile text-on-primary">Incoming Requests</h2>
+<p class="text-body-sm font-body-sm text-[#BFC2FF] opacity-90 mt-0.5">Review and approve reservations before slot expiry</p>
+</div>
+<!-- Alert Pill with Pulsing Indicator -->
+<div class="inline-flex items-center gap-1.5 bg-[#FD5A05]/20 border border-[#FD5A05]/40 px-2.5 py-1 rounded-full whitespace-nowrap">
+<span class="w-2 h-2 rounded-full bg-secondary-container animate-ping"></span>
+<span class="text-label-sm font-label-sm text-[#FFDBCF]">3 Pending Triage</span>
+</div>
+</div>
+</div>
+</header>
+<!-- Sticky Horizontal Filter Tabs -->
+<nav class="sticky top-0 z-10 bg-[#F4F6FB]/95 backdrop-blur-md px-4 py-3 border-b border-[#E2E7F3]">
+<div class="flex items-center gap-2 overflow-x-auto custom-scroll">
+<button class="px-4 py-1.5 rounded-full bg-primary-container text-on-primary font-label-md text-label-md flex items-center gap-1.5 shadow-sm active:scale-95 transition-transform shrink-0">
+<span>Pending</span>
+<span class="w-5 h-5 rounded-full bg-secondary-container text-on-primary text-[10px] font-bold flex items-center justify-center">3</span>
+</button>
+<button class="px-4 py-1.5 rounded-full bg-surface-container-lowest border border-[#DDE3EF] text-on-surface-variant font-label-md text-label-md hover:bg-surface-container active:scale-95 transition-transform shrink-0">
+          Approved (8)
+        </button>
+<button class="px-4 py-1.5 rounded-full bg-surface-container-lowest border border-[#DDE3EF] text-on-surface-variant font-label-md text-label-md hover:bg-surface-container active:scale-95 transition-transform shrink-0">
+          Declined (2)
+        </button>
+<button class="px-4 py-1.5 rounded-full bg-surface-container-lowest border border-[#DDE3EF] text-on-surface-variant font-label-md text-label-md hover:bg-surface-container active:scale-95 transition-transform shrink-0">
+          All (13)
+        </button>
+</div>
+</nav>
+<!-- Main Content Stream -->
+<main class="px-4 pt-3 flex flex-col gap-4">
+<!-- CARD 1: High Priority Triage Card (Featured) -->
+<article class="bg-surface-container-lowest rounded-xl p-4 border border-[#E2E7F3] shadow-[0px_4px_16px_-2px_rgba(22,25,79,0.06)] relative overflow-hidden">
+<!-- Urgent Timer Indicator Banner -->
+<div class="flex items-center justify-between pb-3 border-b border-[#F0F3F9]">
+<div class="flex items-center gap-1.5">
+<span class="text-body-sm font-bold text-primary tracking-tight">#RH-84920</span>
+<button class="text-outline hover:text-primary" title="Copy ID">
+<span class="material-symbols-outlined text-[15px]">content_copy</span>
+</button>
+<span class="text-outline-variant text-[11px]">•</span>
+<span class="text-body-sm font-body-sm text-outline text-[11px]">12 mins ago</span>
+</div>
+<div class="inline-flex items-center gap-1 bg-[#FD5A05]/10 text-secondary border border-secondary/20 px-2 py-0.5 rounded-full text-label-sm font-label-sm">
+<span class="material-symbols-outlined text-[13px] text-secondary">timer</span>
+<span>Auto-expires in 48m</span>
+</div>
+</div>
+<!-- Renter Identity Section -->
+<div class="mt-3 flex items-start justify-between gap-3">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img class="w-12 h-12 rounded-full object-cover ring-2 ring-[#10B981]/20" data-alt="A distinguished professional Pakistani gentleman with neat grooming smiling warmly outdoors in high-key natural morning daylight. The portrait has crisp sharp focal clarity and executive corporate attire reflecting trust and verified reliability." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJAQoBzGqqfioRRHvgpogjZyz0bmqfubg3O387RwFuvFTl75doDaEfSGRbz-m_4Gbqc1OA1S2Dkgsmtf2HNy1Au35Xk7d3cMX_b7rk4m8qzC0Lzbl3iSy1q6Mtb8u7a7WA-puLo2E4LJs2-3Bu8joWuaMD3uJdTbD9sCbkPkqfa4EUljJl0goNMDulDe_6-q5N4oZylQi3bT79Uhffd07wdoA2Pz91V7xg5YZ555YUNrc5gqoxslactNjc2enkXZ-KOjhTGSF2LRbv"/>
+<span class="absolute -bottom-1 -right-1 w-4 h-4 bg-[#10B981] rounded-full flex items-center justify-center text-white ring-2 ring-white">
+<span class="material-symbols-outlined text-[11px]" style="font-variation-settings: 'FILL' 1;">check</span>
+</span>
+</div>
+<div>
+<div class="flex items-center gap-1.5">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Ahmed Khan</h3>
+<span class="text-label-sm font-label-sm bg-[#10B981]/15 text-[#005236] px-1.5 py-0.5 rounded font-bold">NADRA Verified</span>
+</div>
+<div class="flex items-center gap-2 mt-0.5 text-body-sm font-body-sm text-on-surface-variant">
+<span class="flex items-center text-[#FD5A05] text-[12px] font-bold">
+<span class="material-symbols-outlined text-[14px] text-[#FD5A05]" style="font-variation-settings: 'FILL' 1;">star</span> 4.9
+                </span>
+<span class="text-outline text-[11px]">(8 Completed Trips)</span>
+</div>
+</div>
+</div>
+<!-- Clean Record Micro-badge -->
+<div class="bg-surface-container-low px-2 py-1 rounded text-right shrink-0">
+<p class="text-[10px] font-bold text-[#009F6E] flex items-center gap-0.5 justify-end">
+<span class="material-symbols-outlined text-[12px]">verified_user</span> Clean Record
+            </p>
+<p class="text-[9px] text-outline">No Violations</p>
+</div>
+</div>
+<!-- Vehicle & Booking Schedule Details -->
+<div class="mt-3.5 bg-surface-container-low rounded-lg p-3 border border-[#E2E7F3]/70">
+<div class="flex items-center gap-3">
+<!-- Compact Car Thumbnail from Reference image context -->
+<div class="w-20 h-14 rounded-lg bg-surface-container-lowest overflow-hidden border border-[#E2E7F3] shrink-0 relative">
+<img class="w-full h-full object-cover" data-alt="A vivid red contemporary Honda Civic sedan showcased cleanly in a high-key illuminated automotive showroom studio with flawless reflective gloss floor, representing pristine fleet condition in the Pakistan metropolitan rental market." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGY94oMb8J75lO4NEEaWlYJu9824Z0z4POCOljfUYJRSp9ovddVlP0G4F8EPasA11LJsgPQ8ZD9UlWZ9BeL5yXLru65fXsf-IWwLiHewZyYusP5V2p3leMcLR-cyZmqiztyTbDbbEYBKVfIn9he_xG2GpqyNiWLfUDRXUYwaWu9HfdvonxRfIQEXmozRFfro4imXJJtkjl_wl16nZoLDrT7Ua7x201uiDCh3iKJKunEXytuTudJ1UxFU_6WwERLmLYvU-w3iQpwxcs"/>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between">
+<h4 class="font-title-md text-title-md text-primary truncate">Honda Civic Oriel 2021</h4>
+<span class="text-label-sm font-label-sm text-outline uppercase bg-surface-container px-1 rounded">LEA-4820</span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant text-[11px] mt-0.5 flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px] text-secondary">schedule</span>
+<strong class="font-bold text-on-surface">Today:</strong> 2:00 PM – 5:00 PM (3h QuickRide)
+              </p>
+<p class="text-body-sm font-body-sm text-outline text-[11px] mt-0.5 truncate flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px]">location_on</span>
+                Main Boulevard, Gulberg III, Lahore
+              </p>
+</div>
+</div>
+</div>
+<!-- Financial Overview Container -->
+<div class="mt-3 flex items-center justify-between p-2.5 rounded-lg bg-surface-container-lowest border border-[#E2E7F3]">
+<div>
+<span class="text-label-sm font-label-sm text-outline block">Total Estimated Fare</span>
+<span class="font-price-display text-price-display text-primary">PKR 3,500</span>
+</div>
+<div class="text-right">
+<span class="text-label-sm font-label-sm text-secondary block font-bold">Advance Token Required</span>
+<span class="text-title-md font-title-md text-on-surface">PKR 1,000 <span class="text-[10px] font-normal text-outline">(JazzCash/Bank)</span></span>
+</div>
+</div>
+<!-- Call-to-action Action Buttons -->
+<div class="mt-3.5 flex flex-col gap-2">
+<button class="w-full py-2.5 px-4 rounded-full bg-secondary-container text-on-primary font-label-lg text-label-lg flex items-center justify-center gap-2 shadow-sm active:scale-95 transition-all duration-150">
+<span>Approve &amp; Request Advance (PKR 1,000)</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+<div class="flex items-center gap-2">
+<button class="flex-1 py-2 rounded-full border border-[#DDE3EF] bg-surface-container-lowest text-on-surface font-label-md text-label-md hover:bg-surface-container active:scale-95 transition-all duration-150 flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-outline">call</span>
+<span>Call Renter</span>
+</button>
+<button class="flex-1 py-2 rounded-full border border-error/30 text-error font-label-md text-label-md hover:bg-error-container/30 active:scale-95 transition-all duration-150 flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-[16px]">close</span>
+<span>Decline Request</span>
+</button>
+</div>
+</div>
+</article>
+<!-- CARD 2: Standard Pending Request -->
+<article class="bg-surface-container-lowest rounded-xl p-4 border border-[#E2E7F3] shadow-[0px_4px_16px_-2px_rgba(22,25,79,0.06)] relative">
+<div class="flex items-center justify-between pb-2.5 border-b border-[#F0F3F9]">
+<div class="flex items-center gap-1.5">
+<span class="text-body-sm font-bold text-primary tracking-tight">#RH-84922</span>
+<button class="text-outline hover:text-primary">
+<span class="material-symbols-outlined text-[14px]">content_copy</span>
+</button>
+<span class="text-outline-variant text-[11px]">•</span>
+<span class="text-body-sm font-body-sm text-outline text-[11px]">35 mins ago</span>
+</div>
+<span class="bg-surface-container text-on-surface-variant px-2 py-0.5 rounded text-label-sm font-label-sm">
+            Self-Drive
+          </span>
+</div>
+<div class="mt-3 flex items-start justify-between">
+<div class="flex items-center gap-2.5">
+<img class="w-10 h-10 rounded-full object-cover ring-1 ring-[#E2E7F3]" data-alt="A candid profile portrait of an authorized male car driver in casual executive clothing in an urban automotive setting in Islamabad Pakistan, sharp lighting and calm demeanor representing genuine identity verification." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD6sFvLSp7dQFYmqzdmtyt_Ru4vAGDUiou6ZOJfz_eqiNTx0fHnmbg8sIlJsHdGT0TLhW9URn-uG2_KbBzqXnhAIpDHDwM7o8TUcwYOwKGX2A-DD-4TCWRwptOLvJUfEJ-ib8-4wbk3lkciK4MRUglr52HjIdYSFbGFShnH72gORvPdzTeBynLLLqoHDmh4rE0eHUrxhr4v_3GwvI11_zT0PJnnaupCIw4HAXaQ3QY3dEMIvqYS8CBa0Y1G2hw3-QUXCy5urjuFWVRm"/>
+<div>
+<div class="flex items-center gap-1.5">
+<h3 class="font-title-md text-title-md text-on-surface">Usman Ali</h3>
+<span class="material-symbols-outlined text-[14px] text-[#10B981]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<p class="text-body-sm font-body-sm text-outline text-[11px]">4.7 ★ • 4 Completed Trips • Verified CNIC</p>
+</div>
+</div>
+</div>
+<!-- Vehicle specs -->
+<div class="mt-3 flex items-center justify-between bg-surface-container-low p-2.5 rounded-lg border border-[#E2E7F3]/60">
+<div>
+<h4 class="font-title-md text-title-md text-on-surface">Toyota Corolla Grande 2022</h4>
+<p class="text-body-sm font-body-sm text-outline text-[11px] mt-0.5">Tomorrow: Full Day (24 Hours) • ICT-9912</p>
+</div>
+<div class="text-right">
+<span class="text-label-sm font-label-sm text-outline block">Total Fare</span>
+<span class="font-title-md text-title-md text-primary font-bold">PKR 8,500</span>
+</div>
+</div>
+<div class="mt-3 flex items-center justify-between text-[11px] text-on-surface-variant px-1">
+<span>Advance Due: <strong class="text-on-surface">PKR 2,000</strong></span>
+<span class="text-outline">Security deposit waiver applied</span>
+</div>
+<div class="mt-3 flex items-center gap-2">
+<button class="flex-1 py-2 rounded-full border border-[#DDE3EF] text-on-surface-variant font-label-md text-label-md hover:bg-surface-container active:scale-95 transition-all duration-150">
+            Decline
+          </button>
+<button class="flex-1 py-2 rounded-full bg-primary-container text-on-primary font-label-md text-label-md hover:bg-primary active:scale-95 transition-all duration-150 flex items-center justify-center gap-1">
+<span>Approve Request</span>
+<span class="material-symbols-outlined text-[16px]">check</span>
+</button>
+</div>
+</article>
+<!-- CARD 3: Compact Quick Triage Card -->
+<article class="bg-surface-container-lowest rounded-xl p-3.5 border border-[#E2E7F3] shadow-[0px_4px_16px_-2px_rgba(22,25,79,0.06)] flex items-center justify-between gap-3">
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="text-[11px] font-bold text-primary">#RH-84925</span>
+<span class="text-outline-variant text-[10px]">•</span>
+<span class="text-[10px] text-outline">1 hour ago</span>
+</div>
+<h4 class="font-title-md text-title-md text-on-surface truncate mt-0.5">Suzuki Alto VXL 2023</h4>
+<p class="text-body-sm font-body-sm text-outline text-[11px]">Zain Malik • Today: 6:00 PM (6 Hours)</p>
+<span class="font-bold text-primary text-[13px] mt-1 inline-block">PKR 3,500</span>
+</div>
+<div class="flex flex-col gap-1.5 shrink-0">
+<button class="px-3.5 py-1.5 rounded-full bg-secondary-container text-on-primary text-label-sm font-label-sm shadow-sm active:scale-95 transition-all">
+            Review
+          </button>
+<button class="px-3.5 py-1 rounded-full border border-[#DDE3EF] text-outline text-label-sm font-label-sm active:scale-95 transition-all">
+            Dismiss
+          </button>
+</div>
+</article>
+</main>
+<!-- BottomNavBar Shared Component Implementation -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-2 bg-surface-container-lowest shadow-lg">
+<!-- Nav Item 1: Fleet -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-3 py-1.5 hover:bg-surface-container hover:text-on-surface active:scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined text-[22px]">directions_car</span>
+<span class="text-label-sm font-label-sm mt-0.5">Fleet</span>
+</a>
+<!-- Nav Item 2: Requests (ACTIVE STATE MATCHING PAGE INTENT) -->
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary rounded-xl px-3 py-1.5 active:scale-95 transition-transform duration-150 relative" href="#">
+<span class="material-symbols-outlined text-[22px]" style="font-variation-settings: 'FILL' 1;">pending_actions</span>
+<span class="text-label-sm font-label-sm mt-0.5">Requests</span>
+<span class="absolute -top-1 right-1 w-4 h-4 bg-secondary-container text-white text-[9px] font-bold rounded-full flex items-center justify-center ring-2 ring-surface-container-lowest">3</span>
+</a>
+<!-- Nav Item 3: Messages -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-3 py-1.5 hover:bg-surface-container hover:text-on-surface active:scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined text-[22px]">chat</span>
+<span class="text-label-sm font-label-sm mt-0.5">Messages</span>
+</a>
+<!-- Nav Item 4: Earnings -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-3 py-1.5 hover:bg-surface-container hover:text-on-surface active:scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined text-[22px]">account_balance_wallet</span>
+<span class="text-label-sm font-label-sm mt-0.5">Earnings</span>
+</a>
+</nav>
+</div>
+</body></html>

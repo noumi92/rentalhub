@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RentalHub - Return Inspection & Settle Balance</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Plus+Jakarta+Sans:wght@100..900&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "secondary-container": "#fd5a05",
+            "on-tertiary-fixed-variant": "#005236",
+            "outline": "#777681",
+            "on-background": "#181c20",
+            "secondary-fixed-dim": "#ffb59b",
+            "error-container": "#ffdad6",
+            "inverse-primary": "#bfc2ff",
+            "tertiary-container": "#002b1b",
+            "surface-variant": "#e0e2e7",
+            "on-primary-fixed-variant": "#3d417e",
+            "surface-container-high": "#e6e8ed",
+            "on-secondary": "#ffffff",
+            "primary": "#020246",
+            "on-error-container": "#93000a",
+            "on-secondary-container": "#501600",
+            "surface-container-low": "#f1f4f9",
+            "surface-tint": "#555998",
+            "on-primary": "#ffffff",
+            "primary-fixed": "#e0e0ff",
+            "on-primary-container": "#8386c9",
+            "surface-dim": "#d8dadf",
+            "secondary-fixed": "#ffdbcf",
+            "surface-container": "#eceef3",
+            "on-error": "#ffffff",
+            "surface-container-lowest": "#ffffff",
+            "inverse-surface": "#2d3135",
+            "surface-container-highest": "#e0e2e7",
+            "background": "#f7f9fe",
+            "primary-container": "#1a1d5a",
+            "tertiary-fixed-dim": "#4edea3",
+            "surface-bright": "#f7f9fe",
+            "primary-fixed-dim": "#bfc2ff",
+            "secondary": "#a93800",
+            "on-tertiary-container": "#009f6e",
+            "error": "#ba1a1a",
+            "tertiary": "#00130a",
+            "on-surface-variant": "#464650",
+            "on-tertiary": "#ffffff",
+            "on-secondary-fixed-variant": "#812900",
+            "inverse-on-surface": "#eff1f6",
+            "surface": "#f7f9fe",
+            "on-primary-fixed": "#101251",
+            "on-tertiary-fixed": "#002113",
+            "outline-variant": "#c7c5d1",
+            "tertiary-fixed": "#6ffbbe",
+            "on-surface": "#181c20",
+            "on-secondary-fixed": "#380d00"
+          },
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "2xl": "1.25rem",
+            "3xl": "1.75rem",
+            "full": "9999px"
+          },
+          spacing: {
+            "space-xl": "1.5rem",
+            "gutter-sm": "0.5rem",
+            "space-sm": "0.75rem",
+            "space-lg": "1.25rem",
+            "space-md": "1rem",
+            "space-3xl": "3rem",
+            "space-2xl": "2rem",
+            "gutter": "1rem",
+            "space-xs": "0.5rem",
+            "margin": "1rem",
+            "space-xxs": "0.25rem",
+            "margin-lg": "1.5rem"
+          },
+          fontFamily: {
+            "title-md": ["Plus Jakarta Sans"],
+            "label-lg": ["Plus Jakarta Sans"],
+            "price-display": ["Plus Jakarta Sans"],
+            "display-lg": ["Plus Jakarta Sans"],
+            "body-sm": ["Inter"],
+            "label-sm": ["Plus Jakarta Sans"],
+            "headline-sm": ["Plus Jakarta Sans"],
+            "headline-lg-mobile": ["Plus Jakarta Sans"],
+            "headline-lg": ["Plus Jakarta Sans"],
+            "headline-md": ["Plus Jakarta Sans"],
+            "body-md": ["Inter"],
+            "label-md": ["Plus Jakarta Sans"],
+            "body-lg": ["Inter"]
+          },
+          fontSize: {
+            "title-md": ["15px", { lineHeight: "22px", fontWeight: "600" }],
+            "label-lg": ["14px", { lineHeight: "20px", letterSpacing: "0.01em", fontWeight: "700" }],
+            "price-display": ["22px", { lineHeight: "28px", letterSpacing: "-0.02em", fontWeight: "800" }],
+            "display-lg": ["36px", { lineHeight: "44px", letterSpacing: "-0.02em", fontWeight: "800" }],
+            "body-sm": ["12px", { lineHeight: "16px", fontWeight: "400" }],
+            "label-sm": ["10px", { lineHeight: "14px", letterSpacing: "0.04em", fontWeight: "700" }],
+            "headline-sm": ["16px", { lineHeight: "24px", fontWeight: "600" }],
+            "headline-lg-mobile": ["24px", { lineHeight: "32px", letterSpacing: "-0.01em", fontWeight: "700" }],
+            "headline-lg": ["28px", { lineHeight: "36px", letterSpacing: "-0.01em", fontWeight: "700" }],
+            "headline-md": ["20px", { lineHeight: "28px", fontWeight: "700" }],
+            "body-md": ["14px", { lineHeight: "20px", fontWeight: "400" }],
+            "label-md": ["12px", { lineHeight: "16px", letterSpacing: "0.02em", fontWeight: "600" }],
+            "body-lg": ["16px", { lineHeight: "24px", fontWeight: "400" }]
+          }
+        }
+      }
+    };
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-family: 'Material Symbols Outlined';
+      font-weight: normal;
+      font-style: normal;
+      font-size: 20px;
+      line-height: 1;
+      display: inline-block;
+      white-space: nowrap;
+      word-wrap: normal;
+      direction: ltr;
+      -webkit-font-feature-settings: 'liga';
+      -webkit-font-smoothing: antialiased;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface antialiased flex justify-center selection:bg-secondary-container selection:text-on-secondary min-h-screen">
+<!-- Mobile Viewport Container: 393px width constraint -->
+<main class="w-full max-w-[393px] bg-background min-h-screen relative flex flex-col pb-36 shadow-2xl overflow-x-hidden">
+<!-- Top Shared Docked AppBar (JSON Specified Header) -->
+<header class="fixed top-0 left-0 w-full max-w-[393px] mx-auto right-0 z-50 flex items-center justify-between px-space-md py-space-sm bg-primary border-b border-primary-container shadow-sm">
+<div class="flex items-center gap-space-xs">
+<button aria-label="Back" class="p-space-xxs rounded-full text-on-primary hover:bg-primary-container transition-all active:scale-95 flex items-center justify-center" type="button">
+<span class="material-symbols-outlined text-on-primary">arrow_back</span>
+</button>
+<h1 class="text-headline-sm font-headline-sm font-bold text-on-primary">Return & Settlement</h1>
+</div>
+<div class="flex items-center gap-space-xs">
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-tertiary-container text-tertiary-fixed-dim text-label-sm font-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary-fixed-dim animate-pulse"></span>
+          Trip Ended
+        </span>
+<button aria-label="More Options" class="p-space-xxs rounded-full text-on-primary hover:bg-primary-container transition-all active:scale-95 flex items-center justify-center" type="button">
+<span class="material-symbols-outlined text-on-primary">more_vert</span>
+</button>
+</div>
+</header>
+<!-- Curved Header Container (Midnight Velocity Design System) -->
+<section class="bg-primary pt-20 pb-10 px-space-md rounded-b-[28px] shadow-md flex flex-col gap-space-sm relative">
+<!-- Ambient Glow decoration -->
+<div class="absolute -top-12 -right-12 w-48 h-48 bg-primary-container opacity-40 rounded-full blur-3xl pointer-events-none"></div>
+<div class="relative z-10 flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="text-label-sm font-label-sm text-on-primary-container uppercase tracking-wider">Audit & Dispatch Closeout</span>
+<span class="text-label-sm font-label-sm text-on-primary-container">RH-84920</span>
+</div>
+<h2 class="text-headline-lg-mobile font-headline-lg-mobile text-on-primary font-bold">Vehicle Return Inspection</h2>
+</div>
+<!-- Header Information Badges Cluster -->
+<div class="relative z-10 flex flex-col gap-space-xs pt-space-xs">
+<!-- Vehicle Badge -->
+<div class="flex items-center gap-space-xs bg-primary-container/80 backdrop-blur-md px-3 py-2 rounded-xl border border-outline-variant/20">
+<div class="w-8 h-8 rounded-lg bg-surface-container-lowest/10 flex items-center justify-center text-on-primary shrink-0">
+<span class="material-symbols-outlined">directions_car</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="text-title-md font-title-md text-on-primary truncate">Honda Civic 2021 • LEA-4820</span>
+<span class="text-body-sm font-body-sm text-on-primary-container">Sedan • 1.8 i-VTEC Automatic</span>
+</div>
+</div>
+<!-- Renter & Trip Timestamp Pills -->
+<div class="flex items-center gap-2">
+<!-- Renter pill -->
+<div class="flex-1 flex items-center gap-1.5 bg-primary-container/80 px-2.5 py-1.5 rounded-xl border border-outline-variant/20">
+<div class="w-5 h-5 rounded-full bg-secondary-container text-on-secondary flex items-center justify-center text-label-sm font-label-sm font-bold shrink-0">
+              AK
+            </div>
+<span class="text-label-md font-label-md text-on-primary truncate">Ahmed Khan</span>
+<span class="material-symbols-outlined text-[14px] text-tertiary-fixed-dim" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+<!-- Timestamp pill -->
+<div class="flex-1 flex items-center gap-1.5 bg-primary-container/80 px-2.5 py-1.5 rounded-xl border border-outline-variant/20">
+<span class="material-symbols-outlined text-[16px] text-on-primary-container">schedule</span>
+<span class="text-label-sm font-label-sm text-on-primary truncate">Today, 04:55 PM</span>
+</div>
+</div>
+<div class="inline-flex items-center justify-center gap-1 bg-surface-container-lowest/10 py-1 px-2.5 rounded-full text-center">
+<span class="text-label-sm font-label-sm text-on-primary-container">3-Hour Booking Completed • Rapid Audit Verified</span>
+</div>
+</div>
+</section>
+<!-- Main Content Canvas (Overlapping cards on background floor) -->
+<div class="px-space-md -mt-4 flex flex-col gap-space-md relative z-20">
+<!-- Metric 1: Odometer & Mileage Audit Card -->
+<section class="bg-surface-container-lowest rounded-2xl p-space-md shadow-[0px_4px_16px_-2px_rgba(22,25,79,0.06)] border border-surface-variant flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">speed</span>
+</div>
+<h3 class="text-title-md font-title-md text-on-surface">Odometer Verification</h3>
+</div>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-low text-tertiary-container text-label-sm font-label-sm">
+<span class="material-symbols-outlined text-[14px] text-on-tertiary-container">check_circle</span>
+            Accurate
+          </span>
+</div>
+<!-- Side-by-Side Readings Grid -->
+<div class="grid grid-cols-2 gap-space-xs">
+<div class="bg-surface-container-low p-space-xs rounded-xl flex flex-col">
+<span class="text-label-sm font-label-sm text-on-surface-variant">Handover (02:00 PM)</span>
+<span class="text-headline-md font-headline-md text-primary mt-0.5">42,850 <span class="text-body-sm font-body-sm text-outline">km</span></span>
+<span class="text-body-sm font-body-sm text-on-surface-variant mt-0.5">Recorded Initial</span>
+</div>
+<div class="bg-surface-container-low p-space-xs rounded-xl flex flex-col border border-primary-container/20">
+<span class="text-label-sm font-label-sm text-primary font-bold">Return (04:55 PM)</span>
+<span class="text-headline-md font-headline-md text-primary mt-0.5">42,920 <span class="text-body-sm font-body-sm text-outline">km</span></span>
+<span class="text-body-sm font-body-sm text-on-tertiary-container font-semibold mt-0.5">Verified Current</span>
+</div>
+</div>
+<!-- Mileage Math Callout Box -->
+<div class="bg-surface-container-low/70 border border-outline-variant/30 rounded-xl p-space-xs flex items-center justify-between text-center">
+<div class="flex-1">
+<span class="text-label-sm font-label-sm text-on-surface-variant block">Driven</span>
+<span class="text-label-lg font-label-lg text-primary">70 km</span>
+</div>
+<div class="w-px h-6 bg-outline-variant/40"></div>
+<div class="flex-1">
+<span class="text-label-sm font-label-sm text-on-surface-variant block">Allowance</span>
+<span class="text-label-lg font-label-lg text-primary">150 km</span>
+</div>
+<div class="w-px h-6 bg-outline-variant/40"></div>
+<div class="flex-1">
+<span class="text-label-sm font-label-sm text-on-surface-variant block">Over-mileage</span>
+<span class="text-label-lg font-label-lg text-on-tertiary-container">0 km (No Fee)</span>
+</div>
+</div>
+<!-- Photo Verification Row with Image Preview -->
+<div class="flex items-center justify-between pt-1 border-t border-surface-container-high">
+<div class="flex items-center gap-space-xs">
+<div class="w-12 h-12 rounded-lg overflow-hidden relative border border-outline-variant shrink-0 bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="A clean modern digital car dashboard instrument cluster glowing at dusk with crystal-clear odometer digits and illuminated tachometer needles in high resolution automotive clarity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD62qwJH1rAeqLMQhoR0aGu1K4QjCMgBtM2N6nIMnMm_ch_i2ZkcnAIhyumsKJXrGzCyQcpLOENzTXISHy58ICUB6KST_-gt5BbYrH7wPkqL8Amgpo97qDP62RtgtFFPKJ0f9v9eaHucRiPd_MhAqBkjdHBXydA-f-twd3lZ0DBRXwp_aengscv7Q3rTSmdCQkvoh8GK_aTgcbgVduBFz6LkSrlaZ2htEQVlItlnEcEGw2t-yyy4Tp1eIOLPQNX7wqY8Xlv1Ya119yT"/>
+</div>
+<div class="flex flex-col">
+<span class="text-label-md font-label-md text-on-surface">Cluster Capture</span>
+<span class="text-body-sm font-body-sm text-on-surface-variant">04:53 PM • Verified Hash</span>
+</div>
+</div>
+<button class="text-label-md font-label-md text-primary-container hover:underline flex items-center gap-0.5" type="button">
+<span>View</span>
+<span class="material-symbols-outlined text-[16px]">open_in_full</span>
+</button>
+</div>
+</section>
+<!-- Metric 2: Fuel Level Comparison Card -->
+<section class="bg-surface-container-lowest rounded-2xl p-space-md shadow-[0px_4px_16px_-2px_rgba(22,25,79,0.06)] border border-surface-variant flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">local_gas_station</span>
+</div>
+<h3 class="text-title-md font-title-md text-on-surface">Fuel Level Inspection</h3>
+</div>
+<span class="text-label-sm font-label-sm font-bold text-on-tertiary-container bg-surface-container-low px-2 py-0.5 rounded-full">
+            100% Match
+          </span>
+</div>
+<!-- Side-by-side Gauge Values -->
+<div class="flex items-center justify-between text-body-sm font-body-sm">
+<div class="flex flex-col">
+<span class="text-label-sm font-label-sm text-on-surface-variant">Handover Level</span>
+<span class="text-label-lg font-label-lg text-primary">75% <span class="text-body-sm font-body-sm font-normal text-outline">(6 of 8 bars)</span></span>
+</div>
+<div class="flex flex-col items-end">
+<span class="text-label-sm font-label-sm text-on-surface-variant">Return Level</span>
+<span class="text-label-lg font-label-lg text-primary">75% <span class="text-body-sm font-body-sm font-normal text-outline">(6 of 8 bars)</span></span>
+</div>
+</div>
+<!-- 8-Segment Fuel Gauge Graphic -->
+<div class="flex flex-col gap-1.5">
+<div class="grid grid-cols-8 gap-1.5 h-3.5 w-full bg-surface-container-low p-1 rounded-full border border-surface-container-high">
+<div class="bg-primary rounded-full"></div>
+<div class="bg-primary rounded-full"></div>
+<div class="bg-primary rounded-full"></div>
+<div class="bg-primary rounded-full"></div>
+<div class="bg-primary rounded-full"></div>
+<div class="bg-primary rounded-full"></div>
+<div class="bg-surface-variant rounded-full"></div>
+<div class="bg-surface-variant rounded-full"></div>
+</div>
+<div class="flex justify-between text-[10px] text-outline font-semibold px-1">
+<span>E</span>
+<span>1/4</span>
+<span>1/2</span>
+<span>3/4 (Match)</span>
+<span>F</span>
+</div>
+</div>
+<!-- Status badge -->
+<div class="bg-surface-container-low text-tertiary-container rounded-xl p-2.5 flex items-center justify-between border border-outline-variant/30">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-on-tertiary-container text-[18px]">verified</span>
+<span class="text-label-md font-label-md text-on-surface">Level Matched</span>
+</div>
+<span class="text-label-md font-label-md font-bold text-on-tertiary-container">Zero Penalty (PKR 0)</span>
+</div>
+</section>
+<!-- Metric 3: Physical Damage & Exterior Condition Check -->
+<section class="bg-surface-container-lowest rounded-2xl p-space-md shadow-[0px_4px_16px_-2px_rgba(22,25,79,0.06)] border border-surface-variant flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">health_and_safety</span>
+</div>
+<h3 class="text-title-md font-title-md text-on-surface">Physical Damage Audit</h3>
+</div>
+<span class="material-symbols-outlined text-on-tertiary-container" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<!-- Status Pill -->
+<div class="bg-surface-container-low border border-outline-variant/30 px-3 py-2 rounded-xl flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-on-tertiary-container"></span>
+<span class="text-label-md font-label-md text-primary">No New Damage Detected</span>
+</div>
+<span class="text-label-sm font-label-sm text-on-tertiary-container bg-surface-container-lowest px-2 py-0.5 rounded-full font-bold">Vehicle Spotless</span>
+</div>
+<!-- Quick Check Breakdown List -->
+<div class="flex flex-col divide-y divide-surface-container-high text-body-sm font-body-sm">
+<div class="py-2 flex items-center justify-between">
+<span class="text-on-surface-variant flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-outline">cleaning_services</span>
+              Exterior Cleanliness
+            </span>
+<span class="text-label-md font-label-md text-on-surface">Excellent (Washed)</span>
+</div>
+<div class="py-2 flex items-center justify-between">
+<span class="text-on-surface-variant flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-outline">car_repair</span>
+              Bodywork Walkaround
+            </span>
+<span class="text-label-md font-label-md text-on-surface text-right">2 Pre-existing Noted</span>
+</div>
+<div class="py-2 flex items-center justify-between">
+<span class="text-on-surface-variant flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-outline">mode_fan</span>
+              Interior & Cabin A/C
+            </span>
+<span class="text-label-md font-label-md text-on-surface">Chilled AC & Spotless</span>
+</div>
+</div>
+<button class="text-label-md font-label-md text-primary font-bold hover:underline flex items-center justify-center gap-1 py-1" type="button">
+<span class="material-symbols-outlined text-[18px]">photo_library</span>
+<span>View Handover Photo Comparison (4 Shots)</span>
+</button>
+</section>
+<!-- Financial Settlement Ledger Card -->
+<section class="bg-surface-container-lowest rounded-2xl p-space-md shadow-[0px_8px_24px_-4px_rgba(22,25,79,0.08)] border border-surface-variant flex flex-col gap-space-sm">
+<div class="flex items-center justify-between pb-2 border-b border-surface-container-high">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">receipt_long</span>
+</div>
+<div>
+<h3 class="text-title-md font-title-md text-on-surface">Final Settlement Ledger</h3>
+<p class="text-body-sm font-body-sm text-outline">Invoice ID: INV-2023-84920</p>
+</div>
+</div>
+<span class="text-label-sm font-label-sm px-2 py-0.5 bg-surface-container-high text-primary font-bold rounded">Standard Tariffs</span>
+</div>
+<!-- Ledger Line Items -->
+<div class="flex flex-col gap-2.5 text-body-sm font-body-sm">
+<div class="flex items-center justify-between">
+<span class="text-on-surface-variant">Total Agreed Trip Fare</span>
+<span class="text-label-md font-label-md text-on-surface">PKR 3,500</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<span class="text-on-surface-variant">Less Advance Token Paid</span>
+<span class="text-label-sm font-label-sm px-1.5 py-0.2 rounded bg-tertiary-container text-tertiary-fixed-dim">JazzCash</span>
+</div>
+<span class="text-label-md font-label-md text-on-tertiary-container font-bold">- PKR 1,000</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-on-surface-variant">Extra Mileage (0 km @ PKR 35/km)</span>
+<span class="text-body-sm font-body-sm text-outline">PKR 0</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-on-surface-variant">Fuel Deficit Charge</span>
+<span class="text-body-sm font-body-sm text-outline">PKR 0</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-on-surface-variant">Late Return Penalty (0 min)</span>
+<span class="text-body-sm font-body-sm text-outline">PKR 0</span>
+</div>
+</div>
+<!-- Settlement Calculation Summary Box -->
+<div class="bg-surface-container-low rounded-xl p-space-md mt-1 border border-secondary-container/20 flex flex-col gap-1">
+<div class="flex items-center justify-between">
+<span class="text-label-md font-label-md text-on-surface-variant font-bold">Balance Due from Customer</span>
+<span class="text-label-sm font-label-sm text-secondary-container bg-surface-container-lowest px-2 py-0.5 rounded-full font-bold">Final Net</span>
+</div>
+<div class="flex items-baseline justify-between mt-1">
+<div class="flex items-baseline gap-1">
+<span class="text-display-lg font-display-lg text-secondary-container font-extrabold tracking-tight">PKR 2,500</span>
+</div>
+<span class="text-label-sm font-label-sm text-on-surface-variant">Payable via Cash / QR</span>
+</div>
+<div class="flex items-center gap-1 text-[11px] text-outline mt-1">
+<span class="material-symbols-outlined text-[14px]">lock</span>
+<span>Tax included (FBR 16% SST auto-settled)</span>
+</div>
+</div>
+</section>
+<!-- Signature & Acceptance Micro-Section -->
+<section class="bg-surface-container-lowest rounded-xl p-space-sm border border-surface-variant flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-outline">draw</span>
+<div class="flex flex-col">
+<span class="text-label-md font-label-md text-on-surface">Renter Digital Sign-off</span>
+<span class="text-body-sm font-body-sm text-outline">Verified via SMS OTP #4912</span>
+</div>
+</div>
+<span class="text-label-sm font-label-sm text-on-tertiary-container font-bold bg-surface-container-low px-2 py-1 rounded">Signed ✓</span>
+</section>
+</div>
+<!-- Sticky Bottom Bar (Docked Payment & Completion CTA) -->
+<div class="fixed bottom-0 left-0 w-full max-w-[393px] mx-auto right-0 z-50 bg-surface-container-lowest border-t border-surface-variant shadow-[0px_-4px_16px_-2px_rgba(2,2,70,0.08)] px-space-md py-3 flex flex-col gap-2">
+<button class="w-full h-[54px] bg-secondary-container text-on-secondary rounded-xl font-headline-sm text-headline-sm font-bold flex items-center justify-center gap-2 shadow-lg hover:opacity-95 active:scale-98 transition-all" type="button">
+<span>Collect PKR 2,500 & Close Booking</span>
+<span class="material-symbols-outlined text-[20px]">task_alt</span>
+</button>
+<p class="text-center text-[10px] leading-tight text-outline px-2">
+        Completing settlement releases vehicle back to available fleet & issues digital tax invoice.
+      </p>
+</div>
+</main>
+</body></html>

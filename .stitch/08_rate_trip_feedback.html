@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RentalHub - Rate Your Trip</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts: Plus Jakarta Sans & Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "secondary": "#a93800",
+            "secondary-fixed-dim": "#ffb59b",
+            "on-tertiary-fixed-variant": "#005236",
+            "on-tertiary": "#ffffff",
+            "secondary-container": "#fd5a05",
+            "on-background": "#181c20",
+            "surface-container": "#eceef3",
+            "on-primary": "#ffffff",
+            "tertiary-fixed-dim": "#4edea3",
+            "surface-dim": "#d8dadf",
+            "inverse-surface": "#2d3135",
+            "surface-tint": "#555998",
+            "inverse-primary": "#bfc2ff",
+            "secondary-fixed": "#ffdbcf",
+            "primary-fixed": "#e0e0ff",
+            "outline-variant": "#c7c5d1",
+            "error": "#ba1a1a",
+            "tertiary-container": "#002b1b",
+            "on-error-container": "#93000a",
+            "on-error": "#ffffff",
+            "on-primary-fixed-variant": "#3d417e",
+            "background": "#f7f9fe",
+            "on-tertiary-fixed": "#002113",
+            "on-secondary-fixed": "#380d00",
+            "surface-bright": "#f7f9fe",
+            "on-primary-container": "#8386c9",
+            "on-tertiary-container": "#009f6e",
+            "surface-variant": "#e0e2e7",
+            "on-secondary-fixed-variant": "#812900",
+            "outline": "#777681",
+            "surface-container-highest": "#e0e2e7",
+            "primary-container": "#1a1d5a",
+            "tertiary-fixed": "#6ffbbe",
+            "on-secondary": "#ffffff",
+            "surface-container-lowest": "#ffffff",
+            "on-surface-variant": "#464650",
+            "error-container": "#ffdad6",
+            "primary-fixed-dim": "#bfc2ff",
+            "inverse-on-surface": "#eff1f6",
+            "tertiary": "#00130a",
+            "surface": "#f7f9fe",
+            "primary": "#020246",
+            "on-primary-fixed": "#101251",
+            "surface-container-high": "#e6e8ed",
+            "on-surface": "#181c20",
+            "surface-container-low": "#f1f4f9",
+            "on-secondary-container": "#501600"
+          },
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          spacing: {
+            "space-3xl": "3rem",
+            "space-xs": "0.5rem",
+            "space-xl": "1.5rem",
+            "space-lg": "1.25rem",
+            "space-2xl": "2rem",
+            "margin": "1rem",
+            "space-xxs": "0.25rem",
+            "space-sm": "0.75rem",
+            "space-md": "1rem",
+            "margin-lg": "1.5rem",
+            "gutter": "1rem",
+            "gutter-sm": "0.5rem"
+          },
+          fontFamily: {
+            "headline-sm": ["Plus Jakarta Sans"],
+            "body-sm": ["Inter"],
+            "label-md": ["Plus Jakarta Sans"],
+            "price-display": ["Plus Jakarta Sans"],
+            "label-sm": ["Plus Jakarta Sans"],
+            "headline-lg": ["Plus Jakarta Sans"],
+            "label-lg": ["Plus Jakarta Sans"],
+            "display-lg": ["Plus Jakarta Sans"],
+            "body-lg": ["Inter"],
+            "headline-lg-mobile": ["Plus Jakarta Sans"],
+            "title-md": ["Plus Jakarta Sans"],
+            "headline-md": ["Plus Jakarta Sans"],
+            "body-md": ["Inter"]
+          },
+          fontSize: {
+            "headline-sm": ["16px", { lineHeight: "24px", fontWeight: "600" }],
+            "body-sm": ["12px", { lineHeight: "16px", fontWeight: "400" }],
+            "label-md": ["12px", { lineHeight: "16px", letterSpacing: "0.02em", fontWeight: "600" }],
+            "price-display": ["22px", { lineHeight: "28px", letterSpacing: "-0.02em", fontWeight: "800" }],
+            "label-sm": ["10px", { lineHeight: "14px", letterSpacing: "0.04em", fontWeight: "700" }],
+            "headline-lg": ["28px", { lineHeight: "36px", letterSpacing: "-0.01em", fontWeight: "700" }],
+            "label-lg": ["14px", { lineHeight: "20px", letterSpacing: "0.01em", fontWeight: "700" }],
+            "display-lg": ["36px", { lineHeight: "44px", letterSpacing: "-0.02em", fontWeight: "800" }],
+            "body-lg": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+            "headline-lg-mobile": ["24px", { lineHeight: "32px", letterSpacing: "-0.01em", fontWeight: "700" }],
+            "title-md": ["15px", { lineHeight: "22px", fontWeight: "600" }],
+            "headline-md": ["20px", { lineHeight: "28px", fontWeight: "700" }],
+            "body-md": ["14px", { lineHeight: "20px", fontWeight: "400" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .material-symbols-outlined.fill-icon {
+      font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface antialiased min-h-screen flex justify-center selection:bg-secondary-fixed selection:text-on-secondary-fixed">
+<!-- Mobile Container viewport: 393px width constraint -->
+<div class="w-full max-w-[420px] bg-background min-h-screen relative flex flex-col pb-36 shadow-2xl">
+<!-- Header Block with Curved Bottom Corners -->
+<header class="bg-gradient-to-b from-[#16194F] to-[#242875] text-on-primary rounded-b-[28px] pt-2 pb-6 px-space-md shadow-lg relative z-20">
+<!-- Android Status Bar Area -->
+<div class="flex justify-between items-center text-xs text-primary-fixed py-1 mb-2 font-mono">
+<span class="font-bold text-on-primary">12:45</span>
+<div class="flex items-center space-x-1.5 opacity-90">
+<span class="material-symbols-outlined text-[15px]" data-icon="wifi">wifi</span>
+<span class="material-symbols-outlined text-[15px]" data-icon="network_cell">network_cell</span>
+<span class="text-[10px] font-bold tracking-tight">5G</span>
+<span class="material-symbols-outlined text-[15px]" data-icon="battery_full">battery_full</span>
+</div>
+</div>
+<!-- Shared Component: TopAppBar Integration -->
+<div class="flex justify-between items-center w-full py-space-xs text-on-primary">
+<button aria-label="Go back" class="w-10 h-10 rounded-full flex items-center justify-center bg-white/10 hover:bg-white/20 active:scale-95 transition-all text-on-primary" type="button">
+<span class="material-symbols-outlined text-[20px]" data-icon="arrow_back">arrow_back</span>
+</button>
+<h1 class="text-headline-sm font-headline-sm font-bold tracking-tight text-on-primary text-center">Rate Your Trip</h1>
+<button aria-label="Support and help" class="w-10 h-10 rounded-full flex items-center justify-center bg-white/10 hover:bg-white/20 active:scale-95 transition-all text-on-primary" type="button">
+<span class="material-symbols-outlined text-[20px]" data-icon="help_outline">help_outline</span>
+</button>
+</div>
+<!-- Header Sub-Info Pills -->
+<div class="flex items-center justify-between mt-3 pt-2 border-t border-white/10">
+<!-- Prominent Booking Pill Badge -->
+<div class="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-md px-3 py-1 rounded-full border border-white/20 shadow-sm">
+<span class="material-symbols-outlined text-tertiary-fixed-dim text-[16px] fill-icon" data-icon="verified_user">verified_user</span>
+<span class="text-label-md font-label-md text-on-primary tracking-wide">#RH-84920</span>
+</div>
+<!-- Trip Status Pill -->
+<div class="inline-flex items-center gap-1 bg-[#10B981]/20 border border-[#10B981]/40 px-2.5 py-1 rounded-full">
+<span class="material-symbols-outlined text-[#34D399] text-[14px] fill-icon" data-icon="check_circle">check_circle</span>
+<span class="text-label-sm font-label-sm text-[#A7F3D0] uppercase tracking-wider">Trip Ended</span>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas (Single-Column Mobile Flow) -->
+<main class="px-space-md pt-4 space-y-4 flex-1">
+<!-- 1. Vehicle Summary Card -->
+<section class="bg-surface-container-lowest rounded-xl p-space-sm border border-[#E2E7F3] shadow-[0_4px_16px_-2px_rgba(22,25,79,0.06)] relative overflow-hidden">
+<div class="flex gap-3 items-center">
+<!-- Thumbnail using provided image placeholder -->
+<div class="w-28 h-20 rounded-lg overflow-hidden relative bg-surface-container-high flex-shrink-0 border border-[#E2E7F3]">
+<img alt="Honda Civic Oriel 2021 Red Metallic" class="w-full h-full object-cover object-center transform hover:scale-105 transition-transform duration-300" src="https://lh3.googleusercontent.com/aida/AEtjO1W4zSEshPzA0Ga-NK5hdLynINrjp5w6Q8-aNOenVIgCCv_wvwKpHsHi3AkRVggQe4ZjjsmOl3fwjX8NYUjvWNu-ywIhaUo6-MSPDKPZylM1nEwSU76ePe2vLfA2WYM512Jy7BEqkSYmLK7cvIOx38CIBjoK_Urb2mKk9EM5e8qS6t0yVLE-H7qv3hrKhBjDxslP0__P4GKAWYSR9jR0c6tPnRJTEQTGk3AOyxuMSqwR2cBN_vQlw-GF-amq"/>
+<span class="absolute bottom-1 right-1 bg-primary/75 text-on-primary text-[9px] font-bold px-1.5 py-0.5 rounded backdrop-blur-sm">CIVIC</span>
+</div>
+<!-- Car & Host Meta -->
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between mb-0.5">
+<h2 class="text-title-md font-title-md text-primary truncate leading-tight">Honda Civic Oriel 2021</h2>
+</div>
+<div class="flex items-center gap-1.5 mb-1.5">
+<span class="bg-surface-container text-on-surface-variant font-mono text-[11px] font-bold px-1.5 py-0.5 rounded border border-outline-variant/40">LEA-4820</span>
+<span class="inline-flex items-center text-[10px] font-bold text-on-tertiary-container bg-[#10B981]/15 px-1.5 py-0.5 rounded-full">
+<span class="material-symbols-outlined text-[11px] mr-0.5 fill-icon" data-icon="verified">verified</span> Handover Verified
+              </span>
+</div>
+<p class="text-body-sm font-body-sm text-outline truncate flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px] text-primary" data-icon="storefront">storefront</span>
+              Al-Falah Rent a Car • Gulberg III, Lahore
+            </p>
+</div>
+</div>
+<!-- Trip Spec Timing Micro-Row -->
+<div class="mt-2.5 pt-2 border-t border-surface-container flex items-center justify-between text-body-sm font-body-sm text-on-surface-variant">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-secondary-container" data-icon="event_available">event_available</span>
+<span>Oct 29, 2024</span>
+</div>
+<span class="text-label-sm font-label-sm bg-surface-container-low px-2 py-0.5 rounded-full text-primary-container font-semibold">
+            3-Hour Booking Completed
+          </span>
+</div>
+</section>
+<!-- 2. Dual 5-Star Rating Rubric Cards -->
+<section class="space-y-3">
+<!-- Rubric Card 1: Host Service -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md border border-[#E2E7F3] shadow-[0_4px_16px_-2px_rgba(22,25,79,0.06)]">
+<div class="flex items-start justify-between mb-1">
+<div>
+<h3 class="text-title-md font-title-md text-primary">Host Service &amp; Punctuality</h3>
+<p class="text-body-sm font-body-sm text-outline mt-0.5">Friendliness, timely meetup, and transparent agreement</p>
+</div>
+<span class="bg-[#F59E0B]/15 text-[#B45309] text-label-sm font-label-sm px-2 py-0.5 rounded-full whitespace-nowrap font-bold">
+              5.0 Excellent
+            </span>
+</div>
+<!-- Active Star Rating Cluster -->
+<div class="flex items-center justify-between pt-2">
+<div aria-label="Rate Host Service 5 Stars" class="flex items-center gap-2" role="group">
+<button aria-label="1 star" class="p-1 text-[#F59E0B] hover:scale-110 active:scale-95 transition-transform" type="button"><span class="material-symbols-outlined text-[30px] fill-icon" data-icon="star">star</span></button>
+<button aria-label="2 stars" class="p-1 text-[#F59E0B] hover:scale-110 active:scale-95 transition-transform" type="button"><span class="material-symbols-outlined text-[30px] fill-icon" data-icon="star">star</span></button>
+<button aria-label="3 stars" class="p-1 text-[#F59E0B] hover:scale-110 active:scale-95 transition-transform" type="button"><span class="material-symbols-outlined text-[30px] fill-icon" data-icon="star">star</span></button>
+<button aria-label="4 stars" class="p-1 text-[#F59E0B] hover:scale-110 active:scale-95 transition-transform" type="button"><span class="material-symbols-outlined text-[30px] fill-icon" data-icon="star">star</span></button>
+<button aria-label="5 stars" class="p-1 text-[#F59E0B] hover:scale-110 active:scale-95 transition-transform" type="button"><span class="material-symbols-outlined text-[30px] fill-icon" data-icon="star">star</span></button>
+</div>
+<span class="text-body-sm font-body-sm text-outline italic">Tap to tweak</span>
+</div>
+</div>
+<!-- Rubric Card 2: Vehicle Condition -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md border border-[#E2E7F3] shadow-[0_4px_16px_-2px_rgba(22,25,79,0.06)]">
+<div class="flex items-start justify-between mb-1">
+<div>
+<h3 class="text-title-md font-title-md text-primary">Mechanical Condition &amp; Cleanliness</h3>
+<p class="text-body-sm font-body-sm text-outline mt-0.5">Engine response, chilled AC, clean interior, and brakes</p>
+</div>
+<span class="bg-[#F59E0B]/15 text-[#B45309] text-label-sm font-label-sm px-2 py-0.5 rounded-full whitespace-nowrap font-bold">
+              5.0 Outstanding
+            </span>
+</div>
+<!-- Active Star Rating Cluster -->
+<div class="flex items-center justify-between pt-2">
+<div aria-label="Rate Vehicle Condition 5 Stars" class="flex items-center gap-2" role="group">
+<button aria-label="1 star" class="p-1 text-[#F59E0B] hover:scale-110 active:scale-95 transition-transform" type="button"><span class="material-symbols-outlined text-[30px] fill-icon" data-icon="star">star</span></button>
+<button aria-label="2 stars" class="p-1 text-[#F59E0B] hover:scale-110 active:scale-95 transition-transform" type="button"><span class="material-symbols-outlined text-[30px] fill-icon" data-icon="star">star</span></button>
+<button aria-label="3 stars" class="p-1 text-[#F59E0B] hover:scale-110 active:scale-95 transition-transform" type="button"><span class="material-symbols-outlined text-[30px] fill-icon" data-icon="star">star</span></button>
+<button aria-label="4 stars" class="p-1 text-[#F59E0B] hover:scale-110 active:scale-95 transition-transform" type="button"><span class="material-symbols-outlined text-[30px] fill-icon" data-icon="star">star</span></button>
+<button aria-label="5 stars" class="p-1 text-[#F59E0B] hover:scale-110 active:scale-95 transition-transform" type="button"><span class="material-symbols-outlined text-[30px] fill-icon" data-icon="star">star</span></button>
+</div>
+<span class="text-body-sm font-body-sm text-outline italic">Tap to tweak</span>
+</div>
+</div>
+</section>
+<!-- 3. Quick Compliment Chips -->
+<section class="bg-surface-container-lowest rounded-xl p-space-md border border-[#E2E7F3] shadow-[0_4px_16px_-2px_rgba(22,25,79,0.06)]">
+<div class="flex items-center justify-between mb-2">
+<h3 class="text-title-md font-title-md text-primary">What stood out most?</h3>
+<span class="text-label-sm font-label-sm text-outline">Multiple choice</span>
+</div>
+<p class="text-body-sm font-body-sm text-outline mb-3">Highlights will appear on Al-Falah Motors verified profile</p>
+<!-- Interactive Chip Grid -->
+<div class="flex flex-wrap gap-2">
+<!-- Selected: Spotless Interior -->
+<button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-label-md font-label-md border-2 border-secondary-container bg-secondary-fixed/30 text-secondary transition-all active:scale-95 shadow-sm" type="button">
+<span class="material-symbols-outlined text-[16px] text-secondary-container fill-icon" data-icon="check">check</span>
+            Spotless Interior
+          </button>
+<!-- Selected: Chilled AC -->
+<button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-label-md font-label-md border-2 border-secondary-container bg-secondary-fixed/30 text-secondary transition-all active:scale-95 shadow-sm" type="button">
+<span class="material-symbols-outlined text-[16px] text-secondary-container fill-icon" data-icon="ac_unit">ac_unit</span>
+            Chilled AC
+          </button>
+<!-- Selected: Smooth Handover -->
+<button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-label-md font-label-md border-2 border-secondary-container bg-secondary-fixed/30 text-secondary transition-all active:scale-95 shadow-sm" type="button">
+<span class="material-symbols-outlined text-[16px] text-secondary-container fill-icon" data-icon="key">key</span>
+            Smooth Handover
+          </button>
+<!-- Selected: Polite Host -->
+<button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-label-md font-label-md border-2 border-secondary-container bg-secondary-fixed/30 text-secondary transition-all active:scale-95 shadow-sm" type="button">
+<span class="material-symbols-outlined text-[16px] text-secondary-container fill-icon" data-icon="sentiment_very_satisfied">sentiment_very_satisfied</span>
+            Polite Host
+          </button>
+<!-- Default Unselected: Accurate Fuel Level -->
+<button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-label-md font-label-md border border-[#DDE3EF] bg-surface-container-lowest text-on-surface-variant hover:border-primary-container active:scale-95 transition-all" type="button">
+<span class="material-symbols-outlined text-[16px] text-outline" data-icon="local_gas_station">local_gas_station</span>
+            Accurate Fuel Level
+          </button>
+<!-- Selected: Zero Hidden Charges -->
+<button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-label-md font-label-md border-2 border-secondary-container bg-secondary-fixed/30 text-secondary transition-all active:scale-95 shadow-sm" type="button">
+<span class="material-symbols-outlined text-[16px] text-secondary-container fill-icon" data-icon="payments">payments</span>
+            Zero Hidden Charges
+          </button>
+</div>
+</section>
+<!-- 4. Review Experience Text Box -->
+<section class="bg-surface-container-lowest rounded-xl p-space-md border border-[#E2E7F3] shadow-[0_4px_16px_-2px_rgba(22,25,79,0.06)] space-y-3">
+<div class="flex items-center justify-between">
+<label class="text-title-md font-title-md text-primary" for="review-notes">Detailed Feedback (Optional)</label>
+<span class="text-label-sm font-label-sm text-outline">0/500 characters</span>
+</div>
+<div class="relative">
+<textarea class="w-full text-body-md font-body-md p-3 rounded-lg border border-[#E2E7F3] focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 placeholder:text-outline/70 resize-none outline-none transition-all" id="review-notes" placeholder="Write a brief review to help fellow renters in Lahore regarding drive quality, fuel efficiency, or airport handover..." rows="3"></textarea>
+</div>
+<!-- Add Photo Action Chip -->
+<div class="flex items-center justify-between pt-1">
+<button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-dashed border-outline-variant bg-surface-container-low text-primary text-label-md font-label-md hover:bg-surface-container transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px] text-primary" data-icon="add_a_photo">add_a_photo</span>
+<span>+ Add Photos of Car (Optional)</span>
+</button>
+<span class="text-body-sm font-body-sm text-outline">JPG, PNG up to 5MB</span>
+</div>
+</section>
+<!-- 5. Host Community Impact Badge -->
+<section class="rounded-xl p-space-md bg-[#EEF2FF] border border-[#C7D2FE] flex items-start gap-3 shadow-sm">
+<div class="w-9 h-9 rounded-full bg-primary-container text-on-primary flex items-center justify-center flex-shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[20px] fill-icon text-[#6FFBBE]" data-icon="workspace_premium">workspace_premium</span>
+</div>
+<div>
+<h4 class="text-headline-sm font-headline-sm text-primary leading-snug">Community Impact</h4>
+<p class="text-body-sm font-body-sm text-on-surface-variant mt-0.5 leading-relaxed">
+            Your verified review helps <strong class="text-primary font-semibold">Al-Falah Motors</strong> maintain Top Host accreditation in the Lahore metropolitan automotive network.
+          </p>
+</div>
+</section>
+</main>
+<!-- Docked Sticky Bottom Submission Container -->
+<div class="fixed bottom-0 left-0 right-0 max-w-[420px] mx-auto bg-surface-container-lowest/95 backdrop-blur-md px-space-md pt-3 pb-5 border-t border-[#E2E7F3] shadow-[0_-8px_24px_rgba(22,25,79,0.08)] z-40">
+<!-- Primary Vibrant Sunset Orange Action Button -->
+<button class="w-full py-3.5 px-space-md rounded-full bg-secondary-container hover:bg-secondary active:scale-[0.98] text-on-secondary font-label-lg text-label-lg flex items-center justify-center gap-2 shadow-lg shadow-secondary-container/25 transition-all" type="button">
+<span class="material-symbols-outlined text-[20px] fill-icon" data-icon="task_alt">task_alt</span>
+<span>Submit Verified Review</span>
+</button>
+<!-- Trust Microcopy Underneath -->
+<div class="flex items-center justify-center gap-1.5 mt-2 text-outline">
+<span class="material-symbols-outlined text-[14px] text-tertiary-container fill-icon" data-icon="shield">shield</span>
+<span class="text-[11px] font-medium tracking-tight">Verified by RentalHub PK • NADRA-linked Review Integrity</span>
+</div>
+</div>
+</div>
+</body></html>

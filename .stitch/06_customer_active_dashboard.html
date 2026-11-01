@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>RentalHub - Customer Dashboard</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Typography Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "primary-container": "#1a1d5a",
+            "on-tertiary-fixed-variant": "#005236",
+            "on-secondary-container": "#501600",
+            "surface-container-low": "#f1f4f9",
+            "surface-container": "#eceef3",
+            "error-container": "#ffdad6",
+            "on-error": "#ffffff",
+            "surface-container-lowest": "#ffffff",
+            "tertiary-fixed-dim": "#4edea3",
+            "inverse-primary": "#bfc2ff",
+            "secondary-fixed": "#ffdbcf",
+            "on-surface-variant": "#464650",
+            "error": "#ba1a1a",
+            "surface-container-high": "#e6e8ed",
+            "on-secondary-fixed-variant": "#812900",
+            "on-error-container": "#93000a",
+            "primary-fixed-dim": "#bfc2ff",
+            "tertiary": "#00130a",
+            "surface-dim": "#d8dadf",
+            "primary-fixed": "#e0e0ff",
+            "surface-variant": "#e0e2e7",
+            "surface-bright": "#f7f9fe",
+            "secondary-fixed-dim": "#ffb59b",
+            "background": "#f7f9fe",
+            "on-secondary": "#ffffff",
+            "surface-container-highest": "#e0e2e7",
+            "on-primary": "#ffffff",
+            "surface": "#f7f9fe",
+            "on-tertiary-fixed": "#002113",
+            "outline-variant": "#c7c5d1",
+            "outline": "#777681",
+            "secondary": "#a93800",
+            "on-tertiary": "#ffffff",
+            "on-tertiary-container": "#009f6e",
+            "inverse-surface": "#2d3135",
+            "surface-tint": "#555998",
+            "on-secondary-fixed": "#380d00",
+            "on-primary-fixed-variant": "#3d417e",
+            "on-primary-container": "#8386c9",
+            "primary": "#020246",
+            "tertiary-container": "#002b1b",
+            "on-surface": "#181c20",
+            "on-background": "#181c20",
+            "inverse-on-surface": "#eff1f6",
+            "secondary-container": "#fd5a05",
+            "on-primary-fixed": "#101251",
+            "tertiary-fixed": "#6ffbbe"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-sm": "0.75rem",
+            "space-lg": "1.25rem",
+            "space-3xl": "3rem",
+            "space-xl": "1.5rem",
+            "space-md": "1rem",
+            "margin-lg": "1.5rem",
+            "space-xxs": "0.25rem",
+            "gutter": "1rem",
+            "space-2xl": "2rem",
+            "margin": "1rem",
+            "space-xs": "0.5rem",
+            "gutter-sm": "0.5rem"
+          },
+          "fontFamily": {
+            "body-lg": ["Inter"],
+            "headline-lg": ["Plus Jakarta Sans"],
+            "label-md": ["Plus Jakarta Sans"],
+            "headline-md": ["Plus Jakarta Sans"],
+            "headline-lg-mobile": ["Plus Jakarta Sans"],
+            "label-lg": ["Plus Jakarta Sans"],
+            "label-sm": ["Plus Jakarta Sans"],
+            "title-md": ["Plus Jakarta Sans"],
+            "headline-sm": ["Plus Jakarta Sans"],
+            "display-lg": ["Plus Jakarta Sans"],
+            "price-display": ["Plus Jakarta Sans"],
+            "body-md": ["Inter"],
+            "body-sm": ["Inter"]
+          },
+          "fontSize": {
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+            "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "700" }],
+            "headline-lg-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "700" }],
+            "label-sm": ["10px", { "lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "700" }],
+            "title-md": ["15px", { "lineHeight": "22px", "fontWeight": "600" }],
+            "headline-sm": ["16px", { "lineHeight": "24px", "fontWeight": "600" }],
+            "display-lg": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "price-display": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+            "body-sm": ["12px", { "lineHeight": "16px", "fontWeight": "400" }]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    .elevation-1 {
+      box-shadow: 0px 4px 16px -2px rgba(22, 25, 79, 0.06);
+    }
+    .elevation-2 {
+      box-shadow: 0px 8px 24px -4px rgba(22, 25, 79, 0.12);
+    }
+    .elevation-nav {
+      box-shadow: 0px 12px 32px -4px rgba(2, 2, 70, 0.28);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface antialiased flex justify-center min-h-screen">
+<!-- Mobile Container Mock (393px width standard Android) -->
+<div class="w-full max-w-[420px] bg-background min-h-screen flex flex-col relative pb-32 overflow-x-hidden">
+<!-- Top Curve Midnight Header -->
+<header class="w-full bg-gradient-to-br from-[#16194F] to-[#242875] text-on-primary pt-10 pb-16 px-space-md rounded-b-[28px] relative z-10 shadow-md">
+<!-- Status Top Bar Utility Row -->
+<div class="flex justify-between items-center w-full mb-space-md">
+<!-- Brand / Identity -->
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[#F95700]" data-icon="minor_crash" data-weight="fill" style="font-variation-settings: 'FILL' 1;">minor_crash</span>
+<span class="font-headline-sm text-headline-sm tracking-tight text-surface-container-lowest font-extrabold">RentalHub</span>
+<span class="bg-[#10B981]/20 text-[#4edea3] text-[9px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wider border border-[#10B981]/30">PK Live</span>
+</div>
+<!-- Notification Bell Action -->
+<button class="relative w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 active:scale-[0.98] transition-all flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined text-[22px]" data-icon="notifications">notifications</span>
+<span class="absolute top-2.5 right-2.5 w-2.5 h-2.5 bg-secondary-container rounded-full ring-2 ring-[#16194F] animate-pulse"></span>
+</button>
+</div>
+<!-- User Profile Greeting Row -->
+<div class="flex items-center gap-space-sm pt-space-xs">
+<div class="relative">
+<img class="w-14 h-14 rounded-full object-cover ring-2 ring-[#4edea3]/80 p-0.5 bg-surface-container-lowest shadow-sm" data-alt="Close up sharp professional portrait photo of a Pakistani corporate professional named Ahmed wearing an executive dark navy blazer in an illuminated architectural setting with confident gentle smile" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDqnWQw29JoZ_ZLiIou15N2ZL3QfkFj00Krj2MONlE2wEJ-jpABUc2fwlbiuN5JHaFiyR4ANOdjjiQ3OX-7QcW4FLl1_z4Zju8D13DkuW08Ua4H16bEzjL_iArNvXBOXpwfxwBXiukx3lAA49Q3VzUq16v5XnYjCmaqfCXPI9OFSkude9KwtYs8u6NBO2zGR_sFNb3Ntt6x0tF6zva-imgWB9t9pPeK6FAXtcHjTYp-t2piVByYrNVH2JkpP-KFGsYKS0Jhqx8WUYY2"/>
+<div class="absolute -bottom-1 -right-1 bg-[#10B981] text-surface-container-lowest rounded-full p-0.5 flex items-center justify-center shadow-xs">
+<span class="material-symbols-outlined text-[13px]" data-icon="verified" data-weight="fill" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5">
+<h1 class="font-headline-md text-headline-md text-surface-container-lowest font-bold leading-tight">Welcome back, Ahmed</h1>
+</div>
+<div class="flex items-center gap-1 text-surface-variant font-body-sm text-body-sm opacity-90 mt-0.5">
+<span class="material-symbols-outlined text-[14px] text-tertiary-fixed-dim" data-icon="location_on" data-weight="fill" style="font-variation-settings: 'FILL' 1;">location_on</span>
+<span>Lahore, Pakistan · Verified Renter</span>
+</div>
+</div>
+</div>
+</header>
+<!-- Overlapping Stats Bar (Level 1 Elevation) -->
+<div class="px-space-md -mt-10 relative z-20">
+<div class="grid grid-cols-3 gap-space-xs bg-surface-container-lowest rounded-xl p-space-sm border border-outline-variant/40 elevation-2">
+<!-- Trips Stat -->
+<div class="flex flex-col items-center justify-center p-space-xs border-r border-outline-variant/30">
+<div class="w-7 h-7 rounded-full bg-primary/5 text-primary flex items-center justify-center mb-1">
+<span class="material-symbols-outlined text-[16px]" data-icon="directions_car">directions_car</span>
+</div>
+<span class="font-headline-md text-headline-md text-primary leading-tight font-extrabold">8</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Total Trips</span>
+</div>
+<!-- Trust Score -->
+<div class="flex flex-col items-center justify-center p-space-xs border-r border-outline-variant/30">
+<div class="w-7 h-7 rounded-full bg-[#10B981]/10 text-on-tertiary-container flex items-center justify-center mb-1">
+<span class="material-symbols-outlined text-[16px]" data-icon="star" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<div class="flex items-center gap-0.5">
+<span class="font-headline-md text-headline-md text-primary leading-tight font-extrabold">4.9</span>
+<span class="text-[#10B981] font-bold text-xs">★</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-tertiary-container font-semibold">Trust Score</span>
+</div>
+<!-- Saved Garages -->
+<div class="flex flex-col items-center justify-center p-space-xs">
+<div class="w-7 h-7 rounded-full bg-secondary-container/10 text-secondary-container flex items-center justify-center mb-1">
+<span class="material-symbols-outlined text-[16px]" data-icon="storefront">storefront</span>
+</div>
+<span class="font-headline-md text-headline-md text-primary leading-tight font-extrabold">5</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Garages</span>
+</div>
+</div>
+</div>
+<!-- Main Content Canvas -->
+<main class="px-space-md pt-space-lg space-y-space-lg">
+<!-- Section: Active Rental In-Progress Card -->
+<section>
+<div class="flex items-center justify-between mb-space-xs">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-[#10B981] animate-ping"></span>
+<span class="font-headline-sm text-headline-sm text-primary font-bold">Active Trip In-Progress</span>
+</div>
+<span class="bg-[#10B981]/10 text-[#009f6e] border border-[#10B981]/30 font-label-sm text-label-sm px-2 py-0.5 rounded-full flex items-center gap-1 font-bold">
+<span class="material-symbols-outlined text-[13px]" data-icon="schedule">schedule</span>
+            Return in 2h 15m
+          </span>
+</div>
+<!-- Hero Card for Active Car -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant/40 elevation-2 overflow-hidden transition-all">
+<div class="relative w-full h-44 bg-surface-container">
+<img alt="Honda Civic 2021 Red Edition Active Car" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/AEtjO1W4zSEshPzA0Ga-NK5hdLynINrjp5w6Q8-aNOenVIgCCv_wvwKpHsHi3AkRVggQe4ZjjsmOl3fwjX8NYUjvWNu-ywIhaUo6-MSPDKPZylM1nEwSU76ePe2vLfA2WYM512Jy7BEqkSYmLK7cvIOx38CIBjoK_Urb2mKk9EM5e8qS6t0yVLE-H7qv3hrKhBjDxslP0__P4GKAWYSR9jR0c6tPnRJTEQTGk3AOyxuMSqwR2cBN_vQlw-GF-amq"/>
+<!-- Live Overlay Floating Badges -->
+<div class="absolute top-3 left-3 flex items-center gap-1.5 bg-[#16194F]/85 backdrop-blur-md text-white text-[11px] font-bold px-2.5 py-1 rounded-full border border-white/20">
+<span class="material-symbols-outlined text-[13px] text-[#4edea3]" data-icon="key">key</span>
+<span>Self Drive</span>
+</div>
+<div class="absolute top-3 right-3 bg-white/90 backdrop-blur-md px-2.5 py-1 rounded-full shadow-sm text-primary font-label-sm text-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px] text-primary" data-icon="pin_drop">pin_drop</span>
+<span>Live GPS Active</span>
+</div>
+<div class="absolute bottom-2 right-2 bg-black/60 backdrop-blur-sm text-white text-[10px] font-medium px-2 py-0.5 rounded">
+              Lic: LEA-4820
+            </div>
+</div>
+<!-- Card Body Details -->
+<div class="p-space-md">
+<div class="flex justify-between items-start">
+<div>
+<h2 class="font-headline-md text-headline-md text-primary font-extrabold tracking-tight">Honda Civic 2021</h2>
+<div class="flex items-center gap-1.5 text-on-surface-variant font-body-sm text-body-sm mt-0.5">
+<span class="material-symbols-outlined text-[15px] text-primary" data-icon="shield_person">shield_person</span>
+<span class="font-medium text-on-surface">Al-Falah Motors</span>
+<span>· Gulberg III, Lahore</span>
+</div>
+</div>
+<div class="text-right">
+<span class="font-label-sm text-label-sm text-on-surface-variant block uppercase tracking-wider">Per Day</span>
+<span class="font-headline-sm text-headline-sm text-primary font-bold">PKR 12,000</span>
+</div>
+</div>
+<!-- Rental Milestones / Telemetry Bar -->
+<div class="mt-space-sm p-space-xs bg-surface-container-low rounded-lg border border-outline-variant/30 flex items-center justify-between text-body-sm">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-[#10B981]" data-icon="check_circle" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="font-body-sm text-on-surface font-medium">Pickup inspected</span>
+</div>
+<div class="h-3 w-[1px] bg-outline-variant"></div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-secondary" data-icon="local_gas_station">local_gas_station</span>
+<span class="font-body-sm text-on-surface-variant">Fuel: 85%</span>
+</div>
+<div class="h-3 w-[1px] bg-outline-variant"></div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-primary" data-icon="speed">speed</span>
+<span class="font-body-sm text-on-surface-variant">142 km used</span>
+</div>
+</div>
+<!-- Action Buttons Row -->
+<div class="mt-space-md grid grid-cols-12 gap-space-xs">
+<button class="col-span-4 bg-error-container/60 hover:bg-error-container text-error active:scale-[0.98] transition-all rounded-full py-2.5 px-space-xs flex items-center justify-center gap-1 font-label-md text-label-md font-bold border border-error/20">
+<span class="material-symbols-outlined text-[18px]" data-icon="emergency_home">emergency_home</span>
+<span>SOS Support</span>
+</button>
+<button class="col-span-8 bg-[#F95700] hover:bg-[#E04E00] text-surface-container-lowest active:scale-[0.98] transition-all rounded-full py-2.5 px-space-sm flex items-center justify-center gap-1.5 font-label-md text-label-md font-bold shadow-md shadow-[#F95700]/20">
+<span class="material-symbols-outlined text-[18px]" data-icon="qr_code_2">qr_code_2</span>
+<span>View Pass &amp; Agreement</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Section: Quick Actions Grid -->
+<section>
+<div class="flex items-center justify-between mb-space-xs">
+<h3 class="font-headline-sm text-headline-sm text-primary font-bold">Quick Actions</h3>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Fast Services</span>
+</div>
+<div class="grid grid-cols-4 gap-2.5">
+<!-- 1. Book a Car -->
+<button class="bg-surface-container-lowest hover:bg-surface-container-low active:scale-[0.98] transition-all p-3 rounded-xl border border-outline-variant/40 flex flex-col items-center justify-center text-center elevation-1">
+<div class="w-11 h-11 rounded-full bg-primary/10 text-primary flex items-center justify-center mb-1.5">
+<span class="material-symbols-outlined text-[22px]" data-icon="directions_car">directions_car</span>
+</div>
+<span class="font-label-sm text-label-sm text-primary font-bold leading-tight">Book a Car</span>
+</button>
+<!-- 2. My Documents -->
+<button class="bg-surface-container-lowest hover:bg-surface-container-low active:scale-[0.98] transition-all p-3 rounded-xl border border-outline-variant/40 flex flex-col items-center justify-center text-center elevation-1">
+<div class="w-11 h-11 rounded-full bg-[#10B981]/15 text-[#005236] flex items-center justify-center mb-1.5">
+<span class="material-symbols-outlined text-[22px]" data-icon="badge">badge</span>
+</div>
+<span class="font-label-sm text-label-sm text-primary font-bold leading-tight">Documents</span>
+</button>
+<!-- 3. Saved Shops -->
+<button class="bg-surface-container-lowest hover:bg-surface-container-low active:scale-[0.98] transition-all p-3 rounded-xl border border-outline-variant/40 flex flex-col items-center justify-center text-center elevation-1">
+<div class="w-11 h-11 rounded-full bg-secondary-container/10 text-[#a93800] flex items-center justify-center mb-1.5">
+<span class="material-symbols-outlined text-[22px]" data-icon="favorite">favorite</span>
+</div>
+<span class="font-label-sm text-label-sm text-primary font-bold leading-tight">Saved Shops</span>
+</button>
+<!-- 4. Support FAQ -->
+<button class="bg-surface-container-lowest hover:bg-surface-container-low active:scale-[0.98] transition-all p-3 rounded-xl border border-outline-variant/40 flex flex-col items-center justify-center text-center elevation-1">
+<div class="w-11 h-11 rounded-full bg-[#020246]/10 text-primary flex items-center justify-center mb-1.5">
+<span class="material-symbols-outlined text-[22px]" data-icon="headset_mic">headset_mic</span>
+</div>
+<span class="font-label-sm text-label-sm text-primary font-bold leading-tight">Support FAQ</span>
+</button>
+</div>
+</section>
+<!-- Section: Recommended Fleets in Lahore -->
+<section>
+<div class="flex items-center justify-between mb-space-xs">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary text-[20px]" data-icon="verified_user">verified_user</span>
+<h3 class="font-headline-sm text-headline-sm text-primary font-bold">Recommended Fleets in Lahore</h3>
+</div>
+<button class="font-label-md text-label-md text-[#a93800] font-bold flex items-center">
+            See All
+            <span class="material-symbols-outlined text-[16px]" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+<!-- Horizontal Scrollable Fleet Showcase -->
+<div class="flex gap-space-sm overflow-x-auto no-scrollbar pb-2 pt-1 -mx-space-md px-space-md">
+<!-- Card 1: Toyota Yaris -->
+<div class="min-w-[270px] max-w-[270px] bg-surface-container-lowest rounded-xl border border-outline-variant/40 elevation-1 overflow-hidden flex flex-col flex-shrink-0">
+<div class="relative h-32 w-full bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="A pristine white metallic Toyota Yaris modern sedan parked on clean showroom pavement in sunny daylight with crisp reflections, high contrast automotive commercial photography" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC30jJwsy2u_wmw2ROGwzcb4_GETwij2obyRVZr5m7H7ALfrKWZrmtqcUAY5fMLAaO6P_wPjYf8xpne3T-kHt1kMa52KFDLusFTev4leMGDXnomsCBmq0t-5fSpuVOvXiESLtpw73AC28wcQRevUROlvtiz7GbshSoLJdNq5ugi50LJMjbbh9xSNxI14W1fZ0dVnCrObqGvamPKiQr917eHtYTyZMVi2e8eW3cP3z9b1b9cn0YABvWDP3sFWlAUKkUvTiG0Q9pAhwz5"/>
+<div class="absolute top-2 left-2 bg-[#10B981] text-white text-[9px] font-bold px-2 py-0.5 rounded-full flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[10px]" data-icon="check">check</span> VERIFIED
+              </div>
+<div class="absolute top-2 right-2 w-7 h-7 rounded-full bg-[#16194F]/60 backdrop-blur-md text-white flex items-center justify-center">
+<span class="material-symbols-outlined text-[14px]" data-icon="bookmark">bookmark</span>
+</div>
+<div class="absolute bottom-2 left-2 bg-[#020246]/80 backdrop-blur-sm text-white text-[10px] font-semibold px-2 py-0.5 rounded-full">
+                With Driver Available
+              </div>
+</div>
+<div class="p-space-sm flex flex-col justify-between flex-1">
+<div>
+<div class="flex items-center justify-between">
+<h4 class="font-title-md text-title-md text-primary font-bold truncate">Toyota Yaris ATIV X</h4>
+<div class="flex items-center gap-0.5 bg-[#10B981]/15 px-1.5 py-0.5 rounded text-[11px] text-[#005236] font-bold">
+<span class="material-symbols-outlined text-[11px]" data-icon="star" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
+<span>4.8</span>
+</div>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Al-Falah Motors · Lahore</p>
+<!-- Spec Mini-tags -->
+<div class="flex items-center gap-1.5 mt-2">
+<span class="bg-surface-container-low text-on-surface-variant text-[10px] px-2 py-0.5 rounded font-medium">Automatic</span>
+<span class="bg-surface-container-low text-on-surface-variant text-[10px] px-2 py-0.5 rounded font-medium">Petrol</span>
+<span class="bg-surface-container-low text-on-surface-variant text-[10px] px-2 py-0.5 rounded font-medium">5 Seats</span>
+</div>
+</div>
+<!-- Footer with Pricing -->
+<div class="flex items-center justify-between mt-3 pt-2 border-t border-outline-variant/30">
+<div>
+<span class="font-label-sm text-label-sm text-on-surface-variant block">From</span>
+<span class="font-headline-sm text-headline-sm text-primary font-bold">PKR 6,500<span class="text-[11px] font-normal text-on-surface-variant">/day</span></span>
+</div>
+<button class="bg-[#F95700] text-surface-container-lowest font-label-md text-label-md px-3.5 py-1.5 rounded-full font-bold active:scale-[0.98]">
+                  Reserve
+                </button>
+</div>
+</div>
+</div>
+<!-- Card 2: KIA Sportage -->
+<div class="min-w-[270px] max-w-[270px] bg-surface-container-lowest rounded-xl border border-outline-variant/40 elevation-1 overflow-hidden flex flex-col flex-shrink-0">
+<div class="relative h-32 w-full bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="A sleek dark graphite KIA Sportage AWD luxury crossover SUV captured in high dynamic range lighting in front of modern architecture in Lahore Pakistan, professional automotive advertisement photo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD8PAaRdr84xfDN2BNsDkAz3IdZXPECARvd2ZpboC7N4xV_BXtX-x8AfgR56qsMUV8erHF_vedFbvXdg5l4qwovNeVh8hiDZIYv1_OCd5RPkpp15BYK6p9RzUTUoOxkExuGoFgd_PBq08ztzLz0FDGWgXbJ_DVPEfnvheehAeVoVKn1GpNBvLes8-_FWeTlZ5Uh4LZq7uquYJxjOA5OVxHyaOtx9jF5S39yTeXaYySruJeb07JCx97A1_PS7B-l6Bppm0RN1S27XmxD"/>
+<div class="absolute top-2 left-2 bg-[#10B981] text-white text-[9px] font-bold px-2 py-0.5 rounded-full flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[10px]" data-icon="check">check</span> VERIFIED
+              </div>
+<div class="absolute top-2 right-2 w-7 h-7 rounded-full bg-[#16194F]/60 backdrop-blur-md text-white flex items-center justify-center">
+<span class="material-symbols-outlined text-[14px]" data-icon="bookmark_border">bookmark_border</span>
+</div>
+<div class="absolute bottom-2 left-2 bg-[#020246]/80 backdrop-blur-sm text-white text-[10px] font-semibold px-2 py-0.5 rounded-full">
+                Self Drive
+              </div>
+</div>
+<div class="p-space-sm flex flex-col justify-between flex-1">
+<div>
+<div class="flex items-center justify-between">
+<h4 class="font-title-md text-title-md text-primary font-bold truncate">KIA Sportage AWD 2023</h4>
+<div class="flex items-center gap-0.5 bg-[#10B981]/15 px-1.5 py-0.5 rounded text-[11px] text-[#005236] font-bold">
+<span class="material-symbols-outlined text-[11px]" data-icon="star" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
+<span>4.9</span>
+</div>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Rehman Motors · Gulberg</p>
+<!-- Spec Mini-tags -->
+<div class="flex items-center gap-1.5 mt-2">
+<span class="bg-surface-container-low text-on-surface-variant text-[10px] px-2 py-0.5 rounded font-medium">AWD Auto</span>
+<span class="bg-surface-container-low text-on-surface-variant text-[10px] px-2 py-0.5 rounded font-medium">Panoramic</span>
+<span class="bg-surface-container-low text-on-surface-variant text-[10px] px-2 py-0.5 rounded font-medium">5 Seats</span>
+</div>
+</div>
+<!-- Footer with Pricing -->
+<div class="flex items-center justify-between mt-3 pt-2 border-t border-outline-variant/30">
+<div>
+<span class="font-label-sm text-label-sm text-on-surface-variant block">From</span>
+<span class="font-headline-sm text-headline-sm text-primary font-bold">PKR 14,000<span class="text-[11px] font-normal text-on-surface-variant">/day</span></span>
+</div>
+<button class="bg-[#F95700] text-surface-container-lowest font-label-md text-label-md px-3.5 py-1.5 rounded-full font-bold active:scale-[0.98]">
+                  Reserve
+                </button>
+</div>
+</div>
+</div>
+<!-- Card 3: Hyundai Elantra -->
+<div class="min-w-[270px] max-w-[270px] bg-surface-container-lowest rounded-xl border border-outline-variant/40 elevation-1 overflow-hidden flex flex-col flex-shrink-0">
+<div class="relative h-32 w-full bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="A silver metallic Hyundai Elantra GLS sedan photographed in bright daylight on a clean urban boulevard, polished reflective bodywork, contemporary executive aesthetic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB_y57rDUnhJJWYUc-XGSoZxGiJzcU2R6uZv6XKIwx9oY0R4NNGUnyUNybrbHBHxOTzPo_o7zTcIIlOgRlDoYTsRFG-V2CSsLExi23JUEjqwoo5dvJ0ao790VuGHB8B6lW0RH0jz1Rr_ez1k-iHOrsYnmuiOtxKcC_87Zj7Iq4ZrfJfIAnmgesO-wmK5kSDeLydycUBlUukzSceVycRbspxsgvfrZ1CfgLCtZnKf-KtUdEFJgsv8pF3Xxh_d-G3ixr3M1BCMavFChiB"/>
+<div class="absolute top-2 left-2 bg-[#10B981] text-white text-[9px] font-bold px-2 py-0.5 rounded-full flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[10px]" data-icon="check">check</span> VERIFIED
+              </div>
+<div class="absolute top-2 right-2 w-7 h-7 rounded-full bg-[#16194F]/60 backdrop-blur-md text-white flex items-center justify-center">
+<span class="material-symbols-outlined text-[14px]" data-icon="bookmark_border">bookmark_border</span>
+</div>
+</div>
+<div class="p-space-sm flex flex-col justify-between flex-1">
+<div>
+<div class="flex items-center justify-between">
+<h4 class="font-title-md text-title-md text-primary font-bold truncate">Hyundai Elantra GLS</h4>
+<div class="flex items-center gap-0.5 bg-[#10B981]/15 px-1.5 py-0.5 rounded text-[11px] text-[#005236] font-bold">
+<span class="material-symbols-outlined text-[11px]" data-icon="star" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
+<span>4.7</span>
+</div>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Lahore Wheels · Model Town</p>
+<!-- Spec Mini-tags -->
+<div class="flex items-center gap-1.5 mt-2">
+<span class="bg-surface-container-low text-on-surface-variant text-[10px] px-2 py-0.5 rounded font-medium">Automatic</span>
+<span class="bg-surface-container-low text-on-surface-variant text-[10px] px-2 py-0.5 rounded font-medium">Petrol</span>
+<span class="bg-surface-container-low text-on-surface-variant text-[10px] px-2 py-0.5 rounded font-medium">Executive</span>
+</div>
+</div>
+<!-- Footer with Pricing -->
+<div class="flex items-center justify-between mt-3 pt-2 border-t border-outline-variant/30">
+<div>
+<span class="font-label-sm text-label-sm text-on-surface-variant block">From</span>
+<span class="font-headline-sm text-headline-sm text-primary font-bold">PKR 8,500<span class="text-[11px] font-normal text-on-surface-variant">/day</span></span>
+</div>
+<button class="bg-[#F95700] text-surface-container-lowest font-label-md text-label-md px-3.5 py-1.5 rounded-full font-bold active:scale-[0.98]">
+                  Reserve
+                </button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Trust & Direct WhatsApp Support Banner -->
+<section class="bg-gradient-to-r from-[#10B981]/10 to-[#10B981]/5 border border-[#10B981]/30 rounded-xl p-space-md flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-[#10B981] text-surface-container-lowest flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-[20px]" data-icon="support_agent">support_agent</span>
+</div>
+<div>
+<h4 class="font-headline-sm text-headline-sm text-primary font-bold">Need roadside assistance?</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Direct 24/7 WhatsApp dispatch</p>
+</div>
+</div>
+<button class="bg-[#10B981] hover:bg-[#0E9F6E] active:scale-[0.98] text-white px-3.5 py-2 rounded-full font-label-md text-label-md font-bold flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-[16px]" data-icon="chat">chat</span>
+          WhatsApp
+        </button>
+</section>
+</main>
+<!-- Shared Component: BottomNavBar -->
+<!-- JSON Blueprint: destination_count=5, labels=["Dashboard", "Bookings", "Saved", "Support", "Profile"], active='Dashboard' -->
+<nav class="fixed bottom-3 left-3 right-3 max-w-[394px] mx-auto z-50 bg-[#16194F] text-surface-container-lowest rounded-full px-2 py-1.5 elevation-nav flex justify-around items-center border border-white/10 backdrop-blur-lg">
+<!-- 1. Dashboard (Active Destination - Vibrant Sunset Orange Pill) -->
+<button class="flex flex-col items-center justify-center bg-[#F95700] text-surface-container-lowest rounded-full px-3 py-1 active:scale-[0.98] transition-all">
+<span class="material-symbols-outlined text-[20px]" data-icon="dashboard" data-weight="fill" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-label-sm text-label-sm font-bold tracking-tight">Dashboard</span>
+</button>
+<!-- 2. Bookings -->
+<button class="flex flex-col items-center justify-center text-surface-variant/80 hover:text-white px-2 py-1 active:scale-[0.98] transition-all">
+<span class="material-symbols-outlined text-[20px]" data-icon="calendar_month">calendar_month</span>
+<span class="font-label-sm text-label-sm font-medium">Bookings</span>
+</button>
+<!-- 3. Saved -->
+<button class="flex flex-col items-center justify-center text-surface-variant/80 hover:text-white px-2 py-1 active:scale-[0.98] transition-all">
+<span class="material-symbols-outlined text-[20px]" data-icon="bookmark">bookmark</span>
+<span class="font-label-sm text-label-sm font-medium">Saved</span>
+</button>
+<!-- 4. Support -->
+<button class="flex flex-col items-center justify-center text-surface-variant/80 hover:text-white px-2 py-1 active:scale-[0.98] transition-all">
+<span class="material-symbols-outlined text-[20px]" data-icon="support_agent">support_agent</span>
+<span class="font-label-sm text-label-sm font-medium">Support</span>
+</button>
+<!-- 5. Profile -->
+<button class="flex flex-col items-center justify-center text-surface-variant/80 hover:text-white px-2 py-1 active:scale-[0.98] transition-all">
+<span class="material-symbols-outlined text-[20px]" data-icon="person">person</span>
+<span class="font-label-sm text-label-sm font-medium">Profile</span>
+</button>
+</nav>
+</div>
+</body></html>
