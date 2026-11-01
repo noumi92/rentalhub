@@ -4,6 +4,24 @@ class BlacklistRemoteDataSource {
   final Map<String, BlacklistEntity> _records = {};
   final Set<String> _blacklistedCnics = {};
 
+  BlacklistRemoteDataSource() {
+    _initSampleData();
+  }
+
+  void _initSampleData() {
+    const defaultBlacklisted = BlacklistEntity(
+      blacklistId: 'BLK-1001',
+      reportedByShopId: 'shop-metro-lahore',
+      cnicNumber: '35201-9999999-1',
+      phoneNumber: '0300-9998888',
+      reasonCategory: 'Default & Car Impoundment',
+      description: 'Customer failed to return Corolla Altis after 14 days, vehicle tracked and recovered from police impound.',
+      isActive: true,
+    );
+    _records[defaultBlacklisted.blacklistId] = defaultBlacklisted;
+    _blacklistedCnics.add(defaultBlacklisted.cnicNumber);
+  }
+
   Future<BlacklistEntity> reportCustomerToBlacklist({
     required String reportedByShopId,
     required String cnicNumber,
@@ -51,7 +69,22 @@ class BlacklistRemoteDataSource {
   }
 
   Future<bool> isCnicBlacklisted(String cnicNumber) async {
-    return _blacklistedCnics.contains(cnicNumber);
+    final clean = cnicNumber.replaceAll('-', '').trim();
+    return _blacklistedCnics.any((c) => c.replaceAll('-', '').trim() == clean);
+  }
+
+  Future<BlacklistEntity?> getBlacklistRecordByCnic(String cnicNumber) async {
+    final clean = cnicNumber.replaceAll('-', '').trim();
+    for (final entity in _records.values) {
+      if (entity.cnicNumber.replaceAll('-', '').trim() == clean && entity.isActive) {
+        return entity;
+      }
+    }
+    return null;
+  }
+
+  Future<List<BlacklistEntity>> getAllRecords() async {
+    return _records.values.toList();
   }
 }
 
