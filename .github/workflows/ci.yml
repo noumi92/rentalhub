@@ -86,7 +86,7 @@ jobs:
         run: flutter pub get
 
       - name: Compile Flutter Web Bundle
-        run: flutter build web --release --base-href "/admin/"
+        run: flutter build web --release --base-href "/"
 
       - name: Copy Admin SPA .htaccess
         run: cp web/.htaccess build/web/.htaccess || true
@@ -96,6 +96,69 @@ jobs:
         with:
           name: admin-web-bundle
           path: build/web/
+
+  deploy_cpanel_web_admin:
+    name: Deploy Web Admin Panel to cPanel
+    needs: build_web_admin
+    if: github.ref == 'refs/heads/master' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Check cPanel Secrets
+        id: check_secrets
+        run: |
+          if [ -n "${{ secrets.CPANEL_FTP_SERVER }}" ]; then
+            echo "has_cpanel=true" >> $GITHUB_OUTPUT
+            echo "cPanel server configured: ${{ secrets.CPANEL_FTP_SERVER }}"
+          else
+            echo "has_cpanel=false" >> $GITHUB_OUTPUT
+            echo "CPANEL_FTP_SERVER secret not configured. Skipping automated cPanel deployment."
+          fi
+
+      - name: Download Web Admin Artifact
+        if: steps.check_secrets.outputs.has_cpanel == 'true'
+        uses: actions/download-artifact@v4
+        with:
+          name: admin-web-bundle
+          path: dist_web/
+
+      - name: Deploy Web Admin via lftp
+        if: steps.check_secrets.outputs.has_cpanel == 'true'
+        env:
+          CPANEL_SERVER: ${{ secrets.CPANEL_FTP_SERVER }}
+          CPANEL_USER: ${{ secrets.CPANEL_FTP_USERNAME }}
+          CPANEL_PASS: ${{ secrets.CPANEL_FTP_PASSWORD }}
+          CPANEL_PORT: ${{ secrets.CPANEL_FTP_PORT }}
+          CPANEL_PROTO: ${{ secrets.CPANEL_FTP_PROTOCOL }}
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq lftp
+          
+          PROTO="${CPANEL_PROTO:-ftp}"
+          PORT="${CPANEL_PORT:-21}"
+          
+          echo "Deploying Web Admin to cPanel root via $PROTO:$PORT..."
+          
+          if [ "$PROTO" = "sftp" ]; then
+            lftp -u "$CPANEL_USER","$CPANEL_PASS" -p "$PORT" "sftp://$CPANEL_SERVER" <<EOF
+          set sftp:auto-confirm yes
+          set net:timeout 30
+          set net:max-retries 3
+          mirror -R --verbose -x '^storage/' -x '^cgi-bin/' -x '^\.well-known/' dist_web/ ./
+          quit
+          EOF
+          else
+            lftp -u "$CPANEL_USER","$CPANEL_PASS" -p "$PORT" "$CPANEL_SERVER" <<EOF
+          set ftp:ssl-allow true
+          set ssl:verify-certificate no
+          set ftp:passive-mode true
+          set net:timeout 30
+          set net:max-retries 3
+          mirror -R --verbose -x '^storage/' -x '^cgi-bin/' -x '^\.well-known/' dist_web/ ./
+          quit
+          EOF
+          fi
 
   deploy_cpanel_storage:
     name: Deploy Storage Server to cPanel
