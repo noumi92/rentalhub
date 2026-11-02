@@ -131,23 +131,24 @@ class _CustomerCancelBookingViewState extends State<CustomerCancelBookingView> {
                           borderRadius: BorderRadius.circular(14),
                           border: Border.all(color: AppColors.border),
                         ),
-                        child: Column(
-                          children: _reasons.map((r) {
-                            return RadioListTile<String>(
-                              value: r,
-                              groupValue: _selectedReason,
-                              activeColor: AppColors.crimsonRed,
-                              title: Text(r,
-                                  style: const TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w600)),
-                              onChanged: (val) {
-                                if (val != null) {
-                                  setState(() => _selectedReason = val);
-                                }
-                              },
-                            );
-                          }).toList(),
+                        child: RadioGroup<String>(
+                          groupValue: _selectedReason,
+                          onChanged: (val) {
+                            if (val != null) {
+                              setState(() => _selectedReason = val);
+                            }
+                          },
+                          child: Column(
+                            children: _reasons.map((r) {
+                              return RadioListTile<String>(
+                                value: r,
+                                title: Text(r,
+                                    style: const TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w600)),
+                              );
+                            }).toList(),
+                          ),
                         ),
                       ),
                     ),

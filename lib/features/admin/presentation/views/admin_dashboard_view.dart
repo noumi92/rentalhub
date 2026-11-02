@@ -18,7 +18,7 @@ class AdminDashboardView extends StatefulWidget {
 }
 
 class _AdminDashboardViewState extends State<AdminDashboardView> {
-  String _activeRoute = 'dashboard';
+  final String _activeRoute = 'dashboard';
 
   void _handleNavigation(String route) {
     if (route == _activeRoute) return;

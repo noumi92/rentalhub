@@ -52,6 +52,8 @@ class _OnboardingRoleViewState extends State<OnboardingRoleView> {
       }
     }
 
+    if (!mounted) return;
+
     if (widget.onRoleLocked != null) {
       widget.onRoleLocked!(_selectedRole);
     } else {

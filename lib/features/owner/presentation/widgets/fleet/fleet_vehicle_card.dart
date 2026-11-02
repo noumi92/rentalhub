@@ -112,7 +112,7 @@ class FleetVehicleCard extends StatelessWidget {
                     const SizedBox(width: 4),
                     Switch(
                       value: isAvailable,
-                      activeColor: AppColors.emeraldGreen,
+                      activeThumbColor: AppColors.emeraldGreen,
                       onChanged: onToggleAvailability,
                     ),
                   ],

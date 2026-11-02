@@ -54,7 +54,7 @@ class _SignaturePadWidgetState extends State<SignaturePadWidget> {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
+            color: Colors.black.withValues(alpha: 0.02),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -123,7 +123,7 @@ class _SignaturePadWidgetState extends State<SignaturePadWidget> {
             decoration: BoxDecoration(
               color: AppColors.background,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColors.border.withOpacity(0.6), style: BorderStyle.solid),
+              border: Border.all(color: AppColors.border.withValues(alpha: 0.6), style: BorderStyle.solid),
             ),
             child: GestureDetector(
               onPanUpdate: (details) {
@@ -143,7 +143,7 @@ class _SignaturePadWidgetState extends State<SignaturePadWidget> {
                           'Sign here on screen (${widget.signerName})',
                           style: TextStyle(
                             fontSize: 12,
-                            color: AppColors.textMuted.withOpacity(0.7),
+                            color: AppColors.textMuted.withValues(alpha: 0.7),
                             fontStyle: FontStyle.italic,
                           ),
                         )

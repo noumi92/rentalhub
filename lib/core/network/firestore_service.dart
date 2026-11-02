@@ -223,9 +223,9 @@ class FirestoreService {
   }) async {
     if (_hasLiveFirestore) {
       final bookingRef = _firestore!.collection('bookings').doc(bookingId);
-      final vehicleRef = _firestore!.collection('vehicles').doc(vehicleId);
+      final vehicleRef = _firestore.collection('vehicles').doc(vehicleId);
 
-      await _firestore!.runTransaction((transaction) async {
+      await _firestore.runTransaction((transaction) async {
         final vSnapshot = await transaction.get(vehicleRef);
         if (!vSnapshot.exists) {
           throw const ServerException(message: 'Vehicle not found');

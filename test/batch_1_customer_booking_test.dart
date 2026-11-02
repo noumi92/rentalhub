@@ -4,7 +4,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:rentalhub/core/di/injection_container.dart' as di;
 import 'package:rentalhub/features/bookings/data/datasources/booking_remote_data_source.dart';
 import 'package:rentalhub/features/bookings/domain/entities/booking_entity.dart';
-import 'package:rentalhub/features/bookings/presentation/views/booking_approved_view.dart';
 import 'package:rentalhub/features/bookings/presentation/views/booking_success_view.dart';
 import 'package:rentalhub/features/bookings/presentation/views/owner_payment_accounts_view.dart';
 import 'package:rentalhub/features/bookings/presentation/views/payment_proof_upload_view.dart';

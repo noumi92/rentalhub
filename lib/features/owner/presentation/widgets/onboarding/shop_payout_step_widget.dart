@@ -121,7 +121,7 @@ class ShopPayoutStepWidget extends StatelessWidget {
                     ),
                     Switch(
                       value: bankEnabled,
-                      activeColor: AppColors.sunsetOrange,
+                      activeThumbColor: AppColors.sunsetOrange,
                       onChanged: onBankToggle,
                     ),
                   ],
@@ -237,7 +237,7 @@ class ShopPayoutStepWidget extends StatelessWidget {
                     ],
                   ),
                 ),
-                Switch(value: isEnabled, activeColor: AppColors.sunsetOrange, onChanged: onToggle),
+                Switch(value: isEnabled, activeThumbColor: AppColors.sunsetOrange, onChanged: onToggle),
               ],
             ),
             if (isEnabled) ...[

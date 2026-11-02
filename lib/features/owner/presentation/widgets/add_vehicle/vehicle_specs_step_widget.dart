@@ -326,7 +326,7 @@ class VehicleSpecsStepWidget extends StatelessWidget {
               const SizedBox(width: 8),
               Switch(
                 value: hasAc,
-                activeColor: AppColors.sunsetOrange,
+                activeThumbColor: AppColors.sunsetOrange,
                 onChanged: onAcChanged,
               ),
             ],

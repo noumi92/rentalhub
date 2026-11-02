@@ -122,7 +122,7 @@ class _AdminSettingsViewState extends State<AdminSettingsView> {
           const Text('Compose Platform Push Broadcast', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900, color: AppColors.midnightNavy)),
           const SizedBox(height: 12),
           DropdownButtonFormField<String>(
-            value: _targetAudience,
+            initialValue: _targetAudience,
             decoration: const InputDecoration(labelText: 'Target Audience Segment', border: OutlineInputBorder()),
             items: const [
               DropdownMenuItem(value: 'All Showrooms', child: Text('All Registered Showrooms & Hosts')),

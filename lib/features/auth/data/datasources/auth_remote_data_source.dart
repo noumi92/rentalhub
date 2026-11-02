@@ -72,9 +72,7 @@ class AuthRemoteDataSource {
         final fallbackKey = 'profile/${DateTime.now().millisecondsSinceEpoch}_avatar.jpg';
         photoUrl = storageClient!.getSignedMediaUrl(fallbackKey, uid);
       }
-      if (photoUrl != null) {
-        await prefs.setString(_profilePhotoKey, photoUrl);
-      }
+      await prefs.setString(_profilePhotoKey, photoUrl);
     }
 
     final existingUser = firestoreService != null ? await firestoreService!.getUser(uid) : null;

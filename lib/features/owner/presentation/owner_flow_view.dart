@@ -24,14 +24,14 @@ class _OwnerFlowViewState extends State<OwnerFlowView> {
 
   // Handover state
   int _fuelBars = 6;
-  int _odometerCurrent = 42850;
+  final int _odometerCurrent = 42850;
   bool _customerSigned = true;
   bool _hostSigned = true;
 
   // Return state
-  int _returnOdometer = 42920;
-  int _returnFuelBars = 6;
-  bool _newDamage = false;
+  final int _returnOdometer = 42920;
+  final int _returnFuelBars = 6;
+  final bool _newDamage = false;
 
   @override
   void initState() {
@@ -136,7 +136,7 @@ class _OwnerFlowViewState extends State<OwnerFlowView> {
             leading: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.12),
+                color: Colors.white.withValues(alpha: 0.12),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -157,7 +157,7 @@ class _OwnerFlowViewState extends State<OwnerFlowView> {
             bottomContent: Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.15),
+                color: Colors.white.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: const Row(
@@ -351,7 +351,7 @@ class _OwnerFlowViewState extends State<OwnerFlowView> {
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.03),
+              color: Colors.black.withValues(alpha: 0.03),
               blurRadius: 8,
               offset: const Offset(0, 3),
             ),
@@ -447,7 +447,7 @@ class _OwnerFlowViewState extends State<OwnerFlowView> {
           Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.12),
+              color: color.withValues(alpha: 0.12),
               shape: BoxShape.circle,
             ),
             child: Icon(icon, color: color, size: 24),
@@ -738,7 +738,7 @@ class _OwnerFlowViewState extends State<OwnerFlowView> {
                     vertical: 2,
                   ),
                   decoration: BoxDecoration(
-                    color: statusColor.withOpacity(0.12),
+                    color: statusColor.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(
@@ -1145,7 +1145,7 @@ class _OwnerFlowViewState extends State<OwnerFlowView> {
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.06),
+              color: Colors.black.withValues(alpha: 0.06),
               blurRadius: 10,
               offset: const Offset(0, -4),
             ),
@@ -1376,7 +1376,7 @@ class _OwnerFlowViewState extends State<OwnerFlowView> {
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.06),
+              color: Colors.black.withValues(alpha: 0.06),
               blurRadius: 10,
               offset: const Offset(0, -4),
             ),
@@ -1457,7 +1457,7 @@ class _OwnerFlowViewState extends State<OwnerFlowView> {
                       color: AppColors.crimsonSoftBg,
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: AppColors.crimsonRed.withOpacity(0.3),
+                        color: AppColors.crimsonRed.withValues(alpha: 0.3),
                       ),
                     ),
                     child: const Row(
@@ -1513,7 +1513,7 @@ class _OwnerFlowViewState extends State<OwnerFlowView> {
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.06),
+              color: Colors.black.withValues(alpha: 0.06),
               blurRadius: 10,
               offset: const Offset(0, -4),
             ),
@@ -1582,7 +1582,7 @@ class _OwnerFlowViewState extends State<OwnerFlowView> {
                         borderRadius: BorderRadius.circular(30),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.06),
+                            color: Colors.black.withValues(alpha: 0.06),
                             blurRadius: 10,
                             offset: const Offset(0, 4),
                           ),
@@ -1929,11 +1929,11 @@ class _OwnerFlowViewState extends State<OwnerFlowView> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       decoration: BoxDecoration(
-        color: AppColors.midnightNavyDark.withOpacity(0.95),
+        color: AppColors.midnightNavyDark.withValues(alpha: 0.95),
         borderRadius: BorderRadius.circular(30),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.25),
+            color: Colors.black.withValues(alpha: 0.25),
             blurRadius: 15,
             offset: const Offset(0, 6),
           ),

@@ -24,11 +24,7 @@ import 'package:rentalhub/features/auth/presentation/views/onboarding_profile_vi
 import 'package:rentalhub/features/auth/presentation/views/onboarding_role_view.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_onboarding_view.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_add_vehicle_view.dart';
-import 'package:rentalhub/features/owner/presentation/views/owner_fleet_view.dart';
 import 'package:rentalhub/core/widgets/custom_curved_header.dart';
-import 'package:rentalhub/features/owner/presentation/widgets/onboarding/shop_payout_step_widget.dart';
-import 'package:rentalhub/features/owner/presentation/widgets/onboarding/shop_kyc_docs_step_widget.dart';
-import 'package:rentalhub/features/owner/presentation/widgets/add_vehicle/vehicle_rates_step_widget.dart';
 import 'package:rentalhub/main.dart';
 
 void main() {

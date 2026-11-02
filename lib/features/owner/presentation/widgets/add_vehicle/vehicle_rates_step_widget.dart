@@ -103,7 +103,7 @@ class VehicleRatesStepWidget extends StatelessWidget {
                         Text('Customer drives the vehicle themselves', style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
                       ],
                     ),
-                    Switch(value: supportSelfDrive, activeColor: AppColors.sunsetOrange, onChanged: onToggleSelfDrive),
+                    Switch(value: supportSelfDrive, activeThumbColor: AppColors.sunsetOrange, onChanged: onToggleSelfDrive),
                   ],
                 ),
                 const Divider(height: 20),
@@ -117,7 +117,7 @@ class VehicleRatesStepWidget extends StatelessWidget {
                         Text('Shop provides experienced chauffeur', style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
                       ],
                     ),
-                    Switch(value: supportWithDriver, activeColor: AppColors.sunsetOrange, onChanged: onToggleWithDriver),
+                    Switch(value: supportWithDriver, activeThumbColor: AppColors.sunsetOrange, onChanged: onToggleWithDriver),
                   ],
                 ),
                 if (supportWithDriver) ...[

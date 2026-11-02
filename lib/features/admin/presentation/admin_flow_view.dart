@@ -16,7 +16,7 @@ class _AdminFlowViewState extends State<AdminFlowView> {
   // Admin interactive state
   final Set<String> _accreditedShops = {};
   final Set<String> _liftedBans = {};
-  int _activeRentalsCount = 412;
+  final int _activeRentalsCount = 412;
   int _blacklistCount = 29;
 
   @override
@@ -140,7 +140,7 @@ class _AdminFlowViewState extends State<AdminFlowView> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text('Master Super Admin', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w700)),
-                      Text('superadmin@rentalhub.pk', style: TextStyle(color: AppColors.textLavender.withOpacity(0.7), fontSize: 10)),
+                      Text('superadmin@rentalhub.pk', style: TextStyle(color: AppColors.textLavender.withValues(alpha: 0.7), fontSize: 10)),
                     ],
                   ),
                 ),
@@ -165,7 +165,7 @@ class _AdminFlowViewState extends State<AdminFlowView> {
         ),
         child: Row(
           children: [
-            Icon(icon, size: 18, color: isSelected ? Colors.white : AppColors.textLavender.withOpacity(0.8)),
+            Icon(icon, size: 18, color: isSelected ? Colors.white : AppColors.textLavender.withValues(alpha: 0.8)),
             const SizedBox(width: 10),
             Expanded(
               child: Text(
@@ -173,7 +173,7 @@ class _AdminFlowViewState extends State<AdminFlowView> {
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                  color: isSelected ? Colors.white : AppColors.textLavender.withOpacity(0.9),
+                  color: isSelected ? Colors.white : AppColors.textLavender.withValues(alpha: 0.9),
                 ),
               ),
             ),

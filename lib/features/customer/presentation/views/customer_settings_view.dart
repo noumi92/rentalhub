@@ -62,7 +62,7 @@ class _CustomerSettingsViewState extends State<CustomerSettingsView> {
                           border: Border.all(color: AppColors.border),
                         ),
                         child: SwitchListTile(
-                          activeColor: AppColors.sunsetOrange,
+                          activeThumbColor: AppColors.sunsetOrange,
                           title: const Text('Urdu Interface (اردو)',
                               style: TextStyle(
                                   fontSize: 14, fontWeight: FontWeight.w700)),
@@ -92,7 +92,7 @@ class _CustomerSettingsViewState extends State<CustomerSettingsView> {
                         child: Column(
                           children: [
                             SwitchListTile(
-                              activeColor: AppColors.sunsetOrange,
+                              activeThumbColor: AppColors.sunsetOrange,
                               title: const Text('Push Notifications',
                                   style: TextStyle(
                                       fontSize: 14, fontWeight: FontWeight.w700)),
@@ -105,7 +105,7 @@ class _CustomerSettingsViewState extends State<CustomerSettingsView> {
                             ),
                             const Divider(height: 1),
                             SwitchListTile(
-                              activeColor: AppColors.sunsetOrange,
+                              activeThumbColor: AppColors.sunsetOrange,
                               title: const Text('WhatsApp Notifications',
                                   style: TextStyle(
                                       fontSize: 14, fontWeight: FontWeight.w700)),

@@ -177,7 +177,7 @@ class _OwnerCustomerRatingViewState extends State<OwnerCustomerRatingView> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SwitchListTile(
-              activeColor: Colors.red.shade700,
+              activeThumbColor: Colors.red.shade700,
               contentPadding: EdgeInsets.zero,
               title: const Text('Flag Customer to National Blacklist', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: Colors.red)),
               subtitle: const Text('Broadcasts instant fraud/default alert to all Pakistani showrooms', style: TextStyle(fontSize: 11)),
@@ -189,7 +189,7 @@ class _OwnerCustomerRatingViewState extends State<OwnerCustomerRatingView> {
               const Text('Reason Category for Tribunal:', style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: Colors.red)),
               const SizedBox(height: 6),
               DropdownButtonFormField<String>(
-                value: _selectedReason,
+                initialValue: _selectedReason,
                 isExpanded: true,
                 style: const TextStyle(fontSize: 12.5, color: Colors.black87),
                 decoration: InputDecoration(

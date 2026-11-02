@@ -4,7 +4,6 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/routing/auth_route_guard.dart';
-import '../../../../core/routing/route_names.dart';
 
 class SplashView extends StatefulWidget {
   final Duration duration;
@@ -149,67 +148,4 @@ class _SplashViewState extends State<SplashView>
   }
 }
 
-/// Custom painter rendering the sleek curved car silhouette from the UI specification
-class _CarSilhouettePainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.white
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 3.5
-      ..strokeCap = StrokeCap.round
-      ..strokeJoin = StrokeJoin.round;
-
-    final path = Path();
-    // Flowing aerodynamic car roofline: front fender -> hood -> windshield -> roof -> rear window -> trunk
-    path.moveTo(size.width * 0.08, size.height * 0.85);
-    path.quadraticBezierTo(
-      size.width * 0.22,
-      size.height * 0.65,
-      size.width * 0.36,
-      size.height * 0.35,
-    );
-    path.quadraticBezierTo(
-      size.width * 0.52,
-      size.height * 0.10,
-      size.width * 0.68,
-      size.height * 0.30,
-    );
-    path.quadraticBezierTo(
-      size.width * 0.80,
-      size.height * 0.55,
-      size.width * 0.92,
-      size.height * 0.85,
-    );
-
-    canvas.drawPath(path, paint);
-
-    // Subtle front headlight glow streak
-    final accentPaint = Paint()
-      ..color = AppColors.sunsetOrange
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.5
-      ..strokeCap = StrokeCap.round;
-
-    final accentPath = Path();
-    accentPath.moveTo(size.width * 0.04, size.height * 0.90);
-    accentPath.lineTo(size.width * 0.12, size.height * 0.90);
-    canvas.drawPath(accentPath, accentPaint);
-
-    // Subtle rear taillight glow streak
-    final rearPaint = Paint()
-      ..color = AppColors.crimsonRed
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.5
-      ..strokeCap = StrokeCap.round;
-
-    final rearPath = Path();
-    rearPath.moveTo(size.width * 0.88, size.height * 0.90);
-    rearPath.lineTo(size.width * 0.96, size.height * 0.90);
-    canvas.drawPath(rearPath, rearPaint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-}
 

@@ -34,8 +34,8 @@ class _OwnerManualBookingViewState extends State<OwnerManualBookingView> {
   VehicleEntity? _selectedVehicle;
   bool _isLoadingVehicles = true;
   bool _isCreating = false;
-  String _selectedPackage = 'Daily 24h';
-  bool _isWithDriver = false;
+  final String _selectedPackage = 'Daily 24h';
+  final bool _isWithDriver = false;
 
   @override
   void initState() {

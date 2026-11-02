@@ -153,7 +153,7 @@ class _OwnerRateMatrixViewState extends State<OwnerRateMatrixView> {
                         child: Column(
                           children: [
                             SwitchListTile(
-                              activeColor: AppColors.sunsetOrange,
+                              activeThumbColor: AppColors.sunsetOrange,
                               title: const Text('Self-Drive Allowed',
                                   style: TextStyle(
                                       fontSize: 13.5,
@@ -167,7 +167,7 @@ class _OwnerRateMatrixViewState extends State<OwnerRateMatrixView> {
                             ),
                             const Divider(height: 1),
                             SwitchListTile(
-                              activeColor: AppColors.sunsetOrange,
+                              activeThumbColor: AppColors.sunsetOrange,
                               title: const Text('Chauffeur Service Allowed',
                                   style: TextStyle(
                                       fontSize: 13.5,

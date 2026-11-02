@@ -17,7 +17,7 @@ class OwnerSubscriptionView extends StatefulWidget {
 class _OwnerSubscriptionViewState extends State<OwnerSubscriptionView> {
   String _currentTier = 'basic';
   final _trxIdController = TextEditingController();
-  bool _isSubmitting = false;
+  final bool _isSubmitting = false;
 
   @override
   void dispose() {

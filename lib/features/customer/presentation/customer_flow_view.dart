@@ -6,8 +6,6 @@ import '../../../core/widgets/pakistani_plate_widget.dart';
 import '../../discovery/domain/entities/shop_entity.dart';
 import '../../discovery/presentation/views/widgets/location_permission_dialog.dart';
 import '../../discovery/presentation/views/widgets/shop_map_view.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong2/latlong.dart' as ll;
 
 class CustomerFlowView extends StatefulWidget {
   final String initialAnchor;
@@ -40,8 +38,6 @@ class _CustomerFlowViewState extends State<CustomerFlowView> {
   double _selectedRadiusKm = 3.0;
   bool _hasPromptedLocation = false;
   String _activeLocationText = 'Gulberg III, Lahore • GPS Active';
-  MockShop _selectedShop = MockDatabase.shops.first;
-  final MapController _homeMapController = MapController();
 
   @override
   void initState() {
@@ -186,7 +182,7 @@ class _CustomerFlowViewState extends State<CustomerFlowView> {
             leading: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.12),
+                color: Colors.white.withValues(alpha: 0.12),
                 shape: BoxShape.circle,
               ),
               child: const Icon(Icons.location_on,
@@ -215,7 +211,7 @@ class _CustomerFlowViewState extends State<CustomerFlowView> {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                      color: Colors.black.withOpacity(0.06),
+                      color: Colors.black.withValues(alpha: 0.06),
                       blurRadius: 10,
                       offset: const Offset(0, 4)),
                 ],
@@ -619,7 +615,7 @@ class _CustomerFlowViewState extends State<CustomerFlowView> {
           border: Border.all(color: AppColors.border),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.03),
+              color: Colors.black.withValues(alpha: 0.03),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -641,7 +637,7 @@ class _CustomerFlowViewState extends State<CustomerFlowView> {
                 children: [
                   Center(
                     child: Icon(Icons.directions_car_filled_rounded,
-                        size: 90, color: vehicle.brandColor.withOpacity(0.8)),
+                        size: 90, color: vehicle.brandColor.withValues(alpha: 0.8)),
                   ),
                   Positioned(
                     top: 12,
@@ -1016,7 +1012,7 @@ class _CustomerFlowViewState extends State<CustomerFlowView> {
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-                color: Colors.black.withOpacity(0.06),
+                color: Colors.black.withValues(alpha: 0.06),
                 blurRadius: 10,
                 offset: const Offset(0, -4)),
           ],
@@ -1252,13 +1248,13 @@ class _CustomerFlowViewState extends State<CustomerFlowView> {
                       color: AppColors.amberSoftBg,
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                          color: AppColors.amberWarning.withOpacity(0.4)),
+                          color: AppColors.amberWarning.withValues(alpha: 0.4)),
                     ),
                     child: const Row(
                       children: [
                         Icon(Icons.info_outline,
                             color: AppColors.amberWarning, size: 20),
-                        const SizedBox(width: 10),
+                        SizedBox(width: 10),
                         Expanded(
                           child: Text(
                             'Advance token (PKR 1,000) is paid directly to host via JazzCash / EasyPaisa / Bank transfer to lock the vehicle schedule.',
@@ -1305,7 +1301,7 @@ class _CustomerFlowViewState extends State<CustomerFlowView> {
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-                color: Colors.black.withOpacity(0.06),
+                color: Colors.black.withValues(alpha: 0.06),
                 blurRadius: 10,
                 offset: const Offset(0, -4)),
           ],
@@ -1382,7 +1378,7 @@ class _CustomerFlowViewState extends State<CustomerFlowView> {
                       color: AppColors.orangeSoftBg,
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                          color: AppColors.sunsetOrange.withOpacity(0.3)),
+                          color: AppColors.sunsetOrange.withValues(alpha: 0.3)),
                     ),
                     child: Row(
                       children: [
@@ -1519,7 +1515,7 @@ class _CustomerFlowViewState extends State<CustomerFlowView> {
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-                color: Colors.black.withOpacity(0.06),
+                color: Colors.black.withValues(alpha: 0.06),
                 blurRadius: 10,
                 offset: const Offset(0, -4)),
           ],
@@ -1620,7 +1616,7 @@ class _CustomerFlowViewState extends State<CustomerFlowView> {
                   borderRadius: BorderRadius.circular(24),
                   boxShadow: [
                     BoxShadow(
-                        color: Colors.black.withOpacity(0.3),
+                        color: Colors.black.withValues(alpha: 0.3),
                         blurRadius: 20,
                         offset: const Offset(0, 8)),
                   ],
@@ -1649,7 +1645,7 @@ class _CustomerFlowViewState extends State<CustomerFlowView> {
                               Text('Booking #RH-84920',
                                   style: TextStyle(
                                       color: AppColors.textLavender
-                                          .withOpacity(0.8),
+                                          .withValues(alpha: 0.8),
                                       fontSize: 12)),
                             ],
                           ),
@@ -1733,7 +1729,7 @@ class _CustomerFlowViewState extends State<CustomerFlowView> {
                                       fontSize: 10,
                                       fontWeight: FontWeight.w700,
                                       color:
-                                          AppColors.textMuted.withOpacity(0.8)),
+                                          AppColors.textMuted.withValues(alpha: 0.8)),
                                 ),
                               ],
                             ),
@@ -1965,7 +1961,7 @@ class _CustomerFlowViewState extends State<CustomerFlowView> {
                       color: AppColors.crimsonSoftBg,
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                          color: AppColors.crimsonRed.withOpacity(0.3)),
+                          color: AppColors.crimsonRed.withValues(alpha: 0.3)),
                     ),
                     child: const Row(
                       children: [
@@ -2247,7 +2243,7 @@ class _CustomerFlowViewState extends State<CustomerFlowView> {
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-                color: Colors.black.withOpacity(0.06),
+                color: Colors.black.withValues(alpha: 0.06),
                 blurRadius: 10,
                 offset: const Offset(0, -4)),
           ],
@@ -2299,7 +2295,7 @@ class _CustomerFlowViewState extends State<CustomerFlowView> {
                       color: AppColors.emeraldSoftBg,
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                          color: AppColors.emeraldGreen.withOpacity(0.3)),
+                          color: AppColors.emeraldGreen.withValues(alpha: 0.3)),
                     ),
                     child: const Row(
                       children: [
@@ -2336,7 +2332,7 @@ class _CustomerFlowViewState extends State<CustomerFlowView> {
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-                color: Colors.black.withOpacity(0.06),
+                color: Colors.black.withValues(alpha: 0.06),
                 blurRadius: 10,
                 offset: const Offset(0, -4)),
           ],
@@ -2367,7 +2363,7 @@ class _CustomerFlowViewState extends State<CustomerFlowView> {
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
             color: isVerified
-                ? AppColors.emeraldGreen.withOpacity(0.4)
+                ? AppColors.emeraldGreen.withValues(alpha: 0.4)
                 : AppColors.border),
       ),
       child: Row(
@@ -2427,11 +2423,11 @@ class _CustomerFlowViewState extends State<CustomerFlowView> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       decoration: BoxDecoration(
-        color: AppColors.midnightNavyDark.withOpacity(0.95),
+        color: AppColors.midnightNavyDark.withValues(alpha: 0.95),
         borderRadius: BorderRadius.circular(30),
         boxShadow: [
           BoxShadow(
-              color: Colors.black.withOpacity(0.25),
+              color: Colors.black.withValues(alpha: 0.25),
               blurRadius: 15,
               offset: const Offset(0, 6)),
         ],
