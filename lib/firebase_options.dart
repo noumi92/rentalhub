@@ -40,7 +40,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyBgtrxfnbhm9-9Lp28_aRHkIhG4Av78hPU',
-    appId: '1:139498327816:android:595c16e47ce1447b85a6bd',
+    appId: '1:139498327816:android:5851f5a83201a6a285a6bd',
     messagingSenderId: '139498327816',
     projectId: 'rentalhub-dev-pk',
     storageBucket: 'rentalhub-dev-pk.firebasestorage.app',

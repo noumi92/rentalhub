@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.primedigit.renthub.rent_hub"
+    namespace = "pk.rentalhub.rentalhub"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -17,11 +17,20 @@ android {
 
     defaultConfig {
         // Application ID
-        applicationId = "com.primedigit.renthub.rent_hub"
+        applicationId = "pk.rentalhub.rentalhub"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+    }
+
+    signingConfigs {
+        getByName("debug") {
+            storeFile = file("rentalhub-debug.keystore")
+            storePassword = "android"
+            keyAlias = "rentalhubdebug"
+            keyPassword = "android"
+        }
     }
 
     buildTypes {
