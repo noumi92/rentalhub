@@ -21,9 +21,12 @@ void main() {
   });
 
   group('Batch 5: Super Admin Security & Tribunal Reversal Logic', () {
-    test('AdminGuard: verifies only superadmin@rentalhub.pk with super_admin role', () {
+    test(
+        'AdminGuard: verifies only superadmin@rentalhub.pk with super_admin role',
+        () {
       expect(
-        AdminGuard.verifySuperAdmin(email: 'superadmin@rentalhub.pk', role: 'super_admin'),
+        AdminGuard.verifySuperAdmin(
+            email: 'superadmin@rentalhub.pk', role: 'super_admin'),
         isTrue,
       );
       expect(
@@ -31,7 +34,8 @@ void main() {
         isFalse,
       );
       expect(
-        AdminGuard.verifySuperAdmin(email: 'hacker@test.com', role: 'super_admin'),
+        AdminGuard.verifySuperAdmin(
+            email: 'hacker@test.com', role: 'super_admin'),
         isFalse,
       );
       expect(
@@ -40,7 +44,9 @@ void main() {
       );
     });
 
-    test('Blacklist Tribunal Reversal: requires non-empty justification and clears CNIC from active list', () async {
+    test(
+        'Blacklist Tribunal Reversal: requires non-empty justification and clears CNIC from active list',
+        () async {
       final ds = di.sl<BlacklistRemoteDataSource>();
       final item = await ds.reportCustomerToBlacklist(
         reportedByShopId: 'shop-test',
@@ -66,7 +72,8 @@ void main() {
       final reverted = await ds.revertBlacklistRecord(
         blacklistId: item.blacklistId,
         adminUid: 'super_admin_master',
-        justification: 'Court acquitted hirer with formal police clearance cert #9921',
+        justification:
+            'Court acquitted hirer with formal police clearance cert #9921',
       );
 
       expect(reverted.isActive, isFalse);
@@ -76,7 +83,8 @@ void main() {
   });
 
   group('Batch 5: Owner Executive Views UI Tests', () {
-    testWidgets('OwnerDashboardView: renders revenue telemetry and trip ledger', (tester) async {
+    testWidgets('OwnerDashboardView: renders revenue telemetry and trip ledger',
+        (tester) async {
       await tester.pumpWidget(
         const MaterialApp(home: OwnerDashboardView(shopId: 'shop-1')),
       );
@@ -87,7 +95,8 @@ void main() {
       expect(find.text('Completed Trip Ledger & Settlements'), findsOneWidget);
     });
 
-    testWidgets('OwnerSubscriptionView: renders tiers and opens upgrade dialog', (tester) async {
+    testWidgets('OwnerSubscriptionView: renders tiers and opens upgrade dialog',
+        (tester) async {
       await tester.pumpWidget(
         const MaterialApp(home: OwnerSubscriptionView()),
       );
@@ -107,7 +116,8 @@ void main() {
       expect(find.text('Submit Upgrade Verification'), findsOneWidget);
     });
 
-    testWidgets('OwnerWhatsAppLogsView: renders log tiles and filters', (tester) async {
+    testWidgets('OwnerWhatsAppLogsView: renders log tiles and filters',
+        (tester) async {
       await tester.pumpWidget(
         const MaterialApp(home: OwnerWhatsAppLogsView()),
       );
@@ -120,7 +130,8 @@ void main() {
   });
 
   group('Batch 5: Super Admin 1440px Web Panel UI Tests', () {
-    testWidgets('AdminDashboardView: renders 1440px layout, sidebar and KPIs', (tester) async {
+    testWidgets('AdminDashboardView: renders 1440px layout, sidebar and KPIs',
+        (tester) async {
       tester.view.physicalSize = const Size(1440, 900);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(() => tester.view.resetPhysicalSize());
@@ -137,7 +148,9 @@ void main() {
       expect(find.text('National Blacklist Flags'), findsOneWidget);
     });
 
-    testWidgets('AdminShopAccreditationView: displays queue and accredits showroom', (tester) async {
+    testWidgets(
+        'AdminShopAccreditationView: displays queue and accredits showroom',
+        (tester) async {
       tester.view.physicalSize = const Size(1440, 900);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(() => tester.view.resetPhysicalSize());
@@ -160,7 +173,8 @@ void main() {
       expect(find.text('VERIFIED'), findsWidgets);
     });
 
-    testWidgets('AdminBlacklistTribunalView: displays cases and tribunal desk', (tester) async {
+    testWidgets('AdminBlacklistTribunalView: displays cases and tribunal desk',
+        (tester) async {
       tester.view.physicalSize = const Size(1440, 900);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(() => tester.view.resetPhysicalSize());
@@ -170,11 +184,14 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('National Rental Fraud & Blacklist Tribunal'), findsOneWidget);
+      expect(find.text('National Rental Fraud & Blacklist Tribunal'),
+          findsOneWidget);
       expect(find.textContaining('BLK-'), findsWidgets);
     });
 
-    testWidgets('AdminSubscriptionsView: displays tier distribution and gateway credit top-up', (tester) async {
+    testWidgets(
+        'AdminSubscriptionsView: displays tier distribution and gateway credit top-up',
+        (tester) async {
       tester.view.physicalSize = const Size(1440, 900);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(() => tester.view.resetPhysicalSize());
@@ -184,7 +201,8 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Subscriptions & Messaging Gateway Credit'), findsOneWidget);
+      expect(find.text('Subscriptions & Messaging Gateway Credit'),
+          findsOneWidget);
       expect(find.text('Basic Freemium'), findsOneWidget);
       expect(find.text('WhatsApp Meta Cloud API'), findsOneWidget);
 
@@ -194,7 +212,9 @@ void main() {
       expect(find.textContaining('19200'), findsOneWidget);
     });
 
-    testWidgets('AdminSettingsView: composes system broadcast and exports ledger', (tester) async {
+    testWidgets(
+        'AdminSettingsView: composes system broadcast and exports ledger',
+        (tester) async {
       tester.view.physicalSize = const Size(1440, 900);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(() => tester.view.resetPhysicalSize());
@@ -204,7 +224,8 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('System Broadcasts & Financial Exports'), findsOneWidget);
+      expect(
+          find.text('System Broadcasts & Financial Exports'), findsOneWidget);
       expect(find.text('Compose Platform Push Broadcast'), findsOneWidget);
       expect(find.text('Export Ledger (CSV)'), findsOneWidget);
       expect(find.text('Export Tribunal Dossier (PDF)'), findsOneWidget);

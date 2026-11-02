@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../core/error/exceptions.dart';
@@ -109,7 +110,9 @@ class AuthRemoteDataSource {
 
     if (auth != null) {
       try {
-        final GoogleSignIn googleSignIn = GoogleSignIn();
+        final GoogleSignIn googleSignIn = GoogleSignIn(
+          serverClientId: '139498327816-k5sjvum2hpuo30oiooh7u6ap8nsu71m7.apps.googleusercontent.com',
+        );
         final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
         if (googleUser == null) {
           throw const ServerException(message: 'Google Sign-In was cancelled.');
@@ -130,6 +133,25 @@ class AuthRemoteDataSource {
         }
       } on fb.FirebaseAuthException catch (e) {
         throw ServerException(message: e.message ?? 'Google Sign-In failed via Firebase.');
+      } on PlatformException catch (e) {
+        debugPrint('Google Sign-In PlatformException: code=${e.code}, message=${e.message}, details=${e.details}');
+        final msg = e.message ?? '';
+        if (e.code == 'sign_in_canceled' || msg.contains('12501')) {
+          throw const ServerException(message: 'Google Sign-In was cancelled.');
+        } else if (msg.contains('10')) {
+          throw const ServerException(
+            message: 'Google Sign-In configuration error (ApiException: 10). Ensure the app with package com.primedigit.renthub.rent_hub is running and clean installed.',
+          );
+        } else if (msg.contains('12500')) {
+          throw const ServerException(
+            message: 'Google Sign-In failed (ApiException: 12500). Please ensure Support Email is set in Firebase Console Settings.',
+          );
+        } else if (msg.contains('7')) {
+          throw const ServerException(
+            message: 'Network error during Google Sign-In. Please check your internet connection.',
+          );
+        }
+        throw ServerException(message: 'Google Sign-In failed: ${e.message ?? e.code}');
       } catch (e) {
         if (e is ServerException) rethrow;
         throw ServerException(message: 'Google Sign-In failed: $e');
