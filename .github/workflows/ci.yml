@@ -41,6 +41,18 @@ jobs:
     needs: lint_and_test
     runs-on: ubuntu-latest
     steps:
+      - name: Free disk space
+        run: |
+          echo "Disk space before:"
+          df -h
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/share/boost
+          sudo rm -rf /opt/hostedtoolcache/CodeQL
+          sudo docker image prune --all --force || true
+          echo "Disk space after:"
+          df -h
+    
       - name: Checkout Code
         uses: actions/checkout@v4
 
