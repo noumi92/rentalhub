@@ -52,7 +52,89 @@ class VehicleModel extends VehicleEntity {
     super.isWithDriverAvailable,
     required super.rates,
     super.status,
+    super.imageUrl,
+    super.color,
+    super.mileageKm,
+    super.chassisNumber,
+    super.engineNumber,
+    super.engineCc,
+    super.features,
+    super.trackerProvider,
+    super.insurancePolicy,
+    super.weeklyRate,
+    super.securityDepositPkr,
+    super.advanceRequiredPkr,
+    super.extraHourPkr,
+    super.withDriverSurchargePkr,
+    super.fuelPolicy,
   });
+
+  @override
+  VehicleModel copyWith({
+    String? vehicleId,
+    String? shopId,
+    String? make,
+    String? model,
+    int? year,
+    String? plateNumber,
+    String? category,
+    String? transmission,
+    String? fuelType,
+    int? seats,
+    bool? isSelfDriveAvailable,
+    bool? isWithDriverAvailable,
+    VehicleRatesEntity? rates,
+    String? status,
+    String? imageUrl,
+    String? color,
+    int? mileageKm,
+    String? chassisNumber,
+    String? engineNumber,
+    int? engineCc,
+    List<String>? features,
+    String? trackerProvider,
+    String? insurancePolicy,
+    int? weeklyRate,
+    int? securityDepositPkr,
+    int? advanceRequiredPkr,
+    int? extraHourPkr,
+    int? withDriverSurchargePkr,
+    String? fuelPolicy,
+  }) {
+    return VehicleModel(
+      vehicleId: vehicleId ?? this.vehicleId,
+      shopId: shopId ?? this.shopId,
+      make: make ?? this.make,
+      model: model ?? this.model,
+      year: year ?? this.year,
+      plateNumber: plateNumber ?? this.plateNumber,
+      category: category ?? this.category,
+      transmission: transmission ?? this.transmission,
+      fuelType: fuelType ?? this.fuelType,
+      seats: seats ?? this.seats,
+      isSelfDriveAvailable: isSelfDriveAvailable ?? this.isSelfDriveAvailable,
+      isWithDriverAvailable:
+          isWithDriverAvailable ?? this.isWithDriverAvailable,
+      rates: rates ?? this.rates,
+      status: status ?? this.status,
+      imageUrl: imageUrl ?? this.imageUrl,
+      color: color ?? this.color,
+      mileageKm: mileageKm ?? this.mileageKm,
+      chassisNumber: chassisNumber ?? this.chassisNumber,
+      engineNumber: engineNumber ?? this.engineNumber,
+      engineCc: engineCc ?? this.engineCc,
+      features: features ?? this.features,
+      trackerProvider: trackerProvider ?? this.trackerProvider,
+      insurancePolicy: insurancePolicy ?? this.insurancePolicy,
+      weeklyRate: weeklyRate ?? this.weeklyRate,
+      securityDepositPkr: securityDepositPkr ?? this.securityDepositPkr,
+      advanceRequiredPkr: advanceRequiredPkr ?? this.advanceRequiredPkr,
+      extraHourPkr: extraHourPkr ?? this.extraHourPkr,
+      withDriverSurchargePkr:
+          withDriverSurchargePkr ?? this.withDriverSurchargePkr,
+      fuelPolicy: fuelPolicy ?? this.fuelPolicy,
+    );
+  }
 
   Map<String, dynamic> toMap() {
     return {
@@ -70,6 +152,24 @@ class VehicleModel extends VehicleEntity {
       'isWithDriverAvailable': isWithDriverAvailable,
       'rates': VehicleRatesModel.fromEntity(rates).toMap(),
       'status': status,
+      if (imageUrl != null) 'imageUrl': imageUrl,
+      if (color != null) 'color': color,
+      if (mileageKm != null) 'mileageKm': mileageKm,
+      if (chassisNumber != null) 'chassisNumber': chassisNumber,
+      if (engineNumber != null) 'engineNumber': engineNumber,
+      if (engineCc != null) 'engineCc': engineCc,
+      if (features.isNotEmpty) 'features': features,
+      if (trackerProvider != null) 'trackerProvider': trackerProvider,
+      if (insurancePolicy != null) 'insurancePolicy': insurancePolicy,
+      if (weeklyRate != null) 'weeklyRate': weeklyRate,
+      if (securityDepositPkr != null)
+        'securityDepositPkr': securityDepositPkr,
+      if (advanceRequiredPkr != null)
+        'advanceRequiredPkr': advanceRequiredPkr,
+      if (extraHourPkr != null) 'extraHourPkr': extraHourPkr,
+      if (withDriverSurchargePkr != null)
+        'withDriverSurchargePkr': withDriverSurchargePkr,
+      if (fuelPolicy != null) 'fuelPolicy': fuelPolicy,
     };
   }
 
@@ -92,6 +192,25 @@ class VehicleModel extends VehicleEntity {
               Map<String, dynamic>.from(map['rates'] as Map))
           : const VehicleRatesModel(daily24: 5000),
       status: (map['status'] as String?) ?? 'available',
+      imageUrl: map['imageUrl'] as String?,
+      color: map['color'] as String?,
+      mileageKm: (map['mileageKm'] as num?)?.toInt(),
+      chassisNumber: map['chassisNumber'] as String?,
+      engineNumber: map['engineNumber'] as String?,
+      engineCc: (map['engineCc'] as num?)?.toInt(),
+      features: (map['features'] as List?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          const [],
+      trackerProvider: map['trackerProvider'] as String?,
+      insurancePolicy: map['insurancePolicy'] as String?,
+      weeklyRate: (map['weeklyRate'] as num?)?.toInt(),
+      securityDepositPkr: (map['securityDepositPkr'] as num?)?.toInt(),
+      advanceRequiredPkr: (map['advanceRequiredPkr'] as num?)?.toInt(),
+      extraHourPkr: (map['extraHourPkr'] as num?)?.toInt(),
+      withDriverSurchargePkr:
+          (map['withDriverSurchargePkr'] as num?)?.toInt(),
+      fuelPolicy: map['fuelPolicy'] as String?,
     );
   }
 
@@ -111,6 +230,21 @@ class VehicleModel extends VehicleEntity {
       isWithDriverAvailable: entity.isWithDriverAvailable,
       rates: entity.rates,
       status: entity.status,
+      imageUrl: entity.imageUrl,
+      color: entity.color,
+      mileageKm: entity.mileageKm,
+      chassisNumber: entity.chassisNumber,
+      engineNumber: entity.engineNumber,
+      engineCc: entity.engineCc,
+      features: entity.features,
+      trackerProvider: entity.trackerProvider,
+      insurancePolicy: entity.insurancePolicy,
+      weeklyRate: entity.weeklyRate,
+      securityDepositPkr: entity.securityDepositPkr,
+      advanceRequiredPkr: entity.advanceRequiredPkr,
+      extraHourPkr: entity.extraHourPkr,
+      withDriverSurchargePkr: entity.withDriverSurchargePkr,
+      fuelPolicy: entity.fuelPolicy,
     );
   }
 }

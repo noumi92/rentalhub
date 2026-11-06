@@ -29,6 +29,7 @@ import '../../features/fleet/data/repositories/fleet_repository_impl.dart';
 import '../../features/fleet/domain/repositories/fleet_repository.dart';
 import '../../features/fleet/domain/usecases/add_vehicle_usecase.dart';
 import '../../features/fleet/domain/usecases/get_shop_vehicles_usecase.dart';
+import '../../features/fleet/domain/usecases/update_vehicle_status_usecase.dart';
 import '../../features/fleet/presentation/cubit/fleet_cubit.dart';
 import '../../features/bookings/data/datasources/booking_remote_data_source.dart';
 import '../../features/bookings/data/repositories/booking_repository_impl.dart';
@@ -141,10 +142,13 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton(() => AddVehicleUseCase(sl<FleetRepository>()));
   sl.registerLazySingleton(
       () => GetShopVehiclesUseCase(sl<FleetRepository>()));
+  sl.registerLazySingleton(
+      () => UpdateVehicleStatusUseCase(sl<FleetRepository>()));
   sl.registerFactory(
     () => FleetCubit(
       addVehicleUseCase: sl<AddVehicleUseCase>(),
       getShopVehiclesUseCase: sl<GetShopVehiclesUseCase>(),
+      updateVehicleStatusUseCase: sl<UpdateVehicleStatusUseCase>(),
     ),
   );
 

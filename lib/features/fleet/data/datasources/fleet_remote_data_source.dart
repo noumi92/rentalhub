@@ -140,23 +140,8 @@ class FleetRemoteDataSource {
     final ratesModel = VehicleRatesModel.fromEntity(rates);
     final idx = _inMemoryVehicles.indexWhere((v) => v.vehicleId == vehicleId);
     if (idx != -1) {
-      final old = _inMemoryVehicles[idx];
-      _inMemoryVehicles[idx] = VehicleModel(
-        vehicleId: old.vehicleId,
-        shopId: old.shopId,
-        make: old.make,
-        model: old.model,
-        year: old.year,
-        plateNumber: old.plateNumber,
-        category: old.category,
-        transmission: old.transmission,
-        fuelType: old.fuelType,
-        seats: old.seats,
-        isSelfDriveAvailable: old.isSelfDriveAvailable,
-        isWithDriverAvailable: old.isWithDriverAvailable,
-        rates: ratesModel,
-        status: old.status,
-      );
+      _inMemoryVehicles[idx] =
+          _inMemoryVehicles[idx].copyWith(rates: ratesModel);
     }
 
     final fs = _resolvedFirestore;
@@ -175,23 +160,8 @@ class FleetRemoteDataSource {
   }) async {
     final idx = _inMemoryVehicles.indexWhere((v) => v.vehicleId == vehicleId);
     if (idx != -1) {
-      final old = _inMemoryVehicles[idx];
-      _inMemoryVehicles[idx] = VehicleModel(
-        vehicleId: old.vehicleId,
-        shopId: old.shopId,
-        make: old.make,
-        model: old.model,
-        year: old.year,
-        plateNumber: old.plateNumber,
-        category: old.category,
-        transmission: old.transmission,
-        fuelType: old.fuelType,
-        seats: old.seats,
-        isSelfDriveAvailable: old.isSelfDriveAvailable,
-        isWithDriverAvailable: old.isWithDriverAvailable,
-        rates: old.rates,
-        status: status,
-      );
+      _inMemoryVehicles[idx] =
+          _inMemoryVehicles[idx].copyWith(status: status);
     }
 
     final fs = _resolvedFirestore;

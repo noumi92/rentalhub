@@ -20,7 +20,7 @@ const Map<String, int> kOverLimitViews = {
   'lib/features/customer/presentation/views/customer_dashboard_view.dart':
       295,
   'lib/features/owner/presentation/views/owner_onboarding_view.dart': 290,
-  'lib/features/owner/presentation/views/owner_add_vehicle_view.dart': 276,
+  'lib/features/owner/presentation/views/owner_add_vehicle_view.dart': 259,
   'lib/features/owner/presentation/views/owner_rate_matrix_view.dart': 261,
   'lib/features/customer/presentation/views/customer_dispute_view.dart': 260,
 };
@@ -38,6 +38,8 @@ const Map<String, int> kFlowViews = {
 
 // Rulebook §2.3 / D4: files in `lib/` that import `mock_data.dart` today.
 // No new importer may appear; removing one is progress.
+// Phase B (B1) removed the three owner importers: `owner_add_vehicle_view`,
+// `owner_fleet_view`, `fleet_vehicle_card`.
 const Set<String> kMockDataImporters = {
   'lib/features/admin/presentation/admin_flow_view.dart',
   'lib/features/customer/presentation/customer_flow_view.dart',
@@ -46,9 +48,6 @@ const Set<String> kMockDataImporters = {
   'lib/features/discovery/presentation/views/vehicle_detail_view.dart',
   'lib/features/discovery/presentation/views/widgets/customer_vehicle_card.dart',
   'lib/features/discovery/presentation/views/widgets/vehicle_hero_card.dart',
-  'lib/features/owner/presentation/views/owner_add_vehicle_view.dart',
-  'lib/features/owner/presentation/views/owner_fleet_view.dart',
-  'lib/features/owner/presentation/widgets/fleet/fleet_vehicle_card.dart',
 };
 
 int _lineCount(File file) => file.readAsLinesSync().length;

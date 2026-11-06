@@ -24,5 +24,15 @@ class FleetRepositoryImpl implements FleetRepository {
     required VehicleEntity vehicle,
   }) =>
       remoteDataSource.addVehicle(shopId: shopId, vehicle: vehicle);
+
+  @override
+  Future<void> updateVehicleStatus({
+    required String vehicleId,
+    required String status,
+  }) =>
+      remoteDataSource.updateVehicleStatus(
+        vehicleId: vehicleId,
+        status: status,
+      );
 }
 

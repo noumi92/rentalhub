@@ -1,8 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'auth_route_guard.dart';
 import 'route_names.dart';
+import '../../core/utils/current_shop.dart';
 import '../../features/auth/presentation/views/splash_view.dart';
 import '../../features/auth/presentation/views/login_view.dart';
 import '../../features/auth/presentation/views/onboarding_profile_view.dart';
@@ -34,12 +34,6 @@ import '../../features/admin/presentation/admin_flow_view.dart';
 class AppRouter {
   static final GlobalKey<NavigatorState> rootNavigatorKey =
       GlobalKey<NavigatorState>(debugLabel: 'rootNav');
-
-  /// The signed-in owner's uid is the shop id (the onboarding flow writes
-  /// the shop document under the owner's uid). Falls back to the demo shop
-  /// id when nobody is signed in, so the demo HUD still works.
-  static String _currentShopId() =>
-      FirebaseAuth.instance.currentUser?.uid ?? 'shop-1';
 
   static final GoRouter router = GoRouter(
     navigatorKey: rootNavigatorKey,
@@ -140,7 +134,7 @@ class AppRouter {
       GoRoute(
         path: RouteNames.ownerDashboard,
         builder: (context, state) =>
-            OwnerDashboardView(shopId: _currentShopId()),
+            OwnerDashboardView(shopId: currentShopId()),
       ),
       GoRoute(
         path: RouteNames.ownerFleet,
@@ -159,7 +153,7 @@ class AppRouter {
         path: RouteNames.ownerRatesVehicle,
         builder: (context, state) => VehicleRouteLoader(
           vehicleId: state.pathParameters['vehicleId']!,
-          shopId: _currentShopId(),
+          shopId: currentShopId(),
           builder: (context, vehicle) => OwnerRateMatrixView(
             vehicle: vehicle,
             onBack: () => context.pop(),
@@ -169,7 +163,7 @@ class AppRouter {
       GoRoute(
         path: RouteNames.ownerRequests,
         builder: (context, state) =>
-            OwnerBookingRequestsView(shopId: _currentShopId()),
+            OwnerBookingRequestsView(shopId: currentShopId()),
       ),
       GoRoute(
         path: RouteNames.ownerRequestsDetail,

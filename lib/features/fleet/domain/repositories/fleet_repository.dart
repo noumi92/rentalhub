@@ -8,5 +8,9 @@ abstract class FleetRepository {
     required String shopId,
     required VehicleEntity vehicle,
   });
+  Future<void> updateVehicleStatus({
+    required String vehicleId,
+    required String status,
+  });
 }
 

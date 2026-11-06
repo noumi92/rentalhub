@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../../core/constants/app_colors.dart';
-import '../../../../core/models/mock_data.dart';
+import '../../../../core/di/injection_container.dart';
+import '../../../../core/utils/current_shop.dart';
 import '../../../../core/utils/pakistani_validators.dart';
 import '../../../../core/widgets/app_feedback.dart';
-import '../../../../core/widgets/custom_curved_header.dart';
-import '../../../../core/widgets/debounced_button.dart';
 import '../../../../core/widgets/media_picker_helper.dart';
-import '../constants/owner_vehicle_constants.dart';
+import '../../../fleet/domain/entities/vehicle_entity.dart';
+import '../../../fleet/domain/usecases/add_vehicle_usecase.dart';
+import '../services/vehicle_photo_upload_service.dart';
+import '../widgets/add_vehicle/add_vehicle_step_content.dart';
 import '../widgets/add_vehicle/add_vehicle_stepper_bar.dart';
-import '../widgets/add_vehicle/vehicle_photos_step_widget.dart';
-import '../widgets/add_vehicle/vehicle_rates_step_widget.dart';
-import '../widgets/add_vehicle/vehicle_review_step_widget.dart';
-import '../widgets/add_vehicle/vehicle_specs_step_widget.dart';
 
+/// Phase B (B1): builds a real [VehicleEntity] and saves it through
+/// [AddVehicleUseCase] instead of returning a mock vehicle.
 class OwnerAddVehicleView extends StatefulWidget {
-  final ValueChanged<MockVehicle>? onVehicleAdded;
-  const OwnerAddVehicleView({super.key, this.onVehicleAdded});
+  final ValueChanged<VehicleEntity>? onVehicleAdded;
+  final String? shopId;
+  const OwnerAddVehicleView({super.key, this.onVehicleAdded, this.shopId});
 
   @override
   State<OwnerAddVehicleView> createState() => _OwnerAddVehicleViewState();
@@ -71,41 +72,51 @@ class _OwnerAddVehicleViewState extends State<OwnerAddVehicleView> {
   }
   bool _stepErr(String msg) { AppFeedback.showError(context, msg); return false; }
 
-  void _next() {
+  void _next() async {
     if (!_validateStep()) return;
     if (_currentStep < 4) {
       setState(() => _currentStep++);
-    } else {
-      final newVehicle = MockVehicle(
-        id: 'v-${DateTime.now().millisecondsSinceEpoch}',
-        make: _selectedMake,
-        model: _selectedModel,
-        year: _selectedYear,
-        plate: _plateController.text.trim().isEmpty ? 'LEA-23-4567' : _plateController.text.trim(),
-        city: 'Lahore',
-        shopName: 'Al-Falah Rent a Car',
-        shopAddress: 'DHA Phase 5, Lahore',
-        rating: 5.0,
-        tripCount: 0,
-        dailyRate: _getInt(_rate24HoursController, 8500),
-        hourlyRate1: _getInt(_rate1HourController, 1200),
-        hourlyRate3: _getInt(_rate3HoursController, 3000),
-        hourlyRate6: _getInt(_rate6HoursController, 5500),
-        deposit: _getInt(_securityDepositController, 25000),
-        fuelType: _fuelType,
-        transmission: _isAutomatic ? 'Automatic' : 'Manual',
-        seats: _seats,
-        category: _category,
-        hasAC: _hasAc,
-        features: _selectedFeatures.toList(),
-        status: 'Available',
-        imageUrl: _photoFrontFile != null ? _photoFrontFile!.path : 'assets/images/white_sedan_hero.png',
-      );
-
-      widget.onVehicleAdded?.call(newVehicle);
-      AppFeedback.showSuccess(context, '${newVehicle.name} added to showroom fleet!');
-      Navigator.of(context).pop(newVehicle);
+      return;
     }
+    await _saveVehicle();
+  }
+
+  Future<void> _saveVehicle() async {
+    final shopId = widget.shopId ?? currentShopId();
+    final imageUrl = await VehiclePhotoUploadService.uploadFrontPhoto(
+        shopId: shopId, photo: _photoFrontFile) ??
+        _photoFrontFile?.path;
+    final vehicle = VehicleEntity(
+      vehicleId: 'v-${DateTime.now().millisecondsSinceEpoch}',
+      shopId: shopId, make: _selectedMake, model: _selectedModel, year: _selectedYear,
+      plateNumber: _plateController.text.trim().isEmpty ? 'LEA-23-4567' : _plateController.text.trim(),
+      category: _category, transmission: _isAutomatic ? 'Automatic' : 'Manual',
+      fuelType: _fuelType, seats: _seats,
+      isSelfDriveAvailable: _supportSelfDrive, isWithDriverAvailable: _supportWithDriver,
+      rates: VehicleRatesEntity(
+        hourly1: _enable1Hour ? _getInt(_rate1HourController, 1200) : null,
+        hourly3: _enable3Hours ? _getInt(_rate3HoursController, 3000) : null,
+        hourly6: _enable6Hours ? _getInt(_rate6HoursController, 5500) : null,
+        daily24: _getInt(_rate24HoursController, 8500)),
+      imageUrl: imageUrl, color: _color, features: _selectedFeatures.toList(),
+      weeklyRate: _enableWeekly ? _getInt(_rateWeeklyController, 52000) : null,
+      securityDepositPkr: _getInt(_securityDepositController, 25000),
+      advanceRequiredPkr: _getInt(_advanceDepositController, 2000),
+      extraHourPkr: _getInt(_extraHourChargeController, 600),
+      withDriverSurchargePkr: _getInt(_driverAllowanceController, 2000),
+      fuelPolicy: _fuelPolicy,
+    );
+    try {
+      await sl<AddVehicleUseCase>()(shopId: shopId, vehicle: vehicle);
+    } catch (e) {
+      // Freemium 3-car limit and other save failures surface here.
+      if (mounted) _stepErr(e.toString());
+      return;
+    }
+    if (!mounted) return;
+    widget.onVehicleAdded?.call(vehicle);
+    AppFeedback.showSuccess(context, '${vehicle.displayName} added to showroom fleet!');
+    Navigator.of(context).pop(vehicle);
   }
 
   @override
@@ -120,28 +131,11 @@ class _OwnerAddVehicleViewState extends State<OwnerAddVehicleView> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    CustomCurvedHeader(
-                      height: 100,
-                      leadingWidget: IconButton(
-                        icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
-                        onPressed: () => _currentStep > 1 ? setState(() => _currentStep--) : Navigator.of(context).pop(),
-                      ),
-                      titleWidget: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(_getTitle(), style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w900)),
-                          const SizedBox(height: 2),
-                          Text(_getSubtitle(), style: const TextStyle(color: AppColors.textLavender, fontSize: 12)),
-                        ],
-                      ),
-                      actions: [
-                        Container(
-                          margin: const EdgeInsets.only(right: 12),
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                          decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.18), borderRadius: BorderRadius.circular(12)),
-                          child: Text('Step $_currentStep of 4', style: const TextStyle(color: Colors.white, fontSize: 11.5, fontWeight: FontWeight.w700)),
-                        ),
-                      ],
+                    AddVehicleHeader(
+                      currentStep: _currentStep,
+                      onBack: () => _currentStep > 1
+                          ? setState(() => _currentStep--)
+                          : Navigator.of(context).pop(),
                     ),
                     AddVehicleStepperBar(currentStep: _currentStep),
                     Padding(padding: const EdgeInsets.all(16), child: _buildCurrentStep()),
@@ -149,14 +143,9 @@ class _OwnerAddVehicleViewState extends State<OwnerAddVehicleView> {
                 ),
               ),
             ),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: const BoxDecoration(color: Colors.white, border: Border(top: BorderSide(color: AppColors.border)), boxShadow: [BoxShadow(color: Color(0x12000000), blurRadius: 8, offset: Offset(0, -3))]),
-              child: DebouncedButton(
-                text: _currentStep == 4 ? 'Confirm & Publish Vehicle' : 'Next Step',
-                icon: _currentStep == 4 ? Icons.check_circle_rounded : Icons.arrow_forward_rounded,
-                onPressed: () async => _next(),
-              ),
+            AddVehicleBottomBar(
+              currentStep: _currentStep,
+              onPressed: _next,
             ),
           ],
         ),
@@ -164,16 +153,12 @@ class _OwnerAddVehicleViewState extends State<OwnerAddVehicleView> {
     );
   }
 
-  String _getTitle() => const {1: 'Add Vehicle - Specs', 2: 'Car Photos & Docs', 3: 'Rental Rates & Policy'}[_currentStep] ?? 'Review & Publish';
-  String _getSubtitle() => const {1: 'Capacity, AC, features & specs', 2: '4-angle photos, book & excise tax', 3: 'Hourly rates, deposit & fuel policy'}[_currentStep] ?? 'Verify vehicle details before listing';
-
   Widget _buildCurrentStep() {
     switch (_currentStep) {
       case 1:
-        return VehicleSpecsStepWidget(
+        return AddVehicleSpecsStep(
           selectedMake: _selectedMake,
           onMakeChanged: (m) => setState(() => _selectedMake = m),
-          makes: OwnerVehicleConstants.makes,
           selectedModel: _selectedModel,
           onModelChanged: (m) => _selectedModel = m,
           selectedYear: _selectedYear,
@@ -182,7 +167,6 @@ class _OwnerAddVehicleViewState extends State<OwnerAddVehicleView> {
           onColorChanged: (c) => _color = c,
           category: _category,
           onCategoryChanged: (c) => setState(() => _category = c),
-          categories: OwnerVehicleConstants.categories,
           plateController: _plateController,
           onPlateChanged: () => setState(() {}),
           isAutomatic: _isAutomatic,
@@ -197,7 +181,7 @@ class _OwnerAddVehicleViewState extends State<OwnerAddVehicleView> {
           onFeatureToggled: (f) => setState(() => _selectedFeatures.contains(f) ? _selectedFeatures.remove(f) : _selectedFeatures.add(f)),
         );
       case 2:
-        return VehiclePhotosStepWidget(
+        return AddVehiclePhotosStep(
           photoFrontFile: _photoFrontFile,
           onPickFront: () => _chooseMedia((f) => _photoFrontFile = f, hasExisting: _photoFrontFile != null),
           onRemoveFront: () => setState(() => _photoFrontFile = null),
@@ -221,7 +205,7 @@ class _OwnerAddVehicleViewState extends State<OwnerAddVehicleView> {
           onRemoveInsurance: () => setState(() => _insuranceFile = null),
         );
       case 3:
-        return VehicleRatesStepWidget(
+        return AddVehicleRatesStep(
           enable1Hour: _enable1Hour,
           onToggle1Hour: (v) => setState(() => _enable1Hour = v),
           rate1HourController: _rate1HourController,
@@ -247,11 +231,10 @@ class _OwnerAddVehicleViewState extends State<OwnerAddVehicleView> {
           extraHourChargeController: _extraHourChargeController,
           fuelPolicy: _fuelPolicy,
           onFuelPolicyChanged: (f) => setState(() => _fuelPolicy = f),
-          fuelPolicies: OwnerVehicleConstants.fuelPolicies,
         );
       case 4:
       default:
-        return VehicleReviewStepWidget(
+        return AddVehicleReviewStep(
           photoFrontFile: _photoFrontFile,
           selectedMake: _selectedMake,
           selectedModel: _selectedModel,
