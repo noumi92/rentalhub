@@ -58,15 +58,15 @@ void main() {
 
       // Guard redirects auth or onboarding screen to customer dashboard
       expect(
-        AuthRouteGuard.guardRoute(context, createMockState(RouteNames.auth)),
+        await AuthRouteGuard.guardRoute(context, createMockState(RouteNames.auth)),
         RouteNames.customerHome,
       );
       expect(
-        AuthRouteGuard.guardRoute(context, createMockState(RouteNames.onboardingProfile)),
+        await AuthRouteGuard.guardRoute(context, createMockState(RouteNames.onboardingProfile)),
         RouteNames.customerHome,
       );
       expect(
-        AuthRouteGuard.guardRoute(context, createMockState(RouteNames.customerHome)),
+        await AuthRouteGuard.guardRoute(context, createMockState(RouteNames.customerHome)),
         isNull,
       );
     });
@@ -88,11 +88,11 @@ void main() {
       final context = tester.element(find.byType(SizedBox));
 
       expect(
-        AuthRouteGuard.guardRoute(context, createMockState(RouteNames.auth)),
+        await AuthRouteGuard.guardRoute(context, createMockState(RouteNames.auth)),
         RouteNames.ownerFleet,
       );
       expect(
-        AuthRouteGuard.guardRoute(context, createMockState(RouteNames.ownerFleet)),
+        await AuthRouteGuard.guardRoute(context, createMockState(RouteNames.ownerFleet)),
         isNull,
       );
     });
@@ -107,29 +107,29 @@ void main() {
 
       // Attempting to access customer home without login
       expect(
-        AuthRouteGuard.guardRoute(context, createMockState(RouteNames.customerHome)),
+        await AuthRouteGuard.guardRoute(context, createMockState(RouteNames.customerHome)),
         RouteNames.auth,
       );
 
       // Attempting to access owner fleet without login
       expect(
-        AuthRouteGuard.guardRoute(context, createMockState(RouteNames.ownerFleet)),
+        await AuthRouteGuard.guardRoute(context, createMockState(RouteNames.ownerFleet)),
         RouteNames.auth,
       );
 
       // Attempting to access onboarding directly without login
       expect(
-        AuthRouteGuard.guardRoute(context, createMockState(RouteNames.onboardingProfile)),
+        await AuthRouteGuard.guardRoute(context, createMockState(RouteNames.onboardingProfile)),
         RouteNames.auth,
       );
 
       // Splash and auth screens are allowed
       expect(
-        AuthRouteGuard.guardRoute(context, createMockState(RouteNames.splash)),
+        await AuthRouteGuard.guardRoute(context, createMockState(RouteNames.splash)),
         isNull,
       );
       expect(
-        AuthRouteGuard.guardRoute(context, createMockState(RouteNames.auth)),
+        await AuthRouteGuard.guardRoute(context, createMockState(RouteNames.auth)),
         isNull,
       );
     });
@@ -151,17 +151,17 @@ void main() {
 
       // Premature access to customer dashboard redirects to Step 1 Profile
       expect(
-        AuthRouteGuard.guardRoute(context, createMockState(RouteNames.customerHome)),
+        await AuthRouteGuard.guardRoute(context, createMockState(RouteNames.customerHome)),
         RouteNames.onboardingProfile,
       );
       // Accessing auth redirects to pending Step 1 Profile
       expect(
-        AuthRouteGuard.guardRoute(context, createMockState(RouteNames.auth)),
+        await AuthRouteGuard.guardRoute(context, createMockState(RouteNames.auth)),
         RouteNames.onboardingProfile,
       );
       // Staying on onboarding profile is permitted
       expect(
-        AuthRouteGuard.guardRoute(context, createMockState(RouteNames.onboardingProfile)),
+        await AuthRouteGuard.guardRoute(context, createMockState(RouteNames.onboardingProfile)),
         isNull,
       );
     });
@@ -183,12 +183,12 @@ void main() {
 
       // Attempting to jump to customer home redirects to Step 2 Role
       expect(
-        AuthRouteGuard.guardRoute(context, createMockState(RouteNames.customerHome)),
+        await AuthRouteGuard.guardRoute(context, createMockState(RouteNames.customerHome)),
         RouteNames.onboardingRole,
       );
       // Allowed on onboarding role
       expect(
-        AuthRouteGuard.guardRoute(context, createMockState(RouteNames.onboardingRole)),
+        await AuthRouteGuard.guardRoute(context, createMockState(RouteNames.onboardingRole)),
         isNull,
       );
     });
@@ -211,13 +211,49 @@ void main() {
 
       // Attempting to access fleet dashboard redirects to Owner Onboarding
       expect(
-        AuthRouteGuard.guardRoute(context, createMockState(RouteNames.ownerFleet)),
+        await AuthRouteGuard.guardRoute(context, createMockState(RouteNames.ownerFleet)),
         RouteNames.ownerOnboarding,
       );
       // Allowed on owner onboarding
       expect(
-        AuthRouteGuard.guardRoute(context, createMockState(RouteNames.ownerOnboarding)),
+        await AuthRouteGuard.guardRoute(context, createMockState(RouteNames.ownerOnboarding)),
         isNull,
+      );
+    });
+  });
+
+  group('Phase A (A3): the admin panel is guarded', () {
+    testWidgets('Admin login screen is always reachable', (tester) async {
+      await tester.pumpWidget(const MaterialApp(home: SizedBox()));
+      final context = tester.element(find.byType(SizedBox));
+      expect(
+        await AuthRouteGuard.guardRoute(
+            context, createMockState(RouteNames.adminLogin)),
+        isNull,
+      );
+    });
+
+    testWidgets('Unauthenticated visitor to /admin goes to the admin login',
+        (tester) async {
+      await tester.pumpWidget(const MaterialApp(home: SizedBox()));
+      final context = tester.element(find.byType(SizedBox));
+      expect(
+        await AuthRouteGuard.guardRoute(
+            context, createMockState(RouteNames.adminDashboard)),
+        RouteNames.adminLogin,
+      );
+    });
+
+    testWidgets('Logged-in user without a Firebase user cannot open /admin',
+        (tester) async {
+      await authDataSource.setLoggedIn(true);
+      await authDataSource.setOnboardingCompleted(true);
+      await tester.pumpWidget(const MaterialApp(home: SizedBox()));
+      final context = tester.element(find.byType(SizedBox));
+      expect(
+        await AuthRouteGuard.guardRoute(
+            context, createMockState(RouteNames.adminTeam)),
+        RouteNames.adminLogin,
       );
     });
   });

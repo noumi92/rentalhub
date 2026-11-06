@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../../../../core/error/exceptions.dart';
+import '../../../blacklist/data/datasources/blacklist_remote_data_source.dart';
 import '../../../notifications/data/datasources/notification_data_source.dart';
 import '../../domain/entities/booking_entity.dart';
 import '../models/booking_model.dart';
@@ -6,12 +8,17 @@ import '../models/booking_model.dart';
 class BookingRemoteDataSource {
   final FirebaseFirestore? _firestore;
   final NotificationDataSource? _notifications;
+  final BlacklistRemoteDataSource? _blacklist;
   final Map<String, BookingModel> _inMemoryFallback = {};
   static int _idSeq = 0;
 
-  BookingRemoteDataSource({FirebaseFirestore? firestore, NotificationDataSource? notifications})
+  BookingRemoteDataSource(
+      {FirebaseFirestore? firestore,
+      NotificationDataSource? notifications,
+      BlacklistRemoteDataSource? blacklist})
       : _firestore = firestore,
-        _notifications = notifications;
+        _notifications = notifications,
+        _blacklist = blacklist;
 
   FirebaseFirestore? get _resolvedFirestore {
     if (_firestore != null) return _firestore;
@@ -68,6 +75,25 @@ class BookingRemoteDataSource {
     String tripType = 'in_city',
     int? kmLimit,
   }) async {
+    // Phase C (C2): the booking-time blacklist check. The owner
+    // walk-in flow already refuses blacklisted CNICs; the customer
+    // online flow did not — a blacklisted customer could book online
+    // unchecked. The check runs here so every caller is covered, and
+    // a missing Firestore connection fails open (the walk-in path
+    // behaves the same way when offline).
+    final blacklist = _blacklist;
+    if (blacklist != null) {
+      for (final cnic in [customerCnic, guarantorCnic]) {
+        if (cnic != null && cnic.trim().isNotEmpty) {
+          if (await blacklist.isCnicBlacklisted(cnic)) {
+            throw const ServerException(
+              message:
+                  'This CNIC is on the shared RentalHub blacklist. Please contact the showroom.',
+            );
+          }
+        }
+      }
+    }
     // Millisecond ids can collide when two bookings are created back
     // to back, so a per-process counter keeps each id unique.
     final id =

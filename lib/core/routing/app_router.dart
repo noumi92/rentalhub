@@ -57,6 +57,7 @@ import '../../features/owner/presentation/views/owner_car_pnl_view.dart';
 import '../../features/owner/presentation/views/owner_cash_closing_view.dart';
 import '../../features/owner/presentation/views/owner_dues_view.dart';
 import '../../features/owner/presentation/views/owner_finance_view.dart';
+import '../../features/owner/presentation/views/owner_disputes_view.dart';
 import '../../features/owner/presentation/views/owner_notifications_view.dart';
 import '../../features/owner/presentation/views/owner_settings_view.dart';
 import '../../features/owner/presentation/views/owner_subscription_view.dart';
@@ -64,7 +65,26 @@ import '../../features/owner/presentation/views/owner_vehicle_calendar_view.dart
 import '../../features/owner/presentation/views/owner_whatsapp_logs_view.dart';
 import '../../features/owner/presentation/views/owner_fleet_view.dart';
 import '../../features/owner/presentation/widgets/owner_route_loaders.dart';
-import '../../features/admin/presentation/admin_flow_view.dart';
+import '../../features/admin/presentation/views/admin_activity_log_view.dart';
+import '../../features/admin/presentation/views/admin_cars_view.dart';
+import '../../features/admin/presentation/views/admin_customer_detail_view.dart';
+import '../../features/admin/presentation/views/admin_customers_view.dart';
+import '../../features/admin/presentation/views/admin_booking_detail_view.dart';
+import '../../features/admin/presentation/views/admin_bookings_view.dart';
+import '../../features/admin/presentation/views/admin_disputes_view.dart';
+import '../../features/admin/presentation/views/admin_reviews_view.dart';
+import '../../features/admin/presentation/views/admin_announcements_view.dart';
+import '../../features/admin/presentation/views/admin_platform_settings_view.dart';
+import '../../features/admin/presentation/views/admin_reports_view.dart';
+import '../../features/admin/presentation/views/admin_tickets_view.dart';
+import '../../features/admin/presentation/views/admin_shop_approvals_view.dart';
+import '../../features/admin/presentation/views/admin_shop_detail_view.dart';
+import '../../features/admin/presentation/views/admin_shops_view.dart';
+import '../../features/admin/presentation/views/admin_blacklist_tribunal_view.dart';
+import '../../features/admin/presentation/views/admin_coming_soon_view.dart';
+import '../../features/admin/presentation/views/admin_dashboard_view.dart';
+import '../../features/admin/presentation/views/admin_login_view.dart';
+import '../../features/admin/presentation/views/admin_team_view.dart';
 
 class AppRouter {
   static final GlobalKey<NavigatorState> rootNavigatorKey =
@@ -636,6 +656,12 @@ class AppRouter {
         ),
       ),
       GoRoute(
+        path: RouteNames.ownerDisputes,
+        builder: (context, state) => OwnerDisputesView(
+          shopId: currentShopId(),
+        ),
+      ),
+      GoRoute(
         path: RouteNames.ownerSettings,
         builder: (context, state) => const OwnerSettingsView(),
       ),
@@ -664,26 +690,101 @@ class AppRouter {
         ),
       ),
 
-      // Super Admin Web Routes
+      // Super Admin Web Routes (Phase A): the login screen is public;
+      // every other /admin route is guarded by AuthRouteGuard (admin role
+      // + TOTP). The dashboard and blacklist are real; shops and
+      // subscriptions are honest placeholders until Phases B and F.
+      GoRoute(
+        path: RouteNames.adminLogin,
+        builder: (context, state) => const AdminLoginView(),
+      ),
       GoRoute(
         path: RouteNames.adminDashboard,
-        builder: (context, state) =>
-            const AdminFlowView(initialAnchor: 'ANC-17'),
+        builder: (context, state) => const AdminDashboardView(),
       ),
       GoRoute(
         path: RouteNames.adminShops,
-        builder: (context, state) =>
-            const AdminFlowView(initialAnchor: 'ANC-18'),
+        builder: (context, state) => const AdminShopsView(),
+      ),
+      GoRoute(
+        path: RouteNames.adminShopDetail,
+        builder: (context, state) => AdminShopDetailView(
+          shopId: state.pathParameters['shopId'] ?? '',
+        ),
+      ),
+      GoRoute(
+        path: RouteNames.adminApprovals,
+        builder: (context, state) => const AdminShopApprovalsView(),
+      ),
+      GoRoute(
+        path: RouteNames.adminCars,
+        builder: (context, state) => const AdminCarsView(),
+      ),
+      GoRoute(
+        path: RouteNames.adminCustomers,
+        builder: (context, state) => const AdminCustomersView(),
+      ),
+      GoRoute(
+        path: RouteNames.adminCustomerDetail,
+        builder: (context, state) => AdminCustomerDetailView(
+          customerId: state.pathParameters['customerId'] ?? '',
+        ),
+      ),
+      GoRoute(
+        path: RouteNames.adminBookings,
+        builder: (context, state) => const AdminBookingsView(),
+      ),
+      GoRoute(
+        path: RouteNames.adminBookingDetail,
+        builder: (context, state) => AdminBookingDetailView(
+          bookingId: state.pathParameters['bookingId'] ?? '',
+        ),
+      ),
+      GoRoute(
+        path: RouteNames.adminDisputes,
+        builder: (context, state) => const AdminDisputesView(),
+      ),
+      GoRoute(
+        path: RouteNames.adminReviews,
+        builder: (context, state) => const AdminReviewsView(),
+      ),
+      GoRoute(
+        path: RouteNames.adminTickets,
+        builder: (context, state) => const AdminTicketsView(),
+      ),
+      GoRoute(
+        path: RouteNames.adminSettings,
+        builder: (context, state) => const AdminPlatformSettingsView(),
+      ),
+      GoRoute(
+        path: RouteNames.adminAnnouncements,
+        builder: (context, state) => const AdminAnnouncementsView(),
+      ),
+      GoRoute(
+        path: RouteNames.adminReports,
+        builder: (context, state) => const AdminReportsView(),
       ),
       GoRoute(
         path: RouteNames.adminBlacklist,
-        builder: (context, state) =>
-            const AdminFlowView(initialAnchor: 'ANC-19'),
+        builder: (context, state) => const AdminBlacklistTribunalView(),
+      ),
+      GoRoute(
+        path: RouteNames.adminTeam,
+        builder: (context, state) => const AdminTeamView(),
+      ),
+      GoRoute(
+        path: RouteNames.adminActivity,
+        builder: (context, state) => const AdminActivityLogView(),
       ),
       GoRoute(
         path: RouteNames.adminSubscriptions,
-        builder: (context, state) =>
-            const AdminFlowView(initialAnchor: 'ANC-20'),
+        builder: (context, state) => const AdminComingSoonView(
+          activeRoute: RouteNames.adminSubscriptions,
+          title: 'Subscriptions',
+          subtitle: 'Plans, trials and platform revenue',
+          body:
+              'Subscriptions arrive in Phase F, gated on the Play Console setup (plan D1).',
+        ),
       ),
     ],
   );

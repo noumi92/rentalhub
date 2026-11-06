@@ -25,41 +25,24 @@ class AdminDesktopHeader extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: AppColors.midnightNavy)),
-              Text(subtitle, style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
-            ],
-          ),
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: AppColors.emeraldGreen.withAlpha(25),
-                  borderRadius: BorderRadius.circular(6),
-                  border: Border.all(color: AppColors.emeraldGreen.withAlpha(50)),
-                ),
-                child: const Row(
-                  children: [
-                    CircleAvatar(radius: 4, backgroundColor: AppColors.emeraldGreen),
-                    SizedBox(width: 6),
-                    Text('Production Mainnet Live', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: AppColors.emeraldGreen)),
-                  ],
-                ),
-              ),
-              if (onRefresh != null) ...[
-                const SizedBox(width: 12),
-                IconButton(
-                  icon: const Icon(Icons.refresh_rounded, color: AppColors.midnightNavy, size: 20),
-                  tooltip: 'Sync Live Stream',
-                  onPressed: onRefresh,
-                ),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: AppColors.midnightNavy)),
+                Text(subtitle,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
               ],
-            ],
+            ),
           ),
+          if (onRefresh != null)
+            IconButton(
+              icon: const Icon(Icons.refresh_rounded, color: AppColors.midnightNavy, size: 20),
+              tooltip: 'Refresh',
+              onPressed: onRefresh,
+            ),
         ],
       ),
     );

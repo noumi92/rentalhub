@@ -1,153 +1,156 @@
 import 'package:flutter/material.dart';
+
 import '../../../../core/constants/app_colors.dart';
-import '../widgets/admin_desktop_header.dart';
+import '../../../../core/di/injection_container.dart';
+import '../../../../core/routing/route_names.dart';
+import '../../data/datasources/admin_remote_data_source.dart';
 import '../widgets/admin_kpi_card.dart';
-import '../widgets/admin_sidebar_nav.dart';
-import 'admin_shop_accreditation_view.dart';
-import 'admin_blacklist_tribunal_view.dart';
-import 'admin_subscriptions_view.dart';
-import 'admin_settings_view.dart';
+import '../widgets/admin_shell.dart';
 
+/// Phase A (A6) — the admin dashboard, real: live counts from the
+/// platform collections. No growth percentages, no volume figures, no
+/// MRR — those need history and the gated subscription phase, and the
+/// old view invented all of them ("Rs. 4.82M, +22.8% MoM").
 class AdminDashboardView extends StatefulWidget {
-  final VoidCallback? onBack;
-
-  const AdminDashboardView({super.key, this.onBack});
+  const AdminDashboardView({super.key});
 
   @override
   State<AdminDashboardView> createState() => _AdminDashboardViewState();
 }
 
 class _AdminDashboardViewState extends State<AdminDashboardView> {
-  final String _activeRoute = 'dashboard';
+  PlatformStats? _stats;
+  bool _isLoading = true;
 
-  void _handleNavigation(String route) {
-    if (route == _activeRoute) return;
-    Widget destination;
-    switch (route) {
-      case 'accreditation':
-        destination = const AdminShopAccreditationView();
-        break;
-      case 'blacklist':
-        destination = const AdminBlacklistTribunalView();
-        break;
-      case 'subscriptions':
-        destination = const AdminSubscriptionsView();
-        break;
-      case 'settings':
-        destination = const AdminSettingsView();
-        break;
-      default:
-        destination = const AdminDashboardView();
-        break;
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    final stats = await sl<AdminRemoteDataSource>().getPlatformStats();
+    if (mounted) {
+      setState(() {
+        _stats = stats;
+        _isLoading = false;
+      });
     }
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => destination),
-    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
-      body: Row(
-        children: [
-          AdminSidebarNav(
-            activeRoute: _activeRoute,
-            onNavigate: _handleNavigation,
-          ),
-          Expanded(
-            child: Column(
-              children: [
-                const AdminDesktopHeader(
-                  title: 'Executive Telemetry & Platform Overview',
-                  subtitle: 'National Commercial Vehicle Network • Super Admin Console',
-                ),
-                Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(24),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: const [
-                            Expanded(
-                              child: AdminKpiCard(
-                                title: 'Active Rentals On Road',
-                                value: '412',
-                                changeLabel: '+14% vs yesterday',
-                                icon: Icons.directions_car_rounded,
-                                accentColor: AppColors.sunsetOrange,
-                              ),
-                            ),
-                            SizedBox(width: 16),
-                            Expanded(
-                              child: AdminKpiCard(
-                                title: 'Accredited Showrooms',
-                                value: '87',
-                                changeLabel: 'Across 12 major cities',
-                                icon: Icons.store_rounded,
-                                accentColor: AppColors.emeraldGreen,
-                              ),
-                            ),
-                            SizedBox(width: 16),
-                            Expanded(
-                              child: AdminKpiCard(
-                                title: 'National Blacklist Flags',
-                                value: '29',
-                                changeLabel: '4 cases in tribunal review',
-                                icon: Icons.gavel_rounded,
-                                accentColor: Colors.red,
-                              ),
-                            ),
-                            SizedBox(width: 16),
-                            Expanded(
-                              child: AdminKpiCard(
-                                title: '30-Day Platform Volume',
-                                value: 'Rs. 4.82M',
-                                changeLabel: '+22.8% MoM growth',
-                                icon: Icons.account_balance_rounded,
-                                accentColor: AppColors.royalNavy,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 24),
-                        const Text('Live Nationwide Audit Stream', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900, color: AppColors.midnightNavy)),
-                        const SizedBox(height: 12),
-                        _auditLogItem('Al-Falah Rent a Car Lahore certified Handover #RH-8921 (Civic RS Turbo)', '2 mins ago', Icons.key_rounded, AppColors.emeraldGreen),
-                        _auditLogItem('Metro Rent a Car flagged CNIC 35201-9999999-1 for dispute review', '14 mins ago', Icons.warning_rounded, Colors.red),
-                        _auditLogItem('KPK Rent a Car Peshawar submitted shop accreditation documents', '45 mins ago', Icons.assignment_rounded, AppColors.royalNavy),
-                        _auditLogItem('Islamabad Wheels upgraded to Pro Showroom plan (TRX-44211)', '2 hours ago', Icons.verified_rounded, AppColors.sunsetOrange),
-                      ],
-                    ),
+    return AdminShell(
+      activeRoute: RouteNames.adminDashboard,
+      title: 'Dashboard',
+      subtitle: 'The platform at a glance, counted live',
+      onRefresh: _load,
+      child: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      final columns =
+                          constraints.maxWidth >= 900 ? 4 : 2;
+                      final width = (constraints.maxWidth -
+                              (columns - 1) * 16) /
+                          columns;
+                      final cards = _cards();
+                      return Wrap(
+                        spacing: 16,
+                        runSpacing: 16,
+                        children: cards
+                            .map((c) => SizedBox(width: width, child: c))
+                            .toList(),
+                      );
+                    },
                   ),
-                ),
-              ],
+                  const SizedBox(height: 24),
+                  _infoCard(
+                    'Open disputes need a decision',
+                    '${_stats?.openDisputeCount ?? 0} open',
+                    Icons.report_problem_outlined,
+                    'The disputes centre arrives in Phase D.',
+                  ),
+                  const SizedBox(height: 12),
+                  _infoCard(
+                    'Support tickets waiting',
+                    '${_stats?.openTicketCount ?? 0} open',
+                    Icons.support_agent_rounded,
+                    'The tickets inbox arrives in Phase E.',
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
-      ),
     );
   }
 
-  Widget _auditLogItem(String title, String time, IconData icon, Color color) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppColors.border),
+  List<Widget> _cards() {
+    final s = _stats ??
+        const PlatformStats(
+          shopCount: 0,
+          activeBookingCount: 0,
+          openDisputeCount: 0,
+          openTicketCount: 0,
+        );
+    return [
+      AdminKpiCard(
+        title: 'Registered shops',
+        value: '${s.shopCount}',
+        changeLabel: 'Live count',
+        icon: Icons.store_rounded,
       ),
-      child: Row(
-        children: [
-          CircleAvatar(radius: 14, backgroundColor: color.withAlpha(25), child: Icon(icon, color: color, size: 15)),
-          const SizedBox(width: 12),
-          Expanded(child: Text(title, style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: AppColors.midnightNavy))),
-          Text(time, style: const TextStyle(fontSize: 11, color: AppColors.textSecondary)),
-        ],
+      AdminKpiCard(
+        title: 'Active bookings',
+        value: '${s.activeBookingCount}',
+        changeLabel: 'Approved, paid or active',
+        icon: Icons.calendar_month_rounded,
+        accentColor: AppColors.emeraldGreen,
+      ),
+      AdminKpiCard(
+        title: 'Open disputes',
+        value: '${s.openDisputeCount}',
+        changeLabel: 'Awaiting a decision',
+        icon: Icons.report_problem_outlined,
+        accentColor: Colors.amber.shade800,
+      ),
+      AdminKpiCard(
+        title: 'Open support tickets',
+        value: '${s.openTicketCount}',
+        changeLabel: 'Awaiting a reply',
+        icon: Icons.support_agent_rounded,
+        accentColor: Colors.blue.shade700,
+      ),
+    ];
+  }
+
+  /// An informational card, not a link: the disputes centre (Phase D)
+  /// and the tickets inbox (Phase E) are not built yet, so the counts
+  /// are shown with an honest note instead of a misleading destination.
+  Widget _infoCard(
+      String title, String value, IconData icon, String note) {
+    return Card(
+      margin: EdgeInsets.zero,
+      elevation: 0,
+      color: Colors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: const BorderSide(color: AppColors.border),
+      ),
+      child: ListTile(
+        leading: Icon(icon, color: AppColors.royalNavy),
+        title: Text(title,
+            style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w800,
+                color: AppColors.midnightNavy)),
+        subtitle: Text('$value • $note',
+            style: const TextStyle(fontSize: 12, color: AppColors.textMuted)),
       ),
     );
   }
 }
-

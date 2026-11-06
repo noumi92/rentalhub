@@ -1,6 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import '../di/injection_container.dart';
+import '../../features/admin/data/services/admin_session.dart';
 import '../../features/auth/data/datasources/auth_remote_data_source.dart';
 import 'route_names.dart';
 
@@ -70,12 +72,45 @@ class AuthRouteGuard {
     return resolvePendingOnboardingRoute();
   }
 
-  /// Route guard redirect handler for GoRouter
-  static String? guardRoute(BuildContext context, GoRouterState state) {
+  /// Route guard redirect handler for GoRouter. Async because the
+  /// admin branch resolves the admin role from Firestore (cached per
+  /// session by AdminSession, so it reads once, not on every tap).
+  static Future<String?> guardRoute(
+      BuildContext context, GoRouterState state) async {
     final location = state.matchedLocation;
 
     // 1. Splash screen is allowed to run its animation freely
     if (location == RouteNames.splash) {
+      return null;
+    }
+
+    // 1b. Admin panel (Phase A, A3): the login screen is always
+    // reachable; every other /admin route needs a signed-in admin who
+    // has passed the TOTP step. Admins never go through the
+    // customer/owner onboarding — this branch runs before it.
+    if (location.startsWith('/admin')) {
+      if (location == RouteNames.adminLogin) {
+        return null;
+      }
+      if (!isLoggedIn) {
+        return RouteNames.adminLogin;
+      }
+      User? user;
+      try {
+        user = FirebaseAuth.instance.currentUser;
+      } catch (_) {
+        user = null;
+      }
+      if (user == null) {
+        return RouteNames.adminLogin;
+      }
+      final adminRole = await AdminSession.resolveAdminRole(user);
+      if (adminRole == null) {
+        return RouteNames.adminLogin;
+      }
+      if (await AdminSession.adminNeedsTotp(user)) {
+        return RouteNames.adminLogin;
+      }
       return null;
     }
 

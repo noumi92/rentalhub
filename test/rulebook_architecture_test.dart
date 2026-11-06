@@ -34,16 +34,15 @@ const Map<String, int> kOverLimitViews = {
 // The customer flow view was deleted in the customer module build
 // (Phase A, A1) — its routes now point at the real customer views.
 // Do not re-add it.
-const Map<String, int> kFlowViews = {
-  'lib/features/admin/presentation/admin_flow_view.dart': 693,
-};
+// The admin flow view was deleted in the admin panel build (Phase A,
+// A6) — its routes now point at the real admin views. Do not re-add it.
+const Map<String, int> kFlowViews = {};
 
 // Rulebook §2.3 / D4: files in `lib/` that import `mock_data.dart` today.
 // No new importer may appear; removing one is progress.
 // Phase B (B1) removed the three owner importers: `owner_add_vehicle_view`,
 // `owner_fleet_view`, `fleet_vehicle_card`.
 const Set<String> kMockDataImporters = {
-  'lib/features/admin/presentation/admin_flow_view.dart',
   'lib/features/discovery/presentation/views/shop_cars_view.dart',
   'lib/features/discovery/presentation/views/shop_detail_view.dart',
   'lib/features/discovery/presentation/views/vehicle_detail_view.dart',

@@ -233,20 +233,10 @@ void main() {
   test(
       'Phase 4 DoD: Single super_admin guard and Blacklist Tribunal instant flag & mandatory-audit reversal',
       () async {
-    expect(
-      AdminGuard.verifySuperAdmin(
-        email: 'superadmin@rentalhub.pk',
-        role: 'super_admin',
-      ),
-      isTrue,
-    );
-    expect(
-      AdminGuard.verifySuperAdmin(
-        email: 'attacker@rentalhub.pk',
-        role: 'super_admin',
-      ),
-      isFalse,
-    );
+    // Phase A: the role decides, not a hardcoded email.
+    expect(AdminGuard.isSuperAdmin('super_admin'), isTrue);
+    expect(AdminGuard.isSuperAdmin('operations'), isFalse);
+    expect(AdminGuard.isAdminRole('owner'), isFalse);
 
     final blacklistCubit = sl<BlacklistCubit>();
     final flagged = await blacklistCubit.reportFraud(

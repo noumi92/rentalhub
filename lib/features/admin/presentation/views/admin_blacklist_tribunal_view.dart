@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
-import '../../../../core/widgets/app_feedback.dart';
-import '../../../blacklist/data/datasources/blacklist_remote_data_source.dart';
-import '../../../blacklist/domain/entities/blacklist_entity.dart';
+import '../../../../core/routing/route_names.dart';
+import '../../data/datasources/admin_people_data_source.dart';
+import '../widgets/blacklist_appeal_dialog.dart';
 import '../widgets/admin_desktop_header.dart';
 import '../widgets/admin_sidebar_nav.dart';
-import 'admin_dashboard_view.dart';
-import 'admin_shop_accreditation_view.dart';
-import 'admin_subscriptions_view.dart';
-import 'admin_settings_view.dart';
 
 class AdminBlacklistTribunalView extends StatefulWidget {
   const AdminBlacklistTribunalView({super.key});
@@ -19,7 +16,7 @@ class AdminBlacklistTribunalView extends StatefulWidget {
 }
 
 class _AdminBlacklistTribunalViewState extends State<AdminBlacklistTribunalView> {
-  List<BlacklistEntity> _cases = [];
+  List<AdminBlacklistRecord> _cases = [];
   bool _isLoading = true;
 
   @override
@@ -31,87 +28,30 @@ class _AdminBlacklistTribunalViewState extends State<AdminBlacklistTribunalView>
   Future<void> _loadTribunalCases() async {
     setState(() => _isLoading = true);
     try {
-      final ds = sl<BlacklistRemoteDataSource>();
-      final records = await ds.getAllRecords();
+      // Phase C (C2): appeal-aware records — the shared entity does not
+      // carry the appeal state, so the people data source wraps it.
+      final records = await sl<AdminPeopleDataSource>().getBlacklistRecords();
       if (mounted) setState(() => _cases = records);
     } catch (_) {} finally {
       if (mounted) setState(() => _isLoading = false);
     }
   }
 
+  // Phase A (A6): the sidebar now passes real route paths — navigate
+  // through the router instead of pushing the orphaned mock views.
   void _handleNavigation(String route) {
-    if (route == 'blacklist') return;
-    Widget destination;
-    switch (route) {
-      case 'dashboard':
-        destination = const AdminDashboardView();
-        break;
-      case 'accreditation':
-        destination = const AdminShopAccreditationView();
-        break;
-      case 'subscriptions':
-        destination = const AdminSubscriptionsView();
-        break;
-      case 'settings':
-        destination = const AdminSettingsView();
-        break;
-      default:
-        destination = const AdminDashboardView();
-        break;
-    }
-    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => destination));
+    if (route == RouteNames.adminBlacklist) return;
+    context.go(route);
   }
 
-  void _showReversalDialog(BlacklistEntity item) {
-    final justController = TextEditingController();
+  // Phase C (C2): the appeal decision — Keep or Remove, both with a
+  // mandatory reason. Remove goes through the tribunal revert.
+  void _showReversalDialog(AdminBlacklistRecord record) {
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Tribunal Blacklist Reversal Verdict', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16)),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Case: ${item.blacklistId} • CNIC: ${item.cnicNumber}', style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12)),
-            const SizedBox(height: 10),
-            const Text('Mandatory Legal Justification:', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 11)),
-            const SizedBox(height: 6),
-            TextField(
-              controller: justController,
-              maxLines: 3,
-              decoration: const InputDecoration(
-                hintText: 'Enter formal audit settlement / court clearance justification...',
-                border: OutlineInputBorder(),
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.emeraldGreen, foregroundColor: Colors.white),
-            onPressed: () async {
-              if (justController.text.trim().isEmpty) {
-                AppFeedback.showError(ctx, 'Mandatory audit justification is strictly required.');
-                return;
-              }
-              Navigator.pop(ctx);
-              try {
-                final ds = sl<BlacklistRemoteDataSource>();
-                await ds.revertBlacklistRecord(
-                  blacklistId: item.blacklistId,
-                  adminUid: 'super_admin_master',
-                  justification: justController.text.trim(),
-                );
-                await _loadTribunalCases();
-                if (mounted) AppFeedback.showSuccess(context, 'Blacklist flag reversed and archived to audit log.');
-              } catch (e) {
-                if (mounted) AppFeedback.showError(context, 'Reversal failed: $e');
-              }
-            },
-            child: const Text('Authorize Reversal'),
-          ),
-        ],
+      builder: (_) => BlacklistAppealDialog(
+        record: record,
+        onDecided: _loadTribunalCases,
       ),
     );
   }
@@ -122,7 +62,7 @@ class _AdminBlacklistTribunalViewState extends State<AdminBlacklistTribunalView>
       backgroundColor: const Color(0xFFF8FAFC),
       body: Row(
         children: [
-          AdminSidebarNav(activeRoute: 'blacklist', onNavigate: _handleNavigation),
+          AdminSidebarNav(activeRoute: RouteNames.adminBlacklist, onNavigate: _handleNavigation),
           Expanded(
             child: Column(
               children: [
@@ -151,7 +91,8 @@ class _AdminBlacklistTribunalViewState extends State<AdminBlacklistTribunalView>
     );
   }
 
-  Widget _caseCard(BlacklistEntity item) {
+  Widget _caseCard(AdminBlacklistRecord record) {
+    final item = record.entity;
     return Container(
       margin: const EdgeInsets.only(bottom: 14),
       padding: const EdgeInsets.all(18),
@@ -166,12 +107,14 @@ class _AdminBlacklistTribunalViewState extends State<AdminBlacklistTribunalView>
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  Icon(item.isActive ? Icons.gavel_rounded : Icons.check_circle_rounded, color: item.isActive ? Colors.red : AppColors.emeraldGreen, size: 22),
-                  const SizedBox(width: 8),
-                  Text('${item.blacklistId} • CNIC: ${item.cnicNumber}', style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14)),
-                ],
+              Expanded(
+                child: Row(
+                  children: [
+                    Icon(item.isActive ? Icons.gavel_rounded : Icons.check_circle_rounded, color: item.isActive ? Colors.red : AppColors.emeraldGreen, size: 22),
+                    const SizedBox(width: 8),
+                    Expanded(child: Text('${item.blacklistId} • CNIC: ${item.cnicNumber}', overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14))),
+                  ],
+                ),
               ),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -206,12 +149,17 @@ class _AdminBlacklistTribunalViewState extends State<AdminBlacklistTribunalView>
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 OutlinedButton(
-                  onPressed: () => _showReversalDialog(item),
+                  onPressed: () => _showReversalDialog(record),
                   style: OutlinedButton.styleFrom(foregroundColor: AppColors.emeraldGreen),
-                  child: const Text('Reverse Ban with Mandatory Audit', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 11.5)),
+                  child: const Text('Decide appeal — Keep or Remove', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 11.5)),
                 ),
               ],
             ),
+          ],
+          if (record.appealStatus != 'none') ...[
+            const SizedBox(height: 8),
+            Text('Appeal: ${record.appealStatus} — ${record.appealReason}',
+                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700)),
           ],
         ],
       ),

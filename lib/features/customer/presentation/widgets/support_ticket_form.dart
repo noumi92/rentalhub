@@ -22,6 +22,9 @@ class _SupportTicketFormState extends State<SupportTicketForm> {
   final _messageController = TextEditingController();
   bool _isSubmitting = false;
   bool _sent = false;
+  // Phase E (E1): the priority the admin SLA runs on — High 1 h,
+  // Medium 4 h, Low 24 h. Medium is the default.
+  String _priority = 'medium';
 
   @override
   void dispose() {
@@ -46,6 +49,7 @@ class _SupportTicketFormState extends State<SupportTicketForm> {
         'customerId': customerId,
         'message': message,
         'status': 'open',
+        'priority': _priority,
         'createdAt': DateTime.now().toIso8601String(),
       });
       if (mounted) {
@@ -100,6 +104,28 @@ class _SupportTicketFormState extends State<SupportTicketForm> {
               hintText: 'E.g. The showroom charged me extra for fuel...',
               hintStyle: const TextStyle(
                   fontSize: 12, color: AppColors.textSecondary),
+              filled: true,
+              fillColor:
+                  Theme.of(context).colorScheme.surfaceContainerHighest,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: const BorderSide(color: AppColors.border),
+              ),
+              contentPadding: const EdgeInsets.all(12),
+            ),
+          ),
+          const SizedBox(height: 10),
+          DropdownButtonFormField<String>(
+            initialValue: _priority,
+            items: const [
+              DropdownMenuItem(value: 'high', child: Text('High — urgent')),
+              DropdownMenuItem(value: 'medium', child: Text('Medium')),
+              DropdownMenuItem(value: 'low', child: Text('Low')),
+            ],
+            onChanged: (v) =>
+                setState(() => _priority = v ?? 'medium'),
+            decoration: InputDecoration(
+              hintText: 'How urgent is this?',
               filled: true,
               fillColor:
                   Theme.of(context).colorScheme.surfaceContainerHighest,

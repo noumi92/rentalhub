@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'features/notifications/data/services/push_token_service.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -22,6 +23,10 @@ void main() async {
     debugPrint('Firebase initialization notice: $e');
   }
   await initDependencies();
+  // Phase E (E3): listen for FCM token rotation and register the
+  // current token when the app starts (no-op when signed out).
+  PushTokenService.startRefreshListener();
+  await PushTokenService.registerToken();
   runApp(const RentalHubApp());
 }
 

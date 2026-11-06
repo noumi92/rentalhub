@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter/foundation.dart';
@@ -8,6 +9,7 @@ import '../../../../core/error/exceptions.dart';
 import '../../../../core/network/cpanel_storage_client.dart';
 import '../../../../core/network/firestore_service.dart';
 import '../models/user_model.dart';
+import '../../../notifications/data/services/push_token_service.dart';
 
 class AuthRemoteDataSource {
   final SharedPreferences prefs;
@@ -91,6 +93,9 @@ class AuthRemoteDataSource {
 
     if (firestoreService != null) {
       await firestoreService!.saveUser(user);
+    // Phase E (E3): register this device for push announcements.
+    // Fire-and-forget — a push failure must never block sign-in.
+    unawaited(PushTokenService.registerToken());
     }
   }
 
@@ -180,6 +185,9 @@ class AuthRemoteDataSource {
 
     if (firestoreService != null) {
       await firestoreService!.saveUser(user);
+    // Phase E (E3): register this device for push announcements.
+    // Fire-and-forget — a push failure must never block sign-in.
+    unawaited(PushTokenService.registerToken());
     }
     return user;
   }
@@ -260,6 +268,9 @@ class AuthRemoteDataSource {
 
     if (firestoreService != null) {
       await firestoreService!.saveUser(user);
+    // Phase E (E3): register this device for push announcements.
+    // Fire-and-forget — a push failure must never block sign-in.
+    unawaited(PushTokenService.registerToken());
     }
 
     return user;
@@ -306,6 +317,9 @@ class AuthRemoteDataSource {
 
     if (firestoreService != null) {
       await firestoreService!.saveUser(user);
+    // Phase E (E3): register this device for push announcements.
+    // Fire-and-forget — a push failure must never block sign-in.
+    unawaited(PushTokenService.registerToken());
     }
 
     return user;

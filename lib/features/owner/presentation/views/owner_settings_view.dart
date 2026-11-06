@@ -164,6 +164,8 @@ class _OwnerSettingsViewState extends State<OwnerSettingsView> {
                                   l10n.whatsappLogs, RouteNames.ownerWhatsappLogs),
                               _link(context, Icons.notifications_rounded,
                                   l10n.notifications, RouteNames.ownerNotifications),
+                              _link(context, Icons.report_problem_outlined,
+                                  l10n.disputes, RouteNames.ownerDisputes),
                               _link(context, Icons.account_balance_rounded,
                                   l10n.finance, RouteNames.ownerFinance),
                             ],

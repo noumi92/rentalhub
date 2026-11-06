@@ -3,15 +3,17 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:rentalhub/core/di/injection_container.dart' as di;
 import 'package:rentalhub/core/routing/admin_guard.dart';
+import 'package:rentalhub/features/admin/domain/admin_permissions.dart';
 import 'package:rentalhub/features/blacklist/data/datasources/blacklist_remote_data_source.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_dashboard_view.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_subscription_view.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_whatsapp_logs_view.dart';
 import 'package:rentalhub/features/admin/presentation/views/admin_dashboard_view.dart';
-import 'package:rentalhub/features/admin/presentation/views/admin_shop_accreditation_view.dart';
+import 'package:rentalhub/features/admin/presentation/views/admin_shop_approvals_view.dart';
 import 'package:rentalhub/features/admin/presentation/views/admin_blacklist_tribunal_view.dart';
-import 'package:rentalhub/features/admin/presentation/views/admin_subscriptions_view.dart';
-import 'package:rentalhub/features/admin/presentation/views/admin_settings_view.dart';
+import 'package:rentalhub/core/routing/route_names.dart';
+import 'package:rentalhub/features/admin/presentation/views/admin_coming_soon_view.dart';
+import 'package:rentalhub/features/admin/presentation/views/admin_platform_settings_view.dart';
 
 void main() {
   setUpAll(() async {
@@ -22,25 +24,24 @@ void main() {
 
   group('Batch 5: Super Admin Security & Tribunal Reversal Logic', () {
     test(
-        'AdminGuard: verifies only superadmin@rentalhub.pk with super_admin role',
+        'AdminGuard (Phase A): the role decides, not a hardcoded email',
         () {
+      // No email is special any more — the users doc admin_role is
+      // the gate, and any super_admin passes regardless of address.
+      expect(AdminGuard.isAdminRole('super_admin'), isTrue);
+      expect(AdminGuard.isAdminRole('operations'), isTrue);
+      expect(AdminGuard.isAdminRole('support'), isTrue);
+      expect(AdminGuard.isAdminRole('owner'), isFalse);
+      expect(AdminGuard.isAdminRole(null), isFalse);
+      expect(AdminGuard.isSuperAdmin('super_admin'), isTrue);
+      expect(AdminGuard.isSuperAdmin('operations'), isFalse);
       expect(
-        AdminGuard.verifySuperAdmin(
-            email: 'superadmin@rentalhub.pk', role: 'super_admin'),
+        AdminGuard.can('support', AdminPermission.decideVendor),
+        isFalse,
+      );
+      expect(
+        AdminGuard.can('super_admin', AdminPermission.manageTeam),
         isTrue,
-      );
-      expect(
-        AdminGuard.verifySuperAdmin(email: 'owner@rentalhub.pk', role: 'owner'),
-        isFalse,
-      );
-      expect(
-        AdminGuard.verifySuperAdmin(
-            email: 'hacker@test.com', role: 'super_admin'),
-        isFalse,
-      );
-      expect(
-        AdminGuard.verifySuperAdmin(email: null, role: null),
-        isFalse,
       );
     });
 
@@ -142,35 +143,28 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('RENTALHUB'), findsOneWidget);
-      expect(find.text('SUPER ADMIN 1440'), findsOneWidget);
-      expect(find.text('Active Rentals On Road'), findsOneWidget);
-      expect(find.text('Accredited Showrooms'), findsOneWidget);
-      expect(find.text('National Blacklist Flags'), findsOneWidget);
+      expect(find.text('ADMIN PANEL'), findsOneWidget);
+      expect(find.text('Registered shops'), findsOneWidget);
+      expect(find.text('Active bookings'), findsOneWidget);
+      expect(find.text('Open disputes'), findsOneWidget);
+      expect(find.text('Open support tickets'), findsOneWidget);
     });
 
     testWidgets(
-        'AdminShopAccreditationView: displays queue and accredits showroom',
+        'Phase B (B1): approvals queue shows its honest empty state',
         (tester) async {
       tester.view.physicalSize = const Size(1440, 900);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(() => tester.view.resetPhysicalSize());
 
       await tester.pumpWidget(
-        const MaterialApp(home: AdminShopAccreditationView()),
+        const MaterialApp(home: AdminShopApprovalsView()),
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Showroom Accreditation Queue'), findsOneWidget);
-      expect(find.text('Khyber Car Rentals'), findsOneWidget);
-      expect(find.text('Accredit'), findsWidgets);
-
-      await tester.ensureVisible(find.text('Accredit').first);
-      await tester.pumpAndSettle();
-
-      await tester.tap(find.text('Accredit').first);
-      await tester.pumpAndSettle();
-
-      expect(find.text('VERIFIED'), findsWidgets);
+      expect(find.text('Shop Approvals'), findsOneWidget);
+      expect(find.textContaining('No pending applications'),
+          findsOneWidget);
     });
 
     testWidgets('AdminBlacklistTribunalView: displays cases and tribunal desk',
@@ -190,48 +184,43 @@ void main() {
     });
 
     testWidgets(
-        'AdminSubscriptionsView: displays tier distribution and gateway credit top-up',
+        'Phase F (gated): subscriptions route shows the honest placeholder',
         (tester) async {
       tester.view.physicalSize = const Size(1440, 900);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(() => tester.view.resetPhysicalSize());
 
       await tester.pumpWidget(
-        const MaterialApp(home: AdminSubscriptionsView()),
+        const MaterialApp(
+          home: AdminComingSoonView(
+            activeRoute: RouteNames.adminSubscriptions,
+            title: 'Subscriptions',
+            subtitle: 'Plans and WhatsApp credits',
+            body: 'Subscriptions arrive in Phase F, gated on the Play Console setup (plan D1).',
+          ),
+        ),
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Subscriptions & Messaging Gateway Credit'),
-          findsOneWidget);
-      expect(find.text('Basic Freemium'), findsOneWidget);
-      expect(find.text('WhatsApp Meta Cloud API'), findsOneWidget);
-
-      await tester.tap(find.text('Top Up').first);
-      await tester.pumpAndSettle();
-
-      expect(find.textContaining('19200'), findsOneWidget);
+      expect(find.text('Subscriptions'), findsWidgets);
+      expect(find.textContaining('Phase F'), findsOneWidget);
     });
 
     testWidgets(
-        'AdminSettingsView: composes system broadcast and exports ledger',
+        'Phase E (E2): platform settings view shows the defaults',
         (tester) async {
       tester.view.physicalSize = const Size(1440, 900);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(() => tester.view.resetPhysicalSize());
 
       await tester.pumpWidget(
-        const MaterialApp(home: AdminSettingsView()),
+        const MaterialApp(home: AdminPlatformSettingsView()),
       );
       await tester.pumpAndSettle();
 
-      expect(
-          find.text('System Broadcasts & Financial Exports'), findsOneWidget);
-      expect(find.text('Compose Platform Push Broadcast'), findsOneWidget);
-      expect(find.text('Export Ledger (CSV)'), findsOneWidget);
-      expect(find.text('Export Tribunal Dossier (PDF)'), findsOneWidget);
-
-      await tester.tap(find.text('Export Ledger (CSV)'));
-      await tester.pumpAndSettle();
+      expect(find.text('Cities & settings'), findsOneWidget);
+      expect(find.text('Save settings'), findsOneWidget);
+      expect(find.text('Maintenance mode'), findsOneWidget);
     });
   });
 }

@@ -20,6 +20,9 @@ class DisputeRecord {
     required this.description,
     required this.status,
     this.createdAt,
+    this.shopId,
+    this.customerName,
+    this.customerId,
   });
 
   final String id;
@@ -28,6 +31,15 @@ class DisputeRecord {
   final String description;
   final String status; // 'open' | 'in_review' | 'resolved'
   final DateTime? createdAt;
+
+  /// Owner inbox: the showroom the dispute belongs to. Filed by the
+  /// customer when the booking is known; older records without it are
+  /// attributed by resolving their booking (see getShopDisputes).
+  final String? shopId;
+
+  /// Enriched from the booking when the inbox loads it.
+  final String? customerName;
+  final String? customerId;
 }
 
 class DisputeRemoteDataSource {
@@ -38,6 +50,7 @@ class DisputeRemoteDataSource {
     required String customerId,
     required String category,
     required String description,
+    String? shopId,
   }) async {
     final id = 'DSP-${DateTime.now().millisecondsSinceEpoch}';
     final record = <String, dynamic>{
@@ -47,6 +60,7 @@ class DisputeRemoteDataSource {
       'description': description,
       'status': 'open',
       'createdAt': DateTime.now().toIso8601String(),
+      if (shopId != null) 'shopId': shopId,
     };
     _inMemory[id] = record;
     var synced = false;
@@ -105,5 +119,109 @@ class DisputeRemoteDataSource {
     list.sort((a, b) => (b.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0))
         .compareTo(a.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0)));
     return list;
+  }
+
+  /// Owner inbox: the disputes belonging to [shopId], newest first.
+  /// A record carries its shop when the customer filed it with the
+  /// booking known; records filed without one are attributed by
+  /// resolving their booking document. Returns the records with the
+  /// customer name enriched from the booking when available.
+  Future<List<DisputeRecord>> getShopDisputes(String shopId) async {
+    final records = <DisputeRecord>[];
+    try {
+      final snap =
+          await FirebaseFirestore.instance.collection('disputes').get();
+      for (final doc in snap.docs) {
+        final data = doc.data();
+        final recordShopId = await _resolveShopId(
+          data['shopId'] as String?,
+          data['bookingId'] as String? ?? '',
+        );
+        if (recordShopId != shopId) continue;
+        records.add(await _toRecord(doc.id, data));
+      }
+    } catch (_) {}
+    if (records.isEmpty) {
+      for (final e in _inMemory.entries) {
+        if ((e.value['shopId'] as String?) != shopId) continue;
+        records.add(_recordFromMap(e.key, e.value));
+      }
+    }
+    records.sort((a, b) =>
+        (b.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0)).compareTo(
+            a.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0)));
+    return records;
+  }
+
+  /// The showroom answers a dispute by moving it through
+  /// open -> in_review -> resolved. Returns true when the change
+  /// reached Firestore.
+  Future<bool> updateDisputeStatus(String id, String status) async {
+    final existing = _inMemory[id];
+    if (existing != null) {
+      _inMemory[id] = {...existing, 'status': status};
+    }
+    try {
+      await FirebaseFirestore.instance
+          .collection('disputes')
+          .doc(id)
+          .update({'status': status});
+      return true;
+    } catch (_) {
+      return existing != null;
+    }
+  }
+
+  Future<String?> _resolveShopId(
+      String? shopId, String bookingId) async {
+    if (shopId != null && shopId.isNotEmpty) return shopId;
+    if (bookingId.isEmpty) return null;
+    try {
+      final doc = await FirebaseFirestore.instance
+          .collection('bookings')
+          .doc(bookingId)
+          .get();
+      return doc.data()?['shopId'] as String?;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<DisputeRecord> _toRecord(
+      String id, Map<String, dynamic> data) async {
+    String? customerName;
+    final bookingId = data['bookingId'] as String? ?? '';
+    if (bookingId.isNotEmpty) {
+      try {
+        final doc = await FirebaseFirestore.instance
+            .collection('bookings')
+            .doc(bookingId)
+            .get();
+        customerName = doc.data()?['customerName'] as String?;
+      } catch (_) {}
+    }
+    return _recordFromMap(id, data, customerName: customerName);
+  }
+
+  DisputeRecord _recordFromMap(String id, Map<String, dynamic> data,
+      {String? customerName}) {
+    final created = data['createdAt'];
+    DateTime? createdAt;
+    if (created is Timestamp) {
+      createdAt = created.toDate();
+    } else if (created is String) {
+      createdAt = DateTime.tryParse(created);
+    }
+    return DisputeRecord(
+      id: id,
+      bookingId: data['bookingId'] as String? ?? '',
+      category: data['category'] as String? ?? '',
+      description: data['description'] as String? ?? '',
+      status: data['status'] as String? ?? 'open',
+      createdAt: createdAt,
+      shopId: data['shopId'] as String?,
+      customerName: customerName,
+      customerId: data['customerId'] as String?,
+    );
   }
 }

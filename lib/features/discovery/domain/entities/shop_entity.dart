@@ -31,6 +31,11 @@ class ShopEntity extends Equatable {
   final String? ownerName;
   final String? cnicNumber;
   final String? openingHours;
+  // Phase B (B2): the shop's subscription plan ('free' until Phase F
+  // sets real plans) and the suspension state, set by an admin.
+  final String plan;
+  final bool suspended;
+  final String? suspensionReason;
 
   const ShopEntity({
     required this.shopId,
@@ -53,6 +58,9 @@ class ShopEntity extends Equatable {
     this.ownerName,
     this.cnicNumber,
     this.openingHours,
+    this.plan = 'free',
+    this.suspended = false,
+    this.suspensionReason,
   });
 
   @override
@@ -77,6 +85,9 @@ class ShopEntity extends Equatable {
         ownerName,
         cnicNumber,
         openingHours,
+        plan,
+        suspended,
+        suspensionReason,
       ];
 }
 

@@ -6,7 +6,8 @@ import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/custom_curved_header.dart';
 import '../../../../core/widgets/debounced_button.dart';
 import '../../data/datasources/dispute_remote_data_source.dart';
-import '../widgets/dispute_category_chips.dart';
+import '../../../bookings/data/datasources/booking_remote_data_source.dart';
+import '../widgets/dispute_form_fields.dart';
 import '../widgets/my_disputes_list.dart';
 
 class CustomerDisputeView extends StatefulWidget {
@@ -71,6 +72,17 @@ class _CustomerDisputeViewState extends State<CustomerDisputeView> {
         if (u != null) uid = u.uid;
       } catch (_) {}
 
+      // The booking is resolved so the dispute carries the showroom
+      // it belongs to — the owner's disputes inbox reads it straight
+      // off the record. Best effort: when the booking cannot be
+      // resolved the dispute is still filed and the inbox attributes
+      // it from the booking document instead.
+      String? shopId;
+      try {
+        final booking =
+            await sl<BookingRemoteDataSource>().getBookingById(bId);
+        shopId = booking?.shopId;
+      } catch (_) {}
       // G4: the dispute is filed through the data source (Firestore
       // with an in-memory fallback). The message says honestly whether
       // it reached the cloud or only this device — the old code
@@ -81,12 +93,13 @@ class _CustomerDisputeViewState extends State<CustomerDisputeView> {
         customerId: uid,
         category: _selectedCategory,
         description: desc,
+        shopId: shopId,
       );
       if (mounted) {
         if (filed.synced) {
           AppFeedback.showSuccess(
             context,
-            'Dispute filed. The showroom can see it in their bookings.',
+            'Dispute filed. The showroom can see it in their disputes inbox.',
           );
         } else {
           AppFeedback.showWarning(
@@ -136,84 +149,13 @@ class _CustomerDisputeViewState extends State<CustomerDisputeView> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Select Dispute Category',
-                        style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.midnightNavy)),
-                    const SizedBox(height: 8),
-                    DisputeCategoryChips(
+                    DisputeFormFields(
                       categories: _categories,
-                      selected: _selectedCategory,
-                      onSelected: (cat) =>
+                      selectedCategory: _selectedCategory,
+                      onCategorySelected: (cat) =>
                           setState(() => _selectedCategory = cat),
-                    ),
-                    const SizedBox(height: 16),
-                    const Text('Booking ID / Reference',
-                        style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.midnightNavy)),
-                    const SizedBox(height: 6),
-                    TextField(
-                      controller: _bookingIdController,
-                      decoration: InputDecoration(
-                        hintText: 'E.g. RH-849201',
-                        filled: true,
-                        fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(color: AppColors.border),
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 14, vertical: 12),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    const Text('Detailed Explanation',
-                        style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.midnightNavy)),
-                    const SizedBox(height: 6),
-                    TextField(
-                      controller: _descriptionController,
-                      maxLines: 4,
-                      decoration: InputDecoration(
-                        hintText:
-                          'Describe what happened with dates, amounts, and showroom staff names...',
-                        filled: true,
-                        fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(color: AppColors.border),
-                        ),
-                        contentPadding: const EdgeInsets.all(12),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: AppColors.lavenderMist,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Row(
-                        children: const [
-                          Icon(Icons.shield_rounded,
-                              size: 18, color: AppColors.royalNavy),
-                          SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              'Your dispute is recorded and shared with the showroom for review. There is no fixed resolution time yet.',
-                              style: TextStyle(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w600,
-                                  color: AppColors.midnightNavy),
-                            ),
-                          ),
-                        ],
-                      ),
+                      bookingIdController: _bookingIdController,
+                      descriptionController: _descriptionController,
                     ),
                     const SizedBox(height: 20),
                     const MyDisputesList(),

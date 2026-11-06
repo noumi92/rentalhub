@@ -60,6 +60,7 @@ class RouteNames {
   static const String ownerSubscription = '/owner/subscription';
   static const String ownerWhatsappLogs = '/owner/whatsapp';
   static const String ownerNotifications = '/owner/notifications';
+  static const String ownerDisputes = '/owner/disputes';
   static const String ownerSettings = '/owner/settings';
   static const String ownerFinance = '/owner/finance';
   static const String ownerDues = '/owner/finance/dues';
@@ -67,7 +68,23 @@ class RouteNames {
   static const String ownerCarPnL = '/owner/finance/car';
 
   // Super Admin Routes (Web)
+  static const String adminLogin = '/admin/login';
   static const String adminDashboard = '/admin/dashboard';
+  static const String adminTeam = '/admin/team';
+  static const String adminApprovals = '/admin/approvals';
+  static const String adminCars = '/admin/cars';
+  static const String adminShopDetail = '/admin/shops/:shopId';
+  static const String adminCustomers = '/admin/customers';
+  static const String adminCustomerDetail = '/admin/customers/:customerId';
+  static const String adminBookings = '/admin/bookings';
+  static const String adminBookingDetail = '/admin/bookings/:bookingId';
+  static const String adminDisputes = '/admin/disputes';
+  static const String adminReviews = '/admin/reviews';
+  static const String adminTickets = '/admin/tickets';
+  static const String adminSettings = '/admin/settings';
+  static const String adminAnnouncements = '/admin/announcements';
+  static const String adminReports = '/admin/reports';
+  static const String adminActivity = '/admin/activity';
   static const String adminShops = '/admin/shops';
   static const String adminBlacklist = '/admin/blacklist';
   static const String adminSubscriptions = '/admin/subscriptions';

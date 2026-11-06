@@ -17,6 +17,11 @@ import '../../features/auth/domain/usecases/sign_in_with_google_usecase.dart';
 import '../../features/auth/presentation/cubit/auth_cubit.dart';
 import '../../features/customer/data/datasources/customer_remote_data_source.dart';
 import '../../features/customer/data/datasources/dispute_remote_data_source.dart';
+import '../../features/admin/data/datasources/admin_remote_data_source.dart';
+import '../../features/admin/data/datasources/admin_shops_data_source.dart';
+import '../../features/admin/data/datasources/admin_people_data_source.dart';
+import '../../features/admin/data/datasources/admin_platform_data_source.dart';
+import '../../features/admin/data/datasources/admin_support_data_source.dart';
 import '../../features/customer/data/datasources/review_remote_data_source.dart';
 import '../../features/customer/data/repositories/customer_repository_impl.dart';
 import '../../features/customer/domain/repositories/customer_repository.dart';
@@ -153,6 +158,27 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton<DisputeRemoteDataSource>(
     () => DisputeRemoteDataSource(),
   );
+  // Phase A (A1): the admin panel's data layer — Cloud Functions for
+  // TOTP + roles, Firestore for invites and the team list.
+  sl.registerLazySingleton<AdminRemoteDataSource>(
+    () => AdminRemoteDataSource(),
+  );
+  // Phase B: the shops side of the admin panel (approvals, shops, cars).
+  sl.registerLazySingleton<AdminShopsDataSource>(
+    () => AdminShopsDataSource(),
+  );
+  // Phase C: customers, the blacklist and the trust score.
+  sl.registerLazySingleton<AdminPeopleDataSource>(
+    () => AdminPeopleDataSource(),
+  );
+  // Phase D: bookings, disputes, reviews.
+  sl.registerLazySingleton<AdminPlatformDataSource>(
+    () => AdminPlatformDataSource(),
+  );
+  // Phase E: support, settings, announcements, reports.
+  sl.registerLazySingleton<AdminSupportDataSource>(
+    () => AdminSupportDataSource(),
+  );
   // H4: the real reviews store — one document per booking, rated
   // once by each side. No in-memory fallback: a rating that only
   // lives on the device would be a lie to the other side.
@@ -227,7 +253,8 @@ Future<void> initDependencies() async {
   );
   sl.registerLazySingleton<BookingRemoteDataSource>(
     () => BookingRemoteDataSource(
-        notifications: sl<NotificationDataSource>()),
+        notifications: sl<NotificationDataSource>(),
+        blacklist: sl<BlacklistRemoteDataSource>()),
   );
   sl.registerLazySingleton<BookingRepository>(
     () => BookingRepositoryImpl(

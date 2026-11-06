@@ -22,6 +22,9 @@ class ShopModel extends ShopEntity {
     super.ownerName,
     super.cnicNumber,
     super.openingHours,
+    super.plan,
+    super.suspended,
+    super.suspensionReason,
   });
 
   factory ShopModel.fromMap(Map<String, dynamic> d, {String? id}) {
@@ -48,6 +51,9 @@ class ShopModel extends ShopEntity {
       ownerName: d['owner_name'],
       cnicNumber: d['cnic_number'],
       openingHours: d['opening_hours'],
+      plan: d['plan'] as String? ?? 'free',
+      suspended: d['suspended'] as bool? ?? false,
+      suspensionReason: d['suspension_reason'] as String?,
     );
   }
 
@@ -74,6 +80,10 @@ class ShopModel extends ShopEntity {
       if (ownerName != null) 'owner_name': ownerName,
       if (cnicNumber != null) 'cnic_number': cnicNumber,
       if (openingHours != null) 'opening_hours': openingHours,
+      'plan': plan,
+      'suspended': suspended,
+      if (suspensionReason != null)
+        'suspension_reason': suspensionReason,
     };
   }
 }
