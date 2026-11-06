@@ -115,11 +115,11 @@ class _OwnerCarPnLViewState extends State<OwnerCarPnLView> {
                             children: [
                               DropdownButtonFormField<String>(
                                 initialValue: _vehicleId,
-                                decoration: const InputDecoration(
+                                decoration: InputDecoration(
                                     labelText: 'Vehicle',
                                     border: OutlineInputBorder(),
                                     filled: true,
-                                    fillColor: Colors.white),
+                                    fillColor: Theme.of(context).colorScheme.surfaceContainerHighest),
                                 items: _vehicles
                                     .map((v) => DropdownMenuItem(
                                         value: v.vehicleId,

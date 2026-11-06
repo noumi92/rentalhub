@@ -16,6 +16,9 @@ import 'package:rentalhub/features/customer/presentation/views/customer_settings
 import 'package:rentalhub/features/customer/presentation/views/customer_sos_view.dart';
 import 'package:rentalhub/features/customer/presentation/views/customer_support_view.dart';
 import 'package:rentalhub/features/customer/presentation/views/customer_wallet_view.dart';
+import 'package:rentalhub/l10n/app_localizations.dart';
+import 'package:rentalhub/core/settings/app_settings_cubit.dart';
+import 'package:rentalhub/features/finance/data/datasources/security_deposit_data_source.dart';
 
 void main() {
   setUpAll(() async {
@@ -78,7 +81,34 @@ void main() {
       expect(find.text('Approved'), findsOneWidget);
     });
 
-    testWidgets('CustomerWalletView: displays escrow balance and transaction ledger', (tester) async {
+    testWidgets('CustomerWalletView: shows real advances and deposits from the booking records', (tester) async {
+      // F1: seed a real booking with a verified advance and a collected
+      // deposit, then the wallet must show those exact amounts — the
+      // old hardcoded Rs. 15,000 / 5,000 / 10,000 is gone.
+      final bookingDs = di.sl<BookingRemoteDataSource>();
+      final booking = await bookingDs.createBookingRequest(
+        customerId: 'cust-101',
+        shopId: 'shop-1',
+        vehicleId: 'veh-civic',
+        packageType: '24h',
+        isWithDriver: false,
+        pickupTime: DateTime.now().add(const Duration(hours: 5)),
+        returnTime: DateTime.now().add(const Duration(days: 1, hours: 5)),
+        totalAmount: 9000,
+        advanceRequired: 2500,
+        vehicleName: 'Honda Civic',
+      );
+      await bookingDs.verifyPayment(
+        bookingId: booking.bookingId,
+        advanceAmount: 2500,
+      );
+      await di.sl<SecurityDepositDataSource>().collect(
+            bookingId: booking.bookingId,
+            customerId: 'cust-101',
+            shopId: 'shop-1',
+            amount: 10000,
+          );
+
       await tester.pumpWidget(
         const MaterialApp(
           home: CustomerWalletView(),
@@ -88,8 +118,13 @@ void main() {
 
       expect(find.text('Wallet & Security Escrow'), findsOneWidget);
       expect(find.text('Active Escrow & Advances'), findsOneWidget);
-      expect(find.text('Rs. 15,000'), findsOneWidget);
+      expect(find.text('Rs. 12500'), findsOneWidget);
+      expect(find.text('Rs. 2500'), findsOneWidget);
+      expect(find.text('Rs. 10000'), findsOneWidget);
       expect(find.text('Transaction Ledger'), findsOneWidget);
+      expect(find.textContaining('Advance paid — Honda Civic'), findsOneWidget);
+      expect(find.textContaining('Security deposit held — Honda Civic'),
+          findsOneWidget);
     });
 
     testWidgets('CustomerSupportView: searches FAQs and triggers contact options', (tester) async {
@@ -105,12 +140,16 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Help & Support Center'), findsOneWidget);
-      expect(find.text('Call Helpline'), findsOneWidget);
-      expect(find.text('WhatsApp Desk'), findsOneWidget);
+      // G1: the contact cards reach the customer's own showroom now —
+      // no invented RentalHub helpline number.
+      expect(find.text('Call your showroom'), findsOneWidget);
+      expect(find.text('WhatsApp your showroom'), findsOneWidget);
+      expect(find.text('Message Support'), findsOneWidget);
       expect(find.text('Frequently Asked Questions'), findsOneWidget);
 
-      // Search FAQ
-      await tester.enterText(find.byType(TextField), 'deposit');
+      // Search FAQ — the ticket form adds a second TextField, so the
+      // search box is the first one in the tree.
+      await tester.enterText(find.byType(TextField).first, 'deposit');
       await tester.pumpAndSettle();
 
       expect(find.text('When is my security deposit returned?'), findsOneWidget);
@@ -214,7 +253,11 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Cancel Reservation'), findsOneWidget);
-      expect(find.text('Cancellation Policy'), findsOneWidget);
+      // G5: the invented refund timetable is gone — the screen now
+      // says plainly what happens (no advance paid yet on this booking).
+      expect(find.text('What happens when you cancel'), findsOneWidget);
+      expect(find.textContaining('No advance has been paid yet'),
+          findsOneWidget);
 
       await tester.tap(find.text('Found another vehicle'));
       await tester.pumpAndSettle();
@@ -222,6 +265,10 @@ void main() {
       await tester.tap(find.text('Confirm Cancellation'));
       await tester.pumpAndSettle();
       expect(cancelled, isTrue);
+      // G5: the reason travels with the cancellation.
+      final updated = await ds.getBookingById(booking.bookingId);
+      expect(updated?.status, 'cancelled');
+      expect(updated?.rejectionReason, 'Found another vehicle');
     });
 
     testWidgets('CustomerProfileView: renders user profile, trust score, and menu options', (tester) async {
@@ -238,7 +285,10 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Trust Score: 4.8 / 5.0'), findsOneWidget);
+      // H1: no signed-in user in tests, so the profile shows Guest
+      // and an unknown trust score — never the old hardcoded 4.8.
+      expect(find.text('Guest'), findsOneWidget);
+      expect(find.text('Trust Score: —'), findsOneWidget);
       expect(find.text('My Documents (KYC)'), findsOneWidget);
       expect(find.text('Saved Showrooms'), findsOneWidget);
 
@@ -260,24 +310,34 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Saved Showrooms'), findsOneWidget);
-      expect(find.text('Al-Falah Rent a Car'), findsOneWidget);
-      expect(find.text('Capital Wheels Islamabad'), findsOneWidget);
+      // H5: the hardcoded demo shops are gone — with no signed-in
+      // customer the list is honestly empty.
+      expect(find.text('No saved showrooms yet.'), findsOneWidget);
+      expect(
+          find.text('Tap the heart on any showroom to save it here.'),
+          findsOneWidget);
     });
 
-    testWidgets('CustomerSettingsView: toggles Urdu interface and notifications', (tester) async {
+    testWidgets('CustomerSettingsView: switches language via AppSettingsCubit and shows notification toggles', (tester) async {
+      // H2: language and theme are real AppSettingsCubit toggles now —
+      // the old fake setState Urdu switch is gone.
       await tester.pumpWidget(
         const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           home: CustomerSettingsView(),
         ),
       );
       await tester.pumpAndSettle();
 
       expect(find.text('Settings & Preferences'), findsOneWidget);
-      expect(find.text('Urdu Interface (اردو)'), findsOneWidget);
+      expect(find.text('Urdu'), findsOneWidget);
       expect(find.text('Push Notifications'), findsOneWidget);
+      expect(find.text('WhatsApp Notifications'), findsOneWidget);
 
-      await tester.tap(find.text('Urdu Interface (اردو)'));
+      await tester.tap(find.text('Urdu'));
       await tester.pumpAndSettle();
+      expect(di.sl<AppSettingsCubit>().state.localeCode, 'ur');
     });
 
     testWidgets('CustomerSosView: renders SOS pulse button and emergency contacts', (tester) async {
@@ -297,7 +357,7 @@ void main() {
       await tester.pumpAndSettle();
     });
 
-    testWidgets('CustomerReputationView: renders 4-dimensional performance metrics', (tester) async {
+    testWidgets('CustomerReputationView: shows unknown score with no owner reviews', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: CustomerReputationView(),
@@ -306,10 +366,12 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('My Trust & Reputation'), findsOneWidget);
-      expect(find.text('4.8 / 5.0'), findsOneWidget);
-      expect(find.text('4-Dimensional Performance Score'), findsOneWidget);
-      expect(find.text('Vehicle Care & Cleanliness'), findsOneWidget);
-      expect(find.text('On-Time Handover Punctuality'), findsOneWidget);
+      // H3: the hardcoded 4.8 and the invented score bars are gone.
+      expect(find.text('— / 5.0'), findsOneWidget);
+      expect(
+          find.text(
+              'No showroom has rated you yet. Your reputation appears here after your first completed trip.'),
+          findsOneWidget);
     });
   });
 }

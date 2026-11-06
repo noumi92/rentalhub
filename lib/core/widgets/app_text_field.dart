@@ -27,15 +27,16 @@ class AppTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 12.5,
             fontWeight: FontWeight.w700,
-            color: AppColors.midnightNavy,
+            color: scheme.onSurface,
           ),
         ),
         const SizedBox(height: 6),
@@ -45,15 +46,21 @@ class AppTextField extends StatelessWidget {
           keyboardType: keyboardType,
           validator: validator,
           onChanged: onChanged,
+          style: TextStyle(
+            color: scheme.onSurface,
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+          ),
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: const TextStyle(color: AppColors.textMuted, fontSize: 13),
+            hintStyle:
+                TextStyle(color: scheme.onSurfaceVariant, fontSize: 13),
             prefixIcon: prefixIcon != null
-                ? Icon(prefixIcon, size: 20, color: AppColors.midnightNavy)
+                ? Icon(prefixIcon, size: 20, color: scheme.onSurfaceVariant)
                 : null,
             suffixIcon: suffixIcon,
             filled: true,
-            fillColor: const Color(0xFFF8FAFC),
+            fillColor: scheme.surfaceContainerHighest,
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 14,
               vertical: 13,

@@ -4,10 +4,14 @@ import '../../../../core/constants/app_colors.dart';
 
 class PickupCountdownTimer extends StatefulWidget {
   final DateTime targetPickupTime;
+  // E3: the label above the digits — the pickup pass counts down to
+  // pickup; the active-trip view reuses this for the return.
+  final String label;
 
   const PickupCountdownTimer({
     super.key,
     required this.targetPickupTime,
+    this.label = 'COUNTDOWN TO PICKUP',
   });
 
   @override
@@ -61,9 +65,9 @@ class _PickupCountdownTimerState extends State<PickupCountdownTimer> {
       ),
       child: Column(
         children: [
-          const Text(
-            'COUNTDOWN TO PICKUP',
-            style: TextStyle(
+          Text(
+            widget.label,
+            style: const TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.w800,
               letterSpacing: 1.2,

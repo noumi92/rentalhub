@@ -61,7 +61,7 @@ class ManualBookingVehicleSection extends StatelessWidget {
             prefixIcon: const Icon(Icons.lock_clock_rounded,
                 color: AppColors.midnightNavy, size: 20),
             filled: true,
-            fillColor: Colors.white,
+            fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
             border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: const BorderSide(color: AppColors.border)),

@@ -6,6 +6,7 @@ import '../../../../core/widgets/custom_curved_header.dart';
 import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
 import '../widgets/booking_ticket_card.dart';
+import '../widgets/customer_bottom_nav.dart';
 
 class CustomerBookingsView extends StatefulWidget {
   final Function(BookingEntity booking)? onOpenBookingDetails;
@@ -73,7 +74,10 @@ class _CustomerBookingsViewState extends State<CustomerBookingsView> {
             .toList();
       case 4:
         return _allBookings
-            .where((b) => b.status == 'completed' || b.status == 'cancelled')
+            .where((b) =>
+                b.status == 'completed' ||
+                b.status == 'cancelled' ||
+                b.status == 'rejected')
             .toList();
       default:
         return _allBookings;
@@ -85,6 +89,7 @@ class _CustomerBookingsViewState extends State<CustomerBookingsView> {
     final list = _filteredBookings;
     return Scaffold(
       backgroundColor: AppColors.backgroundLight,
+      bottomNavigationBar: const CustomerBottomNav(currentIndex: 1),
       body: SafeArea(
         child: Column(
           children: [

@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
 import '../../../../../core/constants/app_colors.dart';
-import '../../../../../core/models/mock_data.dart';
+import '../../../../fleet/domain/entities/vehicle_entity.dart';
 
 class VehicleHeroCard extends StatelessWidget {
-  final MockVehicle vehicle;
+  final VehicleEntity vehicle;
   final String carAsset;
+
+  /// A real photo URL when the owner uploaded one (cPanel `vehicles`
+  /// folder); when null the asset fallback [carAsset] is shown.
+  final String? imageUrl;
 
   const VehicleHeroCard({
     super.key,
     required this.vehicle,
     required this.carAsset,
+    this.imageUrl,
   });
 
   @override
@@ -34,16 +39,7 @@ class VehicleHeroCard extends StatelessWidget {
         child: Stack(
           alignment: Alignment.center,
           children: [
-            Image.asset(
-              carAsset,
-              fit: BoxFit.contain,
-              width: double.infinity,
-              height: 190,
-              errorBuilder: (_, __, ___) => Image.asset(
-                'assets/images/white_sedan_hero.png',
-                fit: BoxFit.contain,
-              ),
-            ),
+            _buildImage(),
             Positioned(
               top: 12,
               left: 12,
@@ -65,6 +61,36 @@ class VehicleHeroCard extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  /// The owner's uploaded photo when there is one, otherwise the asset
+  /// illustration for this make/model, with the generic sedan as the last
+  /// fallback when even the asset fails to load.
+  Widget _buildImage() {
+    final url = imageUrl;
+    if (url != null && url.startsWith('http')) {
+      return Image.network(
+        url,
+        fit: BoxFit.cover,
+        width: double.infinity,
+        height: 190,
+        errorBuilder: (_, __, ___) => _assetImage(),
+      );
+    }
+    return _assetImage();
+  }
+
+  Widget _assetImage() {
+    return Image.asset(
+      carAsset,
+      fit: BoxFit.contain,
+      width: double.infinity,
+      height: 190,
+      errorBuilder: (_, __, ___) => Image.asset(
+        'assets/images/white_sedan_hero.png',
+        fit: BoxFit.contain,
       ),
     );
   }

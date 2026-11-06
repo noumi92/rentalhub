@@ -183,11 +183,11 @@ class _GuarantorPickerState extends State<GuarantorPicker> {
               child: TextField(
                 controller: _searchController,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   hintText: 'Search guarantor by CNIC',
                   border: OutlineInputBorder(),
                   filled: true,
-                  fillColor: Colors.white,
+                  fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                 ),
               ),
             ),
@@ -235,43 +235,43 @@ class _GuarantorPickerState extends State<GuarantorPicker> {
         if (_addingNew) ...[
           TextField(
             controller: _nameController,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               labelText: 'Guarantor full name',
               border: OutlineInputBorder(),
               filled: true,
-              fillColor: Colors.white,
+              fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
             ),
           ),
           const SizedBox(height: 8),
           TextField(
             controller: _phoneController,
             keyboardType: TextInputType.phone,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               labelText: 'Phone number',
               border: OutlineInputBorder(),
               filled: true,
-              fillColor: Colors.white,
+              fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
             ),
           ),
           const SizedBox(height: 8),
           TextField(
             controller: _cnicController,
             keyboardType: TextInputType.number,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               labelText: 'CNIC number',
               border: OutlineInputBorder(),
               filled: true,
-              fillColor: Colors.white,
+              fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
             ),
           ),
           const SizedBox(height: 8),
           TextField(
             controller: _relationshipController,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               labelText: 'Relationship (e.g. Father, Brother, Friend)',
               border: OutlineInputBorder(),
               filled: true,
-              fillColor: Colors.white,
+              fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
             ),
           ),
           const SizedBox(height: 8),

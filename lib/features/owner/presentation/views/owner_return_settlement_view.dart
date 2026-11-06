@@ -205,12 +205,12 @@ class _OwnerReturnSettlementViewState
                       controller: _damageChargeController,
                       keyboardType: TextInputType.number,
                       onChanged: (_) => setState(() {}),
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         labelText: 'Damage charge (Rs.)',
                         hintText: '0 if nothing new was found',
                         border: OutlineInputBorder(),
                         filled: true,
-                        fillColor: Colors.white,
+                        fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                       ),
                     ),
                     const SizedBox(height: 16),

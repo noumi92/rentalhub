@@ -189,7 +189,7 @@ class VehicleSpecsStepWidget extends StatelessWidget {
                 decoration: InputDecoration(
                   hintText: 'e.g. LEA-23-4567',
                   filled: true,
-                  fillColor: Colors.white,
+                  fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border)),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                 ),

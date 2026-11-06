@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/utils/whatsapp.dart';
+import '../../../../core/widgets/app_feedback.dart';
+import '../widgets/booking_status_chip.dart';
 import '../../../../core/widgets/custom_curved_header.dart';
 import '../../../../core/widgets/debounced_button.dart';
 import '../../domain/entities/booking_entity.dart';
@@ -96,19 +100,7 @@ class BookingSuccessView extends StatelessWidget {
                                   style: TextStyle(
                                       fontSize: 13,
                                       color: AppColors.textSecondary)),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 8, vertical: 3),
-                                decoration: BoxDecoration(
-                                  color: AppColors.amberGold.withValues(alpha: 0.15),
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                                child: const Text('Pending Review',
-                                    style: TextStyle(
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.w800,
-                                        color: AppColors.amberGold)),
-                              ),
+                              BookingStatusChip(status: booking.status),
                             ],
                           ),
                           const Divider(height: 20),
@@ -131,14 +123,32 @@ class BookingSuccessView extends StatelessWidget {
                     ),
                     const SizedBox(height: 20),
                     OutlinedButton.icon(
-                      onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                                'Opening WhatsApp with showroom for ${booking.bookingId}...'),
-                            backgroundColor: AppColors.emeraldGreen,
-                          ),
+                      onPressed: () async {
+                        final uri = whatsappUri(
+                          phone: booking.shopPhone ?? '',
+                          message:
+                              'Hi ${booking.shopName ?? 'there'}, this is about '
+                              'my RentalHub booking ${booking.bookingId} '
+                              '(${booking.vehicleName ?? 'vehicle'}).',
                         );
+                        if (uri == null) {
+                          AppFeedback.showInfo(
+                            context,
+                            'This showroom has no WhatsApp number listed.',
+                          );
+                          return;
+                        }
+                        if (!await launchUrl(
+                          uri,
+                          mode: LaunchMode.externalApplication,
+                        )) {
+                          if (context.mounted) {
+                            AppFeedback.showError(
+                              context,
+                              'Could not open WhatsApp.',
+                            );
+                          }
+                        }
                       },
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppColors.emeraldGreen,
@@ -195,5 +205,5 @@ class BookingSuccessView extends StatelessWidget {
       ),
     );
   }
-}
 
+}

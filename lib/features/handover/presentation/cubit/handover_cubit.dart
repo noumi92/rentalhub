@@ -224,6 +224,20 @@ class HandoverCubit extends Cubit<HandoverState> {
           'status': 'active',
           'createdAt': DateTime.now().toIso8601String(),
         });
+        // E3: the handover record itself — odometer and fuel at pickup —
+        // so the customer's active-trip view can show the real handover
+        // values instead of the agreement doc, which does not carry them.
+        await fs.collection('handovers').doc(item.bookingId).set({
+          'bookingId': item.bookingId,
+          'shopId': item.shopId ?? '',
+          'shopName': item.shopName ?? '',
+          'customerName': item.customerName ?? '',
+          'initialOdometer': item.initialOdometer,
+          'fuelLevel': item.fuelLevel,
+          'damageNotes': item.damageNotes,
+          'agreementPdfUrl': url,
+          'createdAt': DateTime.now().toIso8601String(),
+        });
       }
       await localDataSource.markSynced(item.bookingId, url);
       return url;

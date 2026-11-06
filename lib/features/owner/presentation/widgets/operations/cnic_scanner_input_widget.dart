@@ -71,7 +71,7 @@ class CnicScannerInputWidget extends StatelessWidget {
                     )
                   : null,
               filled: true,
-              fillColor: AppColors.backgroundLight,
+              fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: const BorderSide(color: AppColors.border),

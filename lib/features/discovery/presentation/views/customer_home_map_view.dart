@@ -1,15 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart' as ll;
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/widgets/custom_curved_header.dart';
+import '../../data/datasources/customer_location_store.dart';
+import '../../data/datasources/discovery_remote_data_source.dart';
+import '../../data/repositories/discovery_repository_impl.dart';
 import '../../domain/entities/shop_entity.dart';
-import 'shop_detail_view.dart';
+import '../../domain/usecases/get_nearby_shops_usecase.dart';
+import '../../../customer/presentation/widgets/customer_bottom_nav.dart';
+import 'widgets/customer_map_canvas.dart';
 import 'widgets/map_shop_preview_card.dart';
+import 'widgets/no_shops_banner.dart';
 import 'widgets/radius_filter_pills.dart';
 
+/// B2: the map view runs on real data. The centre is the customer's
+/// stored location (refreshed with a live GPS fix when one is available),
+/// the markers are the verified shops from Firestore within the selected
+/// radius, and changing the radius re-fetches — the old version showed 4
+/// hardcoded shops around a hardcoded Gulberg III pin.
 class CustomerHomeMapView extends StatefulWidget {
   const CustomerHomeMapView({super.key});
 
@@ -19,80 +31,108 @@ class CustomerHomeMapView extends StatefulWidget {
 
 class _CustomerHomeMapViewState extends State<CustomerHomeMapView> {
   final MapController _mapController = MapController();
+  final _locationStore = CustomerLocationStore();
+  late final GetNearbyShopsUseCase _getNearbyShops;
+
   double _selectedRadiusKm = 3.0;
-  final ll.LatLng _userLocation = const ll.LatLng(31.5204, 74.3587); // Gulberg III
-
-  final List<ShopEntity> _allShops = [
-    const ShopEntity(
-      shopId: 'shop-01',
-      ownerId: 'owner-01',
-      shopName: 'Al-Buraq Motors & Car Rentals',
-      phoneNumber: '+92 300 1234567',
-      address: 'Main Boulevard, Gulberg III',
-      city: 'Lahore',
-      geoLocation: GeoPointEntity(31.5230, 74.3595),
-      distanceKm: 1.2,
-      rating: 4.9,
-      availableCount: 14,
-      isVerified: true,
-    ),
-    const ShopEntity(
-      shopId: 'shop-02',
-      ownerId: 'owner-02',
-      shopName: 'Royal Rent A Car Gulberg',
-      phoneNumber: '+92 321 9876543',
-      address: 'Near Liberty Roundabout, Gulberg III',
-      city: 'Lahore',
-      geoLocation: GeoPointEntity(31.5160, 74.3640),
-      distanceKm: 2.1,
-      rating: 4.8,
-      availableCount: 9,
-      isVerified: true,
-    ),
-    const ShopEntity(
-      shopId: 'shop-03',
-      ownerId: 'owner-03',
-      shopName: 'Falcon Fleet & Executive Transport',
-      phoneNumber: '+92 333 4567890',
-      address: 'Jail Road, Shadman',
-      city: 'Lahore',
-      geoLocation: GeoPointEntity(31.5350, 74.3480),
-      distanceKm: 2.8,
-      rating: 4.7,
-      availableCount: 18,
-      isVerified: true,
-    ),
-    const ShopEntity(
-      shopId: 'shop-04',
-      ownerId: 'owner-04',
-      shopName: 'Lahore Wheels & 4x4 Luxury',
-      phoneNumber: '+92 302 8899112',
-      address: 'DHA Phase 5 Commercial',
-      city: 'Lahore',
-      geoLocation: GeoPointEntity(31.4720, 74.3850),
-      distanceKm: 4.5,
-      rating: 4.95,
-      availableCount: 6,
-      isVerified: true,
-    ),
-  ];
-
-  late ShopEntity _selectedShop;
+  CustomerLocation _location = CustomerLocation.defaultLocation;
+  List<ShopEntity> _shops = const [];
+  ShopEntity? _selectedShop;
+  bool _loading = true;
 
   @override
   void initState() {
     super.initState();
-    _selectedShop = _allShops.first;
+    _getNearbyShops = GetNearbyShopsUseCase(
+      DiscoveryRepositoryImpl(
+        remoteDataSource: DiscoveryRemoteDataSource(),
+      ),
+    );
+    _loadFromStoredLocation();
   }
 
-  List<ShopEntity> get _filteredShops => _allShops.where((s) => s.distanceKm <= _selectedRadiusKm).toList();
+  Future<void> _loadFromStoredLocation() async {
+    final stored = await _locationStore.load();
+    if (stored != null && mounted) {
+      setState(() => _location = stored);
+      _mapController.move(_latLng(stored), 13.5);
+    }
+    await _loadShops();
+    await _refreshGpsFix();
+  }
+
+  /// A fresh GPS fix, when the device offers one: the stored location may
+  /// be from an earlier session. Never asks for permission here — the
+  /// location prompt already did; without it we silently keep the stored
+  /// location.
+  Future<void> _refreshGpsFix() async {
+    try {
+      if (!await Geolocator.isLocationServiceEnabled()) return;
+      final permission = await Geolocator.checkPermission();
+      if (permission != LocationPermission.whileInUse &&
+          permission != LocationPermission.always) {
+        return;
+      }
+      final position = await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+        ),
+      );
+      if (!mounted) return;
+      final fix = CustomerLocation(
+        latitude: position.latitude,
+        longitude: position.longitude,
+        city: 'My Live Location',
+        area:
+            '${position.latitude.toStringAsFixed(4)}°N, ${position.longitude.toStringAsFixed(4)}°E',
+        fromGps: true,
+      );
+      if ((fix.latitude - _location.latitude).abs() > 0.0005 ||
+          (fix.longitude - _location.longitude).abs() > 0.0005) {
+        setState(() => _location = fix);
+        _mapController.move(_latLng(fix), 14.5);
+        await _loadShops();
+      }
+    } catch (_) {
+      // No fix available — the stored location stands.
+    }
+  }
+
+  Future<void> _loadShops() async {
+    setState(() => _loading = true);
+    try {
+      final shops = await _getNearbyShops(
+        radiusKm: _selectedRadiusKm,
+        latitude: _location.latitude,
+        longitude: _location.longitude,
+      );
+      if (!mounted) return;
+      setState(() {
+        _shops = shops;
+        _selectedShop = shops.isEmpty ? null : shops.first;
+        _loading = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _shops = const [];
+        _selectedShop = null;
+        _loading = false;
+      });
+    }
+  }
+
+  ll.LatLng _latLng(CustomerLocation location) =>
+      ll.LatLng(location.latitude, location.longitude);
 
   @override
   Widget build(BuildContext context) {
-    final filtered = _filteredShops;
+    final userPoint = _latLng(_location);
+    final selectedShop = _selectedShop;
 
     return Scaffold(
       backgroundColor: AppColors.backgroundLight,
+      bottomNavigationBar: const CustomerBottomNav(currentIndex: 0),
       body: SafeArea(
         child: Column(
           children: [
@@ -102,12 +142,12 @@ class _CustomerHomeMapViewState extends State<CustomerHomeMapView> {
                 icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
                 onPressed: () => context.go(RouteNames.customerHome),
               ),
-              titleWidget: const Column(
+              titleWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Nearby Showrooms', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w900)),
-                  SizedBox(height: 2),
-                  Text('Gulberg III, Lahore • Tap marker to preview', style: TextStyle(color: AppColors.textLavender, fontSize: 12)),
+                  const Text('Nearby Showrooms', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w900)),
+                  const SizedBox(height: 2),
+                  Text('${_location.area} • Tap marker to preview', style: const TextStyle(color: AppColors.textLavender, fontSize: 12)),
                 ],
               ),
               actions: [
@@ -123,103 +163,45 @@ class _CustomerHomeMapViewState extends State<CustomerHomeMapView> {
               color: Colors.white,
               child: RadiusFilterPills(
                 selectedRadiusKm: _selectedRadiusKm,
-                onRadiusSelected: (km) => setState(() => _selectedRadiusKm = km),
+                onRadiusSelected: (km) {
+                  setState(() => _selectedRadiusKm = km);
+                  _loadShops();
+                },
               ),
             ),
             Expanded(
               child: Stack(
                 children: [
-                  FlutterMap(
+                  CustomerMapCanvas(
                     mapController: _mapController,
-                    options: MapOptions(
-                      initialCenter: _userLocation,
-                      initialZoom: 13.5,
-                      minZoom: 5.0,
-                      maxZoom: 18.0,
+                    userPoint: userPoint,
+                    radiusKm: _selectedRadiusKm,
+                    shops: _shops,
+                    selectedShop: selectedShop,
+                    onShopSelected: (shop) =>
+                        setState(() => _selectedShop = shop),
+                  ),
+                  if (_loading)
+                    const Center(child: CircularProgressIndicator()),
+                  if (!_loading && _shops.isEmpty)
+                    const Positioned(
+                      left: 16,
+                      right: 16,
+                      bottom: 16,
+                      child: NoShopsBanner(),
+                    )
+                  else if (selectedShop != null)
+                    MapShopPreviewCard(
+                      shop: selectedShop,
+                      onViewShowroom: () {
+                        context.push(
+                          RouteNames.customerShopDetail.replaceFirst(
+                            ':shopId',
+                            selectedShop.shopId,
+                          ),
+                        );
+                      },
                     ),
-                    children: [
-                      TileLayer(
-                        urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                        userAgentPackageName: 'pk.rentalhub.rentalhub',
-                      ),
-                      CircleLayer(
-                        circles: [
-                          CircleMarker(
-                            point: _userLocation,
-                            radius: 1200,
-                            useRadiusInMeter: true,
-                            color: AppColors.sunsetOrange.withValues(alpha: 0.10),
-                            borderColor: AppColors.sunsetOrange,
-                            borderStrokeWidth: 1.5,
-                          ),
-                        ],
-                      ),
-                      MarkerLayer(
-                        markers: [
-                          Marker(
-                            point: _userLocation,
-                            width: 38,
-                            height: 38,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: AppColors.primary,
-                                border: Border.all(color: Colors.white, width: 2),
-                                boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.25), blurRadius: 6)],
-                              ),
-                              child: const Icon(Icons.my_location_rounded, color: Colors.white, size: 20),
-                            ),
-                          ),
-                          ...filtered.map((shop) {
-                            final isSelected = _selectedShop.shopId == shop.shopId;
-                            final pos = ll.LatLng(shop.geoLocation.latitude, shop.geoLocation.longitude);
-                            return Marker(
-                              point: pos,
-                              width: 150,
-                              height: 72,
-                              alignment: Alignment.bottomCenter,
-                              child: GestureDetector(
-                                onTap: () {
-                                  setState(() => _selectedShop = shop);
-                                  _mapController.move(pos, 14.0);
-                                },
-                                child: FittedBox(
-                                  fit: BoxFit.scaleDown,
-                                  alignment: Alignment.bottomCenter,
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                        decoration: BoxDecoration(
-                                          color: isSelected ? AppColors.sunsetOrange : AppColors.midnightNavy,
-                                          borderRadius: BorderRadius.circular(10),
-                                          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.3), blurRadius: 6)],
-                                        ),
-                                        child: Text(
-                                          '${shop.shopName.split(' ').first} • ${shop.distanceKm}km',
-                                          style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w800),
-                                        ),
-                                      ),
-                                      Icon(Icons.location_on_rounded, size: isSelected ? 32 : 26, color: isSelected ? AppColors.sunsetOrange : AppColors.midnightNavy),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            );
-                          }),
-                        ],
-                      ),
-                    ],
-                  ),
-                  MapShopPreviewCard(
-                    shop: _selectedShop,
-                    onViewShowroom: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(builder: (_) => ShopDetailView(shop: _selectedShop)),
-                      );
-                    },
-                  ),
                 ],
               ),
             ),
@@ -229,3 +211,4 @@ class _CustomerHomeMapViewState extends State<CustomerHomeMapView> {
     );
   }
 }
+

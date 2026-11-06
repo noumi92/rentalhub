@@ -69,7 +69,7 @@ class RateMatrixFieldWidget extends StatelessWidget {
                 ),
                 isDense: true,
                 filled: true,
-                fillColor: AppColors.backgroundLight,
+                fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                   borderSide: const BorderSide(color: AppColors.border),

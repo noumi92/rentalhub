@@ -12,6 +12,12 @@ class BookingSummaryCard extends StatelessWidget {
   final DateTime returnTime;
   final int totalAmount;
   final int advanceRequired;
+  // C2: the trip details the picker chose — shown when the caller has
+  // them (the review screen does; older call sites omit them).
+  final String tripType;
+  final int? kmLimit;
+  final int? securityDepositPkr;
+  final String? destinationCity;
 
   const BookingSummaryCard({
     super.key,
@@ -24,6 +30,10 @@ class BookingSummaryCard extends StatelessWidget {
     required this.returnTime,
     required this.totalAmount,
     required this.advanceRequired,
+    this.tripType = 'in_city',
+    this.kmLimit,
+    this.securityDepositPkr,
+    this.destinationCity,
   });
 
   @override
@@ -79,6 +89,24 @@ class BookingSummaryCard extends StatelessWidget {
           _buildRow('Mode', isWithDriver ? 'With Chauffeur' : 'Self-Drive'),
           const SizedBox(height: 8),
           _buildRow('Package Tier', '$packageType Rental'),
+          const SizedBox(height: 8),
+          _buildRow(
+            'Trip',
+            tripType == 'out_of_city'
+                ? 'Out of city${destinationCity != null ? ' → $destinationCity' : ''}'
+                : 'In city',
+          ),
+          if (kmLimit != null) ...[
+            const SizedBox(height: 8),
+            _buildRow('KM Included', '$kmLimit km'),
+          ],
+          if (securityDepositPkr != null) ...[
+            const SizedBox(height: 8),
+            _buildRow(
+              'Security Deposit',
+              'Rs. $securityDepositPkr (at handover)',
+            ),
+          ],
           const SizedBox(height: 8),
           _buildRow(
             'Pickup Time',

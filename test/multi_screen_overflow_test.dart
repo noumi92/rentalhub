@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:rentalhub/core/di/injection_container.dart';
-import 'package:rentalhub/core/models/mock_data.dart';
 import 'package:rentalhub/core/theme/app_theme.dart';
+import 'package:rentalhub/features/fleet/domain/entities/vehicle_entity.dart';
 import 'package:rentalhub/features/auth/presentation/views/onboarding_profile_view.dart';
 import 'package:rentalhub/features/auth/presentation/views/onboarding_role_view.dart';
 import 'package:rentalhub/features/discovery/domain/entities/shop_entity.dart';
@@ -59,17 +59,29 @@ void main() {
 
     testWidgets('VehicleDetailView renders without overflow on 360px viewport and 1.35x font scale',
         (WidgetTester tester) async {
-      final sampleVehicle = MockDatabase.vehicles.first;
+      final sampleVehicle = const VehicleEntity(
+        vehicleId: 'v1',
+        shopId: 'shop-basic',
+        make: 'Honda',
+        model: 'Civic Oriel',
+        year: 2021,
+        plateNumber: 'LEA-4820',
+        rates: VehicleRatesEntity(daily24: 9000),
+      );
       await TestHarness.pumpScreenWithOverflowCheck(
         tester: tester,
-        screen: VehicleDetailView(vehicle: sampleVehicle),
+        screen: VehicleDetailView(
+          vehicle: sampleVehicle,
+          shopName: 'Al-Falah Rent a Car',
+          shopPhone: '+923001234567',
+        ),
         width: 360.0,
         height: 640.0,
         textScale: 1.35,
         theme: AppTheme.lightTheme,
       );
       expect(find.textContaining(sampleVehicle.model), findsWidgets);
-      expect(find.textContaining('Rs. ${sampleVehicle.selfDriveDailyRate}'), findsWidgets);
+      expect(find.textContaining('Rs. 9000'), findsWidgets);
     });
 
     testWidgets('ShopDetailView renders without overflow on 360px viewport and 1.35x font scale',

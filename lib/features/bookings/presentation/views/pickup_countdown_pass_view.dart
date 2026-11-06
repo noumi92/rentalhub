@@ -4,6 +4,7 @@ import '../../../../core/widgets/custom_curved_header.dart';
 import '../../../../core/widgets/debounced_button.dart';
 import '../../domain/entities/booking_entity.dart';
 import '../widgets/digital_qr_pass_widget.dart';
+import '../widgets/pass_shop_contact_card.dart';
 import '../widgets/pickup_countdown_timer.dart';
 
 class PickupCountdownPassView extends StatelessWidget {
@@ -60,89 +61,11 @@ class PickupCountdownPassView extends StatelessWidget {
                       pickupTime: booking.pickupTime,
                     ),
                     const SizedBox(height: 16),
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: AppColors.border),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: const [
-                              Icon(Icons.location_on_rounded,
-                                  color: AppColors.sunsetOrange, size: 20),
-                              SizedBox(width: 8),
-                              Text(
-                                'Showroom Handover Point',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w800,
-                                  color: AppColors.midnightNavy,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            '${booking.shopName ?? "Al-Falah Rent a Car"}, Main Boulevard, Gulberg III, Lahore',
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: AppColors.textSecondary,
-                              height: 1.4,
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: OutlinedButton.icon(
-                                  onPressed: () {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text('Calling showroom...'),
-                                        backgroundColor: AppColors.royalNavy,
-                                      ),
-                                    );
-                                  },
-                                  style: OutlinedButton.styleFrom(
-                                    foregroundColor: AppColors.royalNavy,
-                                    side: const BorderSide(color: AppColors.border),
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(10)),
-                                  ),
-                                  icon: const Icon(Icons.call_rounded, size: 16),
-                                  label: const Text('Call Shop'),
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: OutlinedButton.icon(
-                                  onPressed: () {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text('Opening Google Maps...'),
-                                        backgroundColor: AppColors.emeraldGreen,
-                                      ),
-                                    );
-                                  },
-                                  style: OutlinedButton.styleFrom(
-                                    foregroundColor: AppColors.emeraldGreen,
-                                    side: const BorderSide(color: Color(0xFF86EFAC)),
-                                    backgroundColor: const Color(0xFFF0FDF4),
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(10)),
-                                  ),
-                                  icon: const Icon(Icons.directions_rounded, size: 16),
-                                  label: const Text('Directions'),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
+                    PassShopContactCard(
+                      shopId: booking.shopId,
+                      shopName: booking.shopName ?? 'Rental Showroom',
+                      shopPhone: booking.shopPhone,
+                      bookingId: booking.bookingId,
                     ),
                     const SizedBox(height: 20),
                   ],

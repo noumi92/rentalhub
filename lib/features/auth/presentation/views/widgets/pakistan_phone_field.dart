@@ -15,15 +15,16 @@ class PakistanPhoneField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'WhatsApp Number',
           style: TextStyle(
             fontSize: 12.5,
             fontWeight: FontWeight.w700,
-            color: AppColors.midnightNavy,
+            color: scheme.onSurface,
           ),
         ),
         const SizedBox(height: 6),
@@ -31,37 +32,44 @@ class PakistanPhoneField extends StatelessWidget {
           controller: controller,
           keyboardType: TextInputType.phone,
           onChanged: onChanged,
+          style: TextStyle(
+            color: scheme.onSurface,
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+          ),
           decoration: InputDecoration(
             hintText: '3XX XXXXXXX',
+            hintStyle:
+                TextStyle(color: scheme.onSurfaceVariant, fontSize: 13),
             prefixIcon: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text(
+                  Text(
                     '🇵🇰 +92',
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
                       fontSize: 13,
-                      color: AppColors.midnightNavy,
+                      color: scheme.onSurface,
                     ),
                   ),
                   const SizedBox(width: 8),
                   Container(
                     width: 1,
                     height: 20,
-                    color: AppColors.border,
+                    color: scheme.outlineVariant,
                   ),
                 ],
               ),
             ),
-            suffixIcon: const Icon(
+            suffixIcon: Icon(
               Icons.chat_outlined,
               size: 19,
-              color: AppColors.midnightNavy,
+              color: scheme.onSurfaceVariant,
             ),
             filled: true,
-            fillColor: const Color(0xFFF8FAFC),
+            fillColor: scheme.surfaceContainerHighest,
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 14,
               vertical: 13,

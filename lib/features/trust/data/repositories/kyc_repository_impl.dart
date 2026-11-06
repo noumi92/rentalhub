@@ -9,6 +9,10 @@ class KycRepositoryImpl implements KycRepository {
   const KycRepositoryImpl({required this.remoteDataSource});
 
   @override
+  Future<KycDocumentEntity?> getKyc(String userUid) =>
+      remoteDataSource.getKyc(userUid);
+
+  @override
   Future<KycDocumentEntity> uploadKycDocuments({
     required String userUid,
     required String cnicNumber,

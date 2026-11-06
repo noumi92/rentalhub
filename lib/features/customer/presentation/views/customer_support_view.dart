@@ -1,6 +1,17 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/di/injection_container.dart';
+import '../../../../core/utils/whatsapp.dart';
+import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/custom_curved_header.dart';
+import '../../../bookings/data/datasources/booking_remote_data_source.dart';
+import '../widgets/customer_bottom_nav.dart';
+import '../widgets/support_contact_card.dart';
+import '../widgets/support_faq_list.dart';
+import '../widgets/support_ticket_form.dart';
 
 class CustomerSupportView extends StatefulWidget {
   final VoidCallback? onFileDispute;
@@ -14,6 +25,83 @@ class CustomerSupportView extends StatefulWidget {
 
 class _CustomerSupportViewState extends State<CustomerSupportView> {
   final _searchController = TextEditingController();
+  String? _shopName;
+  String? _shopPhone;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadShopContact();
+  }
+
+  // G1: the contact cards reach the customer's own showroom — the most
+  // recent booking's shop — not an invented RentalHub helpline number.
+  Future<void> _loadShopContact() async {
+    try {
+      String uid = 'cust-101';
+      try {
+        uid = FirebaseAuth.instance.currentUser?.uid ?? uid;
+      } catch (_) {}
+      final bookings =
+          await sl<BookingRemoteDataSource>().getCustomerBookings(uid);
+      if (bookings.isEmpty) return;
+      final latest = bookings.first;
+      String? phone = (latest.shopPhone ?? '').trim();
+      String? name = latest.shopName;
+      if (phone.isEmpty) {
+        try {
+          final snap = await FirebaseFirestore.instance
+              .collection('shops')
+              .doc(latest.shopId)
+              .get();
+          phone = (snap.data()?['phone_number'] as String? ?? '').trim();
+          name = snap.data()?['shop_name'] as String? ?? name;
+        } catch (_) {}
+      }
+      if (mounted && (phone ?? '').isNotEmpty) {
+        setState(() {
+          _shopName = name;
+          _shopPhone = phone;
+        });
+      }
+    } catch (_) {}
+  }
+
+  Future<void> _callShop() async {
+    final phone = (_shopPhone ?? '').trim();
+    if (phone.isEmpty) {
+      AppFeedback.showInfo(
+        context,
+        'No booking yet — the showroom contact appears here once you have a booking.',
+      );
+      return;
+    }
+    final uri = Uri(scheme: 'tel', path: phone);
+    if (!await launchUrl(uri)) {
+      if (mounted) {
+        AppFeedback.showError(context, 'Could not place the call.');
+      }
+    }
+  }
+
+  Future<void> _whatsAppShop() async {
+    final uri = whatsappUri(
+      phone: _shopPhone ?? '',
+      message: 'Hi ${_shopName ?? 'there'}, I need help with my RentalHub booking.',
+    );
+    if (uri == null) {
+      AppFeedback.showInfo(
+        context,
+        'No booking yet — the showroom contact appears here once you have a booking.',
+      );
+      return;
+    }
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+      if (mounted) {
+        AppFeedback.showError(context, 'Could not open WhatsApp.');
+      }
+    }
+  }
   final List<Map<String, String>> _faqs = [
     {
       'q': 'How does advance payment protect my booking?',
@@ -21,11 +109,11 @@ class _CustomerSupportViewState extends State<CustomerSupportView> {
     },
     {
       'q': 'When is my security deposit returned?',
-      'a': 'For self-drive rentals, the security deposit is inspected and released immediately upon digital return handover if there is no traffic fine or damage.',
+      'a': 'The deposit is settled at return handover. Any deduction for excess kilometres, fuel or damage is shown on the settlement, and the rest is released to you.'
     },
     {
       'q': 'What happens if a vehicle breaks down?',
-      'a': 'All registered showrooms provide 24/7 roadside assistance or immediate vehicle replacement within city limits. You can also trigger the Emergency SOS.',
+      'a': 'Roadside help depends on the showroom — ask yours when you pick up the car. For an emergency, use the Emergency SOS screen.',
     },
     {
       'q': 'Can I take the rental car out of city?',
@@ -50,6 +138,7 @@ class _CustomerSupportViewState extends State<CustomerSupportView> {
 
     return Scaffold(
       backgroundColor: AppColors.backgroundLight,
+      bottomNavigationBar: const CustomerBottomNav(currentIndex: 3),
       body: SafeArea(
         child: Column(
           children: [
@@ -85,7 +174,7 @@ class _CustomerSupportViewState extends State<CustomerSupportView> {
                         hintStyle: const TextStyle(
                             fontSize: 13, color: AppColors.textSecondary),
                         filled: true,
-                        fillColor: Colors.white,
+                        fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                         prefixIcon: const Icon(Icons.search_rounded,
                             color: AppColors.royalNavy),
                         border: OutlineInputBorder(
@@ -100,32 +189,22 @@ class _CustomerSupportViewState extends State<CustomerSupportView> {
                     Row(
                       children: [
                         Expanded(
-                          child: _buildContactCard(
+                          child: SupportContactCard(
                             icon: Icons.phone_in_talk_rounded,
-                            title: 'Call Helpline',
-                            subtitle: '042-111-RENTAL',
+                            title: 'Call your showroom',
+                            subtitle: _shopName ?? 'No booking yet',
                             color: AppColors.royalNavy,
-                            onTap: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content: Text('Calling RentalHub helpline...')),
-                              );
-                            },
+                            onTap: _callShop,
                           ),
                         ),
                         const SizedBox(width: 10),
                         Expanded(
-                          child: _buildContactCard(
+                          child: SupportContactCard(
                             icon: Icons.chat_rounded,
-                            title: 'WhatsApp Desk',
-                            subtitle: '24/7 Live Agent',
+                            title: 'WhatsApp your showroom',
+                            subtitle: _shopName ?? 'No booking yet',
                             color: AppColors.emeraldGreen,
-                            onTap: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content: Text('Connecting to WhatsApp support...')),
-                              );
-                            },
+                            onTap: _whatsAppShop,
                           ),
                         ),
                       ],
@@ -153,48 +232,10 @@ class _CustomerSupportViewState extends State<CustomerSupportView> {
                           size: 14, color: AppColors.sunsetOrange),
                       onTap: widget.onFileDispute,
                     ),
+                    const SizedBox(height: 14),
+                    const SupportTicketForm(),
                     const SizedBox(height: 20),
-                    const Text(
-                      'Frequently Asked Questions',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.midnightNavy,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    ...filtered.map((faq) => Container(
-                          margin: const EdgeInsets.only(bottom: 8),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: AppColors.border),
-                          ),
-                          child: ExpansionTile(
-                            shape: const Border(),
-                            title: Text(
-                              faq['q']!,
-                              style: const TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w700,
-                                color: AppColors.midnightNavy,
-                              ),
-                            ),
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-                                child: Text(
-                                  faq['a']!,
-                                  style: const TextStyle(
-                                    fontSize: 12,
-                                    height: 1.45,
-                                    color: AppColors.textSecondary,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        )),
+                    SupportFaqList(faqs: filtered),
                   ],
                 ),
               ),
@@ -205,40 +246,4 @@ class _CustomerSupportViewState extends State<CustomerSupportView> {
     );
   }
 
-  Widget _buildContactCard({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required Color color,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(14),
-      child: Container(
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: AppColors.border),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Icon(icon, color: color, size: 22),
-            const SizedBox(height: 8),
-            Text(title,
-                style: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.midnightNavy)),
-            Text(subtitle,
-                style: const TextStyle(
-                    fontSize: 11, color: AppColors.textSecondary)),
-          ],
-        ),
-      ),
-    );
-  }
 }
-

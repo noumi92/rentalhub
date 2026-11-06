@@ -55,6 +55,11 @@ class AppColors {
   static const Color surfaceDark = Color(0xFF13152C);
   static const Color surface = surfaceLight;
   static const Color surfaceMuted = Color(0xFFF1F5F9);
+  // Feedback (typography): form-field fills per theme. Light fields use
+  // backgroundLight; dark fields use these two so typed (light) text stays
+  // readable instead of vanishing on a hardcoded light fill.
+  static const Color surfaceContainerDark = Color(0xFF171A30);
+  static const Color surfaceContainerHighestDark = Color(0xFF1E2138);
 
   // Typography
   static const Color onSurfaceLight = Color(0xFF0F172A);
@@ -63,7 +68,13 @@ class AppColors {
   static const Color onSurfaceVariantDark = Color(0xFF94A3B8);
   static const Color textPrimary = onSurfaceLight;
   static const Color textSecondary = onSurfaceVariantLight;
-  static const Color textMuted = onSurfaceVariantDark;
+  // Feedback (typography): textMuted is the muted grey for text on LIGHT
+  // surfaces. It used to be onSurfaceVariantDark (0xFF94A3B8) — a light
+  // grey with only ~2.2:1 contrast on white, which made hint and secondary
+  // text unreadable. 0xFF64748B reads at ~4.6:1 on white and stays
+  // legible on dark surfaces too.
+  static const Color textMuted = onSurfaceVariantLight;
+  static const Color textMutedDark = onSurfaceVariantDark;
   static const Color textWhite = Color(0xFFFFFFFF);
   static const Color textLavender = primaryContainer;
 

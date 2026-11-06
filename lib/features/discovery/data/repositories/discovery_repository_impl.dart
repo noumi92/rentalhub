@@ -8,7 +8,15 @@ class DiscoveryRepositoryImpl implements DiscoveryRepository {
   const DiscoveryRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<List<ShopEntity>> getNearbyShops({required double radiusKm}) =>
-      remoteDataSource.fetchNearbyShops(radiusKm: radiusKm);
+  Future<List<ShopEntity>> getNearbyShops({
+    required double radiusKm,
+    required double latitude,
+    required double longitude,
+  }) =>
+      remoteDataSource.fetchNearbyShops(
+        radiusKm: radiusKm,
+        latitude: latitude,
+        longitude: longitude,
+      );
 }
 

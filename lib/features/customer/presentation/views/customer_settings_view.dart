@@ -1,23 +1,86 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import '../../../../core/constants/app_colors.dart';
-import '../../../../core/widgets/custom_curved_header.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
+import '../../../../core/constants/app_colors.dart';
+import '../../../../core/di/injection_container.dart';
+import '../../../../core/settings/app_settings_cubit.dart';
+import '../../../../core/widgets/custom_curved_header.dart';
+import '../../../../l10n/app_localizations.dart';
+import '../../data/datasources/customer_remote_data_source.dart';
+import '../../domain/entities/customer_entity.dart';
+import '../widgets/profile_sign_out_tile.dart';
+import '../widgets/settings_section_card.dart';
+
+// H2: the settings that do what they say. Language and theme go through
+// AppSettingsCubit (the owner G3 pattern — this is the second
+// translated screen), notification preferences persist on the
+// customer's own record, and the version comes from the installed
+// package, not a hardcoded string. The dead Terms/Privacy tiles are
+// gone — there is no such content in the app.
 class CustomerSettingsView extends StatefulWidget {
+  final VoidCallback? onSignOut;
   final VoidCallback? onBack;
 
-  const CustomerSettingsView({super.key, this.onBack});
+  const CustomerSettingsView({super.key, this.onSignOut, this.onBack});
 
   @override
   State<CustomerSettingsView> createState() => _CustomerSettingsViewState();
 }
 
 class _CustomerSettingsViewState extends State<CustomerSettingsView> {
-  bool _isUrdu = false;
-  bool _pushNotifications = true;
-  bool _smsAlerts = true;
+  CustomerEntity? _customer;
+  String _version = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    String version = '';
+    try {
+      version = (await PackageInfo.fromPlatform()).version;
+    } catch (_) {}
+    CustomerEntity? customer;
+    try {
+      final uid = FirebaseAuth.instance.currentUser?.uid;
+      if (uid != null && sl.isRegistered<CustomerRemoteDataSource>()) {
+        customer = await sl<CustomerRemoteDataSource>().getCustomerById(uid);
+      }
+    } catch (_) {}
+    if (mounted) {
+      setState(() {
+        _version = version;
+        _customer = customer;
+      });
+    }
+  }
+
+  Future<void> _setNotifications({
+    bool? push,
+    bool? whatsapp,
+  }) async {
+    final customer = _customer;
+    if (customer == null) return;
+    final updated = customer.copyWith(
+      pushNotifications: push ?? customer.pushNotifications,
+      whatsappNotifications: whatsapp ?? customer.whatsappNotifications,
+    );
+    setState(() => _customer = updated);
+    try {
+      await sl<CustomerRemoteDataSource>().upsertCustomer(updated);
+    } catch (_) {
+      if (mounted) setState(() => _customer = customer);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final customer = _customer;
     return Scaffold(
       backgroundColor: AppColors.backgroundLight,
       body: SafeArea(
@@ -32,147 +95,142 @@ class _CustomerSettingsViewState extends State<CustomerSettingsView> {
                       onPressed: widget.onBack,
                     )
                   : null,
-              titleWidget: const Text(
-                'Settings & Preferences',
-                style: TextStyle(
+              titleWidget: Text(
+                l10n.customerSettings,
+                style: const TextStyle(
                     color: Colors.white,
                     fontSize: 18,
                     fontWeight: FontWeight.w900),
               ),
             ),
             Expanded(
-              child: SingleChildScrollView(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text('Language & Localization',
-                        style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w800,
-                            color: AppColors.midnightNavy)),
-                    const SizedBox(height: 8),
-                    Material(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: AppColors.border),
+              child: BlocBuilder<AppSettingsCubit, AppSettingsState>(
+                bloc: sl<AppSettingsCubit>(),
+                builder: (context, settings) {
+                  return SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SettingsSectionCard(
+                          title: l10n.language,
+                          child: Row(
+                            children: [
+                              ChoiceChip(
+                                label: Text(l10n.languageEnglish),
+                                selected: settings.localeCode == 'en',
+                                onSelected: (_) => sl<AppSettingsCubit>()
+                                    .setLocale('en'),
+                              ),
+                              const SizedBox(width: 8),
+                              ChoiceChip(
+                                label: Text(l10n.languageUrdu),
+                                selected: settings.localeCode == 'ur',
+                                onSelected: (_) => sl<AppSettingsCubit>()
+                                    .setLocale('ur'),
+                              ),
+                            ],
+                          ),
                         ),
-                        child: SwitchListTile(
-                          activeThumbColor: AppColors.sunsetOrange,
-                          title: const Text('Urdu Interface (اردو)',
-                              style: TextStyle(
-                                  fontSize: 14, fontWeight: FontWeight.w700)),
-                          subtitle: const Text(
-                              'Display app labels in authentic Nastaliq Urdu',
-                              style: TextStyle(fontSize: 11)),
-                          value: _isUrdu,
-                          onChanged: (val) => setState(() => _isUrdu = val),
+                        const SizedBox(height: 16),
+                        SettingsSectionCard(
+                          title: l10n.theme,
+                          child: Row(
+                            children: [
+                              ChoiceChip(
+                                label: Text(l10n.themeLight),
+                                selected:
+                                    settings.themeMode == ThemeMode.light,
+                                onSelected: (_) => sl<AppSettingsCubit>()
+                                    .setThemeMode(ThemeMode.light),
+                              ),
+                              const SizedBox(width: 8),
+                              ChoiceChip(
+                                label: Text(l10n.themeDark),
+                                selected:
+                                    settings.themeMode == ThemeMode.dark,
+                                onSelected: (_) => sl<AppSettingsCubit>()
+                                    .setThemeMode(ThemeMode.dark),
+                              ),
+                              const SizedBox(width: 8),
+                              ChoiceChip(
+                                label: Text(l10n.themeSystem),
+                                selected:
+                                    settings.themeMode == ThemeMode.system,
+                                onSelected: (_) => sl<AppSettingsCubit>()
+                                    .setThemeMode(ThemeMode.system),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
+                        const SizedBox(height: 16),
+                        SettingsSectionCard(
+                          title: l10n.notifications,
+                          child: Column(
+                            children: [
+                              SwitchListTile(
+                                activeThumbColor: AppColors.sunsetOrange,
+                                title: Text(l10n.pushNotifications,
+                                    style: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w700)),
+                                subtitle: const Text(
+                                    'Booking approvals and payment alerts',
+                                    style: TextStyle(fontSize: 11)),
+                                value: customer?.pushNotifications ?? true,
+                                onChanged: customer == null
+                                    ? null
+                                    : (val) =>
+                                        _setNotifications(push: val),
+                              ),
+                              const Divider(height: 1),
+                              SwitchListTile(
+                                activeThumbColor: AppColors.sunsetOrange,
+                                title: Text(l10n.whatsappNotifications,
+                                    style: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w700)),
+                                subtitle: const Text(
+                                    'Agreement and handover receipts',
+                                    style: TextStyle(fontSize: 11)),
+                                value:
+                                    customer?.whatsappNotifications ?? true,
+                                onChanged: customer == null
+                                    ? null
+                                    : (val) =>
+                                        _setNotifications(whatsapp: val),
+                              ),
+                              if (customer == null)
+                                const Padding(
+                                  padding: EdgeInsets.only(top: 8),
+                                  child: Text(
+                                    'Notification preferences save to your profile once you have a customer record.',
+                                    style: TextStyle(
+                                        fontSize: 11,
+                                        color: AppColors.textSecondary),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        SettingsSectionCard(
+                          title: l10n.appVersion,
+                          child: Text(
+                            _version.isEmpty ? '—' : _version,
+                            style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.midnightNavy),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        ProfileSignOutTile(onTap: widget.onSignOut),
+                      ],
                     ),
-                    const SizedBox(height: 20),
-                    const Text('Alerts & Notifications',
-                        style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w800,
-                            color: AppColors.midnightNavy)),
-                    const SizedBox(height: 8),
-                    Material(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: AppColors.border),
-                        ),
-                        child: Column(
-                          children: [
-                            SwitchListTile(
-                              activeThumbColor: AppColors.sunsetOrange,
-                              title: const Text('Push Notifications',
-                                  style: TextStyle(
-                                      fontSize: 14, fontWeight: FontWeight.w700)),
-                              subtitle: const Text(
-                                  'Instant booking approval & payment alerts',
-                                  style: TextStyle(fontSize: 11)),
-                              value: _pushNotifications,
-                              onChanged: (val) =>
-                                  setState(() => _pushNotifications = val),
-                            ),
-                            const Divider(height: 1),
-                            SwitchListTile(
-                              activeThumbColor: AppColors.sunsetOrange,
-                              title: const Text('WhatsApp Notifications',
-                                  style: TextStyle(
-                                      fontSize: 14, fontWeight: FontWeight.w700)),
-                              subtitle: const Text(
-                                  'Digital agreement and handover receipt delivery',
-                                  style: TextStyle(fontSize: 11)),
-                              value: _smsAlerts,
-                              onChanged: (val) =>
-                                  setState(() => _smsAlerts = val),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    const Text('About & Legal',
-                        style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w800,
-                            color: AppColors.midnightNavy)),
-                    const SizedBox(height: 8),
-                    Material(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: AppColors.border),
-                        ),
-                        child: Column(
-                          children: [
-                            ListTile(
-                              title: const Text('Rental Agreement Terms',
-                                  style: TextStyle(
-                                      fontSize: 13.5,
-                                      fontWeight: FontWeight.w600)),
-                              trailing: const Icon(Icons.arrow_forward_ios_rounded,
-                                  size: 14),
-                              onTap: () {},
-                            ),
-                            const Divider(height: 1),
-                            ListTile(
-                              title: const Text('Privacy Policy',
-                                  style: TextStyle(
-                                      fontSize: 13.5,
-                                      fontWeight: FontWeight.w600)),
-                              trailing: const Icon(Icons.arrow_forward_ios_rounded,
-                                  size: 14),
-                              onTap: () {},
-                            ),
-                            const Divider(height: 1),
-                            const ListTile(
-                              title: Text('App Version',
-                                  style: TextStyle(
-                                      fontSize: 13.5,
-                                      fontWeight: FontWeight.w600)),
-                              trailing: Text('1.0.0 (Build 2026)',
-                                  style: TextStyle(
-                                      fontSize: 12,
-                                      color: AppColors.textSecondary)),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                  );
+                },
               ),
             ),
           ],

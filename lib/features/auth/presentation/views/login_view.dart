@@ -103,13 +103,14 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Scaffold(
       backgroundColor: AppColors.backgroundLight,
       body: SingleChildScrollView(
         child: Column(
           children: [
             const CustomCurvedHeader(
-              height: 180,
+              height: 160,
               titleWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -140,9 +141,6 @@ class _LoginViewState extends State<LoginView> {
                   children: [
                     Card(
                       elevation: 4,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
                       child: Padding(
                         padding: const EdgeInsets.all(20),
                         child: Column(
@@ -151,31 +149,31 @@ class _LoginViewState extends State<LoginView> {
                             // Real Matching Car Showcase
                             Center(
                               child: Container(
-                                height: 105,
-                                margin: const EdgeInsets.only(bottom: 12),
+                                height: 84,
+                                margin: const EdgeInsets.only(bottom: 8),
                                 child: Image.asset(
                                   'assets/images/white_sedan_hero.png',
                                   fit: BoxFit.contain,
                                 ),
                               ),
                             ),
-                            const Center(
+                            Center(
                               child: Text(
                                 'Welcome to RentalHub',
                                 style: TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.w800,
-                                  color: AppColors.midnightNavy,
+                                  color: scheme.onSurface,
                                 ),
                               ),
                             ),
                             const SizedBox(height: 4),
-                            const Center(
+                            Center(
                               child: Text(
                                 'Sign in to rent a car near you',
                                 style: TextStyle(
                                   fontSize: 13,
-                                  color: AppColors.textSecondary,
+                                  color: scheme.onSurfaceVariant,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
@@ -236,7 +234,7 @@ class _LoginViewState extends State<LoginView> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 24),
                   ],
                 ),
               ),

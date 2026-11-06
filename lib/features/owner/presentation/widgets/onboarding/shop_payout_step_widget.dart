@@ -57,6 +57,7 @@ class ShopPayoutStepWidget extends StatelessWidget {
 
         // JazzCash Card (Initially disabled)
         _buildWalletCard(
+          context: context,
           title: 'JazzCash Mobile Account',
           subtitle: 'Instant mobile wallet payout',
           isEnabled: jazzCashEnabled,
@@ -71,6 +72,7 @@ class ShopPayoutStepWidget extends StatelessWidget {
 
         // EasyPaisa Card (Initially disabled)
         _buildWalletCard(
+          context: context,
           title: 'EasyPaisa Wallet Account',
           subtitle: 'Instant digital wallet payout',
           isEnabled: easyPaisaEnabled,
@@ -160,7 +162,7 @@ class ShopPayoutStepWidget extends StatelessWidget {
                     decoration: InputDecoration(
                       hintText: 'e.g. PK36MEZN0001234567890123',
                       filled: true,
-                      fillColor: AppColors.backgroundLight,
+                      fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                       isDense: true,
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border)),
                       contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
@@ -177,7 +179,7 @@ class ShopPayoutStepWidget extends StatelessWidget {
                     decoration: InputDecoration(
                       hintText: 'e.g. Al-Falah Rent a Car',
                       filled: true,
-                      fillColor: AppColors.backgroundLight,
+                      fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                       isDense: true,
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border)),
                       contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
@@ -193,6 +195,7 @@ class ShopPayoutStepWidget extends StatelessWidget {
   }
 
   Widget _buildWalletCard({
+    required BuildContext context,
     required String title,
     required String subtitle,
     required bool isEnabled,
@@ -250,7 +253,7 @@ class ShopPayoutStepWidget extends StatelessWidget {
                   labelText: accountLabel,
                   hintText: hintAccount,
                   filled: true,
-                  fillColor: AppColors.backgroundLight,
+                  fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                   isDense: true,
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border)),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
@@ -264,7 +267,7 @@ class ShopPayoutStepWidget extends StatelessWidget {
                   labelText: 'Account Title',
                   hintText: 'Ahmed Raza',
                   filled: true,
-                  fillColor: AppColors.backgroundLight,
+                  fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                   isDense: true,
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border)),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),

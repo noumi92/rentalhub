@@ -1,16 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart' as ll;
+
 import '../../../../../core/constants/app_colors.dart';
 import '../../../domain/entities/shop_entity.dart';
 
+/// B2: the inline map on the customer home list — a real OpenStreetMap
+/// canvas with the customer's position and one marker per verified shop.
+/// The old version was a static "radar" drawing with the shops placed at
+/// fixed offsets, so it showed the same picture whatever the real
+/// locations were.
 class ShopMapView extends StatelessWidget {
   final List<ShopEntity> shops;
   final double radiusKm;
+  final ll.LatLng userLocation;
   final ValueChanged<ShopEntity> onShopSelected;
 
   const ShopMapView({
     super.key,
     required this.shops,
     required this.radiusKm,
+    required this.userLocation,
     required this.onShopSelected,
   });
 
@@ -20,30 +30,112 @@ class ShopMapView extends StatelessWidget {
       height: 280,
       width: double.infinity,
       decoration: BoxDecoration(
-        color: const Color(0xFFE2E8F0),
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: AppColors.border),
       ),
+      clipBehavior: Clip.antiAlias,
       child: Stack(
-        alignment: Alignment.center,
         children: [
-          // Radar circle
-          Container(
-            width: 210,
-            height: 210,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: AppColors.sunsetOrange.withValues(alpha: 0.08),
-              border: Border.all(
-                color: AppColors.sunsetOrange.withValues(alpha: 0.4),
-                width: 1.5,
-              ),
+          FlutterMap(
+            options: MapOptions(
+              initialCenter: userLocation,
+              initialZoom: 13.0,
+              minZoom: 5.0,
+              maxZoom: 18.0,
             ),
-          ),
-          const Icon(
-            Icons.my_location_rounded,
-            color: AppColors.midnightNavy,
-            size: 28,
+            children: [
+              TileLayer(
+                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                userAgentPackageName: 'pk.rentalhub.rentalhub',
+              ),
+              CircleLayer(
+                circles: [
+                  CircleMarker(
+                    point: userLocation,
+                    radius: radiusKm * 1000,
+                    useRadiusInMeter: true,
+                    color: AppColors.sunsetOrange.withValues(alpha: 0.08),
+                    borderColor: AppColors.sunsetOrange,
+                    borderStrokeWidth: 1.5,
+                  ),
+                ],
+              ),
+              MarkerLayer(
+                markers: [
+                  Marker(
+                    point: userLocation,
+                    width: 30,
+                    height: 30,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: AppColors.primary,
+                        border: Border.all(color: Colors.white, width: 2),
+                      ),
+                      child: const Icon(
+                        Icons.my_location_rounded,
+                        color: Colors.white,
+                        size: 16,
+                      ),
+                    ),
+                  ),
+                  ...shops.map((shop) {
+                    final pos = ll.LatLng(
+                      shop.geoLocation.latitude,
+                      shop.geoLocation.longitude,
+                    );
+                    return Marker(
+                      point: pos,
+                      width: 130,
+                      height: 60,
+                      alignment: Alignment.bottomCenter,
+                      child: GestureDetector(
+                        onTap: () => onShopSelected(shop),
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.bottomCenter,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: AppColors.sunsetOrange,
+                                  borderRadius: BorderRadius.circular(10),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Colors.black.withValues(alpha: 0.3),
+                                      blurRadius: 6,
+                                    ),
+                                  ],
+                                ),
+                                child: Text(
+                                  '${shop.shopName.split(' ').first} • ${shop.distanceKm.toStringAsFixed(1)}km',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
+                              ),
+                              const Icon(
+                                Icons.location_on_rounded,
+                                size: 26,
+                                color: AppColors.sunsetOrange,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  }),
+                ],
+              ),
+            ],
           ),
           Positioned(
             top: 12,
@@ -64,60 +156,8 @@ class ShopMapView extends StatelessWidget {
               ),
             ),
           ),
-          ...shops.asMap().entries.map((entry) {
-            final idx = entry.key;
-            final shop = entry.value;
-            final offsets = [
-              const Alignment(-0.45, -0.35),
-              const Alignment(0.5, -0.25),
-              const Alignment(-0.35, 0.45),
-              const Alignment(0.45, 0.4),
-            ];
-            return Align(
-              alignment: offsets[idx % offsets.length],
-              child: InkWell(
-                onTap: () => onShopSelected(shop),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 5,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppColors.sunsetOrange,
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.2),
-                        blurRadius: 6,
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(
-                        Icons.location_on_rounded,
-                        color: Colors.white,
-                        size: 14,
-                      ),
-                      const SizedBox(width: 3),
-                      Text(
-                        '${shop.distanceKm}km',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 10.5,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          }),
         ],
       ),
     );
   }
 }
-

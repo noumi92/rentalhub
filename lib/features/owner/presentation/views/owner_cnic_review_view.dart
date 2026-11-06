@@ -143,7 +143,7 @@ class _OwnerCnicReviewViewState extends State<OwnerCnicReviewView> {
           labelText: label,
           border: const OutlineInputBorder(),
           filled: true,
-          fillColor: Colors.white,
+          fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
         ),
       ),
     );

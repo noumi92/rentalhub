@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'auth_route_guard.dart';
@@ -7,13 +8,35 @@ import '../../features/auth/presentation/views/splash_view.dart';
 import '../../features/auth/presentation/views/login_view.dart';
 import '../../features/auth/presentation/views/onboarding_profile_view.dart';
 import '../../features/auth/presentation/views/onboarding_role_view.dart';
+import '../../features/bookings/presentation/views/booking_approved_view.dart';
+import '../../features/bookings/presentation/views/booking_success_view.dart';
 import '../../features/bookings/presentation/views/owner_payment_accounts_view.dart';
 import '../../features/bookings/presentation/views/payment_proof_upload_view.dart';
+import '../../features/bookings/presentation/views/pickup_countdown_pass_view.dart';
+import '../../features/bookings/presentation/views/rent_package_picker_view.dart';
+import '../../features/bookings/presentation/views/review_booking_request_view.dart';
+import '../../features/customer/presentation/views/customer_booking_detail_view.dart';
+import '../../features/customer/presentation/views/customer_bookings_view.dart';
+import '../../features/customer/presentation/widgets/customer_route_loaders.dart';
+import '../../features/customer/presentation/views/customer_cancel_booking_view.dart';
+import '../../features/customer/presentation/views/customer_active_trip_view.dart';
+import '../../features/customer/presentation/views/customer_dashboard_view.dart';
+import '../../features/customer/presentation/views/customer_dispute_view.dart';
+import '../../features/customer/presentation/views/customer_profile_view.dart';
+import '../../features/customer/presentation/views/customer_rate_trip_view.dart';
+import '../../features/customer/presentation/views/customer_reputation_view.dart';
+import '../../features/customer/presentation/views/customer_saved_shops_view.dart';
+import '../../features/customer/presentation/views/customer_settings_view.dart';
+import '../../features/customer/presentation/views/customer_sos_view.dart';
+import '../../features/customer/presentation/views/customer_support_view.dart';
+import '../../features/customer/presentation/views/customer_wallet_view.dart';
 import '../../features/discovery/presentation/views/customer_location_prompt_view.dart';
 import '../../features/discovery/presentation/views/customer_home_view.dart';
 import '../../features/discovery/presentation/views/customer_home_map_view.dart';
+import '../../features/discovery/presentation/views/shop_cars_view.dart';
+import '../../features/discovery/presentation/views/shop_detail_view.dart';
+import '../../features/discovery/presentation/views/vehicle_detail_view.dart';
 import '../../features/trust/presentation/views/customer_documents_view.dart';
-import '../../features/customer/presentation/customer_flow_view.dart';
 import '../../features/owner/presentation/views/owner_add_vehicle_view.dart';
 import '../../features/owner/presentation/views/owner_booking_requests_view.dart';
 import '../../features/owner/presentation/views/owner_contract_view.dart';
@@ -92,7 +115,11 @@ class AppRouter {
         builder: (context, state) => const CustomerLocationPromptView(),
       ),
 
-      // Customer Routes
+      // Customer Routes — Phase A (A1): real views, no mock flow view.
+      // Views that take a booking/vehicle/shop id load the entity first
+      // via BookingRouteLoader / CustomerVehicleRouteLoader / ShopRouteLoader
+      // (loading + not-found states). The review route takes the picker's
+      // draft map as `extra`; without it there is nothing to review.
       GoRoute(
         path: RouteNames.customerHome,
         builder: (context, state) => const CustomerHomeView(),
@@ -102,38 +129,338 @@ class AppRouter {
         builder: (context, state) => const CustomerHomeMapView(),
       ),
       GoRoute(
+        path: RouteNames.customerShopDetail,
+        builder: (context, state) => ShopRouteLoader(
+          shopId: state.pathParameters['shopId']!,
+          builder: (context, shop) => ShopDetailView(
+            shop: shop,
+            onVehicleSelected: (vehicle) => context.push(
+              RouteNames.customerVehicleDetail
+                  .replaceFirst(':id', vehicle.vehicleId),
+            ),
+            onViewAllCars: () => context.push(
+              RouteNames.customerShopCars
+                  .replaceFirst(':shopId', shop.shopId),
+            ),
+            onBack: () => context.pop(),
+          ),
+        ),
+      ),
+      GoRoute(
+        // B3: the shop's full fleet with category filters — reachable
+        // from the shop detail screen.
+        path: RouteNames.customerShopCars,
+        builder: (context, state) => ShopRouteLoader(
+          shopId: state.pathParameters['shopId']!,
+          builder: (context, shop) => ShopCarsView(
+            shopId: shop.shopId,
+            shopName: shop.shopName,
+            onCarSelected: (vehicle) => context.push(
+              RouteNames.customerVehicleDetail
+                  .replaceFirst(':id', vehicle.vehicleId),
+            ),
+            onBack: () => context.pop(),
+          ),
+        ),
+      ),
+      GoRoute(
         path: RouteNames.customerVehicleDetail,
-        builder: (context, state) =>
-            const CustomerFlowView(initialAnchor: 'ANC-02'),
+        builder: (context, state) => CustomerVehicleRouteLoader(
+          vehicleId: state.pathParameters['id']!,
+          builder: (context, vehicle, shopName, shopPhone) =>
+              VehicleDetailView(
+            vehicle: vehicle,
+            shopName: shopName,
+            shopPhone: shopPhone,
+            onBookNow: () => context.push(
+              RouteNames.customerPackagePicker
+                  .replaceFirst(':vehicleId', vehicle.vehicleId),
+            ),
+            onBack: () => context.pop(),
+          ),
+        ),
+      ),
+      GoRoute(
+        path: RouteNames.customerPackagePicker,
+        builder: (context, state) => CustomerVehicleRouteLoader(
+          vehicleId: state.pathParameters['vehicleId']!,
+          builder: (context, vehicle, shopName, shopPhone) =>
+              RentPackagePickerView(
+            carId: vehicle.vehicleId,
+            carName: vehicle.displayName,
+            plateNumber: vehicle.plateNumber,
+            shopId: vehicle.shopId,
+            shopName: shopName,
+            dailySelfDriveRate: vehicle.rates.daily24,
+            dailyWithDriverRate:
+                vehicle.rates.daily24 + (vehicle.withDriverSurchargePkr ?? 0),
+            hourlyRate: vehicle.rates.hourly1,
+            vehicle: vehicle,
+            onProceedToReview: (draft) => context.push(
+              RouteNames.customerReviewBooking
+                  .replaceFirst(':id', vehicle.vehicleId),
+              extra: draft,
+            ),
+            onBack: () => context.pop(),
+          ),
+        ),
       ),
       GoRoute(
         path: RouteNames.customerReviewBooking,
-        builder: (context, state) =>
-            const CustomerFlowView(initialAnchor: 'ANC-04'),
+        builder: (context, state) {
+          final draft = state.extra as Map<String, dynamic>?;
+          if (draft == null) {
+            return _CustomerNoDraftScreen(
+              onBrowseShops: () => context.go(RouteNames.customerHome),
+            );
+          }
+          return ReviewBookingRequestView(
+            bookingDraft: draft,
+            onRequestCreated: (booking) => context.push(
+              RouteNames.customerBookingSuccess
+                  .replaceFirst(':id', booking.bookingId),
+            ),
+            onBack: () => context.pop(),
+          );
+        },
+      ),
+      GoRoute(
+        path: RouteNames.customerBookingSuccess,
+        builder: (context, state) => BookingRouteLoader(
+          bookingId: state.pathParameters['id']!,
+          builder: (context, booking) => BookingSuccessView(
+            booking: booking,
+            onProceedToPayment: () => context.push(
+              RouteNames.customerPaymentProof
+                  .replaceFirst(':id', booking.bookingId),
+            ),
+            onViewBookings: () => context.go(RouteNames.customerBookings),
+          ),
+        ),
+      ),
+      GoRoute(
+        path: RouteNames.customerBookingApproved,
+        builder: (context, state) => BookingRouteLoader(
+          bookingId: state.pathParameters['id']!,
+          builder: (context, booking) => BookingApprovedView(
+            booking: booking,
+            onPayAdvance: () => context.push(
+              RouteNames.customerPaymentProof
+                  .replaceFirst(':id', booking.bookingId),
+            ),
+            onBack: () => context.pop(),
+          ),
+        ),
       ),
       GoRoute(
         path: RouteNames.customerPaymentProof,
-        builder: (context, state) =>
-            const CustomerFlowView(initialAnchor: 'ANC-03'),
+        builder: (context, state) => BookingRouteLoader(
+          bookingId: state.pathParameters['id']!,
+          builder: (context, booking) => OwnerPaymentAccountsView(
+            booking: booking,
+            onProceedToUploadProof: () => context.push(
+              RouteNames.customerPaymentProofUpload
+                  .replaceFirst(':id', booking.bookingId),
+            ),
+            onBack: () => context.pop(),
+          ),
+        ),
+      ),
+      GoRoute(
+        path: RouteNames.customerPaymentProofUpload,
+        builder: (context, state) => BookingRouteLoader(
+          bookingId: state.pathParameters['id']!,
+          builder: (context, booking) => PaymentProofUploadView(
+            booking: booking,
+            onProofSubmitted: (_) =>
+                context.go(RouteNames.customerBookings),
+            onBack: () => context.pop(),
+          ),
+        ),
       ),
       GoRoute(
         path: RouteNames.customerPickupPass,
-        builder: (context, state) =>
-            const CustomerFlowView(initialAnchor: 'ANC-05'),
+        builder: (context, state) => BookingRouteLoader(
+          bookingId: state.pathParameters['id']!,
+          builder: (context, booking) => PickupCountdownPassView(
+            booking: booking,
+            onReturnHome: () => context.go(RouteNames.customerHome),
+            onBack: () => context.pop(),
+          ),
+        ),
       ),
       GoRoute(
+        // E3: the dedicated active-trip view (booking + real handover
+        // record). The dashboard's active-trip card opens the same
+        // screen via the pass route's booking loader.
         path: RouteNames.customerActiveTrip,
-        builder: (context, state) =>
-            const CustomerFlowView(initialAnchor: 'ANC-06'),
+        builder: (context, state) => BookingRouteLoader(
+          bookingId: state.pathParameters['id']!,
+          builder: (context, booking) => CustomerActiveTripView(
+            booking: booking,
+            onViewPass: () => context.push(
+              RouteNames.customerPickupPass
+                  .replaceFirst(':id', booking.bookingId),
+            ),
+            onBack: () => context.pop(),
+          ),
+        ),
       ),
       GoRoute(
         path: RouteNames.customerRateTrip,
-        builder: (context, state) =>
-            const CustomerFlowView(initialAnchor: 'ANC-08'),
+        builder: (context, state) => BookingRouteLoader(
+          bookingId: state.pathParameters['id']!,
+          builder: (context, booking) => CustomerRateTripView(
+            booking: booking,
+            onRatingSubmitted: () => context.go(RouteNames.customerBookings),
+            onBack: () => context.pop(),
+          ),
+        ),
+      ),
+      GoRoute(
+        path: RouteNames.customerCancelBooking,
+        builder: (context, state) => BookingRouteLoader(
+          bookingId: state.pathParameters['id']!,
+          builder: (context, booking) => CustomerCancelBookingView(
+            booking: booking,
+            onCancelled: () => context.go(RouteNames.customerBookings),
+            onBack: () => context.pop(),
+          ),
+        ),
       ),
       GoRoute(
         path: RouteNames.customerKyc,
         builder: (context, state) => const CustomerDocumentsView(),
+      ),
+      GoRoute(
+        path: RouteNames.customerDashboard,
+        builder: (context, state) => CustomerDashboardView(
+          onExploreShops: () => context.go(RouteNames.customerHome),
+          onOpenBookings: () => context.go(RouteNames.customerBookings),
+          onOpenDocuments: () => context.push(RouteNames.customerKyc),
+          onOpenSos: () => context.push(RouteNames.customerSos),
+          onOpenWallet: () => context.push(RouteNames.customerWallet),
+          onOpenActiveBooking: (booking) => context.push(
+            RouteNames.customerActiveTrip
+                .replaceFirst(':id', booking.bookingId),
+          ),
+        ),
+      ),
+      GoRoute(
+        path: RouteNames.customerBookings,
+        builder: (context, state) => CustomerBookingsView(
+          onOpenBookingDetails: (booking) => context.push(
+            RouteNames.customerBookingDetail
+                .replaceFirst(':id', booking.bookingId),
+          ),
+          onPayAdvance: (booking) => context.push(
+            RouteNames.customerBookingApproved
+                .replaceFirst(':id', booking.bookingId),
+          ),
+          onRateTrip: (booking) => context.push(
+            RouteNames.customerRateTrip
+                .replaceFirst(':id', booking.bookingId),
+          ),
+          onBack: () => context.pop(),
+        ),
+      ),
+      GoRoute(
+        path: RouteNames.customerBookingDetail,
+        builder: (context, state) => BookingRouteLoader(
+          bookingId: state.pathParameters['id']!,
+          builder: (context, booking) => CustomerBookingDetailView(
+            booking: booking,
+            onPayAdvance: () => context.push(
+              RouteNames.customerBookingApproved
+                  .replaceFirst(':id', booking.bookingId),
+            ),
+            onViewPass: () => context.push(
+              RouteNames.customerPickupPass
+                  .replaceFirst(':id', booking.bookingId),
+            ),
+            onCancel: () => context.push(
+              RouteNames.customerCancelBooking
+                  .replaceFirst(':id', booking.bookingId),
+            ),
+            onRateTrip: () => context.push(
+              RouteNames.customerRateTrip
+                  .replaceFirst(':id', booking.bookingId),
+            ),
+            onFileDispute: () => context.push(
+              '${RouteNames.customerDisputes}?bookingId=${booking.bookingId}',
+            ),
+            onBrowseShops: () => context.go(RouteNames.customerHome),
+            onBack: () => context.pop(),
+          ),
+        ),
+      ),
+      GoRoute(
+        path: RouteNames.customerWallet,
+        builder: (context, state) =>
+            CustomerWalletView(onBack: () => context.pop()),
+      ),
+      GoRoute(
+        path: RouteNames.customerSupport,
+        builder: (context, state) => CustomerSupportView(
+          onFileDispute: () => context.push(RouteNames.customerDisputes),
+          onBack: () => context.pop(),
+        ),
+      ),
+      GoRoute(
+        path: RouteNames.customerSos,
+        builder: (context, state) =>
+            CustomerSosView(onBack: () => context.pop()),
+      ),
+      GoRoute(
+        path: RouteNames.customerProfile,
+        builder: (context, state) => CustomerProfileView(
+          onOpenDocuments: () => context.push(RouteNames.customerKyc),
+          onOpenSavedShops: () => context.push(RouteNames.customerSavedShops),
+          onOpenSettings: () => context.push(RouteNames.customerSettings),
+          onOpenReputation: () => context.push(RouteNames.customerReputation),
+          onSignOut: () async {
+            await FirebaseAuth.instance.signOut();
+            if (context.mounted) {
+              context.go(RouteNames.auth);
+            }
+          },
+          onBack: () => context.pop(),
+        ),
+      ),
+      GoRoute(
+        path: RouteNames.customerSettings,
+        builder: (context, state) => CustomerSettingsView(
+              onBack: () => context.pop(),
+              onSignOut: () async {
+                await FirebaseAuth.instance.signOut();
+                if (context.mounted) {
+                  context.go(RouteNames.auth);
+                }
+              },
+            ),
+      ),
+      GoRoute(
+        path: RouteNames.customerDisputes,
+        builder: (context, state) => CustomerDisputeView(
+          initialBookingId: state.uri.queryParameters['bookingId'],
+          onDisputeSubmitted: () => context.pop(),
+          onBack: () => context.pop(),
+        ),
+      ),
+      GoRoute(
+        path: RouteNames.customerReputation,
+        builder: (context, state) =>
+            CustomerReputationView(onBack: () => context.pop()),
+      ),
+      GoRoute(
+        path: RouteNames.customerSavedShops,
+        builder: (context, state) => CustomerSavedShopsView(
+          onSelectShop: (shop) => context.push(
+            RouteNames.customerShopDetail
+                .replaceFirst(':shopId', shop.shopId),
+          ),
+          onBack: () => context.pop(),
+        ),
       ),
 
       // Owner Routes — Phase A (A1): real views, no mock flow view.
@@ -360,5 +687,55 @@ class AppRouter {
       ),
     ],
   );
+}
+
+/// Phase A (A1): shown when the review route is opened without the
+/// picker's draft (for example a deep link). There is nothing to review
+/// without a package, dates, and totals, so the screen says so and sends
+/// the customer back to browsing shops instead of showing a fake summary.
+class _CustomerNoDraftScreen extends StatelessWidget {
+  const _CustomerNoDraftScreen({required this.onBrowseShops});
+
+  final VoidCallback onBrowseShops;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(
+                  Icons.receipt_long_rounded,
+                  size: 52,
+                  color: Colors.grey,
+                ),
+                const SizedBox(height: 12),
+                const Text(
+                  'No booking in progress.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontWeight: FontWeight.w700),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Pick a car and a package first — the review screen '
+                  'needs the booking details from there.',
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                FilledButton(
+                  onPressed: onBrowseShops,
+                  child: const Text('Browse shops'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 

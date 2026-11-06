@@ -17,6 +17,16 @@ class CustomerEntity extends Equatable {
   final String? dateOfBirth;
   final String? cnicExpiry;
 
+  /// H2: notification preferences, persisted on the customer record.
+  /// Actual push delivery is backend/FCM (out of scope) — these record
+  /// what the customer wants.
+  final bool pushNotifications;
+  final bool whatsappNotifications;
+
+  /// H5: showrooms the customer saved (heart on the shop detail
+  /// screen). Stored on the customer record, per the plan.
+  final List<String> savedShopIds;
+
   const CustomerEntity({
     required this.customerId,
     required this.shopId,
@@ -27,6 +37,9 @@ class CustomerEntity extends Equatable {
     required this.createdAt,
     this.dateOfBirth,
     this.cnicExpiry,
+    this.pushNotifications = true,
+    this.whatsappNotifications = true,
+    this.savedShopIds = const [],
   });
 
   CustomerEntity copyWith({
@@ -36,6 +49,9 @@ class CustomerEntity extends Equatable {
     String? source,
     String? dateOfBirth,
     String? cnicExpiry,
+    bool? pushNotifications,
+    bool? whatsappNotifications,
+    List<String>? savedShopIds,
   }) {
     return CustomerEntity(
       customerId: customerId,
@@ -47,6 +63,10 @@ class CustomerEntity extends Equatable {
       createdAt: createdAt,
       dateOfBirth: dateOfBirth ?? this.dateOfBirth,
       cnicExpiry: cnicExpiry ?? this.cnicExpiry,
+      pushNotifications: pushNotifications ?? this.pushNotifications,
+      whatsappNotifications:
+          whatsappNotifications ?? this.whatsappNotifications,
+      savedShopIds: savedShopIds ?? this.savedShopIds,
     );
   }
 
@@ -58,6 +78,9 @@ class CustomerEntity extends Equatable {
         phone,
         cnic,
         source,
+        pushNotifications,
+        whatsappNotifications,
+        savedShopIds,
         createdAt,
         dateOfBirth,
         cnicExpiry,

@@ -42,6 +42,27 @@ class CustomerRemoteDataSource {
         .toList();
   }
 
+  /// C2: the signed-in customer's own record, by their uid (the doc id
+  /// is the customer id — see [upsertCustomer]). Carries the name, phone
+  /// and CNIC the booking request is filed under, so the review screen
+  /// does not have to fall back to a placeholder identity.
+  Future<CustomerEntity?> getCustomerById(String customerId) async {
+    if (_inMemoryCustomers.containsKey(customerId)) {
+      return _inMemoryCustomers[customerId];
+    }
+    final fs = _resolvedFirestore;
+    if (fs != null) {
+      try {
+        final doc =
+            await fs.collection('customers').doc(customerId).get();
+        if (doc.exists && doc.data() != null) {
+          return CustomerModel.fromMap(doc.data()!, doc.id);
+        }
+      } catch (_) {}
+    }
+    return null;
+  }
+
   Future<CustomerEntity?> getCustomerByCnic(
       String shopId, String cnic) async {
     final clean = cnic.replaceAll('-', '').trim();

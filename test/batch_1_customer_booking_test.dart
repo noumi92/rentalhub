@@ -8,9 +8,11 @@ import 'package:rentalhub/features/bookings/presentation/views/booking_success_v
 import 'package:rentalhub/features/bookings/presentation/views/owner_payment_accounts_view.dart';
 import 'package:rentalhub/features/bookings/presentation/views/payment_proof_upload_view.dart';
 import 'package:rentalhub/features/bookings/presentation/views/pickup_countdown_pass_view.dart';
+import 'package:rentalhub/features/customer/presentation/views/customer_active_trip_view.dart';
 import 'package:rentalhub/features/bookings/presentation/views/rent_package_picker_view.dart';
 import 'package:rentalhub/features/bookings/presentation/views/review_booking_request_view.dart';
 import 'package:rentalhub/features/discovery/presentation/views/shop_cars_view.dart';
+import 'package:rentalhub/features/fleet/domain/entities/vehicle_entity.dart';
 
 void main() {
   setUpAll(() async {
@@ -329,11 +331,50 @@ void main() {
     });
 
     testWidgets('ShopCarsView: filters vehicle fleet by category tabs', (tester) async {
+      // B3: real VehicleEntity fleet — two sedans and one SUV.
+      const vehicles = [
+        VehicleEntity(
+          vehicleId: 'veh-civic',
+          shopId: 'shop-1',
+          make: 'Honda',
+          model: 'Civic',
+          year: 2021,
+          plateNumber: 'LEA-4820',
+          category: 'Sedan',
+          rates: VehicleRatesEntity(daily24: 9000),
+        ),
+        VehicleEntity(
+          vehicleId: 'veh-corolla',
+          shopId: 'shop-1',
+          make: 'Toyota',
+          model: 'Corolla',
+          year: 2022,
+          plateNumber: 'LEB-1130',
+          category: 'Sedan',
+          rates: VehicleRatesEntity(daily24: 8000),
+        ),
+        VehicleEntity(
+          vehicleId: 'veh-sportage',
+          shopId: 'shop-1',
+          make: 'Kia',
+          model: 'Sportage',
+          year: 2023,
+          plateNumber: 'LEC-7710',
+          category: 'SUV',
+          rates: VehicleRatesEntity(daily24: 15000),
+        ),
+      ];
+      // Tall surface: the fleet list is a lazy ListView, so all three
+      // cards must fit in the viewport to be found.
+      tester.view.physicalSize = const Size(800, 1400);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
       await tester.pumpWidget(
         MaterialApp(
           home: ShopCarsView(
             shopId: 'shop-1',
             shopName: 'Lahore Luxury Motors',
+            vehicles: vehicles,
           ),
         ),
       );
@@ -343,11 +384,56 @@ void main() {
       expect(find.text('All'), findsOneWidget);
       expect(find.text('Sedan'), findsOneWidget);
       expect(find.text('SUV'), findsOneWidget);
+      expect(find.textContaining('Civic'), findsOneWidget);
+      expect(find.textContaining('Sportage'), findsOneWidget);
 
       await tester.tap(find.text('Sedan'));
       await tester.pumpAndSettle();
 
       expect(find.text('All'), findsOneWidget);
+      expect(find.textContaining('Civic'), findsOneWidget);
+      expect(find.textContaining('Corolla'), findsOneWidget);
+      expect(find.textContaining('Sportage'), findsNothing);
+
+      await tester.tap(find.text('SUV'));
+      await tester.pumpAndSettle();
+
+      expect(find.textContaining('Civic'), findsNothing);
+      expect(find.textContaining('Sportage'), findsOneWidget);
+    });
+
+    // E3: the dedicated active-trip view shows the live trip from the
+    // booking (return countdown for an active trip) and says plainly
+    // that the handover record is not there yet.
+    testWidgets('CustomerActiveTripView: shows return countdown and handover placeholder', (tester) async {
+      final booking = BookingEntity(
+        bookingId: 'RH-849204',
+        customerId: 'cust-1',
+        shopId: 'shop-1',
+        vehicleId: 'veh-1',
+        vehicleName: 'Toyota Corolla',
+        vehiclePlate: 'LEB-1130',
+        shopName: 'Prime Motors Lahore',
+        packageType: '24h',
+        pickupTime: DateTime.now().subtract(const Duration(hours: 2)),
+        returnTime: DateTime.now().add(const Duration(hours: 5)),
+        totalAmount: 8000,
+        advanceRequired: 2000,
+        remainingBalance: 6000,
+        status: 'active',
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: CustomerActiveTripView(booking: booking),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Active Trip'), findsOneWidget);
+      expect(find.text('Toyota Corolla'), findsOneWidget);
+      expect(find.text('TIME UNTIL RETURN'), findsOneWidget);
+      expect(find.textContaining('odometer and fuel level'), findsOneWidget);
     });
   });
 }

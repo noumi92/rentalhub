@@ -6,6 +6,7 @@ import 'package:latlong2/latlong.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/widgets/custom_curved_header.dart';
+import '../../data/datasources/customer_location_store.dart';
 import 'widgets/city_selector_bar.dart';
 import 'widgets/location_confirm_card.dart';
 
@@ -33,6 +34,9 @@ class _CustomerLocationPromptViewState extends State<CustomerLocationPromptView>
   late LatLng _currentCenter;
   late String _addressLabel;
   bool _isLocating = false;
+  // B1: true only while the centre is the live GPS fix — a city pick or
+  // a manual map drag makes it a chosen location, not a GPS one.
+  bool _fromGps = false;
 
   @override
   void initState() {
@@ -85,6 +89,7 @@ class _CustomerLocationPromptViewState extends State<CustomerLocationPromptView>
           _currentCenter = userLatLng;
           _selectedCity = 'My Live Location';
           _addressLabel = '${userLatLng.latitude.toStringAsFixed(4)}°N, ${userLatLng.longitude.toStringAsFixed(4)}°E';
+          _fromGps = true;
         });
 
         _mapController.move(userLatLng, 14.5);
@@ -105,6 +110,7 @@ class _CustomerLocationPromptViewState extends State<CustomerLocationPromptView>
       _selectedCity = city['name'] as String;
       _addressLabel = city['area'] as String;
       _currentCenter = target;
+      _fromGps = false;
     });
 
     _mapController.move(target, 13.5);
@@ -154,6 +160,7 @@ class _CustomerLocationPromptViewState extends State<CustomerLocationPromptView>
                           setState(() {
                             _currentCenter = camera.center;
                             _addressLabel = '${_currentCenter.latitude.toStringAsFixed(4)}°N, ${_currentCenter.longitude.toStringAsFixed(4)}°E';
+                            _fromGps = false;
                           });
                         }
                       },
@@ -215,7 +222,20 @@ class _CustomerLocationPromptViewState extends State<CustomerLocationPromptView>
             LocationConfirmCard(
               selectedCity: _selectedCity,
               addressLabel: _addressLabel,
-              onConfirm: () => context.go(RouteNames.customerHome),
+              onConfirm: () async {
+                await CustomerLocationStore().save(
+                  CustomerLocation(
+                    latitude: _currentCenter.latitude,
+                    longitude: _currentCenter.longitude,
+                    city: _selectedCity,
+                    area: _addressLabel,
+                    fromGps: _fromGps,
+                  ),
+                );
+                if (context.mounted) {
+                  context.go(RouteNames.customerHome);
+                }
+              },
             ),
           ],
         ),

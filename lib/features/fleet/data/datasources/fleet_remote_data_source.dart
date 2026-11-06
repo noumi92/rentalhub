@@ -115,6 +115,28 @@ class FleetRemoteDataSource {
     return _inMemoryVehicles.where((v) => v.shopId == shopId).toList();
   }
 
+  /// Phase A (A1): fetch one vehicle by id from the top-level `vehicles`
+  /// collection. The customer vehicle route needs this — the customer does
+  /// not know the shop up front, so the owner's per-shop list cannot be
+  /// used. Falls back to the in-memory sample fleet when Firestore is
+  /// unreachable (tests / offline).
+  Future<VehicleEntity?> getVehicleById(String vehicleId) async {
+    final fs = _resolvedFirestore;
+    if (fs != null) {
+      try {
+        final doc = await fs.collection('vehicles').doc(vehicleId).get();
+        if (doc.exists && doc.data() != null) {
+          return VehicleModel.fromMap(doc.data()!, doc.id);
+        }
+      } catch (_) {}
+    }
+    try {
+      return _inMemoryVehicles.firstWhere((v) => v.vehicleId == vehicleId);
+    } catch (_) {
+      return null;
+    }
+  }
+
   Future<void> addVehicle({
     required String shopId,
     required VehicleEntity vehicle,

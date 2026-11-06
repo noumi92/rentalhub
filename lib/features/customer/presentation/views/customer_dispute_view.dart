@@ -1,10 +1,13 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/di/injection_container.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/custom_curved_header.dart';
 import '../../../../core/widgets/debounced_button.dart';
+import '../../data/datasources/dispute_remote_data_source.dart';
+import '../widgets/dispute_category_chips.dart';
+import '../widgets/my_disputes_list.dart';
 
 class CustomerDisputeView extends StatefulWidget {
   final String? initialBookingId;
@@ -29,11 +32,8 @@ class _CustomerDisputeViewState extends State<CustomerDisputeView> {
   bool _isSubmitting = false;
 
   final List<String> _categories = [
-    'Deposit Withheld',
-    'Unfair Damage Penalty',
-    'Showroom Overcharge',
-    'Vehicle Breakdown Delay',
-    'Rude / Unprofessional Staff',
+    'Deposit Withheld', 'Unfair Damage Penalty', 'Showroom Overcharge',
+    'Vehicle Breakdown Delay', 'Rude / Unprofessional Staff',
   ];
 
   @override
@@ -71,26 +71,35 @@ class _CustomerDisputeViewState extends State<CustomerDisputeView> {
         if (u != null) uid = u.uid;
       } catch (_) {}
 
-      try {
-        await FirebaseFirestore.instance.collection('disputes').add({
-          'bookingId': bId,
-          'customerId': uid,
-          'category': _selectedCategory,
-          'description': desc,
-          'status': 'open',
-          'createdAt': FieldValue.serverTimestamp(),
-        });
-      } catch (_) {
-        // Handled silently for offline or test mode
-      }
-
+      // G4: the dispute is filed through the data source (Firestore
+      // with an in-memory fallback). The message says honestly whether
+      // it reached the cloud or only this device — the old code
+      // swallowed a failed write and claimed an arbitration team was
+      // notified.
+      final filed = await sl<DisputeRemoteDataSource>().fileDispute(
+        bookingId: bId,
+        customerId: uid,
+        category: _selectedCategory,
+        description: desc,
+      );
       if (mounted) {
-        AppFeedback.showSuccess(
-            context, 'Dispute filed. Platform arbitration team notified.');
+        if (filed.synced) {
+          AppFeedback.showSuccess(
+            context,
+            'Dispute filed. The showroom can see it in their bookings.',
+          );
+        } else {
+          AppFeedback.showWarning(
+            context,
+            'Dispute saved on this device — it will reach the showroom once you are back online.',
+          );
+        }
         widget.onDisputeSubmitted?.call();
       }
     } catch (e) {
-      if (mounted) AppFeedback.showError(context, 'Failed to file dispute: $e');
+      if (mounted) {
+        AppFeedback.showError(context, 'Failed to file dispute: $e');
+      }
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
     }
@@ -133,33 +142,11 @@ class _CustomerDisputeViewState extends State<CustomerDisputeView> {
                             fontWeight: FontWeight.w700,
                             color: AppColors.midnightNavy)),
                     const SizedBox(height: 8),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 6,
-                      children: _categories.map((cat) {
-                        final isSelected = cat == _selectedCategory;
-                        return ChoiceChip(
-                          label: Text(cat),
-                          selected: isSelected,
-                          onSelected: (_) =>
-                              setState(() => _selectedCategory = cat),
-                          selectedColor: AppColors.midnightNavy,
-                          backgroundColor: Colors.white,
-                          labelStyle: TextStyle(
-                            color: isSelected
-                                ? Colors.white
-                                : AppColors.midnightNavy,
-                            fontSize: 11,
-                            fontWeight: isSelected
-                                ? FontWeight.w800
-                                : FontWeight.w600,
-                          ),
-                          side: BorderSide(
-                              color: isSelected
-                                  ? AppColors.midnightNavy
-                                  : AppColors.border),
-                        );
-                      }).toList(),
+                    DisputeCategoryChips(
+                      categories: _categories,
+                      selected: _selectedCategory,
+                      onSelected: (cat) =>
+                          setState(() => _selectedCategory = cat),
                     ),
                     const SizedBox(height: 16),
                     const Text('Booking ID / Reference',
@@ -173,7 +160,7 @@ class _CustomerDisputeViewState extends State<CustomerDisputeView> {
                       decoration: InputDecoration(
                         hintText: 'E.g. RH-849201',
                         filled: true,
-                        fillColor: Colors.white,
+                        fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: const BorderSide(color: AppColors.border),
@@ -196,7 +183,7 @@ class _CustomerDisputeViewState extends State<CustomerDisputeView> {
                         hintText:
                           'Describe what happened with dates, amounts, and showroom staff names...',
                         filled: true,
-                        fillColor: Colors.white,
+                        fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: const BorderSide(color: AppColors.border),
@@ -218,7 +205,7 @@ class _CustomerDisputeViewState extends State<CustomerDisputeView> {
                           SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              'Disputes are mediated by RentalHub compliance tribunal within 24 hours.',
+                              'Your dispute is recorded and shared with the showroom for review. There is no fixed resolution time yet.',
                               style: TextStyle(
                                   fontSize: 11,
                                   fontWeight: FontWeight.w600,
@@ -228,6 +215,8 @@ class _CustomerDisputeViewState extends State<CustomerDisputeView> {
                         ],
                       ),
                     ),
+                    const SizedBox(height: 20),
+                    const MyDisputesList(),
                     const SizedBox(height: 20),
                   ],
                 ),

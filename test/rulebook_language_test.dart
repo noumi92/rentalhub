@@ -21,11 +21,14 @@ import 'package:rentalhub/l10n/app_localizations.dart';
 // hardcoded Urdu strings — new strings go through AppLocalizations (§5.2).
 const Set<String> kHardcodedUrduFiles = {
   'lib/core/widgets/custom_curved_header.dart',
-  'lib/core/widgets/curved_header.dart',
   'lib/features/auth/presentation/views/login_view.dart',
   'lib/features/auth/presentation/views/onboarding_role_view.dart',
   'lib/features/customer/presentation/views/customer_settings_view.dart',
   'lib/features/discovery/presentation/views/vehicle_detail_view.dart',
+  // Phase A (customer): the drive-mode Urdu labels moved here when the
+  // package section was extracted from vehicle_detail_view.dart so the
+  // view stays under the 250-line cap — same strings, new file.
+  'lib/features/discovery/presentation/views/widgets/vehicle_detail_packages.dart',
   'lib/features/trust/presentation/views/customer_documents_view.dart',
 };
 

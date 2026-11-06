@@ -94,11 +94,11 @@ class _HandoverDamageNotesEditorState
               Expanded(
                 child: TextField(
                   controller: _controller,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     hintText: 'e.g. Scratch on right door',
                     border: OutlineInputBorder(),
                     filled: true,
-                    fillColor: Colors.white,
+                    fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                   ),
                   onSubmitted: (_) => _add(),
                 ),

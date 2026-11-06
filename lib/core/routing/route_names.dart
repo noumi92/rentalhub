@@ -5,17 +5,36 @@ class RouteNames {
   static const String onboardingRole = '/onboarding/role';
   static const String onboardingProfile = '/onboarding/profile';
 
-  // Customer Routes
+  // Customer Routes — Phase A (A1): the real views, no mock flow view.
   static const String customerLocationPrompt = '/customer/location-prompt';
   static const String customerHome = '/customer/home';
   static const String customerHomeMap = '/customer/home/map';
+  static const String customerShopDetail = '/customer/shop/:shopId';
+  static const String customerShopCars = '/customer/shop/:shopId/cars';
   static const String customerVehicleDetail = '/customer/vehicle/:id';
+  static const String customerPackagePicker = '/customer/package/:vehicleId';
   static const String customerReviewBooking = '/customer/review/:id';
+  static const String customerBookingSuccess = '/customer/success/:id';
+  static const String customerBookingApproved = '/customer/approved/:id';
   static const String customerPaymentProof = '/customer/payment/:id';
+  static const String customerPaymentProofUpload =
+      '/customer/payment-proof/:id';
   static const String customerPickupPass = '/customer/pass/:id';
   static const String customerActiveTrip = '/customer/active/:id';
   static const String customerRateTrip = '/customer/rate/:id';
+  static const String customerCancelBooking = '/customer/cancel/:id';
   static const String customerKyc = '/customer/kyc';
+  static const String customerDashboard = '/customer/dashboard';
+  static const String customerBookings = '/customer/bookings';
+  static const String customerBookingDetail = '/customer/bookings/:id';
+  static const String customerWallet = '/customer/wallet';
+  static const String customerSupport = '/customer/support';
+  static const String customerSos = '/customer/sos';
+  static const String customerProfile = '/customer/profile';
+  static const String customerSettings = '/customer/settings';
+  static const String customerDisputes = '/customer/disputes';
+  static const String customerReputation = '/customer/reputation';
+  static const String customerSavedShops = '/customer/saved-shops';
 
   // Owner Routes
   static const String ownerOnboarding = '/owner/onboarding';

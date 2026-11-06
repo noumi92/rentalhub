@@ -4,13 +4,15 @@ import '../../../../core/constants/app_colors.dart';
 class CustomerStatsRow extends StatelessWidget {
   final int totalTrips;
   final int activeBookings;
-  final double trustScore;
+  // E1: the customer's real trust score from their `users` record.
+  // Null when no record exists yet — shown as '—', never invented.
+  final double? trustScore;
 
   const CustomerStatsRow({
     super.key,
     required this.totalTrips,
     required this.activeBookings,
-    required this.trustScore,
+    this.trustScore,
   });
 
   @override
@@ -38,7 +40,7 @@ class CustomerStatsRow extends StatelessWidget {
         Expanded(
           child: _buildStatItem(
             label: 'Trust Score',
-            value: '${trustScore.toStringAsFixed(1)} ★',
+            value: trustScore == null ? '—' : '${trustScore!.toStringAsFixed(1)} ★',
             icon: Icons.verified_user_rounded,
             color: AppColors.emeraldGreen,
           ),

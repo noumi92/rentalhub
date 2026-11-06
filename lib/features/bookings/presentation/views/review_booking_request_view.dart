@@ -6,6 +6,7 @@ import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/custom_curved_header.dart';
 import '../../../../core/widgets/debounced_button.dart';
 import '../../data/datasources/booking_remote_data_source.dart';
+import '../../../customer/data/datasources/customer_remote_data_source.dart';
 import '../../domain/entities/booking_entity.dart';
 import '../widgets/advance_deposit_notice_card.dart';
 import '../widgets/booking_summary_card.dart';
@@ -40,15 +41,29 @@ class _ReviewBookingRequestViewState extends State<ReviewBookingRequestView> {
   Future<void> _submitRequest() async {
     setState(() => _isSubmitting = true);
     try {
+      // C2: the request is filed under the signed-in customer's own
+      // record (name, phone, CNIC) when one exists. The placeholder
+      // identity below is only for a signed-out/demo flow — a real
+      // customer never sees it.
       String customerId = 'cust-101';
       String customerName = 'Valued Customer';
       String customerPhone = '+923001234567';
+      String? customerCnic;
       try {
         final user = FirebaseAuth.instance.currentUser;
         if (user != null) {
           customerId = user.uid;
           customerName = user.displayName ?? customerName;
           customerPhone = user.phoneNumber ?? customerPhone;
+          if (sl.isRegistered<CustomerRemoteDataSource>()) {
+            final record = await sl<CustomerRemoteDataSource>()
+                .getCustomerById(user.uid);
+            if (record != null) {
+              customerName = record.name;
+              customerPhone = record.phone;
+              customerCnic = record.cnic;
+            }
+          }
         }
       } catch (_) {}
 
@@ -71,6 +86,9 @@ class _ReviewBookingRequestViewState extends State<ReviewBookingRequestView> {
         shopName: draft['shopName'] as String?,
         customerName: customerName,
         customerPhone: customerPhone,
+        customerCnic: customerCnic,
+        tripType: draft['tripType'] as String? ?? 'in_city',
+        kmLimit: draft['kmLimit'] as int?,
         notes: _notesController.text.trim(),
       );
 
@@ -131,6 +149,11 @@ class _ReviewBookingRequestViewState extends State<ReviewBookingRequestView> {
                           DateTime.now().add(const Duration(days: 1)),
                       totalAmount: d['totalAmount'] as int? ?? 5000,
                       advanceRequired: d['advanceRequired'] as int? ?? 1000,
+                      tripType: d['tripType'] as String? ?? 'in_city',
+                      kmLimit: d['kmLimit'] as int?,
+                      securityDepositPkr:
+                          d['securityDepositPkr'] as int?,
+                      destinationCity: d['destinationCity'] as String?,
                     ),
                     const SizedBox(height: 14),
                     AdvanceDepositNoticeCard(
@@ -165,7 +188,7 @@ class _ReviewBookingRequestViewState extends State<ReviewBookingRequestView> {
                               hintStyle: const TextStyle(
                                   fontSize: 12, color: AppColors.textSecondary),
                               filled: true,
-                              fillColor: AppColors.backgroundLight,
+                              fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                                 borderSide:

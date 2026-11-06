@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:rentalhub/core/di/injection_container.dart' as di;
 import 'package:rentalhub/core/error/exceptions.dart';
 import 'package:rentalhub/core/network/firestore_service.dart';
 import 'package:rentalhub/core/theme/app_theme.dart';
@@ -11,6 +13,14 @@ import 'package:rentalhub/features/fleet/data/models/vehicle_model.dart';
 import 'package:rentalhub/features/trust/presentation/views/customer_documents_view.dart';
 
 void main() {
+  // G3: the documents view resolves its KycCubit from DI, so this
+  // file initialises the container like the batch test files do.
+  setUpAll(() async {
+    TestWidgetsFlutterBinding.ensureInitialized();
+    SharedPreferences.setMockInitialValues({});
+    await di.initDependencies();
+  });
+
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('Data Integrity & Serialization Tests', () {
@@ -328,7 +338,8 @@ void main() {
       // Enter invalid CNIC into TextField
       final cnicField = find.byType(TextField).first;
       await tester.enterText(cnicField, '12345');
-      await tester.tap(find.text('Submit Encrypted KYC to cPanel Vault'));
+      // G3: the submit button is now labelled for what it does.
+      await tester.tap(find.text('Submit KYC Documents'));
       await tester.pumpAndSettle();
 
       expect(submitted, isFalse);

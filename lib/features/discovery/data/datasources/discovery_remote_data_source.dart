@@ -1,104 +1,64 @@
-import '../../domain/entities/shop_entity.dart';
+import 'dart:math' show asin, cos, pi, sin, sqrt;
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../models/shop_model.dart';
 
+/// B1: real discovery. Reads the `shops` collection from Firestore and
+/// returns the verified shops within [radiusKm] of the customer's
+/// location, nearest first, with the distance computed (haversine) from
+/// the shop's stored coordinates — never from a stored `distance_km`
+/// value, which an owner would have no reason to keep accurate.
+///
+/// The old version returned 4 hardcoded shops (with invented bank
+/// accounts) and filtered on their invented distances. That seeded list
+/// is deleted; an empty or unreachable `shops` collection now honestly
+/// returns an empty list and the home screen shows its empty state.
 class DiscoveryRemoteDataSource {
-  static final List<ShopModel> _seededShops = [
-    const ShopModel(
-      shopId: 'shop-1',
-      ownerId: 'usr_owner_1',
-      shopName: 'Al-Haram Motors & Rent-a-Car',
-      phoneNumber: '+92 300 8419201',
-      address: 'Main Boulevard Gulberg III',
-      city: 'Lahore',
-      geoLocation: GeoPointEntity(31.5102, 74.3441),
-      distanceKm: 0.8,
-      rating: 4.9,
-      availableCount: 14,
-      isVerified: true,
-      bankAccounts: [
-        {
-          'bank': 'Meezan Bank',
-          'title': 'Al-Haram Motors Pvt Ltd',
-          'account': 'PK88 MEZN 0002 1940 8172 9012',
-        },
-        {
-          'bank': 'JazzCash',
-          'title': 'Haji Tariq Mehmood',
-          'account': '0300-8419201',
-        },
-        {
-          'bank': 'EasyPaisa',
-          'title': 'Haji Tariq Mehmood',
-          'account': '0345-8419201',
-        },
-      ],
-    ),
-    const ShopModel(
-      shopId: 'shop-2',
-      ownerId: 'usr_owner_2',
-      shopName: 'Capital Executive Fleet',
-      phoneNumber: '+92 321 5192081',
-      address: 'Blue Area Jinnah Avenue, F-6',
-      city: 'Islamabad',
-      geoLocation: GeoPointEntity(33.7182, 73.0714),
-      distanceKm: 1.8,
-      rating: 4.8,
-      availableCount: 9,
-      isVerified: true,
-      bankAccounts: [
-        {
-          'bank': 'Meezan Bank',
-          'title': 'Capital Executive Fleet',
-          'account': 'PK14 MEZN 0001 9921 1029 4410',
-        },
-      ],
-    ),
-    const ShopModel(
-      shopId: 'shop-3',
-      ownerId: 'usr_owner_3',
-      shopName: 'DHA Luxury Wheels',
-      phoneNumber: '+92 333 4110922',
-      address: 'Phase 5 Commercial Broadway, DHA',
-      city: 'Lahore',
-      geoLocation: GeoPointEntity(31.4697, 74.4111),
-      distanceKm: 2.7,
-      rating: 4.7,
-      availableCount: 11,
-      isVerified: true,
-      bankAccounts: [
-        {
-          'bank': 'JazzCash',
-          'title': 'DHA Luxury Wheels',
-          'account': '0333-4110922',
-        },
-      ],
-    ),
-    const ShopModel(
-      shopId: 'shop-4',
-      ownerId: 'usr_owner_4',
-      shopName: 'Clifton Prestige Rentals',
-      phoneNumber: '+92 301 2291844',
-      address: 'Block 4 Shahrah-e-Firdousi, Clifton',
-      city: 'Karachi',
-      geoLocation: GeoPointEntity(24.8138, 67.0301),
-      distanceKm: 4.3,
-      rating: 4.9,
-      availableCount: 18,
-      isVerified: true,
-      bankAccounts: [
-        {
-          'bank': 'Meezan Bank',
-          'title': 'Clifton Prestige Rentals',
-          'account': 'PK55 MEZN 0099 8812 3341 0001',
-        },
-      ],
-    ),
-  ];
+  Future<List<ShopModel>> fetchNearbyShops({
+    required double radiusKm,
+    required double latitude,
+    required double longitude,
+  }) async {
+    final snapshot =
+        await FirebaseFirestore.instance.collection('shops').get();
+    final shops = <ShopModel>[];
+    for (final doc in snapshot.docs) {
+      final shop = ShopModel.fromMap(doc.data(), id: doc.id);
+      if (!shop.isVerified) continue;
+      final distanceKm = _haversineKm(
+        latitude,
+        longitude,
+        shop.geoLocation.latitude,
+        shop.geoLocation.longitude,
+      );
+      if (distanceKm > radiusKm) continue;
+      // The stored `distance_km` (if any) is ignored: the computed
+      // distance is the one the customer sees and sorts by.
+      shops.add(ShopModel.fromMap(
+        {...doc.data(), 'distance_km': distanceKm},
+        id: doc.id,
+      ));
+    }
+    shops.sort((a, b) => a.distanceKm.compareTo(b.distanceKm));
+    return shops;
+  }
 
-  Future<List<ShopModel>> fetchNearbyShops({required double radiusKm}) async {
-    return _seededShops
-        .where((shop) => shop.distanceKm <= radiusKm && shop.isVerified)
-        .toList();
+  /// Great-circle distance in kilometres between two coordinates.
+  static double _haversineKm(
+    double lat1,
+    double lon1,
+    double lat2,
+    double lon2,
+  ) {
+    const earthRadiusKm = 6371.0;
+    final dLat = (lat2 - lat1) * pi / 180;
+    final dLon = (lon2 - lon1) * pi / 180;
+    final a = sin(dLat / 2) * sin(dLat / 2) +
+        cos(lat1 * pi / 180) *
+            cos(lat2 * pi / 180) *
+            sin(dLon / 2) *
+            sin(dLon / 2);
+    return 2 * earthRadiusKm * asin(sqrt(a));
   }
 }
-

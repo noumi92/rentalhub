@@ -5,6 +5,7 @@ import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/custom_curved_header.dart';
 import '../../../../core/widgets/debounced_button.dart';
 import '../../../blacklist/data/datasources/blacklist_remote_data_source.dart';
+import '../../../customer/data/datasources/review_remote_data_source.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
 import '../../../customer/presentation/widgets/star_rating_bar.dart';
 
@@ -37,28 +38,52 @@ class _OwnerCustomerRatingViewState extends State<OwnerCustomerRatingView> {
     super.dispose();
   }
 
+  /// H4 mirror half: the owner's rating of the customer is persisted
+  /// into the same `reviews/{bookingId}` document the customer rates
+  /// into — it used to be shown as "recorded" while nothing was saved.
+  /// The blacklist report uses the booking's real CNIC and phone;
+  /// the old hardcoded CNIC '35201-1234567-1' and phone '0300-1122334'
+  /// are gone. Without a CNIC on the booking the report cannot be
+  /// filed from here, and the switch is disabled.
   Future<void> _submitRating() async {
     setState(() => _isSubmitting = true);
     try {
+      final synced =
+          await sl<ReviewRemoteDataSource>().submitOwnerReview(
+        bookingId: widget.booking.bookingId,
+        shopId: widget.booking.shopId,
+        customerId: widget.booking.customerId,
+        punctualityRating: _punctualityRating,
+        careRating: _careRating,
+        behaviorRating: _behaviorRating,
+        comment: _commentController.text,
+      );
+      bool blacklisted = false;
       if (_flagForBlacklist) {
-        final blDs = sl<BlacklistRemoteDataSource>();
-        await blDs.reportCustomerToBlacklist(
-          reportedByShopId: widget.booking.shopId,
-          cnicNumber: '35201-1234567-1',
-          phoneNumber: widget.booking.customerPhone ?? '0300-1122334',
-          reasonCategory: _selectedReason,
-          description: _commentController.text.trim().isNotEmpty
-              ? _commentController.text.trim()
-              : 'Customer flagged during return settlement for $_selectedReason.',
-        );
+        final cnic = widget.booking.customerCnic;
+        final phone = widget.booking.customerPhone;
+        if (cnic != null && cnic.isNotEmpty && phone != null && phone.isNotEmpty) {
+          await sl<BlacklistRemoteDataSource>().reportCustomerToBlacklist(
+            reportedByShopId: widget.booking.shopId,
+            cnicNumber: cnic,
+            phoneNumber: phone,
+            reasonCategory: _selectedReason,
+            description: _commentController.text.trim().isNotEmpty
+                ? _commentController.text.trim()
+                : 'Customer flagged during return settlement for $_selectedReason.',
+          );
+          blacklisted = true;
+        }
       }
 
       if (mounted) {
         AppFeedback.showSuccess(
           context,
-          _flagForBlacklist
-              ? 'Rating submitted and critical fraud report registered in National Blacklist.'
-              : 'Customer rating recorded in RentalHub reputation system!',
+          !synced
+              ? 'Rating saved on this device — it will sync when you are back online.'
+              : blacklisted
+                  ? 'Rating saved and the customer was reported to the shared blacklist.'
+                  : 'Your rating of the customer has been saved.',
         );
         Navigator.of(context).popUntil((route) => route.isFirst);
       }
@@ -144,7 +169,7 @@ class _OwnerCustomerRatingViewState extends State<OwnerCustomerRatingView> {
             decoration: InputDecoration(
               hintText: 'Add optional feedback notes for community showroom records...',
               filled: true,
-              fillColor: AppColors.backgroundLight,
+              fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: AppColors.border)),
               contentPadding: const EdgeInsets.all(10),
             ),
@@ -179,10 +204,18 @@ class _OwnerCustomerRatingViewState extends State<OwnerCustomerRatingView> {
             SwitchListTile(
               activeThumbColor: Colors.red.shade700,
               contentPadding: EdgeInsets.zero,
-              title: const Text('Flag Customer to National Blacklist', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: Colors.red)),
-              subtitle: const Text('Broadcasts instant fraud/default alert to all Pakistani showrooms', style: TextStyle(fontSize: 11)),
+              title: const Text('Flag Customer to Shared Blacklist', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: Colors.red)),
+              subtitle: Text(
+                  widget.booking.customerCnic == null ||
+                          widget.booking.customerCnic!.isEmpty
+                      ? 'Needs the customer CNIC on this booking — none is recorded, so a report cannot be filed from here.'
+                      : 'Other showrooms using RentalHub can see this report',
+                  style: const TextStyle(fontSize: 11)),
               value: _flagForBlacklist,
-              onChanged: (val) => setState(() => _flagForBlacklist = val),
+              onChanged: widget.booking.customerCnic == null ||
+                      widget.booking.customerCnic!.isEmpty
+                  ? null
+                  : (val) => setState(() => _flagForBlacklist = val),
             ),
             if (_flagForBlacklist) ...[
               const SizedBox(height: 10),
@@ -194,7 +227,7 @@ class _OwnerCustomerRatingViewState extends State<OwnerCustomerRatingView> {
                 style: const TextStyle(fontSize: 12.5, color: Colors.black87),
                 decoration: InputDecoration(
                   filled: true,
-                  fillColor: Colors.white,
+                  fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                 ),

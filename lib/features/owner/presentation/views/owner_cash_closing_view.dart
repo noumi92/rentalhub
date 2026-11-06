@@ -177,21 +177,21 @@ class _OwnerCashClosingViewState extends State<OwnerCashClosingView> {
                             controller: _countedController,
                             keyboardType: TextInputType.number,
                             onChanged: (_) => setState(() {}),
-                            decoration: const InputDecoration(
+                            decoration: InputDecoration(
                               labelText: 'Counted cash (Rs.)',
                               border: OutlineInputBorder(),
                               filled: true,
-                              fillColor: Colors.white,
+                              fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                             ),
                           ),
                           const SizedBox(height: 12),
                           TextField(
                             controller: _noteController,
-                            decoration: const InputDecoration(
+                            decoration: InputDecoration(
                               labelText: 'Note (optional)',
                               border: OutlineInputBorder(),
                               filled: true,
-                              fillColor: Colors.white,
+                              fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                             ),
                           ),
                           const SizedBox(height: 12),

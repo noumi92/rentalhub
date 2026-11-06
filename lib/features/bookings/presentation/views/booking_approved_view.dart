@@ -81,7 +81,7 @@ class BookingApprovedView extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 2),
                                 Text(
-                                  'Lock reserved for next 2 hours. Pay Rs. ${booking.advanceRequired} to guarantee pickup.',
+                                  'Pay Rs. ${booking.advanceRequired} to guarantee pickup.',
                                   style: const TextStyle(
                                     fontSize: 11,
                                     color: AppColors.textLavender,
@@ -104,6 +104,8 @@ class BookingApprovedView extends StatelessWidget {
                       returnTime: booking.returnTime,
                       totalAmount: booking.totalAmount,
                       advanceRequired: booking.advanceRequired,
+                      tripType: booking.tripType,
+                      kmLimit: booking.kmLimit,
                     ),
                     const SizedBox(height: 20),
                   ],

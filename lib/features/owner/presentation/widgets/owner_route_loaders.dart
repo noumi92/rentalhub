@@ -7,7 +7,7 @@ import '../../../bookings/domain/entities/booking_entity.dart';
 import '../../../fleet/data/datasources/fleet_remote_data_source.dart';
 import '../../../fleet/domain/entities/vehicle_entity.dart';
 
-/// Phase A (A1): route-level loaders for owner routes that take an id.
+/// Phase A (A1): route-level loaders for routes that take an id.
 ///
 /// A route such as `/owner/handover/:id` cannot build its view directly —
 /// the view needs a [BookingEntity], not an id. These loaders fetch the
@@ -36,7 +36,7 @@ class BookingRouteLoader extends StatelessWidget {
         }
         final booking = snapshot.data;
         if (booking == null) {
-          return _NotFoundScreen(
+          return RouteNotFoundScreen(
             message: 'Booking $bookingId was not found.',
           );
         }
@@ -80,7 +80,7 @@ class VehicleRouteLoader extends StatelessWidget {
           }
         }
         if (vehicle == null) {
-          return _NotFoundScreen(
+          return RouteNotFoundScreen(
             message: 'Vehicle $vehicleId was not found.',
           );
         }
@@ -90,8 +90,8 @@ class VehicleRouteLoader extends StatelessWidget {
   }
 }
 
-class _NotFoundScreen extends StatelessWidget {
-  const _NotFoundScreen({required this.message});
+class RouteNotFoundScreen extends StatelessWidget {
+  const RouteNotFoundScreen({super.key, required this.message});
 
   final String message;
 

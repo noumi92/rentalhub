@@ -13,6 +13,7 @@ import '../../../fleet/data/datasources/fleet_remote_data_source.dart';
 import '../../../notifications/data/datasources/notification_data_source.dart';
 import '../widgets/dashboard/dashboard_kpis.dart';
 import '../widgets/dashboard/dashboard_ledger_item.dart';
+import '../widgets/owner_bottom_nav.dart';
 
 class OwnerDashboardView extends StatefulWidget {
   final String shopId;
@@ -138,6 +139,7 @@ class _OwnerDashboardViewState extends State<OwnerDashboardView> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.backgroundLight,
+      bottomNavigationBar: const OwnerBottomNav(currentIndex: 0),
       body: SafeArea(
         child: Column(
           children: [

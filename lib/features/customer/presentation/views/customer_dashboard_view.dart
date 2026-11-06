@@ -3,16 +3,23 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/widgets/custom_curved_header.dart';
+import '../../../../core/network/firestore_service.dart';
 import '../../../bookings/data/datasources/booking_remote_data_source.dart';
+import '../../../finance/data/datasources/security_deposit_data_source.dart';
+import '../../data/services/customer_wallet_service.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
 import '../widgets/active_trip_floating_card.dart';
+import '../widgets/customer_service_button.dart';
 import '../widgets/customer_stats_row.dart';
+import '../widgets/dashboard_wallet_card.dart';
+import '../widgets/dashboard_recent_bookings.dart';
 
 class CustomerDashboardView extends StatefulWidget {
   final VoidCallback? onExploreShops;
   final VoidCallback? onOpenBookings;
   final VoidCallback? onOpenDocuments;
   final VoidCallback? onOpenSos;
+  final VoidCallback? onOpenWallet;
   final Function(BookingEntity booking)? onOpenActiveBooking;
 
   const CustomerDashboardView({
@@ -21,6 +28,7 @@ class CustomerDashboardView extends StatefulWidget {
     this.onOpenBookings,
     this.onOpenDocuments,
     this.onOpenSos,
+    this.onOpenWallet,
     this.onOpenActiveBooking,
   });
 
@@ -31,6 +39,8 @@ class CustomerDashboardView extends StatefulWidget {
 class _CustomerDashboardViewState extends State<CustomerDashboardView> {
   List<BookingEntity> _bookings = [];
   bool _isLoading = true;
+  double? _trustScore;
+  CustomerWalletSummary? _wallet;
 
   @override
   void initState() {
@@ -48,9 +58,29 @@ class _CustomerDashboardViewState extends State<CustomerDashboardView> {
 
       final ds = sl<BookingRemoteDataSource>();
       final list = await ds.getCustomerBookings(uid);
+      // E1: the trust score comes from the customer's own `users`
+      // record (created at sign-in, 5.0 by default) — not a hardcoded
+      // number. No record yet means no score shown.
+      double? trustScore;
+      try {
+        if (sl.isRegistered<FirestoreService>()) {
+          trustScore = (await sl<FirestoreService>().getUser(uid))?.trustScore;
+        }
+      } catch (_) {}
+      // E1/F1: the wallet summary comes from the same service the
+      // wallet screen uses (advances + deposits, not the shop ledger).
+      CustomerWalletSummary? wallet;
+      try {
+        wallet = await CustomerWalletService(
+          bookings: ds,
+          deposits: sl<SecurityDepositDataSource>(),
+        ).load(uid);
+      } catch (_) {}
       if (mounted) {
         setState(() {
           _bookings = list;
+          _trustScore = trustScore;
+          _wallet = wallet;
           _isLoading = false;
         });
       }
@@ -90,7 +120,7 @@ class _CustomerDashboardViewState extends State<CustomerDashboardView> {
                           fontSize: 20,
                           fontWeight: FontWeight.w900)),
                   SizedBox(height: 2),
-                  Text('RentalHub Pakistan • Verified Traveler',
+                  Text('RentalHub Pakistan',
                       style: TextStyle(
                           color: AppColors.textLavender, fontSize: 12)),
                 ],
@@ -123,7 +153,12 @@ class _CustomerDashboardViewState extends State<CustomerDashboardView> {
                       CustomerStatsRow(
                         totalTrips: _bookings.length,
                         activeBookings: active != null ? 1 : 0,
-                        trustScore: 4.8,
+                        trustScore: _trustScore,
+                      ),
+                      const SizedBox(height: 16),
+                      DashboardWalletCard(
+                        summary: _wallet,
+                        onTap: widget.onOpenWallet,
                       ),
                       const SizedBox(height: 16),
                       const Text(
@@ -138,7 +173,7 @@ class _CustomerDashboardViewState extends State<CustomerDashboardView> {
                       Row(
                         children: [
                           Expanded(
-                            child: _buildServiceButton(
+                            child: CustomerServiceButton(
                               icon: Icons.storefront_rounded,
                               label: 'Explore Shops',
                               color: AppColors.royalNavy,
@@ -147,7 +182,7 @@ class _CustomerDashboardViewState extends State<CustomerDashboardView> {
                           ),
                           const SizedBox(width: 10),
                           Expanded(
-                            child: _buildServiceButton(
+                            child: CustomerServiceButton(
                               icon: Icons.calendar_month_rounded,
                               label: 'My Bookings',
                               color: AppColors.sunsetOrange,
@@ -156,7 +191,7 @@ class _CustomerDashboardViewState extends State<CustomerDashboardView> {
                           ),
                           const SizedBox(width: 10),
                           Expanded(
-                            child: _buildServiceButton(
+                            child: CustomerServiceButton(
                               icon: Icons.badge_outlined,
                               label: 'KYC Docs',
                               color: AppColors.emeraldGreen,
@@ -166,87 +201,13 @@ class _CustomerDashboardViewState extends State<CustomerDashboardView> {
                         ],
                       ),
                       const SizedBox(height: 20),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text(
-                            'Recent Activity',
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w800,
-                              color: AppColors.midnightNavy,
-                            ),
-                          ),
-                          TextButton(
-                            onPressed: widget.onOpenBookings,
-                            child: const Text('View All',
-                                style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w700,
-                                    color: AppColors.sunsetOrange)),
-                          ),
-                        ],
+                      DashboardRecentBookings(
+                        isLoading: _isLoading,
+                        bookings: _bookings,
+                        onViewAll: widget.onOpenBookings,
+                        onOpenBooking: widget.onOpenActiveBooking,
+                        onExploreShops: widget.onExploreShops,
                       ),
-                      if (_isLoading)
-                        const Center(
-                            child: Padding(
-                          padding: EdgeInsets.all(24),
-                          child: CircularProgressIndicator(),
-                        ))
-                      else if (_bookings.isEmpty)
-                        Container(
-                          padding: const EdgeInsets.all(20),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(color: AppColors.border),
-                          ),
-                          child: Center(
-                            child: Column(
-                              children: [
-                                const Icon(Icons.car_rental_outlined,
-                                    size: 40, color: AppColors.textSecondary),
-                                const SizedBox(height: 8),
-                                const Text('No bookings found yet.',
-                                    style: TextStyle(
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w600,
-                                        color: AppColors.textSecondary)),
-                                const SizedBox(height: 6),
-                                TextButton(
-                                  onPressed: widget.onExploreShops,
-                                  child: const Text('Discover Nearby Cars'),
-                                ),
-                              ],
-                            ),
-                          ),
-                        )
-                      else
-                        ..._bookings.take(3).map((b) => Padding(
-                              padding: const EdgeInsets.only(bottom: 8),
-                              child: ListTile(
-                                tileColor: Colors.white,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  side: const BorderSide(
-                                      color: AppColors.border),
-                                ),
-                                leading: const Icon(
-                                    Icons.directions_car_rounded,
-                                    color: AppColors.royalNavy),
-                                title: Text(b.vehicleName ?? 'Rental Car',
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.w800,
-                                        fontSize: 14)),
-                                subtitle: Text(
-                                    '${b.status.toUpperCase()} • Rs. ${b.totalAmount}'),
-                                trailing: const Icon(
-                                    Icons.arrow_forward_ios_rounded,
-                                    size: 14),
-                                onTap: () =>
-                                    widget.onOpenActiveBooking?.call(b),
-                              ),
-                            )),
                     ],
                   ),
                 ),
@@ -258,38 +219,5 @@ class _CustomerDashboardViewState extends State<CustomerDashboardView> {
     );
   }
 
-  Widget _buildServiceButton({
-    required IconData icon,
-    required String label,
-    required Color color,
-    VoidCallback? onTap,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(14),
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 14),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: AppColors.border),
-        ),
-        child: Column(
-          children: [
-            Icon(icon, size: 24, color: color),
-            const SizedBox(height: 6),
-            Text(
-              label,
-              style: const TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w700,
-                color: AppColors.midnightNavy,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }
 

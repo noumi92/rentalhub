@@ -40,9 +40,13 @@ class _CustomerCancelBookingViewState extends State<CustomerCancelBookingView> {
     setState(() => _isSubmitting = true);
     try {
       final ds = sl<BookingRemoteDataSource>();
+      // G5: the reason travels with the cancellation (stored on the
+      // booking's rejectionReason field, which the detail screen and
+      // the owner triage both read).
       await ds.updateBookingStatus(
         bookingId: widget.booking.bookingId,
         status: 'cancelled',
+        rejectionReason: _selectedReason,
       );
 
       if (mounted) {
@@ -97,18 +101,24 @@ class _CustomerCancelBookingViewState extends State<CustomerCancelBookingView> {
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
-                          Text('Cancellation Policy',
+                        children: [
+                          const Text('What happens when you cancel',
                               style: TextStyle(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w800,
                                   color: AppColors.crimsonRed)),
-                          SizedBox(height: 6),
+                          const SizedBox(height: 6),
+                          // G5: there is no defined refund timetable in
+                          // the app, so none is invented. What is true:
+                          // no deposit was collected (deposits are taken
+                          // at handover), and the advance went straight
+                          // to the showroom's own account, so the
+                          // showroom decides any refund.
                           Text(
-                            '• Cancellation > 12 hours before pickup: 100% advance refunded.\n'
-                            '• Cancellation within 4-12 hours: 50% advance retained.\n'
-                            '• Cancellation < 4 hours: Advance forfeited as showroom lock compensation.',
-                            style: TextStyle(
+                            widget.booking.advancePaid > 0
+                                ? 'You paid Rs. ${widget.booking.advancePaid} advance directly to the showroom\'s account — the showroom decides the refund, so contact them about it. No security deposit was collected: deposits are only taken at handover.'
+                                : 'No advance has been paid yet, so there is nothing to refund. No security deposit was collected: deposits are only taken at handover.',
+                            style: const TextStyle(
                                 fontSize: 11.5,
                                 height: 1.4,
                                 color: AppColors.midnightNavy),

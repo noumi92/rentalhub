@@ -1,4 +1,7 @@
 import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../../../../core/network/cpanel_storage_client.dart';
 import '../../domain/entities/kyc_document_entity.dart';
 
@@ -40,7 +43,7 @@ class KycRemoteDataSource {
       );
     }
 
-    return KycDocumentEntity(
+    final entity = KycDocumentEntity(
       userUid: userUid,
       cnicNumber: cnicNumber,
       cnicFrontKey: frontKey,
@@ -48,6 +51,45 @@ class KycRemoteDataSource {
       licenseKey: licenseKey,
       status: 'submitted',
     );
+    // G3: record the submission so the documents screen (and the owner
+    // side) can show the real status instead of a hardcoded flag.
+    try {
+      await FirebaseFirestore.instance
+          .collection('kyc_documents')
+          .doc(userUid)
+          .set({
+        'userUid': userUid,
+        'cnicNumber': cnicNumber,
+        'cnicFrontKey': frontKey,
+        'cnicBackKey': backKey,
+        'licenseKey': licenseKey,
+        'status': 'submitted',
+        'updatedAt': DateTime.now().toIso8601String(),
+      });
+    } catch (_) {}
+    return entity;
+  }
+
+  /// G3: the customer's submitted KYC record, if any.
+  Future<KycDocumentEntity?> getKyc(String userUid) async {
+    try {
+      final doc = await FirebaseFirestore.instance
+          .collection('kyc_documents')
+          .doc(userUid)
+          .get();
+      final d = doc.data();
+      if (d == null) return null;
+      return KycDocumentEntity(
+        userUid: userUid,
+        cnicNumber: d['cnicNumber'] as String? ?? '',
+        cnicFrontKey: d['cnicFrontKey'] as String? ?? '',
+        cnicBackKey: d['cnicBackKey'] as String? ?? '',
+        licenseKey: d['licenseKey'] as String? ?? '',
+        status: d['status'] as String? ?? 'submitted',
+      );
+    } catch (_) {
+      return null;
+    }
   }
 }
 

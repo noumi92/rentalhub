@@ -8,6 +8,7 @@ import '../../../../core/widgets/custom_curved_header.dart';
 import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
 import '../widgets/operations/request_triage_card.dart';
+import '../widgets/owner_bottom_nav.dart';
 
 class OwnerBookingRequestsView extends StatefulWidget {
   final String shopId;
@@ -151,7 +152,7 @@ class _OwnerBookingRequestsViewState extends State<OwnerBookingRequestsView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
+      bottomNavigationBar: const OwnerBottomNav(currentIndex: 2),
       body: SafeArea(
         child: Column(
           children: [
@@ -172,8 +173,7 @@ class _OwnerBookingRequestsViewState extends State<OwnerBookingRequestsView> {
               ),
               actions: [
                 IconButton(
-                  icon: const Icon(Icons.qr_code_scanner_rounded,
-                      color: Colors.white),
+                  icon: const Icon(Icons.qr_code_scanner_rounded, color: Colors.white),
                   tooltip: 'Scan booking QR',
                   onPressed: () => context.push(RouteNames.ownerQrScan),
                 ),

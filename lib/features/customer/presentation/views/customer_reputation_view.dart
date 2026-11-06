@@ -1,14 +1,84 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/di/injection_container.dart';
+import '../../../../core/network/firestore_service.dart';
 import '../../../../core/widgets/custom_curved_header.dart';
+import '../../data/datasources/review_remote_data_source.dart';
+import '../widgets/reputation_score_bar.dart';
 
-class CustomerReputationView extends StatelessWidget {
+// H3: reputation from the real `reviews` collection — the ratings
+// showrooms gave this customer (H4's owner half) — plus the real
+// trust score from the user's own record. The old hardcoded
+// '4.8 / 5.0', '8 showroom bookings', the four invented score bars
+// and the "instant 5-minute approvals with zero security deposit
+// surcharges" promise are all gone.
+class CustomerReputationView extends StatefulWidget {
   final VoidCallback? onBack;
 
   const CustomerReputationView({super.key, this.onBack});
 
   @override
+  State<CustomerReputationView> createState() =>
+      _CustomerReputationViewState();
+}
+
+class _CustomerReputationViewState extends State<CustomerReputationView> {
+  bool _loading = true;
+  double? _trustScore;
+  List<Map<String, dynamic>> _ownerReviews = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    // FirebaseAuth.instance throws in widget tests (no Firebase app
+    // initialised) — treat that as "no signed-in user", like the
+    // other customer views do.
+    String? uid;
+    try {
+      uid = FirebaseAuth.instance.currentUser?.uid;
+    } catch (_) {}
+    double? trustScore;
+    List<Map<String, dynamic>> reviews = [];
+    if (uid != null) {
+      try {
+        trustScore = (await sl<FirestoreService>().getUser(uid))?.trustScore;
+      } catch (_) {}
+      try {
+        reviews = await sl<ReviewRemoteDataSource>()
+            .getCustomerReviews(uid, onlyOwnerRated: true);
+      } catch (_) {}
+    }
+    if (mounted) {
+      setState(() {
+        _trustScore = trustScore;
+        _ownerReviews = reviews;
+        _loading = false;
+      });
+    }
+  }
+
+  double _average(String field) {
+    final values = _ownerReviews
+        .map((r) => (r[field] as num?)?.toDouble())
+        .whereType<double>()
+        .toList();
+    if (values.isEmpty) return 0;
+    return values.reduce((a, b) => a + b) / values.length;
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final care = _average('careRating');
+    final punctuality = _average('punctualityRating');
+    final behavior = _average('behaviorRating');
+    final overall = _ownerReviews.isEmpty
+        ? null
+        : (care + punctuality + behavior) / 3;
     return Scaffold(
       backgroundColor: AppColors.backgroundLight,
       body: SafeArea(
@@ -16,11 +86,11 @@ class CustomerReputationView extends StatelessWidget {
           children: [
             CustomCurvedHeader(
               height: 100,
-              leadingWidget: onBack != null
+              leadingWidget: widget.onBack != null
                   ? IconButton(
                       icon: const Icon(Icons.arrow_back_ios_new_rounded,
                           color: Colors.white, size: 20),
-                      onPressed: onBack,
+                      onPressed: widget.onBack,
                     )
                   : null,
               titleWidget: const Text(
@@ -32,164 +102,146 @@ class CustomerReputationView extends StatelessWidget {
               ),
             ),
             Expanded(
-              child: SingleChildScrollView(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                child: Column(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: AppColors.border),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.04),
-                            blurRadius: 10,
-                            offset: const Offset(0, 3),
-                          ),
-                        ],
-                      ),
+              child: _loading
+                  ? const Center(child: CircularProgressIndicator())
+                  : SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 14),
                       child: Column(
                         children: [
                           Container(
-                            padding: const EdgeInsets.all(16),
+                            padding: const EdgeInsets.all(20),
                             decoration: BoxDecoration(
-                              color:
-                                  AppColors.emeraldGreen.withValues(alpha: 0.1),
-                              shape: BoxShape.circle,
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(color: AppColors.border),
+                              boxShadow: [
+                                BoxShadow(
+                                  color:
+                                      Colors.black.withValues(alpha: 0.04),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 3),
+                                ),
+                              ],
                             ),
-                            child: const Icon(Icons.verified_rounded,
-                                color: AppColors.emeraldGreen, size: 50),
-                          ),
-                          const SizedBox(height: 12),
-                          const Text(
-                            '4.8 / 5.0',
-                            style: TextStyle(
-                              fontSize: 32,
-                              fontWeight: FontWeight.w900,
-                              color: AppColors.midnightNavy,
+                            child: Column(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(16),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.emeraldGreen
+                                        .withValues(alpha: 0.1),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(Icons.verified_rounded,
+                                      color: AppColors.emeraldGreen, size: 50),
+                                ),
+                                const SizedBox(height: 12),
+                                Text(
+                                  overall == null
+                                      ? '— / 5.0'
+                                      : '${overall.toStringAsFixed(1)} / 5.0',
+                                  style: const TextStyle(
+                                    fontSize: 32,
+                                    fontWeight: FontWeight.w900,
+                                    color: AppColors.midnightNavy,
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  _trustScore == null
+                                      ? 'Trust Score: —'
+                                      : 'Trust Score: ${_trustScore!.toStringAsFixed(1)} / 5.0',
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w700,
+                                    color: AppColors.emeraldGreen,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  _ownerReviews.isEmpty
+                                      ? 'No showroom has rated you yet. Your reputation appears here after your first completed trip.'
+                                      : 'Based on ${_ownerReviews.length} showroom review${_ownerReviews.length == 1 ? '' : 's'} from your completed trips.',
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                    fontSize: 11.5,
+                                    color: AppColors.textSecondary,
+                                    height: 1.4,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          const SizedBox(height: 2),
-                          const Text(
-                            'Trusted Community Traveler',
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.emeraldGreen,
+                          const SizedBox(height: 16),
+                          if (_ownerReviews.isNotEmpty)
+                            Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(color: AppColors.border),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    'Showroom Ratings of You',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w800,
+                                      color: AppColors.midnightNavy,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 14),
+                                  ReputationScoreBar(
+                                      label: 'Vehicle Care & Cleanliness',
+                                      ratio: care / 5,
+                                      score: care),
+                                  const SizedBox(height: 10),
+                                  ReputationScoreBar(
+                                      label: 'On-Time Handover Punctuality',
+                                      ratio: punctuality / 5,
+                                      score: punctuality),
+                                  const SizedBox(height: 10),
+                                  ReputationScoreBar(
+                                      label: 'Staff Interaction & Behavior',
+                                      ratio: behavior / 5,
+                                      score: behavior),
+                                ],
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 8),
-                          const Text(
-                            'Based on reviews from 8 showroom bookings. 100% on-time returns with zero damage disputes.',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 11.5,
-                              color: AppColors.textSecondary,
-                              height: 1.4,
+                          const SizedBox(height: 16),
+                          Container(
+                            padding: const EdgeInsets.all(14),
+                            decoration: BoxDecoration(
+                              color: AppColors.lavenderMist,
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                            child: Row(
+                              children: const [
+                                Icon(Icons.shield_rounded,
+                                    color: AppColors.royalNavy, size: 20),
+                                SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(
+                                    'Showrooms see these ratings when they review your booking requests.',
+                                    style: TextStyle(
+                                        fontSize: 11.5,
+                                        fontWeight: FontWeight.w600,
+                                        color: AppColors.midnightNavy),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
                       ),
                     ),
-                    const SizedBox(height: 16),
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: AppColors.border),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            '4-Dimensional Performance Score',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w800,
-                              color: AppColors.midnightNavy,
-                            ),
-                          ),
-                          const SizedBox(height: 14),
-                          _buildScoreBar('Vehicle Care & Cleanliness', 0.96, '4.8'),
-                          const SizedBox(height: 10),
-                          _buildScoreBar('On-Time Handover Punctuality', 1.0, '5.0'),
-                          const SizedBox(height: 10),
-                          _buildScoreBar('Advance & Balance Payments', 0.94, '4.7'),
-                          const SizedBox(height: 10),
-                          _buildScoreBar('Staff Interaction & Behavior', 0.98, '4.9'),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Container(
-                      padding: const EdgeInsets.all(14),
-                      decoration: BoxDecoration(
-                        color: AppColors.lavenderMist,
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                      child: Row(
-                        children: const [
-                          Icon(Icons.shield_rounded,
-                              color: AppColors.royalNavy, size: 20),
-                          SizedBox(width: 10),
-                          Expanded(
-                            child: Text(
-                              'A high trust score qualifies you for instant 5-minute showroom approvals with zero security deposit surcharges.',
-                              style: TextStyle(
-                                  fontSize: 11.5,
-                                  fontWeight: FontWeight.w600,
-                                  color: AppColors.midnightNavy),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
             ),
           ],
         ),
       ),
     );
   }
-
-  Widget _buildScoreBar(String label, double ratio, String score) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(label,
-                style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.midnightNavy)),
-            Text('$score ★',
-                style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.sunsetOrange)),
-          ],
-        ),
-        const SizedBox(height: 6),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(6),
-          child: LinearProgressIndicator(
-            value: ratio,
-            minHeight: 8,
-            backgroundColor: AppColors.backgroundLight,
-            valueColor:
-                const AlwaysStoppedAnimation<Color>(AppColors.emeraldGreen),
-          ),
-        ),
-      ],
-    );
-  }
 }
-

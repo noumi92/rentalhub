@@ -50,7 +50,7 @@ class FuelOdometerInputWidget extends StatelessWidget {
               suffixStyle: const TextStyle(fontWeight: FontWeight.w800, color: AppColors.sunsetOrange),
               prefixIcon: const Icon(Icons.speed_rounded, color: AppColors.midnightNavy),
               filled: true,
-              fillColor: AppColors.backgroundLight,
+              fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: const BorderSide(color: AppColors.border),

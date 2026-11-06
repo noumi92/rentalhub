@@ -16,12 +16,12 @@ import 'package:flutter_test/flutter_test.dart';
 // Files over the cap today (rulebook D19) with their line counts at
 // `master` `af8c73c`. A file may shrink; it must never grow past its
 // registered count, and no new file may exceed 250.
+// Phase B (B2) removed `owner_rate_matrix_view.dart` (261 -> 229).
 const Map<String, int> kOverLimitViews = {
   'lib/features/customer/presentation/views/customer_dashboard_view.dart':
       295,
   'lib/features/owner/presentation/views/owner_onboarding_view.dart': 290,
   'lib/features/owner/presentation/views/owner_add_vehicle_view.dart': 259,
-  'lib/features/owner/presentation/views/owner_rate_matrix_view.dart': 261,
   'lib/features/customer/presentation/views/customer_dispute_view.dart': 260,
 };
 
@@ -31,8 +31,10 @@ const Map<String, int> kOverLimitViews = {
 // may exceed 250 lines.
 // The owner flow view was deleted in Phase A (A2) — its routes now point
 // at the real owner views. Do not re-add it.
+// The customer flow view was deleted in the customer module build
+// (Phase A, A1) — its routes now point at the real customer views.
+// Do not re-add it.
 const Map<String, int> kFlowViews = {
-  'lib/features/customer/presentation/customer_flow_view.dart': 2479,
   'lib/features/admin/presentation/admin_flow_view.dart': 693,
 };
 
@@ -42,7 +44,6 @@ const Map<String, int> kFlowViews = {
 // `owner_fleet_view`, `fleet_vehicle_card`.
 const Set<String> kMockDataImporters = {
   'lib/features/admin/presentation/admin_flow_view.dart',
-  'lib/features/customer/presentation/customer_flow_view.dart',
   'lib/features/discovery/presentation/views/shop_cars_view.dart',
   'lib/features/discovery/presentation/views/shop_detail_view.dart',
   'lib/features/discovery/presentation/views/vehicle_detail_view.dart',

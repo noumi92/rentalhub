@@ -1,27 +1,71 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/di/injection_container.dart';
 import '../../../../core/widgets/custom_curved_header.dart';
-import '../widgets/wallet_transaction_tile.dart';
+import '../../../bookings/data/datasources/booking_remote_data_source.dart';
+import '../../../finance/data/datasources/security_deposit_data_source.dart';
+import '../../data/services/customer_wallet_service.dart';
+import '../widgets/customer_bottom_nav.dart';
+import '../widgets/wallet_ledger.dart';
 
-class CustomerWalletView extends StatelessWidget {
+// F1: the wallet shows the customer's real money — advances paid on
+// their bookings and security deposits held on them — loaded from the
+// booking and deposit records. The hardcoded Rs. 15,000 / 5,000 /
+// 10,000 and the four const transaction tiles are gone.
+class CustomerWalletView extends StatefulWidget {
   final VoidCallback? onBack;
 
   const CustomerWalletView({super.key, this.onBack});
 
   @override
+  State<CustomerWalletView> createState() => _CustomerWalletViewState();
+}
+
+class _CustomerWalletViewState extends State<CustomerWalletView> {
+  CustomerWalletSummary? _summary;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    try {
+      final service = CustomerWalletService(
+        bookings: sl<BookingRemoteDataSource>(),
+        deposits: sl<SecurityDepositDataSource>(),
+      );
+      final summary =
+          await service.load(CustomerWalletService.currentUid());
+      if (mounted) {
+        setState(() {
+          _summary = summary;
+          _isLoading = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final summary = _summary;
     return Scaffold(
       backgroundColor: AppColors.backgroundLight,
+      bottomNavigationBar: const CustomerBottomNav(currentIndex: 2),
       body: SafeArea(
         child: Column(
           children: [
             CustomCurvedHeader(
               height: 100,
-              leadingWidget: onBack != null
+              leadingWidget: widget.onBack != null
                   ? IconButton(
                       icon: const Icon(Icons.arrow_back_ios_new_rounded,
                           color: Colors.white, size: 20),
-                      onPressed: onBack,
+                      onPressed: widget.onBack,
                     )
                   : null,
               titleWidget: const Text(
@@ -67,8 +111,8 @@ class CustomerWalletView extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(height: 6),
-                          const Text(
-                            'Rs. 15,000',
+                          Text(
+                            'Rs. ${summary?.total ?? 0}',
                             style: TextStyle(
                               fontSize: 26,
                               fontWeight: FontWeight.w900,
@@ -78,11 +122,14 @@ class CustomerWalletView extends StatelessWidget {
                           const SizedBox(height: 14),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: const [
+                            children: [
                               _EscrowPill(
-                                  label: 'Advances Paid', value: 'Rs. 5,000'),
+                                  label: 'Advances Paid',
+                                  value:
+                                      'Rs. ${summary?.advancesPaid ?? 0}'),
                               _EscrowPill(
-                                  label: 'Security Escrow', value: 'Rs. 10,000'),
+                                  label: 'Security Escrow',
+                                  value: 'Rs. ${summary?.escrowHeld ?? 0}'),
                             ],
                           ),
                         ],
@@ -98,36 +145,9 @@ class CustomerWalletView extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    const WalletTransactionTile(
-                      title: 'Advance Deposit - Honda Civic (RH-849201)',
-                      date: 'Today, 2:30 PM',
-                      amount: 2500,
-                      isDebit: true,
-                      status: 'Verified',
-                    ),
-                    const SizedBox(height: 8),
-                    const WalletTransactionTile(
-                      title: 'Refundable Security Deposit Released',
-                      date: 'Yesterday, 6:00 PM',
-                      amount: 10000,
-                      isDebit: false,
-                      status: 'Settled',
-                    ),
-                    const SizedBox(height: 8),
-                    const WalletTransactionTile(
-                      title: 'Advance Lock - Toyota Yaris (RH-849182)',
-                      date: '28 Oct 2026',
-                      amount: 1500,
-                      isDebit: true,
-                      status: 'Completed',
-                    ),
-                    const SizedBox(height: 8),
-                    const WalletTransactionTile(
-                      title: 'Advance Refund - Showroom Cancelled',
-                      date: '24 Oct 2026',
-                      amount: 2000,
-                      isDebit: false,
-                      status: 'Refunded',
+                    WalletLedger(
+                      isLoading: _isLoading,
+                      entries: summary?.entries ?? const [],
                     ),
                   ],
                 ),

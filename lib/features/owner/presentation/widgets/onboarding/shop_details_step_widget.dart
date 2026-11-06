@@ -82,6 +82,7 @@ class ShopDetailsStepWidget extends StatelessWidget {
         const SizedBox(height: 16),
 
         _inputField(
+          context: context,
           label: 'Shop Registered Legal Name',
           controller: shopNameController,
           hint: 'e.g. Al-Falah Rent a Car',
@@ -90,6 +91,7 @@ class ShopDetailsStepWidget extends StatelessWidget {
         const SizedBox(height: 14),
 
         _inputField(
+          context: context,
           label: 'Owner Full Name (as on CNIC)',
           controller: ownerNameController,
           hint: 'e.g. Ahmed Raza',
@@ -98,6 +100,7 @@ class ShopDetailsStepWidget extends StatelessWidget {
         const SizedBox(height: 14),
 
         _inputField(
+          context: context,
           label: 'Owner CNIC Number',
           controller: cnicController,
           hint: '35201-9876543-1',
@@ -110,6 +113,7 @@ class ShopDetailsStepWidget extends StatelessWidget {
           children: [
             Expanded(
               child: _inputField(
+                context: context,
                 label: 'WhatsApp Business Number',
                 controller: whatsappController,
                 hint: '03001234567',
@@ -120,6 +124,7 @@ class ShopDetailsStepWidget extends StatelessWidget {
             const SizedBox(width: 12),
             Expanded(
               child: _inputField(
+                context: context,
                 label: 'Shop Landline / Alt Phone',
                 controller: phoneController,
                 hint: '04235761234',
@@ -162,6 +167,7 @@ class ShopDetailsStepWidget extends StatelessWidget {
   }
 
   Widget _inputField({
+    required BuildContext context,
     required String label,
     required TextEditingController controller,
     required String hint,
@@ -171,7 +177,7 @@ class ShopDetailsStepWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w800, color: AppColors.midnightNavy)),
+        Text(label, style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w800, color: Theme.of(context).colorScheme.onSurface)),
         const SizedBox(height: 6),
         TextField(
           controller: controller,
@@ -181,7 +187,7 @@ class ShopDetailsStepWidget extends StatelessWidget {
             hintText: hint,
             prefixIcon: Icon(icon, color: AppColors.sunsetOrange, size: 20),
             filled: true,
-            fillColor: Colors.white,
+            fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
             isDense: true,
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border)),
             enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border)),

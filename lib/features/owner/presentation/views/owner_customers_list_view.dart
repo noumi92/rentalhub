@@ -9,6 +9,7 @@ import '../../../blacklist/data/datasources/blacklist_remote_data_source.dart';
 import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../customer/domain/usecases/get_shop_customers_usecase.dart';
 import '../../../customer/utils/customer_grouping.dart';
+import '../widgets/owner_bottom_nav.dart';
 
 /// Phase B (C1): the shop's customers — every person who booked,
 /// rolled up with their booking count, total spent and last booking,
@@ -79,6 +80,7 @@ class _OwnerCustomersListViewState extends State<OwnerCustomersListView> {
     final filtered = _filtered;
     return Scaffold(
       backgroundColor: AppColors.backgroundLight,
+      bottomNavigationBar: const OwnerBottomNav(currentIndex: 3),
       body: SafeArea(
         child: Column(
           children: [
@@ -118,12 +120,12 @@ class _OwnerCustomersListViewState extends State<OwnerCustomersListView> {
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
               child: TextField(
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   hintText: 'Search name, phone or CNIC',
                   prefixIcon: Icon(Icons.search_rounded),
                   border: OutlineInputBorder(),
                   filled: true,
-                  fillColor: Colors.white,
+                  fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                 ),
                 onChanged: (v) => setState(() => _query = v),
               ),

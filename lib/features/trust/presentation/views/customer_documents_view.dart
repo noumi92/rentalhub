@@ -1,11 +1,23 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../../../../core/constants/app_colors.dart';
-import '../../../../core/utils/pakistani_validators.dart';
+import '../../../../core/di/injection_container.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/custom_curved_header.dart';
-import '../../../../core/widgets/debounced_button.dart';
-import 'widgets/document_slot_tile.dart';
+import '../../../customer/data/datasources/customer_remote_data_source.dart';
+import '../../../customer/domain/entities/customer_entity.dart';
+import '../cubit/kyc_cubit.dart';
+import '../../data/datasources/kyc_remote_data_source.dart';
+import '../../domain/entities/kyc_document_entity.dart';
+import 'widgets/kyc_status_banner.dart';
+import 'widgets/kyc_submission_form.dart';
 
+// G3: the customer's real documents. The CNIC comes from their own
+// `customers` record (empty when they have none — no demo number), the
+// submission form holds the photos they actually pick, and the status
+// banner shows the real KYC status from `kyc_documents/{uid}`.
 class CustomerDocumentsView extends StatefulWidget {
   final VoidCallback? onSubmitted;
 
@@ -16,125 +28,149 @@ class CustomerDocumentsView extends StatefulWidget {
 }
 
 class _CustomerDocumentsViewState extends State<CustomerDocumentsView> {
-  bool _cnicFront = true;
-  bool _cnicBack = true;
-  bool _license = true;
-  final _cnicController = TextEditingController(text: '35202-8819201-5');
+  KycDocumentEntity? _existing;
+  String _initialCnic = '';
+  bool _loading = true;
 
   @override
-  void dispose() {
-    _cnicController.dispose();
-    super.dispose();
+  void initState() {
+    super.initState();
+    _loadExisting();
+  }
+
+  String _uid() {
+    try {
+      return FirebaseAuth.instance.currentUser?.uid ?? 'cust-101';
+    } catch (_) {
+      return 'cust-101';
+    }
+  }
+
+  Future<void> _loadExisting() async {
+    KycDocumentEntity? existing;
+    String cnic = '';
+    try {
+      existing = await sl<KycRemoteDataSource>().getKyc(_uid());
+      if (sl.isRegistered<CustomerRemoteDataSource>()) {
+        final record =
+            await sl<CustomerRemoteDataSource>().getCustomerById(_uid());
+        cnic = record?.cnic ?? existing?.cnicNumber ?? '';
+      } else {
+        cnic = existing?.cnicNumber ?? '';
+      }
+    } catch (_) {}
+    if (mounted) {
+      setState(() {
+        _existing = existing;
+        _initialCnic = cnic;
+        _loading = false;
+      });
+    }
+  }
+
+  Future<void> _onSubmitted(String cnic) async {
+    // The owner's triage reads the CNIC off the `customers` record, so
+    // the submitted number lands there too.
+    try {
+      if (sl.isRegistered<CustomerRemoteDataSource>()) {
+        final ds = sl<CustomerRemoteDataSource>();
+        final existing = await ds.getCustomerById(_uid());
+        if (existing != null) {
+          await ds.upsertCustomer(existing.copyWith(cnic: cnic));
+        } else {
+          await ds.upsertCustomer(CustomerEntity(
+            customerId: _uid(),
+            shopId: '',
+            name:
+                FirebaseAuth.instance.currentUser?.displayName ?? 'Customer',
+            phone: FirebaseAuth.instance.currentUser?.phoneNumber ?? '',
+            cnic: cnic,
+            source: 'online',
+            createdAt: DateTime.now(),
+          ));
+        }
+      }
+    } catch (_) {}
+    await _loadExisting();
+    if (mounted) {
+      AppFeedback.showSuccess(
+        context,
+        'KYC documents submitted — pending verification.',
+      );
+      widget.onSubmitted?.call();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            const CustomCurvedHeader(
-              height: 165,
-              showProfileGreeting: true,
-              titleWidget: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'NADRA CNIC & Driving License KYC',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w900,
+    return BlocProvider.value(
+      value: sl<KycCubit>(),
+      child: Scaffold(
+        backgroundColor: AppColors.backgroundLight,
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              const CustomCurvedHeader(
+                height: 165,
+                showProfileGreeting: true,
+                titleWidget: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'NADRA CNIC & Driving License KYC',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w900,
+                      ),
                     ),
-                  ),
-                  SizedBox(height: 4),
-                  Text(
-                    'HMAC-SHA256 Encrypted cPanel Private Vault • شناختی کارڈ تصدیق',
-                    style: TextStyle(
-                      color: AppColors.textLavender,
-                      fontSize: 11.5,
+                    SizedBox(height: 4),
+                    Text(
+                      'Private cPanel vault • شناختی کارڈ تصدیق',
+                      style: TextStyle(
+                        color: AppColors.textLavender,
+                        fontSize: 11.5,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            HeaderOverlapContainer(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          '13-Digit NADRA CNIC Number',
-                          style: TextStyle(
-                            fontSize: 12.5,
-                            fontWeight: FontWeight.w800,
-                            color: AppColors.midnightNavy,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        TextField(
-                          controller: _cnicController,
-                          decoration: InputDecoration(
-                            prefixIcon: const Icon(Icons.badge_outlined),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
+              HeaderOverlapContainer(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: _loading
+                          ? const Center(
+                              child: Padding(
+                              padding: EdgeInsets.all(16),
+                              child: CircularProgressIndicator(),
+                            ))
+                          : Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (_existing != null) ...[
+                                  KycStatusBanner(
+                                      status: _existing!.status),
+                                  const SizedBox(height: 14),
+                                ],
+                                KycSubmissionForm(
+                                  initialCnic: _initialCnic,
+                                  existing: _existing,
+                                  userUid: _uid(),
+                                  onSubmitted: _onSubmitted,
+                                ),
+                              ],
                             ),
-                          ),
-                        ),
-                        const SizedBox(height: 14),
-                        DocumentSlotTile(
-                          title: 'NADRA CNIC — Front Side',
-                          subtitle: 'High-resolution scan with clear photo',
-                          isUploaded: _cnicFront,
-                          onTap: () => setState(() => _cnicFront = !_cnicFront),
-                        ),
-                        const SizedBox(height: 10),
-                        DocumentSlotTile(
-                          title: 'NADRA CNIC — Back Side',
-                          subtitle: 'QR code & address clearly visible',
-                          isUploaded: _cnicBack,
-                          onTap: () => setState(() => _cnicBack = !_cnicBack),
-                        ),
-                        const SizedBox(height: 10),
-                        DocumentSlotTile(
-                          title: 'Valid Pakistan Driving License (LTV/HTV)',
-                          subtitle: 'Required for Self-Drive rental packages',
-                          isUploaded: _license,
-                          onTap: () => setState(() => _license = !_license),
-                        ),
-                        const SizedBox(height: 18),
-                        DebouncedButton(
-                          text: 'Submit Encrypted KYC to cPanel Vault',
-                          icon: Icons.cloud_upload_rounded,
-                          onPressed: () async {
-                            final cnicErr = PakistaniValidators.validateCnic(_cnicController.text);
-                            if (cnicErr != null) {
-                              AppFeedback.showError(context, cnicErr);
-                              return;
-                            }
-                            if (!_cnicFront || !_cnicBack) {
-                              AppFeedback.showWarning(context, 'Please upload both front and back photos of your NADRA CNIC.');
-                              return;
-                            }
-                            AppFeedback.showSuccess(context, 'Encrypted KYC documents submitted to private vault!');
-                            widget.onSubmitted?.call();
-                          },
-                        ),
-                      ],
                     ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 }
-

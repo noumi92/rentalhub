@@ -77,11 +77,11 @@ class VehicleRatesStepWidget extends StatelessWidget {
         const Text('Enable packages and edit rates in PKR per booking tier.', style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
         const SizedBox(height: 12),
 
-        _packageRow('1 Hour Rate', rate1HourController, enable1Hour, onToggle1Hour),
-        _packageRow('3 Hours Rate', rate3HoursController, enable3Hours, onToggle3Hours),
-        _packageRow('6 Hours Rate', rate6HoursController, enable6Hours, onToggle6Hours),
-        _packageRow('Full Day (24h) Rate', rate24HoursController, enable24Hours, onToggle24Hours),
-        _packageRow('Weekly (7 Days) Rate', rateWeeklyController, enableWeekly, onToggleWeekly),
+        _packageRow(context, '1 Hour Rate', rate1HourController, enable1Hour, onToggle1Hour),
+        _packageRow(context, '3 Hours Rate', rate3HoursController, enable3Hours, onToggle3Hours),
+        _packageRow(context, '6 Hours Rate', rate6HoursController, enable6Hours, onToggle6Hours),
+        _packageRow(context, 'Full Day (24h) Rate', rate24HoursController, enable24Hours, onToggle24Hours),
+        _packageRow(context, 'Weekly (7 Days) Rate', rateWeeklyController, enableWeekly, onToggleWeekly),
         const SizedBox(height: 16),
 
         const Text('Service Type & Driver Options', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900, color: AppColors.midnightNavy)),
@@ -141,7 +141,7 @@ class VehicleRatesStepWidget extends StatelessWidget {
                             suffixText: '/day',
                             suffixStyle: const TextStyle(fontSize: 11, color: AppColors.textMuted),
                             filled: true,
-                            fillColor: AppColors.backgroundLight,
+                            fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                             isDense: true,
                             contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                             border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: AppColors.border)),
@@ -166,11 +166,11 @@ class VehicleRatesStepWidget extends StatelessWidget {
             padding: const EdgeInsets.all(14),
             child: Column(
               children: [
-                _policyInput('Security Deposit (Self-Drive)', 'Refunded on car return in clean condition', securityDepositController),
+                _policyInput(context, 'Security Deposit (Self-Drive)', 'Refunded on car return in clean condition', securityDepositController),
                 const Divider(height: 20),
-                _policyInput('Advance Booking Fee', 'Required up front to lock slot', advanceDepositController),
+                _policyInput(context, 'Advance Booking Fee', 'Required up front to lock slot', advanceDepositController),
                 const Divider(height: 20),
-                _policyInput('Extra Hour Overstay Charge', 'Billed per hour past scheduled return', extraHourChargeController, suffix: '/hr'),
+                _policyInput(context, 'Extra Hour Overstay Charge', 'Billed per hour past scheduled return', extraHourChargeController, suffix: '/hr'),
                 const Divider(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -207,7 +207,7 @@ class VehicleRatesStepWidget extends StatelessWidget {
     );
   }
 
-  Widget _packageRow(String label, TextEditingController controller, bool isEnabled, ValueChanged<bool> onToggle) {
+  Widget _packageRow(BuildContext context, String label, TextEditingController controller, bool isEnabled, ValueChanged<bool> onToggle) {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
@@ -227,12 +227,12 @@ class VehicleRatesStepWidget extends StatelessWidget {
               enabled: isEnabled,
               keyboardType: TextInputType.number,
               textAlign: TextAlign.end,
-              style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w900, color: isEnabled ? AppColors.midnightNavy : AppColors.textMuted),
+              style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w900, color: isEnabled ? Theme.of(context).colorScheme.onSurface : Theme.of(context).colorScheme.onSurfaceVariant),
               decoration: InputDecoration(
                 prefixText: 'Rs. ',
-                prefixStyle: TextStyle(fontWeight: FontWeight.w800, fontSize: 12, color: isEnabled ? AppColors.midnightNavy : AppColors.textMuted),
+                prefixStyle: TextStyle(fontWeight: FontWeight.w800, fontSize: 12, color: isEnabled ? Theme.of(context).colorScheme.onSurface : Theme.of(context).colorScheme.onSurfaceVariant),
                 filled: true,
-                fillColor: isEnabled ? AppColors.backgroundLight : const Color(0xFFF1F5F9),
+                fillColor: isEnabled ? Theme.of(context).colorScheme.surfaceContainerHighest : Theme.of(context).colorScheme.surfaceContainer,
                 isDense: true,
                 contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: AppColors.border)),
@@ -244,7 +244,7 @@ class VehicleRatesStepWidget extends StatelessWidget {
     );
   }
 
-  Widget _policyInput(String label, String subtitle, TextEditingController controller, {String? suffix}) {
+  Widget _policyInput(BuildContext context, String label, String subtitle, TextEditingController controller, {String? suffix}) {
     return Row(
       children: [
         Expanded(
@@ -264,14 +264,14 @@ class VehicleRatesStepWidget extends StatelessWidget {
             controller: controller,
             keyboardType: TextInputType.number,
             textAlign: TextAlign.end,
-            style: const TextStyle(fontWeight: FontWeight.w900, color: AppColors.midnightNavy, fontSize: 13.5),
+            style: TextStyle(fontWeight: FontWeight.w900, color: Theme.of(context).colorScheme.onSurface, fontSize: 13.5),
             decoration: InputDecoration(
               prefixText: 'Rs. ',
-              prefixStyle: const TextStyle(fontWeight: FontWeight.w800, color: AppColors.midnightNavy, fontSize: 12),
+              prefixStyle: TextStyle(fontWeight: FontWeight.w800, color: Theme.of(context).colorScheme.onSurface, fontSize: 12),
               suffixText: suffix,
               suffixStyle: const TextStyle(fontSize: 11, color: AppColors.textMuted),
               filled: true,
-              fillColor: AppColors.backgroundLight,
+              fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
               isDense: true,
               contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: AppColors.border)),

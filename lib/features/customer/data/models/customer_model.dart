@@ -11,6 +11,9 @@ class CustomerModel extends CustomerEntity {
     required super.createdAt,
     super.dateOfBirth,
     super.cnicExpiry,
+    super.pushNotifications,
+    super.whatsappNotifications,
+    super.savedShopIds,
   });
 
   Map<String, dynamic> toMap() {
@@ -24,6 +27,9 @@ class CustomerModel extends CustomerEntity {
       'createdAt': createdAt.toIso8601String(),
       if (dateOfBirth != null) 'dateOfBirth': dateOfBirth,
       if (cnicExpiry != null) 'cnicExpiry': cnicExpiry,
+      'pushNotifications': pushNotifications,
+      'whatsappNotifications': whatsappNotifications,
+      'savedShopIds': savedShopIds,
     };
   }
 

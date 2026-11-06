@@ -230,6 +230,9 @@ void main() {
         of: find.text('Reject Me'),
         matching: find.byType(RequestTriageCard),
       );
+      await tester.ensureVisible(
+          find.descendant(of: card, matching: find.text('Decline')));
+      await tester.pumpAndSettle();
       await tester.tap(
           find.descendant(of: card, matching: find.text('Decline')));
       await tester.pumpAndSettle();

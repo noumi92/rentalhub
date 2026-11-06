@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
-import '../../../../core/models/mock_data.dart';
+import '../../../../core/di/injection_container.dart';
 import '../../../../core/widgets/custom_curved_header.dart';
+import '../../../fleet/data/datasources/fleet_remote_data_source.dart';
+import '../../../fleet/domain/entities/vehicle_entity.dart';
 import 'widgets/customer_vehicle_card.dart';
 
+/// B3: the shop's fleet screen, converted from MockVehicle to the real
+/// [VehicleEntity]. Without a [vehicles] list it loads the shop's real
+/// fleet from Firestore — the old version fell back to the mock database.
 class ShopCarsView extends StatefulWidget {
   final String shopId;
   final String shopName;
-  final List<MockVehicle>? vehicles;
-  final ValueChanged<MockVehicle>? onCarSelected;
+  final List<VehicleEntity>? vehicles;
+  final ValueChanged<VehicleEntity>? onCarSelected;
   final VoidCallback? onBack;
 
   const ShopCarsView({
@@ -27,10 +32,32 @@ class ShopCarsView extends StatefulWidget {
 class _ShopCarsViewState extends State<ShopCarsView> {
   String _selectedCategory = 'All';
   final List<String> _categories = ['All', 'Sedan', 'SUV', 'Hiace', 'Luxury'];
+  List<VehicleEntity> _loaded = const [];
+  bool _loading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.vehicles == null) {
+      _loading = true;
+      sl<FleetRemoteDataSource>()
+          .getShopVehicles(widget.shopId)
+          .then((vehicles) {
+        if (mounted) {
+          setState(() {
+            _loaded = vehicles;
+            _loading = false;
+          });
+        }
+      }).catchError((_) {
+        if (mounted) setState(() => _loading = false);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final list = widget.vehicles ?? MockDatabase.vehicles;
+    final list = widget.vehicles ?? _loaded;
     final filtered = _selectedCategory == 'All'
         ? list
         : list.where((v) => v.category.toLowerCase() == _selectedCategory.toLowerCase()).toList();
@@ -95,7 +122,9 @@ class _ShopCarsViewState extends State<ShopCarsView> {
               ),
             ),
             Expanded(
-              child: filtered.isEmpty
+              child: _loading
+                  ? const Center(child: CircularProgressIndicator())
+                  : filtered.isEmpty
                   ? Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,

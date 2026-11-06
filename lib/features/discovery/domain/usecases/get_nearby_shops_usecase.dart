@@ -5,7 +5,15 @@ class GetNearbyShopsUseCase {
   final DiscoveryRepository repository;
   const GetNearbyShopsUseCase(this.repository);
 
-  Future<List<ShopEntity>> call({required double radiusKm}) =>
-      repository.getNearbyShops(radiusKm: radiusKm);
+  Future<List<ShopEntity>> call({
+    required double radiusKm,
+    required double latitude,
+    required double longitude,
+  }) =>
+      repository.getNearbyShops(
+        radiusKm: radiusKm,
+        latitude: latitude,
+        longitude: longitude,
+      );
 }
 

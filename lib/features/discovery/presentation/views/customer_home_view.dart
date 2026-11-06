@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:latlong2/latlong.dart' as ll;
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/widgets/custom_curved_header.dart';
+import '../../data/datasources/customer_location_store.dart';
 import '../../data/datasources/discovery_remote_data_source.dart';
 import '../../data/repositories/discovery_repository_impl.dart';
 import '../../domain/entities/shop_entity.dart';
 import '../../domain/usecases/get_nearby_shops_usecase.dart';
 import '../cubit/discovery_cubit.dart';
-import 'shop_detail_view.dart';
-import 'vehicle_detail_view.dart';
+import '../../../customer/presentation/widgets/customer_bottom_nav.dart';
 import 'widgets/empty_radar_state.dart';
 import 'widgets/radius_filter_pills.dart';
 import 'widgets/shop_list_card.dart';
@@ -36,15 +37,51 @@ class CustomerHomeView extends StatelessWidget {
   }
 }
 
-class _CustomerHomeBody extends StatelessWidget {
+class _CustomerHomeBody extends StatefulWidget {
   final ValueChanged<ShopEntity>? onShopSelected;
 
   const _CustomerHomeBody({this.onShopSelected});
 
   @override
+  State<_CustomerHomeBody> createState() => _CustomerHomeBodyState();
+}
+
+class _CustomerHomeBodyState extends State<_CustomerHomeBody> {
+  @override
+  void initState() {
+    super.initState();
+    // B1: the location prompt saved the customer's pick; search from it
+    // instead of the Lahore default the cubit starts with.
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final stored = await CustomerLocationStore().load();
+      if (!mounted || stored == null) return;
+      final cubit = context.read<DiscoveryCubit>();
+      final current = cubit.currentLocation;
+      if (stored.latitude != current.latitude ||
+          stored.longitude != current.longitude) {
+        cubit.setLocation(stored);
+      }
+    });
+  }
+
+  /// Phase A (A1): a shop tap opens the real shop route. The
+  /// [onShopSelected] override is kept for embedded use (tests / widgets
+  /// that host the home view); the app itself always uses the route.
+  void _openShop(BuildContext context, ShopEntity shop) {
+    if (widget.onShopSelected != null) {
+      widget.onShopSelected!.call(shop);
+    } else {
+      context.push(
+        RouteNames.customerShopDetail.replaceFirst(':shopId', shop.shopId),
+      );
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.backgroundLight,
+      bottomNavigationBar: const CustomerBottomNav(currentIndex: 0),
       body: BlocBuilder<DiscoveryCubit, DiscoveryState>(
         builder: (context, state) {
           final cubit = context.read<DiscoveryCubit>();
@@ -67,10 +104,10 @@ class _CustomerHomeBody extends StatelessWidget {
                 CustomCurvedHeader(
                   height: 195,
                   showProfileGreeting: true,
-                  titleWidget: const Column(
+                  titleWidget: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         'Find Verified Rental Shops',
                         style: TextStyle(
                           color: Colors.white,
@@ -78,10 +115,12 @@ class _CustomerHomeBody extends StatelessWidget {
                           fontWeight: FontWeight.w900,
                         ),
                       ),
-                      SizedBox(height: 2),
+                      const SizedBox(height: 2),
                       Text(
-                        'Gulberg III, Lahore • GPS Active',
-                        style: TextStyle(
+                        cubit.currentLocation.fromGps
+                            ? '${cubit.currentLocation.area} • GPS Active'
+                            : cubit.currentLocation.area,
+                        style: const TextStyle(
                           color: AppColors.textLavender,
                           fontSize: 12,
                         ),
@@ -133,39 +172,18 @@ class _CustomerHomeBody extends StatelessWidget {
                           ShopMapView(
                             shops: shops,
                             radiusKm: radiusKm,
+                            userLocation: ll.LatLng(
+                              cubit.currentLocation.latitude,
+                              cubit.currentLocation.longitude,
+                            ),
                             onShopSelected: (shop) =>
-                                onShopSelected?.call(shop),
+                                _openShop(context, shop),
                           )
                         else
                           ...shops.map(
                             (shop) => ShopListCard(
                               shop: shop,
-                              onTap: () {
-                                if (onShopSelected != null) {
-                                  onShopSelected?.call(shop);
-                                } else {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (_) => ShopDetailView(
-                                        shop: shop,
-                                        onBack: () =>
-                                            Navigator.of(context).pop(),
-                                        onVehicleSelected: (vehicle) {
-                                          Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                              builder: (_) => VehicleDetailView(
-                                                vehicle: vehicle,
-                                                onBack: () =>
-                                                    Navigator.of(context).pop(),
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                    ),
-                                  );
-                                }
-                              },
+                              onTap: () => _openShop(context, shop),
                             ),
                           ),
                       ],

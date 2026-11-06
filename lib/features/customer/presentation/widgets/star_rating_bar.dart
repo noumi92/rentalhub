@@ -5,14 +5,17 @@ class StarRatingBar extends StatelessWidget {
   final String title;
   final String subtitle;
   final int rating;
-  final ValueChanged<int> onRatingChanged;
+
+  /// Null makes the stars read-only — used to show an already
+  /// submitted rating (H4, one rating per booking).
+  final ValueChanged<int>? onRatingChanged;
 
   const StarRatingBar({
     super.key,
     required this.title,
     required this.subtitle,
     required this.rating,
-    required this.onRatingChanged,
+    this.onRatingChanged,
   });
 
   @override
@@ -50,7 +53,9 @@ class StarRatingBar extends StatelessWidget {
               final star = index + 1;
               final isFilled = star <= rating;
               return IconButton(
-                onPressed: () => onRatingChanged(star),
+                onPressed: onRatingChanged == null
+                    ? null
+                    : () => onRatingChanged!(star),
                 icon: Icon(
                   isFilled ? Icons.star_rounded : Icons.star_border_rounded,
                   size: 36,

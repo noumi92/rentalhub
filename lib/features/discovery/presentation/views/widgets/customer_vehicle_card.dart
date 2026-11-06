@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
-import '../../../../../core/constants/app_colors.dart';
-import '../../../../../core/models/mock_data.dart';
-import '../../../../../core/widgets/pakistani_plate_widget.dart';
 
+import '../../../../../core/constants/app_colors.dart';
+import '../../../../../core/widgets/pakistani_plate_widget.dart';
+import '../../../../fleet/domain/entities/vehicle_entity.dart';
+
+/// B3: one car card on the shop's fleet screen, converted from MockVehicle
+/// to the real [VehicleEntity]. Shows the owner's uploaded photo when
+/// there is one, otherwise the asset illustration for the make/model.
 class CustomerVehicleCard extends StatelessWidget {
-  final MockVehicle vehicle;
+  final VehicleEntity vehicle;
   final VoidCallback onTap;
 
   const CustomerVehicleCard({
@@ -13,8 +17,8 @@ class CustomerVehicleCard extends StatelessWidget {
     required this.onTap,
   });
 
-  String _getCarImage(MockVehicle v) {
-    final nameLower = v.name.toLowerCase();
+  String _assetFor(VehicleEntity v) {
+    final nameLower = v.displayName.toLowerCase();
     if (nameLower.contains('civic')) {
       return 'assets/images/honda_civic_hero.png';
     } else if (nameLower.contains('corolla') || nameLower.contains('yaris')) {
@@ -25,9 +29,24 @@ class CustomerVehicleCard extends StatelessWidget {
     return 'assets/images/white_sedan_hero.png';
   }
 
+  Widget _carImage(VehicleEntity v) {
+    final url = v.imageUrl;
+    if (url != null && url.startsWith('http')) {
+      return Image.network(
+        url,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => Image.asset(
+          _assetFor(v),
+          fit: BoxFit.cover,
+        ),
+      );
+    }
+    return Image.asset(_assetFor(v), fit: BoxFit.cover);
+  }
+
   @override
   Widget build(BuildContext context) {
-    final carAsset = _getCarImage(vehicle);
+    final v = vehicle;
     return Card(
       elevation: 0,
       shape: RoundedRectangleBorder(
@@ -46,7 +65,7 @@ class CustomerVehicleCard extends StatelessWidget {
               child: SizedBox(
                 height: 120,
                 width: double.infinity,
-                child: Image.asset(carAsset, fit: BoxFit.cover),
+                child: _carImage(v),
               ),
             ),
             Padding(
@@ -59,7 +78,7 @@ class CustomerVehicleCard extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          '${vehicle.name} (${vehicle.modelYear})',
+                          '${v.displayName} (${v.year})',
                           style: const TextStyle(
                             fontSize: 15.5,
                             fontWeight: FontWeight.w800,
@@ -68,7 +87,7 @@ class CustomerVehicleCard extends StatelessWidget {
                         ),
                       ),
                       PakistaniPlateWidget(
-                        plateNumber: vehicle.plateNumber,
+                        plateNumber: v.plateNumber,
                         isCompact: true,
                       ),
                     ],
@@ -77,13 +96,13 @@ class CustomerVehicleCard extends StatelessWidget {
                   Row(
                     children: [
                       _specChip(
-                          Icons.event_seat_rounded, '${vehicle.seats} Seats'),
+                          Icons.event_seat_rounded, '${v.seats} Seats'),
                       const SizedBox(width: 6),
                       _specChip(
-                          Icons.settings_rounded, vehicle.transmission),
+                          Icons.settings_rounded, v.transmission),
                       const SizedBox(width: 6),
                       _specChip(Icons.local_gas_station_rounded,
-                          vehicle.fuelType),
+                          v.fuelType),
                     ],
                   ),
                   const SizedBox(height: 8),
@@ -91,7 +110,7 @@ class CustomerVehicleCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Self: Rs. ${vehicle.selfDriveDailyRate}/day',
+                        'Self: Rs. ${v.rates.daily24}/day',
                         style: const TextStyle(
                           fontSize: 12.5,
                           fontWeight: FontWeight.w800,
@@ -99,7 +118,7 @@ class CustomerVehicleCard extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        'With Driver: Rs. ${vehicle.withDriverDailyRate}/day',
+                        'With Driver: Rs. ${v.rates.daily24 + (v.withDriverSurchargePkr ?? 0)}/day',
                         style: const TextStyle(
                           fontSize: 12.5,
                           fontWeight: FontWeight.w800,
@@ -143,4 +162,3 @@ class CustomerVehicleCard extends StatelessWidget {
     );
   }
 }
-

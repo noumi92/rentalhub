@@ -50,20 +50,17 @@ class _PaymentProofUploadViewState extends State<PaymentProofUploadView> {
 
     setState(() => _isSubmitting = true);
     try {
-      String proofUrl;
-      try {
-        final cpanel = sl<CPanelStorageClient>();
-        final key = await cpanel.uploadFile(
-          file: _selectedFile!,
-          userUid: widget.booking.customerId,
-          folder: 'payments',
-        );
-        proofUrl = cpanel.getSignedMediaUrl(key, widget.booking.customerId);
-      } catch (_) {
-        // Fallback signed HMAC key for offline or test mode
-        proofUrl =
-            'https://storage.rentalhub.pk/media.php?key=pay_${widget.booking.bookingId}.jpg';
-      }
+      // D2: the proof must really upload. A failed upload is an error
+      // the customer sees — never a made-up storage URL filed as their
+      // proof for the shop to "verify".
+      final cpanel = sl<CPanelStorageClient>();
+      final key = await cpanel.uploadFile(
+        file: _selectedFile!,
+        userUid: widget.booking.customerId,
+        folder: 'payments',
+      );
+      final proofUrl =
+          cpanel.getSignedMediaUrl(key, widget.booking.customerId);
 
       final ds = sl<BookingRemoteDataSource>();
       final updated = await ds.updatePaymentProof(
@@ -171,7 +168,7 @@ class _PaymentProofUploadViewState extends State<PaymentProofUploadView> {
                         hintStyle: const TextStyle(
                             fontSize: 13, color: AppColors.textSecondary),
                         filled: true,
-                        fillColor: Colors.white,
+                        fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                         prefixIcon: const Icon(Icons.receipt_long_rounded,
                             color: AppColors.royalNavy),
                         border: OutlineInputBorder(
@@ -207,7 +204,7 @@ class _PaymentProofUploadViewState extends State<PaymentProofUploadView> {
                           SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              'Proof is securely uploaded to private storage and checked by showroom within 15 mins.',
+                              'Proof is uploaded to private storage. The showroom checks it and confirms your booking — there is no fixed waiting time.',
                               style: TextStyle(
                                   fontSize: 11,
                                   fontWeight: FontWeight.w500,

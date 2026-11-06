@@ -9,5 +9,7 @@ abstract class KycRepository {
     File? cnicBack,
     File? license,
   });
+
+  Future<KycDocumentEntity?> getKyc(String userUid);
 }
 

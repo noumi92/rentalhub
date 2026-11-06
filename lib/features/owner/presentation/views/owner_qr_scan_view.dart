@@ -127,11 +127,11 @@ class _OwnerQrScanViewState extends State<OwnerQrScanView> {
                         Expanded(
                           child: TextField(
                             controller: _idController,
-                            decoration: const InputDecoration(
+                            decoration: InputDecoration(
                               hintText: 'Or type the booking id, e.g. RH-…',
                               border: OutlineInputBorder(),
                               filled: true,
-                              fillColor: Colors.white,
+                              fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                             ),
                           ),
                         ),

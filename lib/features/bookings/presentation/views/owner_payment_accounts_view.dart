@@ -157,20 +157,43 @@ class OwnerPaymentAccountsView extends StatelessWidget {
       builder: (context, snapshot) {
         if (snapshot.hasData && snapshot.data != null) {
           final data = snapshot.data!;
-          final rawAccounts = data['bankAccounts'] as List<dynamic>?;
+          // D1: the shop doc stores accounts under `bank_accounts`
+          // (ShopModel.toMap), shaped by the owner onboarding — wallets
+          // {'type': 'jazzcash'|'easypaisa', 'account', 'title'} and
+          // banks {'type': 'bank', 'bank_name', 'iban', 'title'}. The
+          // old code read a `bankAccounts` field with different keys,
+          // so it never found the shop's real accounts.
+          final rawAccounts = data['bank_accounts'] as List<dynamic>?;
           if (rawAccounts != null && rawAccounts.isNotEmpty) {
             return Column(
               children: rawAccounts.map((a) {
                 final acc = a as Map<String, dynamic>;
+                final type =
+                    (acc['type'] as String? ?? 'bank').toLowerCase();
+                final isWallet =
+                    type == 'jazzcash' || type == 'easypaisa';
+                final methodTitle = isWallet
+                    ? (type == 'jazzcash' ? 'JazzCash' : 'EasyPaisa')
+                    : (acc['bank_name'] as String? ?? 'Bank Transfer');
+                // Banks only store an IBAN (no separate account number);
+                // wallets store the mobile number.
+                final number = isWallet
+                    ? (acc['account'] as String? ?? '')
+                    : (acc['iban'] as String? ?? '');
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 12),
                   child: PaymentAccountCard(
-                    methodTitle: acc['bankName'] ?? 'Bank Transfer',
-                    accountTitle: acc['accountTitle'] ?? 'RentalHub Verified',
-                    accountNumber: acc['accountNumber'] ?? '',
-                    iban: acc['iban'],
-                    brandColor: AppColors.royalNavy,
-                    icon: Icons.account_balance_rounded,
+                    methodTitle: methodTitle,
+                    accountTitle:
+                        acc['title'] as String? ?? 'RentalHub Verified',
+                    accountNumber: number,
+                    iban: null,
+                    brandColor: isWallet
+                        ? AppColors.emeraldGreen
+                        : AppColors.royalNavy,
+                    icon: isWallet
+                        ? Icons.account_balance_wallet_rounded
+                        : Icons.account_balance_rounded,
                   ),
                 );
               }).toList(),

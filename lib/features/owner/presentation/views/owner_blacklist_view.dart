@@ -116,7 +116,7 @@ class _OwnerBlacklistViewState extends State<OwnerBlacklistView> {
           labelText: label,
           border: const OutlineInputBorder(),
           filled: true,
-          fillColor: Colors.white,
+          fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
         ),
       ),
     );
@@ -168,11 +168,11 @@ class _OwnerBlacklistViewState extends State<OwnerBlacklistView> {
                             keyboard: TextInputType.phone),
                         DropdownButtonFormField<String>(
                           initialValue: _reason,
-                          decoration: const InputDecoration(
+                          decoration: InputDecoration(
                             labelText: 'Reason',
                             border: OutlineInputBorder(),
                             filled: true,
-                            fillColor: Colors.white,
+                            fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                           ),
                           items: _reasons
                               .map((r) => DropdownMenuItem(
