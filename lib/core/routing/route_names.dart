@@ -21,11 +21,21 @@ class RouteNames {
   static const String ownerOnboarding = '/owner/onboarding';
   static const String ownerDashboard = '/owner/dashboard';
   static const String ownerFleet = '/owner/fleet';
+  static const String ownerAddVehicle = '/owner/fleet/add';
   static const String ownerRates = '/owner/rates';
+  static const String ownerRatesVehicle = '/owner/rates/:vehicleId';
   static const String ownerRequests = '/owner/requests';
+  static const String ownerRequestsDetail = '/owner/requests/:id';
+  static const String ownerManualBooking = '/owner/manual-booking';
+  static const String ownerPaymentProof = '/owner/payment/:id';
   static const String ownerHandover = '/owner/handover/:id';
   static const String ownerReturn = '/owner/return/:id';
+  static const String ownerContract = '/owner/contract/:id';
+  static const String ownerRateCustomer = '/owner/rate-customer/:id';
+  static const String ownerCustomerScan = '/owner/customers/scan';
   static const String ownerBlacklist = '/owner/blacklist';
+  static const String ownerSubscription = '/owner/subscription';
+  static const String ownerWhatsappLogs = '/owner/whatsapp';
 
   // Super Admin Routes (Web)
   static const String adminDashboard = '/admin/dashboard';

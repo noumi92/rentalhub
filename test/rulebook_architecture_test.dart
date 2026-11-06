@@ -25,13 +25,14 @@ const Map<String, int> kOverLimitViews = {
   'lib/features/customer/presentation/views/customer_dispute_view.dart': 260,
 };
 
-// Rulebook §2.2 / D1–D3: the three mock flow views, with line counts at
+// Rulebook §2.2 / D1–D3: the mock flow views, with line counts at
 // `af8c73c`. They must be replaced and deleted, one item at a time.
 // They must never grow, and no new file directly under `presentation/`
 // may exceed 250 lines.
+// The owner flow view was deleted in Phase A (A2) — its routes now point
+// at the real owner views. Do not re-add it.
 const Map<String, int> kFlowViews = {
   'lib/features/customer/presentation/customer_flow_view.dart': 2479,
-  'lib/features/owner/presentation/owner_flow_view.dart': 2008,
   'lib/features/admin/presentation/admin_flow_view.dart': 693,
 };
 

@@ -133,7 +133,10 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Booking Requests Triage'), findsOneWidget);
-      expect(find.text('Approve & Pay'), findsWidgets);
+      // Phase A (A1): the hardcoded demo request was removed. With no
+      // bookings in Firestore the view shows an honest empty state.
+      expect(find.text('No pending booking requests'), findsOneWidget);
+      expect(find.text('Approve & Pay'), findsNothing);
     });
 
     testWidgets('OwnerHandoverSignatureView: captures dual signatures and validates', (tester) async {

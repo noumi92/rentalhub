@@ -224,7 +224,7 @@ Debt may only shrink. A rulebook test fails if any entry below grows (new file, 
 | ID | Debt | Rule broken | Fix (one-by-one item) |
 |---|---|---|---|
 | D1 | `CustomerFlowView` 2,479 lines, mock data | §2.2, §2.3 | Replace with real customer views; delete the file |
-| D2 | `OwnerFlowView` 2,008 lines, hardcoded sample data | §2.2, §2.3 | Replace with real owner views; delete the file |
+| D2 | ~~`OwnerFlowView` 2,008 lines, hardcoded sample data~~ — **RESOLVED 2026-11-06, Owner Module Phase A**: file deleted, its 6 routes now point at the real owner views (`OwnerDashboardView`, `OwnerBookingRequestsView`, `OwnerHandoverSignatureView`, `OwnerReturnSettlementView`, `OwnerContractView`, `OwnerCustomerRatingView`, `OwnerCustomerScanView`, `OwnerManualBookingView`, `OwnerRateMatrixView`), plus new routes for request detail, payment proof, contract, rating, customer scan, add-vehicle, subscription and WhatsApp logs; `BookingRouteLoader`/`VehicleRouteLoader` load entities by id with loading + not-found states; demo request fallback in the triage view removed | §2.2, §2.3 | — |
 | D3 | `AdminFlowView` 693 lines, mock data, snackbar-only actions | §2.2, §2.3, §2.4 | Replace with real admin views; delete the file |
 | D4 | `mock_data.dart` imported by 10 files in `lib/`: `admin_flow_view.dart`, `customer_flow_view.dart`, `shop_cars_view.dart`, `shop_detail_view.dart`, `vehicle_detail_view.dart`, `customer_vehicle_card.dart`, `vehicle_hero_card.dart`, `owner_add_vehicle_view.dart`, `owner_fleet_view.dart`, `fleet_vehicle_card.dart` | §2.3 | Remove all `lib/` importers, then delete the file |
 | D5 | Urdu toggle in `customer_settings_view.dart` is local `setState` only — no locale change, no persistence, no RTL | §5.4 | Build §5.2 infrastructure; wire the toggle to it |
@@ -232,7 +232,7 @@ Debt may only shrink. A rulebook test fails if any entry below grows (new file, 
 | D7 | No Noto Nastaliq / Inter font bundled; no `fontFamily` in theme | §4.5, §5.3, §6.5 | Bundle fonts, wire per-locale font |
 | D8 | `themeMode: ThemeMode.light` hardcoded in `main.dart`; dark theme unreachable | §6.1, §6.2 | Persisted Light/Dark/System choice |
 | D9 | Dark theme hardcodes 6 colour literals inline; dark `error` `#F87171` and `success` `#34D399` missing from `AppColors`; `borderDark` in `AppColors` is `#2D3748`, not the doc's `#23274D` | §6.3 | Move dark theme to `AppColors`, add the missing dark tokens, align `borderDark` |
-| D10 | Legacy `CurvedHeader` (235 px) duplicates `CustomCurvedHeader` (230 px); gradients differ from §4.3 | §4.3 | Keep one header, align gradient, delete the other |
+| D10 | Legacy `CurvedHeader` (235 px) duplicates `CustomCurvedHeader` (230 px); gradients differ from §4.3. Owner usage removed in Phase A (A2) — only `customer_flow_view.dart` still imports it | §4.3 | Keep one header, align gradient, delete the other |
 | D11 | Overflow tests cover 9 of 69 views; `pumpScreenMultiViewport` never called; no keyboard test | §7.2 | Add overflow tests per item until all 69 are covered |
 | D12 | No `fake_cloud_firestore` in tests; Firestore tests run against the in-memory fallback | §7.4 | Add dependency + repository tests |
 | D13 | No `hive` offline cache (DOC-2 requires it) | §1.7, R10 | Add Hive (or approved replacement) with sync tests |

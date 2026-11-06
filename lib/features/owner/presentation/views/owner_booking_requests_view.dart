@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
+import '../../../../core/routing/route_names.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/custom_curved_header.dart';
 import '../../../bookings/data/datasources/booking_remote_data_source.dart';
@@ -41,28 +43,6 @@ class _OwnerBookingRequestsViewState extends State<OwnerBookingRequestsView> {
         _requests = bookings
             .where((b) => b.status == 'requested' || b.status == 'payment_submitted')
             .toList();
-        if (_requests.isEmpty) {
-          // Provide sample incoming request for testing/demo
-          _requests = [
-            BookingEntity(
-              bookingId: 'RH-REQ-778',
-              customerId: 'cust-45',
-              shopId: widget.shopId,
-              vehicleId: 'v1',
-              vehicleName: 'Honda Civic RS Turbo',
-              customerName: 'Muhammad Hamza',
-              customerPhone: '0321-4455667',
-              packageType: '24h',
-              isWithDriver: false,
-              pickupTime: DateTime.now().add(const Duration(hours: 3)),
-              returnTime: DateTime.now().add(const Duration(hours: 27)),
-              totalAmount: 8500,
-              advanceRequired: 1000,
-              remainingBalance: 7500,
-              status: 'requested',
-            ),
-          ];
-        }
       });
     } catch (_) {
       // Fallback
@@ -156,11 +136,18 @@ class _OwnerBookingRequestsViewState extends State<OwnerBookingRequestsView> {
                           separatorBuilder: (_, __) => const SizedBox(height: 12),
                           itemBuilder: (context, index) {
                             final b = _requests[index];
-                            return RequestTriageCard(
-                              booking: b,
-                              isProcessing: _processingId == b.bookingId,
-                              onApprove: () => _approveRequest(b),
-                              onReject: () => _rejectRequest(b),
+                            return InkWell(
+                              borderRadius: BorderRadius.circular(12),
+                              onTap: () => context.push(
+                                RouteNames.ownerRequestsDetail
+                                    .replaceFirst(':id', b.bookingId),
+                              ),
+                              child: RequestTriageCard(
+                                booking: b,
+                                isProcessing: _processingId == b.bookingId,
+                                onApprove: () => _approveRequest(b),
+                                onReject: () => _rejectRequest(b),
+                              ),
                             );
                           },
                         ),
