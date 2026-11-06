@@ -16,6 +16,7 @@ import 'package:rentalhub/features/discovery/presentation/views/customer_home_vi
 import 'package:rentalhub/features/fleet/domain/entities/vehicle_entity.dart';
 import 'package:rentalhub/features/fleet/domain/usecases/add_vehicle_usecase.dart';
 import 'package:rentalhub/features/payments/presentation/cubit/payment_cubit.dart';
+import 'package:rentalhub/features/handover/data/datasources/handover_local_data_source.dart';
 import 'package:rentalhub/features/handover/presentation/cubit/handover_cubit.dart';
 import 'package:rentalhub/features/blacklist/presentation/cubit/blacklist_cubit.dart';
 import 'package:rentalhub/core/routing/admin_guard.dart';
@@ -200,7 +201,12 @@ void main() {
   test(
       'Phase 3 DoD: Offline Handover persists locally in Airplane mode and syncs A4 PDF on reconnect',
       () async {
-    final handoverCubit = sl<HandoverCubit>();
+    // Phase B (E3): constructed directly without a storage client,
+    // so sync stays local-only in tests and never attempts a real
+    // cPanel upload.
+    final handoverCubit = HandoverCubit(
+      localDataSource: sl<HandoverLocalDataSource>(),
+    );
     await handoverCubit.completeHandoverOfflineFirst(
       bookingId: 'RH-84920',
       shopName: 'Al-Falah Rent a Car',

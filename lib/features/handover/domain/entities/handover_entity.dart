@@ -10,6 +10,24 @@ class HandoverEntity extends Equatable {
   final String? agreementPdfUrl;
   final bool isSynced;
 
+  /// Phase B (E2/E3): the real signature PNGs (base64) drawn on the
+  /// pads, and the generated A4 PDF itself (base64) while it waits
+  /// to sync. The old SVG fields are kept only so offline records
+  /// saved before this phase still read back.
+  final String? customerSignatureB64;
+  final String? ownerSignatureB64;
+  final String? agreementPdfB64;
+
+  /// Phase B (E3): the agreement metadata the verify page and the
+  /// `agreements` Firestore doc need. Kept on the record so a
+  /// handover completed offline can still sync later.
+  final String? shopId;
+  final String? shopName;
+  final String? customerName;
+  final String? cnicNumber;
+  final String? vehicleDetails;
+  final int? totalAmount;
+
   const HandoverEntity({
     required this.bookingId,
     required this.initialOdometer,
@@ -19,11 +37,21 @@ class HandoverEntity extends Equatable {
     required this.ownerSignatureSvg,
     this.agreementPdfUrl,
     this.isSynced = false,
+    this.customerSignatureB64,
+    this.ownerSignatureB64,
+    this.agreementPdfB64,
+    this.shopId,
+    this.shopName,
+    this.customerName,
+    this.cnicNumber,
+    this.vehicleDetails,
+    this.totalAmount,
   });
 
   HandoverEntity copyWith({
     String? agreementPdfUrl,
     bool? isSynced,
+    String? agreementPdfB64,
   }) {
     return HandoverEntity(
       bookingId: bookingId,
@@ -34,6 +62,15 @@ class HandoverEntity extends Equatable {
       ownerSignatureSvg: ownerSignatureSvg,
       agreementPdfUrl: agreementPdfUrl ?? this.agreementPdfUrl,
       isSynced: isSynced ?? this.isSynced,
+      customerSignatureB64: customerSignatureB64,
+      ownerSignatureB64: ownerSignatureB64,
+      agreementPdfB64: agreementPdfB64 ?? this.agreementPdfB64,
+      shopId: shopId,
+      shopName: shopName,
+      customerName: customerName,
+      cnicNumber: cnicNumber,
+      vehicleDetails: vehicleDetails,
+      totalAmount: totalAmount,
     );
   }
 
@@ -47,6 +84,15 @@ class HandoverEntity extends Equatable {
         ownerSignatureSvg,
         agreementPdfUrl,
         isSynced,
+        customerSignatureB64,
+        ownerSignatureB64,
+        agreementPdfB64,
+        shopId,
+        shopName,
+        customerName,
+        cnicNumber,
+        vehicleDetails,
+        totalAmount,
       ];
 }
 

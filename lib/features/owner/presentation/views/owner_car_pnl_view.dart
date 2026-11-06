@@ -1,0 +1,215 @@
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../../../core/constants/app_colors.dart';
+import '../../../../core/di/injection_container.dart';
+import '../../../../core/widgets/custom_curved_header.dart';
+import '../../../bookings/data/datasources/booking_remote_data_source.dart';
+import '../../../bookings/domain/entities/booking_entity.dart';
+import '../../../finance/data/datasources/finance_transfer_data_source.dart';
+import '../../../finance/domain/entities/finance_transfer_entity.dart';
+import '../../../finance/utils/finance_summary.dart';
+import '../../../fleet/data/datasources/fleet_remote_data_source.dart';
+import '../../../fleet/domain/entities/vehicle_entity.dart';
+
+/// Phase B (H2): one car's profit and loss — its booking revenue
+/// plus the ledger income tagged to it, minus the ledger expenses
+/// tagged to it (fuel, maintenance, and the rest).
+class OwnerCarPnLView extends StatefulWidget {
+  final String shopId;
+
+  const OwnerCarPnLView({super.key, this.shopId = 'shop-1'});
+
+  @override
+  State<OwnerCarPnLView> createState() => _OwnerCarPnLViewState();
+}
+
+class _OwnerCarPnLViewState extends State<OwnerCarPnLView> {
+  List<VehicleEntity> _vehicles = [];
+  List<BookingEntity> _bookings = [];
+  List<FinanceTransferEntity> _transfers = [];
+  String? _vehicleId;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    setState(() => _isLoading = true);
+    try {
+      final vehicles =
+          await sl<FleetRemoteDataSource>().getShopVehicles(widget.shopId);
+      final bookings =
+          await sl<BookingRemoteDataSource>().getShopBookings(widget.shopId);
+      final transfers =
+          await sl<FinanceTransferDataSource>().getShopTransfers(widget.shopId);
+      if (mounted) {
+        setState(() {
+          _vehicles = vehicles;
+          _bookings = bookings;
+          _transfers = transfers;
+          _vehicleId ??= vehicles.firstOrNull?.vehicleId;
+        });
+      }
+    } catch (_) {} finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final selected = _vehicleId == null
+        ? null
+        : FinanceSummary.vehiclePnL(
+            vehicleId: _vehicleId!,
+            bookings: _bookings,
+            transfers: _transfers,
+          );
+    final tagged = _vehicleId == null
+        ? const <FinanceTransferEntity>[]
+        : _transfers.where((t) => t.vehicleId == _vehicleId).toList();
+    return Scaffold(
+      backgroundColor: AppColors.backgroundLight,
+      body: SafeArea(
+        child: Column(
+          children: [
+            CustomCurvedHeader(
+              height: 100,
+              leadingWidget: IconButton(
+                icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                    color: Colors.white, size: 20),
+                onPressed: () => context.pop(),
+              ),
+              titleWidget: const Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Car P&L',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 17,
+                          fontWeight: FontWeight.w900)),
+                  Text('One car, all its money',
+                      style: TextStyle(
+                          color: AppColors.textLavender, fontSize: 11.5)),
+                ],
+              ),
+            ),
+            Expanded(
+              child: _isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : _vehicles.isEmpty
+                      ? const Center(
+                          child: Text('No cars in the fleet yet.',
+                              style: TextStyle(
+                                  color: AppColors.textMuted,
+                                  fontWeight: FontWeight.w700)),
+                        )
+                      : SingleChildScrollView(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 14),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              DropdownButtonFormField<String>(
+                                initialValue: _vehicleId,
+                                decoration: const InputDecoration(
+                                    labelText: 'Vehicle',
+                                    border: OutlineInputBorder(),
+                                    filled: true,
+                                    fillColor: Colors.white),
+                                items: _vehicles
+                                    .map((v) => DropdownMenuItem(
+                                        value: v.vehicleId,
+                                        child: Text(v.displayName)))
+                                    .toList(),
+                                onChanged: (v) =>
+                                    setState(() => _vehicleId = v),
+                              ),
+                              const SizedBox(height: 16),
+                              if (selected != null) ...[
+                                _pnlCard(selected),
+                                const SizedBox(height: 16),
+                                const Text('Tagged entries',
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w800,
+                                        color: AppColors.midnightNavy)),
+                                const SizedBox(height: 8),
+                                if (tagged.isEmpty)
+                                  const Text(
+                                      'Nothing tagged to this car yet — tag an entry in the ledger.',
+                                      style: TextStyle(
+                                          color: AppColors.textMuted)),
+                                ...tagged.map((t) => _transferRow(t)),
+                              ],
+                            ],
+                          ),
+                        ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _pnlCard(
+      ({int revenue, int income, int expenses, int net}) pnl) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.royalNavy,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Net Rs. ${pnl.net}',
+              style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 22,
+                  fontWeight: FontWeight.w900)),
+          const SizedBox(height: 8),
+          Text(
+              'Booking revenue Rs. ${pnl.revenue} • Other income Rs. ${pnl.income} • Expenses Rs. ${pnl.expenses}',
+              style: const TextStyle(color: Colors.white70, fontSize: 12)),
+        ],
+      ),
+    );
+  }
+
+  Widget _transferRow(FinanceTransferEntity t) {
+    final isIncome = t.kind == 'income';
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(t.category,
+              style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.midnightNavy)),
+          Text(
+            '${isIncome ? '+' : '−'} Rs. ${t.amountPkr}',
+            style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w900,
+                color: isIncome
+                    ? AppColors.emeraldGreen
+                    : AppColors.crimsonRed),
+          ),
+        ],
+      ),
+    );
+  }
+}

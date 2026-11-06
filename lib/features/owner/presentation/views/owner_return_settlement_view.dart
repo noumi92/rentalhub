@@ -1,16 +1,24 @@
 import 'package:flutter/material.dart';
+
 import '../../../../core/constants/app_colors.dart';
-import '../../../../core/di/injection_container.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/custom_curved_header.dart';
 import '../../../../core/widgets/debounced_button.dart';
-import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
-import '../../../fleet/data/datasources/fleet_remote_data_source.dart';
+import '../../../finance/utils/settlement_calculator.dart';
+import '../services/return_settlement_service.dart';
+import '../widgets/handover_damage_notes_editor.dart';
+import '../widgets/handover_notes_banner.dart';
 import '../widgets/operations/fuel_odometer_input_widget.dart';
 import '../widgets/operations/settlement_summary_receipt_widget.dart';
 import 'owner_customer_rating_view.dart';
 
+/// Phase B (F1/F2): the return inspection settles against real
+/// numbers — the booking's km limit, the vehicle's per-km and
+/// per-hour rates, the deposit actually held — and writes the
+/// settlement into `security_deposits`. The old view settled against
+/// hardcoded defaults (250 km, Rs. 15,000, Rs. 25/km) and recorded
+/// nothing, so the money trail did not exist.
 class OwnerReturnSettlementView extends StatefulWidget {
   final BookingEntity booking;
   final int initialOdometer;
@@ -28,51 +36,104 @@ class OwnerReturnSettlementView extends StatefulWidget {
   });
 
   @override
-  State<OwnerReturnSettlementView> createState() => _OwnerReturnSettlementViewState();
+  State<OwnerReturnSettlementView> createState() =>
+      _OwnerReturnSettlementViewState();
 }
 
-class _OwnerReturnSettlementViewState extends State<OwnerReturnSettlementView> {
+class _OwnerReturnSettlementViewState
+    extends State<OwnerReturnSettlementView> {
   late final TextEditingController _returnOdometerController;
+  final _damageChargeController = TextEditingController();
   String _returnFuel = '4/4 (Full)';
+  List<String> _returnDamageNotes = const [];
+  List<String> _handoverDamageNotes = const [];
   bool _isFinalizing = false;
+
+  int _initialOdometer = 45200;
+  int _kmAllowance = 250;
+  int _deposit = 0;
+  int _extraKmPkr = 100;
+  int _extraHourPkr = 0;
 
   @override
   void initState() {
     super.initState();
-    _returnOdometerController = TextEditingController(text: '${widget.initialOdometer + 310}');
+    _initialOdometer = widget.initialOdometer;
+    _kmAllowance = widget.booking.kmLimit ?? widget.kmAllowance;
+    _deposit = widget.initialDeposit;
+    _returnOdometerController =
+        TextEditingController(text: '$_initialOdometer');
     _returnOdometerController.addListener(() => setState(() {}));
+    _loadRealValues();
+  }
+
+  Future<void> _loadRealValues() async {
+    final values = await ReturnSettlementService.loadRealValues(
+      widget.booking,
+      fallbackOdometer: widget.initialOdometer,
+      fallbackDeposit: widget.initialDeposit,
+    );
+    if (!mounted) return;
+    setState(() {
+      _initialOdometer = values.initialOdometer;
+      _handoverDamageNotes = values.handoverDamageNotes;
+      _extraKmPkr = values.extraKmPkr;
+      _extraHourPkr = values.extraHourPkr;
+      _deposit = values.deposit;
+      _returnOdometerController.text = '$_initialOdometer';
+    });
   }
 
   @override
   void dispose() {
     _returnOdometerController.dispose();
+    _damageChargeController.dispose();
     super.dispose();
   }
 
-  int get _returnOdometer => int.tryParse(_returnOdometerController.text.trim()) ?? (widget.initialOdometer + 310);
-  int get _totalKmDriven => (_returnOdometer - widget.initialOdometer).clamp(0, 99999);
-  int get _excessKm => (_totalKmDriven - widget.kmAllowance).clamp(0, 99999);
-  int get _excessPenalty => _excessKm * 25; // Rs. 25 per excess km
-  int get _fuelDeficit => _returnFuel == '4/4 (Full)' ? 0 : (_returnFuel == '3/4 (75%)' ? 1500 : (_returnFuel == '2/4 (50%)' ? 3000 : 4500));
-  int get _netRefund => (widget.initialDeposit - _excessPenalty - _fuelDeficit).clamp(0, 99999);
+  int get _returnOdometer =>
+      int.tryParse(_returnOdometerController.text.trim()) ??
+      _initialOdometer;
+  int get _totalKmDriven => (_returnOdometer - _initialOdometer).clamp(0, 99999);
+  int get _damageCharge => int.tryParse(_damageChargeController.text.trim()) ?? 0;
+  int get _overtimeHours {
+    final late = DateTime.now().difference(widget.booking.returnTime);
+    return late.isNegative ? 0 : (late.inMinutes / 60).ceil();
+  }
+
+  SettlementBreakdown get _breakdown => SettlementCalculator.calculate(
+        totalKmDriven: _totalKmDriven,
+        kmAllowance: _kmAllowance,
+        extraKmPkr: _extraKmPkr,
+        fuelLevel: _returnFuel,
+        damageCharge: _damageCharge,
+        overtimeHours: _overtimeHours,
+        extraHourPkr: _extraHourPkr,
+        securityDeposit: _deposit,
+      );
 
   Future<void> _finalizeReturn() async {
+    if (_returnOdometer < _initialOdometer) {
+      AppFeedback.showError(context, 'The return reading cannot be below the handover reading ($_initialOdometer KM).');
+      return;
+    }
     setState(() => _isFinalizing = true);
     try {
-      final bookingDs = sl<BookingRemoteDataSource>();
-      await bookingDs.updateBookingStatus(
-        bookingId: widget.booking.bookingId,
-        status: 'completed',
+      final breakdown = await ReturnSettlementService.finalizeReturn(
+        booking: widget.booking,
+        returnOdometer: _returnOdometer,
+        initialOdometer: _initialOdometer,
+        kmAllowance: _kmAllowance,
+        extraKmPkr: _extraKmPkr,
+        extraHourPkr: _extraHourPkr,
+        deposit: _deposit,
+        fuelLevel: _returnFuel,
+        returnDamageNotes: _returnDamageNotes,
+        damageCharge: _damageCharge,
       );
-
-      final fleetDs = sl<FleetRemoteDataSource>();
-      await fleetDs.updateVehicleStatus(
-        vehicleId: widget.booking.vehicleId,
-        status: 'available',
-      );
-
       if (mounted) {
-        AppFeedback.showSuccess(context, 'Vehicle returned! Deposit settled and car restored to live fleet.');
+        AppFeedback.showSuccess(context,
+            'Vehicle returned! Deposit settled — Rs. ${breakdown.netRefund} refunded.');
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
             builder: (_) => OwnerCustomerRatingView(
@@ -82,7 +143,9 @@ class _OwnerReturnSettlementViewState extends State<OwnerReturnSettlementView> {
         );
       }
     } catch (e) {
-      if (mounted) AppFeedback.showError(context, 'Finalizing return failed: $e');
+      if (mounted) {
+        AppFeedback.showError(context, 'Finalizing return failed: $e');
+      }
     } finally {
       if (mounted) setState(() => _isFinalizing = false);
     }
@@ -90,6 +153,7 @@ class _OwnerReturnSettlementViewState extends State<OwnerReturnSettlementView> {
 
   @override
   Widget build(BuildContext context) {
+    final breakdown = _breakdown;
     return Scaffold(
       backgroundColor: AppColors.backgroundLight,
       body: SafeArea(
@@ -99,7 +163,8 @@ class _OwnerReturnSettlementViewState extends State<OwnerReturnSettlementView> {
               height: 100,
               leadingWidget: widget.onBack != null
                   ? IconButton(
-                      icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
+                      icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                          color: Colors.white, size: 20),
                       onPressed: widget.onBack,
                     )
                   : null,
@@ -113,7 +178,8 @@ class _OwnerReturnSettlementViewState extends State<OwnerReturnSettlementView> {
             ),
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 child: Column(
                   children: [
                     FuelOdometerInputWidget(
@@ -122,19 +188,48 @@ class _OwnerReturnSettlementViewState extends State<OwnerReturnSettlementView> {
                       selectedFuel: _returnFuel,
                       onFuelSelected: (f) => setState(() => _returnFuel = f),
                     ),
+                    if (_handoverDamageNotes.isNotEmpty) ...[
+                      const SizedBox(height: 12),
+                      HandoverNotesBanner(notes: _handoverDamageNotes),
+                    ],
+                    const SizedBox(height: 16),
+                    HandoverDamageNotesEditor(
+                      title: 'New Damage Found at Return',
+                      subtitle: 'Only damage that was not noted at '
+                          'handover — this is what the charge below covers.',
+                      onChanged: (notes) =>
+                          setState(() => _returnDamageNotes = notes),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: _damageChargeController,
+                      keyboardType: TextInputType.number,
+                      onChanged: (_) => setState(() {}),
+                      decoration: const InputDecoration(
+                        labelText: 'Damage charge (Rs.)',
+                        hintText: '0 if nothing new was found',
+                        border: OutlineInputBorder(),
+                        filled: true,
+                        fillColor: Colors.white,
+                      ),
+                    ),
                     const SizedBox(height: 16),
                     SettlementSummaryReceiptWidget(
-                      totalKm: _totalKmDriven,
-                      excessKm: _excessKm,
-                      excessKmPenalty: _excessPenalty,
-                      fuelDeficitFee: _fuelDeficit,
-                      overtimeFee: 0,
-                      securityDeposit: widget.initialDeposit,
-                      netRefund: _netRefund,
+                      totalKm: breakdown.totalKmDriven,
+                      excessKm: breakdown.excessKm,
+                      excessKmPenalty: breakdown.excessKmCharge,
+                      extraKmRate: _extraKmPkr,
+                      fuelDeficitFee: breakdown.fuelDeficit,
+                      overtimeFee: breakdown.overtimeFee,
+                      damageCharge: breakdown.damageCharge,
+                      securityDeposit: _deposit,
+                      netRefund: breakdown.netRefund,
                     ),
                     const SizedBox(height: 24),
                     DebouncedButton(
-                      text: _isFinalizing ? 'Finalizing Settlement...' : 'Finalize Return & Settle Deposit',
+                      text: _isFinalizing
+                          ? 'Finalizing Settlement...'
+                          : 'Finalize Return & Settle Deposit',
                       icon: Icons.check_circle_rounded,
                       isLoading: _isFinalizing,
                       onPressed: _finalizeReturn,

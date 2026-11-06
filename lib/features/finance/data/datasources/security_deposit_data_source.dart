@@ -1,0 +1,146 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+import '../../domain/entities/security_deposit_entity.dart';
+import '../models/security_deposit_model.dart';
+
+/// Phase B (F2): the `security_deposits` collection, Firestore-first
+/// with an in-memory fallback — the same pattern as the other
+/// datasources. One document per booking (doc id = booking id).
+class SecurityDepositDataSource {
+  final FirebaseFirestore? _firestore;
+  final Map<String, SecurityDepositModel> _inMemory = {};
+
+  SecurityDepositDataSource({FirebaseFirestore? firestore})
+      : _firestore = firestore;
+
+  FirebaseFirestore? get _resolvedFirestore {
+    if (_firestore != null) return _firestore;
+    try {
+      return FirebaseFirestore.instance;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<SecurityDepositEntity?> getByBookingId(String bookingId) async {
+    if (_inMemory.containsKey(bookingId)) return _inMemory[bookingId];
+    final fs = _resolvedFirestore;
+    if (fs == null) return null;
+    try {
+      final doc =
+          await fs.collection('security_deposits').doc(bookingId).get();
+      if (!doc.exists || doc.data() == null) return null;
+      final model = SecurityDepositModel.fromMap(doc.data()!);
+      _inMemory[bookingId] = model;
+      return model;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// Phase B (H4): every deposit the shop holds, for the finance
+  /// summary — collected, released and deducted.
+  Future<List<SecurityDepositEntity>> getShopDeposits(String shopId) async {
+    final fs = _resolvedFirestore;
+    if (fs != null) {
+      try {
+        final snap = await fs
+            .collection('security_deposits')
+            .where('shopId', isEqualTo: shopId)
+            .get();
+        for (final d in snap.docs) {
+          final model = SecurityDepositModel.fromMap(d.data());
+          _inMemory[model.bookingId] = model;
+        }
+      } catch (_) {}
+    }
+    final mine = _inMemory.values.where((d) => d.shopId == shopId).toList()
+      ..sort((a, b) =>
+          (b.collectedAt ?? DateTime.fromMillisecondsSinceEpoch(0))
+              .compareTo(
+                  a.collectedAt ?? DateTime.fromMillisecondsSinceEpoch(0)));
+    return mine;
+  }
+
+  /// Records the deposit as held when the car leaves (handover).
+  /// Idempotent: collecting twice for the same booking keeps the
+  /// first record.
+  Future<SecurityDepositEntity> collect({
+    required String bookingId,
+    required String customerId,
+    required String shopId,
+    required int amount,
+    DateTime? collectedAt,
+  }) async {
+    final existing = await getByBookingId(bookingId);
+    if (existing != null) return existing;
+    final model = SecurityDepositModel(
+      depositId: bookingId,
+      bookingId: bookingId,
+      customerId: customerId,
+      shopId: shopId,
+      amount: amount,
+      status: 'collected',
+      collectedAt: collectedAt ?? DateTime.now(),
+    );
+    _inMemory[bookingId] = model;
+    final fs = _resolvedFirestore;
+    if (fs != null) {
+      try {
+        await fs
+            .collection('security_deposits')
+            .doc(bookingId)
+            .set(model.toMap());
+      } catch (_) {}
+    }
+    return model;
+  }
+
+  /// Settles the deposit at return. Nothing deducted → 'released'
+  /// with a releasedAt timestamp; anything deducted → 'deducted'
+  /// with a deductedAt timestamp and the full breakdown.
+  Future<SecurityDepositEntity> settle({
+    required String bookingId,
+    required int totalKmDriven,
+    required int excessKm,
+    required int excessKmCharge,
+    required int fuelDeficit,
+    required int damageCharge,
+    required int overtimeFee,
+    required int deductedAmount,
+    required int netRefund,
+    List<String> returnDamageNotes = const [],
+  }) async {
+    final existing = await getByBookingId(bookingId);
+    if (existing == null) {
+      throw StateError('No deposit recorded for booking $bookingId');
+    }
+    final now = DateTime.now();
+    final settled = existing.copyWith(
+      status: deductedAmount > 0 ? 'deducted' : 'released',
+      releasedAt: deductedAmount > 0 ? null : now,
+      deductedAt: deductedAmount > 0 ? now : null,
+      totalKmDriven: totalKmDriven,
+      excessKm: excessKm,
+      excessKmCharge: excessKmCharge,
+      fuelDeficit: fuelDeficit,
+      damageCharge: damageCharge,
+      overtimeFee: overtimeFee,
+      deductedAmount: deductedAmount,
+      netRefund: netRefund,
+      returnDamageNotes: returnDamageNotes,
+    );
+    final model = SecurityDepositModel.fromEntity(settled);
+    _inMemory[bookingId] = model;
+    final fs = _resolvedFirestore;
+    if (fs != null) {
+      try {
+        await fs
+            .collection('security_deposits')
+            .doc(bookingId)
+            .update(model.toMap());
+      } catch (_) {}
+    }
+    return settled;
+  }
+}

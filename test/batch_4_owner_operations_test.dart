@@ -5,6 +5,7 @@ import 'package:rentalhub/core/di/injection_container.dart' as di;
 import 'package:rentalhub/features/blacklist/data/datasources/blacklist_remote_data_source.dart';
 import 'package:rentalhub/features/bookings/data/datasources/booking_remote_data_source.dart';
 import 'package:rentalhub/features/bookings/domain/entities/booking_entity.dart';
+import 'package:rentalhub/features/handover/data/datasources/handover_local_data_source.dart';
 import 'package:rentalhub/features/handover/presentation/cubit/handover_cubit.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_customer_scan_view.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_booking_requests_view.dart';
@@ -26,7 +27,12 @@ void main() {
     setUp(() {
       blacklistDs = di.sl<BlacklistRemoteDataSource>();
       bookingDs = di.sl<BookingRemoteDataSource>();
-      handoverCubit = di.sl<HandoverCubit>();
+      // Phase B (E3): the cubit is constructed directly without a
+      // storage client, so sync stays local-only in tests and never
+      // attempts a real cPanel upload.
+      handoverCubit = HandoverCubit(
+        localDataSource: di.sl<HandoverLocalDataSource>(),
+      );
     });
 
     test('Blacklist Verification: detects blacklisted CNIC and retrieves incident file', () async {
@@ -164,15 +170,18 @@ void main() {
 
       expect(find.text('Vehicle Handover & Inspection'), findsOneWidget);
       expect(find.text('Dual Legal Endorsement & Signatures'), findsOneWidget);
+      expect(find.text('Damage & Condition Notes'), findsOneWidget);
 
-      // Sign customer and host
-      await tester.tap(find.text('Sign Now').first);
+      // Phase B (E2): the pads are real now — certifying without
+      // signing is refused instead of toggling a fake signature.
+      await tester.ensureVisible(
+          find.text('Certify Handover & Generate Contract'));
+      await tester.tap(find.text('Certify Handover & Generate Contract'));
       await tester.pumpAndSettle();
-
-      await tester.tap(find.text('Sign Now').first);
-      await tester.pumpAndSettle();
-
-      expect(find.text('Vector Signature Captured (SHA-256)'), findsNWidgets(2));
+      expect(
+          find.text(
+              'Both customer and host must sign on the pads before vehicle departure.'),
+          findsOneWidget);
     });
 
     testWidgets('OwnerReturnSettlementView: displays return odometer telemetry and settlement', (tester) async {

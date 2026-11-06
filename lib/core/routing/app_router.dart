@@ -17,15 +17,27 @@ import '../../features/customer/presentation/customer_flow_view.dart';
 import '../../features/owner/presentation/views/owner_add_vehicle_view.dart';
 import '../../features/owner/presentation/views/owner_booking_requests_view.dart';
 import '../../features/owner/presentation/views/owner_contract_view.dart';
+import '../../features/owner/presentation/views/owner_qr_scan_view.dart';
 import '../../features/owner/presentation/views/owner_customer_rating_view.dart';
+import '../../features/owner/presentation/views/owner_blacklist_view.dart';
 import '../../features/owner/presentation/views/owner_customer_scan_view.dart';
+import '../../features/owner/presentation/views/owner_customers_list_view.dart';
+import '../../features/owner/presentation/views/owner_payment_verification_view.dart';
 import '../../features/owner/presentation/views/owner_dashboard_view.dart';
+import '../../features/owner/presentation/views/owner_fixed_routes_view.dart';
 import '../../features/owner/presentation/views/owner_handover_signature_view.dart';
 import '../../features/owner/presentation/views/owner_manual_booking_view.dart';
 import '../../features/owner/presentation/views/owner_onboarding_view.dart';
 import '../../features/owner/presentation/views/owner_rate_matrix_view.dart';
 import '../../features/owner/presentation/views/owner_return_settlement_view.dart';
+import '../../features/owner/presentation/views/owner_car_pnl_view.dart';
+import '../../features/owner/presentation/views/owner_cash_closing_view.dart';
+import '../../features/owner/presentation/views/owner_dues_view.dart';
+import '../../features/owner/presentation/views/owner_finance_view.dart';
+import '../../features/owner/presentation/views/owner_notifications_view.dart';
+import '../../features/owner/presentation/views/owner_settings_view.dart';
 import '../../features/owner/presentation/views/owner_subscription_view.dart';
+import '../../features/owner/presentation/views/owner_vehicle_calendar_view.dart';
 import '../../features/owner/presentation/views/owner_whatsapp_logs_view.dart';
 import '../../features/owner/presentation/views/owner_fleet_view.dart';
 import '../../features/owner/presentation/widgets/owner_route_loaders.dart';
@@ -161,6 +173,24 @@ class AppRouter {
         ),
       ),
       GoRoute(
+        path: RouteNames.ownerFixedRoutes,
+        builder: (context, state) => OwnerFixedRoutesView(
+          shopId: currentShopId(),
+          onBack: () => context.pop(),
+        ),
+      ),
+      GoRoute(
+        path: RouteNames.ownerCalendar,
+        builder: (context, state) => VehicleRouteLoader(
+          vehicleId: state.pathParameters['vehicleId']!,
+          shopId: currentShopId(),
+          builder: (context, vehicle) => OwnerVehicleCalendarView(
+            vehicle: vehicle,
+            onBack: () => context.pop(),
+          ),
+        ),
+      ),
+      GoRoute(
         path: RouteNames.ownerRequests,
         builder: (context, state) =>
             OwnerBookingRequestsView(shopId: currentShopId()),
@@ -169,14 +199,22 @@ class AppRouter {
         path: RouteNames.ownerRequestsDetail,
         builder: (context, state) => BookingRouteLoader(
           bookingId: state.pathParameters['id']!,
-          builder: (context, booking) => OwnerPaymentAccountsView(
-            booking: booking,
-            onProceedToUploadProof: () => context.push(
-              RouteNames.ownerPaymentProof
-                  .replaceFirst(':id', booking.bookingId),
-            ),
-            onBack: () => context.pop(),
-          ),
+          // Phase B (D3): a submitted proof goes to verification;
+          // anything else shows the payment accounts + proof upload.
+          builder: (context, booking) =>
+              booking.status == 'payment_submitted'
+                  ? OwnerPaymentVerificationView(
+                      booking: booking,
+                      onBack: () => context.pop(),
+                    )
+                  : OwnerPaymentAccountsView(
+                      booking: booking,
+                      onProceedToUploadProof: () => context.push(
+                        RouteNames.ownerPaymentProof
+                            .replaceFirst(':id', booking.bookingId),
+                      ),
+                      onBack: () => context.pop(),
+                    ),
         ),
       ),
       GoRoute(
@@ -192,6 +230,10 @@ class AppRouter {
             onBack: () => context.pop(),
           ),
         ),
+      ),
+      GoRoute(
+        path: RouteNames.ownerQrScan,
+        builder: (context, state) => const OwnerQrScanView(),
       ),
       GoRoute(
         path: RouteNames.ownerHandover,
@@ -238,10 +280,19 @@ class AppRouter {
         builder: (context, state) => const OwnerCustomerScanView(),
       ),
       GoRoute(
+        path: RouteNames.ownerCustomers,
+        builder: (context, state) => OwnerCustomersListView(
+          shopId: currentShopId(),
+          onBack: () => context.pop(),
+        ),
+      ),
+      GoRoute(
         path: RouteNames.ownerBlacklist,
-        // Interim (A1): the scan view is the KYC & Blacklist Radar.
-        // A dedicated blacklist list lands in Phase C (C4).
-        builder: (context, state) => const OwnerCustomerScanView(),
+        // Phase B (C4): the dedicated report form + my-reports list.
+        builder: (context, state) => OwnerBlacklistView(
+          shopId: currentShopId(),
+          onBack: () => context.pop(),
+        ),
       ),
       GoRoute(
         path: RouteNames.ownerSubscription,
@@ -250,6 +301,40 @@ class AppRouter {
       GoRoute(
         path: RouteNames.ownerWhatsappLogs,
         builder: (context, state) => const OwnerWhatsAppLogsView(),
+      ),
+      GoRoute(
+        path: RouteNames.ownerNotifications,
+        builder: (context, state) => OwnerNotificationsView(
+          shopId: currentShopId(),
+        ),
+      ),
+      GoRoute(
+        path: RouteNames.ownerSettings,
+        builder: (context, state) => const OwnerSettingsView(),
+      ),
+      GoRoute(
+        path: RouteNames.ownerFinance,
+        builder: (context, state) => OwnerFinanceView(
+          shopId: currentShopId(),
+        ),
+      ),
+      GoRoute(
+        path: RouteNames.ownerDues,
+        builder: (context, state) => OwnerDuesView(
+          shopId: currentShopId(),
+        ),
+      ),
+      GoRoute(
+        path: RouteNames.ownerCashClosing,
+        builder: (context, state) => OwnerCashClosingView(
+          shopId: currentShopId(),
+        ),
+      ),
+      GoRoute(
+        path: RouteNames.ownerCarPnL,
+        builder: (context, state) => OwnerCarPnLView(
+          shopId: currentShopId(),
+        ),
       ),
 
       // Super Admin Web Routes

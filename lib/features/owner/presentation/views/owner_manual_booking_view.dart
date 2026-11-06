@@ -4,9 +4,14 @@ import '../../../../core/di/injection_container.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/custom_curved_header.dart';
 import '../../../../core/widgets/debounced_button.dart';
-import '../../../bookings/data/datasources/booking_remote_data_source.dart';
+import '../../../blacklist/data/datasources/blacklist_remote_data_source.dart';
 import '../../../fleet/data/datasources/fleet_remote_data_source.dart';
 import '../../../fleet/domain/entities/vehicle_entity.dart';
+import '../services/walk_in_booking_service.dart';
+import '../widgets/guarantor_picker.dart';
+import '../widgets/manual_booking_customer_fields.dart';
+import '../widgets/manual_booking_package_selector.dart';
+import '../widgets/manual_booking_vehicle_section.dart';
 import 'owner_handover_signature_view.dart';
 
 class OwnerManualBookingView extends StatefulWidget {
@@ -28,14 +33,14 @@ class _OwnerManualBookingViewState extends State<OwnerManualBookingView> {
   final _phoneController = TextEditingController(text: '0300-1122334');
   late final TextEditingController _cnicController;
   final _depositController = TextEditingController(text: '15000');
-  final _rentController = TextEditingController(text: '8000');
 
   List<VehicleEntity> _vehicles = [];
   VehicleEntity? _selectedVehicle;
+  VehiclePackageEntity? _selectedPackage;
+  bool _isWithDriver = false;
   bool _isLoadingVehicles = true;
   bool _isCreating = false;
-  final String _selectedPackage = 'Daily 24h';
-  final bool _isWithDriver = false;
+  GuarantorSelection? _guarantor;
 
   @override
   void initState() {
@@ -50,8 +55,17 @@ class _OwnerManualBookingViewState extends State<OwnerManualBookingView> {
     _phoneController.dispose();
     _cnicController.dispose();
     _depositController.dispose();
-    _rentController.dispose();
     super.dispose();
+  }
+
+  void _selectVehicle(VehicleEntity? v) {
+    setState(() {
+      _selectedVehicle = v;
+      final packages = v?.enabledPackages ?? const [];
+      _selectedPackage = packages.isNotEmpty ? packages.first : null;
+      final deposit = v?.securityDepositPkr;
+      if (deposit != null) _depositController.text = deposit.toString();
+    });
   }
 
   Future<void> _loadVehicles() async {
@@ -61,7 +75,7 @@ class _OwnerManualBookingViewState extends State<OwnerManualBookingView> {
       if (mounted) {
         setState(() {
           _vehicles = cars;
-          if (cars.isNotEmpty) _selectedVehicle = cars.first;
+          if (cars.isNotEmpty) _selectVehicle(cars.first);
         });
       }
     } catch (_) {} finally {
@@ -73,33 +87,44 @@ class _OwnerManualBookingViewState extends State<OwnerManualBookingView> {
     final name = _nameController.text.trim();
     final phone = _phoneController.text.trim();
     final cnic = _cnicController.text.trim();
-    final rentAmount = int.tryParse(_rentController.text) ?? 8000;
+    // Phase B (B2): the counter total comes from the chosen package,
+    // not from a typed number.
+    final rentAmount = ManualBookingPackageSelector.totalFor(
+      vehicle: _selectedVehicle,
+      package: _selectedPackage,
+      isWithDriver: _isWithDriver,
+    );
 
     if (name.isEmpty || phone.isEmpty || cnic.isEmpty) {
       AppFeedback.showError(context, 'Please complete all customer details.');
       return;
     }
+    if (_selectedVehicle == null || _selectedPackage == null) {
+      AppFeedback.showError(context, 'Please select a vehicle and package.');
+      return;
+    }
+    // Phase B (D2): a blacklisted CNIC cannot book at the counter
+    // either — the scan screen is not the only way in.
+    if (await sl<BlacklistRemoteDataSource>().isCnicBlacklisted(cnic)) {
+      if (mounted) {
+        AppFeedback.showError(context,
+            'This CNIC is blacklisted — walk-in booking refused.');
+      }
+      return;
+    }
 
     setState(() => _isCreating = true);
     try {
-      final ds = sl<BookingRemoteDataSource>();
-      final booking = await ds.createBookingRequest(
-        customerId: 'walkin-${DateTime.now().millisecondsSinceEpoch}',
-        shopId: 'shop-1',
-        vehicleId: _selectedVehicle?.vehicleId ?? 'v1',
-        vehicleName: _selectedVehicle != null ? '${_selectedVehicle!.make} ${_selectedVehicle!.model}' : 'Showroom Car',
-        customerName: name,
-        customerPhone: phone,
-        packageType: _selectedPackage,
+      final booking = await WalkInBookingService.createWalkInBooking(
+        name: name,
+        phone: phone,
+        cnic: cnic,
+        guarantor: _guarantor,
+        vehicle: _selectedVehicle!,
+        package: _selectedPackage!,
         isWithDriver: _isWithDriver,
-        pickupTime: DateTime.now(),
-        returnTime: DateTime.now().add(const Duration(days: 1)),
-        totalAmount: rentAmount,
-        advanceRequired: rentAmount,
+        rentAmount: rentAmount,
       );
-
-      // Immediately mark paid for walk-in cash transaction
-      await ds.verifyPayment(bookingId: booking.bookingId, advanceAmount: rentAmount);
 
       if (mounted) {
         AppFeedback.showSuccess(context, 'Walk-in booking #${booking.bookingId} registered!');
@@ -148,45 +173,30 @@ class _OwnerManualBookingViewState extends State<OwnerManualBookingView> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _sectionHeader('Customer KYC Details'),
-                    _inputField(controller: _nameController, label: 'Customer Full Name', icon: Icons.person_rounded),
-                    const SizedBox(height: 10),
-                    _inputField(controller: _phoneController, label: 'Phone Number', icon: Icons.phone_rounded, keyboard: TextInputType.phone),
-                    const SizedBox(height: 10),
-                    _inputField(controller: _cnicController, label: 'NADRA CNIC', icon: Icons.badge_rounded, keyboard: TextInputType.number),
+                    ManualBookingCustomerFields(
+                      nameController: _nameController,
+                      phoneController: _phoneController,
+                      cnicController: _cnicController,
+                    ),
+                    const SizedBox(height: 18),
+                    _sectionHeader('Guarantor (optional)'),
+                    GuarantorPicker(
+                      onChanged: (g) => setState(() => _guarantor = g),
+                    ),
                     const SizedBox(height: 18),
                     _sectionHeader('Vehicle & Package Selection'),
-                    if (_isLoadingVehicles)
-                      const Center(child: CircularProgressIndicator())
-                    else
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 14),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: AppColors.border),
-                        ),
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton<VehicleEntity>(
-                            isExpanded: true,
-                            value: _selectedVehicle,
-                            hint: const Text('Select Showroom Vehicle'),
-                            items: _vehicles.map((v) {
-                              return DropdownMenuItem(
-                                value: v,
-                                child: Text('${v.make} ${v.model} (${v.year}) - ${v.plateNumber}', style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13.5)),
-                              );
-                            }).toList(),
-                            onChanged: (v) => setState(() => _selectedVehicle = v),
-                          ),
-                        ),
-                      ),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        Expanded(child: _inputField(controller: _rentController, label: 'Total Rent (Rs.)', icon: Icons.payments_rounded, keyboard: TextInputType.number)),
-                        const SizedBox(width: 10),
-                        Expanded(child: _inputField(controller: _depositController, label: 'Security Deposit (Rs.)', icon: Icons.lock_clock_rounded, keyboard: TextInputType.number)),
-                      ],
+                    ManualBookingVehicleSection(
+                      isLoadingVehicles: _isLoadingVehicles,
+                      vehicles: _vehicles,
+                      selectedVehicle: _selectedVehicle,
+                      onVehicleChanged: (v) => _selectVehicle(v),
+                      selectedPackage: _selectedPackage,
+                      onPackageChanged: (p) =>
+                          setState(() => _selectedPackage = p),
+                      isWithDriver: _isWithDriver,
+                      onDriverModeChanged: (v) =>
+                          setState(() => _isWithDriver = v),
+                      depositController: _depositController,
                     ),
                     const SizedBox(height: 24),
                     DebouncedButton(
@@ -209,27 +219,6 @@ class _OwnerManualBookingViewState extends State<OwnerManualBookingView> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: AppColors.midnightNavy)),
-    );
-  }
-
-  Widget _inputField({
-    required TextEditingController controller,
-    required String label,
-    required IconData icon,
-    TextInputType keyboard = TextInputType.text,
-  }) {
-    return TextField(
-      controller: controller,
-      keyboardType: keyboard,
-      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
-      decoration: InputDecoration(
-        labelText: label,
-        prefixIcon: Icon(icon, color: AppColors.midnightNavy, size: 20),
-        filled: true,
-        fillColor: Colors.white,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border)),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      ),
     );
   }
 }

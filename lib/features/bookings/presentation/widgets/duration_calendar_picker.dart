@@ -9,6 +9,10 @@ class DurationCalendarPicker extends StatelessWidget {
   final ValueChanged<TimeOfDay> onTimeChanged;
   final ValueChanged<int> onDurationChanged;
 
+  /// Phase B (B3): days the car is already booked — the date picker
+  /// will not let the customer pick them.
+  final Set<DateTime> blockedDates;
+
   const DurationCalendarPicker({
     super.key,
     required this.pickupDate,
@@ -17,6 +21,7 @@ class DurationCalendarPicker extends StatelessWidget {
     required this.onDateChanged,
     required this.onTimeChanged,
     required this.onDurationChanged,
+    this.blockedDates = const {},
   });
 
   @override
@@ -55,6 +60,10 @@ class DurationCalendarPicker extends StatelessWidget {
                       initialDate: pickupDate,
                       firstDate: DateTime.now(),
                       lastDate: DateTime.now().add(const Duration(days: 90)),
+                      selectableDayPredicate: (day) {
+                        final d = DateTime(day.year, day.month, day.day);
+                        return !blockedDates.contains(d);
+                      },
                     );
                     if (picked != null) onDateChanged(picked);
                   },

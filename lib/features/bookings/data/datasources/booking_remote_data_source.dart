@@ -1,13 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../../../notifications/data/datasources/notification_data_source.dart';
 import '../../domain/entities/booking_entity.dart';
 import '../models/booking_model.dart';
 
 class BookingRemoteDataSource {
   final FirebaseFirestore? _firestore;
+  final NotificationDataSource? _notifications;
   final Map<String, BookingModel> _inMemoryFallback = {};
+  static int _idSeq = 0;
 
-  BookingRemoteDataSource({FirebaseFirestore? firestore})
-      : _firestore = firestore;
+  BookingRemoteDataSource({FirebaseFirestore? firestore, NotificationDataSource? notifications})
+      : _firestore = firestore,
+        _notifications = notifications;
 
   FirebaseFirestore? get _resolvedFirestore {
     if (_firestore != null) return _firestore;
@@ -16,6 +20,28 @@ class BookingRemoteDataSource {
     } catch (_) {
       return null;
     }
+  }
+
+  /// Phase B (G2): owner notifications are best-effort — a failed
+  /// write must never fail the booking it describes.
+  Future<void> _notify({
+    required String shopId,
+    required String title,
+    required String body,
+    required String type,
+    String? bookingId,
+  }) async {
+    final ds = _notifications;
+    if (ds == null) return;
+    try {
+      await ds.createNotification(
+        shopId: shopId,
+        title: title,
+        body: body,
+        type: type,
+        bookingId: bookingId,
+      );
+    } catch (_) {}
   }
 
   Future<BookingModel> createBookingRequest({
@@ -35,8 +61,17 @@ class BookingRemoteDataSource {
     String? customerName,
     String? customerPhone,
     String? notes,
+    String? customerCnic,
+    String? guarantorName,
+    String? guarantorCnic,
+    String? guarantorPhone,
+    String tripType = 'in_city',
+    int? kmLimit,
   }) async {
-    final id = 'RH-${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}';
+    // Millisecond ids can collide when two bookings are created back
+    // to back, so a per-process counter keeps each id unique.
+    final id =
+        'RH-${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}-${_idSeq++}';
     final model = BookingModel(
       bookingId: id,
       customerId: customerId,
@@ -58,6 +93,12 @@ class BookingRemoteDataSource {
       customerName: customerName,
       customerPhone: customerPhone,
       notes: notes,
+      customerCnic: customerCnic,
+      guarantorName: guarantorName,
+      guarantorCnic: guarantorCnic,
+      guarantorPhone: guarantorPhone,
+      tripType: tripType,
+      kmLimit: kmLimit,
     );
 
     _inMemoryFallback[id] = model;
@@ -71,28 +112,67 @@ class BookingRemoteDataSource {
       }
     }
 
+    // Phase B (G2): an online request alerts the shop. Walk-in
+    // bookings (customerId 'walkin-…') do not — the owner is
+    // standing at the counter when those are made.
+    if (!customerId.startsWith('walkin-')) {
+      await _notify(
+        shopId: shopId,
+        title: 'New booking request',
+        body:
+            '${customerName ?? 'A customer'} requested ${vehicleName ?? 'a car'} • $packageType • Rs. $totalAmount',
+        type: 'booking_request',
+        bookingId: id,
+      );
+    }
+
     return model;
   }
 
   Future<BookingEntity> updateBookingStatus({
     required String bookingId,
     required String status,
+    String? rejectionReason,
   }) async {
     final existing = await getBookingById(bookingId);
     if (existing == null) {
       throw Exception('Booking not found: $bookingId');
     }
-    final updated = existing.copyWith(status: status);
+    final updated = existing.copyWith(
+      status: status,
+      rejectionReason: rejectionReason,
+    );
     final model = BookingModel.fromEntity(updated);
     _inMemoryFallback[bookingId] = model;
 
     final fs = _resolvedFirestore;
     if (fs != null) {
       try {
-        await fs.collection('bookings').doc(bookingId).update({'status': status});
+        final update = <String, dynamic>{'status': status};
+        if (rejectionReason != null) {
+          update['rejectionReason'] = rejectionReason;
+        }
+        await fs.collection('bookings').doc(bookingId).update(update);
       } catch (_) {}
     }
     return model;
+  }
+
+  /// Phase B (D3): the owner rejects a payment proof. The booking
+  /// goes back to 'approved' with the reason, so the customer can
+  /// fix it and upload a new proof.
+  Future<BookingEntity> rejectPaymentProof({
+    required String bookingId,
+    required String reason,
+  }) async {
+    if (reason.trim().isEmpty) {
+      throw ArgumentError('A reason is required to reject a proof.');
+    }
+    return updateBookingStatus(
+      bookingId: bookingId,
+      status: 'approved',
+      rejectionReason: reason.trim(),
+    );
   }
 
   Future<BookingEntity> updatePaymentProof({
@@ -108,6 +188,7 @@ class BookingRemoteDataSource {
       status: 'payment_submitted',
       paymentProofUrl: paymentProofUrl,
       transactionId: transactionId,
+      clearRejectionReason: true,
     );
     final model = BookingModel.fromEntity(updated);
     _inMemoryFallback[bookingId] = model;
@@ -119,9 +200,19 @@ class BookingRemoteDataSource {
           'status': 'payment_submitted',
           'paymentProofUrl': paymentProofUrl,
           'transactionId': transactionId,
+          'rejectionReason': null,
         });
       } catch (_) {}
     }
+    // Phase B (G2): the owner needs to know a proof is waiting.
+    await _notify(
+      shopId: existing.shopId,
+      title: 'Payment proof submitted',
+      body:
+          '${existing.customerName ?? 'A customer'} uploaded payment proof for #$bookingId • TID $transactionId',
+      type: 'payment_proof',
+      bookingId: bookingId,
+    );
     return model;
   }
 
@@ -218,6 +309,32 @@ class BookingRemoteDataSource {
     }
     return _inMemoryFallback.values
         .where((b) => b.shopId == shopId)
+        .toList();
+  }
+
+  /// Phase B (B3): all bookings of one vehicle, for the availability
+  /// calendar. Firestore first, in-memory fallback when offline.
+  /// Cancelled and rejected bookings do not block the calendar.
+  Future<List<BookingEntity>> getVehicleBookings(String vehicleId) async {
+    final fs = _resolvedFirestore;
+    if (fs != null) {
+      try {
+        final snap = await fs
+            .collection('bookings')
+            .where('vehicleId', isEqualTo: vehicleId)
+            .get();
+        if (snap.docs.isNotEmpty) {
+          return snap.docs
+              .map((d) => BookingModel.fromMap(d.data(), d.id))
+              .toList();
+        }
+      } catch (_) {}
+    }
+    return _inMemoryFallback.values
+        .where((b) =>
+            b.vehicleId == vehicleId &&
+            b.status != 'cancelled' &&
+            b.status != 'rejected')
         .toList();
   }
 }

@@ -1,4 +1,9 @@
+import 'dart:convert';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:signature/signature.dart';
+
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/widgets/app_feedback.dart';
@@ -6,9 +11,12 @@ import '../../../../core/widgets/custom_curved_header.dart';
 import '../../../../core/widgets/debounced_button.dart';
 import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
+import '../../../fleet/data/datasources/fleet_remote_data_source.dart';
+import '../../../handover/data/datasources/pdf_contract_generator.dart';
 import '../../../handover/presentation/cubit/handover_cubit.dart';
-import '../widgets/operations/fuel_odometer_input_widget.dart';
+import '../widgets/handover_damage_notes_editor.dart';
 import '../widgets/operations/dual_signature_pad_widget.dart';
+import '../widgets/operations/fuel_odometer_input_widget.dart';
 import 'owner_contract_view.dart';
 
 class OwnerHandoverSignatureView extends StatefulWidget {
@@ -22,19 +30,66 @@ class OwnerHandoverSignatureView extends StatefulWidget {
   });
 
   @override
-  State<OwnerHandoverSignatureView> createState() => _OwnerHandoverSignatureViewState();
+  State<OwnerHandoverSignatureView> createState() =>
+      _OwnerHandoverSignatureViewState();
 }
 
-class _OwnerHandoverSignatureViewState extends State<OwnerHandoverSignatureView> {
+class _OwnerHandoverSignatureViewState
+    extends State<OwnerHandoverSignatureView> {
   final _odometerController = TextEditingController(text: '45200');
+  final _customerSig = SignatureController(
+    penStrokeWidth: 3,
+    penColor: Colors.black,
+    exportBackgroundColor: Colors.white,
+  );
+  final _ownerSig = SignatureController(
+    penStrokeWidth: 3,
+    penColor: Colors.black,
+    exportBackgroundColor: Colors.white,
+  );
   String _selectedFuel = '4/4 (Full)';
-  bool _customerSigned = false;
-  bool _ownerSigned = false;
+  List<String> _damageNotes = const [];
   bool _isSaving = false;
+  String _shopName = '';
+  int _securityDeposit = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _shopName = widget.booking.shopName ?? '';
+    _loadShopAndVehicle();
+  }
+
+  Future<void> _loadShopAndVehicle() async {
+    try {
+      final shopId = widget.booking.shopId;
+      if (_shopName.isEmpty && shopId.isNotEmpty) {
+        final doc = await FirebaseFirestore.instance
+            .collection('shops')
+            .doc(shopId)
+            .get();
+        final name = (doc.data()?['name'] ?? doc.data()?['shopName']) as String?;
+        if (name != null && name.isNotEmpty && mounted) {
+          setState(() => _shopName = name);
+        }
+      }
+      final vehicles =
+          await sl<FleetRemoteDataSource>().getShopVehicles(shopId);
+      final vehicle = vehicles
+          .where((v) => v.vehicleId == widget.booking.vehicleId)
+          .toList();
+      if (vehicle.isNotEmpty && mounted) {
+        setState(
+            () => _securityDeposit = vehicle.first.securityDepositPkr ?? 0);
+      }
+    } catch (_) {}
+  }
 
   @override
   void dispose() {
     _odometerController.dispose();
+    _customerSig.dispose();
+    _ownerSig.dispose();
     super.dispose();
   }
 
@@ -45,45 +100,70 @@ class _OwnerHandoverSignatureViewState extends State<OwnerHandoverSignatureView>
       return;
     }
 
-    if (!_customerSigned || !_ownerSigned) {
-      AppFeedback.showError(context, 'Both customer and host must sign before vehicle departure.');
+    if (_customerSig.isEmpty || _ownerSig.isEmpty) {
+      AppFeedback.showError(context,
+          'Both customer and host must sign on the pads before vehicle departure.');
       return;
     }
 
     setState(() => _isSaving = true);
     try {
-      final cubit = sl<HandoverCubit>();
-      await cubit.completeHandoverOfflineFirst(
-        bookingId: widget.booking.bookingId,
-        shopName: widget.booking.shopName ?? 'Al-Falah Rent a Car',
-        customerName: widget.booking.customerName ?? 'Customer',
-        cnicNumber: '35201-1234567-1',
-        vehicleDetails: widget.booking.vehicleName ?? 'Honda Civic RS Turbo',
+      final customerPng = await _customerSig.toPngBytes();
+      final ownerPng = await _ownerSig.toPngBytes();
+      final booking = widget.booking;
+      final entity = await sl<HandoverCubit>().completeHandoverOfflineFirst(
+        bookingId: booking.bookingId,
+        shopId: booking.shopId,
+        shopName: _shopName.isNotEmpty ? _shopName : 'RentalHub',
+        customerName: booking.customerName ?? 'Customer',
+        customerId: booking.customerId,
+        customerPhone: booking.customerPhone ?? '',
+        cnicNumber: booking.customerCnic ?? 'Not provided',
+        vehicleDetails: booking.vehicleName ?? 'Vehicle',
+        packageType: booking.packageType,
+        isWithDriver: booking.isWithDriver,
+        pickupTime: booking.pickupTime,
+        returnTime: booking.returnTime,
+        totalAmount: booking.totalAmount,
+        advancePaid: booking.advancePaid,
+        securityDeposit: _securityDeposit,
         initialOdometer: odo,
         fuelLevel: _selectedFuel,
-        damageNotes: ['Clean interior', 'Spare tire checked', 'Minor right door scratch noted'],
-        customerSignatureSvg: '<svg>customer-vector-sig</svg>',
-        ownerSignatureSvg: '<svg>host-vector-sig</svg>',
+        damageNotes: _damageNotes,
+        customerSignaturePng: customerPng,
+        ownerSignaturePng: ownerPng,
         isOnline: true,
       );
 
       final ds = sl<BookingRemoteDataSource>();
-      await ds.updateBookingStatus(bookingId: widget.booking.bookingId, status: 'active');
+      await ds.updateBookingStatus(
+          bookingId: booking.bookingId, status: 'active');
 
       if (mounted) {
-        AppFeedback.showSuccess(context, 'Handover certified! Digital A4 rental contract generated.');
+        AppFeedback.showSuccess(context,
+            'Handover certified! Digital A4 rental contract generated.');
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
             builder: (_) => OwnerContractView(
-              booking: widget.booking.copyWith(status: 'active'),
+              booking: booking.copyWith(status: 'active'),
               odometer: odo,
               fuelLevel: _selectedFuel,
+              pdfBytes: entity.agreementPdfB64 != null
+                  ? base64Decode(entity.agreementPdfB64!)
+                  : null,
+              verificationUrl:
+                  PdfContractGenerator.verificationUrlFor(booking.bookingId),
+              customerSignaturePng: customerPng,
+              ownerSignaturePng: ownerPng,
+              securityDeposit: _securityDeposit,
             ),
           ),
         );
       }
     } catch (e) {
-      if (mounted) AppFeedback.showError(context, 'Handover completion failed: $e');
+      if (mounted) {
+        AppFeedback.showError(context, 'Handover completion failed: $e');
+      }
     } finally {
       if (mounted) setState(() => _isSaving = false);
     }
@@ -100,21 +180,30 @@ class _OwnerHandoverSignatureViewState extends State<OwnerHandoverSignatureView>
               height: 100,
               leadingWidget: widget.onBack != null
                   ? IconButton(
-                      icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
+                      icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                          color: Colors.white, size: 20),
                       onPressed: widget.onBack,
                     )
                   : null,
               titleWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Vehicle Handover & Inspection', style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w900)),
-                  Text('#${widget.booking.bookingId} • ${widget.booking.vehicleName ?? "Vehicle"}', style: const TextStyle(color: AppColors.textLavender, fontSize: 11.5)),
+                  const Text('Vehicle Handover & Inspection',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 17,
+                          fontWeight: FontWeight.w900)),
+                  Text(
+                      '#${widget.booking.bookingId} • ${widget.booking.vehicleName ?? "Vehicle"}',
+                      style: const TextStyle(
+                          color: AppColors.textLavender, fontSize: 11.5)),
                 ],
               ),
             ),
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 child: Column(
                   children: [
                     FuelOdometerInputWidget(
@@ -123,21 +212,20 @@ class _OwnerHandoverSignatureViewState extends State<OwnerHandoverSignatureView>
                       onFuelSelected: (f) => setState(() => _selectedFuel = f),
                     ),
                     const SizedBox(height: 16),
+                    HandoverDamageNotesEditor(
+                      onChanged: (notes) =>
+                          setState(() => _damageNotes = notes),
+                    ),
+                    const SizedBox(height: 16),
                     DualSignaturePadWidget(
-                      customerSigned: _customerSigned,
-                      ownerSigned: _ownerSigned,
-                      onCustomerSign: () {
-                        setState(() => _customerSigned = !_customerSigned);
-                        AppFeedback.showSuccess(context, _customerSigned ? 'Customer signature captured!' : 'Customer signature cleared');
-                      },
-                      onOwnerSign: () {
-                        setState(() => _ownerSigned = !_ownerSigned);
-                        AppFeedback.showSuccess(context, _ownerSigned ? 'Host signature captured!' : 'Host signature cleared');
-                      },
+                      customerController: _customerSig,
+                      ownerController: _ownerSig,
                     ),
                     const SizedBox(height: 24),
                     DebouncedButton(
-                      text: _isSaving ? 'Issuing Digital Contract...' : 'Certify Handover & Generate Contract',
+                      text: _isSaving
+                          ? 'Issuing Digital Contract...'
+                          : 'Certify Handover & Generate Contract',
                       icon: Icons.assignment_turned_in_rounded,
                       isLoading: _isSaving,
                       onPressed: _completeHandover,

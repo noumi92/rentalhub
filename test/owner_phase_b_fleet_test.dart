@@ -10,6 +10,7 @@ import 'package:rentalhub/features/fleet/data/models/vehicle_model.dart';
 import 'package:rentalhub/features/fleet/data/repositories/fleet_repository_impl.dart';
 import 'package:rentalhub/features/fleet/domain/usecases/add_vehicle_usecase.dart';
 import 'package:rentalhub/features/fleet/domain/usecases/get_shop_vehicles_usecase.dart';
+import 'package:rentalhub/features/fleet/domain/usecases/update_vehicle_pricing_usecase.dart';
 import 'package:rentalhub/features/fleet/domain/usecases/update_vehicle_status_usecase.dart';
 import 'package:rentalhub/features/fleet/presentation/cubit/fleet_cubit.dart';
 import 'package:rentalhub/features/fleet/presentation/cubit/fleet_state.dart';
@@ -152,6 +153,7 @@ void main() {
         addVehicleUseCase: AddVehicleUseCase(repo),
         getShopVehiclesUseCase: GetShopVehiclesUseCase(repo),
         updateVehicleStatusUseCase: UpdateVehicleStatusUseCase(repo),
+        updateVehiclePricingUseCase: UpdateVehiclePricingUseCase(repo),
       );
 
       await cubit.loadVehicles('shop-basic');

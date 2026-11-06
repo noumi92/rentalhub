@@ -3,10 +3,16 @@
 // English (LTR) + Urdu (RTL), dynamic switching, persisted choice.
 // Target-state tests for infrastructure that does not exist yet are
 // `skip:`ped with their debt ID (rulebook §7.7).
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:rentalhub/core/di/injection_container.dart' as di;
+import 'package:rentalhub/core/settings/app_settings_cubit.dart';
+import 'package:rentalhub/features/owner/presentation/views/owner_settings_view.dart';
+import 'package:rentalhub/l10n/app_localizations.dart';
 
 // Rulebook §5.3 / D20: files that contain hardcoded Urdu text today.
 // Verified by scanning lib/ at `master` `af8c73c`: a greeting default in
@@ -29,6 +35,13 @@ bool _containsUrdu(String content) =>
 String _posix(String path) => path.replaceAll(r'\', '/');
 
 void main() {
+  // Phase B (G3): the locale-switch test pumps the settings view,
+  // which reads AppSettingsCubit from DI.
+  setUpAll(() async {
+    SharedPreferences.setMockInitialValues({});
+    await di.initDependencies();
+  });
+
   group('Rulebook §5.2 — localization infrastructure', () {
     test('flutter_localizations and intl are dependencies', () {
       final pubspec = File('pubspec.yaml').readAsStringSync();
@@ -37,22 +50,50 @@ void main() {
     });
 
     test('English and Urdu .arb files exist and share the same keys', () {
-      fail('not implemented yet');
-    },
-        skip:
-            'D6: no .arb files, no l10n.yaml, no AppLocalizations yet — see rulebook §13. Un-skip when §5.2 lands.');
+      // Phase B (G3): the .arb infrastructure landed — un-skipped
+      // with a real check instead of the placeholder.
+      final en = jsonDecode(File('lib/l10n/app_en.arb').readAsStringSync())
+          as Map<String, dynamic>;
+      final ur = jsonDecode(File('lib/l10n/app_ur.arb').readAsStringSync())
+          as Map<String, dynamic>;
+      final enKeys =
+          en.keys.where((k) => !k.startsWith('@')).toSet();
+      final urKeys =
+          ur.keys.where((k) => !k.startsWith('@')).toSet();
+      expect(enKeys, isNotEmpty);
+      expect(urKeys, equals(enKeys),
+          reason: 'Every English key needs an Urdu translation.');
+      expect(File('l10n.yaml').existsSync(), isTrue);
+    });
 
-    test('switching locale changes the displayed strings', () {
-      fail('not implemented yet');
-    },
-        skip:
-            'D5/D6: no locale wiring in main.dart yet — see rulebook §13. Un-skip when the language toggle drives the app locale.');
+    testWidgets('switching locale changes the displayed strings',
+        (tester) async {
+      // Phase B (G3): the owner settings screen is the first fully
+      // translated screen — it renders in Urdu under the ur locale.
+      await tester.pumpWidget(
+        const MaterialApp(
+          locale: Locale('ur'),
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          home: OwnerSettingsView(),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('دکان کی ترتیبات'), findsOneWidget);
+      expect(find.text('Shop Settings'), findsNothing);
+    });
 
-    test('the language choice persists across restart', () {
-      fail('not implemented yet');
-    },
-        skip:
-            'D5: the Urdu toggle is local setState only, nothing is persisted — see rulebook §13. Un-skip when the choice is saved in SharedPreferences.');
+    test('the language choice persists across restart', () async {
+      // Phase B (G3): AppSettingsCubit persists `app_locale` in
+      // SharedPreferences and reloads it on construction.
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+      final cubit = AppSettingsCubit(prefs: prefs);
+      await cubit.setLocale('ur');
+      final reloaded = AppSettingsCubit(prefs: prefs);
+      expect(reloaded.state.localeCode, 'ur');
+      await cubit.setLocale('en');
+    });
   });
 
   group('Rulebook §5.3 — no new hardcoded Urdu strings', () {
@@ -61,6 +102,10 @@ void main() {
       final libDir = Directory('lib');
       for (final entity in libDir.listSync(recursive: true)) {
         if (entity is! File || !entity.path.endsWith('.dart')) continue;
+        // The generated localizations under lib/l10n/ are derived
+        // from the .arb files — they are the sanctioned source, not
+        // hardcoded strings in code (Phase B, G3).
+        if (_posix(entity.path).startsWith('lib/l10n/')) continue;
         if (_containsUrdu(entity.readAsStringSync())) {
           offenders.add(_posix(entity.path));
         }

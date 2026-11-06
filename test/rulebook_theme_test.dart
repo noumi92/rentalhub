@@ -96,11 +96,15 @@ void main() {
 
     test('themeMode follows a persisted user choice, not a hardcoded value',
         () {
-      // Target state — see rulebook §6.1/§6.2.
-      fail('not implemented yet');
-    },
-        skip:
-            'D8: main.dart hardcodes themeMode: ThemeMode.light — see rulebook §13. Un-skip when the persisted Light/Dark/System choice lands.');
+      // Phase B (G3): D8 resolved — main.dart reads the persisted
+      // choice from AppSettingsCubit instead of hardcoding light.
+      final main = File('lib/main.dart').readAsStringSync();
+      expect(main, isNot(contains('themeMode: ThemeMode.light')));
+      expect(main, contains('themeMode: settings.themeMode'));
+      final cubit = File('lib/core/settings/app_settings_cubit.dart')
+          .readAsStringSync();
+      expect(cubit, contains("app_theme_mode"));
+    });
 
     test('dark theme reads all colours from AppColors (no inline literals)',
         () {

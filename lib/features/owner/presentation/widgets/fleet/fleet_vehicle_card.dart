@@ -13,12 +13,14 @@ class FleetVehicleCard extends StatelessWidget {
   final VehicleEntity vehicle;
   final ValueChanged<bool> onToggleAvailability;
   final VoidCallback onEditRates;
+  final VoidCallback onViewCalendar;
 
   const FleetVehicleCard({
     super.key,
     required this.vehicle,
     required this.onToggleAvailability,
     required this.onEditRates,
+    required this.onViewCalendar,
   });
 
   Widget _carImage(VehicleEntity v) {
@@ -171,6 +173,12 @@ class FleetVehicleCard extends StatelessWidget {
                       icon: const Icon(Icons.tune_rounded, size: 20),
                       color: AppColors.midnightNavy,
                       onPressed: onEditRates,
+                    ),
+                    IconButton(
+                      tooltip: 'Booking calendar',
+                      icon: const Icon(Icons.calendar_month_rounded, size: 20),
+                      color: AppColors.midnightNavy,
+                      onPressed: onViewCalendar,
                     ),
                   ],
                 ),

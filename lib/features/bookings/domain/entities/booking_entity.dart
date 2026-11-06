@@ -24,6 +24,28 @@ class BookingEntity extends Equatable {
   final String? customerPhone;
   final String? notes;
 
+  /// Phase B (C1): the customer's CNIC, collected at booking time
+  /// (walk-in) or from KYC (online). The customers list groups by it.
+  final String? customerCnic;
+
+  /// Phase B (C3): the booking's guarantor, picked in the walk-in
+  /// flow from saved customers or added on the spot.
+  final String? guarantorName;
+  final String? guarantorCnic;
+  final String? guarantorPhone;
+
+  /// Phase B (D3): why the booking — or its payment proof — was
+  /// rejected. Shown to the customer so they can fix and resubmit.
+  final String? rejectionReason;
+
+  /// Phase B (B3): trip type ('in_city' | 'out_of_city'), the km
+  /// allowance for the trip (in-city: package km x days; out-of-city:
+  /// outOfCityKmPerDay x days), and whether the shop cleared the
+  /// tracker for an out-of-city trip.
+  final String tripType;
+  final int? kmLimit;
+  final bool trackerCleared;
+
   const BookingEntity({
     required this.bookingId,
     required this.customerId,
@@ -47,6 +69,14 @@ class BookingEntity extends Equatable {
     this.customerName,
     this.customerPhone,
     this.notes,
+    this.customerCnic,
+    this.guarantorName,
+    this.guarantorCnic,
+    this.guarantorPhone,
+    this.rejectionReason,
+    this.tripType = 'in_city',
+    this.kmLimit,
+    this.trackerCleared = false,
   });
 
   BookingEntity copyWith({
@@ -61,6 +91,15 @@ class BookingEntity extends Equatable {
     String? customerName,
     String? customerPhone,
     String? notes,
+    String? customerCnic,
+    String? guarantorName,
+    String? guarantorCnic,
+    String? guarantorPhone,
+    String? rejectionReason,
+    bool clearRejectionReason = false,
+    String? tripType,
+    int? kmLimit,
+    bool? trackerCleared,
   }) {
     return BookingEntity(
       bookingId: bookingId,
@@ -85,6 +124,16 @@ class BookingEntity extends Equatable {
       customerName: customerName ?? this.customerName,
       customerPhone: customerPhone ?? this.customerPhone,
       notes: notes ?? this.notes,
+      customerCnic: customerCnic ?? this.customerCnic,
+      guarantorName: guarantorName ?? this.guarantorName,
+      guarantorCnic: guarantorCnic ?? this.guarantorCnic,
+      guarantorPhone: guarantorPhone ?? this.guarantorPhone,
+      rejectionReason: clearRejectionReason
+          ? null
+          : (rejectionReason ?? this.rejectionReason),
+      tripType: tripType ?? this.tripType,
+      kmLimit: kmLimit ?? this.kmLimit,
+      trackerCleared: trackerCleared ?? this.trackerCleared,
     );
   }
 
@@ -112,5 +161,13 @@ class BookingEntity extends Equatable {
         customerName,
         customerPhone,
         notes,
+        customerCnic,
+        guarantorName,
+        guarantorCnic,
+        guarantorPhone,
+        rejectionReason,
+        tripType,
+        kmLimit,
+        trackerCleared,
       ];
 }

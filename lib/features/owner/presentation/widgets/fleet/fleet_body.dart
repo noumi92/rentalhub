@@ -16,6 +16,7 @@ class FleetBody extends StatelessWidget {
     required this.onRetry,
     required this.onToggleAvailability,
     required this.onEditRates,
+    required this.onViewCalendar,
   });
 
   final FleetState state;
@@ -26,6 +27,7 @@ class FleetBody extends StatelessWidget {
   final void Function(VehicleEntity vehicle, bool available)
       onToggleAvailability;
   final void Function(VehicleEntity vehicle) onEditRates;
+  final void Function(VehicleEntity vehicle) onViewCalendar;
 
   @override
   Widget build(BuildContext context) {
@@ -106,6 +108,7 @@ class FleetBody extends StatelessWidget {
           vehicle: v,
           onToggleAvailability: (val) => onToggleAvailability(v, val),
           onEditRates: () => onEditRates(v),
+          onViewCalendar: () => onViewCalendar(v),
         );
       },
     );

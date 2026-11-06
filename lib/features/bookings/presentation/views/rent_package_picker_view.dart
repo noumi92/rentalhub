@@ -1,12 +1,25 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
-import '../../../../core/widgets/custom_curved_header.dart';
-import '../../../../core/widgets/debounced_button.dart';
-import '../../../../core/widgets/pakistani_plate_widget.dart';
+import '../../../../core/di/injection_container.dart';
+import '../../../bookings/data/datasources/booking_remote_data_source.dart';
+import '../../../bookings/utils/package_pricing.dart';
+import '../../../bookings/utils/picker_availability.dart';
+import '../../../fleet/domain/entities/fixed_route_entity.dart';
+import '../../../fleet/domain/entities/vehicle_entity.dart';
+import '../../../fleet/domain/usecases/get_shop_fixed_routes_usecase.dart';
+import '../widgets/booking_draft.dart';
 import '../widgets/driver_mode_toggle.dart';
 import '../widgets/duration_calendar_picker.dart';
-import '../widgets/package_tier_card.dart';
+import '../widgets/package_picker_header.dart';
+import '../widgets/package_summary_bar.dart';
+import '../widgets/package_tier_list.dart';
+import '../widgets/trip_type_section.dart';
 
+/// Phase B (B2): when a [vehicle] is supplied, the picker offers only
+/// that vehicle's enabled packages at their real prices, with the
+/// driver surcharge and advance taken from the vehicle — no formula
+/// prices. Without a vehicle it keeps the old behaviour (derived
+/// prices from the daily/hourly rates) for the legacy callers.
 class RentPackagePickerView extends StatefulWidget {
   final String carId;
   final String carName;
@@ -16,6 +29,7 @@ class RentPackagePickerView extends StatefulWidget {
   final int dailySelfDriveRate;
   final int dailyWithDriverRate;
   final int? hourlyRate;
+  final VehicleEntity? vehicle;
   final Function(Map<String, dynamic> bookingDraft)? onProceedToReview;
   final VoidCallback? onBack;
 
@@ -29,6 +43,7 @@ class RentPackagePickerView extends StatefulWidget {
     required this.dailySelfDriveRate,
     required this.dailyWithDriverRate,
     this.hourlyRate,
+    this.vehicle,
     this.onProceedToReview,
     this.onBack,
   });
@@ -44,60 +59,113 @@ class _RentPackagePickerViewState extends State<RentPackagePickerView> {
   TimeOfDay _pickupTime = TimeOfDay.now();
   int _durationDays = 1;
 
-  int get _calculatedRate {
-    final baseDaily = _isWithDriver
-        ? widget.dailyWithDriverRate
-        : widget.dailySelfDriveRate;
-    switch (_selectedPackage) {
-      case '1h':
-        return widget.hourlyRate ?? (baseDaily * 0.15).round();
-      case '3h':
-        return ((widget.hourlyRate ?? (baseDaily * 0.15).round()) * 2.5).round();
-      case '6h':
-        return ((widget.hourlyRate ?? (baseDaily * 0.15).round()) * 4.5).round();
-      case '24h':
-      default:
-        return baseDaily * _durationDays;
+  /// Phase B (B3): trip type, the car's booked days and the shop's
+  /// fixed routes. Loaded only when a vehicle is supplied and DI is
+  /// initialised (legacy callers and unit tests run without it).
+  bool _isOutOfCity = false;
+  Set<DateTime> _blockedDates = {};
+  List<FixedRouteEntity> _fixedRoutes = [];
+  FixedRouteEntity? _selectedRoute;
+
+  @override
+  void initState() {
+    super.initState();
+    final vehicle = widget.vehicle;
+    if (vehicle != null) {
+      _selectedPackage = PackageTierList.defaultSelection(vehicle);
+      if (sl.isRegistered<BookingRemoteDataSource>() ||
+          sl.isRegistered<GetShopFixedRoutesUseCase>()) {
+        loadPickerAvailability(
+          vehicleId: vehicle.vehicleId,
+          shopId: widget.shopId,
+        ).then((data) {
+          if (!mounted) return;
+          setState(() {
+            _blockedDates = data.blockedDays;
+            _fixedRoutes = data.routes;
+          });
+        });
+      }
     }
   }
 
-  int get _advanceRequired {
-    return (_calculatedRate * 0.25).round().clamp(1000, 10000);
+  List<PackageTierOption> get _tiers =>
+      PackageTierList.optionsFor(
+        vehicle: widget.vehicle,
+        isWithDriver: _isWithDriver,
+        dailySelfDriveRate: widget.dailySelfDriveRate,
+        dailyWithDriverRate: widget.dailyWithDriverRate,
+        hourlyRate: widget.hourlyRate,
+        isOutOfCity: _isOutOfCity,
+      );
+
+  PackageTierOption get _selectedTier =>
+      _tiers.firstWhere((t) => t.label == _selectedPackage,
+          orElse: () => _tiers.first);
+
+  int get _calculatedRate {
+    // A fixed route is one fixed trip price; a chauffeur is added on
+    // top, per day of the trip.
+    if (_selectedRoute != null) {
+      final driver = _isWithDriver
+          ? (widget.vehicle?.withDriverSurchargePkr ?? 0) * _durationDays
+          : 0;
+      return _selectedRoute!.fixedPricePkr + driver;
+    }
+    return PackagePricing.rateFor(
+      vehicle: widget.vehicle,
+      tier: _selectedTier,
+      durationDays: _durationDays,
+      isWithDriver: _isWithDriver,
+    );
+  }
+
+  int get _kmLimit => PackagePricing.kmLimitFor(
+        tier: _selectedTier,
+        durationDays: _durationDays,
+      );
+
+  int get _advanceRequired => PackagePricing.advanceFor(
+        vehicle: widget.vehicle,
+        total: _calculatedRate,
+      );
+
+  void _continue() {
+    widget.onProceedToReview?.call(buildBookingDraft(
+      carId: widget.carId,
+      carName: widget.carName,
+      plateNumber: widget.plateNumber,
+      shopId: widget.shopId,
+      shopName: widget.shopName,
+      isWithDriver: _isWithDriver,
+      tier: _selectedTier,
+      kmLimit: _kmLimit,
+      securityDepositPkr: widget.vehicle?.securityDepositPkr,
+      tripType: _isOutOfCity ? 'out_of_city' : 'in_city',
+      fixedRouteId: _selectedRoute?.routeId,
+      destinationCity: _selectedRoute?.destinationCity,
+      pickupDate: _pickupDate,
+      pickupTime: _pickupTime,
+      durationDays: _durationDays,
+      totalAmount: _calculatedRate,
+      advanceRequired: _advanceRequired,
+    ));
   }
 
   @override
   Widget build(BuildContext context) {
+    final tiers = _tiers;
+    final vehicle = widget.vehicle;
     return Scaffold(
       backgroundColor: AppColors.backgroundLight,
       body: SafeArea(
         child: Column(
           children: [
-            CustomCurvedHeader(
-              height: 100,
-              leadingWidget: widget.onBack != null
-                  ? IconButton(
-                      icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                          color: Colors.white, size: 20),
-                      onPressed: widget.onBack,
-                    )
-                  : null,
-              titleWidget: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('Select Rental Package',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w900)),
-                  Text('${widget.carName} • ${widget.shopName}',
-                      style: const TextStyle(
-                          color: AppColors.textLavender, fontSize: 12)),
-                ],
-              ),
-              actions: [
-                PakistaniPlateWidget(
-                    plateNumber: widget.plateNumber, isCompact: true)
-              ],
+            PackagePickerHeader(
+              carName: widget.carName,
+              shopName: widget.shopName,
+              plateNumber: widget.plateNumber,
+              onBack: widget.onBack,
             ),
             Expanded(
               child: SingleChildScrollView(
@@ -110,6 +178,20 @@ class _RentPackagePickerViewState extends State<RentPackagePickerView> {
                       isWithDriver: _isWithDriver,
                       onChanged: (val) => setState(() => _isWithDriver = val),
                     ),
+                    if (vehicle != null) ...[
+                      const SizedBox(height: 12),
+                      TripTypeSection(
+                        isOutOfCity: _isOutOfCity,
+                        onChanged: (v) => setState(() {
+                          _isOutOfCity = v;
+                          _selectedRoute = null;
+                        }),
+                        fixedRoutes: _fixedRoutes,
+                        selectedRoute: _selectedRoute,
+                        onRouteSelected: (r) =>
+                            setState(() => _selectedRoute = r),
+                      ),
+                    ],
                     const SizedBox(height: 16),
                     const Text('Available Duration Tiers',
                         style: TextStyle(
@@ -117,45 +199,26 @@ class _RentPackagePickerViewState extends State<RentPackagePickerView> {
                             fontWeight: FontWeight.w800,
                             color: AppColors.midnightNavy)),
                     const SizedBox(height: 10),
-                    PackageTierCard(
-                      title: 'Daily 24-Hours',
-                      subtitle: 'Full day flexibility with grace return period',
-                      price: _isWithDriver
-                          ? widget.dailyWithDriverRate
-                          : widget.dailySelfDriveRate,
-                      kmIncluded: '250 km/day',
-                      isSelected: _selectedPackage == '24h',
-                      onTap: () => setState(() => _selectedPackage = '24h'),
-                    ),
-                    const SizedBox(height: 10),
-                    PackageTierCard(
-                      title: '6-Hour Express',
-                      subtitle: 'Ideal for city errands, weddings & meetings',
-                      price: ((widget.hourlyRate ??
-                                  (widget.dailySelfDriveRate * 0.15).round()) *
-                              4.5)
-                          .round(),
-                      kmIncluded: '80 km',
-                      isSelected: _selectedPackage == '6h',
-                      onTap: () => setState(() => _selectedPackage = '6h'),
-                    ),
-                    const SizedBox(height: 10),
-                    PackageTierCard(
-                      title: '3-Hour Quick Trip',
-                      subtitle: 'Airport drop/pickup & short commutes',
-                      price: ((widget.hourlyRate ??
-                                  (widget.dailySelfDriveRate * 0.15).round()) *
-                              2.5)
-                          .round(),
-                      kmIncluded: '40 km',
-                      isSelected: _selectedPackage == '3h',
-                      onTap: () => setState(() => _selectedPackage = '3h'),
+                    PackageTierList(
+                      options: tiers,
+                      selectedLabel: _selectedPackage,
+                      onSelect: (label) => setState(() {
+                        _selectedPackage = label;
+                        _selectedRoute = null;
+                      }),
+                      surchargeFor: (o) =>
+                          PackagePricing.driverSurchargeFor(
+                        vehicle: widget.vehicle,
+                        tier: o,
+                        isWithDriver: _isWithDriver,
+                      ),
                     ),
                     const SizedBox(height: 16),
                     DurationCalendarPicker(
                       pickupDate: _pickupDate,
                       pickupTime: _pickupTime,
                       durationDays: _durationDays,
+                      blockedDates: _blockedDates,
                       onDateChanged: (d) => setState(() => _pickupDate = d),
                       onTimeChanged: (t) => setState(() => _pickupTime = t),
                       onDurationChanged: (days) =>
@@ -166,74 +229,11 @@ class _RentPackagePickerViewState extends State<RentPackagePickerView> {
                 ),
               ),
             ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                      color: Color(0x14000000),
-                      blurRadius: 10,
-                      offset: Offset(0, -3))
-                ],
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text('Total: Rs. $_calculatedRate',
-                            style: const TextStyle(
-                                fontSize: 17,
-                                fontWeight: FontWeight.w900,
-                                color: AppColors.midnightNavy)),
-                        Text('Advance Due: Rs. $_advanceRequired',
-                            style: const TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w700,
-                                color: AppColors.sunsetOrange)),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  SizedBox(
-                    width: 140,
-                    child: DebouncedButton(
-                      text: 'Continue',
-                      icon: Icons.arrow_forward_rounded,
-                      onPressed: () async {
-                        final pickupDateTime = DateTime(
-                          _pickupDate.year,
-                          _pickupDate.month,
-                          _pickupDate.day,
-                          _pickupTime.hour,
-                          _pickupTime.minute,
-                        );
-                        final returnDateTime = _selectedPackage == '24h'
-                            ? pickupDateTime.add(Duration(days: _durationDays))
-                            : pickupDateTime.add(
-                                Duration(hours: int.parse(_selectedPackage.replaceAll('h', ''))));
-
-                        widget.onProceedToReview?.call({
-                          'carId': widget.carId,
-                          'carName': widget.carName,
-                          'plateNumber': widget.plateNumber,
-                          'shopId': widget.shopId,
-                          'shopName': widget.shopName,
-                          'isWithDriver': _isWithDriver,
-                          'packageType': _selectedPackage,
-                          'pickupTime': pickupDateTime,
-                          'returnTime': returnDateTime,
-                          'totalAmount': _calculatedRate,
-                          'advanceRequired': _advanceRequired,
-                        });
-                      },
-                    ),
-                  ),
-                ],
-              ),
+            PackageSummaryBar(
+              total: _calculatedRate,
+              advance: _advanceRequired,
+              deposit: vehicle?.securityDepositPkr,
+              onContinue: _continue,
             ),
           ],
         ),

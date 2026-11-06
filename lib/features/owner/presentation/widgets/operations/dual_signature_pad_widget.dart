@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:signature/signature.dart';
+
 import '../../../../../core/constants/app_colors.dart';
 
+/// Phase B (E2): two real signature pads. The caller owns the
+/// controllers and exports the PNG bytes at handover time — the old
+/// version only toggled a boolean and passed a hardcoded SVG string,
+/// so no signature ever existed.
 class DualSignaturePadWidget extends StatelessWidget {
-  final bool customerSigned;
-  final bool ownerSigned;
-  final VoidCallback onCustomerSign;
-  final VoidCallback onOwnerSign;
+  final SignatureController customerController;
+  final SignatureController ownerController;
 
   const DualSignaturePadWidget({
     super.key,
-    required this.customerSigned,
-    required this.ownerSigned,
-    required this.onCustomerSign,
-    required this.onOwnerSign,
+    required this.customerController,
+    required this.ownerController,
   });
 
   @override
@@ -29,80 +31,69 @@ class DualSignaturePadWidget extends StatelessWidget {
         children: [
           const Text(
             'Dual Legal Endorsement & Signatures',
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: AppColors.midnightNavy),
+            style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w800,
+                color: AppColors.midnightNavy),
           ),
           const SizedBox(height: 12),
-          _signatureTile(
+          _pad(
             title: 'Customer / Hirer Digital Signature',
             subtitle: 'Certifies physical receipt of car & documents',
-            isSigned: customerSigned,
-            onSign: onCustomerSign,
+            controller: customerController,
           ),
           const SizedBox(height: 12),
-          _signatureTile(
+          _pad(
             title: 'Showroom Host / Manager Signature',
             subtitle: 'Authorized release by showroom representative',
-            isSigned: ownerSigned,
-            onSign: onOwnerSign,
+            controller: ownerController,
           ),
         ],
       ),
     );
   }
 
-  Widget _signatureTile({
+  Widget _pad({
     required String title,
     required String subtitle,
-    required bool isSigned,
-    required VoidCallback onSign,
+    required SignatureController controller,
   }) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: AppColors.backgroundLight,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: isSigned ? AppColors.emeraldGreen : AppColors.border),
-      ),
-      child: Row(
-        children: [
-          Icon(
-            isSigned ? Icons.check_circle_rounded : Icons.draw_rounded,
-            color: isSigned ? AppColors.emeraldGreen : AppColors.sunsetOrange,
-            size: 26,
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w800, color: AppColors.midnightNavy),
-                ),
-                Text(
-                  isSigned ? 'Vector Signature Captured (SHA-256)' : subtitle,
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: isSigned ? AppColors.emeraldGreen : AppColors.textSecondary,
-                    fontWeight: isSigned ? FontWeight.w700 : FontWeight.w400,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          TextButton(
-            onPressed: onSign,
-            child: Text(
-              isSigned ? 'Resign' : 'Sign Now',
-              style: TextStyle(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title,
+            style: const TextStyle(
+                fontSize: 12.5,
                 fontWeight: FontWeight.w800,
-                color: isSigned ? AppColors.textSecondary : AppColors.sunsetOrange,
-              ),
+                color: AppColors.midnightNavy)),
+        Text(subtitle,
+            style: const TextStyle(
+                fontSize: 11, color: AppColors.textSecondary)),
+        const SizedBox(height: 6),
+        Container(
+          height: 120,
+          decoration: BoxDecoration(
+            color: AppColors.backgroundLight,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: AppColors.border),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: Signature(
+              controller: controller,
+              backgroundColor: Colors.white,
             ),
           ),
-        ],
-      ),
+        ),
+        Align(
+          alignment: Alignment.centerRight,
+          child: TextButton.icon(
+            onPressed: controller.clear,
+            icon: const Icon(Icons.clear_rounded, size: 16),
+            label: const Text('Clear'),
+          ),
+        ),
+      ],
     );
   }
 }
-

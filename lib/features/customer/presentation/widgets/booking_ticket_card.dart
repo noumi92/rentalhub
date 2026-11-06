@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:qr_flutter/qr_flutter.dart';
+
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/pakistani_plate_widget.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
+import '../../../handover/data/datasources/pdf_contract_generator.dart';
 
 class BookingTicketCard extends StatelessWidget {
   final BookingEntity booking;
@@ -34,6 +37,11 @@ class BookingTicketCard extends StatelessWidget {
         return AppColors.royalNavy;
     }
   }
+
+  /// Phase B (E1): once the booking is paid, the customer shows
+  /// this QR at the counter and the owner scans it to open handover.
+  bool get _showQr =>
+      booking.status == 'paid' || booking.status == 'active';
 
   @override
   Widget build(BuildContext context) {
@@ -108,6 +116,26 @@ class BookingTicketCard extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 10),
+              if (_showQr)
+                Row(
+                  children: [
+                    QrImageView(
+                      data: PdfContractGenerator.verificationUrlFor(
+                          booking.bookingId),
+                      size: 84,
+                    ),
+                    const SizedBox(width: 12),
+                    const Expanded(
+                      child: Text(
+                        'Show this code at the counter for handover — '
+                        'it opens your booking and its agreement.',
+                        style: TextStyle(
+                            fontSize: 12, color: AppColors.textSecondary),
+                      ),
+                    ),
+                  ],
+                ),
+              if (_showQr) const SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [

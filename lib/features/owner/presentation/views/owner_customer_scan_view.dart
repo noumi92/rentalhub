@@ -1,12 +1,18 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/custom_curved_header.dart';
 import '../../../blacklist/data/datasources/blacklist_remote_data_source.dart';
 import '../../../blacklist/domain/entities/blacklist_entity.dart';
+import '../../../trust/data/services/cnic_ocr_service.dart';
 import '../widgets/operations/cnic_scanner_input_widget.dart';
 import '../widgets/operations/blacklist_status_banner.dart';
+import 'owner_cnic_review_view.dart';
 import 'owner_manual_booking_view.dart';
 
 class OwnerCustomerScanView extends StatefulWidget {
@@ -62,6 +68,44 @@ class _OwnerCustomerScanViewState extends State<OwnerCustomerScanView> {
       }
     } catch (e) {
       if (mounted) AppFeedback.showError(context, 'Verification lookup failed: $e');
+    } finally {
+      if (mounted) setState(() => _isVerifying = false);
+    }
+  }
+
+  /// Phase B (C2): real on-device OCR. The camera photo is read by
+  /// ML Kit, the owner reviews and corrects the result, and only then
+  /// is the customer saved and the blacklist checked.
+  Future<void> _scanCnicWithCamera() async {
+    final picked = await ImagePicker().pickImage(
+      source: ImageSource.camera,
+      imageQuality: 85,
+    );
+    if (picked == null || !mounted) return;
+    setState(() => _isVerifying = true);
+    try {
+      final result = await CnicOcrService().scanFront(File(picked.path));
+      if (!mounted) return;
+      if (!result.hasAnything) {
+        AppFeedback.showError(context,
+            "Couldn't read the card — type the CNIC manually.");
+        return;
+      }
+      await Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => OwnerCnicReviewView(
+            initial: result,
+            onSaved: (cnic) {
+              _cnicController.text = cnic;
+              _verifyCnic();
+            },
+          ),
+        ),
+      );
+    } catch (e) {
+      if (mounted) {
+        AppFeedback.showError(context, 'CNIC scan failed: $e');
+      }
     } finally {
       if (mounted) setState(() => _isVerifying = false);
     }
@@ -126,10 +170,7 @@ class _OwnerCustomerScanViewState extends State<OwnerCustomerScanView> {
                       controller: _cnicController,
                       isVerifying: _isVerifying,
                       onVerify: _verifyCnic,
-                      onCameraScan: () {
-                        _cnicController.text = '35201-9999999-1';
-                        _verifyCnic();
-                      },
+                      onCameraScan: _scanCnicWithCamera,
                     ),
                     const SizedBox(height: 18),
                     BlacklistStatusBanner(
@@ -137,6 +178,26 @@ class _OwnerCustomerScanViewState extends State<OwnerCustomerScanView> {
                       blacklistedRecord: _foundBlacklist,
                       onProceed: _proceedToManualBooking,
                       onDecline: _declineCustomer,
+                    ),
+                    const SizedBox(height: 18),
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        onPressed: () =>
+                            context.push('/owner/customers'),
+                        icon: const Icon(Icons.people_rounded),
+                        label: const Text('View All Customers'),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        onPressed: () =>
+                            context.push('/owner/blacklist'),
+                        icon: const Icon(Icons.flag_rounded),
+                        label: const Text('Blacklist Reports'),
+                      ),
                     ),
                   ],
                 ),

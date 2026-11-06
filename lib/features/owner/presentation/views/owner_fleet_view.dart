@@ -123,6 +123,13 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
                       ),
                       actions: [
                         IconButton(
+                          tooltip: 'Fixed Routes',
+                          icon: const Icon(Icons.route_rounded,
+                              color: Colors.white, size: 24),
+                          onPressed: () =>
+                              context.push(RouteNames.ownerFixedRoutes),
+                        ),
+                        IconButton(
                           tooltip: 'Add Vehicle',
                           icon: const Icon(Icons.add_circle_rounded,
                               color: AppColors.sunsetOrange, size: 28),
@@ -195,6 +202,10 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
                       },
                       onEditRates: (v) => context.push(
                         RouteNames.ownerRatesVehicle.replaceFirst(
+                            ':vehicleId', v.vehicleId),
+                      ),
+                      onViewCalendar: (v) => context.push(
+                        RouteNames.ownerCalendar.replaceFirst(
                             ':vehicleId', v.vehicleId),
                       ),
                     ),

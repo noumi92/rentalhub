@@ -67,6 +67,9 @@ class VehicleModel extends VehicleEntity {
     super.extraHourPkr,
     super.withDriverSurchargePkr,
     super.fuelPolicy,
+    super.packages,
+    super.extraKmPkr,
+    super.outOfCityKmPerDay,
   });
 
   @override
@@ -100,6 +103,9 @@ class VehicleModel extends VehicleEntity {
     int? extraHourPkr,
     int? withDriverSurchargePkr,
     String? fuelPolicy,
+    List<VehiclePackageEntity>? packages,
+    int? extraKmPkr,
+    int? outOfCityKmPerDay,
   }) {
     return VehicleModel(
       vehicleId: vehicleId ?? this.vehicleId,
@@ -133,6 +139,9 @@ class VehicleModel extends VehicleEntity {
       withDriverSurchargePkr:
           withDriverSurchargePkr ?? this.withDriverSurchargePkr,
       fuelPolicy: fuelPolicy ?? this.fuelPolicy,
+      packages: packages ?? this.packages,
+      extraKmPkr: extraKmPkr ?? this.extraKmPkr,
+      outOfCityKmPerDay: outOfCityKmPerDay ?? this.outOfCityKmPerDay,
     );
   }
 
@@ -170,6 +179,10 @@ class VehicleModel extends VehicleEntity {
       if (withDriverSurchargePkr != null)
         'withDriverSurchargePkr': withDriverSurchargePkr,
       if (fuelPolicy != null) 'fuelPolicy': fuelPolicy,
+      if (packages.isNotEmpty)
+        'packages': packages.map((p) => p.toMap()).toList(),
+      if (extraKmPkr != null) 'extraKmPkr': extraKmPkr,
+      if (outOfCityKmPerDay != null) 'outOfCityKmPerDay': outOfCityKmPerDay,
     };
   }
 
@@ -211,6 +224,13 @@ class VehicleModel extends VehicleEntity {
       withDriverSurchargePkr:
           (map['withDriverSurchargePkr'] as num?)?.toInt(),
       fuelPolicy: map['fuelPolicy'] as String?,
+      packages: (map['packages'] as List?)
+              ?.map((e) => VehiclePackageEntity.fromMap(
+                  Map<String, dynamic>.from(e as Map)))
+              .toList() ??
+          const [],
+      extraKmPkr: (map['extraKmPkr'] as num?)?.toInt(),
+      outOfCityKmPerDay: (map['outOfCityKmPerDay'] as num?)?.toInt(),
     );
   }
 
@@ -245,6 +265,9 @@ class VehicleModel extends VehicleEntity {
       extraHourPkr: entity.extraHourPkr,
       withDriverSurchargePkr: entity.withDriverSurchargePkr,
       fuelPolicy: entity.fuelPolicy,
+      packages: entity.packages,
+      extraKmPkr: entity.extraKmPkr,
+      outOfCityKmPerDay: entity.outOfCityKmPerDay,
     );
   }
 }

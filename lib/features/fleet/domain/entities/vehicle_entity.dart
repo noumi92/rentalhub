@@ -25,6 +25,63 @@ class VehicleRatesEntity extends Equatable {
       ];
 }
 
+/// Phase B (B2): one rentable package of a vehicle. The owner sets the
+/// price and on/off toggle per package in the rate matrix; the booking
+/// picker only offers enabled packages and totals from these prices —
+/// never from a formula.
+class VehiclePackageEntity extends Equatable {
+  /// '1h' | '3h' | '6h' | '12h' | '24h' | 'Weekly'
+  final String label;
+  final int hours;
+  final int pricePkr;
+  final bool enabled;
+  final int kmIncluded;
+
+  const VehiclePackageEntity({
+    required this.label,
+    required this.hours,
+    required this.pricePkr,
+    this.enabled = true,
+    required this.kmIncluded,
+  });
+
+  VehiclePackageEntity copyWith({
+    String? label,
+    int? hours,
+    int? pricePkr,
+    bool? enabled,
+    int? kmIncluded,
+  }) {
+    return VehiclePackageEntity(
+      label: label ?? this.label,
+      hours: hours ?? this.hours,
+      pricePkr: pricePkr ?? this.pricePkr,
+      enabled: enabled ?? this.enabled,
+      kmIncluded: kmIncluded ?? this.kmIncluded,
+    );
+  }
+
+  Map<String, dynamic> toMap() => {
+        'label': label,
+        'hours': hours,
+        'pricePkr': pricePkr,
+        'enabled': enabled,
+        'kmIncluded': kmIncluded,
+      };
+
+  factory VehiclePackageEntity.fromMap(Map<String, dynamic> map) =>
+      VehiclePackageEntity(
+        label: (map['label'] as String?) ?? '24h',
+        hours: (map['hours'] as num?)?.toInt() ?? 24,
+        pricePkr: (map['pricePkr'] as num?)?.toInt() ?? 0,
+        enabled: (map['enabled'] as bool?) ?? true,
+        kmIncluded: (map['kmIncluded'] as num?)?.toInt() ?? 250,
+      );
+
+  @override
+  List<Object?> get props => [label, hours, pricePkr, enabled, kmIncluded];
+}
+
 class VehicleEntity extends Equatable {
   final String vehicleId;
   final String shopId;
@@ -59,6 +116,16 @@ class VehicleEntity extends Equatable {
   final int? withDriverSurchargePkr;
   final String? fuelPolicy;
 
+  /// Phase B (B3): extra-km charge (Rs per km beyond the package's
+  /// included km) and the out-of-city km allowance per day (default 350).
+  final int? extraKmPkr;
+  final int? outOfCityKmPerDay;
+
+  /// Phase B (B2): the vehicle's rentable packages. Empty means "never
+  /// set" — readers must use [effectivePackages], which derives the six
+  /// standard packages from the legacy [rates] for older documents.
+  final List<VehiclePackageEntity> packages;
+
   const VehicleEntity({
     required this.vehicleId,
     required this.shopId,
@@ -89,10 +156,55 @@ class VehicleEntity extends Equatable {
     this.extraHourPkr,
     this.withDriverSurchargePkr,
     this.fuelPolicy,
+    this.packages = const [],
+    this.extraKmPkr,
+    this.outOfCityKmPerDay,
   });
 
   /// Display name used across owner and customer screens.
   String get displayName => '$make $model $year';
+
+  /// The packages the booking picker offers: the stored list when the
+  /// owner has set one, otherwise the six standard packages derived from
+  /// the legacy rates (12h defaults to 60% of the daily rate, Weekly to
+  /// the stored weekly rate or six days).
+  List<VehiclePackageEntity> get effectivePackages {
+    if (packages.isNotEmpty) return packages;
+    final daily = rates.daily24;
+    return [
+      VehiclePackageEntity(
+          label: '1h',
+          hours: 1,
+          pricePkr: rates.hourly1 ?? (daily * 0.15).round(),
+          kmIncluded: 15),
+      VehiclePackageEntity(
+          label: '3h',
+          hours: 3,
+          pricePkr: rates.hourly3 ?? (daily * 0.35).round(),
+          kmIncluded: 40),
+      VehiclePackageEntity(
+          label: '6h',
+          hours: 6,
+          pricePkr: rates.hourly6 ?? (daily * 0.6).round(),
+          kmIncluded: 80),
+      VehiclePackageEntity(
+          label: '12h',
+          hours: 12,
+          pricePkr: (daily * 0.6).round(),
+          kmIncluded: 150),
+      VehiclePackageEntity(
+          label: '24h', hours: 24, pricePkr: daily, kmIncluded: 250),
+      VehiclePackageEntity(
+          label: 'Weekly',
+          hours: 168,
+          pricePkr: weeklyRate ?? daily * 6,
+          kmIncluded: 1750),
+    ];
+  }
+
+  /// Packages the picker shows, in display order.
+  List<VehiclePackageEntity> get enabledPackages =>
+      effectivePackages.where((p) => p.enabled).toList();
 
   VehicleEntity copyWith({
     String? vehicleId,
@@ -124,6 +236,9 @@ class VehicleEntity extends Equatable {
     int? extraHourPkr,
     int? withDriverSurchargePkr,
     String? fuelPolicy,
+    List<VehiclePackageEntity>? packages,
+    int? extraKmPkr,
+    int? outOfCityKmPerDay,
   }) {
     return VehicleEntity(
       vehicleId: vehicleId ?? this.vehicleId,
@@ -157,6 +272,9 @@ class VehicleEntity extends Equatable {
       withDriverSurchargePkr:
           withDriverSurchargePkr ?? this.withDriverSurchargePkr,
       fuelPolicy: fuelPolicy ?? this.fuelPolicy,
+      packages: packages ?? this.packages,
+      extraKmPkr: extraKmPkr ?? this.extraKmPkr,
+      outOfCityKmPerDay: outOfCityKmPerDay ?? this.outOfCityKmPerDay,
     );
   }
 
@@ -191,6 +309,9 @@ class VehicleEntity extends Equatable {
         extraHourPkr,
         withDriverSurchargePkr,
         fuelPolicy,
+        packages,
+        extraKmPkr,
+        outOfCityKmPerDay,
       ];
 }
 

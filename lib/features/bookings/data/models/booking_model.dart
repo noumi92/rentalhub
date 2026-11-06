@@ -24,6 +24,14 @@ class BookingModel extends BookingEntity {
     super.customerName,
     super.customerPhone,
     super.notes,
+    super.customerCnic,
+    super.guarantorName,
+    super.guarantorCnic,
+    super.guarantorPhone,
+    super.rejectionReason,
+    super.tripType,
+    super.kmLimit,
+    super.trackerCleared,
   });
 
   Map<String, dynamic> toMap() {
@@ -50,6 +58,14 @@ class BookingModel extends BookingEntity {
       'customerName': customerName,
       'customerPhone': customerPhone,
       'notes': notes,
+      if (customerCnic != null) 'customerCnic': customerCnic,
+      if (guarantorName != null) 'guarantorName': guarantorName,
+      if (guarantorCnic != null) 'guarantorCnic': guarantorCnic,
+      if (guarantorPhone != null) 'guarantorPhone': guarantorPhone,
+      if (rejectionReason != null) 'rejectionReason': rejectionReason,
+      'tripType': tripType,
+      if (kmLimit != null) 'kmLimit': kmLimit,
+      'trackerCleared': trackerCleared,
     };
   }
 
@@ -83,6 +99,14 @@ class BookingModel extends BookingEntity {
       customerName: map['customerName'] as String?,
       customerPhone: map['customerPhone'] as String?,
       notes: map['notes'] as String?,
+      customerCnic: map['customerCnic'] as String?,
+      guarantorName: map['guarantorName'] as String?,
+      guarantorCnic: map['guarantorCnic'] as String?,
+      guarantorPhone: map['guarantorPhone'] as String?,
+      rejectionReason: map['rejectionReason'] as String?,
+      tripType: (map['tripType'] as String?) ?? 'in_city',
+      kmLimit: (map['kmLimit'] as num?)?.toInt(),
+      trackerCleared: (map['trackerCleared'] as bool?) ?? false,
     );
   }
 
@@ -110,6 +134,14 @@ class BookingModel extends BookingEntity {
       customerName: entity.customerName,
       customerPhone: entity.customerPhone,
       notes: entity.notes,
+      customerCnic: entity.customerCnic,
+      guarantorName: entity.guarantorName,
+      guarantorCnic: entity.guarantorCnic,
+      guarantorPhone: entity.guarantorPhone,
+      rejectionReason: entity.rejectionReason,
+      tripType: entity.tripType,
+      kmLimit: entity.kmLimit,
+      trackerCleared: entity.trackerCleared,
     );
   }
 }

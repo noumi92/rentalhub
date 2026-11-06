@@ -6,6 +6,7 @@ class RequestTriageCard extends StatelessWidget {
   final BookingEntity booking;
   final VoidCallback onApprove;
   final VoidCallback onReject;
+  final VoidCallback? onVerifyProof;
   final bool isProcessing;
 
   const RequestTriageCard({
@@ -13,6 +14,7 @@ class RequestTriageCard extends StatelessWidget {
     required this.booking,
     required this.onApprove,
     required this.onReject,
+    this.onVerifyProof,
     this.isProcessing = false,
   });
 
@@ -91,24 +93,6 @@ class RequestTriageCard extends StatelessWidget {
                   ],
                 ),
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFFF8E7),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: const Color(0xFFFFD54F)),
-                ),
-                child: const Row(
-                  children: [
-                    Icon(Icons.star_rounded, size: 14, color: Color(0xFFF57F17)),
-                    SizedBox(width: 2),
-                    Text(
-                      '4.9 Trust',
-                      style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFFF57F17)),
-                    ),
-                  ],
-                ),
-              ),
             ],
           ),
           const Divider(height: 20),
@@ -131,33 +115,54 @@ class RequestTriageCard extends StatelessWidget {
             style: const TextStyle(fontSize: 11.5, color: AppColors.textSecondary),
           ),
           const SizedBox(height: 14),
-          Row(
-            children: [
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: isProcessing ? null : onReject,
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.red.shade700,
-                    side: BorderSide(color: Colors.red.shade300),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                  ),
-                  child: const Text('Decline', style: TextStyle(fontWeight: FontWeight.w800)),
+          // Phase B (D1): the actions depend on where the booking is
+          // in the pipeline — only new requests can be approved or
+          // declined; a submitted proof is verified on the detail
+          // screen; an approved booking just waits for payment.
+          if (booking.status == 'payment_submitted')
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: isProcessing ? null : onVerifyProof,
+                icon: const Icon(Icons.fact_check_rounded, size: 18),
+                label: const Text('Verify Payment Proof',
+                    style: TextStyle(fontWeight: FontWeight.w800)),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.royalNavy,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
                 ),
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: isProcessing ? null : onApprove,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.emeraldGreen,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            )
+          else if (booking.status == 'requested')
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: isProcessing ? null : onReject,
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.red.shade700,
+                      side: BorderSide(color: Colors.red.shade300),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    ),
+                    child: const Text('Decline', style: TextStyle(fontWeight: FontWeight.w800)),
                   ),
-                  child: const Text('Approve & Pay', style: TextStyle(fontWeight: FontWeight.w800)),
                 ),
-              ),
-            ],
-          ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: isProcessing ? null : onApprove,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.emeraldGreen,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    ),
+                    child: const Text('Approve & Pay', style: TextStyle(fontWeight: FontWeight.w800)),
+                  ),
+                ),
+              ],
+            ),
         ],
       ),
     );

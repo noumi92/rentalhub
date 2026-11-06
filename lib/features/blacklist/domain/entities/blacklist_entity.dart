@@ -12,6 +12,9 @@ class BlacklistEntity extends Equatable {
   final String? revertedByAdmin;
   final String? revertedReason;
 
+  /// Phase B (C4): when the report was filed.
+  final DateTime? reportedAt;
+
   const BlacklistEntity({
     required this.blacklistId,
     required this.reportedByShopId,
@@ -23,12 +26,14 @@ class BlacklistEntity extends Equatable {
     this.isActive = true,
     this.revertedByAdmin,
     this.revertedReason,
+    this.reportedAt,
   });
 
   BlacklistEntity copyWith({
     bool? isActive,
     String? revertedByAdmin,
     String? revertedReason,
+    DateTime? reportedAt,
   }) {
     return BlacklistEntity(
       blacklistId: blacklistId,
@@ -41,6 +46,7 @@ class BlacklistEntity extends Equatable {
       isActive: isActive ?? this.isActive,
       revertedByAdmin: revertedByAdmin ?? this.revertedByAdmin,
       revertedReason: revertedReason ?? this.revertedReason,
+      reportedAt: reportedAt ?? this.reportedAt,
     );
   }
 
@@ -56,6 +62,7 @@ class BlacklistEntity extends Equatable {
         isActive,
         revertedByAdmin,
         revertedReason,
+        reportedAt,
       ];
 }
 

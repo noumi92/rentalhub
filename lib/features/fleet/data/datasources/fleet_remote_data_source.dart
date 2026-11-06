@@ -173,4 +173,71 @@ class FleetRemoteDataSource {
       } catch (_) {}
     }
   }
+
+  /// Phase B (F1): the odometer advances by the trip at return, so
+  /// the fleet's mileage stays true instead of freezing at the
+  /// value recorded when the car was added.
+  Future<void> updateVehicleMileage({
+    required String vehicleId,
+    required int mileageKm,
+  }) async {
+    final idx = _inMemoryVehicles.indexWhere((v) => v.vehicleId == vehicleId);
+    if (idx != -1) {
+      _inMemoryVehicles[idx] =
+          _inMemoryVehicles[idx].copyWith(mileageKm: mileageKm);
+    }
+
+    final fs = _resolvedFirestore;
+    if (fs != null) {
+      try {
+        await fs.collection('vehicles').doc(vehicleId).update({
+          'mileageKm': mileageKm,
+        });
+      } catch (_) {}
+    }
+  }
+
+  /// Phase B (B2): writes the whole pricing set. The in-memory list gets
+  /// the full updated entity; Firestore gets the same fields (the
+  /// pricing subset of `toMap`, so the document keeps its identity
+  /// fields untouched).
+  Future<void> updateVehiclePricing({
+    required String vehicleId,
+    required VehicleEntity vehicle,
+  }) async {
+    final model = VehicleModel.fromEntity(vehicle);
+    final idx = _inMemoryVehicles.indexWhere((v) => v.vehicleId == vehicleId);
+    if (idx != -1) {
+      _inMemoryVehicles[idx] = model;
+    }
+
+    final fs = _resolvedFirestore;
+    if (fs != null) {
+      try {
+        final map = model.toMap();
+        // Firestore deletes a field on a null update value, so only
+        // send the fields that are actually set.
+        final update = <String, dynamic>{
+          'rates': map['rates'],
+          'packages': map['packages'] ?? [],
+          'isSelfDriveAvailable': model.isSelfDriveAvailable,
+          'isWithDriverAvailable': model.isWithDriverAvailable,
+          if (map['weeklyRate'] != null) 'weeklyRate': map['weeklyRate'],
+          if (map['securityDepositPkr'] != null)
+            'securityDepositPkr': map['securityDepositPkr'],
+          if (map['advanceRequiredPkr'] != null)
+            'advanceRequiredPkr': map['advanceRequiredPkr'],
+          if (map['extraHourPkr'] != null)
+            'extraHourPkr': map['extraHourPkr'],
+          if (map['withDriverSurchargePkr'] != null)
+            'withDriverSurchargePkr': map['withDriverSurchargePkr'],
+          if (map['fuelPolicy'] != null) 'fuelPolicy': map['fuelPolicy'],
+          if (map['extraKmPkr'] != null) 'extraKmPkr': map['extraKmPkr'],
+          if (map['outOfCityKmPerDay'] != null)
+            'outOfCityKmPerDay': map['outOfCityKmPerDay'],
+        };
+        await fs.collection('vehicles').doc(vehicleId).update(update);
+      } catch (_) {}
+    }
+  }
 }

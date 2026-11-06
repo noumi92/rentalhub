@@ -5,8 +5,10 @@ class SettlementSummaryReceiptWidget extends StatelessWidget {
   final int totalKm;
   final int excessKm;
   final int excessKmPenalty;
+  final int extraKmRate;
   final int fuelDeficitFee;
   final int overtimeFee;
+  final int damageCharge;
   final int securityDeposit;
   final int netRefund;
 
@@ -15,15 +17,18 @@ class SettlementSummaryReceiptWidget extends StatelessWidget {
     required this.totalKm,
     required this.excessKm,
     required this.excessKmPenalty,
+    this.extraKmRate = 25,
     required this.fuelDeficitFee,
     required this.overtimeFee,
+    this.damageCharge = 0,
     required this.securityDeposit,
     required this.netRefund,
   });
 
   @override
   Widget build(BuildContext context) {
-    final totalDeductions = excessKmPenalty + fuelDeficitFee + overtimeFee;
+    final totalDeductions =
+        excessKmPenalty + fuelDeficitFee + overtimeFee + damageCharge;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -43,11 +48,13 @@ class SettlementSummaryReceiptWidget extends StatelessWidget {
           _itemRow('Total Kilometers Driven', '$totalKm KM'),
           _itemRow('Allowed KM Allowance', '${totalKm - excessKm} KM'),
           if (excessKm > 0)
-            _itemRow('Excess KM Penalty ($excessKm km × Rs. 25)', 'Rs. $excessKmPenalty', isDeduction: true),
+            _itemRow('Excess KM Penalty ($excessKm km × Rs. $extraKmRate)', 'Rs. $excessKmPenalty', isDeduction: true),
           if (fuelDeficitFee > 0)
             _itemRow('Fuel Level Deficit', 'Rs. $fuelDeficitFee', isDeduction: true),
           if (overtimeFee > 0)
             _itemRow('Late Overtime Fee', 'Rs. $overtimeFee', isDeduction: true),
+          if (damageCharge > 0)
+            _itemRow('Damage Found at Return', 'Rs. $damageCharge', isDeduction: true),
           const Divider(height: 18),
           _itemRow('Initial Security Deposit Held', 'Rs. $securityDeposit'),
           _itemRow('Total Incident / Penalty Deductions', '- Rs. $totalDeductions', isDeduction: true),

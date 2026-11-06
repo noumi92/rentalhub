@@ -254,8 +254,13 @@ void main() {
 
       expect(find.text('Reservation Request Approved!'), findsOneWidget);
       expect(find.text('Direct Transfer Channels'), findsOneWidget);
-      expect(find.text('JazzCash Mobile Account'), findsOneWidget);
-      expect(find.text('Bank Meezan Islamic'), findsOneWidget);
+      // Phase B (D1): with no accounts configured for the shop, the
+      // view says so instead of showing another shop's accounts.
+      expect(
+          find.text('No payment accounts configured for this shop yet.'),
+          findsOneWidget);
+      expect(find.text('JazzCash Mobile Account'), findsNothing);
+      expect(find.text('Bank Meezan Islamic'), findsNothing);
     });
 
     testWidgets('PaymentProofUploadView: renders TID input, deposit notice and submits proof', (tester) async {

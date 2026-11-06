@@ -177,31 +177,24 @@ class OwnerPaymentAccountsView extends StatelessWidget {
             );
           }
         }
-        return Column(
-          children: const [
-            PaymentAccountCard(
-              methodTitle: 'JazzCash Mobile Account',
-              accountTitle: 'Al-Falah Rent a Car',
-              accountNumber: '03001234567',
-              brandColor: Color(0xFFED1C24),
-              icon: Icons.phone_android_rounded,
+        // Phase B (D1): when the shop has not configured any payment
+        // accounts, say so — never show another shop's accounts as
+        // if they were this shop's.
+        return const Column(
+          children: [
+            Icon(Icons.account_balance_rounded,
+                size: 40, color: AppColors.textMuted),
+            SizedBox(height: 8),
+            Text(
+              'No payment accounts configured for this shop yet.',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontWeight: FontWeight.w700),
             ),
-            SizedBox(height: 12),
-            PaymentAccountCard(
-              methodTitle: 'EasyPaisa Wallet',
-              accountTitle: 'Al-Falah Rent a Car',
-              accountNumber: '03451234567',
-              brandColor: Color(0xFF00A859),
-              icon: Icons.account_balance_wallet_rounded,
-            ),
-            SizedBox(height: 12),
-            PaymentAccountCard(
-              methodTitle: 'Bank Meezan Islamic',
-              accountTitle: 'Al Falah Motors Private Limited',
-              accountNumber: '02010108920192',
-              iban: 'PK45MEZN0002010108920192',
-              brandColor: Color(0xFF020246),
-              icon: Icons.account_balance_rounded,
+            SizedBox(height: 4),
+            Text(
+              'Add JazzCash, EasyPaisa or bank accounts in Shop Settings so customers know where to pay.',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
             ),
           ],
         );
