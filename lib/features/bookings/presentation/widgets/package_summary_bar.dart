@@ -1,0 +1,75 @@
+import 'package:flutter/material.dart';
+
+import '../../../../core/constants/app_colors.dart';
+import '../../../../core/widgets/debounced_button.dart';
+
+/// The bottom summary bar of the booking picker: total, advance due,
+/// security deposit and the Continue button. Extracted from
+/// [RentPackagePickerView] so the view stays under the 250-line cap.
+class PackageSummaryBar extends StatelessWidget {
+  const PackageSummaryBar({
+    super.key,
+    required this.total,
+    required this.advance,
+    required this.deposit,
+    required this.onContinue,
+  });
+
+  final int total;
+  final int advance;
+  final int? deposit;
+  final VoidCallback onContinue;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+              color: Color(0x14000000),
+              blurRadius: 10,
+              offset: Offset(0, -3))
+        ],
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('Total: Rs. $total',
+                    style: const TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w900,
+                        color: AppColors.midnightNavy)),
+                Text('Advance Due: Rs. $advance',
+                    style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.sunsetOrange)),
+                if (deposit != null)
+                  Text('Security Deposit: Rs. $deposit',
+                      style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.textMuted)),
+              ],
+            ),
+          ),
+          const SizedBox(width: 12),
+          SizedBox(
+            width: 140,
+            child: DebouncedButton(
+              text: 'Continue',
+              icon: Icons.arrow_forward_rounded,
+              onPressed: () async => onContinue(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
