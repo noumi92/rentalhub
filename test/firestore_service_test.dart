@@ -339,6 +339,11 @@ void main() {
       final cnicField = find.byType(TextField).first;
       await tester.enterText(cnicField, '12345');
       // G3: the submit button is now labelled for what it does.
+      // The form is scrollable and the button sits just below the fold on
+      // the default 800x600 test surface (the Phase A type scale made the
+      // form taller), so bring it into view before tapping.
+      await tester.ensureVisible(find.text('Submit KYC Documents'));
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Submit KYC Documents'));
       await tester.pumpAndSettle();
 
