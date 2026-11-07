@@ -30,7 +30,7 @@ class AdminLoginForm extends StatelessWidget {
             style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w900,
-                color: AppColors.midnightNavy)),
+                color: AppColors.primary)),
         const SizedBox(height: 8),
         const Text('Sign in with your admin account.',
             style: TextStyle(fontSize: 13, color: AppColors.textMuted)),
@@ -70,7 +70,7 @@ class AdminLoginForm extends StatelessWidget {
       fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: AppColors.border),
+        borderSide: const BorderSide(color: AppColors.borderSubtle),
       ),
       contentPadding:
           const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
@@ -97,7 +97,7 @@ class AdminNotAdminCard extends StatelessWidget {
             style: TextStyle(
                 fontSize: 17,
                 fontWeight: FontWeight.w900,
-                color: AppColors.midnightNavy)),
+                color: AppColors.primary)),
         const SizedBox(height: 8),
         const Text(
           'This account has no admin role. Sign out and sign in with an admin account, or ask a super admin to grant you one.',

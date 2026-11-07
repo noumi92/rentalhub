@@ -153,7 +153,7 @@ class _AdminTeamViewState extends State<AdminTeamView> {
                     style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w900,
-                        color: AppColors.midnightNavy)),
+                        color: AppColors.primary)),
                 const SizedBox(height: 10),
                 if (_members.isEmpty)
                   const Text('No admins found — the team list reads the users who hold an admin role.',
@@ -195,7 +195,7 @@ class _AdminTeamViewState extends State<AdminTeamView> {
                     style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w900,
-                        color: AppColors.midnightNavy)),
+                        color: AppColors.primary)),
                 const SizedBox(height: 10),
                 if (_invites.where((i) => !i.accepted).isEmpty)
                   const Text('No pending invites.',
@@ -229,7 +229,7 @@ class _AdminTeamViewState extends State<AdminTeamView> {
                       style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w900,
-                          color: AppColors.midnightNavy)),
+                          color: AppColors.primary)),
                   const SizedBox(height: 10),
                   AdminInviteForm(
                     emailController: _emailController,

@@ -163,7 +163,7 @@ class _AdminReportsViewState extends State<AdminReportsView> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.borderSubtle),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -176,7 +176,7 @@ class _AdminReportsViewState extends State<AdminReportsView> {
               style: const TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w800,
-                  color: AppColors.midnightNavy)),
+                  color: AppColors.primary)),
         ],
       ),
     );
@@ -193,7 +193,7 @@ class _AdminReportsViewState extends State<AdminReportsView> {
               style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w800,
-                  color: AppColors.midnightNavy)),
+                  color: AppColors.primary)),
           const SizedBox(height: 6),
           if (list.isEmpty)
             const Text('None in this range.',

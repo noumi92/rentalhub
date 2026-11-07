@@ -69,7 +69,7 @@ class VehicleDetailActionBar extends StatelessWidget {
               }
             },
             style: OutlinedButton.styleFrom(
-              foregroundColor: AppColors.emeraldGreen,
+              foregroundColor: AppColors.accentSuccess,
               side: const BorderSide(color: Color(0xFF86EFAC)),
               backgroundColor: const Color(0xFFF0FDF4),
               padding:
@@ -78,7 +78,7 @@ class VehicleDetailActionBar extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12)),
             ),
             icon: const Icon(Icons.chat_bubble_outline_rounded,
-                size: 18, color: AppColors.emeraldGreen),
+                size: 18, color: AppColors.accentSuccess),
             label: const Text('WhatsApp',
                 style: TextStyle(fontWeight: FontWeight.w700)),
           ),

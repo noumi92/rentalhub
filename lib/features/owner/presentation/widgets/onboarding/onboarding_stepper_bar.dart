@@ -36,10 +36,10 @@ class OnboardingStepperBar extends StatelessWidget {
             width: 32,
             height: 32,
             decoration: BoxDecoration(
-              color: isDone ? AppColors.emeraldGreen : isCurrent ? AppColors.sunsetOrange : Colors.transparent,
+              color: isDone ? AppColors.accentSuccess : isCurrent ? AppColors.secondary : Colors.transparent,
               shape: BoxShape.circle,
               border: Border.all(
-                color: isDone ? AppColors.emeraldGreen : isCurrent ? AppColors.sunsetOrange : AppColors.border,
+                color: isDone ? AppColors.accentSuccess : isCurrent ? AppColors.secondary : AppColors.borderSubtle,
                 width: 1.5,
               ),
             ),
@@ -55,7 +55,7 @@ class OnboardingStepperBar extends StatelessWidget {
             style: TextStyle(
               fontSize: 10,
               fontWeight: isCurrent ? FontWeight.w800 : FontWeight.w600,
-              color: isCurrent ? AppColors.midnightNavy : AppColors.textMuted,
+              color: isCurrent ? AppColors.primary : AppColors.textMuted,
             ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
@@ -71,7 +71,7 @@ class OnboardingStepperBar extends StatelessWidget {
       width: 16,
       height: 2,
       margin: const EdgeInsets.only(bottom: 14),
-      color: isPassed ? AppColors.emeraldGreen : AppColors.border,
+      color: isPassed ? AppColors.accentSuccess : AppColors.borderSubtle,
     );
   }
 }

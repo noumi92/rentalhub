@@ -99,7 +99,7 @@ class _AdminBlacklistTribunalViewState extends State<AdminBlacklistTribunalView>
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: item.isActive ? Colors.red.shade300 : AppColors.border),
+        border: Border.all(color: item.isActive ? Colors.red.shade300 : AppColors.borderSubtle),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -110,7 +110,7 @@ class _AdminBlacklistTribunalViewState extends State<AdminBlacklistTribunalView>
               Expanded(
                 child: Row(
                   children: [
-                    Icon(item.isActive ? Icons.gavel_rounded : Icons.check_circle_rounded, color: item.isActive ? Colors.red : AppColors.emeraldGreen, size: 22),
+                    Icon(item.isActive ? Icons.gavel_rounded : Icons.check_circle_rounded, color: item.isActive ? Colors.red : AppColors.accentSuccess, size: 22),
                     const SizedBox(width: 8),
                     Expanded(child: Text('${item.blacklistId} • CNIC: ${item.cnicNumber}', overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14))),
                   ],
@@ -119,18 +119,18 @@ class _AdminBlacklistTribunalViewState extends State<AdminBlacklistTribunalView>
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: item.isActive ? Colors.red.withAlpha(20) : AppColors.emeraldGreen.withAlpha(20),
+                  color: item.isActive ? Colors.red.withAlpha(20) : AppColors.accentSuccess.withAlpha(20),
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(
                   item.isActive ? 'ACTIVE BLACKLIST' : 'REVERSED / CLEARED',
-                  style: TextStyle(fontWeight: FontWeight.w900, fontSize: 10, color: item.isActive ? Colors.red : AppColors.emeraldGreen),
+                  style: TextStyle(fontWeight: FontWeight.w900, fontSize: 10, color: item.isActive ? Colors.red : AppColors.accentSuccess),
                 ),
               ),
             ],
           ),
           const SizedBox(height: 8),
-          Text('Reason: ${item.reasonCategory}', style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12.5, color: AppColors.midnightNavy)),
+          Text('Reason: ${item.reasonCategory}', style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12.5, color: AppColors.primary)),
           const SizedBox(height: 4),
           Text(item.description, style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
           const SizedBox(height: 4),
@@ -139,8 +139,8 @@ class _AdminBlacklistTribunalViewState extends State<AdminBlacklistTribunalView>
             const SizedBox(height: 8),
             Container(
               padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(color: AppColors.backgroundLight, borderRadius: BorderRadius.circular(6)),
-              child: Text('Reversal Justification: ${item.revertedReason}', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.midnightNavy)),
+              decoration: BoxDecoration(color: Theme.of(context).colorScheme.surfaceContainerHighest, borderRadius: BorderRadius.circular(6)),
+              child: Text('Reversal Justification: ${item.revertedReason}', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.primary)),
             ),
           ],
           if (item.isActive) ...[
@@ -150,7 +150,7 @@ class _AdminBlacklistTribunalViewState extends State<AdminBlacklistTribunalView>
               children: [
                 OutlinedButton(
                   onPressed: () => _showReversalDialog(record),
-                  style: OutlinedButton.styleFrom(foregroundColor: AppColors.emeraldGreen),
+                  style: OutlinedButton.styleFrom(foregroundColor: AppColors.accentSuccess),
                   child: const Text('Decide appeal — Keep or Remove', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 11.5)),
                 ),
               ],

@@ -24,7 +24,7 @@ class CustomerStatsRow extends StatelessWidget {
             label: 'Total Trips',
             value: '$totalTrips',
             icon: Icons.history_rounded,
-            color: AppColors.royalNavy,
+            color: AppColors.primary,
           ),
         ),
         const SizedBox(width: 10),
@@ -33,7 +33,7 @@ class CustomerStatsRow extends StatelessWidget {
             label: 'Active',
             value: '$activeBookings',
             icon: Icons.directions_car_rounded,
-            color: AppColors.sunsetOrange,
+            color: AppColors.secondary,
           ),
         ),
         const SizedBox(width: 10),
@@ -42,7 +42,7 @@ class CustomerStatsRow extends StatelessWidget {
             label: 'Trust Score',
             value: trustScore == null ? '—' : '${trustScore!.toStringAsFixed(1)} ★',
             icon: Icons.verified_user_rounded,
-            color: AppColors.emeraldGreen,
+            color: AppColors.accentSuccess,
           ),
         ),
       ],
@@ -60,7 +60,7 @@ class CustomerStatsRow extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.borderSubtle),
       ),
       child: Column(
         children: [
@@ -71,7 +71,7 @@ class CustomerStatsRow extends StatelessWidget {
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w900,
-              color: AppColors.midnightNavy,
+              color: AppColors.primary,
             ),
           ),
           const SizedBox(height: 2),

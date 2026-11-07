@@ -16,9 +16,9 @@ class DriverModeToggle extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: AppColors.backgroundLight,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.borderSubtle),
       ),
       child: Row(
         children: [
@@ -81,7 +81,7 @@ class DriverModeToggle extends StatelessWidget {
                   icon,
                   size: 17,
                   color: isSelected
-                      ? AppColors.sunsetOrange
+                      ? AppColors.secondary
                       : AppColors.textSecondary,
                 ),
                 const SizedBox(width: 6),
@@ -91,7 +91,7 @@ class DriverModeToggle extends StatelessWidget {
                     fontSize: 13,
                     fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
                     color: isSelected
-                        ? AppColors.midnightNavy
+                        ? AppColors.primary
                         : AppColors.textSecondary,
                   ),
                 ),

@@ -83,7 +83,7 @@ class _CarReviewDetailSheetState extends State<CarReviewDetailSheet> {
                 style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w900,
-                    color: AppColors.midnightNavy)),
+                    color: AppColors.primary)),
             const SizedBox(height: 4),
             Text(
                 'Plate ${v.plateNumber} • ${v.category} • ${v.transmission} • ${v.fuelType} • ${v.seats} seats\nStatus: ${v.status} • Current review: ${widget.review?.status ?? 'not reviewed yet'}',
@@ -146,7 +146,7 @@ class _CarReviewDetailSheetState extends State<CarReviewDetailSheet> {
                     Theme.of(context).colorScheme.surfaceContainerHighest,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppColors.border),
+                  borderSide: const BorderSide(color: AppColors.borderSubtle),
                 ),
                 contentPadding: const EdgeInsets.symmetric(
                     horizontal: 14, vertical: 12),
@@ -201,7 +201,7 @@ class _CarReviewDetailSheetState extends State<CarReviewDetailSheet> {
               style: const TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.midnightNavy)),
+                  color: AppColors.primary)),
         ],
       ),
     );

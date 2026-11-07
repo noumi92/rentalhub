@@ -99,7 +99,7 @@ class _DisputeDecisionSheetState extends State<DisputeDecisionSheet> {
                 style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w900,
-                    color: AppColors.midnightNavy)),
+                    color: AppColors.primary)),
             const SizedBox(height: 4),
             Text(
                 'Booking ${d.bookingId} • ${d.status} • $_slaText',
@@ -121,7 +121,7 @@ class _DisputeDecisionSheetState extends State<DisputeDecisionSheet> {
                 style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.midnightNavy)),
+                    color: AppColors.primary)),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
               initialValue: _decision,
@@ -143,7 +143,7 @@ class _DisputeDecisionSheetState extends State<DisputeDecisionSheet> {
                     Theme.of(context).colorScheme.surfaceContainerHighest,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppColors.border),
+                  borderSide: const BorderSide(color: AppColors.borderSubtle),
                 ),
                 contentPadding: const EdgeInsets.symmetric(
                     horizontal: 14, vertical: 12),
@@ -160,7 +160,7 @@ class _DisputeDecisionSheetState extends State<DisputeDecisionSheet> {
                     Theme.of(context).colorScheme.surfaceContainerHighest,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppColors.border),
+                  borderSide: const BorderSide(color: AppColors.borderSubtle),
                 ),
                 contentPadding: const EdgeInsets.symmetric(
                     horizontal: 14, vertical: 12),
@@ -177,7 +177,7 @@ class _DisputeDecisionSheetState extends State<DisputeDecisionSheet> {
                     Theme.of(context).colorScheme.surfaceContainerHighest,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppColors.border),
+                  borderSide: const BorderSide(color: AppColors.borderSubtle),
                 ),
                 contentPadding: const EdgeInsets.symmetric(
                     horizontal: 14, vertical: 12),
@@ -207,7 +207,7 @@ class _DisputeDecisionSheetState extends State<DisputeDecisionSheet> {
               style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w800,
-                  color: AppColors.midnightNavy)),
+                  color: AppColors.primary)),
           const SizedBox(height: 6),
           ...lines.map((l) => Padding(
                 padding: const EdgeInsets.only(bottom: 3),

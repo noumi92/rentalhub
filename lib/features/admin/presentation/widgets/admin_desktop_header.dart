@@ -20,7 +20,7 @@ class AdminDesktopHeader extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 24),
       decoration: const BoxDecoration(
         color: Colors.white,
-        border: Border(bottom: BorderSide(color: AppColors.border)),
+        border: Border(bottom: BorderSide(color: AppColors.borderSubtle)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -30,7 +30,7 @@ class AdminDesktopHeader extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: AppColors.midnightNavy)),
+                Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: AppColors.primary)),
                 Text(subtitle,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
@@ -39,7 +39,7 @@ class AdminDesktopHeader extends StatelessWidget {
           ),
           if (onRefresh != null)
             IconButton(
-              icon: const Icon(Icons.refresh_rounded, color: AppColors.midnightNavy, size: 20),
+              icon: const Icon(Icons.refresh_rounded, color: AppColors.primary, size: 20),
               tooltip: 'Refresh',
               onPressed: onRefresh,
             ),

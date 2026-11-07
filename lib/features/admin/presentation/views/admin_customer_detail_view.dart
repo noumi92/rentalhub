@@ -127,7 +127,7 @@ class _AdminCustomerDetailViewState extends State<AdminCustomerDetailView> {
                           style: const TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.w900,
-                              color: AppColors.midnightNavy)),
+                              color: AppColors.primary)),
                       const SizedBox(height: 4),
                       Text(
                         '${_detail!.customer.phone} • CNIC ${_detail!.customer.cnic ?? 'not on file'} • Source: ${_detail!.customer.source}',
@@ -219,7 +219,7 @@ class _AdminCustomerDetailViewState extends State<AdminCustomerDetailView> {
               style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w800,
-                  color: AppColors.midnightNavy)),
+                  color: AppColors.primary)),
           const SizedBox(height: 6),
           ...lines.map((l) => Padding(
                 padding: const EdgeInsets.only(bottom: 3),

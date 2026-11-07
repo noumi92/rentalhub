@@ -106,7 +106,7 @@ class _AdminShopDetailViewState extends State<AdminShopDetailView> {
                           style: const TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.w900,
-                              color: AppColors.midnightNavy)),
+                              color: AppColors.primary)),
                       const SizedBox(height: 4),
                       Text(
                         '${_shop!.city} • ${_shop!.address}\nOwner: ${_shop!.ownerName ?? '—'} • ${_shop!.phoneNumber}',
@@ -203,7 +203,7 @@ class _AdminShopDetailViewState extends State<AdminShopDetailView> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.borderSubtle),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -216,7 +216,7 @@ class _AdminShopDetailViewState extends State<AdminShopDetailView> {
               style: const TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w800,
-                  color: AppColors.midnightNavy)),
+                  color: AppColors.primary)),
         ],
       ),
     );
@@ -232,7 +232,7 @@ class _AdminShopDetailViewState extends State<AdminShopDetailView> {
               style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w800,
-                  color: AppColors.midnightNavy)),
+                  color: AppColors.primary)),
           const SizedBox(height: 6),
           ...lines.map((l) => Padding(
                 padding: const EdgeInsets.only(bottom: 3),

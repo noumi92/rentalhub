@@ -91,7 +91,7 @@ class _AdminShopsViewState extends State<AdminShopsView> {
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide:
-                            const BorderSide(color: AppColors.border),
+                            const BorderSide(color: AppColors.borderSubtle),
                       ),
                       contentPadding: const EdgeInsets.symmetric(
                           horizontal: 14, vertical: 12),
@@ -155,20 +155,20 @@ class _AdminShopsViewState extends State<AdminShopsView> {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 side: const BorderSide(
-                                    color: AppColors.border),
+                                    color: AppColors.borderSubtle),
                               ),
                               child: ListTile(
                                 leading: CircleAvatar(
-                                  backgroundColor: AppColors.royalNavy
+                                  backgroundColor: AppColors.primary
                                       .withValues(alpha: 0.12),
                                   child: const Icon(Icons.store_rounded,
-                                      color: AppColors.royalNavy),
+                                      color: AppColors.primary),
                                 ),
                                 title: Text(shop.shopName,
                                     style: const TextStyle(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w800,
-                                        color: AppColors.midnightNavy)),
+                                        color: AppColors.primary)),
                                 subtitle: Text(
                                   '${shop.city} • Plan ${shop.plan} • Rating ${shop.rating.toStringAsFixed(1)}',
                                   style: const TextStyle(

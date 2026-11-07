@@ -31,7 +31,7 @@ class AdminInviteForm extends StatelessWidget {
       color: Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: const BorderSide(color: AppColors.border),
+        side: const BorderSide(color: AppColors.borderSubtle),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -48,7 +48,7 @@ class AdminInviteForm extends StatelessWidget {
                     Theme.of(context).colorScheme.surfaceContainerHighest,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppColors.border),
+                  borderSide: const BorderSide(color: AppColors.borderSubtle),
                 ),
                 contentPadding: const EdgeInsets.symmetric(
                     horizontal: 14, vertical: 12),
@@ -63,7 +63,7 @@ class AdminInviteForm extends StatelessWidget {
                     Theme.of(context).colorScheme.surfaceContainerHighest,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppColors.border),
+                  borderSide: const BorderSide(color: AppColors.borderSubtle),
                 ),
                 contentPadding: const EdgeInsets.symmetric(
                     horizontal: 14, vertical: 12),
@@ -115,14 +115,14 @@ class AdminInviteTile extends StatelessWidget {
       color: Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: const BorderSide(color: AppColors.border),
+        side: const BorderSide(color: AppColors.borderSubtle),
       ),
       child: ListTile(
         title: Text(invite.email,
             style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w800,
-                color: AppColors.midnightNavy)),
+                color: AppColors.primary)),
         subtitle: Text(
           '${AdminPermissions.label(invite.adminRole)} • '
           '${invite.isExpired ? 'Expired' : 'Expires ${invite.expiresAt?.day}/${invite.expiresAt?.month}/${invite.expiresAt?.year}'}',

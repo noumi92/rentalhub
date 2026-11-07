@@ -17,7 +17,7 @@ class BoardingPassCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.borderSubtle),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.06),
@@ -51,7 +51,7 @@ class BoardingPassCard extends StatelessWidget {
                           return Container(
                             width: 5,
                             height: 1.5,
-                            color: AppColors.border,
+                            color: AppColors.borderSubtle,
                           );
                         }),
                       );
@@ -66,7 +66,7 @@ class BoardingPassCard extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: Theme.of(context).scaffoldBackgroundColor,
                       shape: BoxShape.circle,
-                      border: Border.all(color: AppColors.border),
+                      border: Border.all(color: AppColors.borderSubtle),
                     ),
                   ),
                 ),
@@ -78,7 +78,7 @@ class BoardingPassCard extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: Theme.of(context).scaffoldBackgroundColor,
                       shape: BoxShape.circle,
-                      border: Border.all(color: AppColors.border),
+                      border: Border.all(color: AppColors.borderSubtle),
                     ),
                   ),
                 ),

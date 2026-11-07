@@ -58,7 +58,7 @@ class FleetBody extends StatelessWidget {
                 icon: const Icon(Icons.refresh, size: 18),
                 label: const Text('Retry'),
                 style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.sunsetOrange,
+                    backgroundColor: AppColors.secondary,
                     foregroundColor: Colors.white),
               ),
             ],
@@ -88,7 +88,7 @@ class FleetBody extends StatelessWidget {
                 icon: const Icon(Icons.add, size: 18),
                 label: const Text('Add Vehicle Now'),
                 style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.sunsetOrange,
+                    backgroundColor: AppColors.secondary,
                     foregroundColor: Colors.white),
               ),
             ],

@@ -32,7 +32,7 @@ class CustomerTrustBreakdown extends StatelessWidget {
       color: Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: const BorderSide(color: AppColors.border),
+        side: const BorderSide(color: AppColors.borderSubtle),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -46,13 +46,13 @@ class CustomerTrustBreakdown extends StatelessWidget {
                     style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w900,
-                        color: AppColors.midnightNavy)),
+                        color: AppColors.primary)),
                 Text(
                   '${breakdown.total.toStringAsFixed(1)} / 5.0',
                   style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w900,
-                      color: AppColors.midnightNavy),
+                      color: AppColors.primary),
                 ),
               ],
             ),
@@ -93,10 +93,10 @@ class CustomerTrustBreakdown extends StatelessWidget {
           Expanded(
             child: LinearProgressIndicator(
               value: ratio,
-              backgroundColor: AppColors.border,
+              backgroundColor: AppColors.borderSubtle,
               color: value < 0
                   ? Colors.red.shade700
-                  : AppColors.emeraldGreen,
+                  : AppColors.accentSuccess,
               minHeight: 8,
             ),
           ),

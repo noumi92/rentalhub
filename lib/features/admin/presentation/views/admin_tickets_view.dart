@@ -109,15 +109,15 @@ class _AdminTicketsViewState extends State<AdminTicketsView> {
                                 side: BorderSide(
                                     color: breached
                                         ? Colors.red.shade300
-                                        : AppColors.border),
+                                        : AppColors.borderSubtle),
                               ),
                               child: ListTile(
                                 leading: CircleAvatar(
-                                  backgroundColor: AppColors.royalNavy
+                                  backgroundColor: AppColors.primary
                                       .withValues(alpha: 0.12),
                                   child: const Icon(
                                       Icons.support_agent_rounded,
-                                      color: AppColors.royalNavy),
+                                      color: AppColors.primary),
                                 ),
                                 title: Text(
                                     t.message.length > 80
@@ -128,7 +128,7 @@ class _AdminTicketsViewState extends State<AdminTicketsView> {
                                     style: const TextStyle(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w800,
-                                        color: AppColors.midnightNavy)),
+                                        color: AppColors.primary)),
                                 subtitle: Text(
                                   '${t.priority.toUpperCase()} • ${t.status} • ${t.slaText()}',
                                   style: TextStyle(

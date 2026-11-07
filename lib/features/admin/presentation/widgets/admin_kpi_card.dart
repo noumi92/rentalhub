@@ -14,7 +14,7 @@ class AdminKpiCard extends StatelessWidget {
     required this.value,
     required this.changeLabel,
     required this.icon,
-    this.accentColor = AppColors.sunsetOrange,
+    this.accentColor = AppColors.secondary,
   });
 
   @override
@@ -24,7 +24,7 @@ class AdminKpiCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.borderSubtle),
         boxShadow: const [
           BoxShadow(color: Color(0x06000000), blurRadius: 8, offset: Offset(0, 3)),
         ],
@@ -50,9 +50,9 @@ class AdminKpiCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
-          Text(value, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: AppColors.midnightNavy)),
+          Text(value, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: AppColors.primary)),
           const SizedBox(height: 6),
-          Text(changeLabel, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.emeraldGreen)),
+          Text(changeLabel, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.accentSuccess)),
         ],
       ),
     );

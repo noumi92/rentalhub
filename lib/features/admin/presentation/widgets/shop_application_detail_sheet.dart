@@ -82,7 +82,7 @@ class _ShopApplicationDetailSheetState
                 style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w900,
-                    color: AppColors.midnightNavy)),
+                    color: AppColors.primary)),
             const SizedBox(height: 4),
             Text('${shop.city} • ${shop.address}',
                 style:
@@ -96,7 +96,7 @@ class _ShopApplicationDetailSheetState
                 style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.midnightNavy)),
+                    color: AppColors.primary)),
             const SizedBox(height: 8),
             ...checklist.items.map((item) => Padding(
                   padding: const EdgeInsets.only(bottom: 6),
@@ -133,7 +133,7 @@ class _ShopApplicationDetailSheetState
                   style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w800,
-                      color: AppColors.midnightNavy)),
+                      color: AppColors.primary)),
               const SizedBox(height: 8),
               ShopFleetPhotos(photoUrls: shop.fleetPhotos),
               const SizedBox(height: 16),
@@ -149,7 +149,7 @@ class _ShopApplicationDetailSheetState
                     Theme.of(context).colorScheme.surfaceContainerHighest,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppColors.border),
+                  borderSide: const BorderSide(color: AppColors.borderSubtle),
                 ),
                 contentPadding: const EdgeInsets.symmetric(
                     horizontal: 14, vertical: 12),
@@ -214,7 +214,7 @@ class _ShopApplicationDetailSheetState
               style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w800,
-                  color: AppColors.midnightNavy)),
+                  color: AppColors.primary)),
           const SizedBox(height: 6),
           ...lines.map((l) => Padding(
                 padding: const EdgeInsets.only(bottom: 3),

@@ -135,7 +135,7 @@ class _TicketDetailSheetState extends State<TicketDetailSheet> {
                 style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w900,
-                    color: AppColors.midnightNavy)),
+                    color: AppColors.primary)),
             const SizedBox(height: 4),
             Text(
                 '${t.priority.toUpperCase()} • ${t.status} • ${t.slaText()}',
@@ -156,7 +156,7 @@ class _TicketDetailSheetState extends State<TicketDetailSheet> {
                 style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.midnightNavy)),
+                    color: AppColors.primary)),
             const SizedBox(height: 6),
             if (_replies.isEmpty)
               const Text('No replies yet.',
@@ -171,7 +171,7 @@ class _TicketDetailSheetState extends State<TicketDetailSheet> {
                 style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.midnightNavy)),
+                    color: AppColors.primary)),
             const SizedBox(height: 6),
             Wrap(
               spacing: 8,
@@ -196,7 +196,7 @@ class _TicketDetailSheetState extends State<TicketDetailSheet> {
                     Theme.of(context).colorScheme.surfaceContainerHighest,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppColors.border),
+                  borderSide: const BorderSide(color: AppColors.borderSubtle),
                 ),
                 contentPadding: const EdgeInsets.symmetric(
                     horizontal: 14, vertical: 12),
@@ -215,7 +215,7 @@ class _TicketDetailSheetState extends State<TicketDetailSheet> {
                 style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.midnightNavy)),
+                    color: AppColors.primary)),
             const SizedBox(height: 6),
             ..._notes.map((n) => Padding(
                   padding: const EdgeInsets.only(bottom: 6),
@@ -236,7 +236,7 @@ class _TicketDetailSheetState extends State<TicketDetailSheet> {
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide:
-                            const BorderSide(color: AppColors.border),
+                            const BorderSide(color: AppColors.borderSubtle),
                       ),
                       contentPadding: const EdgeInsets.symmetric(
                           horizontal: 14, vertical: 12),

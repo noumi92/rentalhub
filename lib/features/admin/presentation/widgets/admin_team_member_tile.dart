@@ -29,20 +29,20 @@ class AdminTeamMemberTile extends StatelessWidget {
       color: Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: const BorderSide(color: AppColors.border),
+        side: const BorderSide(color: AppColors.borderSubtle),
       ),
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: AppColors.royalNavy.withValues(alpha: 0.12),
+          backgroundColor: AppColors.primary.withValues(alpha: 0.12),
           child: const Icon(Icons.person_rounded,
-              color: AppColors.royalNavy, size: 22),
+              color: AppColors.primary, size: 22),
         ),
         title: Text(
           member.email.isEmpty ? member.uid : member.email,
           style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w800,
-              color: AppColors.midnightNavy),
+              color: AppColors.primary),
         ),
         subtitle: Text(
           AdminPermissions.label(member.adminRole),

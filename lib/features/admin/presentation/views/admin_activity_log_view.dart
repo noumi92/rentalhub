@@ -111,7 +111,7 @@ class _AdminActivityLogViewState extends State<AdminActivityLogView> {
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide:
-                            const BorderSide(color: AppColors.border),
+                            const BorderSide(color: AppColors.borderSubtle),
                       ),
                       contentPadding: const EdgeInsets.symmetric(
                           horizontal: 14, vertical: 12),
@@ -153,21 +153,21 @@ class _AdminActivityLogViewState extends State<AdminActivityLogView> {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 side: const BorderSide(
-                                    color: AppColors.border),
+                                    color: AppColors.borderSubtle),
                               ),
                               child: ListTile(
                                 leading: CircleAvatar(
-                                  backgroundColor: AppColors.royalNavy
+                                  backgroundColor: AppColors.primary
                                       .withValues(alpha: 0.12),
                                   child: const Icon(Icons.history_rounded,
-                                      color: AppColors.royalNavy, size: 20),
+                                      color: AppColors.primary, size: 20),
                                 ),
                                 title: Text(
                                   e.action,
                                   style: const TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w800,
-                                      color: AppColors.midnightNavy),
+                                      color: AppColors.primary),
                                 ),
                                 subtitle: Text(
                                   '${e.actorEmail} • ${e.targetType} ${e.targetId}'

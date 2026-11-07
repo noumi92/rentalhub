@@ -176,7 +176,6 @@ class _AdminLoginViewState extends State<AdminLoginView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
@@ -187,7 +186,7 @@ class _AdminLoginViewState extends State<AdminLoginView> {
               color: Colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
-                side: const BorderSide(color: AppColors.border),
+                side: const BorderSide(color: AppColors.borderSubtle),
               ),
               child: Padding(
                 padding: const EdgeInsets.all(24),

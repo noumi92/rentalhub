@@ -30,7 +30,7 @@ class AdminSidebarNav extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 260,
-      color: AppColors.midnightNavy,
+      color: AppColors.primary,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -42,7 +42,7 @@ class AdminSidebarNav extends StatelessWidget {
                   width: 36,
                   height: 36,
                   decoration: BoxDecoration(
-                    color: AppColors.sunsetOrange,
+                    color: AppColors.secondary,
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: const Center(
@@ -55,7 +55,7 @@ class AdminSidebarNav extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text('RENTALHUB', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 15, letterSpacing: 1.0)),
-                      Text('ADMIN PANEL', style: TextStyle(color: AppColors.sunsetOrange, fontSize: 9.5, fontWeight: FontWeight.w800)),
+                      Text('ADMIN PANEL', style: TextStyle(color: AppColors.secondary, fontSize: 9.5, fontWeight: FontWeight.w800)),
                     ],
                   ),
                 ),
@@ -101,7 +101,7 @@ class AdminSidebarNav extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('SIGNED IN AS ADMIN', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: AppColors.sunsetOrange)),
+                const Text('SIGNED IN AS ADMIN', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: AppColors.secondary)),
                 const SizedBox(height: 4),
                 Text(
                   _adminEmail.isEmpty ? 'Admin' : _adminEmail,
@@ -122,12 +122,12 @@ class AdminSidebarNav extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.sunsetOrange.withAlpha(40) : Colors.transparent,
-          border: isSelected ? const Border(left: BorderSide(color: AppColors.sunsetOrange, width: 3.5)) : null,
+          color: isSelected ? AppColors.secondary.withAlpha(40) : Colors.transparent,
+          border: isSelected ? const Border(left: BorderSide(color: AppColors.secondary, width: 3.5)) : null,
         ),
         child: Row(
           children: [
-            Icon(icon, size: 18, color: isSelected ? AppColors.sunsetOrange : Colors.white70),
+            Icon(icon, size: 18, color: isSelected ? AppColors.secondary : Colors.white70),
             const SizedBox(width: 10),
             Expanded(
               child: Text(

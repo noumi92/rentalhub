@@ -38,7 +38,7 @@ class CustomerDetailActions extends StatelessWidget {
                       Theme.of(context).colorScheme.surfaceContainerHighest,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: AppColors.border),
+                    borderSide: const BorderSide(color: AppColors.borderSubtle),
                   ),
                   contentPadding: const EdgeInsets.symmetric(
                       horizontal: 14, vertical: 12),

@@ -44,7 +44,7 @@ class AdminTotpStep extends StatelessWidget {
           style: const TextStyle(
               fontSize: 17,
               fontWeight: FontWeight.w900,
-              color: AppColors.midnightNavy),
+              color: AppColors.primary),
         ),
         const SizedBox(height: 8),
         Text(
@@ -61,7 +61,7 @@ class AdminTotpStep extends StatelessWidget {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.border),
+                border: Border.all(color: AppColors.borderSubtle),
               ),
               child: QrImageView(data: otpauthUrl!, size: 180),
             ),
@@ -89,7 +89,7 @@ class AdminTotpStep extends StatelessWidget {
                 Theme.of(context).colorScheme.surfaceContainerHighest,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.border),
+              borderSide: const BorderSide(color: AppColors.borderSubtle),
             ),
             contentPadding:
                 const EdgeInsets.symmetric(horizontal: 14, vertical: 12),

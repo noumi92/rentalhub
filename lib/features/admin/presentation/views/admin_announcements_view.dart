@@ -108,7 +108,7 @@ class _AdminAnnouncementsViewState extends State<AdminAnnouncementsView> {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 side: const BorderSide(
-                                    color: AppColors.border),
+                                    color: AppColors.borderSubtle),
                               ),
                               child: Padding(
                                 padding: const EdgeInsets.all(14),
@@ -120,7 +120,7 @@ class _AdminAnnouncementsViewState extends State<AdminAnnouncementsView> {
                                         style: const TextStyle(
                                             fontSize: 14,
                                             fontWeight: FontWeight.w800,
-                                            color: AppColors.midnightNavy)),
+                                            color: AppColors.primary)),
                                     const SizedBox(height: 4),
                                     Text(a.bodyEn,
                                         maxLines: 2,
