@@ -459,7 +459,7 @@ class BookingRemoteDataSource {
         if (doc.exists && doc.data() != null) {
           final model = BookingModel.fromMap(doc.data()!, doc.id);
           _inMemoryFallback[bookingId] = model;
-          return _applyPendingUpdates(model);
+          return await _applyPendingUpdates(model);
         }
       } catch (_) {}
     }
@@ -472,7 +472,7 @@ class BookingRemoteDataSource {
         try {
           final model = BookingModel.fromMap(
               Map<String, dynamic>.from(entry.payload), bookingId);
-          return _applyPendingUpdates(model);
+          return await _applyPendingUpdates(model);
         } catch (_) {}
       }
     }
@@ -506,7 +506,7 @@ class BookingRemoteDataSource {
           final list = snap.docs
               .map((d) => BookingModel.fromMap(d.data(), d.id))
               .toList();
-          return _mergePendingInto(list);
+          return await _mergePendingInto(list);
         }
       } catch (_) {}
     }
@@ -528,7 +528,7 @@ class BookingRemoteDataSource {
           final list = snap.docs
               .map((d) => BookingModel.fromMap(d.data(), d.id))
               .toList();
-          return _mergePendingInto(list);
+          return await _mergePendingInto(list);
         }
       } catch (_) {}
     }
@@ -552,7 +552,7 @@ class BookingRemoteDataSource {
           final list = snap.docs
               .map((d) => BookingModel.fromMap(d.data(), d.id))
               .toList();
-          return _mergePendingInto(list);
+          return await _mergePendingInto(list);
         }
       } catch (_) {}
     }
