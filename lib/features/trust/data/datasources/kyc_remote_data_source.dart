@@ -2,13 +2,51 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../../../core/data/offline_sync_queue.dart';
+import '../../../../core/data/queued_upload.dart';
 import '../../../../core/network/cpanel_storage_client.dart';
 import '../../domain/entities/kyc_document_entity.dart';
 
 class KycRemoteDataSource {
   final CPanelStorageClient storageClient;
 
-  KycRemoteDataSource({required this.storageClient});
+  /// Phase B (B3): the persisted pending-write store. When set, a
+  /// failed upload is queued instead of failing the submission.
+  final OfflineSyncQueue? syncQueue;
+
+  KycRemoteDataSource({required this.storageClient, this.syncQueue});
+
+  /// Uploads one KYC file, or queues it when offline. Returns the
+  /// cPanel key on success, '' when the file is queued (the queue
+  /// handler writes the real key into the KYC doc on sync).
+  Future<String> _uploadOrQueueFile({
+    required String userUid,
+    required File file,
+    required String field,
+  }) async {
+    try {
+      return await storageClient.uploadFile(
+        file: file,
+        userUid: userUid,
+        folder: 'kyc',
+      );
+    } catch (_) {
+      final queue = syncQueue;
+      if (queue == null) rethrow;
+      await enqueueUpload(
+        file: file,
+        userUid: userUid,
+        folder: 'kyc',
+        queue: queue,
+        targetCollection: 'kyc_documents',
+        targetDocId: userUid,
+        targetField: field,
+        extra: const {'status': 'submitted'},
+        storeKey: true,
+      );
+      return '';
+    }
+  }
 
   Future<KycDocumentEntity> uploadCnicAndLicense({
     required String userUid,
@@ -17,29 +55,29 @@ class KycRemoteDataSource {
     File? cnicBack,
     File? license,
   }) async {
-    String frontKey = 'kyc/${userUid}_cnic_front.jpg';
-    String backKey = 'kyc/${userUid}_cnic_back.jpg';
-    String licenseKey = 'kyc/${userUid}_license.jpg';
+    String frontKey = '';
+    String backKey = '';
+    String licenseKey = '';
 
     if (cnicFront != null && cnicFront.existsSync()) {
-      frontKey = await storageClient.uploadFile(
-        file: cnicFront,
+      frontKey = await _uploadOrQueueFile(
         userUid: userUid,
-        folder: 'kyc',
+        file: cnicFront,
+        field: 'cnicFrontKey',
       );
     }
     if (cnicBack != null && cnicBack.existsSync()) {
-      backKey = await storageClient.uploadFile(
-        file: cnicBack,
+      backKey = await _uploadOrQueueFile(
         userUid: userUid,
-        folder: 'kyc',
+        file: cnicBack,
+        field: 'cnicBackKey',
       );
     }
     if (license != null && license.existsSync()) {
-      licenseKey = await storageClient.uploadFile(
-        file: license,
+      licenseKey = await _uploadOrQueueFile(
         userUid: userUid,
-        folder: 'kyc',
+        file: license,
+        field: 'licenseKey',
       );
     }
 
@@ -53,20 +91,42 @@ class KycRemoteDataSource {
     );
     // G3: record the submission so the documents screen (and the owner
     // side) can show the real status instead of a hardcoded flag.
+    // Phase B (B4): merge semantics + server timestamp; on failure
+    // the record itself is queued (the files are already queued
+    // above, so nothing is lost).
+    final record = <String, dynamic>{
+      'userUid': userUid,
+      'cnicNumber': cnicNumber,
+      'cnicFrontKey': frontKey,
+      'cnicBackKey': backKey,
+      'licenseKey': licenseKey,
+      'status': 'submitted',
+    };
     try {
       await FirebaseFirestore.instance
           .collection('kyc_documents')
           .doc(userUid)
-          .set({
-        'userUid': userUid,
-        'cnicNumber': cnicNumber,
-        'cnicFrontKey': frontKey,
-        'cnicBackKey': backKey,
-        'licenseKey': licenseKey,
-        'status': 'submitted',
-        'updatedAt': DateTime.now().toIso8601String(),
-      });
-    } catch (_) {}
+          .set(
+        {
+          ...record,
+          'updatedAt': FieldValue.serverTimestamp(),
+        },
+        SetOptions(merge: true),
+      );
+    } catch (_) {
+      final queue = syncQueue;
+      if (queue != null) {
+        await queue.enqueue(
+          kind: 'firestore_set',
+          entityId: userUid,
+          payload: {
+            'collection': 'kyc_documents',
+            'docId': userUid,
+            'fields': record,
+          },
+        );
+      }
+    }
     return entity;
   }
 

@@ -5,6 +5,12 @@ import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../constants/api_endpoints.dart';
+import '../data/firestore_set_handler.dart';
+import '../data/offline_sync_queue.dart';
+import '../data/sync_engine.dart';
+import '../data/sync_status_cubit.dart';
+import '../data/upload_sync_handler.dart';
+import '../network/connectivity_service.dart';
 import '../settings/app_settings_cubit.dart';
 import '../network/cpanel_storage_client.dart';
 import '../network/firestore_service.dart';
@@ -100,6 +106,34 @@ Future<void> initDependencies() async {
     () => FirestoreService(firestore: firestoreInstance),
   );
 
+  // Phase B (B2/B3): connectivity awareness + the shared offline
+  // sync queue + its drain engine. Registered here so every data
+  // source below can take the queue; the handlers are registered
+  // at the end of this function, once the features exist.
+  sl.registerLazySingleton<OfflineSyncQueue>(
+    () => OfflineSyncQueue(prefs: sl<SharedPreferences>()),
+  );
+  sl.registerLazySingleton<ConnectivityService>(
+    () => ConnectivityService(),
+  );
+  sl.registerLazySingleton<SyncEngine>(
+    () => SyncEngine(queue: sl<OfflineSyncQueue>()),
+  );
+  sl.registerLazySingleton<UploadSyncHandler>(
+    () => UploadSyncHandler(storageClient: sl<CPanelStorageClient>()),
+  );
+  sl.registerLazySingleton<FirestoreSetHandler>(
+    () => FirestoreSetHandler(),
+  );
+  // Phase B (B5): the visible sync state (offline banner, pending
+  // counts, per-item chips).
+  sl.registerLazySingleton<SyncStatusCubit>(
+    () => SyncStatusCubit(
+      connectivity: sl<ConnectivityService>(),
+      queue: sl<OfflineSyncQueue>(),
+    ),
+  );
+
   // 3.5 Firebase Auth
   fb.FirebaseAuth? firebaseAuthInstance;
   try {
@@ -115,6 +149,7 @@ Future<void> initDependencies() async {
       auth: firebaseAuthInstance,
       firestoreService: sl<FirestoreService>(),
       storageClient: sl<CPanelStorageClient>(),
+      syncQueue: sl<OfflineSyncQueue>(),
     ),
   );
   sl.registerLazySingleton<AuthRepository>(
@@ -139,7 +174,10 @@ Future<void> initDependencies() async {
 
   // 4. Trust / KYC Feature
   sl.registerLazySingleton<KycRemoteDataSource>(
-    () => KycRemoteDataSource(storageClient: sl<CPanelStorageClient>()),
+    () => KycRemoteDataSource(
+      storageClient: sl<CPanelStorageClient>(),
+      syncQueue: sl<OfflineSyncQueue>(),
+    ),
   );
   sl.registerLazySingleton<KycRepository>(
     () => KycRepositoryImpl(remoteDataSource: sl<KycRemoteDataSource>()),
@@ -151,7 +189,7 @@ Future<void> initDependencies() async {
 
   // 4b. Customers Feature (Phase B, C1)
   sl.registerLazySingleton<CustomerRemoteDataSource>(
-    () => CustomerRemoteDataSource(),
+    () => CustomerRemoteDataSource(syncQueue: sl<OfflineSyncQueue>()),
   );
   // G4: the customer's disputes (file + list), with an in-memory
   // fallback like the booking data source.
@@ -211,7 +249,9 @@ Future<void> initDependencies() async {
 
   // 6. Fleet Feature
   sl.registerLazySingleton<FleetRemoteDataSource>(
-    () => FleetRemoteDataSource(),
+    () => FleetRemoteDataSource(
+      syncQueue: sl<OfflineSyncQueue>(),
+    ),
   );
   sl.registerLazySingleton<FleetRepository>(
     () => FleetRepositoryImpl(remoteDataSource: sl<FleetRemoteDataSource>()),
@@ -224,7 +264,7 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton(
       () => UpdateVehiclePricingUseCase(sl<FleetRepository>()));
   sl.registerLazySingleton<FixedRouteRemoteDataSource>(
-    () => FixedRouteRemoteDataSource(),
+    () => FixedRouteRemoteDataSource(syncQueue: sl<OfflineSyncQueue>()),
   );
   sl.registerLazySingleton<FixedRouteRepository>(
     () => FixedRouteRepositoryImpl(
@@ -254,7 +294,8 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton<BookingRemoteDataSource>(
     () => BookingRemoteDataSource(
         notifications: sl<NotificationDataSource>(),
-        blacklist: sl<BlacklistRemoteDataSource>()),
+        blacklist: sl<BlacklistRemoteDataSource>(),
+        syncQueue: sl<OfflineSyncQueue>()),
   );
   sl.registerLazySingleton<BookingRepository>(
     () => BookingRepositoryImpl(
@@ -272,6 +313,7 @@ Future<void> initDependencies() async {
     () => PaymentCubit(
       storageClient: sl<CPanelStorageClient>(),
       bookingRepository: sl<BookingRepository>(),
+      syncQueue: sl<OfflineSyncQueue>(),
     ),
   );
 
@@ -282,20 +324,22 @@ Future<void> initDependencies() async {
   // Phase B (F2): security deposits — collected at handover,
   // settled at return.
   sl.registerLazySingleton<SecurityDepositDataSource>(
-    () => SecurityDepositDataSource(),
+    () => SecurityDepositDataSource(syncQueue: sl<OfflineSyncQueue>()),
   );
   // Phase B (H): finance — accounts, ledger, partners, cash closing.
   sl.registerLazySingleton<FinanceAccountDataSource>(
-    () => FinanceAccountDataSource(),
+    () => FinanceAccountDataSource(syncQueue: sl<OfflineSyncQueue>()),
   );
   sl.registerLazySingleton<FinanceTransferDataSource>(
-    () => FinanceTransferDataSource(),
+    () => FinanceTransferDataSource(
+      syncQueue: sl<OfflineSyncQueue>(),
+    ),
   );
   sl.registerLazySingleton<PartnerShareDataSource>(
-    () => PartnerShareDataSource(),
+    () => PartnerShareDataSource(syncQueue: sl<OfflineSyncQueue>()),
   );
   sl.registerLazySingleton<CashClosingDataSource>(
-    () => CashClosingDataSource(),
+    () => CashClosingDataSource(syncQueue: sl<OfflineSyncQueue>()),
   );
   sl.registerFactory(
     () => HandoverCubit(
@@ -312,4 +356,17 @@ Future<void> initDependencies() async {
   sl.registerFactory(
     () => BlacklistCubit(dataSource: sl<BlacklistRemoteDataSource>()),
   );
+
+  // Phase B (B2/B3): the sync engine's handlers, one per queue
+  // kind. Registered last so every data source above exists.
+  final syncEngine = sl<SyncEngine>();
+  syncEngine.registerHandler('upload', sl<UploadSyncHandler>().call);
+  syncEngine.registerHandler(
+      'firestore_set', sl<FirestoreSetHandler>().call);
+  syncEngine.registerHandler(
+      'booking_create', sl<BookingRemoteDataSource>().syncQueuedCreate);
+  syncEngine.registerHandler(
+      'booking_update', sl<BookingRemoteDataSource>().syncQueuedUpdate);
+  syncEngine.registerHandler(
+      'handover', sl<HandoverCubit>().syncQueuedEntry);
 }

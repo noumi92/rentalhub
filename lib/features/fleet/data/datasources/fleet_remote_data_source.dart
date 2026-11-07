@@ -1,9 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../../../../core/data/offline_sync_queue.dart';
 import '../../domain/entities/vehicle_entity.dart';
 import '../models/vehicle_model.dart';
 
 class FleetRemoteDataSource {
   final FirebaseFirestore? _firestore;
+
+  /// Phase B (B1/B3): the persisted pending-write store. When set,
+  /// a failed Firestore write is queued instead of dying in memory.
+  final OfflineSyncQueue? syncQueue;
 
   final Map<String, String> _shopTiers = {
     'shop-basic': 'basic',
@@ -58,8 +63,46 @@ class FleetRemoteDataSource {
     ),
   ];
 
-  FleetRemoteDataSource({FirebaseFirestore? firestore})
+  FleetRemoteDataSource({FirebaseFirestore? firestore, this.syncQueue})
       : _firestore = firestore;
+
+  /// Phase B (B1/B4): one write path for vehicle docs — merge-set +
+  /// server timestamp; on failure the write is queued (persisted)
+  /// instead of dying in memory. Returns true when the server
+  /// confirmed the write.
+  Future<bool> _writeVehicleDoc(
+    String vehicleId,
+    Map<String, dynamic> data,
+  ) async {
+    final fs = _resolvedFirestore;
+    if (fs == null) return false;
+    try {
+      await fs.collection('vehicles').doc(vehicleId).set(
+        {...data, 'updatedAt': FieldValue.serverTimestamp()},
+        SetOptions(merge: true),
+      );
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<void> _queueVehicleWrite(
+    String vehicleId,
+    Map<String, dynamic> fields,
+  ) async {
+    final queue = syncQueue;
+    if (queue == null) return;
+    await queue.enqueue(
+      kind: 'firestore_set',
+      entityId: vehicleId,
+      payload: {
+        'collection': 'vehicles',
+        'docId': vehicleId,
+        'fields': fields,
+      },
+    );
+  }
 
   FirebaseFirestore? get _resolvedFirestore {
     if (_firestore != null) return _firestore;
@@ -144,14 +187,15 @@ class FleetRemoteDataSource {
     final model = VehicleModel.fromEntity(vehicle);
     _inMemoryVehicles.add(model);
 
-    final fs = _resolvedFirestore;
-    if (fs != null) {
-      try {
-        await fs
-            .collection('vehicles')
-            .doc(vehicle.vehicleId)
-            .set(model.toMap());
-      } catch (_) {}
+    final written = await _writeVehicleDoc(
+      vehicle.vehicleId,
+      {
+        ...model.toMap(),
+        'createdAt': FieldValue.serverTimestamp(),
+      },
+    );
+    if (!written) {
+      await _queueVehicleWrite(vehicle.vehicleId, model.toMap());
     }
   }
 
@@ -166,14 +210,9 @@ class FleetRemoteDataSource {
           _inMemoryVehicles[idx].copyWith(rates: ratesModel);
     }
 
-    final fs = _resolvedFirestore;
-    if (fs != null) {
-      try {
-        await fs.collection('vehicles').doc(vehicleId).update({
-          'rates': ratesModel.toMap(),
-        });
-      } catch (_) {}
-    }
+    final fields = <String, dynamic>{'rates': ratesModel.toMap()};
+    final written = await _writeVehicleDoc(vehicleId, fields);
+    if (!written) await _queueVehicleWrite(vehicleId, fields);
   }
 
   Future<void> updateVehicleStatus({
@@ -186,14 +225,9 @@ class FleetRemoteDataSource {
           _inMemoryVehicles[idx].copyWith(status: status);
     }
 
-    final fs = _resolvedFirestore;
-    if (fs != null) {
-      try {
-        await fs.collection('vehicles').doc(vehicleId).update({
-          'status': status,
-        });
-      } catch (_) {}
-    }
+    final fields = <String, dynamic>{'status': status};
+    final written = await _writeVehicleDoc(vehicleId, fields);
+    if (!written) await _queueVehicleWrite(vehicleId, fields);
   }
 
   /// Phase B (F1): the odometer advances by the trip at return, so
@@ -209,14 +243,9 @@ class FleetRemoteDataSource {
           _inMemoryVehicles[idx].copyWith(mileageKm: mileageKm);
     }
 
-    final fs = _resolvedFirestore;
-    if (fs != null) {
-      try {
-        await fs.collection('vehicles').doc(vehicleId).update({
-          'mileageKm': mileageKm,
-        });
-      } catch (_) {}
-    }
+    final fields = <String, dynamic>{'mileageKm': mileageKm};
+    final written = await _writeVehicleDoc(vehicleId, fields);
+    if (!written) await _queueVehicleWrite(vehicleId, fields);
   }
 
   /// Phase B (B2): writes the whole pricing set. The in-memory list gets
@@ -233,33 +262,29 @@ class FleetRemoteDataSource {
       _inMemoryVehicles[idx] = model;
     }
 
-    final fs = _resolvedFirestore;
-    if (fs != null) {
-      try {
-        final map = model.toMap();
-        // Firestore deletes a field on a null update value, so only
-        // send the fields that are actually set.
-        final update = <String, dynamic>{
-          'rates': map['rates'],
-          'packages': map['packages'] ?? [],
-          'isSelfDriveAvailable': model.isSelfDriveAvailable,
-          'isWithDriverAvailable': model.isWithDriverAvailable,
-          if (map['weeklyRate'] != null) 'weeklyRate': map['weeklyRate'],
-          if (map['securityDepositPkr'] != null)
-            'securityDepositPkr': map['securityDepositPkr'],
-          if (map['advanceRequiredPkr'] != null)
-            'advanceRequiredPkr': map['advanceRequiredPkr'],
-          if (map['extraHourPkr'] != null)
-            'extraHourPkr': map['extraHourPkr'],
-          if (map['withDriverSurchargePkr'] != null)
-            'withDriverSurchargePkr': map['withDriverSurchargePkr'],
-          if (map['fuelPolicy'] != null) 'fuelPolicy': map['fuelPolicy'],
-          if (map['extraKmPkr'] != null) 'extraKmPkr': map['extraKmPkr'],
-          if (map['outOfCityKmPerDay'] != null)
-            'outOfCityKmPerDay': map['outOfCityKmPerDay'],
-        };
-        await fs.collection('vehicles').doc(vehicleId).update(update);
-      } catch (_) {}
-    }
+    final map = model.toMap();
+    // Firestore deletes a field on a null update value, so only
+    // send the fields that are actually set.
+    final update = <String, dynamic>{
+      'rates': map['rates'],
+      'packages': map['packages'] ?? [],
+      'isSelfDriveAvailable': model.isSelfDriveAvailable,
+      'isWithDriverAvailable': model.isWithDriverAvailable,
+      if (map['weeklyRate'] != null) 'weeklyRate': map['weeklyRate'],
+      if (map['securityDepositPkr'] != null)
+        'securityDepositPkr': map['securityDepositPkr'],
+      if (map['advanceRequiredPkr'] != null)
+        'advanceRequiredPkr': map['advanceRequiredPkr'],
+      if (map['extraHourPkr'] != null)
+        'extraHourPkr': map['extraHourPkr'],
+      if (map['withDriverSurchargePkr'] != null)
+        'withDriverSurchargePkr': map['withDriverSurchargePkr'],
+      if (map['fuelPolicy'] != null) 'fuelPolicy': map['fuelPolicy'],
+      if (map['extraKmPkr'] != null) 'extraKmPkr': map['extraKmPkr'],
+      if (map['outOfCityKmPerDay'] != null)
+        'outOfCityKmPerDay': map['outOfCityKmPerDay'],
+    };
+    final written = await _writeVehicleDoc(vehicleId, update);
+    if (!written) await _queueVehicleWrite(vehicleId, update);
   }
 }

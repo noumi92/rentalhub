@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/data/offline_sync_queue.dart';
+import '../../../../core/data/queued_upload.dart';
 import '../../../../core/network/cpanel_storage_client.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
 import '../../../bookings/domain/repositories/booking_repository.dart';
@@ -44,9 +46,16 @@ class PaymentCubit extends Cubit<PaymentState> {
   final CPanelStorageClient storageClient;
   final BookingRepository bookingRepository;
 
+  /// Phase B (B3): the persisted pending-write store. When set, a
+  /// failed receipt upload is queued instead of failing the
+  /// submission — the proof is recorded with its TID and the image
+  /// follows on sync.
+  final OfflineSyncQueue? syncQueue;
+
   PaymentCubit({
     required this.storageClient,
     required this.bookingRepository,
+    this.syncQueue,
   }) : super(const PaymentInitial());
 
   Future<void> submitPaymentProof({
@@ -57,13 +66,32 @@ class PaymentCubit extends Cubit<PaymentState> {
   }) async {
     emit(const PaymentUploading());
     try {
-      String fileKey = 'payments/${customerUid}_$bookingId.jpg';
+      String fileKey = '';
       if (receiptScreenshot != null && receiptScreenshot.existsSync()) {
-        fileKey = await storageClient.uploadFile(
-          file: receiptScreenshot,
-          userUid: customerUid,
-          folder: 'payments',
-        );
+        try {
+          fileKey = await storageClient.uploadFile(
+            file: receiptScreenshot,
+            userUid: customerUid,
+            folder: 'payments',
+          );
+        } catch (_) {
+          final queue = syncQueue;
+          if (queue == null) rethrow;
+          await enqueueUpload(
+            file: receiptScreenshot,
+            userUid: customerUid,
+            folder: 'payments',
+            queue: queue,
+            targetCollection: 'bookings',
+            targetDocId: bookingId,
+            targetField: 'paymentProofUrl',
+            extra: {
+              'status': 'payment_submitted',
+              'transactionId': transactionId,
+            },
+          );
+          fileKey = '';
+        }
       }
 
       final updated = await bookingRepository.updatePaymentProof(

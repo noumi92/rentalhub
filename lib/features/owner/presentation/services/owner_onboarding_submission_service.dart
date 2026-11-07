@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:latlong2/latlong.dart' as ll;
+import '../../../../core/data/offline_sync_queue.dart';
+import '../../../../core/data/queued_upload.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/network/cpanel_storage_client.dart';
 import '../../../../core/network/firestore_service.dart';
@@ -12,12 +14,20 @@ import '../../../discovery/data/models/shop_model.dart';
 import '../../../discovery/domain/entities/shop_entity.dart';
 
 class OwnerOnboardingSubmissionService {
-  /// Uploads media file to cPanel and returns a protected signed URL
+  /// Uploads media file to cPanel and returns a protected signed URL.
+  ///
+  /// Phase B (B3): a failed upload returns null — never a made-up
+  /// signed URL filed as the shop's photo. When [syncQueue] and a
+  /// target are given, the file is queued and lands on sync.
   static Future<String?> uploadMediaAndGetProtectedUrl({
     required XFile? xFile,
     required String ownerUid,
     required String folder,
     required CPanelStorageClient? client,
+    OfflineSyncQueue? syncQueue,
+    String? targetCollection,
+    String? targetDocId,
+    String? targetField,
   }) async {
     if (xFile == null) return null;
 
@@ -33,10 +43,25 @@ class OwnerOnboardingSubmissionService {
           return client.getSignedMediaUrl(uploadedKey, ownerUid);
         }
       } catch (e) {
-        debugPrint('cPanel upload notice: $e (Generating secure HMAC URL fallback)');
+        debugPrint('cPanel upload notice: $e (queuing for sync)');
+        if (syncQueue != null &&
+            targetCollection != null &&
+            targetDocId != null &&
+            targetField != null) {
+          try {
+            await enqueueUpload(
+              file: File(xFile.path),
+              userUid: ownerUid,
+              folder: folder,
+              queue: syncQueue,
+              targetCollection: targetCollection,
+              targetDocId: targetDocId,
+              targetField: targetField,
+            );
+          } catch (_) {}
+        }
       }
-      final fallbackKey = '$folder/${DateTime.now().millisecondsSinceEpoch}_${xFile.name}';
-      return client.getSignedMediaUrl(fallbackKey, ownerUid);
+      return null;
     }
     return null;
   }
@@ -83,6 +108,12 @@ class OwnerOnboardingSubmissionService {
 
     final cpanelClient =
         sl.isRegistered<CPanelStorageClient>() ? sl<CPanelStorageClient>() : null;
+    final syncQueue =
+        sl.isRegistered<OfflineSyncQueue>() ? sl<OfflineSyncQueue>() : null;
+
+    // Phase B (B3): the shop id is fixed before the uploads so a
+    // failed photo can be queued against this shop.
+    final shopId = 'shop_$ownerUid';
 
     // 2. Upload all images to cPanel and get protected signed URLs
     final logoUrl = await uploadMediaAndGetProtectedUrl(
@@ -90,6 +121,10 @@ class OwnerOnboardingSubmissionService {
       ownerUid: ownerUid,
       folder: 'shops',
       client: cpanelClient,
+      syncQueue: syncQueue,
+      targetCollection: 'shops',
+      targetDocId: shopId,
+      targetField: 'logoUrl',
     );
 
     final headerUrl = await uploadMediaAndGetProtectedUrl(
@@ -97,6 +132,10 @@ class OwnerOnboardingSubmissionService {
       ownerUid: ownerUid,
       folder: 'shops',
       client: cpanelClient,
+      syncQueue: syncQueue,
+      targetCollection: 'shops',
+      targetDocId: shopId,
+      targetField: 'headerUrl',
     );
 
     final fleetPhotos = <String>[];
@@ -116,6 +155,10 @@ class OwnerOnboardingSubmissionService {
       ownerUid: ownerUid,
       folder: 'kyc',
       client: cpanelClient,
+      syncQueue: syncQueue,
+      targetCollection: 'shops',
+      targetDocId: shopId,
+      targetField: 'kycDocuments.cnic_front',
     );
     if (cnicFrontUrl != null) kycDocuments['cnic_front'] = cnicFrontUrl;
 
@@ -124,6 +167,10 @@ class OwnerOnboardingSubmissionService {
       ownerUid: ownerUid,
       folder: 'kyc',
       client: cpanelClient,
+      syncQueue: syncQueue,
+      targetCollection: 'shops',
+      targetDocId: shopId,
+      targetField: 'kycDocuments.cnic_back',
     );
     if (cnicBackUrl != null) kycDocuments['cnic_back'] = cnicBackUrl;
 
@@ -132,6 +179,10 @@ class OwnerOnboardingSubmissionService {
       ownerUid: ownerUid,
       folder: 'kyc',
       client: cpanelClient,
+      syncQueue: syncQueue,
+      targetCollection: 'shops',
+      targetDocId: shopId,
+      targetField: 'kycDocuments.ntn',
     );
     if (ntnUrl != null) kycDocuments['ntn'] = ntnUrl;
 
@@ -140,10 +191,12 @@ class OwnerOnboardingSubmissionService {
       ownerUid: ownerUid,
       folder: 'kyc',
       client: cpanelClient,
+      syncQueue: syncQueue,
+      targetCollection: 'shops',
+      targetDocId: shopId,
+      targetField: 'kycDocuments.selfie',
     );
     if (selfieUrl != null) kycDocuments['selfie'] = selfieUrl;
-
-    final shopId = 'shop_$ownerUid';
 
     // 3. Construct ShopModel with cPanel protected URLs
     final shopModel = ShopModel(

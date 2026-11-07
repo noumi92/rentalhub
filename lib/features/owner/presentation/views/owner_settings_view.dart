@@ -12,6 +12,7 @@ import '../../../../core/utils/current_shop.dart';
 import '../../../../core/widgets/custom_curved_header.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../widgets/owner_bottom_nav.dart';
+import '../widgets/sync_status_section.dart';
 
 /// Phase B (G3): the owner settings screen. The language and theme
 /// choices are real — they persist in SharedPreferences and the
@@ -143,6 +144,8 @@ class _OwnerSettingsViewState extends State<OwnerSettingsView> {
                             ],
                           ),
                         ),
+                        const SizedBox(height: 16),
+                        const SyncStatusSection(),
                         const SizedBox(height: 16),
                         _sectionCard(
                           title: l10n.quickLinks,

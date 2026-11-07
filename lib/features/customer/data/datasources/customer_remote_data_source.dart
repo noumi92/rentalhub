@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+
+import '../../../../core/data/offline_sync_queue.dart';
 import '../../domain/entities/customer_entity.dart';
 import '../models/customer_model.dart';
 
@@ -8,9 +10,10 @@ import '../models/customer_model.dart';
 /// guarantor is added.
 class CustomerRemoteDataSource {
   final FirebaseFirestore? _firestore;
+  final OfflineSyncQueue? syncQueue;
   final Map<String, CustomerModel> _inMemoryCustomers = {};
 
-  CustomerRemoteDataSource({FirebaseFirestore? firestore})
+  CustomerRemoteDataSource({FirebaseFirestore? firestore, this.syncQueue})
       : _firestore = firestore;
 
   FirebaseFirestore? get _resolvedFirestore {
@@ -20,6 +23,44 @@ class CustomerRemoteDataSource {
     } catch (_) {
       return null;
     }
+  }
+
+  /// Phase B (B1/B3): a failed Firestore write is queued (persisted)
+  /// instead of dying in memory. Returns true when confirmed.
+  Future<bool> _writeDoc(
+    String collection,
+    String docId,
+    Map<String, dynamic> data,
+  ) async {
+    final fs = _resolvedFirestore;
+    if (fs == null) return false;
+    try {
+      await fs.collection(collection).doc(docId).set(
+        {...data, 'updatedAt': FieldValue.serverTimestamp()},
+        SetOptions(merge: true),
+      );
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<void> _queueDoc(
+    String collection,
+    String docId,
+    Map<String, dynamic> fields,
+  ) async {
+    final queue = syncQueue;
+    if (queue == null) return;
+    await queue.enqueue(
+      kind: 'firestore_set',
+      entityId: docId,
+      payload: {
+        'collection': collection,
+        'docId': docId,
+        'fields': fields,
+      },
+    );
   }
 
   Future<List<CustomerEntity>> getShopCustomers(String shopId) async {
@@ -78,14 +119,7 @@ class CustomerRemoteDataSource {
     final model = CustomerModel.fromEntity(customer);
     _inMemoryCustomers[customer.customerId] = model;
 
-    final fs = _resolvedFirestore;
-    if (fs != null) {
-      try {
-        await fs
-            .collection('customers')
-            .doc(customer.customerId)
-            .set(model.toMap());
-      } catch (_) {}
-    }
+    final written = await _writeDoc('customers', customer.customerId, model.toMap());
+    if (!written) await _queueDoc('customers', customer.customerId, model.toMap());
   }
 }

@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../../../core/data/offline_sync_queue.dart';
+
 import '../../domain/entities/finance_account_entity.dart';
 import '../models/finance_account_model.dart';
 
@@ -8,10 +10,11 @@ import '../models/finance_account_model.dart';
 /// default cash account, seeded on first read.
 class FinanceAccountDataSource {
   final FirebaseFirestore? _firestore;
+  final OfflineSyncQueue? syncQueue;
   final List<FinanceAccountModel> _inMemory = [];
   var _idSeq = 0;
 
-  FinanceAccountDataSource({FirebaseFirestore? firestore})
+  FinanceAccountDataSource({FirebaseFirestore? firestore, this.syncQueue})
       : _firestore = firestore;
 
   FirebaseFirestore? get _resolvedFirestore {
@@ -21,6 +24,44 @@ class FinanceAccountDataSource {
     } catch (_) {
       return null;
     }
+  }
+
+  /// Phase B (B1/B3): a failed Firestore write is queued (persisted)
+  /// instead of dying in memory. Returns true when confirmed.
+  Future<bool> _writeDoc(
+    String collection,
+    String docId,
+    Map<String, dynamic> data,
+  ) async {
+    final fs = _resolvedFirestore;
+    if (fs == null) return false;
+    try {
+      await fs.collection(collection).doc(docId).set(
+        {...data, 'updatedAt': FieldValue.serverTimestamp()},
+        SetOptions(merge: true),
+      );
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<void> _queueDoc(
+    String collection,
+    String docId,
+    Map<String, dynamic> fields,
+  ) async {
+    final queue = syncQueue;
+    if (queue == null) return;
+    await queue.enqueue(
+      kind: 'firestore_set',
+      entityId: docId,
+      payload: {
+        'collection': collection,
+        'docId': docId,
+        'fields': fields,
+      },
+    );
   }
 
   Future<FinanceAccountEntity> saveAccount({
@@ -48,12 +89,8 @@ class FinanceAccountDataSource {
       isDefault: isDefault,
     );
     _inMemory.add(model);
-    final fs = _resolvedFirestore;
-    if (fs != null) {
-      try {
-        await fs.collection('finance_accounts').doc(id).set(model.toMap());
-      } catch (_) {}
-    }
+    final written = await _writeDoc('finance_accounts', id, model.toMap());
+    if (!written) await _queueDoc('finance_accounts', id, model.toMap());
     return model;
   }
 

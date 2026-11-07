@@ -26,11 +26,17 @@ class CPanelStorageClient {
     return base64Encode(utf8.encode(message));
   }
 
-  /// Uploads media file to cPanel secure storage endpoint
+  /// Uploads media file to cPanel secure storage endpoint.
+  ///
+  /// Phase B (B3): single-attempt uploads used to hang forever on a
+  /// dead connection and then throw the file away. The request now
+  /// times out ([timeout], default 60s) — callers queue the file in
+  /// the offline sync queue on failure instead of losing it.
   Future<String> uploadFile({
     required File file,
     required String userUid,
     required String folder, // 'kyc', 'payments', 'handovers', 'agreements'
+    Duration timeout = const Duration(seconds: 60),
   }) async {
     final uri = Uri.parse('$baseUrl${ApiEndpoints.uploadEndpoint}');
     final request = http.MultipartRequest('POST', uri)
@@ -38,8 +44,10 @@ class CPanelStorageClient {
       ..fields['category'] = folder
       ..files.add(await http.MultipartFile.fromPath('file', file.path));
 
-    final streamedResponse = await _httpClient.send(request);
-    final responseBody = await streamedResponse.stream.bytesToString();
+    final streamedResponse =
+        await _httpClient.send(request).timeout(timeout);
+    final responseBody =
+        await streamedResponse.stream.bytesToString().timeout(timeout);
 
     if (streamedResponse.statusCode == 200) {
       final json = jsonDecode(responseBody) as Map<String, dynamic>;

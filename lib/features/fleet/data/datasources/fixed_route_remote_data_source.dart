@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+
+import '../../../../core/data/offline_sync_queue.dart';
 import '../../domain/entities/fixed_route_entity.dart';
 import '../models/fixed_route_model.dart';
 
@@ -7,6 +9,7 @@ import '../models/fixed_route_model.dart';
 /// the demo shop; the prices are samples the owner edits in the app.
 class FixedRouteRemoteDataSource {
   final FirebaseFirestore? _firestore;
+  final OfflineSyncQueue? syncQueue;
 
   final List<FixedRouteModel> _inMemoryRoutes = [
     const FixedRouteModel(
@@ -59,7 +62,7 @@ class FixedRouteRemoteDataSource {
     ),
   ];
 
-  FixedRouteRemoteDataSource({FirebaseFirestore? firestore})
+  FixedRouteRemoteDataSource({FirebaseFirestore? firestore, this.syncQueue})
       : _firestore = firestore;
 
   FirebaseFirestore? get _resolvedFirestore {
@@ -69,6 +72,44 @@ class FixedRouteRemoteDataSource {
     } catch (_) {
       return null;
     }
+  }
+
+  /// Phase B (B1/B3): a failed Firestore write is queued (persisted)
+  /// instead of dying in memory. Returns true when confirmed.
+  Future<bool> _writeDoc(
+    String collection,
+    String docId,
+    Map<String, dynamic> data,
+  ) async {
+    final fs = _resolvedFirestore;
+    if (fs == null) return false;
+    try {
+      await fs.collection(collection).doc(docId).set(
+        {...data, 'updatedAt': FieldValue.serverTimestamp()},
+        SetOptions(merge: true),
+      );
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<void> _queueDoc(
+    String collection,
+    String docId,
+    Map<String, dynamic> fields,
+  ) async {
+    final queue = syncQueue;
+    if (queue == null) return;
+    await queue.enqueue(
+      kind: 'firestore_set',
+      entityId: docId,
+      payload: {
+        'collection': collection,
+        'docId': docId,
+        'fields': fields,
+      },
+    );
   }
 
   Future<List<FixedRouteEntity>> getShopFixedRoutes(String shopId) async {
@@ -99,15 +140,8 @@ class FixedRouteRemoteDataSource {
       _inMemoryRoutes.add(model);
     }
 
-    final fs = _resolvedFirestore;
-    if (fs != null) {
-      try {
-        await fs
-            .collection('fixed_routes')
-            .doc(route.routeId)
-            .set(model.toMap());
-      } catch (_) {}
-    }
+    final written = await _writeDoc('fixed_routes', route.routeId, model.toMap());
+    if (!written) await _queueDoc('fixed_routes', route.routeId, model.toMap());
   }
 
   Future<void> deleteFixedRoute(String routeId) async {

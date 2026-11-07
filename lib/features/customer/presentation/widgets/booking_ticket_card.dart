@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/data/sync_status_cubit.dart';
+import '../../../../core/widgets/offline_banner.dart';
 import '../../../../core/widgets/pakistani_plate_widget.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
 import '../../../handover/data/datasources/pdf_contract_generator.dart';
@@ -12,12 +14,18 @@ class BookingTicketCard extends StatelessWidget {
   final VoidCallback? onAction;
   final String? actionLabel;
 
+  /// Phase B (B5): the booking's sync state, when the caller knows
+  /// it (the bookings list passes it from [SyncStatusCubit]). Null
+  /// means "don't show a chip" (e.g. the detail view).
+  final SyncEntryStatus? syncStatus;
+
   const BookingTicketCard({
     super.key,
     required this.booking,
     required this.onTap,
     this.onAction,
     this.actionLabel,
+    this.syncStatus,
   });
 
   Color _getStatusColor(String status) {
@@ -123,17 +131,27 @@ class BookingTicketCard extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                    decoration: BoxDecoration(
-                      color: statusColor.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Text(
-                      booking.status.toUpperCase(),
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800, color: statusColor),
-                    ),
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: statusColor.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          booking.status.toUpperCase(),
+                          style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800, color: statusColor),
+                        ),
+                      ),
+                      // Phase B (B5): per-item sync state.
+                      if (syncStatus != null &&
+                          syncStatus != SyncEntryStatus.synced) ...[
+                        const SizedBox(width: 6),
+                        SyncStatusChip(status: syncStatus!),
+                      ],
+                    ],
                   ),
                   if (actionLabel != null && onAction != null)
                     TextButton(

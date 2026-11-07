@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../../../core/data/offline_sync_queue.dart';
+
 import '../../domain/entities/partner_share_entity.dart';
 import '../models/partner_share_model.dart';
 
@@ -7,10 +9,11 @@ import '../models/partner_share_model.dart';
 /// with an in-memory fallback.
 class PartnerShareDataSource {
   final FirebaseFirestore? _firestore;
+  final OfflineSyncQueue? syncQueue;
   final List<PartnerShareModel> _inMemory = [];
   var _idSeq = 0;
 
-  PartnerShareDataSource({FirebaseFirestore? firestore})
+  PartnerShareDataSource({FirebaseFirestore? firestore, this.syncQueue})
       : _firestore = firestore;
 
   FirebaseFirestore? get _resolvedFirestore {
@@ -20,6 +23,44 @@ class PartnerShareDataSource {
     } catch (_) {
       return null;
     }
+  }
+
+  /// Phase B (B1/B3): a failed Firestore write is queued (persisted)
+  /// instead of dying in memory. Returns true when confirmed.
+  Future<bool> _writeDoc(
+    String collection,
+    String docId,
+    Map<String, dynamic> data,
+  ) async {
+    final fs = _resolvedFirestore;
+    if (fs == null) return false;
+    try {
+      await fs.collection(collection).doc(docId).set(
+        {...data, 'updatedAt': FieldValue.serverTimestamp()},
+        SetOptions(merge: true),
+      );
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<void> _queueDoc(
+    String collection,
+    String docId,
+    Map<String, dynamic> fields,
+  ) async {
+    final queue = syncQueue;
+    if (queue == null) return;
+    await queue.enqueue(
+      kind: 'firestore_set',
+      entityId: docId,
+      payload: {
+        'collection': collection,
+        'docId': docId,
+        'fields': fields,
+      },
+    );
   }
 
   Future<PartnerShareEntity> savePartner({
@@ -43,12 +84,8 @@ class PartnerShareDataSource {
       createdAt: DateTime.now(),
     );
     _inMemory.add(model);
-    final fs = _resolvedFirestore;
-    if (fs != null) {
-      try {
-        await fs.collection('partner_shares').doc(id).set(model.toMap());
-      } catch (_) {}
-    }
+    final written = await _writeDoc('partner_shares', id, model.toMap());
+    if (!written) await _queueDoc('partner_shares', id, model.toMap());
     return model;
   }
 

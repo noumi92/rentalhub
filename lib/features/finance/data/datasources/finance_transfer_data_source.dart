@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../../../core/data/offline_sync_queue.dart';
 import '../../domain/entities/finance_transfer_entity.dart';
 import '../models/finance_transfer_model.dart';
 
@@ -7,10 +8,15 @@ import '../models/finance_transfer_model.dart';
 /// with an in-memory fallback.
 class FinanceTransferDataSource {
   final FirebaseFirestore? _firestore;
+
+  /// Phase B (B1/B3): the persisted pending-write store. When set,
+  /// a failed Firestore write is queued instead of dying in memory.
+  final OfflineSyncQueue? syncQueue;
+
   final List<FinanceTransferModel> _inMemory = [];
   var _idSeq = 0;
 
-  FinanceTransferDataSource({FirebaseFirestore? firestore})
+  FinanceTransferDataSource({FirebaseFirestore? firestore, this.syncQueue})
       : _firestore = firestore;
 
   FirebaseFirestore? get _resolvedFirestore {
@@ -56,14 +62,37 @@ class FinanceTransferDataSource {
       createdAt: createdAt ?? DateTime.now(),
     );
     _inMemory.add(model);
+    // Phase B (B1/B4): merge-set + server timestamp; on failure the
+    // transfer is queued (persisted) — a money record must never
+    // live only in memory.
     final fs = _resolvedFirestore;
+    var written = false;
     if (fs != null) {
       try {
-        await fs
-            .collection('finance_transfers')
-            .doc(id)
-            .set(model.toMap());
+        await fs.collection('finance_transfers').doc(id).set(
+          {
+            ...model.toMap(),
+            'createdAt': FieldValue.serverTimestamp(),
+            'updatedAt': FieldValue.serverTimestamp(),
+          },
+          SetOptions(merge: true),
+        );
+        written = true;
       } catch (_) {}
+    }
+    if (!written) {
+      final queue = syncQueue;
+      if (queue != null) {
+        await queue.enqueue(
+          kind: 'firestore_set',
+          entityId: id,
+          payload: {
+            'collection': 'finance_transfers',
+            'docId': id,
+            'fields': model.toMap(),
+          },
+        );
+      }
     }
     return model;
   }

@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/data/offline_sync_queue.dart';
+import '../../../../core/data/queued_upload.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/network/cpanel_storage_client.dart';
 import '../../../../core/widgets/app_feedback.dart';
@@ -53,14 +55,37 @@ class _PaymentProofUploadViewState extends State<PaymentProofUploadView> {
       // D2: the proof must really upload. A failed upload is an error
       // the customer sees — never a made-up storage URL filed as their
       // proof for the shop to "verify".
+      // Phase B (B3): ...unless the device is offline. Then the
+      // receipt is queued and the proof is recorded with its TID —
+      // the image follows on sync, and nothing fake is filed.
       final cpanel = sl<CPanelStorageClient>();
-      final key = await cpanel.uploadFile(
-        file: _selectedFile!,
-        userUid: widget.booking.customerId,
-        folder: 'payments',
-      );
-      final proofUrl =
-          cpanel.getSignedMediaUrl(key, widget.booking.customerId);
+      final queue = sl.isRegistered<OfflineSyncQueue>()
+          ? sl<OfflineSyncQueue>()
+          : null;
+      String proofUrl = '';
+      try {
+        final key = await cpanel.uploadFile(
+          file: _selectedFile!,
+          userUid: widget.booking.customerId,
+          folder: 'payments',
+        );
+        proofUrl = cpanel.getSignedMediaUrl(key, widget.booking.customerId);
+      } catch (_) {
+        if (queue == null) rethrow;
+        await enqueueUpload(
+          file: _selectedFile!,
+          userUid: widget.booking.customerId,
+          folder: 'payments',
+          queue: queue,
+          targetCollection: 'bookings',
+          targetDocId: widget.booking.bookingId,
+          targetField: 'paymentProofUrl',
+          extra: {
+            'status': 'payment_submitted',
+            'transactionId': tid,
+          },
+        );
+      }
 
       final ds = sl<BookingRemoteDataSource>();
       final updated = await ds.updatePaymentProof(
@@ -71,7 +96,10 @@ class _PaymentProofUploadViewState extends State<PaymentProofUploadView> {
 
       if (mounted) {
         AppFeedback.showSuccess(
-            context, 'Proof submitted! Waiting for showroom confirmation.');
+            context,
+            proofUrl.isEmpty
+                ? 'Proof submitted! Receipt will sync when you are back online.'
+                : 'Proof submitted! Waiting for showroom confirmation.');
         widget.onProofSubmitted?.call(updated);
       }
     } catch (e) {

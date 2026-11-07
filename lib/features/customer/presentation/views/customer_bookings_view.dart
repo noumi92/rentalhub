@@ -1,8 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/data/sync_status_cubit.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/widgets/custom_curved_header.dart';
+import '../../../../core/widgets/offline_banner.dart';
 import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
 import '../widgets/booking_ticket_card.dart';
@@ -180,14 +183,42 @@ class _CustomerBookingsViewState extends State<CustomerBookingsView> {
                                       () => widget.onRateTrip?.call(b);
                                 }
 
+                                Widget card(SyncEntryStatus status) =>
+                                    BookingTicketCard(
+                                      booking: b,
+                                      onTap: () => widget
+                                          .onOpenBookingDetails
+                                          ?.call(b),
+                                      actionLabel: actionLabel,
+                                      onAction: actionCallback,
+                                      syncStatus: status,
+                                    );
+
                                 return Padding(
                                   padding: const EdgeInsets.only(bottom: 10),
-                                  child: BookingTicketCard(
-                                    booking: b,
-                                    onTap: () =>
-                                        widget.onOpenBookingDetails?.call(b),
-                                    actionLabel: actionLabel,
-                                    onAction: actionCallback,
+                                  // Phase B (B5): the per-item sync chip
+                                  // follows the queue state.
+                                  child: Builder(
+                                    builder: (context) {
+                                      // Prefer a provided cubit, else
+                                      // the DI singleton, else no
+                                      // chip (never throw for a
+                                      // missing provider).
+                                      final syncCubit =
+                                          resolveSyncStatusCubit(context);
+                                      if (syncCubit == null) {
+                                        return card(
+                                            SyncEntryStatus.synced);
+                                      }
+                                      return BlocBuilder<SyncStatusCubit,
+                                          SyncStatusState>(
+                                        bloc: syncCubit,
+                                        builder: (context, sync) =>
+                                            card(sync.byEntity[
+                                                    b.bookingId] ??
+                                                SyncEntryStatus.synced),
+                                      );
+                                    },
                                   ),
                                 );
                               },

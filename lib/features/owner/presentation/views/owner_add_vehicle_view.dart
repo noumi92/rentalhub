@@ -82,11 +82,13 @@ class _OwnerAddVehicleViewState extends State<OwnerAddVehicleView> {
 
   Future<void> _saveVehicle() async {
     final shopId = widget.shopId ?? currentShopId();
+    // Phase B (B3): fix the vehicle id before the photo upload so a failed upload can be queued against this vehicle.
+    final vehicleId = 'v-${DateTime.now().millisecondsSinceEpoch}';
     final imageUrl = await VehiclePhotoUploadService.uploadFrontPhoto(
-        shopId: shopId, photo: _photoFrontFile) ??
+        shopId: shopId, photo: _photoFrontFile, vehicleId: vehicleId) ??
         _photoFrontFile?.path;
     final vehicle = VehicleEntity(
-      vehicleId: 'v-${DateTime.now().millisecondsSinceEpoch}',
+      vehicleId: vehicleId,
       shopId: shopId, make: _selectedMake, model: _selectedModel, year: _selectedYear,
       plateNumber: _plateController.text.trim().isEmpty ? 'LEA-23-4567' : _plateController.text.trim(),
       category: _category, transmission: _isAutomatic ? 'Automatic' : 'Manual',

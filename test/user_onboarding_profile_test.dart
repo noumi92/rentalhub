@@ -1,10 +1,29 @@
+import 'dart:convert';
 import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:rentalhub/core/di/injection_container.dart';
 import 'package:rentalhub/core/network/cpanel_storage_client.dart';
 import 'package:rentalhub/core/network/firestore_service.dart';
 import 'package:rentalhub/features/auth/data/datasources/auth_remote_data_source.dart';
+
+/// Phase B (B4): the upload must go through the real client code
+/// path — the old fake-URL-on-failure is gone. The test binding
+/// answers every real HTTP request with 400, so a fake client that
+/// answers 200 with a stored filename is injected instead.
+class _FakeCPanelHttpClient extends http.BaseClient {
+  @override
+  Future<http.StreamedResponse> send(http.BaseRequest request) async {
+    final body = jsonEncode({'filename': 'profile/test_avatar.png'});
+    return http.StreamedResponse(
+      Stream.value(utf8.encode(body)),
+      200,
+      headers: {'content-type': 'application/json'},
+    );
+  }
+}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -25,6 +44,7 @@ void main() {
 
     cpanelClient = CPanelStorageClient(
       apiSecretKey: 'RENTALHUB_HMAC_SECURE_STORAGE_SECRET_2026',
+      httpClient: _FakeCPanelHttpClient(),
     );
     sl.registerLazySingleton<CPanelStorageClient>(() => cpanelClient);
 
@@ -43,8 +63,13 @@ void main() {
   test('User Onboarding: saves profile info without fake data and uploads profile photo to cPanel', () async {
     await authDataSource.setLoggedIn(true);
 
-    // Provide a dummy profile image file
-    final mockImageFile = File('test/mock_avatar.png');
+    // The mock file on disk does not exist in the local tree, so
+    // write a real temp image: the upload path checks exists()
+    // before sending, and a missing file uploads nothing.
+    final tempDir = await Directory.systemTemp.createTemp();
+    final mockImageFile = File('${tempDir.path}/mock_avatar.png');
+    await mockImageFile.writeAsBytes(
+        [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]);
 
     await authDataSource.saveProfileInfo(
       fullName: 'Daniyal Khan',

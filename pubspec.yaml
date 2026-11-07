@@ -27,6 +27,10 @@ dependencies:
 
   # Storage & Offline Cache
   shared_preferences: ^2.5.6
+  # Phase B (B2/B3): connectivity awareness + a stable dir for
+  # queued upload files that must survive a restart.
+  connectivity_plus: ^6.1.4
+  path_provider: ^2.1.5
 
   # Networking & Cryptography (cPanel HMAC Uploads)
   http: ^1.6.0

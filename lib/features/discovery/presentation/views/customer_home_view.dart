@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/widgets/custom_curved_header.dart';
+import '../../../../core/widgets/offline_banner.dart';
 import '../../data/datasources/customer_location_store.dart';
 import '../../data/datasources/discovery_remote_data_source.dart';
 import '../../data/repositories/discovery_repository_impl.dart';
@@ -81,8 +82,14 @@ class _CustomerHomeBodyState extends State<_CustomerHomeBody> {
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: const CustomerBottomNav(currentIndex: 0),
-      body: BlocBuilder<DiscoveryCubit, DiscoveryState>(
-        builder: (context, state) {
+      // Phase B (B5): the offline / pending-sync banner sits above
+      // the content and stays put while the list scrolls.
+      body: Column(
+        children: [
+          const OfflineBanner(),
+          Expanded(
+            child: BlocBuilder<DiscoveryCubit, DiscoveryState>(
+              builder: (context, state) {
           final cubit = context.read<DiscoveryCubit>();
           double radiusKm = 3.0;
           bool isMap = false;
@@ -186,6 +193,9 @@ class _CustomerHomeBodyState extends State<_CustomerHomeBody> {
             ),
           );
         },
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -3,8 +3,11 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:crypto/crypto.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/data/sync_engine.dart';
+import '../../../../core/data/sync_queue_entry.dart';
 import '../../../../core/network/cpanel_storage_client.dart';
 import '../../../finance/data/datasources/security_deposit_data_source.dart';
 import '../../data/datasources/handover_local_data_source.dart';
@@ -165,6 +168,45 @@ class HandoverCubit extends Cubit<HandoverState> {
     return entity;
   }
 
+  /// Phase B (B4): the agreement PDF hash, recorded in Firestore
+  /// so the integrity check can verify the uploaded file matches
+  /// what the phone generated.
+  static String agreementPdfHash(List<int> pdfBytes) =>
+      sha256.convert(pdfBytes).toString();
+
+  /// Phase B (B3): the sync engine's handler for a queued
+  /// handover entry. The payload is the handover JSON saved by
+  /// [HandoverLocalDataSource]; [_syncOne] does the upload + the
+  /// Firestore writes and marks the entry synced.
+  Future<bool> syncQueuedEntry(
+      SyncQueueEntry entry, SyncEngine engine) async {
+    try {
+      final map = Map<String, dynamic>.from(entry.payload);
+      final entity = HandoverEntity(
+        bookingId: map['booking_id'] as String? ?? entry.entityId,
+        initialOdometer: (map['odometer'] as num?)?.toInt() ?? 0,
+        fuelLevel: map['fuel_level'] as String? ?? '',
+        damageNotes: List<String>.from(map['damage_notes'] ?? []),
+        customerSignatureSvg: map['customer_signature'] as String? ?? '',
+        ownerSignatureSvg: map['owner_signature'] as String? ?? '',
+        customerSignatureB64: map['customer_signature_b64'] as String?,
+        ownerSignatureB64: map['owner_signature_b64'] as String?,
+        agreementPdfB64: map['agreement_pdf_b64'] as String?,
+        shopId: map['shop_id'] as String?,
+        shopName: map['shop_name'] as String?,
+        customerName: map['customer_name'] as String?,
+        cnicNumber: map['cnic'] as String?,
+        vehicleDetails: map['vehicle_details'] as String?,
+        totalAmount: (map['total_amount'] as num?)?.toInt(),
+        agreementPdfUrl: map['agreement_pdf_url'] as String?,
+        isSynced: false,
+      );
+      return await _syncOne(entity) != null;
+    } catch (_) {
+      return false;
+    }
+  }
+
   Future<int> syncPendingHandovers() async {
     final pending = await localDataSource.getPendingSyncHandovers();
     var synced = 0;
@@ -195,9 +237,11 @@ class HandoverCubit extends Cubit<HandoverState> {
     final pdfB64 = item.agreementPdfB64;
     if (pdfB64 == null) return null;
     try {
+      final pdfBytes = base64Decode(pdfB64);
+      final pdfHash = agreementPdfHash(pdfBytes);
       final tmp = File(
           '${Directory.systemTemp.path}/agreement-${item.bookingId}.pdf');
-      await tmp.writeAsBytes(base64Decode(pdfB64));
+      await tmp.writeAsBytes(pdfBytes);
       final userUid =
           (item.shopId != null && item.shopId!.isNotEmpty)
               ? item.shopId!
@@ -211,6 +255,10 @@ class HandoverCubit extends Cubit<HandoverState> {
 
       final fs = _resolvedFirestore;
       if (fs != null) {
+        // Phase B (B4): merge semantics + server timestamps (D7:
+        // server timestamp wins for status fields) so a retry never
+        // clobbers a concurrent change, and ordering never depends
+        // on the phone's clock.
         await fs.collection('agreements').doc(item.bookingId).set({
           'agreementId': item.bookingId,
           'bookingId': item.bookingId,
@@ -221,9 +269,11 @@ class HandoverCubit extends Cubit<HandoverState> {
           'vehicleDetails': item.vehicleDetails ?? '',
           'totalAmount': item.totalAmount ?? 0,
           'agreementPdfUrl': url,
+          'agreementPdfSha256': pdfHash,
           'status': 'active',
-          'createdAt': DateTime.now().toIso8601String(),
-        });
+          'createdAt': FieldValue.serverTimestamp(),
+          'updatedAt': FieldValue.serverTimestamp(),
+        }, SetOptions(merge: true));
         // E3: the handover record itself — odometer and fuel at pickup —
         // so the customer's active-trip view can show the real handover
         // values instead of the agreement doc, which does not carry them.
@@ -236,8 +286,10 @@ class HandoverCubit extends Cubit<HandoverState> {
           'fuelLevel': item.fuelLevel,
           'damageNotes': item.damageNotes,
           'agreementPdfUrl': url,
-          'createdAt': DateTime.now().toIso8601String(),
-        });
+          'agreementPdfSha256': pdfHash,
+          'createdAt': FieldValue.serverTimestamp(),
+          'updatedAt': FieldValue.serverTimestamp(),
+        }, SetOptions(merge: true));
       }
       await localDataSource.markSynced(item.bookingId, url);
       return url;

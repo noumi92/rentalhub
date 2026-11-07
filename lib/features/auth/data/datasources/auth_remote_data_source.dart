@@ -5,6 +5,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../../../core/data/offline_sync_queue.dart';
+import '../../../../core/data/queued_upload.dart';
 import '../../../../core/error/exceptions.dart';
 import '../../../../core/network/cpanel_storage_client.dart';
 import '../../../../core/network/firestore_service.dart';
@@ -16,6 +18,11 @@ class AuthRemoteDataSource {
   final fb.FirebaseAuth? auth;
   final FirestoreService? firestoreService;
   final CPanelStorageClient? storageClient;
+
+  /// Phase B (B3): the persisted pending-write store. When set, a
+  /// failed profile-photo upload is queued instead of filed as a
+  /// made-up URL.
+  final OfflineSyncQueue? syncQueue;
 
   static const String _isLoggedInKey = 'rentalhub_is_logged_in';
   static const String _onboardingCompletedKey = 'rentalhub_onboarding_completed';
@@ -55,7 +62,9 @@ class AuthRemoteDataSource {
 
     String? photoUrl = prefs.getString(_profilePhotoKey);
 
-    // Upload to cPanel if image file provided
+    // Upload to cPanel if image file provided.
+    // Phase B (B3): a failed upload is queued (the photo lands on
+    // sync) — never a made-up signed URL filed as the user's photo.
     if (profilePhotoFile != null && storageClient != null) {
       try {
         if (await profilePhotoFile.exists()) {
@@ -65,16 +74,25 @@ class AuthRemoteDataSource {
             folder: 'profile',
           );
           photoUrl = storageClient!.getSignedMediaUrl(fileKey, uid);
-        } else {
-          final fallbackKey = 'profile/${DateTime.now().millisecondsSinceEpoch}_avatar.jpg';
-          photoUrl = storageClient!.getSignedMediaUrl(fallbackKey, uid);
         }
       } catch (e) {
-        debugPrint('cPanel profile upload notice: $e (Falling back to signed HMAC URL)');
-        final fallbackKey = 'profile/${DateTime.now().millisecondsSinceEpoch}_avatar.jpg';
-        photoUrl = storageClient!.getSignedMediaUrl(fallbackKey, uid);
+        debugPrint('cPanel profile upload notice: $e (queuing for sync)');
+        final queue = syncQueue;
+        if (queue != null && await profilePhotoFile.exists()) {
+          await enqueueUpload(
+            file: profilePhotoFile,
+            userUid: uid,
+            folder: 'profile',
+            queue: queue,
+            targetCollection: 'users',
+            targetDocId: uid,
+            targetField: 'profile_photo_url',
+          );
+        }
       }
-      await prefs.setString(_profilePhotoKey, photoUrl);
+      if (photoUrl != null) {
+        await prefs.setString(_profilePhotoKey, photoUrl);
+      }
     }
 
     final existingUser = firestoreService != null ? await firestoreService!.getUser(uid) : null;
@@ -104,6 +122,7 @@ class AuthRemoteDataSource {
     this.auth,
     this.firestoreService,
     this.storageClient,
+    this.syncQueue,
   });
 
   Future<UserModel> signInWithGoogle() async {

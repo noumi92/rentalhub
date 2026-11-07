@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../../../core/data/offline_sync_queue.dart';
+
 import '../../domain/entities/cash_closing_entity.dart';
 import '../models/cash_closing_model.dart';
 
@@ -9,9 +11,10 @@ import '../models/cash_closing_model.dart';
 /// creates a duplicate.
 class CashClosingDataSource {
   final FirebaseFirestore? _firestore;
+  final OfflineSyncQueue? syncQueue;
   final List<CashClosingModel> _inMemory = [];
 
-  CashClosingDataSource({FirebaseFirestore? firestore})
+  CashClosingDataSource({FirebaseFirestore? firestore, this.syncQueue})
       : _firestore = firestore;
 
   FirebaseFirestore? get _resolvedFirestore {
@@ -21,6 +24,44 @@ class CashClosingDataSource {
     } catch (_) {
       return null;
     }
+  }
+
+  /// Phase B (B1/B3): a failed Firestore write is queued (persisted)
+  /// instead of dying in memory. Returns true when confirmed.
+  Future<bool> _writeDoc(
+    String collection,
+    String docId,
+    Map<String, dynamic> data,
+  ) async {
+    final fs = _resolvedFirestore;
+    if (fs == null) return false;
+    try {
+      await fs.collection(collection).doc(docId).set(
+        {...data, 'updatedAt': FieldValue.serverTimestamp()},
+        SetOptions(merge: true),
+      );
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<void> _queueDoc(
+    String collection,
+    String docId,
+    Map<String, dynamic> fields,
+  ) async {
+    final queue = syncQueue;
+    if (queue == null) return;
+    await queue.enqueue(
+      kind: 'firestore_set',
+      entityId: docId,
+      payload: {
+        'collection': collection,
+        'docId': docId,
+        'fields': fields,
+      },
+    );
   }
 
   Future<CashClosingEntity> saveClosing({
@@ -46,12 +87,8 @@ class CashClosingDataSource {
     );
     _inMemory.removeWhere((c) => c.closingId == id);
     _inMemory.add(model);
-    final fs = _resolvedFirestore;
-    if (fs != null) {
-      try {
-        await fs.collection('cash_closings').doc(id).set(model.toMap());
-      } catch (_) {}
-    }
+    final written = await _writeDoc('cash_closings', id, model.toMap());
+    if (!written) await _queueDoc('cash_closings', id, model.toMap());
     return model;
   }
 
