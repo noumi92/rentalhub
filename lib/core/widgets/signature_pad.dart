@@ -49,7 +49,7 @@ class _SignaturePadWidgetState extends State<SignaturePadWidget> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: _isSigned ? AppColors.emeraldGreen : AppColors.border,
+          color: _isSigned ? AppColors.accentSuccess : AppColors.borderSubtle,
           width: _isSigned ? 1.5 : 1,
         ),
         boxShadow: [
@@ -71,16 +71,14 @@ class _SignaturePadWidgetState extends State<SignaturePadWidget> {
                 children: [
                   Icon(
                     _isSigned ? Icons.check_circle : Icons.draw_outlined,
-                    color: _isSigned ? AppColors.emeraldGreen : AppColors.midnightNavy,
+                    color: _isSigned ? AppColors.accentSuccess : AppColors.primary,
                     size: 18,
                   ),
                   const SizedBox(width: 6),
                   Text(
                     widget.signerLabel,
-                    style: const TextStyle(
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.w700,
-                      fontSize: 14,
-                      color: AppColors.textPrimary,
                     ),
                   ),
                 ],
@@ -94,9 +92,11 @@ class _SignaturePadWidgetState extends State<SignaturePadWidget> {
                       minimumSize: Size.zero,
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
-                    child: const Text(
+                    child: Text(
                       'Auto Sign',
-                      style: TextStyle(fontSize: 12, color: AppColors.sunsetOrange),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AppColors.secondary,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -107,9 +107,9 @@ class _SignaturePadWidgetState extends State<SignaturePadWidget> {
                       minimumSize: Size.zero,
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
-                    child: const Text(
+                    child: Text(
                       'Clear',
-                      style: TextStyle(fontSize: 12, color: AppColors.textMuted),
+                      style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ),
                 ],
@@ -123,7 +123,7 @@ class _SignaturePadWidgetState extends State<SignaturePadWidget> {
             decoration: BoxDecoration(
               color: AppColors.background,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColors.border.withValues(alpha: 0.6), style: BorderStyle.solid),
+              border: Border.all(color: AppColors.borderSubtle.withValues(alpha: 0.6), style: BorderStyle.solid),
             ),
             child: GestureDetector(
               onPanUpdate: (details) {
@@ -141,8 +141,7 @@ class _SignaturePadWidgetState extends State<SignaturePadWidget> {
                   child: _points.isEmpty
                       ? Text(
                           'Sign here on screen (${widget.signerName})',
-                          style: TextStyle(
-                            fontSize: 12,
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
                             color: AppColors.textMuted.withValues(alpha: 0.7),
                             fontStyle: FontStyle.italic,
                           ),
@@ -158,21 +157,20 @@ class _SignaturePadWidgetState extends State<SignaturePadWidget> {
             children: [
               Text(
                 'Signed by: ${widget.signerName}',
-                style: const TextStyle(fontSize: 11, color: AppColors.textSecondary),
+                style: Theme.of(context).textTheme.labelSmall,
               ),
               if (_isSigned)
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   decoration: BoxDecoration(
-                    color: AppColors.emeraldSoftBg,
+                    color: AppColors.successContainer,
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: const Text(
+                  child: Text(
                     'NADRA Validated',
-                    style: TextStyle(
-                      fontSize: 10,
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
                       fontWeight: FontWeight.w700,
-                      color: AppColors.emeraldGreen,
+                      color: AppColors.accentSuccess,
                     ),
                   ),
                 ),
@@ -192,7 +190,7 @@ class _SignaturePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = AppColors.midnightNavyDark
+      ..color = AppColors.primaryDark
       ..strokeCap = StrokeCap.round
       ..strokeWidth = 2.5;
 

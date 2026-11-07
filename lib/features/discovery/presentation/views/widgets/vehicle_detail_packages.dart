@@ -27,11 +27,8 @@ class VehicleDetailPackages extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Choose Rental Package',
-            style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w900,
-                color: AppColors.midnightNavy)),
+        Text('Choose Rental Package',
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900, color: AppColors.primary)),
         const SizedBox(height: 10),
         Row(
           children: [
@@ -63,13 +60,13 @@ class VehicleDetailPackages extends StatelessWidget {
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: withDriver
-                ? AppColors.emeraldGreen.withValues(alpha: 0.08)
-                : AppColors.amberGold.withValues(alpha: 0.12),
+                ? AppColors.accentSuccess.withValues(alpha: 0.08)
+                : AppColors.warning.withValues(alpha: 0.12),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
                 color: withDriver
-                    ? AppColors.emeraldGreen.withValues(alpha: 0.25)
-                    : AppColors.amberGold.withValues(alpha: 0.35)),
+                    ? AppColors.accentSuccess.withValues(alpha: 0.25)
+                    : AppColors.warning.withValues(alpha: 0.35)),
           ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -80,19 +77,15 @@ class VehicleDetailPackages extends StatelessWidget {
                       : Icons.security_rounded,
                   size: 18,
                   color: withDriver
-                      ? AppColors.emeraldGreen
-                      : AppColors.midnightNavy),
+                      ? AppColors.accentSuccess
+                      : AppColors.primary),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   withDriver
                       ? 'Verified chauffeur included • Overtime: Rs. ${v.extraHourPkr ?? 0}/hr • Outstation: +Rs. ${v.rates.outOfCityDaily ?? 0}/day'
                       : 'Security Deposit: Rs. ${v.securityDepositPkr ?? 0} + Original NADRA CNIC guarantee required at pickup',
-                  style: const TextStyle(
-                      fontSize: 11.5,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.midnightNavy,
-                      height: 1.3),
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600, color: AppColors.primary, height: 1.3),
                 ),
               ),
             ],

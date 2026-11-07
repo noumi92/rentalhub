@@ -17,15 +17,12 @@ class ProfileSignOutTile extends StatelessWidget {
       child: ListTile(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(14),
-          side: const BorderSide(color: AppColors.border),
+          side: const BorderSide(color: AppColors.borderSubtle),
         ),
         leading: const Icon(Icons.logout_rounded,
-            color: AppColors.crimsonRed),
-        title: const Text('Sign Out',
-            style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w700,
-                color: AppColors.crimsonRed)),
+            color: AppColors.accentDanger),
+        title: Text('Sign Out',
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700, color: AppColors.accentDanger)),
         onTap: onTap,
       ),
     );

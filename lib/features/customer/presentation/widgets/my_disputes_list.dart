@@ -39,11 +39,11 @@ class _MyDisputesListState extends State<MyDisputesList> {
   Color _statusColor(String status) {
     switch (status) {
       case 'resolved':
-        return AppColors.emeraldGreen;
+        return AppColors.accentSuccess;
       case 'in_review':
-        return AppColors.amberGold;
+        return AppColors.warning;
       default:
-        return AppColors.sunsetOrange;
+        return AppColors.secondary;
     }
   }
 
@@ -64,13 +64,9 @@ class _MyDisputesListState extends State<MyDisputesList> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'My Disputes',
-          style: TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w800,
-            color: AppColors.midnightNavy,
-          ),
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
         ),
         const SizedBox(height: 10),
         if (disputes == null)
@@ -85,12 +81,11 @@ class _MyDisputesListState extends State<MyDisputesList> {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColors.border),
+              border: Border.all(color: AppColors.borderSubtle),
             ),
-            child: const Text(
+            child: Text(
               'No disputes filed yet.',
-              style: TextStyle(
-                  fontSize: 12, color: AppColors.textSecondary),
+              style: Theme.of(context).textTheme.bodySmall,
             ),
           )
         else
@@ -100,7 +95,7 @@ class _MyDisputesListState extends State<MyDisputesList> {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppColors.border),
+                  border: Border.all(color: AppColors.borderSubtle),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -111,11 +106,7 @@ class _MyDisputesListState extends State<MyDisputesList> {
                         Expanded(
                           child: Text(
                             d.category,
-                            style: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w800,
-                              color: AppColors.midnightNavy,
-                            ),
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
                           ),
                         ),
                         Container(
@@ -128,11 +119,7 @@ class _MyDisputesListState extends State<MyDisputesList> {
                           ),
                           child: Text(
                             _statusLabel(d.status),
-                            style: TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w800,
-                              color: _statusColor(d.status),
-                            ),
+                            style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800, color: _statusColor(d.status)),
                           ),
                         ),
                       ],
@@ -140,16 +127,12 @@ class _MyDisputesListState extends State<MyDisputesList> {
                     const SizedBox(height: 4),
                     Text(
                       'Booking ${d.bookingId}',
-                      style: const TextStyle(
-                          fontSize: 11, color: AppColors.textSecondary),
+                      style: Theme.of(context).textTheme.labelSmall,
                     ),
                     const SizedBox(height: 4),
                     Text(
                       d.description,
-                      style: const TextStyle(
-                          fontSize: 12,
-                          color: AppColors.midnightNavy,
-                          height: 1.4),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.primary, height: 1.4),
                     ),
                   ],
                 ),

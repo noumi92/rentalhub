@@ -81,11 +81,11 @@ class _FinancePnLReportState extends State<FinancePnLReport> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text('P&L Statement',
-                style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.midnightNavy)),
+            Text('P&L Statement',
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.primary,
+                )),
             DropdownButton<String>(
               value: _period,
               items: const [
@@ -106,7 +106,7 @@ class _FinancePnLReportState extends State<FinancePnLReport> {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.border),
+            border: Border.all(color: AppColors.borderSubtle),
           ),
           child: Column(
             children: [
@@ -158,13 +158,13 @@ class _FinancePnLReportState extends State<FinancePnLReport> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(label,
-              style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: bold ? FontWeight.w900 : FontWeight.w700)),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: bold ? FontWeight.w900 : FontWeight.w700,
+              )),
           Text('Rs. $amount',
-              style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: bold ? FontWeight.w900 : FontWeight.w700)),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: bold ? FontWeight.w900 : FontWeight.w700,
+              )),
         ],
       ),
     );

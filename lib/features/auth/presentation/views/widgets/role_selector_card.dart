@@ -31,11 +31,11 @@ class RoleSelectorCard extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: isSelected
-              ? AppColors.sunsetOrange.withValues(alpha: 0.08)
+              ? AppColors.secondary.withValues(alpha: 0.08)
               : Colors.white,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isSelected ? AppColors.sunsetOrange : AppColors.border,
+            color: isSelected ? AppColors.secondary : AppColors.borderSubtle,
             width: isSelected ? 2 : 1,
           ),
         ),
@@ -46,13 +46,13 @@ class RoleSelectorCard extends StatelessWidget {
               height: 48,
               decoration: BoxDecoration(
                 color: isSelected
-                    ? AppColors.sunsetOrange
+                    ? AppColors.secondary
                     : AppColors.primaryContainer,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
                 icon,
-                color: isSelected ? Colors.white : AppColors.midnightNavy,
+                color: isSelected ? Colors.white : AppColors.primary,
                 size: 24,
               ),
             ),
@@ -68,18 +68,16 @@ class RoleSelectorCard extends StatelessWidget {
                     children: [
                       Text(
                         title,
-                        style: const TextStyle(
-                          fontSize: 14.5,
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
                           fontWeight: FontWeight.w800,
-                          color: AppColors.midnightNavy,
+                          color: AppColors.primary,
                         ),
                       ),
                       Text(
                         urduSubtitle,
-                        style: const TextStyle(
-                          fontSize: 12,
+                        style: Theme.of(context).textTheme.labelMedium?.copyWith(
                           fontWeight: FontWeight.w600,
-                          color: AppColors.sunsetOrange,
+                          color: AppColors.secondary,
                         ),
                       ),
                     ],
@@ -87,10 +85,7 @@ class RoleSelectorCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     description,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: AppColors.textMuted,
-                    ),
+                    style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ],
               ),
@@ -99,7 +94,7 @@ class RoleSelectorCard extends StatelessWidget {
               isSelected
                   ? Icons.radio_button_checked_rounded
                   : Icons.radio_button_off_rounded,
-              color: isSelected ? AppColors.sunsetOrange : AppColors.textMuted,
+              color: isSelected ? AppColors.secondary : AppColors.textMuted,
             ),
           ],
         ),

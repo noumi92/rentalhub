@@ -28,11 +28,8 @@ class DisputeFormFields extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Select Dispute Category',
-            style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w700,
-                color: AppColors.midnightNavy)),
+        Text('Select Dispute Category',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.primary)),
         const SizedBox(height: 8),
         DisputeCategoryChips(
           categories: categories,
@@ -40,11 +37,8 @@ class DisputeFormFields extends StatelessWidget {
           onSelected: onCategorySelected,
         ),
         const SizedBox(height: 16),
-        const Text('Booking ID / Reference',
-            style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w700,
-                color: AppColors.midnightNavy)),
+        Text('Booking ID / Reference',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.primary)),
         const SizedBox(height: 6),
         TextField(
           controller: bookingIdController,
@@ -55,18 +49,15 @@ class DisputeFormFields extends StatelessWidget {
                 Theme.of(context).colorScheme.surfaceContainerHighest,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.border),
+              borderSide: const BorderSide(color: AppColors.borderSubtle),
             ),
             contentPadding:
                 const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           ),
         ),
         const SizedBox(height: 16),
-        const Text('Detailed Explanation',
-            style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w700,
-                color: AppColors.midnightNavy)),
+        Text('Detailed Explanation',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.primary)),
         const SizedBox(height: 6),
         TextField(
           controller: descriptionController,
@@ -79,7 +70,7 @@ class DisputeFormFields extends StatelessWidget {
                 Theme.of(context).colorScheme.surfaceContainerHighest,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.border),
+              borderSide: const BorderSide(color: AppColors.borderSubtle),
             ),
             contentPadding: const EdgeInsets.all(12),
           ),
@@ -88,21 +79,18 @@ class DisputeFormFields extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: AppColors.lavenderMist,
+            color: AppColors.primaryContainer,
             borderRadius: BorderRadius.circular(12),
           ),
           child: Row(
-            children: const [
+            children: [
               Icon(Icons.shield_rounded,
-                  size: 18, color: AppColors.royalNavy),
+                  size: 18, color: AppColors.primary),
               SizedBox(width: 8),
               Expanded(
                 child: Text(
                   'Your dispute is recorded and shared with the showroom for review. There is no fixed resolution time yet.',
-                  style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.midnightNavy),
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600, color: AppColors.primary),
                 ),
               ),
             ],

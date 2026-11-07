@@ -72,9 +72,9 @@ class VehicleRatesStepWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Duration Packages (Hourly & Daily)', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900, color: AppColors.midnightNavy)),
+        Text('Duration Packages (Hourly & Daily)', style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900, color: AppColors.primary)),
         const SizedBox(height: 4),
-        const Text('Enable packages and edit rates in PKR per booking tier.', style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+        Text('Enable packages and edit rates in PKR per booking tier.', style: Theme.of(context).textTheme.bodySmall),
         const SizedBox(height: 12),
 
         _packageRow(context, '1 Hour Rate', rate1HourController, enable1Hour, onToggle1Hour),
@@ -84,11 +84,11 @@ class VehicleRatesStepWidget extends StatelessWidget {
         _packageRow(context, 'Weekly (7 Days) Rate', rateWeeklyController, enableWeekly, onToggleWeekly),
         const SizedBox(height: 16),
 
-        const Text('Service Type & Driver Options', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900, color: AppColors.midnightNavy)),
+        Text('Service Type & Driver Options', style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900, color: AppColors.primary)),
         const SizedBox(height: 8),
 
         Card(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14), side: const BorderSide(color: AppColors.border)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14), side: const BorderSide(color: AppColors.borderSubtle)),
           child: Padding(
             padding: const EdgeInsets.all(14),
             child: Column(
@@ -96,37 +96,37 @@ class VehicleRatesStepWidget extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Column(
+                    Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Self-Drive Service', style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w800, color: AppColors.midnightNavy)),
-                        Text('Customer drives the vehicle themselves', style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+                        Text('Self-Drive Service', style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
+                        Text('Customer drives the vehicle themselves', style: Theme.of(context).textTheme.labelSmall),
                       ],
                     ),
-                    Switch(value: supportSelfDrive, activeThumbColor: AppColors.sunsetOrange, onChanged: onToggleSelfDrive),
+                    Switch(value: supportSelfDrive, activeThumbColor: AppColors.secondary, onChanged: onToggleSelfDrive),
                   ],
                 ),
                 const Divider(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Column(
+                    Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('With-Driver Service', style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w800, color: AppColors.midnightNavy)),
-                        Text('Shop provides experienced chauffeur', style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+                        Text('With-Driver Service', style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
+                        Text('Shop provides experienced chauffeur', style: Theme.of(context).textTheme.labelSmall),
                       ],
                     ),
-                    Switch(value: supportWithDriver, activeThumbColor: AppColors.sunsetOrange, onChanged: onToggleWithDriver),
+                    Switch(value: supportWithDriver, activeThumbColor: AppColors.secondary, onChanged: onToggleWithDriver),
                   ],
                 ),
                 if (supportWithDriver) ...[
                   const Divider(height: 20),
                   Row(
                     children: [
-                      const Expanded(
+                      Expanded(
                         flex: 3,
-                        child: Text('Driver Daily Allowance:', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.textSecondary)),
+                        child: Text('Driver Daily Allowance:', style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700)),
                       ),
                       Expanded(
                         flex: 2,
@@ -134,17 +134,17 @@ class VehicleRatesStepWidget extends StatelessWidget {
                           controller: driverAllowanceController,
                           keyboardType: TextInputType.number,
                           textAlign: TextAlign.end,
-                          style: const TextStyle(fontWeight: FontWeight.w900, color: AppColors.sunsetOrange, fontSize: 14),
+                          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900, color: AppColors.secondary),
                           decoration: InputDecoration(
                             prefixText: 'Rs. ',
-                            prefixStyle: const TextStyle(fontWeight: FontWeight.w800, color: AppColors.midnightNavy),
+                            prefixStyle: const TextStyle(fontWeight: FontWeight.w800, color: AppColors.primary),
                             suffixText: '/day',
-                            suffixStyle: const TextStyle(fontSize: 11, color: AppColors.textMuted),
+                            suffixStyle: Theme.of(context).textTheme.labelSmall,
                             filled: true,
                             fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                             isDense: true,
                             contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: AppColors.border)),
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: AppColors.borderSubtle)),
                           ),
                         ),
                       ),
@@ -157,11 +157,11 @@ class VehicleRatesStepWidget extends StatelessWidget {
         ),
         const SizedBox(height: 16),
 
-        const Text('Security Deposit & Rental Policies', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900, color: AppColors.midnightNavy)),
+        Text('Security Deposit & Rental Policies', style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900, color: AppColors.primary)),
         const SizedBox(height: 8),
 
         Card(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14), side: const BorderSide(color: AppColors.border)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14), side: const BorderSide(color: AppColors.borderSubtle)),
           child: Padding(
             padding: const EdgeInsets.all(14),
             child: Column(
@@ -175,22 +175,22 @@ class VehicleRatesStepWidget extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Expanded(
+                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Fuel Policy', style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w800, color: AppColors.midnightNavy)),
-                          Text('Condition expected upon return', style: TextStyle(fontSize: 10.5, color: AppColors.textSecondary)),
+                          Text('Fuel Policy', style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
+                          Text('Condition expected upon return', style: Theme.of(context).textTheme.labelSmall),
                         ],
                       ),
                     ),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10),
-                      decoration: BoxDecoration(color: AppColors.backgroundLight, borderRadius: BorderRadius.circular(8), border: Border.all(color: AppColors.border)),
+                      decoration: BoxDecoration(color: Theme.of(context).colorScheme.surfaceContainerHighest, borderRadius: BorderRadius.circular(8), border: Border.all(color: AppColors.borderSubtle)),
                       child: DropdownButtonHideUnderline(
                         child: DropdownButton<String>(
                           value: fuelPolicy,
-                          items: fuelPolicies.map((f) => DropdownMenuItem(value: f, child: Text(f, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12.5)))).toList(),
+                          items: fuelPolicies.map((f) => DropdownMenuItem(value: f, child: Text(f, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700)))).toList(),
                           onChanged: (v) {
                             if (v != null) onFuelPolicyChanged(v);
                           },
@@ -214,12 +214,12 @@ class VehicleRatesStepWidget extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: isEnabled ? AppColors.sunsetOrange.withValues(alpha: 0.3) : AppColors.border),
+        border: Border.all(color: isEnabled ? AppColors.secondary.withValues(alpha: 0.3) : AppColors.borderSubtle),
       ),
       child: Row(
         children: [
-          Checkbox(value: isEnabled, activeColor: AppColors.sunsetOrange, onChanged: (v) => onToggle(v ?? false)),
-          Expanded(child: Text(label, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: isEnabled ? AppColors.midnightNavy : AppColors.textMuted))),
+          Checkbox(value: isEnabled, activeColor: AppColors.secondary, onChanged: (v) => onToggle(v ?? false)),
+          Expanded(child: Text(label, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800, color: isEnabled ? AppColors.primary : AppColors.textMuted))),
           SizedBox(
             width: 120,
             child: TextField(
@@ -227,15 +227,15 @@ class VehicleRatesStepWidget extends StatelessWidget {
               enabled: isEnabled,
               keyboardType: TextInputType.number,
               textAlign: TextAlign.end,
-              style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w900, color: isEnabled ? Theme.of(context).colorScheme.onSurface : Theme.of(context).colorScheme.onSurfaceVariant),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w900, color: isEnabled ? Theme.of(context).colorScheme.onSurface : Theme.of(context).colorScheme.onSurfaceVariant),
               decoration: InputDecoration(
                 prefixText: 'Rs. ',
-                prefixStyle: TextStyle(fontWeight: FontWeight.w800, fontSize: 12, color: isEnabled ? Theme.of(context).colorScheme.onSurface : Theme.of(context).colorScheme.onSurfaceVariant),
+                prefixStyle: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: isEnabled ? Theme.of(context).colorScheme.onSurface : Theme.of(context).colorScheme.onSurfaceVariant),
                 filled: true,
                 fillColor: isEnabled ? Theme.of(context).colorScheme.surfaceContainerHighest : Theme.of(context).colorScheme.surfaceContainer,
                 isDense: true,
                 contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: AppColors.border)),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: AppColors.borderSubtle)),
               ),
             ),
           ),
@@ -252,8 +252,8 @@ class VehicleRatesStepWidget extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(label, style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w800, color: AppColors.midnightNavy)),
-              Text(subtitle, style: const TextStyle(fontSize: 10.5, color: AppColors.textSecondary)),
+              Text(label, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
+              Text(subtitle, style: Theme.of(context).textTheme.labelSmall),
             ],
           ),
         ),
@@ -264,17 +264,17 @@ class VehicleRatesStepWidget extends StatelessWidget {
             controller: controller,
             keyboardType: TextInputType.number,
             textAlign: TextAlign.end,
-            style: TextStyle(fontWeight: FontWeight.w900, color: Theme.of(context).colorScheme.onSurface, fontSize: 13.5),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w900),
             decoration: InputDecoration(
               prefixText: 'Rs. ',
-              prefixStyle: TextStyle(fontWeight: FontWeight.w800, color: Theme.of(context).colorScheme.onSurface, fontSize: 12),
+              prefixStyle: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: Theme.of(context).colorScheme.onSurface),
               suffixText: suffix,
-              suffixStyle: const TextStyle(fontSize: 11, color: AppColors.textMuted),
+              suffixStyle: Theme.of(context).textTheme.labelSmall,
               filled: true,
               fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
               isDense: true,
               contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: AppColors.border)),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: AppColors.borderSubtle)),
             ),
           ),
         ),

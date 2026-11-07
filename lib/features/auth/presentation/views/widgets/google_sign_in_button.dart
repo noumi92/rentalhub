@@ -20,7 +20,7 @@ class GoogleSignInButton extends StatelessWidget {
         onPressed: isLoading ? null : onPressed,
         style: OutlinedButton.styleFrom(
           backgroundColor: Colors.white,
-          foregroundColor: AppColors.midnightNavy,
+          foregroundColor: AppColors.primary,
           side: const BorderSide(color: Color(0xFFE2E8F0), width: 1.5),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
@@ -35,12 +35,11 @@ class GoogleSignInButton extends StatelessWidget {
               painter: const _GoogleGPainter(),
             ),
             const SizedBox(width: 12),
-            const Text(
+            Text(
               'Continue with Google',
-              style: TextStyle(
-                fontSize: 15,
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
                 fontWeight: FontWeight.w700,
-                color: AppColors.midnightNavy,
+                color: AppColors.primary,
               ),
             ),
           ],

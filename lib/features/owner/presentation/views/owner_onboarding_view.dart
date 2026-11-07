@@ -172,7 +172,6 @@ class _OwnerOnboardingViewState extends State<OwnerOnboardingView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
       body: SafeArea(
         child: Column(
           children: [
@@ -187,9 +186,9 @@ class _OwnerOnboardingViewState extends State<OwnerOnboardingView> {
                       titleWidget: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(_getHeaderTitle(), style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w900)),
+                          Text(_getHeaderTitle(), style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
                           const SizedBox(height: 2),
-                          Text(_getHeaderSubtitle(), style: const TextStyle(color: AppColors.textLavender, fontSize: 12)),
+                          Text(_getHeaderSubtitle(), style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.primaryContainer)),
                         ],
                       ),
                       actions: [
@@ -198,7 +197,7 @@ class _OwnerOnboardingViewState extends State<OwnerOnboardingView> {
                             margin: const EdgeInsets.only(right: 8),
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                             decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.18), borderRadius: BorderRadius.circular(12)),
-                            child: Text('Step $_currentStep of 4', style: const TextStyle(color: Colors.white, fontSize: 11.5, fontWeight: FontWeight.w700)),
+                            child: Text('Step $_currentStep of 4', style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700, color: Colors.white)),
                           ),
                       ],
                     ),
@@ -211,7 +210,7 @@ class _OwnerOnboardingViewState extends State<OwnerOnboardingView> {
             if (_currentStep < 5)
               Container(
                 padding: const EdgeInsets.all(16),
-                decoration: const BoxDecoration(color: Colors.white, border: Border(top: BorderSide(color: AppColors.border)), boxShadow: [BoxShadow(color: Color(0x0C000000), blurRadius: 8, offset: Offset(0, -3))]),
+                decoration: const BoxDecoration(color: Colors.white, border: Border(top: BorderSide(color: AppColors.borderSubtle)), boxShadow: [BoxShadow(color: Color(0x0C000000), blurRadius: 8, offset: Offset(0, -3))]),
                 child: DebouncedButton(
                   text: _currentStep == 4 ? 'Submit Shop for Verification' : 'Next Step',
                   icon: _currentStep == 4 ? Icons.check_circle_rounded : Icons.arrow_forward_rounded,

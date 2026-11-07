@@ -10,7 +10,7 @@ class AppFeedback {
     _showSnackBar(
       context: context,
       message: message,
-      backgroundColor: AppColors.emeraldGreen,
+      backgroundColor: AppColors.accentSuccess,
       icon: Icons.check_circle_rounded,
     );
   }
@@ -20,7 +20,7 @@ class AppFeedback {
     _showSnackBar(
       context: context,
       message: message,
-      backgroundColor: AppColors.crimsonRed,
+      backgroundColor: AppColors.accentDanger,
       icon: Icons.error_outline_rounded,
     );
   }
@@ -30,7 +30,7 @@ class AppFeedback {
     _showSnackBar(
       context: context,
       message: message,
-      backgroundColor: AppColors.sunsetOrange,
+      backgroundColor: AppColors.secondary,
       icon: Icons.warning_amber_rounded,
     );
   }
@@ -40,7 +40,7 @@ class AppFeedback {
     _showSnackBar(
       context: context,
       message: message,
-      backgroundColor: AppColors.midnightNavy,
+      backgroundColor: AppColors.primary,
       icon: Icons.info_outline_rounded,
     );
   }
@@ -65,10 +65,9 @@ class AppFeedback {
             Expanded(
               child: Text(
                 message,
-                style: const TextStyle(
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Colors.white,
                   fontWeight: FontWeight.w700,
-                  fontSize: 13,
                 ),
               ),
             ),
@@ -105,13 +104,13 @@ class AppFeedback {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: (isDestructive ? AppColors.crimsonRed : AppColors.sunsetOrange)
+                color: (isDestructive ? AppColors.accentDanger : AppColors.secondary)
                     .withValues(alpha: 0.12),
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 icon,
-                color: isDestructive ? AppColors.crimsonRed : AppColors.sunsetOrange,
+                color: isDestructive ? AppColors.accentDanger : AppColors.secondary,
                 size: 22,
               ),
             ),
@@ -119,10 +118,9 @@ class AppFeedback {
             Expanded(
               child: Text(
                 title,
-                style: const TextStyle(
-                  fontSize: 16,
+                style: Theme.of(ctx).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w800,
-                  color: AppColors.midnightNavy,
+                  color: AppColors.primary,
                 ),
               ),
             ),
@@ -130,8 +128,7 @@ class AppFeedback {
         ),
         content: Text(
           message,
-          style: const TextStyle(
-            fontSize: 13,
+          style: Theme.of(ctx).textTheme.bodyMedium?.copyWith(
             color: AppColors.textSecondary,
             height: 1.4,
           ),
@@ -150,7 +147,7 @@ class AppFeedback {
           ElevatedButton(
             onPressed: () => Navigator.of(ctx).pop(true),
             style: ElevatedButton.styleFrom(
-              backgroundColor: isDestructive ? AppColors.crimsonRed : AppColors.midnightNavy,
+              backgroundColor: isDestructive ? AppColors.accentDanger : AppColors.primary,
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),

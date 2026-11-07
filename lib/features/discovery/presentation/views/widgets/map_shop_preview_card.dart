@@ -23,7 +23,7 @@ class MapShopPreviewCard extends StatelessWidget {
         elevation: 6,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(18),
-          side: const BorderSide(color: AppColors.border),
+          side: const BorderSide(color: AppColors.borderSubtle),
         ),
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -42,7 +42,7 @@ class MapShopPreviewCard extends StatelessWidget {
                     ),
                     child: const Icon(
                       Icons.storefront_rounded,
-                      color: AppColors.midnightNavy,
+                      color: AppColors.primary,
                       size: 24,
                     ),
                   ),
@@ -53,21 +53,14 @@ class MapShopPreviewCard extends StatelessWidget {
                       children: [
                         Text(
                           shop.shopName,
-                          style: const TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w800,
-                            color: AppColors.midnightNavy,
-                          ),
+                          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(height: 2),
                         Text(
                           '${shop.address} • ${shop.distanceKm} km away',
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: AppColors.textSecondary,
-                          ),
+                          style: Theme.of(context).textTheme.bodySmall,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -83,20 +76,12 @@ class MapShopPreviewCard extends StatelessWidget {
                   const SizedBox(width: 8),
                   Text(
                     '★ ${shop.rating} Rating',
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.midnightNavy,
-                    ),
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.primary),
                   ),
                   const SizedBox(width: 8),
                   Text(
                     '• ${shop.availableCount} Cars Ready',
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.emeraldGreen,
-                    ),
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.accentSuccess),
                   ),
                 ],
               ),
@@ -112,50 +97,50 @@ class MapShopPreviewCard extends StatelessWidget {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text('Calling ${shop.shopName}...'),
-                          backgroundColor: AppColors.midnightNavy,
+                          backgroundColor: AppColors.primary,
                           duration: const Duration(seconds: 2),
                         ),
                       );
                     },
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: AppColors.midnightNavy,
-                      side: const BorderSide(color: AppColors.border),
+                      foregroundColor: AppColors.primary,
+                      side: const BorderSide(color: AppColors.borderSubtle),
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     ),
                     icon: const Icon(Icons.call_rounded, size: 14, color: AppColors.primary),
-                    label: const Text('Call', style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700)),
+                    label: Text('Call', style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700)),
                   ),
                   OutlinedButton.icon(
                     onPressed: () {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text('Opening WhatsApp with ${shop.shopName}...'),
-                          backgroundColor: AppColors.emeraldGreen,
+                          backgroundColor: AppColors.accentSuccess,
                           duration: const Duration(seconds: 2),
                         ),
                       );
                     },
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: AppColors.emeraldGreen,
+                      foregroundColor: AppColors.accentSuccess,
                       side: const BorderSide(color: Color(0xFF86EFAC)),
                       backgroundColor: const Color(0xFFF0FDF4),
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     ),
-                    icon: const Icon(Icons.chat_bubble_outline_rounded, size: 14, color: AppColors.emeraldGreen),
-                    label: const Text('WhatsApp', style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700)),
+                    icon: const Icon(Icons.chat_bubble_outline_rounded, size: 14, color: AppColors.accentSuccess),
+                    label: Text('WhatsApp', style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700)),
                   ),
                   ElevatedButton.icon(
                     onPressed: onViewShowroom,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.sunsetOrange,
+                      backgroundColor: AppColors.secondary,
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     ),
                     icon: const Icon(Icons.directions_car_rounded, size: 14),
-                    label: const Text('View Fleet', style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w800)),
+                    label: Text('View Fleet', style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800)),
                   ),
                 ],
               ),

@@ -97,7 +97,6 @@ class _OwnerCustomerRatingViewState extends State<OwnerCustomerRatingView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
       body: SafeArea(
         child: Column(
           children: [
@@ -112,8 +111,8 @@ class _OwnerCustomerRatingViewState extends State<OwnerCustomerRatingView> {
               titleWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Customer Reputation & Review', style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w900)),
-                  Text(widget.booking.customerName ?? 'Customer Review', style: const TextStyle(color: AppColors.textLavender, fontSize: 11.5)),
+                  Text('Customer Reputation & Review', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
+                  Text(widget.booking.customerName ?? 'Customer Review', style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.primaryContainer)),
                 ],
               ),
             ),
@@ -149,12 +148,12 @@ class _OwnerCustomerRatingViewState extends State<OwnerCustomerRatingView> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.borderSubtle),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Customer Performance Feedback', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: AppColors.midnightNavy)),
+          Text('Customer Performance Feedback', style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
           const SizedBox(height: 12),
           _starRow('Return Punctuality & Timekeeping', 'Vehicle returned as per agreed contract schedule', _punctualityRating, (r) => setState(() => _punctualityRating = r)),
           const SizedBox(height: 10),
@@ -165,12 +164,12 @@ class _OwnerCustomerRatingViewState extends State<OwnerCustomerRatingView> {
           TextField(
             controller: _commentController,
             maxLines: 2,
-            style: const TextStyle(fontSize: 13),
+            style: Theme.of(context).textTheme.bodyMedium,
             decoration: InputDecoration(
               hintText: 'Add optional feedback notes for community showroom records...',
               filled: true,
               fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: AppColors.border)),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: AppColors.borderSubtle)),
               contentPadding: const EdgeInsets.all(10),
             ),
           ),
@@ -196,7 +195,7 @@ class _OwnerCustomerRatingViewState extends State<OwnerCustomerRatingView> {
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: _flagForBlacklist ? Colors.red.shade400 : AppColors.border),
+          border: Border.all(color: _flagForBlacklist ? Colors.red.shade400 : AppColors.borderSubtle),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -204,13 +203,13 @@ class _OwnerCustomerRatingViewState extends State<OwnerCustomerRatingView> {
             SwitchListTile(
               activeThumbColor: Colors.red.shade700,
               contentPadding: EdgeInsets.zero,
-              title: const Text('Flag Customer to Shared Blacklist', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: Colors.red)),
+              title: Text('Flag Customer to Shared Blacklist', style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800, color: Colors.red)),
               subtitle: Text(
                   widget.booking.customerCnic == null ||
                           widget.booking.customerCnic!.isEmpty
                       ? 'Needs the customer CNIC on this booking — none is recorded, so a report cannot be filed from here.'
                       : 'Other showrooms using RentalHub can see this report',
-                  style: const TextStyle(fontSize: 11)),
+                  style: Theme.of(context).textTheme.labelSmall),
               value: _flagForBlacklist,
               onChanged: widget.booking.customerCnic == null ||
                       widget.booking.customerCnic!.isEmpty
@@ -219,12 +218,12 @@ class _OwnerCustomerRatingViewState extends State<OwnerCustomerRatingView> {
             ),
             if (_flagForBlacklist) ...[
               const SizedBox(height: 10),
-              const Text('Reason Category for Tribunal:', style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: Colors.red)),
+              Text('Reason Category for Tribunal:', style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700, color: Colors.red)),
               const SizedBox(height: 6),
               DropdownButtonFormField<String>(
                 initialValue: _selectedReason,
                 isExpanded: true,
-                style: const TextStyle(fontSize: 12.5, color: Colors.black87),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.black87),
                 decoration: InputDecoration(
                   filled: true,
                   fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,

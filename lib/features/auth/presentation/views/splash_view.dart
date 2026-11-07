@@ -123,16 +123,15 @@ class _SplashViewState extends State<SplashView>
                       width: 44,
                       height: 3.5,
                       decoration: BoxDecoration(
-                        color: AppColors.sunsetOrange,
+                        color: AppColors.secondary,
                         borderRadius: BorderRadius.circular(2),
                       ),
                     ),
                     const SizedBox(height: 16),
                     Text(
                       '© ${DateTime.now().year} RentalHub. All rights reserved.',
-                      style: TextStyle(
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
                         color: Colors.white.withValues(alpha: 0.5),
-                        fontSize: 11.5,
                         fontWeight: FontWeight.w400,
                         letterSpacing: 0.3,
                       ),

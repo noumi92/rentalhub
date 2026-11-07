@@ -131,7 +131,6 @@ class _CustomerHomeMapViewState extends State<CustomerHomeMapView> {
     final selectedShop = _selectedShop;
 
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
       bottomNavigationBar: const CustomerBottomNav(currentIndex: 0),
       body: SafeArea(
         child: Column(
@@ -145,16 +144,16 @@ class _CustomerHomeMapViewState extends State<CustomerHomeMapView> {
               titleWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Nearby Showrooms', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w900)),
+                  Text('Nearby Showrooms', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
                   const SizedBox(height: 2),
-                  Text('${_location.area} • Tap marker to preview', style: const TextStyle(color: AppColors.textLavender, fontSize: 12)),
+                  Text('${_location.area} • Tap marker to preview', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.primaryContainer)),
                 ],
               ),
               actions: [
                 IconButton(
                   tooltip: 'Switch to List View',
                   onPressed: () => context.go(RouteNames.customerHome),
-                  icon: const Icon(Icons.view_list_rounded, color: AppColors.sunsetOrange, size: 24),
+                  icon: const Icon(Icons.view_list_rounded, color: AppColors.secondary, size: 24),
                 ),
               ],
             ),

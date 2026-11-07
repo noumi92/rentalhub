@@ -24,14 +24,14 @@ class WalletTransactionTile extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.borderSubtle),
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: (isDebit ? AppColors.crimsonRed : AppColors.emeraldGreen)
+              color: (isDebit ? AppColors.accentDanger : AppColors.accentSuccess)
                   .withValues(alpha: 0.12),
               shape: BoxShape.circle,
             ),
@@ -39,7 +39,7 @@ class WalletTransactionTile extends StatelessWidget {
               isDebit
                   ? Icons.arrow_upward_rounded
                   : Icons.arrow_downward_rounded,
-              color: isDebit ? AppColors.crimsonRed : AppColors.emeraldGreen,
+              color: isDebit ? AppColors.accentDanger : AppColors.accentSuccess,
               size: 18,
             ),
           ),
@@ -50,18 +50,11 @@ class WalletTransactionTile extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.midnightNavy,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.primary),
                 ),
                 Text(
                   date,
-                  style: const TextStyle(
-                    fontSize: 11,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: Theme.of(context).textTheme.labelSmall,
                 ),
               ],
             ),
@@ -71,20 +64,11 @@ class WalletTransactionTile extends StatelessWidget {
             children: [
               Text(
                 '${isDebit ? "-" : "+"} Rs. $amount',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w800,
-                  color:
-                      isDebit ? AppColors.crimsonRed : AppColors.emeraldGreen,
-                ),
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: isDebit ? AppColors.accentDanger : AppColors.accentSuccess),
               ),
               Text(
                 status,
-                style: const TextStyle(
-                  fontSize: 10,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textSecondary,
-                ),
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600),
               ),
             ],
           ),

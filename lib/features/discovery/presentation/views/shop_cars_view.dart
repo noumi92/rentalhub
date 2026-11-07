@@ -63,7 +63,6 @@ class _ShopCarsViewState extends State<ShopCarsView> {
         : list.where((v) => v.category.toLowerCase() == _selectedCategory.toLowerCase()).toList();
 
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
       body: SafeArea(
         child: Column(
           children: [
@@ -79,14 +78,10 @@ class _ShopCarsViewState extends State<ShopCarsView> {
               titleWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Available Fleet',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w900)),
+                  Text('Available Fleet',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
                   Text(widget.shopName,
-                      style: const TextStyle(
-                          color: AppColors.textLavender, fontSize: 12)),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.primaryContainer)),
                 ],
               ),
             ),
@@ -105,15 +100,11 @@ class _ShopCarsViewState extends State<ShopCarsView> {
                     label: Text(cat),
                     selected: isSelected,
                     onSelected: (_) => setState(() => _selectedCategory = cat),
-                    selectedColor: AppColors.midnightNavy,
+                    selectedColor: AppColors.primary,
                     backgroundColor: Colors.white,
-                    labelStyle: TextStyle(
-                      color: isSelected ? Colors.white : AppColors.midnightNavy,
-                      fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
-                      fontSize: 12,
-                    ),
+                    labelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600, color: isSelected ? Colors.white : AppColors.primary),
                     side: BorderSide(
-                      color: isSelected ? AppColors.midnightNavy : AppColors.border,
+                      color: isSelected ? AppColors.primary : AppColors.borderSubtle,
                     ),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20)),
@@ -130,12 +121,11 @@ class _ShopCarsViewState extends State<ShopCarsView> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(Icons.directions_car_outlined,
-                              size: 48, color: AppColors.slateGray.withValues(alpha: 0.5)),
+                              size: 48, color: AppColors.textSecondary.withValues(alpha: 0.5)),
                           const SizedBox(height: 8),
                           Text(
                             'No $_selectedCategory vehicles available right now.',
-                            style: const TextStyle(
-                                fontSize: 13, color: AppColors.textSecondary),
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
                           ),
                         ],
                       ),

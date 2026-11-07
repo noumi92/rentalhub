@@ -27,11 +27,11 @@ class FinanceAccountsSection extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text('Accounts',
-                style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.midnightNavy)),
+            Text('Accounts',
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.primary,
+                )),
             TextButton.icon(
               icon: const Icon(Icons.add_rounded, size: 18),
               label: const Text('Add account'),
@@ -48,7 +48,7 @@ class FinanceAccountsSection extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColors.border),
+              border: Border.all(color: AppColors.borderSubtle),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -57,20 +57,19 @@ class FinanceAccountsSection extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(a.name,
-                        style: const TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w800,
-                            color: AppColors.midnightNavy)),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.primary,
+                        )),
                     Text(a.type,
-                        style: const TextStyle(
-                            fontSize: 11, color: AppColors.textSecondary)),
+                        style: Theme.of(context).textTheme.labelSmall),
                   ],
                 ),
                 Text('Rs. $balance',
-                    style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w900,
-                        color: AppColors.midnightNavy)),
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w900,
+                      color: AppColors.primary,
+                    )),
               ],
             ),
           );

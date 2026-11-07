@@ -21,14 +21,10 @@ class NoShopsBanner extends StatelessWidget {
           ),
         ],
       ),
-      child: const Text(
+      child: Text(
         'No verified showrooms within this radius yet. Try a wider radius.',
         textAlign: TextAlign.center,
-        style: TextStyle(
-          fontSize: 13,
-          fontWeight: FontWeight.w600,
-          color: AppColors.midnightNavy,
-        ),
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600, color: AppColors.primary),
       ),
     );
   }

@@ -28,16 +28,16 @@ class PackageTierCard extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.lavenderMist : Colors.white,
+          color: isSelected ? AppColors.primaryContainer : Colors.white,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isSelected ? AppColors.royalNavy : AppColors.border,
+            color: isSelected ? AppColors.primary : AppColors.borderSubtle,
             width: isSelected ? 2 : 1,
           ),
           boxShadow: [
             BoxShadow(
               color: isSelected
-                  ? AppColors.royalNavy.withValues(alpha: 0.12)
+                  ? AppColors.primary.withValues(alpha: 0.12)
                   : Colors.black.withValues(alpha: 0.04),
               blurRadius: 8,
               offset: const Offset(0, 3),
@@ -50,13 +50,13 @@ class PackageTierCard extends StatelessWidget {
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 color: isSelected
-                    ? AppColors.sunsetOrange
-                    : AppColors.backgroundLight,
+                    ? AppColors.secondary
+                    : Theme.of(context).colorScheme.surfaceContainerHighest,
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 isSelected ? Icons.check_rounded : Icons.schedule_rounded,
-                color: isSelected ? Colors.white : AppColors.slateGray,
+                color: isSelected ? Colors.white : AppColors.textSecondary,
                 size: 20,
               ),
             ),
@@ -69,29 +69,21 @@ class PackageTierCard extends StatelessWidget {
                     children: [
                       Text(
                         title,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w800,
-                          color: isSelected
-                              ? AppColors.midnightNavy
-                              : AppColors.textPrimary,
-                        ),
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800, color: isSelected
+                              ? AppColors.primary
+                              : AppColors.textPrimary),
                       ),
                       const SizedBox(width: 8),
                       Container(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8, vertical: 2),
                         decoration: BoxDecoration(
-                          color: AppColors.emeraldGreen.withValues(alpha: 0.12),
+                          color: AppColors.accentSuccess.withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Text(
                           kmIncluded,
-                          style: const TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.emeraldGreen,
-                          ),
+                          style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700, color: AppColors.accentSuccess),
                         ),
                       ),
                     ],
@@ -99,10 +91,7 @@ class PackageTierCard extends StatelessWidget {
                   const SizedBox(height: 3),
                   Text(
                     subtitle,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: AppColors.textSecondary,
-                    ),
+                    style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ],
               ),
@@ -112,19 +101,11 @@ class PackageTierCard extends StatelessWidget {
               children: [
                 Text(
                   'Rs. $price',
-                  style: const TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.w900,
-                    color: AppColors.midnightNavy,
-                  ),
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: AppColors.primary),
                 ),
                 Text(
                   'Advance: Rs. ${(price * 0.2).round().clamp(1000, 5000)}',
-                  style: const TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.sunsetOrange,
-                  ),
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600, color: AppColors.secondary),
                 ),
               ],
             ),

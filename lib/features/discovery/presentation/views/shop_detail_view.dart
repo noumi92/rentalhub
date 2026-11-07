@@ -111,7 +111,6 @@ class _ShopDetailViewState extends State<ShopDetailView> {
     final vehicles = _vehicles ?? const <VehicleEntity>[];
 
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -130,19 +129,12 @@ class _ShopDetailViewState extends State<ShopDetailView> {
                 children: [
                   Text(
                     shop.shopName,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w900,
-                    ),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     '${shop.address}, ${shop.city} (${shop.distanceKm} km)',
-                    style: const TextStyle(
-                      color: AppColors.textLavender,
-                      fontSize: 12,
-                    ),
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.primaryContainer),
                   ),
                 ],
               ),
@@ -173,16 +165,12 @@ class _ShopDetailViewState extends State<ShopDetailView> {
                         child: Center(child: CircularProgressIndicator()),
                       )
                     else if (vehicles.isEmpty)
-                      const Padding(
+                      Padding(
                         padding: EdgeInsets.symmetric(vertical: 32),
                         child: Center(
                           child: Text(
                             'This shop has no cars listed yet.',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.textSecondary,
-                            ),
+                            style: Theme.of(context).textTheme.titleSmall?.copyWith(color: AppColors.textSecondary),
                           ),
                         ),
                       )

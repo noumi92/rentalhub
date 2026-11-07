@@ -30,7 +30,7 @@ class ShopListCard extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: const BorderSide(color: AppColors.border),
+        side: const BorderSide(color: AppColors.borderSubtle),
       ),
       child: InkWell(
         onTap: onTap,
@@ -52,7 +52,7 @@ class ShopListCard extends StatelessWidget {
                       child: Icon(
                         Icons.storefront_rounded,
                         size: 48,
-                        color: AppColors.midnightNavy,
+                        color: AppColors.primary,
                       ),
                     ),
                   ),
@@ -76,16 +76,12 @@ class ShopListCard extends StatelessWidget {
                         const Icon(
                           Icons.location_on_rounded,
                           size: 13,
-                          color: AppColors.sunsetOrange,
+                          color: AppColors.secondary,
                         ),
                         const SizedBox(width: 3),
                         Text(
                           '${shop.distanceKm.toStringAsFixed(1)} km',
-                          style: const TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w800,
-                            color: Colors.white,
-                          ),
+                          style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800, color: Colors.white),
                         ),
                       ],
                     ),
@@ -107,11 +103,7 @@ class ShopListCard extends StatelessWidget {
                       Expanded(
                         child: Text(
                           shop.shopName,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w900,
-                            color: AppColors.midnightNavy,
-                          ),
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: AppColors.primary),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -135,36 +127,24 @@ class ShopListCard extends StatelessWidget {
                           const Icon(
                             Icons.star_rounded,
                             size: 16,
-                            color: AppColors.amberGold,
+                            color: AppColors.warning,
                           ),
                           const SizedBox(width: 3),
                           Text(
                             shop.rating.toStringAsFixed(1),
-                            style: const TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w800,
-                              color: AppColors.midnightNavy,
-                            ),
+                            style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
                           ),
                         ],
                       ),
                       const Text('•', style: TextStyle(color: AppColors.textMuted)),
                       Text(
                         '${shop.address}, ${shop.city}',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: AppColors.textSecondary,
-                          fontWeight: FontWeight.w500,
-                        ),
+                        style: Theme.of(context).textTheme.labelMedium,
                       ),
                       const Text('•', style: TextStyle(color: AppColors.textMuted)),
                       Text(
                         '${shop.availableCount} cars available',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.emeraldGreen,
-                        ),
+                        style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.accentSuccess),
                       ),
                     ],
                   ),
@@ -185,14 +165,14 @@ class ShopListCard extends StatelessWidget {
                                 SnackBar(
                                   content: Text(
                                       'Calling ${shop.shopName} (${shop.phoneNumber})...'),
-                                  backgroundColor: AppColors.midnightNavy,
+                                  backgroundColor: AppColors.primary,
                                   duration: const Duration(seconds: 2),
                                 ),
                               );
                             },
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: AppColors.midnightNavy,
-                          side: const BorderSide(color: AppColors.border),
+                          foregroundColor: AppColors.primary,
+                          side: const BorderSide(color: AppColors.borderSubtle),
                           padding: const EdgeInsets.symmetric(
                               horizontal: 10, vertical: 7),
                           minimumSize: Size.zero,
@@ -203,9 +183,8 @@ class ShopListCard extends StatelessWidget {
                         ),
                         icon: const Icon(Icons.call_rounded,
                             size: 14, color: AppColors.primary),
-                        label: const Text('Call',
-                            style: TextStyle(
-                                fontSize: 11.5, fontWeight: FontWeight.w700)),
+                        label: Text('Call',
+                            style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700)),
                       ),
 
                       // Direct WhatsApp Chat Button
@@ -216,13 +195,13 @@ class ShopListCard extends StatelessWidget {
                                 SnackBar(
                                   content: Text(
                                       'Opening WhatsApp with ${shop.shopName}...'),
-                                  backgroundColor: AppColors.emeraldGreen,
+                                  backgroundColor: AppColors.accentSuccess,
                                   duration: const Duration(seconds: 2),
                                 ),
                               );
                             },
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: AppColors.emeraldGreen,
+                          foregroundColor: AppColors.accentSuccess,
                           side: const BorderSide(color: Color(0xFF86EFAC)),
                           backgroundColor: const Color(0xFFF0FDF4),
                           padding: const EdgeInsets.symmetric(
@@ -234,17 +213,16 @@ class ShopListCard extends StatelessWidget {
                           ),
                         ),
                         icon: const Icon(Icons.chat_bubble_outline_rounded,
-                            size: 14, color: AppColors.emeraldGreen),
-                        label: const Text('WhatsApp',
-                            style: TextStyle(
-                                fontSize: 11.5, fontWeight: FontWeight.w700)),
+                            size: 14, color: AppColors.accentSuccess),
+                        label: Text('WhatsApp',
+                            style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700)),
                       ),
 
                       // View Showroom Fleet CTA
                       ElevatedButton(
                         onPressed: onTap,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.sunsetOrange,
+                          backgroundColor: AppColors.secondary,
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(
                               horizontal: 13, vertical: 7),
@@ -255,12 +233,11 @@ class ShopListCard extends StatelessWidget {
                             borderRadius: BorderRadius.circular(10),
                           ),
                         ),
-                        child: const Row(
+                        child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text('View Fleet',
-                                style: TextStyle(
-                                    fontSize: 12, fontWeight: FontWeight.w800)),
+                                style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800)),
                             SizedBox(width: 4),
                             Icon(Icons.arrow_forward_rounded, size: 13),
                           ],

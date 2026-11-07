@@ -32,9 +32,9 @@ class WalletLedger extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.border),
+          border: Border.all(color: AppColors.borderSubtle),
         ),
-        child: const Center(
+        child: Center(
           child: Column(
             children: [
               Icon(Icons.account_balance_wallet_outlined,
@@ -42,17 +42,13 @@ class WalletLedger extends StatelessWidget {
               SizedBox(height: 8),
               Text(
                 'No wallet activity yet.',
-                style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textSecondary),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600, color: AppColors.textSecondary),
               ),
               SizedBox(height: 4),
               Text(
                 'Advances you pay and deposits you leave will appear here.',
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontSize: 12, color: AppColors.textSecondary),
+                style: Theme.of(context).textTheme.bodySmall,
               ),
             ],
           ),

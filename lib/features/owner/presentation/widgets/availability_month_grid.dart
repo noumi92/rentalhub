@@ -67,7 +67,7 @@ class AvailabilityMonthGrid extends StatelessWidget {
               color: _dayColor(date),
               borderRadius: BorderRadius.circular(8),
               border: isSelected
-                  ? Border.all(color: AppColors.royalNavy, width: 2)
+                  ? Border.all(color: AppColors.primary, width: 2)
                   : null,
             ),
             alignment: Alignment.center,
@@ -75,7 +75,7 @@ class AvailabilityMonthGrid extends StatelessWidget {
                 style: TextStyle(
                     fontWeight:
                         isSelected ? FontWeight.w900 : FontWeight.w600,
-                    color: AppColors.midnightNavy)),
+                    color: AppColors.primary)),
           ),
         ),
       );
@@ -96,10 +96,10 @@ class AvailabilityMonthGrid extends StatelessWidget {
                   onMonthChanged(DateTime(month.year, month.month - 1)),
             ),
             Text(_monthLabel,
-                style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.midnightNavy)),
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.primary,
+                )),
             IconButton(
               icon: const Icon(Icons.chevron_right_rounded),
               onPressed: () =>
@@ -108,16 +108,16 @@ class AvailabilityMonthGrid extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 8),
-        const Row(
+        Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            Text('Mon', style: TextStyle(fontSize: 11)),
-            Text('Tue', style: TextStyle(fontSize: 11)),
-            Text('Wed', style: TextStyle(fontSize: 11)),
-            Text('Thu', style: TextStyle(fontSize: 11)),
-            Text('Fri', style: TextStyle(fontSize: 11)),
-            Text('Sat', style: TextStyle(fontSize: 11)),
-            Text('Sun', style: TextStyle(fontSize: 11)),
+            Text('Mon', style: Theme.of(context).textTheme.labelSmall),
+            Text('Tue', style: Theme.of(context).textTheme.labelSmall),
+            Text('Wed', style: Theme.of(context).textTheme.labelSmall),
+            Text('Thu', style: Theme.of(context).textTheme.labelSmall),
+            Text('Fri', style: Theme.of(context).textTheme.labelSmall),
+            Text('Sat', style: Theme.of(context).textTheme.labelSmall),
+            Text('Sun', style: Theme.of(context).textTheme.labelSmall),
           ],
         ),
         const SizedBox(height: 4),

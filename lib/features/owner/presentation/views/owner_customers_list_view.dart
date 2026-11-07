@@ -79,7 +79,6 @@ class _OwnerCustomersListViewState extends State<OwnerCustomersListView> {
   Widget build(BuildContext context) {
     final filtered = _filtered;
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
       bottomNavigationBar: const OwnerBottomNav(currentIndex: 3),
       body: SafeArea(
         child: Column(
@@ -94,17 +93,13 @@ class _OwnerCustomersListViewState extends State<OwnerCustomersListView> {
               titleWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Customers',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w900)),
+                  Text('Customers',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
                   Text(
                       _loading
                           ? 'Loading…'
                           : '${_customers.length} customers',
-                      style: const TextStyle(
-                          color: AppColors.textLavender, fontSize: 12)),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.primaryContainer)),
                 ],
               ),
               actions: [
@@ -151,7 +146,7 @@ class _OwnerCustomersListViewState extends State<OwnerCustomersListView> {
                                   ListTile(
                                     leading: CircleAvatar(
                                       backgroundColor:
-                                          AppColors.royalNavy,
+                                          AppColors.primary,
                                       child: Text(
                                         c.name.isNotEmpty
                                             ? c.name[0].toUpperCase()
@@ -170,11 +165,9 @@ class _OwnerCustomersListViewState extends State<OwnerCustomersListView> {
                                                       FontWeight.w800)),
                                         ),
                                         if (blacklisted)
-                                          const Chip(
+                                          Chip(
                                             label: Text('Blacklisted',
-                                                style: TextStyle(
-                                                    fontSize: 10,
-                                                    color: Colors.white)),
+                                                style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.white)),
                                             backgroundColor: Colors.red,
                                             padding: EdgeInsets.zero,
                                           ),
@@ -211,11 +204,11 @@ class _OwnerCustomersListViewState extends State<OwnerCustomersListView> {
                                                       FontWeight.w800)),
                                         )),
                                   if (expanded && c.bookings.isEmpty)
-                                    const Padding(
+                                    Padding(
                                       padding: EdgeInsets.only(bottom: 12),
                                       child: Text(
                                           'No bookings yet — saved from a CNIC scan or as a guarantor.',
-                                          style: TextStyle(fontSize: 12)),
+                                          style: Theme.of(context).textTheme.bodySmall),
                                     ),
                                 ],
                               ),

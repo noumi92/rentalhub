@@ -63,7 +63,6 @@ class _CustomerCancelBookingViewState extends State<CustomerCancelBookingView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
       body: SafeArea(
         child: Column(
           children: [
@@ -76,12 +75,9 @@ class _CustomerCancelBookingViewState extends State<CustomerCancelBookingView> {
                       onPressed: widget.onBack,
                     )
                   : null,
-              titleWidget: const Text(
+              titleWidget: Text(
                 'Cancel Reservation',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w900),
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white),
               ),
             ),
             Expanded(
@@ -94,19 +90,16 @@ class _CustomerCancelBookingViewState extends State<CustomerCancelBookingView> {
                     Container(
                       padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
-                        color: AppColors.crimsonSoftBg,
+                        color: AppColors.errorContainer,
                         borderRadius: BorderRadius.circular(14),
                         border: Border.all(
-                            color: AppColors.crimsonRed.withValues(alpha: 0.3)),
+                            color: AppColors.accentDanger.withValues(alpha: 0.3)),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('What happens when you cancel',
-                              style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w800,
-                                  color: AppColors.crimsonRed)),
+                          Text('What happens when you cancel',
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.accentDanger)),
                           const SizedBox(height: 6),
                           // G5: there is no defined refund timetable in
                           // the app, so none is invented. What is true:
@@ -118,20 +111,14 @@ class _CustomerCancelBookingViewState extends State<CustomerCancelBookingView> {
                             widget.booking.advancePaid > 0
                                 ? 'You paid Rs. ${widget.booking.advancePaid} advance directly to the showroom\'s account — the showroom decides the refund, so contact them about it. No security deposit was collected: deposits are only taken at handover.'
                                 : 'No advance has been paid yet, so there is nothing to refund. No security deposit was collected: deposits are only taken at handover.',
-                            style: const TextStyle(
-                                fontSize: 11.5,
-                                height: 1.4,
-                                color: AppColors.midnightNavy),
+                            style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.primary, height: 1.4),
                           ),
                         ],
                       ),
                     ),
                     const SizedBox(height: 18),
-                    const Text('Reason for Cancellation',
-                        style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w800,
-                            color: AppColors.midnightNavy)),
+                    Text('Reason for Cancellation',
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
                     const SizedBox(height: 8),
                     Material(
                       color: Colors.white,
@@ -139,7 +126,7 @@ class _CustomerCancelBookingViewState extends State<CustomerCancelBookingView> {
                       child: Container(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(14),
-                          border: Border.all(color: AppColors.border),
+                          border: Border.all(color: AppColors.borderSubtle),
                         ),
                         child: RadioGroup<String>(
                           groupValue: _selectedReason,
@@ -153,9 +140,7 @@ class _CustomerCancelBookingViewState extends State<CustomerCancelBookingView> {
                               return RadioListTile<String>(
                                 value: r,
                                 title: Text(r,
-                                    style: const TextStyle(
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w600)),
+                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600)),
                               );
                             }).toList(),
                           ),
@@ -180,7 +165,7 @@ class _CustomerCancelBookingViewState extends State<CustomerCancelBookingView> {
               ),
               child: DebouncedButton(
                 text: _isSubmitting ? 'Cancelling...' : 'Confirm Cancellation',
-                backgroundColor: AppColors.crimsonRed,
+                backgroundColor: AppColors.accentDanger,
                 icon: Icons.cancel_outlined,
                 isLoading: _isSubmitting,
                 onPressed: _cancelBooking,

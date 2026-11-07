@@ -172,7 +172,6 @@ class _OwnerHandoverSignatureViewState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
       body: SafeArea(
         child: Column(
           children: [
@@ -188,15 +187,11 @@ class _OwnerHandoverSignatureViewState
               titleWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Vehicle Handover & Inspection',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 17,
-                          fontWeight: FontWeight.w900)),
+                  Text('Vehicle Handover & Inspection',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
                   Text(
                       '#${widget.booking.bookingId} • ${widget.booking.vehicleName ?? "Vehicle"}',
-                      style: const TextStyle(
-                          color: AppColors.textLavender, fontSize: 11.5)),
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.primaryContainer)),
                 ],
               ),
             ),

@@ -18,7 +18,7 @@ class EmptyRadarState extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.borderSubtle),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -28,29 +28,25 @@ class EmptyRadarState extends StatelessWidget {
             height: 64,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: AppColors.sunsetOrange.withValues(alpha: 0.1),
+              color: AppColors.secondary.withValues(alpha: 0.1),
             ),
             child: const Icon(
               Icons.radar_rounded,
               size: 34,
-              color: AppColors.sunsetOrange,
+              color: AppColors.secondary,
             ),
           ),
           const SizedBox(height: 12),
           Text(
             'No Verified Shops Within ${currentRadiusKm.toInt()} km',
             textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w800,
-              color: AppColors.midnightNavy,
-            ),
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
           ),
           const SizedBox(height: 6),
-          const Text(
+          Text(
             'Expand your GPS discovery radius to 5 km to view accredited showrooms nearby.',
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 12, color: AppColors.textMuted),
+            style: Theme.of(context).textTheme.bodySmall,
           ),
           const SizedBox(height: 14),
           ElevatedButton.icon(

@@ -64,7 +64,6 @@ class _OwnerWhatsAppLogsViewState extends State<OwnerWhatsAppLogsView> {
     final filtered = _filteredLogs;
 
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
       body: SafeArea(
         child: Column(
           children: [
@@ -76,11 +75,11 @@ class _OwnerWhatsAppLogsViewState extends State<OwnerWhatsAppLogsView> {
                       onPressed: widget.onBack,
                     )
                   : null,
-              titleWidget: const Column(
+              titleWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('WhatsApp Alert Dispatches', style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w900)),
-                  Text('Transactional Messaging Gateway • Live', style: TextStyle(color: AppColors.textLavender, fontSize: 11.5)),
+                  Text('WhatsApp Alert Dispatches', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
+                  Text('Transactional Messaging Gateway • Live', style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.primaryContainer)),
                 ],
               ),
             ),
@@ -97,13 +96,9 @@ class _OwnerWhatsAppLogsViewState extends State<OwnerWhatsAppLogsView> {
                     child: ChoiceChip(
                       label: Text(tab),
                       selected: isSelected,
-                      selectedColor: AppColors.sunsetOrange,
-                      backgroundColor: AppColors.backgroundLight,
-                      labelStyle: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        color: isSelected ? Colors.white : AppColors.midnightNavy,
-                      ),
+                      selectedColor: AppColors.secondary,
+                      backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                      labelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700, color: isSelected ? Colors.white : AppColors.primary),
                       onSelected: (_) => setState(() => _filter = tab),
                     ),
                   );

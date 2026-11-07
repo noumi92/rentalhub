@@ -24,18 +24,18 @@ class FinanceDepositsSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Security Deposits',
-            style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w800,
-                color: AppColors.midnightNavy)),
+        Text('Security Deposits',
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w800,
+              color: AppColors.primary,
+            )),
         const SizedBox(height: 8),
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.border),
+            border: Border.all(color: AppColors.borderSubtle),
           ),
           child: Column(
             children: [
@@ -72,7 +72,7 @@ class FinanceDepositsSection extends StatelessWidget {
             style: const TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w900,
-                color: AppColors.midnightNavy)),
+                color: AppColors.primary)),
       ],
     );
   }

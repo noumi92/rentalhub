@@ -33,7 +33,7 @@ class OnboardingPhotoUploadBox extends StatelessWidget {
           color: hasFile ? const Color(0xFFF0FDF4) : Colors.white,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: hasFile ? AppColors.emeraldGreen : AppColors.border,
+            color: hasFile ? AppColors.accentSuccess : AppColors.borderSubtle,
             width: hasFile ? 1.5 : 1,
           ),
         ),
@@ -56,7 +56,7 @@ class OnboardingPhotoUploadBox extends StatelessWidget {
                           Flexible(
                             child: Text(
                               label,
-                              style: const TextStyle(color: Colors.white, fontSize: 10.5, fontWeight: FontWeight.w800),
+                              style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.white, fontWeight: FontWeight.w800),
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
@@ -72,7 +72,7 @@ class OnboardingPhotoUploadBox extends StatelessWidget {
                           child: Container(
                             padding: const EdgeInsets.all(4),
                             decoration: const BoxDecoration(
-                              color: AppColors.error,
+                              color: AppColors.accentDanger,
                               shape: BoxShape.circle,
                             ),
                             child: const Icon(Icons.close_rounded, color: Colors.white, size: 14),
@@ -85,16 +85,16 @@ class OnboardingPhotoUploadBox extends StatelessWidget {
             : Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.camera_alt_outlined, color: AppColors.sunsetOrange, size: 28),
+                  const Icon(Icons.camera_alt_outlined, color: AppColors.secondary, size: 28),
                   const SizedBox(height: 6),
                   Text(
                     label,
-                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: AppColors.midnightNavy),
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
                     textAlign: TextAlign.center,
                   ),
                   Text(
                     isRequired ? 'Tap to Upload' : 'Optional',
-                    style: TextStyle(fontSize: 10, color: isRequired ? AppColors.textMuted : AppColors.textLavender),
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(color: isRequired ? AppColors.textMuted : AppColors.primaryContainer),
                   ),
                 ],
               ),

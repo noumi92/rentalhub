@@ -35,14 +35,14 @@ class SettlementSummaryReceiptWidget extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.borderSubtle),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Deposit & Return Balance Settlement',
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: AppColors.midnightNavy),
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
           ),
           const SizedBox(height: 12),
           _itemRow('Total Kilometers Driven', '$totalKm KM'),
@@ -62,16 +62,15 @@ class SettlementSummaryReceiptWidget extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'Net Refund to Customer',
-                style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w900, color: AppColors.midnightNavy),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w900, color: AppColors.primary),
               ),
               Text(
                 'Rs. $netRefund',
-                style: TextStyle(
-                  fontSize: 16,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w900,
-                  color: netRefund >= 0 ? AppColors.emeraldGreen : Colors.red,
+                  color: netRefund >= 0 ? AppColors.accentSuccess : Colors.red,
                 ),
               ),
             ],
@@ -93,7 +92,7 @@ class SettlementSummaryReceiptWidget extends StatelessWidget {
             style: TextStyle(
               fontSize: 12.5,
               fontWeight: FontWeight.w700,
-              color: isDeduction ? Colors.red.shade700 : AppColors.midnightNavy,
+              color: isDeduction ? Colors.red.shade700 : AppColors.primary,
             ),
           ),
         ],

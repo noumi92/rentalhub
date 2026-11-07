@@ -32,9 +32,9 @@ class ShopLocationStepWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Select Your City',
-          style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w800, color: AppColors.midnightNavy),
+          style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
         ),
         const SizedBox(height: 6),
         // Requirement 4: Single horizontal row for major cities BEFORE map view
@@ -48,12 +48,11 @@ class ShopLocationStepWidget extends StatelessWidget {
                 child: FilterChip(
                   label: Text(city['name'] as String),
                   selected: isSelected,
-                  selectedColor: AppColors.sunsetOrange,
+                  selectedColor: AppColors.secondary,
                   backgroundColor: Colors.white,
-                  labelStyle: TextStyle(
-                    color: isSelected ? Colors.white : AppColors.midnightNavy,
+                  labelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    color: isSelected ? Colors.white : AppColors.primary,
                     fontWeight: FontWeight.w700,
-                    fontSize: 12,
                   ),
                   onSelected: (_) {
                     onCityChanged(city['name'] as String);
@@ -72,18 +71,18 @@ class ShopLocationStepWidget extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
+            Text(
               'Pin Showroom On Map',
-              style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w800, color: AppColors.midnightNavy),
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
             ),
             TextButton.icon(
               onPressed: isLocating ? null : onFetchGps,
               icon: isLocating
                   ? const SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2))
-                  : const Icon(Icons.my_location_rounded, size: 16, color: AppColors.sunsetOrange),
+                  : const Icon(Icons.my_location_rounded, size: 16, color: AppColors.secondary),
               label: Text(
                 isLocating ? 'Locating...' : 'Use Current GPS',
-                style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w800, color: AppColors.sunsetOrange),
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.secondary),
               ),
             ),
           ],
@@ -95,7 +94,7 @@ class ShopLocationStepWidget extends StatelessWidget {
           child: Container(
             height: 220,
             decoration: BoxDecoration(
-              border: Border.all(color: AppColors.border),
+              border: Border.all(color: AppColors.borderSubtle),
               borderRadius: BorderRadius.circular(16),
             ),
             child: Stack(
@@ -123,7 +122,7 @@ class ShopLocationStepWidget extends StatelessWidget {
                           child: const Icon(
                             Icons.location_on_rounded,
                             size: 40,
-                            color: AppColors.sunsetOrange,
+                            color: AppColors.secondary,
                           ),
                         ),
                       ],
@@ -143,12 +142,12 @@ class ShopLocationStepWidget extends StatelessWidget {
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.touch_app_rounded, size: 14, color: AppColors.sunsetOrange),
+                        const Icon(Icons.touch_app_rounded, size: 14, color: AppColors.secondary),
                         const SizedBox(width: 6),
                         Expanded(
                           child: Text(
                             'Tap anywhere on map to pin showroom (${shopPin.latitude.toStringAsFixed(4)}, ${shopPin.longitude.toStringAsFixed(4)})',
-                            style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.w600, color: AppColors.midnightNavy),
+                            style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600, color: AppColors.primary),
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
@@ -163,26 +162,26 @@ class ShopLocationStepWidget extends StatelessWidget {
         const SizedBox(height: 14),
 
         // Physical Street Address Input
-        const Text(
+        Text(
           'Physical Showroom Address',
-          style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w800, color: AppColors.midnightNavy),
+          style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
         ),
         const SizedBox(height: 6),
         TextField(
           controller: addressController,
           maxLines: 2,
-          style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13.5),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
           decoration: InputDecoration(
             hintText: 'Shop number, plaza, street, sector / commercial area',
             prefixIcon: const Padding(
               padding: EdgeInsets.only(bottom: 24),
-              child: Icon(Icons.place_rounded, color: AppColors.sunsetOrange, size: 20),
+              child: Icon(Icons.place_rounded, color: AppColors.secondary, size: 20),
             ),
             filled: true,
             fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border)),
-            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border)),
-            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.sunsetOrange, width: 1.5)),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.borderSubtle)),
+            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.borderSubtle)),
+            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.secondary, width: 1.5)),
             contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           ),
         ),

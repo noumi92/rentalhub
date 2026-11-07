@@ -52,14 +52,15 @@ class AddVehicleHeader extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(_title,
-              style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w900)),
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.w900,
+              )),
           const SizedBox(height: 2),
           Text(_subtitle,
-              style: const TextStyle(
-                  color: AppColors.textLavender, fontSize: 12)),
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: AppColors.primaryContainer,
+              )),
         ],
       ),
       actions: [
@@ -70,10 +71,10 @@ class AddVehicleHeader extends StatelessWidget {
               color: Colors.white.withValues(alpha: 0.18),
               borderRadius: BorderRadius.circular(12)),
           child: Text('Step $currentStep of 4',
-              style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 11.5,
-                  fontWeight: FontWeight.w700)),
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.w700,
+              )),
         ),
       ],
     );
@@ -97,7 +98,7 @@ class AddVehicleBottomBar extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: const BoxDecoration(
           color: Colors.white,
-          border: Border(top: BorderSide(color: AppColors.border)),
+          border: Border(top: BorderSide(color: AppColors.borderSubtle)),
           boxShadow: [
             BoxShadow(
                 color: Color(0x12000000),

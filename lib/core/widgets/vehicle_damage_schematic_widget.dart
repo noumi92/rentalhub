@@ -69,7 +69,7 @@ class _VehicleDamageSchematicWidgetState
       decoration: BoxDecoration(
         color: AppColors.surfaceLight,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.borderSubtle),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -77,20 +77,19 @@ class _VehicleDamageSchematicWidgetState
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Row(
+              Row(
                 children: [
                   Icon(
                     Icons.car_crash_rounded,
                     size: 18,
-                    color: AppColors.sunsetOrange,
+                    color: AppColors.secondary,
                   ),
                   SizedBox(width: 6),
                   Text(
                     '4-Quadrant Exterior Inspection Schematic',
-                    style: TextStyle(
-                      fontSize: 13,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.w800,
-                      color: AppColors.midnightNavy,
+                      color: AppColors.primary,
                     ),
                   ),
                 ],
@@ -99,27 +98,26 @@ class _VehicleDamageSchematicWidgetState
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
                   color: _pins.isEmpty
-                      ? AppColors.emeraldGreen.withValues(alpha: 0.12)
-                      : AppColors.amberGold.withValues(alpha: 0.15),
+                      ? AppColors.accentSuccess.withValues(alpha: 0.12)
+                      : AppColors.warning.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
                   '${_pins.length} Marks Logged',
-                  style: TextStyle(
-                    fontSize: 11,
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
                     fontWeight: FontWeight.w800,
                     color: _pins.isEmpty
-                        ? AppColors.emeraldGreen
-                        : AppColors.amberGold,
+                        ? AppColors.accentSuccess
+                        : AppColors.warning,
                   ),
                 ),
               ),
             ],
           ),
           const SizedBox(height: 6),
-          const Text(
+          Text(
             'Tap any vehicle quadrant below to pin/unpin pre-existing scratches or dents:',
-            style: TextStyle(fontSize: 11.5, color: AppColors.textMuted),
+            style: Theme.of(context).textTheme.labelSmall,
           ),
           const SizedBox(height: 12),
           // Top-down schematic grid representation
@@ -128,7 +126,7 @@ class _VehicleDamageSchematicWidgetState
             decoration: BoxDecoration(
               color: const Color(0xFFF1F5F9),
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: AppColors.border),
+              border: Border.all(color: AppColors.borderSubtle),
             ),
             child: Column(
               children: [
@@ -180,25 +178,24 @@ class _VehicleDamageSchematicWidgetState
               children: _pins.map((pin) {
                 return Chip(
                   visualDensity: VisualDensity.compact,
-                  backgroundColor: AppColors.crimsonRed.withValues(alpha: 0.1),
+                  backgroundColor: AppColors.accentDanger.withValues(alpha: 0.1),
                   side: BorderSide(
-                    color: AppColors.crimsonRed.withValues(alpha: 0.3),
+                    color: AppColors.accentDanger.withValues(alpha: 0.3),
                   ),
                   avatar: const Icon(
                     Icons.location_on_rounded,
                     size: 14,
-                    color: AppColors.crimsonRed,
+                    color: AppColors.accentDanger,
                   ),
                   label: Text(
                     '${pin.zone}: ${pin.type}',
-                    style: const TextStyle(
-                      fontSize: 11,
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
                       fontWeight: FontWeight.w700,
-                      color: AppColors.crimsonRed,
+                      color: AppColors.accentDanger,
                     ),
                   ),
                   onDeleted: () => _toggleZone(pin.zone),
-                  deleteIconColor: AppColors.crimsonRed,
+                  deleteIconColor: AppColors.accentDanger,
                 );
               }).toList(),
             ),
@@ -218,11 +215,11 @@ class _VehicleDamageSchematicWidgetState
         padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 6),
         decoration: BoxDecoration(
           color: flagged
-              ? AppColors.crimsonRed.withValues(alpha: 0.14)
+              ? AppColors.accentDanger.withValues(alpha: 0.14)
               : Colors.white,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-            color: flagged ? AppColors.crimsonRed : AppColors.border,
+            color: flagged ? AppColors.accentDanger : AppColors.borderSubtle,
             width: flagged ? 1.5 : 1.0,
           ),
         ),
@@ -233,18 +230,17 @@ class _VehicleDamageSchematicWidgetState
             Icon(
               flagged ? Icons.warning_amber_rounded : icon,
               size: 14,
-              color: flagged ? AppColors.crimsonRed : AppColors.midnightNavy,
+              color: flagged ? AppColors.accentDanger : AppColors.primary,
             ),
             const SizedBox(width: 4),
             Flexible(
               child: Text(
                 zone,
                 overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: 10.5,
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
                   fontWeight: flagged ? FontWeight.w800 : FontWeight.w600,
                   color:
-                      flagged ? AppColors.crimsonRed : AppColors.midnightNavy,
+                      flagged ? AppColors.accentDanger : AppColors.primary,
                 ),
               ),
             ),

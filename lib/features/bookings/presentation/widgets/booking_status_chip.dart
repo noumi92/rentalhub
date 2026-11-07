@@ -36,12 +36,12 @@ class BookingStatusChip extends StatelessWidget {
     switch (status) {
       case 'approved':
       case 'paid':
-        return AppColors.emeraldGreen;
+        return AppColors.accentSuccess;
       case 'rejected':
       case 'cancelled':
-        return AppColors.crimsonRed;
+        return AppColors.accentDanger;
       default:
-        return AppColors.amberGold;
+        return AppColors.warning;
     }
   }
 
@@ -56,11 +56,7 @@ class BookingStatusChip extends StatelessWidget {
       ),
       child: Text(
         labelFor(status),
-        style: TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w800,
-          color: color,
-        ),
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800, color: color),
       ),
     );
   }

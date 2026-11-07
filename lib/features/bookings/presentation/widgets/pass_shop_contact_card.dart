@@ -161,34 +161,26 @@ class _PassShopContactCardState extends State<PassShopContactCard> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.borderSubtle),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            children: const [
+            children: [
               Icon(Icons.location_on_rounded,
-                  color: AppColors.sunsetOrange, size: 20),
+                  color: AppColors.secondary, size: 20),
               SizedBox(width: 8),
               Text(
                 'Showroom Handover Point',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.midnightNavy,
-                ),
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
               ),
             ],
           ),
           const SizedBox(height: 8),
           Text(
             _addressLine,
-            style: const TextStyle(
-              fontSize: 12,
-              color: AppColors.textSecondary,
-              height: 1.4,
-            ),
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(height: 1.4),
           ),
           const SizedBox(height: 12),
           Row(
@@ -197,8 +189,8 @@ class _PassShopContactCardState extends State<PassShopContactCard> {
                 child: OutlinedButton.icon(
                   onPressed: _callShop,
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: AppColors.royalNavy,
-                    side: const BorderSide(color: AppColors.border),
+                    foregroundColor: AppColors.primary,
+                    side: const BorderSide(color: AppColors.borderSubtle),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10)),
                   ),
@@ -211,7 +203,7 @@ class _PassShopContactCardState extends State<PassShopContactCard> {
                 child: OutlinedButton.icon(
                   onPressed: _openDirections,
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: AppColors.emeraldGreen,
+                    foregroundColor: AppColors.accentSuccess,
                     side: const BorderSide(color: Color(0xFF86EFAC)),
                     backgroundColor: const Color(0xFFF0FDF4),
                     shape: RoundedRectangleBorder(
@@ -230,8 +222,8 @@ class _PassShopContactCardState extends State<PassShopContactCard> {
               child: OutlinedButton.icon(
                 onPressed: _openAgreement,
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: AppColors.royalNavy,
-                  side: const BorderSide(color: AppColors.border),
+                  foregroundColor: AppColors.primary,
+                  side: const BorderSide(color: AppColors.borderSubtle),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10)),
                 ),
@@ -241,12 +233,9 @@ class _PassShopContactCardState extends State<PassShopContactCard> {
             ),
           ] else if (_loaded) ...[
             const SizedBox(height: 10),
-            const Text(
+            Text(
               'Your signed rental agreement will appear here after handover.',
-              style: TextStyle(
-                fontSize: 11,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.labelSmall,
             ),
           ],
         ],

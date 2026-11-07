@@ -133,7 +133,6 @@ class _OwnerCustomerScanViewState extends State<OwnerCustomerScanView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
       body: SafeArea(
         child: Column(
           children: [
@@ -145,11 +144,11 @@ class _OwnerCustomerScanViewState extends State<OwnerCustomerScanView> {
                       onPressed: widget.onBack,
                     )
                   : null,
-              titleWidget: const Column(
+              titleWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('KYC & Blacklist Radar', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w900)),
-                  Text('National Anti-Fraud Network • Real-time', style: TextStyle(color: AppColors.textLavender, fontSize: 12)),
+                  Text('KYC & Blacklist Radar', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
+                  Text('National Anti-Fraud Network • Real-time', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.primaryContainer)),
                 ],
               ),
               actions: [

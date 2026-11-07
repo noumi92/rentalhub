@@ -159,7 +159,7 @@ class _GuarantorPickerState extends State<GuarantorPicker> {
         color: Colors.white,
         child: ListTile(
           leading: const Icon(Icons.verified_user_rounded,
-              color: AppColors.emeraldGreen),
+              color: AppColors.accentSuccess),
           title: Text(s.name,
               style: const TextStyle(fontWeight: FontWeight.w800)),
           subtitle: Text('${s.cnic} • ${s.phone}\n${s.relationship}'),
@@ -222,8 +222,8 @@ class _GuarantorPickerState extends State<GuarantorPicker> {
             ),
           )
         else
-          const Text('No saved customers yet.',
-              style: TextStyle(fontSize: 12)),
+          Text('No saved customers yet.',
+              style: Theme.of(context).textTheme.bodySmall),
         const SizedBox(height: 8),
         TextButton.icon(
           onPressed: () => setState(() => _addingNew = !_addingNew),

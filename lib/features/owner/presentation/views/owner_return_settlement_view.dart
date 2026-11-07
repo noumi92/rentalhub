@@ -155,7 +155,6 @@ class _OwnerReturnSettlementViewState
   Widget build(BuildContext context) {
     final breakdown = _breakdown;
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
       body: SafeArea(
         child: Column(
           children: [
@@ -171,8 +170,8 @@ class _OwnerReturnSettlementViewState
               titleWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Vehicle Return & Settlement', style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w900)),
-                  Text('Trip Audit #${widget.booking.bookingId}', style: const TextStyle(color: AppColors.textLavender, fontSize: 11.5)),
+                  Text('Vehicle Return & Settlement', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
+                  Text('Trip Audit #${widget.booking.bookingId}', style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.primaryContainer)),
                 ],
               ),
             ),

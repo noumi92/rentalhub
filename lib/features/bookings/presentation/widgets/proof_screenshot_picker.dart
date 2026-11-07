@@ -33,7 +33,7 @@ class ProofScreenshotPicker extends StatelessWidget {
         width: double.infinity,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.border),
+          border: Border.all(color: AppColors.borderSubtle),
           image: DecorationImage(
             image: FileImage(selectedFile!),
             fit: BoxFit.cover,
@@ -67,13 +67,9 @@ class ProofScreenshotPicker extends StatelessWidget {
                   color: Colors.black.withValues(alpha: 0.65),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Text(
+                child: Text(
                   'Screenshot Ready',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600, color: Colors.white),
                 ),
               ),
             ),
@@ -88,35 +84,28 @@ class ProofScreenshotPicker extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border, style: BorderStyle.solid),
+        border: Border.all(color: AppColors.borderSubtle, style: BorderStyle.solid),
       ),
       child: Column(
         children: [
           Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color: AppColors.lavenderMist,
+              color: AppColors.primaryContainer,
               shape: BoxShape.circle,
             ),
             child: const Icon(Icons.cloud_upload_outlined,
-                color: AppColors.royalNavy, size: 30),
+                color: AppColors.primary, size: 30),
           ),
           const SizedBox(height: 10),
-          const Text(
+          Text(
             'Upload Transfer Screenshot',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w800,
-              color: AppColors.midnightNavy,
-            ),
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
           ),
           const SizedBox(height: 4),
-          const Text(
+          Text(
             'Support JPG, PNG receipt from banking app',
-            style: TextStyle(
-              fontSize: 11,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.labelSmall,
           ),
           const SizedBox(height: 14),
           Row(
@@ -125,8 +114,8 @@ class ProofScreenshotPicker extends StatelessWidget {
               OutlinedButton.icon(
                 onPressed: () => _pickImage(ImageSource.gallery),
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: AppColors.royalNavy,
-                  side: const BorderSide(color: AppColors.border),
+                  foregroundColor: AppColors.primary,
+                  side: const BorderSide(color: AppColors.borderSubtle),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10)),
                 ),
@@ -137,8 +126,8 @@ class ProofScreenshotPicker extends StatelessWidget {
               OutlinedButton.icon(
                 onPressed: () => _pickImage(ImageSource.camera),
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: AppColors.royalNavy,
-                  side: const BorderSide(color: AppColors.border),
+                  foregroundColor: AppColors.primary,
+                  side: const BorderSide(color: AppColors.borderSubtle),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10)),
                 ),

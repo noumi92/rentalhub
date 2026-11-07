@@ -23,18 +23,14 @@ class ActiveTripHandoverCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.borderSubtle),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Handover at Pickup',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w800,
-              color: AppColors.midnightNavy,
-            ),
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
           ),
           const SizedBox(height: 8),
           if (!loaded)
@@ -44,13 +40,9 @@ class ActiveTripHandoverCard extends StatelessWidget {
               child: CircularProgressIndicator(),
             ))
           else if (handover == null)
-            const Text(
+            Text(
               'The shop records the odometer and fuel level at handover — they will appear here once the car is handed over.',
-              style: TextStyle(
-                fontSize: 12,
-                color: AppColors.textSecondary,
-                height: 1.4,
-              ),
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(height: 1.4),
             )
           else ...[
             _fact('Odometer at pickup', '${handover!['initialOdometer'] ?? '—'} km'),
@@ -80,7 +72,7 @@ class ActiveTripHandoverCard extends StatelessWidget {
               style: const TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.midnightNavy)),
+                  color: AppColors.primary)),
         ),
       ],
     );

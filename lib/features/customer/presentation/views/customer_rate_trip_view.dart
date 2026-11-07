@@ -109,7 +109,6 @@ class _CustomerRateTripViewState extends State<CustomerRateTripView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
       body: SafeArea(
         child: Column(
           children: [
@@ -122,12 +121,9 @@ class _CustomerRateTripViewState extends State<CustomerRateTripView> {
                       onPressed: widget.onBack,
                     )
                   : null,
-              titleWidget: const Text(
+              titleWidget: Text(
                 'Rate Your Experience',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w900),
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white),
               ),
             ),
             Expanded(
@@ -140,22 +136,15 @@ class _CustomerRateTripViewState extends State<CustomerRateTripView> {
                         children: [
                           Text(
                             'Trip Reference: ${widget.booking.bookingId}',
-                            style: const TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.sunsetOrange,
-                            ),
+                            style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.secondary),
                           ),
                           const SizedBox(height: 12),
                           if (_alreadyRated)
-                            const Padding(
+                            Padding(
                               padding: EdgeInsets.only(bottom: 12),
                               child: Text(
                                 'You already rated this trip — your review is shown below.',
-                                style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w700,
-                                    color: AppColors.textSecondary),
+                                style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700),
                               ),
                             ),
                           StarRatingBar(

@@ -93,7 +93,6 @@ class _CustomerSavedShopsViewState extends State<CustomerSavedShopsView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
       body: SafeArea(
         child: Column(
           children: [
@@ -106,12 +105,9 @@ class _CustomerSavedShopsViewState extends State<CustomerSavedShopsView> {
                       onPressed: widget.onBack,
                     )
                   : null,
-              titleWidget: const Text(
+              titleWidget: Text(
                 'Saved Showrooms',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w900),
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white),
               ),
             ),
             Expanded(
@@ -121,20 +117,16 @@ class _CustomerSavedShopsViewState extends State<CustomerSavedShopsView> {
                       ? Center(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
-                            children: const [
+                            children: [
                               Icon(Icons.favorite_border_rounded,
                                   size: 46, color: AppColors.textSecondary),
                               SizedBox(height: 8),
                               Text('No saved showrooms yet.',
-                                  style: TextStyle(
-                                      fontSize: 13,
-                                      color: AppColors.textSecondary)),
+                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary)),
                               SizedBox(height: 4),
                               Text(
                                   'Tap the heart on any showroom to save it here.',
-                                  style: TextStyle(
-                                      fontSize: 11,
-                                      color: AppColors.textSecondary)),
+                                  style: Theme.of(context).textTheme.labelSmall),
                             ],
                           ),
                         )
@@ -150,7 +142,7 @@ class _CustomerSavedShopsViewState extends State<CustomerSavedShopsView> {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(16),
                                 side: const BorderSide(
-                                    color: AppColors.border),
+                                    color: AppColors.borderSubtle),
                               ),
                               child: InkWell(
                                 onTap: () =>
@@ -164,13 +156,13 @@ class _CustomerSavedShopsViewState extends State<CustomerSavedShopsView> {
                                         width: 48,
                                         height: 48,
                                         decoration: BoxDecoration(
-                                          color: AppColors.lavenderMist,
+                                          color: AppColors.primaryContainer,
                                           borderRadius:
                                               BorderRadius.circular(12),
                                         ),
                                         child: const Icon(
                                             Icons.storefront_rounded,
-                                            color: AppColors.royalNavy),
+                                            color: AppColors.primary),
                                       ),
                                       const SizedBox(width: 12),
                                       Expanded(
@@ -179,17 +171,11 @@ class _CustomerSavedShopsViewState extends State<CustomerSavedShopsView> {
                                               CrossAxisAlignment.start,
                                           children: [
                                             Text(shop.shopName,
-                                                style: const TextStyle(
-                                                    fontSize: 15,
-                                                    fontWeight: FontWeight.w800,
-                                                    color: AppColors
-                                                        .midnightNavy)),
+                                                style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
                                             const SizedBox(height: 2),
                                             Text(
                                                 '${shop.address}, ${shop.city}',
-                                                style: const TextStyle(
-                                                    fontSize: 11.5,
-                                                    color: AppColors
+                                                style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors
                                                         .textSecondary)),
                                             const SizedBox(height: 4),
                                             Row(
@@ -197,22 +183,14 @@ class _CustomerSavedShopsViewState extends State<CustomerSavedShopsView> {
                                                 const Icon(
                                                     Icons.star_rounded,
                                                     size: 14,
-                                                    color: AppColors.amberGold),
+                                                    color: AppColors.warning),
                                                 const SizedBox(width: 3),
                                                 Text('${shop.rating}',
-                                                    style: const TextStyle(
-                                                        fontSize: 11,
-                                                        fontWeight:
-                                                            FontWeight.w700)),
+                                                    style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700)),
                                                 const SizedBox(width: 8),
                                                 Text(
                                                     '• ${shop.availableCount} Cars Ready',
-                                                    style: const TextStyle(
-                                                        fontSize: 11,
-                                                        color: AppColors
-                                                            .emeraldGreen,
-                                                        fontWeight:
-                                                            FontWeight.w600)),
+                                                    style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600, color: AppColors.accentSuccess)),
                                               ],
                                             ),
                                           ],
@@ -222,7 +200,7 @@ class _CustomerSavedShopsViewState extends State<CustomerSavedShopsView> {
                                         icon: const Icon(
                                             Icons.favorite_rounded,
                                             size: 20,
-                                            color: AppColors.sunsetOrange),
+                                            color: AppColors.secondary),
                                         tooltip: 'Remove from saved',
                                         onPressed: () => _unsave(shop),
                                       ),

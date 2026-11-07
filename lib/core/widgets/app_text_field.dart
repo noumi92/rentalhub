@@ -33,8 +33,7 @@ class AppTextField extends StatelessWidget {
       children: [
         Text(
           label,
-          style: TextStyle(
-            fontSize: 12.5,
+          style: Theme.of(context).textTheme.labelMedium?.copyWith(
             fontWeight: FontWeight.w700,
             color: scheme.onSurface,
           ),
@@ -46,15 +45,14 @@ class AppTextField extends StatelessWidget {
           keyboardType: keyboardType,
           validator: validator,
           onChanged: onChanged,
-          style: TextStyle(
-            color: scheme.onSurface,
-            fontSize: 14,
+          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
             fontWeight: FontWeight.w500,
           ),
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle:
-                TextStyle(color: scheme.onSurfaceVariant, fontSize: 13),
+            hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: scheme.onSurfaceVariant,
+            ),
             prefixIcon: prefixIcon != null
                 ? Icon(prefixIcon, size: 20, color: scheme.onSurfaceVariant)
                 : null,
@@ -67,16 +65,16 @@ class AppTextField extends StatelessWidget {
             ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.border),
+              borderSide: const BorderSide(color: AppColors.borderSubtle),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.border),
+              borderSide: const BorderSide(color: AppColors.borderSubtle),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: const BorderSide(
-                color: AppColors.sunsetOrange,
+                color: AppColors.secondary,
                 width: 1.5,
               ),
             ),

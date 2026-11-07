@@ -152,7 +152,6 @@ class _OwnerCnicReviewViewState extends State<OwnerCnicReviewView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
       body: SafeArea(
         child: Column(
           children: [
@@ -163,17 +162,13 @@ class _OwnerCnicReviewViewState extends State<OwnerCnicReviewView> {
                     color: Colors.white, size: 20),
                 onPressed: () => Navigator.of(context).pop(),
               ),
-              titleWidget: const Column(
+              titleWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('Review Scanned CNIC',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w900)),
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
                   Text('Correct anything OCR misread',
-                      style: TextStyle(
-                          color: AppColors.textLavender, fontSize: 12)),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.primaryContainer)),
                 ],
               ),
             ),

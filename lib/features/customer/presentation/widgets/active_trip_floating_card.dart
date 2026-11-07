@@ -19,10 +19,10 @@ class ActiveTripFloatingCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: AppColors.royalNavy.withValues(alpha: 0.15)),
+        border: Border.all(color: AppColors.primary.withValues(alpha: 0.15)),
         boxShadow: [
           BoxShadow(
-            color: AppColors.midnightNavy.withValues(alpha: 0.08),
+            color: AppColors.primary.withValues(alpha: 0.08),
             blurRadius: 16,
             offset: const Offset(0, 6),
           ),
@@ -38,7 +38,7 @@ class ActiveTripFloatingCard extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: AppColors.emeraldGreen.withValues(alpha: 0.12),
+                  color: AppColors.accentSuccess.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
@@ -48,29 +48,21 @@ class ActiveTripFloatingCard extends StatelessWidget {
                       width: 6,
                       height: 6,
                       decoration: const BoxDecoration(
-                        color: AppColors.emeraldGreen,
+                        color: AppColors.accentSuccess,
                         shape: BoxShape.circle,
                       ),
                     ),
                     const SizedBox(width: 6),
                     Text(
                       booking.status.toUpperCase(),
-                      style: const TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.emeraldGreen,
-                      ),
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.accentSuccess),
                     ),
                   ],
                 ),
               ),
               Text(
                 'ID: ${booking.bookingId}',
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.sunsetOrange,
-                ),
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.secondary),
               ),
             ],
           ),
@@ -80,11 +72,11 @@ class ActiveTripFloatingCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: AppColors.lavenderMist,
+                  color: AppColors.primaryContainer,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Icon(Icons.directions_car_filled_rounded,
-                    color: AppColors.royalNavy, size: 28),
+                    color: AppColors.primary, size: 28),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -93,20 +85,12 @@ class ActiveTripFloatingCard extends StatelessWidget {
                   children: [
                     Text(
                       booking.vehicleName ?? 'Active Rental Car',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w900,
-                        color: AppColors.midnightNavy,
-                      ),
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: AppColors.primary),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       booking.shopName ?? 'Rental Showroom',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textSecondary,
-                        fontWeight: FontWeight.w500,
-                      ),
+                      style: Theme.of(context).textTheme.labelMedium,
                     ),
                   ],
                 ),
@@ -120,16 +104,11 @@ class ActiveTripFloatingCard extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Total Fare',
-                      style: TextStyle(
-                          fontSize: 11, color: AppColors.textSecondary)),
+                  Text('Total Fare',
+                      style: Theme.of(context).textTheme.labelSmall),
                   Text(
                     'Rs. ${booking.totalAmount}',
-                    style: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w900,
-                      color: AppColors.midnightNavy,
-                    ),
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900, color: AppColors.primary),
                   ),
                 ],
               ),
@@ -140,19 +119,15 @@ class ActiveTripFloatingCard extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                   decoration: BoxDecoration(
-                    color: AppColors.sunsetOrange,
+                    color: AppColors.secondary,
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
-                    children: const [
+                    children: [
                       Text(
                         'View Pass / QR',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w800,
-                          color: Colors.white,
-                        ),
+                        style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: Colors.white),
                       ),
                       SizedBox(width: 4),
                       Icon(Icons.arrow_forward_rounded,

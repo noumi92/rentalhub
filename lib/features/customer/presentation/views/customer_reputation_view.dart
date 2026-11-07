@@ -80,7 +80,6 @@ class _CustomerReputationViewState extends State<CustomerReputationView> {
         ? null
         : (care + punctuality + behavior) / 3;
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
       body: SafeArea(
         child: Column(
           children: [
@@ -93,12 +92,9 @@ class _CustomerReputationViewState extends State<CustomerReputationView> {
                       onPressed: widget.onBack,
                     )
                   : null,
-              titleWidget: const Text(
+              titleWidget: Text(
                 'My Trust & Reputation',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w900),
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white),
               ),
             ),
             Expanded(
@@ -114,7 +110,7 @@ class _CustomerReputationViewState extends State<CustomerReputationView> {
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(20),
-                              border: Border.all(color: AppColors.border),
+                              border: Border.all(color: AppColors.borderSubtle),
                               boxShadow: [
                                 BoxShadow(
                                   color:
@@ -129,34 +125,26 @@ class _CustomerReputationViewState extends State<CustomerReputationView> {
                                 Container(
                                   padding: const EdgeInsets.all(16),
                                   decoration: BoxDecoration(
-                                    color: AppColors.emeraldGreen
+                                    color: AppColors.accentSuccess
                                         .withValues(alpha: 0.1),
                                     shape: BoxShape.circle,
                                   ),
                                   child: const Icon(Icons.verified_rounded,
-                                      color: AppColors.emeraldGreen, size: 50),
+                                      color: AppColors.accentSuccess, size: 50),
                                 ),
                                 const SizedBox(height: 12),
                                 Text(
                                   overall == null
                                       ? '— / 5.0'
                                       : '${overall.toStringAsFixed(1)} / 5.0',
-                                  style: const TextStyle(
-                                    fontSize: 32,
-                                    fontWeight: FontWeight.w900,
-                                    color: AppColors.midnightNavy,
-                                  ),
+                                  style: Theme.of(context).textTheme.displayLarge?.copyWith(fontWeight: FontWeight.w900, color: AppColors.primary),
                                 ),
                                 const SizedBox(height: 2),
                                 Text(
                                   _trustScore == null
                                       ? 'Trust Score: —'
                                       : 'Trust Score: ${_trustScore!.toStringAsFixed(1)} / 5.0',
-                                  style: const TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w700,
-                                    color: AppColors.emeraldGreen,
-                                  ),
+                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.accentSuccess),
                                 ),
                                 const SizedBox(height: 8),
                                 Text(
@@ -164,11 +152,7 @@ class _CustomerReputationViewState extends State<CustomerReputationView> {
                                       ? 'No showroom has rated you yet. Your reputation appears here after your first completed trip.'
                                       : 'Based on ${_ownerReviews.length} showroom review${_ownerReviews.length == 1 ? '' : 's'} from your completed trips.',
                                   textAlign: TextAlign.center,
-                                  style: const TextStyle(
-                                    fontSize: 11.5,
-                                    color: AppColors.textSecondary,
-                                    height: 1.4,
-                                  ),
+                                  style: Theme.of(context).textTheme.labelSmall?.copyWith(height: 1.4),
                                 ),
                               ],
                             ),
@@ -180,18 +164,14 @@ class _CustomerReputationViewState extends State<CustomerReputationView> {
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(16),
-                                border: Border.all(color: AppColors.border),
+                                border: Border.all(color: AppColors.borderSubtle),
                               ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Text(
+                                  Text(
                                     'Showroom Ratings of You',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w800,
-                                      color: AppColors.midnightNavy,
-                                    ),
+                                    style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
                                   ),
                                   const SizedBox(height: 14),
                                   ReputationScoreBar(
@@ -215,21 +195,18 @@ class _CustomerReputationViewState extends State<CustomerReputationView> {
                           Container(
                             padding: const EdgeInsets.all(14),
                             decoration: BoxDecoration(
-                              color: AppColors.lavenderMist,
+                              color: AppColors.primaryContainer,
                               borderRadius: BorderRadius.circular(14),
                             ),
                             child: Row(
-                              children: const [
+                              children: [
                                 Icon(Icons.shield_rounded,
-                                    color: AppColors.royalNavy, size: 20),
+                                    color: AppColors.primary, size: 20),
                                 SizedBox(width: 10),
                                 Expanded(
                                   child: Text(
                                     'Showrooms see these ratings when they review your booking requests.',
-                                    style: TextStyle(
-                                        fontSize: 11.5,
-                                        fontWeight: FontWeight.w600,
-                                        color: AppColors.midnightNavy),
+                                    style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600, color: AppColors.primary),
                                   ),
                                 ),
                               ],

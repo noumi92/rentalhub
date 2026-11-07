@@ -22,16 +22,12 @@ class RadiusFilterPills extends StatelessWidget {
           const Icon(
             Icons.radar_rounded,
             size: 16,
-            color: AppColors.sunsetOrange,
+            color: AppColors.secondary,
           ),
           const SizedBox(width: 6),
-          const Text(
+          Text(
             'Radius:',
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w800,
-              color: AppColors.midnightNavy,
-            ),
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
           ),
           const SizedBox(width: 8),
           ..._radii.map((km) {
@@ -49,23 +45,18 @@ class RadiusFilterPills extends StatelessWidget {
                   ),
                   decoration: BoxDecoration(
                     color: isSelected
-                        ? AppColors.sunsetOrange
+                        ? AppColors.secondary
                         : AppColors.surfaceLight,
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
                       color: isSelected
-                          ? AppColors.sunsetOrange
-                          : AppColors.border,
+                          ? AppColors.secondary
+                          : AppColors.borderSubtle,
                     ),
                   ),
                   child: Text(
                     '${km.toInt()} km',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w800,
-                      color:
-                          isSelected ? Colors.white : AppColors.midnightNavy,
-                    ),
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: isSelected ? Colors.white : AppColors.primary),
                   ),
                 ),
               ),

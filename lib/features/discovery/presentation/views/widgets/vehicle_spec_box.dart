@@ -20,19 +20,15 @@ class VehicleSpecBox extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.borderSubtle),
       ),
       child: Column(
         children: [
-          Icon(icon, size: 20, color: AppColors.midnightNavy),
+          Icon(icon, size: 20, color: AppColors.primary),
           const SizedBox(height: 5),
           Text(
             value,
-            style: const TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w800,
-              color: AppColors.midnightNavy,
-            ),
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
             textAlign: TextAlign.center,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
@@ -40,11 +36,7 @@ class VehicleSpecBox extends StatelessWidget {
           const SizedBox(height: 2),
           Text(
             label,
-            style: const TextStyle(
-              fontSize: 9.5,
-              color: AppColors.textMuted,
-              fontWeight: FontWeight.w500,
-            ),
+            style: Theme.of(context).textTheme.labelSmall,
             textAlign: TextAlign.center,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,

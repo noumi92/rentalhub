@@ -34,11 +34,11 @@ class FinanceLedgerSection extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text('Ledger',
-                style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.midnightNavy)),
+            Text('Ledger',
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.primary,
+                )),
             TextButton.icon(
               icon: const Icon(Icons.add_rounded, size: 18),
               label: const Text('Add entry'),
@@ -58,7 +58,7 @@ class FinanceLedgerSection extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColors.border),
+              border: Border.all(color: AppColors.borderSubtle),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -68,25 +68,24 @@ class FinanceLedgerSection extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(t.category,
-                          style: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w800,
-                              color: AppColors.midnightNavy)),
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.primary,
+                          )),
                       Text(
                           '${_accountName(t.accountId)} • ${t.createdAt.day}/${t.createdAt.month}/${t.createdAt.year}${t.note != null ? ' • ${t.note}' : ''}',
-                          style: const TextStyle(
-                              fontSize: 11, color: AppColors.textSecondary)),
+                          style: Theme.of(context).textTheme.labelSmall),
                     ],
                   ),
                 ),
                 Text(
                   '${isIncome ? '+' : '−'} Rs. ${t.amountPkr}',
-                  style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w900,
-                      color: isIncome
-                          ? AppColors.emeraldGreen
-                          : AppColors.crimsonRed),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w900,
+                    color: isIncome
+                          ? AppColors.accentSuccess
+                          : AppColors.accentDanger,
+                  ),
                 ),
               ],
             ),

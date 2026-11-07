@@ -22,19 +22,19 @@ class ShopApprovalStatusStepWidget extends StatelessWidget {
             shape: BoxShape.circle,
           ),
           child: const Center(
-            child: Icon(Icons.check_circle_rounded, size: 64, color: AppColors.emeraldGreen),
+            child: Icon(Icons.check_circle_rounded, size: 64, color: AppColors.accentSuccess),
           ),
         ),
         const SizedBox(height: 18),
-        const Text(
+        Text(
           'Shop Application Submitted!',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: AppColors.midnightNavy),
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900, color: AppColors.primary),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 8),
-        const Text(
+        Text(
           'Your shop profile and KYC credentials have been routed to the Super Admin desk. You will receive SMS & WhatsApp verification within 2 to 4 business hours.',
-          style: TextStyle(fontSize: 13, color: AppColors.textSecondary, height: 1.4),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary, height: 1.4),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 24),
@@ -43,21 +43,21 @@ class ShopApprovalStatusStepWidget extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.border),
+            border: Border.all(color: AppColors.borderSubtle),
           ),
-          child: const Row(
+          child: Row(
             children: [
-              Icon(Icons.inventory_2_outlined, color: AppColors.sunsetOrange, size: 28),
+              Icon(Icons.inventory_2_outlined, color: AppColors.secondary, size: 28),
               SizedBox(width: 14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Fleet Catalog Ready', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: AppColors.midnightNavy)),
+                    Text('Fleet Catalog Ready', style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
                     SizedBox(height: 2),
                     Text(
                       'You can start adding your cars, setting 1h/3h/6h/24h rates and photos right now.',
-                      style: TextStyle(fontSize: 11.5, color: AppColors.textSecondary),
+                      style: Theme.of(context).textTheme.labelSmall,
                     ),
                   ],
                 ),
@@ -72,9 +72,9 @@ class ShopApprovalStatusStepWidget extends StatelessWidget {
           child: ElevatedButton.icon(
             onPressed: onGoToFleet,
             icon: const Icon(Icons.arrow_forward_rounded, size: 18),
-            label: const Text('Manage Fleet & Add Vehicles', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800)),
+            label: Text('Manage Fleet & Add Vehicles', style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.sunsetOrange,
+              backgroundColor: AppColors.secondary,
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
             ),

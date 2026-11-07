@@ -24,42 +24,41 @@ class FuelOdometerInputWidget extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.borderSubtle),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             title,
-            style: const TextStyle(
-              fontSize: 14,
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w800,
-              color: AppColors.midnightNavy,
+              color: AppColors.primary,
             ),
           ),
           const SizedBox(height: 12),
-          const Text('Odometer Reading (KM):', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.midnightNavy)),
+          Text('Odometer Reading (KM):', style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.primary)),
           const SizedBox(height: 6),
           TextField(
             controller: odometerController,
             keyboardType: TextInputType.number,
-            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: AppColors.midnightNavy),
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
             decoration: InputDecoration(
               hintText: 'e.g. 45200',
               suffixText: 'KM',
-              suffixStyle: const TextStyle(fontWeight: FontWeight.w800, color: AppColors.sunsetOrange),
-              prefixIcon: const Icon(Icons.speed_rounded, color: AppColors.midnightNavy),
+              suffixStyle: const TextStyle(fontWeight: FontWeight.w800, color: AppColors.secondary),
+              prefixIcon: const Icon(Icons.speed_rounded, color: AppColors.primary),
               filled: true,
               fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: AppColors.border),
+                borderSide: const BorderSide(color: AppColors.borderSubtle),
               ),
               contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
             ),
           ),
           const SizedBox(height: 14),
-          const Text('Fuel Level Gauge:', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.midnightNavy)),
+          Text('Fuel Level Gauge:', style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.primary)),
           const SizedBox(height: 8),
           Wrap(
             spacing: 8,
@@ -69,12 +68,11 @@ class FuelOdometerInputWidget extends StatelessWidget {
               return ChoiceChip(
                 label: Text(lvl),
                 selected: isSelected,
-                selectedColor: AppColors.sunsetOrange,
-                backgroundColor: AppColors.backgroundLight,
-                labelStyle: TextStyle(
-                  fontSize: 11.5,
+                selectedColor: AppColors.secondary,
+                backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                labelStyle: Theme.of(context).textTheme.labelSmall?.copyWith(
                   fontWeight: FontWeight.w700,
-                  color: isSelected ? Colors.white : AppColors.midnightNavy,
+                  color: isSelected ? Colors.white : AppColors.primary,
                 ),
                 onSelected: (_) => onFuelSelected(lvl),
               );

@@ -35,14 +35,10 @@ class PackagePickerHeader extends StatelessWidget {
       titleWidget: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Select Rental Package',
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w900)),
+          Text('Select Rental Package',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
           Text('$carName • $shopName',
-              style: const TextStyle(
-                  color: AppColors.textLavender, fontSize: 12)),
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.primaryContainer)),
         ],
       ),
       actions: [

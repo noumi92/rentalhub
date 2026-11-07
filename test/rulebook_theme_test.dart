@@ -16,20 +16,33 @@ import 'package:rentalhub/core/theme/app_theme.dart';
 const Map<String, String> kLightTokens = {
   'primary': '0xFF1B1E5C',
   'primaryDark': '0xFF16194F',
+  'primaryLight': '0xFFEEF0FF',
   'primaryContainer': '0xFFEEF0FF',
+  'primaryOnDark': '0xFF252B7A',
+  'primaryContainerOnDark': '0xFF1A1D42',
+  'primaryDarkOnDark': '0xFF0B0D26',
   'secondary': '0xFFF95700',
-  'secondaryLight': '0xFFFF6D24',
+  // Rulebook §4.2: secondaryLight is the pale tint; the bright orange is
+  // the *dark* secondary (secondaryDark).
+  'secondaryLight': '0xFFFFF3EB',
+  'secondaryDark': '0xFFFF6D24',
+  'secondaryLightDark': '0xFF3D1B08',
   'backgroundLight': '0xFFF8FAFC',
   'backgroundDark': '0xFF0A0B1A',
   'surfaceLight': '0xFFFFFFFF',
   'surfaceDark': '0xFF13152C',
+  'surfaceElevated': '0xFFF1F5F9',
+  'surfaceElevatedDark': '0xFF1C1F3D',
   'onSurfaceLight': '0xFF0F172A',
   'onSurfaceDark': '0xFFF8FAFC',
   'onSurfaceVariantLight': '0xFF64748B',
   'onSurfaceVariantDark': '0xFF94A3B8',
-  'error': '0xFFEF4444',
-  'success': '0xFF10B981',
-  'border': '0xFFE2E8F0',
+  'accentDanger': '0xFFEF4444',
+  'accentDangerDark': '0xFFF87171',
+  'accentSuccess': '0xFF10B981',
+  'accentSuccessDark': '0xFF34D399',
+  'borderSubtle': '0xFFE2E8F0',
+  'borderDark': '0xFF23274D',
 };
 
 void main() {
@@ -46,18 +59,19 @@ void main() {
               'Rulebook §4.2: token values missing from AppColors:\n${missing.join('\n')}');
     });
 
-    test('dark theme hardcodes no more than the 6 registered literals (D9)', () {
-      // Rulebook §6.3 / D9: the dark theme currently hardcodes 6 colour
-      // literals inline instead of reading AppColors. That number must
-      // only go down as the theme is moved to AppColors.
+    test('dark theme hardcodes no colour literals (D9 resolved in Phase A)',
+        () {
+      // Rulebook §6.3 / D9: Phase A moved every dark colour into
+      // AppColors, so the theme file must contain zero literals. The
+      // number must stay at zero.
       final content =
           File('lib/core/theme/app_theme.dart').readAsStringSync();
       final darkSection = content.split('darkTheme').last;
       final literals =
           RegExp(r'Color\(0xFF[0-9A-Fa-f]{6}\)').allMatches(darkSection).length;
-      expect(literals, lessThanOrEqualTo(6),
+      expect(literals, 0,
           reason:
-              'Rulebook §6.3 (D9): dark theme has $literals hardcoded colour literals (registered: 6). New literals are banned — use AppColors.');
+              'Rulebook §6.3 (D9): dark theme has $literals hardcoded colour literals. New literals are banned — use AppColors.');
     });
   });
 
@@ -108,9 +122,14 @@ void main() {
 
     test('dark theme reads all colours from AppColors (no inline literals)',
         () {
-      fail('not implemented yet');
-    },
-        skip:
-            'D9: dark theme hardcodes 6 literals — see rulebook §13. Un-skip when AppColors owns the dark tokens.');
+      // D9 resolved in Phase A: the dark theme section of app_theme.dart
+      // contains no Color(0xFF...) literals at all.
+      final content =
+          File('lib/core/theme/app_theme.dart').readAsStringSync();
+      final darkSection = content.split('darkTheme').last;
+      final literals =
+          RegExp(r'Color\(0xFF[0-9A-Fa-f]{6}\)').allMatches(darkSection).length;
+      expect(literals, 0);
+    });
   });
 }

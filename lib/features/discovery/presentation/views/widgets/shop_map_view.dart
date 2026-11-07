@@ -31,7 +31,7 @@ class ShopMapView extends StatelessWidget {
       width: double.infinity,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.borderSubtle),
       ),
       clipBehavior: Clip.antiAlias,
       child: Stack(
@@ -54,8 +54,8 @@ class ShopMapView extends StatelessWidget {
                     point: userLocation,
                     radius: radiusKm * 1000,
                     useRadiusInMeter: true,
-                    color: AppColors.sunsetOrange.withValues(alpha: 0.08),
-                    borderColor: AppColors.sunsetOrange,
+                    color: AppColors.secondary.withValues(alpha: 0.08),
+                    borderColor: AppColors.secondary,
                     borderStrokeWidth: 1.5,
                   ),
                 ],
@@ -103,7 +103,7 @@ class ShopMapView extends StatelessWidget {
                                   vertical: 4,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: AppColors.sunsetOrange,
+                                  color: AppColors.secondary,
                                   borderRadius: BorderRadius.circular(10),
                                   boxShadow: [
                                     BoxShadow(
@@ -115,17 +115,13 @@ class ShopMapView extends StatelessWidget {
                                 ),
                                 child: Text(
                                   '${shop.shopName.split(' ').first} • ${shop.distanceKm.toStringAsFixed(1)}km',
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w800,
-                                  ),
+                                  style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800, color: Colors.white),
                                 ),
                               ),
                               const Icon(
                                 Icons.location_on_rounded,
                                 size: 26,
-                                color: AppColors.sunsetOrange,
+                                color: AppColors.secondary,
                               ),
                             ],
                           ),
@@ -143,16 +139,12 @@ class ShopMapView extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               decoration: BoxDecoration(
-                color: AppColors.midnightNavy,
+                color: AppColors.primary,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
                 'GPS Radar: ${radiusKm.toInt()} km (${shops.length} Verified Shops)',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 11,
-                  fontWeight: FontWeight.w700,
-                ),
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700, color: Colors.white),
               ),
             ),
           ),

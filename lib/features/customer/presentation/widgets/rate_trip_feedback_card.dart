@@ -22,18 +22,14 @@ class RateTripFeedbackCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.borderSubtle),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Additional Feedback (Optional)',
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
-              color: AppColors.midnightNavy,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.primary),
           ),
           const SizedBox(height: 8),
           TextField(
@@ -48,7 +44,7 @@ class RateTripFeedbackCard extends StatelessWidget {
                   Theme.of(context).colorScheme.surfaceContainerHighest,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
-                borderSide: const BorderSide(color: AppColors.border),
+                borderSide: const BorderSide(color: AppColors.borderSubtle),
               ),
               contentPadding: const EdgeInsets.all(10),
             ),

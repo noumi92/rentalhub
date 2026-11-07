@@ -156,7 +156,6 @@ class _CustomerSosViewState extends State<CustomerSosView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
       body: SafeArea(
         child: Column(
           children: [
@@ -169,12 +168,9 @@ class _CustomerSosViewState extends State<CustomerSosView> {
                       onPressed: widget.onBack,
                     )
                   : null,
-              titleWidget: const Text(
+              titleWidget: Text(
                 'Emergency SOS Assistance',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w900),
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white),
               ),
             ),
             Expanded(
@@ -185,30 +181,22 @@ class _CustomerSosViewState extends State<CustomerSosView> {
                   children: [
                     SosButton(onTap: _confirmAndCallPolice),
                     const SizedBox(height: 16),
-                    const Text(
+                    Text(
                       'Press SOS in Emergency',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w900,
-                        color: AppColors.crimsonRed,
-                      ),
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: AppColors.accentDanger),
                     ),
                     const SizedBox(height: 6),
-                    const Text(
+                    Text(
                       'The SOS button calls Police 15. You can also call Rescue 1122 or share your live location with your showroom.',
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textSecondary,
-                        height: 1.4,
-                      ),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(height: 1.4),
                     ),
                     const SizedBox(height: 24),
                     SosEmergencyOption(
                       icon: Icons.local_police_rounded,
                       title: 'Call Police Emergency 15',
                       subtitle: 'Direct Punjab & Federal Police helpline',
-                      color: AppColors.royalNavy,
+                      color: AppColors.primary,
                       onTap: () => _callNumber('15', 'Police 15'),
                     ),
                     const SizedBox(height: 10),
@@ -216,7 +204,7 @@ class _CustomerSosViewState extends State<CustomerSosView> {
                       icon: Icons.medical_services_rounded,
                       title: 'Call Rescue 1122',
                       subtitle: 'Ambulance, fire and rescue services',
-                      color: AppColors.sunsetOrange,
+                      color: AppColors.secondary,
                       onTap: () => _callNumber('1122', 'Rescue 1122'),
                     ),
                     const SizedBox(height: 10),
@@ -226,7 +214,7 @@ class _CustomerSosViewState extends State<CustomerSosView> {
                       subtitle: _shopName != null
                           ? 'Send your live location to $_shopName'
                           : 'Send your live location to your showroom',
-                      color: AppColors.emeraldGreen,
+                      color: AppColors.accentSuccess,
                       onTap: _shareLiveLocation,
                     ),
                   ],

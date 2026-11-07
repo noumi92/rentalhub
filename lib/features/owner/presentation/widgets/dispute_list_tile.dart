@@ -57,7 +57,7 @@ class DisputeListTile extends StatelessWidget {
       color: Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: const BorderSide(color: AppColors.border),
+        side: const BorderSide(color: AppColors.borderSubtle),
       ),
       child: ListTile(
         onTap: onTap,
@@ -67,15 +67,15 @@ class DisputeListTile extends StatelessWidget {
         ),
         title: Text(
           dispute.category.isEmpty ? 'Dispute' : dispute.category,
-          style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w800,
-              color: AppColors.midnightNavy),
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+            fontWeight: FontWeight.w800,
+            color: AppColors.primary,
+          ),
         ),
         subtitle: Text(
           'Booking ${dispute.bookingId} • ${dispute.customerName ?? dispute.customerId ?? 'Customer'}'
           '${dispute.createdAt == null ? '' : '\n${formatDate(dispute.createdAt)}'}',
-          style: const TextStyle(fontSize: 12, color: AppColors.textMuted),
+          style: Theme.of(context).textTheme.bodySmall,
         ),
         isThreeLine: dispute.createdAt != null,
         trailing: Container(
@@ -86,8 +86,10 @@ class DisputeListTile extends StatelessWidget {
           ),
           child: Text(
             statusLabel(dispute.status),
-            style: TextStyle(
-                fontSize: 11, fontWeight: FontWeight.w800, color: color),
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              fontWeight: FontWeight.w800,
+              color: color,
+            ),
           ),
         ),
       ),

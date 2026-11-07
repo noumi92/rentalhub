@@ -63,14 +63,14 @@ class VehiclePhotosStepWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Vehicle 4-Angle Photos',
-          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900, color: AppColors.midnightNavy),
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900, color: AppColors.primary),
         ),
         const SizedBox(height: 4),
-        const Text(
+        Text(
           'Upload photos using Camera or Gallery. Tap to change or remove.',
-          style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+          style: Theme.of(context).textTheme.bodySmall,
         ),
         const SizedBox(height: 12),
 
@@ -124,9 +124,9 @@ class VehiclePhotosStepWidget extends StatelessWidget {
         ),
         const SizedBox(height: 20),
 
-        const Text(
+        Text(
           'Legal Documents',
-          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900, color: AppColors.midnightNavy),
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900, color: AppColors.primary),
         ),
         const SizedBox(height: 8),
 

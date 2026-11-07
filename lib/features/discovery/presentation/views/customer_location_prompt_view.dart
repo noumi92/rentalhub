@@ -71,7 +71,7 @@ class _CustomerLocationPromptViewState extends State<CustomerLocationPromptView>
         if (permission == LocationPermission.denied) {
           if (!silent && mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Location permission denied. Tap a city to explore.'), backgroundColor: AppColors.error),
+              const SnackBar(content: Text('Location permission denied. Tap a city to explore.'), backgroundColor: AppColors.accentDanger),
             );
           }
           setState(() => _isLocating = false);
@@ -119,7 +119,6 @@ class _CustomerLocationPromptViewState extends State<CustomerLocationPromptView>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
       body: SafeArea(
         child: Column(
           children: [
@@ -135,9 +134,9 @@ class _CustomerLocationPromptViewState extends State<CustomerLocationPromptView>
                   }
                 },
               ),
-              titleWidget: const Text(
+              titleWidget: Text(
                 'Set Rental Location',
-                style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w800),
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800, color: Colors.white),
               ),
             ),
             CitySelectorBar(
@@ -179,8 +178,8 @@ class _CustomerLocationPromptViewState extends State<CustomerLocationPromptView>
                         height: 160,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: AppColors.sunsetOrange.withValues(alpha: 0.10),
-                          border: Border.all(color: AppColors.sunsetOrange.withValues(alpha: 0.45), width: 1.5),
+                          color: AppColors.secondary.withValues(alpha: 0.10),
+                          border: Border.all(color: AppColors.secondary.withValues(alpha: 0.45), width: 1.5),
                         ),
                       ),
                     ),
@@ -193,11 +192,11 @@ class _CustomerLocationPromptViewState extends State<CustomerLocationPromptView>
                         children: [
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                            decoration: BoxDecoration(color: AppColors.midnightNavy, borderRadius: BorderRadius.circular(12)),
-                            child: const Text('Center Location Pin', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w700)),
+                            decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(12)),
+                            child: Text('Center Location Pin', style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700, color: Colors.white)),
                           ),
                           const SizedBox(height: 2),
-                          const Icon(Icons.location_on_rounded, size: 46, color: AppColors.sunsetOrange),
+                          const Icon(Icons.location_on_rounded, size: 46, color: AppColors.secondary),
                         ],
                       ),
                     ),
@@ -208,11 +207,11 @@ class _CustomerLocationPromptViewState extends State<CustomerLocationPromptView>
                     child: FloatingActionButton.small(
                       heroTag: 'gps_map_fetch_btn',
                       backgroundColor: Colors.white,
-                      foregroundColor: AppColors.sunsetOrange,
+                      foregroundColor: AppColors.secondary,
                       elevation: 4,
                       onPressed: _isLocating ? null : () => _fetchCurrentGpsLocation(silent: false),
                       child: _isLocating
-                          ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation(AppColors.sunsetOrange)))
+                          ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation(AppColors.secondary)))
                           : const Icon(Icons.my_location_rounded, size: 20),
                     ),
                   ),

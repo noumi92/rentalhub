@@ -21,8 +21,7 @@ class PakistanPhoneField extends StatelessWidget {
       children: [
         Text(
           'WhatsApp Number',
-          style: TextStyle(
-            fontSize: 12.5,
+          style: Theme.of(context).textTheme.labelMedium?.copyWith(
             fontWeight: FontWeight.w700,
             color: scheme.onSurface,
           ),
@@ -32,15 +31,14 @@ class PakistanPhoneField extends StatelessWidget {
           controller: controller,
           keyboardType: TextInputType.phone,
           onChanged: onChanged,
-          style: TextStyle(
-            color: scheme.onSurface,
-            fontSize: 14,
+          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
             fontWeight: FontWeight.w500,
           ),
           decoration: InputDecoration(
             hintText: '3XX XXXXXXX',
-            hintStyle:
-                TextStyle(color: scheme.onSurfaceVariant, fontSize: 13),
+            hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: scheme.onSurfaceVariant,
+            ),
             prefixIcon: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Row(
@@ -48,10 +46,8 @@ class PakistanPhoneField extends StatelessWidget {
                 children: [
                   Text(
                     '🇵🇰 +92',
-                    style: TextStyle(
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.w700,
-                      fontSize: 13,
-                      color: scheme.onSurface,
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -76,20 +72,20 @@ class PakistanPhoneField extends StatelessWidget {
             ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.border),
+              borderSide: const BorderSide(color: AppColors.borderSubtle),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(
-                color: errorMessage != null ? AppColors.error : AppColors.border,
+                color: errorMessage != null ? AppColors.accentDanger : AppColors.borderSubtle,
               ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(
                 color: errorMessage != null
-                    ? AppColors.error
-                    : AppColors.sunsetOrange,
+                    ? AppColors.accentDanger
+                    : AppColors.secondary,
                 width: 1.5,
               ),
             ),
@@ -99,10 +95,8 @@ class PakistanPhoneField extends StatelessWidget {
           const SizedBox(height: 5),
           Text(
             errorMessage!,
-            style: const TextStyle(
-              color: AppColors.error,
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+              color: AppColors.accentDanger,
             ),
           ),
         ],

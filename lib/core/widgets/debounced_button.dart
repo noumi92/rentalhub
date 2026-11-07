@@ -92,8 +92,7 @@ class _DebouncedButtonState extends State<DebouncedButton> {
                   child: Text(
                     widget.displayLabel,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontSize: 15,
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.w700,
                     ),
                   ),

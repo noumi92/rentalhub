@@ -26,7 +26,7 @@ class PakistaniPlateWidget extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(5),
-        border: Border.all(color: AppColors.midnightNavyDark, width: 1.5),
+        border: Border.all(color: AppColors.primaryDark, width: 1.5),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.08),
@@ -75,12 +75,14 @@ class PakistaniPlateWidget extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: isCompact ? 7 : 10),
             child: Text(
               plateNumber.toUpperCase(),
-              style: TextStyle(
+              style: (isCompact
+                      ? Theme.of(context).textTheme.labelSmall
+                      : Theme.of(context).textTheme.bodyMedium)
+                  ?.copyWith(
                 fontFamily: 'monospace',
-                fontSize: isCompact ? 11.5 : 13.5,
                 fontWeight: FontWeight.w900,
                 letterSpacing: 1.2,
-                color: AppColors.midnightNavyDark,
+                color: AppColors.primaryDark,
               ),
             ),
           ),

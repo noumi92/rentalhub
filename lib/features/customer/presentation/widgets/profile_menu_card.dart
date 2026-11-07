@@ -32,7 +32,7 @@ class ProfileMenuCard extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.border),
+          border: Border.all(color: AppColors.borderSubtle),
         ),
         child: Column(
           children: items.map((item) {
@@ -40,15 +40,11 @@ class ProfileMenuCard extends StatelessWidget {
             return Column(
               children: [
                 ListTile(
-                  leading: Icon(item.icon, color: AppColors.royalNavy),
+                  leading: Icon(item.icon, color: AppColors.primary),
                   title: Text(item.title,
-                      style: const TextStyle(
-                          fontSize: 13.5,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.midnightNavy)),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.primary)),
                   subtitle: Text(item.subtitle,
-                      style: const TextStyle(
-                          fontSize: 11, color: AppColors.textSecondary)),
+                      style: Theme.of(context).textTheme.labelSmall),
                   trailing: const Icon(Icons.arrow_forward_ios_rounded,
                       size: 13, color: AppColors.textSecondary),
                   onTap: item.onTap,

@@ -137,7 +137,6 @@ class _CustomerSupportViewState extends State<CustomerSupportView> {
         .toList();
 
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
       bottomNavigationBar: const CustomerBottomNav(currentIndex: 3),
       body: SafeArea(
         child: Column(
@@ -151,12 +150,9 @@ class _CustomerSupportViewState extends State<CustomerSupportView> {
                       onPressed: widget.onBack,
                     )
                   : null,
-              titleWidget: const Text(
+              titleWidget: Text(
                 'Help & Support Center',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w900),
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white),
               ),
             ),
             Expanded(
@@ -171,15 +167,14 @@ class _CustomerSupportViewState extends State<CustomerSupportView> {
                       onChanged: (_) => setState(() {}),
                       decoration: InputDecoration(
                         hintText: 'Search questions, payments, safety...',
-                        hintStyle: const TextStyle(
-                            fontSize: 13, color: AppColors.textSecondary),
+                        hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
                         filled: true,
                         fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                         prefixIcon: const Icon(Icons.search_rounded,
-                            color: AppColors.royalNavy),
+                            color: AppColors.primary),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(color: AppColors.border),
+                          borderSide: const BorderSide(color: AppColors.borderSubtle),
                         ),
                         contentPadding: const EdgeInsets.symmetric(
                             horizontal: 14, vertical: 12),
@@ -193,7 +188,7 @@ class _CustomerSupportViewState extends State<CustomerSupportView> {
                             icon: Icons.phone_in_talk_rounded,
                             title: 'Call your showroom',
                             subtitle: _shopName ?? 'No booking yet',
-                            color: AppColors.royalNavy,
+                            color: AppColors.primary,
                             onTap: _callShop,
                           ),
                         ),
@@ -203,7 +198,7 @@ class _CustomerSupportViewState extends State<CustomerSupportView> {
                             icon: Icons.chat_rounded,
                             title: 'WhatsApp your showroom',
                             subtitle: _shopName ?? 'No booking yet',
-                            color: AppColors.emeraldGreen,
+                            color: AppColors.accentSuccess,
                             onTap: _whatsAppShop,
                           ),
                         ),
@@ -211,25 +206,22 @@ class _CustomerSupportViewState extends State<CustomerSupportView> {
                     ),
                     const SizedBox(height: 14),
                     ListTile(
-                      tileColor: AppColors.softOrangeTint,
+                      tileColor: AppColors.secondaryContainer,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                         side: BorderSide(
                             color:
-                                AppColors.sunsetOrange.withValues(alpha: 0.3)),
+                                AppColors.secondary.withValues(alpha: 0.3)),
                       ),
                       leading: const Icon(Icons.gavel_rounded,
-                          color: AppColors.sunsetOrange),
-                      title: const Text('File a Formal Complaint / Dispute',
-                          style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w800,
-                              color: AppColors.sunsetOrange)),
-                      subtitle: const Text(
+                          color: AppColors.secondary),
+                      title: Text('File a Formal Complaint / Dispute',
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.secondary)),
+                      subtitle: Text(
                           'Overcharged or deposit withheld? File an arbitration claim.',
-                          style: TextStyle(fontSize: 11)),
+                          style: Theme.of(context).textTheme.labelSmall),
                       trailing: const Icon(Icons.arrow_forward_ios_rounded,
-                          size: 14, color: AppColors.sunsetOrange),
+                          size: 14, color: AppColors.secondary),
                       onTap: widget.onFileDispute,
                     ),
                     const SizedBox(height: 14),

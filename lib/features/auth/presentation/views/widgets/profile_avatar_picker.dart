@@ -32,7 +32,7 @@ class ProfileAvatarPicker extends StatelessWidget {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Could not open image picker: $e'),
-            backgroundColor: AppColors.error,
+            backgroundColor: AppColors.accentDanger,
           ),
         );
       }
@@ -51,19 +51,18 @@ class ProfileAvatarPicker extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
+              Text(
                 'Select Profile Photo',
-                style: TextStyle(
-                  fontSize: 16,
+                style: Theme.of(ctx).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w700,
-                  color: AppColors.midnightNavy,
+                  color: AppColors.primary,
                 ),
               ),
               const SizedBox(height: 12),
               ListTile(
                 leading: const Icon(
                   Icons.camera_alt_rounded,
-                  color: AppColors.sunsetOrange,
+                  color: AppColors.secondary,
                 ),
                 title: const Text(
                   'Take Photo',
@@ -111,7 +110,7 @@ class ProfileAvatarPicker extends StatelessWidget {
                   shape: BoxShape.circle,
                   color: AppColors.primaryContainer,
                   border: Border.all(
-                    color: AppColors.border,
+                    color: AppColors.borderSubtle,
                     width: 2,
                   ),
                 ),
@@ -136,7 +135,7 @@ class ProfileAvatarPicker extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.all(7),
                   decoration: BoxDecoration(
-                    color: AppColors.sunsetOrange,
+                    color: AppColors.secondary,
                     shape: BoxShape.circle,
                     border: Border.all(
                       color: Colors.white,
@@ -156,12 +155,11 @@ class ProfileAvatarPicker extends StatelessWidget {
         const SizedBox(height: 6),
         TextButton(
           onPressed: () => _showSheet(context),
-          child: const Text(
+          child: Text(
             'Set Profile Picture',
-            style: TextStyle(
-              fontSize: 12,
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(
               fontWeight: FontWeight.w700,
-              color: AppColors.sunsetOrange,
+              color: AppColors.secondary,
             ),
           ),
         ),

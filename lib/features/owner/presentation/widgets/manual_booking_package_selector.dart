@@ -24,7 +24,7 @@ class ManualBookingVehicleDropdown extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.borderSubtle),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<VehicleEntity>(
@@ -36,8 +36,9 @@ class ManualBookingVehicleDropdown extends StatelessWidget {
               value: v,
               child: Text(
                   '${v.make} ${v.model} (${v.year}) - ${v.plateNumber}',
-                  style: const TextStyle(
-                      fontWeight: FontWeight.w700, fontSize: 13.5)),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  )),
             );
           }).toList(),
           onChanged: onChanged,
@@ -104,13 +105,13 @@ class ManualBookingPackageSelector extends StatelessWidget {
   Widget build(BuildContext context) {
     final vehicle = this.vehicle;
     if (vehicle == null) {
-      return const Text('Select a vehicle first to see its packages.',
-          style: TextStyle(fontSize: 12, color: AppColors.textMuted));
+      return Text('Select a vehicle first to see its packages.',
+          style: Theme.of(context).textTheme.bodySmall);
     }
     final packages = vehicle.enabledPackages;
     if (packages.isEmpty) {
-      return const Text('This vehicle has no packages enabled.',
-          style: TextStyle(fontSize: 12, color: AppColors.textMuted));
+      return Text('This vehicle has no packages enabled.',
+          style: Theme.of(context).textTheme.bodySmall);
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -123,12 +124,11 @@ class ManualBookingPackageSelector extends StatelessWidget {
             return ChoiceChip(
               label: Text('${p.label} • Rs. ${p.pricePkr}'),
               selected: selected,
-              selectedColor: AppColors.sunsetOrange,
-              backgroundColor: AppColors.backgroundLight,
-              labelStyle: TextStyle(
-                fontSize: 12,
+              selectedColor: AppColors.secondary,
+              backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+              labelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
                 fontWeight: FontWeight.w700,
-                color: selected ? Colors.white : AppColors.midnightNavy,
+                color: selected ? Colors.white : AppColors.primary,
               ),
               onSelected: (_) => onPackageChanged(p),
             );
@@ -137,20 +137,21 @@ class ManualBookingPackageSelector extends StatelessWidget {
         const SizedBox(height: 10),
         Row(
           children: [
-            const Text('With Driver',
-                style: TextStyle(
-                    fontSize: 13, fontWeight: FontWeight.w700)),
+            Text('With Driver',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                )),
             Switch(
               value: isWithDriver,
-              activeThumbColor: AppColors.sunsetOrange,
+              activeThumbColor: AppColors.secondary,
               onChanged: onDriverModeChanged,
             ),
             const SizedBox(width: 8),
             Text('Total: Rs. $_total',
-                style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w900,
-                    color: AppColors.midnightNavy)),
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w900,
+                  color: AppColors.primary,
+                )),
           ],
         ),
       ],

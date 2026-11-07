@@ -24,22 +24,22 @@ class CashClosingSummaryCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.royalNavy,
+        color: AppColors.primary,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Expected in till today',
-              style: TextStyle(color: Colors.white70, fontSize: 12)),
+          Text('Expected in till today',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white70)),
           Text('Rs. $expectedCash',
-              style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 22,
-                  fontWeight: FontWeight.w900)),
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.w900,
+              )),
           const SizedBox(height: 4),
           Text('Opening Rs. $openingCash • Difference Rs. $difference',
-              style: const TextStyle(color: Colors.white70, fontSize: 12)),
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white70)),
         ],
       ),
     );
@@ -59,7 +59,7 @@ class CashClosingRow extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.borderSubtle),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -68,12 +68,12 @@ class CashClosingRow extends StatelessWidget {
               style: const TextStyle(fontWeight: FontWeight.w800)),
           Text(
               'Counted Rs. ${closing.countedCash} • Diff Rs. ${closing.difference}',
-              style: TextStyle(
-                  fontSize: 12,
-                  color: closing.difference == 0
-                      ? AppColors.emeraldGreen
-                      : AppColors.crimsonRed,
-                  fontWeight: FontWeight.w700)),
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                color: closing.difference == 0
+                      ? AppColors.accentSuccess
+                      : AppColors.accentDanger,
+                fontWeight: FontWeight.w700,
+              )),
         ],
       ),
     );

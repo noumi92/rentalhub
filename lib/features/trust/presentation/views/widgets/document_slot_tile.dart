@@ -24,11 +24,11 @@ class DocumentSlotTile extends StatelessWidget {
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: isUploaded
-              ? AppColors.emeraldGreen.withValues(alpha: 0.08)
+              ? AppColors.accentSuccess.withValues(alpha: 0.08)
               : Colors.white,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: isUploaded ? AppColors.emeraldGreen : AppColors.border,
+            color: isUploaded ? AppColors.accentSuccess : AppColors.borderSubtle,
             width: isUploaded ? 1.5 : 1,
           ),
         ),
@@ -39,7 +39,7 @@ class DocumentSlotTile extends StatelessWidget {
               height: 44,
               decoration: BoxDecoration(
                 color: isUploaded
-                    ? AppColors.emeraldGreen
+                    ? AppColors.accentSuccess
                     : AppColors.primaryContainer,
                 borderRadius: BorderRadius.circular(10),
               ),
@@ -47,7 +47,7 @@ class DocumentSlotTile extends StatelessWidget {
                 isUploaded
                     ? Icons.check_circle_rounded
                     : Icons.camera_alt_rounded,
-                color: isUploaded ? Colors.white : AppColors.midnightNavy,
+                color: isUploaded ? Colors.white : AppColors.primary,
                 size: 22,
               ),
             ),
@@ -58,19 +58,12 @@ class DocumentSlotTile extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(
-                      fontSize: 13.5,
-                      fontWeight: FontWeight.w800,
-                      color: AppColors.midnightNavy,
-                    ),
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     subtitle,
-                    style: const TextStyle(
-                      fontSize: 11.5,
-                      color: AppColors.textMuted,
-                    ),
+                    style: Theme.of(context).textTheme.labelSmall,
                   ),
                 ],
               ),
@@ -79,19 +72,15 @@ class DocumentSlotTile extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               decoration: BoxDecoration(
                 color: isUploaded
-                    ? AppColors.emeraldGreen.withValues(alpha: 0.15)
-                    : AppColors.sunsetOrange.withValues(alpha: 0.12),
+                    ? AppColors.accentSuccess.withValues(alpha: 0.15)
+                    : AppColors.secondary.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
                 isUploaded ? 'Encrypted' : 'Upload',
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w800,
-                  color: isUploaded
-                      ? AppColors.emeraldGreen
-                      : AppColors.sunsetOrange,
-                ),
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800, color: isUploaded
+                      ? AppColors.accentSuccess
+                      : AppColors.secondary),
               ),
             ),
           ],

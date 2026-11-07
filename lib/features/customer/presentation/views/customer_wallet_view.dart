@@ -54,7 +54,6 @@ class _CustomerWalletViewState extends State<CustomerWalletView> {
   Widget build(BuildContext context) {
     final summary = _summary;
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
       bottomNavigationBar: const CustomerBottomNav(currentIndex: 2),
       body: SafeArea(
         child: Column(
@@ -68,12 +67,9 @@ class _CustomerWalletViewState extends State<CustomerWalletView> {
                       onPressed: widget.onBack,
                     )
                   : null,
-              titleWidget: const Text(
+              titleWidget: Text(
                 'Wallet & Security Escrow',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w900),
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white),
               ),
             ),
             Expanded(
@@ -87,13 +83,13 @@ class _CustomerWalletViewState extends State<CustomerWalletView> {
                       padding: const EdgeInsets.all(18),
                       decoration: BoxDecoration(
                         gradient: const LinearGradient(
-                          colors: [AppColors.midnightNavy, AppColors.royalNavy],
+                          colors: [AppColors.primary, AppColors.primary],
                         ),
                         borderRadius: BorderRadius.circular(18),
                         boxShadow: [
                           BoxShadow(
                             color:
-                                AppColors.midnightNavy.withValues(alpha: 0.25),
+                                AppColors.primary.withValues(alpha: 0.25),
                             blurRadius: 12,
                             offset: const Offset(0, 4),
                           ),
@@ -102,22 +98,14 @@ class _CustomerWalletViewState extends State<CustomerWalletView> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                          Text(
                             'Active Escrow & Advances',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: AppColors.textLavender,
-                              fontWeight: FontWeight.w600,
-                            ),
+                            style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w600, color: AppColors.primaryContainer),
                           ),
                           const SizedBox(height: 6),
                           Text(
                             'Rs. ${summary?.total ?? 0}',
-                            style: TextStyle(
-                              fontSize: 26,
-                              fontWeight: FontWeight.w900,
-                              color: Colors.white,
-                            ),
+                            style: Theme.of(context).textTheme.displayLarge?.copyWith(fontWeight: FontWeight.w900, color: Colors.white),
                           ),
                           const SizedBox(height: 14),
                           Row(
@@ -136,13 +124,9 @@ class _CustomerWalletViewState extends State<CustomerWalletView> {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    const Text(
+                    Text(
                       'Transaction Ledger',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.midnightNavy,
-                      ),
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
                     ),
                     const SizedBox(height: 10),
                     WalletLedger(
@@ -178,13 +162,9 @@ class _EscrowPill extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(label,
-              style: const TextStyle(
-                  fontSize: 10, color: AppColors.textLavender)),
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.primaryContainer)),
           Text(value,
-              style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w800,
-                  color: Colors.white)),
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: Colors.white)),
         ],
       ),
     );

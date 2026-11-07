@@ -68,7 +68,6 @@ class _OnboardingRoleViewState extends State<OnboardingRoleView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
       body: SafeArea(
         child: Column(
           children: [
@@ -90,17 +89,22 @@ class _OnboardingRoleViewState extends State<OnboardingRoleView> {
                           }
                         },
                       ),
-                      titleWidget: const Column(
+                      titleWidget: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             'Step 2: Account Role',
-                            style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w900),
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w900,
+                            ),
                           ),
                           SizedBox(height: 2),
                           Text(
                             'Choose how you want to use RentalHub',
-                            style: TextStyle(color: AppColors.textLavender, fontSize: 12),
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: AppColors.primaryContainer,
+                            ),
                           ),
                         ],
                       ),
@@ -119,12 +123,11 @@ class _OnboardingRoleViewState extends State<OnboardingRoleView> {
                             message: 'Security Policy: Role selection is strictly one-way and immutable once confirmed.',
                           ),
                           const SizedBox(height: 16),
-                          const Text(
+                          Text(
                             'Select Permanent Account Role',
-                            style: TextStyle(
-                              fontSize: 13,
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               fontWeight: FontWeight.w800,
-                              color: AppColors.midnightNavy,
+                              color: AppColors.primary,
                             ),
                           ),
                           const SizedBox(height: 10),
@@ -162,7 +165,7 @@ class _OnboardingRoleViewState extends State<OnboardingRoleView> {
               padding: const EdgeInsets.all(16),
               decoration: const BoxDecoration(
                 color: Colors.white,
-                border: Border(top: BorderSide(color: AppColors.border)),
+                border: Border(top: BorderSide(color: AppColors.borderSubtle)),
                 boxShadow: [
                   BoxShadow(color: Color(0x0C000000), blurRadius: 8, offset: Offset(0, -3)),
                 ],

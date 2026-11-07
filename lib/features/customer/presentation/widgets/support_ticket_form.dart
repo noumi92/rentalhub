@@ -74,27 +74,19 @@ class _SupportTicketFormState extends State<SupportTicketForm> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.borderSubtle),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Message Support',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w800,
-              color: AppColors.midnightNavy,
-            ),
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
           ),
           const SizedBox(height: 4),
-          const Text(
+          Text(
             'Tell us what went wrong. Our team will reach you on WhatsApp — replies do not appear in the app yet.',
-            style: TextStyle(
-              fontSize: 12,
-              color: AppColors.textSecondary,
-              height: 1.4,
-            ),
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(height: 1.4),
           ),
           const SizedBox(height: 10),
           TextField(
@@ -102,14 +94,13 @@ class _SupportTicketFormState extends State<SupportTicketForm> {
             maxLines: 3,
             decoration: InputDecoration(
               hintText: 'E.g. The showroom charged me extra for fuel...',
-              hintStyle: const TextStyle(
-                  fontSize: 12, color: AppColors.textSecondary),
+              hintStyle: Theme.of(context).textTheme.bodySmall,
               filled: true,
               fillColor:
                   Theme.of(context).colorScheme.surfaceContainerHighest,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
-                borderSide: const BorderSide(color: AppColors.border),
+                borderSide: const BorderSide(color: AppColors.borderSubtle),
               ),
               contentPadding: const EdgeInsets.all(12),
             ),
@@ -131,7 +122,7 @@ class _SupportTicketFormState extends State<SupportTicketForm> {
                   Theme.of(context).colorScheme.surfaceContainerHighest,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
-                borderSide: const BorderSide(color: AppColors.border),
+                borderSide: const BorderSide(color: AppColors.borderSubtle),
               ),
               contentPadding: const EdgeInsets.all(12),
             ),
@@ -145,19 +136,15 @@ class _SupportTicketFormState extends State<SupportTicketForm> {
           ),
           if (_sent) ...[
             const SizedBox(height: 10),
-            const Row(
+            Row(
               children: [
                 Icon(Icons.check_circle_rounded,
-                    size: 16, color: AppColors.emeraldGreen),
+                    size: 16, color: AppColors.accentSuccess),
                 SizedBox(width: 6),
                 Expanded(
                   child: Text(
                     'Message sent. Our team will contact you on WhatsApp.',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.emeraldGreen,
-                    ),
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w600, color: AppColors.accentSuccess),
                   ),
                 ),
               ],

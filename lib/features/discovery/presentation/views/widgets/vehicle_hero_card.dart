@@ -25,7 +25,7 @@ class VehicleHeroCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.borderSubtle),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -46,16 +46,12 @@ class VehicleHeroCard extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: AppColors.midnightNavy.withValues(alpha: 0.85),
+                  color: AppColors.primary.withValues(alpha: 0.85),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Text(
                   vehicle.category,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                  ),
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700, color: Colors.white),
                 ),
               ),
             ),

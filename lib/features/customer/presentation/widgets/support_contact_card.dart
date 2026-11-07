@@ -31,7 +31,7 @@ class SupportContactCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: AppColors.border),
+          border: Border.all(color: AppColors.borderSubtle),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -39,13 +39,9 @@ class SupportContactCard extends StatelessWidget {
             Icon(icon, color: color, size: 22),
             const SizedBox(height: 8),
             Text(title,
-                style: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.midnightNavy)),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
             Text(subtitle,
-                style: const TextStyle(
-                    fontSize: 11, color: AppColors.textSecondary)),
+                style: Theme.of(context).textTheme.labelSmall),
           ],
         ),
       ),

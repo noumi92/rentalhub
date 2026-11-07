@@ -167,8 +167,8 @@ class _OwnerBookingRequestsViewState extends State<OwnerBookingRequestsView> {
               titleWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Booking Requests Triage', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w900)),
-                  Text('${_filtered.length} Requests Awaiting Review', style: const TextStyle(color: AppColors.textLavender, fontSize: 12)),
+                  Text('Booking Requests Triage', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
+                  Text('${_filtered.length} Requests Awaiting Review', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.primaryContainer)),
                 ],
               ),
               actions: [

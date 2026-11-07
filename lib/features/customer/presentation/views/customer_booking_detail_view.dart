@@ -61,7 +61,6 @@ class CustomerBookingDetailView extends StatelessWidget {
   Widget build(BuildContext context) {
     final b = booking;
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
       body: SafeArea(
         child: Column(
           children: [
@@ -79,19 +78,12 @@ class CustomerBookingDetailView extends StatelessWidget {
                 children: [
                   Text(
                     b.vehicleName ?? 'Booking ${b.bookingId}',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w900,
-                    ),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     '${b.shopName ?? 'Rental Showroom'} • ${b.bookingId}',
-                    style: const TextStyle(
-                      color: AppColors.textLavender,
-                      fontSize: 12,
-                    ),
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.primaryContainer),
                   ),
                 ],
               ),
@@ -105,11 +97,7 @@ class CustomerBookingDetailView extends StatelessWidget {
                   ),
                   child: Text(
                     _statusLabel(b.status),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w800,
-                    ),
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: Colors.white),
                   ),
                 ),
               ],

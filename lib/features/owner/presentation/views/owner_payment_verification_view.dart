@@ -130,7 +130,6 @@ class _OwnerPaymentVerificationViewState
   Widget build(BuildContext context) {
     final b = _booking;
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
       body: SafeArea(
         child: Column(
           children: [
@@ -144,10 +143,10 @@ class _OwnerPaymentVerificationViewState
               titleWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Verify Payment Proof',
-                      style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w900)),
+                  Text('Verify Payment Proof',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
                   Text('Booking #${b.bookingId}',
-                      style: const TextStyle(color: AppColors.textLavender, fontSize: 12)),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.primaryContainer)),
                 ],
               ),
             ),
@@ -179,11 +178,8 @@ class _OwnerPaymentVerificationViewState
                       ),
                     ),
                     const SizedBox(height: 14),
-                    const Text('Payment screenshot',
-                        style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w800,
-                            color: AppColors.midnightNavy)),
+                    Text('Payment screenshot',
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
                     const SizedBox(height: 8),
                     if (b.paymentProofUrl != null)
                       ClipRRect(
@@ -197,7 +193,7 @@ class _OwnerPaymentVerificationViewState
                               Container(
                             height: 120,
                             alignment: Alignment.center,
-                            color: AppColors.lavenderMist,
+                            color: AppColors.primaryContainer,
                             child: const Text(
                                 'Proof image unavailable — ask the customer to resend it.'),
                           ),
@@ -208,8 +204,7 @@ class _OwnerPaymentVerificationViewState
                     if (b.rejectionReason != null) ...[
                       const SizedBox(height: 14),
                       Text('Previously rejected: ${b.rejectionReason}',
-                          style: TextStyle(
-                              fontSize: 13, color: Colors.orange.shade800)),
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.orange.shade800)),
                     ],
                     const SizedBox(height: 20),
                     SizedBox(

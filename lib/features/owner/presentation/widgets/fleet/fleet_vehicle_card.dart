@@ -84,7 +84,7 @@ class FleetVehicleCard extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: const BorderSide(color: AppColors.border),
+        side: const BorderSide(color: AppColors.borderSubtle),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -105,16 +105,15 @@ class FleetVehicleCard extends StatelessWidget {
                     children: [
                       Text(
                         vehicle.displayName,
-                        style: const TextStyle(
-                            fontWeight: FontWeight.w900,
-                            fontSize: 15,
-                            color: AppColors.midnightNavy),
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w900,
+                          color: AppColors.primary,
+                        ),
                       ),
                       const SizedBox(height: 2),
                       Text(
                         '${vehicle.transmission} • ${vehicle.fuelType} • ${vehicle.seats} Seats',
-                        style: const TextStyle(
-                            fontSize: 11, color: AppColors.textSecondary),
+                        style: Theme.of(context).textTheme.labelSmall,
                       ),
                     ],
                   ),
@@ -137,15 +136,14 @@ class FleetVehicleCard extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Daily Self-Drive Rate',
-                        style: TextStyle(
-                            fontSize: 10.5, color: AppColors.textMuted)),
+                    Text('Daily Self-Drive Rate',
+                        style: Theme.of(context).textTheme.labelSmall),
                     Text(
                       'Rs. ${vehicle.rates.daily24}/day',
-                      style: const TextStyle(
-                          fontSize: 13.5,
-                          fontWeight: FontWeight.w900,
-                          color: AppColors.midnightNavy),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w900,
+                        color: AppColors.primary,
+                      ),
                     ),
                   ],
                 ),
@@ -154,30 +152,29 @@ class FleetVehicleCard extends StatelessWidget {
                   children: [
                     Text(
                       _statusLabel(vehicle.status),
-                      style: TextStyle(
-                        fontSize: 11.5,
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
                         fontWeight: FontWeight.w800,
                         color: isAvailable
-                            ? AppColors.emeraldGreen
-                            : AppColors.sunsetOrange,
+                            ? AppColors.accentSuccess
+                            : AppColors.secondary,
                       ),
                     ),
                     const SizedBox(width: 4),
                     Switch(
                       value: isAvailable,
-                      activeThumbColor: AppColors.emeraldGreen,
+                      activeThumbColor: AppColors.accentSuccess,
                       onChanged: onToggleAvailability,
                     ),
                     IconButton(
                       tooltip: 'Edit rates',
                       icon: const Icon(Icons.tune_rounded, size: 20),
-                      color: AppColors.midnightNavy,
+                      color: AppColors.primary,
                       onPressed: onEditRates,
                     ),
                     IconButton(
                       tooltip: 'Booking calendar',
                       icon: const Icon(Icons.calendar_month_rounded, size: 20),
-                      color: AppColors.midnightNavy,
+                      color: AppColors.primary,
                       onPressed: onViewCalendar,
                     ),
                   ],

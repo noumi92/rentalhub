@@ -81,7 +81,6 @@ class _OwnerQrScanViewState extends State<OwnerQrScanView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
       body: SafeArea(
         child: Column(
           children: [
@@ -92,17 +91,13 @@ class _OwnerQrScanViewState extends State<OwnerQrScanView> {
                     color: Colors.white, size: 20),
                 onPressed: () => context.pop(),
               ),
-              titleWidget: const Column(
+              titleWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('Scan Booking QR',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 17,
-                          fontWeight: FontWeight.w900)),
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
                   Text('Point the camera at the customer’s booking code',
-                      style: TextStyle(
-                          color: AppColors.textLavender, fontSize: 11.5)),
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.primaryContainer)),
                 ],
               ),
             ),

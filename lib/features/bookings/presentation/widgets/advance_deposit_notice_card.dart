@@ -14,25 +14,21 @@ class AdvanceDepositNoticeCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: AppColors.softOrangeTint,
+        color: AppColors.secondaryContainer,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.sunsetOrange.withValues(alpha: 0.3)),
+        border: Border.all(color: AppColors.secondary.withValues(alpha: 0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            children: const [
+            children: [
               Icon(Icons.info_outline_rounded,
-                  color: AppColors.sunsetOrange, size: 18),
+                  color: AppColors.secondary, size: 18),
               SizedBox(width: 8),
               Text(
                 'Advance & Verification Notice',
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.sunsetOrange,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.secondary),
               ),
             ],
           ),
@@ -45,12 +41,7 @@ class AdvanceDepositNoticeCard extends StatelessWidget {
                 : '• Original NADRA CNIC & valid Driving License required at handover.\n'
                     '• Advance confirms vehicle booking lock with showroom.\n'
                     '• Refundable security deposit collected digitally or in cash at handover.',
-            style: const TextStyle(
-              fontSize: 12,
-              height: 1.45,
-              fontWeight: FontWeight.w500,
-              color: AppColors.midnightNavy,
-            ),
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(color: AppColors.primary, height: 1.45),
           ),
         ],
       ),

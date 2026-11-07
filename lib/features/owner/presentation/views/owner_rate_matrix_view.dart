@@ -157,7 +157,6 @@ class _OwnerRateMatrixViewState extends State<OwnerRateMatrixView> {
   Widget build(BuildContext context) {
     final v = widget.vehicle;
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
       body: SafeArea(
         child: Column(
           children: [
@@ -169,11 +168,8 @@ class _OwnerRateMatrixViewState extends State<OwnerRateMatrixView> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Drive Mode Availability',
-                        style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w800,
-                            color: AppColors.midnightNavy)),
+                    Text('Drive Mode Availability',
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
                     const SizedBox(height: 8),
                     PricingDriveModeCard(
                       isSelfDrive: _isSelfDrive,
@@ -184,16 +180,12 @@ class _OwnerRateMatrixViewState extends State<OwnerRateMatrixView> {
                           setState(() => _isWithDriver = val),
                     ),
                     const SizedBox(height: 18),
-                    const Text('Rental Packages',
-                        style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w800,
-                            color: AppColors.midnightNavy)),
+                    Text('Rental Packages',
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
                     const SizedBox(height: 4),
-                    const Text(
+                    Text(
                         'Switch a package off to hide it from customers.',
-                        style: TextStyle(
-                            fontSize: 11.5, color: AppColors.textMuted)),
+                        style: Theme.of(context).textTheme.labelSmall),
                     const SizedBox(height: 8),
                     PricingPackageList(
                       packages: _packages,
@@ -208,11 +200,8 @@ class _OwnerRateMatrixViewState extends State<OwnerRateMatrixView> {
                       priceController: (label) => _priceControllers[label]!,
                     ),
                     const SizedBox(height: 18),
-                    const Text('Pricing Policy',
-                        style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w800,
-                            color: AppColors.midnightNavy)),
+                    Text('Pricing Policy',
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
                     const SizedBox(height: 8),
                     PricingPolicyFields(
                       outOfCityController: _outOfCityController,

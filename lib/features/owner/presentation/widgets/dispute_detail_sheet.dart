@@ -47,7 +47,7 @@ class _DisputeDetailSheetState extends State<DisputeDetailSheet> {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: AppColors.border,
+                  color: AppColors.borderSubtle,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -58,10 +58,10 @@ class _DisputeDetailSheetState extends State<DisputeDetailSheet> {
                 Expanded(
                   child: Text(
                     d.category.isEmpty ? 'Dispute' : d.category,
-                    style: const TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w900,
-                        color: AppColors.midnightNavy),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w900,
+                      color: AppColors.primary,
+                    ),
                   ),
                 ),
                 Container(
@@ -73,10 +73,10 @@ class _DisputeDetailSheetState extends State<DisputeDetailSheet> {
                   ),
                   child: Text(
                     DisputeListTile.statusLabel(d.status),
-                    style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w800,
-                        color: color),
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      fontWeight: FontWeight.w800,
+                      color: color,
+                    ),
                   ),
                 ),
               ],
@@ -85,13 +85,15 @@ class _DisputeDetailSheetState extends State<DisputeDetailSheet> {
             Text(
               'Booking ${d.bookingId} • ${d.customerName ?? d.customerId ?? 'Customer'}'
               '${d.createdAt == null ? '' : ' • ${DisputeListTile.formatDate(d.createdAt)}'}',
-              style: const TextStyle(fontSize: 12, color: AppColors.textMuted),
+              style: Theme.of(context).textTheme.bodySmall,
             ),
             const SizedBox(height: 16),
             Text(
               d.description.isEmpty ? 'No description given.' : d.description,
-              style: const TextStyle(
-                  fontSize: 14, color: AppColors.midnightNavy, height: 1.5),
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                color: AppColors.primary,
+                height: 1.5,
+              ),
             ),
             const SizedBox(height: 20),
             if (d.status == 'open')
@@ -113,12 +115,11 @@ class _DisputeDetailSheetState extends State<DisputeDetailSheet> {
               ),
             ],
             if (d.status == 'resolved')
-              const Text(
+              Text(
                 'Resolved — no further action needed.',
-                style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.textMuted),
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
               ),
           ],
         ),

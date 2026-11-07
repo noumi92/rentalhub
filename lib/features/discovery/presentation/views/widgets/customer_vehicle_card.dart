@@ -51,7 +51,7 @@ class CustomerVehicleCard extends StatelessWidget {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: const BorderSide(color: AppColors.border),
+        side: const BorderSide(color: AppColors.borderSubtle),
       ),
       child: InkWell(
         onTap: onTap,
@@ -79,11 +79,7 @@ class CustomerVehicleCard extends StatelessWidget {
                       Expanded(
                         child: Text(
                           '${v.displayName} (${v.year})',
-                          style: const TextStyle(
-                            fontSize: 15.5,
-                            fontWeight: FontWeight.w800,
-                            color: AppColors.midnightNavy,
-                          ),
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
                         ),
                       ),
                       PakistaniPlateWidget(
@@ -95,13 +91,13 @@ class CustomerVehicleCard extends StatelessWidget {
                   const SizedBox(height: 6),
                   Row(
                     children: [
-                      _specChip(
+                      _specChip(context, 
                           Icons.event_seat_rounded, '${v.seats} Seats'),
                       const SizedBox(width: 6),
-                      _specChip(
+                      _specChip(context, 
                           Icons.settings_rounded, v.transmission),
                       const SizedBox(width: 6),
-                      _specChip(Icons.local_gas_station_rounded,
+                      _specChip(context, Icons.local_gas_station_rounded,
                           v.fuelType),
                     ],
                   ),
@@ -111,19 +107,11 @@ class CustomerVehicleCard extends StatelessWidget {
                     children: [
                       Text(
                         'Self: Rs. ${v.rates.daily24}/day',
-                        style: const TextStyle(
-                          fontSize: 12.5,
-                          fontWeight: FontWeight.w800,
-                          color: AppColors.midnightNavy,
-                        ),
+                        style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
                       ),
                       Text(
                         'With Driver: Rs. ${v.rates.daily24 + (v.withDriverSurchargePkr ?? 0)}/day',
-                        style: const TextStyle(
-                          fontSize: 12.5,
-                          fontWeight: FontWeight.w800,
-                          color: AppColors.sunsetOrange,
-                        ),
+                        style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.secondary),
                       ),
                     ],
                   ),
@@ -136,13 +124,13 @@ class CustomerVehicleCard extends StatelessWidget {
     );
   }
 
-  Widget _specChip(IconData icon, String label) {
+  Widget _specChip(BuildContext context, IconData icon, String label) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
       decoration: BoxDecoration(
-        color: AppColors.backgroundLight,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.borderSubtle),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -151,11 +139,7 @@ class CustomerVehicleCard extends StatelessWidget {
           const SizedBox(width: 3),
           Text(
             label,
-            style: const TextStyle(
-              fontSize: 10.5,
-              color: AppColors.textSecondary,
-              fontWeight: FontWeight.w600,
-            ),
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600),
           ),
         ],
       ),

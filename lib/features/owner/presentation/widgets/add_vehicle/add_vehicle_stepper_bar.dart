@@ -9,23 +9,23 @@ class AddVehicleStepperBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.white,
+      color: Theme.of(context).colorScheme.surface,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
         children: [
-          _stepperItem(1, 'Vehicle Specs'),
+          _stepperItem(context, 1, 'Vehicle Specs'),
           _stepperDivider(1),
-          _stepperItem(2, 'Photos & Docs'),
+          _stepperItem(context, 2, 'Photos & Docs'),
           _stepperDivider(2),
-          _stepperItem(3, 'Rates & Policy'),
+          _stepperItem(context, 3, 'Rates & Policy'),
           _stepperDivider(3),
-          _stepperItem(4, 'Review'),
+          _stepperItem(context, 4, 'Review'),
         ],
       ),
     );
   }
 
-  Widget _stepperItem(int step, String label) {
+  Widget _stepperItem(BuildContext context, int step, String label) {
     final isDone = currentStep > step;
     final isCurrent = currentStep == step;
 
@@ -36,10 +36,10 @@ class AddVehicleStepperBar extends StatelessWidget {
             width: 28,
             height: 28,
             decoration: BoxDecoration(
-              color: isDone ? AppColors.emeraldGreen : isCurrent ? AppColors.sunsetOrange : AppColors.backgroundLight,
+              color: isDone ? AppColors.accentSuccess : isCurrent ? AppColors.secondary : Theme.of(context).colorScheme.surfaceContainerHighest,
               shape: BoxShape.circle,
               border: Border.all(
-                color: isDone ? AppColors.emeraldGreen : isCurrent ? AppColors.sunsetOrange : AppColors.border,
+                color: isDone ? AppColors.accentSuccess : isCurrent ? AppColors.secondary : AppColors.borderSubtle,
                 width: 1.5,
               ),
             ),
@@ -48,8 +48,7 @@ class AddVehicleStepperBar extends StatelessWidget {
                   ? const Icon(Icons.check, size: 16, color: Colors.white)
                   : Text(
                       '$step',
-                      style: TextStyle(
-                        fontSize: 12,
+                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
                         fontWeight: FontWeight.w900,
                         color: isCurrent ? Colors.white : AppColors.textMuted,
                       ),
@@ -60,10 +59,9 @@ class AddVehicleStepperBar extends StatelessWidget {
           Text(
             label,
             textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 10,
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
               fontWeight: isCurrent ? FontWeight.w800 : FontWeight.w600,
-              color: isCurrent ? AppColors.midnightNavy : AppColors.textMuted,
+              color: isCurrent ? AppColors.primary : AppColors.textMuted,
             ),
           ),
         ],
@@ -77,7 +75,7 @@ class AddVehicleStepperBar extends StatelessWidget {
       width: 24,
       height: 2,
       margin: const EdgeInsets.only(bottom: 16),
-      color: isPassed ? AppColors.emeraldGreen : AppColors.border,
+      color: isPassed ? AppColors.accentSuccess : AppColors.borderSubtle,
     );
   }
 }

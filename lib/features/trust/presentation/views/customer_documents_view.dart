@@ -106,11 +106,10 @@ class _CustomerDocumentsViewState extends State<CustomerDocumentsView> {
     return BlocProvider.value(
       value: sl<KycCubit>(),
       child: Scaffold(
-        backgroundColor: AppColors.backgroundLight,
         body: SingleChildScrollView(
           child: Column(
             children: [
-              const CustomCurvedHeader(
+              CustomCurvedHeader(
                 height: 165,
                 showProfileGreeting: true,
                 titleWidget: Column(
@@ -118,19 +117,12 @@ class _CustomerDocumentsViewState extends State<CustomerDocumentsView> {
                   children: [
                     Text(
                       'NADRA CNIC & Driving License KYC',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w900,
-                      ),
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white),
                     ),
                     SizedBox(height: 4),
                     Text(
                       'Private cPanel vault • شناختی کارڈ تصدیق',
-                      style: TextStyle(
-                        color: AppColors.textLavender,
-                        fontSize: 11.5,
-                      ),
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.primaryContainer),
                     ),
                   ],
                 ),

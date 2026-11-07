@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/custom_curved_header.dart';
 import '../../../../core/widgets/debounced_button.dart';
 import '../../domain/entities/booking_entity.dart';
@@ -22,7 +21,6 @@ class PickupCountdownPassView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
       body: SafeArea(
         child: Column(
           children: [
@@ -35,12 +33,9 @@ class PickupCountdownPassView extends StatelessWidget {
                       onPressed: onBack,
                     )
                   : null,
-              titleWidget: const Text(
+              titleWidget: Text(
                 'Pickup Countdown Pass',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w900),
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white),
               ),
             ),
             Expanded(

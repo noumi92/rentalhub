@@ -28,10 +28,7 @@ class ProfileHeader extends StatelessWidget {
           backgroundColor: Colors.white,
           child: Text(
             name.isNotEmpty ? name[0].toUpperCase() : 'U',
-            style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w900,
-                color: AppColors.midnightNavy),
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900, color: AppColors.primary),
           ),
         ),
         const SizedBox(width: 12),
@@ -40,16 +37,12 @@ class ProfileHeader extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(name,
-                  style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 17,
-                      fontWeight: FontWeight.w900)),
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
               Text(
                 email.isNotEmpty
                     ? email
                     : (phone.isNotEmpty ? phone : 'Not signed in'),
-                style: const TextStyle(
-                    color: AppColors.textLavender, fontSize: 12),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.primaryContainer),
               ),
             ],
           ),

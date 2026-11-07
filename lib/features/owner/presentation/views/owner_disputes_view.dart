@@ -72,7 +72,6 @@ class _OwnerDisputesViewState extends State<OwnerDisputesView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
       body: SafeArea(
         child: Column(
           children: [
@@ -83,17 +82,13 @@ class _OwnerDisputesViewState extends State<OwnerDisputesView> {
                     color: Colors.white, size: 20),
                 onPressed: () => context.pop(),
               ),
-              titleWidget: const Column(
+              titleWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('Disputes',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 17,
-                          fontWeight: FontWeight.w900)),
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
                   Text('Complaints from your customers',
-                      style: TextStyle(
-                          color: AppColors.textLavender, fontSize: 11.5)),
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.primaryContainer)),
                 ],
               ),
             ),
@@ -165,12 +160,8 @@ class _OwnerDisputesViewState extends State<OwnerDisputesView> {
       label: Text(label),
       selected: selected,
       onSelected: (_) => setState(() => _filter = value),
-      selectedColor: AppColors.royalNavy,
-      labelStyle: TextStyle(
-        color: selected ? Colors.white : AppColors.midnightNavy,
-        fontWeight: FontWeight.w700,
-        fontSize: 12,
-      ),
+      selectedColor: AppColors.primary,
+      labelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700, color: selected ? Colors.white : AppColors.primary),
     );
   }
 }

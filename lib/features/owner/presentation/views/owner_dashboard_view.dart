@@ -138,7 +138,6 @@ class _OwnerDashboardViewState extends State<OwnerDashboardView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
       bottomNavigationBar: const OwnerBottomNav(currentIndex: 0),
       body: SafeArea(
         child: Column(
@@ -154,8 +153,8 @@ class _OwnerDashboardViewState extends State<OwnerDashboardView> {
               titleWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Showroom Revenue & Operations', style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w900)),
-                  Text(_shopName.isNotEmpty ? _shopName : 'My Showroom', style: const TextStyle(color: AppColors.textLavender, fontSize: 11.5)),
+                  Text('Showroom Revenue & Operations', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
+                  Text(_shopName.isNotEmpty ? _shopName : 'My Showroom', style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.primaryContainer)),
                 ],
               ),
               actions: [
@@ -174,9 +173,9 @@ class _OwnerDashboardViewState extends State<OwnerDashboardView> {
                         child: Container(
                           padding: const EdgeInsets.all(4),
                           decoration: const BoxDecoration(
-                              color: AppColors.crimsonRed, shape: BoxShape.circle),
+                              color: AppColors.accentDanger, shape: BoxShape.circle),
                           child: Text('$_unreadNotifications',
-                              style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.w900)),
+                              style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
                         ),
                       ),
                   ],
@@ -213,7 +212,7 @@ class _OwnerDashboardViewState extends State<OwnerDashboardView> {
                             fleetTotal: _fleetTotal,
                           ),
                           const SizedBox(height: 20),
-                          const Text('Completed Trip Ledger & Settlements', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: AppColors.midnightNavy)),
+                          Text('Completed Trip Ledger & Settlements', style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
                           const SizedBox(height: 10),
                           if (_allBookings.isEmpty)
                             const Center(

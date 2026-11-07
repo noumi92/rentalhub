@@ -82,7 +82,6 @@ class _CustomerSettingsViewState extends State<CustomerSettingsView> {
     final l10n = AppLocalizations.of(context)!;
     final customer = _customer;
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
       body: SafeArea(
         child: Column(
           children: [
@@ -97,10 +96,7 @@ class _CustomerSettingsViewState extends State<CustomerSettingsView> {
                   : null,
               titleWidget: Text(
                 l10n.customerSettings,
-                style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w900),
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white),
               ),
             ),
             Expanded(
@@ -170,14 +166,12 @@ class _CustomerSettingsViewState extends State<CustomerSettingsView> {
                           child: Column(
                             children: [
                               SwitchListTile(
-                                activeThumbColor: AppColors.sunsetOrange,
+                                activeThumbColor: AppColors.secondary,
                                 title: Text(l10n.pushNotifications,
-                                    style: const TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w700)),
-                                subtitle: const Text(
+                                    style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
+                                subtitle: Text(
                                     'Booking approvals and payment alerts',
-                                    style: TextStyle(fontSize: 11)),
+                                    style: Theme.of(context).textTheme.labelSmall),
                                 value: customer?.pushNotifications ?? true,
                                 onChanged: customer == null
                                     ? null
@@ -186,14 +180,12 @@ class _CustomerSettingsViewState extends State<CustomerSettingsView> {
                               ),
                               const Divider(height: 1),
                               SwitchListTile(
-                                activeThumbColor: AppColors.sunsetOrange,
+                                activeThumbColor: AppColors.secondary,
                                 title: Text(l10n.whatsappNotifications,
-                                    style: const TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w700)),
-                                subtitle: const Text(
+                                    style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
+                                subtitle: Text(
                                     'Agreement and handover receipts',
-                                    style: TextStyle(fontSize: 11)),
+                                    style: Theme.of(context).textTheme.labelSmall),
                                 value:
                                     customer?.whatsappNotifications ?? true,
                                 onChanged: customer == null
@@ -202,13 +194,11 @@ class _CustomerSettingsViewState extends State<CustomerSettingsView> {
                                         _setNotifications(whatsapp: val),
                               ),
                               if (customer == null)
-                                const Padding(
+                                Padding(
                                   padding: EdgeInsets.only(top: 8),
                                   child: Text(
                                     'Notification preferences save to your profile once you have a customer record.',
-                                    style: TextStyle(
-                                        fontSize: 11,
-                                        color: AppColors.textSecondary),
+                                    style: Theme.of(context).textTheme.labelSmall,
                                   ),
                                 ),
                             ],
@@ -219,10 +209,7 @@ class _CustomerSettingsViewState extends State<CustomerSettingsView> {
                           title: l10n.appVersion,
                           child: Text(
                             _version.isEmpty ? '—' : _version,
-                            style: const TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w700,
-                                color: AppColors.midnightNavy),
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.primary),
                           ),
                         ),
                         const SizedBox(height: 16),

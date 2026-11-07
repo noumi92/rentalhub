@@ -29,7 +29,7 @@ class ProfileTrustCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.border),
+          border: Border.all(color: AppColors.borderSubtle),
         ),
         child: Row(
           children: [
@@ -37,11 +37,11 @@ class ProfileTrustCard extends StatelessWidget {
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 color:
-                    AppColors.emeraldGreen.withValues(alpha: 0.12),
+                    AppColors.accentSuccess.withValues(alpha: 0.12),
                 shape: BoxShape.circle,
               ),
               child: const Icon(Icons.stars_rounded,
-                  color: AppColors.emeraldGreen, size: 26),
+                  color: AppColors.accentSuccess, size: 26),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -52,16 +52,12 @@ class ProfileTrustCard extends StatelessWidget {
                     trustScore == null
                         ? 'Trust Score: —'
                         : 'Trust Score: ${trustScore!.toStringAsFixed(1)} / 5.0',
-                    style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.midnightNavy),
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
                   ),
                   Text(
                     '${kycVerified ? 'KYC verified' : 'KYC pending'} • '
                     '${isBlacklisted ? 'Flagged on blacklist' : 'No blacklist record'}',
-                    style: const TextStyle(
-                        fontSize: 11, color: AppColors.textSecondary),
+                    style: Theme.of(context).textTheme.labelSmall,
                   ),
                 ],
               ),

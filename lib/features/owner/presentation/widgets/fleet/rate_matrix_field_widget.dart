@@ -22,7 +22,7 @@ class RateMatrixFieldWidget extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.borderSubtle),
       ),
       child: Row(
         children: [
@@ -32,19 +32,15 @@ class RateMatrixFieldWidget extends StatelessWidget {
               children: [
                 Text(
                   label,
-                  style: const TextStyle(
-                    fontSize: 13,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w700,
-                    color: AppColors.midnightNavy,
+                    color: AppColors.primary,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   kmCap,
-                  style: const TextStyle(
-                    fontSize: 11,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: Theme.of(context).textTheme.labelSmall,
                 ),
               ],
             ),
@@ -55,24 +51,22 @@ class RateMatrixFieldWidget extends StatelessWidget {
               controller: controller,
               keyboardType: TextInputType.number,
               textAlign: TextAlign.end,
-              style: const TextStyle(
-                fontSize: 14,
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
                 fontWeight: FontWeight.w800,
-                color: AppColors.sunsetOrange,
+                color: AppColors.secondary,
               ),
               decoration: InputDecoration(
                 prefixText: 'Rs. ',
-                prefixStyle: const TextStyle(
-                  fontSize: 13,
+                prefixStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   fontWeight: FontWeight.w700,
-                  color: AppColors.midnightNavy,
+                  color: AppColors.primary,
                 ),
                 isDense: true,
                 filled: true,
                 fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
-                  borderSide: const BorderSide(color: AppColors.border),
+                  borderSide: const BorderSide(color: AppColors.borderSubtle),
                 ),
                 contentPadding:
                     const EdgeInsets.symmetric(horizontal: 8, vertical: 8),

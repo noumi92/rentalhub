@@ -68,7 +68,6 @@ class _VehicleDetailViewState extends State<VehicleDetailView> {
     final carAsset = _getCarImage(v);
 
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
       body: SafeArea(
         child: Column(
           children: [
@@ -88,9 +87,9 @@ class _VehicleDetailViewState extends State<VehicleDetailView> {
                       titleWidget: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('${v.make} ${v.model} (${v.year})', style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w900)),
+                          Text('${v.make} ${v.model} (${v.year})', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
                           const SizedBox(height: 2),
-                          Text('${widget.shopName} • ${v.category}', style: const TextStyle(color: AppColors.textLavender, fontSize: 12)),
+                          Text('${widget.shopName} • ${v.category}', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.primaryContainer)),
                         ],
                       ),
                       actions: [PakistaniPlateWidget(plateNumber: v.plateNumber, isCompact: true)],
@@ -113,20 +112,20 @@ class _VehicleDetailViewState extends State<VehicleDetailView> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(v.displayName, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: AppColors.midnightNavy)),
+                                    Text(v.displayName, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900, color: AppColors.primary)),
                                     const SizedBox(height: 4),
-                                    Text('Showroom: ${widget.shopName}', style: const TextStyle(fontSize: 13, color: AppColors.textSecondary, fontWeight: FontWeight.w500)),
+                                    Text('Showroom: ${widget.shopName}', style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500, color: AppColors.textSecondary)),
                                   ],
                                 ),
                               ),
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                                 decoration: BoxDecoration(
-                                  color: AppColors.emeraldGreen.withValues(alpha: 0.12),
+                                  color: AppColors.accentSuccess.withValues(alpha: 0.12),
                                   borderRadius: BorderRadius.circular(10),
-                                  border: Border.all(color: AppColors.emeraldGreen.withValues(alpha: 0.3)),
+                                  border: Border.all(color: AppColors.accentSuccess.withValues(alpha: 0.3)),
                                 ),
-                                child: Text(_statusLabel(v.status), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: AppColors.emeraldGreen)),
+                                child: Text(_statusLabel(v.status), style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.accentSuccess)),
                               ),
                             ],
                           ),
@@ -180,13 +179,13 @@ class _VehicleDetailViewState extends State<VehicleDetailView> {
   Widget _featureChip(String label) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(color: AppColors.backgroundLight, borderRadius: BorderRadius.circular(10), border: Border.all(color: AppColors.border)),
+      decoration: BoxDecoration(color: Theme.of(context).colorScheme.surfaceContainerHighest, borderRadius: BorderRadius.circular(10), border: Border.all(color: AppColors.borderSubtle)),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.check_rounded, size: 13, color: AppColors.sunsetOrange),
+          const Icon(Icons.check_rounded, size: 13, color: AppColors.secondary),
           const SizedBox(width: 4),
-          Text(label, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.midnightNavy)),
+          Text(label, style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600, color: AppColors.primary)),
         ],
       ),
     );

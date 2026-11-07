@@ -53,11 +53,11 @@ class _PickupCountdownTimerState extends State<PickupCountdownTimer> {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
       decoration: BoxDecoration(
-        color: AppColors.midnightNavy,
+        color: AppColors.primary,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: AppColors.midnightNavy.withValues(alpha: 0.25),
+            color: AppColors.primary.withValues(alpha: 0.25),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -67,12 +67,7 @@ class _PickupCountdownTimerState extends State<PickupCountdownTimer> {
         children: [
           Text(
             widget.label,
-            style: const TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w800,
-              letterSpacing: 1.2,
-              color: AppColors.textLavender,
-            ),
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primaryContainer, letterSpacing: 1.2),
           ),
           const SizedBox(height: 8),
           Row(
@@ -101,36 +96,24 @@ class _PickupCountdownTimerState extends State<PickupCountdownTimer> {
           ),
           child: Text(
             value,
-            style: const TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.w900,
-              color: Colors.white,
-            ),
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900, color: Colors.white),
           ),
         ),
         const SizedBox(height: 4),
         Text(
           unit,
-          style: const TextStyle(
-            fontSize: 9,
-            fontWeight: FontWeight.w700,
-            color: AppColors.textLavender,
-          ),
+          style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700, color: AppColors.primaryContainer),
         ),
       ],
     );
   }
 
   Widget _buildColon() {
-    return const Padding(
+    return Padding(
       padding: EdgeInsets.symmetric(horizontal: 6, vertical: 4),
       child: Text(
         ':',
-        style: TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.w900,
-          color: Colors.white70,
-        ),
+        style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900, color: Colors.white70),
       ),
     );
   }

@@ -41,13 +41,13 @@ class ShopDetailsStepWidget extends StatelessWidget {
                 height: 90,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: AppColors.backgroundLight,
-                  border: Border.all(color: AppColors.sunsetOrange, width: 2),
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                  border: Border.all(color: AppColors.secondary, width: 2),
                 ),
                 child: ClipOval(
                   child: shopLogoFile != null
                       ? Image.file(File(shopLogoFile!.path), fit: BoxFit.cover)
-                      : const Icon(Icons.storefront_rounded, size: 44, color: AppColors.sunsetOrange),
+                      : const Icon(Icons.storefront_rounded, size: 44, color: AppColors.secondary),
                 ),
               ),
               Positioned(
@@ -58,7 +58,7 @@ class ShopDetailsStepWidget extends StatelessWidget {
                   child: Container(
                     padding: const EdgeInsets.all(7),
                     decoration: const BoxDecoration(
-                      color: AppColors.sunsetOrange,
+                      color: AppColors.secondary,
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(Icons.camera_alt_rounded, color: Colors.white, size: 16),
@@ -72,10 +72,10 @@ class ShopDetailsStepWidget extends StatelessWidget {
         Center(
           child: TextButton.icon(
             onPressed: onPickLogo,
-            icon: const Icon(Icons.upload_rounded, size: 16, color: AppColors.sunsetOrange),
+            icon: const Icon(Icons.upload_rounded, size: 16, color: AppColors.secondary),
             label: Text(
               shopLogoFile != null ? 'Change Shop Logo' : 'Upload Shop Logo / Storefront',
-              style: const TextStyle(color: AppColors.sunsetOrange, fontWeight: FontWeight.w800, fontSize: 12),
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(color: AppColors.secondary, fontWeight: FontWeight.w800),
             ),
           ),
         ),
@@ -137,14 +137,14 @@ class ShopDetailsStepWidget extends StatelessWidget {
         const SizedBox(height: 14),
 
         // Opening Hours Dropdown
-        const Text('Operating Hours', style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w800, color: AppColors.midnightNavy)),
+        Text('Operating Hours', style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
         const SizedBox(height: 6),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 14),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.border),
+            border: Border.all(color: AppColors.borderSubtle),
           ),
           child: DropdownButtonHideUnderline(
             child: DropdownButton<String>(
@@ -155,7 +155,7 @@ class ShopDetailsStepWidget extends StatelessWidget {
                 '8:00 AM - Midnight',
                 '24 Hours / 7 Days',
                 '10:00 AM - 8:00 PM',
-              ].map((h) => DropdownMenuItem(value: h, child: Text(h, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13.5)))).toList(),
+              ].map((h) => DropdownMenuItem(value: h, child: Text(h, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)))).toList(),
               onChanged: (v) {
                 if (v != null) onOpeningHoursChanged(v);
               },
@@ -177,21 +177,21 @@ class ShopDetailsStepWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w800, color: Theme.of(context).colorScheme.onSurface)),
+        Text(label, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: Theme.of(context).colorScheme.onSurface)),
         const SizedBox(height: 6),
         TextField(
           controller: controller,
           keyboardType: keyboardType,
-          style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13.5),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
           decoration: InputDecoration(
             hintText: hint,
-            prefixIcon: Icon(icon, color: AppColors.sunsetOrange, size: 20),
+            prefixIcon: Icon(icon, color: AppColors.secondary, size: 20),
             filled: true,
             fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
             isDense: true,
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border)),
-            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border)),
-            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.sunsetOrange, width: 1.5)),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.borderSubtle)),
+            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.borderSubtle)),
+            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.secondary, width: 1.5)),
             contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           ),
         ),

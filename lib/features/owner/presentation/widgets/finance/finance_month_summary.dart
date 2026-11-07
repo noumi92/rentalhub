@@ -28,24 +28,24 @@ class FinanceMonthSummary extends StatelessWidget {
           width: double.infinity,
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: AppColors.royalNavy,
+            color: AppColors.primary,
             borderRadius: BorderRadius.circular(16),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('This month',
-                  style: TextStyle(color: Colors.white70, fontSize: 12)),
+              Text('This month',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white70)),
               Text('Net Rs. $net',
-                  style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 22,
-                      fontWeight: FontWeight.w900)),
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w900,
+                  )),
               const SizedBox(height: 8),
               Text(
                   'Bookings Rs. $bookingRevenue • Other income Rs. $ledgerIncome • Expenses Rs. $expenses',
                   style:
-                      const TextStyle(color: Colors.white70, fontSize: 12)),
+                      Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white70)),
             ],
           ),
         ),
@@ -76,7 +76,7 @@ class FinanceMonthSummary extends StatelessWidget {
       BuildContext context, IconData icon, String label, String route) {
     return OutlinedButton.icon(
       icon: Icon(icon, size: 18),
-      label: Text(label, style: const TextStyle(fontSize: 12)),
+      label: Text(label, style: Theme.of(context).textTheme.bodySmall),
       onPressed: () => context.push(route),
     );
   }

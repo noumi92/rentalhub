@@ -44,14 +44,14 @@ class ShopPayoutStepWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Payout Accounts & Settlement',
-          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900, color: AppColors.midnightNavy),
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900, color: AppColors.primary),
         ),
         const SizedBox(height: 4),
-        const Text(
+        Text(
           'Select at least one payout channel to receive rental bookings and customer advance deposits.',
-          style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+          style: Theme.of(context).textTheme.bodySmall,
         ),
         const SizedBox(height: 14),
 
@@ -91,7 +91,7 @@ class ShopPayoutStepWidget extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
             side: BorderSide(
-              color: bankEnabled ? AppColors.sunsetOrange : AppColors.border,
+              color: bankEnabled ? AppColors.secondary : AppColors.borderSubtle,
               width: bankEnabled ? 1.5 : 1,
             ),
           ),
@@ -112,18 +112,18 @@ class ShopPayoutStepWidget extends StatelessWidget {
                       child: const Icon(Icons.account_balance_rounded, color: Color(0xFF0284C7), size: 22),
                     ),
                     const SizedBox(width: 12),
-                    const Expanded(
+                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Direct Commercial Bank', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: AppColors.midnightNavy)),
-                          Text('1-Link / IBAN direct bank settlement', style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+                          Text('Direct Commercial Bank', style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
+                          Text('1-Link / IBAN direct bank settlement', style: Theme.of(context).textTheme.labelSmall),
                         ],
                       ),
                     ),
                     Switch(
                       value: bankEnabled,
-                      activeThumbColor: AppColors.sunsetOrange,
+                      activeThumbColor: AppColors.secondary,
                       onChanged: onBankToggle,
                     ),
                   ],
@@ -131,20 +131,20 @@ class ShopPayoutStepWidget extends StatelessWidget {
                 if (bankEnabled) ...[
                   const Divider(height: 20),
                   // Bank Name Dropdown
-                  const Text('Select Bank Name', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: AppColors.midnightNavy)),
+                  Text('Select Bank Name', style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
                   const SizedBox(height: 6),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 14),
                     decoration: BoxDecoration(
-                      color: AppColors.backgroundLight,
+                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: AppColors.border),
+                      border: Border.all(color: AppColors.borderSubtle),
                     ),
                     child: DropdownButtonHideUnderline(
                       child: DropdownButton<String>(
                         value: selectedBankName,
                         isExpanded: true,
-                        items: pakistaniBanks.map((b) => DropdownMenuItem(value: b, child: Text(b, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13)))).toList(),
+                        items: pakistaniBanks.map((b) => DropdownMenuItem(value: b, child: Text(b, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)))).toList(),
                         onChanged: (v) {
                           if (v != null) onBankNameChanged(v);
                         },
@@ -154,34 +154,34 @@ class ShopPayoutStepWidget extends StatelessWidget {
                   const SizedBox(height: 12),
 
                   // Account Number / IBAN
-                  const Text('Account Number / IBAN', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: AppColors.midnightNavy)),
+                  Text('Account Number / IBAN', style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
                   const SizedBox(height: 6),
                   TextField(
                     controller: bankAccountController,
-                    style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800),
                     decoration: InputDecoration(
                       hintText: 'e.g. PK36MEZN0001234567890123',
                       filled: true,
                       fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                       isDense: true,
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border)),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.borderSubtle)),
                       contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                     ),
                   ),
                   const SizedBox(height: 12),
 
                   // Account Title
-                  const Text('Account Title (Business / Owner)', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: AppColors.midnightNavy)),
+                  Text('Account Title (Business / Owner)', style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
                   const SizedBox(height: 6),
                   TextField(
                     controller: bankAccountTitle,
-                    style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800),
                     decoration: InputDecoration(
                       hintText: 'e.g. Al-Falah Rent a Car',
                       filled: true,
                       fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                       isDense: true,
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border)),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.borderSubtle)),
                       contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                     ),
                   ),
@@ -211,7 +211,7 @@ class ShopPayoutStepWidget extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
         side: BorderSide(
-          color: isEnabled ? AppColors.sunsetOrange : AppColors.border,
+          color: isEnabled ? AppColors.secondary : AppColors.borderSubtle,
           width: isEnabled ? 1.5 : 1,
         ),
       ),
@@ -235,12 +235,12 @@ class ShopPayoutStepWidget extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: AppColors.midnightNavy)),
-                      Text(subtitle, style: const TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+                      Text(title, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
+                      Text(subtitle, style: Theme.of(context).textTheme.labelSmall),
                     ],
                   ),
                 ),
-                Switch(value: isEnabled, activeThumbColor: AppColors.sunsetOrange, onChanged: onToggle),
+                Switch(value: isEnabled, activeThumbColor: AppColors.secondary, onChanged: onToggle),
               ],
             ),
             if (isEnabled) ...[
@@ -248,28 +248,28 @@ class ShopPayoutStepWidget extends StatelessWidget {
               TextField(
                 controller: accountController,
                 keyboardType: TextInputType.phone,
-                style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800),
                 decoration: InputDecoration(
                   labelText: accountLabel,
                   hintText: hintAccount,
                   filled: true,
                   fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                   isDense: true,
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border)),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.borderSubtle)),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                 ),
               ),
               const SizedBox(height: 10),
               TextField(
                 controller: titleController,
-                style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800),
                 decoration: InputDecoration(
                   labelText: 'Account Title',
                   hintText: 'Ahmed Raza',
                   filled: true,
                   fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                   isDense: true,
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border)),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.borderSubtle)),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                 ),
               ),

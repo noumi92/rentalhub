@@ -75,7 +75,6 @@ class _OwnerNotificationsViewState extends State<OwnerNotificationsView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
       body: SafeArea(
         child: Column(
           children: [
@@ -86,17 +85,13 @@ class _OwnerNotificationsViewState extends State<OwnerNotificationsView> {
                     color: Colors.white, size: 20),
                 onPressed: () => context.pop(),
               ),
-              titleWidget: const Column(
+              titleWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('Notifications',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 17,
-                          fontWeight: FontWeight.w900)),
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
                   Text('What needs your attention',
-                      style: TextStyle(
-                          color: AppColors.textLavender, fontSize: 11.5)),
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.primaryContainer)),
                 ],
               ),
               actions: [
@@ -141,18 +136,18 @@ class _OwnerNotificationsViewState extends State<OwnerNotificationsView> {
                                 decoration: BoxDecoration(
                                   color: n.read
                                       ? Colors.white
-                                      : AppColors.royalNavy
+                                      : AppColors.primary
                                           .withValues(alpha: 0.06),
                                   borderRadius: BorderRadius.circular(12),
                                   border: Border.all(
                                       color: n.read
-                                          ? AppColors.border
-                                          : AppColors.royalNavy),
+                                          ? AppColors.borderSubtle
+                                          : AppColors.primary),
                                 ),
                                 child: Row(
                                   children: [
                                     Icon(_iconFor(n.type),
-                                        color: AppColors.royalNavy),
+                                        color: AppColors.primary),
                                     const SizedBox(width: 12),
                                     Expanded(
                                       child: Column(
@@ -160,16 +155,9 @@ class _OwnerNotificationsViewState extends State<OwnerNotificationsView> {
                                             CrossAxisAlignment.start,
                                         children: [
                                           Text(n.title,
-                                              style: const TextStyle(
-                                                  fontSize: 13,
-                                                  fontWeight: FontWeight.w800,
-                                                  color:
-                                                      AppColors.midnightNavy)),
+                                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
                                           Text(n.body,
-                                              style: const TextStyle(
-                                                  fontSize: 12,
-                                                  color: AppColors
-                                                      .textSecondary)),
+                                              style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors .textSecondary)),
                                         ],
                                       ),
                                     ),
@@ -178,7 +166,7 @@ class _OwnerNotificationsViewState extends State<OwnerNotificationsView> {
                                         width: 8,
                                         height: 8,
                                         decoration: const BoxDecoration(
-                                            color: AppColors.royalNavy,
+                                            color: AppColors.primary,
                                             shape: BoxShape.circle),
                                       ),
                                   ],

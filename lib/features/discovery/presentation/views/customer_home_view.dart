@@ -80,7 +80,6 @@ class _CustomerHomeBodyState extends State<_CustomerHomeBody> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
       bottomNavigationBar: const CustomerBottomNav(currentIndex: 0),
       body: BlocBuilder<DiscoveryCubit, DiscoveryState>(
         builder: (context, state) {
@@ -107,23 +106,16 @@ class _CustomerHomeBodyState extends State<_CustomerHomeBody> {
                   titleWidget: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Find Verified Rental Shops',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 19,
-                          fontWeight: FontWeight.w900,
-                        ),
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900, color: Colors.white),
                       ),
                       const SizedBox(height: 2),
                       Text(
                         cubit.currentLocation.fromGps
                             ? '${cubit.currentLocation.area} • GPS Active'
                             : cubit.currentLocation.area,
-                        style: const TextStyle(
-                          color: AppColors.textLavender,
-                          fontSize: 12,
-                        ),
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.primaryContainer),
                       ),
                     ],
                   ),
@@ -133,7 +125,7 @@ class _CustomerHomeBodyState extends State<_CustomerHomeBody> {
                       onPressed: () => context.go(RouteNames.customerHomeMap),
                       icon: const Icon(
                         Icons.map_rounded,
-                        color: AppColors.sunsetOrange,
+                        color: AppColors.secondary,
                       ),
                     ),
                   ],

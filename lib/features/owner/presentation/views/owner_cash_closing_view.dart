@@ -133,7 +133,6 @@ class _OwnerCashClosingViewState extends State<OwnerCashClosingView> {
   Widget build(BuildContext context) {
     final diff = _counted - _expectedCash;
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
       body: SafeArea(
         child: Column(
           children: [
@@ -144,17 +143,13 @@ class _OwnerCashClosingViewState extends State<OwnerCashClosingView> {
                     color: Colors.white, size: 20),
                 onPressed: () => context.pop(),
               ),
-              titleWidget: const Column(
+              titleWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('Cash Closing',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 17,
-                          fontWeight: FontWeight.w900)),
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
                   Text('Count the till, close the day',
-                      style: TextStyle(
-                          color: AppColors.textLavender, fontSize: 11.5)),
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.primaryContainer)),
                 ],
               ),
             ),
@@ -213,11 +208,8 @@ class _OwnerCashClosingViewState extends State<OwnerCashClosingView> {
                             transfers: _transfers,
                           ),
                           const SizedBox(height: 20),
-                          const Text('Past closings',
-                              style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w800,
-                                  color: AppColors.midnightNavy)),
+                          Text('Past closings',
+                              style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
                           const SizedBox(height: 8),
                           if (_closings.isEmpty)
                             const Text('No closings yet.',

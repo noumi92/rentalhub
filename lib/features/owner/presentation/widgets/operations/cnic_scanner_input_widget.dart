@@ -23,7 +23,7 @@ class CnicScannerInputWidget extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.borderSubtle),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -31,16 +31,15 @@ class CnicScannerInputWidget extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'NADRA CNIC Verification',
-                style: TextStyle(
-                  fontSize: 14,
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.w800,
-                  color: AppColors.midnightNavy,
+                  color: AppColors.primary,
                 ),
               ),
               IconButton(
-                icon: const Icon(Icons.qr_code_scanner_rounded, color: AppColors.sunsetOrange),
+                icon: const Icon(Icons.qr_code_scanner_rounded, color: AppColors.secondary),
                 tooltip: 'Scan CNIC / Barcode',
                 onPressed: onCameraScan,
               ),
@@ -54,16 +53,15 @@ class CnicScannerInputWidget extends StatelessWidget {
               FilteringTextInputFormatter.allow(RegExp(r'[0-9\-]')),
               LengthLimitingTextInputFormatter(15),
             ],
-            style: const TextStyle(
-              fontSize: 16,
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.w700,
               letterSpacing: 1.5,
-              color: AppColors.midnightNavy,
+              color: AppColors.primary,
             ),
             decoration: InputDecoration(
               hintText: '35201-1234567-1',
               hintStyle: const TextStyle(letterSpacing: 1.0, color: AppColors.textMuted),
-              prefixIcon: const Icon(Icons.badge_rounded, color: AppColors.midnightNavy),
+              prefixIcon: const Icon(Icons.badge_rounded, color: AppColors.primary),
               suffixIcon: controller.text.isNotEmpty
                   ? IconButton(
                       icon: const Icon(Icons.clear, size: 18),
@@ -74,7 +72,7 @@ class CnicScannerInputWidget extends StatelessWidget {
               fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: AppColors.border),
+                borderSide: const BorderSide(color: AppColors.borderSubtle),
               ),
               contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
             ),
@@ -94,10 +92,10 @@ class CnicScannerInputWidget extends StatelessWidget {
                   : const Icon(Icons.verified_user_rounded, size: 18),
               label: Text(
                 isVerifying ? 'Checking National Tribunal...' : 'Verify CNIC & Blacklist',
-                style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w800),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800),
               ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.midnightNavy,
+                backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),

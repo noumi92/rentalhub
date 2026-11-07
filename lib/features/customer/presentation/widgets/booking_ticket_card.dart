@@ -24,17 +24,17 @@ class BookingTicketCard extends StatelessWidget {
     switch (status.toLowerCase()) {
       case 'paid':
       case 'completed':
-        return AppColors.emeraldGreen;
+        return AppColors.accentSuccess;
       case 'approved':
       case 'payment_submitted':
-        return AppColors.sunsetOrange;
+        return AppColors.secondary;
       case 'requested':
-        return AppColors.amberGold;
+        return AppColors.warning;
       case 'cancelled':
       case 'rejected':
-        return AppColors.crimsonRed;
+        return AppColors.accentDanger;
       default:
-        return AppColors.royalNavy;
+        return AppColors.primary;
     }
   }
 
@@ -50,7 +50,7 @@ class BookingTicketCard extends StatelessWidget {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: const BorderSide(color: AppColors.border),
+        side: const BorderSide(color: AppColors.borderSubtle),
       ),
       child: InkWell(
         onTap: onTap,
@@ -69,18 +69,11 @@ class BookingTicketCard extends StatelessWidget {
                       children: [
                         Text(
                           booking.vehicleName ?? 'Rental Car',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w800,
-                            color: AppColors.midnightNavy,
-                          ),
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
                         ),
                         Text(
                           booking.shopName ?? 'Showroom',
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: AppColors.textSecondary,
-                          ),
+                          style: Theme.of(context).textTheme.bodySmall,
                         ),
                       ],
                     ),
@@ -99,19 +92,11 @@ class BookingTicketCard extends StatelessWidget {
                 children: [
                   Text(
                     'Pickup: ${booking.pickupTime.day}/${booking.pickupTime.month}/${booking.pickupTime.year}',
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
-                    ),
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w600, color: AppColors.textPrimary),
                   ),
                   Text(
                     'Total: Rs. ${booking.totalAmount}',
-                    style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w800,
-                      color: AppColors.midnightNavy,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
                   ),
                 ],
               ),
@@ -125,12 +110,11 @@ class BookingTicketCard extends StatelessWidget {
                       size: 84,
                     ),
                     const SizedBox(width: 12),
-                    const Expanded(
+                    Expanded(
                       child: Text(
                         'Show this code at the counter for handover — '
                         'it opens your booking and its agreement.',
-                        style: TextStyle(
-                            fontSize: 12, color: AppColors.textSecondary),
+                        style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ),
                   ],
@@ -148,11 +132,7 @@ class BookingTicketCard extends StatelessWidget {
                     ),
                     child: Text(
                       booking.status.toUpperCase(),
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w800,
-                        color: statusColor,
-                      ),
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800, color: statusColor),
                     ),
                   ),
                   if (actionLabel != null && onAction != null)
@@ -163,14 +143,11 @@ class BookingTicketCard extends StatelessWidget {
                             horizontal: 10, vertical: 4),
                         minimumSize: Size.zero,
                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        foregroundColor: AppColors.sunsetOrange,
+                        foregroundColor: AppColors.secondary,
                       ),
                       child: Text(
                         actionLabel!,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w800,
-                        ),
+                        style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800),
                       ),
                     ),
                 ],

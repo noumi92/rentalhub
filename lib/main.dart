@@ -44,8 +44,15 @@ class RentalHubApp extends StatelessWidget {
         return MaterialApp.router(
           title: 'RentalHub Pakistan',
           debugShowCheckedModeBanner: false,
-          theme: AppTheme.lightTheme,
-          darkTheme: AppTheme.darkTheme,
+          // Phase A (A1): the font family follows the locale — Inter for
+          // Latin, Noto Nastaliq Urdu for Urdu — so Urdu text never renders
+          // in the default Material font.
+          theme: AppTheme.lightThemeFor(
+            fontFamily: AppTheme.fontFamilyFor(settings.locale),
+          ),
+          darkTheme: AppTheme.darkThemeFor(
+            fontFamily: AppTheme.fontFamilyFor(settings.locale),
+          ),
           themeMode: settings.themeMode,
           locale: settings.locale,
           supportedLocales: AppLocalizations.supportedLocales,

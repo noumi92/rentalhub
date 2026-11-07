@@ -21,7 +21,6 @@ class OwnerPaymentAccountsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
       body: SafeArea(
         child: Column(
           children: [
@@ -34,12 +33,9 @@ class OwnerPaymentAccountsView extends StatelessWidget {
                       onPressed: onBack,
                     )
                   : null,
-              titleWidget: const Text(
+              titleWidget: Text(
                 'Showroom Payment Accounts',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w900),
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white),
               ),
             ),
             Expanded(
@@ -52,37 +48,29 @@ class OwnerPaymentAccountsView extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
-                        color: AppColors.emeraldGreen.withValues(alpha: 0.1),
+                        color: AppColors.accentSuccess.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(14),
                         border: Border.all(
                             color:
-                                AppColors.emeraldGreen.withValues(alpha: 0.3)),
+                                AppColors.accentSuccess.withValues(alpha: 0.3)),
                       ),
                       child: Row(
                         children: [
                           const Icon(Icons.verified_rounded,
-                              color: AppColors.emeraldGreen, size: 28),
+                              color: AppColors.accentSuccess, size: 28),
                           const SizedBox(width: 12),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text(
+                                Text(
                                   'Reservation Request Approved!',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w800,
-                                    color: AppColors.midnightNavy,
-                                  ),
+                                  style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
                                 ),
                                 const SizedBox(height: 2),
                                 Text(
                                   'Transfer Rs. ${booking.advanceRequired} to lock your vehicle.',
-                                  style: const TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600,
-                                    color: AppColors.sunsetOrange,
-                                  ),
+                                  style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w600, color: AppColors.secondary),
                                 ),
                               ],
                             ),
@@ -91,21 +79,14 @@ class OwnerPaymentAccountsView extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    const Text(
+                    Text(
                       'Direct Transfer Channels',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.midnightNavy,
-                      ),
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
                     ),
                     const SizedBox(height: 4),
-                    const Text(
+                    Text(
                       'Pay to the verified showroom accounts below and capture a screenshot of your transfer.',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: Theme.of(context).textTheme.bodySmall,
                     ),
                     const SizedBox(height: 14),
                     _buildDynamicAccountsList(),
@@ -189,8 +170,8 @@ class OwnerPaymentAccountsView extends StatelessWidget {
                     accountNumber: number,
                     iban: null,
                     brandColor: isWallet
-                        ? AppColors.emeraldGreen
-                        : AppColors.royalNavy,
+                        ? AppColors.accentSuccess
+                        : AppColors.primary,
                     icon: isWallet
                         ? Icons.account_balance_wallet_rounded
                         : Icons.account_balance_rounded,
@@ -203,7 +184,7 @@ class OwnerPaymentAccountsView extends StatelessWidget {
         // Phase B (D1): when the shop has not configured any payment
         // accounts, say so — never show another shop's accounts as
         // if they were this shop's.
-        return const Column(
+        return Column(
           children: [
             Icon(Icons.account_balance_rounded,
                 size: 40, color: AppColors.textMuted),
@@ -217,7 +198,7 @@ class OwnerPaymentAccountsView extends StatelessWidget {
             Text(
               'Add JazzCash, EasyPaisa or bank accounts in Shop Settings so customers know where to pay.',
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+              style: Theme.of(context).textTheme.bodySmall,
             ),
           ],
         );

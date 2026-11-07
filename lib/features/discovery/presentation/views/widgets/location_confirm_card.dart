@@ -37,12 +37,12 @@ class LocationConfirmCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: AppColors.sunsetOrange.withValues(alpha: 0.12),
+                  color: AppColors.secondary.withValues(alpha: 0.12),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
                   Icons.place_rounded,
-                  color: AppColors.sunsetOrange,
+                  color: AppColors.secondary,
                   size: 20,
                 ),
               ),
@@ -53,20 +53,12 @@ class LocationConfirmCard extends StatelessWidget {
                   children: [
                     Text(
                       selectedCity,
-                      style: const TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.midnightNavy,
-                      ),
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       addressLabel,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textSecondary,
-                        fontWeight: FontWeight.w500,
-                      ),
+                      style: Theme.of(context).textTheme.labelMedium,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ],

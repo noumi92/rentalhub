@@ -15,10 +15,10 @@ class SosButton extends StatelessWidget {
       width: 140,
       height: 140,
       decoration: BoxDecoration(
-        color: AppColors.crimsonRed.withValues(alpha: 0.12),
+        color: AppColors.accentDanger.withValues(alpha: 0.12),
         shape: BoxShape.circle,
         border: Border.all(
-            color: AppColors.crimsonRed.withValues(alpha: 0.3), width: 2),
+            color: AppColors.accentDanger.withValues(alpha: 0.3), width: 2),
       ),
       child: Center(
         child: InkWell(
@@ -28,7 +28,7 @@ class SosButton extends StatelessWidget {
             width: 110,
             height: 110,
             decoration: const BoxDecoration(
-              color: AppColors.crimsonRed,
+              color: AppColors.accentDanger,
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
@@ -38,15 +38,10 @@ class SosButton extends StatelessWidget {
                 ),
               ],
             ),
-            child: const Center(
+            child: Center(
               child: Text(
                 'SOS',
-                style: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.w900,
-                  color: Colors.white,
-                  letterSpacing: 2,
-                ),
+                style: Theme.of(context).textTheme.displayLarge?.copyWith(fontWeight: FontWeight.w900, color: Colors.white, letterSpacing: 2),
               ),
             ),
           ),

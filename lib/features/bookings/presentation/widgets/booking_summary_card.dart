@@ -43,7 +43,7 @@ class BookingSummaryCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.borderSubtle),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -64,20 +64,12 @@ class BookingSummaryCard extends StatelessWidget {
                   children: [
                     Text(
                       carName,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w900,
-                        color: AppColors.midnightNavy,
-                      ),
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: AppColors.primary),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       'Showroom: $shopName',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textSecondary,
-                        fontWeight: FontWeight.w500,
-                      ),
+                      style: Theme.of(context).textTheme.labelMedium,
                     ),
                   ],
                 ),
@@ -123,14 +115,14 @@ class BookingSummaryCard extends StatelessWidget {
           _buildRow(
             'Advance Payable',
             'Rs. $advanceRequired',
-            color: AppColors.sunsetOrange,
+            color: AppColors.secondary,
             isBold: true,
           ),
           const SizedBox(height: 8),
           _buildRow(
             'Balance at Handover',
             'Rs. ${totalAmount - advanceRequired}',
-            color: AppColors.midnightNavy,
+            color: AppColors.primary,
           ),
         ],
       ),
@@ -146,7 +138,7 @@ class BookingSummaryCard extends StatelessWidget {
           label,
           style: TextStyle(
             fontSize: 13,
-            color: isBold ? AppColors.midnightNavy : AppColors.textSecondary,
+            color: isBold ? AppColors.primary : AppColors.textSecondary,
             fontWeight: isBold ? FontWeight.w800 : FontWeight.w500,
           ),
         ),
@@ -154,7 +146,7 @@ class BookingSummaryCard extends StatelessWidget {
           value,
           style: TextStyle(
             fontSize: 13,
-            color: color ?? AppColors.midnightNavy,
+            color: color ?? AppColors.primary,
             fontWeight: isBold ? FontWeight.w900 : FontWeight.w700,
           ),
         ),

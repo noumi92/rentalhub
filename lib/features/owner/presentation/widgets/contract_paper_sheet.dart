@@ -40,7 +40,7 @@ class ContractPaperSheet extends StatelessWidget {
               blurRadius: 10,
               offset: Offset(0, 4)),
         ],
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.borderSubtle),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -50,28 +50,28 @@ class ContractPaperSheet extends StatelessWidget {
               children: [
                 Text(
                   (booking.shopName ?? 'RentalHub').toUpperCase(),
-                  style: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w900,
-                      color: AppColors.midnightNavy,
-                      letterSpacing: 0.5),
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w900,
+                    color: AppColors.primary,
+                    letterSpacing: 0.5,
+                  ),
                 ),
                 const SizedBox(height: 2),
-                const Text('Govt. Registered Commercial Motor Car Rental Agency',
+                Text('Govt. Registered Commercial Motor Car Rental Agency',
                     style:
-                        TextStyle(fontSize: 10, color: AppColors.textSecondary)),
+                        Theme.of(context).textTheme.labelSmall),
                 const SizedBox(height: 6),
                 Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
                   decoration: BoxDecoration(
-                      color: AppColors.midnightNavy,
+                      color: AppColors.primary,
                       borderRadius: BorderRadius.circular(4)),
-                  child: const Text('CERTIFIED DIGITAL RENTAL CONTRACT',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 10,
-                          fontWeight: FontWeight.w800)),
+                  child: Text('CERTIFIED DIGITAL RENTAL CONTRACT',
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w800,
+                      )),
                 ),
               ],
             ),
@@ -91,20 +91,21 @@ class ContractPaperSheet extends StatelessWidget {
           _fieldRow('Security Deposit:',
               securityDeposit != null ? 'Rs. $securityDeposit (refundable)' : '—'),
           const Divider(height: 20),
-          const Text(
+          Text(
             'Legal Terms & Conditions (Pakistan Jurisdiction):',
-            style: TextStyle(
-                fontSize: 11.5,
-                fontWeight: FontWeight.w800,
-                color: AppColors.midnightNavy),
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              fontWeight: FontWeight.w800,
+              color: AppColors.primary,
+            ),
           ),
           const SizedBox(height: 4),
-          const Text(
+          Text(
             '1. Vehicle shall not be driven across unauthorized provincial checkpoints without NOC.\n'
             '2. Traffic challans, e-tickets and fuel consumed are sole liability of the hirer.\n'
             '3. Any default will result in immediate non-bailable FIR and National Tribunal Blacklist listing.',
-            style: TextStyle(
-                fontSize: 10.5, color: AppColors.textSecondary, height: 1.4),
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              height: 1.4,
+            ),
           ),
           const Divider(height: 24),
           Row(
@@ -129,7 +130,7 @@ class ContractPaperSheet extends StatelessWidget {
           Image.memory(png, width: 110, height: 44, fit: BoxFit.contain)
         else
           const Icon(Icons.verified_rounded,
-              color: AppColors.emeraldGreen, size: 24),
+              color: AppColors.accentSuccess, size: 24),
         const SizedBox(height: 2),
         Text(label,
             style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800)),
@@ -155,7 +156,7 @@ class ContractPaperSheet extends StatelessWidget {
                 style: const TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.midnightNavy)),
+                    color: AppColors.primary)),
           ),
         ],
       ),

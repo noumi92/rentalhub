@@ -22,18 +22,18 @@ class BlacklistStatusBanner extends StatelessWidget {
       return Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppColors.lavenderMist.withAlpha(50),
+          color: AppColors.primaryContainer.withAlpha(50),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.border),
+          border: Border.all(color: AppColors.borderSubtle),
         ),
-        child: const Row(
+        child: Row(
           children: [
             Icon(Icons.shield_outlined, color: AppColors.textMuted, size: 28),
             SizedBox(width: 12),
             Expanded(
               child: Text(
                 'Enter CNIC above to run an instant real-time scan against the National Car Rental Fraud & Blacklist Database.',
-                style: TextStyle(fontSize: 12, color: AppColors.textSecondary, height: 1.4),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(height: 1.4),
               ),
             ),
           ],
@@ -62,13 +62,13 @@ class BlacklistStatusBanner extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'CRITICAL ALERT: BLACKLISTED CITIZEN',
-                        style: TextStyle(fontSize: 13, fontWeight: FontWeight.w900, color: Colors.red),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.red),
                       ),
                       Text(
                         'Incident Ref: ${blacklistedRecord!.blacklistId}',
-                        style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Colors.red.shade900),
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600, color: Colors.red.shade900),
                       ),
                     ],
                   ),
@@ -86,11 +86,11 @@ class BlacklistStatusBanner extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Reason: ${blacklistedRecord!.reasonCategory}', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: Colors.black87)),
+                  Text('Reason: ${blacklistedRecord!.reasonCategory}', style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: Colors.black87)),
                   const SizedBox(height: 4),
-                  Text(blacklistedRecord!.description, style: const TextStyle(fontSize: 11.5, color: Colors.black54)),
+                  Text(blacklistedRecord!.description, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.black54)),
                   const SizedBox(height: 4),
-                  Text('Reported By: ${blacklistedRecord!.reportedByShopId}', style: TextStyle(fontSize: 10.5, fontStyle: FontStyle.italic, color: Colors.red.shade700)),
+                  Text('Reported By: ${blacklistedRecord!.reportedByShopId}', style: Theme.of(context).textTheme.labelSmall?.copyWith(fontStyle: FontStyle.italic, color: Colors.red.shade700)),
                 ],
               ),
             ),
@@ -125,7 +125,7 @@ class BlacklistStatusBanner extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
               Icon(Icons.check_circle_rounded, color: Colors.green, size: 28),
               SizedBox(width: 10),
@@ -135,11 +135,11 @@ class BlacklistStatusBanner extends StatelessWidget {
                   children: [
                     Text(
                       'CLEAN NADRA RECORD VERIFIED',
-                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.w900, color: Colors.green),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.green),
                     ),
                     Text(
                       'Zero active defaults or tribunal complaints on file.',
-                      style: TextStyle(fontSize: 11, color: Colors.green),
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.green),
                     ),
                   ],
                 ),
@@ -155,7 +155,7 @@ class BlacklistStatusBanner extends StatelessWidget {
               icon: const Icon(Icons.arrow_forward_rounded, size: 18),
               label: const Text('Proceed to Walk-in Booking Wizard', style: TextStyle(fontWeight: FontWeight.w800)),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.sunsetOrange,
+                backgroundColor: AppColors.secondary,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               ),

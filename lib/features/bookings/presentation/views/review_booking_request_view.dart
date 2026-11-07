@@ -109,7 +109,6 @@ class _ReviewBookingRequestViewState extends State<ReviewBookingRequestView> {
   Widget build(BuildContext context) {
     final d = widget.bookingDraft;
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
       body: SafeArea(
         child: Column(
           children: [
@@ -122,12 +121,9 @@ class _ReviewBookingRequestViewState extends State<ReviewBookingRequestView> {
                       onPressed: widget.onBack,
                     )
                   : null,
-              titleWidget: const Text(
+              titleWidget: Text(
                 'Review Reservation',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w900),
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white),
               ),
             ),
             Expanded(
@@ -165,18 +161,14 @@ class _ReviewBookingRequestViewState extends State<ReviewBookingRequestView> {
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: AppColors.border),
+                        border: Border.all(color: AppColors.borderSubtle),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                          Text(
                             'Special Instructions for Showroom',
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.midnightNavy,
-                            ),
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.primary),
                           ),
                           const SizedBox(height: 8),
                           TextField(
@@ -185,14 +177,13 @@ class _ReviewBookingRequestViewState extends State<ReviewBookingRequestView> {
                             decoration: InputDecoration(
                               hintText:
                                   'E.g. Clean car required, airport terminal pickup...',
-                              hintStyle: const TextStyle(
-                                  fontSize: 12, color: AppColors.textSecondary),
+                              hintStyle: Theme.of(context).textTheme.bodySmall,
                               filled: true,
                               fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                                 borderSide:
-                                    const BorderSide(color: AppColors.border),
+                                    const BorderSide(color: AppColors.borderSubtle),
                               ),
                               contentPadding: const EdgeInsets.all(10),
                             ),

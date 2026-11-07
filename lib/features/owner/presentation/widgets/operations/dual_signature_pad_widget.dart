@@ -24,17 +24,17 @@ class DualSignaturePadWidget extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.borderSubtle),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Dual Legal Endorsement & Signatures',
-            style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w800,
-                color: AppColors.midnightNavy),
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w800,
+              color: AppColors.primary,
+            ),
           ),
           const SizedBox(height: 12),
           _pad(
@@ -65,7 +65,7 @@ class DualSignaturePadWidget extends StatelessWidget {
             style: const TextStyle(
                 fontSize: 12.5,
                 fontWeight: FontWeight.w800,
-                color: AppColors.midnightNavy)),
+                color: AppColors.primary)),
         Text(subtitle,
             style: const TextStyle(
                 fontSize: 11, color: AppColors.textSecondary)),
@@ -75,7 +75,7 @@ class DualSignaturePadWidget extends StatelessWidget {
           decoration: BoxDecoration(
             color: AppColors.backgroundLight,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.border),
+            border: Border.all(color: AppColors.borderSubtle),
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(12),

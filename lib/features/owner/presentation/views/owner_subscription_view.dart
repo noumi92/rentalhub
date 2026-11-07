@@ -40,22 +40,22 @@ class _OwnerSubscriptionViewState extends State<OwnerSubscriptionView> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Upgrade to $tierName', style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w900, color: AppColors.midnightNavy)),
+                Text('Upgrade to $tierName', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: AppColors.primary)),
                 IconButton(icon: const Icon(Icons.close), onPressed: () => Navigator.pop(ctx)),
               ],
             ),
             const SizedBox(height: 8),
-            Text('Transfer Rs. $price via Raast / IBAN to activate instant showroom accreditation.', style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+            Text('Transfer Rs. $price via Raast / IBAN to activate instant showroom accreditation.', style: Theme.of(context).textTheme.bodySmall),
             const SizedBox(height: 14),
             Container(
               padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(color: AppColors.backgroundLight, borderRadius: BorderRadius.circular(10)),
-              child: const Column(
+              decoration: BoxDecoration(color: Theme.of(context).colorScheme.surfaceContainerHighest, borderRadius: BorderRadius.circular(10)),
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Bank: Meezan Bank Ltd.', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800)),
-                  Text('Title: RentalHub Pakistan PVT Ltd.', style: TextStyle(fontSize: 12)),
-                  Text('IBAN: PK64MEZN0001234567890123', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: AppColors.sunsetOrange)),
+                  Text('Bank: Meezan Bank Ltd.', style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800)),
+                  Text('Title: RentalHub Pakistan PVT Ltd.', style: Theme.of(context).textTheme.bodySmall),
+                  Text('IBAN: PK64MEZN0001234567890123', style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.secondary)),
                 ],
               ),
             ),
@@ -93,7 +93,6 @@ class _OwnerSubscriptionViewState extends State<OwnerSubscriptionView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
       body: SafeArea(
         child: Column(
           children: [
@@ -105,11 +104,11 @@ class _OwnerSubscriptionViewState extends State<OwnerSubscriptionView> {
                       onPressed: widget.onBack,
                     )
                   : null,
-              titleWidget: const Column(
+              titleWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Showroom Membership Plans', style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w900)),
-                  Text('Grow Your Showroom Fleet with RentalHub', style: TextStyle(color: AppColors.textLavender, fontSize: 11.5)),
+                  Text('Showroom Membership Plans', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
+                  Text('Grow Your Showroom Fleet with RentalHub', style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.primaryContainer)),
                 ],
               ),
             ),

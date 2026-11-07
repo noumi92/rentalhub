@@ -29,11 +29,11 @@ class FixedRouteForm extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Add a route',
-            style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w800,
-                color: AppColors.midnightNavy)),
+        Text('Add a route',
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w800,
+              color: AppColors.primary,
+            )),
         const SizedBox(height: 10),
         Row(
           children: [

@@ -41,21 +41,12 @@ class PackageSummaryBar extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text('Total: Rs. $total',
-                    style: const TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w900,
-                        color: AppColors.midnightNavy)),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: AppColors.primary)),
                 Text('Advance Due: Rs. $advance',
-                    style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.sunsetOrange)),
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.secondary)),
                 if (deposit != null)
                   Text('Security Deposit: Rs. $deposit',
-                      style: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.textMuted)),
+                      style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700)),
               ],
             ),
           ),

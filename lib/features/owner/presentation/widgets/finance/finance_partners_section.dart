@@ -24,11 +24,11 @@ class FinancePartnersSection extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text('Partners',
-                style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.midnightNavy)),
+            Text('Partners',
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.primary,
+                )),
             TextButton.icon(
               icon: const Icon(Icons.add_rounded, size: 18),
               label: const Text('Add partner'),
@@ -47,19 +47,18 @@ class FinancePartnersSection extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColors.border),
+              border: Border.all(color: AppColors.borderSubtle),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(p.partnerName,
-                    style: const TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.midnightNavy)),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.primary,
+                    )),
                 Text('${p.sharePercent}% of profit',
-                    style: const TextStyle(
-                        fontSize: 12, color: AppColors.textSecondary)),
+                    style: Theme.of(context).textTheme.bodySmall),
               ],
             ),
           );

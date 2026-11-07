@@ -16,7 +16,7 @@ class VerifiedBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Color badgeColor =
-        isVerified ? AppColors.success : AppColors.amberWarning;
+        isVerified ? AppColors.accentSuccess : AppColors.warning;
     final Color bgColor =
         isVerified ? AppColors.successContainer : AppColors.warningContainer;
 
@@ -47,8 +47,7 @@ class VerifiedBadge extends StatelessWidget {
               isVerified ? label : 'Pending Review',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                fontSize: isSmall ? 10 : 11,
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
                 fontWeight: FontWeight.w700,
                 color: badgeColor,
               ),

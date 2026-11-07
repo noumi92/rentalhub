@@ -48,34 +48,26 @@ class LocationPermissionDialog extends StatelessWidget {
               width: 64,
               height: 64,
               decoration: BoxDecoration(
-                color: AppColors.sunsetOrange.withValues(alpha: 0.12),
+                color: AppColors.secondary.withValues(alpha: 0.12),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
                 Icons.location_on_rounded,
-                color: AppColors.sunsetOrange,
+                color: AppColors.secondary,
                 size: 34,
               ),
             ),
             const SizedBox(height: 16),
-            const Text(
+            Text(
               'Enable Precise Location',
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w800,
-                color: AppColors.midnightNavy,
-              ),
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               'RentalHub uses your real-time GPS coordinates to calculate road distances and discover verified rental showrooms within 1–5 km around you in Pakistan.',
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 13,
-                color: AppColors.textSecondary,
-                height: 1.4,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary, height: 1.4),
             ),
             const SizedBox(height: 22),
             SizedBox(
@@ -84,7 +76,7 @@ class LocationPermissionDialog extends StatelessWidget {
               child: ElevatedButton.icon(
                 onPressed: onAllow,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.sunsetOrange,
+                  backgroundColor: AppColors.secondary,
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -92,12 +84,9 @@ class LocationPermissionDialog extends StatelessWidget {
                   elevation: 0,
                 ),
                 icon: const Icon(Icons.my_location_rounded, size: 18),
-                label: const Text(
+                label: Text(
                   'Allow While Using App',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                  ),
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
                 ),
               ),
             ),
@@ -108,18 +97,15 @@ class LocationPermissionDialog extends StatelessWidget {
               child: OutlinedButton(
                 onPressed: onManualCity,
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: AppColors.midnightNavy,
-                  side: const BorderSide(color: AppColors.border),
+                  foregroundColor: AppColors.primary,
+                  side: const BorderSide(color: AppColors.borderSubtle),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: const Text(
+                child: Text(
                   'Select City Manually (Lahore)',
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
                 ),
               ),
             ),

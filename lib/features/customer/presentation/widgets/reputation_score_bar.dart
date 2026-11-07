@@ -26,15 +26,9 @@ class ReputationScoreBar extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(label,
-                style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.midnightNavy)),
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w600, color: AppColors.primary)),
             Text('${score.toStringAsFixed(1)} ★',
-                style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.sunsetOrange)),
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.secondary)),
           ],
         ),
         const SizedBox(height: 6),
@@ -43,9 +37,9 @@ class ReputationScoreBar extends StatelessWidget {
           child: LinearProgressIndicator(
             value: ratio.clamp(0.0, 1.0),
             minHeight: 8,
-            backgroundColor: AppColors.backgroundLight,
+            backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
             valueColor:
-                const AlwaysStoppedAnimation<Color>(AppColors.emeraldGreen),
+                const AlwaysStoppedAnimation<Color>(AppColors.accentSuccess),
           ),
         ),
       ],

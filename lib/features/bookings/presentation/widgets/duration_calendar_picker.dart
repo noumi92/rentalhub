@@ -31,18 +31,14 @@ class DurationCalendarPicker extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.borderSubtle),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Pickup Schedule',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w800,
-              color: AppColors.midnightNavy,
-            ),
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
           ),
           const SizedBox(height: 12),
           Row(
@@ -91,13 +87,9 @@ class DurationCalendarPicker extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'Rental Duration',
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
               ),
               Row(
                 children: [
@@ -106,22 +98,18 @@ class DurationCalendarPicker extends StatelessWidget {
                         ? () => onDurationChanged(durationDays - 1)
                         : null,
                     icon: const Icon(Icons.remove_circle_outline_rounded),
-                    color: AppColors.royalNavy,
+                    color: AppColors.primary,
                   ),
                   Text(
                     '$durationDays Day${durationDays > 1 ? "s" : ""}',
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w800,
-                      color: AppColors.midnightNavy,
-                    ),
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
                   ),
                   IconButton(
                     onPressed: durationDays < 30
                         ? () => onDurationChanged(durationDays + 1)
                         : null,
                     icon: const Icon(Icons.add_circle_outline_rounded),
-                    color: AppColors.sunsetOrange,
+                    color: AppColors.secondary,
                   ),
                 ],
               ),
@@ -145,13 +133,13 @@ class DurationCalendarPicker extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         decoration: BoxDecoration(
-          color: AppColors.backgroundLight,
+          color: Theme.of(context).colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.border),
+          border: Border.all(color: AppColors.borderSubtle),
         ),
         child: Row(
           children: [
-            Icon(icon, size: 18, color: AppColors.royalNavy),
+            Icon(icon, size: 18, color: AppColors.primary),
             const SizedBox(width: 8),
             Expanded(
               child: Column(
@@ -159,18 +147,11 @@ class DurationCalendarPicker extends StatelessWidget {
                 children: [
                   Text(
                     label,
-                    style: const TextStyle(
-                      fontSize: 10,
-                      color: AppColors.textSecondary,
-                    ),
+                    style: Theme.of(context).textTheme.labelSmall,
                   ),
                   Text(
                     value,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.midnightNavy,
-                    ),
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.primary),
                   ),
                 ],
               ),

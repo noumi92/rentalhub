@@ -14,13 +14,9 @@ class SupportFaqList extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Frequently Asked Questions',
-          style: TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w800,
-            color: AppColors.midnightNavy,
-          ),
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
         ),
         const SizedBox(height: 10),
         ...faqs.map((faq) => Container(
@@ -28,28 +24,20 @@ class SupportFaqList extends StatelessWidget {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.border),
+                border: Border.all(color: AppColors.borderSubtle),
               ),
               child: ExpansionTile(
                 shape: const Border(),
                 title: Text(
                   faq['q']!,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.midnightNavy,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.primary),
                 ),
                 children: [
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
                     child: Text(
                       faq['a']!,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        height: 1.45,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(height: 1.45),
                     ),
                   ),
                 ],

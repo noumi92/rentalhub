@@ -26,31 +26,27 @@ class DashboardWalletCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.border),
+          border: Border.all(color: AppColors.borderSubtle),
         ),
         child: Row(
           children: [
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: AppColors.sunsetOrange.withValues(alpha: 0.12),
+                color: AppColors.secondary.withValues(alpha: 0.12),
                 shape: BoxShape.circle,
               ),
               child: const Icon(Icons.account_balance_wallet_rounded,
-                  color: AppColors.sunsetOrange, size: 22),
+                  color: AppColors.secondary, size: 22),
             ),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Wallet',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w800,
-                      color: AppColors.midnightNavy,
-                    ),
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
                   ),
                   const SizedBox(height: 2),
                   Text(
@@ -58,21 +54,14 @@ class DashboardWalletCard extends StatelessWidget {
                         ? 'Advances and deposits will appear here.'
                         : 'Advances Rs. ${summary!.advancesPaid} • '
                             'Escrow Rs. ${summary!.escrowHeld}',
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: AppColors.textSecondary,
-                    ),
+                    style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ],
               ),
             ),
             Text(
               'Rs. ${summary?.total ?? 0}',
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w900,
-                color: AppColors.midnightNavy,
-              ),
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: AppColors.primary),
             ),
             const SizedBox(width: 4),
             const Icon(Icons.arrow_forward_ios_rounded,

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../../../core/constants/app_colors.dart';
 
 class FleetMetricCard extends StatelessWidget {
   final String label;
@@ -36,12 +35,12 @@ class FleetMetricCard extends StatelessWidget {
                 children: [
                   Text(
                     value,
-                    style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w900, color: color),
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w900, color: color),
                     overflow: TextOverflow.ellipsis,
                   ),
                   Text(
                     label,
-                    style: const TextStyle(fontSize: 10, color: AppColors.textMuted, fontWeight: FontWeight.w600),
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ],

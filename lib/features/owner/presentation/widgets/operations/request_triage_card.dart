@@ -25,7 +25,7 @@ class RequestTriageCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.borderSubtle),
         boxShadow: const [
           BoxShadow(
             color: Color(0x0A000000),
@@ -42,24 +42,21 @@ class RequestTriageCard extends StatelessWidget {
             children: [
               Text(
                 '#${booking.bookingId}',
-                style: const TextStyle(
-                  fontSize: 12,
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
                   fontWeight: FontWeight.w800,
-                  color: AppColors.textSecondary,
                 ),
               ),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
-                  color: AppColors.softOrangeTint,
+                  color: AppColors.secondaryContainer,
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(
                   booking.status.toUpperCase(),
-                  style: const TextStyle(
-                    fontSize: 10,
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
                     fontWeight: FontWeight.w900,
-                    color: AppColors.sunsetOrange,
+                    color: AppColors.secondary,
                   ),
                 ),
               ),
@@ -70,8 +67,8 @@ class RequestTriageCard extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 20,
-                backgroundColor: AppColors.royalNavy.withAlpha(25),
-                child: const Icon(Icons.person, color: AppColors.royalNavy),
+                backgroundColor: AppColors.primary.withAlpha(25),
+                child: const Icon(Icons.person, color: AppColors.primary),
               ),
               const SizedBox(width: 10),
               Expanded(
@@ -80,15 +77,14 @@ class RequestTriageCard extends StatelessWidget {
                   children: [
                     Text(
                       booking.customerName ?? 'Customer',
-                      style: const TextStyle(
-                        fontSize: 14,
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.w800,
-                        color: AppColors.midnightNavy,
+                        color: AppColors.primary,
                       ),
                     ),
                     Text(
                       booking.customerPhone ?? '0300-1234567',
-                      style: const TextStyle(fontSize: 11.5, color: AppColors.textSecondary),
+                      style: Theme.of(context).textTheme.labelSmall,
                     ),
                   ],
                 ),
@@ -101,18 +97,18 @@ class RequestTriageCard extends StatelessWidget {
             children: [
               Text(
                 booking.vehicleName ?? 'Requested Car',
-                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: AppColors.midnightNavy),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
               ),
               Text(
                 'Rs. ${booking.totalAmount}',
-                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: AppColors.sunsetOrange),
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900, color: AppColors.secondary),
               ),
             ],
           ),
           const SizedBox(height: 4),
           Text(
             '${booking.packageType.toUpperCase()} • ${booking.isWithDriver ? "With Chauffeur" : "Self Drive"}',
-            style: const TextStyle(fontSize: 11.5, color: AppColors.textSecondary),
+            style: Theme.of(context).textTheme.labelSmall,
           ),
           const SizedBox(height: 14),
           // Phase B (D1): the actions depend on where the booking is
@@ -128,7 +124,7 @@ class RequestTriageCard extends StatelessWidget {
                 label: const Text('Verify Payment Proof',
                     style: TextStyle(fontWeight: FontWeight.w800)),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.royalNavy,
+                  backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10)),
@@ -154,7 +150,7 @@ class RequestTriageCard extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: isProcessing ? null : onApprove,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.emeraldGreen,
+                      backgroundColor: AppColors.accentSuccess,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     ),

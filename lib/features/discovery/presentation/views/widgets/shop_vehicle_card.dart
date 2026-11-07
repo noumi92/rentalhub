@@ -74,7 +74,7 @@ class ShopVehicleCard extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: const BorderSide(color: AppColors.border),
+        side: const BorderSide(color: AppColors.borderSubtle),
       ),
       child: InkWell(
         onTap: onTap,
@@ -104,11 +104,7 @@ class ShopVehicleCard extends StatelessWidget {
                       ),
                       child: Text(
                         _statusLabel(v.status),
-                        style: const TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.emeraldGreen,
-                        ),
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700, color: AppColors.accentSuccess),
                       ),
                     ),
                   ),
@@ -126,11 +122,7 @@ class ShopVehicleCard extends StatelessWidget {
                       Expanded(
                         child: Text(
                           v.displayName,
-                          style: const TextStyle(
-                            fontSize: 15.5,
-                            fontWeight: FontWeight.w800,
-                            color: AppColors.midnightNavy,
-                          ),
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
                         ),
                       ),
                       PakistaniPlateWidget(
@@ -158,19 +150,11 @@ class ShopVehicleCard extends StatelessWidget {
                     children: [
                       Text(
                         'Self: Rs. ${v.rates.daily24}/day',
-                        style: const TextStyle(
-                          fontSize: 12.5,
-                          fontWeight: FontWeight.w800,
-                          color: AppColors.midnightNavy,
-                        ),
+                        style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
                       ),
                       Text(
                         'With Driver: Rs. ${v.rates.daily24 + (v.withDriverSurchargePkr ?? 0)}/day',
-                        style: const TextStyle(
-                          fontSize: 12.5,
-                          fontWeight: FontWeight.w800,
-                          color: AppColors.sunsetOrange,
-                        ),
+                        style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.secondary),
                       ),
                     ],
                   ),

@@ -29,7 +29,7 @@ class SubscriptionTierCard extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isPopular ? AppColors.sunsetOrange : (isCurrent ? AppColors.emeraldGreen : AppColors.border),
+          color: isPopular ? AppColors.secondary : (isCurrent ? AppColors.accentSuccess : AppColors.borderSubtle),
           width: isPopular || isCurrent ? 2 : 1,
         ),
       ),
@@ -39,18 +39,18 @@ class SubscriptionTierCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: AppColors.midnightNavy)),
+              Text(title, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: AppColors.primary)),
               if (isPopular)
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                  decoration: BoxDecoration(color: AppColors.sunsetOrange, borderRadius: BorderRadius.circular(6)),
-                  child: const Text('MOST POPULAR', style: TextStyle(color: Colors.white, fontSize: 9.5, fontWeight: FontWeight.w900)),
+                  decoration: BoxDecoration(color: AppColors.secondary, borderRadius: BorderRadius.circular(6)),
+                  child: Text('MOST POPULAR', style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.white, fontWeight: FontWeight.w900)),
                 )
               else if (isCurrent)
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                  decoration: BoxDecoration(color: AppColors.emeraldGreen, borderRadius: BorderRadius.circular(6)),
-                  child: const Text('CURRENT PLAN', style: TextStyle(color: Colors.white, fontSize: 9.5, fontWeight: FontWeight.w900)),
+                  decoration: BoxDecoration(color: AppColors.accentSuccess, borderRadius: BorderRadius.circular(6)),
+                  child: Text('CURRENT PLAN', style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.white, fontWeight: FontWeight.w900)),
                 ),
             ],
           ),
@@ -59,9 +59,9 @@ class SubscriptionTierCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.baseline,
             textBaseline: TextBaseline.alphabetic,
             children: [
-              Text(price, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: AppColors.midnightNavy)),
+              Text(price, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900, color: AppColors.primary)),
               const SizedBox(width: 4),
-              Text(billingPeriod, style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+              Text(billingPeriod, style: Theme.of(context).textTheme.bodySmall),
             ],
           ),
           const Divider(height: 20),
@@ -69,9 +69,9 @@ class SubscriptionTierCard extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 3),
                 child: Row(
                   children: [
-                    const Icon(Icons.check_circle_rounded, size: 16, color: AppColors.emeraldGreen),
+                    const Icon(Icons.check_circle_rounded, size: 16, color: AppColors.accentSuccess),
                     const SizedBox(width: 8),
-                    Expanded(child: Text(f, style: const TextStyle(fontSize: 12, color: AppColors.midnightNavy))),
+                    Expanded(child: Text(f, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.primary))),
                   ],
                 ),
               )),
@@ -82,13 +82,13 @@ class SubscriptionTierCard extends StatelessWidget {
             child: ElevatedButton(
               onPressed: isCurrent ? null : onSelect,
               style: ElevatedButton.styleFrom(
-                backgroundColor: isPopular ? AppColors.sunsetOrange : AppColors.midnightNavy,
+                backgroundColor: isPopular ? AppColors.secondary : AppColors.primary,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               ),
               child: Text(
                 isCurrent ? 'Active Plan' : 'Upgrade to $title',
-                style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800),
               ),
             ),
           ),

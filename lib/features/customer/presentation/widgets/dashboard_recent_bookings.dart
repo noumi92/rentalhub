@@ -30,21 +30,14 @@ class DashboardRecentBookings extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
+            Text(
               'Recent Activity',
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w800,
-                color: AppColors.midnightNavy,
-              ),
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
             ),
             TextButton(
               onPressed: onViewAll,
-              child: const Text('View All',
-                  style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.sunsetOrange)),
+              child: Text('View All',
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.secondary)),
             ),
           ],
         ),
@@ -60,7 +53,7 @@ class DashboardRecentBookings extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: AppColors.border),
+              border: Border.all(color: AppColors.borderSubtle),
             ),
             child: Center(
               child: Column(
@@ -68,11 +61,8 @@ class DashboardRecentBookings extends StatelessWidget {
                   const Icon(Icons.car_rental_outlined,
                       size: 40, color: AppColors.textSecondary),
                   const SizedBox(height: 8),
-                  const Text('No bookings found yet.',
-                      style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.textSecondary)),
+                  Text('No bookings found yet.',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600, color: AppColors.textSecondary)),
                   const SizedBox(height: 6),
                   TextButton(
                     onPressed: onExploreShops,
@@ -89,13 +79,12 @@ class DashboardRecentBookings extends StatelessWidget {
                   tileColor: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
-                    side: const BorderSide(color: AppColors.border),
+                    side: const BorderSide(color: AppColors.borderSubtle),
                   ),
                   leading: const Icon(Icons.directions_car_rounded,
-                      color: AppColors.royalNavy),
+                      color: AppColors.primary),
                   title: Text(b.vehicleName ?? 'Rental Car',
-                      style: const TextStyle(
-                          fontWeight: FontWeight.w800, fontSize: 14)),
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
                   subtitle:
                       Text('${b.status.toUpperCase()} • Rs. ${b.totalAmount}'),
                   trailing: const Icon(Icons.arrow_forward_ios_rounded,

@@ -86,7 +86,6 @@ class _PaymentProofUploadViewState extends State<PaymentProofUploadView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
       body: SafeArea(
         child: Column(
           children: [
@@ -99,12 +98,9 @@ class _PaymentProofUploadViewState extends State<PaymentProofUploadView> {
                       onPressed: widget.onBack,
                     )
                   : null,
-              titleWidget: const Text(
+              titleWidget: Text(
                 'Submit Payment Proof',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w900),
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white),
               ),
             ),
             Expanded(
@@ -119,7 +115,7 @@ class _PaymentProofUploadViewState extends State<PaymentProofUploadView> {
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: AppColors.border),
+                        border: Border.all(color: AppColors.borderSubtle),
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -129,62 +125,45 @@ class _PaymentProofUploadViewState extends State<PaymentProofUploadView> {
                             children: [
                               Text(
                                 widget.booking.vehicleName ?? 'Selected Car',
-                                style: const TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w800,
-                                  color: AppColors.midnightNavy,
-                                ),
+                                style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
                               ),
                               Text(
                                 'Booking ID: ${widget.booking.bookingId}',
-                                style: const TextStyle(
-                                    fontSize: 12,
-                                    color: AppColors.textSecondary),
+                                style: Theme.of(context).textTheme.bodySmall,
                               ),
                             ],
                           ),
                           Text(
                             'Rs. ${widget.booking.advanceRequired}',
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w900,
-                              color: AppColors.sunsetOrange,
-                            ),
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: AppColors.secondary),
                           ),
                         ],
                       ),
                     ),
                     const SizedBox(height: 16),
-                    const Text('Transaction Reference / TID',
-                        style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.midnightNavy)),
+                    Text('Transaction Reference / TID',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.primary)),
                     const SizedBox(height: 6),
                     TextField(
                       controller: _tidController,
                       decoration: InputDecoration(
                         hintText: 'Enter JazzCash / Bank TID (e.g. 892019281)',
-                        hintStyle: const TextStyle(
-                            fontSize: 13, color: AppColors.textSecondary),
+                        hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
                         filled: true,
                         fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                         prefixIcon: const Icon(Icons.receipt_long_rounded,
-                            color: AppColors.royalNavy),
+                            color: AppColors.primary),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(color: AppColors.border),
+                          borderSide: const BorderSide(color: AppColors.borderSubtle),
                         ),
                         contentPadding: const EdgeInsets.symmetric(
                             horizontal: 14, vertical: 12),
                       ),
                     ),
                     const SizedBox(height: 16),
-                    const Text('Proof Screenshot',
-                        style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.midnightNavy)),
+                    Text('Proof Screenshot',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.primary)),
                     const SizedBox(height: 6),
                     ProofScreenshotPicker(
                       selectedFile: _selectedFile,
@@ -194,21 +173,18 @@ class _PaymentProofUploadViewState extends State<PaymentProofUploadView> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: AppColors.lavenderMist,
+                        color: AppColors.primaryContainer,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Row(
-                        children: const [
+                        children: [
                           Icon(Icons.lock_clock_rounded,
-                              size: 16, color: AppColors.royalNavy),
+                              size: 16, color: AppColors.primary),
                           SizedBox(width: 8),
                           Expanded(
                             child: Text(
                               'Proof is uploaded to private storage. The showroom checks it and confirms your booking — there is no fixed waiting time.',
-                              style: TextStyle(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w500,
-                                  color: AppColors.midnightNavy),
+                              style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.primary),
                             ),
                           ),
                         ],

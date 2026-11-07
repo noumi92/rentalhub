@@ -108,10 +108,10 @@ class DemoHudBar extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
           margin: const EdgeInsets.fromLTRB(12, 4, 12, 6),
           decoration: BoxDecoration(
-            color: AppColors.midnightNavyDark.withValues(alpha: 0.92),
+            color: AppColors.primaryDark.withValues(alpha: 0.92),
             borderRadius: BorderRadius.circular(30),
             border: Border.all(
-                color: AppColors.sunsetOrange.withValues(alpha: 0.35),
+                color: AppColors.secondary.withValues(alpha: 0.35),
                 width: 1),
             boxShadow: [
               BoxShadow(
@@ -147,7 +147,7 @@ class DemoHudBar extends StatelessWidget {
               const SizedBox(width: 8),
               IconButton(
                 icon: const Icon(Icons.list_alt_rounded,
-                    color: AppColors.sunsetOrange, size: 20),
+                    color: AppColors.secondary, size: 20),
                 tooltip: 'Jump to Any Anchor Screen',
                 constraints: const BoxConstraints(),
                 padding: const EdgeInsets.all(4),
@@ -173,7 +173,7 @@ class DemoHudBar extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
-          color: isActive ? AppColors.sunsetOrange : Colors.transparent,
+          color: isActive ? AppColors.secondary : Colors.transparent,
           borderRadius: BorderRadius.circular(20),
         ),
         child: Row(
@@ -184,7 +184,7 @@ class DemoHudBar extends StatelessWidget {
               size: 14,
               color: isActive
                   ? Colors.white
-                  : AppColors.textLavender.withValues(alpha: 0.7),
+                  : AppColors.primaryContainer.withValues(alpha: 0.7),
             ),
             const SizedBox(width: 4),
             Text(
@@ -194,7 +194,7 @@ class DemoHudBar extends StatelessWidget {
                 fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
                 color: isActive
                     ? Colors.white
-                    : AppColors.textLavender.withValues(alpha: 0.75),
+                    : AppColors.primaryContainer.withValues(alpha: 0.75),
               ),
             ),
           ],
@@ -221,12 +221,11 @@ class DemoHudBar extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
+                    Text(
                       'Jump to 20 Core Anchor Screens',
-                      style: TextStyle(
-                        fontSize: 16,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w800,
-                        color: AppColors.midnightNavy,
+                        color: AppColors.primary,
                       ),
                     ),
                     IconButton(
@@ -286,10 +285,9 @@ class DemoHudBar extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 8),
           child: Text(
             title,
-            style: const TextStyle(
-              fontSize: 13,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.w700,
-              color: AppColors.sunsetOrange,
+              color: AppColors.secondary,
             ),
           ),
         ),
@@ -299,10 +297,11 @@ class DemoHudBar extends StatelessWidget {
             dense: true,
             visualDensity: VisualDensity.compact,
             leading: const Icon(Icons.arrow_forward_ios,
-                size: 12, color: AppColors.midnightNavy),
+                size: 12, color: AppColors.primary),
             title: Text(item,
-                style:
-                    const TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w500,
+                )),
             onTap: () {
               Navigator.pop(context);
               DemoHudController.instance.jumpToAnchor(anchorId);

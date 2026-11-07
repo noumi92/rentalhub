@@ -126,7 +126,6 @@ class _OwnerContractViewState extends State<OwnerContractView> {
   Widget build(BuildContext context) {
     final booking = widget.booking;
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
       body: SafeArea(
         child: Column(
           children: [
@@ -142,14 +141,10 @@ class _OwnerContractViewState extends State<OwnerContractView> {
               titleWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Digital Rental Contract',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w900)),
+                  Text('Digital Rental Contract',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
                   Text('Legal Agreement Ref: #${booking.bookingId}',
-                      style: const TextStyle(
-                          color: AppColors.textLavender, fontSize: 11.5)),
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.primaryContainer)),
                 ],
               ),
               actions: [
@@ -186,7 +181,7 @@ class _OwnerContractViewState extends State<OwnerContractView> {
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: AppColors.border),
+                          border: Border.all(color: AppColors.borderSubtle),
                         ),
                         child: Row(
                           children: [
@@ -195,14 +190,12 @@ class _OwnerContractViewState extends State<OwnerContractView> {
                               size: 96,
                             ),
                             const SizedBox(width: 12),
-                            const Expanded(
+                            Expanded(
                               child: Text(
                                 'Scan to verify this agreement — the '
                                 'page shows the booking, the shop and '
                                 'the signed PDF.',
-                                style: TextStyle(
-                                    fontSize: 12,
-                                    color: AppColors.textSecondary),
+                                style: Theme.of(context).textTheme.bodySmall,
                               ),
                             ),
                           ],

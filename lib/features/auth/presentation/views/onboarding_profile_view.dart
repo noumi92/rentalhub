@@ -115,7 +115,6 @@ class _OnboardingProfileViewState extends State<OnboardingProfileView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
       body: SafeArea(
         child: Column(
           children: [
@@ -137,17 +136,22 @@ class _OnboardingProfileViewState extends State<OnboardingProfileView> {
                           }
                         },
                       ),
-                      titleWidget: const Column(
+                      titleWidget: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             'Step 1: Your Profile',
-                            style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w900),
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w900,
+                            ),
                           ),
                           SizedBox(height: 2),
                           Text(
                             'Enter your contact information',
-                            style: TextStyle(color: AppColors.textLavender, fontSize: 12),
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: AppColors.primaryContainer,
+                            ),
                           ),
                         ],
                       ),
@@ -163,7 +167,7 @@ class _OnboardingProfileViewState extends State<OnboardingProfileView> {
                         elevation: 3,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
-                          side: const BorderSide(color: AppColors.border),
+                          side: const BorderSide(color: AppColors.borderSubtle),
                         ),
                         child: Padding(
                           padding: const EdgeInsets.all(20),
@@ -222,7 +226,7 @@ class _OnboardingProfileViewState extends State<OnboardingProfileView> {
               padding: const EdgeInsets.all(16),
               decoration: const BoxDecoration(
                 color: Colors.white,
-                border: Border(top: BorderSide(color: AppColors.border)),
+                border: Border(top: BorderSide(color: AppColors.borderSubtle)),
                 boxShadow: [
                   BoxShadow(color: Color(0x0C000000), blurRadius: 8, offset: Offset(0, -3)),
                 ],

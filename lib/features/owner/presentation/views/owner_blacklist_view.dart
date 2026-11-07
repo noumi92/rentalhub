@@ -125,7 +125,6 @@ class _OwnerBlacklistViewState extends State<OwnerBlacklistView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
       body: SafeArea(
         child: Column(
           children: [
@@ -136,17 +135,13 @@ class _OwnerBlacklistViewState extends State<OwnerBlacklistView> {
                     color: Colors.white, size: 20),
                 onPressed: widget.onBack ?? () => context.pop(),
               ),
-              titleWidget: const Column(
+              titleWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('Blacklist Reports',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w900)),
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
                   Text('Shared with every shop • Tribunal reviewed',
-                      style: TextStyle(
-                          color: AppColors.textLavender, fontSize: 12)),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.primaryContainer)),
                 ],
               ),
             ),
@@ -156,11 +151,8 @@ class _OwnerBlacklistViewState extends State<OwnerBlacklistView> {
                   : ListView(
                       padding: const EdgeInsets.all(16),
                       children: [
-                        const Text('Report a customer',
-                            style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w800,
-                                color: AppColors.midnightNavy)),
+                        Text('Report a customer',
+                            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
                         const SizedBox(height: 10),
                         _field(_cnicController, 'Customer CNIC',
                             keyboard: TextInputType.number),
@@ -195,10 +187,7 @@ class _OwnerBlacklistViewState extends State<OwnerBlacklistView> {
                         ),
                         const SizedBox(height: 20),
                         Text('My reports (${_reports.length})',
-                            style: const TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w800,
-                                color: AppColors.midnightNavy)),
+                            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
                         const SizedBox(height: 10),
                         if (_reports.isEmpty)
                           const Text(
@@ -221,9 +210,7 @@ class _OwnerBlacklistViewState extends State<OwnerBlacklistView> {
                                 trailing: Chip(
                                   label: Text(
                                       r.isActive ? 'Active' : 'Reverted',
-                                      style: const TextStyle(
-                                          fontSize: 11,
-                                          color: Colors.white)),
+                                      style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.white)),
                                   backgroundColor: r.isActive
                                       ? Colors.red
                                       : Colors.grey,

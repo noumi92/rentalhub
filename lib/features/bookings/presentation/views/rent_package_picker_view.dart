@@ -157,7 +157,6 @@ class _RentPackagePickerViewState extends State<RentPackagePickerView> {
     final tiers = _tiers;
     final vehicle = widget.vehicle;
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
       body: SafeArea(
         child: Column(
           children: [
@@ -193,11 +192,8 @@ class _RentPackagePickerViewState extends State<RentPackagePickerView> {
                       ),
                     ],
                     const SizedBox(height: 16),
-                    const Text('Available Duration Tiers',
-                        style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w800,
-                            color: AppColors.midnightNavy)),
+                    Text('Available Duration Tiers',
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
                     const SizedBox(height: 10),
                     PackageTierList(
                       options: tiers,

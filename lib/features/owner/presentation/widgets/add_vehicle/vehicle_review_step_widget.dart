@@ -53,7 +53,7 @@ class VehicleReviewStepWidget extends StatelessWidget {
       children: [
         Card(
           elevation: 2,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18), side: const BorderSide(color: AppColors.border)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18), side: const BorderSide(color: AppColors.borderSubtle)),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -71,7 +71,7 @@ class VehicleReviewStepWidget extends StatelessWidget {
                         width: 50,
                         height: 50,
                         decoration: BoxDecoration(color: AppColors.primaryContainer, borderRadius: BorderRadius.circular(12)),
-                        child: const Icon(Icons.directions_car_rounded, color: AppColors.midnightNavy, size: 28),
+                        child: const Icon(Icons.directions_car_rounded, color: AppColors.primary, size: 28),
                       ),
                     const SizedBox(width: 12),
                     Expanded(
@@ -80,9 +80,9 @@ class VehicleReviewStepWidget extends StatelessWidget {
                         children: [
                           Text(
                             '$selectedMake $selectedModel',
-                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: AppColors.midnightNavy),
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: AppColors.primary),
                           ),
-                          Text('$category • $selectedYear • $color', style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                          Text('$category • $selectedYear • $color', style: Theme.of(context).textTheme.bodySmall),
                         ],
                       ),
                     ),
@@ -109,20 +109,20 @@ class VehicleReviewStepWidget extends StatelessWidget {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('Self-Drive Rate', style: TextStyle(fontSize: 11, color: AppColors.textMuted)),
+                        Text('Self-Drive Rate', style: Theme.of(context).textTheme.labelSmall),
                         Text(
                           supportSelfDrive ? 'Rs. $dailyRate/day' : 'Not Offered',
-                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900, color: supportSelfDrive ? AppColors.midnightNavy : AppColors.textMuted),
+                          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900, color: supportSelfDrive ? AppColors.primary : AppColors.textMuted),
                         ),
                       ],
                     ),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        const Text('With-Driver Rate', style: TextStyle(fontSize: 11, color: AppColors.textMuted)),
+                        Text('With-Driver Rate', style: Theme.of(context).textTheme.labelSmall),
                         Text(
                           supportWithDriver ? 'Rs. ${dailyRate + driverAllowance}/day' : 'Not Offered',
-                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900, color: supportWithDriver ? AppColors.sunsetOrange : AppColors.textMuted),
+                          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900, color: supportWithDriver ? AppColors.secondary : AppColors.textMuted),
                         ),
                       ],
                     ),
@@ -150,14 +150,14 @@ class VehicleReviewStepWidget extends StatelessWidget {
             borderRadius: BorderRadius.circular(14),
             border: Border.all(color: const Color(0xFF86EFAC)),
           ),
-          child: const Row(
+          child: Row(
             children: [
-              Icon(Icons.verified_rounded, color: AppColors.emeraldGreen, size: 24),
+              Icon(Icons.verified_rounded, color: AppColors.accentSuccess, size: 24),
               SizedBox(width: 12),
               Expanded(
                 child: Text(
                   'This car will be immediately available in your fleet catalog and visible to nearby customers upon approval.',
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.midnightNavy, height: 1.3),
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w600, color: AppColors.primary, height: 1.3),
                 ),
               ),
             ],
@@ -170,7 +170,7 @@ class VehicleReviewStepWidget extends StatelessWidget {
   Widget _reviewSpec(String title, String val) {
     return Column(
       children: [
-        Text(val, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: AppColors.midnightNavy)),
+        Text(val, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: AppColors.primary)),
         Text(title, style: const TextStyle(fontSize: 10, color: AppColors.textMuted)),
       ],
     );
@@ -181,7 +181,7 @@ class VehicleReviewStepWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(title, style: const TextStyle(fontSize: 10, color: AppColors.textMuted)),
-        Text(val, style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w800, color: AppColors.midnightNavy)),
+        Text(val, style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w800, color: AppColors.primary)),
       ],
     );
   }

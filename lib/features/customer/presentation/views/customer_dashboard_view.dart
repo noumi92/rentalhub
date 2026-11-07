@@ -105,7 +105,6 @@ class _CustomerDashboardViewState extends State<CustomerDashboardView> {
   Widget build(BuildContext context) {
     final active = _activeBooking;
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
       body: SafeArea(
         child: Column(
           children: [
@@ -113,16 +112,12 @@ class _CustomerDashboardViewState extends State<CustomerDashboardView> {
               height: 120,
               titleWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
+                children: [
                   Text('Customer Dashboard',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.w900)),
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
                   SizedBox(height: 2),
                   Text('RentalHub Pakistan',
-                      style: TextStyle(
-                          color: AppColors.textLavender, fontSize: 12)),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.primaryContainer)),
                 ],
               ),
               actions: [
@@ -161,13 +156,9 @@ class _CustomerDashboardViewState extends State<CustomerDashboardView> {
                         onTap: widget.onOpenWallet,
                       ),
                       const SizedBox(height: 16),
-                      const Text(
+                      Text(
                         'Quick Services',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w800,
-                          color: AppColors.midnightNavy,
-                        ),
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
                       ),
                       const SizedBox(height: 10),
                       Row(
@@ -176,7 +167,7 @@ class _CustomerDashboardViewState extends State<CustomerDashboardView> {
                             child: CustomerServiceButton(
                               icon: Icons.storefront_rounded,
                               label: 'Explore Shops',
-                              color: AppColors.royalNavy,
+                              color: AppColors.primary,
                               onTap: widget.onExploreShops,
                             ),
                           ),
@@ -185,7 +176,7 @@ class _CustomerDashboardViewState extends State<CustomerDashboardView> {
                             child: CustomerServiceButton(
                               icon: Icons.calendar_month_rounded,
                               label: 'My Bookings',
-                              color: AppColors.sunsetOrange,
+                              color: AppColors.secondary,
                               onTap: widget.onOpenBookings,
                             ),
                           ),
@@ -194,7 +185,7 @@ class _CustomerDashboardViewState extends State<CustomerDashboardView> {
                             child: CustomerServiceButton(
                               icon: Icons.badge_outlined,
                               label: 'KYC Docs',
-                              color: AppColors.emeraldGreen,
+                              color: AppColors.accentSuccess,
                               onTap: widget.onOpenDocuments,
                             ),
                           ),

@@ -55,16 +55,16 @@ class ManualBookingVehicleSection extends StatelessWidget {
         TextField(
           controller: depositController,
           keyboardType: TextInputType.number,
-          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
           decoration: InputDecoration(
             labelText: 'Security Deposit (Rs.)',
             prefixIcon: const Icon(Icons.lock_clock_rounded,
-                color: AppColors.midnightNavy, size: 20),
+                color: AppColors.primary, size: 20),
             filled: true,
             fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
             border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: AppColors.border)),
+                borderSide: const BorderSide(color: AppColors.borderSubtle)),
             contentPadding:
                 const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           ),

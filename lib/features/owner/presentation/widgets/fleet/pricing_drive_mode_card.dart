@@ -28,30 +28,30 @@ class PricingDriveModeCard extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.border),
+          border: Border.all(color: AppColors.borderSubtle),
         ),
         child: Column(
           children: [
             SwitchListTile(
-              activeThumbColor: AppColors.sunsetOrange,
-              title: const Text('Self-Drive Allowed',
+              activeThumbColor: AppColors.secondary,
+              title: Text('Self-Drive Allowed',
                   style:
-                      TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700)),
-              subtitle: const Text(
+                      Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
+              subtitle: Text(
                   'Requires original NADRA CNIC + security deposit',
-                  style: TextStyle(fontSize: 11)),
+                  style: Theme.of(context).textTheme.labelSmall),
               value: isSelfDrive,
               onChanged: onSelfDriveChanged,
             ),
             const Divider(height: 1),
             SwitchListTile(
-              activeThumbColor: AppColors.sunsetOrange,
-              title: const Text('Chauffeur Service Allowed',
+              activeThumbColor: AppColors.secondary,
+              title: Text('Chauffeur Service Allowed',
                   style:
-                      TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700)),
+                      Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
               subtitle:
-                  const Text('Showroom driver assigned to booking',
-                      style: TextStyle(fontSize: 11)),
+                  Text('Showroom driver assigned to booking',
+                      style: Theme.of(context).textTheme.labelSmall),
               value: isWithDriver,
               onChanged: onWithDriverChanged,
             ),

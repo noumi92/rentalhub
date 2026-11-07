@@ -16,27 +16,26 @@ class SecurityPolicyBanner extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppColors.amberGold.withValues(alpha: 0.12),
+        color: AppColors.warning.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: AppColors.amberGold.withValues(alpha: 0.4),
+          color: AppColors.warning.withValues(alpha: 0.4),
         ),
       ),
       child: Row(
         children: [
           Icon(
             icon,
-            color: AppColors.amberGold,
+            color: AppColors.warning,
             size: 20,
           ),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
               message,
-              style: const TextStyle(
-                fontSize: 11.5,
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
                 fontWeight: FontWeight.w700,
-                color: AppColors.midnightNavy,
+                color: AppColors.primary,
               ),
             ),
           ),

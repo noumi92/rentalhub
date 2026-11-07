@@ -87,18 +87,18 @@ class PricingPolicyFields extends StatelessWidget {
           kmCap: 'Tracker clearance required beyond the city',
         ),
         const SizedBox(height: 14),
-        const Text('Fuel Policy',
-            style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w700,
-                color: AppColors.midnightNavy)),
+        Text('Fuel Policy',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w700,
+              color: AppColors.primary,
+            )),
         const SizedBox(height: 6),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 14),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.border),
+            border: Border.all(color: AppColors.borderSubtle),
           ),
           child: DropdownButtonHideUnderline(
             child: DropdownButton<String>(

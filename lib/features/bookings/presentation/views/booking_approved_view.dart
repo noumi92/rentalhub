@@ -20,7 +20,6 @@ class BookingApprovedView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
       body: SafeArea(
         child: Column(
           children: [
@@ -33,12 +32,9 @@ class BookingApprovedView extends StatelessWidget {
                       onPressed: onBack,
                     )
                   : null,
-              titleWidget: const Text(
+              titleWidget: Text(
                 'Booking Approved!',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w900),
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white),
               ),
             ),
             Expanded(
@@ -51,7 +47,7 @@ class BookingApprovedView extends StatelessWidget {
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         gradient: const LinearGradient(
-                          colors: [AppColors.midnightNavy, AppColors.royalNavy],
+                          colors: [AppColors.primary, AppColors.primary],
                         ),
                         borderRadius: BorderRadius.circular(16),
                       ),
@@ -60,32 +56,25 @@ class BookingApprovedView extends StatelessWidget {
                           Container(
                             padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
-                              color: AppColors.emeraldGreen.withValues(alpha: 0.2),
+                              color: AppColors.accentSuccess.withValues(alpha: 0.2),
                               shape: BoxShape.circle,
                             ),
                             child: const Icon(Icons.check_circle_rounded,
-                                color: AppColors.emeraldGreen, size: 30),
+                                color: AppColors.accentSuccess, size: 30),
                           ),
                           const SizedBox(width: 14),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text(
+                                Text(
                                   'Ready for Advance Payment',
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w800,
-                                    color: Colors.white,
-                                  ),
+                                  style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: Colors.white),
                                 ),
                                 const SizedBox(height: 2),
                                 Text(
                                   'Pay Rs. ${booking.advanceRequired} to guarantee pickup.',
-                                  style: const TextStyle(
-                                    fontSize: 11,
-                                    color: AppColors.textLavender,
-                                  ),
+                                  style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.primaryContainer),
                                 ),
                               ],
                             ),

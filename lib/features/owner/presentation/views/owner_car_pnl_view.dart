@@ -72,7 +72,6 @@ class _OwnerCarPnLViewState extends State<OwnerCarPnLView> {
         ? const <FinanceTransferEntity>[]
         : _transfers.where((t) => t.vehicleId == _vehicleId).toList();
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
       body: SafeArea(
         child: Column(
           children: [
@@ -83,17 +82,13 @@ class _OwnerCarPnLViewState extends State<OwnerCarPnLView> {
                     color: Colors.white, size: 20),
                 onPressed: () => context.pop(),
               ),
-              titleWidget: const Column(
+              titleWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('Car P&L',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 17,
-                          fontWeight: FontWeight.w900)),
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
                   Text('One car, all its money',
-                      style: TextStyle(
-                          color: AppColors.textLavender, fontSize: 11.5)),
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.primaryContainer)),
                 ],
               ),
             ),
@@ -132,11 +127,8 @@ class _OwnerCarPnLViewState extends State<OwnerCarPnLView> {
                               if (selected != null) ...[
                                 _pnlCard(selected),
                                 const SizedBox(height: 16),
-                                const Text('Tagged entries',
-                                    style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w800,
-                                        color: AppColors.midnightNavy)),
+                                Text('Tagged entries',
+                                    style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
                                 const SizedBox(height: 8),
                                 if (tagged.isEmpty)
                                   const Text(
@@ -161,21 +153,18 @@ class _OwnerCarPnLViewState extends State<OwnerCarPnLView> {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.royalNavy,
+        color: AppColors.primary,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text('Net Rs. ${pnl.net}',
-              style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 22,
-                  fontWeight: FontWeight.w900)),
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
           const SizedBox(height: 8),
           Text(
               'Booking revenue Rs. ${pnl.revenue} • Other income Rs. ${pnl.income} • Expenses Rs. ${pnl.expenses}',
-              style: const TextStyle(color: Colors.white70, fontSize: 12)),
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white70)),
         ],
       ),
     );
@@ -189,24 +178,16 @@ class _OwnerCarPnLViewState extends State<OwnerCarPnLView> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.borderSubtle),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(t.category,
-              style: const TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.midnightNavy)),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
           Text(
             '${isIncome ? '+' : '−'} Rs. ${t.amountPkr}',
-            style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w900,
-                color: isIncome
-                    ? AppColors.emeraldGreen
-                    : AppColors.crimsonRed),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w900, color: isIncome ? AppColors.accentSuccess : AppColors.accentDanger),
           ),
         ],
       ),

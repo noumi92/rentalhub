@@ -27,16 +27,16 @@ class VehiclePackageCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.sunsetOrange.withValues(alpha: 0.08) : Colors.white,
+          color: isSelected ? AppColors.secondary.withValues(alpha: 0.08) : Colors.white,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isSelected ? AppColors.sunsetOrange : AppColors.border,
+            color: isSelected ? AppColors.secondary : AppColors.borderSubtle,
             width: isSelected ? 2 : 1,
           ),
           boxShadow: [
             if (isSelected)
               BoxShadow(
-                color: AppColors.sunsetOrange.withValues(alpha: 0.15),
+                color: AppColors.secondary.withValues(alpha: 0.15),
                 blurRadius: 8,
                 offset: const Offset(0, 3),
               ),
@@ -51,49 +51,33 @@ class VehiclePackageCard extends StatelessWidget {
                 Icon(
                   icon,
                   size: 22,
-                  color: isSelected ? AppColors.sunsetOrange : AppColors.midnightNavy,
+                  color: isSelected ? AppColors.secondary : AppColors.primary,
                 ),
                 if (isSelected)
                   const Icon(
                     Icons.check_circle_rounded,
                     size: 18,
-                    color: AppColors.sunsetOrange,
+                    color: AppColors.secondary,
                   ),
               ],
             ),
             const SizedBox(height: 10),
             Text(
               title,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w900,
-                color: isSelected ? AppColors.sunsetOrange : AppColors.midnightNavy,
-              ),
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900, color: isSelected ? AppColors.secondary : AppColors.primary),
             ),
             Text(
               urdu,
-              style: const TextStyle(
-                fontSize: 10.5,
-                color: AppColors.textMuted,
-                fontWeight: FontWeight.w600,
-              ),
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 8),
             Text(
               'Rs. $price',
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w900,
-                color: AppColors.midnightNavy,
-              ),
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: AppColors.primary),
             ),
-            const Text(
+            Text(
               '/ per day',
-              style: TextStyle(
-                fontSize: 10.5,
-                color: AppColors.textSecondary,
-                fontWeight: FontWeight.w500,
-              ),
+              style: Theme.of(context).textTheme.labelSmall,
             ),
           ],
         ),

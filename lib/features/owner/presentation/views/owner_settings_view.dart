@@ -51,7 +51,6 @@ class _OwnerSettingsViewState extends State<OwnerSettingsView> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
       bottomNavigationBar: const OwnerBottomNav(currentIndex: 4),
       body: SafeArea(
         child: Column(
@@ -67,13 +66,9 @@ class _OwnerSettingsViewState extends State<OwnerSettingsView> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(l10n.settings,
-                      style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 17,
-                          fontWeight: FontWeight.w900)),
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
                   Text(l10n.settingsSubtitle,
-                      style: const TextStyle(
-                          color: AppColors.textLavender, fontSize: 11.5)),
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.primaryContainer)),
                 ],
               ),
             ),
@@ -93,8 +88,7 @@ class _OwnerSettingsViewState extends State<OwnerSettingsView> {
                             _shopName.isNotEmpty
                                 ? _shopName
                                 : l10n.shopNotSet,
-                            style: const TextStyle(
-                                fontSize: 14, fontWeight: FontWeight.w800),
+                            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
                           ),
                         ),
                         const SizedBox(height: 16),
@@ -204,16 +198,13 @@ class _OwnerSettingsViewState extends State<OwnerSettingsView> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.borderSubtle),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(title,
-              style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.midnightNavy)),
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
           const SizedBox(height: 10),
           child,
         ],
@@ -227,7 +218,7 @@ class _OwnerSettingsViewState extends State<OwnerSettingsView> {
       color: Colors.transparent,
       child: ListTile(
         contentPadding: EdgeInsets.zero,
-        leading: Icon(icon, color: AppColors.royalNavy),
+        leading: Icon(icon, color: AppColors.primary),
         title: Text(label,
             style: const TextStyle(fontWeight: FontWeight.w700)),
         trailing: const Icon(Icons.chevron_right_rounded),

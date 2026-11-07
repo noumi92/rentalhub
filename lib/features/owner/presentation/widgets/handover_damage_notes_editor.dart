@@ -59,19 +59,19 @@ class _HandoverDamageNotesEditorState
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.borderSubtle),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(widget.title,
-              style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.midnightNavy)),
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.w800,
+                color: AppColors.primary,
+              )),
           Text(widget.subtitle,
               style:
-                  const TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+                  Theme.of(context).textTheme.labelSmall),
           const SizedBox(height: 10),
           if (_notes.isNotEmpty)
             Wrap(

@@ -118,7 +118,6 @@ class _OwnerDuesViewState extends State<OwnerDuesView> {
     final totalDue =
         _dues.fold(0, (total, b) => total + b.remainingBalance);
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
       body: SafeArea(
         child: Column(
           children: [
@@ -132,14 +131,10 @@ class _OwnerDuesViewState extends State<OwnerDuesView> {
               titleWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Customer Dues',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 17,
-                          fontWeight: FontWeight.w900)),
+                  Text('Customer Dues',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
                   Text('Rs. $totalDue outstanding',
-                      style: const TextStyle(
-                          color: AppColors.textLavender, fontSize: 11.5)),
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.primaryContainer)),
                 ],
               ),
             ),
@@ -175,7 +170,7 @@ class _OwnerDuesViewState extends State<OwnerDuesView> {
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(12),
-                                border: Border.all(color: AppColors.border),
+                                border: Border.all(color: AppColors.borderSubtle),
                               ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -186,30 +181,19 @@ class _OwnerDuesViewState extends State<OwnerDuesView> {
                                     children: [
                                       Expanded(
                                         child: Text(name,
-                                            style: const TextStyle(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w800,
-                                                color:
-                                                    AppColors.midnightNavy)),
+                                            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
                                       ),
                                       Text('Rs. $due',
-                                          style: const TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w900,
-                                              color: AppColors.crimsonRed)),
+                                          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900, color: AppColors.accentDanger)),
                                     ],
                                   ),
                                   Text(
                                       '${bookings.length} booking${bookings.length > 1 ? 's' : ''} • ${phone ?? 'no phone'}',
-                                      style: const TextStyle(
-                                          fontSize: 11,
-                                          color: AppColors.textSecondary)),
+                                      style: Theme.of(context).textTheme.labelSmall),
                                   if (last != null)
                                     Text(
                                         'Last reminded ${last.day}/${last.month}/${last.year}',
-                                        style: const TextStyle(
-                                            fontSize: 11,
-                                            color: AppColors.textSecondary)),
+                                        style: Theme.of(context).textTheme.labelSmall),
                                   const SizedBox(height: 8),
                                   SizedBox(
                                     width: double.infinity,
@@ -230,12 +214,12 @@ class _OwnerDuesViewState extends State<OwnerDuesView> {
                           },
                         ),
             ),
-            const Padding(
+            Padding(
               padding: EdgeInsets.fromLTRB(16, 0, 16, 14),
               child: Text(
                   'Automated WhatsApp reminders (every 3 days) need the WhatsApp Business setup — Phase I.',
                   style:
-                      TextStyle(fontSize: 11, color: AppColors.textMuted),
+                      Theme.of(context).textTheme.labelSmall,
                   textAlign: TextAlign.center),
             ),
           ],

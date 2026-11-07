@@ -10,11 +10,12 @@ class AuthStepperBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-      color: Colors.white,
+      color: Theme.of(context).colorScheme.surface,
       child: Row(
         children: [
           Expanded(
             child: _stepPill(
+              context,
               step: 1,
               title: '1. Profile Info',
               isDone: currentStep > 1,
@@ -26,10 +27,11 @@ class AuthStepperBar extends StatelessWidget {
             width: 20,
             height: 2,
             margin: const EdgeInsets.symmetric(horizontal: 6),
-            color: currentStep > 1 ? AppColors.emeraldGreen : AppColors.border,
+            color: currentStep > 1 ? AppColors.accentSuccess : AppColors.borderSubtle,
           ),
           Expanded(
             child: _stepPill(
+              context,
               step: 2,
               title: '2. Select Role',
               isDone: false,
@@ -42,7 +44,8 @@ class AuthStepperBar extends StatelessWidget {
     );
   }
 
-  Widget _stepPill({
+  Widget _stepPill(
+    BuildContext context, {
     required int step,
     required String title,
     required bool isDone,
@@ -50,9 +53,9 @@ class AuthStepperBar extends StatelessWidget {
     required IconData icon,
   }) {
     final color = isDone
-        ? AppColors.emeraldGreen
+        ? AppColors.accentSuccess
         : isCurrent
-            ? AppColors.sunsetOrange
+            ? AppColors.secondary
             : AppColors.textMuted;
 
     return Row(
@@ -62,7 +65,7 @@ class AuthStepperBar extends StatelessWidget {
           height: 26,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: isDone || isCurrent ? color : AppColors.backgroundLight,
+            color: isDone || isCurrent ? color : Theme.of(context).colorScheme.surfaceContainerHighest,
             border: Border.all(color: color, width: 1.5),
           ),
           child: Center(
@@ -81,10 +84,9 @@ class AuthStepperBar extends StatelessWidget {
             title,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontSize: 11.5,
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
               fontWeight: isCurrent ? FontWeight.w800 : FontWeight.w600,
-              color: isCurrent ? AppColors.midnightNavy : AppColors.textMuted,
+              color: isCurrent ? AppColors.primary : AppColors.textMuted,
             ),
           ),
         ),

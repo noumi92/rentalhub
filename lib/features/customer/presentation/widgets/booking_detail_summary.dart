@@ -25,7 +25,7 @@ class BookingDetailSummary extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.borderSubtle),
       ),
       child: Column(
         children: [
@@ -54,7 +54,7 @@ class BookingDetailSummary extends StatelessWidget {
         children: [
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 13,
               color: AppColors.textSecondary,
             ),
@@ -64,7 +64,7 @@ class BookingDetailSummary extends StatelessWidget {
             style: TextStyle(
               fontSize: 13,
               fontWeight: bold ? FontWeight.w800 : FontWeight.w600,
-              color: AppColors.midnightNavy,
+              color: AppColors.primary,
             ),
           ),
         ],
@@ -92,17 +92,13 @@ class BookingDetailRejectionCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: AppColors.crimsonRed.withValues(alpha: 0.08),
+        color: AppColors.accentDanger.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.crimsonRed.withValues(alpha: 0.3)),
+        border: Border.all(color: AppColors.accentDanger.withValues(alpha: 0.3)),
       ),
       child: Text(
         '$prefix$reason',
-        style: const TextStyle(
-          fontSize: 13,
-          fontWeight: FontWeight.w600,
-          color: AppColors.midnightNavy,
-        ),
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600, color: AppColors.primary),
       ),
     );
   }
@@ -120,17 +116,13 @@ class BookingDetailInfoCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: AppColors.amberGold.withValues(alpha: 0.1),
+        color: AppColors.warning.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.amberGold.withValues(alpha: 0.35)),
+        border: Border.all(color: AppColors.warning.withValues(alpha: 0.35)),
       ),
       child: Text(
         text,
-        style: const TextStyle(
-          fontSize: 13,
-          fontWeight: FontWeight.w600,
-          color: AppColors.midnightNavy,
-        ),
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600, color: AppColors.primary),
       ),
     );
   }

@@ -146,7 +146,6 @@ class _OwnerManualBookingViewState extends State<OwnerManualBookingView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
       body: SafeArea(
         child: Column(
           children: [
@@ -158,11 +157,11 @@ class _OwnerManualBookingViewState extends State<OwnerManualBookingView> {
                       onPressed: widget.onBack,
                     )
                   : null,
-              titleWidget: const Column(
+              titleWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Walk-in Booking Wizard', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w900)),
-                  Text('Showroom Counter Direct Issue', style: TextStyle(color: AppColors.textLavender, fontSize: 12)),
+                  Text('Walk-in Booking Wizard', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
+                  Text('Showroom Counter Direct Issue', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.primaryContainer)),
                 ],
               ),
             ),
@@ -218,7 +217,7 @@ class _OwnerManualBookingViewState extends State<OwnerManualBookingView> {
   Widget _sectionHeader(String title) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
-      child: Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: AppColors.midnightNavy)),
+      child: Text(title, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
     );
   }
 }

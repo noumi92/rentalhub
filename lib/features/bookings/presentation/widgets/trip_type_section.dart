@@ -34,11 +34,11 @@ class TripTypeSection extends StatelessWidget {
               child: ChoiceChip(
                 label: const Text('In-City'),
                 selected: !isOutOfCity,
-                selectedColor: AppColors.royalNavy,
+                selectedColor: AppColors.primary,
                 labelStyle: TextStyle(
                     fontWeight: FontWeight.w700,
                     color: isOutOfCity
-                        ? AppColors.midnightNavy
+                        ? AppColors.primary
                         : Colors.white),
                 onSelected: (_) => onChanged(false),
               ),
@@ -48,12 +48,12 @@ class TripTypeSection extends StatelessWidget {
               child: ChoiceChip(
                 label: const Text('Out-of-City'),
                 selected: isOutOfCity,
-                selectedColor: AppColors.royalNavy,
+                selectedColor: AppColors.primary,
                 labelStyle: TextStyle(
                     fontWeight: FontWeight.w700,
                     color: isOutOfCity
                         ? Colors.white
-                        : AppColors.midnightNavy),
+                        : AppColors.primary),
                 onSelected: (_) => onChanged(true),
               ),
             ),
@@ -61,20 +61,14 @@ class TripTypeSection extends StatelessWidget {
         ),
         if (isOutOfCity) ...[
           const SizedBox(height: 10),
-          const Text(
+          Text(
             'Tracker clearance required — the shop confirms it before pickup.',
-            style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: AppColors.sunsetOrange),
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w600, color: AppColors.secondary),
           ),
           if (fixedRoutes.isNotEmpty) ...[
             const SizedBox(height: 10),
-            const Text('Fixed routes from this shop',
-                style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.midnightNavy)),
+            Text('Fixed routes from this shop',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
             const SizedBox(height: 6),
             Wrap(
               spacing: 8,
@@ -85,12 +79,12 @@ class TripTypeSection extends StatelessWidget {
                   label:
                       Text('${r.destinationCity} • Rs. ${r.fixedPricePkr}'),
                   selected: selected,
-                  selectedColor: AppColors.sunsetOrange,
+                  selectedColor: AppColors.secondary,
                   labelStyle: TextStyle(
                       fontWeight: FontWeight.w700,
                       color: selected
                           ? Colors.white
-                          : AppColors.midnightNavy),
+                          : AppColors.primary),
                   onSelected: (_) =>
                       onRouteSelected(selected ? null : r),
                 );

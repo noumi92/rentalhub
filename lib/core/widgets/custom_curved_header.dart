@@ -23,9 +23,12 @@ class CustomCurvedHeader extends StatelessWidget {
     this.bottomWidget,
     this.height = AppDimensions.headerHeight,
     this.showProfileGreeting = false,
-    this.userName = 'Ahmed Raza',
+    // Phase A (A5): no fake identity. Callers must pass the signed-in
+    // user's real name; an empty name renders a neutral greeting and an
+    // unverified badge instead of pretending to be a fake demo user.
+    this.userName = '',
     this.urduGreeting = 'اسلام علیکم',
-    this.isVerified = true,
+    this.isVerified = false,
     this.onNotificationTap,
   });
 
@@ -74,19 +77,18 @@ class CustomCurvedHeader extends StatelessWidget {
                         height: 38,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: AppColors.sunsetOrange.withValues(alpha: 0.2),
+                          color: AppColors.secondary.withValues(alpha: 0.2),
                           border: Border.all(
-                            color: AppColors.sunsetOrange,
+                            color: AppColors.secondary,
                             width: 1.5,
                           ),
                         ),
                         alignment: Alignment.center,
                         child: Text(
                           userName.isNotEmpty ? userName[0].toUpperCase() : 'U',
-                          style: const TextStyle(
+                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                             color: Colors.white,
                             fontWeight: FontWeight.w800,
-                            fontSize: 15,
                           ),
                         ),
                       ),
@@ -100,18 +102,18 @@ class CustomCurvedHeader extends StatelessWidget {
                               spacing: 6,
                               children: [
                                 Text(
-                                  'Hi, $userName',
-                                  style: const TextStyle(
+                                  userName.isNotEmpty
+                                      ? 'Hi, $userName'
+                                      : 'Hi there',
+                                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
                                     color: Colors.white,
-                                    fontSize: 14,
                                     fontWeight: FontWeight.w800,
                                   ),
                                 ),
                                 Text(
                                   '($urduGreeting)',
-                                  style: const TextStyle(
-                                    color: AppColors.textLavender,
-                                    fontSize: 12,
+                                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                                    color: AppColors.primaryContainer,
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
@@ -139,7 +141,7 @@ class CustomCurvedHeader extends StatelessWidget {
                                 width: 8,
                                 height: 8,
                                 decoration: const BoxDecoration(
-                                  color: AppColors.sunsetOrange,
+                                  color: AppColors.secondary,
                                   shape: BoxShape.circle,
                                 ),
                               ),

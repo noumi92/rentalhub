@@ -23,7 +23,7 @@ class FuelGaugeWidget extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surfaceLight,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.borderSubtle),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -36,15 +36,14 @@ class FuelGaugeWidget extends StatelessWidget {
                   const Icon(
                     Icons.local_gas_station_rounded,
                     size: 18,
-                    color: AppColors.sunsetOrange,
+                    color: AppColors.secondary,
                   ),
                   const SizedBox(width: 6),
                   Text(
                     label,
-                    style: const TextStyle(
-                      fontSize: 13,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.w700,
-                      color: AppColors.midnightNavy,
+                      color: AppColors.primary,
                     ),
                   ),
                 ],
@@ -57,10 +56,9 @@ class FuelGaugeWidget extends StatelessWidget {
                 ),
                 child: Text(
                   '$activeSegments / 8 Bars (${(activeSegments / 8 * 100).round()}%)',
-                  style: const TextStyle(
-                    fontSize: 11,
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
                     fontWeight: FontWeight.w800,
-                    color: AppColors.midnightNavy,
+                    color: AppColors.primary,
                   ),
                 ),
               ),
@@ -71,11 +69,11 @@ class FuelGaugeWidget extends StatelessWidget {
             children: List.generate(8, (index) {
               final int barNumber = index + 1;
               final bool isFilled = barNumber <= activeSegments;
-              Color barColor = AppColors.emeraldGreen;
+              Color barColor = AppColors.accentSuccess;
               if (barNumber <= 2) {
-                barColor = AppColors.crimsonRed;
+                barColor = AppColors.accentDanger;
               } else if (barNumber <= 4) {
-                barColor = AppColors.amberGold;
+                barColor = AppColors.warning;
               }
 
               return Expanded(
@@ -89,12 +87,12 @@ class FuelGaugeWidget extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: isFilled
                           ? barColor
-                          : AppColors.border.withValues(alpha: 0.45),
+                          : AppColors.borderSubtle.withValues(alpha: 0.45),
                       borderRadius: BorderRadius.circular(5),
                       border: Border.all(
                         color: isFilled
                             ? barColor.withValues(alpha: 0.8)
-                            : AppColors.border,
+                            : AppColors.borderSubtle,
                       ),
                     ),
                   ),
@@ -103,47 +101,40 @@ class FuelGaugeWidget extends StatelessWidget {
             }),
           ),
           const SizedBox(height: 6),
-          const Row(
+          Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 'E',
-                style: TextStyle(
-                  fontSize: 11,
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
                   fontWeight: FontWeight.w900,
-                  color: AppColors.crimsonRed,
+                  color: AppColors.accentDanger,
                 ),
               ),
               Text(
                 '1/4',
-                style: TextStyle(
-                  fontSize: 10,
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: AppColors.textMuted,
                 ),
               ),
               Text(
                 '1/2',
-                style: TextStyle(
-                  fontSize: 10,
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
                   fontWeight: FontWeight.w700,
-                  color: AppColors.midnightNavy,
+                  color: AppColors.primary,
                 ),
               ),
               Text(
                 '3/4',
-                style: TextStyle(
-                  fontSize: 10,
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: AppColors.textMuted,
                 ),
               ),
               Text(
                 'F',
-                style: TextStyle(
-                  fontSize: 11,
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
                   fontWeight: FontWeight.w900,
-                  color: AppColors.emeraldGreen,
+                  color: AppColors.accentSuccess,
                 ),
               ),
             ],

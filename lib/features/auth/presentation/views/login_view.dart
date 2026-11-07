@@ -22,9 +22,8 @@ class LoginView extends StatefulWidget {
 }
 
 class _LoginViewState extends State<LoginView> {
-  final _emailController =
-      TextEditingController(text: 'ahmed.raza@rentalhub.pk');
-  final _passwordController = TextEditingController(text: 'password123');
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
   bool _isLoading = false;
 
   @override
@@ -105,20 +104,19 @@ class _LoginViewState extends State<LoginView> {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
-      body: SingleChildScrollView(
+      body: SafeArea(
+        child: SingleChildScrollView(
         child: Column(
           children: [
-            const CustomCurvedHeader(
+            CustomCurvedHeader(
               height: 160,
               titleWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     'RentalHub',
-                    style: TextStyle(
+                    style: Theme.of(context).textTheme.displayLarge?.copyWith(
                       color: Colors.white,
-                      fontSize: 26,
                       fontWeight: FontWeight.w900,
                       letterSpacing: -0.5,
                     ),
@@ -126,9 +124,8 @@ class _LoginViewState extends State<LoginView> {
                   SizedBox(height: 4),
                   Text(
                     'Pakistan Premier Car Rental & Fleet Ecosystem • خوش آمدید',
-                    style: TextStyle(
-                      color: AppColors.textLavender,
-                      fontSize: 12.5,
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                      color: AppColors.primaryContainer,
                     ),
                   ),
                 ],
@@ -160,10 +157,8 @@ class _LoginViewState extends State<LoginView> {
                             Center(
                               child: Text(
                                 'Welcome to RentalHub',
-                                style: TextStyle(
-                                  fontSize: 20,
+                                style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                   fontWeight: FontWeight.w800,
-                                  color: scheme.onSurface,
                                 ),
                               ),
                             ),
@@ -171,8 +166,7 @@ class _LoginViewState extends State<LoginView> {
                             Center(
                               child: Text(
                                 'Sign in to rent a car near you',
-                                style: TextStyle(
-                                  fontSize: 13,
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                   color: scheme.onSurfaceVariant,
                                   fontWeight: FontWeight.w500,
                                 ),
@@ -220,12 +214,11 @@ class _LoginViewState extends State<LoginView> {
                                     context.go(RouteNames.onboardingProfile);
                                   }
                                 },
-                                child: const Text(
+                                child: Text(
                                   'New to RentalHub? Choose Role & Register',
-                                  style: TextStyle(
+                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                     color: AppColors.primary,
                                     fontWeight: FontWeight.w700,
-                                    fontSize: 13,
                                   ),
                                 ),
                               ),
@@ -241,6 +234,7 @@ class _LoginViewState extends State<LoginView> {
             ),
           ],
         ),
+      ),
       ),
     );
   }

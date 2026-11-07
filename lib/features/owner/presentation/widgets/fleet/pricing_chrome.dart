@@ -32,14 +32,15 @@ class PricingHeader extends StatelessWidget {
       titleWidget: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Vehicle Pricing Matrix',
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w900)),
+          Text('Vehicle Pricing Matrix',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.w900,
+              )),
           Text('${vehicle.make} ${vehicle.model} (${vehicle.year})',
-              style: const TextStyle(
-                  color: AppColors.textLavender, fontSize: 12)),
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: AppColors.primaryContainer,
+              )),
         ],
       ),
       actions: [

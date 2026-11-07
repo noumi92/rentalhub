@@ -31,7 +31,7 @@ class OnboardingDocumentTile extends StatelessWidget {
           color: hasFile ? const Color(0xFFF0FDF4) : Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: hasFile ? AppColors.emeraldGreen : AppColors.border,
+            color: hasFile ? AppColors.accentSuccess : AppColors.borderSubtle,
             width: hasFile ? 1.5 : 1,
           ),
         ),
@@ -52,12 +52,12 @@ class OnboardingDocumentTile extends StatelessWidget {
                 width: 38,
                 height: 38,
                 decoration: BoxDecoration(
-                  color: AppColors.sunsetOrange.withValues(alpha: 0.1),
+                  color: AppColors.secondary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: const Icon(
                   Icons.upload_file_rounded,
-                  color: AppColors.sunsetOrange,
+                  color: AppColors.secondary,
                   size: 22,
                 ),
               ),
@@ -68,35 +68,30 @@ class OnboardingDocumentTile extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(
-                      fontSize: 12.5,
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
                       fontWeight: FontWeight.w800,
-                      color: AppColors.midnightNavy,
+                      color: AppColors.primary,
                     ),
                   ),
                   Text(
                     subtitle,
-                    style: const TextStyle(
-                      fontSize: 10.5,
-                      color: AppColors.textSecondary,
-                    ),
+                    style: Theme.of(context).textTheme.labelSmall,
                   ),
                 ],
               ),
             ),
             if (hasFile && onRemove != null)
               IconButton(
-                icon: const Icon(Icons.delete_outline_rounded, color: AppColors.error, size: 20),
+                icon: const Icon(Icons.delete_outline_rounded, color: AppColors.accentDanger, size: 20),
                 tooltip: 'Remove',
                 onPressed: onRemove,
               )
             else
               Text(
                 hasFile ? 'Ready ✓' : 'Upload',
-                style: TextStyle(
-                  fontSize: 11,
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
                   fontWeight: FontWeight.w800,
-                  color: hasFile ? AppColors.emeraldGreen : AppColors.sunsetOrange,
+                  color: hasFile ? AppColors.accentSuccess : AppColors.secondary,
                 ),
               ),
           ],

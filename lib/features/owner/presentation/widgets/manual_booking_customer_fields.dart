@@ -27,7 +27,7 @@ class ManualBookingCustomerFields extends StatelessWidget {
     return TextField(
       controller: controller,
       keyboardType: keyboard,
-      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+      style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
       decoration: InputDecoration(
         labelText: label,
         prefixIcon: Icon(icon, color: Theme.of(context).colorScheme.onSurfaceVariant, size: 20),
@@ -35,7 +35,7 @@ class ManualBookingCustomerFields extends StatelessWidget {
         fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
         border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: AppColors.border)),
+            borderSide: const BorderSide(color: AppColors.borderSubtle)),
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       ),

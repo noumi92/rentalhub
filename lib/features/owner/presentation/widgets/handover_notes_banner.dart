@@ -17,12 +17,12 @@ class HandoverNotesBanner extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.borderSubtle),
       ),
       child: Text(
         'Noted at handover: ${notes.join('; ')}',
         style:
-            const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+            Theme.of(context).textTheme.bodySmall,
       ),
     );
   }

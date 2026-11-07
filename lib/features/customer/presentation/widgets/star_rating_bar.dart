@@ -25,26 +25,19 @@ class StarRatingBar extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.borderSubtle),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             title,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w800,
-              color: AppColors.midnightNavy,
-            ),
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
           ),
           const SizedBox(height: 2),
           Text(
             subtitle,
-            style: const TextStyle(
-              fontSize: 11,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.labelSmall,
           ),
           const SizedBox(height: 10),
           Row(
@@ -59,7 +52,7 @@ class StarRatingBar extends StatelessWidget {
                 icon: Icon(
                   isFilled ? Icons.star_rounded : Icons.star_border_rounded,
                   size: 36,
-                  color: isFilled ? AppColors.amberGold : AppColors.border,
+                  color: isFilled ? AppColors.warning : AppColors.borderSubtle,
                 ),
               );
             }),

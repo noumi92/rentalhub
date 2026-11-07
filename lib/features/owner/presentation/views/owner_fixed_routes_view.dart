@@ -112,7 +112,6 @@ class _OwnerFixedRoutesViewState extends State<OwnerFixedRoutesView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
       body: SafeArea(
         child: Column(
           children: [
@@ -123,17 +122,13 @@ class _OwnerFixedRoutesViewState extends State<OwnerFixedRoutesView> {
                     color: Colors.white, size: 20),
                 onPressed: widget.onBack ?? () => context.pop(),
               ),
-              titleWidget: const Column(
+              titleWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('Fixed Out-of-City Routes',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w900)),
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
                   Text('One fixed price per destination',
-                      style: TextStyle(
-                          color: AppColors.textLavender, fontSize: 12)),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.primaryContainer)),
                 ],
               ),
             ),
@@ -151,7 +146,7 @@ class _OwnerFixedRoutesViewState extends State<OwnerFixedRoutesView> {
                                   child: ListTile(
                                     leading: const Icon(
                                         Icons.route_rounded,
-                                        color: AppColors.royalNavy),
+                                        color: AppColors.primary),
                                     title: Text(r.displayName,
                                         style: const TextStyle(
                                             fontWeight: FontWeight.w800)),

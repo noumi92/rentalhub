@@ -67,7 +67,6 @@ class _CustomerActiveTripViewState extends State<CustomerActiveTripView> {
     final b = widget.booking;
     final isActive = b.status == 'active';
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
       body: SafeArea(
         child: Column(
           children: [
@@ -80,12 +79,9 @@ class _CustomerActiveTripViewState extends State<CustomerActiveTripView> {
                       onPressed: widget.onBack,
                     )
                   : null,
-              titleWidget: const Text(
+              titleWidget: Text(
                 'Active Trip',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w900),
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white),
               ),
             ),
             Expanded(
@@ -108,7 +104,7 @@ class _CustomerActiveTripViewState extends State<CustomerActiveTripView> {
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: AppColors.border),
+                        border: Border.all(color: AppColors.borderSubtle),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -119,11 +115,7 @@ class _CustomerActiveTripViewState extends State<CustomerActiveTripView> {
                               Expanded(
                                 child: Text(
                                   b.vehicleName ?? 'Rental Car',
-                                  style: const TextStyle(
-                                    fontSize: 17,
-                                    fontWeight: FontWeight.w900,
-                                    color: AppColors.midnightNavy,
-                                  ),
+                                  style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: AppColors.primary),
                                 ),
                               ),
                               BookingStatusChip(status: b.status),
@@ -132,10 +124,7 @@ class _CustomerActiveTripViewState extends State<CustomerActiveTripView> {
                           const SizedBox(height: 4),
                           Text(
                             '${b.shopName ?? 'Showroom'} • ${b.vehiclePlate ?? ''}',
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: AppColors.textSecondary,
-                            ),
+                            style: Theme.of(context).textTheme.bodySmall,
                           ),
                           const Divider(height: 20),
                           _fact('Pickup', _when(b.pickupTime)),
@@ -199,15 +188,11 @@ class _CustomerActiveTripViewState extends State<CustomerActiveTripView> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(label,
-            style: const TextStyle(
-                fontSize: 13, color: AppColors.textSecondary)),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary)),
         Flexible(
           child: Text(value,
               textAlign: TextAlign.right,
-              style: const TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.midnightNavy)),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.primary)),
         ),
       ],
     );

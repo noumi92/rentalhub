@@ -75,7 +75,6 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
     return BlocProvider.value(
       value: _cubit,
       child: Scaffold(
-        backgroundColor: AppColors.backgroundLight,
         bottomNavigationBar: const OwnerBottomNav(currentIndex: 1),
         body: SafeArea(
           child: BlocBuilder<FleetCubit, FleetState>(
@@ -109,18 +108,14 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
                           }
                         },
                       ),
-                      titleWidget: const Column(
+                      titleWidget: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text('Fleet Management',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w900)),
+                              style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
                           SizedBox(height: 2),
                           Text('Live Showroom',
-                              style: TextStyle(
-                                  color: AppColors.textLavender, fontSize: 12)),
+                              style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.primaryContainer)),
                         ],
                       ),
                       actions: [
@@ -134,7 +129,7 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
                         IconButton(
                           tooltip: 'Add Vehicle',
                           icon: const Icon(Icons.add_circle_rounded,
-                              color: AppColors.sunsetOrange, size: 28),
+                              color: AppColors.secondary, size: 28),
                           onPressed: _openAddVehicle,
                         ),
                       ],
@@ -151,19 +146,19 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
                               label: 'Total Fleet',
                               value: '$totalCount Cars',
                               icon: Icons.directions_car_rounded,
-                              color: AppColors.midnightNavy),
+                              color: AppColors.primary),
                           const SizedBox(width: 8),
                           FleetMetricCard(
                               label: 'Available',
                               value: '$availableCount Ready',
                               icon: Icons.check_circle_outline_rounded,
-                              color: AppColors.emeraldGreen),
+                              color: AppColors.accentSuccess),
                           const SizedBox(width: 8),
                           FleetMetricCard(
                               label: 'On Rent',
                               value: '$onRentCount Active',
                               icon: Icons.key_rounded,
-                              color: AppColors.sunsetOrange),
+                              color: AppColors.secondary),
                         ],
                       ),
                     ),
@@ -226,13 +221,8 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
     return ChoiceChip(
       label: Text('$label ($count)'),
       selected: isSelected,
-      selectedColor: AppColors.sunsetOrange,
-      backgroundColor: AppColors.backgroundLight,
-      labelStyle: TextStyle(
-        fontSize: 11.5,
-        fontWeight: FontWeight.w700,
-        color: isSelected ? Colors.white : AppColors.midnightNavy,
-      ),
+      selectedColor: AppColors.secondary,
+      labelStyle: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700, color: isSelected ? Colors.white : AppColors.primary),
       onSelected: (_) => setState(() => _selectedFilter = label),
     );
   }

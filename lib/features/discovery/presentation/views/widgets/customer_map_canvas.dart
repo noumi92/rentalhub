@@ -48,8 +48,8 @@ class CustomerMapCanvas extends StatelessWidget {
               point: userPoint,
               radius: radiusKm * 1000,
               useRadiusInMeter: true,
-              color: AppColors.sunsetOrange.withValues(alpha: 0.10),
-              borderColor: AppColors.sunsetOrange,
+              color: AppColors.secondary.withValues(alpha: 0.10),
+              borderColor: AppColors.secondary,
               borderStrokeWidth: 1.5,
             ),
           ],
@@ -108,8 +108,8 @@ class CustomerMapCanvas extends StatelessWidget {
                           ),
                           decoration: BoxDecoration(
                             color: isSelected
-                                ? AppColors.sunsetOrange
-                                : AppColors.midnightNavy,
+                                ? AppColors.secondary
+                                : AppColors.primary,
                             borderRadius: BorderRadius.circular(10),
                             boxShadow: [
                               BoxShadow(
@@ -120,19 +120,15 @@ class CustomerMapCanvas extends StatelessWidget {
                           ),
                           child: Text(
                             '${shop.shopName.split(' ').first} • ${shop.distanceKm.toStringAsFixed(1)}km',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w800,
-                            ),
+                            style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800, color: Colors.white),
                           ),
                         ),
                         Icon(
                           Icons.location_on_rounded,
                           size: isSelected ? 32 : 26,
                           color: isSelected
-                              ? AppColors.sunsetOrange
-                              : AppColors.midnightNavy,
+                              ? AppColors.secondary
+                              : AppColors.primary,
                         ),
                       ],
                     ),

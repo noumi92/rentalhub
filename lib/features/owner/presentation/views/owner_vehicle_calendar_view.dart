@@ -66,7 +66,6 @@ class _OwnerVehicleCalendarViewState extends State<OwnerVehicleCalendarView> {
     final selectedBookings =
         _selectedDay == null ? <BookingEntity>[] : _bookingsOn(_selectedDay!);
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
       body: SafeArea(
         child: Column(
           children: [
@@ -80,14 +79,10 @@ class _OwnerVehicleCalendarViewState extends State<OwnerVehicleCalendarView> {
               titleWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Booking Calendar',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w900)),
+                  Text('Booking Calendar',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
                   Text(v.displayName,
-                      style: const TextStyle(
-                          color: AppColors.textLavender, fontSize: 12)),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.primaryContainer)),
                 ],
               ),
             ),
@@ -119,10 +114,7 @@ class _OwnerVehicleCalendarViewState extends State<OwnerVehicleCalendarView> {
                         if (_selectedDay != null) ...[
                           Text(
                             'Bookings on ${_selectedDay!.day}/${_selectedDay!.month}/${_selectedDay!.year}',
-                            style: const TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w800,
-                                color: AppColors.midnightNavy),
+                            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
                           ),
                           const SizedBox(height: 8),
                           if (selectedBookings.isEmpty)
@@ -140,8 +132,7 @@ class _OwnerVehicleCalendarViewState extends State<OwnerVehicleCalendarView> {
                                       '${b.packageType} • ${b.pickupTime.hour}:${b.pickupTime.minute.toString().padLeft(2, '0')} → ${b.returnTime.day}/${b.returnTime.month}'),
                                   trailing: Chip(
                                       label: Text(b.status,
-                                          style: const TextStyle(
-                                              fontSize: 11))),
+                                          style: Theme.of(context).textTheme.labelSmall)),
                                 ),
                               )),
                         ],
@@ -165,7 +156,7 @@ class _OwnerVehicleCalendarViewState extends State<OwnerVehicleCalendarView> {
               color: color, borderRadius: BorderRadius.circular(4)),
         ),
         const SizedBox(width: 4),
-        Text(label, style: const TextStyle(fontSize: 11)),
+        Text(label, style: Theme.of(context).textTheme.labelSmall),
       ],
     );
   }

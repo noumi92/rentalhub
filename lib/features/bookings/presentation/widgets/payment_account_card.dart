@@ -28,7 +28,7 @@ class PaymentAccountCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.borderSubtle),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -56,17 +56,13 @@ class PaymentAccountCard extends StatelessWidget {
                   const SizedBox(width: 10),
                   Text(
                     methodTitle,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
-                      color: AppColors.midnightNavy,
-                    ),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
                   ),
                 ],
               ),
               IconButton(
                 icon: const Icon(Icons.copy_rounded,
-                    size: 19, color: AppColors.royalNavy),
+                    size: 19, color: AppColors.primary),
                 tooltip: 'Copy Number',
                 onPressed: () {
                   Clipboard.setData(ClipboardData(text: iban ?? accountNumber));
@@ -105,7 +101,7 @@ class PaymentAccountCard extends StatelessWidget {
           style: const TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.w700,
-            color: AppColors.midnightNavy,
+            color: AppColors.primary,
           ),
         ),
       ],

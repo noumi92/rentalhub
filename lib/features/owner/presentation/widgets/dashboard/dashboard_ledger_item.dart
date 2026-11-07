@@ -24,17 +24,17 @@ class DashboardLedgerItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final statusColor = status == 'completed'
-        ? AppColors.emeraldGreen
+        ? AppColors.accentSuccess
         : status == 'active'
-            ? AppColors.royalNavy
-            : AppColors.sunsetOrange;
+            ? AppColors.primary
+            : AppColors.secondary;
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.borderSubtle),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -43,30 +43,29 @@ class DashboardLedgerItem extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(vehicleName,
-                  style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w800,
-                      color: AppColors.midnightNavy)),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.primary,
+                  )),
               const SizedBox(height: 2),
               Text('#$bookingId • $customerName',
-                  style: const TextStyle(
-                      fontSize: 11, color: AppColors.textSecondary)),
+                  style: Theme.of(context).textTheme.labelSmall),
             ],
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text('Rs. $amount',
-                  style: const TextStyle(
-                      fontSize: 13.5,
-                      fontWeight: FontWeight.w900,
-                      color: AppColors.midnightNavy)),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w900,
+                    color: AppColors.primary,
+                  )),
               const SizedBox(height: 2),
               Text(status.toUpperCase(),
-                  style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w900,
-                      color: statusColor)),
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    fontWeight: FontWeight.w900,
+                    color: statusColor,
+                  )),
             ],
           ),
         ],

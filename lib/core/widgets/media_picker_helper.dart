@@ -46,17 +46,16 @@ class MediaPickerHelper {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: AppColors.border,
+                  color: AppColors.borderSubtle,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
               const SizedBox(height: 14),
-              const Text(
+              Text(
                 'Select Media Source',
-                style: TextStyle(
-                  fontSize: 16,
+                style: Theme.of(ctx).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w800,
-                  color: AppColors.midnightNavy,
+                  color: AppColors.primary,
                 ),
               ),
               const SizedBox(height: 12),
@@ -66,13 +65,13 @@ class MediaPickerHelper {
                 leading: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: AppColors.sunsetOrange.withValues(alpha: 0.1),
+                    color: AppColors.secondary.withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.camera_alt_rounded, color: AppColors.sunsetOrange, size: 22),
+                  child: const Icon(Icons.camera_alt_rounded, color: AppColors.secondary, size: 22),
                 ),
-                title: const Text('Take Photo (Back Camera)', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
-                subtitle: const Text('Use device camera', style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+                title: Text('Take Photo (Back Camera)', style: Theme.of(ctx).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
+                subtitle: Text('Use device camera', style: Theme.of(ctx).textTheme.labelSmall),
                 onTap: () async {
                   Navigator.of(ctx).pop();
                   final photo = await _picker.pickImage(
@@ -92,10 +91,10 @@ class MediaPickerHelper {
                     color: AppColors.primaryContainer,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.photo_library_rounded, color: AppColors.midnightNavy, size: 22),
+                  child: const Icon(Icons.photo_library_rounded, color: AppColors.primary, size: 22),
                 ),
-                title: const Text('Choose from Gallery', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
-                subtitle: const Text('Pick existing photo or screenshot', style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+                title: Text('Choose from Gallery', style: Theme.of(ctx).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
+                subtitle: Text('Pick existing photo or screenshot', style: Theme.of(ctx).textTheme.labelSmall),
                 onTap: () async {
                   Navigator.of(ctx).pop();
                   final photo = await _picker.pickImage(
@@ -113,13 +112,13 @@ class MediaPickerHelper {
                   leading: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: AppColors.error.withValues(alpha: 0.1),
+                      color: AppColors.accentDanger.withValues(alpha: 0.1),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.delete_outline_rounded, color: AppColors.error, size: 22),
+                    child: const Icon(Icons.delete_outline_rounded, color: AppColors.accentDanger, size: 22),
                   ),
-                  title: const Text('Remove Photo', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: AppColors.error)),
-                  subtitle: const Text('Clear this uploaded image', style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+                  title: Text('Remove Photo', style: Theme.of(ctx).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700, color: AppColors.accentDanger)),
+                  subtitle: Text('Clear this uploaded image', style: Theme.of(ctx).textTheme.labelSmall),
                   onTap: () {
                     Navigator.of(ctx).pop();
                     onImageSelected(null);

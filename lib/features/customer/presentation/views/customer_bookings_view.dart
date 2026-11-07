@@ -88,7 +88,6 @@ class _CustomerBookingsViewState extends State<CustomerBookingsView> {
   Widget build(BuildContext context) {
     final list = _filteredBookings;
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
       bottomNavigationBar: const CustomerBottomNav(currentIndex: 1),
       body: SafeArea(
         child: Column(
@@ -102,12 +101,9 @@ class _CustomerBookingsViewState extends State<CustomerBookingsView> {
                       onPressed: widget.onBack,
                     )
                   : null,
-              titleWidget: const Text(
+              titleWidget: Text(
                 'My Reservations',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w900),
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white),
               ),
             ),
             Container(
@@ -124,18 +120,13 @@ class _CustomerBookingsViewState extends State<CustomerBookingsView> {
                     label: Text(_tabs[i]),
                     selected: isSelected,
                     onSelected: (_) => setState(() => _selectedTab = i),
-                    selectedColor: AppColors.midnightNavy,
+                    selectedColor: AppColors.primary,
                     backgroundColor: Colors.white,
-                    labelStyle: TextStyle(
-                      color: isSelected ? Colors.white : AppColors.midnightNavy,
-                      fontWeight:
-                          isSelected ? FontWeight.w800 : FontWeight.w600,
-                      fontSize: 12,
-                    ),
+                    labelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600, color: isSelected ? Colors.white : AppColors.primary),
                     side: BorderSide(
                       color: isSelected
-                          ? AppColors.midnightNavy
-                          : AppColors.border,
+                          ? AppColors.primary
+                          : AppColors.borderSubtle,
                     ),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20)),
@@ -155,14 +146,12 @@ class _CustomerBookingsViewState extends State<CustomerBookingsView> {
                                 children: [
                                   Icon(Icons.inbox_rounded,
                                       size: 46,
-                                      color: AppColors.slateGray
+                                      color: AppColors.textSecondary
                                           .withValues(alpha: 0.5)),
                                   const SizedBox(height: 8),
                                   Text(
                                     'No ${_tabs[_selectedTab]} bookings found.',
-                                    style: const TextStyle(
-                                        fontSize: 13,
-                                        color: AppColors.textSecondary),
+                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
                                   ),
                                 ],
                               ),

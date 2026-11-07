@@ -71,14 +71,14 @@ class ShopKycDocsStepWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // 1 Picture as Shop Header (Back Camera / Gallery / Remove)
-        const Text(
+        Text(
           'Shop Header Showcase Banner',
-          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: AppColors.midnightNavy),
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900, color: AppColors.primary),
         ),
         const SizedBox(height: 4),
-        const Text(
+        Text(
           'Upload photo from camera or gallery. Appears at the top of your public profile.',
-          style: TextStyle(fontSize: 11.5, color: AppColors.textSecondary),
+          style: Theme.of(context).textTheme.labelSmall,
         ),
         const SizedBox(height: 10),
         OnboardingPhotoUploadBox(
@@ -91,14 +91,14 @@ class ShopKycDocsStepWidget extends StatelessWidget {
         const SizedBox(height: 20),
 
         // 3 Fleet Photos (Back Camera / Gallery / Remove)
-        const Text(
+        Text(
           'Showroom Fleet Photos (3 Required)',
-          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: AppColors.midnightNavy),
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900, color: AppColors.primary),
         ),
         const SizedBox(height: 4),
-        const Text(
+        Text(
           'Upload authentic photos of cars parked at your showroom.',
-          style: TextStyle(fontSize: 11.5, color: AppColors.textSecondary),
+          style: Theme.of(context).textTheme.labelSmall,
         ),
         const SizedBox(height: 10),
         Row(
@@ -134,14 +134,14 @@ class ShopKycDocsStepWidget extends StatelessWidget {
         const SizedBox(height: 20),
 
         // Legal & KYC Docs
-        const Text(
+        Text(
           'Owner Identity & Tax Verification',
-          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: AppColors.midnightNavy),
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900, color: AppColors.primary),
         ),
         const SizedBox(height: 4),
-        const Text(
+        Text(
           'Mandatory compliance for showroom verification.',
-          style: TextStyle(fontSize: 11.5, color: AppColors.textSecondary),
+          style: Theme.of(context).textTheme.labelSmall,
         ),
         const SizedBox(height: 10),
 

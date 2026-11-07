@@ -30,16 +30,12 @@ class CitySelectorBar extends StatelessWidget {
           return ChoiceChip(
             label: Text(city['name'] as String),
             selected: isSelected,
-            selectedColor: AppColors.sunsetOrange,
-            backgroundColor: AppColors.backgroundLight,
+            selectedColor: AppColors.secondary,
+            backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
             side: BorderSide(
-              color: isSelected ? AppColors.sunsetOrange : AppColors.border,
+              color: isSelected ? AppColors.secondary : AppColors.borderSubtle,
             ),
-            labelStyle: TextStyle(
-              color: isSelected ? Colors.white : AppColors.midnightNavy,
-              fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
-              fontSize: 12,
-            ),
+            labelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600, color: isSelected ? Colors.white : AppColors.primary),
             onSelected: (_) => onSelectCity(city),
           );
         },

@@ -29,7 +29,7 @@ class WhatsAppLogTile extends StatelessWidget {
         statusIcon = Icons.done_all_rounded;
         break;
       case 'delivered':
-        statusColor = AppColors.emeraldGreen;
+        statusColor = AppColors.accentSuccess;
         statusIcon = Icons.check_circle_rounded;
         break;
       default:
@@ -42,7 +42,7 @@ class WhatsAppLogTile extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.borderSubtle),
       ),
       child: Row(
         children: [
@@ -58,13 +58,13 @@ class WhatsAppLogTile extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Text(recipientName, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: AppColors.midnightNavy)),
+                    Text(recipientName, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
                     const SizedBox(width: 6),
-                    Text(phone, style: const TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+                    Text(phone, style: Theme.of(context).textTheme.labelSmall),
                   ],
                 ),
                 const SizedBox(height: 2),
-                Text('$messageType • $timestamp', style: const TextStyle(fontSize: 11, color: AppColors.textMuted)),
+                Text('$messageType • $timestamp', style: Theme.of(context).textTheme.labelSmall),
               ],
             ),
           ),
@@ -76,13 +76,13 @@ class WhatsAppLogTile extends StatelessWidget {
                 children: [
                   Icon(statusIcon, size: 14, color: statusColor),
                   const SizedBox(width: 4),
-                  Text(status.toUpperCase(), style: TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: statusColor)),
+                  Text(status.toUpperCase(), style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w900, color: statusColor)),
                 ],
               ),
               const SizedBox(height: 2),
               InkWell(
                 onTap: onResend,
-                child: const Text('Resend', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.sunsetOrange)),
+                child: Text('Resend', style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700, color: AppColors.secondary)),
               ),
             ],
           ),
