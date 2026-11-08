@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
-import '../../../../core/widgets/custom_curved_header.dart';
+import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../core/widgets/pakistani_plate_widget.dart';
 import '../../../../features/fleet/domain/entities/vehicle_entity.dart';
 import 'widgets/vehicle_detail_action_bar.dart';
@@ -79,24 +79,10 @@ class _VehicleDetailViewState extends State<VehicleDetailView> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    CustomCurvedHeader(
-                      variant: CustomCurvedHeaderVariant.compact,
-                      leadingWidget: widget.onBack != null
-                          ? IconButton(
-                              tooltip: l10n.back,
-                              icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                                  color: Colors.white, size: 20),
-                              onPressed: widget.onBack,
-                            )
-                          : null,
-                      titleWidget: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('${v.make} ${v.model} (${v.year})', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
-                          const SizedBox(height: 2),
-                          Text('${widget.shopName} • ${v.category}', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.primaryContainer)),
-                        ],
-                      ),
+                    MinimalAppBar(
+                      title: '${v.make} ${v.model} (${v.year})',
+                      subtitle: '${widget.shopName} • ${v.category}',
+                      onBack: widget.onBack,
                       actions: [PakistaniPlateWidget(plateNumber: v.plateNumber, isCompact: true)],
                     ),
                     Padding(

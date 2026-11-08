@@ -3,10 +3,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:rentalhub/core/di/injection_container.dart';
+import 'package:rentalhub/core/network/firestore_service.dart';
 import 'package:rentalhub/core/routing/app_router.dart';
 import 'package:rentalhub/core/routing/auth_route_guard.dart';
 import 'package:rentalhub/core/routing/route_names.dart';
 import 'package:rentalhub/features/auth/data/datasources/auth_remote_data_source.dart';
+import 'package:rentalhub/features/auth/data/models/user_model.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -219,6 +221,79 @@ void main() {
         await AuthRouteGuard.guardRoute(context, createMockState(RouteNames.ownerOnboarding)),
         isNull,
       );
+    });
+  });
+
+  group('Phone-test #2 — role restore on sign-in', () {
+    test('fresh prefs + Firestore user with role customer → customer home, never the role screen',
+        () async {
+      // Seed the Firestore user doc (in-memory FirestoreService, no
+      // live Firebase) the way a returning account looks on a fresh
+      // device: role + completed onboarding + name/phone, but empty
+      // local SharedPreferences.
+      final firestoreService = FirestoreService();
+      await firestoreService.saveUser(const UserModel(
+        uid: 'usr_pk_001',
+        email: 'ahmed@rentalhub.pk',
+        fullName: 'Ahmed Raza',
+        phoneNumber: '03001234567',
+        role: 'customer',
+        isOnboardingCompleted: true,
+      ));
+      await sl.reset();
+      sl.registerLazySingleton<SharedPreferences>(() => prefs);
+      final restoringSource = AuthRemoteDataSource(
+        prefs: prefs,
+        firestoreService: firestoreService,
+      );
+      sl.registerLazySingleton<AuthRemoteDataSource>(
+          () => restoringSource);
+
+      final user = await restoringSource.signInWithEmail(
+        email: 'ahmed@rentalhub.pk',
+        password: 'secret123',
+      );
+      expect(user.role, 'customer');
+      expect(restoringSource.lockedRole, 'customer');
+      expect(restoringSource.isOnboardingCompleted, isTrue);
+      expect(restoringSource.fullName, 'Ahmed Raza');
+      expect(restoringSource.phoneNumber, '03001234567');
+      expect(AuthRouteGuard.resolveAuthDestination(), RouteNames.customerHome);
+    });
+
+    test('Firestore read with no user doc keeps current behaviour',
+        () async {
+      final firestoreService = FirestoreService();
+      await sl.reset();
+      sl.registerLazySingleton<SharedPreferences>(() => prefs);
+      final source = AuthRemoteDataSource(
+        prefs: prefs,
+        firestoreService: firestoreService,
+      );
+      sl.registerLazySingleton<AuthRemoteDataSource>(() => source);
+
+      await source.signInWithEmail(
+        email: 'new@rentalhub.pk',
+        password: 'secret123',
+      );
+      expect(source.lockedRole, isNull);
+      expect(source.isOnboardingCompleted, isFalse);
+      expect(AuthRouteGuard.resolveAuthDestination(),
+          RouteNames.onboardingProfile);
+    });
+
+    test('an offline Firestore read failure keeps current behaviour',
+        () async {
+      // No FirestoreService at all: getUser is never attempted and
+      // the sign-in proceeds exactly as before the restore.
+      final source = AuthRemoteDataSource(prefs: prefs);
+      await source.signInWithEmail(
+        email: 'offline@rentalhub.pk',
+        password: 'secret123',
+      );
+      expect(source.lockedRole, isNull);
+      expect(AuthRouteGuard.resolveAuthDestination(),
+          RouteNames.onboardingProfile);
     });
   });
 

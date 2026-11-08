@@ -83,7 +83,10 @@ class SyncStatusCubit extends Cubit<SyncStatusState> {
     if (isClosed) return;
     emit(SyncStatusState(
       isOnline: connectivity.isOnline,
-      pendingCount: entries.length,
+      // Phone-test #4: only genuinely pending entries count as
+      // pending — exhausted entries are failed, not pending, or the
+      // banner would say "1 change pending sync" forever.
+      pendingCount: entries.length - failed,
       failedCount: failed,
       byEntity: byEntity,
     ));

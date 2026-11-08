@@ -37,7 +37,7 @@ class CnicScannerInputWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                l10n?.cnicVerifyTitle ?? 'NADRA CNIC Verification',
+                l10n?.cnicVerifyTitle ?? 'CNIC Check',
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.w800,
                     ),

@@ -10,9 +10,12 @@ import 'package:rentalhub/core/data/offline_sync_queue.dart';
 import 'package:rentalhub/core/data/sync_engine.dart';
 import 'package:rentalhub/core/data/sync_status_cubit.dart';
 import 'package:rentalhub/core/data/upload_sync_handler.dart';
+import 'package:rentalhub/core/di/injection_container.dart';
 import 'package:rentalhub/core/network/connectivity_service.dart';
 import 'package:rentalhub/core/network/cpanel_storage_client.dart';
 import 'package:rentalhub/core/widgets/offline_banner.dart';
+import 'package:rentalhub/features/settings/presentation/views/sync_details_view.dart';
+import 'package:rentalhub/l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// A fake HTTP client for the cPanel storage client: counts requests
@@ -374,6 +377,244 @@ void main() {
       final entries = await queue.pendingEntries();
       expect(entries.length, 1);
       expect(entries.first.attempts, 1);
+    });
+  });
+
+  group('Phone-test #4 — exhausted entries are parked, not pending', () {
+    Future<void> exhaust(
+      SyncEngine engine,
+      OfflineSyncQueue queue,
+    ) async {
+      for (var i = 0; i < 5; i++) {
+        await engine.drain();
+        final entry = (await queue.pendingEntries()).first;
+        await queue.updateEntry(entry.copyWith(
+          nextRetryAt: DateTime.now().subtract(const Duration(seconds: 1)),
+        ));
+      }
+    }
+
+    test('exhausted entries count as failed, not pending', () async {
+      final prefs = await freshPrefs();
+      final queue = OfflineSyncQueue(prefs: prefs);
+      final engine = SyncEngine(queue: queue);
+      engine.registerHandler('test', (_, __) async => false);
+      final controller = StreamController<List<ConnectivityResult>>();
+      final service = fakeConnectivity(controller,
+          initial: const [ConnectivityResult.wifi]);
+      final cubit = SyncStatusCubit(connectivity: service, queue: queue);
+      await service.start();
+      await cubit.start();
+      await queue.enqueue(
+          kind: 'test', entityId: 'a', payload: {'x': 1});
+      await exhaust(engine, queue);
+      await cubit.refresh();
+      expect(cubit.state.pendingCount, 0);
+      expect(cubit.state.failedCount, 1);
+      expect(cubit.statusFor('a'), SyncEntryStatus.failed);
+      await cubit.close();
+      await service.dispose();
+      await controller.close();
+    });
+
+    test('an exhausted entry is never retried again', () async {
+      final prefs = await freshPrefs();
+      final queue = OfflineSyncQueue(prefs: prefs);
+      final engine = SyncEngine(queue: queue);
+      var calls = 0;
+      engine.registerHandler('test', (_, __) async {
+        calls++;
+        return false;
+      });
+      await queue.enqueue(
+          kind: 'test', entityId: 'a', payload: {'x': 1});
+      await exhaust(engine, queue);
+      expect(calls, 5);
+      // Three more drains (entry due again): the handler must not run.
+      for (var i = 0; i < 3; i++) {
+        final entry = (await queue.pendingEntries()).first;
+        await queue.updateEntry(entry.copyWith(
+          nextRetryAt: DateTime.now().subtract(const Duration(seconds: 1)),
+        ));
+        await engine.drain();
+      }
+      expect(calls, 5);
+      expect(await queue.pendingCount, 1);
+    });
+
+    test('an entry with no handler is parked as failed, not skipped',
+        () async {
+      final prefs = await freshPrefs();
+      final queue = OfflineSyncQueue(prefs: prefs);
+      final engine = SyncEngine(queue: queue);
+      await queue.enqueue(
+          kind: 'unknown-kind', entityId: 'a', payload: {'x': 1});
+      expect(await engine.drain(), 0);
+      var entries = await queue.pendingEntries();
+      expect(entries.length, 1);
+      expect(entries.first.attempts, 1);
+      expect(entries.first.lastError, contains('No sync handler'));
+      // Five drains park it as exhausted — still queued, still
+      // visible, never silently dropped.
+      for (var i = 0; i < 4; i++) {
+        final entry = (await queue.pendingEntries()).first;
+        await queue.updateEntry(entry.copyWith(
+          nextRetryAt: DateTime.now().subtract(const Duration(seconds: 1)),
+        ));
+        await engine.drain();
+      }
+      entries = await queue.pendingEntries();
+      expect(entries.length, 1);
+      expect(entries.first.isExhausted, isTrue);
+    });
+
+    test('retry resets an exhausted entry and drains it', () async {
+      final prefs = await freshPrefs();
+      final queue = OfflineSyncQueue(prefs: prefs);
+      final engine = SyncEngine(queue: queue);
+      engine.registerHandler('test', (_, __) async => false);
+      await queue.enqueue(
+          kind: 'test', entityId: 'a', payload: {'x': 1});
+      await exhaust(engine, queue);
+      expect((await queue.pendingEntries()).first.isExhausted, isTrue);
+      engine.registerHandler('test', (_, __) async => true);
+      final entry = (await queue.pendingEntries()).first;
+      await engine.retryEntry(entry);
+      expect(await queue.pendingCount, 0);
+    });
+
+    test('an upload whose local file is gone is discarded, not retried',
+        () async {
+      final prefs = await freshPrefs();
+      final queue = OfflineSyncQueue(prefs: prefs);
+      final engine = SyncEngine(queue: queue);
+      final handler = UploadSyncHandler(
+        storageClient: CPanelStorageClient(
+          apiSecretKey: 'test-secret',
+          httpClient: FakeHttpClient(),
+        ),
+      );
+      engine.registerHandler('upload', handler.call);
+      await queue.enqueue(
+        kind: 'upload',
+        entityId: 'b1',
+        payload: {
+          'filePath': '/definitely/not/here/receipt.jpg',
+          'folder': 'payments',
+          'userUid': 'u1',
+        },
+      );
+      expect(await engine.drain(), 1);
+      expect(await queue.pendingCount, 0);
+    });
+
+    testWidgets('banner shows the failed state for exhausted entries',
+        (tester) async {
+      final prefs = await freshPrefs();
+      final queue = OfflineSyncQueue(prefs: prefs);
+      final engine = SyncEngine(queue: queue);
+      engine.registerHandler('test', (_, __) async => false);
+      final controller = StreamController<List<ConnectivityResult>>();
+      final service = fakeConnectivity(controller,
+          initial: const [ConnectivityResult.wifi]);
+      final cubit = SyncStatusCubit(connectivity: service, queue: queue);
+      await service.start();
+      await cubit.start();
+      await queue.enqueue(
+          kind: 'test', entityId: 'a', payload: {'x': 1});
+      await exhaust(engine, queue);
+      await cubit.refresh();
+
+      await tester.pumpWidget(
+        BlocProvider<SyncStatusCubit>.value(
+          value: cubit,
+          child: const MaterialApp(
+            home: Scaffold(body: OfflineBanner()),
+          ),
+        ),
+      );
+      await tester.pump(const Duration(milliseconds: 50));
+      await tester.pump(const Duration(milliseconds: 50));
+      expect(find.text('Sync failed — tap to review'), findsOneWidget);
+      expect(find.textContaining('pending sync'), findsNothing);
+
+      await tester.runAsync(() async {
+        await cubit.close();
+        await service.dispose();
+        await controller.close();
+      });
+    });
+
+    testWidgets('sync details lists entries with Retry now and Discard',
+        (tester) async {
+      final prefs = await freshPrefs();
+      final queue = OfflineSyncQueue(prefs: prefs);
+      final engine = SyncEngine(queue: queue);
+      engine.registerHandler('test', (_, __) async => false);
+      await sl.reset();
+      sl.registerSingleton<OfflineSyncQueue>(queue);
+      sl.registerSingleton<SyncEngine>(engine);
+      await queue.enqueue(
+          kind: 'test', entityId: 'a', payload: {'x': 1});
+      await exhaust(engine, queue);
+      // A succeeding handler, so Retry now actually clears the entry.
+      engine.registerHandler('test', (_, __) async => true);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const SyncDetailsView(),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Sync details'), findsOneWidget);
+      expect(find.text('test'), findsOneWidget);
+      expect(find.text('a'), findsOneWidget);
+      expect(find.text('Failed'), findsOneWidget);
+      expect(find.textContaining('handler reported failure'),
+          findsOneWidget);
+      expect(find.text('Retry now'), findsOneWidget);
+      expect(find.text('Discard'), findsOneWidget);
+
+      await tester.tap(find.text('Retry now'));
+      await tester.pumpAndSettle();
+      expect(find.text('Nothing pending'), findsOneWidget);
+      expect(await queue.pendingCount, 0);
+
+      await tester.runAsync(() async {
+        await sl.reset();
+      });
+    });
+
+    testWidgets('sync details Discard removes the entry', (tester) async {
+      final prefs = await freshPrefs();
+      final queue = OfflineSyncQueue(prefs: prefs);
+      final engine = SyncEngine(queue: queue);
+      await sl.reset();
+      sl.registerSingleton<OfflineSyncQueue>(queue);
+      sl.registerSingleton<SyncEngine>(engine);
+      await queue.enqueue(
+          kind: 'test', entityId: 'b', payload: {'x': 1});
+
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const SyncDetailsView(),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('b'), findsOneWidget);
+
+      await tester.tap(find.text('Discard'));
+      await tester.pumpAndSettle();
+      expect(find.text('Nothing pending'), findsOneWidget);
+      expect(await queue.pendingCount, 0);
+
+      await tester.runAsync(() async {
+        await sl.reset();
+      });
     });
   });
 

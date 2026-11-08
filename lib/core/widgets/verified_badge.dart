@@ -21,7 +21,7 @@ class VerifiedBadge extends StatelessWidget {
     // still wins. English fallback for delegate-less pumps.
     final l10n = AppLocalizations.of(context);
     final verifiedLabel =
-        label ?? l10n?.badgeNadraVerified ?? 'NADRA Verified';
+        label ?? l10n?.badgeNadraVerified ?? 'Verified';
     final pendingLabel = l10n?.statusPendingReview ?? 'Pending Review';
     final Color badgeColor = isVerified
         ? AppColors.successOnContainerFor(brightness)

@@ -178,7 +178,7 @@ void main() {
 
   group('Rulebook §4.4 — nav shell is the only navigation mechanism', () {
     // Phase C (C1/C2): the two StatefulShellRoute shells (customer +
-    // owner, five branches each) own the single floating nav
+    // owner, five branches each) own the single flush nav
     // (`AppShellNav`, via `AppShell`). The 10 tab-root screens must
     // never embed a nav widget of their own — a second nav would
     // double the pill and break the shell's branch state.

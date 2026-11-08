@@ -1,10 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/app_state_views.dart';
-import '../../../../core/widgets/custom_curved_header.dart';
+import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../core/widgets/verified_badge.dart';
 import 'widgets/shop_vehicle_card.dart';
 import '../../../customer/data/datasources/customer_remote_data_source.dart';
@@ -133,35 +132,11 @@ class _ShopDetailViewState extends State<ShopDetailView> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CustomCurvedHeader(
-                variant: CustomCurvedHeaderVariant.hero,
-                leadingWidget: widget.onBack != null
-                    ? IconButton(
-                        tooltip: l10n.back,
-                        icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                            color: Colors.white, size: 18),
-                        onPressed: widget.onBack,
-                      )
-                    : null,
-                titleWidget: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      shop.shopName,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w900, color: Colors.white),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      '${shop.address}, ${shop.city} (${shop.distanceKm} km)',
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodySmall
-                          ?.copyWith(color: AppColors.primaryContainer),
-                    ),
-                  ],
-                ),
-                bottomWidget: VerifiedBadge(isVerified: shop.isVerified),
+              MinimalAppBar(
+                title: shop.shopName,
+                subtitle:
+                    '${shop.address}, ${shop.city} (${shop.distanceKm} km)',
+                onBack: widget.onBack,
                 actions: [
                   IconButton(
                     icon: Icon(
@@ -176,60 +151,62 @@ class _ShopDetailViewState extends State<ShopDetailView> {
                   ),
                 ],
               ),
-              HeaderOverlapContainer(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (_loading)
-                        // E2: shared loading / error / empty states.
-                         AppLoadingState(
-                          message: l10n.shopLoadingCars,
-                        )
-                      else if (_hasError)
-                        AppErrorState(
-                          message:
-                              l10n.shopCarsLoadError,
-                          onRetry: _loadVehicles,
-                        )
-                      else if (vehicles.isEmpty)
-                         AppEmptyState(
-                          title: l10n.shopNoCars,
-                          message:
-                              l10n.shopCheckLater,
-                          icon: Icons.directions_car_outlined,
-                        )
-                      else ...[
-                        ...vehicles.map(
-                          (vehicle) => ShopVehicleCard(
-                            vehicle: vehicle,
-                            onTap: () =>
-                                widget.onVehicleSelected?.call(vehicle),
-                          ),
+              Padding(
+                padding: const EdgeInsets.only(left: 20, top: 12),
+                child: VerifiedBadge(isVerified: shop.isVerified),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (_loading)
+                      
+                       AppLoadingState(
+                        message: l10n.shopLoadingCars,
+                      )
+                    else if (_hasError)
+                      AppErrorState(
+                        message:
+                            l10n.shopCarsLoadError,
+                        onRetry: _loadVehicles,
+                      )
+                    else if (vehicles.isEmpty)
+                       AppEmptyState(
+                        title: l10n.shopNoCars,
+                        message:
+                            l10n.shopCheckLater,
+                        icon: Icons.directions_car_outlined,
+                      )
+                    else ...[
+                      ...vehicles.map(
+                        (vehicle) => ShopVehicleCard(
+                          vehicle: vehicle,
+                          onTap: () =>
+                              widget.onVehicleSelected?.call(vehicle),
                         ),
-                        if (widget.onViewAllCars != null)
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 8),
-                            child: Center(
-                              child: TextButton.icon(
-                                onPressed: widget.onViewAllCars,
-                                icon: const Icon(
-                                  Icons.directions_car_rounded,
-                                  size: 18,
-                                ),
-                                label:  Text(
-                                  l10n.shopViewAllCars,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w700,
-                                  ),
+                      ),
+                      if (widget.onViewAllCars != null)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: Center(
+                            child: TextButton.icon(
+                              onPressed: widget.onViewAllCars,
+                              icon: const Icon(
+                                Icons.directions_car_rounded,
+                                size: 18,
+                              ),
+                              label:  Text(
+                                l10n.shopViewAllCars,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w700,
                                 ),
                               ),
                             ),
                           ),
-                      ],
+                        ),
                     ],
-                  ),
+                  ],
                 ),
               ),
             ],

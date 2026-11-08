@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/widgets/app_feedback.dart';
-import '../../../../core/widgets/custom_curved_header.dart';
+import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../core/widgets/debounced_button.dart';
 import '../../../blacklist/data/datasources/blacklist_remote_data_source.dart';
 import '../../../fleet/data/datasources/fleet_remote_data_source.dart';
@@ -17,11 +16,18 @@ import 'owner_handover_signature_view.dart';
 
 class OwnerManualBookingView extends StatefulWidget {
   final String? prefilledCnic;
+  // #18: booking for an existing customer (from the Customers list)
+  // prefills name + phone as well as the CNIC; all three arrive as
+  // query params on the manual-booking route.
+  final String? prefilledName;
+  final String? prefilledPhone;
   final VoidCallback? onBack;
 
   const OwnerManualBookingView({
     super.key,
     this.prefilledCnic,
+    this.prefilledName,
+    this.prefilledPhone,
     this.onBack,
   });
 
@@ -30,8 +36,8 @@ class OwnerManualBookingView extends StatefulWidget {
 }
 
 class _OwnerManualBookingViewState extends State<OwnerManualBookingView> {
-  final _nameController = TextEditingController(text: 'Walk-in Customer');
-  final _phoneController = TextEditingController(text: '0300-1122334');
+  late final TextEditingController _nameController;
+  late final TextEditingController _phoneController;
   late final TextEditingController _cnicController;
   final _depositController = TextEditingController(text: '15000');
 
@@ -46,6 +52,10 @@ class _OwnerManualBookingViewState extends State<OwnerManualBookingView> {
   @override
   void initState() {
     super.initState();
+    _nameController = TextEditingController(
+        text: widget.prefilledName ?? 'Walk-in Customer');
+    _phoneController = TextEditingController(
+        text: widget.prefilledPhone ?? '0300-1122334');
     _cnicController =
         TextEditingController(text: widget.prefilledCnic ?? '35201-1234567-1');
     _loadVehicles();
@@ -157,29 +167,10 @@ class _OwnerManualBookingViewState extends State<OwnerManualBookingView> {
       body: SafeArea(
         child: Column(
           children: [
-            CustomCurvedHeader(
-              variant: CustomCurvedHeaderVariant.compact,
-              leadingWidget: widget.onBack != null
-                  ? IconButton(
-                      tooltip: l10n.back,
-                      icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                          color: Colors.white, size: 20),
-                      onPressed: widget.onBack,
-                    )
-                  : null,
-              titleWidget: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(l10n.manualBookingTitle,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w900, color: Colors.white)),
-                  Text(l10n.manualBookingSubtitle,
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodySmall
-                          ?.copyWith(color: AppColors.primaryContainer)),
-                ],
-              ),
+            MinimalAppBar(
+              title: l10n.manualBookingTitle,
+              subtitle: l10n.manualBookingSubtitle,
+              onBack: widget.onBack,
             ),
             Expanded(
               child: SingleChildScrollView(

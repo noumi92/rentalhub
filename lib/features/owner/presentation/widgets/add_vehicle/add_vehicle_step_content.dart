@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../../../../../core/constants/app_colors.dart';
-import '../../../../../core/widgets/custom_curved_header.dart';
+import '../../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../../core/widgets/debounced_button.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../constants/owner_vehicle_constants.dart';
@@ -39,29 +38,10 @@ class AddVehicleHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return CustomCurvedHeader(
-      variant: CustomCurvedHeaderVariant.compact,
-      leadingWidget: IconButton(
-        tooltip: l10n.back,
-        icon: const Icon(Icons.arrow_back_ios_new_rounded,
-            color: Colors.white, size: 20),
-        onPressed: onBack,
-      ),
-      titleWidget: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(_title(l10n),
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w900,
-                  )),
-          const SizedBox(height: 2),
-          Text(_subtitle(l10n),
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: AppColors.primaryContainer,
-                  )),
-        ],
-      ),
+    return MinimalAppBar(
+      title: _title(l10n),
+      subtitle: _subtitle(l10n),
+      onBack: onBack,
       actions: [
         Container(
           margin: const EdgeInsets.only(right: 12),

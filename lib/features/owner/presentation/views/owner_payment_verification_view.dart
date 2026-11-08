@@ -6,7 +6,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/widgets/app_feedback.dart';
-import '../../../../core/widgets/custom_curved_header.dart';
+import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../core/widgets/debounced_button.dart';
 import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
@@ -137,27 +137,10 @@ class _OwnerPaymentVerificationViewState
       body: SafeArea(
         child: Column(
           children: [
-            CustomCurvedHeader(
-              variant: CustomCurvedHeaderVariant.compact,
-              leadingWidget: IconButton(
-                tooltip: l10n.back,
-                icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                    color: Colors.white, size: 20),
-                onPressed: widget.onBack ?? () => context.pop(),
-              ),
-              titleWidget: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(l10n.paymentVerificationTitle,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w900, color: Colors.white)),
-                  Text(l10n.paymentVerificationBooking(b.bookingId),
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodySmall
-                          ?.copyWith(color: AppColors.primaryContainer)),
-                ],
-              ),
+            MinimalAppBar(
+              title: l10n.paymentVerificationTitle,
+              subtitle: l10n.paymentVerificationBooking(b.bookingId),
+              onBack: widget.onBack ?? () => context.pop(),
             ),
             Expanded(
               child: SingleChildScrollView(

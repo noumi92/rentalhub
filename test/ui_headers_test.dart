@@ -1,24 +1,25 @@
-// Phase D (D1) — one header system.
+// Phone-test #16 (design direction) — one header system, redesigned.
 //
-// Rulebook §4.3 defines exactly two header heights: hero 230 (screens
-// whose hero card overlaps the header) and compact 100 (every
-// title-only screen). Call sites pass a `variant:`, never a `height:`.
-// The base gradient is #16194F → #242875 (light) / #0B0D26 → #16194F
-// (dark), and hero cards overlap the header by -28.
+// Rulebook §4.3: every screen except login uses `MinimalAppBar` — a
+// flat solid-navy bar, 56 px of content below the status-bar inset,
+// bold white title 18 sp / w900, subtitle 12 sp white 70%. No curve,
+// no gradient, no overlap, no shadow. `CustomCurvedHeader` survives
+// only for the login hero (230 px, curved, gradient, -28 px overlap);
+// every other call site is a violation.
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:rentalhub/core/theme/app_theme.dart';
 import 'package:rentalhub/core/widgets/custom_curved_header.dart';
+import 'package:rentalhub/core/widgets/minimal_app_bar.dart';
 
 import 'test_helper.dart';
 
 /// The top-level (depth-1) argument text of the constructor call whose
 /// opening paren is at [openParenIndex] in [source]. Nested widget
-/// arguments — e.g. `SizedBox(height: ...)` inside titleWidget — sit at
-/// depth > 1 and are excluded, so only direct constructor arguments
-/// are scanned.
+/// arguments sit at depth > 1 and are excluded, so only direct
+/// constructor arguments are scanned.
 String _topLevelArgs(String source, int openParenIndex) {
   final buf = StringBuffer();
   var depth = 0;
@@ -36,62 +37,52 @@ String _topLevelArgs(String source, int openParenIndex) {
   return buf.toString();
 }
 
-/// The header's own CustomPaint — not the debug banner's: the one whose
-/// painter is a [CurvedGradientHeaderPainter]. `find.byType(CustomPaint)`
-/// also matches the DEBUG banner, so widget lookups must use this.
-Finder get _headerPaint => find.byWidgetPredicate(
-      (w) => w is CustomPaint && w.painter is CurvedGradientHeaderPainter,
-    );
-
 void main() {
-  group('D1 — no per-call-site header heights', () {
-    test('no CustomCurvedHeader call site passes a height: argument',
+  group('#16 — only login still uses the curved header', () {
+    test('no CustomCurvedHeader call site except login (and the definition)',
         () {
+      const allowed = {
+        'lib/core/widgets/custom_curved_header.dart',
+        'lib/features/auth/presentation/views/login_view.dart',
+      };
       final violations = <String>[];
       for (final file in Directory('lib')
           .listSync(recursive: true)
           .whereType<File>()
           .where((f) => f.path.endsWith('.dart'))) {
         final path = file.path.replaceAll(r'\', '/');
-        // The widget definition itself, not a call site.
-        if (path == 'lib/core/widgets/custom_curved_header.dart') continue;
+        if (allowed.contains(path)) continue;
         final source = file.readAsStringSync();
-        for (final m
-            in RegExp(r'CustomCurvedHeader\s*\(').allMatches(source)) {
-          final topLevel = _topLevelArgs(source, m.end - 1);
-          if (RegExp(r'(^|[\s,])height\s*:').hasMatch(topLevel)) {
-            violations.add('$path: CustomCurvedHeader still passes height:');
-          }
+        if (RegExp(r'CustomCurvedHeader\s*\(').hasMatch(source)) {
+          violations.add('$path: still uses CustomCurvedHeader');
         }
       }
       expect(violations, isEmpty,
-          reason:
-              'Call sites must pass variant:, never height:.\n${violations.join('\n')}');
+          reason: 'Every screen except login must use MinimalAppBar.\n'
+              '${violations.join('\n')}');
     });
 
-    test('every CustomCurvedHeader call site passes a variant', () {
+    test('no MinimalAppBar call site passes a variant: or height:', () {
       final violations = <String>[];
       for (final file in Directory('lib')
           .listSync(recursive: true)
           .whereType<File>()
           .where((f) => f.path.endsWith('.dart'))) {
         final path = file.path.replaceAll(r'\', '/');
-        if (path == 'lib/core/widgets/custom_curved_header.dart') continue;
         final source = file.readAsStringSync();
-        for (final m
-            in RegExp(r'CustomCurvedHeader\s*\(').allMatches(source)) {
+        for (final m in RegExp(r'MinimalAppBar\s*\(').allMatches(source)) {
           final topLevel = _topLevelArgs(source, m.end - 1);
-          if (!topLevel.contains('variant:')) {
-            violations.add('$path: CustomCurvedHeader has no variant:');
+          if (RegExp(r'(^|[\s,])(variant|height)\s*:').hasMatch(topLevel)) {
+            violations.add('$path: MinimalAppBar passes variant:/height:');
           }
         }
       }
       expect(violations, isEmpty,
-          reason:
-              'Every call site must pass variant: hero or compact.\n${violations.join('\n')}');
+          reason: 'MinimalAppBar takes title/subtitle/actions/onBack only.\n'
+              '${violations.join('\n')}');
     });
 
-    test('header tokens are the rulebook §4.3 values', () {
+    test('login hero tokens are the rulebook §4.3 values', () {
       expect(AppColors.primaryDark, const Color(0xFF16194F));
       expect(AppColors.headerGradientEnd, const Color(0xFF242875));
       expect(AppColors.primaryDarkOnDark, const Color(0xFF0B0D26));
@@ -101,58 +92,101 @@ void main() {
     });
   });
 
-  group('D1 — header variants render the rulebook heights', () {
-    testWidgets('hero variant is 230 high in both themes', (tester) async {
-      for (final theme in [AppTheme.lightTheme, AppTheme.darkTheme]) {
-        await TestHarness.pumpScreenWithOverflowCheck(
-          tester: tester,
-          screen: const CustomCurvedHeader(
-            variant: CustomCurvedHeaderVariant.hero,
-            titleWidget: Text('Hero'),
-          ),
-          theme: theme,
-        );
-        final container = tester.widget<Container>(
-          find.ancestor(
-            of: find.byType(ClipRRect),
-            matching: find.byType(Container),
-          ),
-        );
-        expect(
-          (container.constraints as BoxConstraints).minHeight,
-          AppDimensions.headerHeight,
-        );
-      }
-    });
+  group('#16 — MinimalAppBar renders the rulebook §4.3 bar', () {
+    Container barContainer(WidgetTester tester) {
+      return tester.widget<Container>(
+        find.byWidgetPredicate(
+          (w) => w is Container && w.color == AppColors.primaryDark,
+        ),
+      );
+    }
 
-    testWidgets('compact variant is 100 high in both themes',
+    testWidgets('flat primaryDark bar, 56 px content, no back at a root',
         (tester) async {
-      for (final theme in [AppTheme.lightTheme, AppTheme.darkTheme]) {
-        await TestHarness.pumpScreenWithOverflowCheck(
-          tester: tester,
-          screen: const CustomCurvedHeader(
-            variant: CustomCurvedHeaderVariant.compact,
-            titleWidget: Text('Compact'),
-          ),
-          theme: theme,
-        );
-        final container = tester.widget<Container>(
-          find.ancestor(
-            of: find.byType(ClipRRect),
-            matching: find.byType(Container),
-          ),
-        );
-        expect(
-          (container.constraints as BoxConstraints).minHeight,
-          AppDimensions.headerCompactHeight,
-        );
-      }
-    });
-
-    testWidgets('variant defaults to hero', (tester) async {
       await TestHarness.pumpScreenWithOverflowCheck(
         tester: tester,
-        screen: const CustomCurvedHeader(titleWidget: Text('Default')),
+        screen: const Scaffold(
+          body: MinimalAppBar(title: 'Requests', subtitle: '3 waiting'),
+        ),
+        theme: AppTheme.lightTheme,
+      );
+      expect(find.text('Requests'), findsOneWidget);
+      expect(find.text('3 waiting'), findsOneWidget);
+      expect(find.byIcon(Icons.arrow_back_ios_new_rounded), findsNothing);
+      final container = barContainer(tester);
+      // No curve, gradient, or shadow: a plain colour, nothing else.
+      expect(container.decoration, isNull);
+      expect(tester.getSize(find.byWidget(container)).height, 56);
+      final title = tester.widget<Text>(find.text('Requests'));
+      expect(title.style?.fontSize, 18);
+      expect(title.style?.fontWeight, FontWeight.w900);
+      expect(title.style?.color, Colors.white);
+      final subtitle = tester.widget<Text>(find.text('3 waiting'));
+      expect(subtitle.style?.fontSize, 12);
+      expect(subtitle.style?.color, Colors.white70);
+    });
+
+    testWidgets('no subtitle renders a single-line bar', (tester) async {
+      await TestHarness.pumpScreenWithOverflowCheck(
+        tester: tester,
+        screen: const Scaffold(
+          body: MinimalAppBar(title: 'Wallet'),
+        ),
+        theme: AppTheme.lightTheme,
+      );
+      expect(find.text('Wallet'), findsOneWidget);
+      expect(tester.getSize(find.byWidget(barContainer(tester))).height, 56);
+    });
+
+    testWidgets('status-bar inset adds to the 56 px content height',
+        (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.lightTheme,
+          home: const MediaQuery(
+            data: MediaQueryData(
+              size: Size(360, 640),
+              padding: EdgeInsets.only(top: 24),
+            ),
+            child: Scaffold(
+              body: MinimalAppBar(title: 'Bar'),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(tester.getSize(find.byWidget(barContainer(tester))).height,
+          56 + 24);
+    });
+
+    testWidgets('actions render and stay tappable', (tester) async {
+      var tapped = false;
+      await TestHarness.pumpScreenWithOverflowCheck(
+        tester: tester,
+        screen: Scaffold(
+          body: MinimalAppBar(
+            title: 'Fleet',
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.refresh_rounded, color: Colors.white),
+                onPressed: () => tapped = true,
+              ),
+            ],
+          ),
+        ),
+        theme: AppTheme.lightTheme,
+      );
+      await tester.tap(find.byIcon(Icons.refresh_rounded));
+      expect(tapped, isTrue);
+    });
+
+    testWidgets('login hero still renders the curved header', (tester) async {
+      await TestHarness.pumpScreenWithOverflowCheck(
+        tester: tester,
+        screen: const CustomCurvedHeader(
+          variant: CustomCurvedHeaderVariant.hero,
+          titleWidget: Text('RentalHub'),
+        ),
         theme: AppTheme.lightTheme,
       );
       final container = tester.widget<Container>(
@@ -165,80 +199,6 @@ void main() {
         (container.constraints as BoxConstraints).minHeight,
         AppDimensions.headerHeight,
       );
-    });
-
-    testWidgets('hero header reserves status-bar padding plus 10',
-        (tester) async {
-      await tester.pumpWidget(
-        MaterialApp(
-          theme: AppTheme.lightTheme,
-          home: const MediaQuery(
-            data: MediaQueryData(
-              size: Size(360, 640),
-              padding: EdgeInsets.only(top: 24),
-            ),
-            child: Scaffold(
-              body: CustomCurvedHeader(
-                variant: CustomCurvedHeaderVariant.hero,
-                titleWidget: Text('Hero'),
-              ),
-            ),
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-      final container = tester.widget<Container>(
-        find.ancestor(
-          of: find.byType(ClipRRect),
-          matching: find.byType(Container),
-        ),
-      );
-      expect(
-        (container.constraints as BoxConstraints).minHeight,
-        AppDimensions.headerHeight + 24,
-      );
-      final padding = tester.widget<Padding>(
-        find.descendant(
-          of: _headerPaint,
-          matching: find.byType(Padding),
-        ),
-      );
-      expect(padding.padding.resolve(TextDirection.ltr).top, 24 + 10);
-    });
-
-    testWidgets('header paints the light gradient in light mode and '
-        'the dark gradient in dark mode', (tester) async {
-      for (final theme in [AppTheme.lightTheme, AppTheme.darkTheme]) {
-        await TestHarness.pumpScreenWithOverflowCheck(
-          tester: tester,
-          screen: const CustomCurvedHeader(
-            variant: CustomCurvedHeaderVariant.hero,
-            titleWidget: Text('Hero'),
-          ),
-          theme: theme,
-        );
-        final paint = tester.widget<CustomPaint>(_headerPaint);
-        final painter = paint.painter as CurvedGradientHeaderPainter;
-        expect(painter.isDark, theme.brightness == Brightness.dark);
-      }
-    });
-  });
-
-  group('D1 — hero card overlap', () {
-    testWidgets('HeaderOverlapContainer translates its child by -28px',
-        (tester) async {
-      await TestHarness.pumpScreenWithOverflowCheck(
-        tester: tester,
-        screen: const HeaderOverlapContainer(
-          child: SizedBox(width: 50, height: 50),
-        ),
-      );
-      final transform =
-          tester.widget<Transform>(find.byType(Transform));
-      final translation = transform.transform.getTranslation();
-      expect(translation.x, 0.0);
-      expect(translation.y, AppDimensions.headerOverlapOffset);
-      expect(translation.y, -28.0);
     });
   });
 }

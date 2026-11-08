@@ -1,19 +1,19 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:latlong2/latlong.dart' as ll;
 import 'package:go_router/go_router.dart';
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/responsive.dart';
 import '../../../../core/widgets/app_state_views.dart';
-import '../../../../core/widgets/custom_curved_header.dart';
+import 'widgets/empty_radar_state.dart';
+import 'widgets/home_app_bar.dart';
 import '../../data/datasources/customer_location_store.dart';
 import '../../data/datasources/discovery_remote_data_source.dart';
 import '../../data/repositories/discovery_repository_impl.dart';
 import '../../domain/entities/shop_entity.dart';
 import '../../domain/usecases/get_nearby_shops_usecase.dart';
 import '../cubit/discovery_cubit.dart';
-import 'widgets/empty_radar_state.dart';
 import 'widgets/home_quick_actions.dart';
 import 'widgets/radius_filter_pills.dart';
 import 'widgets/shop_list_card.dart';
@@ -80,6 +80,28 @@ class _CustomerHomeBodyState extends State<_CustomerHomeBody> {
     }
   }
 
+  /// #5: the signed-in user's initial for the header avatar. Firebase
+  /// is best-effort here — 'U' when there is no signed-in user yet.
+  String _userInitial() {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      final name = user?.displayName ?? user?.email ?? '';
+      if (name.isNotEmpty) return name[0];
+    } catch (_) {}
+    return 'U';
+  }
+
+  /// #3: the next radius in [1, 2, 3, 5] km after [current], or 5.0
+  /// when already at the maximum (the empty state then shows the
+  /// no-shops message instead of another expand).
+  double _nextRadius(double current) {
+    const radii = [1.0, 2.0, 3.0, 5.0];
+    for (final r in radii) {
+      if (r > current) return r;
+    }
+    return 5.0;
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -106,43 +128,26 @@ class _CustomerHomeBodyState extends State<_CustomerHomeBody> {
                     radiusKm = state.currentRadiusKm;
                   }
 
-                  return SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        CustomCurvedHeader(
-                          variant: CustomCurvedHeaderVariant.hero,
-                          showProfileGreeting: true,
-                          titleWidget: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                l10n.homeTitle,
-                                style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900, color: Colors.white),
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                cubit.currentLocation.fromGps
-                                    ? l10n.homeGpsActive(cubit.currentLocation.area)
-                                    : cubit.currentLocation.area,
-                                style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.primaryContainer),
-                              ),
-                            ],
-                          ),
-                          actions: [
-                            IconButton(
-                              tooltip: l10n.homeSwitchToMap,
-                              onPressed: () => context.push(RouteNames.customerHomeMap),
-                              icon: const Icon(Icons.map_rounded, color: AppColors.secondary),
-                            ),
-                          ],
-                        ),
-                        HeaderOverlapContainer(
+                  return Column(
+                    children: [
+                      // #5/#6/#16: the curved hero is gone — a pinned
+                      // MinimalAppBar, with the map, bell and avatar
+                      // all wired to real destinations.
+                      CustomerHomeAppBar(
+                        title: l10n.homeTitle,
+                        subtitle: cubit.currentLocation.fromGps
+                            ? l10n.homeGpsActive(cubit.currentLocation.area)
+                            : cubit.currentLocation.area,
+                        userInitial: _userInitial(),
+                      ),
+                      Expanded(
+                        child: SingleChildScrollView(
                           child: Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 16),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+                                const SizedBox(height: 12),
                                 Card(
                                   child: Padding(
                                     padding: const EdgeInsets.all(12),
@@ -167,8 +172,8 @@ class _CustomerHomeBodyState extends State<_CustomerHomeBody> {
                                 else if (state is DiscoveryEmpty)
                                   EmptyRadarState(
                                     currentRadiusKm: radiusKm,
-                                    onExpandRadius: () =>
-                                        cubit.fetchNearbyShops(radiusKm: 5.0),
+                                    onExpandRadius: () => cubit.fetchNearbyShops(
+                                        radiusKm: _nextRadius(radiusKm)),
                                   )
                                 else if (isMap)
                                   ShopMapView(
@@ -191,8 +196,8 @@ class _CustomerHomeBodyState extends State<_CustomerHomeBody> {
                             ),
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   );
                 },
               ),

@@ -143,7 +143,7 @@ class BlacklistStatusBanner extends StatelessWidget {
                   children: [
                     Text(
                       l10n?.blacklistCleanTitle ??
-                          'CLEAN NADRA RECORD VERIFIED',
+                          'No blacklist record found',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w900, color: AppColors.successOnContainerFor(Theme.of(context).brightness)),
                     ),
                     Text(
@@ -163,7 +163,7 @@ class BlacklistStatusBanner extends StatelessWidget {
             child: ElevatedButton.icon(
               onPressed: onProceed,
               icon: const Icon(Icons.arrow_forward_rounded, size: 18),
-              label: Text(l10n?.blacklistProceed ?? 'Proceed to Walk-in Booking Wizard', style: const TextStyle(fontWeight: FontWeight.w800)),
+              label: Text(l10n?.blacklistProceed ?? 'Add Customer', style: const TextStyle(fontWeight: FontWeight.w800)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.secondary,
                 foregroundColor: Colors.white,

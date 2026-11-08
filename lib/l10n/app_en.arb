@@ -96,11 +96,21 @@
   "locationEnablePrecise": "Enable Precise Location",
   "locationPermissionExplainer": "RentalHub uses your real-time GPS coordinates to calculate road distances and discover verified rental showrooms within 1–5 km around you in Pakistan.",
   "emptyRadarExpandHint": "Expand your GPS discovery radius to 5 km to view accredited showrooms nearby.",
-  "emptyRadarExpand": "Expand Radar to 5 km",
+  "emptyRadarExpandToKm": "Expand to {radius} km",
+  "@emptyRadarExpandToKm": {
+    "placeholders": {
+      "radius": {
+        "type": "int"
+      }
+    }
+  },
+  "emptyRadarNoShopsTitle": "No rental shops near you yet",
+  "emptyRadarNoShopsSubtitle": "Try a different area or browse all shops.",
+  "emptyRadarBrowseAll": "Browse all shops",
   "noShopsBanner": "No verified showrooms within this radius yet. Try a wider radius.",
   "radiusLabel": "Radius:",
   "quickBookCar": "Book a Car",
-  "quickScanPass": "Scan Pass",
+  "quickMyReservations": "My Reservations",
   "quickNearbyShops": "Nearby Shops",
   "shopCarsTitle": "Available Fleet",
   "shopCarsLoading": "Loading available cars…",
@@ -1637,6 +1647,11 @@
   },
   "customersNoBookings": "No bookings yet — saved from a CNIC scan or as a guarantor.",
   "customersScanTitle": "KYC & Blacklist Radar",
+  "addCustomerTitle": "Add Customer",
+  "addCustomerName": "Full name",
+  "addCustomerPhone": "Phone number",
+  "addCustomerSaved": "Customer saved",
+  "addCustomerSave": "Save customer",
   "customersScanSubtitle": "National Anti-Fraud Network • Real-time",
   "customersScanTribunalPolicy": "Tribunal Policy",
   "customersScanTribunalInfo": "Every Pakistani rental shop shares instant fraud telemetry via RentalHub.",
@@ -2536,6 +2551,11 @@
     }
   },
   "syncFailedShort": "Sync failed — will retry",
+  "syncFailedBanner": "Sync failed — tap to review",
+  "syncDetailsTitle": "Sync details",
+  "syncRetryNow": "Retry now",
+  "syncDiscard": "Discard",
+  "syncNoPending": "Nothing pending",
   "syncPendingShort": "Pending sync",
   "syncAllSynced": "All changes synced",
   "syncTitle": "Sync",
@@ -2580,8 +2600,8 @@
       }
     }
   },
-  "signatureNadraValidated": "NADRA Validated",
-  "badgeNadraVerified": "NADRA Verified",
+  "signatureNadraValidated": "Signature captured",
+  "badgeNadraVerified": "Verified",
   "fuelGaugeLabel": "Calibrated 8-Segment Fuel Level",
   "fuelGaugeSetLevel": "Set fuel level to {n} of 8",
   "@fuelGaugeSetLevel": {
@@ -2628,10 +2648,10 @@
     }
   },
   "blacklistDecline": "Decline / Refuse Service",
-  "blacklistCleanTitle": "CLEAN NADRA RECORD VERIFIED",
+  "blacklistCleanTitle": "No blacklist record found",
   "blacklistCleanSubtitle": "Zero active defaults or tribunal complaints on file.",
-  "blacklistProceed": "Proceed to Walk-in Booking Wizard",
-  "cnicVerifyTitle": "NADRA CNIC Verification",
+  "blacklistProceed": "Add Customer",
+  "cnicVerifyTitle": "CNIC Check",
   "cnicScanTooltip": "Scan CNIC / Barcode",
   "cnicVerifyButton": "Verify CNIC & Blacklist",
   "cnicChecking": "Checking National Tribunal...",

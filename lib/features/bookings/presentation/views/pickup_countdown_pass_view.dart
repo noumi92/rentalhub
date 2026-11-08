@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../core/widgets/custom_curved_header.dart';
+import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../core/widgets/debounced_button.dart';
 import '../../domain/entities/booking_entity.dart';
 import '../widgets/digital_qr_pass_widget.dart';
@@ -26,21 +26,9 @@ class PickupCountdownPassView extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            CustomCurvedHeader(
-              variant: CustomCurvedHeaderVariant.compact,
-              leadingWidget: onBack != null
-                  ? IconButton(
-                      tooltip: l10n.back,
-                      icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                          color: Colors.white, size: 20),
-                      onPressed: onBack,
-                    )
-                  : null,
-              titleWidget: Text(
-                l10n.passTitle,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w900, color: Colors.white),
-              ),
+            MinimalAppBar(
+              title: l10n.passTitle,
+              onBack: onBack,
             ),
             Expanded(
               child: SingleChildScrollView(

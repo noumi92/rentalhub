@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/constants/app_colors.dart';
-import '../../../../core/widgets/custom_curved_header.dart';
+import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../core/widgets/pakistani_plate_widget.dart';
 import '../../../../l10n/app_localizations.dart';
 
@@ -25,31 +24,10 @@ class PackagePickerHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return CustomCurvedHeader(
-      variant: CustomCurvedHeaderVariant.compact,
-      leadingWidget: onBack != null
-          ? IconButton(
-              tooltip: l10n.back,
-              icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                  color: Colors.white, size: 20),
-              onPressed: onBack,
-            )
-          : null,
-      titleWidget: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(l10n.packageSelectTitle,
-              style: Theme.of(context)
-                  .textTheme
-                  .titleMedium
-                  ?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
-          Text('$carName • $shopName',
-              style: Theme.of(context)
-                  .textTheme
-                  .bodySmall
-                  ?.copyWith(color: AppColors.primaryContainer)),
-        ],
-      ),
+    return MinimalAppBar(
+      title: l10n.packageSelectTitle,
+      subtitle: '$carName • $shopName',
+      onBack: onBack,
       actions: [
         PakistaniPlateWidget(plateNumber: plateNumber, isCompact: true)
       ],

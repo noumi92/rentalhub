@@ -3,11 +3,10 @@ import '../../../../l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/widgets/app_feedback.dart';
-import '../../../../core/widgets/custom_curved_header.dart';
+import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 
 /// Phase B (E1): the owner scans the QR on the customer's confirmed
@@ -86,27 +85,10 @@ class _OwnerQrScanViewState extends State<OwnerQrScanView> {
       body: SafeArea(
         child: Column(
           children: [
-            CustomCurvedHeader(
-              variant: CustomCurvedHeaderVariant.compact,
-              leadingWidget: IconButton(
-                tooltip: l10n.back,
-                icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                    color: Colors.white, size: 20),
-                onPressed: () => context.pop(),
-              ),
-              titleWidget: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(l10n.qrScanTitle,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w900, color: Colors.white)),
-                  Text(l10n.qrScanSubtitle,
-                      style: Theme.of(context)
-                          .textTheme
-                          .labelSmall
-                          ?.copyWith(color: AppColors.primaryContainer)),
-                ],
-              ),
+            MinimalAppBar(
+              title: l10n.qrScanTitle,
+              subtitle: l10n.qrScanSubtitle,
+              onBack: () => context.pop(),
             ),
             Expanded(
               child: Padding(

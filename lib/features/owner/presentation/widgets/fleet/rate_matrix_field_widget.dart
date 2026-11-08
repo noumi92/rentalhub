@@ -52,7 +52,10 @@ class RateMatrixFieldWidget extends StatelessWidget {
               textAlign: TextAlign.end,
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
                 fontWeight: FontWeight.w800,
-                color: AppColors.secondary,
+                // #15: orange rate text — lighter secondaryDark in dark.
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? AppColors.secondaryDark
+                    : AppColors.secondary,
               ),
               decoration: InputDecoration(
                 prefixText: 'Rs. ',

@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
-import '../../../../core/widgets/custom_curved_header.dart';
+import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../customer/data/datasources/dispute_remote_data_source.dart';
 import '../widgets/dispute_detail_sheet.dart';
 import '../widgets/dispute_list_tile.dart';
@@ -76,27 +76,10 @@ class _OwnerDisputesViewState extends State<OwnerDisputesView> {
       body: SafeArea(
         child: Column(
           children: [
-            CustomCurvedHeader(
-              variant: CustomCurvedHeaderVariant.compact,
-              leadingWidget: IconButton(
-                tooltip: l10n.back,
-                icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                    color: Colors.white, size: 20),
-                onPressed: () => context.pop(),
-              ),
-              titleWidget: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(l10n.disputes,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w900, color: Colors.white)),
-                  Text(l10n.disputesOwnerSubtitle,
-                      style: Theme.of(context)
-                          .textTheme
-                          .labelSmall
-                          ?.copyWith(color: AppColors.primaryContainer)),
-                ],
-              ),
+            MinimalAppBar(
+              title: l10n.disputes,
+              subtitle: l10n.disputesOwnerSubtitle,
+              onBack: () => context.pop(),
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 14, 16, 4),

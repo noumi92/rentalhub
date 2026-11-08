@@ -4,11 +4,10 @@ import 'package:flutter/material.dart';
 import '../../../../l10n/app_localizations.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/utils/current_shop.dart';
 import '../../../../core/widgets/app_feedback.dart';
-import '../../../../core/widgets/custom_curved_header.dart';
+import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../customer/domain/entities/customer_entity.dart';
 import '../../../customer/domain/usecases/save_customer_usecase.dart';
 import '../../../trust/data/services/cnic_ocr_service.dart';
@@ -158,27 +157,10 @@ class _OwnerCnicReviewViewState extends State<OwnerCnicReviewView> {
       body: SafeArea(
         child: Column(
           children: [
-            CustomCurvedHeader(
-              variant: CustomCurvedHeaderVariant.compact,
-              leadingWidget: IconButton(
-                tooltip: l10n.back,
-                icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                    color: Colors.white, size: 20),
-                onPressed: () => Navigator.of(context).pop(),
-              ),
-              titleWidget: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(l10n.customersCnicReviewTitle,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w900, color: Colors.white)),
-                  Text(l10n.customersCnicReviewSubtitle,
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodySmall
-                          ?.copyWith(color: AppColors.primaryContainer)),
-                ],
-              ),
+            MinimalAppBar(
+              title: l10n.customersCnicReviewTitle,
+              subtitle: l10n.customersCnicReviewSubtitle,
+              onBack: () => Navigator.of(context).pop(),
             ),
             Expanded(
               child: SingleChildScrollView(

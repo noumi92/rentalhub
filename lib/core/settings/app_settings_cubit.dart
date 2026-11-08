@@ -16,7 +16,10 @@ class AppSettingsState extends Equatable {
 
   const AppSettingsState({
     this.localeCode = 'en',
-    this.themeMode = ThemeMode.system,
+    // Phone-test #16: Light is the default (was System). A saved user
+    // choice is untouched — only fresh installs / unknown stored
+    // values start in Light. Dark stays available in Settings.
+    this.themeMode = ThemeMode.light,
   });
 
   Locale get locale => Locale(localeCode);
@@ -47,7 +50,10 @@ class AppSettingsCubit extends Cubit<AppSettingsState> {
     final themeMode = switch (themeRaw) {
       'light' => ThemeMode.light,
       'dark' => ThemeMode.dark,
-      _ => ThemeMode.system,
+      // 'system' stays a valid saved choice; an absent or unknown
+      // stored value falls back to Light (#16), not System.
+      'system' => ThemeMode.system,
+      _ => ThemeMode.light,
     };
     return AppSettingsState(localeCode: localeCode, themeMode: themeMode);
   }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../core/constants/app_colors.dart';
-import '../../../../../core/widgets/custom_curved_header.dart';
+import '../../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../../core/widgets/debounced_button.dart';
 import '../../../../../core/widgets/pakistani_plate_widget.dart';
 import '../../../../../l10n/app_localizations.dart';
@@ -22,30 +21,10 @@ class PricingHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return CustomCurvedHeader(
-      variant: CustomCurvedHeaderVariant.compact,
-      leadingWidget: onBack != null
-          ? IconButton(
-              tooltip: l10n.back,
-              icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                  color: Colors.white, size: 20),
-              onPressed: onBack,
-            )
-          : null,
-      titleWidget: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(l10n.pricingTitle,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w900,
-                  )),
-          Text('${vehicle.make} ${vehicle.model} (${vehicle.year})',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: AppColors.primaryContainer,
-                  )),
-        ],
-      ),
+    return MinimalAppBar(
+      title: l10n.pricingTitle,
+      subtitle: '${vehicle.make} ${vehicle.model} (${vehicle.year})',
+      onBack: onBack,
       actions: [
         PakistaniPlateWidget(plateNumber: vehicle.plateNumber, isCompact: true)
       ],

@@ -191,7 +191,7 @@ class _SignaturePadWidgetState extends State<SignaturePadWidget> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Text(
-                    l10n?.signatureNadraValidated ?? 'NADRA Validated',
+                    l10n?.signatureNadraValidated ?? 'Signature captured',
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
                           fontWeight: FontWeight.w700,
                           color: AppColors.accentSuccess,

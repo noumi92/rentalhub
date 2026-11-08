@@ -1,12 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
+import '../../../../core/routing/route_names.dart';
 import '../../../../core/settings/app_settings_cubit.dart';
-import '../../../../core/widgets/custom_curved_header.dart';
+import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/datasources/customer_remote_data_source.dart';
 import '../../domain/entities/customer_entity.dart';
@@ -85,21 +87,9 @@ class _CustomerSettingsViewState extends State<CustomerSettingsView> {
       body: SafeArea(
         child: Column(
           children: [
-            CustomCurvedHeader(
-              variant: CustomCurvedHeaderVariant.compact,
-              leadingWidget: widget.onBack != null
-                  ? IconButton(
-                      tooltip: l10n.back,
-                      icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                          color: Colors.white, size: 20),
-                      onPressed: widget.onBack,
-                    )
-                  : null,
-              titleWidget: Text(
-                l10n.customerSettings,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w900, color: Colors.white),
-              ),
+            MinimalAppBar(
+              title: l10n.customerSettings,
+              onBack: widget.onBack,
             ),
             Expanded(
               child: BlocBuilder<AppSettingsCubit, AppSettingsState>(
@@ -232,6 +222,11 @@ class _CustomerSettingsViewState extends State<CustomerSettingsView> {
                                 .bodyMedium
                                 ?.copyWith(fontWeight: FontWeight.w700),
                           ),
+                        ),
+                        const SizedBox(height: 16),
+                        SettingsSectionCard(
+                          title: l10n.syncDetailsTitle,
+                          child: ListTile(contentPadding: EdgeInsets.zero, leading: const Icon(Icons.sync_rounded), title: Text(l10n.syncDetailsTitle), trailing: const Icon(Icons.chevron_right_rounded), onTap: () => context.push(RouteNames.syncDetails)),
                         ),
                         const SizedBox(height: 16),
                         ProfileSignOutTile(onTap: widget.onSignOut),

@@ -6,7 +6,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/utils/current_shop.dart';
 import '../../../../core/widgets/app_feedback.dart';
-import '../../../../core/widgets/custom_curved_header.dart';
+import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../blacklist/data/datasources/blacklist_remote_data_source.dart';
 import '../../../blacklist/domain/entities/blacklist_entity.dart';
 
@@ -131,27 +131,10 @@ class _OwnerBlacklistViewState extends State<OwnerBlacklistView> {
       body: SafeArea(
         child: Column(
           children: [
-            CustomCurvedHeader(
-              variant: CustomCurvedHeaderVariant.compact,
-              leadingWidget: IconButton(
-                tooltip: l10n.back,
-                icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                    color: Colors.white, size: 20),
-                onPressed: widget.onBack ?? () => context.pop(),
-              ),
-              titleWidget: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(l10n.blacklist,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w900, color: Colors.white)),
-                  Text(l10n.blacklistSubtitle,
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodySmall
-                          ?.copyWith(color: AppColors.primaryContainer)),
-                ],
-              ),
+            MinimalAppBar(
+              title: l10n.blacklist,
+              subtitle: l10n.blacklistSubtitle,
+              onBack: widget.onBack ?? () => context.pop(),
             ),
             Expanded(
               child: _loading
@@ -211,7 +194,13 @@ class _OwnerBlacklistViewState extends State<OwnerBlacklistView> {
                               child: ListTile(
                                 leading: Icon(
                                   Icons.flag_rounded,
-                                  color: r.isActive ? Colors.red : Colors.grey,
+                                  // #15: grey flag on a dark card is low
+                                  // contrast — theme-aware muted tone.
+                                  color: r.isActive
+                                      ? Colors.red
+                                      : Theme.of(context)
+                                          .colorScheme
+                                          .onSurfaceVariant,
                                 ),
                                 title: Text(r.cnicNumber,
                                     style: const TextStyle(

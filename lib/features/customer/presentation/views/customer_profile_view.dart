@@ -5,13 +5,12 @@ import '../../../../core/di/injection_container.dart';
 import '../../../../core/network/firestore_service.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/app_state_views.dart';
-import '../../../../core/widgets/custom_curved_header.dart';
+import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../data/datasources/customer_remote_data_source.dart';
 import '../../domain/entities/customer_entity.dart';
 import '../../../trust/data/datasources/kyc_remote_data_source.dart';
 import '../widgets/edit_profile_sheet.dart';
 import '../widgets/profile_cnic_row.dart';
-import '../widgets/profile_header.dart';
 import '../widgets/profile_menu_card.dart';
 import '../widgets/profile_sign_out_tile.dart';
 import '../widgets/profile_trust_card.dart';
@@ -172,17 +171,21 @@ class _CustomerProfileViewState extends State<CustomerProfileView> {
       body: SafeArea(
         child: Column(
           children: [
-            CustomCurvedHeader(
-              variant: CustomCurvedHeaderVariant.compact,
-              // Tab root: no back button. The header's back policy
-              // renders one only when the route can pop, which a
-              // branch root never can.
-              titleWidget: ProfileHeader(
-                name: _name == 'Guest' ? l10n.profileGuest : _name,
-                email: _email,
-                phone: _phone,
-                onEdit: _openEdit,
-              ),
+            MinimalAppBar(
+              title: _name == 'Guest' ? l10n.profileGuest : _name,
+              subtitle: _email.isNotEmpty
+                  ? _email
+                  : (_phone.isNotEmpty
+                      ? _phone
+                      : l10n.profileNotSignedInShort),
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.edit_rounded,
+                      color: Colors.white, size: 20),
+                  tooltip: l10n.profileEditProfile,
+                  onPressed: _openEdit,
+                ),
+              ],
             ),
             Expanded(
               child: SingleChildScrollView(

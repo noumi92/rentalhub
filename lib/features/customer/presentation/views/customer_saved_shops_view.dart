@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/widgets/app_feedback.dart';
-import '../../../../core/widgets/custom_curved_header.dart';
+import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../customer/data/datasources/customer_remote_data_source.dart';
 import '../../../customer/domain/entities/customer_entity.dart';
 import '../../../discovery/data/models/shop_model.dart';
@@ -96,21 +96,9 @@ class _CustomerSavedShopsViewState extends State<CustomerSavedShopsView> {
       body: SafeArea(
         child: Column(
           children: [
-            CustomCurvedHeader(
-              variant: CustomCurvedHeaderVariant.compact,
-              leadingWidget: widget.onBack != null
-                  ? IconButton(
-                      tooltip: l10n.back,
-                      icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                          color: Colors.white, size: 20),
-                      onPressed: widget.onBack,
-                    )
-                  : null,
-              titleWidget: Text(
-                l10n.profileSavedShops,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w900, color: Colors.white),
-              ),
+            MinimalAppBar(
+              title: l10n.profileSavedShops,
+              onBack: widget.onBack,
             ),
             Expanded(
               child: _loading

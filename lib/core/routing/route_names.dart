@@ -54,6 +54,7 @@ class RouteNames {
   static const String ownerContract = '/owner/contract/:id';
   static const String ownerRateCustomer = '/owner/rate-customer/:id';
   static const String ownerCustomerScan = '/owner/customers/scan';
+  static const String ownerAddCustomer = '/owner/customers/add';
   static const String ownerCustomers = '/owner/customers';
   static const String ownerBlacklist = '/owner/blacklist';
   static const String ownerSubscription = '/owner/subscription';
@@ -65,6 +66,10 @@ class RouteNames {
   static const String ownerDues = '/owner/finance/dues';
   static const String ownerCashClosing = '/owner/finance/closing';
   static const String ownerCarPnL = '/owner/finance/car';
+
+  // Sync details (top-level, reachable from Settings and the failed
+  // sync banner) — Phone-test #4.
+  static const String syncDetails = '/sync-details';
 
   // Super Admin Routes (Web)
   static const String adminLogin = '/admin/login';

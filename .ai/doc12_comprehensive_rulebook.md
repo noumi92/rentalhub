@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| Version | 1.0.2 |
+| Version | 1.0.3 |
 | Date | 2026-11-08 |
 | Author | Muse (for Nouman Karim) |
 | Status | **Binding.** Every change to the app, tests, or docs must follow this rulebook. Where it conflicts with an older doc, this rulebook wins until the older doc is amended (see §11). |
@@ -112,17 +112,17 @@ Container / on-container tokens (Phase A3, dark-mode readability). The pale ligh
 | `primaryFocusedOnDark` | — | `#6C72D9` | Focused input border in dark mode (`primaryOnDark` is invisible against the dark field fill) |
 | `headerGradientEnd` | `#242875` | — | Header gradient end (§4.3 light gradient) |
 
-4.3 **Header:** `CustomCurvedHeader`, height 230 px (incl. status-bar padding), curved bottom radius 28 px, gradient `#16194F → #242875` (light) / `#0B0D26 → #16194F` (dark). Hero card overlaps the header by **-28 px** (`Transform.translate`, DOC-6 wins over DOC-2's -24). One header widget only — the legacy `CurvedHeader` is debt (§13).
+4.3 **Header:** `MinimalAppBar` (`lib/core/widgets/minimal_app_bar.dart`) — flat solid `primaryDark` (`#16194F`), full-bleed, no curve, no gradient, no overlap, no shadow. Content height 56 px minimum below the status-bar inset (grows past 56 px at large text scales instead of clipping); content starts immediately below. Bold white title 18 sp / w900, subtitle 12 sp white 70% when present. Back arrow (`arrow_back_ios_new_rounded`, white, 20) exactly when the route can pop (explicit `onBack` wins, else auto) — tab roots show no arrow. **The login hero is the only exception:** `CustomCurvedHeader` hero variant (230 px incl. status-bar padding, curved bottom radius 28 px, gradient `#16194F → #242875` light / `#0B0D26 → #16194F` dark, hero card overlapping by **-28 px**) survives for the login screen only; every other screen uses `MinimalAppBar`. (Phone-test #16, 2026-11-08 — the curved header on every other screen is gone; #8 is moot, tab screens get a pinned 56 px bar by design.)
 
 4.4 **Layout & components.**
-- Bottom nav: floating bar, height 68 px, margin 16 px, radius 32 px, navy background, orange active indicator. **Implemented 2026-11-07, Phase C: `AppShellNav` (`lib/core/widgets/app_shell_nav.dart`, 68/16/32, navy `primary` / orange `secondary` from the theme), owned by `AppShell` (`lib/core/routing/app_shell.dart`) behind the two `StatefulShellRoute` shells (customer + owner, five branches each); the 10 tab screens embed no nav widget — enforced by `rulebook_architecture_test.dart` (nav-shell scan).**
-- Spacing scale: 4 / 8 / 12 / 16 / 24 / 32 px. Radii: pills/badges 8, cards/inputs/buttons 16, header-overlap containers 24, header curve 28.
+- Bottom nav: flush bar attached to the bottom edge, height 56 px, no margin, no radius, no extra padding, no SafeArea; navy background, orange active indicator. **Implemented 2026-11-07, Phase C, redesigned 2026-11-08 (phone-test #16): `AppShellNav` (`lib/core/widgets/app_shell_nav.dart`, 56, navy `primary` / orange `secondary` from the theme), owned by `AppShell` (`lib/core/routing/app_shell.dart`) behind the two `StatefulShellRoute` shells (customer + owner, five branches each); the 10 tab screens embed no nav widget — enforced by `rulebook_architecture_test.dart` (nav-shell scan).** The bar is visible exactly on the 10 tab roots and hidden on every sub-screen (phone-test #17, user rule: a screen with a back arrow gets no bottom navigation) — one path-set check in `AppShell` (`tabRootPaths`), not one route move per sub-screen.
+- Spacing scale: 4 / 8 / 12 / 16 / 24 / 32 px. Radii: pills/badges 8, cards/inputs/buttons 16, login hero curve 28 (§4.3 — the only curved header left).
 - Primary CTA: `secondary` `#F95700`, white text, height 54 px, radius 16 px, **debounced 400 ms** (`DebouncedButton` — every submit/booking/payment button uses it, not a plain button).
 - Secondary button: `primary`, white text, 54 px, 16 px radius. Outline: 1.5 px `primary` border, transparent, navy text.
 - WhatsApp button: `#25D366`, 44 px, 12 px radius, only for verified users.
 - Inputs: height 52 px, `surface` background, 1 px `borderSubtle` border, focused 2 px `primary` border, prefix icon in `textSecondary`.
 - Badges: Verified — emerald pill `#ECFDF5` / `#10B981`; Blacklisted — crimson banner `#FEF2F2` / `#EF4444`; Pending — amber pill `#FFFBEB` / `#F59E0B`. (Backgrounds are the canonical `successContainer` / `errorContainer` / `warningContainer` tokens, §4.2; the previous values `#EEFDF5` / `#FEE2E2` / `#FEF3C7` / `#D97706` appeared nowhere in `lib/` and were corrected 2026-11-08, Phase G.)
-- Shadows: card `0 8 24 rgba(27,30,92,0.08)`; floating nav `0 -4 20 rgba(0,0,0,0.08)`.
+- Shadows: card `0 8 24 rgba(27,30,92,0.08)`.
 
 4.5 **Typography:** Inter (Latin) / Noto Nastaliq Urdu (Urdu) — see §5. Scale: displayLarge 28/Bold/34, titleLarge 20/600/26, titleMedium 16/600/22, bodyLarge 15/400/22, bodyMedium 13/400/18, labelSmall 11/500/14. All text in `Flexible`/`Expanded` with `TextOverflow.ellipsis` (Urdu/German long-word safety).
 
@@ -152,7 +152,7 @@ Container / on-container tokens (Phase A3, dark-mode readability). The pale ligh
 
 ## 6. Theme — light & dark (future requirement, binding)
 
-6.1 **Modes:** Light, Dark, and System. Default is **System** (follow the device). The user can override in Settings with an explicit Light / Dark / System choice, persisted (SharedPreferences, key `app_theme_mode`) and applied on next launch.
+6.1 **Modes:** Light, Dark, and System. Default is **Light** (phone-test #16, 2026-11-08 — was System; a saved user choice is untouched, only fresh installs / unknown stored values start in Light). The user can override in Settings with an explicit Light / Dark / System choice, persisted (SharedPreferences, key `app_theme_mode`) and applied on next launch.
 
 6.2 **The dark theme must be reachable.** `themeMode: ThemeMode.light` hardcoded in `main.dart` is a defect (§13). `MaterialApp.router` gets `theme`, `darkTheme`, and a `themeMode` driven by the persisted choice.
 
@@ -263,6 +263,7 @@ Debt may only shrink. A rulebook test fails if any entry below grows (new file, 
 
 | Version | Date | Author / Agent | Change Type | Summary |
 |---|---|---|---|---|
+| 1.0.3 | 2026-11-08 | Muse | Phone-test fix batch (#16/#17) | Header + nav redesign: §4.3 minimal 56 px `MinimalAppBar` everywhere except the login curved hero; §4.4 flush 56 px tab bar (was floating 68/16/32) visible only on the 10 tab roots (`AppShell.tabRootPaths`, #17); §6.1 Light is the default theme (was System; saved choices untouched). |
 | 1.0.2 | 2026-11-08 | Muse | Phase G (G4) follow-up | D7 resolved (Inter + Noto Nastaliq Urdu bundled — font test un-skipped with real file/pubspec assertions); §4.4 badge hexes corrected to the canonical tokens (`successContainer #ECFDF5`, `errorContainer #FEF2F2`, `warningContainer #FFFBEB`, warning text `#F59E0B`) — the old values appeared nowhere in `lib/`. |
 | 1.0.1 | 2026-11-08 | Muse | Phase G (G1) update | Rulebook test gates: nav-shell scan (§4.4), token name→value bindings + dark container tokens + whole-file literal scan (§4.2/§6.3), line-count test tightened to 250 with E/F shared-widget cap, overflow coverage + 200% text-scale pass; §4.2 container-token table added (values verified against `AppColors`); §4.4 nav marked implemented; §13 D9 resolved, D4 corrected to 0 importers, D14 resolved, D19 counts corrected. No new debt entries. |
 | 1.0.0 | 2026-11-06 | Muse | Initial Creation | Comprehensive rulebook consolidating DOC-0–DOC-6, the Gaari UI specs, the `test/` suite and `lib/` at `af8c73c`; adds binding language (§5) and theme (§6) requirements and rulings R1–R10; opens the Known Debt Register (§13). |

@@ -5,13 +5,12 @@ import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:latlong2/latlong.dart' as ll;
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/pakistani_validators.dart';
 import '../../../../core/widgets/app_feedback.dart';
-import '../../../../core/widgets/custom_curved_header.dart';
 import '../../../../core/widgets/debounced_button.dart';
 import '../../../../core/widgets/media_picker_helper.dart';
+import '../../../../core/widgets/minimal_app_bar.dart';
 import '../constants/owner_onboarding_constants.dart';
 import '../services/owner_onboarding_submission_service.dart';
 import '../widgets/onboarding/onboarding_stepper_bar.dart';
@@ -161,17 +160,12 @@ class _OwnerOnboardingViewState extends State<OwnerOnboardingView> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    CustomCurvedHeader(
-                      variant: CustomCurvedHeaderVariant.compact,
-                      leadingWidget: IconButton(tooltip: l10n.back, icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20), onPressed: _prevStep),
-                      titleWidget: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(_getHeaderTitle(l10n), style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
-                          const SizedBox(height: 2),
-                          Text(_getHeaderSubtitle(l10n), style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.primaryContainer)),
-                        ],
-                      ),
+                    // #9/#16: MinimalAppBar — back steps through the
+                    // wizard (or pops), title/subtitle per step.
+                    MinimalAppBar(
+                      title: _getHeaderTitle(l10n),
+                      subtitle: _getHeaderSubtitle(l10n),
+                      onBack: _prevStep,
                       actions: [
                         if (_currentStep < 5)
                           Container(

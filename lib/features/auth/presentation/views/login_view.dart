@@ -8,6 +8,7 @@ import '../../../../core/routing/route_names.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/custom_curved_header.dart';
 import '../../../../core/widgets/debounced_button.dart';
+import '../../../../core/widgets/hero_car_slider.dart';
 import '../../data/datasources/auth_remote_data_source.dart';
 import 'widgets/auth_text_field.dart';
 import 'widgets/google_sign_in_button.dart';
@@ -134,6 +135,9 @@ class _LoginViewState extends State<LoginView> {
                   ),
                 ],
               ),
+              // #1: the car slider fills the hero between the greeting
+              // row and the overlapping sign-in card.
+              bottomWidget: const HeroCarSlider(height: 104),
             ),
             HeaderOverlapContainer(
               child: Padding(
@@ -147,17 +151,8 @@ class _LoginViewState extends State<LoginView> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Real Matching Car Showcase
-                            Center(
-                              child: Container(
-                                height: 84,
-                                margin: const EdgeInsets.only(bottom: 8),
-                                child: Image.asset(
-                                  'assets/images/white_sedan_hero.png',
-                                  fit: BoxFit.contain,
-                                ),
-                              ),
-                            ),
+                            // #1: the static sedan is gone — it
+                            // duplicated the hero slider above.
                             Center(
                               child: Text(
                                 l10n.authWelcome,

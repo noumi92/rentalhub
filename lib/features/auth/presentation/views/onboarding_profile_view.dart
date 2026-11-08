@@ -1,11 +1,10 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/widgets/app_feedback.dart';
-import '../../../../core/widgets/custom_curved_header.dart';
+import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../core/widgets/debounced_button.dart';
 import '../../data/datasources/auth_remote_data_source.dart';
 import 'widgets/auth_stepper_bar.dart';
@@ -121,39 +120,16 @@ class _OnboardingProfileViewState extends State<OnboardingProfileView> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     // Header rolls up with scroll
-                    CustomCurvedHeader(
-                      variant: CustomCurvedHeaderVariant.compact,
-                      leadingWidget: IconButton(
-                        tooltip: l10n.back,
-                        icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                            color: Colors.white, size: 20),
-                        onPressed: () {
-                          if (context.canPop()) {
-                            context.pop();
-                          } else {
-                            context.go(RouteNames.auth);
-                          }
-                        },
-                      ),
-                      titleWidget: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            l10n.onboardingStep1,
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w900,
-                            ),
-                          ),
-                          SizedBox(height: 2),
-                          Text(
-                            l10n.onboardingEnterContact,
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: AppColors.primaryContainer,
-                            ),
-                          ),
-                        ],
-                      ),
+                    MinimalAppBar(
+                      title: l10n.onboardingStep1,
+                      subtitle: l10n.onboardingEnterContact,
+                      onBack: () {
+                        if (context.canPop()) {
+                          context.pop();
+                        } else {
+                          context.go(RouteNames.auth);
+                        }
+                      },
                     ),
 
                     // 2-Step Progress Stepper

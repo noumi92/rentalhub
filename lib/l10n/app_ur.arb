@@ -96,11 +96,21 @@
   "locationEnablePrecise": "درست جگہ فعال کریں",
   "locationPermissionExplainer": "رینٹل ہب آپ کے GPS کوآرڈینیٹس استعمال کر کے پاکستان میں آپ کے آس پاس 1 تا 5 کلومیٹر کے اندر تصدیق شدہ شورومز تلاش کرتا ہے۔",
   "emptyRadarExpandHint": "قریبی منظور شدہ شورومز دیکھنے کے لیے اپنی GPS تلاش کا دائرہ 5 کلومیٹر تک بڑھائیں۔",
-  "emptyRadarExpand": "ریڈار 5 کلومیٹر تک بڑھائیں",
+  "emptyRadarExpandToKm": "{radius} کلومیٹر تک پھیلائیں",
+  "@emptyRadarExpandToKm": {
+    "placeholders": {
+      "radius": {
+        "type": "int"
+      }
+    }
+  },
+  "emptyRadarNoShopsTitle": "آپ کے قریب ابھی کوئی رینٹل شاپ نہیں ہے",
+  "emptyRadarNoShopsSubtitle": "کوئی اور علاقہ آزمائیں یا تمام شاپس دیکھیں۔",
+  "emptyRadarBrowseAll": "تمام شاپس دیکھیں",
   "noShopsBanner": "اس دائرے میں ابھی کوئی تصدیق شدہ شوروم نہیں۔ وسیع دائرہ آزمائیں۔",
   "radiusLabel": "دائرہ:",
   "quickBookCar": "گاڑی بک کریں",
-  "quickScanPass": "پاس اسکین کریں",
+  "quickMyReservations": "میری بکنگز",
   "quickNearbyShops": "قریبی شورومز",
   "shopCarsTitle": "دستیاب گاڑیاں",
   "shopCarsLoading": "دستیاب گاڑیاں لوڈ ہو رہی ہیں…",
@@ -1637,6 +1647,11 @@
   },
   "customersNoBookings": "ابھی کوئی بکنگ نہیں — شناختی کارڈ اسکین یا ضامن کے طور پر محفوظ کیا گیا۔",
   "customersScanTitle": "کے وائی سی اور بلیک لسٹ ریڈار",
+  "addCustomerTitle": "گاہک شامل کریں",
+  "addCustomerName": "پورا نام",
+  "addCustomerPhone": "فون نمبر",
+  "addCustomerSaved": "گاہک محفوظ ہو گیا",
+  "addCustomerSave": "گاہک محفوظ کریں",
   "customersScanSubtitle": "قومی انسداد فراڈ نیٹ ورک • ریئل ٹائم",
   "customersScanTribunalPolicy": "ٹرائیبیونل پالیسی",
   "customersScanTribunalInfo": "ہر پاکستانی رینٹل شاپ رینٹل ہب کے ذریعے فوری فراڈ کی معلومات شیئر کرتی ہے۔",
@@ -2536,6 +2551,11 @@
     }
   },
   "syncFailedShort": "ہم آہنگی ناکام — دوبارہ کوشش کی جائے گی",
+  "syncFailedBanner": "سنک ناکام ہوئی — دیکھنے کے لیے تھپتھپائیں",
+  "syncDetailsTitle": "سنک کی تفصیلات",
+  "syncRetryNow": "ابھی دوبارہ کوشش کریں",
+  "syncDiscard": "خارج کریں",
+  "syncNoPending": "کچھ زیر التوا نہیں ہے",
   "syncPendingShort": "ہم آہنگی کے منتظر",
   "syncAllSynced": "تمام تبدیلیاں ہم آہنگ ہو گئیں",
   "syncTitle": "ہم آہنگی",
@@ -2580,8 +2600,8 @@
       }
     }
   },
-  "signatureNadraValidated": "نادرا سے تصدیق شدہ",
-  "badgeNadraVerified": "نادرا سے تصدیق شدہ",
+  "signatureNadraValidated": "دستخط محفوظ ہو گئے",
+  "badgeNadraVerified": "تصدیق شدہ",
   "fuelGaugeLabel": "ایندھن کی سطح (8 درجے)",
   "fuelGaugeSetLevel": "ایندھن کی سطح {n} از 8 مقرر کریں",
   "@fuelGaugeSetLevel": {
@@ -2628,10 +2648,10 @@
     }
   },
   "blacklistDecline": "انکار کریں / سروس سے انکار",
-  "blacklistCleanTitle": "نادرا ریکارڈ صاف اور تصدیق شدہ",
+  "blacklistCleanTitle": "بلیک لسٹ میں کوئی ریکارڈ نہیں ملا",
   "blacklistCleanSubtitle": "کوئی فعال نادہندگی یا ٹریبونل شکایت درج نہیں۔",
-  "blacklistProceed": "واک ان بکنگ جاری رکھیں",
-  "cnicVerifyTitle": "نادرا شناختی کارڈ کی تصدیق",
+  "blacklistProceed": "گاہک شامل کریں",
+  "cnicVerifyTitle": "شناختی کارڈ چیک",
   "cnicScanTooltip": "شناختی کارڈ / بارکوڈ اسکین کریں",
   "cnicVerifyButton": "شناختی کارڈ اور بلیک لسٹ کی تصدیق کریں",
   "cnicChecking": "قومی ٹریبونل سے جانچ ہو رہی ہے...",

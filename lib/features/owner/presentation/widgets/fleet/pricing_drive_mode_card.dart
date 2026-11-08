@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../core/constants/app_colors.dart';
 import '../../../../../l10n/app_localizations.dart';
 
 /// The drive-mode availability card of the rate matrix.
@@ -35,7 +34,7 @@ class PricingDriveModeCard extends StatelessWidget {
         child: Column(
           children: [
             SwitchListTile(
-              activeThumbColor: AppColors.secondary,
+              activeThumbColor: Theme.of(context).colorScheme.secondary,
               title: Text(l10n.pricingSelfDriveAllowed,
                   style:
                       Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
@@ -47,7 +46,7 @@ class PricingDriveModeCard extends StatelessWidget {
             ),
             const Divider(height: 1),
             SwitchListTile(
-              activeThumbColor: AppColors.secondary,
+              activeThumbColor: Theme.of(context).colorScheme.secondary,
               title: Text(l10n.pricingChauffeurAllowed,
                   style:
                       Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),

@@ -11,7 +11,11 @@ import 'package:rentalhub/features/customer/presentation/widgets/customer_suppor
 import 'package:rentalhub/features/owner/presentation/widgets/owner_requests_badge.dart';
 
 // Phase C (C1–C3): the navigation rebuild — StatefulShellRoute shells,
-// the single floating nav, badges, and the orphan-route scan.
+// the single flush nav, badges, and the orphan-route scan.
+//
+// Phone-test #16/#17: the floating pill is gone — the bar is 56 px,
+// flush to the bottom edge, no margin/radius/SafeArea — and it is
+// visible only on the 10 tab roots (`AppShell.tabRootPaths`).
 
 String _posix(String path) => path.replaceAll(r'\', '/');
 
@@ -59,6 +63,21 @@ void main() {
           '/owner/settings',
         ]),
       );
+    });
+
+    test('AppShell.tabRootPaths is exactly the 10 tab roots', () {
+      expect(AppShell.tabRootPaths, {
+        '/customer/home',
+        '/customer/bookings',
+        '/customer/wallet',
+        '/customer/support',
+        '/customer/profile',
+        '/owner/dashboard',
+        '/owner/fleet',
+        '/owner/requests',
+        '/owner/customers',
+        '/owner/settings',
+      });
     });
 
     test('Home has exactly one tab root; the map is branch-internal', () {
@@ -129,7 +148,7 @@ void main() {
       );
     }
 
-    GoRouter buildRouter({String initialLocation = '/a'}) {
+    GoRouter buildRouter({String initialLocation = '/customer/home'}) {
       return GoRouter(
         initialLocation: initialLocation,
         routes: [
@@ -145,7 +164,9 @@ void main() {
               StatefulShellBranch(
                 routes: [
                   GoRoute(
-                    path: '/a',
+                    // Real tab-root path: AppShell hides the nav on any
+                    // other path, so the test router must use one.
+                    path: '/customer/home',
                     builder: (context, state) =>
                         stubList('Screen A', controllerA),
                     routes: [
@@ -162,7 +183,7 @@ void main() {
               StatefulShellBranch(
                 routes: [
                   GoRoute(
-                    path: '/b',
+                    path: '/customer/bookings',
                     builder: (context, state) =>
                         stubList('Screen B', controllerB),
                   ),
@@ -213,27 +234,53 @@ void main() {
       expect(controllerA.offset, 300);
     });
 
-    testWidgets('tapping the active tab pops to the branch root',
-        (tester) async {
-      await tester.pumpWidget(MaterialApp.router(routerConfig: router));
+    testWidgets('the flush bar has no SafeArea around it', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp.router(routerConfig: router),
+      );
       await tester.pumpAndSettle();
-      router.push('/a/detail');
-      await tester.pumpAndSettle();
-      expect(find.text('Detail A'), findsOneWidget);
-
-      await tester.tap(find.text('Tab A'));
-      await tester.pumpAndSettle();
-      expect(find.text('Detail A'), findsNothing);
-      expect(find.text('Screen A'), findsOneWidget);
+      expect(find.byType(AppShellNav), findsOneWidget);
+      expect(
+        find.ancestor(
+          of: find.byType(AppShellNav),
+          matching: find.byType(SafeArea),
+        ),
+        findsNothing,
+      );
     });
 
-    testWidgets('deep-linking into a pushed screen keeps the tab active',
+    testWidgets('pushing a sub-screen hides the nav; popping brings it back',
+        (tester) async {
+      await tester.pumpWidget(MaterialApp.router(routerConfig: router));
+      await tester.pumpAndSettle();
+      expect(find.byType(AppShellNav), findsOneWidget);
+
+      router.push('/customer/home/detail');
+      await tester.pumpAndSettle();
+      expect(find.text('Detail A'), findsOneWidget);
+      expect(find.byType(AppShellNav), findsNothing);
+      expect(find.byType(NavigationBar), findsNothing);
+
+      router.pop();
+      await tester.pumpAndSettle();
+      expect(find.text('Screen A'), findsOneWidget);
+      expect(find.byType(AppShellNav), findsOneWidget);
+    });
+
+    testWidgets(
+        'deep-linking into a pushed screen hides the nav; popping restores it',
         (tester) async {
       router.dispose();
-      router = buildRouter(initialLocation: '/a/detail');
+      router = buildRouter(initialLocation: '/customer/home/detail');
       await tester.pumpWidget(MaterialApp.router(routerConfig: router));
       await tester.pumpAndSettle();
       expect(find.text('Detail A'), findsOneWidget);
+      expect(find.byType(AppShellNav), findsNothing);
+
+      router.pop();
+      await tester.pumpAndSettle();
+      expect(find.text('Screen A'), findsOneWidget);
+      expect(find.byType(AppShellNav), findsOneWidget);
       expect(
         tester.widget<NavigationBar>(find.byType(NavigationBar)).selectedIndex,
         0,
@@ -241,7 +288,7 @@ void main() {
     });
   });
 
-  group('Phase C: floating nav geometry and colours', () {
+  group('Phase C: flush nav geometry and colours', () {
     Future<void> pumpNav(
       WidgetTester tester, {
       required ThemeData theme,
@@ -266,28 +313,27 @@ void main() {
       await tester.pumpAndSettle();
     }
 
-    Container navContainer(WidgetTester tester) {
+    Container navContainer(WidgetTester tester, Color background) {
       return tester.widget<Container>(
         find.byWidgetPredicate(
-          (w) =>
-              w is Container &&
-              w.decoration is BoxDecoration &&
-              (w.decoration as BoxDecoration).borderRadius ==
-                  BorderRadius.circular(AppShellNav.navRadius),
+          (w) => w is Container && w.color == background,
         ),
       );
     }
 
-    testWidgets('light theme: 68 px, margin 16, radius 32, navy + orange',
+    testWidgets('light theme: 56 px flush bar, navy + orange, no margin/radius',
         (tester) async {
       await pumpNav(tester, theme: AppTheme.lightTheme);
-      final container = navContainer(tester);
-      expect(container.margin, const EdgeInsets.all(AppShellNav.navMargin));
-      final decoration = container.decoration as BoxDecoration;
-      expect(decoration.color, AppColors.primary);
-      expect(decoration.boxShadow, hasLength(1));
-      expect(decoration.boxShadow!.first.offset, const Offset(0, -4));
-      expect(decoration.boxShadow!.first.blurRadius, 20);
+      expect(AppShellNav.navHeight, 56);
+      final container = navContainer(tester, AppColors.primary);
+      expect(container.margin, isNull);
+      // No radius, no shadow: a plain colour, no decoration at all.
+      expect(container.decoration, isNull);
+      expect(find.byType(ClipRRect), findsNothing);
+      expect(
+        tester.getSize(find.byWidget(container)).height,
+        AppShellNav.navHeight,
+      );
       expect(
         tester.getSize(find.byType(NavigationBar)).height,
         AppShellNav.navHeight,
@@ -307,9 +353,9 @@ void main() {
     testWidgets('dark theme: navy container, orange indicator',
         (tester) async {
       await pumpNav(tester, theme: AppTheme.darkTheme);
-      final container = navContainer(tester);
-      final decoration = container.decoration as BoxDecoration;
-      expect(decoration.color, AppColors.primaryDarkOnDark);
+      final container = navContainer(tester, AppColors.primaryDarkOnDark);
+      expect(container.margin, isNull);
+      expect(container.decoration, isNull);
       final theme = Theme.of(
         tester.element(find.byType(NavigationBar)),
       );

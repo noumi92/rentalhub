@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'app_shell.dart';
@@ -7,6 +6,7 @@ import '../../l10n/app_localizations.dart';
 import 'auth_route_guard.dart';
 import 'route_names.dart';
 import '../../core/utils/current_shop.dart';
+import '../../features/auth/presentation/utils/sign_out_helper.dart';
 import '../../features/auth/presentation/views/splash_view.dart';
 import '../../features/auth/presentation/views/login_view.dart';
 import '../../features/auth/presentation/views/onboarding_profile_view.dart';
@@ -40,6 +40,7 @@ import '../../features/discovery/presentation/views/shop_cars_view.dart';
 import '../../features/discovery/presentation/views/shop_detail_view.dart';
 import '../../features/discovery/presentation/views/vehicle_detail_view.dart';
 import '../../features/trust/presentation/views/customer_documents_view.dart';
+import '../../features/owner/presentation/views/owner_add_customer_view.dart';
 import '../../features/owner/presentation/views/owner_add_vehicle_view.dart';
 import '../../features/owner/presentation/views/owner_booking_requests_view.dart';
 import '../../features/owner/presentation/views/owner_contract_view.dart';
@@ -69,6 +70,7 @@ import '../../features/owner/presentation/views/owner_whatsapp_logs_view.dart';
 import '../../features/owner/presentation/views/owner_fleet_view.dart';
 import '../../features/owner/presentation/widgets/owner_route_loaders.dart';
 import '../../features/owner/presentation/widgets/owner_requests_badge.dart';
+import '../../features/settings/presentation/views/sync_details_view.dart';
 import '../../features/admin/presentation/views/admin_activity_log_view.dart';
 import '../../features/admin/presentation/views/admin_cars_view.dart';
 import '../../features/admin/presentation/views/admin_customer_detail_view.dart';
@@ -523,12 +525,7 @@ class AppRouter {
                   onOpenSavedShops: () => context.push(RouteNames.customerSavedShops),
                   onOpenSettings: () => context.push(RouteNames.customerSettings),
                   onOpenReputation: () => context.push(RouteNames.customerReputation),
-                  onSignOut: () async {
-                    await FirebaseAuth.instance.signOut();
-                    if (context.mounted) {
-                      context.go(RouteNames.auth);
-                    }
-                  },
+                  onSignOut: () => signOutToAuth(context),
                 ),
               ),
               // Profile: customerKyc
@@ -541,12 +538,7 @@ class AppRouter {
                 path: RouteNames.customerSettings,
                 builder: (context, state) => CustomerSettingsView(
                       onBack: () => context.pop(),
-                      onSignOut: () async {
-                        await FirebaseAuth.instance.signOut();
-                        if (context.mounted) {
-                          context.go(RouteNames.auth);
-                        }
-                      },
+                      onSignOut: () => signOutToAuth(context),
                     ),
               ),
               // Profile: customerReputation
@@ -706,10 +698,16 @@ class AppRouter {
                   ),
                 ),
               ),
-              // Requests: ownerManualBooking
+              // Requests: ownerManualBooking — #18: name/phone/CNIC
+              // arrive as query params from the Customers list Book
+              // action (or the scan view's CNIC-only prefill).
               GoRoute(
                 path: RouteNames.ownerManualBooking,
-                builder: (context, state) => const OwnerManualBookingView(),
+                builder: (context, state) => OwnerManualBookingView(
+                  prefilledCnic: state.uri.queryParameters['cnic'],
+                  prefilledName: state.uri.queryParameters['name'],
+                  prefilledPhone: state.uri.queryParameters['phone'],
+                ),
               ),
               // Requests: ownerHandover
               GoRoute(
@@ -775,6 +773,14 @@ class AppRouter {
               GoRoute(
                 path: RouteNames.ownerCustomerScan,
                 builder: (context, state) => const OwnerCustomerScanView(),
+              ),
+              // Customers: ownerAddCustomer (Phone-test #18: the scan
+              // view's Proceed lands here, not in the booking wizard).
+              GoRoute(
+                path: RouteNames.ownerAddCustomer,
+                builder: (context, state) => OwnerAddCustomerView(
+                  prefilledCnic: state.uri.queryParameters['cnic'],
+                ),
               ),
               // Customers: ownerBlacklist
               GoRoute(
@@ -847,6 +853,12 @@ class AppRouter {
       GoRoute(
         path: RouteNames.ownerOnboarding,
         builder: (context, state) => const OwnerOnboardingView(),
+      ),
+      GoRoute(
+        // Phone-test #4: top-level (not inside a shell branch) so the
+        // failed-sync banner and Settings can open it without a tab bar.
+        path: RouteNames.syncDetails,
+        builder: (context, state) => const SyncDetailsView(),
       ),
       GoRoute(
         path: RouteNames.ownerRates,

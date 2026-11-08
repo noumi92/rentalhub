@@ -6,7 +6,7 @@ import '../../../../core/data/queued_upload.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/network/cpanel_storage_client.dart';
 import '../../../../core/widgets/app_feedback.dart';
-import '../../../../core/widgets/custom_curved_header.dart';
+import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../core/widgets/debounced_button.dart';
 import '../../data/datasources/booking_remote_data_source.dart';
 import '../../domain/entities/booking_entity.dart';
@@ -119,20 +119,9 @@ class _PaymentProofUploadViewState extends State<PaymentProofUploadView> {
       body: SafeArea(
         child: Column(
           children: [
-            CustomCurvedHeader(
-              variant: CustomCurvedHeaderVariant.compact,
-              leadingWidget: widget.onBack != null
-                  ? IconButton(
-                      tooltip: l10n.back,
-                      icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                          color: Colors.white, size: 20),
-                      onPressed: widget.onBack,
-                    )
-                  : null,
-              titleWidget: Text(
-                l10n.proofSubmit,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white),
-              ),
+            MinimalAppBar(
+              title: l10n.proofSubmit,
+              onBack: widget.onBack,
             ),
             Expanded(
               child: SingleChildScrollView(

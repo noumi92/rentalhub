@@ -121,7 +121,7 @@ void main() {
       await prefs.remove(AppSettingsCubit.themeKey);
       final cubit = AppSettingsCubit(prefs: prefs);
       expect(cubit.state.localeCode, 'en');
-      expect(cubit.state.themeMode, ThemeMode.system);
+      expect(cubit.state.themeMode, ThemeMode.light);
 
       await cubit.setLocale('ur');
       expect(cubit.state.localeCode, 'ur');

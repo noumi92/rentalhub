@@ -2,10 +2,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/widgets/app_feedback.dart';
-import '../../../../core/widgets/custom_curved_header.dart';
+import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../customer/data/datasources/customer_remote_data_source.dart';
 import '../../../customer/domain/entities/customer_entity.dart';
 import '../cubit/kyc_cubit.dart';
@@ -112,60 +111,38 @@ class _CustomerDocumentsViewState extends State<CustomerDocumentsView> {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                CustomCurvedHeader(
-                  variant: CustomCurvedHeaderVariant.hero,
-                  showProfileGreeting: true,
-                  titleWidget: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        l10n.kycTitle,
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleMedium
-                            ?.copyWith(
-                                fontWeight: FontWeight.w900,
-                                color: Colors.white),
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        l10n.kycVaultNote,
-                        style: Theme.of(context)
-                            .textTheme
-                            .labelSmall
-                            ?.copyWith(color: AppColors.primaryContainer),
-                      ),
-                    ],
-                  ),
+                // #5/#16: plain MinimalAppBar — the greeting header
+                // (dead bell + dead avatar) is gone.
+                MinimalAppBar(
+                  title: l10n.kycTitle,
+                  subtitle: l10n.kycVaultNote,
                 ),
-                HeaderOverlapContainer(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: _loading
-                            ? const Center(
-                                child: Padding(
-                                padding: EdgeInsets.all(16),
-                                child: CircularProgressIndicator(),
-                              ))
-                            : Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  if (_existing != null) ...[
-                                    KycStatusBanner(status: _existing!.status),
-                                    const SizedBox(height: 14),
-                                  ],
-                                  KycSubmissionForm(
-                                    initialCnic: _initialCnic,
-                                    existing: _existing,
-                                    userUid: _uid(),
-                                    onSubmitted: _onSubmitted,
-                                  ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                  child: Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: _loading
+                          ? const Center(
+                              child: Padding(
+                              padding: EdgeInsets.all(16),
+                              child: CircularProgressIndicator(),
+                            ))
+                          : Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (_existing != null) ...[
+                                  KycStatusBanner(status: _existing!.status),
+                                  const SizedBox(height: 14),
                                 ],
-                              ),
-                      ),
+                                KycSubmissionForm(
+                                  initialCnic: _initialCnic,
+                                  existing: _existing,
+                                  userUid: _uid(),
+                                  onSubmitted: _onSubmitted,
+                                ),
+                              ],
+                            ),
                     ),
                   ),
                 ),

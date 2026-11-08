@@ -6,7 +6,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/utils/whatsapp.dart';
 import '../../../../core/widgets/app_feedback.dart';
-import '../../../../core/widgets/custom_curved_header.dart';
+import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../widgets/support_contact_card.dart';
 import '../widgets/support_faq_list.dart';
@@ -133,15 +133,8 @@ class _CustomerSupportViewState extends State<CustomerSupportView> {
       body: SafeArea(
         child: Column(
           children: [
-            CustomCurvedHeader(
-              variant: CustomCurvedHeaderVariant.compact,
-              // Tab root: no back button. The header's back policy
-              // renders one only when the route can pop, which a
-              // branch root never can.
-              titleWidget: Text(
-                l10n.supportTitle,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white),
-              ),
+            MinimalAppBar(
+              title: l10n.supportTitle,
             ),
             Expanded(
               child: SingleChildScrollView(

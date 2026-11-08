@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/app_feedback.dart';
-import '../../../../core/widgets/custom_curved_header.dart';
+import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../core/widgets/debounced_button.dart';
 import '../widgets/dashboard/subscription_tier_card.dart';
 
@@ -80,7 +80,12 @@ class _OwnerSubscriptionViewState extends State<OwnerSubscriptionView> {
                   Text('IBAN: PK64MEZN0001234567890123',
                       style: Theme.of(context).textTheme.labelMedium?.copyWith(
                           fontWeight: FontWeight.w800,
-                          color: AppColors.secondary)),
+                          // #15: orange small text — the lighter
+                          // secondaryDark in dark mode, secondary in light.
+                          color: Theme.of(context).brightness ==
+                                  Brightness.dark
+                              ? AppColors.secondaryDark
+                              : AppColors.secondary)),
                 ],
               ),
             ),
@@ -125,29 +130,10 @@ class _OwnerSubscriptionViewState extends State<OwnerSubscriptionView> {
       body: SafeArea(
         child: Column(
           children: [
-            CustomCurvedHeader(
-              variant: CustomCurvedHeaderVariant.compact,
-              leadingWidget: widget.onBack != null
-                  ? IconButton(
-                      tooltip: l10n.back,
-                      icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                          color: Colors.white, size: 20),
-                      onPressed: widget.onBack,
-                    )
-                  : null,
-              titleWidget: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(l10n.subscriptionTitle,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w900, color: Colors.white)),
-                  Text(l10n.subscriptionSubtitle,
-                      style: Theme.of(context)
-                          .textTheme
-                          .labelSmall
-                          ?.copyWith(color: AppColors.primaryContainer)),
-                ],
-              ),
+            MinimalAppBar(
+              title: l10n.subscriptionTitle,
+              subtitle: l10n.subscriptionSubtitle,
+              onBack: widget.onBack,
             ),
             Expanded(
               child: ListView(

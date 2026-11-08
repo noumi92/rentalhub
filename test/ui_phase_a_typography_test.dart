@@ -109,13 +109,20 @@ void main() {
       }
     });
 
-    test('mobile modules have no ad-hoc fontSize beyond the 32 known leftovers',
+    test('mobile modules have no ad-hoc fontSize beyond the 35 known leftovers',
         () {
       // Phase A1 migration (2026-11-07): 657 sites moved to theme slots.
       // The 32 that remain are all deliberate — 29 inside private helpers
       // with no BuildContext in scope, 1 invisible splash text
       // (fontSize 0), and 2 sub-scale plate labels. The count must only
       // go down; if it grows, migrate the new sites or justify them here.
+      // Phone-test fix batch (2026-11-08): +3 deliberate sites, all
+      // spec sizes with no matching theme slot (rulebook §4.5 scale is
+      // titleLarge 20 / titleMedium 16 / bodyMedium 13 / labelSmall 11):
+      // MinimalAppBar title 18sp w900 white + subtitle 12sp white70
+      // (rulebook §4.3 — white-on-navy header, no slot is 18/12) and
+      // the AppIconChip badge count at 10sp (sub-scale, same class as
+      // the plate labels). New total 35.
       const scopes = [
         'lib/features/auth',
         'lib/features/customer',
@@ -135,8 +142,8 @@ void main() {
           count += RegExp(r'fontSize:').allMatches(file.readAsStringSync()).length;
         }
       }
-      expect(count, lessThanOrEqualTo(32),
-          reason: 'Ad-hoc fontSize sites grew to $count (was 32).');
+      expect(count, lessThanOrEqualTo(35),
+          reason: 'Ad-hoc fontSize sites grew to $count (was 35).');
     });
   });
 

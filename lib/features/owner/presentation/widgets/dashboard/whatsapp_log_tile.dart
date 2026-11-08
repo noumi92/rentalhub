@@ -84,7 +84,7 @@ class WhatsAppLogTile extends StatelessWidget {
               const SizedBox(height: 2),
               InkWell(
                 onTap: onResend,
-                child: Text(l10n.whatsappLogsResend, style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700, color: AppColors.secondary)),
+                child: Text(l10n.whatsappLogsResend, style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700, color: Theme.of(context).brightness == Brightness.dark ? AppColors.secondaryDark : AppColors.secondary)),
               ),
             ],
           ),

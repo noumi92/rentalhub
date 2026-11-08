@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 
 import '../network/cpanel_storage_client.dart';
 import 'queued_uploads.dart';
@@ -53,7 +54,18 @@ class UploadSyncHandler {
     String? fileKey = entry.result['fileKey'] as String?;
     if (url == null) {
       final file = await _resolveFile(payload);
-      if (file == null) return false;
+      // Phone-test #4: the queued file is already gone locally (the
+      // picked file was deleted before the retry). No retry can ever
+      // succeed, so discard the entry instead of returning false
+      // forever and sticking the banner on "1 pending sync".
+      if (file == null) {
+        debugPrint(
+          'UploadSyncHandler: discarding ${entry.id} — local file for '
+          'kind "${entry.kind}" no longer exists.',
+        );
+        await engine.queue.remove(entry.id);
+        return true;
+      }
       try {
         final key = await client.uploadFile(
           file: file,

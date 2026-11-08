@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
-import '../../../../core/widgets/custom_curved_header.dart';
+import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../core/widgets/masked_value.dart';
 import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../finance/data/datasources/security_deposit_data_source.dart';
@@ -65,13 +65,8 @@ class _CustomerWalletViewState extends State<CustomerWalletView> {
       body: SafeArea(
         child: Column(
           children: [
-            CustomCurvedHeader(
-              variant: CustomCurvedHeaderVariant.compact,
-              titleWidget: Text(
-                l10n.walletTitle,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w900, color: Colors.white),
-              ),
+            MinimalAppBar(
+              title: l10n.walletTitle,
             ),
             Expanded(
               child: SingleChildScrollView(

@@ -4,16 +4,21 @@ import 'package:flutter/material.dart';
 /// HBL banking reference pattern. The tile is pure data; the row widget
 /// below renders a list of them, so customer Home and owner Dashboard
 /// share the same component instead of each hand-rolling one.
+/// [color] is the tile's per-destination accent (#7/#12): the icon
+/// sits in a tinted circle of that colour, so a colour means the same
+/// destination everywhere. Null keeps the theme primary.
 class QuickActionTile {
   const QuickActionTile({
     required this.icon,
     required this.label,
     required this.onTap,
+    this.color,
   });
 
   final IconData icon;
   final String label;
   final VoidCallback onTap;
+  final Color? color;
 }
 
 /// E1: a row of [QuickActionTile]s, one per action, each with a
@@ -51,7 +56,21 @@ class QuickActionTiles extends StatelessWidget {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(tile.icon, size: 26, color: colorScheme.primary),
+                          // #7/#12: per-tile colour — a tinted circle
+                          // behind a larger icon, so tiles read as
+                          // tappable and distinct at a glance.
+                          Container(
+                            width: 48,
+                            height: 48,
+                            decoration: BoxDecoration(
+                              color: (tile.color ?? colorScheme.primary)
+                                  .withValues(alpha: 0.15),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(tile.icon,
+                                size: 28,
+                                color: tile.color ?? colorScheme.primary),
+                          ),
                           const SizedBox(height: 6),
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 4),
@@ -61,7 +80,7 @@ class QuickActionTiles extends StatelessWidget {
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: textTheme.labelMedium?.copyWith(
-                                fontWeight: FontWeight.w700,
+                                fontWeight: FontWeight.w800,
                                 color: colorScheme.onSurface,
                               ),
                             ),

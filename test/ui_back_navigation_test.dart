@@ -3,12 +3,12 @@
 //   "Main 5 tabs should NOT have a back button in header, all other
 //    screens SHOULD have a button which navigate back to the relevant tab."
 //
-// The policy lives in CustomCurvedHeader: with no explicit leadingWidget
-// it renders a back button exactly when the route can pop (a pushed
-// screen) and never at a branch root. These tests pin that policy at
-// three levels: the header alone in a plain Navigator, the header inside
-// a real StatefulShellRoute shell, and statically — no tab-root view
-// re-introduces a hand-copied back button or an onBack field.
+// The policy lives in MinimalAppBar (phone-test #16): with no explicit
+// onBack it renders a back button exactly when the route can pop (a
+// pushed screen) and never at a branch root. These tests pin that
+// policy at three levels: the bar alone in a plain Navigator, the bar
+// inside a real StatefulShellRoute shell, and statically — no tab-root
+// view re-introduces a hand-copied back button or an onBack field.
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -17,19 +17,13 @@ import 'package:go_router/go_router.dart';
 import 'package:rentalhub/core/routing/app_shell.dart';
 import 'package:rentalhub/core/theme/app_theme.dart';
 import 'package:rentalhub/core/widgets/app_shell_nav.dart';
-import 'package:rentalhub/core/widgets/custom_curved_header.dart';
+import 'package:rentalhub/core/widgets/minimal_app_bar.dart';
 import 'package:rentalhub/features/admin/presentation/widgets/admin_shell.dart';
 
 const _backIcon = Icons.arrow_back_ios_new_rounded;
 
-Widget _headerScreen(String title,
-        {bool showBackButton = true, Widget? leadingWidget}) =>
-    Scaffold(
-      body: CustomCurvedHeader(
-        titleWidget: Text(title),
-        showBackButton: showBackButton,
-        leadingWidget: leadingWidget,
-      ),
+Widget _headerScreen(String title, {VoidCallback? onBack}) => Scaffold(
+      body: MinimalAppBar(title: title, onBack: onBack),
     );
 
 List<File> _tabRootFiles() => [
@@ -91,8 +85,9 @@ void main() {
       expect(find.byIcon(_backIcon), findsNothing);
     });
 
-    testWidgets('showBackButton: false suppresses the button on a push',
+    testWidgets('an explicit onBack wins over the automatic pop',
         (tester) async {
+      var tapped = false;
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.lightTheme,
@@ -104,7 +99,7 @@ void main() {
                     MaterialPageRoute(
                       builder: (_) => _headerScreen(
                         'Pushed',
-                        showBackButton: false,
+                        onBack: () => tapped = true,
                       ),
                     ),
                   ),
@@ -118,42 +113,13 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('Go'));
       await tester.pumpAndSettle();
-      expect(find.text('Pushed'), findsOneWidget);
-      expect(find.byIcon(_backIcon), findsNothing);
-    });
+      expect(find.byIcon(_backIcon), findsOneWidget);
 
-    testWidgets('an explicit leadingWidget wins over the automatic button',
-        (tester) async {
-      await tester.pumpWidget(
-        MaterialApp(
-          theme: AppTheme.lightTheme,
-          home: Builder(
-            builder: (context) => Scaffold(
-              body: Center(
-                child: TextButton(
-                  onPressed: () => Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => _headerScreen(
-                        'Pushed',
-                        leadingWidget: IconButton(
-                          icon: const Icon(Icons.close_rounded),
-                          onPressed: () {},
-                        ),
-                      ),
-                    ),
-                  ),
-                  child: const Text('Go'),
-                ),
-              ),
-            ),
-          ),
-        ),
-      );
+      await tester.tap(find.byIcon(_backIcon));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Go'));
-      await tester.pumpAndSettle();
-      expect(find.byIcon(_backIcon), findsNothing);
-      expect(find.byIcon(Icons.close_rounded), findsOneWidget);
+      expect(tapped, isTrue);
+      // The explicit callback ran instead of popping.
+      expect(find.text('Pushed'), findsOneWidget);
     });
   });
 
@@ -161,7 +127,7 @@ void main() {
     late GoRouter router;
 
     GoRouter buildRouter() => GoRouter(
-          initialLocation: '/a',
+          initialLocation: '/customer/home',
           routes: [
             StatefulShellRoute.indexedStack(
               builder: (context, state, shell) => AppShell(
@@ -175,7 +141,9 @@ void main() {
                 StatefulShellBranch(
                   routes: [
                     GoRoute(
-                      path: '/a',
+                      // Real tab-root path: AppShell hides the nav on any
+                      // other path, so the test router must use one.
+                      path: '/customer/home',
                       builder: (context, state) => _headerScreen('Screen A'),
                       routes: [
                         GoRoute(
@@ -190,7 +158,7 @@ void main() {
                 StatefulShellBranch(
                   routes: [
                     GoRoute(
-                      path: '/b',
+                      path: '/customer/bookings',
                       builder: (context, state) => _headerScreen('Screen B'),
                     ),
                   ],
@@ -223,15 +191,19 @@ void main() {
         MaterialApp.router(routerConfig: router),
       );
       await tester.pumpAndSettle();
-      router.push('/a/detail');
+      router.push('/customer/home/detail');
       await tester.pumpAndSettle();
       expect(find.text('Detail A'), findsOneWidget);
       expect(find.byIcon(_backIcon), findsOneWidget);
+      // #17: the pushed screen has a back arrow, so it gets no tab bar.
+      expect(find.byType(AppShellNav), findsNothing);
 
       await tester.tap(find.byIcon(_backIcon));
       await tester.pumpAndSettle();
       expect(find.text('Screen A'), findsOneWidget);
       expect(find.byIcon(_backIcon), findsNothing);
+      // Back on the tab root: the bar reappears.
+      expect(find.byType(AppShellNav), findsOneWidget);
     });
   });
 

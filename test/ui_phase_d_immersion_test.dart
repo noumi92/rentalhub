@@ -384,9 +384,11 @@ void main() {
       expect(find.text('stub-map'), findsOneWidget);
     });
 
-    testWidgets('Scan Pass opens the bookings list', (tester) async {
+    testWidgets('My Reservations opens the bookings list', (tester) async {
       await pumpHome(tester);
-      await tester.tap(find.text('Scan Pass'));
+      // #7 renamed the tile: "Scan Pass" -> "My Reservations";
+      // the destination (bookings list) is unchanged.
+      await tester.tap(find.text('My Reservations'));
       await tester.pumpAndSettle();
       expect(find.text('stub-bookings'), findsOneWidget);
     });

@@ -51,6 +51,23 @@ void main() {
       }
     });
 
+    test('phone-test routes exist: ownerAddCustomer and syncDetails', () {
+      final names =
+          File('lib/core/routing/route_names.dart').readAsStringSync();
+      expect(names, contains("ownerAddCustomer = '/owner/customers/add'"),
+          reason: 'Phone-test #18: the scan view Proceed target.');
+      expect(names, contains("syncDetails = '/sync-details'"),
+          reason: 'Phone-test #4: the failed-banner/details target.');
+      final router =
+          File('lib/core/routing/app_router.dart').readAsStringSync();
+      expect(router, contains('OwnerAddCustomerView'));
+      expect(router, contains('SyncDetailsView'));
+      // syncDetails is a top-level route (no tab bar), not a shell
+      // branch route: it must be registered outside the shells.
+      expect(router.indexOf('SyncDetailsView'),
+          greaterThan(router.lastIndexOf('StatefulShellRoute.indexedStack')));
+    });
+
     test('route loaders exist and stay under the 250-line view cap', () {
       final file = File(
         'lib/features/owner/presentation/widgets/owner_route_loaders.dart',

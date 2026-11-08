@@ -123,7 +123,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('KYC & Blacklist Radar'), findsOneWidget);
-      expect(find.text('NADRA CNIC Verification'), findsOneWidget);
+      expect(find.text('CNIC Check'), findsOneWidget);
 
       await tester.enterText(find.byType(TextField), '35201-9999999-1');
       await tester.tap(find.text('Verify CNIC & Blacklist'));

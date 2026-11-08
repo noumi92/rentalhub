@@ -2,13 +2,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_dimensions.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/responsive.dart';
+import '../../../../core/widgets/app_icon_chip.dart';
 import '../../../../core/widgets/app_state_views.dart';
-import '../../../../core/widgets/custom_curved_header.dart';
+import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
@@ -178,46 +178,36 @@ class _OwnerDashboardViewState extends State<OwnerDashboardView> {
       body: SafeArea(
         child: Column(
           children: [
-            CustomCurvedHeader(
-              variant: CustomCurvedHeaderVariant.compact,
-              titleWidget: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(l10n.dashboardTitle, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
-                  Text(_shopName.isNotEmpty ? _shopName : l10n.dashboardMyShowroom, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.primaryContainer)),
-                ],
-              ),
+            // #9/#12: MinimalAppBar — bell (with unread badge),
+            // settings and refresh, each in a tinted AppIconChip.
+            MinimalAppBar(
+              title: l10n.dashboardTitle,
+              subtitle:
+                  _shopName.isNotEmpty ? _shopName : l10n.dashboardMyShowroom,
               actions: [
-                Stack(
-                  alignment: Alignment.topRight,
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.notifications_rounded, color: Colors.white),
-                      tooltip: l10n.dashboardNotificationsTooltip,
-                      onPressed: () => context.push(RouteNames.ownerNotifications),
-                    ),
-                    if (_unreadNotifications > 0)
-                      Positioned(
-                        right: 6,
-                        top: 6,
-                        child: Container(
-                          padding: const EdgeInsets.all(4),
-                          decoration: const BoxDecoration(
-                              color: AppColors.accentDanger, shape: BoxShape.circle),
-                          child: Text('$_unreadNotifications',
-                              style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
-                        ),
-                      ),
-                  ],
+                AppIconChip(
+                  icon: Icons.notifications_rounded,
+                  tooltip: l10n.dashboardNotificationsTooltip,
+                  background: Colors.white.withValues(alpha: 0.15),
+                  iconColor: Colors.white,
+                  badgeCount:
+                      _unreadNotifications > 0 ? _unreadNotifications : null,
+                  onPressed: () => context.push(RouteNames.ownerNotifications),
                 ),
-                IconButton(
-                  icon: const Icon(Icons.settings_rounded, color: Colors.white),
+                const SizedBox(width: 8),
+                AppIconChip(
+                  icon: Icons.settings_rounded,
                   tooltip: l10n.dashboardSettingsTooltip,
+                  background: Colors.white.withValues(alpha: 0.15),
+                  iconColor: Colors.white,
                   onPressed: () => context.push(RouteNames.ownerSettings),
                 ),
-                IconButton(
+                const SizedBox(width: 8),
+                AppIconChip(
+                  icon: Icons.refresh_rounded,
                   tooltip: l10n.dashboardRefreshTooltip,
-                  icon: const Icon(Icons.refresh_rounded, color: Colors.white),
+                  background: Colors.white.withValues(alpha: 0.15),
+                  iconColor: Colors.white,
                   onPressed: _loadDashboardData,
                 ),
               ],

@@ -1,15 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../auth/presentation/utils/sign_out_helper.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/settings/app_settings_cubit.dart';
 import '../../../../core/utils/current_shop.dart';
-import '../../../../core/widgets/custom_curved_header.dart';
+import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../widgets/sync_status_section.dart';
 
@@ -54,20 +54,9 @@ class _OwnerSettingsViewState extends State<OwnerSettingsView> {
       body: SafeArea(
         child: Column(
           children: [
-            CustomCurvedHeader(
-              variant: CustomCurvedHeaderVariant.compact,
-              // Tab root: no back button. The header's back policy
-              // renders one only when the route can pop, which a
-              // branch root never can.
-              titleWidget: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(l10n.settings,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
-                  Text(l10n.settingsSubtitle,
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.primaryContainer)),
-                ],
-              ),
+            MinimalAppBar(
+              title: l10n.settings,
+              subtitle: l10n.settingsSubtitle,
             ),
             Expanded(
               child: BlocBuilder<AppSettingsCubit, AppSettingsState>(
@@ -166,6 +155,8 @@ class _OwnerSettingsViewState extends State<OwnerSettingsView> {
                                   l10n.whatsappLogs, RouteNames.ownerWhatsappLogs),
                               _link(context, Icons.notifications_rounded,
                                   l10n.notifications, RouteNames.ownerNotifications),
+                              _link(context, Icons.sync_rounded,
+                                  l10n.syncDetailsTitle, RouteNames.syncDetails),
                               _link(context, Icons.report_problem_outlined,
                                   l10n.disputes, RouteNames.ownerDisputes),
                               _link(context, Icons.account_balance_rounded,
@@ -180,10 +171,7 @@ class _OwnerSettingsViewState extends State<OwnerSettingsView> {
                             icon: const Icon(Icons.logout_rounded),
                             label: Text(l10n.signOut),
                             onPressed: () async {
-                              await FirebaseAuth.instance.signOut();
-                              if (context.mounted) {
-                                context.go(RouteNames.auth);
-                              }
+                              await signOutToAuth(context);
                             },
                           ),
                         ),

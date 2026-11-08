@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/routing/route_names.dart';
-import '../../../../core/widgets/custom_curved_header.dart';
+import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../data/datasources/customer_location_store.dart';
 import 'widgets/city_selector_bar.dart';
 import 'widgets/location_confirm_card.dart';
@@ -125,24 +125,15 @@ class _CustomerLocationPromptViewState extends State<CustomerLocationPromptView>
       body: SafeArea(
         child: Column(
           children: [
-            CustomCurvedHeader(
-              variant: CustomCurvedHeaderVariant.compact,
-              leadingWidget: IconButton(
-                tooltip: l10n.back,
-                icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                    color: Colors.white, size: 18),
-                onPressed: () {
-                  if (context.canPop()) {
-                    context.pop();
-                  } else {
-                    context.go(RouteNames.onboardingRole);
-                  }
-                },
-              ),
-              titleWidget: Text(
-                l10n.locationSetTitle,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800, color: Colors.white),
-              ),
+            MinimalAppBar(
+              title: l10n.locationSetTitle,
+              onBack: () {
+                if (context.canPop()) {
+                  context.pop();
+                } else {
+                  context.go(RouteNames.onboardingRole);
+                }
+              },
             ),
             CitySelectorBar(
               majorCities: _majorCities,

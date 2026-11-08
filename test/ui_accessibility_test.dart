@@ -132,8 +132,9 @@ void main() {
         }
       }
       // Guard the audit itself: the tree this was written against has
-      // 85 IconButtons, all labelled.
-      expect(total, greaterThanOrEqualTo(85));
+      // 34 IconButtons, all labelled. (Was 85 before the #16
+      // MinimalAppBar conversion collapsed per-screen headers.)
+      expect(total, greaterThanOrEqualTo(34));
       expect(violations, isEmpty,
           reason: 'An IconButton tooltip is its semantic label (and the '
               'long-press hint). Add tooltip: to:\n${violations.join('\n')}');
@@ -159,8 +160,8 @@ void main() {
           }
         }
       }
-      // The tree this was written against has 7 GestureDetectors.
-      expect(total, 7);
+      // The tree this was written against has 8 GestureDetectors.
+      expect(total, 8);
       expect(violations, isEmpty,
           reason: 'Wrap the GestureDetector in Semantics(button: true, '
               'label: ...) or convert it to an IconButton with a '

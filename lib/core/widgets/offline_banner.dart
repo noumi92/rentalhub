@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../data/sync_status_cubit.dart';
 import '../di/injection_container.dart';
+import '../routing/route_names.dart';
 
 /// Phase B (B5): resolve the cubit a sync widget should listen to.
 /// Prefers a [SyncStatusCubit] provided by an ancestor (tests and
@@ -28,6 +30,10 @@ SyncStatusCubit? resolveSyncStatusCubit(BuildContext context) {
 ///   back online" (warning colours).
 /// * Online with queued work → "N change(s) pending sync"
 ///   (neutral, with a small spinner).
+/// * Online with nothing pending but failed entries → "Sync failed —
+///   tap to review" (error colours, tappable → sync details).
+///   Phone-test #4: exhausted entries used to count as pending, so
+///   the banner said "1 change pending sync" forever.
 /// * Online and nothing pending → renders nothing.
 ///
 /// Reads [SyncStatusCubit]; place it at the top of a tab screen's
@@ -46,11 +52,20 @@ class OfflineBanner extends StatelessWidget {
     return BlocBuilder<SyncStatusCubit, SyncStatusState>(
       bloc: cubit,
       builder: (context, state) {
-        if (state.isOnline && state.pendingCount == 0) {
+        // Phone-test #4: failed entries no longer count as pending,
+        // so the banner hides only when nothing is pending AND
+        // nothing has failed.
+        if (state.isOnline &&
+            state.pendingCount == 0 &&
+            state.failedCount == 0) {
           return const SizedBox.shrink();
         }
         final theme = Theme.of(context);
         final isOffline = !state.isOnline;
+        // Phone-test #4: online with no pending work but failed
+        // entries is a distinct state — tappable, opens sync details.
+        final isFailed =
+            state.isOnline && state.pendingCount == 0 && state.failedCount > 0;
         // Phase F: the banner copy is localized; the plural keys carry
         // the 1-vs-many form, so no English singular/plural ternary
         // lives in the widget. The English fallback covers pumps
@@ -59,35 +74,40 @@ class OfflineBanner extends StatelessWidget {
         final l10n = AppLocalizations.of(context);
         final background = isOffline
             ? theme.colorScheme.errorContainer
-            : theme.colorScheme.surfaceContainerHighest;
+            : isFailed
+                ? theme.colorScheme.errorContainer
+                : theme.colorScheme.surfaceContainerHighest;
         final foreground = isOffline
             ? theme.colorScheme.onErrorContainer
-            : theme.colorScheme.onSurface;
+            : isFailed
+                ? theme.colorScheme.onErrorContainer
+                : theme.colorScheme.onSurface;
         final text = isOffline
             ? (state.pendingCount > 0
                 ? l10n?.syncOfflineWithPending(state.pendingCount) ??
                     "You're offline — ${state.pendingCount} change${state.pendingCount == 1 ? '' : 's'} will sync when you're back online"
                 : l10n?.syncOffline ??
                     "You're offline — changes will sync when you're back online")
-            : l10n?.syncPending(state.pendingCount) ??
-                '${state.pendingCount} change${state.pendingCount == 1 ? '' : 's'} pending sync';
+            : isFailed
+                ? l10n?.syncFailedBanner ?? 'Sync failed — tap to review'
+                : l10n?.syncPending(state.pendingCount) ??
+                    '${state.pendingCount} change${state.pendingCount == 1 ? '' : 's'} pending sync';
         // Phase D (D2): the banner lives at the very top of the shell
         // body, so with edge-to-edge it would render under the status
         // bar when visible. The SafeArea wraps only the visible
         // banner — the hidden branch above stays a zero-size shrink.
-        return SafeArea(
-          top: true,
-          bottom: false,
-          left: false,
-          right: false,
-          child: Container(
-            width: double.infinity,
-            color: background,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        final banner = Container(
+          width: double.infinity,
+          color: background,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           child: Row(
             children: [
               Icon(
-                isOffline ? Icons.wifi_off_outlined : Icons.sync_outlined,
+                isOffline
+                    ? Icons.wifi_off_outlined
+                    : isFailed
+                        ? Icons.error_outline_rounded
+                        : Icons.sync_outlined,
                 size: 18,
                 color: foreground,
               ),
@@ -100,9 +120,31 @@ class OfflineBanner extends StatelessWidget {
                   ),
                 ),
               ),
+              if (isFailed)
+                Icon(Icons.chevron_right_rounded, size: 18, color: foreground),
             ],
           ),
-          ),
+        );
+        return SafeArea(
+          top: true,
+          bottom: false,
+          left: false,
+          right: false,
+          // The failed banner is tappable (opens sync details); the
+          // offline/pending states stay plain. maybeOf keeps pumps
+          // without a GoRouter from throwing on tap. The Semantics
+          // label is the a11y name for the tap target (E3 scan).
+          child: isFailed
+              ? Semantics(
+                  button: true,
+                  label: text,
+                  child: GestureDetector(
+                    onTap: () => GoRouter.maybeOf(context)
+                        ?.push(RouteNames.syncDetails),
+                    child: banner,
+                  ),
+                )
+              : banner,
         );
       },
     );

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/constants/app_colors.dart';
-import '../../../../core/widgets/custom_curved_header.dart';
+import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
 import '../widgets/booking_detail_actions.dart';
 import '../widgets/booking_detail_summary.dart';
@@ -66,34 +65,10 @@ class CustomerBookingDetailView extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            CustomCurvedHeader(
-              variant: CustomCurvedHeaderVariant.compact,
-              leadingWidget: onBack != null
-                  ? IconButton(
-                      tooltip: l10n.back,
-                      icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                          color: Colors.white, size: 20),
-                      onPressed: onBack,
-                    )
-                  : null,
-              titleWidget: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    b.vehicleName ?? l10n.bookingDetailTitle(b.bookingId),
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w900, color: Colors.white),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    l10n.bookingShopLine(b.shopName ?? l10n.rentalShowroom, b.bookingId),
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodySmall
-                        ?.copyWith(color: AppColors.primaryContainer),
-                  ),
-                ],
-              ),
+            MinimalAppBar(
+              title: b.vehicleName ?? l10n.bookingDetailTitle(b.bookingId),
+              subtitle: l10n.bookingShopLine(b.shopName ?? l10n.rentalShowroom, b.bookingId),
+              onBack: onBack,
               actions: [
                 Container(
                   padding:

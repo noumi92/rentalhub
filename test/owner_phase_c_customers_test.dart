@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:rentalhub/core/di/injection_container.dart' as di;
 import 'package:rentalhub/features/blacklist/data/datasources/blacklist_remote_data_source.dart';
@@ -11,8 +12,10 @@ import 'package:rentalhub/features/customer/data/datasources/customer_remote_dat
 import 'package:rentalhub/features/customer/data/models/customer_model.dart';
 import 'package:rentalhub/features/customer/domain/entities/customer_entity.dart';
 import 'package:rentalhub/features/customer/utils/customer_grouping.dart';
+import 'package:rentalhub/features/owner/presentation/views/owner_add_customer_view.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_blacklist_view.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_cnic_review_view.dart';
+import 'package:rentalhub/features/owner/presentation/views/owner_customer_scan_view.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_customers_list_view.dart';
 import 'package:rentalhub/features/owner/presentation/widgets/guarantor_picker.dart';
 import 'package:rentalhub/l10n/app_localizations.dart';
@@ -410,6 +413,122 @@ House 12, Street 4, Gulberg III, Lahore
       expect(names, contains("ownerCustomers = '/owner/customers'"));
       expect(router, contains('OwnerCustomersListView'));
       expect(router, contains('OwnerBlacklistView'));
+    });
+  });
+
+  group('Phone-test #18 — adding a customer is its own step', () {
+    test('the add-customer route exists', () async {
+      final names =
+          await File('lib/core/routing/route_names.dart').readAsString();
+      final router =
+          await File('lib/core/routing/app_router.dart').readAsString();
+      expect(names, contains("ownerAddCustomer = '/owner/customers/add'"));
+      expect(router, contains('OwnerAddCustomerView'));
+      expect(router, contains("state.uri.queryParameters['cnic']"));
+    });
+
+    testWidgets('the form prefills the CNIC, validates, and saves',
+        (tester) async {
+      // A CNIC no earlier test in this file has saved, so the
+      // pre-save absence check below is meaningful (the shared
+      // in-memory datasource from setUpAll persists across tests).
+      const cnic = '35201-3333333-3';
+      final router = GoRouter(
+        initialLocation: '/owner/customers/add?cnic=$cnic',
+        routes: [
+          GoRoute(
+            path: '/owner/customers/add',
+            builder: (context, state) => OwnerAddCustomerView(
+              prefilledCnic: state.uri.queryParameters['cnic'],
+            ),
+          ),
+          GoRoute(
+            path: '/owner/customers',
+            builder: (context, state) =>
+                const OwnerCustomersListView(shopId: 'shop-1'),
+          ),
+        ],
+      );
+      await tester.pumpWidget(
+        MaterialApp.router(
+          routerConfig: router,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Add Customer'), findsOneWidget);
+      final cnicField = tester.widget<TextField>(
+          find.widgetWithText(TextField, 'CNIC Check'));
+      expect(cnicField.controller?.text, cnic);
+
+      // Saving with no name/phone shows validation errors, not a save.
+      await tester.tap(find.text('Save customer'));
+      await tester.pumpAndSettle();
+      expect(find.text('Add Customer'), findsOneWidget);
+      expect(
+        await di.sl<CustomerRemoteDataSource>()
+            .getCustomerByCnic('shop-1', cnic),
+        isNull,
+      );
+
+      await tester.enterText(
+          find.widgetWithText(TextField, 'Full name'), 'Ayesha Khan');
+      await tester.enterText(
+          find.widgetWithText(TextField, 'Phone number'), '0300-3333333');
+      await tester.tap(find.text('Save customer'));
+      await tester.pumpAndSettle();
+
+      // Lands back on the Customers list with the new customer visible.
+      expect(find.text('Customer saved'), findsOneWidget);
+      expect(find.text('Ayesha Khan'), findsOneWidget);
+      final saved = await di.sl<CustomerRemoteDataSource>()
+          .getCustomerByCnic('shop-1', cnic);
+      expect(saved?.name, 'Ayesha Khan');
+      expect(saved?.phone, '0300-3333333');
+    });
+
+    testWidgets('a clean scan proceeds to Add Customer, not to booking',
+        (tester) async {
+      final router = GoRouter(
+        initialLocation: '/owner/customers/scan',
+        routes: [
+          GoRoute(
+            path: '/owner/customers/scan',
+            builder: (context, state) => const OwnerCustomerScanView(),
+          ),
+          GoRoute(
+            path: '/owner/customers/add',
+            builder: (context, state) => OwnerAddCustomerView(
+              prefilledCnic: state.uri.queryParameters['cnic'],
+            ),
+          ),
+          GoRoute(
+            path: '/owner/customers',
+            builder: (context, state) =>
+                const OwnerCustomersListView(shopId: 'shop-1'),
+          ),
+        ],
+      );
+      await tester.pumpWidget(
+        MaterialApp.router(
+          routerConfig: router,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextField), '35201-1234567-1');
+      await tester.tap(find.text('Verify CNIC & Blacklist'));
+      await tester.pumpAndSettle();
+      expect(find.text('No blacklist record found'), findsOneWidget);
+
+      await tester.tap(find.text('Add Customer'));
+      await tester.pumpAndSettle();
+      final cnicField = tester.widget<TextField>(
+          find.widgetWithText(TextField, 'CNIC Check'));
+      expect(cnicField.controller?.text, '35201-1234567-1');
+      expect(find.text('Save customer'), findsOneWidget);
     });
   });
 }

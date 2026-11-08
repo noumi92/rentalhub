@@ -347,11 +347,21 @@ void main() {
     testWidgets('tab root with notch + gesture-bar insets has no overflow',
         (tester) async {
       // A notched phone: 47dp status bar, 34dp gesture bar.
+      // FakeViewPadding takes PHYSICAL pixels, and this pump runs at
+      // DPR 2.0 (780x1688 physical = 390x844 logical) — so the inset
+      // values are doubled to 94 / 68 physical. `padding` (not just
+      // `viewPadding`) is what MediaQuery reads: TestFlutterView keeps
+      // the two overrides independent, so setting viewPadding alone
+      // leaves MediaQuery.padding at 0 and the bar would sit under
+      // the notch.
       tester.view.viewPadding =
-          const FakeViewPadding(top: 47, bottom: 34);
+          const FakeViewPadding(top: 94, bottom: 68);
+      tester.view.padding =
+          const FakeViewPadding(top: 94, bottom: 68);
       tester.view.physicalSize = const Size(780, 1688);
       tester.view.devicePixelRatio = 2.0;
       addTearDown(tester.view.resetViewPadding);
+      addTearDown(tester.view.resetPadding);
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
 

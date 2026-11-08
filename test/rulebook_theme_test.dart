@@ -8,7 +8,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:rentalhub/core/settings/app_settings_cubit.dart';
 import 'package:rentalhub/core/theme/app_theme.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // Rulebook §4.2: tokens that exist in `AppColors` today, with the exact
 // values the docs require. If a value changes, the rulebook (§4.2) and
@@ -266,6 +268,27 @@ void main() {
       final cubit = File('lib/core/settings/app_settings_cubit.dart')
           .readAsStringSync();
       expect(cubit, contains("app_theme_mode"));
+    });
+
+    test('Light is the default; a saved choice is untouched', () async {
+      // Rulebook §6.1 (phone-test #16): fresh installs start in Light.
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+      expect(AppSettingsCubit(prefs: prefs).state.themeMode,
+          ThemeMode.light);
+
+      // An unknown stored value falls back to Light, not System.
+      await prefs.setString(AppSettingsCubit.themeKey, 'bogus');
+      expect(AppSettingsCubit(prefs: prefs).state.themeMode,
+          ThemeMode.light);
+
+      // An explicitly saved System (or Dark) choice is preserved.
+      await prefs.setString(AppSettingsCubit.themeKey, 'system');
+      expect(AppSettingsCubit(prefs: prefs).state.themeMode,
+          ThemeMode.system);
+      await prefs.setString(AppSettingsCubit.themeKey, 'dark');
+      expect(AppSettingsCubit(prefs: prefs).state.themeMode,
+          ThemeMode.dark);
     });
 
     test('dark theme reads all colours from AppColors (no inline literals)',

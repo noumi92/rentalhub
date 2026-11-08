@@ -57,7 +57,13 @@ class OnboardingStepperBar extends StatelessWidget {
             style: TextStyle(
               fontSize: 10,
               fontWeight: isCurrent ? FontWeight.w800 : FontWeight.w600,
-              color: isCurrent ? AppColors.primary : Theme.of(context).colorScheme.onSurfaceVariant,
+              // #10: theme-aware — the hardcoded AppColors.primary navy
+              // was ~1.2:1 on a dark surface (invisible). Light mode
+              // keeps the theme primary; dark mode uses the pale
+              // lavender primaryContainer — NOT colorScheme.primary,
+              // which in the dark theme is the dark navy #252B7A
+              // (1.46:1 on the dark surface, still unreadable).
+              color: isCurrent ? (Theme.of(context).brightness == Brightness.dark ? AppColors.primaryContainer : Theme.of(context).colorScheme.primary) : Theme.of(context).colorScheme.onSurfaceVariant,
             ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,

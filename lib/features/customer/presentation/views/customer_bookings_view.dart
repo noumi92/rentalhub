@@ -5,7 +5,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/data/sync_status_cubit.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/widgets/app_state_views.dart';
-import '../../../../core/widgets/custom_curved_header.dart';
+import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../core/widgets/offline_banner.dart';
 import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
@@ -103,16 +103,8 @@ class _CustomerBookingsViewState extends State<CustomerBookingsView> {
       body: SafeArea(
         child: Column(
           children: [
-            CustomCurvedHeader(
-              variant: CustomCurvedHeaderVariant.compact,
-              // Tab root: no back button. The header's back policy
-              // renders one only when the route can pop, which a
-              // branch root never can.
-              titleWidget: Text(
-                l10n.bookingsTitle,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w900, color: Colors.white),
-              ),
+            MinimalAppBar(
+              title: l10n.bookingsTitle,
             ),
             // E3: 48dp chip + 8dp vertical padding each side — the
             // old 50dp row squeezed the filter chips to 34dp.

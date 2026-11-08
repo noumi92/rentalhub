@@ -6,7 +6,8 @@ import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/current_shop.dart';
 import '../../../../core/utils/responsive.dart';
-import '../../../../core/widgets/custom_curved_header.dart';
+import '../../../../core/widgets/app_icon_chip.dart';
+import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../fleet/domain/entities/vehicle_entity.dart';
 import '../../../fleet/presentation/cubit/fleet_cubit.dart';
@@ -115,35 +116,26 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // Header rolls up with scroll (Requirement 1)
-                    CustomCurvedHeader(
-                      variant: CustomCurvedHeaderVariant.compact,
-                      // Tab root: no back button, and never an exit from
-                      // the shell. The header's back policy renders one
-                      // only when the route can pop, which a branch root
-                      // never can.
-                      titleWidget: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(l10n.fleetTitle,
-                              style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
-                          SizedBox(height: 2),
-                          Text(l10n.fleetSubtitle,
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.primaryContainer)),
-                        ],
-                      ),
+                    // #9/#12/#15: MinimalAppBar with tinted chips;
+                    // the header scrolls with the list as before.
+                    MinimalAppBar(
+                      title: l10n.fleetTitle,
+                      subtitle: l10n.fleetSubtitle,
                       actions: [
-                        IconButton(
+                        AppIconChip(
+                          icon: Icons.route_rounded,
                           tooltip: l10n.fixedRoutes,
-                          icon: const Icon(Icons.route_rounded,
-                              color: Colors.white, size: 24),
+                          background: Colors.white.withValues(alpha: 0.15),
+                          iconColor: Colors.white,
                           onPressed: () =>
                               context.push(RouteNames.ownerFixedRoutes),
                         ),
-                        IconButton(
+                        const SizedBox(width: 8),
+                        AppIconChip(
+                          icon: Icons.add_circle_rounded,
                           tooltip: l10n.fleetAddVehicle,
-                          icon: const Icon(Icons.add_circle_rounded,
-                              color: AppColors.secondary, size: 28),
+                          background: Colors.white.withValues(alpha: 0.15),
+                          iconColor: Colors.white,
                           onPressed: _openAddVehicle,
                         ),
                       ],
@@ -172,7 +164,14 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
                               label: l10n.fleetOnRent,
                               value: l10n.fleetOnRentActive(onRentCount),
                               icon: Icons.key_rounded,
-                              color: AppColors.secondary),
+                              // #15: the metric value is small text in
+                              // this colour — the light orange is weak
+                              // on a dark surface, so dark mode uses
+                              // the lighter secondaryDark.
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? AppColors.secondaryDark
+                                  : AppColors.secondary),
                         ],
                       ),
                     ),

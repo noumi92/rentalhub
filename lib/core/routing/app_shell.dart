@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../widgets/app_shell_nav.dart';
 import '../widgets/offline_banner.dart';
+import 'route_names.dart';
 
 /// Phase C (C1): the shell scaffold shared by the customer and owner
 /// `StatefulShellRoute`s. One shell per module, five branches each —
@@ -15,13 +16,43 @@ import '../widgets/offline_banner.dart';
 /// - the [OfflineBanner] lives here once (Phase B deferred the
 ///   full banner rollout to this shell) instead of once per tab
 ///   screen, so every tab root shows the same sync state;
-/// - the [AppShellNav] is the single floating nav (C2); the tab
+/// - the [AppShellNav] is the single flush nav (C2, §4.4); the tab
 ///   screens no longer embed one.
+///
+/// Phone-test #17 (user rule: every screen with a back arrow is a
+/// sub-screen and gets no bottom navigation): the bar is visible
+/// exactly when the current screen is a tab root — which is exactly
+/// when there is no back arrow. The check is ONE condition here, on
+/// the current route path, instead of one route move per sub-screen:
+/// 10 tab roots keep the bar, 45 mobile sub-screens lose it. From a
+/// sub-screen the only way back is the back arrow / system back,
+/// which returns to the tab root and the bar reappears.
+///
+/// The visibility reads the live route through
+/// [GoRouterState.of] in [build], so the shell rebuilds (and the
+/// bar appears/disappears) on every inner push/pop — the same
+/// signal [MinimalAppBar] uses for its back button
+/// (`Navigator.canPop`), expressed as a path set because the shell
+/// sits above the branch navigators and cannot ask them directly.
 ///
 /// Re-tapping the active tab pops that branch back to its root
 /// (`goBranch` with `initialLocation: true`); tapping another tab
 /// restores that branch's stack where the user left it.
 class AppShell extends StatelessWidget {
+  /// The 10 tab-root paths (rulebook §4.4). Any other path inside a
+  /// shell branch is a sub-screen and hides the tab bar.
+  static const Set<String> tabRootPaths = {
+    RouteNames.customerHome,
+    RouteNames.customerBookings,
+    RouteNames.customerWallet,
+    RouteNames.customerSupport,
+    RouteNames.customerProfile,
+    RouteNames.ownerDashboard,
+    RouteNames.ownerFleet,
+    RouteNames.ownerRequests,
+    RouteNames.ownerCustomers,
+    RouteNames.ownerSettings,
+  };
   final StatefulNavigationShell navigationShell;
   final List<ShellNavItem> tabs;
 
@@ -41,6 +72,10 @@ class AppShell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // #17: the bar is visible exactly on a tab root. The OfflineBanner
+    // stays above the content either way (untouched).
+    final showNav =
+        tabRootPaths.contains(GoRouterState.of(context).uri.path);
     return Scaffold(
       body: Column(
         children: [
@@ -48,21 +83,15 @@ class AppShell extends StatelessWidget {
           Expanded(child: navigationShell),
         ],
       ),
-      // Phase D (D2): with edge-to-edge the floating pill must clear
-      // the bottom system inset (gesture bar / 3-button nav) instead
-      // of sitting on top of the system buttons. The SafeArea adds
-      // only the bottom inset; the pill's own geometry is untouched.
-      bottomNavigationBar: SafeArea(
-        top: false,
-        left: false,
-        right: false,
-        bottom: true,
-        child: AppShellNav(
-          currentIndex: navigationShell.currentIndex,
-          onTap: _onTap,
-          items: tabs,
-        ),
-      ),
+      // #16: the flush bar attaches to the bottom edge — no SafeArea
+      // around it. It renders only on tab roots (see above).
+      bottomNavigationBar: showNav
+          ? AppShellNav(
+              currentIndex: navigationShell.currentIndex,
+              onTap: _onTap,
+              items: tabs,
+            )
+          : null,
     );
   }
 }

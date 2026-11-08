@@ -6,6 +6,7 @@ import 'package:rentalhub/core/di/injection_container.dart';
 import 'package:rentalhub/core/error/exceptions.dart';
 import 'package:rentalhub/core/theme/app_theme.dart';
 import 'package:rentalhub/core/widgets/debounced_button.dart';
+import 'package:rentalhub/core/widgets/minimal_app_bar.dart';
 import 'test_helper.dart';
 import 'package:rentalhub/features/auth/data/datasources/auth_remote_data_source.dart';
 import 'package:rentalhub/features/auth/presentation/cubit/auth_cubit.dart';
@@ -25,7 +26,6 @@ import 'package:rentalhub/features/auth/presentation/views/onboarding_profile_vi
 import 'package:rentalhub/features/auth/presentation/views/onboarding_role_view.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_onboarding_view.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_add_vehicle_view.dart';
-import 'package:rentalhub/core/widgets/custom_curved_header.dart';
 import 'package:rentalhub/main.dart';
 import 'package:rentalhub/l10n/app_localizations.dart';
 
@@ -305,6 +305,9 @@ void main() {
       'Owner Onboarding & Add Vehicle: Verifies 10 user requirements',
       (WidgetTester tester) async {
     // 1. Header rolls up with scroll on all screens (descendant of SingleChildScrollView)
+    // #16: the header is now the MinimalAppBar, not CustomCurvedHeader
+    // (retired except for the login hero) — the roll-up behaviour on
+    // this wizard is unchanged, only the widget type changed.
     await tester.pumpWidget(
       MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates, supportedLocales: AppLocalizations.supportedLocales,
@@ -317,7 +320,7 @@ void main() {
     expect(
       find.descendant(
         of: find.byType(SingleChildScrollView),
-        matching: find.byType(CustomCurvedHeader),
+        matching: find.byType(MinimalAppBar),
       ),
       findsOneWidget,
       reason: 'Requirement 1: Header must roll up inside SingleChildScrollView',

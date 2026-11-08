@@ -21,8 +21,11 @@ typedef SyncHandler = Future<bool> Function(
 /// offline → online trigger idempotent: firing twice syncs nothing
 /// the second time), FIFO order, exponential backoff per entry
 /// (1s → 5s → 30s → 5 min → 30 min; after the 5th attempt the entry
-/// stays queued, flagged exhausted, retrying hourly — never silently
-/// dropped).
+/// is exhausted — parked as failed, never retried again, and it
+/// leaves the queue only via user Retry or Discard on the sync
+/// details screen (Phone-test #4). Entries whose kind has no
+/// registered handler are parked the same way instead of being
+/// silently skipped forever.
 class SyncEngine {
   final OfflineSyncQueue queue;
 
@@ -63,9 +66,25 @@ class SyncEngine {
   Future<void> updateEntry(SyncQueueEntry entry) =>
       queue.updateEntry(entry);
 
+  /// Phone-test #4: user-initiated retry from the sync details
+  /// screen — resets the attempts/backoff so the entry drains again.
+  Future<void> retryEntry(SyncQueueEntry entry) async {
+    await queue.updateEntry(entry.copyWith(
+      attempts: 0,
+      clearNextRetryAt: true,
+      clearLastError: true,
+    ));
+    await drain();
+  }
+
+  /// Phone-test #4: user-initiated discard from the sync details
+  /// screen — the only other way a parked entry leaves the queue.
+  Future<void> discardEntry(String id) => queue.remove(id);
+
   /// Drains every due entry once, FIFO. Returns how many entries
   /// were confirmed synced. Never throws — a handler failure is
-  /// recorded on the entry, not raised.
+  /// recorded on the entry, not raised. Exhausted entries are
+  /// parked: their handler is never called again.
   Future<int> drain() async {
     if (_draining) return 0;
     _draining = true;
@@ -74,11 +93,27 @@ class SyncEngine {
       final now = DateTime.now();
       final entries = await queue.pendingEntries();
       for (final entry in entries) {
+        // Phone-test #4: exhausted entries are parked as failed —
+        // never call their handler again (the old code retried them
+        // hourly forever and the banner counted them as pending).
+        if (entry.isExhausted) {
+          continue;
+        }
         if (entry.nextRetryAt != null && entry.nextRetryAt!.isAfter(now)) {
           continue;
         }
         final handler = _handlers[entry.kind];
-        if (handler == null) continue;
+        // Phone-test #4: an entry whose kind has no registered
+        // handler used to be skipped silently forever. Park it as
+        // failed instead, so it shows up on the details screen and
+        // can be retried (once a handler exists) or discarded.
+        if (handler == null) {
+          await _recordFailure(
+            entry,
+            'No sync handler registered for kind "${entry.kind}"',
+          );
+          continue;
+        }
         bool ok = false;
         try {
           ok = await handler(entry, this);

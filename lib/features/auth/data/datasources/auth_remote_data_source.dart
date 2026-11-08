@@ -42,6 +42,39 @@ class AuthRemoteDataSource {
   String? get profilePhotoUrl => prefs.getString(_profilePhotoKey);
   bool get hasProfileInfo => fullName.trim().isNotEmpty && phoneNumber.trim().isNotEmpty;
 
+  /// Phone-test #2: restores the Firestore profile into the local
+  /// prefs cache after a successful sign-in. A fresh device (or
+  /// cleared app data) has no role/onboarding state locally, but the
+  /// `users/{uid}` doc does — without this restore the guard sends
+  /// every returning user back to the role screen. Best-effort: a
+  /// missing doc (offline read failure) or a prefs failure keeps the
+  /// current behaviour instead of blocking sign-in. Local values win
+  /// when present (the locked role is immutable); only missing fields
+  /// are filled, and onboarding is only ever flipped to completed.
+  Future<void> _restoreProfileFromRemote(UserModel? remote) async {
+    if (remote == null) return;
+    try {
+      if (prefs.getString(_roleKey) == null &&
+          remote.role != null &&
+          remote.role!.isNotEmpty) {
+        await prefs.setString(_roleKey, remote.role!);
+      }
+      if (remote.isOnboardingCompleted) {
+        await prefs.setBool(_onboardingCompletedKey, true);
+      }
+      if ((prefs.getString(_fullNameKey) ?? '').isEmpty &&
+          remote.fullName.trim().isNotEmpty) {
+        await prefs.setString(_fullNameKey, remote.fullName.trim());
+      }
+      if ((prefs.getString(_phoneKey) ?? '').isEmpty &&
+          remote.phoneNumber.trim().isNotEmpty) {
+        await prefs.setString(_phoneKey, remote.phoneNumber.trim());
+      }
+    } catch (_) {
+      debugPrint('Profile restore notice: could not cache remote profile');
+    }
+  }
+
   Future<void> setLoggedIn(bool value) async => await prefs.setBool(_isLoggedInKey, value);
   Future<void> setOnboardingCompleted(bool value) async => await prefs.setBool(_onboardingCompletedKey, value);
 
@@ -187,8 +220,14 @@ class AuthRemoteDataSource {
     }
     await prefs.setBool(_isLoggedInKey, true);
 
-    final existingRole = prefs.getString(_roleKey);
     final existingUser = firestoreService != null ? await firestoreService!.getUser(uid) : null;
+    // Phone-test #2: restore the Firestore role/profile into the
+    // local cache BEFORE the destination is resolved, so a returning
+    // user on a fresh device goes to their dashboard, not the role
+    // screen. A failed/offline read leaves existingUser null and the
+    // behaviour below is unchanged.
+    await _restoreProfileFromRemote(existingUser);
+    final existingRole = prefs.getString(_roleKey);
     final user = UserModel(
       uid: uid,
       email: email,
@@ -270,8 +309,12 @@ class AuthRemoteDataSource {
     await prefs.setString(_uidKey, uid);
     await prefs.setBool(_isLoggedInKey, true);
 
-    final existingRole = prefs.getString(_roleKey);
     final existingUser = firestoreService != null ? await firestoreService!.getUser(uid) : null;
+    // Phone-test #2: restore the Firestore role/profile into the
+    // local cache BEFORE the destination is resolved (see Google
+    // sign-in above).
+    await _restoreProfileFromRemote(existingUser);
+    final existingRole = prefs.getString(_roleKey);
     final user = UserModel(
       uid: uid,
       email: trimmedEmail,

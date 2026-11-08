@@ -6,11 +6,12 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/utils/current_shop.dart';
 import '../../../../core/widgets/app_state_views.dart';
-import '../../../../core/widgets/custom_curved_header.dart';
+import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../blacklist/data/datasources/blacklist_remote_data_source.dart';
 import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../customer/domain/usecases/get_shop_customers_usecase.dart';
 import '../../../customer/utils/customer_grouping.dart';
+import '../widgets/customer_row_book_action.dart';
 
 /// Phase B (C1): the shop's customers — every person who booked,
 /// rolled up with their booking count, total spent and last booking,
@@ -95,19 +96,9 @@ class _OwnerCustomersListViewState extends State<OwnerCustomersListView> {
       body: SafeArea(
         child: Column(
           children: [
-            CustomCurvedHeader(
-              variant: CustomCurvedHeaderVariant.compact,
-              // Tab root: no back button. The header's back policy
-              // renders one only when the route can pop, which a
-              // branch root never can.
-              titleWidget: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(l10n.customersTitle, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
-                  Text(_loading ? l10n.customersLoading : l10n.customersCount(_customers.length),
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.primaryContainer)),
-                ],
-              ),
+            MinimalAppBar(
+              title: l10n.customersTitle,
+              subtitle: _loading ? l10n.customersLoading : l10n.customersCount(_customers.length),
               actions: [
                 IconButton(
                   tooltip: l10n.customersScanCnic,
@@ -230,6 +221,12 @@ class _OwnerCustomersListViewState extends State<OwnerCustomersListView> {
                                                   .textTheme
                                                   .bodySmall),
                                         ),
+                                      // #18: Book for this customer —
+                                      // wizard opens prefilled (name,
+                                      // phone, CNIC); adding the customer
+                                      // itself stays a separate step.
+                                      if (expanded)
+                                        CustomerRowBookAction(customer: c),
                                     ],
                                   ),
                                 );
