@@ -151,7 +151,11 @@ void main() {
       final dark = AppTheme.darkTheme.inputDecorationTheme;
       final darkFocused = dark.focusedBorder as OutlineInputBorder;
       expect(darkFocused.borderSide.width, 2);
-      expect(darkFocused.borderSide.color, const Color(0xFF252B7A));
+      // Dark fix (2026-11-08): the old #252B7A focused border was
+      // invisible against the dark fill (#1E2138) and border (#23274D)
+      // — three near-identical navies. The focused border is now the
+      // lighter primaryFocusedOnDark token so focus is visible.
+      expect(darkFocused.borderSide.color, AppColors.primaryFocusedOnDark);
     });
 
     test('all button families are themed', () {

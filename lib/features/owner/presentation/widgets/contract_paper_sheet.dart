@@ -40,7 +40,7 @@ class ContractPaperSheet extends StatelessWidget {
               blurRadius: 10,
               offset: Offset(0, 4)),
         ],
-        border: Border.all(color: AppColors.borderSubtle),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -65,7 +65,6 @@ class ContractPaperSheet extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
                   decoration: BoxDecoration(
-                      color: AppColors.primary,
                       borderRadius: BorderRadius.circular(4)),
                   child: Text('CERTIFIED DIGITAL RENTAL CONTRACT',
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
@@ -136,7 +135,7 @@ class ContractPaperSheet extends StatelessWidget {
             style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800)),
         Text(caption,
             style:
-                const TextStyle(fontSize: 9.5, color: AppColors.textSecondary)),
+                const TextStyle(fontSize: 9.5, color: AppColors.textMuted)),
       ],
     );
   }

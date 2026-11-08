@@ -29,10 +29,9 @@ class CustomerTrustBreakdown extends StatelessWidget {
     return Card(
       margin: EdgeInsets.zero,
       elevation: 0,
-      color: Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: const BorderSide(color: AppColors.borderSubtle),
+        side: BorderSide(color: Theme.of(context).dividerColor),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -46,13 +45,13 @@ class CustomerTrustBreakdown extends StatelessWidget {
                     style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w900,
-                        color: AppColors.primary)),
+                        )),
                 Text(
                   '${breakdown.total.toStringAsFixed(1)} / 5.0',
                   style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w900,
-                      color: AppColors.primary),
+                      ),
                 ),
               ],
             ),
@@ -62,22 +61,22 @@ class CustomerTrustBreakdown extends StatelessWidget {
               'Owner rating: ${meanOwnerRating == null ? 'none yet' : meanOwnerRating!.toStringAsFixed(1)}'
               '${storedScore == null ? '' : ' • Stored score: ${storedScore!.toStringAsFixed(1)}'}',
               style:
-                  const TextStyle(fontSize: 12, color: AppColors.textMuted),
+                  TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
             ),
             const SizedBox(height: 12),
-            _bar('Base', breakdown.base, 2.5),
-            _bar('KYC', breakdown.kyc, 1.0),
-            _bar('Trips', breakdown.trips, 0.5),
-            _bar('Ratings', breakdown.ratings, 0.6),
-            _bar('Punctuality', breakdown.punctuality, 0.5),
-            _bar('Conduct', breakdown.conduct, 1.0),
+            _bar(context, 'Base', breakdown.base, 2.5),
+            _bar(context, 'KYC', breakdown.kyc, 1.0),
+            _bar(context, 'Trips', breakdown.trips, 0.5),
+            _bar(context, 'Ratings', breakdown.ratings, 0.6),
+            _bar(context, 'Punctuality', breakdown.punctuality, 0.5),
+            _bar(context, 'Conduct', breakdown.conduct, 1.0),
           ],
         ),
       ),
     );
   }
 
-  Widget _bar(String label, double value, double max) {
+  Widget _bar(BuildContext context, String label, double value, double max) {
     final ratio = max == 0 ? 0.0 : (value.abs() / max).clamp(0.0, 1.0);
     final sign = value < 0 ? '−' : '+';
     return Padding(
@@ -88,12 +87,12 @@ class CustomerTrustBreakdown extends StatelessWidget {
             width: 90,
             child: Text(label,
                 style:
-                    const TextStyle(fontSize: 12, color: AppColors.textMuted)),
+                    TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant)),
           ),
           Expanded(
             child: LinearProgressIndicator(
               value: ratio,
-              backgroundColor: AppColors.borderSubtle,
+              backgroundColor: Theme.of(context).dividerColor,
               color: value < 0
                   ? Colors.red.shade700
                   : AppColors.accentSuccess,

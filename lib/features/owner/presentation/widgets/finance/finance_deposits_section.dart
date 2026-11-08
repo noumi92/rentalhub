@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../core/constants/app_colors.dart';
 import  '../../../../finance/domain/entities/security_deposit_entity.dart';
 
 /// Phase B (H4): the deposits the shop holds — what is still held,
@@ -27,24 +26,23 @@ class FinanceDepositsSection extends StatelessWidget {
         Text('Security Deposits',
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w800,
-              color: AppColors.primary,
             )),
         const SizedBox(height: 8),
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.borderSubtle),
+            border: Border.all(color: Theme.of(context).dividerColor),
           ),
           child: Column(
             children: [
-              _row('Held now', '${held.length} deposits', heldAmount),
+              _row(context, 'Held now', '${held.length} deposits', heldAmount),
               const Divider(height: 16),
-              _row('Refunded in full', '${released.length} deposits',
+              _row(context, 'Refunded in full', '${released.length} deposits',
                   refundedAmount),
               const Divider(height: 16),
-              _row('Deducted at return', '${deducted.length} deposits',
+              _row(context, 'Deducted at return', '${deducted.length} deposits',
                   deductedAmount),
             ],
           ),
@@ -53,7 +51,7 @@ class FinanceDepositsSection extends StatelessWidget {
     );
   }
 
-  Widget _row(String label, String count, int amount) {
+  Widget _row(BuildContext context, String label, String count, int amount) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -64,15 +62,15 @@ class FinanceDepositsSection extends StatelessWidget {
                 style: const TextStyle(
                     fontSize: 13, fontWeight: FontWeight.w800)),
             Text(count,
-                style: const TextStyle(
-                    fontSize: 11, color: AppColors.textSecondary)),
+                style: TextStyle(
+                    fontSize: 11, color: Theme.of(context).colorScheme.onSurfaceVariant)),
           ],
         ),
         Text('Rs. $amount',
             style: const TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w900,
-                color: AppColors.primary)),
+                )),
       ],
     );
   }

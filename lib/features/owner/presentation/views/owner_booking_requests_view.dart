@@ -11,12 +11,10 @@ import '../widgets/operations/request_triage_card.dart';
 
 class OwnerBookingRequestsView extends StatefulWidget {
   final String shopId;
-  final VoidCallback? onBack;
 
   const OwnerBookingRequestsView({
     super.key,
     this.shopId = 'shop-1',
-    this.onBack,
   });
 
   @override
@@ -156,12 +154,6 @@ class _OwnerBookingRequestsViewState extends State<OwnerBookingRequestsView> {
           children: [
             CustomCurvedHeader(
               height: 100,
-              leadingWidget: widget.onBack != null
-                  ? IconButton(
-                      icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
-                      onPressed: widget.onBack,
-                    )
-                  : null,
               titleWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -186,7 +178,8 @@ class _OwnerBookingRequestsViewState extends State<OwnerBookingRequestsView> {
                   ? const Center(child: CircularProgressIndicator())
                   : Column(
                       children: [
-                        Padding(
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
                           padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
                           child: Row(
                             children: [

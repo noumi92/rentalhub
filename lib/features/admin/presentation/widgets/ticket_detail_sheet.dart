@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/widgets/app_feedback.dart';
@@ -135,12 +134,12 @@ class _TicketDetailSheetState extends State<TicketDetailSheet> {
                 style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w900,
-                    color: AppColors.primary)),
+                    )),
             const SizedBox(height: 4),
             Text(
                 '${t.priority.toUpperCase()} • ${t.status} • ${t.slaText()}',
                 style:
-                    const TextStyle(fontSize: 13, color: AppColors.textMuted)),
+                    TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurfaceVariant)),
             const SizedBox(height: 12),
             Text(t.message, style: const TextStyle(fontSize: 14)),
             const SizedBox(height: 8),
@@ -156,11 +155,11 @@ class _TicketDetailSheetState extends State<TicketDetailSheet> {
                 style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.primary)),
+                    )),
             const SizedBox(height: 6),
             if (_replies.isEmpty)
-              const Text('No replies yet.',
-                  style: TextStyle(fontSize: 13, color: AppColors.textMuted)),
+              Text('No replies yet.',
+                  style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurfaceVariant)),
             ..._replies.map((r) => Padding(
                   padding: const EdgeInsets.only(bottom: 6),
                   child: Text('${r.authorRole}: ${r.text}',
@@ -171,7 +170,7 @@ class _TicketDetailSheetState extends State<TicketDetailSheet> {
                 style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.primary)),
+                    )),
             const SizedBox(height: 6),
             Wrap(
               spacing: 8,
@@ -196,7 +195,7 @@ class _TicketDetailSheetState extends State<TicketDetailSheet> {
                     Theme.of(context).colorScheme.surfaceContainerHighest,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppColors.borderSubtle),
+                  borderSide: BorderSide(color: Theme.of(context).dividerColor),
                 ),
                 contentPadding: const EdgeInsets.symmetric(
                     horizontal: 14, vertical: 12),
@@ -215,7 +214,7 @@ class _TicketDetailSheetState extends State<TicketDetailSheet> {
                 style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.primary)),
+                    )),
             const SizedBox(height: 6),
             ..._notes.map((n) => Padding(
                   padding: const EdgeInsets.only(bottom: 6),
@@ -236,7 +235,7 @@ class _TicketDetailSheetState extends State<TicketDetailSheet> {
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide:
-                            const BorderSide(color: AppColors.borderSubtle),
+                            BorderSide(color: Theme.of(context).dividerColor),
                       ),
                       contentPadding: const EdgeInsets.symmetric(
                           horizontal: 14, vertical: 12),

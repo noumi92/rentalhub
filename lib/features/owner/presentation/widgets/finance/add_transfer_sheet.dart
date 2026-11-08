@@ -122,6 +122,7 @@ class _AddTransferSheetState extends State<AddTransferSheet> {
             ),
             const SizedBox(height: 12),
             DropdownButtonFormField<String>(
+              dropdownColor: Theme.of(context).colorScheme.surface,
               initialValue: _category,
               decoration: const InputDecoration(
                   labelText: 'Category', border: OutlineInputBorder()),
@@ -140,6 +141,7 @@ class _AddTransferSheetState extends State<AddTransferSheet> {
             ),
             const SizedBox(height: 12),
             DropdownButtonFormField<String>(
+              dropdownColor: Theme.of(context).colorScheme.surface,
               initialValue: _accountId,
               decoration: const InputDecoration(
                   labelText: 'Account', border: OutlineInputBorder()),
@@ -151,6 +153,7 @@ class _AddTransferSheetState extends State<AddTransferSheet> {
             ),
             const SizedBox(height: 12),
             DropdownButtonFormField<String?>(
+              dropdownColor: Theme.of(context).colorScheme.surface,
               initialValue: _vehicleId,
               decoration: const InputDecoration(
                   labelText: 'Vehicle (optional — for car P&L)',

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../constants/app_colors.dart';
 
 class AppTextField extends StatelessWidget {
   final TextEditingController controller;
@@ -63,21 +62,9 @@ class AppTextField extends StatelessWidget {
               horizontal: 14,
               vertical: 13,
             ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.borderSubtle),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.borderSubtle),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(
-                color: AppColors.secondary,
-                width: 1.5,
-              ),
-            ),
+            // Borders, focused and error states come from the theme's
+            // inputDecorationTheme (rulebook §4.4, radius 16) — the
+            // hardcoded light borders were invisible/wrong in dark mode.
           ),
         ),
       ],

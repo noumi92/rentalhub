@@ -16,9 +16,8 @@ import '../../../customer/utils/customer_grouping.dart';
 /// expands to that customer's bookings. Blacklisted CNICs are badged.
 class OwnerCustomersListView extends StatefulWidget {
   final String? shopId;
-  final VoidCallback? onBack;
 
-  const OwnerCustomersListView({super.key, this.shopId, this.onBack});
+  const OwnerCustomersListView({super.key, this.shopId});
 
   @override
   State<OwnerCustomersListView> createState() =>
@@ -83,11 +82,9 @@ class _OwnerCustomersListViewState extends State<OwnerCustomersListView> {
           children: [
             CustomCurvedHeader(
               height: 100,
-              leadingWidget: IconButton(
-                icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                    color: Colors.white, size: 20),
-                onPressed: widget.onBack ?? () => context.pop(),
-              ),
+              // Tab root: no back button. The header's back policy
+              // renders one only when the route can pop, which a
+              // branch root never can.
               titleWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

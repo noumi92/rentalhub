@@ -338,7 +338,6 @@ class AppRouter {
                     RouteNames.customerRateTrip
                         .replaceFirst(':id', booking.bookingId),
                   ),
-                  onBack: () => context.pop(),
                 ),
               ),
               // Bookings: customerBookingDetail
@@ -458,8 +457,7 @@ class AppRouter {
               // Wallet: customerWallet
               GoRoute(
                 path: RouteNames.customerWallet,
-                builder: (context, state) =>
-                    CustomerWalletView(onBack: () => context.pop()),
+                builder: (context, state) => const CustomerWalletView(),
               ),
             ],
           ),
@@ -471,7 +469,6 @@ class AppRouter {
                 builder: (context, state) => CustomerSupportView(
                   onFileDispute: () => context.push(RouteNames.customerDisputes),
                   onOpenSos: () => context.push(RouteNames.customerSos),
-                  onBack: () => context.pop(),
                 ),
               ),
               // Support: customerSos
@@ -507,7 +504,6 @@ class AppRouter {
                       context.go(RouteNames.auth);
                     }
                   },
-                  onBack: () => context.pop(),
                 ),
               ),
               // Profile: customerKyc
@@ -538,10 +534,33 @@ class AppRouter {
               GoRoute(
                 path: RouteNames.customerSavedShops,
                 builder: (context, state) => CustomerSavedShopsView(
-                  onSelectShop: (shop) => context.push(
-                    RouteNames.customerShopDetail
-                        .replaceFirst(':shopId', shop.shopId),
-                  ),
+                  // The shop detail belongs to the Home branch: a plain
+                  // push here would append it to the Profile branch's
+                  // stack and render it under the Profile tab. Switch to
+                  // the Home tab first (branch 0), then push the detail
+                  // onto the Home branch — on top of the Home root — so
+                  // back returns to Home. The push is deferred a frame so
+                  // the branch switch has landed; if the user tapped away
+                  // in the meantime, their navigation is left alone.
+                  onSelectShop: (shop) {
+                    final shell = StatefulNavigationShell.maybeOf(context);
+                    if (shell == null) {
+                      context.push(
+                        RouteNames.customerShopDetail
+                            .replaceFirst(':shopId', shop.shopId),
+                      );
+                      return;
+                    }
+                    shell.goBranch(0, initialLocation: true);
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      if (!context.mounted) return;
+                      if (shell.currentIndex != 0) return;
+                      context.push(
+                        RouteNames.customerShopDetail
+                            .replaceFirst(':shopId', shop.shopId),
+                      );
+                    });
+                  },
                   onBack: () => context.pop(),
                 ),
               ),
@@ -725,7 +744,6 @@ class AppRouter {
                 path: RouteNames.ownerCustomers,
                 builder: (context, state) => OwnerCustomersListView(
                   shopId: currentShopId(),
-                  onBack: () => context.pop(),
                 ),
               ),
               // Customers: ownerCustomerScan

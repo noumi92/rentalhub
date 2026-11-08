@@ -104,17 +104,17 @@ class _OwnerVehicleCalendarViewState extends State<OwnerVehicleCalendarView> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            _legend(Colors.green.shade50, 'Free'),
-                            _legend(Colors.amber.shade100, 'Requested'),
-                            _legend(Colors.red.shade100, 'Confirmed'),
-                            _legend(Colors.grey.shade200, 'Past'),
+                            _legend(AppColors.successContainerFor(Theme.of(context).brightness), 'Free'),
+                            _legend(AppColors.warningContainerFor(Theme.of(context).brightness), 'Requested'),
+                            _legend(AppColors.errorContainerFor(Theme.of(context).brightness), 'Confirmed'),
+                            _legend(Theme.of(context).colorScheme.surfaceContainerHighest, 'Past'),
                           ],
                         ),
                         const SizedBox(height: 16),
                         if (_selectedDay != null) ...[
                           Text(
                             'Bookings on ${_selectedDay!.day}/${_selectedDay!.month}/${_selectedDay!.year}',
-                            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
+                            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
                           ),
                           const SizedBox(height: 8),
                           if (selectedBookings.isEmpty)

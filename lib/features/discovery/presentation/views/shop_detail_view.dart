@@ -170,7 +170,7 @@ class _ShopDetailViewState extends State<ShopDetailView> {
                         child: Center(
                           child: Text(
                             'This shop has no cars listed yet.',
-                            style: Theme.of(context).textTheme.titleSmall?.copyWith(color: AppColors.textSecondary),
+                            style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                           ),
                         ),
                       )

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../core/constants/app_colors.dart';
 import  '../../../../finance/domain/entities/partner_share_entity.dart';
 
 /// Phase B (H4): the shop's partners and their profit share. The
@@ -27,7 +26,6 @@ class FinancePartnersSection extends StatelessWidget {
             Text('Partners',
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.w800,
-                  color: AppColors.primary,
                 )),
             TextButton.icon(
               icon: const Icon(Icons.add_rounded, size: 18),
@@ -38,16 +36,16 @@ class FinancePartnersSection extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         if (partners.isEmpty)
-          const Text('No partners yet — add one to record their share.',
-              style: TextStyle(color: AppColors.textMuted)),
+          Text('No partners yet — add one to record their share.',
+              style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
         ...partners.map((p) {
           return Container(
             margin: const EdgeInsets.only(bottom: 8),
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColors.borderSubtle),
+              border: Border.all(color: Theme.of(context).dividerColor),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -55,7 +53,6 @@ class FinancePartnersSection extends StatelessWidget {
                 Text(p.partnerName,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.w800,
-                      color: AppColors.primary,
                     )),
                 Text('${p.sharePercent}% of profit',
                     style: Theme.of(context).textTheme.bodySmall),

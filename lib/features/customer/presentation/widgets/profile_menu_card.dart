@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/constants/app_colors.dart';
 
 /// H1: one row of the profile menu (Documents / Saved Showrooms /
 /// Settings). Extracted from [CustomerProfileView] so the view stays
@@ -27,12 +26,12 @@ class ProfileMenuCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.white,
+      color: Theme.of(context).colorScheme.surface,
       borderRadius: BorderRadius.circular(16),
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.borderSubtle),
+          border: Border.all(color: Theme.of(context).dividerColor),
         ),
         child: Column(
           children: items.map((item) {
@@ -40,13 +39,13 @@ class ProfileMenuCard extends StatelessWidget {
             return Column(
               children: [
                 ListTile(
-                  leading: Icon(item.icon, color: AppColors.primary),
+                  leading: Icon(item.icon),
                   title: Text(item.title,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.primary)),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
                   subtitle: Text(item.subtitle,
                       style: Theme.of(context).textTheme.labelSmall),
-                  trailing: const Icon(Icons.arrow_forward_ios_rounded,
-                      size: 13, color: AppColors.textSecondary),
+                  trailing: Icon(Icons.arrow_forward_ios_rounded,
+                      size: 13, color: Theme.of(context).colorScheme.onSurfaceVariant),
                   onTap: item.onTap,
                 ),
                 if (!isLast) const Divider(height: 1, indent: 56),

@@ -54,7 +54,7 @@ class BookingSuccessView extends StatelessWidget {
                     const SizedBox(height: 18),
                     Text(
                       'Request Sent Successfully!',
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900, color: AppColors.primary),
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
                     ),
                     const SizedBox(height: 6),
                     Text(
@@ -71,9 +71,9 @@ class BookingSuccessView extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.surface,
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: AppColors.borderSubtle),
+                        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
                       ),
                       child: Column(
                         children: [
@@ -81,7 +81,7 @@ class BookingSuccessView extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text('Showroom Status:',
-                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary)),
+                                  style: Theme.of(context).textTheme.bodyMedium),
                               BookingStatusChip(status: booking.status),
                             ],
                           ),
@@ -90,7 +90,7 @@ class BookingSuccessView extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text('Advance Due Upon Approval:',
-                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary)),
+                                  style: Theme.of(context).textTheme.bodyMedium),
                               Text('Rs. ${booking.advanceRequired}',
                                   style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900, color: AppColors.secondary)),
                             ],
@@ -129,8 +129,14 @@ class BookingSuccessView extends StatelessWidget {
                       },
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppColors.accentSuccess,
-                        side: const BorderSide(color: Color(0xFF86EFAC)),
-                        backgroundColor: const Color(0xFFF0FDF4),
+                        // Translucent success tint over the surface (same
+                        // pattern as the success circle above): readable
+                        // in both modes, no pale glare in dark mode.
+                        side: BorderSide(
+                            color: AppColors.accentSuccess
+                                .withValues(alpha: 0.4)),
+                        backgroundColor: AppColors.accentSuccess
+                            .withValues(alpha: 0.1),
                         minimumSize: const Size.fromHeight(48),
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12)),
@@ -146,8 +152,8 @@ class BookingSuccessView extends StatelessWidget {
             ),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: const BoxDecoration(
-                color: Colors.white,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surface,
                 boxShadow: [
                   BoxShadow(
                       color: Color(0x14000000),
@@ -169,7 +175,7 @@ class BookingSuccessView extends StatelessWidget {
                   TextButton(
                     onPressed: onViewBookings,
                     child: Text('Return to My Bookings',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.primary)),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
                   ),
                 ],
               ),

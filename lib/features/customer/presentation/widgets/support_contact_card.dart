@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/constants/app_colors.dart';
 
 /// G1: one of the support screen's contact tiles (call / WhatsApp the
 /// showroom). Extracted from [CustomerSupportView] so the view stays
@@ -29,9 +28,9 @@ class SupportContactCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: AppColors.borderSubtle),
+          border: Border.all(color: Theme.of(context).dividerColor),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -39,7 +38,7 @@ class SupportContactCard extends StatelessWidget {
             Icon(icon, color: color, size: 22),
             const SizedBox(height: 8),
             Text(title,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800)),
             Text(subtitle,
                 style: Theme.of(context).textTheme.labelSmall),
           ],

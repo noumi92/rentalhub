@@ -36,12 +36,13 @@ class _MyDisputesListState extends State<MyDisputesList> {
     if (mounted) setState(() => _disputes = list);
   }
 
-  Color _statusColor(String status) {
+  Color _statusColor(BuildContext context, String status) {
+    final brightness = Theme.of(context).brightness;
     switch (status) {
       case 'resolved':
-        return AppColors.accentSuccess;
+        return AppColors.successTextFor(brightness);
       case 'in_review':
-        return AppColors.warning;
+        return AppColors.warningTextFor(brightness);
       default:
         return AppColors.secondary;
     }
@@ -66,7 +67,7 @@ class _MyDisputesListState extends State<MyDisputesList> {
       children: [
         Text(
           'My Disputes',
-          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
         ),
         const SizedBox(height: 10),
         if (disputes == null)
@@ -79,9 +80,9 @@ class _MyDisputesListState extends State<MyDisputesList> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColors.borderSubtle),
+              border: Border.all(color: Theme.of(context).dividerColor),
             ),
             child: Text(
               'No disputes filed yet.',
@@ -93,9 +94,9 @@ class _MyDisputesListState extends State<MyDisputesList> {
                 margin: const EdgeInsets.only(bottom: 8),
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppColors.borderSubtle),
+                  border: Border.all(color: Theme.of(context).dividerColor),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -106,20 +107,20 @@ class _MyDisputesListState extends State<MyDisputesList> {
                         Expanded(
                           child: Text(
                             d.category,
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800),
                           ),
                         ),
                         Container(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 8, vertical: 3),
                           decoration: BoxDecoration(
-                            color: _statusColor(d.status)
+                            color: _statusColor(context, d.status)
                                 .withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: Text(
                             _statusLabel(d.status),
-                            style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800, color: _statusColor(d.status)),
+                            style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800, color: _statusColor(context, d.status)),
                           ),
                         ),
                       ],
@@ -132,7 +133,7 @@ class _MyDisputesListState extends State<MyDisputesList> {
                     const SizedBox(height: 4),
                     Text(
                       d.description,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.primary, height: 1.4),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(height: 1.4),
                     ),
                   ],
                 ),

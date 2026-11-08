@@ -71,7 +71,7 @@ class _CustomerLocationPromptViewState extends State<CustomerLocationPromptView>
         if (permission == LocationPermission.denied) {
           if (!silent && mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Location permission denied. Tap a city to explore.'), backgroundColor: AppColors.accentDanger),
+              SnackBar(content: const Text('Location permission denied. Tap a city to explore.'), backgroundColor: Theme.of(context).brightness == Brightness.dark ? AppColors.errorContainerDark : AppColors.accentDanger),
             );
           }
           setState(() => _isLocating = false);

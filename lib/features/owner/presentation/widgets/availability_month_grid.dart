@@ -32,18 +32,26 @@ class AvailabilityMonthGrid extends StatelessWidget {
     return '${months[month.month - 1]} ${month.year}';
   }
 
-  Color _dayColor(DateTime day) {
+  /// Day-cell colour, brightness-aware: the old pale tints (grey.shade200,
+  /// red/amber/green.shade50-100) glare on a dark calendar and the navy day
+  /// number on them was unreadable once the cells went dark.
+  Color _dayColor(BuildContext context, DateTime day) {
+    final brightness = Theme.of(context).brightness;
     final today = DateTime.now();
     final d = DateTime(day.year, day.month, day.day);
     if (d.isBefore(DateTime(today.year, today.month, today.day))) {
-      return Colors.grey.shade200;
+      return Theme.of(context).colorScheme.surfaceContainerHighest;
     }
-    if (isDayConfirmed(bookings, day)) return Colors.red.shade100;
-    if (isDayBlocked(bookings, day)) return Colors.amber.shade100;
-    return Colors.green.shade50;
+    if (isDayConfirmed(bookings, day)) {
+      return AppColors.errorContainerFor(brightness);
+    }
+    if (isDayBlocked(bookings, day)) {
+      return AppColors.warningContainerFor(brightness);
+    }
+    return AppColors.successContainerFor(brightness);
   }
 
-  List<Widget> _monthCells() {
+  List<Widget> _monthCells(BuildContext context) {
     final first = DateTime(month.year, month.month, 1);
     final daysInMonth = DateTime(month.year, month.month + 1, 0).day;
     // Monday-first grid: DateTime.weekday is Mon=1..Sun=7.
@@ -64,10 +72,10 @@ class AvailabilityMonthGrid extends StatelessWidget {
           child: Container(
             margin: const EdgeInsets.all(2),
             decoration: BoxDecoration(
-              color: _dayColor(date),
+              color: _dayColor(context, date),
               borderRadius: BorderRadius.circular(8),
               border: isSelected
-                  ? Border.all(color: AppColors.primary, width: 2)
+                  ? Border.all(color: Theme.of(context).colorScheme.onSurface, width: 2)
                   : null,
             ),
             alignment: Alignment.center,
@@ -75,7 +83,7 @@ class AvailabilityMonthGrid extends StatelessWidget {
                 style: TextStyle(
                     fontWeight:
                         isSelected ? FontWeight.w900 : FontWeight.w600,
-                    color: AppColors.primary)),
+                    color: Theme.of(context).colorScheme.onSurface)),
           ),
         ),
       );
@@ -98,7 +106,6 @@ class AvailabilityMonthGrid extends StatelessWidget {
             Text(_monthLabel,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w800,
-                  color: AppColors.primary,
                 )),
             IconButton(
               icon: const Icon(Icons.chevron_right_rounded),
@@ -125,7 +132,7 @@ class AvailabilityMonthGrid extends StatelessWidget {
           crossAxisCount: 7,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          children: _monthCells(),
+          children: _monthCells(context),
         ),
       ],
     );

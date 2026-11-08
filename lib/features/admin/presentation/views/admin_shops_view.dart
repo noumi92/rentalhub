@@ -91,7 +91,7 @@ class _AdminShopsViewState extends State<AdminShopsView> {
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide:
-                            const BorderSide(color: AppColors.borderSubtle),
+                            BorderSide(color: Theme.of(context).dividerColor),
                       ),
                       contentPadding: const EdgeInsets.symmetric(
                           horizontal: 14, vertical: 12),
@@ -128,18 +128,18 @@ class _AdminShopsViewState extends State<AdminShopsView> {
                 ],
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Expanded(
               child: _isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : _visible.isEmpty
-                      ? const Center(
+                      ? Center(
                           child: Text(
                             'No shops match — the list reads the shops collection.',
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 fontWeight: FontWeight.w700,
-                                color: AppColors.textMuted),
+                                color: Theme.of(context).colorScheme.onSurfaceVariant),
                           ),
                         )
                       : ListView.separated(
@@ -151,29 +151,28 @@ class _AdminShopsViewState extends State<AdminShopsView> {
                             return Card(
                               margin: EdgeInsets.zero,
                               elevation: 0,
-                              color: Colors.white,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
-                                side: const BorderSide(
-                                    color: AppColors.borderSubtle),
+                                side: BorderSide(
+                                    color: Theme.of(context).dividerColor),
                               ),
                               child: ListTile(
                                 leading: CircleAvatar(
                                   backgroundColor: AppColors.primary
                                       .withValues(alpha: 0.12),
                                   child: const Icon(Icons.store_rounded,
-                                      color: AppColors.primary),
+                                      ),
                                 ),
                                 title: Text(shop.shopName,
                                     style: const TextStyle(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w800,
-                                        color: AppColors.primary)),
+                                        )),
                                 subtitle: Text(
                                   '${shop.city} • Plan ${shop.plan} • Rating ${shop.rating.toStringAsFixed(1)}',
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                       fontSize: 12,
-                                      color: AppColors.textMuted),
+                                      color: Theme.of(context).colorScheme.onSurfaceVariant),
                                 ),
                                 trailing: _statusChip(shop),
                                 onTap: () => context.go(

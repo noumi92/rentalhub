@@ -32,22 +32,24 @@ class BookingStatusChip extends StatelessWidget {
     }
   }
 
-  static Color colorFor(String status) {
+  /// Status text colour, brightness-aware: the light tokens are too dark
+  /// to read on dark surfaces, so dark mode uses the lighter variants.
+  static Color colorFor(String status, Brightness brightness) {
     switch (status) {
       case 'approved':
       case 'paid':
-        return AppColors.accentSuccess;
+        return AppColors.successTextFor(brightness);
       case 'rejected':
       case 'cancelled':
-        return AppColors.accentDanger;
+        return AppColors.dangerTextFor(brightness);
       default:
-        return AppColors.warning;
+        return AppColors.warningTextFor(brightness);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final color = colorFor(status);
+    final color = colorFor(status, Theme.of(context).brightness);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(

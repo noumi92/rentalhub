@@ -43,14 +43,14 @@ class FleetBody extends StatelessWidget {
         child: Center(
           child: Column(
             children: [
-              const Icon(Icons.error_outline_rounded,
-                  size: 54, color: AppColors.textMuted),
+              Icon(Icons.error_outline_rounded,
+                  size: 54, color: Theme.of(context).colorScheme.onSurfaceVariant),
               const SizedBox(height: 12),
               Text(
                 'Could not load your fleet: ${(state as FleetError).message}',
                 textAlign: TextAlign.center,
-                style: const TextStyle(
-                    fontWeight: FontWeight.w700, color: AppColors.textMuted),
+                style: TextStyle(
+                    fontWeight: FontWeight.w700, color: Theme.of(context).colorScheme.onSurfaceVariant),
               ),
               const SizedBox(height: 12),
               ElevatedButton.icon(
@@ -72,15 +72,15 @@ class FleetBody extends StatelessWidget {
         child: Center(
           child: Column(
             children: [
-              const Icon(Icons.no_crash_rounded,
-                  size: 54, color: AppColors.textMuted),
+              Icon(Icons.no_crash_rounded,
+                  size: 54, color: Theme.of(context).colorScheme.onSurfaceVariant),
               const SizedBox(height: 12),
               Text(
                 fleet.isEmpty
                     ? 'No vehicles yet — add your first car'
                     : 'No vehicles found in this filter',
-                style: const TextStyle(
-                    fontWeight: FontWeight.w700, color: AppColors.textMuted),
+                style: TextStyle(
+                    fontWeight: FontWeight.w700, color: Theme.of(context).colorScheme.onSurfaceVariant),
               ),
               const SizedBox(height: 12),
               ElevatedButton.icon(

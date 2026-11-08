@@ -41,9 +41,9 @@ class BookingSummaryCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.borderSubtle),
+        border: Border.all(color: Theme.of(context).dividerColor),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -64,7 +64,7 @@ class BookingSummaryCard extends StatelessWidget {
                   children: [
                     Text(
                       carName,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: AppColors.primary),
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
                     ),
                     const SizedBox(height: 2),
                     Text(
@@ -78,11 +78,11 @@ class BookingSummaryCard extends StatelessWidget {
             ],
           ),
           const Divider(height: 24),
-          _buildRow('Mode', isWithDriver ? 'With Chauffeur' : 'Self-Drive'),
+          _buildRow(context, 'Mode', isWithDriver ? 'With Chauffeur' : 'Self-Drive'),
           const SizedBox(height: 8),
-          _buildRow('Package Tier', '$packageType Rental'),
+          _buildRow(context, 'Package Tier', '$packageType Rental'),
           const SizedBox(height: 8),
-          _buildRow(
+          _buildRow(context, 
             'Trip',
             tripType == 'out_of_city'
                 ? 'Out of city${destinationCity != null ? ' → $destinationCity' : ''}'
@@ -90,46 +90,46 @@ class BookingSummaryCard extends StatelessWidget {
           ),
           if (kmLimit != null) ...[
             const SizedBox(height: 8),
-            _buildRow('KM Included', '$kmLimit km'),
+            _buildRow(context, 'KM Included', '$kmLimit km'),
           ],
           if (securityDepositPkr != null) ...[
             const SizedBox(height: 8),
-            _buildRow(
+            _buildRow(context, 
               'Security Deposit',
               'Rs. $securityDepositPkr (at handover)',
             ),
           ],
           const SizedBox(height: 8),
-          _buildRow(
+          _buildRow(context, 
             'Pickup Time',
             '${pickupTime.day}/${pickupTime.month}/${pickupTime.year} at ${pickupTime.hour.toString().padLeft(2, '0')}:${pickupTime.minute.toString().padLeft(2, '0')}',
           ),
           const SizedBox(height: 8),
-          _buildRow(
+          _buildRow(context, 
             'Return Due',
             '${returnTime.day}/${returnTime.month}/${returnTime.year} at ${returnTime.hour.toString().padLeft(2, '0')}:${returnTime.minute.toString().padLeft(2, '0')}',
           ),
           const Divider(height: 24),
-          _buildRow('Total Rental Fare', 'Rs. $totalAmount', isBold: true),
+          _buildRow(context, 'Total Rental Fare', 'Rs. $totalAmount', isBold: true),
           const SizedBox(height: 8),
-          _buildRow(
+          _buildRow(context, 
             'Advance Payable',
             'Rs. $advanceRequired',
             color: AppColors.secondary,
             isBold: true,
           ),
           const SizedBox(height: 8),
-          _buildRow(
+          _buildRow(context, 
             'Balance at Handover',
             'Rs. ${totalAmount - advanceRequired}',
-            color: AppColors.primary,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ],
       ),
     );
   }
 
-  Widget _buildRow(String label, String value,
+  Widget _buildRow(BuildContext context, String label, String value,
       {bool isBold = false, Color? color}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -138,7 +138,7 @@ class BookingSummaryCard extends StatelessWidget {
           label,
           style: TextStyle(
             fontSize: 13,
-            color: isBold ? AppColors.primary : AppColors.textSecondary,
+            color: isBold ? Theme.of(context).colorScheme.onSurface : Theme.of(context).colorScheme.onSurfaceVariant,
             fontWeight: isBold ? FontWeight.w800 : FontWeight.w500,
           ),
         ),
@@ -146,7 +146,7 @@ class BookingSummaryCard extends StatelessWidget {
           value,
           style: TextStyle(
             fontSize: 13,
-            color: color ?? AppColors.primary,
+            color: color ?? Theme.of(context).colorScheme.onSurface,
             fontWeight: isBold ? FontWeight.w900 : FontWeight.w700,
           ),
         ),

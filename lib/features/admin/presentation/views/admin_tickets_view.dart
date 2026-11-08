@@ -77,18 +77,18 @@ class _AdminTicketsViewState extends State<AdminTicketsView> {
                 ],
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Expanded(
               child: _isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : _tickets.isEmpty
-                      ? const Center(
+                      ? Center(
                           child: Text(
                             'No tickets — the inbox reads the support_tickets collection.',
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 fontWeight: FontWeight.w700,
-                                color: AppColors.textMuted),
+                                color: Theme.of(context).colorScheme.onSurfaceVariant),
                           ),
                         )
                       : ListView.separated(
@@ -103,13 +103,12 @@ class _AdminTicketsViewState extends State<AdminTicketsView> {
                             return Card(
                               margin: EdgeInsets.zero,
                               elevation: 0,
-                              color: Colors.white,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 side: BorderSide(
                                     color: breached
                                         ? Colors.red.shade300
-                                        : AppColors.borderSubtle),
+                                        : Theme.of(context).dividerColor),
                               ),
                               child: ListTile(
                                 leading: CircleAvatar(
@@ -117,7 +116,7 @@ class _AdminTicketsViewState extends State<AdminTicketsView> {
                                       .withValues(alpha: 0.12),
                                   child: const Icon(
                                       Icons.support_agent_rounded,
-                                      color: AppColors.primary),
+                                      ),
                                 ),
                                 title: Text(
                                     t.message.length > 80
@@ -128,14 +127,14 @@ class _AdminTicketsViewState extends State<AdminTicketsView> {
                                     style: const TextStyle(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w800,
-                                        color: AppColors.primary)),
+                                        )),
                                 subtitle: Text(
                                   '${t.priority.toUpperCase()} • ${t.status} • ${t.slaText()}',
                                   style: TextStyle(
                                       fontSize: 12,
                                       color: breached
                                           ? Colors.red.shade700
-                                          : AppColors.textMuted,
+                                          : Theme.of(context).colorScheme.onSurfaceVariant,
                                       fontWeight: breached
                                           ? FontWeight.w700
                                           : FontWeight.normal),

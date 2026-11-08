@@ -41,7 +41,7 @@ class AdvanceDepositNoticeCard extends StatelessWidget {
                 : '• Original NADRA CNIC & valid Driving License required at handover.\n'
                     '• Advance confirms vehicle booking lock with showroom.\n'
                     '• Refundable security deposit collected digitally or in cash at handover.',
-            style: Theme.of(context).textTheme.labelMedium?.copyWith(color: AppColors.primary, height: 1.45),
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(height: 1.45),
           ),
         ],
       ),

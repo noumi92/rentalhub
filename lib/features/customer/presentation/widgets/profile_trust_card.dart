@@ -27,9 +27,9 @@ class ProfileTrustCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.borderSubtle),
+          border: Border.all(color: Theme.of(context).dividerColor),
         ),
         child: Row(
           children: [
@@ -40,8 +40,8 @@ class ProfileTrustCard extends StatelessWidget {
                     AppColors.accentSuccess.withValues(alpha: 0.12),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.stars_rounded,
-                  color: AppColors.accentSuccess, size: 26),
+              child: Icon(Icons.stars_rounded,
+                  color: AppColors.successTextFor(Theme.of(context).brightness), size: 26),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -52,7 +52,7 @@ class ProfileTrustCard extends StatelessWidget {
                     trustScore == null
                         ? 'Trust Score: —'
                         : 'Trust Score: ${trustScore!.toStringAsFixed(1)} / 5.0',
-                    style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
                   ),
                   Text(
                     '${kycVerified ? 'KYC verified' : 'KYC pending'} • '
@@ -62,8 +62,8 @@ class ProfileTrustCard extends StatelessWidget {
                 ],
               ),
             ),
-            const Icon(Icons.arrow_forward_ios_rounded,
-                size: 14, color: AppColors.textSecondary),
+            Icon(Icons.arrow_forward_ios_rounded,
+                size: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
           ],
         ),
       ),

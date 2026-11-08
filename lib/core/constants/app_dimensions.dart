@@ -2,8 +2,9 @@ class AppDimensions {
   // Heights & Radius
   static const double headerHeight = 230.0;
   static const double headerBottomRadius = 28.0;
-  static const double cardOverlapMargin = -24.0;
-  static const double headerOverlapOffset = -24.0;
+  static const double cardOverlapMargin = -28.0;
+  // Rulebook §4.3: content cards overlap the header by -28.
+  static const double headerOverlapOffset = -28.0;
   static const double cardRadius = 20.0;
   static const double buttonRadius = 16.0;
   static const double buttonHeight = 54.0;

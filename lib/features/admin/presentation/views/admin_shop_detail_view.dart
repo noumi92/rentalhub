@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/whatsapp.dart';
@@ -83,6 +83,7 @@ class _AdminShopDetailViewState extends State<AdminShopDetailView> {
       title: 'Shop detail',
       subtitle: 'Plan, fleet, bookings and admin actions',
       onRefresh: _load,
+      onBack: () => context.go(RouteNames.adminShops),
       child: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _shop == null
@@ -92,8 +93,7 @@ class _AdminShopDetailViewState extends State<AdminShopDetailView> {
                     child: Text(
                       'Shop not found.',
                       style: TextStyle(
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.textMuted),
+                          fontWeight: FontWeight.w700),
                     ),
                   ),
                 )
@@ -105,13 +105,12 @@ class _AdminShopDetailViewState extends State<AdminShopDetailView> {
                       Text(_shop!.shopName,
                           style: const TextStyle(
                               fontSize: 20,
-                              fontWeight: FontWeight.w900,
-                              color: AppColors.primary)),
+                              fontWeight: FontWeight.w900)),
                       const SizedBox(height: 4),
                       Text(
                         '${_shop!.city} • ${_shop!.address}\nOwner: ${_shop!.ownerName ?? '—'} • ${_shop!.phoneNumber}',
                         style: const TextStyle(
-                            fontSize: 13, color: AppColors.textMuted),
+                            fontSize: 13),
                       ),
                       const SizedBox(height: 16),
                       Wrap(
@@ -134,7 +133,7 @@ class _AdminShopDetailViewState extends State<AdminShopDetailView> {
                             style: TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
-                                color: Colors.red.shade700)),
+                                color: Theme.of(context).colorScheme.error)),
                       ],
                       const SizedBox(height: 20),
                       _section('KYC documents',
@@ -201,22 +200,21 @@ class _AdminShopDetailViewState extends State<AdminShopDetailView> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppColors.borderSubtle),
+        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(label,
               style: const TextStyle(
-                  fontSize: 11, color: AppColors.textMuted)),
+                  fontSize: 11)),
           const SizedBox(height: 2),
           Text(value,
               style: const TextStyle(
                   fontSize: 15,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.primary)),
+                  fontWeight: FontWeight.w800)),
         ],
       ),
     );
@@ -231,14 +229,13 @@ class _AdminShopDetailViewState extends State<AdminShopDetailView> {
           Text(title,
               style: const TextStyle(
                   fontSize: 14,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.primary)),
+                  fontWeight: FontWeight.w800)),
           const SizedBox(height: 6),
           ...lines.map((l) => Padding(
                 padding: const EdgeInsets.only(bottom: 3),
                 child: Text(l,
                     style: const TextStyle(
-                        fontSize: 13, color: AppColors.textMuted)),
+                        fontSize: 13)),
               )),
         ],
       ),

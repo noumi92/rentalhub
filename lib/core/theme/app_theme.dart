@@ -142,19 +142,29 @@ class AppTheme {
     required Color foregroundColor,
     Color? borderColor,
   }) {
+    // Disabled buttons dim instead of looking identical to enabled
+    // ones (the old WidgetStateProperty.all never dimmed).
+    Color dim(Color color, Set<WidgetState> states) =>
+        states.contains(WidgetState.disabled)
+            ? color.withValues(alpha: 0.38)
+            : color;
     return ButtonStyle(
-      backgroundColor: WidgetStateProperty.all(backgroundColor),
-      foregroundColor: WidgetStateProperty.all(foregroundColor),
+      backgroundColor: WidgetStateProperty.resolveWith(
+        (states) => dim(backgroundColor, states),
+      ),
+      foregroundColor: WidgetStateProperty.resolveWith(
+        (states) => dim(foregroundColor, states),
+      ),
       minimumSize: WidgetStateProperty.all(const Size(64, 48)),
       padding: WidgetStateProperty.all(
         const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       ),
-      shape: WidgetStateProperty.all(
-        RoundedRectangleBorder(
+      shape: WidgetStateProperty.resolveWith(
+        (states) => RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppDimensions.buttonRadius),
           side: borderColor == null
               ? BorderSide.none
-              : BorderSide(color: borderColor, width: 1.5),
+              : BorderSide(color: dim(borderColor, states), width: 1.5),
         ),
       ),
       textStyle: WidgetStateProperty.all(
@@ -173,6 +183,9 @@ class AppTheme {
       fontFamily: fontFamily,
       primaryColor: AppColors.primary,
       scaffoldBackgroundColor: AppColors.backgroundLight,
+      // Dropdown menus fall back to canvasColor; keep it the surface so
+      // menus match the theme in both modes.
+      canvasColor: AppColors.surfaceLight,
       colorScheme: const ColorScheme.light(
         primary: AppColors.primary,
         onPrimary: Colors.white,
@@ -363,16 +376,21 @@ class AppTheme {
       fontFamily: fontFamily,
       primaryColor: AppColors.primaryOnDark,
       scaffoldBackgroundColor: AppColors.backgroundDark,
+      // Dropdown menus fall back to canvasColor; keep it the surface so
+      // menus match the theme in both modes.
+      canvasColor: AppColors.surfaceDark,
       colorScheme: const ColorScheme.dark(
         primary: AppColors.primaryOnDark,
         onPrimary: Colors.white,
         primaryContainer: AppColors.primaryContainerOnDark,
         secondary: AppColors.secondaryDark,
         onSecondary: Colors.white,
+        secondaryContainer: AppColors.secondaryLightDark,
         surface: AppColors.surfaceDark,
         onSurface: AppColors.onSurfaceDark,
         onSurfaceVariant: AppColors.onSurfaceVariantDark,
         surfaceContainer: AppColors.surfaceContainerDark,
+        surfaceContainerLow: AppColors.backgroundDark,
         surfaceContainerHighest: AppColors.surfaceContainerHighestDark,
         error: AppColors.accentDangerDark,
         onError: Colors.white,
@@ -388,7 +406,7 @@ class AppTheme {
         labelColor: AppColors.onSurfaceVariantDark,
         floatingLabelColor: AppColors.onSurfaceDark,
         borderColor: AppColors.borderDark,
-        focusedColor: AppColors.primaryOnDark,
+        focusedColor: AppColors.primaryFocusedOnDark,
         errorColor: AppColors.accentDangerDark,
       ),
       appBarTheme: const AppBarTheme(

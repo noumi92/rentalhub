@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/widgets/app_feedback.dart';
@@ -74,6 +74,7 @@ Handover: ${d.handover == null ? 'none' : 'odometer ${d.handover!.initialOdomete
       title: 'Booking detail',
       subtitle: 'Lifecycle, money, handover and messages',
       onRefresh: _load,
+      onBack: () => context.go(RouteNames.adminBookings),
       child: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _detail == null
@@ -82,8 +83,7 @@ Handover: ${d.handover == null ? 'none' : 'odometer ${d.handover!.initialOdomete
                     padding: EdgeInsets.all(32),
                     child: Text('Booking not found.',
                         style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.textMuted)),
+                            fontWeight: FontWeight.w700)),
                   ),
                 )
               : SingleChildScrollView(
@@ -98,8 +98,7 @@ Handover: ${d.handover == null ? 'none' : 'odometer ${d.handover!.initialOdomete
                               '${_detail!.booking.vehicleName ?? _detail!.booking.vehicleId} • ${_detail!.booking.bookingId}',
                               style: const TextStyle(
                                   fontSize: 20,
-                                  fontWeight: FontWeight.w900,
-                                  color: AppColors.primary),
+                                  fontWeight: FontWeight.w900),
                             ),
                           ),
                           FilledButton.icon(
@@ -113,7 +112,7 @@ Handover: ${d.handover == null ? 'none' : 'odometer ${d.handover!.initialOdomete
                       Text(
                         'Status: ${_detail!.booking.status} • Trip: ${_detail!.booking.tripType} • Package: ${_detail!.booking.packageType} • ${(_detail!.booking.isWithDriver) ? 'with driver' : 'self drive'}',
                         style: const TextStyle(
-                            fontSize: 13, color: AppColors.textMuted),
+                            fontSize: 13),
                       ),
                       const SizedBox(height: 16),
                       _section('Amounts', [
@@ -193,14 +192,13 @@ Handover: ${d.handover == null ? 'none' : 'odometer ${d.handover!.initialOdomete
           Text(title,
               style: const TextStyle(
                   fontSize: 14,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.primary)),
+                  fontWeight: FontWeight.w800)),
           const SizedBox(height: 6),
           ...lines.map((l) => Padding(
                 padding: const EdgeInsets.only(bottom: 3),
                 child: Text(l,
                     style: const TextStyle(
-                        fontSize: 13, color: AppColors.textMuted)),
+                        fontSize: 13)),
               )),
         ],
       ),

@@ -16,12 +16,10 @@ import '../widgets/dashboard/dashboard_ledger_item.dart';
 
 class OwnerDashboardView extends StatefulWidget {
   final String shopId;
-  final VoidCallback? onBack;
 
   const OwnerDashboardView({
     super.key,
     this.shopId = 'shop-1',
-    this.onBack,
   });
 
   @override
@@ -142,12 +140,6 @@ class _OwnerDashboardViewState extends State<OwnerDashboardView> {
           children: [
             CustomCurvedHeader(
               height: 100,
-              leadingWidget: widget.onBack != null
-                  ? IconButton(
-                      icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
-                      onPressed: widget.onBack,
-                    )
-                  : null,
               titleWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -210,14 +202,14 @@ class _OwnerDashboardViewState extends State<OwnerDashboardView> {
                             fleetTotal: _fleetTotal,
                           ),
                           const SizedBox(height: 20),
-                          Text('Completed Trip Ledger & Settlements', style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
-                          const SizedBox(height: 10),
+                          Text('Completed Trip Ledger & Settlements', style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
+                          SizedBox(height: 10),
                           if (_allBookings.isEmpty)
-                            const Center(
+                            Center(
                               child: Padding(
                                 padding: EdgeInsets.symmetric(vertical: 24),
                                 child: Text('No trips yet — bookings will appear here.',
-                                    style: TextStyle(color: AppColors.textMuted, fontWeight: FontWeight.w700)),
+                                    style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontWeight: FontWeight.w700)),
                               ),
                             )
                           else

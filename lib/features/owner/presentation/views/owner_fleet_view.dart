@@ -95,17 +95,10 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
                     // Header rolls up with scroll (Requirement 1)
                     CustomCurvedHeader(
                       height: 115,
-                      leadingWidget: IconButton(
-                        icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                            color: Colors.white, size: 20),
-                        onPressed: () {
-                          if (context.canPop()) {
-                            context.pop();
-                          } else {
-                            context.go(RouteNames.onboardingRole);
-                          }
-                        },
-                      ),
+                      // Tab root: no back button, and never an exit from
+                      // the shell. The header's back policy renders one
+                      // only when the route can pop, which a branch root
+                      // never can.
                       titleWidget: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -137,14 +130,14 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
                     Container(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16, vertical: 12),
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.surface,
                       child: Row(
                         children: [
                           FleetMetricCard(
                               label: 'Total Fleet',
                               value: '$totalCount Cars',
                               icon: Icons.directions_car_rounded,
-                              color: AppColors.primary),
+                              color: Theme.of(context).colorScheme.primary),
                           const SizedBox(width: 8),
                           FleetMetricCard(
                               label: 'Available',
@@ -166,7 +159,7 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
                       height: 48,
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16, vertical: 6),
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.surface,
                       child: ListView(
                         scrollDirection: Axis.horizontal,
                         children: [
@@ -220,7 +213,9 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
       label: Text('$label ($count)'),
       selected: isSelected,
       selectedColor: AppColors.secondary,
-      labelStyle: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700, color: isSelected ? Colors.white : AppColors.primary),
+      // No label colour: the theme's chipTheme drives both modes
+      // (dark-correct); the orange selected colour stays.
+      labelStyle: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700),
       onSelected: (_) => setState(() => _selectedFilter = label),
     );
   }

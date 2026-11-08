@@ -21,9 +21,9 @@ class CnicScannerInputWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.borderSubtle),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -35,7 +35,6 @@ class CnicScannerInputWidget extends StatelessWidget {
                 'NADRA CNIC Verification',
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.w800,
-                  color: AppColors.primary,
                 ),
               ),
               IconButton(
@@ -56,12 +55,11 @@ class CnicScannerInputWidget extends StatelessWidget {
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.w700,
               letterSpacing: 1.5,
-              color: AppColors.primary,
             ),
             decoration: InputDecoration(
               hintText: '35201-1234567-1',
-              hintStyle: const TextStyle(letterSpacing: 1.0, color: AppColors.textMuted),
-              prefixIcon: const Icon(Icons.badge_rounded, color: AppColors.primary),
+              hintStyle: TextStyle(letterSpacing: 1.0, color: Theme.of(context).colorScheme.onSurfaceVariant),
+              prefixIcon: const Icon(Icons.badge_rounded),
               suffixIcon: controller.text.isNotEmpty
                   ? IconButton(
                       icon: const Icon(Icons.clear, size: 18),
@@ -72,7 +70,7 @@ class CnicScannerInputWidget extends StatelessWidget {
               fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: AppColors.borderSubtle),
+                borderSide: BorderSide(color: Theme.of(context).dividerColor),
               ),
               contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
             ),

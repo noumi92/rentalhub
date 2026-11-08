@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
+import '../../../../core/routing/route_names.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/custom_curved_header.dart';
 import '../../../../core/widgets/debounced_button.dart';
@@ -38,13 +40,9 @@ class _OwnerCustomerRatingViewState extends State<OwnerCustomerRatingView> {
     super.dispose();
   }
 
-  /// H4 mirror half: the owner's rating of the customer is persisted
-  /// into the same `reviews/{bookingId}` document the customer rates
-  /// into — it used to be shown as "recorded" while nothing was saved.
-  /// The blacklist report uses the booking's real CNIC and phone;
-  /// the old hardcoded CNIC '35201-1234567-1' and phone '0300-1122334'
-  /// are gone. Without a CNIC on the booking the report cannot be
-  /// filed from here, and the switch is disabled.
+  /// H4 mirror half: the owner's rating of the customer is persisted into the same `reviews/{bookingId}` document the customer rates into.
+  /// The blacklist report uses the booking's real CNIC and phone (the old hardcoded CNIC/phone are gone); without a CNIC the report cannot
+  /// be filed from here, and the switch is disabled.
   Future<void> _submitRating() async {
     setState(() => _isSubmitting = true);
     try {
@@ -85,7 +83,8 @@ class _OwnerCustomerRatingViewState extends State<OwnerCustomerRatingView> {
                   ? 'Rating saved and the customer was reported to the shared blacklist.'
                   : 'Your rating of the customer has been saved.',
         );
-        Navigator.of(context).popUntil((route) => route.isFirst);
+        // Flow complete: go to the Requests list (tab root); other tabs keep their state.
+        context.go(RouteNames.ownerRequests);
       }
     } catch (e) {
       if (mounted) AppFeedback.showError(context, 'Submission failed: $e');
@@ -153,7 +152,7 @@ class _OwnerCustomerRatingViewState extends State<OwnerCustomerRatingView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Customer Performance Feedback', style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
+          Text('Customer Performance Feedback', style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
           const SizedBox(height: 12),
           _starRow('Return Punctuality & Timekeeping', 'Vehicle returned as per agreed contract schedule', _punctualityRating, (r) => setState(() => _punctualityRating = r)),
           const SizedBox(height: 10),
@@ -189,21 +188,21 @@ class _OwnerCustomerRatingViewState extends State<OwnerCustomerRatingView> {
 
   Widget _blacklistSection() {
     return Material(
-      color: _flagForBlacklist ? const Color(0xFFFFF0F0) : Colors.white,
+      color: _flagForBlacklist ? Theme.of(context).colorScheme.errorContainer : Theme.of(context).colorScheme.surface,
       borderRadius: BorderRadius.circular(16),
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: _flagForBlacklist ? Colors.red.shade400 : AppColors.borderSubtle),
+          border: Border.all(color: _flagForBlacklist ? Theme.of(context).colorScheme.error : Theme.of(context).colorScheme.outlineVariant),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SwitchListTile(
-              activeThumbColor: Colors.red.shade700,
+              activeThumbColor: Theme.of(context).colorScheme.error,
               contentPadding: EdgeInsets.zero,
-              title: Text('Flag Customer to Shared Blacklist', style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800, color: Colors.red)),
+              title: Text('Flag Customer to Shared Blacklist', style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800, color: Theme.of(context).colorScheme.error)),
               subtitle: Text(
                   widget.booking.customerCnic == null ||
                           widget.booking.customerCnic!.isEmpty
@@ -218,12 +217,13 @@ class _OwnerCustomerRatingViewState extends State<OwnerCustomerRatingView> {
             ),
             if (_flagForBlacklist) ...[
               const SizedBox(height: 10),
-              Text('Reason Category for Tribunal:', style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700, color: Colors.red)),
+              Text('Reason Category for Tribunal:', style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700)),
               const SizedBox(height: 6),
               DropdownButtonFormField<String>(
                 initialValue: _selectedReason,
                 isExpanded: true,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.black87),
+                style: Theme.of(context).textTheme.bodySmall,
+                dropdownColor: Theme.of(context).colorScheme.surface,
                 decoration: InputDecoration(
                   filled: true,
                   fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,

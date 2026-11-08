@@ -7,40 +7,57 @@ class AppFeedback {
 
   /// Displays an Emerald Green success alert banner.
   static void showSuccess(BuildContext context, String message) {
+    final dark = Theme.of(context).brightness == Brightness.dark;
     _showSnackBar(
       context: context,
       message: message,
-      backgroundColor: AppColors.accentSuccess,
+      // Dark-mode snackbars use the dark container tones: the light
+      // status colour with white text is ~2.9:1, and the lighter dark
+      // accent token as a background would drop it to ~2.2:1.
+      backgroundColor:
+          dark ? AppColors.successContainerDark : AppColors.accentSuccess,
+      foregroundColor:
+          dark ? AppColors.successOnContainerDark : Colors.white,
       icon: Icons.check_circle_rounded,
     );
   }
 
   /// Displays a Crimson Red error alert banner.
   static void showError(BuildContext context, String message) {
+    final dark = Theme.of(context).brightness == Brightness.dark;
     _showSnackBar(
       context: context,
       message: message,
-      backgroundColor: AppColors.accentDanger,
+      backgroundColor:
+          dark ? AppColors.errorContainerDark : AppColors.accentDanger,
+      foregroundColor: dark ? AppColors.errorOnContainerDark : Colors.white,
       icon: Icons.error_outline_rounded,
     );
   }
 
   /// Displays a Sunset Orange warning alert banner.
   static void showWarning(BuildContext context, String message) {
+    final dark = Theme.of(context).brightness == Brightness.dark;
     _showSnackBar(
       context: context,
       message: message,
-      backgroundColor: AppColors.secondary,
+      backgroundColor:
+          dark ? AppColors.warningContainerDark : AppColors.secondary,
+      foregroundColor:
+          dark ? AppColors.warningOnContainerDark : Colors.white,
       icon: Icons.warning_amber_rounded,
     );
   }
 
   /// Displays a Midnight Navy informational alert banner.
   static void showInfo(BuildContext context, String message) {
+    final dark = Theme.of(context).brightness == Brightness.dark;
     _showSnackBar(
       context: context,
       message: message,
-      backgroundColor: AppColors.primary,
+      backgroundColor:
+          dark ? AppColors.primaryContainerOnDark : AppColors.primary,
+      foregroundColor: Colors.white,
       icon: Icons.info_outline_rounded,
     );
   }
@@ -49,6 +66,7 @@ class AppFeedback {
     required BuildContext context,
     required String message,
     required Color backgroundColor,
+    required Color foregroundColor,
     required IconData icon,
     Duration duration = const Duration(seconds: 3),
   }) {
@@ -60,13 +78,13 @@ class AppFeedback {
       SnackBar(
         content: Row(
           children: [
-            Icon(icon, color: Colors.white, size: 20),
+            Icon(icon, color: foregroundColor, size: 20),
             const SizedBox(width: 10),
             Expanded(
               child: Text(
                 message,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.white,
+                  color: foregroundColor,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -98,7 +116,6 @@ class AppFeedback {
       barrierDismissible: false,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        backgroundColor: Colors.white,
         title: Row(
           children: [
             Container(
@@ -120,7 +137,6 @@ class AppFeedback {
                 title,
                 style: Theme.of(ctx).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w800,
-                  color: AppColors.primary,
                 ),
               ),
             ),
@@ -129,7 +145,7 @@ class AppFeedback {
         content: Text(
           message,
           style: Theme.of(ctx).textTheme.bodyMedium?.copyWith(
-            color: AppColors.textSecondary,
+            color: Theme.of(ctx).colorScheme.onSurfaceVariant,
             height: 1.4,
           ),
         ),
@@ -138,16 +154,18 @@ class AppFeedback {
             onPressed: () => Navigator.of(ctx).pop(false),
             child: Text(
               cancelLabel,
-              style: const TextStyle(
+              style: TextStyle(
                 fontWeight: FontWeight.w700,
-                color: AppColors.textMuted,
+                color: Theme.of(ctx).colorScheme.onSurfaceVariant,
               ),
             ),
           ),
           ElevatedButton(
             onPressed: () => Navigator.of(ctx).pop(true),
             style: ElevatedButton.styleFrom(
-              backgroundColor: isDestructive ? AppColors.accentDanger : AppColors.primary,
+              backgroundColor: isDestructive
+                  ? AppColors.accentDanger
+                  : Theme.of(ctx).colorScheme.primary,
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../constants/app_colors.dart';
 
 class BoardingPassCard extends StatelessWidget {
   final Widget topSection;
@@ -15,9 +14,9 @@ class BoardingPassCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.borderSubtle),
+        border: Border.all(color: Theme.of(context).dividerColor),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.06),
@@ -51,7 +50,7 @@ class BoardingPassCard extends StatelessWidget {
                           return Container(
                             width: 5,
                             height: 1.5,
-                            color: AppColors.borderSubtle,
+                            color: Theme.of(context).dividerColor,
                           );
                         }),
                       );
@@ -66,7 +65,7 @@ class BoardingPassCard extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: Theme.of(context).scaffoldBackgroundColor,
                       shape: BoxShape.circle,
-                      border: Border.all(color: AppColors.borderSubtle),
+                      border: Border.all(color: Theme.of(context).dividerColor),
                     ),
                   ),
                 ),
@@ -78,7 +77,7 @@ class BoardingPassCard extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: Theme.of(context).scaffoldBackgroundColor,
                       shape: BoxShape.circle,
-                      border: Border.all(color: AppColors.borderSubtle),
+                      border: Border.all(color: Theme.of(context).dividerColor),
                     ),
                   ),
                 ),

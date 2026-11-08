@@ -24,7 +24,7 @@ class DualSignaturePadWidget extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.borderSubtle),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -33,17 +33,16 @@ class DualSignaturePadWidget extends StatelessWidget {
             'Dual Legal Endorsement & Signatures',
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w800,
-              color: AppColors.primary,
             ),
           ),
           const SizedBox(height: 12),
-          _pad(
+          _pad(context, 
             title: 'Customer / Hirer Digital Signature',
             subtitle: 'Certifies physical receipt of car & documents',
             controller: customerController,
           ),
           const SizedBox(height: 12),
-          _pad(
+          _pad(context, 
             title: 'Showroom Host / Manager Signature',
             subtitle: 'Authorized release by showroom representative',
             controller: ownerController,
@@ -53,7 +52,7 @@ class DualSignaturePadWidget extends StatelessWidget {
     );
   }
 
-  Widget _pad({
+  Widget _pad(BuildContext context, {
     required String title,
     required String subtitle,
     required SignatureController controller,
@@ -65,17 +64,17 @@ class DualSignaturePadWidget extends StatelessWidget {
             style: const TextStyle(
                 fontSize: 12.5,
                 fontWeight: FontWeight.w800,
-                color: AppColors.primary)),
+                )),
         Text(subtitle,
-            style: const TextStyle(
-                fontSize: 11, color: AppColors.textSecondary)),
+            style: TextStyle(
+                fontSize: 11, color: Theme.of(context).colorScheme.onSurfaceVariant)),
         const SizedBox(height: 6),
         Container(
           height: 120,
           decoration: BoxDecoration(
             color: AppColors.backgroundLight,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.borderSubtle),
+            border: Border.all(color: Theme.of(context).dividerColor),
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(12),

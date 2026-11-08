@@ -37,7 +37,6 @@ class FinanceLedgerSection extends StatelessWidget {
             Text('Ledger',
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.w800,
-                  color: AppColors.primary,
                 )),
             TextButton.icon(
               icon: const Icon(Icons.add_rounded, size: 18),
@@ -48,17 +47,17 @@ class FinanceLedgerSection extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         if (transfers.isEmpty)
-          const Text('No entries yet — record your first income or expense.',
-              style: TextStyle(color: AppColors.textMuted)),
+          Text('No entries yet — record your first income or expense.',
+              style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
         ...transfers.take(20).map((t) {
           final isIncome = t.kind == 'income';
           return Container(
             margin: const EdgeInsets.only(bottom: 8),
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColors.borderSubtle),
+              border: Border.all(color: Theme.of(context).dividerColor),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -70,7 +69,6 @@ class FinanceLedgerSection extends StatelessWidget {
                       Text(t.category,
                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             fontWeight: FontWeight.w800,
-                            color: AppColors.primary,
                           )),
                       Text(
                           '${_accountName(t.accountId)} • ${t.createdAt.day}/${t.createdAt.month}/${t.createdAt.year}${t.note != null ? ' • ${t.note}' : ''}',
@@ -83,8 +81,8 @@ class FinanceLedgerSection extends StatelessWidget {
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w900,
                     color: isIncome
-                          ? AppColors.accentSuccess
-                          : AppColors.accentDanger,
+                          ? AppColors.successTextFor(Theme.of(context).brightness)
+                          : AppColors.dangerTextFor(Theme.of(context).brightness),
                   ),
                 ),
               ],

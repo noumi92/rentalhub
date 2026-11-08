@@ -25,7 +25,6 @@ class CustomerProfileView extends StatefulWidget {
   final VoidCallback? onOpenSettings;
   final VoidCallback? onOpenReputation;
   final VoidCallback? onSignOut;
-  final VoidCallback? onBack;
 
   const CustomerProfileView({
     super.key,
@@ -34,7 +33,6 @@ class CustomerProfileView extends StatefulWidget {
     this.onOpenSettings,
     this.onOpenReputation,
     this.onSignOut,
-    this.onBack,
   });
 
   @override
@@ -173,13 +171,9 @@ class _CustomerProfileViewState extends State<CustomerProfileView> {
           children: [
             CustomCurvedHeader(
               height: 120,
-              leadingWidget: widget.onBack != null
-                  ? IconButton(
-                      icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                          color: Colors.white, size: 20),
-                      onPressed: widget.onBack,
-                    )
-                  : null,
+              // Tab root: no back button. The header's back policy
+              // renders one only when the route can pop, which a
+              // branch root never can.
               titleWidget: ProfileHeader(
                 name: _name,
                 email: _email,

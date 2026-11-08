@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/data/sync_status_cubit.dart';
 import '../../../../core/widgets/offline_banner.dart';
 
@@ -18,16 +17,16 @@ class SyncStatusSection extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.borderSubtle),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text('Sync',
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w800, color: AppColors.primary)),
+                  fontWeight: FontWeight.w800)),
           const SizedBox(height: 10),
           Builder(
             builder: (context) {
@@ -54,7 +53,7 @@ class SyncStatusSection extends StatelessWidget {
                         sync.isOnline && sync.pendingCount == 0
                             ? Icons.check_circle_outline_rounded
                             : Icons.sync_outlined,
-                        color: AppColors.primary,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                       const SizedBox(width: 10),
                       Expanded(

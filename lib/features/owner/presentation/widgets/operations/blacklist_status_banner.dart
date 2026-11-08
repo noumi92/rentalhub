@@ -24,11 +24,11 @@ class BlacklistStatusBanner extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.primaryContainer.withAlpha(50),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.borderSubtle),
+          border: Border.all(color: Theme.of(context).dividerColor),
         ),
         child: Row(
           children: [
-            Icon(Icons.shield_outlined, color: AppColors.textMuted, size: 28),
+            Icon(Icons.shield_outlined, color: Theme.of(context).colorScheme.onSurfaceVariant, size: 28),
             SizedBox(width: 12),
             Expanded(
               child: Text(
@@ -47,16 +47,16 @@ class BlacklistStatusBanner extends StatelessWidget {
       return Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: const Color(0xFFFFF0F0),
+          color: AppColors.errorContainerFor(Theme.of(context).brightness),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.red.shade400, width: 1.5),
+          border: Border.all(color: Theme.of(context).brightness == Brightness.dark ? AppColors.accentDangerDark : Colors.red.shade400, width: 1.5),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                const Icon(Icons.dangerous_rounded, color: Colors.red, size: 28),
+                Icon(Icons.dangerous_rounded, color: AppColors.errorOnContainerFor(Theme.of(context).brightness), size: 28),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Column(
@@ -64,11 +64,11 @@ class BlacklistStatusBanner extends StatelessWidget {
                     children: [
                       Text(
                         'CRITICAL ALERT: BLACKLISTED CITIZEN',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.red),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w900, color: AppColors.errorOnContainerFor(Theme.of(context).brightness)),
                       ),
                       Text(
                         'Incident Ref: ${blacklistedRecord!.blacklistId}',
-                        style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600, color: Colors.red.shade900),
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600, color: Theme.of(context).brightness == Brightness.dark ? AppColors.errorOnContainerDark : Colors.red.shade900),
                       ),
                     ],
                   ),
@@ -79,18 +79,18 @@ class BlacklistStatusBanner extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.red.shade200),
+                border: Border.all(color: Theme.of(context).brightness == Brightness.dark ? Theme.of(context).dividerColor : Colors.red.shade200),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Reason: ${blacklistedRecord!.reasonCategory}', style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: Colors.black87)),
+                  Text('Reason: ${blacklistedRecord!.reasonCategory}', style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: Theme.of(context).colorScheme.onSurface)),
                   const SizedBox(height: 4),
-                  Text(blacklistedRecord!.description, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.black54)),
+                  Text(blacklistedRecord!.description, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
                   const SizedBox(height: 4),
-                  Text('Reported By: ${blacklistedRecord!.reportedByShopId}', style: Theme.of(context).textTheme.labelSmall?.copyWith(fontStyle: FontStyle.italic, color: Colors.red.shade700)),
+                  Text('Reported By: ${blacklistedRecord!.reportedByShopId}', style: Theme.of(context).textTheme.labelSmall?.copyWith(fontStyle: FontStyle.italic, color: AppColors.errorOnContainerFor(Theme.of(context).brightness))),
                 ],
               ),
             ),
@@ -118,16 +118,16 @@ class BlacklistStatusBanner extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFFF0FFF4),
+        color: AppColors.successContainerFor(Theme.of(context).brightness),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.green.shade400, width: 1.5),
+        border: Border.all(color: Theme.of(context).brightness == Brightness.dark ? AppColors.accentSuccessDark : Colors.green.shade400, width: 1.5),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(Icons.check_circle_rounded, color: Colors.green, size: 28),
+              Icon(Icons.check_circle_rounded, color: AppColors.successOnContainerFor(Theme.of(context).brightness), size: 28),
               SizedBox(width: 10),
               Expanded(
                 child: Column(
@@ -135,11 +135,11 @@ class BlacklistStatusBanner extends StatelessWidget {
                   children: [
                     Text(
                       'CLEAN NADRA RECORD VERIFIED',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.green),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w900, color: AppColors.successOnContainerFor(Theme.of(context).brightness)),
                     ),
                     Text(
                       'Zero active defaults or tribunal complaints on file.',
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.green),
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.successOnContainerFor(Theme.of(context).brightness)),
                     ),
                   ],
                 ),

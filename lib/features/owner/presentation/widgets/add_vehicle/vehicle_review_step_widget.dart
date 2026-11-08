@@ -53,7 +53,7 @@ class VehicleReviewStepWidget extends StatelessWidget {
       children: [
         Card(
           elevation: 2,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18), side: const BorderSide(color: AppColors.borderSubtle)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18), side: BorderSide(color: Theme.of(context).dividerColor)),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -71,7 +71,7 @@ class VehicleReviewStepWidget extends StatelessWidget {
                         width: 50,
                         height: 50,
                         decoration: BoxDecoration(color: AppColors.primaryContainer, borderRadius: BorderRadius.circular(12)),
-                        child: const Icon(Icons.directions_car_rounded, color: AppColors.primary, size: 28),
+                        child: const Icon(Icons.directions_car_rounded, size: 28),
                       ),
                     const SizedBox(width: 12),
                     Expanded(
@@ -80,7 +80,7 @@ class VehicleReviewStepWidget extends StatelessWidget {
                         children: [
                           Text(
                             '$selectedMake $selectedModel',
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: AppColors.primary),
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
                           ),
                           Text('$category • $selectedYear • $color', style: Theme.of(context).textTheme.bodySmall),
                         ],
@@ -96,10 +96,10 @@ class VehicleReviewStepWidget extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    _reviewSpec('Gear', isAutomatic ? 'Auto' : 'Manual'),
-                    _reviewSpec('Fuel', fuelType),
-                    _reviewSpec('Seats', '$seats'),
-                    _reviewSpec('AC', 'Full AC'),
+                    _reviewSpec(context, 'Gear', isAutomatic ? 'Auto' : 'Manual'),
+                    _reviewSpec(context, 'Fuel', fuelType),
+                    _reviewSpec(context, 'Seats', '$seats'),
+                    _reviewSpec(context, 'AC', 'Full AC'),
                   ],
                 ),
                 const Divider(height: 24),
@@ -112,7 +112,7 @@ class VehicleReviewStepWidget extends StatelessWidget {
                         Text('Self-Drive Rate', style: Theme.of(context).textTheme.labelSmall),
                         Text(
                           supportSelfDrive ? 'Rs. $dailyRate/day' : 'Not Offered',
-                          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900, color: supportSelfDrive ? AppColors.primary : AppColors.textMuted),
+                          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900, color: supportSelfDrive ? Theme.of(context).colorScheme.onSurface : Theme.of(context).colorScheme.onSurfaceVariant),
                         ),
                       ],
                     ),
@@ -122,7 +122,7 @@ class VehicleReviewStepWidget extends StatelessWidget {
                         Text('With-Driver Rate', style: Theme.of(context).textTheme.labelSmall),
                         Text(
                           supportWithDriver ? 'Rs. ${dailyRate + driverAllowance}/day' : 'Not Offered',
-                          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900, color: supportWithDriver ? AppColors.secondary : AppColors.textMuted),
+                          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900, color: supportWithDriver ? AppColors.secondary : Theme.of(context).colorScheme.onSurfaceVariant),
                         ),
                       ],
                     ),
@@ -132,10 +132,10 @@ class VehicleReviewStepWidget extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    _reviewMiniDetail('Deposit', 'Rs. $deposit'),
-                    _reviewMiniDetail('Advance', 'Rs. $advance'),
-                    _reviewMiniDetail('Overstay', 'Rs. $extraHour/hr'),
-                    _reviewMiniDetail('Fuel', fuelPolicy),
+                    _reviewMiniDetail(context, 'Deposit', 'Rs. $deposit'),
+                    _reviewMiniDetail(context, 'Advance', 'Rs. $advance'),
+                    _reviewMiniDetail(context, 'Overstay', 'Rs. $extraHour/hr'),
+                    _reviewMiniDetail(context, 'Fuel', fuelPolicy),
                   ],
                 ),
               ],
@@ -146,18 +146,18 @@ class VehicleReviewStepWidget extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
-            color: const Color(0xFFF0FDF4),
+            color: AppColors.successContainerFor(Theme.of(context).brightness),
             borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: const Color(0xFF86EFAC)),
+            border: Border.all(color: AppColors.successBorderFor(Theme.of(context).brightness)),
           ),
           child: Row(
             children: [
-              Icon(Icons.verified_rounded, color: AppColors.accentSuccess, size: 24),
+              Icon(Icons.verified_rounded, color: AppColors.successOnContainerFor(Theme.of(context).brightness), size: 24),
               SizedBox(width: 12),
               Expanded(
                 child: Text(
                   'This car will be immediately available in your fleet catalog and visible to nearby customers upon approval.',
-                  style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w600, color: AppColors.primary, height: 1.3),
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w600, height: 1.3),
                 ),
               ),
             ],
@@ -167,21 +167,21 @@ class VehicleReviewStepWidget extends StatelessWidget {
     );
   }
 
-  Widget _reviewSpec(String title, String val) {
+  Widget _reviewSpec(BuildContext context, String title, String val) {
     return Column(
       children: [
-        Text(val, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: AppColors.primary)),
-        Text(title, style: const TextStyle(fontSize: 10, color: AppColors.textMuted)),
+        Text(val, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800)),
+        Text(title, style: TextStyle(fontSize: 10, color: Theme.of(context).colorScheme.onSurfaceVariant)),
       ],
     );
   }
 
-  Widget _reviewMiniDetail(String title, String val) {
+  Widget _reviewMiniDetail(BuildContext context, String title, String val) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: const TextStyle(fontSize: 10, color: AppColors.textMuted)),
-        Text(val, style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w800, color: AppColors.primary)),
+        Text(title, style: TextStyle(fontSize: 10, color: Theme.of(context).colorScheme.onSurfaceVariant)),
+        Text(val, style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w800)),
       ],
     );
   }

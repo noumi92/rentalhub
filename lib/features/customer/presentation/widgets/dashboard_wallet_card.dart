@@ -24,9 +24,9 @@ class DashboardWalletCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.borderSubtle),
+          border: Border.all(color: Theme.of(context).dividerColor),
         ),
         child: Row(
           children: [
@@ -46,7 +46,7 @@ class DashboardWalletCard extends StatelessWidget {
                 children: [
                   Text(
                     'Wallet',
-                    style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
                   ),
                   const SizedBox(height: 2),
                   Text(
@@ -61,11 +61,11 @@ class DashboardWalletCard extends StatelessWidget {
             ),
             Text(
               'Rs. ${summary?.total ?? 0}',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: AppColors.primary),
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
             ),
             const SizedBox(width: 4),
-            const Icon(Icons.arrow_forward_ios_rounded,
-                size: 14, color: AppColors.textSecondary),
+            Icon(Icons.arrow_forward_ios_rounded,
+                size: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
           ],
         ),
       ),

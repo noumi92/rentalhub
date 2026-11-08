@@ -20,9 +20,9 @@ class RateMatrixFieldWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.borderSubtle),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Row(
         children: [
@@ -34,7 +34,6 @@ class RateMatrixFieldWidget extends StatelessWidget {
                   label,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w700,
-                    color: AppColors.primary,
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -59,14 +58,13 @@ class RateMatrixFieldWidget extends StatelessWidget {
                 prefixText: 'Rs. ',
                 prefixStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   fontWeight: FontWeight.w700,
-                  color: AppColors.primary,
                 ),
                 isDense: true,
                 filled: true,
                 fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
-                  borderSide: const BorderSide(color: AppColors.borderSubtle),
+                  borderSide: BorderSide(color: Theme.of(context).dividerColor),
                 ),
                 contentPadding:
                     const EdgeInsets.symmetric(horizontal: 8, vertical: 8),

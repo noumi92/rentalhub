@@ -115,14 +115,14 @@ class _OwnerDisputesViewState extends State<OwnerDisputesView> {
               child: _isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : _items.isEmpty
-                      ? const Center(
+                      ? Center(
                           child: Padding(
                             padding: EdgeInsets.symmetric(horizontal: 32),
                             child: Text(
                               'No disputes yet — customer disputes for your showroom will appear here.',
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                  color: AppColors.textMuted,
+                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                                   fontWeight: FontWeight.w700),
                             ),
                           ),
@@ -131,8 +131,8 @@ class _OwnerDisputesViewState extends State<OwnerDisputesView> {
                           ? Center(
                               child: Text(
                                 'No ${_filter == 'in_review' ? 'in-review' : _filter} disputes.',
-                                style: const TextStyle(
-                                    color: AppColors.textMuted,
+                                style: TextStyle(
+                                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                                     fontWeight: FontWeight.w700),
                               ),
                             )
@@ -161,7 +161,7 @@ class _OwnerDisputesViewState extends State<OwnerDisputesView> {
       selected: selected,
       onSelected: (_) => setState(() => _filter = value),
       selectedColor: AppColors.primary,
-      labelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700, color: selected ? Colors.white : AppColors.primary),
+      labelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700, color: selected ? Colors.white : Theme.of(context).colorScheme.onSurface),
     );
   }
 }

@@ -2,7 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/widgets/app_feedback.dart';
@@ -183,10 +182,9 @@ class _AdminLoginViewState extends State<AdminLoginView> {
             constraints: const BoxConstraints(maxWidth: 420),
             child: Card(
               elevation: 0,
-              color: Colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
-                side: const BorderSide(color: AppColors.borderSubtle),
+                side: BorderSide(color: Theme.of(context).dividerColor),
               ),
               child: Padding(
                 padding: const EdgeInsets.all(24),

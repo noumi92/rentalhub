@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/app_feedback.dart';
 
 class PaymentAccountCard extends StatelessWidget {
@@ -26,9 +25,9 @@ class PaymentAccountCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.borderSubtle),
+        border: Border.all(color: Theme.of(context).dividerColor),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -56,13 +55,13 @@ class PaymentAccountCard extends StatelessWidget {
                   const SizedBox(width: 10),
                   Text(
                     methodTitle,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
                   ),
                 ],
               ),
               IconButton(
                 icon: const Icon(Icons.copy_rounded,
-                    size: 19, color: AppColors.primary),
+                    size: 19),
                 tooltip: 'Copy Number',
                 onPressed: () {
                   Clipboard.setData(ClipboardData(text: iban ?? accountNumber));
@@ -73,27 +72,27 @@ class PaymentAccountCard extends StatelessWidget {
             ],
           ),
           const Divider(height: 18),
-          _buildInfoRow('Account Title', accountTitle),
+          _buildInfoRow(context, 'Account Title', accountTitle),
           const SizedBox(height: 6),
-          _buildInfoRow('Account / Mobile', accountNumber),
+          _buildInfoRow(context, 'Account / Mobile', accountNumber),
           if (iban != null && iban!.isNotEmpty) ...[
             const SizedBox(height: 6),
-            _buildInfoRow('IBAN Number', iban!),
+            _buildInfoRow(context, 'IBAN Number', iban!),
           ],
         ],
       ),
     );
   }
 
-  Widget _buildInfoRow(String label, String value) {
+  Widget _buildInfoRow(BuildContext context, String label, String value) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 12,
-            color: AppColors.textSecondary,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
         ),
         Text(
@@ -101,7 +100,6 @@ class PaymentAccountCard extends StatelessWidget {
           style: const TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.w700,
-            color: AppColors.primary,
           ),
         ),
       ],

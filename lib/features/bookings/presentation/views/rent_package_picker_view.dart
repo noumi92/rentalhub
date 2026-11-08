@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../bookings/utils/package_pricing.dart';
@@ -193,7 +192,7 @@ class _RentPackagePickerViewState extends State<RentPackagePickerView> {
                     ],
                     const SizedBox(height: 16),
                     Text('Available Duration Tiers',
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
                     const SizedBox(height: 10),
                     PackageTierList(
                       options: tiers,

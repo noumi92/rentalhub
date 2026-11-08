@@ -55,7 +55,6 @@ class ProfileAvatarPicker extends StatelessWidget {
                 'Select Profile Photo',
                 style: Theme.of(ctx).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w700,
-                  color: AppColors.primary,
                 ),
               ),
               const SizedBox(height: 12),
@@ -76,7 +75,6 @@ class ProfileAvatarPicker extends StatelessWidget {
               ListTile(
                 leading: const Icon(
                   Icons.photo_library_rounded,
-                  color: AppColors.primary,
                 ),
                 title: const Text(
                   'Choose from Gallery',
@@ -110,7 +108,7 @@ class ProfileAvatarPicker extends StatelessWidget {
                   shape: BoxShape.circle,
                   color: AppColors.primaryContainer,
                   border: Border.all(
-                    color: AppColors.borderSubtle,
+                    color: Theme.of(context).dividerColor,
                     width: 2,
                   ),
                 ),
@@ -125,7 +123,6 @@ class ProfileAvatarPicker extends StatelessWidget {
                       : Icon(
                           Icons.person_rounded,
                           size: radius * 1.15,
-                          color: AppColors.primary,
                         ),
                 ),
               ),

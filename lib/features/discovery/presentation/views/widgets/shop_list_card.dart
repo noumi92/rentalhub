@@ -30,7 +30,7 @@ class ShopListCard extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: const BorderSide(color: AppColors.borderSubtle),
+        side: BorderSide(color: Theme.of(context).dividerColor),
       ),
       child: InkWell(
         onTap: onTap,
@@ -52,7 +52,6 @@ class ShopListCard extends StatelessWidget {
                       child: Icon(
                         Icons.storefront_rounded,
                         size: 48,
-                        color: AppColors.primary,
                       ),
                     ),
                   ),
@@ -103,7 +102,7 @@ class ShopListCard extends StatelessWidget {
                       Expanded(
                         child: Text(
                           shop.shopName,
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: AppColors.primary),
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -132,19 +131,19 @@ class ShopListCard extends StatelessWidget {
                           const SizedBox(width: 3),
                           Text(
                             shop.rating.toStringAsFixed(1),
-                            style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
+                            style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800),
                           ),
                         ],
                       ),
-                      const Text('•', style: TextStyle(color: AppColors.textMuted)),
+                      Text('•', style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
                       Text(
                         '${shop.address}, ${shop.city}',
                         style: Theme.of(context).textTheme.labelMedium,
                       ),
-                      const Text('•', style: TextStyle(color: AppColors.textMuted)),
+                      Text('•', style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
                       Text(
                         '${shop.availableCount} cars available',
-                        style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.accentSuccess),
+                        style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.successOnContainerFor(Theme.of(context).brightness)),
                       ),
                     ],
                   ),
@@ -171,8 +170,8 @@ class ShopListCard extends StatelessWidget {
                               );
                             },
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: AppColors.primary,
-                          side: const BorderSide(color: AppColors.borderSubtle),
+                          foregroundColor: Theme.of(context).colorScheme.onSurface,
+                          side: BorderSide(color: Theme.of(context).dividerColor),
                           padding: const EdgeInsets.symmetric(
                               horizontal: 10, vertical: 7),
                           minimumSize: Size.zero,
@@ -182,7 +181,7 @@ class ShopListCard extends StatelessWidget {
                           ),
                         ),
                         icon: const Icon(Icons.call_rounded,
-                            size: 14, color: AppColors.primary),
+                            size: 14),
                         label: Text('Call',
                             style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700)),
                       ),
@@ -195,15 +194,15 @@ class ShopListCard extends StatelessWidget {
                                 SnackBar(
                                   content: Text(
                                       'Opening WhatsApp with ${shop.shopName}...'),
-                                  backgroundColor: AppColors.accentSuccess,
+                                  backgroundColor: AppColors.successContainerFor(Theme.of(context).brightness),
                                   duration: const Duration(seconds: 2),
                                 ),
                               );
                             },
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: AppColors.accentSuccess,
-                          side: const BorderSide(color: Color(0xFF86EFAC)),
-                          backgroundColor: const Color(0xFFF0FDF4),
+                          foregroundColor: AppColors.successOnContainerFor(Theme.of(context).brightness),
+                          side: BorderSide(color: AppColors.successBorderFor(Theme.of(context).brightness)),
+                          backgroundColor: AppColors.successContainerFor(Theme.of(context).brightness),
                           padding: const EdgeInsets.symmetric(
                               horizontal: 10, vertical: 7),
                           minimumSize: Size.zero,
@@ -212,8 +211,8 @@ class ShopListCard extends StatelessWidget {
                             borderRadius: BorderRadius.circular(10),
                           ),
                         ),
-                        icon: const Icon(Icons.chat_bubble_outline_rounded,
-                            size: 14, color: AppColors.accentSuccess),
+                        icon: Icon(Icons.chat_bubble_outline_rounded,
+                            size: 14, color: AppColors.successOnContainerFor(Theme.of(context).brightness)),
                         label: Text('WhatsApp',
                             style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700)),
                       ),

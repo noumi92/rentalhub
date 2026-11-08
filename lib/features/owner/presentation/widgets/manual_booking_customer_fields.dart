@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../core/constants/app_colors.dart';
 
 /// The customer KYC fields of the walk-in booking wizard: name,
 /// phone and CNIC. Extracted from [OwnerManualBookingView] so the
@@ -35,7 +34,7 @@ class ManualBookingCustomerFields extends StatelessWidget {
         fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
         border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: AppColors.borderSubtle)),
+            borderSide: BorderSide(color: Theme.of(context).dividerColor)),
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       ),

@@ -33,7 +33,7 @@ class ProofScreenshotPicker extends StatelessWidget {
         width: double.infinity,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.borderSubtle),
+          border: Border.all(color: Theme.of(context).dividerColor),
           image: DecorationImage(
             image: FileImage(selectedFile!),
             fit: BoxFit.cover,
@@ -82,9 +82,9 @@ class ProofScreenshotPicker extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.borderSubtle, style: BorderStyle.solid),
+        border: Border.all(color: Theme.of(context).dividerColor, style: BorderStyle.solid),
       ),
       child: Column(
         children: [
@@ -95,12 +95,12 @@ class ProofScreenshotPicker extends StatelessWidget {
               shape: BoxShape.circle,
             ),
             child: const Icon(Icons.cloud_upload_outlined,
-                color: AppColors.primary, size: 30),
+                size: 30),
           ),
           const SizedBox(height: 10),
           Text(
             'Upload Transfer Screenshot',
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 4),
           Text(
@@ -114,8 +114,8 @@ class ProofScreenshotPicker extends StatelessWidget {
               OutlinedButton.icon(
                 onPressed: () => _pickImage(ImageSource.gallery),
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: AppColors.primary,
-                  side: const BorderSide(color: AppColors.borderSubtle),
+                  foregroundColor: Theme.of(context).colorScheme.onSurface,
+                  side: BorderSide(color: Theme.of(context).dividerColor),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10)),
                 ),
@@ -126,8 +126,8 @@ class ProofScreenshotPicker extends StatelessWidget {
               OutlinedButton.icon(
                 onPressed: () => _pickImage(ImageSource.camera),
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: AppColors.primary,
-                  side: const BorderSide(color: AppColors.borderSubtle),
+                  foregroundColor: Theme.of(context).colorScheme.onSurface,
+                  side: BorderSide(color: Theme.of(context).dividerColor),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10)),
                 ),

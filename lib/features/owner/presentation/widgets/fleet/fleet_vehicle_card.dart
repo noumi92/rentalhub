@@ -84,13 +84,13 @@ class FleetVehicleCard extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: const BorderSide(color: AppColors.borderSubtle),
+        side: BorderSide(color: Theme.of(context).dividerColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.surface,
             padding: const EdgeInsets.fromLTRB(14, 12, 14, 6),
             child: Row(
               children: [
@@ -107,7 +107,6 @@ class FleetVehicleCard extends StatelessWidget {
                         vehicle.displayName,
                         style: Theme.of(context).textTheme.titleSmall?.copyWith(
                           fontWeight: FontWeight.w900,
-                          color: AppColors.primary,
                         ),
                       ),
                       const SizedBox(height: 2),
@@ -142,7 +141,6 @@ class FleetVehicleCard extends StatelessWidget {
                       'Rs. ${vehicle.rates.daily24}/day',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.w900,
-                        color: AppColors.primary,
                       ),
                     ),
                   ],
@@ -155,7 +153,7 @@ class FleetVehicleCard extends StatelessWidget {
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
                         fontWeight: FontWeight.w800,
                         color: isAvailable
-                            ? AppColors.accentSuccess
+                            ? AppColors.successTextFor(Theme.of(context).brightness)
                             : AppColors.secondary,
                       ),
                     ),
@@ -168,13 +166,11 @@ class FleetVehicleCard extends StatelessWidget {
                     IconButton(
                       tooltip: 'Edit rates',
                       icon: const Icon(Icons.tune_rounded, size: 20),
-                      color: AppColors.primary,
                       onPressed: onEditRates,
                     ),
                     IconButton(
                       tooltip: 'Booking calendar',
                       icon: const Icon(Icons.calendar_month_rounded, size: 20),
-                      color: AppColors.primary,
                       onPressed: onViewCalendar,
                     ),
                   ],

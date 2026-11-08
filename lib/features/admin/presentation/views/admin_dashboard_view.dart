@@ -109,7 +109,7 @@ class _AdminDashboardViewState extends State<AdminDashboardView> {
         value: '${s.activeBookingCount}',
         changeLabel: 'Approved, paid or active',
         icon: Icons.calendar_month_rounded,
-        accentColor: AppColors.accentSuccess,
+        accentColor: AppColors.successTextFor(Theme.of(context).brightness),
       ),
       AdminKpiCard(
         title: 'Open disputes',
@@ -136,20 +136,19 @@ class _AdminDashboardViewState extends State<AdminDashboardView> {
     return Card(
       margin: EdgeInsets.zero,
       elevation: 0,
-      color: Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: const BorderSide(color: AppColors.borderSubtle),
+        side: BorderSide(color: Theme.of(context).dividerColor),
       ),
       child: ListTile(
-        leading: Icon(icon, color: AppColors.primary),
+        leading: Icon(icon),
         title: Text(title,
             style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w800,
-                color: AppColors.primary)),
+                )),
         subtitle: Text('$value • $note',
-            style: const TextStyle(fontSize: 12, color: AppColors.textMuted)),
+            style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant)),
       ),
     );
   }

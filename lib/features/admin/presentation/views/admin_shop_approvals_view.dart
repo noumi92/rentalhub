@@ -61,7 +61,7 @@ class _AdminShopApprovalsViewState extends State<AdminShopApprovalsView> {
       child: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _pending.isEmpty
-              ? const Center(
+              ? Center(
                   child: Padding(
                     padding: EdgeInsets.all(32),
                     child: Text(
@@ -69,7 +69,7 @@ class _AdminShopApprovalsViewState extends State<AdminShopApprovalsView> {
                       textAlign: TextAlign.center,
                       style: TextStyle(
                           fontWeight: FontWeight.w700,
-                          color: AppColors.textMuted),
+                          color: Theme.of(context).colorScheme.onSurfaceVariant),
                     ),
                   ),
                 )
@@ -84,27 +84,26 @@ class _AdminShopApprovalsViewState extends State<AdminShopApprovalsView> {
                     return Card(
                       margin: EdgeInsets.zero,
                       elevation: 0,
-                      color: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
-                        side: const BorderSide(color: AppColors.borderSubtle),
+                        side: BorderSide(color: Theme.of(context).dividerColor),
                       ),
                       child: ListTile(
                         leading: CircleAvatar(
                           backgroundColor: AppColors.primary
                               .withValues(alpha: 0.12),
                           child: const Icon(Icons.store_rounded,
-                              color: AppColors.primary),
+                              ),
                         ),
                         title: Text(shop.shopName,
                             style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w800,
-                                color: AppColors.primary)),
+                                )),
                         subtitle: Text(
                           '${shop.city} • ${shop.ownerName ?? 'Owner not listed'} • Checklist ${checklist.doneCount}/6',
-                          style: const TextStyle(
-                              fontSize: 12, color: AppColors.textMuted),
+                          style: TextStyle(
+                              fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
                         ),
                         trailing: const Icon(
                             Icons.arrow_forward_ios_rounded,

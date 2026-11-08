@@ -72,16 +72,16 @@ class _SupportTicketFormState extends State<SupportTicketForm> {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.borderSubtle),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             'Message Support',
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 4),
           Text(
@@ -93,20 +93,22 @@ class _SupportTicketFormState extends State<SupportTicketForm> {
             controller: _messageController,
             maxLines: 3,
             decoration: InputDecoration(
-              hintText: 'E.g. The showroom charged me extra for fuel...',
+              hintText: 'What went wrong?',
               hintStyle: Theme.of(context).textTheme.bodySmall,
               filled: true,
               fillColor:
                   Theme.of(context).colorScheme.surfaceContainerHighest,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
-                borderSide: const BorderSide(color: AppColors.borderSubtle),
+                borderSide: BorderSide(color: Theme.of(context).dividerColor),
               ),
               contentPadding: const EdgeInsets.all(12),
             ),
           ),
           const SizedBox(height: 10),
           DropdownButtonFormField<String>(
+            isExpanded: true,
+            dropdownColor: Theme.of(context).colorScheme.surface,
             initialValue: _priority,
             items: const [
               DropdownMenuItem(value: 'high', child: Text('High — urgent')),
@@ -122,7 +124,7 @@ class _SupportTicketFormState extends State<SupportTicketForm> {
                   Theme.of(context).colorScheme.surfaceContainerHighest,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
-                borderSide: const BorderSide(color: AppColors.borderSubtle),
+                borderSide: BorderSide(color: Theme.of(context).dividerColor),
               ),
               contentPadding: const EdgeInsets.all(12),
             ),
@@ -139,12 +141,12 @@ class _SupportTicketFormState extends State<SupportTicketForm> {
             Row(
               children: [
                 Icon(Icons.check_circle_rounded,
-                    size: 16, color: AppColors.accentSuccess),
+                    size: 16, color: AppColors.successTextFor(Theme.of(context).brightness)),
                 SizedBox(width: 6),
                 Expanded(
                   child: Text(
                     'Message sent. Our team will contact you on WhatsApp.',
-                    style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w600, color: AppColors.accentSuccess),
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w600, color: AppColors.successTextFor(Theme.of(context).brightness)),
                   ),
                 ),
               ],

@@ -118,7 +118,7 @@ class _OwnerPaymentVerificationViewState
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: const TextStyle(color: AppColors.textSecondary)),
+          Text(label, style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
           Text(value,
               style: const TextStyle(fontWeight: FontWeight.w800)),
         ],
@@ -179,7 +179,7 @@ class _OwnerPaymentVerificationViewState
                     ),
                     const SizedBox(height: 14),
                     Text('Payment screenshot',
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
                     const SizedBox(height: 8),
                     if (b.paymentProofUrl != null)
                       ClipRRect(

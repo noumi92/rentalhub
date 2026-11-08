@@ -142,10 +142,10 @@ class _OwnerDuesViewState extends State<OwnerDuesView> {
               child: _isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : groups.isEmpty
-                      ? const Center(
+                      ? Center(
                           child: Text('No outstanding dues. All clear.',
                               style: TextStyle(
-                                  color: AppColors.textMuted,
+                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                                   fontWeight: FontWeight.w700)),
                         )
                       : ListView.separated(
@@ -168,9 +168,9 @@ class _OwnerDuesViewState extends State<OwnerDuesView> {
                             return Container(
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
-                                color: Colors.white,
+                                color: Theme.of(context).colorScheme.surface,
                                 borderRadius: BorderRadius.circular(12),
-                                border: Border.all(color: AppColors.borderSubtle),
+                                border: Border.all(color: Theme.of(context).dividerColor),
                               ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -181,10 +181,10 @@ class _OwnerDuesViewState extends State<OwnerDuesView> {
                                     children: [
                                       Expanded(
                                         child: Text(name,
-                                            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
+                                            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
                                       ),
                                       Text('Rs. $due',
-                                          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900, color: AppColors.accentDanger)),
+                                          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900, color: AppColors.dangerTextFor(Theme.of(context).brightness))),
                                     ],
                                   ),
                                   Text(

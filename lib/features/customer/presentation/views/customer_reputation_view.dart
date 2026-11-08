@@ -108,9 +108,9 @@ class _CustomerReputationViewState extends State<CustomerReputationView> {
                           Container(
                             padding: const EdgeInsets.all(20),
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: Theme.of(context).colorScheme.surface,
                               borderRadius: BorderRadius.circular(20),
-                              border: Border.all(color: AppColors.borderSubtle),
+                              border: Border.all(color: Theme.of(context).dividerColor),
                               boxShadow: [
                                 BoxShadow(
                                   color:
@@ -129,22 +129,22 @@ class _CustomerReputationViewState extends State<CustomerReputationView> {
                                         .withValues(alpha: 0.1),
                                     shape: BoxShape.circle,
                                   ),
-                                  child: const Icon(Icons.verified_rounded,
-                                      color: AppColors.accentSuccess, size: 50),
+                                  child: Icon(Icons.verified_rounded,
+                                      color: AppColors.successTextFor(Theme.of(context).brightness), size: 50),
                                 ),
                                 const SizedBox(height: 12),
                                 Text(
                                   overall == null
                                       ? '— / 5.0'
                                       : '${overall.toStringAsFixed(1)} / 5.0',
-                                  style: Theme.of(context).textTheme.displayLarge?.copyWith(fontWeight: FontWeight.w900, color: AppColors.primary),
+                                  style: Theme.of(context).textTheme.displayLarge?.copyWith(fontWeight: FontWeight.w900),
                                 ),
                                 const SizedBox(height: 2),
                                 Text(
                                   _trustScore == null
                                       ? 'Trust Score: —'
                                       : 'Trust Score: ${_trustScore!.toStringAsFixed(1)} / 5.0',
-                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.accentSuccess),
+                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.successTextFor(Theme.of(context).brightness)),
                                 ),
                                 const SizedBox(height: 8),
                                 Text(
@@ -162,16 +162,16 @@ class _CustomerReputationViewState extends State<CustomerReputationView> {
                             Container(
                               padding: const EdgeInsets.all(16),
                               decoration: BoxDecoration(
-                                color: Colors.white,
+                                color: Theme.of(context).colorScheme.surface,
                                 borderRadius: BorderRadius.circular(16),
-                                border: Border.all(color: AppColors.borderSubtle),
+                                border: Border.all(color: Theme.of(context).dividerColor),
                               ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
                                     'Showroom Ratings of You',
-                                    style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
+                                    style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
                                   ),
                                   const SizedBox(height: 14),
                                   ReputationScoreBar(
@@ -201,12 +201,12 @@ class _CustomerReputationViewState extends State<CustomerReputationView> {
                             child: Row(
                               children: [
                                 Icon(Icons.shield_rounded,
-                                    color: AppColors.primary, size: 20),
+                                    size: 20),
                                 SizedBox(width: 10),
                                 Expanded(
                                   child: Text(
                                     'Showrooms see these ratings when they review your booking requests.',
-                                    style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600, color: AppColors.primary),
+                                    style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600),
                                   ),
                                 ),
                               ],

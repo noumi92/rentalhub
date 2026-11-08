@@ -24,41 +24,46 @@ class DashboardLedgerItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final statusColor = status == 'completed'
-        ? AppColors.accentSuccess
+        ? AppColors.successTextFor(Theme.of(context).brightness)
         : status == 'active'
-            ? AppColors.primary
+            ? Theme.of(context).colorScheme.primary
             : AppColors.secondary;
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: AppColors.borderSubtle),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(vehicleName,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.primary,
-                  )),
-              const SizedBox(height: 2),
-              Text('#$bookingId • $customerName',
-                  style: Theme.of(context).textTheme.labelSmall),
-            ],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(vehicleName,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w800,
+                    )),
+                const SizedBox(height: 2),
+                Text('#$bookingId • $customerName',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.labelSmall),
+              ],
+            ),
           ),
+          const SizedBox(width: 8),
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text('Rs. $amount',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w900,
-                    color: AppColors.primary,
                   )),
               const SizedBox(height: 2),
               Text(status.toUpperCase(),

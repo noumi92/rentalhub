@@ -12,9 +12,7 @@ import '../widgets/wallet_ledger.dart';
 // booking and deposit records. The hardcoded Rs. 15,000 / 5,000 /
 // 10,000 and the four const transaction tiles are gone.
 class CustomerWalletView extends StatefulWidget {
-  final VoidCallback? onBack;
-
-  const CustomerWalletView({super.key, this.onBack});
+  const CustomerWalletView({super.key});
 
   @override
   State<CustomerWalletView> createState() => _CustomerWalletViewState();
@@ -58,13 +56,6 @@ class _CustomerWalletViewState extends State<CustomerWalletView> {
           children: [
             CustomCurvedHeader(
               height: 100,
-              leadingWidget: widget.onBack != null
-                  ? IconButton(
-                      icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                          color: Colors.white, size: 20),
-                      onPressed: widget.onBack,
-                    )
-                  : null,
               titleWidget: Text(
                 'Wallet & Security Escrow',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white),
@@ -101,21 +92,29 @@ class _CustomerWalletViewState extends State<CustomerWalletView> {
                             style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w600, color: AppColors.primaryContainer),
                           ),
                           const SizedBox(height: 6),
-                          Text(
-                            'Rs. ${summary?.total ?? 0}',
-                            style: Theme.of(context).textTheme.displayLarge?.copyWith(fontWeight: FontWeight.w900, color: Colors.white),
+                          FittedBox(
+                            fit: BoxFit.scaleDown,
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              'Rs. ${summary?.total ?? 0}',
+                              style: Theme.of(context).textTheme.displayLarge?.copyWith(fontWeight: FontWeight.w900, color: Colors.white),
+                            ),
                           ),
                           const SizedBox(height: 14),
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              _EscrowPill(
-                                  label: 'Advances Paid',
-                                  value:
-                                      'Rs. ${summary?.advancesPaid ?? 0}'),
-                              _EscrowPill(
-                                  label: 'Security Escrow',
-                                  value: 'Rs. ${summary?.escrowHeld ?? 0}'),
+                              Expanded(
+                                child: _EscrowPill(
+                                    label: 'Advances Paid',
+                                    value:
+                                        'Rs. ${summary?.advancesPaid ?? 0}'),
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: _EscrowPill(
+                                    label: 'Security Escrow',
+                                    value: 'Rs. ${summary?.escrowHeld ?? 0}'),
+                              ),
                             ],
                           ),
                         ],
@@ -124,7 +123,7 @@ class _CustomerWalletViewState extends State<CustomerWalletView> {
                     const SizedBox(height: 20),
                     Text(
                       'Transaction Ledger',
-                      style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
                     ),
                     const SizedBox(height: 10),
                     WalletLedger(
@@ -160,8 +159,12 @@ class _EscrowPill extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.primaryContainer)),
           Text(value,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: Colors.white)),
         ],
       ),

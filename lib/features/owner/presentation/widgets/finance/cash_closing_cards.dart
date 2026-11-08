@@ -57,9 +57,9 @@ class CashClosingRow extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.borderSubtle),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -70,8 +70,8 @@ class CashClosingRow extends StatelessWidget {
               'Counted Rs. ${closing.countedCash} • Diff Rs. ${closing.difference}',
               style: Theme.of(context).textTheme.labelMedium?.copyWith(
                 color: closing.difference == 0
-                      ? AppColors.accentSuccess
-                      : AppColors.accentDanger,
+                      ? AppColors.successTextFor(Theme.of(context).brightness)
+                      : AppColors.dangerTextFor(Theme.of(context).brightness),
                 fontWeight: FontWeight.w700,
               )),
         ],

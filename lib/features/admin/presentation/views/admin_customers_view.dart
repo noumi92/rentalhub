@@ -77,24 +77,24 @@ class _AdminCustomersViewState extends State<AdminCustomersView> {
                     Theme.of(context).colorScheme.surfaceContainerHighest,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppColors.borderSubtle),
+                  borderSide: BorderSide(color: Theme.of(context).dividerColor),
                 ),
                 contentPadding:
                     const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Expanded(
               child: _isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : _visible.isEmpty
-                      ? const Center(
+                      ? Center(
                           child: Text(
                             'No customers match — the list reads the customers collection.',
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 fontWeight: FontWeight.w700,
-                                color: AppColors.textMuted),
+                                color: Theme.of(context).colorScheme.onSurfaceVariant),
                           ),
                         )
                       : ListView.separated(
@@ -106,29 +106,28 @@ class _AdminCustomersViewState extends State<AdminCustomersView> {
                             return Card(
                               margin: EdgeInsets.zero,
                               elevation: 0,
-                              color: Colors.white,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
-                                side: const BorderSide(
-                                    color: AppColors.borderSubtle),
+                                side: BorderSide(
+                                    color: Theme.of(context).dividerColor),
                               ),
                               child: ListTile(
                                 leading: CircleAvatar(
                                   backgroundColor: AppColors.primary
                                       .withValues(alpha: 0.12),
                                   child: const Icon(Icons.person_rounded,
-                                      color: AppColors.primary),
+                                      ),
                                 ),
                                 title: Text(c.name,
                                     style: const TextStyle(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w800,
-                                        color: AppColors.primary)),
+                                        )),
                                 subtitle: Text(
                                   '${c.phone} • CNIC ${c.cnic ?? 'not on file'} • ${c.source}',
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                       fontSize: 12,
-                                      color: AppColors.textMuted),
+                                      color: Theme.of(context).colorScheme.onSurfaceVariant),
                                 ),
                                 trailing: const Icon(
                                     Icons.arrow_forward_ios_rounded,

@@ -15,10 +15,13 @@ class VerifiedBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color badgeColor =
-        isVerified ? AppColors.accentSuccess : AppColors.warning;
-    final Color bgColor =
-        isVerified ? AppColors.successContainer : AppColors.warningContainer;
+    final brightness = Theme.of(context).brightness;
+    final Color badgeColor = isVerified
+        ? AppColors.successOnContainerFor(brightness)
+        : AppColors.warningOnContainerFor(brightness);
+    final Color bgColor = isVerified
+        ? AppColors.successContainerFor(brightness)
+        : AppColors.warningContainerFor(brightness);
 
     return Container(
       padding: EdgeInsets.symmetric(

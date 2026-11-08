@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import '../constants/app_colors.dart';
 import '../constants/app_dimensions.dart';
 
 class DebouncedButton extends StatefulWidget {
@@ -64,7 +63,10 @@ class _DebouncedButtonState extends State<DebouncedButton> {
     return ElevatedButton(
       onPressed: (widget.isLoading || _isLocked) ? null : _handleTap,
       style: ElevatedButton.styleFrom(
-        backgroundColor: widget.backgroundColor ?? AppColors.secondary,
+        // Theme secondary in both modes (light orange / dark orange);
+        // the old hardcoded light secondary was wrong in dark mode.
+        backgroundColor:
+            widget.backgroundColor ?? Theme.of(context).colorScheme.secondary,
         foregroundColor: widget.textColor ?? Colors.white,
         minimumSize: const Size(double.infinity, AppDimensions.buttonHeight),
         shape: RoundedRectangleBorder(
@@ -92,8 +94,12 @@ class _DebouncedButtonState extends State<DebouncedButton> {
                   child: Text(
                     widget.displayLabel,
                     overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    // No theme text colour here: the label must take the
+                    // button's foregroundColor (white). The old titleSmall
+                    // colour forced onSurface text onto the orange button.
+                    style: TextStyle(
                       fontWeight: FontWeight.w700,
+                      color: widget.textColor ?? Colors.white,
                     ),
                   ),
                 ),

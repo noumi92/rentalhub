@@ -56,11 +56,9 @@ class _OwnerSettingsViewState extends State<OwnerSettingsView> {
           children: [
             CustomCurvedHeader(
               height: 100,
-              leadingWidget: IconButton(
-                icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                    color: Colors.white, size: 20),
-                onPressed: () => context.pop(),
-              ),
+              // Tab root: no back button. The header's back policy
+              // renders one only when the route can pop, which a
+              // branch root never can.
               titleWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -93,7 +91,9 @@ class _OwnerSettingsViewState extends State<OwnerSettingsView> {
                         const SizedBox(height: 16),
                         _sectionCard(
                           title: l10n.language,
-                          child: Row(
+                          child: Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
                             children: [
                               ChoiceChip(
                                 label: Text(l10n.languageEnglish),
@@ -101,7 +101,6 @@ class _OwnerSettingsViewState extends State<OwnerSettingsView> {
                                 onSelected: (_) => sl<AppSettingsCubit>()
                                     .setLocale('en'),
                               ),
-                              const SizedBox(width: 8),
                               ChoiceChip(
                                 label: Text(l10n.languageUrdu),
                                 selected: settings.localeCode == 'ur',
@@ -114,7 +113,9 @@ class _OwnerSettingsViewState extends State<OwnerSettingsView> {
                         const SizedBox(height: 16),
                         _sectionCard(
                           title: l10n.theme,
-                          child: Row(
+                          child: Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
                             children: [
                               ChoiceChip(
                                 label: Text(l10n.themeLight),
@@ -123,7 +124,6 @@ class _OwnerSettingsViewState extends State<OwnerSettingsView> {
                                 onSelected: (_) => sl<AppSettingsCubit>()
                                     .setThemeMode(ThemeMode.light),
                               ),
-                              const SizedBox(width: 8),
                               ChoiceChip(
                                 label: Text(l10n.themeDark),
                                 selected:
@@ -131,7 +131,6 @@ class _OwnerSettingsViewState extends State<OwnerSettingsView> {
                                 onSelected: (_) => sl<AppSettingsCubit>()
                                     .setThemeMode(ThemeMode.dark),
                               ),
-                              const SizedBox(width: 8),
                               ChoiceChip(
                                 label: Text(l10n.themeSystem),
                                 selected:
@@ -205,7 +204,7 @@ class _OwnerSettingsViewState extends State<OwnerSettingsView> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(title,
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
           const SizedBox(height: 10),
           child,
         ],
@@ -219,7 +218,7 @@ class _OwnerSettingsViewState extends State<OwnerSettingsView> {
       color: Colors.transparent,
       child: ListTile(
         contentPadding: EdgeInsets.zero,
-        leading: Icon(icon, color: AppColors.primary),
+        leading: Icon(icon),
         title: Text(label,
             style: const TextStyle(fontWeight: FontWeight.w700)),
         trailing: const Icon(Icons.chevron_right_rounded),

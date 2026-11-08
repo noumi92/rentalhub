@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../core/constants/app_colors.dart';
 import 'rate_matrix_field_widget.dart';
 
 /// The pricing-policy fields of the rate matrix: out-of-city daily rate,
@@ -90,18 +89,18 @@ class PricingPolicyFields extends StatelessWidget {
         Text('Fuel Policy',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.w700,
-              color: AppColors.primary,
             )),
         const SizedBox(height: 6),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 14),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.borderSubtle),
+            border: Border.all(color: Theme.of(context).dividerColor),
           ),
           child: DropdownButtonHideUnderline(
             child: DropdownButton<String>(
+              dropdownColor: Theme.of(context).colorScheme.surface,
               isExpanded: true,
               value: fuelPolicies.contains(fuelPolicy)
                   ? fuelPolicy

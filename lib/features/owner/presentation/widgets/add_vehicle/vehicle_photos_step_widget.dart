@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import '../../../../../core/constants/app_colors.dart';
 import '../onboarding/onboarding_document_tile.dart';
 import '../onboarding/onboarding_photo_upload_box.dart';
 
@@ -65,7 +64,7 @@ class VehiclePhotosStepWidget extends StatelessWidget {
       children: [
         Text(
           'Vehicle 4-Angle Photos',
-          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900, color: AppColors.primary),
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900),
         ),
         const SizedBox(height: 4),
         Text(
@@ -126,7 +125,7 @@ class VehiclePhotosStepWidget extends StatelessWidget {
 
         Text(
           'Legal Documents',
-          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900, color: AppColors.primary),
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900),
         ),
         const SizedBox(height: 8),
 

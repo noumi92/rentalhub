@@ -91,7 +91,7 @@ class _AdminBookingsViewState extends State<AdminBookingsView> {
                     Theme.of(context).colorScheme.surfaceContainerHighest,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppColors.borderSubtle),
+                  borderSide: BorderSide(color: Theme.of(context).dividerColor),
                 ),
                 contentPadding:
                     const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
@@ -118,18 +118,18 @@ class _AdminBookingsViewState extends State<AdminBookingsView> {
                     .toList(),
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Expanded(
               child: _isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : _visible.isEmpty
-                      ? const Center(
+                      ? Center(
                           child: Text(
                             'No bookings match — the list reads the bookings collection.',
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 fontWeight: FontWeight.w700,
-                                color: AppColors.textMuted),
+                                color: Theme.of(context).colorScheme.onSurfaceVariant),
                           ),
                         )
                       : ListView.separated(
@@ -141,32 +141,31 @@ class _AdminBookingsViewState extends State<AdminBookingsView> {
                             return Card(
                               margin: EdgeInsets.zero,
                               elevation: 0,
-                              color: Colors.white,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
-                                side: const BorderSide(
-                                    color: AppColors.borderSubtle),
+                                side: BorderSide(
+                                    color: Theme.of(context).dividerColor),
                               ),
                               child: ListTile(
                                 leading: CircleAvatar(
                                   backgroundColor: AppColors.primary
                                       .withValues(alpha: 0.12),
                                   child: const Icon(Icons.receipt_long_rounded,
-                                      color: AppColors.primary),
+                                      ),
                                 ),
                                 title: Text(
                                     '${b.vehicleName ?? b.vehicleId} • ${b.bookingId}',
                                     style: const TextStyle(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w800,
-                                        color: AppColors.primary)),
+                                        )),
                                 subtitle: Text(
                                   '${b.customerName ?? 'Customer'} • ${b.shopName ?? ''} • Rs. ${b.totalAmount} • ${b.tripType}',
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                       fontSize: 12,
-                                      color: AppColors.textMuted),
+                                      color: Theme.of(context).colorScheme.onSurfaceVariant),
                                 ),
-                                trailing: _statusChip(b.status),
+                                trailing: _statusChip(context, b.status),
                                 onTap: () => context.go(
                                   RouteNames.adminBookingDetail
                                       .replaceFirst(':bookingId', b.bookingId),
@@ -182,12 +181,13 @@ class _AdminBookingsViewState extends State<AdminBookingsView> {
     );
   }
 
-  Widget _statusChip(String status) {
+  Widget _statusChip(BuildContext context, String status) {
+    final brightness = Theme.of(context).brightness;
     final color = switch (status) {
-      'completed' => Colors.green.shade700,
+      'completed' => AppColors.successTextFor(brightness),
       'active' || 'paid' => Colors.blue.shade700,
-      'rejected' || 'cancelled' => Colors.red.shade700,
-      _ => Colors.grey.shade700,
+      'rejected' || 'cancelled' => AppColors.dangerTextFor(brightness),
+      _ => Theme.of(context).colorScheme.onSurfaceVariant,
     };
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),

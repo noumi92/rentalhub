@@ -22,16 +22,16 @@ class SupportSosTile extends StatelessWidget {
             color: AppColors.accentDanger.withValues(alpha: 0.3)),
       ),
       leading:
-          const Icon(Icons.sos_rounded, color: AppColors.accentDanger),
+          Icon(Icons.sos_rounded, color: AppColors.dangerTextFor(Theme.of(context).brightness)),
       title: Text('Emergency SOS',
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.w800,
-              color: AppColors.accentDanger)),
+              color: AppColors.dangerTextFor(Theme.of(context).brightness))),
       subtitle: Text(
           'Police 15 · Rescue 1122 — one-tap emergency help.',
           style: Theme.of(context).textTheme.labelSmall),
-      trailing: const Icon(Icons.arrow_forward_ios_rounded,
-          size: 14, color: AppColors.accentDanger),
+      trailing: Icon(Icons.arrow_forward_ios_rounded,
+          size: 14, color: AppColors.dangerTextFor(Theme.of(context).brightness)),
       onTap: onTap,
     );
   }

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/utils/pakistani_validators.dart';
 import '../../../../../core/widgets/app_feedback.dart';
 import '../../../../../core/widgets/debounced_button.dart';
@@ -152,7 +151,7 @@ class _KycSubmissionFormState extends State<KycSubmissionForm> {
         children: [
           Text(
             '13-Digit NADRA CNIC Number',
-            style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 6),
           TextField(

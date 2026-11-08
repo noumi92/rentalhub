@@ -74,7 +74,7 @@ class ShopVehicleCard extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: const BorderSide(color: AppColors.borderSubtle),
+        side: BorderSide(color: Theme.of(context).dividerColor),
       ),
       child: InkWell(
         onTap: onTap,
@@ -85,7 +85,7 @@ class ShopVehicleCard extends StatelessWidget {
             Container(
               height: 130,
               width: double.infinity,
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.surface,
               child: Stack(
                 alignment: Alignment.center,
                 children: [
@@ -98,13 +98,13 @@ class ShopVehicleCard extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFF0FDF4),
+                        color: AppColors.successContainerFor(Theme.of(context).brightness),
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: const Color(0xFF86EFAC)),
+                        border: Border.all(color: AppColors.successBorderFor(Theme.of(context).brightness)),
                       ),
                       child: Text(
                         _statusLabel(v.status),
-                        style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700, color: AppColors.accentSuccess),
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700, color: AppColors.successOnContainerFor(Theme.of(context).brightness)),
                       ),
                     ),
                   ),
@@ -122,7 +122,7 @@ class ShopVehicleCard extends StatelessWidget {
                       Expanded(
                         child: Text(
                           v.displayName,
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
                         ),
                       ),
                       PakistaniPlateWidget(
@@ -136,10 +136,10 @@ class ShopVehicleCard extends StatelessWidget {
                     spacing: 10,
                     runSpacing: 6,
                     children: [
-                      _specChip(
+                      _specChip(context, 
                           Icons.event_seat_rounded, '${v.seats} Seats'),
-                      _specChip(Icons.settings_rounded, v.transmission),
-                      _specChip(Icons.local_gas_station_rounded, v.fuelType),
+                      _specChip(context, Icons.settings_rounded, v.transmission),
+                      _specChip(context, Icons.local_gas_station_rounded, v.fuelType),
                     ],
                   ),
                   const Divider(height: 18),
@@ -150,7 +150,7 @@ class ShopVehicleCard extends StatelessWidget {
                     children: [
                       Text(
                         'Self: Rs. ${v.rates.daily24}/day',
-                        style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
+                        style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800),
                       ),
                       Text(
                         'With Driver: Rs. ${v.rates.daily24 + (v.withDriverSurchargePkr ?? 0)}/day',
@@ -167,15 +167,15 @@ class ShopVehicleCard extends StatelessWidget {
     );
   }
 
-  Widget _specChip(IconData icon, String text) {
+  Widget _specChip(BuildContext context, IconData icon, String text) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, size: 14, color: AppColors.textMuted),
+        Icon(icon, size: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
         const SizedBox(width: 4),
         Text(
           text,
-          style: const TextStyle(fontSize: 11.5, color: AppColors.textMuted),
+          style: TextStyle(fontSize: 11.5, color: Theme.of(context).colorScheme.onSurfaceVariant),
         ),
       ],
     );

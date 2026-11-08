@@ -69,7 +69,7 @@ class _VehicleDamageSchematicWidgetState
       decoration: BoxDecoration(
         color: AppColors.surfaceLight,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.borderSubtle),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -89,7 +89,6 @@ class _VehicleDamageSchematicWidgetState
                     '4-Quadrant Exterior Inspection Schematic',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.w800,
-                      color: AppColors.primary,
                     ),
                   ),
                 ],
@@ -126,7 +125,7 @@ class _VehicleDamageSchematicWidgetState
             decoration: BoxDecoration(
               color: const Color(0xFFF1F5F9),
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: AppColors.borderSubtle),
+              border: Border.all(color: Theme.of(context).dividerColor),
             ),
             child: Column(
               children: [
@@ -182,20 +181,20 @@ class _VehicleDamageSchematicWidgetState
                   side: BorderSide(
                     color: AppColors.accentDanger.withValues(alpha: 0.3),
                   ),
-                  avatar: const Icon(
+                  avatar: Icon(
                     Icons.location_on_rounded,
                     size: 14,
-                    color: AppColors.accentDanger,
+                    color: AppColors.dangerTextFor(Theme.of(context).brightness),
                   ),
                   label: Text(
                     '${pin.zone}: ${pin.type}',
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
                       fontWeight: FontWeight.w700,
-                      color: AppColors.accentDanger,
+                      color: AppColors.dangerTextFor(Theme.of(context).brightness),
                     ),
                   ),
                   onDeleted: () => _toggleZone(pin.zone),
-                  deleteIconColor: AppColors.accentDanger,
+                  deleteIconColor: AppColors.dangerTextFor(Theme.of(context).brightness),
                 );
               }).toList(),
             ),
@@ -219,7 +218,7 @@ class _VehicleDamageSchematicWidgetState
               : Colors.white,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-            color: flagged ? AppColors.accentDanger : AppColors.borderSubtle,
+            color: flagged ? AppColors.accentDanger : Theme.of(context).dividerColor,
             width: flagged ? 1.5 : 1.0,
           ),
         ),

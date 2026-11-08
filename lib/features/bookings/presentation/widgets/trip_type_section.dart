@@ -38,7 +38,7 @@ class TripTypeSection extends StatelessWidget {
                 labelStyle: TextStyle(
                     fontWeight: FontWeight.w700,
                     color: isOutOfCity
-                        ? AppColors.primary
+                        ? Theme.of(context).colorScheme.onSurface
                         : Colors.white),
                 onSelected: (_) => onChanged(false),
               ),
@@ -53,7 +53,7 @@ class TripTypeSection extends StatelessWidget {
                     fontWeight: FontWeight.w700,
                     color: isOutOfCity
                         ? Colors.white
-                        : AppColors.primary),
+                        : Theme.of(context).colorScheme.onSurface),
                 onSelected: (_) => onChanged(true),
               ),
             ),
@@ -68,7 +68,7 @@ class TripTypeSection extends StatelessWidget {
           if (fixedRoutes.isNotEmpty) ...[
             const SizedBox(height: 10),
             Text('Fixed routes from this shop',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800)),
             const SizedBox(height: 6),
             Wrap(
               spacing: 8,
@@ -84,7 +84,7 @@ class TripTypeSection extends StatelessWidget {
                       fontWeight: FontWeight.w700,
                       color: selected
                           ? Colors.white
-                          : AppColors.primary),
+                          : Theme.of(context).colorScheme.onSurface),
                   onSelected: (_) =>
                       onRouteSelected(selected ? null : r),
                 );

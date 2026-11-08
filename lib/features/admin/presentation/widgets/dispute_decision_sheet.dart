@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../customer/data/datasources/dispute_remote_data_source.dart';
@@ -99,12 +98,12 @@ class _DisputeDecisionSheetState extends State<DisputeDecisionSheet> {
                 style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w900,
-                    color: AppColors.primary)),
+                    )),
             const SizedBox(height: 4),
             Text(
                 'Booking ${d.bookingId} • ${d.status} • $_slaText',
                 style:
-                    const TextStyle(fontSize: 13, color: AppColors.textMuted)),
+                    TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurfaceVariant)),
             const SizedBox(height: 16),
             _side('Customer statement', [
               'Category: ${d.category}',
@@ -121,9 +120,10 @@ class _DisputeDecisionSheetState extends State<DisputeDecisionSheet> {
                 style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.primary)),
+                    )),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
+              dropdownColor: Theme.of(context).colorScheme.surface,
               initialValue: _decision,
               items: const [
                 DropdownMenuItem(
@@ -143,7 +143,7 @@ class _DisputeDecisionSheetState extends State<DisputeDecisionSheet> {
                     Theme.of(context).colorScheme.surfaceContainerHighest,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppColors.borderSubtle),
+                  borderSide: BorderSide(color: Theme.of(context).dividerColor),
                 ),
                 contentPadding: const EdgeInsets.symmetric(
                     horizontal: 14, vertical: 12),
@@ -160,7 +160,7 @@ class _DisputeDecisionSheetState extends State<DisputeDecisionSheet> {
                     Theme.of(context).colorScheme.surfaceContainerHighest,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppColors.borderSubtle),
+                  borderSide: BorderSide(color: Theme.of(context).dividerColor),
                 ),
                 contentPadding: const EdgeInsets.symmetric(
                     horizontal: 14, vertical: 12),
@@ -177,7 +177,7 @@ class _DisputeDecisionSheetState extends State<DisputeDecisionSheet> {
                     Theme.of(context).colorScheme.surfaceContainerHighest,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppColors.borderSubtle),
+                  borderSide: BorderSide(color: Theme.of(context).dividerColor),
                 ),
                 contentPadding: const EdgeInsets.symmetric(
                     horizontal: 14, vertical: 12),
@@ -207,13 +207,13 @@ class _DisputeDecisionSheetState extends State<DisputeDecisionSheet> {
               style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w800,
-                  color: AppColors.primary)),
+                  )),
           const SizedBox(height: 6),
           ...lines.map((l) => Padding(
                 padding: const EdgeInsets.only(bottom: 3),
                 child: Text(l,
-                    style: const TextStyle(
-                        fontSize: 13, color: AppColors.textMuted)),
+                    style: TextStyle(
+                        fontSize: 13, color: Theme.of(context).colorScheme.onSurfaceVariant)),
               )),
         ],
       ),

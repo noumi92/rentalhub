@@ -14,14 +14,12 @@ class CustomerBookingsView extends StatefulWidget {
   final Function(BookingEntity booking)? onOpenBookingDetails;
   final Function(BookingEntity booking)? onPayAdvance;
   final Function(BookingEntity booking)? onRateTrip;
-  final VoidCallback? onBack;
 
   const CustomerBookingsView({
     super.key,
     this.onOpenBookingDetails,
     this.onPayAdvance,
     this.onRateTrip,
-    this.onBack,
   });
 
   @override
@@ -95,13 +93,9 @@ class _CustomerBookingsViewState extends State<CustomerBookingsView> {
           children: [
             CustomCurvedHeader(
               height: 100,
-              leadingWidget: widget.onBack != null
-                  ? IconButton(
-                      icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                          color: Colors.white, size: 20),
-                      onPressed: widget.onBack,
-                    )
-                  : null,
+              // Tab root: no back button. The header's back policy
+              // renders one only when the route can pop, which a
+              // branch root never can.
               titleWidget: Text(
                 'My Reservations',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white),
@@ -121,9 +115,9 @@ class _CustomerBookingsViewState extends State<CustomerBookingsView> {
                     label: Text(_tabs[i]),
                     selected: isSelected,
                     onSelected: (_) => setState(() => _selectedTab = i),
-                    selectedColor: AppColors.primary,
-                    backgroundColor: Colors.white,
-                    labelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600, color: isSelected ? Colors.white : AppColors.primary),
+                    // No background/selected/label colours: the theme's
+                    // chipTheme drives both modes (dark-correct).
+                    labelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600),
                     side: BorderSide(
                       color: isSelected
                           ? AppColors.primary
@@ -147,7 +141,7 @@ class _CustomerBookingsViewState extends State<CustomerBookingsView> {
                                 children: [
                                   Icon(Icons.inbox_rounded,
                                       size: 46,
-                                      color: AppColors.textSecondary
+                                      color: Theme.of(context).colorScheme.onSurfaceVariant
                                           .withValues(alpha: 0.5)),
                                   const SizedBox(height: 8),
                                   Text(

@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../data/datasources/admin_support_data_source.dart';
@@ -121,10 +120,10 @@ class _AdminReportsViewState extends State<AdminReportsView> {
             if (_isLoading)
               const Center(child: CircularProgressIndicator())
             else if (r == null)
-              const Text(
+              Text(
                 'No data for this range — the report reads the live collections.',
                 style: TextStyle(
-                    fontWeight: FontWeight.w700, color: AppColors.textMuted),
+                    fontWeight: FontWeight.w700, color: Theme.of(context).colorScheme.onSurfaceVariant),
               )
             else ...[
               Wrap(
@@ -161,22 +160,22 @@ class _AdminReportsViewState extends State<AdminReportsView> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppColors.borderSubtle),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(label,
               style:
-                  const TextStyle(fontSize: 11, color: AppColors.textMuted)),
+                  TextStyle(fontSize: 11, color: Theme.of(context).colorScheme.onSurfaceVariant)),
           const SizedBox(height: 2),
           Text(value,
               style: const TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w800,
-                  color: AppColors.primary)),
+                  )),
         ],
       ),
     );
@@ -193,16 +192,16 @@ class _AdminReportsViewState extends State<AdminReportsView> {
               style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w800,
-                  color: AppColors.primary)),
+                  )),
           const SizedBox(height: 6),
           if (list.isEmpty)
-            const Text('None in this range.',
-                style: TextStyle(fontSize: 13, color: AppColors.textMuted)),
+            Text('None in this range.',
+                style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurfaceVariant)),
           ...list.map((l) => Padding(
                 padding: const EdgeInsets.only(bottom: 3),
                 child: Text(l,
-                    style: const TextStyle(
-                        fontSize: 13, color: AppColors.textMuted)),
+                    style: TextStyle(
+                        fontSize: 13, color: Theme.of(context).colorScheme.onSurfaceVariant)),
               )),
         ],
       ),

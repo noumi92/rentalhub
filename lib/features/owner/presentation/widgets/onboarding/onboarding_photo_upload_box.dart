@@ -30,10 +30,10 @@ class OnboardingPhotoUploadBox extends StatelessWidget {
       child: Container(
         height: height,
         decoration: BoxDecoration(
-          color: hasFile ? const Color(0xFFF0FDF4) : Colors.white,
+          color: hasFile ? AppColors.successContainerFor(Theme.of(context).brightness) : Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: hasFile ? AppColors.accentSuccess : AppColors.borderSubtle,
+            color: hasFile ? AppColors.successBorderFor(Theme.of(context).brightness) : Theme.of(context).dividerColor,
             width: hasFile ? 1.5 : 1,
           ),
         ),
@@ -89,12 +89,12 @@ class OnboardingPhotoUploadBox extends StatelessWidget {
                   const SizedBox(height: 6),
                   Text(
                     label,
-                    style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800),
                     textAlign: TextAlign.center,
                   ),
                   Text(
                     isRequired ? 'Tap to Upload' : 'Optional',
-                    style: Theme.of(context).textTheme.labelSmall?.copyWith(color: isRequired ? AppColors.textMuted : AppColors.primaryContainer),
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(color: isRequired ? Theme.of(context).colorScheme.onSurfaceVariant : AppColors.primaryContainer),
                   ),
                 ],
               ),

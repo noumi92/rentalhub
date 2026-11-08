@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../fleet/domain/entities/vehicle_entity.dart';
@@ -169,7 +168,7 @@ class _OwnerRateMatrixViewState extends State<OwnerRateMatrixView> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('Drive Mode Availability',
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
                     const SizedBox(height: 8),
                     PricingDriveModeCard(
                       isSelfDrive: _isSelfDrive,
@@ -181,7 +180,7 @@ class _OwnerRateMatrixViewState extends State<OwnerRateMatrixView> {
                     ),
                     const SizedBox(height: 18),
                     Text('Rental Packages',
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
                     const SizedBox(height: 4),
                     Text(
                         'Switch a package off to hide it from customers.',
@@ -201,7 +200,7 @@ class _OwnerRateMatrixViewState extends State<OwnerRateMatrixView> {
                     ),
                     const SizedBox(height: 18),
                     Text('Pricing Policy',
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
                     const SizedBox(height: 8),
                     PricingPolicyFields(
                       outOfCityController: _outOfCityController,

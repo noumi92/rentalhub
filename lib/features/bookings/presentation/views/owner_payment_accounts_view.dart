@@ -56,8 +56,8 @@ class OwnerPaymentAccountsView extends StatelessWidget {
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.verified_rounded,
-                              color: AppColors.accentSuccess, size: 28),
+                          Icon(Icons.verified_rounded,
+                              color: AppColors.successTextFor(Theme.of(context).brightness), size: 28),
                           const SizedBox(width: 12),
                           Expanded(
                             child: Column(
@@ -65,7 +65,7 @@ class OwnerPaymentAccountsView extends StatelessWidget {
                               children: [
                                 Text(
                                   'Reservation Request Approved!',
-                                  style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
+                                  style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
                                 ),
                                 const SizedBox(height: 2),
                                 Text(
@@ -81,7 +81,7 @@ class OwnerPaymentAccountsView extends StatelessWidget {
                     const SizedBox(height: 16),
                     Text(
                       'Direct Transfer Channels',
-                      style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
                     ),
                     const SizedBox(height: 4),
                     Text(
@@ -97,8 +97,8 @@ class OwnerPaymentAccountsView extends StatelessWidget {
             ),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: const BoxDecoration(
-                color: Colors.white,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surface,
                 boxShadow: [
                   BoxShadow(
                       color: Color(0x14000000),
@@ -170,8 +170,8 @@ class OwnerPaymentAccountsView extends StatelessWidget {
                     accountNumber: number,
                     iban: null,
                     brandColor: isWallet
-                        ? AppColors.accentSuccess
-                        : AppColors.primary,
+                        ? AppColors.successTextFor(Theme.of(context).brightness)
+                        : Theme.of(context).colorScheme.onSurface,
                     icon: isWallet
                         ? Icons.account_balance_wallet_rounded
                         : Icons.account_balance_rounded,
@@ -187,7 +187,7 @@ class OwnerPaymentAccountsView extends StatelessWidget {
         return Column(
           children: [
             Icon(Icons.account_balance_rounded,
-                size: 40, color: AppColors.textMuted),
+                size: 40, color: Theme.of(context).colorScheme.onSurfaceVariant),
             SizedBox(height: 8),
             Text(
               'No payment accounts configured for this shop yet.',

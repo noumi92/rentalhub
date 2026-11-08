@@ -6,6 +6,15 @@ import 'verified_badge.dart';
 class CustomCurvedHeader extends StatelessWidget {
   final Widget titleWidget;
   final Widget? leadingWidget;
+
+  /// Back policy: when no explicit [leadingWidget] is given, the header
+  /// renders a back button automatically iff the current route can pop,
+  /// and never at a branch root. Inside a StatefulShellRoute the nearest
+  /// Navigator is the branch navigator, which holds a single route at a
+  /// tab root (so `canPop` is false there) and one per pushed screen (so
+  /// it is true). An explicit [leadingWidget] always wins; set
+  /// [showBackButton] to false to suppress the automatic button.
+  final bool showBackButton;
   final List<Widget>? actions;
   final Widget? bottomWidget;
   final double height;
@@ -19,6 +28,7 @@ class CustomCurvedHeader extends StatelessWidget {
     super.key,
     required this.titleWidget,
     this.leadingWidget,
+    this.showBackButton = true,
     this.actions,
     this.bottomWidget,
     this.height = AppDimensions.headerHeight,
@@ -32,10 +42,28 @@ class CustomCurvedHeader extends StatelessWidget {
     this.onNotificationTap,
   });
 
+  /// The automatic back button, or null when this screen must not show
+  /// one (a tab root, or [showBackButton] is false). Uses the nearest
+  /// Navigator so it works in a shell branch, on a plain route, and in
+  /// tests; [Navigator.maybeOf] returns null (no button) when the header
+  /// is built outside any Navigator.
+  Widget? _autoBackButton(BuildContext context) {
+    if (!showBackButton) return null;
+    if (Navigator.maybeOf(context)?.canPop() != true) return null;
+    return IconButton(
+      icon: const Icon(Icons.arrow_back_ios_new_rounded,
+          color: Colors.white, size: 20),
+      onPressed: () => Navigator.of(context).maybePop(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final topPadding = MediaQuery.of(context).padding.top;
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    // Explicit leadingWidget wins; otherwise the automatic back button
+    // decides from canPop (renders on pushed screens, never at a tab root).
+    final Widget? effectiveLeading = leadingWidget ?? _autoBackButton(context);
 
     return Container(
       width: double.infinity,
@@ -63,7 +91,7 @@ class CustomCurvedHeader extends StatelessWidget {
               top: topPadding + 10,
               left: AppDimensions.paddingHorizontal,
               right: AppDimensions.paddingHorizontal,
-              bottom: 32, // Extra bottom space for -24.0 card overlap
+              bottom: 32, // Extra bottom space for -28.0 card overlap
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -155,8 +183,8 @@ class CustomCurvedHeader extends StatelessWidget {
                 ],
                 Row(
                   children: [
-                    if (leadingWidget != null) leadingWidget!,
-                    if (leadingWidget != null) const SizedBox(width: 12),
+                    if (effectiveLeading != null) effectiveLeading,
+                    if (effectiveLeading != null) const SizedBox(width: 12),
                     Expanded(child: titleWidget),
                     if (actions != null) ...actions!,
                   ],
@@ -276,7 +304,7 @@ class CurvedGradientHeaderPainter extends CustomPainter {
       oldDelegate.isDark != isDark;
 }
 
-/// Wrapper that applies the DOC-2 mandated -24.0 negative top margin overlap
+/// Wrapper that applies the DOC-2 mandated -28.0 negative top margin overlap
 /// so primary content cards float across the curved header baseline.
 class HeaderOverlapContainer extends StatelessWidget {
   final Widget child;

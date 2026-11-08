@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/constants/app_colors.dart';
 
 /// E3: the handover card on the active-trip screen — the odometer and
 /// fuel the owner recorded at pickup, from `handovers/{bookingId}`.
@@ -21,16 +20,16 @@ class ActiveTripHandoverCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.borderSubtle),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             'Handover at Pickup',
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 8),
           if (!loaded)
@@ -45,12 +44,12 @@ class ActiveTripHandoverCard extends StatelessWidget {
               style: Theme.of(context).textTheme.bodySmall?.copyWith(height: 1.4),
             )
           else ...[
-            _fact('Odometer at pickup', '${handover!['initialOdometer'] ?? '—'} km'),
+            _fact(context, 'Odometer at pickup', '${handover!['initialOdometer'] ?? '—'} km'),
             const SizedBox(height: 8),
-            _fact('Fuel at pickup', '${handover!['fuelLevel'] ?? '—'}'),
+            _fact(context, 'Fuel at pickup', '${handover!['fuelLevel'] ?? '—'}'),
             if ((handover!['damageNotes'] as List?)?.isNotEmpty == true) ...[
               const SizedBox(height: 8),
-              _fact('Damage noted',
+              _fact(context, 'Damage noted',
                   (handover!['damageNotes'] as List).join(', ')),
             ],
           ],
@@ -59,20 +58,20 @@ class ActiveTripHandoverCard extends StatelessWidget {
     );
   }
 
-  Widget _fact(String label, String value) {
+  Widget _fact(BuildContext context, String label, String value) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(label,
-            style: const TextStyle(
-                fontSize: 13, color: AppColors.textSecondary)),
+            style: TextStyle(
+                fontSize: 13, color: Theme.of(context).colorScheme.onSurfaceVariant)),
         Flexible(
           child: Text(value,
               textAlign: TextAlign.right,
               style: const TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.primary)),
+                  )),
         ),
       ],
     );

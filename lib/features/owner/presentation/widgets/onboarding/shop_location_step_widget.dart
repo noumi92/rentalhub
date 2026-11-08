@@ -34,7 +34,7 @@ class ShopLocationStepWidget extends StatelessWidget {
       children: [
         Text(
           'Select Your City',
-          style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
+          style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800),
         ),
         const SizedBox(height: 6),
         // Requirement 4: Single horizontal row for major cities BEFORE map view
@@ -49,9 +49,8 @@ class ShopLocationStepWidget extends StatelessWidget {
                   label: Text(city['name'] as String),
                   selected: isSelected,
                   selectedColor: AppColors.secondary,
-                  backgroundColor: Colors.white,
                   labelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    color: isSelected ? Colors.white : AppColors.primary,
+                    color: isSelected ? Colors.white : Theme.of(context).colorScheme.onSurface,
                     fontWeight: FontWeight.w700,
                   ),
                   onSelected: (_) {
@@ -73,7 +72,7 @@ class ShopLocationStepWidget extends StatelessWidget {
           children: [
             Text(
               'Pin Showroom On Map',
-              style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800),
             ),
             TextButton.icon(
               onPressed: isLocating ? null : onFetchGps,
@@ -94,7 +93,7 @@ class ShopLocationStepWidget extends StatelessWidget {
           child: Container(
             height: 220,
             decoration: BoxDecoration(
-              border: Border.all(color: AppColors.borderSubtle),
+              border: Border.all(color: Theme.of(context).dividerColor),
               borderRadius: BorderRadius.circular(16),
             ),
             child: Stack(
@@ -147,7 +146,7 @@ class ShopLocationStepWidget extends StatelessWidget {
                         Expanded(
                           child: Text(
                             'Tap anywhere on map to pin showroom (${shopPin.latitude.toStringAsFixed(4)}, ${shopPin.longitude.toStringAsFixed(4)})',
-                            style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600, color: AppColors.primary),
+                            style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600),
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
@@ -164,7 +163,7 @@ class ShopLocationStepWidget extends StatelessWidget {
         // Physical Street Address Input
         Text(
           'Physical Showroom Address',
-          style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
+          style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800),
         ),
         const SizedBox(height: 6),
         TextField(
@@ -179,8 +178,8 @@ class ShopLocationStepWidget extends StatelessWidget {
             ),
             filled: true,
             fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.borderSubtle)),
-            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.borderSubtle)),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Theme.of(context).dividerColor)),
+            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Theme.of(context).dividerColor)),
             focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.secondary, width: 1.5)),
             contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           ),

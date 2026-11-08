@@ -23,7 +23,7 @@ class FuelGaugeWidget extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surfaceLight,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.borderSubtle),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -43,7 +43,6 @@ class FuelGaugeWidget extends StatelessWidget {
                     label,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.w700,
-                      color: AppColors.primary,
                     ),
                   ),
                 ],
@@ -58,7 +57,6 @@ class FuelGaugeWidget extends StatelessWidget {
                   '$activeSegments / 8 Bars (${(activeSegments / 8 * 100).round()}%)',
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
                     fontWeight: FontWeight.w800,
-                    color: AppColors.primary,
                   ),
                 ),
               ),
@@ -87,12 +85,12 @@ class FuelGaugeWidget extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: isFilled
                           ? barColor
-                          : AppColors.borderSubtle.withValues(alpha: 0.45),
+                          : Theme.of(context).dividerColor.withValues(alpha: 0.45),
                       borderRadius: BorderRadius.circular(5),
                       border: Border.all(
                         color: isFilled
                             ? barColor.withValues(alpha: 0.8)
-                            : AppColors.borderSubtle,
+                            : Theme.of(context).dividerColor,
                       ),
                     ),
                   ),
@@ -108,7 +106,7 @@ class FuelGaugeWidget extends StatelessWidget {
                 'E',
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
                   fontWeight: FontWeight.w900,
-                  color: AppColors.accentDanger,
+                  color: AppColors.dangerTextFor(Theme.of(context).brightness),
                 ),
               ),
               Text(
@@ -121,7 +119,6 @@ class FuelGaugeWidget extends StatelessWidget {
                 '1/2',
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
                   fontWeight: FontWeight.w700,
-                  color: AppColors.primary,
                 ),
               ),
               Text(
@@ -134,7 +131,7 @@ class FuelGaugeWidget extends StatelessWidget {
                 'F',
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
                   fontWeight: FontWeight.w900,
-                  color: AppColors.accentSuccess,
+                  color: AppColors.successTextFor(Theme.of(context).brightness),
                 ),
               ),
             ],

@@ -171,7 +171,7 @@ class _CustomerSavedShopsViewState extends State<CustomerSavedShopsView> {
                                               CrossAxisAlignment.start,
                                           children: [
                                             Text(shop.shopName,
-                                                style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
+                                                style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
                                             const SizedBox(height: 2),
                                             Text(
                                                 '${shop.address}, ${shop.city}',

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/constants/app_colors.dart';
 
 /// G2: one emergency action row on the SOS screen (Police 15, Rescue
 /// 1122, share live location). Extracted from [CustomerSosView] so the
@@ -29,9 +28,9 @@ class SosEmergencyOption extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.borderSubtle),
+          border: Border.all(color: Theme.of(context).dividerColor),
         ),
         child: Row(
           children: [
@@ -49,14 +48,14 @@ class SosEmergencyOption extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(title,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800)),
                   Text(subtitle,
                       style: Theme.of(context).textTheme.labelSmall),
                 ],
               ),
             ),
-            const Icon(Icons.arrow_forward_ios_rounded,
-                size: 13, color: AppColors.textSecondary),
+            Icon(Icons.arrow_forward_ios_rounded,
+                size: 13, color: Theme.of(context).colorScheme.onSurfaceVariant),
           ],
         ),
       ),

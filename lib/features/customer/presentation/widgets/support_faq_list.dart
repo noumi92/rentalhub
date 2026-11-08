@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/constants/app_colors.dart';
 
 /// G1: the support screen's FAQ list (search-filtered). Extracted from
 /// [CustomerSupportView] so the view stays under the 250-line cap.
@@ -16,21 +15,21 @@ class SupportFaqList extends StatelessWidget {
       children: [
         Text(
           'Frequently Asked Questions',
-          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
         ),
         const SizedBox(height: 10),
         ...faqs.map((faq) => Container(
               margin: const EdgeInsets.only(bottom: 8),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.borderSubtle),
+                border: Border.all(color: Theme.of(context).dividerColor),
               ),
               child: ExpansionTile(
                 shape: const Border(),
                 title: Text(
                   faq['q']!,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.primary),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
                 ),
                 children: [
                   Padding(

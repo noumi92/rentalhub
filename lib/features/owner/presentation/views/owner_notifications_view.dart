@@ -114,10 +114,10 @@ class _OwnerNotificationsViewState extends State<OwnerNotificationsView> {
               child: _isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : _items.isEmpty
-                      ? const Center(
+                      ? Center(
                           child: Text('No notifications yet.',
                               style: TextStyle(
-                                  color: AppColors.textMuted,
+                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                                   fontWeight: FontWeight.w700)),
                         )
                       : ListView.separated(
@@ -135,19 +135,19 @@ class _OwnerNotificationsViewState extends State<OwnerNotificationsView> {
                                 padding: const EdgeInsets.all(12),
                                 decoration: BoxDecoration(
                                   color: n.read
-                                      ? Colors.white
+                                      ? Theme.of(context).colorScheme.surface
                                       : AppColors.primary
                                           .withValues(alpha: 0.06),
                                   borderRadius: BorderRadius.circular(12),
                                   border: Border.all(
                                       color: n.read
-                                          ? AppColors.borderSubtle
+                                          ? Theme.of(context).dividerColor
                                           : AppColors.primary),
                                 ),
                                 child: Row(
                                   children: [
                                     Icon(_iconFor(n.type),
-                                        color: AppColors.primary),
+                                        ),
                                     const SizedBox(width: 12),
                                     Expanded(
                                       child: Column(
@@ -155,7 +155,7 @@ class _OwnerNotificationsViewState extends State<OwnerNotificationsView> {
                                             CrossAxisAlignment.start,
                                         children: [
                                           Text(n.title,
-                                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
+                                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800)),
                                           Text(n.body,
                                               style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors .textSecondary)),
                                         ],
@@ -165,8 +165,8 @@ class _OwnerNotificationsViewState extends State<OwnerNotificationsView> {
                                       Container(
                                         width: 8,
                                         height: 8,
-                                        decoration: const BoxDecoration(
-                                            color: AppColors.primary,
+                                        decoration: BoxDecoration(
+                                            color: Theme.of(context).colorScheme.onSurface,
                                             shape: BoxShape.circle),
                                       ),
                                   ],

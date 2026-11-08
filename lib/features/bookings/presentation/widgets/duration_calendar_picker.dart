@@ -29,16 +29,16 @@ class DurationCalendarPicker extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.borderSubtle),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             'Pickup Schedule',
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 12),
           Row(
@@ -98,11 +98,10 @@ class DurationCalendarPicker extends StatelessWidget {
                         ? () => onDurationChanged(durationDays - 1)
                         : null,
                     icon: const Icon(Icons.remove_circle_outline_rounded),
-                    color: AppColors.primary,
                   ),
                   Text(
                     '$durationDays Day${durationDays > 1 ? "s" : ""}',
-                    style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
                   ),
                   IconButton(
                     onPressed: durationDays < 30
@@ -135,11 +134,11 @@ class DurationCalendarPicker extends StatelessWidget {
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.borderSubtle),
+          border: Border.all(color: Theme.of(context).dividerColor),
         ),
         child: Row(
           children: [
-            Icon(icon, size: 18, color: AppColors.primary),
+            Icon(icon, size: 18),
             const SizedBox(width: 8),
             Expanded(
               child: Column(
@@ -151,7 +150,7 @@ class DurationCalendarPicker extends StatelessWidget {
                   ),
                   Text(
                     value,
-                    style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.primary),
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700),
                   ),
                 ],
               ),

@@ -15,6 +15,7 @@ class AdminShell extends StatelessWidget {
     required this.subtitle,
     required this.child,
     this.onRefresh,
+    this.onBack,
   });
 
   final String activeRoute;
@@ -22,6 +23,11 @@ class AdminShell extends StatelessWidget {
   final String subtitle;
   final Widget child;
   final VoidCallback? onRefresh;
+
+  /// Back button for detail screens. Admin routes are reached by `go`
+  /// (the list is replaced, so there is nothing to pop); the caller
+  /// supplies the callback that returns to its list route.
+  final VoidCallback? onBack;
 
   @override
   Widget build(BuildContext context) {
@@ -31,10 +37,25 @@ class AdminShell extends StatelessWidget {
           final wide = constraints.maxWidth >= 900;
           final content = Column(
             children: [
-              AdminDesktopHeader(
-                title: title,
-                subtitle: subtitle,
-                onRefresh: onRefresh,
+              Row(
+                children: [
+                  if (onBack != null)
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8),
+                      child: IconButton(
+                        icon: const Icon(Icons.arrow_back_rounded, size: 22),
+                        tooltip: 'Back',
+                        onPressed: onBack,
+                      ),
+                    ),
+                  Expanded(
+                    child: AdminDesktopHeader(
+                      title: title,
+                      subtitle: subtitle,
+                      onRefresh: onRefresh,
+                    ),
+                  ),
+                ],
               ),
               Expanded(child: child),
             ],

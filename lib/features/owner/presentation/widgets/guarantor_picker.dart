@@ -156,10 +156,9 @@ class _GuarantorPickerState extends State<GuarantorPicker> {
     if (_selected != null) {
       final s = _selected!;
       return Card(
-        color: Colors.white,
         child: ListTile(
-          leading: const Icon(Icons.verified_user_rounded,
-              color: AppColors.accentSuccess),
+          leading: Icon(Icons.verified_user_rounded,
+              color: AppColors.successTextFor(Theme.of(context).brightness)),
           title: Text(s.name,
               style: const TextStyle(fontWeight: FontWeight.w800)),
           subtitle: Text('${s.cnic} • ${s.phone}\n${s.relationship}'),

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import 'shop_fleet_photos.dart';
@@ -82,21 +81,21 @@ class _ShopApplicationDetailSheetState
                 style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w900,
-                    color: AppColors.primary)),
+                    )),
             const SizedBox(height: 4),
             Text('${shop.city} • ${shop.address}',
                 style:
-                    const TextStyle(fontSize: 13, color: AppColors.textMuted)),
+                    TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurfaceVariant)),
             Text(
                 'Owner: ${shop.ownerName ?? '—'} • ${shop.phoneNumber} • CNIC ${shop.cnicNumber ?? '—'}',
                 style:
-                    const TextStyle(fontSize: 13, color: AppColors.textMuted)),
+                    TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurfaceVariant)),
             const SizedBox(height: 16),
             Text('Checklist — ${checklist.doneCount} of 6 complete',
                 style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.primary)),
+                    )),
             const SizedBox(height: 8),
             ...checklist.items.map((item) => Padding(
                   padding: const EdgeInsets.only(bottom: 6),
@@ -133,7 +132,7 @@ class _ShopApplicationDetailSheetState
                   style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w800,
-                      color: AppColors.primary)),
+                      )),
               const SizedBox(height: 8),
               ShopFleetPhotos(photoUrls: shop.fleetPhotos),
               const SizedBox(height: 16),
@@ -149,7 +148,7 @@ class _ShopApplicationDetailSheetState
                     Theme.of(context).colorScheme.surfaceContainerHighest,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppColors.borderSubtle),
+                  borderSide: BorderSide(color: Theme.of(context).dividerColor),
                 ),
                 contentPadding: const EdgeInsets.symmetric(
                     horizontal: 14, vertical: 12),
@@ -214,13 +213,13 @@ class _ShopApplicationDetailSheetState
               style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w800,
-                  color: AppColors.primary)),
+                  )),
           const SizedBox(height: 6),
           ...lines.map((l) => Padding(
                 padding: const EdgeInsets.only(bottom: 3),
                 child: Text(l,
-                    style: const TextStyle(
-                        fontSize: 13, color: AppColors.textMuted)),
+                    style: TextStyle(
+                        fontSize: 13, color: Theme.of(context).colorScheme.onSurfaceVariant)),
               )),
         ],
       ),

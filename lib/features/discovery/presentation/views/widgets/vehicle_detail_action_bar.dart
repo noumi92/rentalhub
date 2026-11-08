@@ -33,8 +33,8 @@ class VehicleDetailActionBar extends StatelessWidget {
     final v = vehicle;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: const BoxDecoration(
-        color: Colors.white,
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
         boxShadow: [
           BoxShadow(
               color: Color(0x14000000), blurRadius: 10, offset: Offset(0, -3))
@@ -69,16 +69,16 @@ class VehicleDetailActionBar extends StatelessWidget {
               }
             },
             style: OutlinedButton.styleFrom(
-              foregroundColor: AppColors.accentSuccess,
-              side: const BorderSide(color: Color(0xFF86EFAC)),
-              backgroundColor: const Color(0xFFF0FDF4),
+              foregroundColor: AppColors.successOnContainerFor(Theme.of(context).brightness),
+              side: BorderSide(color: AppColors.successBorderFor(Theme.of(context).brightness)),
+              backgroundColor: AppColors.successContainerFor(Theme.of(context).brightness),
               padding:
                   const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12)),
             ),
-            icon: const Icon(Icons.chat_bubble_outline_rounded,
-                size: 18, color: AppColors.accentSuccess),
+            icon: Icon(Icons.chat_bubble_outline_rounded,
+                size: 18, color: AppColors.successOnContainerFor(Theme.of(context).brightness)),
             label: const Text('WhatsApp',
                 style: TextStyle(fontWeight: FontWeight.w700)),
           ),

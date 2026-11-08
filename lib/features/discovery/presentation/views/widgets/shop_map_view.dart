@@ -31,7 +31,7 @@ class ShopMapView extends StatelessWidget {
       width: double.infinity,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: AppColors.borderSubtle),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       clipBehavior: Clip.antiAlias,
       child: Stack(

@@ -141,9 +141,9 @@ class _PaymentProofUploadViewState extends State<PaymentProofUploadView> {
                     Container(
                       padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.surface,
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: AppColors.borderSubtle),
+                        border: Border.all(color: Theme.of(context).dividerColor),
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -153,7 +153,7 @@ class _PaymentProofUploadViewState extends State<PaymentProofUploadView> {
                             children: [
                               Text(
                                 widget.booking.vehicleName ?? 'Selected Car',
-                                style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
+                                style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
                               ),
                               Text(
                                 'Booking ID: ${widget.booking.bookingId}',
@@ -170,20 +170,19 @@ class _PaymentProofUploadViewState extends State<PaymentProofUploadView> {
                     ),
                     const SizedBox(height: 16),
                     Text('Transaction Reference / TID',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.primary)),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
                     const SizedBox(height: 6),
                     TextField(
                       controller: _tidController,
                       decoration: InputDecoration(
                         hintText: 'Enter JazzCash / Bank TID (e.g. 892019281)',
-                        hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
+                        hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                         filled: true,
                         fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-                        prefixIcon: const Icon(Icons.receipt_long_rounded,
-                            color: AppColors.primary),
+                        prefixIcon: const Icon(Icons.receipt_long_rounded),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(color: AppColors.borderSubtle),
+                          borderSide: BorderSide(color: Theme.of(context).dividerColor),
                         ),
                         contentPadding: const EdgeInsets.symmetric(
                             horizontal: 14, vertical: 12),
@@ -191,7 +190,7 @@ class _PaymentProofUploadViewState extends State<PaymentProofUploadView> {
                     ),
                     const SizedBox(height: 16),
                     Text('Proof Screenshot',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.primary)),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
                     const SizedBox(height: 6),
                     ProofScreenshotPicker(
                       selectedFile: _selectedFile,
@@ -207,12 +206,12 @@ class _PaymentProofUploadViewState extends State<PaymentProofUploadView> {
                       child: Row(
                         children: [
                           Icon(Icons.lock_clock_rounded,
-                              size: 16, color: AppColors.primary),
+                              size: 16),
                           SizedBox(width: 8),
                           Expanded(
                             child: Text(
                               'Proof is uploaded to private storage. The showroom checks it and confirms your booking — there is no fixed waiting time.',
-                              style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.primary),
+                              style: Theme.of(context).textTheme.labelSmall,
                             ),
                           ),
                         ],
@@ -225,8 +224,8 @@ class _PaymentProofUploadViewState extends State<PaymentProofUploadView> {
             ),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: const BoxDecoration(
-                color: Colors.white,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surface,
                 boxShadow: [
                   BoxShadow(
                       color: Color(0x14000000),

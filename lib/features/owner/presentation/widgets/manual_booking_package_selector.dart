@@ -22,12 +22,13 @@ class ManualBookingVehicleDropdown extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.borderSubtle),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<VehicleEntity>(
+          dropdownColor: Theme.of(context).colorScheme.surface,
           isExpanded: true,
           value: selectedVehicle,
           hint: const Text('Select Showroom Vehicle'),
@@ -128,7 +129,7 @@ class ManualBookingPackageSelector extends StatelessWidget {
               backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
               labelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
                 fontWeight: FontWeight.w700,
-                color: selected ? Colors.white : AppColors.primary,
+                color: selected ? Colors.white : Theme.of(context).colorScheme.onSurface,
               ),
               onSelected: (_) => onPackageChanged(p),
             );
@@ -150,7 +151,6 @@ class ManualBookingPackageSelector extends StatelessWidget {
             Text('Total: Rs. $_total',
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.w900,
-                  color: AppColors.primary,
                 )),
           ],
         ),

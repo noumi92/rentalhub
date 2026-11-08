@@ -20,16 +20,16 @@ class CustomerStatsRow extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-          child: _buildStatItem(
+          child: _buildStatItem(context, 
             label: 'Total Trips',
             value: '$totalTrips',
             icon: Icons.history_rounded,
-            color: AppColors.primary,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
         const SizedBox(width: 10),
         Expanded(
-          child: _buildStatItem(
+          child: _buildStatItem(context, 
             label: 'Active',
             value: '$activeBookings',
             icon: Icons.directions_car_rounded,
@@ -38,18 +38,18 @@ class CustomerStatsRow extends StatelessWidget {
         ),
         const SizedBox(width: 10),
         Expanded(
-          child: _buildStatItem(
+          child: _buildStatItem(context, 
             label: 'Trust Score',
             value: trustScore == null ? '—' : '${trustScore!.toStringAsFixed(1)} ★',
             icon: Icons.verified_user_rounded,
-            color: AppColors.accentSuccess,
+            color: AppColors.successTextFor(Theme.of(context).brightness),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildStatItem({
+  Widget _buildStatItem(BuildContext context, {
     required String label,
     required String value,
     required IconData icon,
@@ -58,9 +58,9 @@ class CustomerStatsRow extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.borderSubtle),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Column(
         children: [
@@ -71,16 +71,15 @@ class CustomerStatsRow extends StatelessWidget {
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w900,
-              color: AppColors.primary,
             ),
           ),
           const SizedBox(height: 2),
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.w600,
-              color: AppColors.textSecondary,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
         ],

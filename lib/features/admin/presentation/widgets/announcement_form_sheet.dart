@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../data/datasources/admin_support_data_source.dart';
@@ -92,7 +91,7 @@ class _AnnouncementFormSheetState extends State<AnnouncementFormSheet> {
                 style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w900,
-                    color: AppColors.primary)),
+                    )),
             const SizedBox(height: 16),
             _field('Title (English)', _titleEn),
             _field('Title (Urdu)', _titleUr),
@@ -180,7 +179,7 @@ class _AnnouncementFormSheetState extends State<AnnouncementFormSheet> {
           fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: AppColors.borderSubtle),
+            borderSide: BorderSide(color: Theme.of(context).dividerColor),
           ),
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
@@ -194,6 +193,7 @@ class _AnnouncementFormSheetState extends State<AnnouncementFormSheet> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: DropdownButtonFormField<String>(
+        dropdownColor: Theme.of(context).colorScheme.surface,
         initialValue: value,
         decoration: InputDecoration(
           labelText: label,
@@ -201,7 +201,7 @@ class _AnnouncementFormSheetState extends State<AnnouncementFormSheet> {
           fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: AppColors.borderSubtle),
+            borderSide: BorderSide(color: Theme.of(context).dividerColor),
           ),
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 14, vertical: 12),

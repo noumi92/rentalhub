@@ -23,16 +23,16 @@ class StarRatingBar extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.borderSubtle),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             title,
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 2),
           Text(
@@ -52,7 +52,7 @@ class StarRatingBar extends StatelessWidget {
                 icon: Icon(
                   isFilled ? Icons.star_rounded : Icons.star_border_rounded,
                   size: 36,
-                  color: isFilled ? AppColors.warning : AppColors.borderSubtle,
+                  color: isFilled ? AppColors.warning : Theme.of(context).dividerColor,
                 ),
               );
             }),

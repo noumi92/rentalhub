@@ -25,7 +25,7 @@ class DigitalQrPassWidget extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.borderSubtle),
+        border: Border.all(color: Theme.of(context).dividerColor),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.06),
@@ -39,19 +39,26 @@ class DigitalQrPassWidget extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    vehicleName,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: AppColors.primary),
-                  ),
-                  Text(
-                    shopName,
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                ],
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      vehicleName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: AppColors.textPrimary),
+                    ),
+                    Text(
+                      shopName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.textMuted),
+                    ),
+                  ],
+                ),
               ),
+              const SizedBox(width: 12),
               PakistaniPlateWidget(plateNumber: plateNumber, isCompact: true),
             ],
           ),
@@ -73,17 +80,19 @@ class DigitalQrPassWidget extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppColors.borderSubtle),
+                    border: Border.all(color: Theme.of(context).dividerColor),
                   ),
                   child: Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(Icons.qr_code_2_rounded,
-                            size: 110, color: AppColors.primary),
+                        Icon(Icons.qr_code_2_rounded,
+                            size: 110, color: AppColors.textPrimary),
                         Text(
                           bookingId,
-                          style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary, letterSpacing: 1.1),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800, letterSpacing: 1.1, color: AppColors.textPrimary),
                         ),
                       ],
                     ),
@@ -93,7 +102,7 @@ class DigitalQrPassWidget extends StatelessWidget {
                 Text(
                   'Present this QR Code to showroom staff at handover',
                   textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.labelSmall,
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.textMuted),
                 ),
               ],
             ),
@@ -104,11 +113,17 @@ class DigitalQrPassWidget extends StatelessWidget {
             children: [
               Text(
                 'Pickup Target:',
-                style: Theme.of(context).textTheme.bodySmall,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.textMuted),
               ),
-              Text(
-                '${pickupTime.day}/${pickupTime.month}/${pickupTime.year} • ${pickupTime.hour.toString().padLeft(2, '0')}:${pickupTime.minute.toString().padLeft(2, '0')}',
-                style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  '${pickupTime.day}/${pickupTime.month}/${pickupTime.year} • ${pickupTime.hour.toString().padLeft(2, '0')}:${pickupTime.minute.toString().padLeft(2, '0')}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.end,
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.textPrimary),
+                ),
               ),
             ],
           ),

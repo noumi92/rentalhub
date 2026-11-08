@@ -152,13 +152,14 @@ class _OwnerBlacklistViewState extends State<OwnerBlacklistView> {
                       padding: const EdgeInsets.all(16),
                       children: [
                         Text('Report a customer',
-                            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
+                            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
                         const SizedBox(height: 10),
                         _field(_cnicController, 'Customer CNIC',
                             keyboard: TextInputType.number),
                         _field(_phoneController, 'Customer phone',
                             keyboard: TextInputType.phone),
                         DropdownButtonFormField<String>(
+                          dropdownColor: Theme.of(context).colorScheme.surface,
                           initialValue: _reason,
                           decoration: InputDecoration(
                             labelText: 'Reason',
@@ -187,7 +188,7 @@ class _OwnerBlacklistViewState extends State<OwnerBlacklistView> {
                         ),
                         const SizedBox(height: 20),
                         Text('My reports (${_reports.length})',
-                            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
+                            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
                         const SizedBox(height: 10),
                         if (_reports.isEmpty)
                           const Text(

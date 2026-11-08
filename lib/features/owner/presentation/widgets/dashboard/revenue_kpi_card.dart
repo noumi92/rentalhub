@@ -22,9 +22,9 @@ class RevenueKpiCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.borderSubtle),
+        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
         boxShadow: const [
           BoxShadow(color: Color(0x08000000), blurRadius: 8, offset: Offset(0, 3)),
         ],
@@ -35,7 +35,13 @@ class RevenueKpiCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(title, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700)),
+              Expanded(
+                child: Text(title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700)),
+              ),
+              const SizedBox(width: 8),
               CircleAvatar(
                 radius: 16,
                 backgroundColor: color.withAlpha(25),
@@ -44,13 +50,22 @@ class RevenueKpiCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 8),
-          Text(amount, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900, color: AppColors.primary)),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Text(amount, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900)),
+          ),
           const SizedBox(height: 4),
           Row(
             children: [
               const Icon(Icons.trending_up_rounded, size: 14, color: AppColors.accentSuccess),
               const SizedBox(width: 4),
-              Text(changeLabel, style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700, color: AppColors.accentSuccess)),
+              Expanded(
+                child: Text(changeLabel,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700, color: AppColors.successTextFor(Theme.of(context).brightness))),
+              ),
             ],
           ),
         ],

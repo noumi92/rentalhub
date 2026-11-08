@@ -86,7 +86,7 @@ class _OwnerWhatsAppLogsViewState extends State<OwnerWhatsAppLogsView> {
             Container(
               height: 48,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.surface,
               child: ListView(
                 scrollDirection: Axis.horizontal,
                 children: ['All', 'Delivered', 'Read', 'Failed'].map((tab) {
@@ -98,7 +98,7 @@ class _OwnerWhatsAppLogsViewState extends State<OwnerWhatsAppLogsView> {
                       selected: isSelected,
                       selectedColor: AppColors.secondary,
                       backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-                      labelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700, color: isSelected ? Colors.white : AppColors.primary),
+                      labelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700, color: isSelected ? Colors.white : Theme.of(context).colorScheme.onSurface),
                       onSelected: (_) => setState(() => _filter = tab),
                     ),
                   );

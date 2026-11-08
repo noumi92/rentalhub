@@ -96,10 +96,10 @@ class _OwnerCarPnLViewState extends State<OwnerCarPnLView> {
               child: _isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : _vehicles.isEmpty
-                      ? const Center(
+                      ? Center(
                           child: Text('No cars in the fleet yet.',
                               style: TextStyle(
-                                  color: AppColors.textMuted,
+                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                                   fontWeight: FontWeight.w700)),
                         )
                       : SingleChildScrollView(
@@ -109,6 +109,7 @@ class _OwnerCarPnLViewState extends State<OwnerCarPnLView> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               DropdownButtonFormField<String>(
+                                dropdownColor: Theme.of(context).colorScheme.surface,
                                 initialValue: _vehicleId,
                                 decoration: InputDecoration(
                                     labelText: 'Vehicle',
@@ -128,13 +129,13 @@ class _OwnerCarPnLViewState extends State<OwnerCarPnLView> {
                                 _pnlCard(selected),
                                 const SizedBox(height: 16),
                                 Text('Tagged entries',
-                                    style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
+                                    style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
                                 const SizedBox(height: 8),
                                 if (tagged.isEmpty)
-                                  const Text(
+                                  Text(
                                       'Nothing tagged to this car yet — tag an entry in the ledger.',
                                       style: TextStyle(
-                                          color: AppColors.textMuted)),
+                                          color: Theme.of(context).colorScheme.onSurfaceVariant)),
                                 ...tagged.map((t) => _transferRow(t)),
                               ],
                             ],
@@ -176,18 +177,18 @@ class _OwnerCarPnLViewState extends State<OwnerCarPnLView> {
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.borderSubtle),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(t.category,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800)),
           Text(
             '${isIncome ? '+' : '−'} Rs. ${t.amountPkr}',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w900, color: isIncome ? AppColors.accentSuccess : AppColors.accentDanger),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w900, color: isIncome ? AppColors.successTextFor(Theme.of(context).brightness) : AppColors.dangerTextFor(Theme.of(context).brightness)),
           ),
         ],
       ),

@@ -99,7 +99,7 @@ class _CustomerCancelBookingViewState extends State<CustomerCancelBookingView> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text('What happens when you cancel',
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.accentDanger)),
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.dangerTextFor(Theme.of(context).brightness))),
                           const SizedBox(height: 6),
                           // G5: there is no defined refund timetable in
                           // the app, so none is invented. What is true:
@@ -111,22 +111,22 @@ class _CustomerCancelBookingViewState extends State<CustomerCancelBookingView> {
                             widget.booking.advancePaid > 0
                                 ? 'You paid Rs. ${widget.booking.advancePaid} advance directly to the showroom\'s account — the showroom decides the refund, so contact them about it. No security deposit was collected: deposits are only taken at handover.'
                                 : 'No advance has been paid yet, so there is nothing to refund. No security deposit was collected: deposits are only taken at handover.',
-                            style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.primary, height: 1.4),
+                            style: Theme.of(context).textTheme.labelSmall?.copyWith(height: 1.4),
                           ),
                         ],
                       ),
                     ),
                     const SizedBox(height: 18),
                     Text('Reason for Cancellation',
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
                     const SizedBox(height: 8),
                     Material(
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.surface,
                       borderRadius: BorderRadius.circular(14),
                       child: Container(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(14),
-                          border: Border.all(color: AppColors.borderSubtle),
+                          border: Border.all(color: Theme.of(context).dividerColor),
                         ),
                         child: RadioGroup<String>(
                           groupValue: _selectedReason,
@@ -154,8 +154,8 @@ class _CustomerCancelBookingViewState extends State<CustomerCancelBookingView> {
             ),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: const BoxDecoration(
-                color: Colors.white,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surface,
                 boxShadow: [
                   BoxShadow(
                       color: Color(0x14000000),

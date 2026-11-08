@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/constants/app_colors.dart';
 import '../../data/datasources/admin_remote_data_source.dart';
 import '../../domain/admin_permissions.dart';
 
@@ -28,10 +27,9 @@ class AdminInviteForm extends StatelessWidget {
     return Card(
       margin: EdgeInsets.zero,
       elevation: 0,
-      color: Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: const BorderSide(color: AppColors.borderSubtle),
+        side: BorderSide(color: Theme.of(context).dividerColor),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -48,7 +46,7 @@ class AdminInviteForm extends StatelessWidget {
                     Theme.of(context).colorScheme.surfaceContainerHighest,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppColors.borderSubtle),
+                  borderSide: BorderSide(color: Theme.of(context).dividerColor),
                 ),
                 contentPadding: const EdgeInsets.symmetric(
                     horizontal: 14, vertical: 12),
@@ -56,6 +54,7 @@ class AdminInviteForm extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             DropdownButtonFormField<String>(
+              dropdownColor: Theme.of(context).colorScheme.surface,
               initialValue: inviteRole,
               decoration: InputDecoration(
                 filled: true,
@@ -63,7 +62,7 @@ class AdminInviteForm extends StatelessWidget {
                     Theme.of(context).colorScheme.surfaceContainerHighest,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppColors.borderSubtle),
+                  borderSide: BorderSide(color: Theme.of(context).dividerColor),
                 ),
                 contentPadding: const EdgeInsets.symmetric(
                     horizontal: 14, vertical: 12),
@@ -77,9 +76,9 @@ class AdminInviteForm extends StatelessWidget {
               },
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               'Invites expire after 48 hours. The invitee creates their account first, then a super admin grants the role.',
-              style: TextStyle(fontSize: 12, color: AppColors.textMuted),
+              style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
             ),
             const SizedBox(height: 12),
             FilledButton(
@@ -112,21 +111,20 @@ class AdminInviteTile extends StatelessWidget {
     return Card(
       margin: EdgeInsets.zero,
       elevation: 0,
-      color: Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: const BorderSide(color: AppColors.borderSubtle),
+        side: BorderSide(color: Theme.of(context).dividerColor),
       ),
       child: ListTile(
         title: Text(invite.email,
             style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w800,
-                color: AppColors.primary)),
+                )),
         subtitle: Text(
           '${AdminPermissions.label(invite.adminRole)} • '
           '${invite.isExpired ? 'Expired' : 'Expires ${invite.expiresAt?.day}/${invite.expiresAt?.month}/${invite.expiresAt?.year}'}',
-          style: const TextStyle(fontSize: 12, color: AppColors.textMuted),
+          style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
         ),
         trailing: canManage
             ? TextButton(

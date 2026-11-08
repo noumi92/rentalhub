@@ -25,10 +25,10 @@ class DocumentSlotTile extends StatelessWidget {
         decoration: BoxDecoration(
           color: isUploaded
               ? AppColors.accentSuccess.withValues(alpha: 0.08)
-              : Colors.white,
+              : Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: isUploaded ? AppColors.accentSuccess : AppColors.borderSubtle,
+            color: isUploaded ? AppColors.accentSuccess : Theme.of(context).dividerColor,
             width: isUploaded ? 1.5 : 1,
           ),
         ),
@@ -47,7 +47,7 @@ class DocumentSlotTile extends StatelessWidget {
                 isUploaded
                     ? Icons.check_circle_rounded
                     : Icons.camera_alt_rounded,
-                color: isUploaded ? Colors.white : AppColors.primary,
+                color: isUploaded ? Colors.white : Theme.of(context).colorScheme.onSurface,
                 size: 22,
               ),
             ),
@@ -58,7 +58,7 @@ class DocumentSlotTile extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
                   ),
                   const SizedBox(height: 2),
                   Text(
@@ -79,7 +79,7 @@ class DocumentSlotTile extends StatelessWidget {
               child: Text(
                 isUploaded ? 'Encrypted' : 'Upload',
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800, color: isUploaded
-                      ? AppColors.accentSuccess
+                      ? AppColors.successTextFor(Theme.of(context).brightness)
                       : AppColors.secondary),
               ),
             ),

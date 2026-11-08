@@ -59,7 +59,6 @@ class _AdminBlacklistTribunalViewState extends State<AdminBlacklistTribunalView>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
       body: Row(
         children: [
           AdminSidebarNav(activeRoute: RouteNames.adminBlacklist, onNavigate: _handleNavigation),
@@ -97,9 +96,9 @@ class _AdminBlacklistTribunalViewState extends State<AdminBlacklistTribunalView>
       margin: const EdgeInsets.only(bottom: 14),
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: item.isActive ? Colors.red.shade300 : AppColors.borderSubtle),
+        border: Border.all(color: item.isActive ? Colors.red.shade300 : Theme.of(context).dividerColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -110,7 +109,7 @@ class _AdminBlacklistTribunalViewState extends State<AdminBlacklistTribunalView>
               Expanded(
                 child: Row(
                   children: [
-                    Icon(item.isActive ? Icons.gavel_rounded : Icons.check_circle_rounded, color: item.isActive ? Colors.red : AppColors.accentSuccess, size: 22),
+                    Icon(item.isActive ? Icons.gavel_rounded : Icons.check_circle_rounded, color: item.isActive ? Colors.red : AppColors.successTextFor(Theme.of(context).brightness), size: 22),
                     const SizedBox(width: 8),
                     Expanded(child: Text('${item.blacklistId} • CNIC: ${item.cnicNumber}', overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14))),
                   ],
@@ -124,23 +123,23 @@ class _AdminBlacklistTribunalViewState extends State<AdminBlacklistTribunalView>
                 ),
                 child: Text(
                   item.isActive ? 'ACTIVE BLACKLIST' : 'REVERSED / CLEARED',
-                  style: TextStyle(fontWeight: FontWeight.w900, fontSize: 10, color: item.isActive ? Colors.red : AppColors.accentSuccess),
+                  style: TextStyle(fontWeight: FontWeight.w900, fontSize: 10, color: item.isActive ? Colors.red : AppColors.successTextFor(Theme.of(context).brightness)),
                 ),
               ),
             ],
           ),
           const SizedBox(height: 8),
-          Text('Reason: ${item.reasonCategory}', style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12.5, color: AppColors.primary)),
+          Text('Reason: ${item.reasonCategory}', style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12.5)),
           const SizedBox(height: 4),
-          Text(item.description, style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+          Text(item.description, style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant)),
           const SizedBox(height: 4),
-          Text('Reported by Showroom: ${item.reportedByShopId}', style: const TextStyle(fontSize: 11, fontStyle: FontStyle.italic, color: AppColors.textMuted)),
+          Text('Reported by Showroom: ${item.reportedByShopId}', style: TextStyle(fontSize: 11, fontStyle: FontStyle.italic, color: Theme.of(context).colorScheme.onSurfaceVariant)),
           if (!item.isActive && item.revertedReason != null) ...[
             const SizedBox(height: 8),
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(color: Theme.of(context).colorScheme.surfaceContainerHighest, borderRadius: BorderRadius.circular(6)),
-              child: Text('Reversal Justification: ${item.revertedReason}', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.primary)),
+              child: Text('Reversal Justification: ${item.revertedReason}', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600)),
             ),
           ],
           if (item.isActive) ...[
@@ -150,7 +149,7 @@ class _AdminBlacklistTribunalViewState extends State<AdminBlacklistTribunalView>
               children: [
                 OutlinedButton(
                   onPressed: () => _showReversalDialog(record),
-                  style: OutlinedButton.styleFrom(foregroundColor: AppColors.accentSuccess),
+                  style: OutlinedButton.styleFrom(foregroundColor: AppColors.successTextFor(Theme.of(context).brightness)),
                   child: const Text('Decide appeal — Keep or Remove', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 11.5)),
                 ),
               ],

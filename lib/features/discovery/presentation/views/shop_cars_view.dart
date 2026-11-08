@@ -101,10 +101,9 @@ class _ShopCarsViewState extends State<ShopCarsView> {
                     selected: isSelected,
                     onSelected: (_) => setState(() => _selectedCategory = cat),
                     selectedColor: AppColors.primary,
-                    backgroundColor: Colors.white,
-                    labelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600, color: isSelected ? Colors.white : AppColors.primary),
+                    labelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600, color: isSelected ? Colors.white : Theme.of(context).colorScheme.onSurface),
                     side: BorderSide(
-                      color: isSelected ? AppColors.primary : AppColors.borderSubtle,
+                      color: isSelected ? AppColors.primary : Theme.of(context).dividerColor,
                     ),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20)),
@@ -121,11 +120,11 @@ class _ShopCarsViewState extends State<ShopCarsView> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(Icons.directions_car_outlined,
-                              size: 48, color: AppColors.textSecondary.withValues(alpha: 0.5)),
+                              size: 48, color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.5)),
                           const SizedBox(height: 8),
                           Text(
                             'No $_selectedCategory vehicles available right now.',
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                           ),
                         ],
                       ),

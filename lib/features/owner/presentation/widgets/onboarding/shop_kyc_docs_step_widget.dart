@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import '../../../../../core/constants/app_colors.dart';
 import 'onboarding_document_tile.dart';
 import 'onboarding_photo_upload_box.dart';
 
@@ -73,7 +72,7 @@ class ShopKycDocsStepWidget extends StatelessWidget {
         // 1 Picture as Shop Header (Back Camera / Gallery / Remove)
         Text(
           'Shop Header Showcase Banner',
-          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900, color: AppColors.primary),
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900),
         ),
         const SizedBox(height: 4),
         Text(
@@ -93,7 +92,7 @@ class ShopKycDocsStepWidget extends StatelessWidget {
         // 3 Fleet Photos (Back Camera / Gallery / Remove)
         Text(
           'Showroom Fleet Photos (3 Required)',
-          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900, color: AppColors.primary),
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900),
         ),
         const SizedBox(height: 4),
         Text(
@@ -136,7 +135,7 @@ class ShopKycDocsStepWidget extends StatelessWidget {
         // Legal & KYC Docs
         Text(
           'Owner Identity & Tax Verification',
-          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900, color: AppColors.primary),
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900),
         ),
         const SizedBox(height: 4),
         Text(

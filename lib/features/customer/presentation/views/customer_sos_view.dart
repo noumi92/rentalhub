@@ -183,7 +183,7 @@ class _CustomerSosViewState extends State<CustomerSosView> {
                     const SizedBox(height: 16),
                     Text(
                       'Press SOS in Emergency',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: AppColors.accentDanger),
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: AppColors.dangerTextFor(Theme.of(context).brightness)),
                     ),
                     const SizedBox(height: 6),
                     Text(
@@ -196,7 +196,9 @@ class _CustomerSosViewState extends State<CustomerSosView> {
                       icon: Icons.local_police_rounded,
                       title: 'Call Police Emergency 15',
                       subtitle: 'Direct Punjab & Federal Police helpline',
-                      color: AppColors.primary,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? AppColors.primaryContainer
+                          : AppColors.primary,
                       onTap: () => _callNumber('15', 'Police 15'),
                     ),
                     const SizedBox(height: 10),
@@ -214,7 +216,9 @@ class _CustomerSosViewState extends State<CustomerSosView> {
                       subtitle: _shopName != null
                           ? 'Send your live location to $_shopName'
                           : 'Send your live location to your showroom',
-                      color: AppColors.accentSuccess,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? AppColors.accentSuccessDark
+                          : AppColors.accentSuccess,
                       onTap: _shareLiveLocation,
                     ),
                   ],

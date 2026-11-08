@@ -23,30 +23,30 @@ class BookingDetailSummary extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.borderSubtle),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Column(
         children: [
-          _row('Vehicle', b.vehicleName ?? '—'),
-          _row('Plate', b.vehiclePlate ?? '—'),
-          _row('Package', b.packageType),
-          _row('Drive mode', b.isWithDriver ? 'With driver' : 'Self drive'),
-          _row('Trip', b.tripType == 'out_city' ? 'Out of city' : 'In city'),
-          _row('Pickup', _formatDateTime(b.pickupTime)),
-          _row('Return', _formatDateTime(b.returnTime)),
+          _row(context, 'Vehicle', b.vehicleName ?? '—'),
+          _row(context, 'Plate', b.vehiclePlate ?? '—'),
+          _row(context, 'Package', b.packageType),
+          _row(context, 'Drive mode', b.isWithDriver ? 'With driver' : 'Self drive'),
+          _row(context, 'Trip', b.tripType == 'out_city' ? 'Out of city' : 'In city'),
+          _row(context, 'Pickup', _formatDateTime(b.pickupTime)),
+          _row(context, 'Return', _formatDateTime(b.returnTime)),
           const Divider(height: 18),
-          _row('Total', 'Rs. ${b.totalAmount}', bold: true),
-          _row('Advance required', 'Rs. ${b.advanceRequired}'),
-          _row('Advance paid', 'Rs. ${b.advancePaid}'),
-          _row('Remaining', 'Rs. ${b.remainingBalance}', bold: true),
+          _row(context, 'Total', 'Rs. ${b.totalAmount}', bold: true),
+          _row(context, 'Advance required', 'Rs. ${b.advanceRequired}'),
+          _row(context, 'Advance paid', 'Rs. ${b.advancePaid}'),
+          _row(context, 'Remaining', 'Rs. ${b.remainingBalance}', bold: true),
         ],
       ),
     );
   }
 
-  Widget _row(String label, String value, {bool bold = false}) {
+  Widget _row(BuildContext context, String label, String value, {bool bold = false}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 3),
       child: Row(
@@ -56,7 +56,7 @@ class BookingDetailSummary extends StatelessWidget {
             label,
             style: TextStyle(
               fontSize: 13,
-              color: AppColors.textSecondary,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
           Text(
@@ -64,7 +64,6 @@ class BookingDetailSummary extends StatelessWidget {
             style: TextStyle(
               fontSize: 13,
               fontWeight: bold ? FontWeight.w800 : FontWeight.w600,
-              color: AppColors.primary,
             ),
           ),
         ],
@@ -98,7 +97,7 @@ class BookingDetailRejectionCard extends StatelessWidget {
       ),
       child: Text(
         '$prefix$reason',
-        style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600, color: AppColors.primary),
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
       ),
     );
   }
@@ -122,7 +121,7 @@ class BookingDetailInfoCard extends StatelessWidget {
       ),
       child: Text(
         text,
-        style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600, color: AppColors.primary),
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
       ),
     );
   }

@@ -16,10 +16,9 @@ import '../widgets/support_ticket_form.dart';
 class CustomerSupportView extends StatefulWidget {
   final VoidCallback? onFileDispute;
   final VoidCallback? onOpenSos;
-  final VoidCallback? onBack;
 
   const CustomerSupportView(
-      {super.key, this.onFileDispute, this.onOpenSos, this.onBack});
+      {super.key, this.onFileDispute, this.onOpenSos});
 
   @override
   State<CustomerSupportView> createState() => _CustomerSupportViewState();
@@ -144,13 +143,9 @@ class _CustomerSupportViewState extends State<CustomerSupportView> {
           children: [
             CustomCurvedHeader(
               height: 100,
-              leadingWidget: widget.onBack != null
-                  ? IconButton(
-                      icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                          color: Colors.white, size: 20),
-                      onPressed: widget.onBack,
-                    )
-                  : null,
+              // Tab root: no back button. The header's back policy
+              // renders one only when the route can pop, which a
+              // branch root never can.
               titleWidget: Text(
                 'Help & Support Center',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white),
@@ -167,12 +162,12 @@ class _CustomerSupportViewState extends State<CustomerSupportView> {
                       controller: _searchController,
                       onChanged: (_) => setState(() {}),
                       decoration: InputDecoration(
-                        hintText: 'Search questions, payments, safety...',
-                        hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
+                        hintText: 'Search help',
+                        // No hintStyle override: the theme's input hint
+                        // style (onSurfaceVariant) drives both modes.
                         filled: true,
                         fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-                        prefixIcon: const Icon(Icons.search_rounded,
-                            color: AppColors.primary),
+                        prefixIcon: const Icon(Icons.search_rounded),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: const BorderSide(color: AppColors.borderSubtle),
@@ -189,7 +184,7 @@ class _CustomerSupportViewState extends State<CustomerSupportView> {
                             icon: Icons.phone_in_talk_rounded,
                             title: 'Call your showroom',
                             subtitle: _shopName ?? 'No booking yet',
-                            color: AppColors.primary,
+                            color: Theme.of(context).colorScheme.primary,
                             onTap: _callShop,
                           ),
                         ),

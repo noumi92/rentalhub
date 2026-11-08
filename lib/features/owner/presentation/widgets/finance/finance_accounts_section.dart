@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../core/constants/app_colors.dart';
 import  '../../../../finance/domain/entities/finance_account_entity.dart';
 import  '../../../../finance/domain/entities/finance_transfer_entity.dart';
 import  '../../../../finance/utils/finance_summary.dart';
@@ -30,7 +29,6 @@ class FinanceAccountsSection extends StatelessWidget {
             Text('Accounts',
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.w800,
-                  color: AppColors.primary,
                 )),
             TextButton.icon(
               icon: const Icon(Icons.add_rounded, size: 18),
@@ -46,9 +44,9 @@ class FinanceAccountsSection extends StatelessWidget {
             margin: const EdgeInsets.only(bottom: 8),
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColors.borderSubtle),
+              border: Border.all(color: Theme.of(context).dividerColor),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -59,7 +57,6 @@ class FinanceAccountsSection extends StatelessWidget {
                     Text(a.name,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           fontWeight: FontWeight.w800,
-                          color: AppColors.primary,
                         )),
                     Text(a.type,
                         style: Theme.of(context).textTheme.labelSmall),
@@ -68,7 +65,6 @@ class FinanceAccountsSection extends StatelessWidget {
                 Text('Rs. $balance',
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.w900,
-                      color: AppColors.primary,
                     )),
               ],
             ),

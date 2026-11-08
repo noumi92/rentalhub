@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/widgets/app_feedback.dart';
@@ -130,18 +129,18 @@ class _AdminReviewsViewState extends State<AdminReviewsView> {
                 ],
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Expanded(
               child: _isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : visible.isEmpty
-                      ? const Center(
+                      ? Center(
                           child: Text(
                             'No reviews in this queue.',
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 fontWeight: FontWeight.w700,
-                                color: AppColors.textMuted),
+                                color: Theme.of(context).colorScheme.onSurfaceVariant),
                           ),
                         )
                       : ListView.separated(
@@ -153,11 +152,10 @@ class _AdminReviewsViewState extends State<AdminReviewsView> {
                             return Card(
                               margin: EdgeInsets.zero,
                               elevation: 0,
-                              color: Colors.white,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
-                                side: const BorderSide(
-                                    color: AppColors.borderSubtle),
+                                side: BorderSide(
+                                    color: Theme.of(context).dividerColor),
                               ),
                               child: Padding(
                                 padding: const EdgeInsets.all(14),
@@ -170,14 +168,14 @@ class _AdminReviewsViewState extends State<AdminReviewsView> {
                                       style: const TextStyle(
                                           fontSize: 14,
                                           fontWeight: FontWeight.w800,
-                                          color: AppColors.primary),
+                                          ),
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
                                       'Shop ${r.shopRating ?? '—'}/5 • Car ${r.vehicleRating ?? '—'}/5 • Owner: punctuality ${r.ownerPunctuality ?? '—'}, care ${r.ownerCare ?? '—'}, behaviour ${r.ownerBehavior ?? '—'}',
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                           fontSize: 12,
-                                          color: AppColors.textMuted),
+                                          color: Theme.of(context).colorScheme.onSurfaceVariant),
                                     ),
                                     if (r.customerComment.isNotEmpty) ...[
                                       const SizedBox(height: 4),
@@ -204,9 +202,9 @@ class _AdminReviewsViewState extends State<AdminReviewsView> {
                                     const SizedBox(height: 6),
                                     Text(
                                       'Moderation: ${r.moderationStatus}${r.moderationReason.isNotEmpty ? ' — ${r.moderationReason}' : ''}',
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                           fontSize: 12,
-                                          color: AppColors.textMuted),
+                                          color: Theme.of(context).colorScheme.onSurfaceVariant),
                                     ),
                                     const SizedBox(height: 10),
                                     Wrap(

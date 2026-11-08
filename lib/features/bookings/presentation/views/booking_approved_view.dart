@@ -59,8 +59,8 @@ class BookingApprovedView extends StatelessWidget {
                               color: AppColors.accentSuccess.withValues(alpha: 0.2),
                               shape: BoxShape.circle,
                             ),
-                            child: const Icon(Icons.check_circle_rounded,
-                                color: AppColors.accentSuccess, size: 30),
+                            child: Icon(Icons.check_circle_rounded,
+                                color: AppColors.successTextFor(Theme.of(context).brightness), size: 30),
                           ),
                           const SizedBox(width: 14),
                           Expanded(
@@ -103,8 +103,8 @@ class BookingApprovedView extends StatelessWidget {
             ),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: const BoxDecoration(
-                color: Colors.white,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surface,
                 boxShadow: [
                   BoxShadow(
                       color: Color(0x14000000),

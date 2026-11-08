@@ -18,7 +18,7 @@ class CitySelectorBar extends StatelessWidget {
     return Container(
       height: 48,
       padding: const EdgeInsets.symmetric(vertical: 6),
-      color: Colors.white,
+      color: Theme.of(context).colorScheme.surface,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -33,9 +33,9 @@ class CitySelectorBar extends StatelessWidget {
             selectedColor: AppColors.secondary,
             backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
             side: BorderSide(
-              color: isSelected ? AppColors.secondary : AppColors.borderSubtle,
+              color: isSelected ? AppColors.secondary : Theme.of(context).dividerColor,
             ),
-            labelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600, color: isSelected ? Colors.white : AppColors.primary),
+            labelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600, color: isSelected ? Colors.white : Theme.of(context).colorScheme.onSurface),
             onSelected: (_) => onSelectCity(city),
           );
         },

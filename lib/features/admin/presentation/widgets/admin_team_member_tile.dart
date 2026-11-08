@@ -26,27 +26,26 @@ class AdminTeamMemberTile extends StatelessWidget {
     return Card(
       margin: EdgeInsets.zero,
       elevation: 0,
-      color: Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: const BorderSide(color: AppColors.borderSubtle),
+        side: BorderSide(color: Theme.of(context).dividerColor),
       ),
       child: ListTile(
         leading: CircleAvatar(
           backgroundColor: AppColors.primary.withValues(alpha: 0.12),
           child: const Icon(Icons.person_rounded,
-              color: AppColors.primary, size: 22),
+              size: 22),
         ),
         title: Text(
           member.email.isEmpty ? member.uid : member.email,
           style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w800,
-              color: AppColors.primary),
+              ),
         ),
         subtitle: Text(
           AdminPermissions.label(member.adminRole),
-          style: const TextStyle(fontSize: 12, color: AppColors.textMuted),
+          style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
         ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,

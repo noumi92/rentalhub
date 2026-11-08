@@ -209,7 +209,7 @@ class _CustomerSettingsViewState extends State<CustomerSettingsView> {
                           title: l10n.appVersion,
                           child: Text(
                             _version.isEmpty ? '—' : _version,
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.primary),
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
                           ),
                         ),
                         const SizedBox(height: 16),

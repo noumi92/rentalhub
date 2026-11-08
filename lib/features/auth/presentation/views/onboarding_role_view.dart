@@ -127,7 +127,6 @@ class _OnboardingRoleViewState extends State<OnboardingRoleView> {
                             'Select Permanent Account Role',
                             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               fontWeight: FontWeight.w800,
-                              color: AppColors.primary,
                             ),
                           ),
                           const SizedBox(height: 10),
@@ -163,9 +162,9 @@ class _OnboardingRoleViewState extends State<OnboardingRoleView> {
             // Bottom Sticky CTA (Clean label, single icon)
             Container(
               padding: const EdgeInsets.all(16),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                border: Border(top: BorderSide(color: AppColors.borderSubtle)),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surface,
+                border: Border(top: BorderSide(color: Theme.of(context).dividerColor)),
                 boxShadow: [
                   BoxShadow(color: Color(0x0C000000), blurRadius: 8, offset: Offset(0, -3)),
                 ],

@@ -51,7 +51,7 @@ class CustomerVehicleCard extends StatelessWidget {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: const BorderSide(color: AppColors.borderSubtle),
+        side: BorderSide(color: Theme.of(context).dividerColor),
       ),
       child: InkWell(
         onTap: onTap,
@@ -79,7 +79,7 @@ class CustomerVehicleCard extends StatelessWidget {
                       Expanded(
                         child: Text(
                           '${v.displayName} (${v.year})',
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
                         ),
                       ),
                       PakistaniPlateWidget(
@@ -107,7 +107,7 @@ class CustomerVehicleCard extends StatelessWidget {
                     children: [
                       Text(
                         'Self: Rs. ${v.rates.daily24}/day',
-                        style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
+                        style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800),
                       ),
                       Text(
                         'With Driver: Rs. ${v.rates.daily24 + (v.withDriverSurchargePkr ?? 0)}/day',
@@ -130,12 +130,12 @@ class CustomerVehicleCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: AppColors.borderSubtle),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 12, color: AppColors.textSecondary),
+          Icon(icon, size: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
           const SizedBox(width: 3),
           Text(
             label,

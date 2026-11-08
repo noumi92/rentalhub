@@ -72,19 +72,19 @@ class PakistanPhoneField extends StatelessWidget {
             ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.borderSubtle),
+              borderSide: BorderSide(color: Theme.of(context).dividerColor),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(
-                color: errorMessage != null ? AppColors.accentDanger : AppColors.borderSubtle,
+                color: errorMessage != null ? AppColors.accentDanger : Theme.of(context).dividerColor,
               ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(
                 color: errorMessage != null
-                    ? AppColors.accentDanger
+                    ? AppColors.dangerTextFor(Theme.of(context).brightness)
                     : AppColors.secondary,
                 width: 1.5,
               ),
@@ -96,7 +96,7 @@ class PakistanPhoneField extends StatelessWidget {
           Text(
             errorMessage!,
             style: Theme.of(context).textTheme.labelMedium?.copyWith(
-              color: AppColors.accentDanger,
+              color: AppColors.dangerTextFor(Theme.of(context).brightness),
             ),
           ),
         ],

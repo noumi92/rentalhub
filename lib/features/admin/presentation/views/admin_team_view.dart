@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/widgets/app_feedback.dart';
@@ -139,25 +138,25 @@ class _AdminTeamViewState extends State<AdminTeamView> {
               padding: const EdgeInsets.all(24),
               children: [
                 if (!_canManage)
-                  const Padding(
+                  Padding(
                     padding: EdgeInsets.only(bottom: 16),
                     child: Text(
                       'Only a super admin can invite, reset two-factor authentication, or revoke a role. You can view the team.',
                       style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w700,
-                          color: AppColors.textMuted),
+                          color: Theme.of(context).colorScheme.onSurfaceVariant),
                     ),
                   ),
                 const Text('Team members',
                     style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w900,
-                        color: AppColors.primary)),
+                        )),
                 const SizedBox(height: 10),
                 if (_members.isEmpty)
-                  const Text('No admins found — the team list reads the users who hold an admin role.',
-                      style: TextStyle(color: AppColors.textMuted))
+                  Text('No admins found — the team list reads the users who hold an admin role.',
+                      style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant))
                 else
                   ..._members.map((m) => Padding(
                         padding: const EdgeInsets.only(bottom: 10),
@@ -195,11 +194,11 @@ class _AdminTeamViewState extends State<AdminTeamView> {
                     style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w900,
-                        color: AppColors.primary)),
+                        )),
                 const SizedBox(height: 10),
                 if (_invites.where((i) => !i.accepted).isEmpty)
-                  const Text('No pending invites.',
-                      style: TextStyle(color: AppColors.textMuted))
+                  Text('No pending invites.',
+                      style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant))
                 else
                   ..._invites.where((i) => !i.accepted).map((i) => Padding(
                         padding: const EdgeInsets.only(bottom: 10),
@@ -229,7 +228,7 @@ class _AdminTeamViewState extends State<AdminTeamView> {
                       style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w900,
-                          color: AppColors.primary)),
+                          )),
                   const SizedBox(height: 10),
                   AdminInviteForm(
                     emailController: _emailController,

@@ -85,18 +85,18 @@ class _AdminDisputesViewState extends State<AdminDisputesView> {
                 ],
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Expanded(
               child: _isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : _disputes.isEmpty
-                      ? const Center(
+                      ? Center(
                           child: Text(
                             'No disputes — the centre reads the disputes collection.',
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 fontWeight: FontWeight.w700,
-                                color: AppColors.textMuted),
+                                color: Theme.of(context).colorScheme.onSurfaceVariant),
                           ),
                         )
                       : ListView.separated(
@@ -108,32 +108,31 @@ class _AdminDisputesViewState extends State<AdminDisputesView> {
                             return Card(
                               margin: EdgeInsets.zero,
                               elevation: 0,
-                              color: Colors.white,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
-                                side: const BorderSide(
-                                    color: AppColors.borderSubtle),
+                                side: BorderSide(
+                                    color: Theme.of(context).dividerColor),
                               ),
                               child: ListTile(
                                 leading: CircleAvatar(
                                   backgroundColor: AppColors.primary
                                       .withValues(alpha: 0.12),
                                   child: const Icon(Icons.gavel_rounded,
-                                      color: AppColors.primary),
+                                      ),
                                 ),
                                 title: Text(
                                     '${d.category} • ${d.bookingId}',
                                     style: const TextStyle(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w800,
-                                        color: AppColors.primary)),
+                                        )),
                                 subtitle: Text(
                                   '${d.description} — ${d.status} • ${_slaText(d)}',
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                       fontSize: 12,
-                                      color: AppColors.textMuted),
+                                      color: Theme.of(context).colorScheme.onSurfaceVariant),
                                 ),
                                 trailing: const Icon(
                                     Icons.arrow_forward_ios_rounded,

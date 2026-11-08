@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../core/constants/app_colors.dart';
 
 /// Phase B (E2): the damage notes the owner records at handover.
 /// Starts empty — the old flow hardcoded three notes, including a
@@ -57,9 +56,9 @@ class _HandoverDamageNotesEditorState
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.borderSubtle),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -67,7 +66,6 @@ class _HandoverDamageNotesEditorState
           Text(widget.title,
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
                 fontWeight: FontWeight.w800,
-                color: AppColors.primary,
               )),
           Text(widget.subtitle,
               style:

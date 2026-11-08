@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 
-import '../../../../../core/constants/app_colors.dart';
 import  '../../../../bookings/domain/entities/booking_entity.dart';
 import  '../../../../finance/domain/entities/finance_transfer_entity.dart';
 import  '../../../../finance/utils/finance_summary.dart';
@@ -84,9 +83,9 @@ class _FinancePnLReportState extends State<FinancePnLReport> {
             Text('P&L Statement',
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.w800,
-                  color: AppColors.primary,
                 )),
             DropdownButton<String>(
+              dropdownColor: Theme.of(context).colorScheme.surface,
               value: _period,
               items: const [
                 DropdownMenuItem(
@@ -104,9 +103,9 @@ class _FinancePnLReportState extends State<FinancePnLReport> {
           width: double.infinity,
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.borderSubtle),
+            border: Border.all(color: Theme.of(context).dividerColor),
           ),
           child: Column(
             children: [

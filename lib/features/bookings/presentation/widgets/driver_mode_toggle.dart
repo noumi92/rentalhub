@@ -18,12 +18,12 @@ class DriverModeToggle extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.borderSubtle),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Row(
         children: [
           Expanded(
-            child: _buildOption(
+            child: _buildOption(context, 
               label: 'Self Drive',
               sublabel: 'Requires CNIC + Deposit',
               icon: Icons.directions_car_filled_rounded,
@@ -33,7 +33,7 @@ class DriverModeToggle extends StatelessWidget {
           ),
           const SizedBox(width: 4),
           Expanded(
-            child: _buildOption(
+            child: _buildOption(context, 
               label: 'With Chauffeur',
               sublabel: 'Verified Driver Included',
               icon: Icons.person_pin_circle_rounded,
@@ -46,7 +46,7 @@ class DriverModeToggle extends StatelessWidget {
     );
   }
 
-  Widget _buildOption({
+  Widget _buildOption(BuildContext context, {
     required String label,
     required String sublabel,
     required IconData icon,
@@ -82,7 +82,7 @@ class DriverModeToggle extends StatelessWidget {
                   size: 17,
                   color: isSelected
                       ? AppColors.secondary
-                      : AppColors.textSecondary,
+                      : Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
                 const SizedBox(width: 6),
                 Text(
@@ -92,7 +92,7 @@ class DriverModeToggle extends StatelessWidget {
                     fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
                     color: isSelected
                         ? AppColors.primary
-                        : AppColors.textSecondary,
+                        : Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
               ],
@@ -104,7 +104,7 @@ class DriverModeToggle extends StatelessWidget {
                 fontSize: 10,
                 color: isSelected
                     ? AppColors.textPrimary
-                    : AppColors.textSecondary.withValues(alpha: 0.7),
+                    : Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
               ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,

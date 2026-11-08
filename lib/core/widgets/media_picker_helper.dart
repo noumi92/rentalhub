@@ -32,7 +32,6 @@ class MediaPickerHelper {
     // Modal bottom sheet with Camera, Gallery, and optional Remove
     showModalBottomSheet<void>(
       context: context,
-      backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -46,7 +45,7 @@ class MediaPickerHelper {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: AppColors.borderSubtle,
+                  color: Theme.of(context).dividerColor,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -55,7 +54,6 @@ class MediaPickerHelper {
                 'Select Media Source',
                 style: Theme.of(ctx).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w800,
-                  color: AppColors.primary,
                 ),
               ),
               const SizedBox(height: 12),
@@ -91,7 +89,7 @@ class MediaPickerHelper {
                     color: AppColors.primaryContainer,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.photo_library_rounded, color: AppColors.primary, size: 22),
+                  child: const Icon(Icons.photo_library_rounded, size: 22),
                 ),
                 title: Text('Choose from Gallery', style: Theme.of(ctx).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
                 subtitle: Text('Pick existing photo or screenshot', style: Theme.of(ctx).textTheme.labelSmall),
@@ -115,9 +113,9 @@ class MediaPickerHelper {
                       color: AppColors.accentDanger.withValues(alpha: 0.1),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.delete_outline_rounded, color: AppColors.accentDanger, size: 22),
+                    child: Icon(Icons.delete_outline_rounded, color: AppColors.dangerTextFor(Theme.of(context).brightness), size: 22),
                   ),
-                  title: Text('Remove Photo', style: Theme.of(ctx).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700, color: AppColors.accentDanger)),
+                  title: Text('Remove Photo', style: Theme.of(ctx).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700, color: AppColors.dangerTextFor(Theme.of(context).brightness))),
                   subtitle: Text('Clear this uploaded image', style: Theme.of(ctx).textTheme.labelSmall),
                   onTap: () {
                     Navigator.of(ctx).pop();

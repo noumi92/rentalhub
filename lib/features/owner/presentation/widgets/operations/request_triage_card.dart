@@ -23,9 +23,9 @@ class RequestTriageCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.borderSubtle),
+        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
         boxShadow: const [
           BoxShadow(
             color: Color(0x0A000000),
@@ -40,12 +40,17 @@ class RequestTriageCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                '#${booking.bookingId}',
-                style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                  fontWeight: FontWeight.w800,
+              Expanded(
+                child: Text(
+                  '#${booking.bookingId}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
               ),
+              const SizedBox(width: 8),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
@@ -68,7 +73,7 @@ class RequestTriageCard extends StatelessWidget {
               CircleAvatar(
                 radius: 20,
                 backgroundColor: AppColors.primary.withAlpha(25),
-                child: const Icon(Icons.person, color: AppColors.primary),
+                child: Icon(Icons.person, color: Theme.of(context).colorScheme.primary),
               ),
               const SizedBox(width: 10),
               Expanded(
@@ -79,7 +84,6 @@ class RequestTriageCard extends StatelessWidget {
                       booking.customerName ?? 'Customer',
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.w800,
-                        color: AppColors.primary,
                       ),
                     ),
                     Text(
@@ -95,10 +99,15 @@ class RequestTriageCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                booking.vehicleName ?? 'Requested Car',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
+              Expanded(
+                child: Text(
+                  booking.vehicleName ?? 'Requested Car',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800),
+                ),
               ),
+              const SizedBox(width: 8),
               Text(
                 'Rs. ${booking.totalAmount}',
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900, color: AppColors.secondary),

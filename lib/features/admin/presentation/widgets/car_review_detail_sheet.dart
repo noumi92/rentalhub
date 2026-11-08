@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../fleet/domain/entities/vehicle_entity.dart';
@@ -83,19 +82,19 @@ class _CarReviewDetailSheetState extends State<CarReviewDetailSheet> {
                 style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w900,
-                    color: AppColors.primary)),
+                    )),
             const SizedBox(height: 4),
             Text(
                 'Plate ${v.plateNumber} • ${v.category} • ${v.transmission} • ${v.fuelType} • ${v.seats} seats\nStatus: ${v.status} • Current review: ${widget.review?.status ?? 'not reviewed yet'}',
                 style:
-                    const TextStyle(fontSize: 13, color: AppColors.textMuted)),
+                    TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurfaceVariant)),
             if ((widget.review?.reason ?? '').isNotEmpty) ...[
               const SizedBox(height: 8),
               Text('Last decision: ${widget.review!.reason}',
-                  style: const TextStyle(
+                  style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w700,
-                      color: AppColors.textMuted)),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant)),
             ],
             const SizedBox(height: 16),
             if (v.imageUrl != null && v.imageUrl!.isNotEmpty)
@@ -146,7 +145,7 @@ class _CarReviewDetailSheetState extends State<CarReviewDetailSheet> {
                     Theme.of(context).colorScheme.surfaceContainerHighest,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppColors.borderSubtle),
+                  borderSide: BorderSide(color: Theme.of(context).dividerColor),
                 ),
                 contentPadding: const EdgeInsets.symmetric(
                     horizontal: 14, vertical: 12),
@@ -196,12 +195,12 @@ class _CarReviewDetailSheetState extends State<CarReviewDetailSheet> {
         children: [
           Text(label,
               style:
-                  const TextStyle(fontSize: 13, color: AppColors.textMuted)),
+                  TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurfaceVariant)),
           Text(value,
               style: const TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.primary)),
+                  )),
         ],
       ),
     );

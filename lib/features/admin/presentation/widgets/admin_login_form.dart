@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/constants/app_colors.dart';
 
 /// The admin login's credentials form, extracted from AdminLoginView
 /// so the view stays under the 250-line cap: email + password fields,
@@ -30,10 +29,10 @@ class AdminLoginForm extends StatelessWidget {
             style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w900,
-                color: AppColors.primary)),
+                )),
         const SizedBox(height: 8),
-        const Text('Sign in with your admin account.',
-            style: TextStyle(fontSize: 13, color: AppColors.textMuted)),
+        Text('Sign in with your admin account.',
+            style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurfaceVariant)),
         const SizedBox(height: 20),
         TextField(
           controller: emailController,
@@ -70,7 +69,7 @@ class AdminLoginForm extends StatelessWidget {
       fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: AppColors.borderSubtle),
+        borderSide: BorderSide(color: Theme.of(context).dividerColor),
       ),
       contentPadding:
           const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
@@ -97,11 +96,11 @@ class AdminNotAdminCard extends StatelessWidget {
             style: TextStyle(
                 fontSize: 17,
                 fontWeight: FontWeight.w900,
-                color: AppColors.primary)),
+                )),
         const SizedBox(height: 8),
-        const Text(
+        Text(
           'This account has no admin role. Sign out and sign in with an admin account, or ask a super admin to grant you one.',
-          style: TextStyle(fontSize: 13, color: AppColors.textMuted),
+          style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurfaceVariant),
         ),
         const SizedBox(height: 20),
         OutlinedButton(

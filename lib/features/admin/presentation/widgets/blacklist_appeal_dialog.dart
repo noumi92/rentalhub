@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../data/datasources/admin_people_data_source.dart';
@@ -84,12 +83,12 @@ class _BlacklistAppealDialogState extends State<BlacklistAppealDialog> {
           const SizedBox(height: 6),
           Text('${item.reasonCategory} — ${item.description}',
               style:
-                  const TextStyle(fontSize: 12, color: AppColors.textMuted)),
+                  TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant)),
           if (item.evidenceUrls.isNotEmpty) ...[
             const SizedBox(height: 6),
             Text('Evidence: ${item.evidenceUrls.length} file(s) on record',
                 style:
-                    const TextStyle(fontSize: 12, color: AppColors.textMuted)),
+                    TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant)),
           ],
           if (widget.record.appealStatus != 'none') ...[
             const SizedBox(height: 6),

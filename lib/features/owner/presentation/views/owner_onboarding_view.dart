@@ -210,7 +210,7 @@ class _OwnerOnboardingViewState extends State<OwnerOnboardingView> {
             if (_currentStep < 5)
               Container(
                 padding: const EdgeInsets.all(16),
-                decoration: const BoxDecoration(color: Colors.white, border: Border(top: BorderSide(color: AppColors.borderSubtle)), boxShadow: [BoxShadow(color: Color(0x0C000000), blurRadius: 8, offset: Offset(0, -3))]),
+                decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, border: Border(top: BorderSide(color: Theme.of(context).dividerColor)), boxShadow: [BoxShadow(color: Color(0x0C000000), blurRadius: 8, offset: Offset(0, -3))]),
                 child: DebouncedButton(
                   text: _currentStep == 4 ? 'Submit Shop for Verification' : 'Next Step',
                   icon: _currentStep == 4 ? Icons.check_circle_rounded : Icons.arrow_forward_rounded,

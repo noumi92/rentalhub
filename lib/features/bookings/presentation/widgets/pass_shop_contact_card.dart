@@ -159,9 +159,9 @@ class _PassShopContactCardState extends State<PassShopContactCard> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.borderSubtle),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -173,7 +173,7 @@ class _PassShopContactCardState extends State<PassShopContactCard> {
               SizedBox(width: 8),
               Text(
                 'Showroom Handover Point',
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
               ),
             ],
           ),
@@ -189,8 +189,8 @@ class _PassShopContactCardState extends State<PassShopContactCard> {
                 child: OutlinedButton.icon(
                   onPressed: _callShop,
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: AppColors.primary,
-                    side: const BorderSide(color: AppColors.borderSubtle),
+                    foregroundColor: Theme.of(context).colorScheme.onSurface,
+                    side: BorderSide(color: Theme.of(context).dividerColor),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10)),
                   ),
@@ -203,9 +203,9 @@ class _PassShopContactCardState extends State<PassShopContactCard> {
                 child: OutlinedButton.icon(
                   onPressed: _openDirections,
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: AppColors.accentSuccess,
-                    side: const BorderSide(color: Color(0xFF86EFAC)),
-                    backgroundColor: const Color(0xFFF0FDF4),
+                    foregroundColor: AppColors.successOnContainerFor(Theme.of(context).brightness),
+                    side: BorderSide(color: AppColors.successBorderFor(Theme.of(context).brightness)),
+                    backgroundColor: AppColors.successContainerFor(Theme.of(context).brightness),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10)),
                   ),
@@ -222,8 +222,8 @@ class _PassShopContactCardState extends State<PassShopContactCard> {
               child: OutlinedButton.icon(
                 onPressed: _openAgreement,
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: AppColors.primary,
-                  side: const BorderSide(color: AppColors.borderSubtle),
+                  foregroundColor: Theme.of(context).colorScheme.onSurface,
+                  side: BorderSide(color: Theme.of(context).dividerColor),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10)),
                 ),

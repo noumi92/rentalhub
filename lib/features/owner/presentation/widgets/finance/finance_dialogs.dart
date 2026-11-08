@@ -28,6 +28,7 @@ class FinanceDialogs {
             ),
             const SizedBox(height: 12),
             DropdownButtonFormField<String>(
+              dropdownColor: Theme.of(context).colorScheme.surface,
               initialValue: type,
               decoration: const InputDecoration(
                   labelText: 'Type', border: OutlineInputBorder()),

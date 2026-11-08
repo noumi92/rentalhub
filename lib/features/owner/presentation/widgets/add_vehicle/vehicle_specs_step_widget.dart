@@ -74,13 +74,14 @@ class VehicleSpecsStepWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Brand / Make Dropdown
-        Text('Make / Brand', style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
+        Text('Make / Brand', style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800)),
         const SizedBox(height: 6),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 14),
-          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: AppColors.borderSubtle)),
+          decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, borderRadius: BorderRadius.circular(12), border: Border.all(color: Theme.of(context).dividerColor)),
           child: DropdownButtonHideUnderline(
             child: DropdownButton<String>(
+              dropdownColor: Theme.of(context).colorScheme.surface,
               value: selectedMake,
               isExpanded: true,
               items: makes.map((m) => DropdownMenuItem(value: m, child: Text(m, style: const TextStyle(fontWeight: FontWeight.w700)))).toList(),
@@ -93,11 +94,11 @@ class VehicleSpecsStepWidget extends StatelessWidget {
         const SizedBox(height: 14),
 
         // Model Variant
-        Text('Model Variant', style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
+        Text('Model Variant', style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800)),
         const SizedBox(height: 6),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 14),
-          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: AppColors.borderSubtle)),
+          decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, borderRadius: BorderRadius.circular(12), border: Border.all(color: Theme.of(context).dividerColor)),
           child: TextFormField(
             initialValue: selectedModel,
             style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
@@ -114,13 +115,14 @@ class VehicleSpecsStepWidget extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Manufacturing Year', style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
+                  Text('Manufacturing Year', style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800)),
                   const SizedBox(height: 6),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
-                    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: AppColors.borderSubtle)),
+                    decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, borderRadius: BorderRadius.circular(12), border: Border.all(color: Theme.of(context).dividerColor)),
                     child: DropdownButtonHideUnderline(
                       child: DropdownButton<int>(
+                        dropdownColor: Theme.of(context).colorScheme.surface,
                         value: selectedYear,
                         isExpanded: true,
                         items: List.generate(15, (i) => 2025 - i).map((y) => DropdownMenuItem(value: y, child: Text('$y', style: const TextStyle(fontWeight: FontWeight.w700)))).toList(),
@@ -138,11 +140,11 @@ class VehicleSpecsStepWidget extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Exterior Color', style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
+                  Text('Exterior Color', style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800)),
                   const SizedBox(height: 6),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
-                    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: AppColors.borderSubtle)),
+                    decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, borderRadius: BorderRadius.circular(12), border: Border.all(color: Theme.of(context).dividerColor)),
                     child: TextFormField(
                       initialValue: color,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
@@ -158,7 +160,7 @@ class VehicleSpecsStepWidget extends StatelessWidget {
         const SizedBox(height: 14),
 
         // Body Category Pills
-        Text('Body Category', style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
+        Text('Body Category', style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800)),
         const SizedBox(height: 6),
         Wrap(
           spacing: 8,
@@ -169,8 +171,7 @@ class VehicleSpecsStepWidget extends StatelessWidget {
               label: Text(c),
               selected: isSelected,
               selectedColor: AppColors.secondary,
-              backgroundColor: Colors.white,
-              labelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(color: isSelected ? Colors.white : AppColors.primary, fontWeight: FontWeight.w700),
+              labelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(color: isSelected ? Colors.white : Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.w700),
               onSelected: (_) => onCategoryChanged(c),
             );
           }).toList(),
@@ -178,7 +179,7 @@ class VehicleSpecsStepWidget extends StatelessWidget {
         const SizedBox(height: 14),
 
         // Registration Number & Plate Preview
-        Text('Vehicle Registration Number', style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
+        Text('Vehicle Registration Number', style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800)),
         const SizedBox(height: 6),
         Row(
           children: [
@@ -190,7 +191,7 @@ class VehicleSpecsStepWidget extends StatelessWidget {
                   hintText: 'e.g. LEA-23-4567',
                   filled: true,
                   fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.borderSubtle)),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Theme.of(context).dividerColor)),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                 ),
                 onChanged: (_) => onPlateChanged(),
@@ -211,11 +212,11 @@ class VehicleSpecsStepWidget extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Transmission', style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
+                  Text('Transmission', style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800)),
                   const SizedBox(height: 6),
                   Container(
                     padding: const EdgeInsets.all(4),
-                    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: AppColors.borderSubtle)),
+                    decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, borderRadius: BorderRadius.circular(12), border: Border.all(color: Theme.of(context).dividerColor)),
                     child: Row(
                       children: [
                         Expanded(
@@ -224,8 +225,8 @@ class VehicleSpecsStepWidget extends StatelessWidget {
                             borderRadius: BorderRadius.circular(8),
                             child: Container(
                               padding: const EdgeInsets.symmetric(vertical: 8),
-                              decoration: BoxDecoration(color: isAutomatic ? AppColors.primary : Colors.transparent, borderRadius: BorderRadius.circular(8)),
-                              child: Text('Automatic', textAlign: TextAlign.center, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: isAutomatic ? Colors.white : AppColors.textMuted)),
+                              decoration: BoxDecoration(color: isAutomatic ? Theme.of(context).colorScheme.primary : Colors.transparent, borderRadius: BorderRadius.circular(8)),
+                              child: Text('Automatic', textAlign: TextAlign.center, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: isAutomatic ? Colors.white : Theme.of(context).colorScheme.onSurfaceVariant)),
                             ),
                           ),
                         ),
@@ -235,8 +236,8 @@ class VehicleSpecsStepWidget extends StatelessWidget {
                             borderRadius: BorderRadius.circular(8),
                             child: Container(
                               padding: const EdgeInsets.symmetric(vertical: 8),
-                              decoration: BoxDecoration(color: !isAutomatic ? AppColors.primary : Colors.transparent, borderRadius: BorderRadius.circular(8)),
-                              child: Text('Manual', textAlign: TextAlign.center, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: !isAutomatic ? Colors.white : AppColors.textMuted)),
+                              decoration: BoxDecoration(color: !isAutomatic ? Theme.of(context).colorScheme.primary : Colors.transparent, borderRadius: BorderRadius.circular(8)),
+                              child: Text('Manual', textAlign: TextAlign.center, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: !isAutomatic ? Colors.white : Theme.of(context).colorScheme.onSurfaceVariant)),
                             ),
                           ),
                         ),
@@ -251,13 +252,14 @@ class VehicleSpecsStepWidget extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Fuel Type', style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
+                  Text('Fuel Type', style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800)),
                   const SizedBox(height: 6),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
-                    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: AppColors.borderSubtle)),
+                    decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, borderRadius: BorderRadius.circular(12), border: Border.all(color: Theme.of(context).dividerColor)),
                     child: DropdownButtonHideUnderline(
                       child: DropdownButton<String>(
+                        dropdownColor: Theme.of(context).colorScheme.surface,
                         value: fuelType,
                         isExpanded: true,
                         items: ['Petrol', 'Diesel', 'Hybrid', 'Electric'].map((f) => DropdownMenuItem(value: f, child: Text(f, style: const TextStyle(fontWeight: FontWeight.w700)))).toList(),
@@ -275,7 +277,7 @@ class VehicleSpecsStepWidget extends StatelessWidget {
         const SizedBox(height: 16),
 
         // Requirement 3: Vehicle Seating Capacity
-        Text('Vehicle Seating Capacity', style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
+        Text('Vehicle Seating Capacity', style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800)),
         const SizedBox(height: 6),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
@@ -288,9 +290,8 @@ class VehicleSpecsStepWidget extends StatelessWidget {
                   label: Text('$s Seats'),
                   selected: isSelected,
                   selectedColor: AppColors.secondary,
-                  backgroundColor: Colors.white,
-                  labelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    color: isSelected ? Colors.white : AppColors.primary,
+                      labelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    color: isSelected ? Colors.white : Theme.of(context).colorScheme.onSurface,
                     fontWeight: FontWeight.w700,
                   ),
                   onSelected: (_) => onSeatsChanged(s),
@@ -305,19 +306,19 @@ class VehicleSpecsStepWidget extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.borderSubtle),
+            border: Border.all(color: Theme.of(context).dividerColor),
           ),
           child: Row(
             children: [
-              const Icon(Icons.ac_unit_rounded, color: AppColors.primary, size: 22),
+              const Icon(Icons.ac_unit_rounded, size: 22),
               const SizedBox(width: 10),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Air Conditioning (Full AC)', style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
+                    Text('Air Conditioning (Full AC)', style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800)),
                     Text('Vehicle equipped with working chilled AC', style: Theme.of(context).textTheme.labelSmall),
                   ],
                 ),
@@ -334,7 +335,7 @@ class VehicleSpecsStepWidget extends StatelessWidget {
         const SizedBox(height: 16),
 
         // Requirement 3: Extra Features (Shown in Car Details page)
-        Text('Extra Features (Shown on Car Detail)', style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
+        Text('Extra Features (Shown on Car Detail)', style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800)),
         const SizedBox(height: 4),
         Text('Select amenities included with this vehicle to attract more renters.', style: Theme.of(context).textTheme.labelSmall),
         const SizedBox(height: 8),
@@ -347,10 +348,9 @@ class VehicleSpecsStepWidget extends StatelessWidget {
               label: Text(f),
               selected: isSelected,
               selectedColor: AppColors.secondary,
-              backgroundColor: Colors.white,
               checkmarkColor: Colors.white,
               labelStyle: Theme.of(context).textTheme.labelSmall?.copyWith(
-                color: isSelected ? Colors.white : AppColors.primary,
+                color: isSelected ? Colors.white : Theme.of(context).colorScheme.onSurface,
                 fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
               ),
               onSelected: (_) => onFeatureToggled(f),

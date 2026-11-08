@@ -32,14 +32,61 @@ class AppColors {
   static const Color accentSuccess = Color(0xFF10B981);
   static const Color accentSuccessDark = Color(0xFF34D399);
   static const Color successContainer = Color(0xFFECFDF5);
+  // Dark-mode container tones for the pale success/error/warning slabs
+  // in views (rulebook §4.2 Dark column). The pale light containers
+  // glare in dark mode; these replace them, with a light on-container
+  // colour for the text/icons that sit on them.
+  static const Color successContainerDark = Color(0xFF123524);
+  static const Color successOnContainerDark = Color(0xFF86EFAC);
 
   static const Color accentDanger = Color(0xFFEF4444);
   static const Color accentDangerDark = Color(0xFFF87171);
   static const Color errorDark = Color(0xFFDC2626);
   static const Color errorContainer = Color(0xFFFEF2F2);
+  static const Color errorContainerDark = Color(0xFF3B1215);
+  static const Color errorOnContainerDark = Color(0xFFFCA5A5);
 
   static const Color warning = Color(0xFFF59E0B);
   static const Color warningContainer = Color(0xFFFFFBEB);
+  static const Color warningContainerDark = Color(0xFF3A2A05);
+  static const Color warningOnContainerDark = Color(0xFFFCD34D);
+
+  // Dark-mode focused input border. primaryOnDark #252B7A is invisible
+  // against the dark field fill #1E2138 / border #23274D, so focused
+  // fields were indistinguishable from unfocused ones.
+  static const Color primaryFocusedOnDark = Color(0xFF6C72D9);
+
+  /// Brightness-aware container/foreground pairs for the pale success and
+  /// error slabs (WhatsApp buttons, status pills, banners). Light mode
+  /// keeps the original pale tints; dark mode uses the dark container
+  /// tokens so the slab and its text stay readable on dark surfaces.
+  static Color successContainerFor(Brightness brightness) =>
+      brightness == Brightness.dark ? successContainerDark : successContainer;
+  static Color successOnContainerFor(Brightness brightness) =>
+      brightness == Brightness.dark ? successOnContainerDark : accentSuccess;
+  static Color successBorderFor(Brightness brightness) =>
+      brightness == Brightness.dark
+          ? accentSuccessDark
+          : const Color(0xFF86EFAC);
+  static Color errorContainerFor(Brightness brightness) =>
+      brightness == Brightness.dark ? errorContainerDark : errorContainer;
+  static Color errorOnContainerFor(Brightness brightness) =>
+      brightness == Brightness.dark ? errorOnContainerDark : accentDanger;
+
+  /// Brightness-aware status TEXT colours (icons, labels, amounts on a
+  /// surface). The light tokens are too dark to read on dark surfaces
+  /// (accentDanger #EF4444 ≈ 3.9:1, accentSuccess #16A34A ≈ 3.0:1), so
+  /// dark mode uses the lighter variants; light mode is unchanged.
+  static Color dangerTextFor(Brightness brightness) =>
+      brightness == Brightness.dark ? accentDangerDark : accentDanger;
+  static Color successTextFor(Brightness brightness) =>
+      brightness == Brightness.dark ? accentSuccessDark : accentSuccess;
+  static Color warningTextFor(Brightness brightness) =>
+      brightness == Brightness.dark ? warningOnContainerDark : warning;
+  static Color warningContainerFor(Brightness brightness) =>
+      brightness == Brightness.dark ? warningContainerDark : warningContainer;
+  static Color warningOnContainerFor(Brightness brightness) =>
+      brightness == Brightness.dark ? warningOnContainerDark : warning;
 
   // Background & surfaces
   static const Color backgroundLight = Color(0xFFF8FAFC);
@@ -65,9 +112,11 @@ class AppColors {
   static const Color onSurfaceVariantDark = Color(0xFF94A3B8);
   static const Color textPrimary = onSurfaceLight;
   static const Color textSecondary = onSurfaceVariantLight;
-  // textMuted is the muted grey for text on LIGHT surfaces.
-  // 0xFF64748B reads at ~4.6:1 on white (WCAG AA) and stays legible on
-  // dark surfaces too. (Was 0xFF94A3B8 — ~2.2:1, unreadable.)
+  // textMuted is the muted grey for text on LIGHT surfaces ONLY.
+  // 0xFF64748B reads at ~4.6:1 on white (WCAG AA) but only ~3.8:1 on
+  // dark surfaces, failing AA — never use it on a dark surface; use
+  // textMutedDark (onSurfaceVariantDark, ~7:1 on dark) instead.
+  // (Was 0xFF94A3B8 — ~2.2:1, unreadable.)
   static const Color textMuted = onSurfaceVariantLight;
   static const Color textMutedDark = onSurfaceVariantDark;
 

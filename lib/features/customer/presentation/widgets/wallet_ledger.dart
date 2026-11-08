@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/constants/app_colors.dart';
 import '../../data/services/customer_wallet_service.dart';
 import 'wallet_transaction_tile.dart';
 
@@ -30,19 +29,19 @@ class WalletLedger extends StatelessWidget {
       return Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.borderSubtle),
+          border: Border.all(color: Theme.of(context).dividerColor),
         ),
         child: Center(
           child: Column(
             children: [
               Icon(Icons.account_balance_wallet_outlined,
-                  size: 40, color: AppColors.textSecondary),
+                  size: 40, color: Theme.of(context).colorScheme.onSurfaceVariant),
               SizedBox(height: 8),
               Text(
                 'No wallet activity yet.',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600, color: AppColors.textSecondary),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.onSurfaceVariant),
               ),
               SizedBox(height: 4),
               Text(

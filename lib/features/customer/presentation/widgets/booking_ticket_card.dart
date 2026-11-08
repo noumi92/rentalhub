@@ -28,21 +28,21 @@ class BookingTicketCard extends StatelessWidget {
     this.syncStatus,
   });
 
-  Color _getStatusColor(String status) {
+  Color _getStatusColor(String status, Brightness brightness) {
     switch (status.toLowerCase()) {
       case 'paid':
       case 'completed':
-        return AppColors.accentSuccess;
+        return AppColors.successTextFor(brightness);
       case 'approved':
       case 'payment_submitted':
         return AppColors.secondary;
       case 'requested':
-        return AppColors.warning;
+        return AppColors.warningTextFor(brightness);
       case 'cancelled':
       case 'rejected':
-        return AppColors.accentDanger;
+        return AppColors.dangerTextFor(brightness);
       default:
-        return AppColors.primary;
+        return brightness == Brightness.dark ? AppColors.primaryOnDark : AppColors.primary;
     }
   }
 
@@ -53,7 +53,7 @@ class BookingTicketCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final statusColor = _getStatusColor(booking.status);
+    final statusColor = _getStatusColor(booking.status, Theme.of(context).brightness);
     return Card(
       elevation: 0,
       shape: RoundedRectangleBorder(
@@ -77,7 +77,7 @@ class BookingTicketCard extends StatelessWidget {
                       children: [
                         Text(
                           booking.vehicleName ?? 'Rental Car',
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
                         ),
                         Text(
                           booking.shopName ?? 'Showroom',
@@ -98,13 +98,23 @@ class BookingTicketCard extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    'Pickup: ${booking.pickupTime.day}/${booking.pickupTime.month}/${booking.pickupTime.year}',
-                    style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w600, color: AppColors.textPrimary),
+                  Expanded(
+                    child: Text(
+                      'Pickup: ${booking.pickupTime.day}/${booking.pickupTime.month}/${booking.pickupTime.year}',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w600, color: AppColors.textPrimary),
+                    ),
                   ),
-                  Text(
-                    'Total: Rs. ${booking.totalAmount}',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
+                  const SizedBox(width: 8),
+                  Flexible(
+                    child: Text(
+                      'Total: Rs. ${booking.totalAmount}',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.end,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800),
+                    ),
                   ),
                 ],
               ),

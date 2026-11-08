@@ -167,7 +167,7 @@ class _OnboardingProfileViewState extends State<OnboardingProfileView> {
                         elevation: 3,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
-                          side: const BorderSide(color: AppColors.borderSubtle),
+                          side: BorderSide(color: Theme.of(context).dividerColor),
                         ),
                         child: Padding(
                           padding: const EdgeInsets.all(20),
@@ -224,9 +224,9 @@ class _OnboardingProfileViewState extends State<OnboardingProfileView> {
             // Bottom Sticky CTA
             Container(
               padding: const EdgeInsets.all(16),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                border: Border(top: BorderSide(color: AppColors.borderSubtle)),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surface,
+                border: Border(top: BorderSide(color: Theme.of(context).dividerColor)),
                 boxShadow: [
                   BoxShadow(color: Color(0x0C000000), blurRadius: 8, offset: Offset(0, -3)),
                 ],

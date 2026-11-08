@@ -30,7 +30,7 @@ class VehiclePackageCard extends StatelessWidget {
           color: isSelected ? AppColors.secondary.withValues(alpha: 0.08) : Colors.white,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isSelected ? AppColors.secondary : AppColors.borderSubtle,
+            color: isSelected ? AppColors.secondary : Theme.of(context).dividerColor,
             width: isSelected ? 2 : 1,
           ),
           boxShadow: [
@@ -51,7 +51,7 @@ class VehiclePackageCard extends StatelessWidget {
                 Icon(
                   icon,
                   size: 22,
-                  color: isSelected ? AppColors.secondary : AppColors.primary,
+                  color: isSelected ? AppColors.secondary : Theme.of(context).colorScheme.onSurface,
                 ),
                 if (isSelected)
                   const Icon(
@@ -64,7 +64,7 @@ class VehiclePackageCard extends StatelessWidget {
             const SizedBox(height: 10),
             Text(
               title,
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900, color: isSelected ? AppColors.secondary : AppColors.primary),
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900, color: isSelected ? AppColors.secondary : Theme.of(context).colorScheme.onSurface),
             ),
             Text(
               urdu,
@@ -73,7 +73,7 @@ class VehiclePackageCard extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               'Rs. $price',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: AppColors.primary),
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
             ),
             Text(
               '/ per day',

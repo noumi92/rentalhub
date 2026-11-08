@@ -146,7 +146,7 @@ class _OwnerFixedRoutesViewState extends State<OwnerFixedRoutesView> {
                                   child: ListTile(
                                     leading: const Icon(
                                         Icons.route_rounded,
-                                        color: AppColors.primary),
+                                        ),
                                     title: Text(r.displayName,
                                         style: const TextStyle(
                                             fontWeight: FontWeight.w800)),

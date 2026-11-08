@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/constants/app_colors.dart';
 
 /// The action row on the customer detail screen, extracted from
 /// AdminCustomerDetailView so the view stays under the 250-line cap:
@@ -38,7 +37,7 @@ class CustomerDetailActions extends StatelessWidget {
                       Theme.of(context).colorScheme.surfaceContainerHighest,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: AppColors.borderSubtle),
+                    borderSide: BorderSide(color: Theme.of(context).dividerColor),
                   ),
                   contentPadding: const EdgeInsets.symmetric(
                       horizontal: 14, vertical: 12),

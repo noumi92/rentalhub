@@ -17,7 +17,7 @@ class ActiveTripFloatingCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: AppColors.primary.withValues(alpha: 0.15)),
         boxShadow: [
@@ -47,15 +47,15 @@ class ActiveTripFloatingCard extends StatelessWidget {
                     Container(
                       width: 6,
                       height: 6,
-                      decoration: const BoxDecoration(
-                        color: AppColors.accentSuccess,
+                      decoration: BoxDecoration(
+                        color: AppColors.successTextFor(Theme.of(context).brightness),
                         shape: BoxShape.circle,
                       ),
                     ),
                     const SizedBox(width: 6),
                     Text(
                       booking.status.toUpperCase(),
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.accentSuccess),
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.successTextFor(Theme.of(context).brightness)),
                     ),
                   ],
                 ),
@@ -76,7 +76,7 @@ class ActiveTripFloatingCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Icon(Icons.directions_car_filled_rounded,
-                    color: AppColors.primary, size: 28),
+                    size: 28),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -85,7 +85,7 @@ class ActiveTripFloatingCard extends StatelessWidget {
                   children: [
                     Text(
                       booking.vehicleName ?? 'Active Rental Car',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: AppColors.primary),
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
                     ),
                     const SizedBox(height: 2),
                     Text(
@@ -108,7 +108,7 @@ class ActiveTripFloatingCard extends StatelessWidget {
                       style: Theme.of(context).textTheme.labelSmall),
                   Text(
                     'Rs. ${booking.totalAmount}',
-                    style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900, color: AppColors.primary),
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900),
                   ),
                 ],
               ),

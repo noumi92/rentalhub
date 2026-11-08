@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
-import '../../../../core/constants/app_colors.dart';
 
 /// The TOTP step of the admin login: either verifying the 6-digit code
 /// from the admin's authenticator app (login), or enrolling for the
@@ -44,14 +43,14 @@ class AdminTotpStep extends StatelessWidget {
           style: const TextStyle(
               fontSize: 17,
               fontWeight: FontWeight.w900,
-              color: AppColors.primary),
+              ),
         ),
         const SizedBox(height: 8),
         Text(
           enrolling
               ? 'Scan this code with your authenticator app, then enter the 6-digit code it shows to confirm.'
               : 'Two-factor authentication is on for this account. Enter the 6-digit code from your authenticator app.',
-          style: const TextStyle(fontSize: 13, color: AppColors.textMuted),
+          style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurfaceVariant),
         ),
         if (enrolling) ...[
           const SizedBox(height: 16),
@@ -59,9 +58,9 @@ class AdminTotpStep extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.borderSubtle),
+                border: Border.all(color: Theme.of(context).dividerColor),
               ),
               child: QrImageView(data: otpauthUrl!, size: 180),
             ),
@@ -71,8 +70,8 @@ class AdminTotpStep extends StatelessWidget {
             SelectableText(
               'Manual setup key: $_manualKey',
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                  fontSize: 12, color: AppColors.textMuted),
+              style: TextStyle(
+                  fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
             ),
           ],
         ],
@@ -89,7 +88,7 @@ class AdminTotpStep extends StatelessWidget {
                 Theme.of(context).colorScheme.surfaceContainerHighest,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.borderSubtle),
+              borderSide: BorderSide(color: Theme.of(context).dividerColor),
             ),
             contentPadding:
                 const EdgeInsets.symmetric(horizontal: 14, vertical: 12),

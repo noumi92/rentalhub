@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/widgets/app_feedback.dart';
@@ -106,6 +106,7 @@ class _AdminCustomerDetailViewState extends State<AdminCustomerDetailView> {
       title: 'Customer detail',
       subtitle: 'Trust score, KYC, trips and admin actions',
       onRefresh: _load,
+      onBack: () => context.go(RouteNames.adminCustomers),
       child: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _detail == null
@@ -114,8 +115,7 @@ class _AdminCustomerDetailViewState extends State<AdminCustomerDetailView> {
                     padding: EdgeInsets.all(32),
                     child: Text('Customer not found.',
                         style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.textMuted)),
+                            fontWeight: FontWeight.w700)),
                   ),
                 )
               : SingleChildScrollView(
@@ -126,13 +126,12 @@ class _AdminCustomerDetailViewState extends State<AdminCustomerDetailView> {
                       Text(_detail!.customer.name,
                           style: const TextStyle(
                               fontSize: 20,
-                              fontWeight: FontWeight.w900,
-                              color: AppColors.primary)),
+                              fontWeight: FontWeight.w900)),
                       const SizedBox(height: 4),
                       Text(
                         '${_detail!.customer.phone} • CNIC ${_detail!.customer.cnic ?? 'not on file'} • Source: ${_detail!.customer.source}',
                         style: const TextStyle(
-                            fontSize: 13, color: AppColors.textMuted),
+                            fontSize: 13),
                       ),
                       const SizedBox(height: 8),
                       if (_detail!.isBlacklisted)
@@ -140,14 +139,14 @@ class _AdminCustomerDetailViewState extends State<AdminCustomerDetailView> {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 10, vertical: 4),
                           decoration: BoxDecoration(
-                            color: Colors.red.shade700.withValues(alpha: 0.12),
+                            color: Theme.of(context).colorScheme.errorContainer,
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Text('Blacklisted',
                               style: TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w800,
-                                  color: Colors.red.shade700)),
+                                  color: Theme.of(context).colorScheme.error)),
                         ),
                       const SizedBox(height: 16),
                       CustomerTrustBreakdown(
@@ -218,14 +217,13 @@ class _AdminCustomerDetailViewState extends State<AdminCustomerDetailView> {
           Text(title,
               style: const TextStyle(
                   fontSize: 14,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.primary)),
+                  fontWeight: FontWeight.w800)),
           const SizedBox(height: 6),
           ...lines.map((l) => Padding(
                 padding: const EdgeInsets.only(bottom: 3),
                 child: Text(l,
                     style: const TextStyle(
-                        fontSize: 13, color: AppColors.textMuted)),
+                        fontSize: 13)),
               )),
         ],
       ),

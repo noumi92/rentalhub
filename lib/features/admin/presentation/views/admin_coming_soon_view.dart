@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/constants/app_colors.dart';
 import '../widgets/admin_shell.dart';
 
 /// Phase A (A6) — an honest placeholder for an admin section whose
@@ -33,16 +32,16 @@ class AdminComingSoonView extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.construction_rounded,
-                  size: 40, color: AppColors.textMuted),
+              Icon(Icons.construction_rounded,
+                  size: 40, color: Theme.of(context).colorScheme.onSurfaceVariant),
               const SizedBox(height: 16),
               Text(
                 body,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.textMuted),
+                    color: Theme.of(context).colorScheme.onSurfaceVariant),
               ),
             ],
           ),

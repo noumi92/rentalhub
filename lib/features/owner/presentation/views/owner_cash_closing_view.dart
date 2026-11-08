@@ -209,12 +209,12 @@ class _OwnerCashClosingViewState extends State<OwnerCashClosingView> {
                           ),
                           const SizedBox(height: 20),
                           Text('Past closings',
-                              style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
+                              style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
                           const SizedBox(height: 8),
                           if (_closings.isEmpty)
-                            const Text('No closings yet.',
+                            Text('No closings yet.',
                                 style:
-                                    TextStyle(color: AppColors.textMuted)),
+                                    TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
                           ..._closings.take(10).map((c) => CashClosingRow(closing: c)),
                         ],
                       ),

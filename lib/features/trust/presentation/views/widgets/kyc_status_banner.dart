@@ -23,8 +23,9 @@ class KycStatusBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final verified = status == 'verified';
-    final color =
-        verified ? AppColors.accentSuccess : AppColors.warning;
+    final color = verified
+        ? AppColors.successOnContainerFor(Theme.of(context).brightness)
+        : AppColors.warningOnContainerFor(Theme.of(context).brightness);
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -45,7 +46,7 @@ class KycStatusBanner extends StatelessWidget {
           Expanded(
             child: Text(
               'KYC status: $_label',
-              style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.primary),
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700),
             ),
           ),
         ],

@@ -112,9 +112,9 @@ class _VehicleDetailViewState extends State<VehicleDetailView> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(v.displayName, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900, color: AppColors.primary)),
+                                    Text(v.displayName, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900)),
                                     const SizedBox(height: 4),
-                                    Text('Showroom: ${widget.shopName}', style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500, color: AppColors.textSecondary)),
+                                    Text('Showroom: ${widget.shopName}', style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500, color: Theme.of(context).colorScheme.onSurfaceVariant)),
                                   ],
                                 ),
                               ),
@@ -125,7 +125,7 @@ class _VehicleDetailViewState extends State<VehicleDetailView> {
                                   borderRadius: BorderRadius.circular(10),
                                   border: Border.all(color: AppColors.accentSuccess.withValues(alpha: 0.3)),
                                 ),
-                                child: Text(_statusLabel(v.status), style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.accentSuccess)),
+                                child: Text(_statusLabel(v.status), style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.successTextFor(Theme.of(context).brightness))),
                               ),
                             ],
                           ),
@@ -179,13 +179,13 @@ class _VehicleDetailViewState extends State<VehicleDetailView> {
   Widget _featureChip(String label) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(color: Theme.of(context).colorScheme.surfaceContainerHighest, borderRadius: BorderRadius.circular(10), border: Border.all(color: AppColors.borderSubtle)),
+      decoration: BoxDecoration(color: Theme.of(context).colorScheme.surfaceContainerHighest, borderRadius: BorderRadius.circular(10), border: Border.all(color: Theme.of(context).dividerColor)),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           const Icon(Icons.check_rounded, size: 13, color: AppColors.secondary),
           const SizedBox(width: 4),
-          Text(label, style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600, color: AppColors.primary)),
+          Text(label, style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600)),
         ],
       ),
     );

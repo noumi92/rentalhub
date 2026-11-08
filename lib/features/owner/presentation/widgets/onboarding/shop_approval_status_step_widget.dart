@@ -13,37 +13,37 @@ class ShopApprovalStatusStepWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const SizedBox(height: 20),
+        SizedBox(height: 20),
         Container(
           width: 90,
           height: 90,
-          decoration: const BoxDecoration(
-            color: Color(0xFFF0FDF4),
+          decoration: BoxDecoration(
+            color: AppColors.successContainerFor(Theme.of(context).brightness),
             shape: BoxShape.circle,
           ),
-          child: const Center(
-            child: Icon(Icons.check_circle_rounded, size: 64, color: AppColors.accentSuccess),
+          child: Center(
+            child: Icon(Icons.check_circle_rounded, size: 64, color: AppColors.successOnContainerFor(Theme.of(context).brightness)),
           ),
         ),
         const SizedBox(height: 18),
         Text(
           'Shop Application Submitted!',
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900, color: AppColors.primary),
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 8),
         Text(
           'Your shop profile and KYC credentials have been routed to the Super Admin desk. You will receive SMS & WhatsApp verification within 2 to 4 business hours.',
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary, height: 1.4),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant, height: 1.4),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 24),
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.borderSubtle),
+            border: Border.all(color: Theme.of(context).dividerColor),
           ),
           child: Row(
             children: [
@@ -53,7 +53,7 @@ class ShopApprovalStatusStepWidget extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Fleet Catalog Ready', style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
+                    Text('Fleet Catalog Ready', style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
                     SizedBox(height: 2),
                     Text(
                       'You can start adding your cars, setting 1h/3h/6h/24h rates and photos right now.',

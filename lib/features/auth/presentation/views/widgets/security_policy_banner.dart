@@ -35,7 +35,6 @@ class SecurityPolicyBanner extends StatelessWidget {
               message,
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
                 fontWeight: FontWeight.w700,
-                color: AppColors.primary,
               ),
             ),
           ),

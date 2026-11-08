@@ -206,7 +206,6 @@ class DemoHudBar extends StatelessWidget {
   void _showAnchorMenu(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -225,7 +224,6 @@ class DemoHudBar extends StatelessWidget {
                       'Jump to 20 Core Anchor Screens',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w800,
-                        color: AppColors.primary,
                       ),
                     ),
                     IconButton(
@@ -297,7 +295,7 @@ class DemoHudBar extends StatelessWidget {
             dense: true,
             visualDensity: VisualDensity.compact,
             leading: const Icon(Icons.arrow_forward_ios,
-                size: 12, color: AppColors.primary),
+                size: 12),
             title: Text(item,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   fontWeight: FontWeight.w500,

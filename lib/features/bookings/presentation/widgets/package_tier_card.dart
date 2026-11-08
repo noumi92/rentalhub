@@ -28,10 +28,14 @@ class PackageTierCard extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.primaryContainer : Colors.white,
+          color: isSelected
+              ? (Theme.of(context).brightness == Brightness.dark
+                  ? AppColors.primaryContainerOnDark
+                  : AppColors.primaryContainer)
+              : Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isSelected ? AppColors.primary : AppColors.borderSubtle,
+            color: isSelected ? AppColors.primary : Theme.of(context).dividerColor,
             width: isSelected ? 2 : 1,
           ),
           boxShadow: [
@@ -56,7 +60,7 @@ class PackageTierCard extends StatelessWidget {
               ),
               child: Icon(
                 isSelected ? Icons.check_rounded : Icons.schedule_rounded,
-                color: isSelected ? Colors.white : AppColors.textSecondary,
+                color: isSelected ? Colors.white : Theme.of(context).colorScheme.onSurfaceVariant,
                 size: 20,
               ),
             ),
@@ -69,9 +73,7 @@ class PackageTierCard extends StatelessWidget {
                     children: [
                       Text(
                         title,
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800, color: isSelected
-                              ? AppColors.primary
-                              : AppColors.textPrimary),
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800, color: Theme.of(context).colorScheme.onSurface),
                       ),
                       const SizedBox(width: 8),
                       Container(
@@ -83,7 +85,7 @@ class PackageTierCard extends StatelessWidget {
                         ),
                         child: Text(
                           kmIncluded,
-                          style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700, color: AppColors.accentSuccess),
+                          style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700, color: AppColors.successTextFor(Theme.of(context).brightness)),
                         ),
                       ),
                     ],
@@ -101,7 +103,7 @@ class PackageTierCard extends StatelessWidget {
               children: [
                 Text(
                   'Rs. $price',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: AppColors.primary),
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
                 ),
                 Text(
                   'Advance: Rs. ${(price * 0.2).round().clamp(1000, 5000)}',

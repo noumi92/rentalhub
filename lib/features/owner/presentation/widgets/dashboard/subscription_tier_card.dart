@@ -26,10 +26,10 @@ class SubscriptionTierCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isPopular ? AppColors.secondary : (isCurrent ? AppColors.accentSuccess : AppColors.borderSubtle),
+          color: isPopular ? AppColors.secondary : (isCurrent ? AppColors.accentSuccess : Theme.of(context).dividerColor),
           width: isPopular || isCurrent ? 2 : 1,
         ),
       ),
@@ -39,7 +39,7 @@ class SubscriptionTierCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(title, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: AppColors.primary)),
+              Text(title, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900)),
               if (isPopular)
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
@@ -59,7 +59,7 @@ class SubscriptionTierCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.baseline,
             textBaseline: TextBaseline.alphabetic,
             children: [
-              Text(price, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900, color: AppColors.primary)),
+              Text(price, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900)),
               const SizedBox(width: 4),
               Text(billingPeriod, style: Theme.of(context).textTheme.bodySmall),
             ],
@@ -69,9 +69,9 @@ class SubscriptionTierCard extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 3),
                 child: Row(
                   children: [
-                    const Icon(Icons.check_circle_rounded, size: 16, color: AppColors.accentSuccess),
+                    Icon(Icons.check_circle_rounded, size: 16, color: AppColors.successTextFor(Theme.of(context).brightness)),
                     const SizedBox(width: 8),
-                    Expanded(child: Text(f, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.primary))),
+                    Expanded(child: Text(f, style: Theme.of(context).textTheme.bodySmall)),
                   ],
                 ),
               )),

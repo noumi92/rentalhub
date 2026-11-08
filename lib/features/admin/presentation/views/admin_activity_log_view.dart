@@ -111,7 +111,7 @@ class _AdminActivityLogViewState extends State<AdminActivityLogView> {
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide:
-                            const BorderSide(color: AppColors.borderSubtle),
+                            BorderSide(color: Theme.of(context).dividerColor),
                       ),
                       contentPadding: const EdgeInsets.symmetric(
                           horizontal: 14, vertical: 12),
@@ -126,17 +126,17 @@ class _AdminActivityLogViewState extends State<AdminActivityLogView> {
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Expanded(
               child: _isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : _visible.isEmpty
-                      ? const Center(
+                      ? Center(
                           child: Text(
                             'No audit entries yet — admin actions will appear here as they happen.',
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: AppColors.textMuted,
+                                color: Theme.of(context).colorScheme.onSurfaceVariant,
                                 fontWeight: FontWeight.w700),
                           ),
                         )
@@ -149,40 +149,39 @@ class _AdminActivityLogViewState extends State<AdminActivityLogView> {
                             return Card(
                               margin: EdgeInsets.zero,
                               elevation: 0,
-                              color: Colors.white,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
-                                side: const BorderSide(
-                                    color: AppColors.borderSubtle),
+                                side: BorderSide(
+                                    color: Theme.of(context).dividerColor),
                               ),
                               child: ListTile(
                                 leading: CircleAvatar(
                                   backgroundColor: AppColors.primary
                                       .withValues(alpha: 0.12),
                                   child: const Icon(Icons.history_rounded,
-                                      color: AppColors.primary, size: 20),
+                                      size: 20),
                                 ),
                                 title: Text(
                                   e.action,
                                   style: const TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w800,
-                                      color: AppColors.primary),
+                                      ),
                                 ),
                                 subtitle: Text(
                                   '${e.actorEmail} • ${e.targetType} ${e.targetId}'
                                   '${e.detail.isEmpty ? '' : '\n${e.detail}'}'
                                   '${e.decision == null ? '' : '\nDecision: ${e.decision}'}',
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                       fontSize: 12,
-                                      color: AppColors.textMuted),
+                                      color: Theme.of(context).colorScheme.onSurfaceVariant),
                                 ),
                                 isThreeLine: true,
                                 trailing: Text(
                                   _formatDate(e.createdAt),
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                       fontSize: 11,
-                                      color: AppColors.textMuted),
+                                      color: Theme.of(context).colorScheme.onSurfaceVariant),
                                 ),
                               ),
                             );

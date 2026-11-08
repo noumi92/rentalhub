@@ -79,6 +79,9 @@ class _SignaturePadWidgetState extends State<SignaturePadWidget> {
                     widget.signerLabel,
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.w700,
+                      // The pad stays near-white for ink in both modes,
+                      // so the label stays a fixed dark colour.
+                      color: AppColors.textPrimary,
                     ),
                   ),
                 ],

@@ -22,9 +22,9 @@ class AdminKpiCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.borderSubtle),
+        border: Border.all(color: Theme.of(context).dividerColor),
         boxShadow: const [
           BoxShadow(color: Color(0x06000000), blurRadius: 8, offset: Offset(0, 3)),
         ],
@@ -38,7 +38,7 @@ class AdminKpiCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   title,
-                  style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: AppColors.textSecondary),
+                  style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: Theme.of(context).colorScheme.onSurfaceVariant),
                 ),
               ),
               const SizedBox(width: 8),
@@ -50,9 +50,9 @@ class AdminKpiCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
-          Text(value, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: AppColors.primary)),
+          Text(value, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900)),
           const SizedBox(height: 6),
-          Text(changeLabel, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.accentSuccess)),
+          Text(changeLabel, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.successTextFor(Theme.of(context).brightness))),
         ],
       ),
     );

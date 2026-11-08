@@ -14,6 +14,8 @@ class TestHarness {
     double height = 640.0,
     double textScale = 1.35,
     ThemeData? theme,
+    List<LocalizationsDelegate<dynamic>>? localizationsDelegates,
+    List<Locale>? supportedLocales,
   }) async {
     tester.view.physicalSize = Size(width * 2, height * 2);
     tester.view.devicePixelRatio = 2.0;
@@ -29,6 +31,9 @@ class TestHarness {
       await tester.pumpWidget(
         MaterialApp(
           theme: theme ?? ThemeData.light(useMaterial3: true),
+          localizationsDelegates: localizationsDelegates,
+          supportedLocales:
+              supportedLocales ?? const <Locale>[Locale('en')],
           home: MediaQuery(
             data: MediaQueryData(
               size: Size(width, height),
@@ -68,6 +73,8 @@ class TestHarness {
     required WidgetTester tester,
     required Widget screen,
     ThemeData? theme,
+    List<LocalizationsDelegate<dynamic>>? localizationsDelegates,
+    List<Locale>? supportedLocales,
   }) async {
     final viewports = [
       const _ViewportConfig(width: 320, height: 568, scale: 1.25),
@@ -83,6 +90,8 @@ class TestHarness {
         height: config.height,
         textScale: config.scale,
         theme: theme,
+        localizationsDelegates: localizationsDelegates,
+        supportedLocales: supportedLocales,
       );
     }
   }

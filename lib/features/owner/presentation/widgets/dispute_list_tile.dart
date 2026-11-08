@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/constants/app_colors.dart';
 import '../../../customer/data/datasources/dispute_remote_data_source.dart';
 
 /// One row of the owner's disputes inbox: the dispute category, the
@@ -54,10 +53,9 @@ class DisputeListTile extends StatelessWidget {
     return Card(
       margin: EdgeInsets.zero,
       elevation: 0,
-      color: Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: const BorderSide(color: AppColors.borderSubtle),
+        side: BorderSide(color: Theme.of(context).dividerColor),
       ),
       child: ListTile(
         onTap: onTap,
@@ -69,7 +67,6 @@ class DisputeListTile extends StatelessWidget {
           dispute.category.isEmpty ? 'Dispute' : dispute.category,
           style: Theme.of(context).textTheme.titleSmall?.copyWith(
             fontWeight: FontWeight.w800,
-            color: AppColors.primary,
           ),
         ),
         subtitle: Text(

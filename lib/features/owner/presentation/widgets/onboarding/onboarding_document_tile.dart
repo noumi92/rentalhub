@@ -28,10 +28,10 @@ class OnboardingDocumentTile extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: hasFile ? const Color(0xFFF0FDF4) : Colors.white,
+          color: hasFile ? AppColors.successContainerFor(Theme.of(context).brightness) : Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: hasFile ? AppColors.accentSuccess : AppColors.borderSubtle,
+            color: hasFile ? AppColors.successBorderFor(Theme.of(context).brightness) : Theme.of(context).dividerColor,
             width: hasFile ? 1.5 : 1,
           ),
         ),
@@ -70,7 +70,6 @@ class OnboardingDocumentTile extends StatelessWidget {
                     title,
                     style: Theme.of(context).textTheme.labelMedium?.copyWith(
                       fontWeight: FontWeight.w800,
-                      color: AppColors.primary,
                     ),
                   ),
                   Text(
@@ -82,7 +81,7 @@ class OnboardingDocumentTile extends StatelessWidget {
             ),
             if (hasFile && onRemove != null)
               IconButton(
-                icon: const Icon(Icons.delete_outline_rounded, color: AppColors.accentDanger, size: 20),
+                icon: Icon(Icons.delete_outline_rounded, color: AppColors.errorOnContainerFor(Theme.of(context).brightness), size: 20),
                 tooltip: 'Remove',
                 onPressed: onRemove,
               )
@@ -91,7 +90,7 @@ class OnboardingDocumentTile extends StatelessWidget {
                 hasFile ? 'Ready ✓' : 'Upload',
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
                   fontWeight: FontWeight.w800,
-                  color: hasFile ? AppColors.accentSuccess : AppColors.secondary,
+                  color: hasFile ? AppColors.successOnContainerFor(Theme.of(context).brightness) : AppColors.secondary,
                 ),
               ),
           ],

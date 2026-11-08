@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../core/constants/app_colors.dart';
 
 /// The "add a route" form of [OwnerFixedRoutesView]. Extracted so the
 /// view stays under the 250-line cap.
@@ -32,7 +31,6 @@ class FixedRouteForm extends StatelessWidget {
         Text('Add a route',
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w800,
-              color: AppColors.primary,
             )),
         const SizedBox(height: 10),
         Row(
@@ -48,6 +46,7 @@ class FixedRouteForm extends StatelessWidget {
             const SizedBox(width: 10),
             Expanded(
               child: DropdownButtonFormField<String>(
+                dropdownColor: Theme.of(context).colorScheme.surface,
                 initialValue: destination,
                 decoration: const InputDecoration(
                     labelText: 'To (city)', border: OutlineInputBorder()),

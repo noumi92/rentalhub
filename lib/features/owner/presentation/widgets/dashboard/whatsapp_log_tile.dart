@@ -40,9 +40,9 @@ class WhatsAppLogTile extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.borderSubtle),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Row(
         children: [
@@ -58,7 +58,7 @@ class WhatsAppLogTile extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Text(recipientName, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary)),
+                    Text(recipientName, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800)),
                     const SizedBox(width: 6),
                     Text(phone, style: Theme.of(context).textTheme.labelSmall),
                   ],

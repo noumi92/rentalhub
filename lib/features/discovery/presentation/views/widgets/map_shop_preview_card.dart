@@ -23,7 +23,7 @@ class MapShopPreviewCard extends StatelessWidget {
         elevation: 6,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(18),
-          side: const BorderSide(color: AppColors.borderSubtle),
+          side: BorderSide(color: Theme.of(context).dividerColor),
         ),
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -42,7 +42,6 @@ class MapShopPreviewCard extends StatelessWidget {
                     ),
                     child: const Icon(
                       Icons.storefront_rounded,
-                      color: AppColors.primary,
                       size: 24,
                     ),
                   ),
@@ -53,7 +52,7 @@ class MapShopPreviewCard extends StatelessWidget {
                       children: [
                         Text(
                           shop.shopName,
-                          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
+                          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -76,12 +75,12 @@ class MapShopPreviewCard extends StatelessWidget {
                   const SizedBox(width: 8),
                   Text(
                     '★ ${shop.rating} Rating',
-                    style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.primary),
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700),
                   ),
                   const SizedBox(width: 8),
                   Text(
                     '• ${shop.availableCount} Cars Ready',
-                    style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.accentSuccess),
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.successTextFor(Theme.of(context).brightness)),
                   ),
                 ],
               ),
@@ -103,12 +102,12 @@ class MapShopPreviewCard extends StatelessWidget {
                       );
                     },
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: AppColors.primary,
-                      side: const BorderSide(color: AppColors.borderSubtle),
+                      foregroundColor: Theme.of(context).colorScheme.onSurface,
+                      side: BorderSide(color: Theme.of(context).dividerColor),
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     ),
-                    icon: const Icon(Icons.call_rounded, size: 14, color: AppColors.primary),
+                    icon: const Icon(Icons.call_rounded, size: 14),
                     label: Text('Call', style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700)),
                   ),
                   OutlinedButton.icon(
@@ -116,19 +115,19 @@ class MapShopPreviewCard extends StatelessWidget {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text('Opening WhatsApp with ${shop.shopName}...'),
-                          backgroundColor: AppColors.accentSuccess,
+                          backgroundColor: AppColors.successContainerFor(Theme.of(context).brightness),
                           duration: const Duration(seconds: 2),
                         ),
                       );
                     },
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: AppColors.accentSuccess,
-                      side: const BorderSide(color: Color(0xFF86EFAC)),
-                      backgroundColor: const Color(0xFFF0FDF4),
+                      foregroundColor: AppColors.successOnContainerFor(Theme.of(context).brightness),
+                      side: BorderSide(color: AppColors.successBorderFor(Theme.of(context).brightness)),
+                      backgroundColor: AppColors.successContainerFor(Theme.of(context).brightness),
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     ),
-                    icon: const Icon(Icons.chat_bubble_outline_rounded, size: 14, color: AppColors.accentSuccess),
+                    icon: Icon(Icons.chat_bubble_outline_rounded, size: 14, color: AppColors.successOnContainerFor(Theme.of(context).brightness)),
                     label: Text('WhatsApp', style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700)),
                   ),
                   ElevatedButton.icon(

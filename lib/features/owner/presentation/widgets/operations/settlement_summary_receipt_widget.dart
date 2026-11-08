@@ -33,44 +33,44 @@ class SettlementSummaryReceiptWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.borderSubtle),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             'Deposit & Return Balance Settlement',
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primary),
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 12),
-          _itemRow('Total Kilometers Driven', '$totalKm KM'),
-          _itemRow('Allowed KM Allowance', '${totalKm - excessKm} KM'),
+          _itemRow(context, 'Total Kilometers Driven', '$totalKm KM'),
+          _itemRow(context, 'Allowed KM Allowance', '${totalKm - excessKm} KM'),
           if (excessKm > 0)
-            _itemRow('Excess KM Penalty ($excessKm km × Rs. $extraKmRate)', 'Rs. $excessKmPenalty', isDeduction: true),
+            _itemRow(context, 'Excess KM Penalty ($excessKm km × Rs. $extraKmRate)', 'Rs. $excessKmPenalty', isDeduction: true),
           if (fuelDeficitFee > 0)
-            _itemRow('Fuel Level Deficit', 'Rs. $fuelDeficitFee', isDeduction: true),
+            _itemRow(context, 'Fuel Level Deficit', 'Rs. $fuelDeficitFee', isDeduction: true),
           if (overtimeFee > 0)
-            _itemRow('Late Overtime Fee', 'Rs. $overtimeFee', isDeduction: true),
+            _itemRow(context, 'Late Overtime Fee', 'Rs. $overtimeFee', isDeduction: true),
           if (damageCharge > 0)
-            _itemRow('Damage Found at Return', 'Rs. $damageCharge', isDeduction: true),
+            _itemRow(context, 'Damage Found at Return', 'Rs. $damageCharge', isDeduction: true),
           const Divider(height: 18),
-          _itemRow('Initial Security Deposit Held', 'Rs. $securityDeposit'),
-          _itemRow('Total Incident / Penalty Deductions', '- Rs. $totalDeductions', isDeduction: true),
+          _itemRow(context, 'Initial Security Deposit Held', 'Rs. $securityDeposit'),
+          _itemRow(context, 'Total Incident / Penalty Deductions', '- Rs. $totalDeductions', isDeduction: true),
           const Divider(height: 18),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 'Net Refund to Customer',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w900, color: AppColors.primary),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w900),
               ),
               Text(
                 'Rs. $netRefund',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w900,
-                  color: netRefund >= 0 ? AppColors.accentSuccess : Colors.red,
+                  color: netRefund >= 0 ? AppColors.successTextFor(Theme.of(context).brightness) : AppColors.dangerTextFor(Theme.of(context).brightness),
                 ),
               ),
             ],
@@ -80,19 +80,19 @@ class SettlementSummaryReceiptWidget extends StatelessWidget {
     );
   }
 
-  Widget _itemRow(String label, String value, {bool isDeduction = false}) {
+  Widget _itemRow(BuildContext context, String label, String value, {bool isDeduction = false}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 3),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+          Text(label, style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant)),
           Text(
             value,
             style: TextStyle(
               fontSize: 12.5,
               fontWeight: FontWeight.w700,
-              color: isDeduction ? Colors.red.shade700 : AppColors.primary,
+              color: isDeduction ? AppColors.dangerTextFor(Theme.of(context).brightness) : Theme.of(context).colorScheme.onSurface,
             ),
           ),
         ],

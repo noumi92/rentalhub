@@ -27,7 +27,7 @@ class AuthStepperBar extends StatelessWidget {
             width: 20,
             height: 2,
             margin: const EdgeInsets.symmetric(horizontal: 6),
-            color: currentStep > 1 ? AppColors.accentSuccess : AppColors.borderSubtle,
+            color: currentStep > 1 ? AppColors.accentSuccess : Theme.of(context).dividerColor,
           ),
           Expanded(
             child: _stepPill(
@@ -56,7 +56,7 @@ class AuthStepperBar extends StatelessWidget {
         ? AppColors.accentSuccess
         : isCurrent
             ? AppColors.secondary
-            : AppColors.textMuted;
+            : Theme.of(context).colorScheme.onSurfaceVariant;
 
     return Row(
       children: [
@@ -74,7 +74,7 @@ class AuthStepperBar extends StatelessWidget {
                 : Icon(
                     icon,
                     size: 13,
-                    color: isCurrent ? Colors.white : AppColors.textMuted,
+                    color: isCurrent ? Colors.white : Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
           ),
         ),
@@ -86,7 +86,7 @@ class AuthStepperBar extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
               fontWeight: isCurrent ? FontWeight.w800 : FontWeight.w600,
-              color: isCurrent ? AppColors.primary : AppColors.textMuted,
+              color: isCurrent ? AppColors.primary : Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
         ),

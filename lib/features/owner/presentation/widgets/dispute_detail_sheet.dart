@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/constants/app_colors.dart';
 import '../../../customer/data/datasources/dispute_remote_data_source.dart';
 import 'dispute_list_tile.dart';
 
@@ -47,7 +46,7 @@ class _DisputeDetailSheetState extends State<DisputeDetailSheet> {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: AppColors.borderSubtle,
+                  color: Theme.of(context).dividerColor,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -60,7 +59,6 @@ class _DisputeDetailSheetState extends State<DisputeDetailSheet> {
                     d.category.isEmpty ? 'Dispute' : d.category,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w900,
-                      color: AppColors.primary,
                     ),
                   ),
                 ),
@@ -91,7 +89,6 @@ class _DisputeDetailSheetState extends State<DisputeDetailSheet> {
             Text(
               d.description.isEmpty ? 'No description given.' : d.description,
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: AppColors.primary,
                 height: 1.5,
               ),
             ),

@@ -137,7 +137,7 @@ class _CustomerHomeMapViewState extends State<CustomerHomeMapView> {
               height: 110,
               leadingWidget: IconButton(
                 icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
-                onPressed: () => context.go(RouteNames.customerHome),
+                onPressed: () => context.pop(),
               ),
               titleWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
