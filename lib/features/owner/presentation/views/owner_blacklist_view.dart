@@ -6,6 +6,8 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/utils/current_shop.dart';
 import '../../../../core/widgets/app_feedback.dart';
+import '../../../../core/widgets/app_state_views.dart';
+import '../../../../core/widgets/debounced_button.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../blacklist/data/datasources/blacklist_remote_data_source.dart';
 import '../../../blacklist/domain/entities/blacklist_entity.dart';
@@ -40,9 +42,15 @@ class _OwnerBlacklistViewState extends State<OwnerBlacklistView> {
   String _reason = _reasons.first;
   List<BlacklistEntity> _reports = [];
   bool _loading = true;
-  bool _submitting = false;
+  // Audit §22/C4: a load failure used to spin forever — now an error
+  // state with retry. Audit §22: All/Active/Reverted filter.
+  bool _hasError = false;
+  String? _loadError;
+  String _filter = 'all';
 
   String get _shopId => widget.shopId ?? currentShopId();
+
+  List<BlacklistEntity> get _filtered => _filter == 'active' ? _reports.where((r) => r.isActive).toList() : _filter == 'reverted' ? _reports.where((r) => !r.isActive).toList() : _reports;
 
   @override
   void initState() {
@@ -59,13 +67,14 @@ class _OwnerBlacklistViewState extends State<OwnerBlacklistView> {
   }
 
   Future<void> _load() async {
-    final reports =
-        await sl<BlacklistRemoteDataSource>().getShopReports(_shopId);
-    if (!mounted) return;
-    setState(() {
-      _reports = reports;
-      _loading = false;
-    });
+    if (mounted) setState(() { _hasError = false; _loadError = null; });
+    try {
+      final reports = await sl<BlacklistRemoteDataSource>().getShopReports(_shopId);
+      if (!mounted) return;
+      setState(() { _reports = reports; _loading = false; });
+    } catch (e) {
+      if (mounted) setState(() { _hasError = true; _loadError = e.toString(); _loading = false; });
+    }
   }
 
   Future<void> _submit() async {
@@ -74,13 +83,11 @@ class _OwnerBlacklistViewState extends State<OwnerBlacklistView> {
     final phone = _phoneController.text.trim();
     final description = _descriptionController.text.trim();
     if (cnic.replaceAll('-', '').trim().length != 13) {
-      AppFeedback.showError(
-          context, l10n.blacklistEnterCnic);
+      AppFeedback.showError(context, l10n.blacklistEnterCnic);
       return;
     }
     if (description.isEmpty) {
-      AppFeedback.showError(
-          context, l10n.blacklistDescribe);
+      AppFeedback.showError(context, l10n.blacklistDescribe);
       return;
     }
     setState(() => _submitting = true);
@@ -93,8 +100,7 @@ class _OwnerBlacklistViewState extends State<OwnerBlacklistView> {
         description: description,
       );
       if (!mounted) return;
-      AppFeedback.showSuccess(
-          context, l10n.blacklistReported);
+      AppFeedback.showSuccess(context, l10n.blacklistReported);
       _cnicController.clear();
       _phoneController.clear();
       _descriptionController.clear();
@@ -105,6 +111,8 @@ class _OwnerBlacklistViewState extends State<OwnerBlacklistView> {
       if (mounted) setState(() => _submitting = false);
     }
   }
+
+  bool _submitting = false;
 
   Widget _field(TextEditingController controller, String label,
       {TextInputType keyboard = TextInputType.text, int maxLines = 1}) {
@@ -127,8 +135,11 @@ class _OwnerBlacklistViewState extends State<OwnerBlacklistView> {
   @override
   Widget build(BuildContext context) {
   final l10n = AppLocalizations.of(context)!;
+    final reports = _filtered;
     return Scaffold(
+      // C1: MinimalAppBar owns the top inset — no double status bar.
       body: SafeArea(
+        top: false,
         child: Column(
           children: [
             MinimalAppBar(
@@ -138,94 +149,78 @@ class _OwnerBlacklistViewState extends State<OwnerBlacklistView> {
             ),
             Expanded(
               child: _loading
-                  ? const Center(child: CircularProgressIndicator())
-                  : ListView(
-                      padding: const EdgeInsets.all(16),
-                      children: [
-                        Text(l10n.blacklistReportTitle, style: Theme.of(context) .textTheme .titleSmall ?.copyWith(fontWeight: FontWeight.w800)),
-                        const SizedBox(height: 10),
-                        _field(_cnicController, l10n.blacklistCustomerCnic,
-                            keyboard: TextInputType.number),
-                        _field(_phoneController, l10n.blacklistCustomerPhone,
-                            keyboard: TextInputType.phone),
-                        DropdownButtonFormField<String>(
-                          dropdownColor: Theme.of(context).colorScheme.surface,
-                          initialValue: _reason,
-                          decoration: InputDecoration(
-                            labelText: l10n.blacklistReasonLabel,
-                            border: OutlineInputBorder(),
-                            filled: true,
-                            fillColor: Theme.of(context)
-                                .colorScheme
-                                .surfaceContainerHighest,
-                          ),
-                          items: _reasons
-                              .map((r) => DropdownMenuItem(
-                                  value: r,
-                                  child: Text(_reasonLabel(l10n, r))))
-                              .toList(),
-                          onChanged: (r) =>
-                              setState(() => _reason = r ?? _reason),
-                        ),
-                        const SizedBox(height: 12),
-                        _field(_descriptionController,
-                            l10n.blacklistWhatHappened,
-                            maxLines: 3),
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton.icon(
-                            onPressed: _submitting ? null : _submit,
-                            icon: const Icon(Icons.flag_rounded),
-                            label: Text(l10n.blacklistReportButton),
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        Text(l10n.blacklistMyReports(_reports.length),
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleSmall
-                                ?.copyWith(fontWeight: FontWeight.w800)),
-                        const SizedBox(height: 10),
-                        if (_reports.isEmpty)
-                          Text(
-                              l10n.blacklistNoReports),
-                        ..._reports.map((r) => Card(
-                              margin: const EdgeInsets.only(bottom: 10),
-                              child: ListTile(
-                                leading: Icon(
-                                  Icons.flag_rounded,
-                                  // #15: grey flag on a dark card is low
-                                  // contrast — theme-aware muted tone.
-                                  color: r.isActive
-                                      ? Colors.red
-                                      : Theme.of(context)
-                                          .colorScheme
-                                          .onSurfaceVariant,
-                                ),
-                                title: Text(r.cnicNumber,
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.w800)),
-                                subtitle: Text(
-                                    '${_reasonLabel(l10n, r.reasonCategory)}\n${r.description}'),
-                                isThreeLine: true,
-                                trailing: Chip(
-                                  label: Text(
-                                      r.isActive ? l10n.active : l10n.blacklistReverted,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .labelSmall
-                                          ?.copyWith(color: Colors.white)),
-                                  // E3: white on Colors.grey is 2.68:1
-                                  // (WCAG AA fail); AppColors.textMuted
-                                  // (#64748B) is 4.76:1 and passes.
-                                  backgroundColor: r.isActive
-                                      ? Colors.red
-                                      : AppColors.textMuted,
+                  ? const AppLoadingState()
+                  : _hasError
+                      ? AppErrorState(message: l10n.blacklistReportFailed(_loadError ?? ''), onRetry: _load)
+                      : RefreshIndicator(
+                          onRefresh: _load,
+                          child: ListView(
+                            padding: const EdgeInsets.all(16),
+                            children: [
+                              // Audit §22: the report form is its own
+                              // card, separated from the history below.
+                              Card(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(l10n.blacklistReportTitle, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
+                                      const SizedBox(height: 10),
+                                      _field(_cnicController, l10n.blacklistCustomerCnic, keyboard: TextInputType.number),
+                                      _field(_phoneController, l10n.blacklistCustomerPhone, keyboard: TextInputType.phone),
+                                      DropdownButtonFormField<String>(
+                                        dropdownColor: Theme.of(context).colorScheme.surface,
+                                        initialValue: _reason,
+                                        decoration: InputDecoration(labelText: l10n.blacklistReasonLabel, border: const OutlineInputBorder(), filled: true, fillColor: Theme.of(context).colorScheme.surfaceContainerHighest),
+                                        items: _reasons.map((r) => DropdownMenuItem(value: r, child: Text(_reasonLabel(l10n, r)))).toList(),
+                                        onChanged: (r) => setState(() => _reason = r ?? _reason),
+                                      ),
+                                      const SizedBox(height: 12),
+                                      _field(_descriptionController, l10n.blacklistWhatHappened, maxLines: 3),
+                                      // Audit §22/C7: 54dp DebouncedButton.
+                                      DebouncedButton(text: l10n.blacklistReportButton, icon: Icons.flag_rounded, isLoading: _submitting, onPressed: _submit),
+                                    ],
+                                  ),
                                 ),
                               ),
-                            )),
-                      ],
-                    ),
+                              const SizedBox(height: 20),
+                              Text(l10n.blacklistMyReports(_reports.length), style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
+                              const SizedBox(height: 10),
+                              // Audit §22: All/Active/Reverted filter.
+                              Wrap(
+                                spacing: 8,
+                                children: [
+                                  ChoiceChip(label: Text(l10n.filterAll), selected: _filter == 'all', onSelected: (_) => setState(() => _filter = 'all')),
+                                  ChoiceChip(label: Text(l10n.active), selected: _filter == 'active', onSelected: (_) => setState(() => _filter = 'active')),
+                                  ChoiceChip(label: Text(l10n.blacklistReverted), selected: _filter == 'reverted', onSelected: (_) => setState(() => _filter = 'reverted')),
+                                ],
+                              ),
+                              const SizedBox(height: 10),
+                              if (reports.isEmpty)
+                                AppEmptyState(title: l10n.blacklistNoReports, icon: Icons.flag_outlined)
+                              else
+                                ...reports.map((r) => Card(
+                                      margin: const EdgeInsets.only(bottom: 10),
+                                      child: ListTile(
+                                        leading: Icon(Icons.flag_rounded, color: r.isActive ? AppColors.errorDark : Theme.of(context).colorScheme.onSurfaceVariant),
+                                        title: Text(r.cnicNumber, style: const TextStyle(fontWeight: FontWeight.w800)),
+                                        subtitle: Text('${_reasonLabel(l10n, r.reasonCategory)}\n${r.description}'),
+                                        isThreeLine: true,
+                                        trailing: Chip(
+                                          label: Text(r.isActive ? l10n.active : l10n.blacklistReverted, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.white)),
+                                          // Audit §22: white on
+                                          // Colors.red is 3.68:1 —
+                                          // errorDark #DC2626 is ~4.9:1.
+                                          // (Reverted keeps textMuted,
+                                          // 4.76:1 — already passing.)
+                                          backgroundColor: r.isActive ? AppColors.errorDark : AppColors.textMuted,
+                                        ),
+                                      ),
+                                    )),
+                            ],
+                          ),
+                        ),
             ),
           ],
         ),

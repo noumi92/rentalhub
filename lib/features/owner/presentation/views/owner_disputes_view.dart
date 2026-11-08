@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
+import '../../../../core/widgets/app_feedback.dart';
+import '../../../../core/widgets/app_state_views.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../customer/data/datasources/dispute_remote_data_source.dart';
 import '../widgets/dispute_detail_sheet.dart';
@@ -26,6 +28,7 @@ class OwnerDisputesView extends StatefulWidget {
 class _OwnerDisputesViewState extends State<OwnerDisputesView> {
   List<DisputeRecord> _items = [];
   bool _isLoading = true;
+  bool _hasError = false;
   String _filter = 'all';
 
   @override
@@ -35,12 +38,17 @@ class _OwnerDisputesViewState extends State<OwnerDisputesView> {
   }
 
   Future<void> _load() async {
-    setState(() => _isLoading = true);
+    setState(() {
+      _isLoading = true;
+      _hasError = false;
+    });
     try {
       final items =
           await sl<DisputeRemoteDataSource>().getShopDisputes(widget.shopId);
       if (mounted) setState(() => _items = items);
     } catch (_) {
+      // Audit §30/C4: a failed load used to render as "no disputes".
+      if (mounted) setState(() => _hasError = true);
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -53,6 +61,7 @@ class _OwnerDisputesViewState extends State<OwnerDisputesView> {
   int _count(String status) => _items.where((d) => d.status == status).length;
 
   Future<void> _open(DisputeRecord d) async {
+    final l10n = AppLocalizations.of(context)!;
     await showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
@@ -61,9 +70,17 @@ class _OwnerDisputesViewState extends State<OwnerDisputesView> {
       ),
       builder: (_) => DisputeDetailSheet(
         dispute: d,
+        // Audit §30: the sheet used to pop even when the update
+        // failed (and stranded when it threw). The callback now
+        // reports success so the sheet can stay open on failure.
         onStatusChanged: (status) async {
-          await sl<DisputeRemoteDataSource>().updateDisputeStatus(d.id, status);
+          final ok = await sl<DisputeRemoteDataSource>()
+              .updateDisputeStatus(d.id, status);
+          if (!ok && mounted) {
+            AppFeedback.showError(context, l10n.shopSaveError);
+          }
           await _load();
+          return ok;
         },
       ),
     );
@@ -74,6 +91,7 @@ class _OwnerDisputesViewState extends State<OwnerDisputesView> {
   final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: SafeArea(
+        top: false,
         child: Column(
           children: [
             MinimalAppBar(
@@ -101,34 +119,27 @@ class _OwnerDisputesViewState extends State<OwnerDisputesView> {
             ),
             Expanded(
               child: _isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : _items.isEmpty
-                      ? Center(
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 32),
-                            child: Text(
-                              l10n.disputesOwnerEmpty,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onSurfaceVariant,
-                                  fontWeight: FontWeight.w700),
-                            ),
-                          ),
+                  ? const AppLoadingState()
+                  : _hasError
+                      ? AppErrorState(
+                          message: l10n.dashboardLoadError,
+                          onRetry: _load,
                         )
-                      : _visible.isEmpty
-                          ? Center(
-                              child: Text(
-                                _filter == 'open' ? l10n.disputesNoneOpen : _filter == 'in_review' ? l10n.disputesNoneInReview : l10n.disputesNoneResolved,
-                                style: TextStyle(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onSurfaceVariant,
-                                    fontWeight: FontWeight.w700),
-                              ),
+                      : _items.isEmpty
+                          ? AppEmptyState(
+                              title: l10n.disputesOwnerEmpty,
+                              icon: Icons.report_problem_outlined,
                             )
-                          : ListView.separated(
+                          : _visible.isEmpty
+                              ? AppEmptyState(
+                                  title: _filter == 'open'
+                                      ? l10n.disputesNoneOpen
+                                      : _filter == 'in_review'
+                                          ? l10n.disputesNoneInReview
+                                          : l10n.disputesNoneResolved,
+                                  icon: Icons.report_problem_outlined,
+                                )
+                              : ListView.separated(
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 16, vertical: 10),
                               itemCount: _visible.length,

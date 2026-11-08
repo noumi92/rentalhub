@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/data/offline_sync_queue.dart';
 import '../../../../core/data/queued_upload.dart';
 import '../../../../core/di/injection_container.dart';
@@ -10,6 +9,7 @@ import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../core/widgets/debounced_button.dart';
 import '../../data/datasources/booking_remote_data_source.dart';
 import '../../domain/entities/booking_entity.dart';
+import '../widgets/proof_amount_card.dart';
 import '../widgets/proof_screenshot_picker.dart';
 import '../../../../l10n/app_localizations.dart';
 
@@ -33,6 +33,11 @@ class _PaymentProofUploadViewState extends State<PaymentProofUploadView> {
   final _tidController = TextEditingController();
   File? _selectedFile;
   bool _isSubmitting = false;
+  // §11: inline validation errors — the empty TID / missing
+  // screenshot used to surface only as a snackbar, with the
+  // offending field unmarked.
+  String? _tidError;
+  String? _screenshotError;
 
   @override
   void dispose() {
@@ -43,14 +48,13 @@ class _PaymentProofUploadViewState extends State<PaymentProofUploadView> {
   Future<void> _submitProof() async {
     final l10n = AppLocalizations.of(context)!;
     final tid = _tidController.text.trim();
-    if (tid.isEmpty) {
-      AppFeedback.showError(context, l10n.proofEnterTid);
-      return;
-    }
-    if (_selectedFile == null) {
-      AppFeedback.showError(context, l10n.proofAttachFirst);
-      return;
-    }
+    // §11: mark the offending field inline instead of snackbar-only.
+    setState(() {
+      _tidError = tid.isEmpty ? l10n.proofEnterTid : null;
+      _screenshotError =
+          _selectedFile == null ? l10n.proofAttachFirst : null;
+    });
+    if (tid.isEmpty || _selectedFile == null) return;
 
     setState(() => _isSubmitting = true);
     try {
@@ -116,7 +120,9 @@ class _PaymentProofUploadViewState extends State<PaymentProofUploadView> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
+      // C1: MinimalAppBar owns the top inset.
       body: SafeArea(
+        top: false,
         child: Column(
           children: [
             MinimalAppBar(
@@ -130,44 +136,21 @@ class _PaymentProofUploadViewState extends State<PaymentProofUploadView> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      padding: const EdgeInsets.all(14),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.surface,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: Theme.of(context).dividerColor),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                widget.booking.vehicleName ?? l10n.proofSelectedCar,
-                                style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
-                              ),
-                              Text(
-                                l10n.proofBookingId(widget.booking.bookingId),
-                                style: Theme.of(context).textTheme.bodySmall,
-                              ),
-                            ],
-                          ),
-                          Text(
-                            'Rs. ${widget.booking.advanceRequired}',
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: AppColors.secondary),
-                          ),
-                        ],
-                      ),
-                    ),
+                    ProofAmountCard(booking: widget.booking),
                     const SizedBox(height: 16),
                     Text(l10n.proofTidLabel,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
                     const SizedBox(height: 6),
                     TextField(
                       controller: _tidController,
+                      onChanged: (_) {
+                        if (_tidError != null) {
+                          setState(() => _tidError = null);
+                        }
+                      },
                       decoration: InputDecoration(
                         hintText: l10n.proofTidHint,
+                        errorText: _tidError,
                         hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                         filled: true,
                         fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
@@ -186,13 +169,32 @@ class _PaymentProofUploadViewState extends State<PaymentProofUploadView> {
                     const SizedBox(height: 6),
                     ProofScreenshotPicker(
                       selectedFile: _selectedFile,
-                      onFileSelected: (f) => setState(() => _selectedFile = f),
+                      onFileSelected: (f) => setState(() {
+                        _selectedFile = f;
+                        if (f != null) _screenshotError = null;
+                      }),
                     ),
+                    if (_screenshotError != null) ...[
+                      const SizedBox(height: 6),
+                      Text(
+                        _screenshotError!,
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodySmall
+                            ?.copyWith(
+                                color: Theme.of(context).colorScheme.error),
+                      ),
+                    ],
                     const SizedBox(height: 14),
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: AppColors.primaryContainer,
+                        // §11: brightness-aware container — the
+                        // const-light primaryContainer with theme text
+                        // was unreadable in dark mode.
+                        color: Theme.of(context)
+                            .colorScheme
+                            .surfaceContainerHighest,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Row(

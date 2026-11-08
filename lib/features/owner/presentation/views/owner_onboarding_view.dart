@@ -30,26 +30,28 @@ class OwnerOnboardingView extends StatefulWidget {
 class _OwnerOnboardingViewState extends State<OwnerOnboardingView> {
   int _currentStep = 1;
 
-  // Step 1: Details
+  // Step 1: Details — controllers start EMPTY (audit §1/C6): the old prefilled shop name / owner / CNIC / phones were publishable as-is. Hints live on the fields (see the step widgets).
   XFile? _shopLogoFile;
-  final _shopNameController = TextEditingController(text: 'Al-Falah Rent a Car'); final _ownerNameController = TextEditingController(text: 'Ahmed Raza');
-  final _cnicController = TextEditingController(text: '35201-9876543-1'); final _whatsappController = TextEditingController(text: '03001234567');
-  final _phoneController = TextEditingController(text: '04235761234');
+  final _shopNameController = TextEditingController(); final _ownerNameController = TextEditingController();
+  final _cnicController = TextEditingController(); final _whatsappController = TextEditingController();
+  final _phoneController = TextEditingController();
   String _openingHours = '9:00 AM - 10:00 PM';
 
   // Step 2: Location
   final MapController _mapController = MapController();
   ll.LatLng _shopPin = const ll.LatLng(31.4720, 74.3850);
-  final _addressController = TextEditingController(text: 'Shop 12, Main Boulevard, DHA Phase 5');
+  final _addressController = TextEditingController();
   String _selectedCity = 'Lahore';
   bool _isLocating = false;
+  // Audit §1: submit progress is its own flag — _isLocating used to double as the submit flag, so the button showed no loading state.
+  bool _isSubmitting = false;
 
   // Step 3: Payout (Initially disabled)
   bool _jazzCashEnabled = false, _easyPaisaEnabled = false, _bankEnabled = false;
-  final _jazzCashAccount = TextEditingController(text: '03001234567'); final _jazzCashTitle = TextEditingController(text: 'Ahmed Raza');
-  final _easyPaisaAccount = TextEditingController(text: '03457654321'); final _easyPaisaTitle = TextEditingController(text: 'Ahmed Raza');
+  final _jazzCashAccount = TextEditingController(); final _jazzCashTitle = TextEditingController();
+  final _easyPaisaAccount = TextEditingController(); final _easyPaisaTitle = TextEditingController();
   String _selectedBankName = 'Meezan Bank';
-  final _bankAccountController = TextEditingController(text: 'PK36MEZN0001234567890123'); final _bankAccountTitle = TextEditingController(text: 'Al-Falah Rent a Car');
+  final _bankAccountController = TextEditingController(); final _bankAccountTitle = TextEditingController();
 
   // Step 4: Documents & Photos
   XFile? _cnicFrontFile, _cnicBackFile, _shopHeaderFile;
@@ -106,7 +108,7 @@ class _OwnerOnboardingViewState extends State<OwnerOnboardingView> {
 
   Future<void> _handleSubmitShop() async {
     final l10n = AppLocalizations.of(context)!;
-    setState(() => _isLocating = true);
+    setState(() => _isSubmitting = true);
     try {
       final accounts = [
         if (_jazzCashEnabled) {'type': 'jazzcash', 'account': _jazzCashAccount.text.trim(), 'title': _jazzCashTitle.text.trim()},
@@ -125,7 +127,7 @@ class _OwnerOnboardingViewState extends State<OwnerOnboardingView> {
       if (!mounted) return;
       AppFeedback.showError(context, l10n.customersRatingSubmitFailed(e.toString()));
     } finally {
-      if (mounted) setState(() => _isLocating = false);
+      if (mounted) setState(() => _isSubmitting = false);
     }
   }
 
@@ -152,7 +154,9 @@ class _OwnerOnboardingViewState extends State<OwnerOnboardingView> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
+      // C1: MinimalAppBar owns the top inset — no double status bar.
       body: SafeArea(
+        top: false,
         child: Column(
           children: [
             Expanded(
@@ -189,6 +193,7 @@ class _OwnerOnboardingViewState extends State<OwnerOnboardingView> {
                 child: DebouncedButton(
                   text: _currentStep == 4 ? l10n.onboardingSubmit : l10n.onboardingNextStep,
                   icon: _currentStep == 4 ? Icons.check_circle_rounded : Icons.arrow_forward_rounded,
+                  isLoading: _isSubmitting,
                   onPressed: () async => _handleNext(),
                 ),
               ),
@@ -210,7 +215,7 @@ class _OwnerOnboardingViewState extends State<OwnerOnboardingView> {
         );
       case 2:
         return ShopLocationStepWidget(
-          mapController: _mapController, shopPin: _shopPin, onPinChanged: (p) => setState(() => _shopPin = p),
+          mapController: _mapController, shopPin: _shopPin, onPinChanged: (p) { setState(() => _shopPin = p); _mapController.move(p, 14.0); },
           addressController: _addressController, selectedCity: _selectedCity, onCityChanged: (c) => setState(() => _selectedCity = c),
           majorCities: OwnerOnboardingConstants.majorCities, isLocating: _isLocating, onFetchGps: _fetchCurrentGps,
         );

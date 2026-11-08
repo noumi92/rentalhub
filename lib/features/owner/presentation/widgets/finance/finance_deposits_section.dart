@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../../l10n/app_localizations.dart';
 
 import  '../../../../finance/domain/entities/security_deposit_entity.dart';
+import '../../../../../core/utils/money_format.dart';
 
 /// Phase B (H4): the deposits the shop holds — what is still held,
 /// what was refunded in full, and what was deducted at return.
@@ -68,7 +69,7 @@ class FinanceDepositsSection extends StatelessWidget {
                     fontSize: 11, color: Theme.of(context).colorScheme.onSurfaceVariant)),
           ],
         ),
-        Text(l10n.amountRs(amount),
+        Text(l10n.amountRs(formatRs(amount)),
             style: const TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w900,

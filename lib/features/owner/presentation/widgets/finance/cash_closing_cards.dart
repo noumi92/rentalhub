@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import '../../../../../l10n/app_localizations.dart';
 
 import '../../../../../core/constants/app_colors.dart';
-import  '../../../../finance/domain/entities/cash_closing_entity.dart';
+import '../../../../../core/utils/money_format.dart';
+import '../../../../finance/domain/entities/cash_closing_entity.dart';
 
 /// Phase B (H5): the cash-closing summary card and one past
 /// closing row, extracted from [OwnerCashClosingView] so the view
@@ -10,23 +11,37 @@ import  '../../../../finance/domain/entities/cash_closing_entity.dart';
 class CashClosingSummaryCard extends StatelessWidget {
   final int expectedCash;
   final int openingCash;
-  final int difference;
+
+  /// Null until the owner types a counted amount — the card must
+  /// never show a false difference on first paint (audit §26).
+  final int? difference;
+  final int cashInToday;
+  final int cashOutToday;
+
+  /// The typed counted amount (for the exact-match line).
+  final int? countedCash;
 
   const CashClosingSummaryCard({
     super.key,
     required this.expectedCash,
     required this.openingCash,
     required this.difference,
+    this.cashInToday = 0,
+    this.cashOutToday = 0,
+    this.countedCash,
   });
 
   @override
   Widget build(BuildContext context) {
-  final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context)!;
+    final diff = difference;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.primary,
+        // Audit §24: the light navy token in dark mode was barely
+        // distinguishable from the dark surface.
+        color: Theme.of(context).colorScheme.primary,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -34,17 +49,55 @@ class CashClosingSummaryCard extends StatelessWidget {
         children: [
           Text(l10n.financeClosingExpected,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white70)),
-          Text(l10n.amountRs(expectedCash),
+          Text(l10n.amountRs(formatRs(expectedCash)),
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                 color: Colors.white,
                 fontWeight: FontWeight.w900,
               )),
           const SizedBox(height: 4),
-          Text(l10n.financeClosingOpening(openingCash, difference),
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white70)),
+          // Audit §26: the expected figure was opaque — the
+          // arithmetic behind it (opening + cash in − cash out).
+          Text(
+              '${l10n.amountRs(formatRs(openingCash))} + ${l10n.amountRs(formatRs(cashInToday))} − ${l10n.amountRs(formatRs(cashOutToday))}',
+              style: Theme.of(context)
+                  .textTheme
+                  .bodySmall
+                  ?.copyWith(color: Colors.white70)),
+          const SizedBox(height: 8),
+          _differenceLine(context, diff, countedCash),
         ],
       ),
     );
+  }
+
+  /// Audit §26: a bare signed int said nothing about over/short.
+  /// The card is navy in both modes, so the over/short text uses
+  /// the dark-mode danger/success text tokens for contrast.
+  Widget _differenceLine(BuildContext context, int? diff, int? counted) {
+    final l10n = AppLocalizations.of(context)!;
+    const dark = Brightness.dark;
+    if (diff == null) {
+      return Text(l10n.financeClosingEnterCounted,
+          style: Theme.of(context)
+              .textTheme
+              .bodySmall
+              ?.copyWith(color: Colors.white70));
+    }
+    if (diff == 0) {
+      return Text(l10n.financeClosingCounted(formatRs(counted ?? 0), formatRs(0)),
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: Colors.white70, fontWeight: FontWeight.w700));
+    }
+    if (diff < 0) {
+      return Text(l10n.cashClosingShortBy(formatRs(-diff)),
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: AppColors.dangerTextFor(dark),
+              fontWeight: FontWeight.w800));
+    }
+    return Text(l10n.cashClosingOverBy(formatRs(diff)),
+        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+            color: AppColors.successTextFor(dark),
+            fontWeight: FontWeight.w800));
   }
 }
 
@@ -55,7 +108,7 @@ class CashClosingRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-  final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(12),
@@ -70,7 +123,7 @@ class CashClosingRow extends StatelessWidget {
           Text('${closing.date.day}/${closing.date.month}/${closing.date.year}',
               style: const TextStyle(fontWeight: FontWeight.w800)),
           Text(
-              l10n.financeClosingCounted(closing.countedCash, closing.difference),
+              l10n.financeClosingCounted(formatRs(closing.countedCash), formatRs(closing.difference)),
               style: Theme.of(context).textTheme.labelMedium?.copyWith(
                 color: closing.difference == 0
                       ? AppColors.successTextFor(Theme.of(context).brightness)

@@ -101,6 +101,16 @@ class VehicleEntity extends Equatable {
   // Phase B (B1): vehicle identity + pricing fields the Gaari spec needs.
   // All optional — older vehicle documents without them still read fine.
   final String? imageUrl;
+  // Audit §5 (integration): the other six picked files' URLs.
+  // uploadAllVehicleFiles uploads them, but without fields they
+  // were uploaded yet unlinked. All optional — older documents
+  // without them still read fine.
+  final String? photoBackUrl;
+  final String? photoSideUrl;
+  final String? photoInteriorUrl;
+  final String? regBookUrl;
+  final String? tokenTaxUrl;
+  final String? insuranceUrl;
   final String? color;
   final int? mileageKm;
   final String? chassisNumber;
@@ -142,6 +152,12 @@ class VehicleEntity extends Equatable {
     required this.rates,
     this.status = 'available',
     this.imageUrl,
+    this.photoBackUrl,
+    this.photoSideUrl,
+    this.photoInteriorUrl,
+    this.regBookUrl,
+    this.tokenTaxUrl,
+    this.insuranceUrl,
     this.color,
     this.mileageKm,
     this.chassisNumber,
@@ -222,6 +238,12 @@ class VehicleEntity extends Equatable {
     VehicleRatesEntity? rates,
     String? status,
     String? imageUrl,
+    String? photoBackUrl,
+    String? photoSideUrl,
+    String? photoInteriorUrl,
+    String? regBookUrl,
+    String? tokenTaxUrl,
+    String? insuranceUrl,
     String? color,
     int? mileageKm,
     String? chassisNumber,
@@ -257,6 +279,12 @@ class VehicleEntity extends Equatable {
       rates: rates ?? this.rates,
       status: status ?? this.status,
       imageUrl: imageUrl ?? this.imageUrl,
+      photoBackUrl: photoBackUrl ?? this.photoBackUrl,
+      photoSideUrl: photoSideUrl ?? this.photoSideUrl,
+      photoInteriorUrl: photoInteriorUrl ?? this.photoInteriorUrl,
+      regBookUrl: regBookUrl ?? this.regBookUrl,
+      tokenTaxUrl: tokenTaxUrl ?? this.tokenTaxUrl,
+      insuranceUrl: insuranceUrl ?? this.insuranceUrl,
       color: color ?? this.color,
       mileageKm: mileageKm ?? this.mileageKm,
       chassisNumber: chassisNumber ?? this.chassisNumber,
@@ -295,6 +323,12 @@ class VehicleEntity extends Equatable {
         rates,
         status,
         imageUrl,
+        photoBackUrl,
+        photoSideUrl,
+        photoInteriorUrl,
+        regBookUrl,
+        tokenTaxUrl,
+        insuranceUrl,
         color,
         mileageKm,
         chassisNumber,

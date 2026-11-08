@@ -4,6 +4,7 @@ import '../../../../../l10n/app_localizations.dart';
 import  '../../../../finance/domain/entities/finance_account_entity.dart';
 import  '../../../../finance/domain/entities/finance_transfer_entity.dart';
 import  '../../../../finance/utils/finance_summary.dart';
+import '../../../../../core/utils/money_format.dart';
 
 /// Phase B (H1): the shop's accounts with their live balances —
 /// opening balance plus every transfer posted to the account.
@@ -40,6 +41,12 @@ class FinanceAccountsSection extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 8),
+        // Audit §24: with zero accounts the section used to render
+        // only the header + "Add" button and blank space.
+        if (accounts.isEmpty)
+          Text(l10n.financeAccountsEmpty,
+              style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant)),
         ...accounts.map((a) {
           final balance = FinanceSummary.accountBalance(a, transfers);
           return Container(
@@ -64,7 +71,7 @@ class FinanceAccountsSection extends StatelessWidget {
                         style: Theme.of(context).textTheme.labelSmall),
                   ],
                 ),
-                Text(l10n.amountRs(balance),
+                Text(l10n.amountRs(formatRs(balance)),
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.w900,
                     )),

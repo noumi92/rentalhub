@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/pakistani_plate_widget.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../../core/utils/money_format.dart';
 
 class BookingSummaryCard extends StatelessWidget {
   final String carName;
@@ -100,7 +101,7 @@ class BookingSummaryCard extends StatelessWidget {
             const SizedBox(height: 8),
             _buildRow(context, 
               l10n.summarySecurityDeposit,
-              l10n.summaryDepositAtHandover(securityDepositPkr!),
+              l10n.summaryDepositAtHandover(formatRs(securityDepositPkr!)),
             ),
           ],
           const SizedBox(height: 8),

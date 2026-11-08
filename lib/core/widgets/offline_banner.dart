@@ -92,14 +92,19 @@ class OfflineBanner extends StatelessWidget {
                 ? l10n?.syncFailedBanner ?? 'Sync failed — tap to review'
                 : l10n?.syncPending(state.pendingCount) ??
                     '${state.pendingCount} change${state.pendingCount == 1 ? '' : 's'} pending sync';
-        // Phase D (D2): the banner lives at the very top of the shell
-        // body, so with edge-to-edge it would render under the status
-        // bar when visible. The SafeArea wraps only the visible
-        // banner — the hidden branch above stays a zero-size shrink.
+        // Audit fix (C1 / dead band): the banner no longer wraps
+        // itself in a SafeArea — the shell (AppShell) owns the top
+        // inset exactly once, so no ~status-bar-height empty strip
+        // appears between the banner and the header. Standalone
+        // pumps (tests) render it flush at the top, as before.
+        // Audit fix (§4.6): 15 px vertical padding puts the tappable
+        // failed banner at the 48 dp minimum tap height (15 + ~18 px
+        // text line + 15); the offline/pending states get the same
+        // height so the banner never jumps when its state changes.
         final banner = Container(
           width: double.infinity,
           color: background,
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
           child: Row(
             children: [
               Icon(
@@ -125,27 +130,21 @@ class OfflineBanner extends StatelessWidget {
             ],
           ),
         );
-        return SafeArea(
-          top: true,
-          bottom: false,
-          left: false,
-          right: false,
-          // The failed banner is tappable (opens sync details); the
-          // offline/pending states stay plain. maybeOf keeps pumps
-          // without a GoRouter from throwing on tap. The Semantics
-          // label is the a11y name for the tap target (E3 scan).
-          child: isFailed
-              ? Semantics(
-                  button: true,
-                  label: text,
-                  child: GestureDetector(
-                    onTap: () => GoRouter.maybeOf(context)
-                        ?.push(RouteNames.syncDetails),
-                    child: banner,
-                  ),
-                )
-              : banner,
-        );
+        // The failed banner is tappable (opens sync details); the
+        // offline/pending states stay plain. maybeOf keeps pumps
+        // without a GoRouter from throwing on tap. The Semantics
+        // label is the a11y name for the tap target (E3 scan).
+        return isFailed
+            ? Semantics(
+                button: true,
+                label: text,
+                child: GestureDetector(
+                  onTap: () => GoRouter.maybeOf(context)
+                      ?.push(RouteNames.syncDetails),
+                  child: banner,
+                ),
+              )
+            : banner;
       },
     );
   }

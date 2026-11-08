@@ -13,7 +13,6 @@ import '../../../blacklist/domain/entities/blacklist_entity.dart';
 import '../../../trust/data/services/cnic_ocr_service.dart';
 import '../widgets/operations/cnic_scanner_input_widget.dart';
 import '../widgets/operations/blacklist_status_banner.dart';
-import 'owner_cnic_review_view.dart';
 
 class OwnerCustomerScanView extends StatefulWidget {
   final VoidCallback? onBack;
@@ -29,6 +28,11 @@ class _OwnerCustomerScanViewState extends State<OwnerCustomerScanView> {
   bool _isVerifying = false;
   bool _hasSearched = false;
   BlacklistEntity? _foundBlacklist;
+  // Audit §19: blacklisted, but no record returned — the banner shows
+  // the "details unavailable" state; no record is ever invented.
+  bool _blacklistNoRecord = false;
+  // Audit §19: inline field error (was snackbar-only).
+  String? _cnicError;
 
   @override
   void dispose() {
@@ -39,9 +43,9 @@ class _OwnerCustomerScanViewState extends State<OwnerCustomerScanView> {
   Future<void> _verifyCnic() async {
   final l10n = AppLocalizations.of(context)!;
     final cnic = _cnicController.text.trim();
-    if (cnic.length < 13) {
-      AppFeedback.showError(
-          context, l10n.customersScanInvalidCnic);
+    if (cnic.replaceAll('-', '').trim().length != 13) {
+      setState(() => _cnicError = l10n.customersScanInvalidCnic);
+      AppFeedback.showError(context, l10n.customersScanInvalidCnic);
       return;
     }
 
@@ -51,28 +55,15 @@ class _OwnerCustomerScanViewState extends State<OwnerCustomerScanView> {
       final isBlacklisted = await ds.isCnicBlacklisted(cnic);
       if (isBlacklisted) {
         final record = await ds.getBlacklistRecordByCnic(cnic);
-        setState(() {
-          _foundBlacklist = record ??
-              BlacklistEntity(
-                blacklistId: 'BLK-AUTO',
-                reportedByShopId: 'All-Pakistan Tribunal',
-                cnicNumber: cnic,
-                phoneNumber: '0300-0000000',
-                reasonCategory: l10n.customersScanFallbackReason,
-                description: l10n.customersScanFallbackDescription,
-              );
-          _hasSearched = true;
-        });
+        // Audit §19: a null record used to be replaced by a fabricated
+        // BLK-AUTO / '0300-0000000' record — now the banner renders
+        // "details unavailable" instead.
+        setState(() { _foundBlacklist = record; _blacklistNoRecord = record == null; _hasSearched = true; });
       } else {
-        setState(() {
-          _foundBlacklist = null;
-          _hasSearched = true;
-        });
+        setState(() { _foundBlacklist = null; _blacklistNoRecord = false; _hasSearched = true; });
       }
     } catch (e) {
-      if (mounted) {
-        AppFeedback.showError(context, l10n.customersScanLookupFailed(e.toString()));
-      }
+      if (mounted) AppFeedback.showError(context, l10n.customersScanLookupFailed(e.toString()));
     } finally {
       if (mounted) setState(() => _isVerifying = false);
     }
@@ -83,35 +74,26 @@ class _OwnerCustomerScanViewState extends State<OwnerCustomerScanView> {
   /// is the customer saved and the blacklist checked.
   Future<void> _scanCnicWithCamera() async {
   final l10n = AppLocalizations.of(context)!;
-    final picked = await ImagePicker().pickImage(
-      source: ImageSource.camera,
-      imageQuality: 85,
-    );
+    final picked = await ImagePicker().pickImage(source: ImageSource.camera, imageQuality: 85);
     if (picked == null || !mounted) return;
     setState(() => _isVerifying = true);
     try {
       final result = await CnicOcrService().scanFront(File(picked.path));
       if (!mounted) return;
       if (!result.hasAnything) {
-        AppFeedback.showError(
-            context, l10n.customersScanUnreadable);
+        AppFeedback.showError(context, l10n.customersScanUnreadable);
         return;
       }
-      await Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (_) => OwnerCnicReviewView(
-            initial: result,
-            onSaved: (cnic) {
-              _cnicController.text = cnic;
-              _verifyCnic();
-            },
-          ),
-        ),
+      await context.push(
+        '/owner/customers/cnic-review',
+        extra: <String, dynamic>{
+          'result': result,
+          'frontImagePath': picked.path,
+          'onSaved': (String cnic) { _cnicController.text = cnic; _verifyCnic(); },
+        },
       );
     } catch (e) {
-      if (mounted) {
-        AppFeedback.showError(context, l10n.customersScanFailed(e.toString()));
-      }
+      if (mounted) AppFeedback.showError(context, l10n.customersScanFailed(e.toString()));
     } finally {
       if (mounted) setState(() => _isVerifying = false);
     }
@@ -129,20 +111,40 @@ class _OwnerCustomerScanViewState extends State<OwnerCustomerScanView> {
 
   void _declineCustomer() {
   final l10n = AppLocalizations.of(context)!;
-    AppFeedback.showInfo(
-        context, l10n.customersScanDeclined);
-    setState(() {
-      _hasSearched = false;
-      _foundBlacklist = null;
-      _cnicController.clear();
-    });
+    AppFeedback.showInfo(context, l10n.customersScanDeclined);
+    setState(() { _hasSearched = false; _foundBlacklist = null; _blacklistNoRecord = false; _cnicController.clear(); });
+  }
+
+  /// Audit §19: Tribunal Policy opens a bottom sheet with the actual
+  /// policy text instead of a toast.
+  void _showTribunalPolicy() {
+    final l10n = AppLocalizations.of(context)!;
+    showModalBottomSheet<void>(
+      context: context,
+      builder: (sheetContext) => Padding(
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(l10n.customersScanTribunalPolicy, style: Theme.of(sheetContext).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
+            const SizedBox(height: 8),
+            Text(l10n.customersScanTribunalInfo, style: Theme.of(sheetContext).textTheme.bodyMedium),
+            const SizedBox(height: 16),
+            SizedBox(width: double.infinity, child: FilledButton(onPressed: () => Navigator.of(sheetContext).pop(), child: Text(l10n.back))),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
   final l10n = AppLocalizations.of(context)!;
     return Scaffold(
+      // C1: MinimalAppBar owns the top inset — no double status bar.
       body: SafeArea(
+        top: false,
         child: Column(
           children: [
             MinimalAppBar(
@@ -153,8 +155,7 @@ class _OwnerCustomerScanViewState extends State<OwnerCustomerScanView> {
                 IconButton(
                   icon: const Icon(Icons.info_outline, color: Colors.white),
                   tooltip: l10n.customersScanTribunalPolicy,
-                  onPressed: () => AppFeedback.showInfo(context,
-                      l10n.customersScanTribunalInfo),
+                  onPressed: _showTribunalPolicy,
                 ),
               ],
             ),
@@ -168,6 +169,8 @@ class _OwnerCustomerScanViewState extends State<OwnerCustomerScanView> {
                     CnicScannerInputWidget(
                       controller: _cnicController,
                       isVerifying: _isVerifying,
+                      errorText: _cnicError,
+                      onCnicChanged: (_) { if (_cnicError != null) setState(() => _cnicError = null); },
                       onVerify: _verifyCnic,
                       onCameraScan: _scanCnicWithCamera,
                     ),
@@ -175,6 +178,7 @@ class _OwnerCustomerScanViewState extends State<OwnerCustomerScanView> {
                     BlacklistStatusBanner(
                       isChecked: _hasSearched,
                       blacklistedRecord: _foundBlacklist,
+                      detailsUnavailable: _blacklistNoRecord,
                       onProceed: _proceedToAddCustomer,
                       onDecline: _declineCustomer,
                     ),
@@ -182,7 +186,9 @@ class _OwnerCustomerScanViewState extends State<OwnerCustomerScanView> {
                     SizedBox(
                       width: double.infinity,
                       child: OutlinedButton.icon(
-                        onPressed: () => context.push('/owner/customers'),
+                        // Audit §19: pop/go replaces the push stack —
+                        // back from the list no longer returns to scan.
+                        onPressed: () { if (context.canPop()) { context.pop(); } else { context.go(RouteNames.ownerCustomers); } },
                         icon: const Icon(Icons.people_rounded),
                         label: Text(l10n.customersScanViewAll),
                       ),
@@ -191,7 +197,9 @@ class _OwnerCustomerScanViewState extends State<OwnerCustomerScanView> {
                     SizedBox(
                       width: double.infinity,
                       child: OutlinedButton.icon(
-                        onPressed: () => context.push('/owner/blacklist'),
+                        // Audit §19: go() replaces the stack — back
+                        // from the blacklist no longer returns to scan.
+                        onPressed: () => context.go(RouteNames.ownerBlacklist),
                         icon: const Icon(Icons.flag_rounded),
                         label: Text(l10n.blacklist),
                       ),

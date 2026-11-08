@@ -6,6 +6,7 @@ import '../../../../../features/discovery/presentation/views/widgets/vehicle_her
     show vehicleHeroTag;
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../fleet/domain/entities/vehicle_entity.dart';
+import '../../../../../core/utils/money_format.dart';
 
 /// Phase B (B1) + #13: fleet card for a real [VehicleEntity], rebuilt
 /// image-led on the [VehicleHeroCard] pattern — a full-width hero photo
@@ -25,12 +26,18 @@ class FleetVehicleCard extends StatelessWidget {
   final VoidCallback onEditRates;
   final VoidCallback onViewCalendar;
 
+  /// Tapping the photo opens the vehicle-detail route (the hero tag
+  /// only works when the image is actually tappable). Null in tests
+  /// or embeds that render the card without navigation.
+  final VoidCallback? onTap;
+
   const FleetVehicleCard({
     super.key,
     required this.vehicle,
     required this.onToggleAvailability,
     required this.onEditRates,
     required this.onViewCalendar,
+    this.onTap,
   });
 
   Widget _carImage(VehicleEntity v) {
@@ -59,14 +66,15 @@ class FleetVehicleCard extends StatelessWidget {
 
   Widget _assetImage(String asset) => Image.asset(asset, width: double.infinity, height: 190, fit: BoxFit.cover, errorBuilder: (_, __, ___) => Image.asset('assets/images/white_sedan_hero.png', width: double.infinity, height: 190, fit: BoxFit.cover));
 
+  /// Only the two known model families map to a model photo; anything
+  /// else gets the one neutral placeholder — never a wrong-model photo
+  /// (a Sportage is not a red Civic).
   String _assetFor(VehicleEntity v) {
     final nameLower = v.displayName.toLowerCase();
     if (nameLower.contains('civic')) {
       return 'assets/images/honda_civic_hero.png';
     } else if (nameLower.contains('corolla') || nameLower.contains('yaris')) {
       return 'assets/images/toyota_corolla.png';
-    } else if (nameLower.contains('sportage') || nameLower.contains('br-v')) {
-      return 'assets/images/red_civic.png';
     }
     return 'assets/images/white_sedan_hero.png';
   }
@@ -79,10 +87,16 @@ class FleetVehicleCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final isAvailable = vehicle.status == 'available';
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    // #15: the non-available status is small text — the light orange
-    // is weak on a dark surface, so dark mode uses secondaryDark.
-    final statusColor = isAvailable ? AppColors.successTextFor(Theme.of(context).brightness) : (isDark ? AppColors.secondaryDark : AppColors.secondary);
+    final isRented = vehicle.status == 'rented';
+    final brightness = Theme.of(context).brightness;
+    // Audit §4: the status chip is small white text, so it sits on a
+    // filled token — orangeFill #C2410C (white 5.18:1, both modes) for
+    // non-available, accentSuccessStrong #047857 (white 5.48:1) for
+    // available. Never white on #F95700 / #FF6D24 (~3:1).
+    final chipColor = isAvailable ? AppColors.accentSuccessStrong : AppColors.orangeFill;
+    // Small status text next to the switch uses the brightness-aware
+    // text tokens, not the fill colours.
+    final statusTextColor = isAvailable ? AppColors.successTextFor(brightness) : AppColors.orangeTextFor(brightness);
     return Card(
       elevation: 2,
       clipBehavior: Clip.antiAlias,
@@ -93,16 +107,22 @@ class FleetVehicleCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
-            height: 190,
-            width: double.infinity,
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                Hero(
-                  tag: vehicleHeroTag(vehicle.vehicleId),
-                  child: _carImage(vehicle),
-                ),
+          // Audit §4: the photo is tappable — it pushes the
+          // vehicle-detail route (hero tag above). The Rates /
+          // Calendar buttons and the availability switch below stay
+          // outside the tap area.
+          InkWell(
+            onTap: onTap,
+            child: SizedBox(
+              height: 190,
+              width: double.infinity,
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Hero(
+                    tag: vehicleHeroTag(vehicle.vehicleId),
+                    child: _carImage(vehicle),
+                  ),
                 Positioned.fill(
                   child: DecoratedBox(
                     decoration: BoxDecoration(
@@ -153,7 +173,7 @@ class FleetVehicleCard extends StatelessWidget {
                           ),
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                            decoration: BoxDecoration(color: statusColor, borderRadius: BorderRadius.circular(10)),
+                            decoration: BoxDecoration(color: chipColor, borderRadius: BorderRadius.circular(10)),
                             child: Text(
                               _statusLabel(l10n, vehicle.status),
                               style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800, color: Colors.white),
@@ -167,6 +187,7 @@ class FleetVehicleCard extends StatelessWidget {
               ],
             ),
           ),
+          ),
           Padding(
             padding: const EdgeInsets.fromLTRB(14, 12, 14, 6),
             child: Row(
@@ -176,18 +197,22 @@ class FleetVehicleCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(l10n.fleetDailySelfDriveRate, style: Theme.of(context).textTheme.labelSmall),
-                      Text(l10n.fleetDailyRate(vehicle.rates.daily24), style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w900)),
+                      Text(l10n.fleetDailyRate(formatRs(vehicle.rates.daily24)), style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w900)),
                     ],
                   ),
                 ),
+                // Audit §4: the switch means Available ↔ Maintenance
+                // and is labelled as such. A rented car shows it
+                // disabled — flipping it must never write
+                // 'maintenance' for a car that is out on rent.
                 Text(
-                  isAvailable ? l10n.available : _statusLabel(l10n, vehicle.status),
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800, color: statusColor),
+                  l10n.available,
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800, color: statusTextColor),
                 ),
                 Switch(
                   value: isAvailable,
                   activeThumbColor: AppColors.accentSuccess,
-                  onChanged: onToggleAvailability,
+                  onChanged: isRented ? null : onToggleAvailability,
                 ),
               ],
             ),

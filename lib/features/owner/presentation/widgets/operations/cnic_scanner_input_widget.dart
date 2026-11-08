@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../../../../core/constants/app_colors.dart';
+import '../../../../../core/widgets/debounced_button.dart';
 import '../../../../../l10n/app_localizations.dart';
 
 class CnicScannerInputWidget extends StatelessWidget {
@@ -9,12 +10,19 @@ class CnicScannerInputWidget extends StatelessWidget {
   final VoidCallback onCameraScan;
   final bool isVerifying;
 
+  /// Audit §19: inline field error for a <13-digit CNIC (was
+  /// snackbar-only). Cleared by the owner via [onCnicChanged].
+  final String? errorText;
+  final ValueChanged<String>? onCnicChanged;
+
   const CnicScannerInputWidget({
     super.key,
     required this.controller,
     required this.onVerify,
     required this.onCameraScan,
     this.isVerifying = false,
+    this.errorText,
+    this.onCnicChanged,
   });
 
   @override
@@ -54,6 +62,7 @@ class CnicScannerInputWidget extends StatelessWidget {
           TextField(
             controller: controller,
             keyboardType: TextInputType.number,
+            onChanged: onCnicChanged,
             inputFormatters: [
               FilteringTextInputFormatter.allow(RegExp(r'[0-9\-]')),
               LengthLimitingTextInputFormatter(15),
@@ -75,6 +84,7 @@ class CnicScannerInputWidget extends StatelessWidget {
                       onPressed: () => controller.clear(),
                     )
                   : null,
+              errorText: errorText,
               filled: true,
               fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
               border: OutlineInputBorder(
@@ -86,35 +96,16 @@ class CnicScannerInputWidget extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
-          SizedBox(
-            width: double.infinity,
-            height: 46,
-            child: ElevatedButton.icon(
-              onPressed: isVerifying ? null : onVerify,
-              icon: isVerifying
-                  ? const SizedBox(
-                      width: 18,
-                      height: 18,
-                      child: CircularProgressIndicator(
-                          strokeWidth: 2, color: Colors.white),
-                    )
-                  : const Icon(Icons.verified_user_rounded, size: 18),
-              label: Text(
-                isVerifying
-                    ? l10n?.cnicChecking ?? 'Checking National Tribunal...'
-                    : l10n?.cnicVerifyButton ?? 'Verify CNIC & Blacklist',
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyMedium
-                    ?.copyWith(fontWeight: FontWeight.w800),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12)),
-              ),
-            ),
+          // Audit §19/C7: 54dp DebouncedButton (was a 46dp
+          // ElevatedButton). The navy fill is unchanged.
+          DebouncedButton(
+            text: isVerifying
+                ? l10n?.cnicChecking ?? 'Checking RentalHub blacklist...'
+                : l10n?.cnicVerifyButton ?? 'Verify CNIC & Blacklist',
+            icon: isVerifying ? null : Icons.verified_user_rounded,
+            isLoading: isVerifying,
+            backgroundColor: AppColors.primary,
+            onPressed: onVerify,
           ),
         ],
       ),

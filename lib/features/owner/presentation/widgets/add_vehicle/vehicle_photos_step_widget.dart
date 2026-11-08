@@ -33,6 +33,10 @@ class VehiclePhotosStepWidget extends StatelessWidget {
   final VoidCallback onPickInsurance;
   final VoidCallback onRemoveInsurance;
 
+  /// Audit §5: true after Next is pressed on step 2 with no front
+  /// photo — the step shows an inline error naming the front photo.
+  final bool frontPhotoError;
+
   const VehiclePhotosStepWidget({
     super.key,
     required this.photoFrontFile,
@@ -56,6 +60,7 @@ class VehiclePhotosStepWidget extends StatelessWidget {
     required this.insuranceFile,
     required this.onPickInsurance,
     required this.onRemoveInsurance,
+    this.frontPhotoError = false,
   });
 
   @override
@@ -74,6 +79,41 @@ class VehiclePhotosStepWidget extends StatelessWidget {
           style: Theme.of(context).textTheme.bodySmall,
         ),
         const SizedBox(height: 12),
+
+        // Audit §5 (spec O8): the front photo is required before step
+        // 2 passes — the error is surfaced here on the step.
+        if (frontPhotoError)
+          Container(
+            width: double.infinity,
+            margin: const EdgeInsets.only(bottom: 12),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.errorContainer,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(Icons.warning_amber_rounded, color: Theme.of(context).colorScheme.error, size: 20),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l10n.addVehiclePhotoFront,
+                        style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: Theme.of(context).colorScheme.error),
+                      ),
+                      Text(
+                        l10n.addVehicleFrontPhotoRequired,
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
 
         // 4 Car Photos Grid (Camera + Gallery + Remove)
         Row(

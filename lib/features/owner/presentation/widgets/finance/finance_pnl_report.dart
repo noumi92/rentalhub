@@ -8,6 +8,7 @@ import  '../../../../bookings/domain/entities/booking_entity.dart';
 import  '../../../../finance/domain/entities/finance_transfer_entity.dart';
 import  '../../../../finance/utils/finance_summary.dart';
 import  '../../../../finance/utils/pnl_csv.dart';
+import '../../../../../core/utils/money_format.dart';
 
 /// Phase B (H5): the P&L statement for a period, with a CSV export
 /// that opens in Excel. The booking revenue comes from the
@@ -168,7 +169,7 @@ class _FinancePnLReportState extends State<FinancePnLReport> {
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 fontWeight: bold ? FontWeight.w900 : FontWeight.w700,
               )),
-          Text(l10n.amountRs(amount),
+          Text(l10n.amountRs(formatRs(amount)),
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 fontWeight: bold ? FontWeight.w900 : FontWeight.w700,
               )),

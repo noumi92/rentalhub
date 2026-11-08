@@ -18,6 +18,7 @@ import '../../../notifications/data/datasources/notification_data_source.dart';
 import '../widgets/dashboard/dashboard_kpis.dart';
 import '../widgets/dashboard/dashboard_ledger_section.dart';
 import '../widgets/dashboard/dashboard_quick_actions.dart';
+import '../widgets/dashboard/revenue_kpi_card.dart';
 
 class OwnerDashboardView extends StatefulWidget {
   final String shopId;
@@ -121,16 +122,15 @@ class _OwnerDashboardViewState extends State<OwnerDashboardView> {
           b.pickupTime.month == month)
       .fold(0, (total, b) => total + b.totalAmount);
 
-  /// Real month-on-month revenue change, from the bookings' pickup
-  /// dates. Null when there is no last-month revenue to compare.
-  String get _growthLabel {
+  /// Real month-on-month revenue change in percent, from the bookings'
+  /// pickup dates. Null when there is no last-month revenue to compare.
+  int? get _growthPct {
     final now = DateTime.now();
     final thisMonth = _monthRevenue(now.year, now.month);
     final lastMonthDate = DateTime(now.year, now.month - 1);
     final lastMonth = _monthRevenue(lastMonthDate.year, lastMonthDate.month);
-    if (lastMonth == 0) return AppLocalizations.of(context)!.dashboardNoRevenueLastMonth;
-    final pct = ((thisMonth - lastMonth) / lastMonth * 100).round();
-    return AppLocalizations.of(context)!.dashboardGrowthLabel('${pct >= 0 ? '+' : ''}$pct');
+    if (lastMonth == 0) return null;
+    return ((thisMonth - lastMonth) / lastMonth * 100).round();
   }
 
   List<BookingEntity> get _ledger => (List<BookingEntity>.of(_allBookings)
@@ -141,9 +141,15 @@ class _OwnerDashboardViewState extends State<OwnerDashboardView> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    // One source of truth for the revenue trend: the label and the
+    // direction come from the same pct, so they can never disagree
+    // (audit §2 — never an up arrow in green for a negative month;
+    // no last-month revenue or a flat month is neutral, no icon).
+    final growthPct = _growthPct;
     final kpis = DashboardKpis(
       totalRevenue: _totalRevenue,
-      growthLabel: _growthLabel,
+      growthLabel: growthPct == null ? l10n.dashboardNoRevenueLastMonth : l10n.dashboardGrowthLabel('${growthPct >= 0 ? '+' : ''}$growthPct'),
+      growthTrend: growthPct == null || growthPct == 0 ? KpiTrend.neutral : growthPct > 0 ? KpiTrend.up : KpiTrend.down,
       activeCount: _activeCount,
       completedCount: _completedCount,
       settleLabel: _settleRate == null
@@ -175,7 +181,9 @@ class _OwnerDashboardViewState extends State<OwnerDashboardView> {
             children: [kpis, const SizedBox(height: 20), ledger],
           );
     return Scaffold(
+      // C1: MinimalAppBar owns the top inset; this SafeArea must not add it again.
       body: SafeArea(
+        top: false,
         child: Column(
           children: [
             // #9/#12: MinimalAppBar — bell (with unread badge),

@@ -1,24 +1,27 @@
 import 'package:flutter/material.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../../core/constants/app_colors.dart';
+import '../../../../../core/utils/money_format.dart';
 
 class SubscriptionTierCard extends StatelessWidget {
   final String title;
-  final String price;
+  final int pricePkr;
   final String billingPeriod;
   final List<String> features;
   final bool isCurrent;
   final bool isPopular;
+  final bool isPending;
   final VoidCallback onSelect;
 
   const SubscriptionTierCard({
     super.key,
     required this.title,
-    required this.price,
+    required this.pricePkr,
     required this.billingPeriod,
     required this.features,
     this.isCurrent = false,
     this.isPopular = false,
+    this.isPending = false,
     required this.onSelect,
   });
 
@@ -61,7 +64,9 @@ class SubscriptionTierCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.baseline,
             textBaseline: TextBaseline.alphabetic,
             children: [
-              Text(price, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900)),
+              // Audit §28: prices were hardcoded 'Rs. 4,999' strings —
+              // now grouped with formatRs (same display in English).
+              Text(l10n.amountRs(formatRs(pricePkr)), style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900)),
               const SizedBox(width: 4),
               Text(billingPeriod, style: Theme.of(context).textTheme.bodySmall),
             ],
@@ -80,16 +85,21 @@ class SubscriptionTierCard extends StatelessWidget {
           const SizedBox(height: 16),
           SizedBox(
             width: double.infinity,
-            height: 42,
+            // Audit §28/C7: was 42dp; the rulebook CTA is 54dp.
+            height: 54,
             child: ElevatedButton(
-              onPressed: isCurrent ? null : onSelect,
+              onPressed: (isCurrent || isPending) ? null : onSelect,
               style: ElevatedButton.styleFrom(
                 backgroundColor: isPopular ? AppColors.secondary : AppColors.primary,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               ),
               child: Text(
-                isCurrent ? l10n.subscriptionActivePlan : l10n.subscriptionUpgradeTo(title),
+                isCurrent
+                    ? l10n.subscriptionActivePlan
+                    : isPending
+                        ? l10n.subscriptionRequested
+                        : l10n.subscriptionUpgradeTo(title),
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800),
               ),
             ),

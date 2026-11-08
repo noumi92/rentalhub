@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../l10n/app_localizations.dart';
 
+import '../../../../core/widgets/app_feedback.dart';
 import '../../../customer/data/datasources/dispute_remote_data_source.dart';
 import 'dispute_list_tile.dart';
 
@@ -16,7 +17,10 @@ class DisputeDetailSheet extends StatefulWidget {
   });
 
   final DisputeRecord dispute;
-  final Future<void> Function(String status) onStatusChanged;
+
+  /// Reports whether the status change reached the store, so the
+  /// sheet can stay open (with an error) when it did not.
+  final Future<bool> Function(String status) onStatusChanged;
 
   @override
   State<DisputeDetailSheet> createState() => _DisputeDetailSheetState();
@@ -26,16 +30,38 @@ class _DisputeDetailSheetState extends State<DisputeDetailSheet> {
   bool _isWorking = false;
 
   Future<void> _change(String status) async {
+    final l10n = AppLocalizations.of(context)!;
     setState(() => _isWorking = true);
-    await widget.onStatusChanged(status);
-    if (mounted) Navigator.of(context).pop();
+    try {
+      // Audit §30: a failed update used to strand the sheet with
+      // the button permanently disabled and no error. The sheet
+      // now stays open and reports the failure.
+      // NOTE: no resolution-note field was added — `updateDisputeStatus`
+      // takes no note, and adding one means editing the shared
+      // dispute data source (customer feature, outside this batch)
+      // plus a Firestore field; the admin panel shares that source.
+      final ok = await widget.onStatusChanged(status);
+      if (!mounted) return;
+      if (ok) {
+        Navigator.of(context).pop();
+      } else {
+        setState(() => _isWorking = false);
+        AppFeedback.showError(context, l10n.disputesUpdateError);
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() => _isWorking = false);
+        AppFeedback.showError(context, l10n.disputesUpdateError);
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
   final l10n = AppLocalizations.of(context)!;
     final d = widget.dispute;
-    final color = DisputeListTile.statusColor(d.status);
+    final container = DisputeListTile.statusContainer(context, d.status);
+    final color = DisputeListTile.statusColor(context, d.status);
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
@@ -68,7 +94,7 @@ class _DisputeDetailSheetState extends State<DisputeDetailSheet> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: color.withValues(alpha: 0.12),
+                    color: container,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(

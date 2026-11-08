@@ -6,6 +6,7 @@ import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/current_shop.dart';
 import '../../../../core/utils/pakistani_validators.dart';
 import '../../../../core/widgets/app_feedback.dart';
+import '../../../../core/widgets/debounced_button.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../customer/utils/save_walk_in_customer.dart';
@@ -68,6 +69,12 @@ class _OwnerAddCustomerViewState extends State<OwnerAddCustomerView> {
       // Back to the Customers list (fresh load shows the new
       // customer); the scan view is left behind, not returned to.
       context.go(RouteNames.ownerCustomers);
+    } on BlacklistedCustomerException {
+      // Audit §21: the blacklist check lives in saveWalkInCustomer
+      // and refuses before anything is written.
+      if (mounted) {
+        AppFeedback.showError(context, l10n.customersScanDeclined);
+      }
     } catch (e) {
       if (mounted) {
         AppFeedback.showError(context, e.toString());
@@ -81,11 +88,15 @@ class _OwnerAddCustomerViewState extends State<OwnerAddCustomerView> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
+      // C1: MinimalAppBar owns the top inset — no double status bar.
       body: SafeArea(
+        top: false,
         child: Column(
           children: [
             MinimalAppBar(
               title: l10n.addCustomerTitle,
+              // Audit §21: the screen had no subtitle and no guidance.
+              subtitle: l10n.addCustomerHelper,
               onBack: () => context.pop(),
             ),
             Expanded(
@@ -106,7 +117,9 @@ class _OwnerAddCustomerViewState extends State<OwnerAddCustomerView> {
                           LengthLimitingTextInputFormatter(15),
                         ],
                         decoration: InputDecoration(
-                          labelText: l10n.cnicVerifyTitle,
+                          // Audit §21: the label reused the "CNIC
+                          // Check" section title — now "CNIC Number".
+                          labelText: l10n.addCustomerCnic,
                           hintText: '35201-1234567-1',
                           prefixIcon: const Icon(Icons.badge_rounded),
                           border: const OutlineInputBorder(),
@@ -123,7 +136,7 @@ class _OwnerAddCustomerViewState extends State<OwnerAddCustomerView> {
                           border: const OutlineInputBorder(),
                         ),
                         validator: (v) => (v == null || v.trim().isEmpty)
-                            ? 'Full name is required'
+                            ? l10n.addCustomerFullNameRequired
                             : null,
                       ),
                       const SizedBox(height: 14),
@@ -140,24 +153,22 @@ class _OwnerAddCustomerViewState extends State<OwnerAddCustomerView> {
                             PakistaniValidators.validatePakistaniPhone,
                       ),
                       const SizedBox(height: 20),
-                      SizedBox(
-                        width: double.infinity,
-                        height: 48,
-                        child: FilledButton.icon(
-                          onPressed: _isSaving ? null : _save,
-                          icon: _isSaving
-                              ? const SizedBox(
-                                  width: 18,
-                                  height: 18,
-                                  child: CircularProgressIndicator(
-                                      strokeWidth: 2, color: Colors.white),
-                                )
-                              : const Icon(Icons.person_add_rounded, size: 18),
-                          label: Text(
-                            l10n.addCustomerSave,
-                            style: const TextStyle(fontWeight: FontWeight.w800),
-                          ),
-                        ),
+                      // Audit §21: helper line under the fields (the
+                      // same line is the app-bar subtitle above).
+                      Row(
+                        children: [
+                          Icon(Icons.info_outline_rounded, size: 16, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                          const SizedBox(width: 6),
+                          Expanded(child: Text(l10n.addCustomerHelper, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant))),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      // Audit §21/C7: 54dp DebouncedButton (was 48dp).
+                      DebouncedButton(
+                        text: l10n.addCustomerSave,
+                        icon: Icons.person_add_rounded,
+                        isLoading: _isSaving,
+                        onPressed: _save,
                       ),
                     ],
                   ),

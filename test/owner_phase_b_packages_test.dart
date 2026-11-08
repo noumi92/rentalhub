@@ -207,10 +207,10 @@ void main() {
       expect(find.text('Weekly Package'), findsOneWidget);
       // The disabled 3h package is hidden.
       expect(find.text('3-Hour Quick Trip'), findsNothing);
-      // 24h selected by default, 1 day, self-drive: Rs. 9000.
-      expect(find.text('Total: Rs. 9000'), findsOneWidget);
-      expect(find.text('Advance Due: Rs. 3000'), findsOneWidget);
-      expect(find.text('Security Deposit: Rs. 20000'), findsOneWidget);
+      // 24h selected by default, 1 day, self-drive: Rs. 9,000.
+      expect(find.text('Total: Rs. 9,000'), findsOneWidget);
+      expect(find.text('Advance Due: Rs. 3,000'), findsOneWidget);
+      expect(find.text('Security Deposit: Rs. 20,000'), findsOneWidget);
 
       await tester.tap(find.text('Continue'));
       await tester.pumpAndSettle();
@@ -250,7 +250,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // 24h (9000) + one day of driver surcharge (1500).
-      expect(find.text('Total: Rs. 10500'), findsOneWidget);
+      expect(find.text('Total: Rs. 10,500'), findsOneWidget);
 
       await tester.tap(find.text('Continue'));
       await tester.pumpAndSettle();

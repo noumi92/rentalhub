@@ -17,11 +17,43 @@ import '../../../../core/network/cpanel_storage_client.dart';
 /// this phone); the queue handler overwrites it with the real URL.
 /// Without a [vehicleId] (or without a queue) the old behaviour
 /// applies: the local path is returned on failure.
+///
+/// Audit §5: the wizard picks 7 files (4 photos + 3 documents) but
+/// only the front photo was ever uploaded — the other 6 were silently
+/// discarded. [uploadAllVehicleFiles] uploads every picked file, each
+/// to its own target field on the vehicle doc (`photoBackUrl`,
+/// `photoSideUrl`, `photoInteriorUrl`, `regBookUrl`, `tokenTaxUrl`,
+/// `insuranceUrl`); the vehicle write uses merge semantics, so the
+/// queued field writes never clobber the vehicle doc created after
+/// them. The returned map is field → signed URL (or the local path
+/// when the upload is queued / falls back). Callers must upload —
+/// never silently drop a picked file.
 class VehiclePhotoUploadService {
   static Future<String?> uploadFrontPhoto({
     required String shopId,
     required XFile? photo,
     String? vehicleId,
+    OfflineSyncQueue? syncQueue,
+  }) async {
+    return uploadVehicleFile(
+      shopId: shopId,
+      photo: photo,
+      vehicleId: vehicleId,
+      targetField: 'imageUrl',
+      syncQueue: syncQueue,
+    );
+  }
+
+  /// Uploads one picked file to the `vehicles` folder, targeting
+  /// [targetField] on `vehicles/{vehicleId}` when a queue + id exist.
+  /// Returns the signed URL, or the local path when the upload was
+  /// queued (the queue handler writes the real URL later) or failed
+  /// without a queue. Returns null when [photo] is null.
+  static Future<String?> uploadVehicleFile({
+    required String shopId,
+    required XFile? photo,
+    String? vehicleId,
+    String targetField = 'imageUrl',
     OfflineSyncQueue? syncQueue,
   }) async {
     if (photo == null) return null;
@@ -37,7 +69,7 @@ class VehiclePhotoUploadService {
             queue: queue,
             targetCollection: 'vehicles',
             targetDocId: vehicleId,
-            targetField: 'imageUrl',
+            targetField: targetField,
           ) ??
           photo.path;
     }
@@ -51,5 +83,29 @@ class VehiclePhotoUploadService {
     } catch (_) {
       return photo.path;
     }
+  }
+
+  /// Uploads every picked file in [files] (target field → picked
+  /// file; null entries are skipped) and returns the same keys mapped
+  /// to their signed URL or local fallback path. Uploads run
+  /// sequentially so a failure in one file never drops another.
+  static Future<Map<String, String?>> uploadAllVehicleFiles({
+    required String shopId,
+    required String vehicleId,
+    required Map<String, XFile?> files,
+    OfflineSyncQueue? syncQueue,
+  }) async {
+    final uploaded = <String, String?>{};
+    for (final entry in files.entries) {
+      if (entry.value == null) continue;
+      uploaded[entry.key] = await uploadVehicleFile(
+        shopId: shopId,
+        photo: entry.value,
+        vehicleId: vehicleId,
+        targetField: entry.key,
+        syncQueue: syncQueue,
+      );
+    }
+    return uploaded;
   }
 }

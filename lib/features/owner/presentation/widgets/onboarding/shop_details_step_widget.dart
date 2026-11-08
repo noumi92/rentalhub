@@ -55,15 +55,20 @@ class ShopDetailsStepWidget extends StatelessWidget {
               Positioned(
                 bottom: 0,
                 right: 0,
+                // Audit §1: the 30dp visual stays, but the InkWell hit
+                // area is padded to the 48dp minimum (9dp each side).
                 child: InkWell(
                   onTap: onPickLogo,
-                  child: Container(
-                    padding: const EdgeInsets.all(7),
-                    decoration: const BoxDecoration(
-                      color: AppColors.secondary,
-                      shape: BoxShape.circle,
+                  child: Padding(
+                    padding: const EdgeInsets.all(9),
+                    child: Container(
+                      padding: const EdgeInsets.all(7),
+                      decoration: const BoxDecoration(
+                        color: AppColors.secondary,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.camera_alt_rounded, color: Colors.white, size: 16),
                     ),
-                    child: const Icon(Icons.camera_alt_rounded, color: Colors.white, size: 16),
                   ),
                 ),
               ),
@@ -74,10 +79,12 @@ class ShopDetailsStepWidget extends StatelessWidget {
         Center(
           child: TextButton.icon(
             onPressed: onPickLogo,
-            icon: const Icon(Icons.upload_rounded, size: 16, color: AppColors.secondary),
+            // Audit §1/C3: small orange text uses the brightness-aware
+            // token (AppColors.secondary is ~3.2:1 at this size).
+            icon: Icon(Icons.upload_rounded, size: 16, color: AppColors.orangeTextFor(Theme.of(context).brightness)),
             label: Text(
               shopLogoFile != null ? l10n.onboardingChangeLogo : l10n.onboardingUploadLogo,
-              style: Theme.of(context).textTheme.labelMedium?.copyWith(color: AppColors.secondary, fontWeight: FontWeight.w800),
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(color: AppColors.orangeTextFor(Theme.of(context).brightness), fontWeight: FontWeight.w800),
             ),
           ),
         ),

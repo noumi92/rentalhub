@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/debounced_button.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../../core/utils/money_format.dart';
 
 /// The bottom summary bar of the booking picker: total, advance due,
 /// security deposit and the Continue button. Extracted from
@@ -42,12 +43,12 @@ class PackageSummaryBar extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(l10n.packageTotal(total),
+                Text(l10n.packageTotal(formatRs(total)),
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900)),
-                Text(l10n.packageAdvanceDue(advance),
+                Text(l10n.packageAdvanceDue(formatRs(advance)),
                     style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.secondary)),
                 if (deposit != null)
-                  Text(l10n.packageSecurityDeposit(deposit ?? 0),
+                  Text(l10n.packageSecurityDeposit(formatRs(deposit ?? 0)),
                       style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700)),
               ],
             ),

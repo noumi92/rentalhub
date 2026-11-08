@@ -24,7 +24,10 @@ class DualSignaturePadWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        // Audit C2: the card/labels live on a theme surface so the text
+        // stays readable in dark mode. Only the pad itself stays white
+        // (signature paper — a deliberate keep, like the contract sheet).
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Theme.of(context).dividerColor),
       ),
@@ -63,13 +66,13 @@ class DualSignaturePadWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(title,
-            style: const TextStyle(
-                fontSize: 12.5,
-                fontWeight: FontWeight.w800,
-                )),
+            style: Theme.of(context)
+                .textTheme
+                .titleSmall
+                ?.copyWith(fontWeight: FontWeight.w800)),
         Text(subtitle,
-            style: TextStyle(
-                fontSize: 11, color: Theme.of(context).colorScheme.onSurfaceVariant)),
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant)),
         const SizedBox(height: 6),
         Container(
           height: 120,

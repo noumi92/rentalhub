@@ -609,6 +609,10 @@ void main() {
 
       await tester.tap(find.text('Discard'));
       await tester.pumpAndSettle();
+      // Audit §31: Discard now asks for confirmation first.
+      expect(find.text('Discard this change?'), findsOneWidget);
+      await tester.tap(find.text('Confirm'));
+      await tester.pumpAndSettle();
       expect(find.text('Nothing pending'), findsOneWidget);
       expect(await queue.pendingCount, 0);
 

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import '../../l10n/app_localizations.dart';
 import '../constants/app_colors.dart';
 
 /// Minimal app bar (design direction #16): flat solid navy, 56 dp title
@@ -12,6 +14,11 @@ import '../constants/app_colors.dart';
 /// two-line title + subtitle need more room, and a fixed 56 dp box
 /// overflowed by 16 px (multi_screen_overflow_test) — so the bar
 /// grows past 56 dp instead of clipping.
+///
+/// The bar owns the top inset exactly once (C1): it adds
+/// `MediaQuery.padding.top` itself, so callers wrap the scaffold body
+/// in `SafeArea(top: false)` and the shell strips the inset from the
+/// branch subtree — no double status-bar band.
 class MinimalAppBar extends StatelessWidget implements PreferredSizeWidget {
   const MinimalAppBar({
     super.key,
@@ -43,7 +50,7 @@ class MinimalAppBar extends StatelessWidget implements PreferredSizeWidget {
           children: [
             if (showBack)
               IconButton(
-                tooltip: 'Back',
+                tooltip: AppLocalizations.of(context)?.back ?? 'Back',
                 icon: const Icon(Icons.arrow_back_ios_new_rounded,
                     color: Colors.white, size: 20),
                 onPressed: onBack ?? () => Navigator.of(context).maybePop(),

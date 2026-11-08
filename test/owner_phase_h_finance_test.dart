@@ -231,7 +231,7 @@ void main() {
       expect(find.text('Finance'), findsOneWidget);
       expect(find.text('Cash in Hand'), findsOneWidget);
       expect(find.text('Rent'), findsOneWidget);
-      expect(find.text('Rs. 7777'), findsWidgets);
+      expect(find.text('Rs. 7,777'), findsWidgets);
     });
 
     testWidgets('dues view lists unpaid balances', (tester) async {
@@ -262,7 +262,7 @@ void main() {
       );
       await tester.pumpAndSettle();
       expect(find.text('Dues Customer'), findsOneWidget);
-      expect(find.text('Rs. 9000'), findsWidgets);
+      expect(find.text('Rs. 9,000'), findsWidgets);
     });
 
     testWidgets('cash closing saves the counted cash', (tester) async {
@@ -281,7 +281,7 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('Close the day'));
       await tester.pumpAndSettle();
-      expect(find.textContaining('Diff Rs. 5000'), findsWidgets);
+      expect(find.textContaining('Diff Rs. 5,000'), findsWidgets);
     });
 
     testWidgets('car P&L picks a vehicle and shows its net', (tester) async {

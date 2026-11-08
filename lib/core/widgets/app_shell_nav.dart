@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -34,8 +36,14 @@ class ShellNavItem {
 }
 
 class AppShellNav extends StatelessWidget {
-  /// Rulebook §4.4 flush geometry: 56 px high, attached to the bottom
-  /// edge — no margin, no radius, no extra padding, no SafeArea.
+  /// Rulebook §4.4 flush geometry: 56 px of content, attached to the
+  /// bottom edge — no margin, no radius, no extra padding, no SafeArea.
+  /// Audit fix (gesture bar): on gesture-navigation devices the 56 px
+  /// content keeps its height, but `MediaQuery.padding.bottom` is added
+  /// BELOW it, so the tab labels clear the system gesture pill. The bar
+  /// stays flush (no floating margin); the extra height is system
+  /// inset, not padding around the bar. At large text scales the
+  /// content grows past 56 px instead of clipping the labels.
   static const double navHeight = 56;
 
   final int currentIndex;
@@ -85,11 +93,21 @@ class AppShellNav extends StatelessWidget {
     final background =
         theme.navigationBarTheme.backgroundColor ?? theme.colorScheme.primary;
     final l10n = AppLocalizations.of(context);
+    // Audit fix: the 56 px content height is kept, but the system
+    // gesture inset is added below it (Scaffold passes the full
+    // MediaQuery padding to bottomNavigationBar). At large text
+    // scales the 12 sp labels need more room, so the content grows
+    // past 56 px instead of clipping.
+    final bottomInset = MediaQuery.of(context).padding.bottom;
+    final textScaler = MediaQuery.textScalerOf(context);
+    final contentHeight =
+        math.max(navHeight, 40 + textScaler.scale(12));
     return Container(
-      height: navHeight,
+      height: contentHeight + bottomInset,
+      padding: EdgeInsets.only(bottom: bottomInset),
       color: background,
       child: NavigationBar(
-        height: navHeight,
+        height: contentHeight,
         backgroundColor: background,
         elevation: 0,
         selectedIndex: currentIndex,

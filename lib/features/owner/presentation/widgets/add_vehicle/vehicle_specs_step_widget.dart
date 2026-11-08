@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/widgets/pakistani_plate_widget.dart';
-import '../../constants/owner_vehicle_constants.dart';
+import 'vehicle_specs_capacity_widget.dart';
 
 class VehicleSpecsStepWidget extends StatelessWidget {
   final String selectedMake;
@@ -273,9 +273,11 @@ class VehicleSpecsStepWidget extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 12),
+            // Audit §5: no sample plate as a preview — an empty plate
+            // shows a dash until one is entered.
             PakistaniPlateWidget(
               plateNumber: plateController.text.trim().isEmpty
-                  ? 'LEA-23-4567'
+                  ? '—'
                   : plateController.text.trim(),
             ),
           ],
@@ -405,107 +407,13 @@ class VehicleSpecsStepWidget extends StatelessWidget {
         ),
         const SizedBox(height: 16),
 
-        // Requirement 3: Vehicle Seating Capacity
-        Text(l10n.addVehicleSeatingCapacity,
-            style: Theme.of(context)
-                .textTheme
-                .labelMedium
-                ?.copyWith(fontWeight: FontWeight.w800)),
-        const SizedBox(height: 6),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children: OwnerVehicleConstants.seatingCapacities.map((s) {
-              final isSelected = seats == s;
-              return Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: ChoiceChip(
-                  materialTapTargetSize: MaterialTapTargetSize.padded,
-                  label: Text(l10n.addVehicleSeatsCount(s)),
-                  selected: isSelected,
-                  selectedColor: AppColors.secondary,
-                  labelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
-                        color: isSelected
-                            ? Colors.white
-                            : Theme.of(context).colorScheme.onSurface,
-                        fontWeight: FontWeight.w700,
-                      ),
-                  onSelected: (_) => onSeatsChanged(s),
-                ),
-              );
-            }).toList(),
-          ),
-        ),
-        const SizedBox(height: 16),
-
-        // Requirement 3: Air Conditioning (AC) Switch
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Theme.of(context).dividerColor),
-          ),
-          child: Row(
-            children: [
-              const Icon(Icons.ac_unit_rounded, size: 22),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(l10n.addVehicleAcTitle,
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyMedium
-                            ?.copyWith(fontWeight: FontWeight.w800)),
-                    Text(l10n.addVehicleAcSubtitle,
-                        style: Theme.of(context).textTheme.labelSmall),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 8),
-              Switch(
-                value: hasAc,
-                activeThumbColor: AppColors.secondary,
-                onChanged: onAcChanged,
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 16),
-
-        // Requirement 3: Extra Features (Shown in Car Details page)
-        Text(l10n.addVehicleExtraFeatures,
-            style: Theme.of(context)
-                .textTheme
-                .labelMedium
-                ?.copyWith(fontWeight: FontWeight.w800)),
-        const SizedBox(height: 4),
-        Text(
-            l10n.addVehicleExtraFeaturesHint,
-            style: Theme.of(context).textTheme.labelSmall),
-        const SizedBox(height: 8),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: OwnerVehicleConstants.extraFeatures.map((f) {
-            final isSelected = selectedFeatures.contains(f);
-            return FilterChip(
-              materialTapTargetSize: MaterialTapTargetSize.padded,
-              label: Text(f),
-              selected: isSelected,
-              selectedColor: AppColors.secondary,
-              checkmarkColor: Colors.white,
-              labelStyle: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: isSelected
-                        ? Colors.white
-                        : Theme.of(context).colorScheme.onSurface,
-                    fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
-                  ),
-              onSelected: (_) => onFeatureToggled(f),
-            );
-          }).toList(),
+        VehicleCapacityStepWidget(
+          seats: seats,
+          onSeatsChanged: onSeatsChanged,
+          hasAc: hasAc,
+          onAcChanged: onAcChanged,
+          selectedFeatures: selectedFeatures,
+          onFeatureToggled: onFeatureToggled,
         ),
       ],
     );

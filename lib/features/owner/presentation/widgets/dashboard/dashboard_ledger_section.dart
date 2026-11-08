@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../../../core/routing/route_names.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../bookings/domain/entities/booking_entity.dart';
 import 'dashboard_ledger_item.dart';
@@ -49,6 +51,35 @@ class DashboardLedgerSection extends StatelessWidget {
                 amount: b.totalAmount,
                 status: b.status,
               )),
+        // Audit fix (§2): the ledger shows the newest 8 only — a
+        // "View all requests" row links to the full Requests tab, so
+        // the history is discoverable instead of hidden behind the tab.
+        if (!isEmpty)
+          InkWell(
+            onTap: () => context.go(RouteNames.ownerRequests),
+            child: Padding(
+              // 15 px vertical padding puts the row at the §4.6 48 dp
+              // minimum tap height.
+              padding: const EdgeInsets.symmetric(vertical: 15),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    l10n.dashboardViewAllRequests,
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                          fontWeight: FontWeight.w800,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                  ),
+                  Icon(
+                    Icons.arrow_forward_rounded,
+                    size: 18,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ],
+              ),
+            ),
+          ),
       ],
     );
   }

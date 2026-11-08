@@ -38,10 +38,10 @@ class AddVehicleStepperBar extends StatelessWidget {
             width: 28,
             height: 28,
             decoration: BoxDecoration(
-              color: isDone ? AppColors.accentSuccess : isCurrent ? AppColors.secondary : Theme.of(context).colorScheme.surfaceContainerHighest,
+              color: isDone ? AppColors.accentSuccessStrong : isCurrent ? AppColors.orangeFill : Theme.of(context).colorScheme.surfaceContainerHighest,
               shape: BoxShape.circle,
               border: Border.all(
-                color: isDone ? AppColors.accentSuccess : isCurrent ? AppColors.secondary : Theme.of(context).dividerColor,
+                color: isDone ? AppColors.accentSuccessStrong : isCurrent ? AppColors.orangeFill : Theme.of(context).dividerColor,
                 width: 1.5,
               ),
             ),
@@ -63,7 +63,13 @@ class AddVehicleStepperBar extends StatelessWidget {
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
               fontWeight: isCurrent ? FontWeight.w800 : FontWeight.w600,
-              color: isCurrent ? AppColors.primary : Theme.of(context).colorScheme.onSurfaceVariant,
+              // Audit §5 (Critical): theme-aware exactly like the
+              // onboarding stepper fix — hardcoded AppColors.primary
+              // navy was ~1.5:1 on a dark surface. Dark mode uses the
+              // pale lavender primaryContainer — NOT
+              // colorScheme.primary, which in the dark theme is the
+              // dark navy #252B7A (1.46:1, still unreadable).
+              color: isCurrent ? (Theme.of(context).brightness == Brightness.dark ? AppColors.primaryContainer : Theme.of(context).colorScheme.primary) : Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
         ],

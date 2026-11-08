@@ -10,6 +10,7 @@ import 'package:rentalhub/features/bookings/data/models/booking_model.dart';
 import 'package:rentalhub/features/bookings/presentation/views/owner_payment_accounts_view.dart';
 import 'package:rentalhub/features/fleet/domain/entities/vehicle_entity.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_booking_requests_view.dart';
+import 'package:rentalhub/features/owner/presentation/views/owner_manual_booking_view.dart';
 import 'package:rentalhub/l10n/app_localizations.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_payment_verification_view.dart';
 import 'package:rentalhub/features/owner/presentation/widgets/manual_booking_package_selector.dart';
@@ -21,7 +22,12 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   setUpAll(() async {
-    SharedPreferences.setMockInitialValues({});
+    // Role gate (integration): the owner tests pump the payment
+    // accounts view as the shop owner, so the locked role is 'owner'
+    // here; the customer route is covered by the default-deny path
+    // (no role set) in the immersion tests.
+    SharedPreferences.setMockInitialValues(
+        {'rentalhub_locked_role': 'owner'});
     await di.initDependencies();
   });
 
@@ -201,14 +207,14 @@ void main() {
       expect(find.text('New Requester'), findsOneWidget);
       expect(find.text('Proof Sender'), findsNothing);
       expect(find.text('Approved Waiter'), findsNothing);
-      expect(find.text('Approve & Pay'), findsOneWidget);
+      expect(find.text('Approve'), findsOneWidget);
 
       await tester.tap(find.textContaining('Proof ('));
       await tester.pumpAndSettle();
       expect(find.text('Proof Sender'), findsOneWidget);
       expect(find.text('New Requester'), findsNothing);
       expect(find.text('Verify Payment Proof'), findsOneWidget);
-      expect(find.text('Approve & Pay'), findsNothing);
+      expect(find.text('Approve'), findsNothing);
 
       await tester.tap(find.textContaining('Approved ('));
       await tester.pumpAndSettle();
@@ -349,17 +355,38 @@ void main() {
   group('Phase D (D1) — payment accounts are honest', () {
     testWidgets('no configured accounts says so instead of fake ones',
         (tester) async {
+      // §10: the accounts view gates on status — a merely `requested`
+      // booking renders the requested-state detail, so this
+      // accounts-honesty case pumps an approved booking.
+      final approved = modelFor('RH-d4', 'Ayesha Khan')
+          .copyWith(status: 'approved');
       await tester.pumpWidget(
         MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: OwnerPaymentAccountsView(booking: modelFor('RH-d4', 'Ayesha Khan')),
+          home: OwnerPaymentAccountsView(booking: approved),
         ),
       );
       await tester.pumpAndSettle();
       expect(find.text('No payment accounts configured for this shop yet.'),
           findsOneWidget);
       expect(find.text('Al-Falah Rent a Car'), findsNothing);
+    });
+
+    testWidgets('a requested booking shows the decision detail, not the approved banner',
+        (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: OwnerPaymentAccountsView(
+              booking: modelFor('RH-d4', 'Ayesha Khan')),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Reservation Request Approved!'), findsNothing);
+      expect(find.text('Approve'), findsWidgets);
+      expect(find.text('Decline'), findsOneWidget);
     });
   });
 
@@ -370,6 +397,54 @@ void main() {
           await File('lib/core/routing/app_router.dart').readAsString();
       expect(router, contains('OwnerPaymentVerificationView'));
       expect(router, contains("booking.status == 'payment_submitted'"));
+    });
+  });
+
+  group('Audit §12 — manual booking starts with no demo identity', () {
+    testWidgets('customer, phone and CNIC fields start empty',
+        (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const OwnerManualBookingView(),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // The old demo defaults must never appear as real values.
+      expect(find.text('Walk-in Customer'), findsNothing);
+      expect(find.text('0300-1122334'), findsNothing);
+      expect(find.text('35201-1234567-1'), findsNothing);
+      final nameField = tester.widget<TextField>(
+          find.widgetWithText(TextField, 'Customer Full Name'));
+      expect(nameField.controller?.text, isEmpty);
+      final phoneField = tester.widget<TextField>(
+          find.widgetWithText(TextField, 'Phone Number'));
+      expect(phoneField.controller?.text, isEmpty);
+      final cnicField = tester.widget<TextField>(
+          find.widgetWithText(TextField, 'NADRA CNIC'));
+      expect(cnicField.controller?.text, isEmpty);
+    });
+
+    testWidgets('real query params still prefill the fields',
+        (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const OwnerManualBookingView(
+            prefilledName: 'Ayesha Khan',
+            prefilledPhone: '03001234567',
+            prefilledCnic: '35202-1234567-1',
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Ayesha Khan'), findsOneWidget);
+      expect(find.text('03001234567'), findsOneWidget);
+      expect(find.text('35202-1234567-1'), findsOneWidget);
     });
   });
 }

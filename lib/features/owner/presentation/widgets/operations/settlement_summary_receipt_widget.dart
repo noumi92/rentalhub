@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../../core/constants/app_colors.dart';
+import '../../../../../core/utils/money_format.dart';
 
 class SettlementSummaryReceiptWidget extends StatelessWidget {
   final int totalKm;
@@ -50,26 +51,31 @@ class SettlementSummaryReceiptWidget extends StatelessWidget {
           _itemRow(context, l10n.returnReceiptTotalKm, '$totalKm KM'),
           _itemRow(context, l10n.returnReceiptAllowance, '${totalKm - excessKm} KM'),
           if (excessKm > 0)
-            _itemRow(context, l10n.returnReceiptExcessPenalty(excessKm, extraKmRate), l10n.amountRs(excessKmPenalty), isDeduction: true),
+            _itemRow(context, l10n.returnReceiptExcessPenalty(excessKm, formatRs(extraKmRate)), l10n.returnReceiptDeductionsAmount(formatRs(excessKmPenalty)), isDeduction: true),
           if (fuelDeficitFee > 0)
-            _itemRow(context, l10n.returnReceiptFuelDeficit, l10n.amountRs(fuelDeficitFee), isDeduction: true),
+            _itemRow(context, l10n.returnReceiptFuelDeficit, l10n.returnReceiptDeductionsAmount(formatRs(fuelDeficitFee)), isDeduction: true),
           if (overtimeFee > 0)
-            _itemRow(context, l10n.returnReceiptOvertime, l10n.amountRs(overtimeFee), isDeduction: true),
+            _itemRow(context, l10n.returnReceiptOvertime, l10n.returnReceiptDeductionsAmount(formatRs(overtimeFee)), isDeduction: true),
           if (damageCharge > 0)
-            _itemRow(context, l10n.returnReceiptDamage, l10n.amountRs(damageCharge), isDeduction: true),
+            _itemRow(context, l10n.returnReceiptDamage, l10n.returnReceiptDeductionsAmount(formatRs(damageCharge)), isDeduction: true),
           const Divider(height: 18),
-          _itemRow(context, l10n.returnReceiptDepositHeld, l10n.amountRs(securityDeposit)),
-          _itemRow(context, l10n.returnReceiptTotalDeductions, l10n.returnReceiptDeductionsAmount(totalDeductions), isDeduction: true),
+          _itemRow(context, l10n.returnReceiptDepositHeld, l10n.amountRs(formatRs(securityDeposit))),
+          _itemRow(context, l10n.returnReceiptTotalDeductions, l10n.returnReceiptDeductionsAmount(formatRs(totalDeductions)), isDeduction: true),
           const Divider(height: 18),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                l10n.returnReceiptNetRefund,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w900),
+              Flexible(
+                child: Text(
+                  l10n.returnReceiptNetRefund,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w900),
+                ),
               ),
+              const SizedBox(width: 8),
               Text(
-                l10n.amountRs(netRefund),
+                l10n.amountRs(formatRs(netRefund)),
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w900,
                   color: netRefund >= 0 ? AppColors.successTextFor(Theme.of(context).brightness) : AppColors.dangerTextFor(Theme.of(context).brightness),
@@ -77,6 +83,16 @@ class SettlementSummaryReceiptWidget extends StatelessWidget {
               ),
             ],
           ),
+          if (netRefund < 0) ...[
+            const SizedBox(height: 8),
+            Text(
+              l10n.returnCustomerOwes(formatRs(-netRefund)),
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.dangerTextFor(Theme.of(context).brightness),
+                  ),
+            ),
+          ],
         ],
       ),
     );
@@ -88,11 +104,18 @@ class SettlementSummaryReceiptWidget extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant)),
+          Flexible(
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+            ),
+          ),
+          const SizedBox(width: 8),
           Text(
             value,
-            style: TextStyle(
-              fontSize: 12.5,
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(
               fontWeight: FontWeight.w700,
               color: isDeduction ? AppColors.dangerTextFor(Theme.of(context).brightness) : Theme.of(context).colorScheme.onSurface,
             ),

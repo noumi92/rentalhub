@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../../l10n/app_localizations.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../../../core/constants/app_colors.dart';
+import '../../../../../core/utils/money_format.dart';
 import '../../../../../core/widgets/pakistani_plate_widget.dart';
 
 class VehicleReviewStepWidget extends StatelessWidget {
@@ -16,6 +17,15 @@ class VehicleReviewStepWidget extends StatelessWidget {
   final bool isAutomatic;
   final String fuelType;
   final int seats;
+
+  /// Audit §5: AC is rendered honestly from the step-1 switch —
+  /// never a hardcoded "Full AC".
+  final bool hasAc;
+
+  /// Audit §5: names of the picked documents (reg book / token tax /
+  /// insurance) and extra photos, so the owner sees what was picked
+  /// before publishing. Entries are "Label: filename".
+  final List<String> documentNames;
   final int dailyRate;
   final int driverAllowance;
   final bool supportSelfDrive;
@@ -45,6 +55,8 @@ class VehicleReviewStepWidget extends StatelessWidget {
     required this.advance,
     required this.extraHour,
     required this.fuelPolicy,
+    required this.hasAc,
+    this.documentNames = const [],
   });
 
   @override
@@ -88,20 +100,24 @@ class VehicleReviewStepWidget extends StatelessWidget {
                         ],
                       ),
                     ),
-                    PakistaniPlateWidget(
-                      plateNumber: plateNumber.isEmpty ? 'LEA-23-4567' : plateNumber,
-                      isCompact: true,
-                    ),
+                    // Audit §5: no sample plate as a fallback — an
+                    // empty plate shows a dash until one is entered.
+                    if (plateNumber.isEmpty)
+                      Text('—', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900))
+                    else
+                      PakistaniPlateWidget(
+                        plateNumber: plateNumber,
+                        isCompact: true,
+                      ),
                   ],
                 ),
                 const Divider(height: 24),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     _reviewSpec(context, l10n.addVehicleReviewGear, isAutomatic ? l10n.addVehicleReviewAuto : l10n.addVehicleManual),
                     _reviewSpec(context, l10n.addVehicleReviewFuel, fuelType),
                     _reviewSpec(context, l10n.addVehicleReviewSeats, '$seats'),
-                    _reviewSpec(context, l10n.addVehicleReviewAc, l10n.addVehicleReviewFullAc),
+                    _reviewSpec(context, l10n.addVehicleReviewAc, hasAc ? l10n.addVehicleReviewFullAc : l10n.addVehicleReviewNotOffered),
                   ],
                 ),
                 const Divider(height: 24),
@@ -113,7 +129,7 @@ class VehicleReviewStepWidget extends StatelessWidget {
                       children: [
                         Text(l10n.addVehicleReviewSelfDriveRate, style: Theme.of(context).textTheme.labelSmall),
                         Text(
-                          supportSelfDrive ? l10n.addVehicleReviewDailyRate(dailyRate) : l10n.addVehicleReviewNotOffered,
+                          supportSelfDrive ? l10n.addVehicleReviewDailyRate(formatRs(dailyRate)) : l10n.addVehicleReviewNotOffered,
                           style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900, color: supportSelfDrive ? Theme.of(context).colorScheme.onSurface : Theme.of(context).colorScheme.onSurfaceVariant),
                         ),
                       ],
@@ -123,8 +139,8 @@ class VehicleReviewStepWidget extends StatelessWidget {
                       children: [
                         Text(l10n.addVehicleReviewWithDriverRate, style: Theme.of(context).textTheme.labelSmall),
                         Text(
-                          supportWithDriver ? l10n.addVehicleReviewDailyRate(dailyRate + driverAllowance) : l10n.addVehicleReviewNotOffered,
-                          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900, color: supportWithDriver ? AppColors.secondary : Theme.of(context).colorScheme.onSurfaceVariant),
+                          supportWithDriver ? l10n.addVehicleReviewDailyRate(formatRs(dailyRate + driverAllowance)) : l10n.addVehicleReviewNotOffered,
+                          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900, color: supportWithDriver ? Theme.of(context).colorScheme.onSurface : Theme.of(context).colorScheme.onSurfaceVariant),
                         ),
                       ],
                     ),
@@ -132,14 +148,32 @@ class VehicleReviewStepWidget extends StatelessWidget {
                 ),
                 const Divider(height: 20),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    _reviewMiniDetail(context, l10n.addVehicleReviewDeposit, 'Rs. $deposit'),
-                    _reviewMiniDetail(context, l10n.addVehicleReviewAdvance, 'Rs. $advance'),
-                    _reviewMiniDetail(context, l10n.addVehicleReviewOverstay, l10n.addVehicleReviewOverstayRate(extraHour)),
+                    _reviewMiniDetail(context, l10n.addVehicleReviewDeposit, l10n.amountRs(formatRs(deposit))),
+                    _reviewMiniDetail(context, l10n.addVehicleReviewAdvance, l10n.amountRs(formatRs(advance))),
+                    _reviewMiniDetail(context, l10n.addVehicleReviewOverstay, l10n.addVehicleReviewOverstayRate(formatRs(extraHour))),
                     _reviewMiniDetail(context, l10n.addVehicleReviewFuel, fuelPolicy),
                   ],
                 ),
+                // Audit §5: the picked photos/documents are listed,
+                // so the review shows what will actually be uploaded.
+                if (documentNames.isNotEmpty) ...[
+                  const Divider(height: 20),
+                  Text(l10n.addVehicleLegalDocs, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800)),
+                  const SizedBox(height: 6),
+                  ...documentNames.map((name) => Padding(
+                        padding: const EdgeInsets.only(bottom: 4),
+                        child: Row(
+                          children: [
+                            Icon(Icons.attach_file_rounded, size: 16, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: Text(name, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.labelSmall),
+                            ),
+                          ],
+                        ),
+                      )),
+                ],
               ],
             ),
           ),
@@ -169,22 +203,29 @@ class VehicleReviewStepWidget extends StatelessWidget {
     );
   }
 
+  // Audit §5 (C8): theme font slots, one Expanded column each, with
+  // ellipsis — the old hardcoded 13/10/11.5sp rows in a bare Row
+  // overflowed at 360px / 1.35× / Urdu.
   Widget _reviewSpec(BuildContext context, String title, String val) {
-    return Column(
-      children: [
-        Text(val, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800)),
-        Text(title, style: TextStyle(fontSize: 10, color: Theme.of(context).colorScheme.onSurfaceVariant)),
-      ],
+    return Expanded(
+      child: Column(
+        children: [
+          Text(val, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800)),
+          Text(title, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
+        ],
+      ),
     );
   }
 
   Widget _reviewMiniDetail(BuildContext context, String title, String val) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(title, style: TextStyle(fontSize: 10, color: Theme.of(context).colorScheme.onSurfaceVariant)),
-        Text(val, style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w800)),
-      ],
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
+          Text(val, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800)),
+        ],
+      ),
     );
   }
 }

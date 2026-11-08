@@ -41,6 +41,8 @@ import '../../features/discovery/presentation/views/shop_detail_view.dart';
 import '../../features/discovery/presentation/views/vehicle_detail_view.dart';
 import '../../features/trust/presentation/views/customer_documents_view.dart';
 import '../../features/owner/presentation/views/owner_add_customer_view.dart';
+import '../../features/owner/presentation/views/owner_cnic_review_view.dart';
+import '../../features/trust/utils/cnic_text_parser.dart';
 import '../../features/owner/presentation/views/owner_add_vehicle_view.dart';
 import '../../features/owner/presentation/views/owner_booking_requests_view.dart';
 import '../../features/owner/presentation/views/owner_contract_view.dart';
@@ -781,6 +783,24 @@ class AppRouter {
                 builder: (context, state) => OwnerAddCustomerView(
                   prefilledCnic: state.uri.queryParameters['cnic'],
                 ),
+              ),
+              // Customers: CNIC review (audit §20/C11 — was pushed
+              // with Navigator from the scan view, no route/deep link).
+              // The scan view passes its OCR result + front-photo path
+              // + onSaved callback via extra; without extra the scan
+              // view is shown instead of crashing on a deep link.
+              GoRoute(
+                path: '/owner/customers/cnic-review',
+                builder: (context, state) {
+                  final extra = state.extra as Map<String, dynamic>?;
+                  final result = extra?['result'] as CnicScanResult?;
+                  if (result == null) return const OwnerCustomerScanView();
+                  return OwnerCnicReviewView(
+                    initial: result,
+                    frontImagePath: extra?['frontImagePath'] as String?,
+                    onSaved: extra?['onSaved'] as ValueChanged<String>?,
+                  );
+                },
               ),
               // Customers: ownerBlacklist
               GoRoute(

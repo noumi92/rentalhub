@@ -17,6 +17,13 @@ class CustomerEntity extends Equatable {
   final String? dateOfBirth;
   final String? cnicExpiry;
 
+  /// Audit §20: Father's Name and Address were collected by the CNIC
+  /// review form and then silently discarded — the entity had no
+  /// fields for them. Both are nullable so older records (without
+  /// them) keep round-tripping unchanged.
+  final String? fatherName;
+  final String? address;
+
   /// H2: notification preferences, persisted on the customer record.
   /// Actual push delivery is backend/FCM (out of scope) — these record
   /// what the customer wants.
@@ -37,6 +44,8 @@ class CustomerEntity extends Equatable {
     required this.createdAt,
     this.dateOfBirth,
     this.cnicExpiry,
+    this.fatherName,
+    this.address,
     this.pushNotifications = true,
     this.whatsappNotifications = true,
     this.savedShopIds = const [],
@@ -49,6 +58,8 @@ class CustomerEntity extends Equatable {
     String? source,
     String? dateOfBirth,
     String? cnicExpiry,
+    String? fatherName,
+    String? address,
     bool? pushNotifications,
     bool? whatsappNotifications,
     List<String>? savedShopIds,
@@ -63,6 +74,8 @@ class CustomerEntity extends Equatable {
       createdAt: createdAt,
       dateOfBirth: dateOfBirth ?? this.dateOfBirth,
       cnicExpiry: cnicExpiry ?? this.cnicExpiry,
+      fatherName: fatherName ?? this.fatherName,
+      address: address ?? this.address,
       pushNotifications: pushNotifications ?? this.pushNotifications,
       whatsappNotifications:
           whatsappNotifications ?? this.whatsappNotifications,
@@ -84,5 +97,7 @@ class CustomerEntity extends Equatable {
         createdAt,
         dateOfBirth,
         cnicExpiry,
+        fatherName,
+        address,
       ];
 }

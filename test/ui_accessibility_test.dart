@@ -160,8 +160,9 @@ void main() {
           }
         }
       }
-      // The tree this was written against has 8 GestureDetectors.
-      expect(total, 8);
+      // The tree this was written against has 9 GestureDetectors
+      // (was 8 — the proof-image viewer joined in the audit batch).
+      expect(total, 9);
       expect(violations, isEmpty,
           reason: 'Wrap the GestureDetector in Semantics(button: true, '
               'label: ...) or convert it to an IconButton with a '
@@ -536,7 +537,7 @@ void main() {
         customerName: 'Muhammad Ahmed Khan Butt',
       );
       await pumpAt200(tester, const CustomerBookingsView());
-      expect(find.text('Total: Rs. 1250000'), findsWidgets);
+      expect(find.text('Total: Rs. 1,250,000'), findsWidgets);
     });
 
     testWidgets('Owner Requests with a 7-digit triage card at 200%',
@@ -555,7 +556,7 @@ void main() {
         customerName: 'Muhammad Ahmed Khan Butt',
       );
       await pumpAt200(tester, const OwnerBookingRequestsView());
-      expect(find.text('Rs. 1250000'), findsWidgets);
+      expect(find.text('Rs. 1,250,000'), findsWidgets);
     });
   });
 }

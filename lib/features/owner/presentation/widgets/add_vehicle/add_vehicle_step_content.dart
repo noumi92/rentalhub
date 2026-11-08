@@ -204,6 +204,7 @@ class AddVehiclePhotosStep extends StatelessWidget {
     required this.insuranceFile,
     required this.onPickInsurance,
     required this.onRemoveInsurance,
+    this.frontPhotoError = false,
   });
 
   final XFile? photoFrontFile;
@@ -227,6 +228,7 @@ class AddVehiclePhotosStep extends StatelessWidget {
   final XFile? insuranceFile;
   final VoidCallback onPickInsurance;
   final VoidCallback onRemoveInsurance;
+  final bool frontPhotoError;
 
   @override
   Widget build(BuildContext context) {
@@ -252,6 +254,7 @@ class AddVehiclePhotosStep extends StatelessWidget {
       insuranceFile: insuranceFile,
       onPickInsurance: onPickInsurance,
       onRemoveInsurance: onRemoveInsurance,
+      frontPhotoError: frontPhotoError,
     );
   }
 }
@@ -366,6 +369,8 @@ class AddVehicleReviewStep extends StatelessWidget {
     required this.advance,
     required this.extraHour,
     required this.fuelPolicy,
+    required this.hasAc,
+    this.documentNames = const [],
   });
 
   final XFile? photoFrontFile;
@@ -386,6 +391,8 @@ class AddVehicleReviewStep extends StatelessWidget {
   final int advance;
   final int extraHour;
   final String fuelPolicy;
+  final bool hasAc;
+  final List<String> documentNames;
 
   @override
   Widget build(BuildContext context) {
@@ -408,6 +415,8 @@ class AddVehicleReviewStep extends StatelessWidget {
       advance: advance,
       extraHour: extraHour,
       fuelPolicy: fuelPolicy,
+      hasAc: hasAc,
+      documentNames: documentNames,
     );
   }
 }

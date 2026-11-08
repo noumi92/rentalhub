@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../data/services/customer_wallet_service.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../../core/utils/money_format.dart';
 
 /// E1/F1: the dashboard's wallet summary — the customer's real advances
 /// paid and security escrow held (from the same wallet service the
@@ -54,7 +55,7 @@ class DashboardWalletCard extends StatelessWidget {
                   Text(
                     summary == null
                         ? l10n.walletEmptyHint
-                        : l10n.walletAdvancesEscrow(summary!.advancesPaid, summary!.escrowHeld),
+                        : l10n.walletAdvancesEscrow(formatRs(summary!.advancesPaid), formatRs(summary!.escrowHeld)),
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ],

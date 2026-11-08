@@ -11,6 +11,8 @@ class CustomerModel extends CustomerEntity {
     required super.createdAt,
     super.dateOfBirth,
     super.cnicExpiry,
+    super.fatherName,
+    super.address,
     super.pushNotifications,
     super.whatsappNotifications,
     super.savedShopIds,
@@ -27,6 +29,8 @@ class CustomerModel extends CustomerEntity {
       'createdAt': createdAt.toIso8601String(),
       if (dateOfBirth != null) 'dateOfBirth': dateOfBirth,
       if (cnicExpiry != null) 'cnicExpiry': cnicExpiry,
+      if (fatherName != null) 'fatherName': fatherName,
+      if (address != null) 'address': address,
       'pushNotifications': pushNotifications,
       'whatsappNotifications': whatsappNotifications,
       'savedShopIds': savedShopIds,
@@ -46,6 +50,8 @@ class CustomerModel extends CustomerEntity {
           : DateTime.now(),
       dateOfBirth: map['dateOfBirth'] as String?,
       cnicExpiry: map['cnicExpiry'] as String?,
+      fatherName: map['fatherName'] as String?,
+      address: map['address'] as String?,
     );
   }
 
@@ -60,6 +66,8 @@ class CustomerModel extends CustomerEntity {
       createdAt: entity.createdAt,
       dateOfBirth: entity.dateOfBirth,
       cnicExpiry: entity.cnicExpiry,
+      fatherName: entity.fatherName,
+      address: entity.address,
     );
   }
 }

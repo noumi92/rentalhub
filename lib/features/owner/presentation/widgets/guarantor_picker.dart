@@ -47,6 +47,7 @@ class _GuarantorPickerState extends State<GuarantorPicker> {
   GuarantorSelection? _selected;
   List<CustomerEntity> _saved = [];
   bool _loadingSaved = true;
+  bool _loadSavedFailed = false;
   bool _addingNew = false;
   final _searchController = TextEditingController();
   final _nameController = TextEditingController();
@@ -75,13 +76,27 @@ class _GuarantorPickerState extends State<GuarantorPicker> {
   }
 
   Future<void> _loadSaved() async {
-    final saved =
-        await sl<CustomerRemoteDataSource>().getShopCustomers(_shopId);
-    if (!mounted) return;
+    // Audit C4: a failed saved-list load is a visible error with a retry,
+    // never a spinner that spins forever.
     setState(() {
-      _saved = saved;
-      _loadingSaved = false;
+      _loadingSaved = true;
+      _loadSavedFailed = false;
     });
+    try {
+      final saved =
+          await sl<CustomerRemoteDataSource>().getShopCustomers(_shopId);
+      if (!mounted) return;
+      setState(() {
+        _saved = saved;
+        _loadingSaved = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _loadingSaved = false;
+        _loadSavedFailed = true;
+      });
+    }
   }
 
   void _select(CustomerEntity c, String relationship) {
@@ -195,13 +210,27 @@ class _GuarantorPickerState extends State<GuarantorPicker> {
               ),
             ),
             const SizedBox(width: 8),
-            ElevatedButton(
-              onPressed: _searchByCnic,
-              child: Text(l10n.manualBookingGuarantorFind),
+            SizedBox(
+              height: 48,
+              child: ElevatedButton(
+                onPressed: _searchByCnic,
+                child: Text(l10n.manualBookingGuarantorFind),
+              ),
             ),
           ],
         ),
         const SizedBox(height: 8),
+        if (_loadSavedFailed) ...[
+          Text(l10n.customersLoadError,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: AppColors.dangerTextFor(
+                      Theme.of(context).brightness))),
+          TextButton.icon(
+            onPressed: _loadSaved,
+            icon: const Icon(Icons.refresh_rounded, size: 18),
+            label: Text(l10n.commonRetry),
+          ),
+        ],
         if (_loadingSaved)
           const Center(child: CircularProgressIndicator())
         else if (_saved.isNotEmpty)
@@ -224,7 +253,7 @@ class _GuarantorPickerState extends State<GuarantorPicker> {
               },
             ),
           )
-        else
+        else if (!_loadSavedFailed)
           Text(l10n.manualBookingGuarantorEmpty,
               style: Theme.of(context).textTheme.bodySmall),
         const SizedBox(height: 8),
@@ -280,6 +309,7 @@ class _GuarantorPickerState extends State<GuarantorPicker> {
           const SizedBox(height: 8),
           SizedBox(
             width: double.infinity,
+            height: 48,
             child: ElevatedButton(
               onPressed: _addNew,
               child: Text(l10n.manualBookingGuarantorSave),

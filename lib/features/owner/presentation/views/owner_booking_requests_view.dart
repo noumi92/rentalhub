@@ -157,13 +157,20 @@ class _OwnerBookingRequestsViewState extends State<OwnerBookingRequestsView> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
+      // C1: MinimalAppBar owns the top inset; SafeArea must not add it
+      // again or the navy header gains a dead band.
       body: SafeArea(
+        top: false,
         child: Column(
           children: [
             MinimalAppBar(
               title: l10n.requestsTitle,
               subtitle: l10n.requestsAwaitingReview(_filtered.length),
               actions: [
+                // §9: the tab that owns the booking lifecycle gets a New
+                // walk-in booking entry (was only reachable from
+                // Customers / scan).
+                IconButton(icon: const Icon(Icons.person_add_rounded, color: Colors.white), tooltip: l10n.manualBookingTitle, onPressed: () => context.push(RouteNames.ownerManualBooking)),
                 IconButton(
                   icon: const Icon(Icons.qr_code_scanner_rounded, color: Colors.white),
                   tooltip: l10n.requestsScanQrTooltip,

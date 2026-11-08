@@ -1,16 +1,25 @@
+
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:rentalhub/core/di/injection_container.dart' as di;
 import 'package:rentalhub/core/settings/app_settings_cubit.dart';
+import 'package:rentalhub/core/theme/app_theme.dart';
 import 'package:rentalhub/features/bookings/data/datasources/booking_remote_data_source.dart';
+import 'package:rentalhub/features/bookings/domain/entities/booking_entity.dart';
 import 'package:rentalhub/features/notifications/data/datasources/notification_data_source.dart';
 import 'package:rentalhub/features/notifications/data/models/notification_model.dart';
 import 'package:rentalhub/features/notifications/domain/entities/notification_entity.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_dashboard_view.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_settings_view.dart';
+import 'package:rentalhub/features/owner/presentation/widgets/dashboard/dashboard_kpis.dart';
+import 'package:rentalhub/features/owner/presentation/widgets/dashboard/dashboard_ledger_item.dart';
+import 'package:rentalhub/features/owner/presentation/widgets/dashboard/dashboard_ledger_section.dart';
+import 'package:rentalhub/features/owner/presentation/widgets/dashboard/dashboard_quick_actions.dart';
+import 'package:rentalhub/features/owner/presentation/widgets/dashboard/revenue_kpi_card.dart';
 import 'package:rentalhub/l10n/app_localizations.dart';
 
 void main() {
@@ -211,13 +220,208 @@ void main() {
       );
       await tester.pumpAndSettle();
       // The amount appears twice: the revenue KPI and the ledger row.
-      expect(find.text('Rs. 9000'), findsNWidgets(2));
+      // C5: grouped thousands — "Rs. 9,000", never "Rs. 9000".
+      expect(find.text('Rs. 9,000'), findsNWidgets(2));
+      expect(find.text('Rs. 9000'), findsNothing);
       expect(find.text('Rs. 148,500'), findsNothing);
       expect(find.text('Honda Civic Oriel 2021'), findsOneWidget);
       expect(find.text('No trips yet — bookings will appear here.'),
           findsNothing);
       expect(find.text('Al-Falah Rent a Car • Executive Telemetry'),
           findsNothing);
+    });
+  });
+
+  group('Audit fix — dashboard KPI trend, ledger link, quick actions', () {
+    testWidgets('down trend shows a down arrow, never an up arrow in green',
+        (tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: RevenueKpiCard(
+              title: 'Gross revenue',
+              amount: 'Rs. 8,800',
+              changeLabel: '-12% vs last month',
+              icon: Icons.account_balance_wallet_rounded,
+              trend: KpiTrend.down,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.byIcon(Icons.trending_down_rounded), findsOneWidget);
+      expect(find.byIcon(Icons.trending_up_rounded), findsNothing);
+    });
+
+    testWidgets('up trend shows the up arrow; neutral shows no trend icon',
+        (tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: Column(
+              children: [
+                RevenueKpiCard(
+                  title: 'Gross revenue',
+                  amount: 'Rs. 10,000',
+                  changeLabel: '+12% vs last month',
+                  icon: Icons.account_balance_wallet_rounded,
+                  trend: KpiTrend.up,
+                ),
+                RevenueKpiCard(
+                  title: 'Requests waiting',
+                  amount: '3',
+                  changeLabel: 'Needs review',
+                  icon: Icons.inbox_rounded,
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.byIcon(Icons.trending_up_rounded), findsOneWidget);
+      expect(find.byIcon(Icons.trending_down_rounded), findsNothing);
+    });
+
+    testWidgets('DashboardKpis formats a 7-digit revenue with separators',
+        (tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: DashboardKpis(
+              totalRevenue: 1234567,
+              growthLabel: '+12% vs last month',
+              growthTrend: KpiTrend.up,
+              activeCount: 87,
+              completedCount: 1234,
+              settleLabel: '87% deposits settled',
+              waitingCount: 42,
+              fleetAvailable: 18,
+              fleetTotal: 24,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Rs. 1,234,567'), findsOneWidget);
+      expect(find.text('Rs. 1234567'), findsNothing);
+      expect(find.byIcon(Icons.trending_up_rounded), findsOneWidget);
+    });
+
+    testWidgets('ledger status colours are brightness-aware, not plain orange',
+        (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.lightTheme,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const Scaffold(
+            body: Column(
+              children: [
+                DashboardLedgerItem(
+                  bookingId: 'RH-1',
+                  vehicleName: 'Honda Civic',
+                  customerName: 'Ayesha Khan',
+                  amount: 125000,
+                  status: 'requested',
+                ),
+                DashboardLedgerItem(
+                  bookingId: 'RH-2',
+                  vehicleName: 'Honda Civic',
+                  customerName: 'Ayesha Khan',
+                  amount: 125000,
+                  status: 'rejected',
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Rs. 125,000'), findsNWidgets(2));
+      final requested = tester.widget<Text>(find.text('Requested'));
+      expect(requested.style?.color,
+          AppColors.orangeTextFor(Brightness.light));
+      final rejected = tester.widget<Text>(find.text('Rejected'));
+      expect(rejected.style?.color,
+          AppColors.dangerTextFor(Brightness.light));
+    });
+
+    testWidgets('"View all requests" opens the Requests tab',
+        (tester) async {
+      final booking = BookingEntity(
+        bookingId: 'RH-1',
+        customerId: 'cust-1',
+        shopId: 'shop-1',
+        vehicleId: 'veh-1',
+        packageType: '24h',
+        pickupTime: DateTime.now(),
+        returnTime: DateTime.now().add(const Duration(days: 1)),
+        totalAmount: 9000,
+        remainingBalance: 6000,
+        vehicleName: 'Honda Civic',
+        customerName: 'Ayesha Khan',
+        status: 'paid',
+      );
+      final router = GoRouter(
+        initialLocation: '/',
+        routes: [
+          GoRoute(
+            path: '/',
+            builder: (context, state) => Scaffold(
+              body: DashboardLedgerSection(
+                isEmpty: false,
+                ledger: [booking],
+              ),
+            ),
+          ),
+          GoRoute(
+            path: '/owner/requests',
+            builder: (context, state) => const Scaffold(
+              body: Center(child: Text('Requests')),
+            ),
+          ),
+        ],
+      );
+      await tester.pumpWidget(
+        MaterialApp.router(
+          routerConfig: router,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('View all requests'), findsOneWidget);
+      await tester.tap(find.text('View all requests'));
+      await tester.pumpAndSettle();
+      expect(find.text('Requests'), findsOneWidget);
+      router.dispose();
+    });
+
+    testWidgets('Scan QR tile icon uses the theme primary in dark mode',
+        (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.darkTheme,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const Scaffold(body: DashboardQuickActions()),
+        ),
+      );
+      await tester.pumpAndSettle();
+      final icon = tester.widget<Icon>(
+        find.byIcon(Icons.qr_code_scanner_rounded),
+      );
+      // Theme primary in dark is lavender — not the navy
+      // AppColors.primary (#1B1E5C), which was ~1.2:1 on dark.
+      expect(icon.color, AppTheme.darkTheme.colorScheme.primary);
+      expect(icon.color, isNot(AppColors.primary));
     });
   });
 

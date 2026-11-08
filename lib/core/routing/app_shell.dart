@@ -76,12 +76,29 @@ class AppShell extends StatelessWidget {
     // stays above the content either way (untouched).
     final showNav =
         tabRootPaths.contains(GoRouterState.of(context).uri.path);
+    // Audit fix (C1 / dead band): the shell consumes the top inset
+    // exactly once. This SafeArea adds it above the banner/content,
+    // and removePadding strips it from the branch subtree, so
+    // MinimalAppBar and each view's SafeArea cannot add it a second
+    // time — no ~status-bar-height empty strip appears between the
+    // banner and the header when the banner is visible, and the
+    // header still clears the status bar when it is hidden.
     return Scaffold(
-      body: Column(
-        children: [
-          const OfflineBanner(),
-          Expanded(child: navigationShell),
-        ],
+      body: SafeArea(
+        top: true,
+        bottom: false,
+        child: Column(
+          children: [
+            const OfflineBanner(),
+            Expanded(
+              child: MediaQuery.removePadding(
+                context: context,
+                removeTop: true,
+                child: navigationShell,
+              ),
+            ),
+          ],
+        ),
       ),
       // #16: the flush bar attaches to the bottom edge — no SafeArea
       // around it. It renders only on tab roots (see above).

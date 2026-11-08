@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/utils/money_format.dart';
 import '../../../fleet/domain/entities/fixed_route_entity.dart';
 import '../../../../l10n/app_localizations.dart';
 
@@ -85,7 +86,8 @@ class TripTypeSection extends StatelessWidget {
                 final selected = selectedRoute?.routeId == r.routeId;
                 return ChoiceChip(
                   materialTapTargetSize: MaterialTapTargetSize.padded,
-                  label: Text('${r.destinationCity} • Rs. ${r.fixedPricePkr}'),
+                  label: Text(l10n.fixedRouteChip(
+                      r.destinationCity, formatRs(r.fixedPricePkr))),
                   selected: selected,
                   selectedColor: AppColors.secondary,
                   labelStyle: TextStyle(

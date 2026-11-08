@@ -283,6 +283,22 @@
   "disputeSubmit": "Submit Claim",
   "disputeSubmitting": "Submitting Dispute...",
   "disputeFiled": "Dispute filed. The showroom can see it in their disputes inbox.",
+  "disputeFiledAgo": "Filed {time} ago",
+  "@disputeFiledAgo": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "disputeSlaLeft": "{time} left",
+  "@disputeSlaLeft": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
   "disputeSavedOffline": "Dispute saved on this device — it will reach the showroom once you are back online.",
   "cancelReasonLabel": "Reason for Cancellation",
   "cancelTitle": "Cancel Reservation",
@@ -381,6 +397,14 @@
   "proofScreenshotReady": "Screenshot Ready",
   "proofScreenshotSupport": "Support JPG, PNG receipt from banking app",
   "proofUploadScreenshot": "Upload Transfer Screenshot",
+  "paymentProofPayTo": "Pay to: {account}",
+  "@paymentProofPayTo": {
+    "placeholders": {
+      "account": {
+        "type": "String"
+      }
+    }
+  },
   "paymentAccountMobile": "Account / Mobile",
   "paymentAccountTitle": "Account Title",
   "paymentCopyNumber": "Copy Number",
@@ -427,7 +451,7 @@
   "roleCustomerDesc": "Discover verified rental shops within 1–5 km, book Self-Drive or With-Driver packages.",
   "roleOwner": "Fleet Owner (Showroom)",
   "roleOwnerTitle": "List My Fleet (Shop Owner)",
-  "roleOwnerDesc": "Register your showroom, manage fleet rates, digital handovers, and National Blacklist.",
+  "roleOwnerDesc": "Register your showroom, manage fleet rates, digital handovers, and RentalHub's shared blacklist.",
   "roleContinueCustomer": "Continue as Customer",
   "roleContinueOwner": "Continue as Fleet Owner",
   "roleReview": "Review Selection",
@@ -603,7 +627,7 @@
   "@vehicleSelfRate": {
     "placeholders": {
       "rate": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -611,7 +635,7 @@
   "@vehicleDriverRate": {
     "placeholders": {
       "rate": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -635,7 +659,7 @@
   "@vehicleDepositCnic": {
     "placeholders": {
       "amount": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -643,10 +667,10 @@
   "@vehicleDriverPackageDetail": {
     "placeholders": {
       "overtime": {
-        "type": "int"
+        "type": "String"
       },
       "outstation": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -676,10 +700,11 @@
   "@bookNowWithRate": {
     "placeholders": {
       "rate": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
+  "vehicleManageRates": "Manage rates",
   "bookingDetailTitle": "Booking {id}",
   "@bookingDetailTitle": {
     "placeholders": {
@@ -754,7 +779,7 @@
   "@summaryDepositAtHandover": {
     "placeholders": {
       "amount": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -762,7 +787,7 @@
   "@payAdvanceAmount": {
     "placeholders": {
       "amount": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -850,7 +875,7 @@
   "@cancelAdvancePaid": {
     "placeholders": {
       "amount": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -955,7 +980,7 @@
   "@paymentTransferToLock": {
     "placeholders": {
       "amount": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -963,7 +988,7 @@
   "@approvedPayToGuarantee": {
     "placeholders": {
       "amount": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -971,7 +996,7 @@
   "@packageAdvanceDue": {
     "placeholders": {
       "amount": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -979,7 +1004,7 @@
   "@packageSecurityDeposit": {
     "placeholders": {
       "amount": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -987,7 +1012,7 @@
   "@packageTotal": {
     "placeholders": {
       "amount": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -995,7 +1020,7 @@
   "@tierAdvance": {
     "placeholders": {
       "amount": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -1115,10 +1140,10 @@
   "@walletAdvancesEscrow": {
     "placeholders": {
       "adv": {
-        "type": "int"
+        "type": "String"
       },
       "esc": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -1151,12 +1176,13 @@
   "@bookingTotalAmount": {
     "placeholders": {
       "amount": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
   "fleetTitle": "Fleet Management",
   "fleetSubtitle": "Live Showroom",
+  "fleetSearchHint": "Search by name or plate",
   "fleetTotalFleet": "Total Fleet",
   "fleetTotalCars": "{count} Cars",
   "@fleetTotalCars": {
@@ -1215,7 +1241,7 @@
   "@fleetDailyRate": {
     "placeholders": {
       "amount": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -1286,6 +1312,7 @@
   },
   "dashboardLedgerTitle": "Completed Trip Ledger & Settlements",
   "dashboardLedgerEmpty": "No trips yet — bookings will appear here.",
+  "dashboardViewAllRequests": "View all requests",
   "dashboardLedgerVehicle": "Vehicle",
   "dashboardLedgerCustomer": "Customer",
   "dashboardQuickAddCar": "Add Car",
@@ -1363,7 +1390,7 @@
   "requestsWithChauffeur": "With Chauffeur",
   "requestsVerifyProof": "Verify Payment Proof",
   "requestsDecline": "Decline",
-  "requestsApprovePay": "Approve & Pay",
+  "requestsApprovePay": "Approve",
   "requestsStatusRequested": "Requested",
   "calendarTitle": "Booking Calendar",
   "calendarFree": "Free",
@@ -1473,6 +1500,7 @@
   "addVehicleExtraFeaturesHint": "Select amenities included with this vehicle to attract more renters.",
   "addVehiclePhotosTitle": "Vehicle 4-Angle Photos",
   "addVehiclePhotosHint": "Upload photos using Camera or Gallery. Tap to change or remove.",
+  "addVehicleFrontPhotoRequired": "A front photo is required before publishing this vehicle.",
   "addVehiclePhotoFront": "Front View",
   "addVehiclePhotoRear": "Rear View",
   "addVehiclePhotoSide": "Side Profile",
@@ -1521,7 +1549,7 @@
   "@addVehicleReviewDailyRate": {
     "placeholders": {
       "amount": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -1529,7 +1557,7 @@
   "@addVehicleReviewOverstayRate": {
     "placeholders": {
       "amount": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -1551,8 +1579,18 @@
     }
   },
   "pricingTitle": "Vehicle Pricing Matrix",
+  "rateMatrixInvalidField": "Enter a valid number for {field}",
+  "@rateMatrixInvalidField": {
+    "placeholders": {
+      "field": {
+        "type": "String"
+      }
+    }
+  },
   "pricingSaving": "Saving Matrix...",
   "pricingSave": "Save Pricing Matrix",
+  "pricingUnsavedTitle": "Discard unsaved prices?",
+  "pricingUnsavedBody": "Your edited prices have not been saved.",
   "pricingSelfDriveAllowed": "Self-Drive Allowed",
   "pricingSelfDriveHint": "Requires original NADRA CNIC + security deposit",
   "pricingChauffeurAllowed": "Chauffeur Service Allowed",
@@ -1590,15 +1628,28 @@
   "fixedRoutesSubtitle": "One fixed price per destination",
   "fixedRoutesDeleteTooltip": "Delete fixed route",
   "fixedRoutesPriceRequired": "Enter a fixed price above zero.",
+  "fixedRoutesLoadError": "Could not load your fixed routes. Check your connection and try again.",
   "fixedRoutesEmpty": "No fixed routes yet — add your first destination below.",
+  "fixedRouteDuplicate": "This route already exists",
   "fixedRouteSummary": "{km} km • Rs. {price} fixed",
+  "fixedRouteChip": "{city} • Rs. {price}",
   "@fixedRouteSummary": {
     "placeholders": {
       "km": {
         "type": "int"
       },
       "price": {
-        "type": "int"
+        "type": "String"
+      }
+    }
+  },
+  "@fixedRouteChip": {
+    "placeholders": {
+      "city": {
+        "type": "String"
+      },
+      "price": {
+        "type": "String"
       }
     }
   },
@@ -1613,7 +1664,7 @@
   "@amountRs": {
     "placeholders": {
       "amount": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -1641,7 +1692,7 @@
         "type": "int"
       },
       "amount": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -1649,12 +1700,15 @@
   "customersScanTitle": "KYC & Blacklist Radar",
   "addCustomerTitle": "Add Customer",
   "addCustomerName": "Full name",
+  "addCustomerCnic": "CNIC Number",
   "addCustomerPhone": "Phone number",
   "addCustomerSaved": "Customer saved",
   "addCustomerSave": "Save customer",
-  "customersScanSubtitle": "National Anti-Fraud Network • Real-time",
+  "addCustomerFullNameRequired": "Full name is required",
+  "addCustomerHelper": "Guarantor can be added later from the booking flow",
+  "customersScanSubtitle": "RentalHub shared blacklist • Real-time",
   "customersScanTribunalPolicy": "Tribunal Policy",
-  "customersScanTribunalInfo": "Every Pakistani rental shop shares instant fraud telemetry via RentalHub.",
+  "customersScanTribunalInfo": "Every RentalHub shop shares fraud reports in one blacklist.",
   "customersScanViewAll": "View All Customers",
   "customersScanInvalidCnic": "Please enter a valid 13-digit Pakistani CNIC",
   "customersScanLookupFailed": "Verification lookup failed: {error}",
@@ -1675,7 +1729,7 @@
   },
   "customersScanUnreadable": "Couldn't read the card — type the CNIC manually.",
   "customersScanDeclined": "Customer flagged and declined entry into showroom.",
-  "customersScanFallbackReason": "Reported in National Blacklist",
+  "customersScanFallbackReason": "Reported in RentalHub's shared blacklist",
   "customersScanFallbackDescription": "Severe fraud / non-payment incident flagged.",
   "customersRatingTitle": "Customer Reputation & Review",
   "customersRatingFallback": "Customer Review",
@@ -1686,6 +1740,7 @@
   "customersRatingCareHint": "Interior cleanliness and scratch-free return",
   "customersRatingBehavior": "Overall Behavior & Civility",
   "customersRatingBehaviorHint": "Professionalism and adherence to showroom policies",
+  "rateCustomerSelectStars": "Select at least one star rating",
   "customersRatingCommentHint": "Add optional feedback notes for community showroom records...",
   "customersRatingFlagTitle": "Flag Customer to Shared Blacklist",
   "customersRatingFlagNoCnic": "Needs the customer CNIC on this booking — none is recorded, so a report cannot be filed from here.",
@@ -1778,7 +1833,7 @@
   "@financeNetAmount": {
     "placeholders": {
       "amount": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -1786,13 +1841,13 @@
   "@financeMonthBreakdown": {
     "placeholders": {
       "bookings": {
-        "type": "int"
+        "type": "String"
       },
       "income": {
-        "type": "int"
+        "type": "String"
       },
       "expenses": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -1815,7 +1870,7 @@
         "type": "String"
       },
       "amount": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -1825,6 +1880,7 @@
   "financeAccountTypeEasyPaisa": "EasyPaisa",
   "financeAccountTypeLabel": "Type",
   "financeAccountsTitle": "Accounts",
+  "financeAccountsEmpty": "No accounts yet",
   "financeAddAccount": "Add account",
   "financeLedgerTitle": "Ledger",
   "financeAddEntry": "Add entry",
@@ -1869,10 +1925,10 @@
   "@financeClosingOpening": {
     "placeholders": {
       "opening": {
-        "type": "int"
+        "type": "String"
       },
       "difference": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -1880,10 +1936,10 @@
   "@financeClosingCounted": {
     "placeholders": {
       "counted": {
-        "type": "int"
+        "type": "String"
       },
       "difference": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -1892,6 +1948,7 @@
   "financePnlOtherIncome": "Other income",
   "financePnlExpenses": "Expenses",
   "financePnlNetProfit": "Net profit",
+  "pnlLoss": "Loss",
   "financePnlExport": "Export P&L as CSV (opens in Excel)",
   "financeCarPnlSubtitle": "One car, all its money",
   "financeCarPnlNoCars": "No cars in the fleet yet.",
@@ -1901,13 +1958,13 @@
   "@financeCarPnlBreakdown": {
     "placeholders": {
       "revenue": {
-        "type": "int"
+        "type": "String"
       },
       "income": {
-        "type": "int"
+        "type": "String"
       },
       "expenses": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -1922,7 +1979,23 @@
   "@financeClosingClosed": {
     "placeholders": {
       "difference": {
-        "type": "int"
+        "type": "String"
+      }
+    }
+  },
+  "cashClosingShortBy": "Short by Rs. {amount}",
+  "@cashClosingShortBy": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "cashClosingOverBy": "Over by Rs. {amount}",
+  "@cashClosingOverBy": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
       }
     }
   },
@@ -1931,7 +2004,7 @@
   "@financeDuesOutstanding": {
     "placeholders": {
       "amount": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -1962,6 +2035,14 @@
       }
     }
   },
+  "financeDuesLastRemindedDate": "Last reminded {date}",
+  "@financeDuesLastRemindedDate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "financeDuesRemind": "Remind on WhatsApp",
   "financeDuesRemindAgain": "Remind again on WhatsApp",
   "financeDuesNoPhoneError": "No phone number for this customer.",
@@ -1972,12 +2053,12 @@
         "type": "String"
       },
       "due": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
   "financeDuesWhatsappFailed": "Could not open WhatsApp.",
-  "financeDuesReminderSent": "WhatsApp opened — reminder marked as sent.",
+  "financeDuesReminderSent": "WhatsApp opened — send the reminder from the chat.",
   "financeDuesAutoNote": "Automated WhatsApp reminders (every 3 days) need the WhatsApp Business setup — Phase I.",
   "handoverTitle": "Vehicle Handover & Inspection",
   "handoverOdometerInvalid": "Please enter a valid odometer reading.",
@@ -2040,7 +2121,15 @@
   "@returnSettled": {
     "placeholders": {
       "refund": {
-        "type": "int"
+        "type": "String"
+      }
+    }
+  },
+  "returnCustomerOwes": "Customer owes Rs. {amount}",
+  "@returnCustomerOwes": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
       }
     }
   },
@@ -2069,7 +2158,7 @@
         "type": "int"
       },
       "rate": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -2082,7 +2171,7 @@
   "@returnReceiptDeductionsAmount": {
     "placeholders": {
       "amount": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -2099,6 +2188,7 @@
   "contractSharePdf": "Share PDF",
   "contractPrintPdf": "Print PDF",
   "contractPdfUnavailable": "The agreement PDF is not available yet.",
+  "contractNotAvailable": "Agreement not available yet",
   "contractShareText": "Rental agreement #{id}",
   "@contractShareText": {
     "placeholders": {
@@ -2128,7 +2218,7 @@
   "@contractDepositRefundable": {
     "placeholders": {
       "amount": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -2185,6 +2275,7 @@
   "paymentVerificationTransactionId": "Transaction ID",
   "paymentVerificationScreenshotTitle": "Payment screenshot",
   "paymentVerificationProofUnavailable": "Proof image unavailable — ask the customer to resend it.",
+  "proofImageOpenFullscreen": "Open proof image fullscreen",
   "paymentVerificationNoScreenshot": "No screenshot attached.",
   "paymentVerificationPreviouslyRejected": "Previously rejected: {reason}",
   "@paymentVerificationPreviouslyRejected": {
@@ -2199,7 +2290,7 @@
   "@paymentVerificationConfirmButton": {
     "placeholders": {
       "amount": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -2241,7 +2332,7 @@
         "type": "String"
       },
       "price": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -2249,7 +2340,7 @@
   "@manualBookingTotal": {
     "placeholders": {
       "total": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -2269,6 +2360,23 @@
   "manualBookingGuarantorSave": "Save & Select Guarantor",
   "qrScanTitle": "Scan Booking QR",
   "qrScanSubtitle": "Point the camera at the customer’s booking code",
+  "qrOpen": "Open",
+  "qrScanOpenSettings": "Open settings",
+  "qrCameraDenied": "Camera permission is off — RentalHub cannot scan QR codes.",
+  "qrCameraDeniedHint": "Allow the camera in the app settings, or type the booking id below.",
+  "qrCameraUnavailable": "Camera unavailable — {detail}",
+  "@qrCameraUnavailable": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "qrCameraUnavailableHint": "Type the booking id below instead.",
+  "qrCameraSettingsError": "Could not open Settings — open the app settings and allow the camera, then try again.",
+  "qrTorchOn": "Torch on",
+  "qrTorchOff": "Torch off",
+  "proofPickerPermissionDenied": "Could not open the photo picker — check the camera / photo permission and try again.",
   "qrNoBooking": "No booking found for #{id}.",
   "@qrNoBooking": {
     "placeholders": {
@@ -2450,6 +2558,7 @@
   },
   "disputesNoDescription": "No description given.",
   "disputesSaving": "Saving…",
+  "disputesUpdateError": "Could not update this dispute. Try again.",
   "disputesMarkInReview": "Mark in review",
   "disputesMarkResolved": "Mark resolved",
   "disputesResolvedNote": "Resolved — no further action needed.",
@@ -2481,7 +2590,7 @@
   "@subscriptionTransfer": {
     "placeholders": {
       "price": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -2492,13 +2601,16 @@
   "subscriptionRequested": "Upgrade requested! Super Admin review in progress.",
   "subscriptionTitle": "Showroom Membership Plans",
   "subscriptionSubtitle": "Grow Your Showroom Fleet with RentalHub",
+  "subscriptionTierStarter": "Starter Freemium",
+  "subscriptionTierPro": "Pro Showroom",
+  "subscriptionTierEnterprise": "Enterprise Fleet",
   "subscriptionPerMonth": "/ month",
   "subscriptionForeverFree": "Forever Free",
   "subscriptionFeatureMax3": "Max 3 Showroom Vehicles",
   "subscriptionFeatureAgreements": "Standard Digital Agreements",
   "subscriptionFeatureVerification": "Customer Verification Check",
   "subscriptionFeatureUnlimited": "Unlimited Fleet Vehicles",
-  "subscriptionFeatureRadar": "Real-time National Blacklist Radar",
+  "subscriptionFeatureRadar": "Real-time shared blacklist radar",
   "subscriptionFeatureWhatsappInvoicing": "WhatsApp Automated Invoicing & Pass",
   "subscriptionFeaturePricingMatrix": "Custom Multi-tier Pricing Matrix",
   "subscriptionFeatureMultiBranch": "Multi-branch Fleet Synchronization",
@@ -2513,6 +2625,7 @@
   "whatsappLogsDelivered": "Delivered",
   "whatsappLogsRead": "Read",
   "whatsappLogsFailed": "Failed",
+  "whatsappLogsEmpty": "No WhatsApp messages sent yet",
   "whatsappLogsResent": "WhatsApp notification re-dispatched via Meta Cloud API!",
   "whatsappLogsResend": "Resend",
   "onboardingWhatsappBusinessNumber": "WhatsApp Business Number",
@@ -2553,8 +2666,32 @@
   "syncFailedShort": "Sync failed — will retry",
   "syncFailedBanner": "Sync failed — tap to review",
   "syncDetailsTitle": "Sync details",
+  "syncDetailsFailed": "Failed",
+  "syncDetailsAttempts": "Attempts: {count}",
+  "@syncDetailsAttempts": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "syncRetryNow": "Retry now",
   "syncDiscard": "Discard",
+  "syncDiscardTitle": "Discard this change?",
+  "syncDiscardBody": "{kind} • {entity}\nIt will not sync.",
+  "@syncDiscardBody": {
+    "placeholders": {
+      "kind": {
+        "type": "String"
+      },
+      "entity": {
+        "type": "String"
+      }
+    }
+  },
+  "syncKindSavedChange": "Saved change",
+  "syncKindFileUpload": "File upload",
+  "syncKindHandover": "Handover",
   "syncNoPending": "Nothing pending",
   "syncPendingShort": "Pending sync",
   "syncAllSynced": "All changes synced",
@@ -2621,7 +2758,7 @@
     }
   },
   "damageTapHint": "Tap any vehicle quadrant below to pin/unpin pre-existing scratches or dents:",
-  "blacklistScanPrompt": "Enter CNIC above to run an instant real-time scan against the National Car Rental Fraud & Blacklist Database.",
+  "blacklistScanPrompt": "Enter CNIC above to run an instant real-time scan against the RentalHub shared blacklist.",
   "blacklistCriticalAlert": "CRITICAL ALERT: BLACKLISTED CITIZEN",
   "blacklistIncidentRef": "Incident Ref: {id}",
   "@blacklistIncidentRef": {
@@ -2650,11 +2787,12 @@
   "blacklistDecline": "Decline / Refuse Service",
   "blacklistCleanTitle": "No blacklist record found",
   "blacklistCleanSubtitle": "Zero active defaults or tribunal complaints on file.",
+  "blacklistDetailsUnavailable": "Blacklisted — details unavailable, refer to tribunal",
   "blacklistProceed": "Add Customer",
   "cnicVerifyTitle": "CNIC Check",
   "cnicScanTooltip": "Scan CNIC / Barcode",
   "cnicVerifyButton": "Verify CNIC & Blacklist",
-  "cnicChecking": "Checking National Tribunal...",
+  "cnicChecking": "Checking RentalHub blacklist...",
   "noDraftTitle": "No booking in progress.",
   "noDraftMessage": "Pick a car and a package first — the review screen needs the booking details from there.",
   "noDraftBrowse": "Browse shops",

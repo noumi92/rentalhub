@@ -77,6 +77,10 @@ class AvailabilityMonthGrid extends StatelessWidget {
           selectedDay!.year == date.year &&
           selectedDay!.month == date.month &&
           selectedDay!.day == date.day;
+      final now = DateTime.now();
+      final isToday = now.year == date.year &&
+          now.month == date.month &&
+          now.day == date.day;
       cells.add(
         // E3: each day is a labelled button (selected state included)
         // for screen readers; the tap behaviour is unchanged.
@@ -95,14 +99,36 @@ class AvailabilityMonthGrid extends StatelessWidget {
                     ? Border.all(
                         color: Theme.of(context).colorScheme.onSurface,
                         width: 2)
-                    : null,
+                    // Audit §7: today gets a ring (and a dot below
+                    // the number) so it is distinguishable from any
+                    // other free/requested/confirmed day.
+                    : isToday
+                        ? Border.all(
+                            color: Theme.of(context).colorScheme.primary,
+                            width: 2)
+                        : null,
               ),
               alignment: Alignment.center,
-              child: Text('$day',
-                  style: TextStyle(
-                      fontWeight:
-                          isSelected ? FontWeight.w900 : FontWeight.w600,
-                      color: Theme.of(context).colorScheme.onSurface)),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('$day',
+                      style: TextStyle(
+                          fontWeight:
+                              isSelected ? FontWeight.w900 : FontWeight.w600,
+                          color: Theme.of(context).colorScheme.onSurface)),
+                  if (isToday)
+                    Container(
+                      width: 5,
+                      height: 5,
+                      margin: const EdgeInsets.only(top: 1),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.primary,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                ],
+              ),
             ),
           ),
         ),
@@ -125,10 +151,18 @@ class AvailabilityMonthGrid extends StatelessWidget {
               onPressed: () =>
                   onMonthChanged(DateTime(month.year, month.month - 1)),
             ),
-            Text(_monthLabel(l10n),
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w800,
-                    )),
+            // Audit §7: the month label flexes with ellipsis — at
+            // 360px / 1.35× (and the wide test font) the bare label
+            // overflowed the row between the two nav buttons.
+            Expanded(
+              child: Text(_monthLabel(l10n),
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w800,
+                      )),
+            ),
             IconButton(
               tooltip: l10n.calendarNextMonth,
               icon: const Icon(Icons.chevron_right_rounded),
@@ -138,16 +172,27 @@ class AvailabilityMonthGrid extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 8),
+        // Audit §7: each weekday label is Expanded with centred
+        // ellipsis — the bare spaceAround Row overflowed in Urdu /
+        // at 1.35× text scale.
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            Text(l10n.calendarWeekdayMon, style: Theme.of(context).textTheme.labelSmall),
-            Text(l10n.calendarWeekdayTue, style: Theme.of(context).textTheme.labelSmall),
-            Text(l10n.calendarWeekdayWed, style: Theme.of(context).textTheme.labelSmall),
-            Text(l10n.calendarWeekdayThu, style: Theme.of(context).textTheme.labelSmall),
-            Text(l10n.calendarWeekdayFri, style: Theme.of(context).textTheme.labelSmall),
-            Text(l10n.calendarWeekdaySat, style: Theme.of(context).textTheme.labelSmall),
-            Text(l10n.calendarWeekdaySun, style: Theme.of(context).textTheme.labelSmall),
+            for (final label in [
+              l10n.calendarWeekdayMon,
+              l10n.calendarWeekdayTue,
+              l10n.calendarWeekdayWed,
+              l10n.calendarWeekdayThu,
+              l10n.calendarWeekdayFri,
+              l10n.calendarWeekdaySat,
+              l10n.calendarWeekdaySun,
+            ])
+              Expanded(
+                child: Text(label,
+                    textAlign: TextAlign.center,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.labelSmall),
+              ),
           ],
         ),
         const SizedBox(height: 4),

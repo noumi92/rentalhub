@@ -283,6 +283,22 @@
   "disputeSubmit": "دعویٰ جمع کریں",
   "disputeSubmitting": "تنازع جمع کیا جا رہا ہے…",
   "disputeFiled": "تنازع درج ہو گیا۔ شوروم اسے اپنے تنازعات کے ان باکس میں دیکھ سکتا ہے۔",
+  "disputeFiledAgo": "{time} قبل درج کیا گیا",
+  "@disputeFiledAgo": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "disputeSlaLeft": "{time} باقی",
+  "@disputeSlaLeft": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
   "disputeSavedOffline": "تنازع اس آلے پر محفوظ ہو گیا — آن لائن ہونے پر شوروم تک پہنچ جائے گا۔",
   "cancelReasonLabel": "منسوخی کی وجہ",
   "cancelTitle": "بکنگ منسوخ کریں",
@@ -381,6 +397,14 @@
   "proofScreenshotReady": "اسکرین شاٹ تیار ہے",
   "proofScreenshotSupport": "بینکنگ ایپ کی JPG، PNG رسید معاون ہے",
   "proofUploadScreenshot": "منتقلی کا اسکرین شاٹ اپ لوڈ کریں",
+  "paymentProofPayTo": "ادائیگی برائے: {account}",
+  "@paymentProofPayTo": {
+    "placeholders": {
+      "account": {
+        "type": "String"
+      }
+    }
+  },
   "paymentAccountMobile": "اکاؤنٹ / موبائل",
   "paymentAccountTitle": "اکاؤنٹ کا عنوان",
   "paymentCopyNumber": "نمبر کاپی کریں",
@@ -427,7 +451,7 @@
   "roleCustomerDesc": "1 تا 5 کلومیٹر کے اندر تصدیق شدہ شورومز تلاش کریں، سیلف ڈرائیو یا ڈرائیور والے پیکج بک کریں۔",
   "roleOwner": "فلیٹ مالک (شوروم)",
   "roleOwnerTitle": "میری گاڑیاں درج کریں (شوروم مالک)",
-  "roleOwnerDesc": "اپنا شوروم رجسٹر کریں، فلیٹ کے نرخ، ڈیجیٹل حوالگی اور قومی بلیک لسٹ کا انتظام کریں۔",
+  "roleOwnerDesc": "اپنا شوروم رجسٹر کریں، فلیٹ کے نرخ، ڈیجیٹل حوالگی اور رینٹل ہب کی مشترکہ بلیک لسٹ کا انتظام کریں۔",
   "roleContinueCustomer": "گاہک کے طور پر جاری رکھیں",
   "roleContinueOwner": "فلیٹ مالک کے طور پر جاری رکھیں",
   "roleReview": "انتخاب کا جائزہ لیں",
@@ -603,7 +627,7 @@
   "@vehicleSelfRate": {
     "placeholders": {
       "rate": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -611,7 +635,7 @@
   "@vehicleDriverRate": {
     "placeholders": {
       "rate": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -635,7 +659,7 @@
   "@vehicleDepositCnic": {
     "placeholders": {
       "amount": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -643,10 +667,10 @@
   "@vehicleDriverPackageDetail": {
     "placeholders": {
       "overtime": {
-        "type": "int"
+        "type": "String"
       },
       "outstation": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -676,10 +700,11 @@
   "@bookNowWithRate": {
     "placeholders": {
       "rate": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
+  "vehicleManageRates": "نرخوں کا انتظام کریں",
   "bookingDetailTitle": "بکنگ {id}",
   "@bookingDetailTitle": {
     "placeholders": {
@@ -754,7 +779,7 @@
   "@summaryDepositAtHandover": {
     "placeholders": {
       "amount": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -762,7 +787,7 @@
   "@payAdvanceAmount": {
     "placeholders": {
       "amount": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -850,7 +875,7 @@
   "@cancelAdvancePaid": {
     "placeholders": {
       "amount": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -955,7 +980,7 @@
   "@paymentTransferToLock": {
     "placeholders": {
       "amount": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -963,7 +988,7 @@
   "@approvedPayToGuarantee": {
     "placeholders": {
       "amount": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -971,7 +996,7 @@
   "@packageAdvanceDue": {
     "placeholders": {
       "amount": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -979,7 +1004,7 @@
   "@packageSecurityDeposit": {
     "placeholders": {
       "amount": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -987,7 +1012,7 @@
   "@packageTotal": {
     "placeholders": {
       "amount": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -995,7 +1020,7 @@
   "@tierAdvance": {
     "placeholders": {
       "amount": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -1115,10 +1140,10 @@
   "@walletAdvancesEscrow": {
     "placeholders": {
       "adv": {
-        "type": "int"
+        "type": "String"
       },
       "esc": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -1151,12 +1176,13 @@
   "@bookingTotalAmount": {
     "placeholders": {
       "amount": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
   "fleetTitle": "فلیٹ مینجمنٹ",
   "fleetSubtitle": "لائیو شوروم",
+  "fleetSearchHint": "نام یا نمبر پلیٹ سے تلاش کریں",
   "fleetTotalFleet": "کل گاڑیاں",
   "fleetTotalCars": "{count} گاڑیاں",
   "@fleetTotalCars": {
@@ -1215,7 +1241,7 @@
   "@fleetDailyRate": {
     "placeholders": {
       "amount": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -1286,6 +1312,7 @@
   },
   "dashboardLedgerTitle": "مکمل سفروں کا کھاتہ اور تصفیے",
   "dashboardLedgerEmpty": "ابھی کوئی سفر نہیں — بکنگ یہاں نظر آئے گی۔",
+  "dashboardViewAllRequests": "تمام درخواستیں دیکھیں",
   "dashboardLedgerVehicle": "گاڑی",
   "dashboardLedgerCustomer": "گاہک",
   "dashboardQuickAddCar": "گاڑی شامل کریں",
@@ -1363,7 +1390,7 @@
   "requestsWithChauffeur": "ڈرائیور کے ساتھ",
   "requestsVerifyProof": "ادائیگی ثبوت کی تصدیق کریں",
   "requestsDecline": "مسترد کریں",
-  "requestsApprovePay": "منظور کریں اور ادائیگی",
+  "requestsApprovePay": "منظور کریں",
   "requestsStatusRequested": "درخواست شدہ",
   "calendarTitle": "بکنگ کیلنڈر",
   "calendarFree": "خالی",
@@ -1473,6 +1500,7 @@
   "addVehicleExtraFeaturesHint": "اس گاڑی کے ساتھ شامل سہولتیں منتخب کریں تاکہ زیادہ کرایہ دار متوجہ ہوں۔",
   "addVehiclePhotosTitle": "گاڑی کی چار زاویوں کی تصاویر",
   "addVehiclePhotosHint": "کیمرہ یا گیلری سے تصاویر اپ لوڈ کریں۔ تبدیل یا ہٹانے کے لیے ٹیپ کریں۔",
+  "addVehicleFrontPhotoRequired": "اس گاڑی کو شائع کرنے سے پہلے سامنے والی تصویر ضروری ہے۔",
   "addVehiclePhotoFront": "سامنے کا منظر",
   "addVehiclePhotoRear": "پیچھے کا منظر",
   "addVehiclePhotoSide": "سائیڈ پروفائل",
@@ -1521,7 +1549,7 @@
   "@addVehicleReviewDailyRate": {
     "placeholders": {
       "amount": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -1529,7 +1557,7 @@
   "@addVehicleReviewOverstayRate": {
     "placeholders": {
       "amount": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -1551,8 +1579,18 @@
     }
   },
   "pricingTitle": "گاڑی کی قیمتوں کا میٹرکس",
+  "rateMatrixInvalidField": "{field} کے لیے درست عدد درج کریں",
+  "@rateMatrixInvalidField": {
+    "placeholders": {
+      "field": {
+        "type": "String"
+      }
+    }
+  },
   "pricingSaving": "میٹرکس محفوظ ہو رہا ہے…",
   "pricingSave": "قیمتوں کا میٹرکس محفوظ کریں",
+  "pricingUnsavedTitle": "غیر محفوظ شدہ قیمتیں حذف کر دیں؟",
+  "pricingUnsavedBody": "آپ کی ترمیم شدہ قیمتیں محفوظ نہیں ہوئیں۔",
   "pricingSelfDriveAllowed": "سیلف ڈرائیو کی اجازت ہے",
   "pricingSelfDriveHint": "اصل نادرا شناختی کارڈ + ضمانت درکار ہے",
   "pricingChauffeurAllowed": "ڈرائیور سروس کی اجازت ہے",
@@ -1590,15 +1628,28 @@
   "fixedRoutesSubtitle": "ہر منزل کے لیے ایک مقررہ قیمت",
   "fixedRoutesDeleteTooltip": "مقررہ راستہ حذف کریں",
   "fixedRoutesPriceRequired": "صفر سے زیادہ مقررہ قیمت درج کریں۔",
+  "fixedRoutesLoadError": "مقررہ راستے لوڈ نہیں ہو سکے۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔",
   "fixedRoutesEmpty": "ابھی کوئی مقررہ راستہ نہیں — نیچے اپنی پہلی منزل شامل کریں۔",
+  "fixedRouteDuplicate": "یہ راستہ پہلے سے موجود ہے",
   "fixedRouteSummary": "{km} کلومیٹر • {price} روپے مقررہ",
+  "fixedRouteChip": "{city} • {price} روپے",
   "@fixedRouteSummary": {
     "placeholders": {
       "km": {
         "type": "int"
       },
       "price": {
-        "type": "int"
+        "type": "String"
+      }
+    }
+  },
+  "@fixedRouteChip": {
+    "placeholders": {
+      "city": {
+        "type": "String"
+      },
+      "price": {
+        "type": "String"
       }
     }
   },
@@ -1613,7 +1664,7 @@
   "@amountRs": {
     "placeholders": {
       "amount": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -1641,7 +1692,7 @@
         "type": "int"
       },
       "amount": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -1649,12 +1700,15 @@
   "customersScanTitle": "کے وائی سی اور بلیک لسٹ ریڈار",
   "addCustomerTitle": "گاہک شامل کریں",
   "addCustomerName": "پورا نام",
+  "addCustomerCnic": "شناختی کارڈ نمبر",
   "addCustomerPhone": "فون نمبر",
   "addCustomerSaved": "گاہک محفوظ ہو گیا",
   "addCustomerSave": "گاہک محفوظ کریں",
-  "customersScanSubtitle": "قومی انسداد فراڈ نیٹ ورک • ریئل ٹائم",
+  "addCustomerFullNameRequired": "پورا نام ضروری ہے",
+  "addCustomerHelper": "ضامن بعد میں بکنگ کے مرحلے سے شامل کیا جا سکتا ہے",
+  "customersScanSubtitle": "رینٹل ہب کی مشترکہ بلیک لسٹ • ریئل ٹائم",
   "customersScanTribunalPolicy": "ٹرائیبیونل پالیسی",
-  "customersScanTribunalInfo": "ہر پاکستانی رینٹل شاپ رینٹل ہب کے ذریعے فوری فراڈ کی معلومات شیئر کرتی ہے۔",
+  "customersScanTribunalInfo": "ہر رینٹل ہب شوروم فراڈ کی رپورٹس ایک مشترکہ بلیک لسٹ میں شیئر کرتا ہے۔",
   "customersScanViewAll": "تمام گاہک دیکھیں",
   "customersScanInvalidCnic": "براہ کرم درست 13 ہندسوں والا پاکستانی شناختی کارڈ درج کریں",
   "customersScanLookupFailed": "تصدیقی تلاش ناکام ہوئی: {error}",
@@ -1675,7 +1729,7 @@
   },
   "customersScanUnreadable": "کارڈ پڑھا نہیں جا سکا — شناختی کارڈ دستی طور پر لکھیں۔",
   "customersScanDeclined": "گاہک کو فلیگ کر کے شوروم میں داخلے سے منع کر دیا گیا۔",
-  "customersScanFallbackReason": "قومی بلیک لسٹ میں رپورٹ شدہ",
+  "customersScanFallbackReason": "رینٹل ہب کی مشترکہ بلیک لسٹ میں رپورٹ شدہ",
   "customersScanFallbackDescription": "سنگین فراڈ / عدم ادائیگی کا واقعہ فلیگ شدہ۔",
   "customersRatingTitle": "گاہک کی ساکھ اور جائزہ",
   "customersRatingFallback": "گاہک کا جائزہ",
@@ -1686,6 +1740,7 @@
   "customersRatingCareHint": "اندرونی صفائی اور بغیر خراش کے واپسی",
   "customersRatingBehavior": "مجموعی رویہ اور شائستگی",
   "customersRatingBehaviorHint": "پیشہ ورانہ رویہ اور شوروم کی پالیسیوں کی پابندی",
+  "rateCustomerSelectStars": "کم از کم ایک ستارہ منتخب کریں",
   "customersRatingCommentHint": "کمیونٹی شوروم ریکارڈ کے لیے اختیاری رائے شامل کریں...",
   "customersRatingFlagTitle": "گاہک کو مشترکہ بلیک لسٹ میں فلیگ کریں",
   "customersRatingFlagNoCnic": "اس بکنگ کے لیے گاہک کا شناختی کارڈ درکار ہے — کوئی ریکارڈ نہیں، اس لیے یہاں سے رپورٹ درج نہیں ہو سکتی۔",
@@ -1778,7 +1833,7 @@
   "@financeNetAmount": {
     "placeholders": {
       "amount": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -1786,13 +1841,13 @@
   "@financeMonthBreakdown": {
     "placeholders": {
       "bookings": {
-        "type": "int"
+        "type": "String"
       },
       "income": {
-        "type": "int"
+        "type": "String"
       },
       "expenses": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -1815,7 +1870,7 @@
         "type": "String"
       },
       "amount": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -1825,6 +1880,7 @@
   "financeAccountTypeEasyPaisa": "ایزی پیسہ",
   "financeAccountTypeLabel": "قسم",
   "financeAccountsTitle": "اکاؤنٹس",
+  "financeAccountsEmpty": "ابھی کوئی اکاؤنٹ نہیں",
   "financeAddAccount": "اکاؤنٹ شامل کریں",
   "financeLedgerTitle": "لیجر",
   "financeAddEntry": "اندراج شامل کریں",
@@ -1869,10 +1925,10 @@
   "@financeClosingOpening": {
     "placeholders": {
       "opening": {
-        "type": "int"
+        "type": "String"
       },
       "difference": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -1880,10 +1936,10 @@
   "@financeClosingCounted": {
     "placeholders": {
       "counted": {
-        "type": "int"
+        "type": "String"
       },
       "difference": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -1892,6 +1948,7 @@
   "financePnlOtherIncome": "دیگر آمدنی",
   "financePnlExpenses": "اخراجات",
   "financePnlNetProfit": "خالص منافع",
+  "pnlLoss": "نقصان",
   "financePnlExport": "نفع نقصان CSV کے طور پر ایکسپورٹ کریں (ایکسل میں کھلتا ہے)",
   "financeCarPnlSubtitle": "ایک گاڑی، اس کا تمام حساب",
   "financeCarPnlNoCars": "فلیٹ میں ابھی کوئی گاڑی نہیں۔",
@@ -1901,13 +1958,13 @@
   "@financeCarPnlBreakdown": {
     "placeholders": {
       "revenue": {
-        "type": "int"
+        "type": "String"
       },
       "income": {
-        "type": "int"
+        "type": "String"
       },
       "expenses": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -1922,7 +1979,23 @@
   "@financeClosingClosed": {
     "placeholders": {
       "difference": {
-        "type": "int"
+        "type": "String"
+      }
+    }
+  },
+  "cashClosingShortBy": "{amount} روپے کم ہیں",
+  "@cashClosingShortBy": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "cashClosingOverBy": "{amount} روپے زیادہ ہیں",
+  "@cashClosingOverBy": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
       }
     }
   },
@@ -1931,7 +2004,7 @@
   "@financeDuesOutstanding": {
     "placeholders": {
       "amount": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -1962,6 +2035,14 @@
       }
     }
   },
+  "financeDuesLastRemindedDate": "آخری یاد دہانی {date}",
+  "@financeDuesLastRemindedDate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "financeDuesRemind": "واٹس ایپ پر یاد دہانی کرائیں",
   "financeDuesRemindAgain": "واٹس ایپ پر دوبارہ یاد دہانی کرائیں",
   "financeDuesNoPhoneError": "اس گاہک کا کوئی فون نمبر نہیں۔",
@@ -1972,12 +2053,12 @@
         "type": "String"
       },
       "due": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
   "financeDuesWhatsappFailed": "واٹس ایپ نہیں کھل سکا۔",
-  "financeDuesReminderSent": "واٹس ایپ کھل گیا — یاد دہانی بھیجی گئی قرار دی گئی۔",
+  "financeDuesReminderSent": "واٹس ایپ کھل گیا — یاد دہانی چیٹ سے بھیجیں۔",
   "financeDuesAutoNote": "خودکار واٹس ایپ یاد دہانیوں (ہر 3 دن بعد) کے لیے واٹس ایپ بزنس سیٹ اپ درکار ہے — فیز I۔",
   "handoverTitle": "گاڑی کی حوالگی اور معائنہ",
   "handoverOdometerInvalid": "براہ کرم درست اوڈومیٹر ریڈنگ درج کریں۔",
@@ -2040,7 +2121,15 @@
   "@returnSettled": {
     "placeholders": {
       "refund": {
-        "type": "int"
+        "type": "String"
+      }
+    }
+  },
+  "returnCustomerOwes": "گاہک پر {amount} روپے واجب الادا ہیں",
+  "@returnCustomerOwes": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
       }
     }
   },
@@ -2069,7 +2158,7 @@
         "type": "int"
       },
       "rate": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -2082,7 +2171,7 @@
   "@returnReceiptDeductionsAmount": {
     "placeholders": {
       "amount": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -2099,6 +2188,7 @@
   "contractSharePdf": "پی ڈی ایف شیئر کریں",
   "contractPrintPdf": "پی ڈی ایف پرنٹ کریں",
   "contractPdfUnavailable": "معاہدے کی پی ڈی ایف ابھی دستیاب نہیں۔",
+  "contractNotAvailable": "معاہدہ ابھی دستیاب نہیں",
   "contractShareText": "رینٹل معاہدہ #{id}",
   "@contractShareText": {
     "placeholders": {
@@ -2128,7 +2218,7 @@
   "@contractDepositRefundable": {
     "placeholders": {
       "amount": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -2185,6 +2275,7 @@
   "paymentVerificationTransactionId": "لین دین کی شناخت",
   "paymentVerificationScreenshotTitle": "ادائیگی کا اسکرین شاٹ",
   "paymentVerificationProofUnavailable": "ثبوت کی تصویر دستیاب نہیں — گاہک سے دوبارہ بھیجنے کو کہیں۔",
+  "proofImageOpenFullscreen": "ثبوت کی تصویر پوری سکرین پر کھولیں",
   "paymentVerificationNoScreenshot": "کوئی اسکرین شاٹ منسلک نہیں۔",
   "paymentVerificationPreviouslyRejected": "پہلے مسترد کیا گیا: {reason}",
   "@paymentVerificationPreviouslyRejected": {
@@ -2199,7 +2290,7 @@
   "@paymentVerificationConfirmButton": {
     "placeholders": {
       "amount": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -2241,7 +2332,7 @@
         "type": "String"
       },
       "price": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -2249,7 +2340,7 @@
   "@manualBookingTotal": {
     "placeholders": {
       "total": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -2269,6 +2360,23 @@
   "manualBookingGuarantorSave": "ضامن محفوظ کریں اور منتخب کریں",
   "qrScanTitle": "بکنگ کا کیو آر اسکین کریں",
   "qrScanSubtitle": "کیمرہ گاہک کے بکنگ کوڈ کی طرف کریں",
+  "qrOpen": "کھولیں",
+  "qrScanOpenSettings": "سیٹنگز کھولیں",
+  "qrCameraDenied": "کیمیرے کی اجازت بند ہے — رینٹل ہب QR کوڈ اسکین نہیں کر سکتا۔",
+  "qrCameraDeniedHint": "ایپ کی ترتیبات میں کیمیرے کی اجازت دیں، یا نیچے بکنگ آئی ڈی لکھیں۔",
+  "qrCameraUnavailable": "کیمرہ دستیاب نہیں ہے — {detail}",
+  "@qrCameraUnavailable": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "qrCameraUnavailableHint": "اس کے بجائے نیچے بکنگ آئی ڈی لکھیں۔",
+  "qrCameraSettingsError": "ترتیبات نہیں کھل سکیں — ایپ کی ترتیبات کھولیں اور کیمیرے کی اجازت دیں، پھر دوبارہ کوشش کریں۔",
+  "qrTorchOn": "ٹارچ آن",
+  "qrTorchOff": "ٹارچ آف",
+  "proofPickerPermissionDenied": "فوٹو پکر نہیں کھل سکا — کیمرہ / فوٹو کی اجازت چیک کریں اور دوبارہ کوشش کریں۔",
   "qrNoBooking": "#{id} کے لیے کوئی بکنگ نہیں ملی۔",
   "@qrNoBooking": {
     "placeholders": {
@@ -2450,6 +2558,7 @@
   },
   "disputesNoDescription": "کوئی تفصیل نہیں دی گئی۔",
   "disputesSaving": "محفوظ ہو رہا ہے…",
+  "disputesUpdateError": "اس تنازعے کو اپ ڈیٹ نہیں کیا جا سکا۔ دوبارہ کوشش کریں۔",
   "disputesMarkInReview": "جائزے میں قرار دیں",
   "disputesMarkResolved": "حل شدہ قرار دیں",
   "disputesResolvedNote": "حل شدہ — مزید کارروائی کی ضرورت نہیں۔",
@@ -2481,7 +2590,7 @@
   "@subscriptionTransfer": {
     "placeholders": {
       "price": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -2492,13 +2601,16 @@
   "subscriptionRequested": "اپ گریڈ کی درخواست ہو گئی! سپر ایڈمن کا جائزہ جاری ہے۔",
   "subscriptionTitle": "شوروم ممبرشپ پلانز",
   "subscriptionSubtitle": "رینٹل ہب کے ساتھ اپنے شوروم کا فلیٹ بڑھائیں",
+  "subscriptionTierStarter": "اسٹارٹر فریمیم",
+  "subscriptionTierPro": "پرو شوروم",
+  "subscriptionTierEnterprise": "انٹرپرائز فلیٹ",
   "subscriptionPerMonth": "/ ماہ",
   "subscriptionForeverFree": "ہمیشہ مفت",
   "subscriptionFeatureMax3": "زیادہ سے زیادہ 3 شوروم گاڑیاں",
   "subscriptionFeatureAgreements": "معیاری ڈیجیٹل معاہدے",
   "subscriptionFeatureVerification": "گاہک کی تصدیق کی جانچ",
   "subscriptionFeatureUnlimited": "لامحدود فلیٹ گاڑیاں",
-  "subscriptionFeatureRadar": "ریئل ٹائم قومی بلیک لسٹ ریڈار",
+  "subscriptionFeatureRadar": "ریئل ٹائم مشترکہ بلیک لسٹ ریڈار",
   "subscriptionFeatureWhatsappInvoicing": "واٹس ایپ خودکار انوائسنگ اور پاس",
   "subscriptionFeaturePricingMatrix": "اپنی مرضی کی ملٹی ٹیئر پرائسنگ میٹرکس",
   "subscriptionFeatureMultiBranch": "ملٹی برانچ فلیٹ سنکرونائزیشن",
@@ -2513,6 +2625,7 @@
   "whatsappLogsDelivered": "پہنچا دیا گیا",
   "whatsappLogsRead": "پڑھا گیا",
   "whatsappLogsFailed": "ناکام",
+  "whatsappLogsEmpty": "ابھی کوئی واٹس ایپ پیغام نہیں بھیجا گیا",
   "whatsappLogsResent": "واٹس ایپ اطلاع میٹا کلاؤڈ API کے ذریعے دوبارہ بھیج دی گئی!",
   "whatsappLogsResend": "دوبارہ بھیجیں",
   "onboardingWhatsappBusinessNumber": "واٹس ایپ بزنس نمبر",
@@ -2553,8 +2666,32 @@
   "syncFailedShort": "ہم آہنگی ناکام — دوبارہ کوشش کی جائے گی",
   "syncFailedBanner": "سنک ناکام ہوئی — دیکھنے کے لیے تھپتھپائیں",
   "syncDetailsTitle": "سنک کی تفصیلات",
+  "syncDetailsFailed": "ناکام",
+  "syncDetailsAttempts": "کوششیں: {count}",
+  "@syncDetailsAttempts": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "syncRetryNow": "ابھی دوبارہ کوشش کریں",
   "syncDiscard": "خارج کریں",
+  "syncDiscardTitle": "کیا یہ تبدیلی حذف کر دی جائے؟",
+  "syncDiscardBody": "{kind} • {entity}\nیہ ہم آہنگ نہیں ہوگی۔",
+  "@syncDiscardBody": {
+    "placeholders": {
+      "kind": {
+        "type": "String"
+      },
+      "entity": {
+        "type": "String"
+      }
+    }
+  },
+  "syncKindSavedChange": "محفوظ شدہ تبدیلی",
+  "syncKindFileUpload": "فائل اپ لوڈ",
+  "syncKindHandover": "حوالگی",
   "syncNoPending": "کچھ زیر التوا نہیں ہے",
   "syncPendingShort": "ہم آہنگی کے منتظر",
   "syncAllSynced": "تمام تبدیلیاں ہم آہنگ ہو گئیں",
@@ -2621,7 +2758,7 @@
     }
   },
   "damageTapHint": "پہلے سے موجود خراشوں یا دھنسوں کو نشان زد کرنے کے لیے نیچے گاڑی کے کسی بھی حصے پر ٹیپ کریں:",
-  "blacklistScanPrompt": "قومی کار رینٹل فراڈ اور بلیک لسٹ ڈیٹا بیس کے خلاف فوری اسکین کے لیے اوپر شناختی کارڈ درج کریں۔",
+  "blacklistScanPrompt": "رینٹل ہب کی مشترکہ بلیک لسٹ کے خلاف فوری اسکین کے لیے اوپر شناختی کارڈ درج کریں۔",
   "blacklistCriticalAlert": "اہم انتباہ: بلیک لسٹ شدہ شہری",
   "blacklistIncidentRef": "واقعہ نمبر: {id}",
   "@blacklistIncidentRef": {
@@ -2650,11 +2787,12 @@
   "blacklistDecline": "انکار کریں / سروس سے انکار",
   "blacklistCleanTitle": "بلیک لسٹ میں کوئی ریکارڈ نہیں ملا",
   "blacklistCleanSubtitle": "کوئی فعال نادہندگی یا ٹریبونل شکایت درج نہیں۔",
+  "blacklistDetailsUnavailable": "بلیک لسٹ — تفصیلات دستیاب نہیں، ٹریبونل سے رجوع کریں",
   "blacklistProceed": "گاہک شامل کریں",
   "cnicVerifyTitle": "شناختی کارڈ چیک",
   "cnicScanTooltip": "شناختی کارڈ / بارکوڈ اسکین کریں",
   "cnicVerifyButton": "شناختی کارڈ اور بلیک لسٹ کی تصدیق کریں",
-  "cnicChecking": "قومی ٹریبونل سے جانچ ہو رہی ہے...",
+  "cnicChecking": "رینٹل ہب بلیک لسٹ سے جانچ ہو رہی ہے...",
   "noDraftTitle": "کوئی بکنگ جاری نہیں ہے۔",
   "noDraftMessage": "پہلے گاڑی اور پیکج منتخب کریں — جائزہ اسکرین کو وہاں سے بکنگ کی تفصیلات درکار ہیں۔",
   "noDraftBrowse": "شورومز دیکھیں",

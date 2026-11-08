@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../../core/constants/app_colors.dart';
+import '../../../../../core/utils/money_format.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../bookings/domain/entities/booking_entity.dart';
 
@@ -10,6 +11,12 @@ class RequestTriageCard extends StatelessWidget {
   final VoidCallback? onVerifyProof;
   final bool isProcessing;
 
+  /// False hides the owner Approve/Decline row (e.g. a customer
+  /// viewing a `requested` booking through the shared accounts
+  /// view); the summary still renders. Defaults to true so the
+  /// triage list is unaffected.
+  final bool showActions;
+
   const RequestTriageCard({
     super.key,
     required this.booking,
@@ -17,6 +24,7 @@ class RequestTriageCard extends StatelessWidget {
     required this.onReject,
     this.onVerifyProof,
     this.isProcessing = false,
+    this.showActions = true,
   });
 
   @override
@@ -56,7 +64,11 @@ class RequestTriageCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
-                  color: AppColors.secondaryContainer,
+                  // §9: brightness-aware container + orange text token —
+                  // the const-light peach slab glared in dark mode and
+                  // orange-on-peach was ~3.3:1 at 11sp.
+                  color: AppColors.orangeContainerFor(
+                      Theme.of(context).brightness),
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(
@@ -66,7 +78,8 @@ class RequestTriageCard extends StatelessWidget {
                   _statusLabel(l10n, booking.status),
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
                         fontWeight: FontWeight.w900,
-                        color: AppColors.secondary,
+                        color: AppColors.orangeTextFor(
+                            Theme.of(context).brightness),
                       ),
                 ),
               ),
@@ -93,7 +106,9 @@ class RequestTriageCard extends StatelessWidget {
                           ),
                     ),
                     Text(
-                      booking.customerPhone ?? '0300-1234567',
+                      // §9: never a plausible-looking demo number — an
+                      // unknown phone renders as an em dash.
+                      booking.customerPhone ?? '—',
                       style: Theme.of(context).textTheme.labelSmall,
                     ),
                   ],
@@ -127,7 +142,8 @@ class RequestTriageCard extends StatelessWidget {
                   fit: BoxFit.scaleDown,
                   alignment: Alignment.centerRight,
                   child: Text(
-                    'Rs. ${booking.totalAmount}',
+                    // C5: grouped rupees, via the localised wrapper.
+                    l10n.amountRs(formatRs(booking.totalAmount)),
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.w900,
                         color: AppColors.secondary),
@@ -164,15 +180,19 @@ class RequestTriageCard extends StatelessWidget {
                 ),
               ),
             )
-          else if (booking.status == 'requested')
+          else if (booking.status == 'requested' && showActions)
             Row(
               children: [
                 Expanded(
                   child: OutlinedButton(
                     onPressed: isProcessing ? null : onReject,
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: Colors.red.shade700,
-                      side: BorderSide(color: Colors.red.shade300),
+                      // §9: theme danger tokens, not raw red shades.
+                      foregroundColor: AppColors.dangerTextFor(
+                          Theme.of(context).brightness),
+                      side: BorderSide(
+                          color: Theme.of(context).colorScheme.error),
+                      minimumSize: const Size(0, 54),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10)),
                     ),
@@ -185,8 +205,11 @@ class RequestTriageCard extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: isProcessing ? null : onApprove,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.accentSuccess,
+                      // §9: white on accentSuccess #10B981 is ~2.5:1;
+                      // accentSuccessStrong #047857 is 5.48:1.
+                      backgroundColor: AppColors.accentSuccessStrong,
                       foregroundColor: Colors.white,
+                      minimumSize: const Size(0, 54),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10)),
                     ),

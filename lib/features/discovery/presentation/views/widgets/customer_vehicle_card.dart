@@ -4,6 +4,7 @@ import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/widgets/pakistani_plate_widget.dart';
 import '../../../../fleet/domain/entities/vehicle_entity.dart';
 import '../../../../../l10n/app_localizations.dart';
+import '../../../../../core/utils/money_format.dart';
 
 /// B3: one car card on the shop's fleet screen, converted from MockVehicle
 /// to the real [VehicleEntity]. Shows the owner's uploaded photo when
@@ -108,11 +109,11 @@ class CustomerVehicleCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        l10n.vehicleSelfRate(v.rates.daily24),
+                        l10n.vehicleSelfRate(formatRs(v.rates.daily24)),
                         style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800),
                       ),
                       Text(
-                        l10n.vehicleDriverRate(v.rates.daily24 + (v.withDriverSurchargePkr ?? 0)),
+                        l10n.vehicleDriverRate(formatRs(v.rates.daily24 + (v.withDriverSurchargePkr ?? 0))),
                         style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.secondary),
                       ),
                     ],

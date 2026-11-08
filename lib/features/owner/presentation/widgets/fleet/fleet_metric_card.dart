@@ -16,6 +16,10 @@ class FleetMetricCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Audit §4: at 360px (and in Urdu) three icon+value+label cards
+    // are ~104dp each and truncate — drop the icon on compact widths
+    // so the value and label have room.
+    final compact = MediaQuery.sizeOf(context).width < 400;
     return Expanded(
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
@@ -26,8 +30,10 @@ class FleetMetricCard extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(icon, color: color, size: 20),
-            const SizedBox(width: 8),
+            if (!compact) ...[
+              Icon(icon, color: color, size: 20),
+              const SizedBox(width: 8),
+            ],
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

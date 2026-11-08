@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../../../../../l10n/app_localizations.dart';
 
 import '../../../../../core/constants/app_colors.dart';
+import '../../../../../core/utils/money_format.dart';
 import 'operations/fuel_odometer_input_widget.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
 
@@ -13,8 +14,11 @@ import '../../../bookings/domain/entities/booking_entity.dart';
 /// "Verified Clean" claim, no hardcoded deposit.
 class ContractPaperSheet extends StatelessWidget {
   final BookingEntity booking;
-  final int odometer;
-  final String fuelLevel;
+
+  /// Null renders as "—": an unknown odometer/fuel must never
+  /// render as an invented value on the contract.
+  final int? odometer;
+  final String? fuelLevel;
   final int? securityDeposit;
   final Uint8List? customerSignaturePng;
   final Uint8List? ownerSignaturePng;
@@ -60,14 +64,21 @@ class ContractPaperSheet extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 2),
+                // §15: every text run on the deliberate white paper
+                // carries an explicit dark-on-paper colour — bare theme
+                // text is near-white in dark mode and vanishes here.
                 Text(l10n.contractAgencyLine,
-                    style:
-                        Theme.of(context).textTheme.labelSmall),
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: AppColors.textSecondary,
+                        )),
                 const SizedBox(height: 6),
                 Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
                   decoration: BoxDecoration(
+                      // §15: the pill had no background, so white text
+                      // on white paper was invisible in both modes.
+                      color: AppColors.primary,
                       borderRadius: BorderRadius.circular(4)),
                   child: Text(l10n.contractCertifiedTitle,
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
@@ -79,19 +90,21 @@ class ContractPaperSheet extends StatelessWidget {
             ),
           ),
           const Divider(height: 24, thickness: 1.5),
-          _fieldRow(l10n.contractFieldAgreementNo, '#${booking.bookingId}'),
-          _fieldRow(l10n.contractFieldHirer, booking.customerName ?? l10n.contractWalkInCustomer),
-          _fieldRow(l10n.contractFieldContact, booking.customerPhone ?? '—'),
-          _fieldRow(l10n.contractFieldCnic, booking.customerCnic ?? l10n.contractNotProvided),
+          _fieldRow(context, l10n.contractFieldAgreementNo, '#${booking.bookingId}'),
+          _fieldRow(context, l10n.contractFieldHirer, booking.customerName ?? l10n.contractWalkInCustomer),
+          _fieldRow(context, l10n.contractFieldContact, booking.customerPhone ?? '—'),
+          _fieldRow(context, l10n.contractFieldCnic, booking.customerCnic ?? l10n.contractNotProvided),
           const Divider(height: 20),
-          _fieldRow(l10n.contractFieldVehicle, booking.vehicleName ?? l10n.summaryVehicle),
-          _fieldRow(l10n.contractFieldPackage,
+          _fieldRow(context, l10n.contractFieldVehicle, booking.vehicleName ?? l10n.summaryVehicle),
+          _fieldRow(context, l10n.contractFieldPackage,
               '${booking.packageType} (${booking.isWithDriver ? l10n.contractChauffeur : l10n.selfDriveHyphen})'),
-          _fieldRow(l10n.contractFieldOdometer, '$odometer KM'),
-          _fieldRow(l10n.contractFieldFuel, fuelLevelLabel(l10n, fuelLevel)),
-          _fieldRow(l10n.contractFieldTotalPaid, l10n.amountRs(booking.totalAmount)),
-          _fieldRow(l10n.contractFieldDeposit,
-              securityDeposit != null ? l10n.contractDepositRefundable(securityDeposit!) : '—'),
+          _fieldRow(context, l10n.contractFieldOdometer,
+              odometer == null ? '—' : '$odometer KM'),
+          _fieldRow(context, l10n.contractFieldFuel,
+              fuelLevel == null ? '—' : fuelLevelLabel(l10n, fuelLevel!)),
+          _fieldRow(context, l10n.contractFieldTotalPaid, l10n.amountRs(formatRs(booking.totalAmount))),
+          _fieldRow(context, l10n.contractFieldDeposit,
+              securityDeposit != null ? l10n.contractDepositRefundable(formatRs(securityDeposit!)) : '—'),
           const Divider(height: 20),
           Text(
             l10n.contractTermsTitle,
@@ -105,15 +118,16 @@ class ContractPaperSheet extends StatelessWidget {
             '${l10n.contractTerm1}\n${l10n.contractTerm2}\n${l10n.contractTerm3}',
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
               height: 1.4,
+              color: AppColors.textPrimary,
             ),
           ),
           const Divider(height: 24),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _signatureColumn(
+              _signatureColumn(context,
                   l10n.contractHirerSignature, customerSignaturePng, l10n.contractSignedOnPad),
-              _signatureColumn(l10n.contractHostSignature, ownerSignaturePng,
+              _signatureColumn(context, l10n.contractHostSignature, ownerSignaturePng,
                   l10n.contractAuthorizedManager),
             ],
           ),
@@ -122,7 +136,8 @@ class ContractPaperSheet extends StatelessWidget {
     );
   }
 
-  Widget _signatureColumn(String label, Uint8List? png, String caption) {
+  Widget _signatureColumn(
+      BuildContext context, String label, Uint8List? png, String caption) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -132,31 +147,40 @@ class ContractPaperSheet extends StatelessWidget {
           const Icon(Icons.verified_rounded,
               color: AppColors.accentSuccess, size: 24),
         const SizedBox(height: 2),
+        // C8: theme font slots with explicit dark-on-paper colours
+        // (was hardcoded 11 / 9.5sp with no colour).
         Text(label,
-            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800)),
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.primary,
+                )),
         Text(caption,
-            style:
-                const TextStyle(fontSize: 9.5, color: AppColors.textMuted)),
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: AppColors.textSecondary,
+                )),
       ],
     );
   }
 
-  Widget _fieldRow(String label, String value) {
+  Widget _fieldRow(BuildContext context, String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2.5),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
+          // C8: theme font slots with explicit dark-on-paper colours
+          // (was hardcoded 11.5 / 12sp).
           Text(label,
-              style: const TextStyle(
-                  fontSize: 11.5, color: AppColors.textSecondary)),
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: AppColors.textSecondary,
+                  )),
           Flexible(
             child: Text(value,
                 textAlign: TextAlign.end,
-                style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.primary)),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.primary,
+                    )),
           ),
         ],
       ),

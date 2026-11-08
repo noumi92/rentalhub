@@ -5,6 +5,7 @@ import '../../../../core/widgets/debounced_button.dart';
 import '../../domain/entities/booking_entity.dart';
 import '../widgets/booking_summary_card.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../../core/utils/money_format.dart';
 
 class BookingApprovedView extends StatelessWidget {
   final BookingEntity booking;
@@ -73,7 +74,7 @@ class BookingApprovedView extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 2),
                                 Text(
-                                  l10n.approvedPayToGuarantee(booking.advanceRequired),
+                                  l10n.approvedPayToGuarantee(formatRs(booking.advanceRequired)),
                                   style: Theme.of(context)
                                       .textTheme
                                       .labelSmall
@@ -117,7 +118,7 @@ class BookingApprovedView extends StatelessWidget {
                 ],
               ),
               child: DebouncedButton(
-                text: l10n.payAdvanceAmount(booking.advanceRequired),
+                text: l10n.payAdvanceAmount(formatRs(booking.advanceRequired)),
                 icon: Icons.payments_rounded,
                 onPressed: () async {
                   onPayAdvance?.call();

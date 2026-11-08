@@ -57,10 +57,15 @@ class FleetFilterChips extends StatelessWidget {
       materialTapTargetSize: MaterialTapTargetSize.padded,
       label: Text(l10n.fleetFilterChip(_filterLabel(l10n, label), count)),
       selected: isSelected,
-      selectedColor: AppColors.secondary,
-      // No label colour: the theme's chipTheme drives both modes
-      // (dark-correct); the orange selected colour stays.
-      labelStyle: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700),
+      // Audit §4: explicit label colour per state — white on the
+      // orangeFill (5.18:1, both modes), theme onSurface unselected.
+      // The old implicit chipTheme colour on #F95700 failed AA.
+      selectedColor: AppColors.orangeFill,
+      labelStyle: Theme.of(context).textTheme.labelSmall?.copyWith(
+          fontWeight: FontWeight.w700,
+          color: isSelected
+              ? Colors.white
+              : Theme.of(context).colorScheme.onSurface),
       onSelected: (_) => onSelected(label),
     );
   }

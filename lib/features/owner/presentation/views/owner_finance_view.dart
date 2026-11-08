@@ -3,6 +3,7 @@ import '../../../../l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/di/injection_container.dart';
+import '../../../../core/widgets/app_state_views.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
@@ -46,6 +47,7 @@ class _OwnerFinanceViewState extends State<OwnerFinanceView> {
   List<BookingEntity> _bookings = [];
   List<VehicleEntity> _vehicles = [];
   bool _isLoading = true;
+  bool _hasError = false;
 
   @override
   void initState() {
@@ -54,7 +56,10 @@ class _OwnerFinanceViewState extends State<OwnerFinanceView> {
   }
 
   Future<void> _load() async {
-    setState(() => _isLoading = true);
+    setState(() {
+      _isLoading = true;
+      _hasError = false;
+    });
     try {
       final shopId = widget.shopId;
       final accounts =
@@ -80,6 +85,9 @@ class _OwnerFinanceViewState extends State<OwnerFinanceView> {
         });
       }
     } catch (_) {
+      // Audit §24/C4: a failed load used to render as "empty / Rs. 0"
+      // — surface it with a retry instead.
+      if (mounted) setState(() => _hasError = true);
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -134,6 +142,7 @@ class _OwnerFinanceViewState extends State<OwnerFinanceView> {
     final month = _monthTotals;
     return Scaffold(
       body: SafeArea(
+        top: false,
         child: Column(
           children: [
             MinimalAppBar(
@@ -150,8 +159,13 @@ class _OwnerFinanceViewState extends State<OwnerFinanceView> {
             ),
             Expanded(
               child: _isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : SingleChildScrollView(
+                  ? const AppLoadingState()
+                  : _hasError
+                      ? AppErrorState(
+                          message: l10n.dashboardLoadError,
+                          onRetry: _load,
+                        )
+                      : SingleChildScrollView(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16, vertical: 14),
                       child: Column(

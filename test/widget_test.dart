@@ -342,6 +342,14 @@ void main() {
     );
 
     // 4. Advance to Step 2 (Location & Map)
+    // Audit §1: step-1 fields start empty (the old prefilled demo
+    // data used to satisfy validation); enter valid values first,
+    // the way the multi_screen_overflow onboarding test does —
+    // fields by order: shop name, owner, CNIC, WhatsApp, phone.
+    await tester.enterText(
+        find.byType(TextField).at(0), 'Al-Falah Rent a Car');
+    await tester.enterText(find.byType(TextField).at(3), '03001234567');
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Next Step'));
     await tester.pumpAndSettle();
 
@@ -354,6 +362,11 @@ void main() {
     expect(find.text('Use Current GPS'), findsOneWidget);
 
     // 6. Advance to Step 3 (Payouts)
+    // Audit §1: the address field also starts empty now — enter a
+    // valid address first (step-2 validation requires ≥5 chars).
+    await tester.enterText(find.byType(TextField).first,
+        'Shop 12, Main Boulevard, DHA Phase 5');
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Next Step'));
     await tester.pumpAndSettle();
 
@@ -373,6 +386,16 @@ void main() {
     expect(find.text('Account Title (Business / Owner)'), findsOneWidget);
 
     // 7 & 8. Advance to Step 4 (KYC & Photos)
+    // Audit §1: the bank IBAN also starts empty now — step-3
+    // validation requires a valid 24-char PK IBAN when bank payout
+    // is enabled, so enter one into the IBAN field (found by its
+    // hint text) before advancing.
+    await tester.enterText(
+        find.byWidgetPredicate((w) =>
+            w is TextField &&
+            w.decoration?.hintText == 'e.g. PK36MEZN0001234567890123'),
+        'PK36MEZN0001234567890123');
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Next Step'));
     await tester.pumpAndSettle();
 
@@ -406,19 +429,22 @@ void main() {
     expect(find.text('ABS Brakes'), findsOneWidget);
     expect(find.text('GPS Tracking'), findsOneWidget);
 
-    // Step 1 -> Step 2 -> Step 3
-    await tester.tap(find.text('Next Step'));
+    // Step 1 -> Step 2: audit §5 requires a valid plate before step 1
+    // passes (it used to ship prefilled with the sample plate).
+    await tester.ensureVisible(find.byType(TextField).last);
+    await tester.enterText(find.byType(TextField).last, 'LEA-23-4567');
     await tester.pumpAndSettle();
     await tester.tap(find.text('Next Step'));
     await tester.pumpAndSettle();
+    expect(find.text('Car Photos & Docs'), findsOneWidget);
 
-    // Step 3: Rates & Policy are editable
-    expect(find.text('1 Hour Rate'), findsOneWidget);
-    expect(find.text('Full Day (24h) Rate'), findsOneWidget);
-    expect(find.text('Security Deposit (Self-Drive)'), findsOneWidget);
-    expect(find.text('Advance Booking Fee'), findsOneWidget);
-    expect(find.text('Extra Hour Overstay Charge'), findsOneWidget);
-    expect(find.text('Fuel Policy'), findsOneWidget);
+    // Step 2 -> Step 3 is blocked without a front photo (audit §5,
+    // spec O8) — no photo can be picked in tests, so the wizard stays
+    // on step 2 and the rates step is covered by the overflow test.
+    await tester.tap(find.text('Next Step'));
+    await tester.pumpAndSettle();
+    expect(find.text('Car Photos & Docs'), findsOneWidget);
+    expect(find.text('1 Hour Rate'), findsNothing);
   });
 
   testWidgets(

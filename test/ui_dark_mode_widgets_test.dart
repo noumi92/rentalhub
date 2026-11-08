@@ -28,6 +28,7 @@ import 'package:rentalhub/features/customer/presentation/views/customer_wallet_v
 import 'package:rentalhub/features/customer/presentation/widgets/booking_ticket_card.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_dashboard_view.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_fleet_view.dart';
+import 'package:rentalhub/features/owner/presentation/views/owner_settings_view.dart';
 import 'package:rentalhub/features/owner/presentation/widgets/dashboard/dashboard_kpis.dart';
 import 'package:rentalhub/features/owner/presentation/widgets/dashboard/dashboard_ledger_item.dart';
 import 'package:rentalhub/features/owner/presentation/widgets/dashboard/revenue_kpi_card.dart';
@@ -144,7 +145,7 @@ void main() {
         tester: tester,
         screen: const RevenueKpiCard(
           title: 'Completed Trips',
-          amount: 'Rs. 1234567',
+          amount: 'Rs. 1,234,567',
           changeLabel: '87% deposits settled',
           icon: Icons.task_alt_rounded,
         ),
@@ -152,7 +153,7 @@ void main() {
       );
       expect(_whiteSurfaces(tester), isEmpty);
       final surface = AppTheme.darkTheme.colorScheme.surface;
-      _expectReadable(tester, 'Rs. 1234567', surface);
+      _expectReadable(tester, 'Rs. 1,234,567', surface);
       _expectReadable(tester, 'Completed Trips', surface);
     });
 
@@ -174,11 +175,12 @@ void main() {
         theme: AppTheme.darkTheme,
       );
       expect(_whiteSurfaces(tester), isEmpty);
-      expect(_textColor(tester, 'Rs. 1234567'), darkOnSurface);
-      // The change label is green in both modes; dark mode must use the
-      // lighter success text token, not the light-mode green.
+      expect(_textColor(tester, 'Rs. 1,234,567'), darkOnSurface);
+      // Audit §2: the settle label is a state, not a trend — the
+      // card renders it neutral (onSurfaceVariant), never as a
+      // green "positive trend" the way the old code did.
       expect(_textColor(tester, '87% deposits settled'),
-          AppColors.successTextFor(Brightness.dark));
+          AppTheme.darkTheme.colorScheme.onSurfaceVariant);
     });
 
     testWidgets('DashboardLedgerItem: long id + name, 6-digit amount',
@@ -196,7 +198,7 @@ void main() {
         theme: AppTheme.darkTheme,
       );
       expect(_whiteSurfaces(tester), isEmpty);
-      expect(_textColor(tester, 'Rs. 125000'), darkOnSurface);
+      expect(_textColor(tester, 'Rs. 125,000'), darkOnSurface);
       expect(_textColor(tester, 'Toyota Corolla Grande 1.8'), darkOnSurface);
       // The status chip for an active booking uses the dark primary
       // (light navy), never the brand navy. The label is the localized
@@ -221,7 +223,7 @@ void main() {
       expect(_textColor(tester, 'Toyota Corolla Grande 1.8'), darkOnSurface);
       // The amount is the brand orange by design (readable on dark at
       // ~5.5:1); it was never navy, so it stays orange.
-      expect(_textColor(tester, 'Rs. 125000'), AppColors.secondary);
+      expect(_textColor(tester, 'Rs. 125,000'), AppColors.secondary);
       expect(
           _textColor(tester, 'Muhammad Ahmed Khan Butt'), darkOnSurface);
     });
@@ -239,7 +241,7 @@ void main() {
       );
       expect(_whiteSurfaces(tester), isEmpty);
       expect(_textColor(tester, 'Toyota Corolla Grande 1.8'), darkOnSurface);
-      expect(_textColor(tester, 'Total: Rs. 125000'), darkOnSurface);
+      expect(_textColor(tester, 'Total: Rs. 125,000'), darkOnSurface);
       // 'requested' maps to the warning branch — the light amber in dark
       // mode — not the default (navy) branch.
       expect(_textColor(tester, 'REQUESTED'),
@@ -377,6 +379,21 @@ void main() {
       );
       expect(_whiteSurfaces(tester), isEmpty);
       expect(find.text('Showroom Revenue & Operations'), findsOneWidget);
+    });
+
+    testWidgets(
+        'OwnerSettingsView has no white surface in dark (audit §23 Critical)',
+        (tester) async {
+      // The screen that switches themes was itself unreadable in
+      // dark mode: hardcoded white section cards with theme text.
+      await TestHarness.pumpScreenWithOverflowCheck(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        tester: tester,
+        screen: const OwnerSettingsView(),
+        theme: AppTheme.darkTheme,
+      );
+      expect(_whiteSurfaces(tester), isEmpty);
+      expect(find.text('Shop Settings'), findsOneWidget);
     });
   });
 }

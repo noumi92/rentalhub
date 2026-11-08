@@ -8,7 +8,10 @@ import '../../../../core/data/offline_sync_queue.dart';
 import '../../../../core/data/sync_engine.dart';
 import '../../../../core/data/sync_queue_entry.dart';
 import '../../../../core/di/injection_container.dart';
+import '../../../../core/widgets/app_feedback.dart';
+import '../../../../core/widgets/app_state_views.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
+import '../widgets/sync_entry_card.dart';
 
 /// Phone-test #4: the screen the failed-sync banner opens (and the
 /// Settings entry point). The queue lives in SharedPreferences key
@@ -32,6 +35,7 @@ class _SyncDetailsViewState extends State<SyncDetailsView> {
   SyncEngine? _engine;
   List<SyncQueueEntry> _entries = [];
   bool _loading = true;
+  String? _retryingId;
   StreamSubscription<void>? _queueSub;
 
   @override
@@ -69,13 +73,56 @@ class _SyncDetailsViewState extends State<SyncDetailsView> {
   }
 
   Future<void> _retry(SyncQueueEntry entry) async {
+    final l10n = AppLocalizations.of(context);
     final engine = _engine;
-    if (engine == null) return;
-    await engine.retryEntry(entry);
-    await _refresh();
+    if (engine == null) {
+      // Audit §31: retry used to silently no-op when the engine
+      // wasn't registered.
+      if (mounted) {
+        AppFeedback.showError(
+            context, l10n?.syncFailed(1) ?? 'Sync failed — will retry');
+      }
+      return;
+    }
+    setState(() => _retryingId = entry.id);
+    try {
+      await engine.retryEntry(entry);
+      await _refresh();
+    } catch (_) {
+      if (mounted) {
+        AppFeedback.showError(
+            context, l10n?.syncFailed(1) ?? 'Sync failed — will retry');
+      }
+    } finally {
+      if (mounted) setState(() => _retryingId = null);
+    }
   }
 
   Future<void> _discard(SyncQueueEntry entry) async {
+    final l10n = AppLocalizations.of(context);
+    // Audit §31/C10: Discard deletes a queued offline change with
+    // no confirmation and no undo — confirm first, showing the
+    // entry kind.
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n?.syncDiscardTitle ?? 'Discard this change?'),
+        content: Text(l10n?.syncDiscardBody(
+                syncKindLabel(l10n, entry.kind), entry.entityId) ??
+            '${syncKindLabel(l10n, entry.kind)} • ${entry.entityId}\nIt will not sync.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(l10n?.commonGoBack ?? 'Go back'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(l10n?.commonConfirm ?? 'Confirm'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
     await _queue?.remove(entry.id);
     await _refresh();
   }
@@ -85,6 +132,7 @@ class _SyncDetailsViewState extends State<SyncDetailsView> {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
       body: SafeArea(
+        top: false,
         child: Column(
           children: [
             MinimalAppBar(
@@ -93,7 +141,7 @@ class _SyncDetailsViewState extends State<SyncDetailsView> {
             ),
             Expanded(
               child: _loading
-                  ? const Center(child: CircularProgressIndicator())
+                  ? const AppLoadingState()
                   : _entries.isEmpty
                       ? Center(
                           child: Column(
@@ -113,107 +161,24 @@ class _SyncDetailsViewState extends State<SyncDetailsView> {
                           itemCount: _entries.length,
                           itemBuilder: (context, index) {
                             final entry = _entries[index];
-                            return _SyncEntryCard(
+                            return SyncEntryCard(
                               entry: entry,
+                              kindLabel: syncKindLabel(l10n, entry.kind),
+                              failedLabel:
+                                  l10n?.syncDetailsFailed ?? 'Failed',
+                              attemptsLabel: l10n?.syncDetailsAttempts(
+                                      entry.attempts) ??
+                                  'Attempts: ${entry.attempts}',
                               retryLabel:
                                   l10n?.syncRetryNow ?? 'Retry now',
                               discardLabel:
                                   l10n?.syncDiscard ?? 'Discard',
+                              isRetrying: _retryingId == entry.id,
                               onRetry: () => _retry(entry),
                               onDiscard: () => _discard(entry),
                             );
                           },
                         ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-/// One queued entry: kind, entity id, attempts and last error, with
-/// Retry now + Discard. The error text is a raw diagnostic string
-/// (English, from the handler), so it is shown as stored.
-class _SyncEntryCard extends StatelessWidget {
-  final SyncQueueEntry entry;
-  final String retryLabel;
-  final String discardLabel;
-  final VoidCallback onRetry;
-  final VoidCallback onDiscard;
-
-  const _SyncEntryCard({
-    required this.entry,
-    required this.retryLabel,
-    required this.discardLabel,
-    required this.onRetry,
-    required this.onDiscard,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Card(
-      margin: const EdgeInsets.only(bottom: 10),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    entry.kind,
-                    style: theme.textTheme.titleSmall
-                        ?.copyWith(fontWeight: FontWeight.w800),
-                  ),
-                ),
-                if (entry.isExhausted)
-                  Chip(
-                    label: Text(
-                      'Failed',
-                      style: theme.textTheme.labelSmall
-                          ?.copyWith(color: Colors.white),
-                    ),
-                    backgroundColor: Colors.red,
-                    padding: EdgeInsets.zero,
-                  ),
-              ],
-            ),
-            const SizedBox(height: 4),
-            Text(entry.entityId, style: theme.textTheme.bodyMedium),
-            Text(
-              'Attempts: ${entry.attempts}',
-              style: theme.textTheme.bodySmall,
-            ),
-            if (entry.lastError != null) ...[
-              const SizedBox(height: 4),
-              Text(
-                entry.lastError!,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-              ),
-            ],
-            const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                TextButton.icon(
-                  onPressed: onDiscard,
-                  icon: const Icon(Icons.delete_outline_rounded, size: 18),
-                  label: Text(discardLabel),
-                ),
-                const SizedBox(width: 8),
-                FilledButton.icon(
-                  onPressed: onRetry,
-                  icon: const Icon(Icons.refresh_rounded, size: 18),
-                  label: Text(retryLabel),
-                ),
-              ],
             ),
           ],
         ),

@@ -264,7 +264,7 @@ void main() {
       await tester.pump();
       expect(find.byType(Hero), findsOneWidget);
       expect(find.text('Honda Civic Oriel 2021'), findsOneWidget);
-      expect(find.text('Rs. 9000/day'), findsOneWidget);
+      expect(find.text('Rs. 9,000/day'), findsOneWidget);
       expect(find.text('Edit rates'), findsOneWidget);
       expect(find.text('Booking calendar'), findsOneWidget);
       // The old hardcoded 0xFFF8FAFC bottom strip must be gone.

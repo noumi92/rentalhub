@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:rentalhub/core/di/injection_container.dart' as di;
+import 'package:rentalhub/core/widgets/app_state_views.dart';
 import 'package:rentalhub/features/bookings/data/datasources/booking_remote_data_source.dart';
 import 'package:rentalhub/features/finance/data/datasources/security_deposit_data_source.dart';
 import 'package:rentalhub/features/finance/data/models/security_deposit_model.dart';
@@ -243,6 +244,56 @@ void main() {
           vehicles.firstWhere((v) => v.vehicleId == 'v1');
       expect(vehicle.status, 'available');
       expect(vehicle.mileageKm, 45550);
+    });
+
+    testWidgets(
+        'Finalize is not rendered until the real values load (audit §14)',
+        (tester) async {
+      final bookingDs = di.sl<BookingRemoteDataSource>();
+      final booking = await bookingDs.createBookingRequest(
+        customerId: 'cust-f1-gate',
+        shopId: 'shop-basic',
+        vehicleId: 'v1',
+        vehicleName: 'Honda Civic Oriel 2021',
+        customerName: 'Gate Check',
+        customerPhone: '03001234567',
+        packageType: '24h',
+        isWithDriver: false,
+        pickupTime: DateTime.now().subtract(const Duration(days: 1)),
+        returnTime: DateTime.now().subtract(const Duration(hours: 1)),
+        totalAmount: 9000,
+        advanceRequired: 3000,
+        kmLimit: 250,
+      );
+      await bookingDs.updateBookingStatus(
+          bookingId: booking.bookingId, status: 'active');
+
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: OwnerReturnSettlementView(
+            booking: booking,
+            initialOdometer: 45200,
+            kmAllowance: 250,
+            initialDeposit: 20000,
+          ),
+        ),
+      );
+      // No settle: the real-values load is still in flight, so the
+      // form — and its Finalize button — must not be rendered yet.
+      // The old code settled against 45200 / 250 km / Rs. 15,000
+      // fallbacks while the load was pending.
+      expect(find.text('Finalize Return & Settle Deposit'), findsNothing);
+      expect(find.byType(AppLoadingState), findsOneWidget);
+
+      // Once the load lands the button appears and the booking can
+      // be settled; it must still be 'active' — nothing settled early.
+      await tester.pumpAndSettle();
+      expect(find.text('Finalize Return & Settle Deposit'), findsOneWidget);
+      final stillActive =
+          await bookingDs.getBookingById(booking.bookingId);
+      expect(stillActive?.status, 'active');
     });
   });
 }

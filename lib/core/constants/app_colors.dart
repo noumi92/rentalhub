@@ -44,10 +44,33 @@ class AppColors {
   static const Color secondaryDark = Color(0xFFFF6D24);
   static const Color secondaryLightDark = Color(0xFF3D1B08);
 
+  // Orange TEXT / FILL tokens (audit C3, 2026-11-08). White on
+  // `secondary` #F95700 is only 3.29:1 — it passes WCAG AA for large /
+  // bold text (>= 3:1) but FAILS for small text (>= 4.5:1), so #F95700
+  // stays the brand / large-fill token only and must never carry small
+  // white text (white on `secondaryDark` #FF6D24 is worse, 2.81:1).
+  // Measured WCAG ratios (script in the foundation report):
+  //   orangeText #C2410C on white 5.18:1, on #FFF3EB 4.75:1;
+  //   white on orangeFill #C2410C 5.18:1 (same value serves both roles);
+  //   orangeTextDark #FB923C on dark surface #13152C 7.92:1, on the dark
+  //   orange container #3D1B08 6.83:1.
+  // Small orange text: `orangeTextFor(brightness)`. Filled chips and
+  // buttons with small white text (both modes): `orangeFill`.
+  static const Color orangeText = Color(0xFFC2410C);
+  static const Color orangeTextDark = Color(0xFFFB923C);
+  static const Color orangeFill = Color(0xFFC2410C);
+
   // Status colors — canonical names are accentSuccess / accentDanger
   // (rulebook §11). Dark variants added in Phase A (were missing, D9).
   static const Color accentSuccess = Color(0xFF10B981);
   static const Color accentSuccessDark = Color(0xFF34D399);
+  // Filled-success token (audit C3 / triage Approve button, 2026-11-08).
+  // White on `accentSuccess` #10B981 is only 2.54:1 — it must never carry
+  // button text. White on `accentSuccessStrong` #047857 measures 5.48:1
+  // (>= 4.5:1), so this is the fill for success buttons with white text
+  // in BOTH modes; it also reads 5.48:1 as text on white and 5.21:1 on
+  // the light success container #ECFDF5.
+  static const Color accentSuccessStrong = Color(0xFF047857);
   static const Color successContainer = Color(0xFFECFDF5);
   // Dark-mode container tones for the pale success/error/warning slabs
   // in views (rulebook §4.2 Dark column). The pale light containers
@@ -104,6 +127,17 @@ class AppColors {
       brightness == Brightness.dark ? warningContainerDark : warningContainer;
   static Color warningOnContainerFor(Brightness brightness) =>
       brightness == Brightness.dark ? warningOnContainerDark : warning;
+
+  /// Brightness-aware ORANGE text / container colours (audit C3).
+  /// Light mode uses the dark orange #C2410C (5.18:1 on white, 4.75:1 on
+  /// the pale container); dark mode uses the light orange #FB923C (7.92:1
+  /// on the dark surface #13152C, 6.83:1 on the dark container #3D1B08).
+  static Color orangeTextFor(Brightness brightness) =>
+      brightness == Brightness.dark ? orangeTextDark : orangeText;
+  static Color orangeContainerFor(Brightness brightness) =>
+      brightness == Brightness.dark ? secondaryLightDark : secondaryContainer;
+  static Color orangeOnContainerFor(Brightness brightness) =>
+      brightness == Brightness.dark ? orangeTextDark : orangeText;
 
   // Background & surfaces
   static const Color backgroundLight = Color(0xFFF8FAFC);

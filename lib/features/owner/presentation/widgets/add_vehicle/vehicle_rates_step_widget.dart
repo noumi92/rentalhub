@@ -98,12 +98,16 @@ class VehicleRatesStepWidget extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(l10n.addVehicleSelfDriveService, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800)),
-                        Text(l10n.addVehicleSelfDriveHint, style: Theme.of(context).textTheme.labelSmall),
-                      ],
+                    // Overflow hardening: the text column must flex —
+                    // the hint is ~620px wide at 360px/1.35× otherwise.
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(l10n.addVehicleSelfDriveService, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800)),
+                          Text(l10n.addVehicleSelfDriveHint, style: Theme.of(context).textTheme.labelSmall),
+                        ],
+                      ),
                     ),
                     Switch(value: supportSelfDrive, activeThumbColor: AppColors.secondary, onChanged: onToggleSelfDrive),
                   ],
@@ -112,12 +116,14 @@ class VehicleRatesStepWidget extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(l10n.addVehicleWithDriverService, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800)),
-                        Text(l10n.addVehicleWithDriverHint, style: Theme.of(context).textTheme.labelSmall),
-                      ],
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(l10n.addVehicleWithDriverService, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800)),
+                          Text(l10n.addVehicleWithDriverHint, style: Theme.of(context).textTheme.labelSmall),
+                        ],
+                      ),
                     ),
                     Switch(value: supportWithDriver, activeThumbColor: AppColors.secondary, onChanged: onToggleWithDriver),
                   ],
@@ -136,7 +142,7 @@ class VehicleRatesStepWidget extends StatelessWidget {
                           controller: driverAllowanceController,
                           keyboardType: TextInputType.number,
                           textAlign: TextAlign.end,
-                          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900, color: AppColors.secondary),
+                          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900, color: Theme.of(context).colorScheme.onSurface),
                           decoration: InputDecoration(
                             prefixText: 'Rs. ',
                             prefixStyle: const TextStyle(fontWeight: FontWeight.w800),

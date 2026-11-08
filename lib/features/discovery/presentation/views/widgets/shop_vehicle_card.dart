@@ -5,6 +5,7 @@ import '../../../../../core/widgets/pakistani_plate_widget.dart';
 import '../../../../fleet/domain/entities/vehicle_entity.dart';
 import 'vehicle_hero_card.dart' show vehicleHeroTag;
 import '../../../../../l10n/app_localizations.dart';
+import '../../../../../core/utils/money_format.dart';
 
 /// Phase A (A1): one car card on the shop detail screen, extracted so the
 /// view stays under the 250-line cap. Shows the owner's uploaded photo
@@ -170,14 +171,14 @@ class ShopVehicleCard extends StatelessWidget {
                     runSpacing: 4,
                     children: [
                       Text(
-                        l10n.vehicleSelfRate(v.rates.daily24),
+                        l10n.vehicleSelfRate(formatRs(v.rates.daily24)),
                         style: Theme.of(context)
                             .textTheme
                             .labelMedium
                             ?.copyWith(fontWeight: FontWeight.w800),
                       ),
                       Text(
-                        l10n.vehicleDriverRate(v.rates.daily24 + (v.withDriverSurchargePkr ?? 0)),
+                        l10n.vehicleDriverRate(formatRs(v.rates.daily24 + (v.withDriverSurchargePkr ?? 0))),
                         style: Theme.of(context)
                             .textTheme
                             .labelMedium

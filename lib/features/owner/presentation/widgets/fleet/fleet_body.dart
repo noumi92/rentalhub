@@ -18,6 +18,7 @@ class FleetBody extends StatelessWidget {
     required this.onToggleAvailability,
     required this.onEditRates,
     required this.onViewCalendar,
+    required this.onTapVehicle,
   });
 
   final FleetState state;
@@ -29,6 +30,7 @@ class FleetBody extends StatelessWidget {
       onToggleAvailability;
   final void Function(VehicleEntity vehicle) onEditRates;
   final void Function(VehicleEntity vehicle) onViewCalendar;
+  final void Function(VehicleEntity vehicle) onTapVehicle;
 
   @override
   Widget build(BuildContext context) {
@@ -73,6 +75,7 @@ class FleetBody extends StatelessWidget {
           onToggleAvailability: (val) => onToggleAvailability(v, val),
           onEditRates: () => onEditRates(v),
           onViewCalendar: () => onViewCalendar(v),
+          onTap: () => onTapVehicle(v),
         );
       },
     );

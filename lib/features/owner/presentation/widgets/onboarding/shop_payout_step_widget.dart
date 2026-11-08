@@ -65,7 +65,9 @@ class ShopPayoutStepWidget extends StatelessWidget {
           subtitle: l10n.onboardingJazzCashSubtitle,
           isEnabled: jazzCashEnabled,
           onToggle: onJazzCashToggle,
-          iconColor: const Color(0xFFE11D48),
+          // Audit §1/C9: brand hex literals → AppColors tokens with a
+          // dark variant (JazzCash red).
+          iconColor: Theme.of(context).brightness == Brightness.dark ? AppColors.accentDangerDark : AppColors.accentDanger,
           accountController: jazzCashAccount,
           titleController: jazzCashTitle,
           accountLabel: l10n.onboardingJazzCashNumber,
@@ -81,7 +83,8 @@ class ShopPayoutStepWidget extends StatelessWidget {
           subtitle: l10n.onboardingEasyPaisaSubtitle,
           isEnabled: easyPaisaEnabled,
           onToggle: onEasyPaisaToggle,
-          iconColor: const Color(0xFF16A34A),
+          // Audit §1/C9: EasyPaisa green as AppColors tokens.
+          iconColor: Theme.of(context).brightness == Brightness.dark ? AppColors.accentSuccessDark : AppColors.accentSuccessStrong,
           accountController: easyPaisaAccount,
           titleController: easyPaisaTitle,
           accountLabel: l10n.onboardingEasyPaisaNumber,
@@ -110,10 +113,12 @@ class ShopPayoutStepWidget extends StatelessWidget {
                       width: 40,
                       height: 40,
                       decoration: BoxDecoration(
-                        color: const Color(0xFF0284C7).withValues(alpha: 0.12),
+                        // Audit §1/C9: bank blue hex literal → AppColors
+                        // tokens (navy in light, pale lavender in dark).
+                        color: (Theme.of(context).brightness == Brightness.dark ? AppColors.primaryContainer : AppColors.primary).withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: const Icon(Icons.account_balance_rounded, color: Color(0xFF0284C7), size: 22),
+                      child: Icon(Icons.account_balance_rounded, color: Theme.of(context).brightness == Brightness.dark ? AppColors.primaryContainer : AppColors.primary, size: 22),
                     ),
                     const SizedBox(width: 12),
                     Expanded(

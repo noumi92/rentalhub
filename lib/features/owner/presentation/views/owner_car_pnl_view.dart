@@ -2,16 +2,19 @@ import 'package:flutter/material.dart';
 import '../../../../l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
+import '../../../../core/widgets/app_state_views.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
+import '../../../finance/data/datasources/finance_account_data_source.dart';
 import '../../../finance/data/datasources/finance_transfer_data_source.dart';
+import '../../../finance/domain/entities/finance_account_entity.dart';
 import '../../../finance/domain/entities/finance_transfer_entity.dart';
 import '../../../finance/utils/finance_summary.dart';
 import '../../../fleet/data/datasources/fleet_remote_data_source.dart';
 import '../../../fleet/domain/entities/vehicle_entity.dart';
+import '../widgets/car_pnl_widgets.dart';
 
 /// Phase B (H2): one car's profit and loss — its booking revenue
 /// plus the ledger income tagged to it, minus the ledger expenses
@@ -29,8 +32,11 @@ class _OwnerCarPnLViewState extends State<OwnerCarPnLView> {
   List<VehicleEntity> _vehicles = [];
   List<BookingEntity> _bookings = [];
   List<FinanceTransferEntity> _transfers = [];
+  List<FinanceAccountEntity> _accounts = [];
   String? _vehicleId;
+  String _period = 'this_month';
   bool _isLoading = true;
+  bool _hasError = false;
 
   @override
   void initState() {
@@ -39,7 +45,10 @@ class _OwnerCarPnLViewState extends State<OwnerCarPnLView> {
   }
 
   Future<void> _load() async {
-    setState(() => _isLoading = true);
+    setState(() {
+      _isLoading = true;
+      _hasError = false;
+    });
     try {
       final vehicles =
           await sl<FleetRemoteDataSource>().getShopVehicles(widget.shopId);
@@ -47,35 +56,74 @@ class _OwnerCarPnLViewState extends State<OwnerCarPnLView> {
           await sl<BookingRemoteDataSource>().getShopBookings(widget.shopId);
       final transfers =
           await sl<FinanceTransferDataSource>().getShopTransfers(widget.shopId);
+      final accounts =
+          await sl<FinanceAccountDataSource>().getShopAccounts(widget.shopId);
       if (mounted) {
         setState(() {
           _vehicles = vehicles;
           _bookings = bookings;
           _transfers = transfers;
+          _accounts = accounts;
           _vehicleId ??= vehicles.firstOrNull?.vehicleId;
         });
       }
     } catch (_) {
+      // Audit §27/C4: a failed load used to render as "no cars".
+      if (mounted) setState(() => _hasError = true);
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
   }
 
+  /// Audit §27: the same period range as the closing screen's P&L
+  /// report (this / last month / all time) — the car P&L was
+  /// all-time only.
+  ({DateTime? from, DateTime? to}) get _range {
+    final now = DateTime.now();
+    switch (_period) {
+      case 'last_month':
+        return (
+          from: DateTime(now.year, now.month - 1),
+          to: DateTime(now.year, now.month),
+        );
+      case 'all':
+        return (from: null, to: null);
+      case 'this_month':
+      default:
+        return (
+          from: DateTime(now.year, now.month),
+          to: DateTime(now.year, now.month + 1),
+        );
+    }
+  }
+
+  bool _inRange(DateTime t) {
+    final range = _range;
+    if (range.from != null && t.isBefore(range.from!)) return false;
+    if (range.to != null && !t.isBefore(range.to!)) return false;
+    return true;
+  }
+
   @override
   Widget build(BuildContext context) {
   final l10n = AppLocalizations.of(context)!;
+    final periodBookings =
+        _bookings.where((b) => _inRange(b.pickupTime)).toList();
+    final periodTransfers =
+        _transfers.where((t) => _inRange(t.createdAt)).toList();
     final selected = _vehicleId == null
         ? null
         : FinanceSummary.vehiclePnL(
             vehicleId: _vehicleId!,
-            bookings: _bookings,
-            transfers: _transfers,
+            bookings: periodBookings,
+            transfers: periodTransfers,
           );
     final tagged = _vehicleId == null
         ? const <FinanceTransferEntity>[]
-        : _transfers.where((t) => t.vehicleId == _vehicleId).toList();
+        : periodTransfers.where((t) => t.vehicleId == _vehicleId).toList();
     return Scaffold(
       body: SafeArea(
+        top: false,
         child: Column(
           children: [
             MinimalAppBar(
@@ -85,22 +133,57 @@ class _OwnerCarPnLViewState extends State<OwnerCarPnLView> {
             ),
             Expanded(
               child: _isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : _vehicles.isEmpty
-                      ? Center(
-                          child: Text(l10n.financeCarPnlNoCars,
-                              style: TextStyle(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onSurfaceVariant,
-                                  fontWeight: FontWeight.w700)),
+                  ? const AppLoadingState()
+                  : _hasError
+                      ? AppErrorState(
+                          message: l10n.dashboardLoadError,
+                          onRetry: _load,
                         )
-                      : SingleChildScrollView(
+                      : _vehicles.isEmpty
+                          ? AppEmptyState(
+                              title: l10n.financeCarPnlNoCars,
+                              icon: Icons.directions_car_rounded,
+                            )
+                          : SingleChildScrollView(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 16, vertical: 14),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(l10n.financePnlTitle,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleSmall
+                                          ?.copyWith(
+                                              fontWeight: FontWeight.w800)),
+                                  DropdownButton<String>(
+                                    dropdownColor: Theme.of(context)
+                                        .colorScheme
+                                        .surface,
+                                    value: _period,
+                                    items: [
+                                      DropdownMenuItem(
+                                          value: 'this_month',
+                                          child:
+                                              Text(l10n.financeThisMonth)),
+                                      DropdownMenuItem(
+                                          value: 'last_month',
+                                          child:
+                                              Text(l10n.financeLastMonth)),
+                                      DropdownMenuItem(
+                                          value: 'all',
+                                          child: Text(l10n.financeAllTime)),
+                                    ],
+                                    onChanged: (v) => setState(
+                                        () => _period = v ?? 'this_month'),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
                               DropdownButtonFormField<String>(
                                 dropdownColor:
                                     Theme.of(context).colorScheme.surface,
@@ -115,14 +198,16 @@ class _OwnerCarPnLViewState extends State<OwnerCarPnLView> {
                                 items: _vehicles
                                     .map((v) => DropdownMenuItem(
                                         value: v.vehicleId,
-                                        child: Text(v.displayName)))
+                                        child: Text(v.displayName,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis)))
                                     .toList(),
                                 onChanged: (v) =>
                                     setState(() => _vehicleId = v),
                               ),
                               const SizedBox(height: 16),
                               if (selected != null) ...[
-                                _pnlCard(selected),
+                                CarPnlCard(pnl: selected),
                                 const SizedBox(height: 16),
                                 Text(l10n.financeCarPnlTagged,
                                     style: Theme.of(context)
@@ -138,7 +223,10 @@ class _OwnerCarPnLViewState extends State<OwnerCarPnLView> {
                                           color: Theme.of(context)
                                               .colorScheme
                                               .onSurfaceVariant)),
-                                ...tagged.map((t) => _transferRow(t)),
+                                ...tagged.map((t) => CarPnlTransferRow(
+                                      transfer: t,
+                                      accountName: _accountName(t.accountId),
+                                    )),
                               ],
                             ],
                           ),
@@ -150,68 +238,12 @@ class _OwnerCarPnLViewState extends State<OwnerCarPnLView> {
     );
   }
 
-  Widget _pnlCard(({int revenue, int income, int expenses, int net}) pnl) {
-  final l10n = AppLocalizations.of(context)!;
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.primary,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(l10n.financeNetAmount(pnl.net),
-              style: Theme.of(context)
-                  .textTheme
-                  .titleLarge
-                  ?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
-          const SizedBox(height: 8),
-          Text(
-              l10n.financeCarPnlBreakdown(pnl.revenue, pnl.income, pnl.expenses),
-              style: Theme.of(context)
-                  .textTheme
-                  .bodySmall
-                  ?.copyWith(color: Colors.white70)),
-        ],
-      ),
-    );
+  String _accountName(String accountId) {
+    return _accounts
+            .where((a) => a.accountId == accountId)
+            .firstOrNull
+            ?.name ??
+        AppLocalizations.of(context)!.financeAccountFallback;
   }
 
-  Widget _transferRow(FinanceTransferEntity t) {
-  final l10n = AppLocalizations.of(context)!;
-    final isIncome = t.kind == 'income';
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Theme.of(context).dividerColor),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(_categoryLabel(l10n, t.category),
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyMedium
-                  ?.copyWith(fontWeight: FontWeight.w800)),
-          Text(
-            l10n.financeLedgerAmount(isIncome ? '+' : '−', t.amountPkr),
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w900,
-                color: isIncome
-                    ? AppColors.successTextFor(Theme.of(context).brightness)
-                    : AppColors.dangerTextFor(Theme.of(context).brightness)),
-          ),
-        ],
-      ),
-    );
-  }
 }
-
-/// Stored ledger category codes mapped to localized labels — the
-/// stored value itself is never changed.
-String _categoryLabel(AppLocalizations l10n, String category) => {'rent': l10n.financeCategoryRent, 'deposit': l10n.addVehicleReviewDeposit, 'other': l10n.blacklistReasonOther, 'fuel': l10n.financeCategoryFuel, 'maintenance': l10n.fleetFilterMaintenance, 'salary': l10n.financeCategorySalary, 'partner_share': l10n.financeCategoryPartnerShare, 'deposit_refund': l10n.financeCategoryDepositRefund}[category] ?? category;

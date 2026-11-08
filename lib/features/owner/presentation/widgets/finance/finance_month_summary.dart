@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import '../../../../../l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/routing/route_names.dart';
+import '../../../../../core/utils/money_format.dart';
 
 /// Phase B (H): the finance hub's month summary card and the
 /// links to dues, cash closing and car P&L, extracted from
@@ -22,7 +22,7 @@ class FinanceMonthSummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-  final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context)!;
     final net = bookingRevenue + ledgerIncome - expenses;
     return Column(
       children: [
@@ -30,7 +30,9 @@ class FinanceMonthSummary extends StatelessWidget {
           width: double.infinity,
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: AppColors.primary,
+            // Audit §24: the light navy token in dark mode was barely
+            // distinguishable from the dark surface.
+            color: Theme.of(context).colorScheme.primary,
             borderRadius: BorderRadius.circular(16),
           ),
           child: Column(
@@ -38,14 +40,14 @@ class FinanceMonthSummary extends StatelessWidget {
             children: [
               Text(l10n.financeThisMonth,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white70)),
-              Text(l10n.financeNetAmount(net),
+              Text(l10n.financeNetAmount(formatRs(net)),
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.w900,
                   )),
               const SizedBox(height: 8),
               Text(
-                  l10n.financeMonthBreakdown(bookingRevenue, ledgerIncome, expenses),
+                  l10n.financeMonthBreakdown(formatRs(bookingRevenue), formatRs(ledgerIncome), formatRs(expenses)),
                   style:
                       Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white70)),
             ],
@@ -53,19 +55,20 @@ class FinanceMonthSummary extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
-              child: _linkButton(context, Icons.people_rounded,
+              child: _linkTile(context, Icons.people_rounded,
                   l10n.financeCustomerDues, RouteNames.ownerDues),
             ),
             const SizedBox(width: 10),
             Expanded(
-              child: _linkButton(context, Icons.account_balance_wallet_rounded,
+              child: _linkTile(context, Icons.account_balance_wallet_rounded,
                   l10n.financeCashClosing, RouteNames.ownerCashClosing),
             ),
             const SizedBox(width: 10),
             Expanded(
-              child: _linkButton(context, Icons.directions_car_rounded,
+              child: _linkTile(context, Icons.directions_car_rounded,
                   l10n.financeCarPnl, RouteNames.ownerCarPnL),
             ),
           ],
@@ -74,12 +77,42 @@ class FinanceMonthSummary extends StatelessWidget {
     );
   }
 
-  Widget _linkButton(
+  /// Audit §24: three `OutlinedButton.icon`s in one row overflowed
+  /// at 360px (icon + padding + label > ~103dp each). Stacked icon
+  /// tiles — icon above a two-line label — fit at 360px and in Urdu.
+  Widget _linkTile(
       BuildContext context, IconData icon, String label, String route) {
-    return OutlinedButton.icon(
-      icon: Icon(icon, size: 18),
-      label: Text(label, style: Theme.of(context).textTheme.bodySmall),
-      onPressed: () => context.push(route),
+    final scheme = Theme.of(context).colorScheme;
+    return Material(
+      color: scheme.surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(color: Theme.of(context).dividerColor),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: () => context.push(route),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 14),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 24, color: scheme.primary),
+              const SizedBox(height: 8),
+              Text(
+                label,
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context)
+                    .textTheme
+                    .labelMedium
+                    ?.copyWith(fontWeight: FontWeight.w700),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

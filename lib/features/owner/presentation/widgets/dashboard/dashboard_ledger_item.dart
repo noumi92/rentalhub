@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../core/constants/app_colors.dart';
+import '../../../../../core/utils/money_format.dart';
 import '../../../../../l10n/app_localizations.dart';
 
 /// Phase B (G1): one ledger row on the owner dashboard, extracted
@@ -25,18 +26,30 @@ class DashboardLedgerItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final statusColor = status == 'completed'
-        ? AppColors.successTextFor(Theme.of(context).brightness)
-        : status == 'active'
-            ? Theme.of(context).colorScheme.primary
-            : AppColors.secondary;
+    final brightness = Theme.of(context).brightness;
+    final scheme = Theme.of(context).colorScheme;
+    // Audit fix (§2 / C3): brightness-aware status colours, following
+    // the successTextFor pattern already used for `completed`. The old
+    // fall-through was AppColors.secondary orange at 11 sp (~3.2:1,
+    // fails AA) for every non-completed, non-active status.
+    final statusColor = switch (status) {
+      'completed' || 'paid' || 'approved' =>
+        AppColors.successTextFor(brightness),
+      'active' => scheme.primary,
+      'requested' || 'payment_submitted' =>
+        AppColors.orangeTextFor(brightness),
+      'rejected' || 'cancelled' => AppColors.dangerTextFor(brightness),
+      _ => scheme.onSurfaceVariant,
+    };
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.borderSubtle),
+        // Audit fix (§2): the hardcoded light border stayed pale grey
+        // in dark mode — use the theme outline instead.
+        border: Border.all(color: scheme.outlineVariant),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -63,7 +76,10 @@ class DashboardLedgerItem extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Text('Rs. $amount',
+              // C5: grouped thousands — "Rs. 125,000". (amountRs takes
+              // an int, so the formatted string goes inline — see
+              // dashboard_kpis.dart.)
+              Text(l10n.amountRs(formatRs(amount)),
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w900,
                   )),

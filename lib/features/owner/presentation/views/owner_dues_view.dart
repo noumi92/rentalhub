@@ -4,12 +4,14 @@ import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/widgets/app_feedback.dart';
+import '../../../../core/widgets/app_state_views.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
+import '../widgets/owner_dues_group_card.dart';
+import '../../../../core/utils/money_format.dart';
 
 /// Phase B (H3): what customers still owe. A due is a booking
 /// whose balance is unpaid — the advance on an approved booking,
@@ -30,6 +32,7 @@ class _OwnerDuesViewState extends State<OwnerDuesView> {
   List<BookingEntity> _dues = [];
   Map<String, DateTime> _lastReminded = {};
   bool _isLoading = true;
+  bool _hasError = false;
 
   static const _dueStatuses = {'approved', 'paid', 'active', 'completed'};
 
@@ -40,7 +43,10 @@ class _OwnerDuesViewState extends State<OwnerDuesView> {
   }
 
   Future<void> _load() async {
-    setState(() => _isLoading = true);
+    setState(() {
+      _isLoading = true;
+      _hasError = false;
+    });
     try {
       final bookings =
           await sl<BookingRemoteDataSource>().getShopBookings(widget.shopId);
@@ -64,7 +70,10 @@ class _OwnerDuesViewState extends State<OwnerDuesView> {
           _lastReminded = reminded;
         });
       }
-    } catch (_) {} finally {
+    } catch (_) {
+      // Audit §25/C4: a failed load used to render as "no dues".
+      if (mounted) setState(() => _hasError = true);
+    } finally {
       if (mounted) setState(() => _isLoading = false);
     }
   }
@@ -92,8 +101,7 @@ class _OwnerDuesViewState extends State<OwnerDuesView> {
       AppFeedback.showError(context, l10n.financeDuesNoPhoneError);
       return;
     }
-    final message =
-        l10n.financeDuesReminderMessage(name, due);
+    final message = l10n.financeDuesReminderMessage(name, formatRs(due));
     final uri =
         Uri.parse('https://wa.me/$number?text=${Uri.encodeComponent(message)}');
     final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
@@ -103,109 +111,102 @@ class _OwnerDuesViewState extends State<OwnerDuesView> {
       }
       return;
     }
+    // Audit §25: opening WhatsApp is not sending. The 3-day
+    // "remind again" clock starts only when the owner confirms
+    // the message was actually sent from the chat.
+    if (!mounted) return;
+    final sent = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.financeDuesRemind),
+        content: Text(l10n.financeDuesReminderSent),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(l10n.commonGoBack),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(l10n.commonConfirm),
+          ),
+        ],
+      ),
+    );
+    if (sent != true || !mounted) return;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(
         'due_reminder_$customerId', DateTime.now().toIso8601String());
     if (mounted) {
       setState(() => _lastReminded[customerId] = DateTime.now());
-      AppFeedback.showSuccess(
-          context, l10n.financeDuesReminderSent);
+      AppFeedback.showSuccess(context, l10n.financeDuesReminderSent);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-  final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context)!;
     final groups = _byCustomer;
     final totalDue = _dues.fold(0, (total, b) => total + b.remainingBalance);
     return Scaffold(
       body: SafeArea(
+        top: false,
         child: Column(
           children: [
             MinimalAppBar(
               title: l10n.financeDuesTitle,
-              subtitle: l10n.financeDuesOutstanding(totalDue),
+              subtitle: l10n.financeDuesOutstanding(formatRs(totalDue)),
               onBack: () => context.pop(),
             ),
             Expanded(
               child: _isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : groups.isEmpty
-                      ? Center(
-                          child: Text(l10n.financeDuesEmpty,
-                              style: TextStyle(
-                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                                  fontWeight: FontWeight.w700)),
+                  ? const AppLoadingState()
+                  : _hasError
+                      ? AppErrorState(
+                          message: l10n.bookingsLoadError,
+                          onRetry: _load,
                         )
-                      : ListView.separated(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 14),
-                          itemCount: groups.length,
-                          separatorBuilder: (_, __) =>
-                              const SizedBox(height: 10),
-                          itemBuilder: (context, index) {
-                            final entry = groups.entries.elementAt(index);
-                            final bookings = entry.value;
-                            final due = bookings.fold(
-                                0, (total, b) => total + b.remainingBalance);
-                            final name =
-                                bookings.first.customerName ?? l10n.requestsCustomerFallback;
-                            final phone = bookings.first.customerPhone;
-                            final last = _lastReminded[entry.key];
-                            final overdue = last == null ||
-                                DateTime.now().difference(last).inDays >= 3;
-                            return Container(
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).colorScheme.surface,
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(color: Theme.of(context).dividerColor),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Expanded(
-                                        child: Text(name,
-                                            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
-                                      ),
-                                      Text(l10n.amountRs(due),
-                                          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900, color: AppColors.dangerTextFor(Theme.of(context).brightness))),
-                                    ],
+                      : groups.isEmpty
+                          ? AppEmptyState(
+                              title: l10n.financeDuesEmpty,
+                              icon: Icons.handshake_rounded,
+                            )
+                          : ListView.separated(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 14),
+                              itemCount: groups.length + 1,
+                              separatorBuilder: (_, __) =>
+                                  const SizedBox(height: 10),
+                              itemBuilder: (context, index) {
+                                // Audit §25: the total due was only a
+                                // 12sp app-bar subtitle that truncated
+                                // — it gets a summary card at the top.
+                                if (index == 0) {
+                                  return DuesTotalCard(totalDue: totalDue);
+                                }
+                                final entry =
+                                    groups.entries.elementAt(index - 1);
+                                final bookings = entry.value;
+                                final due = bookings.fold(
+                                    0,
+                                    (total, b) =>
+                                        total + b.remainingBalance);
+                                return DuesGroupCard(
+                                  bookings: bookings,
+                                  lastReminded: _lastReminded[entry.key],
+                                  onRemind: () => _remind(
+                                    entry.key,
+                                    bookings.first.customerName ??
+                                        l10n.requestsCustomerFallback,
+                                    bookings.first.customerPhone,
+                                    due,
                                   ),
-                                  Text(
-                                      l10n.financeDuesBookingsLine(bookings.length, phone ?? l10n.financeDuesNoPhone),
-                                      style: Theme.of(context).textTheme.labelSmall),
-                                  if (last != null)
-                                    Text(
-                                        l10n.financeDuesLastReminded(last.day, last.month, last.year),
-                                        style: Theme.of(context).textTheme.labelSmall),
-                                  const SizedBox(height: 8),
-                                  SizedBox(
-                                    width: double.infinity,
-                                    child: OutlinedButton.icon(
-                                      icon: const Icon(Icons.chat_rounded,
-                                          size: 18),
-                                      label: Text(overdue
-                                          ? l10n.financeDuesRemind
-                                          : l10n.financeDuesRemindAgain),
-                                      onPressed: () =>
-                                          _remind(entry.key, name, phone, due),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
-                        ),
+                                );
+                              },
+                            ),
             ),
             Padding(
-              padding: EdgeInsets.fromLTRB(16, 0, 16, 14),
-              child: Text(
-                  l10n.financeDuesAutoNote,
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 14),
+              child: Text(l10n.financeDuesAutoNote,
                   style: Theme.of(context).textTheme.labelSmall,
                   textAlign: TextAlign.center),
             ),

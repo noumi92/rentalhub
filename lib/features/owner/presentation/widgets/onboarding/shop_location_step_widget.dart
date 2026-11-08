@@ -92,12 +92,14 @@ class ShopLocationStepWidget extends StatelessWidget {
                       width: 14,
                       height: 14,
                       child: CircularProgressIndicator(strokeWidth: 2))
-                  : const Icon(Icons.my_location_rounded,
-                      size: 16, color: AppColors.secondary),
+                  // Audit §1/C3: small orange text uses the
+                  // brightness-aware token, not AppColors.secondary.
+                  : Icon(Icons.my_location_rounded,
+                      size: 16, color: AppColors.orangeTextFor(Theme.of(context).brightness)),
               label: Text(
                 isLocating ? l10n.onboardingLocating : l10n.onboardingUseGps,
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    fontWeight: FontWeight.w800, color: AppColors.secondary),
+                    fontWeight: FontWeight.w800, color: AppColors.orangeTextFor(Theme.of(context).brightness)),
               ),
             ),
           ],
@@ -145,6 +147,26 @@ class ShopLocationStepWidget extends StatelessWidget {
                     ),
                   ],
                 ),
+                // Audit §1: the 220px map sits inside a scroll view, so
+                // vertical drags scroll the page instead of panning.
+                // flutter_map has no eager-gesture option, so the map
+                // expands to a full-screen dialog on tap.
+                Positioned(
+                  top: 8,
+                  right: 8,
+                  child: Material(
+                    color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.92),
+                    borderRadius: BorderRadius.circular(8),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(8),
+                      onTap: () => _expandMap(context),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: Icon(Icons.fullscreen_rounded, size: 20, color: Theme.of(context).colorScheme.onSurface),
+                      ),
+                    ),
+                  ),
+                ),
                 Positioned(
                   bottom: 8,
                   left: 8,
@@ -153,7 +175,10 @@ class ShopLocationStepWidget extends StatelessWidget {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.92),
+                      // Audit §1: hardcoded white + theme onSurface text
+                      // was ~1:1 in dark mode — theme surface + explicit
+                      // onSurface text instead.
+                      color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.92),
                       borderRadius: BorderRadius.circular(8),
                       boxShadow: const [
                         BoxShadow(color: Colors.black12, blurRadius: 4)
@@ -170,7 +195,7 @@ class ShopLocationStepWidget extends StatelessWidget {
                             style: Theme.of(context)
                                 .textTheme
                                 .labelSmall
-                                ?.copyWith(fontWeight: FontWeight.w600),
+                                ?.copyWith(fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.onSurface),
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
@@ -224,6 +249,62 @@ class ShopLocationStepWidget extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+
+  /// Audit §1: full-screen map — the inline 220px map cannot be
+  /// panned inside the scrolling form, so tapping the expand icon
+  /// opens this dialog where drags belong to the map. Taps move the
+  /// pin (via [onPinChanged], which also recentres the inline map);
+  /// Done closes the dialog.
+  Future<void> _expandMap(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
+    final dialogController = MapController();
+    var pin = shopPin;
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) => Dialog(
+        insetPadding: const EdgeInsets.all(12),
+        child: SizedBox(
+          height: MediaQuery.of(dialogContext).size.height * 0.75,
+          child: Column(
+            children: [
+              Expanded(
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                  child: StatefulBuilder(
+                    builder: (stateContext, setDialogState) => FlutterMap(
+                      mapController: dialogController,
+                      options: MapOptions(
+                        initialCenter: pin,
+                        initialZoom: 15.0,
+                        onTap: (_, point) {
+                          setDialogState(() => pin = point);
+                          onPinChanged(point);
+                        },
+                      ),
+                      children: [
+                        TileLayer(urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', userAgentPackageName: 'com.rentalhub.pk'),
+                        MarkerLayer(markers: [Marker(point: pin, width: 44, height: 44, child: const Icon(Icons.location_on_rounded, size: 40, color: AppColors.secondary))]),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(12),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: FilledButton(
+                    onPressed: () => Navigator.of(dialogContext).pop(),
+                    child: Text(l10n.commonConfirm),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

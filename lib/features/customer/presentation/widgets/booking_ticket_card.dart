@@ -8,6 +8,7 @@ import '../../../../core/widgets/pakistani_plate_widget.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
 import '../../../handover/data/datasources/pdf_contract_generator.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../../core/utils/money_format.dart';
 
 class BookingTicketCard extends StatelessWidget {
   final BookingEntity booking;
@@ -111,7 +112,7 @@ class BookingTicketCard extends StatelessWidget {
                   const SizedBox(width: 8),
                   Flexible(
                     child: Text(
-                      l10n.bookingTotalAmount(booking.totalAmount),
+                      l10n.bookingTotalAmount(formatRs(booking.totalAmount)),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.end,

@@ -38,10 +38,12 @@ class OnboardingStepperBar extends StatelessWidget {
             width: 32,
             height: 32,
             decoration: BoxDecoration(
-              color: isDone ? AppColors.accentSuccess : isCurrent ? AppColors.secondary : Colors.transparent,
+              // Audit §1: white on accentSuccess #10B981 is ~2.5:1;
+              // accentSuccessStrong #047857 is 5.48:1 with white.
+              color: isDone ? AppColors.accentSuccessStrong : isCurrent ? AppColors.orangeFill : Colors.transparent,
               shape: BoxShape.circle,
               border: Border.all(
-                color: isDone ? AppColors.accentSuccess : isCurrent ? AppColors.secondary : Theme.of(context).dividerColor,
+                color: isDone ? AppColors.accentSuccessStrong : isCurrent ? AppColors.orangeFill : Theme.of(context).dividerColor,
                 width: 1.5,
               ),
             ),
@@ -54,8 +56,11 @@ class OnboardingStepperBar extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             label,
+            textAlign: TextAlign.center,
             style: TextStyle(
-              fontSize: 10,
+              // Audit §1: 10sp is below the §4.5 minimum (11sp) and
+              // maxLines 1 truncated Urdu labels — allow 2 lines.
+              fontSize: 11,
               fontWeight: isCurrent ? FontWeight.w800 : FontWeight.w600,
               // #10: theme-aware — the hardcoded AppColors.primary navy
               // was ~1.2:1 on a dark surface (invisible). Light mode
@@ -65,7 +70,7 @@ class OnboardingStepperBar extends StatelessWidget {
               // (1.46:1 on the dark surface, still unreadable).
               color: isCurrent ? (Theme.of(context).brightness == Brightness.dark ? AppColors.primaryContainer : Theme.of(context).colorScheme.primary) : Theme.of(context).colorScheme.onSurfaceVariant,
             ),
-            maxLines: 1,
+            maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
         ],

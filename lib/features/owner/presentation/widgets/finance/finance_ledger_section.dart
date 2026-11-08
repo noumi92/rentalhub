@@ -4,10 +4,11 @@ import '../../../../../l10n/app_localizations.dart';
 import '../../../../../core/constants/app_colors.dart';
 import  '../../../../finance/domain/entities/finance_account_entity.dart';
 import  '../../../../finance/domain/entities/finance_transfer_entity.dart';
+import '../../../../../core/utils/money_format.dart';
 
 /// Phase B (H1/H2): the ledger — every income and expense, newest
 /// first, with the account and category it was posted to.
-class FinanceLedgerSection extends StatelessWidget {
+class FinanceLedgerSection extends StatefulWidget {
   final List<FinanceTransferEntity> transfers;
   final List<FinanceAccountEntity> accounts;
   final VoidCallback onAddTransfer;
@@ -19,8 +20,20 @@ class FinanceLedgerSection extends StatelessWidget {
     required this.onAddTransfer,
   });
 
+  @override
+  State<FinanceLedgerSection> createState() => _FinanceLedgerSectionState();
+}
+
+class _FinanceLedgerSectionState extends State<FinanceLedgerSection> {
+  static const _pageSize = 20;
+  bool _showAll = false;
+
+  List<FinanceTransferEntity> get _visible => _showAll
+      ? widget.transfers
+      : widget.transfers.take(_pageSize).toList();
+
   String _accountName(AppLocalizations l10n, String accountId) {
-    return accounts
+    return widget.accounts
             .where((a) => a.accountId == accountId)
             .firstOrNull
             ?.name ??
@@ -29,7 +42,8 @@ class FinanceLedgerSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-  final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context)!;
+    final transfers = widget.transfers;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -43,7 +57,7 @@ class FinanceLedgerSection extends StatelessWidget {
             TextButton.icon(
               icon: const Icon(Icons.add_rounded, size: 18),
               label: Text(l10n.financeAddEntry),
-              onPressed: onAddTransfer,
+              onPressed: widget.onAddTransfer,
             ),
           ],
         ),
@@ -51,7 +65,7 @@ class FinanceLedgerSection extends StatelessWidget {
         if (transfers.isEmpty)
           Text(l10n.financeLedgerEmpty,
               style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
-        ...transfers.take(20).map((t) {
+        ..._visible.map((t) {
           final isIncome = t.kind == 'income';
           return Container(
             margin: const EdgeInsets.only(bottom: 8),
@@ -79,7 +93,7 @@ class FinanceLedgerSection extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  l10n.financeLedgerAmount(isIncome ? '+' : '−', t.amountPkr),
+                  l10n.financeLedgerAmount(isIncome ? '+' : '−', formatRs(t.amountPkr)),
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w900,
                     color: isIncome
@@ -91,6 +105,16 @@ class FinanceLedgerSection extends StatelessWidget {
             ),
           );
         }),
+        // Audit §24: the ledger was silently capped at 20 with no
+        // count and no way to see the rest. The button label carries
+        // the total, and expands the full list in place.
+        if (transfers.length > _pageSize && !_showAll)
+          Center(
+            child: TextButton(
+              onPressed: () => setState(() => _showAll = true),
+              child: Text(l10n.disputesFilterAll(transfers.length)),
+            ),
+          ),
       ],
     );
   }

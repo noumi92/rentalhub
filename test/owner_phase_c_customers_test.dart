@@ -18,6 +18,7 @@ import 'package:rentalhub/features/owner/presentation/views/owner_cnic_review_vi
 import 'package:rentalhub/features/owner/presentation/views/owner_customer_scan_view.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_customers_list_view.dart';
 import 'package:rentalhub/features/owner/presentation/widgets/guarantor_picker.dart';
+import 'package:rentalhub/features/owner/presentation/widgets/operations/blacklist_status_banner.dart';
 import 'package:rentalhub/l10n/app_localizations.dart';
 import 'package:rentalhub/features/trust/utils/cnic_text_parser.dart';
 
@@ -235,11 +236,11 @@ House 12, Street 4, Gulberg III, Lahore
       );
       await tester.pumpAndSettle();
       expect(find.text('Muhammad Ahmed'), findsOneWidget);
-      expect(find.textContaining('2 bookings • Rs. 20500'), findsOneWidget);
+      expect(find.textContaining('2 bookings • Rs. 20,500'), findsOneWidget);
 
       await tester.tap(find.text('Muhammad Ahmed'));
       await tester.pumpAndSettle();
-      expect(find.textContaining('Rs. 9000'), findsWidgets);
+      expect(find.textContaining('Rs. 9,000'), findsWidgets);
     });
   });
 
@@ -364,8 +365,46 @@ House 12, Street 4, Gulberg III, Lahore
       await tester.tap(find.text('Report to Blacklist'));
       await tester.pumpAndSettle();
       expect(find.text('My reports (1)'), findsOneWidget);
+      // The new report row sits below the fold (form card + filter
+      // chips above it); drag the list up so the row is built before
+      // asserting. (scrollUntilVisible cannot be used: the form's
+      // TextFields each carry their own Scrollable, so its default
+      // scrollable finder is ambiguous.)
+      await tester.drag(find.byType(ListView), const Offset(0, -400));
+      await tester.pumpAndSettle();
       expect(find.text('35201-2222222-2'), findsOneWidget);
-      expect(find.text('Active'), findsOneWidget);
+      // Audit §22: 'Active' now appears twice — the filter chip and
+      // the report's status chip.
+      expect(find.text('Active'), findsWidgets);
+    });
+
+    testWidgets(
+        'blacklisted CNIC with no record shows details-unavailable, never an invented record (audit §19)',
+        (tester) async {
+      // The old code fabricated a BLK-AUTO record ('All-Pakistan
+      // Tribunal', '0300-0000000') when the lookup returned null.
+      // The banner must say details are unavailable and show no
+      // invented phone, reporter or reference.
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const Scaffold(
+            body: BlacklistStatusBanner(
+              isChecked: true,
+              detailsUnavailable: true,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(
+          find.text('Blacklisted — details unavailable, refer to tribunal'),
+          findsOneWidget);
+      expect(find.textContaining('BLK-AUTO'), findsNothing);
+      expect(find.textContaining('0300-0000000'), findsNothing);
+      expect(find.textContaining('All-Pakistan Tribunal'), findsNothing);
+      expect(find.textContaining('Incident Ref'), findsNothing);
     });
   });
 
@@ -459,7 +498,7 @@ House 12, Street 4, Gulberg III, Lahore
       await tester.pumpAndSettle();
       expect(find.text('Add Customer'), findsOneWidget);
       final cnicField = tester.widget<TextField>(
-          find.widgetWithText(TextField, 'CNIC Check'));
+          find.widgetWithText(TextField, 'CNIC Number'));
       expect(cnicField.controller?.text, cnic);
 
       // Saving with no name/phone shows validation errors, not a save.
@@ -526,7 +565,7 @@ House 12, Street 4, Gulberg III, Lahore
       await tester.tap(find.text('Add Customer'));
       await tester.pumpAndSettle();
       final cnicField = tester.widget<TextField>(
-          find.widgetWithText(TextField, 'CNIC Check'));
+          find.widgetWithText(TextField, 'CNIC Number'));
       expect(cnicField.controller?.text, '35201-1234567-1');
       expect(find.text('Save customer'), findsOneWidget);
     });

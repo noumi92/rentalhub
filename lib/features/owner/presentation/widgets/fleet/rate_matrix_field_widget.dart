@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../../../core/constants/app_colors.dart';
 
 class RateMatrixFieldWidget extends StatelessWidget {
   final TextEditingController controller;
@@ -7,12 +6,17 @@ class RateMatrixFieldWidget extends StatelessWidget {
   final String hint;
   final String kmCap;
 
+  /// Audit §6: a disabled package's price field is greyed out and
+  /// not editable (the add-vehicle rates step already does this).
+  final bool enabled;
+
   const RateMatrixFieldWidget({
     super.key,
     required this.controller,
     required this.label,
     required this.hint,
     required this.kmCap,
+    this.enabled = true,
   });
 
   @override
@@ -27,35 +31,44 @@ class RateMatrixFieldWidget extends StatelessWidget {
       child: Row(
         children: [
           Expanded(
+            flex: 3,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   label,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w700,
+                    color: enabled ? Theme.of(context).colorScheme.onSurface : Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   kmCap,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.labelSmall,
                 ),
               ],
             ),
           ),
-          SizedBox(
-            width: 130,
+          const SizedBox(width: 8),
+          // Audit §6: flex-based, not a fixed 130dp — the field
+          // squeezes at 360px with a long Urdu label + Rs. prefix.
+          Expanded(
+            flex: 2,
             child: TextField(
               controller: controller,
+              enabled: enabled,
               keyboardType: TextInputType.number,
               textAlign: TextAlign.end,
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
                 fontWeight: FontWeight.w800,
-                // #15: orange rate text — lighter secondaryDark in dark.
-                color: Theme.of(context).brightness == Brightness.dark
-                    ? AppColors.secondaryDark
-                    : AppColors.secondary,
+                // Audit §6: prices are the most important content —
+                // onSurface, never small orange text (~3:1).
+                color: Theme.of(context).colorScheme.onSurface,
               ),
               decoration: InputDecoration(
                 prefixText: 'Rs. ',
@@ -64,7 +77,9 @@ class RateMatrixFieldWidget extends StatelessWidget {
                 ),
                 isDense: true,
                 filled: true,
-                fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                fillColor: enabled
+                    ? Theme.of(context).colorScheme.surfaceContainerHighest
+                    : Theme.of(context).colorScheme.surfaceContainer,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide(color: Theme.of(context).dividerColor),

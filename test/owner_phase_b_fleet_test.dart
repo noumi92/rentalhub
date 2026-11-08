@@ -87,6 +87,14 @@ void main() {
         extraHourPkr: 600,
         withDriverSurchargePkr: 2000,
         fuelPolicy: 'Same to Same',
+        // Audit §5 (integration): the six extra-file URLs round-trip
+        // too — they used to be uploaded but never stored.
+        photoBackUrl: 'https://storage.example/back.jpg',
+        photoSideUrl: 'https://storage.example/side.jpg',
+        photoInteriorUrl: 'https://storage.example/interior.jpg',
+        regBookUrl: 'https://storage.example/regbook.jpg',
+        tokenTaxUrl: 'https://storage.example/tokentax.jpg',
+        insuranceUrl: 'https://storage.example/insurance.jpg',
       );
       final restored = VehicleModel.fromMap(vehicle.toMap(), 'v-test-1');
       expect(restored, equals(vehicle));
@@ -107,6 +115,14 @@ void main() {
       expect(map.containsKey('color'), isFalse);
       expect(map.containsKey('chassisNumber'), isFalse);
       expect(map.containsKey('features'), isFalse);
+      // Audit §5 (integration): the extra-file URL fields are omitted
+      // when null, so old documents still read fine.
+      expect(map.containsKey('photoBackUrl'), isFalse);
+      expect(map.containsKey('photoSideUrl'), isFalse);
+      expect(map.containsKey('photoInteriorUrl'), isFalse);
+      expect(map.containsKey('regBookUrl'), isFalse);
+      expect(map.containsKey('tokenTaxUrl'), isFalse);
+      expect(map.containsKey('insuranceUrl'), isFalse);
       final restored = VehicleModel.fromMap(map, 'v-test-2');
       expect(restored.color, isNull);
       expect(restored.features, isEmpty);

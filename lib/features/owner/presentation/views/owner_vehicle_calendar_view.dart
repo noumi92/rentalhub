@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_dimensions.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/utils/responsive.dart';
+import '../../../../core/widgets/app_state_views.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../bookings/data/datasources/booking_remote_data_source.dart';
@@ -33,6 +35,7 @@ class OwnerVehicleCalendarView extends StatefulWidget {
 class _OwnerVehicleCalendarViewState extends State<OwnerVehicleCalendarView> {
   List<BookingEntity> _bookings = [];
   bool _loading = true;
+  bool _hasError = false;
   DateTime _month = DateTime(DateTime.now().year, DateTime.now().month);
   DateTime? _selectedDay;
 
@@ -43,13 +46,27 @@ class _OwnerVehicleCalendarViewState extends State<OwnerVehicleCalendarView> {
   }
 
   Future<void> _load() async {
-    final bookings = await sl<BookingRemoteDataSource>()
-        .getVehicleBookings(widget.vehicle.vehicleId);
-    if (!mounted) return;
-    setState(() {
-      _bookings = bookings;
-      _loading = false;
-    });
+    if (mounted) {
+      setState(() {
+        _loading = true;
+        _hasError = false;
+      });
+    }
+    // Audit §7 (C4): a failed load used to spin forever — catch it and render an error state with retry, as Fleet does.
+    try {
+      final bookings = await sl<BookingRemoteDataSource>().getVehicleBookings(widget.vehicle.vehicleId);
+      if (!mounted) return;
+      setState(() {
+        _bookings = bookings;
+        _loading = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _loading = false;
+        _hasError = true;
+      });
+    }
   }
 
   List<BookingEntity> _bookingsOn(DateTime day) {
@@ -100,41 +117,53 @@ class _OwnerVehicleCalendarViewState extends State<OwnerVehicleCalendarView> {
     );
   }
 
-  /// The day-detail agenda. Compact shows it only once a day is
-  /// picked (as today); medium+ always shows the column, with a hint
-  /// until a day is picked.
+  /// The day-detail agenda. Compact shows today's agenda by default
+  /// (audit §7: the old blank space before a day was picked); medium+
+  /// always shows the column, with a hint until a day is picked.
   Widget _detailSection({required bool showHint}) {
     final l10n = AppLocalizations.of(context)!;
-    if (_selectedDay == null) {
-      if (!showHint) return const SizedBox.shrink();
-      return Text(l10n.calendarTapDayHint,
-          style: Theme.of(context).textTheme.bodyMedium);
+    // Compact: no selection yet means "today", not blank space.
+    final day = _selectedDay ?? (showHint ? null : DateTime.now());
+    if (day == null) {
+      return Text(l10n.calendarTapDayHint, style: Theme.of(context).textTheme.bodyMedium);
     }
-    final selectedBookings = _bookingsOn(_selectedDay!);
+    final selectedBookings = _bookingsOn(day);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          l10n.calendarBookingsOn(_selectedDay!.day, _selectedDay!.month, _selectedDay!.year),
-          style: Theme.of(context)
-              .textTheme
-              .titleSmall
-              ?.copyWith(fontWeight: FontWeight.w800),
+          l10n.calendarBookingsOn(day.day, day.month, day.year),
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
         ),
         const SizedBox(height: 8),
         if (selectedBookings.isEmpty) Text(l10n.calendarNoBookingsDay),
-        ...selectedBookings.map((b) => Card(
-              margin: const EdgeInsets.only(bottom: 8),
-              child: ListTile(
-                title: Text(b.customerName ?? b.customerId,
-                    style: const TextStyle(fontWeight: FontWeight.w700)),
-                subtitle: Text(
-                    '${b.packageType} • ${b.pickupTime.hour}:${b.pickupTime.minute.toString().padLeft(2, '0')} → ${b.returnTime.day}/${b.returnTime.month}'),
-                trailing: Chip(
-                    label: Text(_statusLabel(l10n, b.status),
-                        style: Theme.of(context).textTheme.labelSmall)),
+        ...selectedBookings.map((b) {
+          final brightness = Theme.of(context).brightness;
+          // Audit §7: the status chip is tinted by status, matching
+          // the legend (success / warning / error containers).
+          final (chipBg, chipFg) = switch (b.status) {
+            'completed' || 'active' || 'approved' || 'paid' => (AppColors.successContainerFor(brightness), AppColors.successOnContainerFor(brightness)),
+            'requested' || 'payment_submitted' => (AppColors.warningContainerFor(brightness), AppColors.warningOnContainerFor(brightness)),
+            'rejected' || 'cancelled' => (AppColors.errorContainerFor(brightness), AppColors.errorOnContainerFor(brightness)),
+            _ => (Theme.of(context).colorScheme.surfaceContainerHighest, Theme.of(context).colorScheme.onSurface),
+          };
+          return Card(
+            margin: const EdgeInsets.only(bottom: 8),
+            child: ListTile(
+              title: Text(b.customerName ?? b.customerId,
+                  style: const TextStyle(fontWeight: FontWeight.w700)),
+              // Audit §7: unambiguous pickup → return date+time
+              // (intl `h:mm a`), not "9:05 → 12/11".
+              subtitle: Text(
+                  '${b.packageType} • ${DateFormat('d MMM, h:mm a').format(b.pickupTime)} → ${DateFormat('d MMM, h:mm a').format(b.returnTime)}'),
+              trailing: Chip(
+                  backgroundColor: chipBg,
+                  label: Text(_statusLabel(l10n, b.status),
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(color: chipFg, fontWeight: FontWeight.w700)),
               ),
-            )),
+            ),
+          );
+        }),
       ],
     );
   }
@@ -145,6 +174,8 @@ class _OwnerVehicleCalendarViewState extends State<OwnerVehicleCalendarView> {
     final v = widget.vehicle;
     return Scaffold(
       body: SafeArea(
+        // C1: MinimalAppBar owns the top inset.
+        top: false,
         child: Column(
           children: [
             MinimalAppBar(
@@ -154,8 +185,15 @@ class _OwnerVehicleCalendarViewState extends State<OwnerVehicleCalendarView> {
             ),
             Expanded(
               child: _loading
-                  ? const Center(child: CircularProgressIndicator())
-                  : ListView(
+                  ? AppLoadingState(message: l10n.calendarTitle)
+                  : _hasError
+                      ? AppErrorState(
+                          // No calendar-specific error key exists;
+                          // the bookings load error is the same failure.
+                          message: l10n.bookingsLoadError,
+                          onRetry: _load,
+                        )
+                      : ListView(
                       padding:
                           const EdgeInsets.all(AppDimensions.paddingVertical),
                       children: [

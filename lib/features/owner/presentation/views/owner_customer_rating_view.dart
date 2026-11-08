@@ -27,9 +27,11 @@ class OwnerCustomerRatingView extends StatefulWidget {
 }
 
 class _OwnerCustomerRatingViewState extends State<OwnerCustomerRatingView> {
-  int _punctualityRating = 5;
-  int _careRating = 5;
-  int _behaviorRating = 5;
+  // §16: ratings start unselected (0), not 5 — submitting untouched
+  // used to record a perfect score. At least one star is required.
+  int _punctualityRating = 0;
+  int _careRating = 0;
+  int _behaviorRating = 0;
   bool _flagForBlacklist = false;
   String _selectedReason = 'Payment Default / Refusal to Settle Penalty';
   final _commentController = TextEditingController();
@@ -46,6 +48,14 @@ class _OwnerCustomerRatingViewState extends State<OwnerCustomerRatingView> {
   /// be filed from here, and the switch is disabled.
   Future<void> _submitRating() async {
   final l10n = AppLocalizations.of(context)!;
+    // §16: require at least one star — a blank submission must not
+    // record a rating at all.
+    if (_punctualityRating == 0 &&
+        _careRating == 0 &&
+        _behaviorRating == 0) {
+      AppFeedback.showError(context, l10n.rateCustomerSelectStars);
+      return;
+    }
     setState(() => _isSubmitting = true);
     try {
       final synced = await sl<ReviewRemoteDataSource>().submitOwnerReview(
@@ -92,7 +102,9 @@ class _OwnerCustomerRatingViewState extends State<OwnerCustomerRatingView> {
   Widget build(BuildContext context) {
   final l10n = AppLocalizations.of(context)!;
     return Scaffold(
+      // C1: MinimalAppBar owns the top inset.
       body: SafeArea(
+        top: false,
         child: Column(
           children: [
             MinimalAppBar(
@@ -131,9 +143,11 @@ class _OwnerCustomerRatingViewState extends State<OwnerCustomerRatingView> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        // §16: theme surface + theme border — the hardcoded white
+        // container with theme text was unreadable in dark mode.
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.borderSubtle),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

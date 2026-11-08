@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../auth/presentation/utils/sign_out_helper.dart';
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/settings/app_settings_cubit.dart';
@@ -27,6 +26,7 @@ class OwnerSettingsView extends StatefulWidget {
 
 class _OwnerSettingsViewState extends State<OwnerSettingsView> {
   String _shopName = '';
+  bool _shopNameLoaded = false;
 
   @override
   void initState() {
@@ -44,7 +44,13 @@ class _OwnerSettingsViewState extends State<OwnerSettingsView> {
       if (name != null && name.isNotEmpty && mounted) {
         setState(() => _shopName = name);
       }
-    } catch (_) {}
+    } catch (_) {
+      // Audit §23: a failed shop read keeps the fallback text; the
+      // loading state below still resolves so the screen never
+      // flashes "not set yet" forever.
+    } finally {
+      if (mounted) setState(() => _shopNameLoaded = true);
+    }
   }
 
   @override
@@ -52,6 +58,7 @@ class _OwnerSettingsViewState extends State<OwnerSettingsView> {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: SafeArea(
+        top: false,
         child: Column(
           children: [
             MinimalAppBar(
@@ -70,12 +77,17 @@ class _OwnerSettingsViewState extends State<OwnerSettingsView> {
                       children: [
                         _sectionCard(
                           title: l10n.shop,
-                          child: Text(
-                            _shopName.isNotEmpty
-                                ? _shopName
-                                : l10n.shopNotSet,
-                            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
-                          ),
+                          // Audit §23: blank until the Firestore read
+                          // completes — "Shop name not set yet" used to
+                          // flash for shops that do have a name.
+                          child: _shopNameLoaded
+                              ? Text(
+                                  _shopName.isNotEmpty
+                                      ? _shopName
+                                      : l10n.shopNotSet,
+                                  style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
+                                )
+                              : const SizedBox(height: 20),
                         ),
                         const SizedBox(height: 16),
                         _sectionCard(
@@ -192,9 +204,11 @@ class _OwnerSettingsViewState extends State<OwnerSettingsView> {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        // Audit §23 (Critical): hardcoded white made the card's theme
+        // text invisible in dark mode.
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.borderSubtle),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -210,13 +224,18 @@ class _OwnerSettingsViewState extends State<OwnerSettingsView> {
 
   Widget _link(
       BuildContext context, IconData icon, String label, String route) {
+    // Audit §23: the chevron flips in RTL (Urdu) so it still points
+    // forward.
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
     return Material(
       color: Colors.transparent,
       child: ListTile(
         contentPadding: EdgeInsets.zero,
         leading: Icon(icon),
         title: Text(label, style: const TextStyle(fontWeight: FontWeight.w700)),
-        trailing: const Icon(Icons.chevron_right_rounded),
+        trailing: Icon(isRtl
+            ? Icons.chevron_left_rounded
+            : Icons.chevron_right_rounded),
         onTap: () => context.push(route),
       ),
     );

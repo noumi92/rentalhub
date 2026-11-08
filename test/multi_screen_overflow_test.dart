@@ -14,6 +14,7 @@ import 'package:rentalhub/features/discovery/presentation/views/customer_home_vi
 import 'package:rentalhub/features/discovery/presentation/views/shop_detail_view.dart';
 import 'package:rentalhub/features/discovery/presentation/views/vehicle_detail_view.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_add_vehicle_view.dart';
+import 'package:rentalhub/features/owner/presentation/widgets/add_vehicle/add_vehicle_step_content.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_dashboard_view.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_fleet_view.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_onboarding_view.dart';
@@ -183,11 +184,26 @@ void main() {
       expect(find.text('Shop Registration'), findsOneWidget);
       expect(tester.takeException(), isNull);
 
+      // Audit §1: step-1 fields start empty (the old prefilled demo
+      // data used to satisfy validation); enter valid values first.
+      // Labels are sibling Texts, not field decorations, so the
+      // fields are found by order: shop name, owner, CNIC, WhatsApp,
+      // phone.
+      await tester.enterText(
+          find.byType(TextField).at(0), 'Al-Falah Rent a Car');
+      await tester.enterText(find.byType(TextField).at(3), '03001234567');
+      await tester.pumpAndSettle();
+
       // Step 2: Location & Map
       await tester.tap(find.text('Next Step'));
       await tester.pumpAndSettle();
       expect(find.text('Location & Map Pin'), findsOneWidget);
       expect(tester.takeException(), isNull);
+
+      // Audit §1: the address field also starts empty now.
+      await tester.enterText(find.byType(TextField).first,
+          'Shop 12, Main Boulevard, DHA Phase 5');
+      await tester.pumpAndSettle();
 
       // Step 3: Payout Accounts
       await tester.tap(find.text('Next Step'));
@@ -225,16 +241,69 @@ void main() {
       expect(find.text('Add Vehicle - Specs'), findsOneWidget);
       expect(tester.takeException(), isNull);
 
+      // Audit §5: step 1 now requires a valid plate (it used to ship
+      // prefilled with the sample plate LEA-23-4567).
+      await tester.ensureVisible(find.byType(TextField).last);
+      await tester.enterText(find.byType(TextField).last, 'LEA-23-4567');
+      await tester.pumpAndSettle();
+
       // Step 2: Photos & Registration
       await tester.tap(find.text('Next Step'));
       await tester.pumpAndSettle();
       expect(find.text('Car Photos & Docs'), findsOneWidget);
       expect(tester.takeException(), isNull);
 
-      // Step 3: Rates & Deposit Policy
+      // Step 3: Rates & Deposit Policy — audit §5 (spec O8) blocks
+      // step 2 without a front photo, so step 3 is overflow-checked
+      // as a standalone step (no photo can be picked in tests).
       await tester.tap(find.text('Next Step'));
       await tester.pumpAndSettle();
-      expect(find.text('Rental Rates & Policy'), findsOneWidget);
+      expect(find.text('Car Photos & Docs'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+
+      // The rates step needs a Material ancestor (Checkbox/TextField)
+      // — the wizard's Scaffold normally provides it — and the wizard
+      // scrolls its step content, so the standalone pump must too or
+      // the tall step overflows the 640px viewport vertically.
+      await TestHarness.pumpScreenWithOverflowCheck(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        tester: tester,
+        screen: Scaffold(body: SingleChildScrollView(child: AddVehicleRatesStep(
+          enable1Hour: true,
+          onToggle1Hour: (_) {},
+          rate1HourController: TextEditingController(text: '1200'),
+          enable3Hours: true,
+          onToggle3Hours: (_) {},
+          rate3HoursController: TextEditingController(text: '3000'),
+          enable6Hours: true,
+          onToggle6Hours: (_) {},
+          rate6HoursController: TextEditingController(text: '5500'),
+          enable24Hours: true,
+          onToggle24Hours: (_) {},
+          rate24HoursController: TextEditingController(text: '8500'),
+          enableWeekly: true,
+          onToggleWeekly: (_) {},
+          rateWeeklyController: TextEditingController(text: '52000'),
+          supportSelfDrive: true,
+          onToggleSelfDrive: (_) {},
+          supportWithDriver: true,
+          onToggleWithDriver: (_) {},
+          driverAllowanceController: TextEditingController(text: '2000'),
+          securityDepositController: TextEditingController(text: '25000'),
+          advanceDepositController: TextEditingController(text: '2000'),
+          extraHourChargeController: TextEditingController(text: '600'),
+          fuelPolicy: 'Same to Same',
+          onFuelPolicyChanged: (_) {},
+        ))),
+        width: 360.0,
+        height: 640.0,
+        textScale: 1.35,
+        theme: AppTheme.lightTheme,
+      );
+      // 'Rental Rates & Policy' is the wizard's step-3 title, not a
+      // text inside the rates step itself — assert on the step's own
+      // heading instead.
+      expect(find.text('Duration Packages (Hourly & Daily)'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
 

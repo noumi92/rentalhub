@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../l10n/app_localizations.dart';
 
 import '../../../../core/widgets/app_feedback.dart';
+import '../../../../core/widgets/app_state_views.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../core/widgets/debounced_button.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
@@ -12,13 +13,9 @@ import '../widgets/handover_notes_banner.dart';
 import '../widgets/operations/fuel_odometer_input_widget.dart';
 import '../widgets/operations/settlement_summary_receipt_widget.dart';
 import 'owner_customer_rating_view.dart';
+import '../../../../core/utils/money_format.dart';
 
-/// Phase B (F1/F2): the return inspection settles against real
-/// numbers — the booking's km limit, the vehicle's per-km and
-/// per-hour rates, the deposit actually held — and writes the
-/// settlement into `security_deposits`. The old view settled against
-/// hardcoded defaults (250 km, Rs. 15,000, Rs. 25/km) and recorded
-/// nothing, so the money trail did not exist.
+/// Phase B (F1/F2): the return inspection settles against real numbers — the booking's km limit, the vehicle's per-km and per-hour rates, the deposit actually held — and writes the settlement into `security_deposits`.
 class OwnerReturnSettlementView extends StatefulWidget {
   final BookingEntity booking;
   final int initialOdometer;
@@ -47,6 +44,12 @@ class _OwnerReturnSettlementViewState extends State<OwnerReturnSettlementView> {
   List<String> _returnDamageNotes = const [];
   List<String> _handoverDamageNotes = const [];
   bool _isFinalizing = false;
+  // Audit §14 (Critical): Finalize stays disabled until the real values have loaded, and the load never overwrites an odometer the owner has already typed — the old code settled against 45200 / 250 km / Rs. 15,000 fallbacks and clobbered typed input mid-edit.
+  bool _valuesLoaded = false;
+  bool _loadFailed = false;
+  String? _loadError;
+  bool _odometerTouched = false;
+  bool _suppressOdometerListener = false;
 
   int _initialOdometer = 45200;
   int _kmAllowance = 250;
@@ -60,27 +63,44 @@ class _OwnerReturnSettlementViewState extends State<OwnerReturnSettlementView> {
     _initialOdometer = widget.initialOdometer;
     _kmAllowance = widget.booking.kmLimit ?? widget.kmAllowance;
     _deposit = widget.initialDeposit;
-    _returnOdometerController =
-        TextEditingController(text: '$_initialOdometer');
-    _returnOdometerController.addListener(() => setState(() {}));
+    // Starts EMPTY: no invented odometer is ever shown or settled.
+    _returnOdometerController = TextEditingController();
+    _returnOdometerController.addListener(() {
+      if (!_suppressOdometerListener) _odometerTouched = true;
+      setState(() {});
+    });
     _loadRealValues();
   }
 
   Future<void> _loadRealValues() async {
-    final values = await ReturnSettlementService.loadRealValues(
-      widget.booking,
-      fallbackOdometer: widget.initialOdometer,
-      fallbackDeposit: widget.initialDeposit,
-    );
-    if (!mounted) return;
     setState(() {
-      _initialOdometer = values.initialOdometer;
-      _handoverDamageNotes = values.handoverDamageNotes;
-      _extraKmPkr = values.extraKmPkr;
-      _extraHourPkr = values.extraHourPkr;
-      _deposit = values.deposit;
-      _returnOdometerController.text = '$_initialOdometer';
+      _loadFailed = false;
+      _loadError = null;
     });
+    try {
+      final values = await ReturnSettlementService.loadRealValues(widget.booking, fallbackOdometer: widget.initialOdometer, fallbackDeposit: widget.initialDeposit);
+      if (!mounted) return;
+      // Load once into the form only if the owner has not typed yet — done outside setState so the controller listener cannot fire a nested setState.
+      if (!_odometerTouched) {
+        _suppressOdometerListener = true;
+        _returnOdometerController.text = '${values.initialOdometer}';
+        _suppressOdometerListener = false;
+      }
+      setState(() {
+        _initialOdometer = values.initialOdometer;
+        _handoverDamageNotes = values.handoverDamageNotes;
+        _extraKmPkr = values.extraKmPkr;
+        _extraHourPkr = values.extraHourPkr;
+        _deposit = values.deposit;
+        _valuesLoaded = true;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _loadFailed = true;
+        _loadError = e.toString();
+      });
+    }
   }
 
   @override
@@ -94,25 +114,32 @@ class _OwnerReturnSettlementViewState extends State<OwnerReturnSettlementView> {
       int.tryParse(_returnOdometerController.text.trim()) ??
       _initialOdometer;
   int get _totalKmDriven => (_returnOdometer - _initialOdometer).clamp(0, 99999);
-  int get _damageCharge => int.tryParse(_damageChargeController.text.trim()) ?? 0;
+  // Damage charge is clamped to >= 0: a negative charge must never increase the refund.
+  int get _damageCharge => (int.tryParse(_damageChargeController.text.trim()) ?? 0).clamp(0, 999999999);
   int get _overtimeHours {
     final late = DateTime.now().difference(widget.booking.returnTime);
     return late.isNegative ? 0 : (late.inMinutes / 60).ceil();
   }
 
   SettlementBreakdown get _breakdown => SettlementCalculator.calculate(
-        totalKmDriven: _totalKmDriven,
-        kmAllowance: _kmAllowance,
-        extraKmPkr: _extraKmPkr,
-        fuelLevel: _returnFuel,
-        damageCharge: _damageCharge,
-        overtimeHours: _overtimeHours,
-        extraHourPkr: _extraHourPkr,
-        securityDeposit: _deposit,
+        totalKmDriven: _totalKmDriven, kmAllowance: _kmAllowance, extraKmPkr: _extraKmPkr, fuelLevel: _returnFuel,
+        damageCharge: _damageCharge, overtimeHours: _overtimeHours, extraHourPkr: _extraHourPkr, securityDeposit: _deposit,
       );
+
+  void _onDamageChargeChanged(String value) {
+    // Keep the field and the receipt consistent: a negative charge is reset to 0 as soon as it is typed.
+    final parsed = int.tryParse(value.trim());
+    if (parsed != null && parsed < 0) {
+      _damageChargeController.text = '0';
+      _damageChargeController.selection = const TextSelection.collapsed(offset: 1);
+    }
+    setState(() {});
+  }
 
   Future<void> _finalizeReturn() async {
   final l10n = AppLocalizations.of(context)!;
+    // Belt-and-braces: the button is only rendered once loaded, but a stray call must never settle against unloaded values.
+    if (!_valuesLoaded || _isFinalizing) return;
     if (_returnOdometer < _initialOdometer) {
       AppFeedback.showError(context, l10n.returnOdometerBelow(_initialOdometer));
       return;
@@ -120,32 +147,16 @@ class _OwnerReturnSettlementViewState extends State<OwnerReturnSettlementView> {
     setState(() => _isFinalizing = true);
     try {
       final breakdown = await ReturnSettlementService.finalizeReturn(
-        booking: widget.booking,
-        returnOdometer: _returnOdometer,
-        initialOdometer: _initialOdometer,
-        kmAllowance: _kmAllowance,
-        extraKmPkr: _extraKmPkr,
-        extraHourPkr: _extraHourPkr,
-        deposit: _deposit,
-        fuelLevel: _returnFuel,
-        returnDamageNotes: _returnDamageNotes,
-        damageCharge: _damageCharge,
+        booking: widget.booking, returnOdometer: _returnOdometer, initialOdometer: _initialOdometer, kmAllowance: _kmAllowance,
+        extraKmPkr: _extraKmPkr, extraHourPkr: _extraHourPkr, deposit: _deposit, fuelLevel: _returnFuel,
+        returnDamageNotes: _returnDamageNotes, damageCharge: _damageCharge,
       );
       if (mounted) {
-        AppFeedback.showSuccess(context,
-            l10n.returnSettled(breakdown.netRefund));
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (_) => OwnerCustomerRatingView(
-              booking: widget.booking.copyWith(status: 'completed'),
-            ),
-          ),
-        );
+        AppFeedback.showSuccess(context, l10n.returnSettled(formatRs(breakdown.netRefund)));
+        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => OwnerCustomerRatingView(booking: widget.booking.copyWith(status: 'completed'))));
       }
     } catch (e) {
-      if (mounted) {
-        AppFeedback.showError(context, l10n.returnFinalizeFailed(e.toString()));
-      }
+      if (mounted) AppFeedback.showError(context, l10n.returnFinalizeFailed(e.toString()));
     } finally {
       if (mounted) setState(() => _isFinalizing = false);
     }
@@ -157,74 +168,46 @@ class _OwnerReturnSettlementViewState extends State<OwnerReturnSettlementView> {
     final breakdown = _breakdown;
     return Scaffold(
       body: SafeArea(
+        top: false,
         child: Column(
           children: [
-            MinimalAppBar(
-              title: l10n.returnTitle,
-              subtitle: l10n.returnTripAudit(widget.booking.bookingId),
-              onBack: widget.onBack,
-            ),
-            Expanded(
-              child: SingleChildScrollView(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                child: Column(
-                  children: [
-                    FuelOdometerInputWidget(
-                      title: l10n.returnTelemetryTitle,
-                      odometerController: _returnOdometerController,
-                      selectedFuel: _returnFuel,
-                      onFuelSelected: (f) => setState(() => _returnFuel = f),
-                    ),
-                    if (_handoverDamageNotes.isNotEmpty) ...[
+            MinimalAppBar(title: l10n.returnTitle, subtitle: l10n.returnTripAudit(widget.booking.bookingId), onBack: widget.onBack),
+            if (!_valuesLoaded && !_loadFailed)
+              const Expanded(child: AppLoadingState())
+            else if (_loadFailed)
+              Expanded(child: AppErrorState(message: l10n.fleetLoadError(_loadError ?? ''), onRetry: _loadRealValues))
+            else
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  child: Column(
+                    children: [
+                      FuelOdometerInputWidget(title: l10n.returnTelemetryTitle, odometerController: _returnOdometerController, selectedFuel: _returnFuel, onFuelSelected: (f) => setState(() => _returnFuel = f)),
+                      if (_handoverDamageNotes.isNotEmpty) ...[
+                        const SizedBox(height: 12),
+                        HandoverNotesBanner(notes: _handoverDamageNotes),
+                      ],
+                      const SizedBox(height: 16),
+                      HandoverDamageNotesEditor(title: l10n.returnNewDamageTitle, subtitle: l10n.returnNewDamageSubtitle, onChanged: (notes) => setState(() => _returnDamageNotes = notes)),
                       const SizedBox(height: 12),
-                      HandoverNotesBanner(notes: _handoverDamageNotes),
-                    ],
-                    const SizedBox(height: 16),
-                    HandoverDamageNotesEditor(
-                      title: l10n.returnNewDamageTitle,
-                      subtitle: l10n.returnNewDamageSubtitle,
-                      onChanged: (notes) =>
-                          setState(() => _returnDamageNotes = notes),
-                    ),
-                    const SizedBox(height: 12),
-                    TextField(
-                      controller: _damageChargeController,
-                      keyboardType: TextInputType.number,
-                      onChanged: (_) => setState(() {}),
-                      decoration: InputDecoration(
-                        labelText: l10n.returnDamageChargeLabel,
-                        hintText: l10n.returnDamageChargeHint,
-                        border: OutlineInputBorder(),
-                        filled: true,
-                        fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                      TextField(
+                        controller: _damageChargeController,
+                        keyboardType: TextInputType.number,
+                        onChanged: _onDamageChargeChanged,
+                        decoration: InputDecoration(labelText: l10n.returnDamageChargeLabel, hintText: l10n.returnDamageChargeHint, border: OutlineInputBorder(), filled: true, fillColor: Theme.of(context).colorScheme.surfaceContainerHighest),
                       ),
-                    ),
-                    const SizedBox(height: 16),
-                    SettlementSummaryReceiptWidget(
-                      totalKm: breakdown.totalKmDriven,
-                      excessKm: breakdown.excessKm,
-                      excessKmPenalty: breakdown.excessKmCharge,
-                      extraKmRate: _extraKmPkr,
-                      fuelDeficitFee: breakdown.fuelDeficit,
-                      overtimeFee: breakdown.overtimeFee,
-                      damageCharge: breakdown.damageCharge,
-                      securityDeposit: _deposit,
-                      netRefund: breakdown.netRefund,
-                    ),
-                    const SizedBox(height: 24),
-                    DebouncedButton(
-                      text: _isFinalizing
-                          ? l10n.returnFinalizing
-                          : l10n.returnFinalize,
-                      icon: Icons.check_circle_rounded,
-                      isLoading: _isFinalizing,
-                      onPressed: _finalizeReturn,
-                    ),
-                  ],
+                      const SizedBox(height: 16),
+                      SettlementSummaryReceiptWidget(
+                        totalKm: breakdown.totalKmDriven, excessKm: breakdown.excessKm, excessKmPenalty: breakdown.excessKmCharge, extraKmRate: _extraKmPkr,
+                        fuelDeficitFee: breakdown.fuelDeficit, overtimeFee: breakdown.overtimeFee, damageCharge: breakdown.damageCharge,
+                        securityDeposit: _deposit, netRefund: breakdown.netRefund,
+                      ),
+                      const SizedBox(height: 24),
+                      DebouncedButton(text: _isFinalizing ? l10n.returnFinalizing : l10n.returnFinalize, icon: Icons.check_circle_rounded, isLoading: _isFinalizing, onPressed: _finalizeReturn),
+                    ],
+                  ),
                 ),
               ),
-            ),
           ],
         ),
       ),

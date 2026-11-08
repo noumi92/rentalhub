@@ -181,6 +181,14 @@ void main() {
 
       // Phase B (E2): the pads are real now — certifying without
       // signing is refused instead of toggling a fake signature.
+      // Audit §13: the odometer starts empty, and its validation
+      // runs before the signature check — enter a valid reading
+      // first so the tap reaches the signature refusal.
+      await tester.enterText(
+          find.byWidgetPredicate((w) =>
+              w is TextField && w.decoration?.hintText == 'e.g. 45200'),
+          '45200');
+      await tester.pumpAndSettle();
       await tester.ensureVisible(
           find.text('Certify Handover & Generate Contract'));
       await tester.tap(find.text('Certify Handover & Generate Contract'));

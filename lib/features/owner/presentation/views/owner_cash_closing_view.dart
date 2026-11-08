@@ -1,11 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../../../../l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/di/injection_container.dart';
+import '../../../../core/utils/current_shop.dart';
 import '../../../../core/widgets/app_feedback.dart';
+import '../../../../core/widgets/app_state_views.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
-import '../../../../core/widgets/debounced_button.dart';
 import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
 import '../../../finance/data/datasources/cash_closing_data_source.dart';
@@ -16,7 +18,10 @@ import '../../../finance/domain/entities/finance_account_entity.dart';
 import '../../../finance/domain/entities/finance_transfer_entity.dart';
 import '../../../finance/utils/finance_summary.dart';
 import '../widgets/finance/cash_closing_cards.dart';
+import '../widgets/finance/cash_closing_history.dart';
+import '../widgets/finance/cash_closing_form.dart';
 import '../widgets/finance/finance_pnl_report.dart';
+import '../../../../core/utils/money_format.dart';
 
 /// Phase B (H5): the day's cash closing — what the till should
 /// hold (computed from the cash account, never typed in), what the
@@ -40,15 +45,35 @@ class _OwnerCashClosingViewState extends State<OwnerCashClosingView> {
   final _noteController = TextEditingController();
   bool _isLoading = true;
   bool _isSaving = false;
+  bool _hasError = false;
+  String _shopName = '';
 
   @override
   void initState() {
     super.initState();
     _load();
+    _loadShopName();
+  }
+
+  // Audit §26: the P&L CSV was labelled with the raw shop id — load the real shop name like Settings.
+  Future<void> _loadShopName() async {
+    try {
+      final doc = await FirebaseFirestore.instance
+          .collection('shops')
+          .doc(currentShopId())
+          .get();
+      final name = (doc.data()?['name'] ?? doc.data()?['shopName']) as String?;
+      if (name != null && name.isNotEmpty && mounted) {
+        setState(() => _shopName = name);
+      }
+    } catch (_) {}
   }
 
   Future<void> _load() async {
-    setState(() => _isLoading = true);
+    setState(() {
+      _isLoading = true;
+      _hasError = false;
+    });
     try {
       final accounts =
           await sl<FinanceAccountDataSource>().getShopAccounts(widget.shopId);
@@ -67,6 +92,8 @@ class _OwnerCashClosingViewState extends State<OwnerCashClosingView> {
         });
       }
     } catch (_) {
+      // Audit §26/C4: a failed load used to render as "expected Rs. 0".
+      if (mounted) setState(() => _hasError = true);
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -91,7 +118,27 @@ class _OwnerCashClosingViewState extends State<OwnerCashClosingView> {
     return _cashAccount?.openingBalancePkr ?? 0;
   }
 
-  int get _counted => int.tryParse(_countedController.text.trim()) ?? 0;
+  /// Today's cash movement on the cash account, for the expected-cash
+  /// breakdown line (opening + cash in − cash out).
+  ({int cashIn, int cashOut}) get _todayCashFlow {
+    final cash = _cashAccount;
+    if (cash == null) return (cashIn: 0, cashOut: 0);
+    final now = DateTime.now();
+    final start = DateTime(now.year, now.month, now.day);
+    final end = start.add(const Duration(days: 1));
+    var cashIn = 0;
+    var cashOut = 0;
+    for (final t in _transfers) {
+      if (t.accountId != cash.accountId) continue;
+      if (t.createdAt.isBefore(start) || !t.createdAt.isBefore(end)) continue;
+      if (t.kind == 'income') {
+        cashIn += t.amountPkr;
+      } else {
+        cashOut += t.amountPkr;
+      }
+    }
+    return (cashIn: cashIn, cashOut: cashOut);
+  }
 
   Future<void> _saveClosing() async {
   final l10n = AppLocalizations.of(context)!;
@@ -114,10 +161,15 @@ class _OwnerCashClosingViewState extends State<OwnerCashClosingView> {
       );
       if (mounted) {
         AppFeedback.showSuccess(
-            context, l10n.financeClosingClosed(counted - _expectedCash));
+            context, l10n.financeClosingClosed(formatRs(counted - _expectedCash)));
         _countedController.clear();
         _noteController.clear();
         _load();
+      }
+    } catch (_) {
+      // Audit §26: a save failure used to be silent.
+      if (mounted) {
+        AppFeedback.showError(context, l10n.shopSaveError);
       }
     } finally {
       if (mounted) setState(() => _isSaving = false);
@@ -133,10 +185,14 @@ class _OwnerCashClosingViewState extends State<OwnerCashClosingView> {
 
   @override
   Widget build(BuildContext context) {
-  final l10n = AppLocalizations.of(context)!;
-    final diff = _counted - _expectedCash;
+    final l10n = AppLocalizations.of(context)!;
+    // Audit §26: the difference is null until the owner types — `?? 0` used to show a false difference on first paint.
+    final counted = int.tryParse(_countedController.text.trim());
+    final diff = counted == null ? null : counted - _expectedCash;
+    final flow = _todayCashFlow;
     return Scaffold(
       body: SafeArea(
+        top: false,
         child: Column(
           children: [
             MinimalAppBar(
@@ -146,8 +202,13 @@ class _OwnerCashClosingViewState extends State<OwnerCashClosingView> {
             ),
             Expanded(
               child: _isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : SingleChildScrollView(
+                  ? const AppLoadingState()
+                  : _hasError
+                      ? AppErrorState(
+                          message: l10n.dashboardLoadError,
+                          onRetry: _load,
+                        )
+                      : SingleChildScrollView(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16, vertical: 14),
                       child: Column(
@@ -157,65 +218,26 @@ class _OwnerCashClosingViewState extends State<OwnerCashClosingView> {
                             expectedCash: _expectedCash,
                             openingCash: _openingCash,
                             difference: diff,
+                            countedCash: counted,
+                            cashInToday: flow.cashIn,
+                            cashOutToday: flow.cashOut,
                           ),
                           const SizedBox(height: 12),
-                          TextField(
-                            controller: _countedController,
-                            keyboardType: TextInputType.number,
-                            onChanged: (_) => setState(() {}),
-                            decoration: InputDecoration(
-                              labelText: l10n.financeClosingCountedLabel,
-                              border: OutlineInputBorder(),
-                              filled: true,
-                              fillColor: Theme.of(context)
-                                  .colorScheme
-                                  .surfaceContainerHighest,
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          TextField(
-                            controller: _noteController,
-                            decoration: InputDecoration(
-                              labelText: l10n.financeNoteOptional,
-                              border: OutlineInputBorder(),
-                              filled: true,
-                              fillColor: Theme.of(context)
-                                  .colorScheme
-                                  .surfaceContainerHighest,
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          SizedBox(
-                            width: double.infinity,
-                            child: DebouncedButton(
-                              text: _isSaving ? l10n.financeClosingSaving : l10n.financeClosingButton,
-                              icon: Icons.lock_rounded,
-                              isLoading: _isSaving,
-                              onPressed: _saveClosing,
-                            ),
+                          CashClosingForm(
+                            countedController: _countedController,
+                            noteController: _noteController,
+                            isSaving: _isSaving,
+                            onCountedChanged: () => setState(() {}),
+                            onSave: _saveClosing,
                           ),
                           const SizedBox(height: 20),
                           FinancePnLReport(
-                            shopName: widget.shopId,
+                            shopName: _shopName.isNotEmpty ? _shopName : widget.shopId,
                             bookings: _bookings,
                             transfers: _transfers,
                           ),
                           const SizedBox(height: 20),
-                          Text(l10n.financeClosingPast,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleSmall
-                                  ?.copyWith(fontWeight: FontWeight.w800)),
-                          const SizedBox(height: 8),
-                          if (_closings.isEmpty)
-                            Text(l10n.financeClosingEmpty,
-                                style: TextStyle(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onSurfaceVariant)),
-                          ..._closings
-                              .take(10)
-                              .map((c) => CashClosingRow(closing: c)),
+                          CashClosingHistory(closings: _closings),
                         ],
                       ),
                     ),

@@ -126,7 +126,7 @@ void main() {
       expect(find.text('Submit Upgrade Verification'), findsOneWidget);
     });
 
-    testWidgets('OwnerWhatsAppLogsView: renders log tiles and filters',
+    testWidgets('OwnerWhatsAppLogsView: honest empty state, no fake dispatches',
         (tester) async {
       await tester.pumpWidget(
         MaterialApp(
@@ -138,8 +138,15 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('WhatsApp Alert Dispatches'), findsOneWidget);
-      expect(find.text('Muhammad Hamza'), findsOneWidget);
-      expect(find.text('Delivered'), findsWidgets);
+      // Audit §29 (Critical): the fabricated sample entries are gone —
+      // WhatsApp sending is D2-gated, so the screen is an honest empty
+      // state with no Resend action until real dispatches exist.
+      expect(find.text('No WhatsApp messages sent yet'), findsOneWidget);
+      expect(find.text('Muhammad Hamza'), findsNothing);
+      expect(find.text('Usman Tariq'), findsNothing);
+      expect(find.text('Bilal Ahmed'), findsNothing);
+      expect(find.text('Kashif Ali'), findsNothing);
+      expect(find.text('Resend'), findsNothing);
     });
   });
 

@@ -134,6 +134,10 @@ void main() {
       // No hardcoded damage notes from the old flow.
       expect(find.text('Minor right door scratch noted'), findsNothing);
 
+      // Audit §13: the odometer starts empty, so enter a real reading
+      // before certifying — otherwise the odometer error fires first.
+      await tester.enterText(find.byType(TextField).first, '45200');
+      await tester.pumpAndSettle();
       await tester.ensureVisible(
           find.text('Certify Handover & Generate Contract'));
       await tester.tap(find.text('Certify Handover & Generate Contract'));
@@ -196,7 +200,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byType(QrImageView), findsOneWidget);
       expect(find.text('35202-1234567-1'), findsOneWidget);
-      expect(find.text('Rs. 20000 (refundable)'), findsOneWidget);
+      expect(find.text('Rs. 20,000 (refundable)'), findsOneWidget);
       // The old fake claims are gone.
       expect(find.text('AL-FALAH RENT A CAR LAHORE'), findsNothing);
       expect(find.text('Verified Clean (NADRA / Tribunal)'), findsNothing);
@@ -283,14 +287,14 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Approve Me'), findsOneWidget);
 
-      await tester.tap(find.text('Approve & Pay'));
+      await tester.tap(find.text('Approve'));
       await tester.pumpAndSettle();
       expect(find.text('Approve Me'), findsNothing);
 
       await tester.tap(find.textContaining('Approved ('));
       await tester.pumpAndSettle();
       expect(find.text('Approve Me'), findsOneWidget);
-      expect(find.text('Approve & Pay'), findsNothing);
+      expect(find.text('Approve'), findsNothing);
       expect(
           (await ds.getBookingById(booking.bookingId))?.status, 'approved');
     });

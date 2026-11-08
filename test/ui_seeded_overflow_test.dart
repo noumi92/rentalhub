@@ -73,13 +73,13 @@ void main() {
         tester: tester,
         screen: const RevenueKpiCard(
           title: 'Completed Trips',
-          amount: 'Rs. 1234567',
+          amount: 'Rs. 1,234,567',
           changeLabel: '87% deposits settled',
           icon: Icons.task_alt_rounded,
         ),
         theme: AppTheme.lightTheme,
       );
-      expect(find.text('Rs. 1234567'), findsWidgets);
+      expect(find.text('Rs. 1,234,567'), findsWidgets);
     });
 
     testWidgets('DashboardKpis with 7-digit revenue and 2–3 digit counts',
@@ -99,7 +99,7 @@ void main() {
         ),
         theme: AppTheme.lightTheme,
       );
-      expect(find.text('Rs. 1234567'), findsWidgets);
+      expect(find.text('Rs. 1,234,567'), findsWidgets);
       expect(find.text('42'), findsWidgets);
     });
 
@@ -117,7 +117,7 @@ void main() {
         ),
         theme: AppTheme.lightTheme,
       );
-      expect(find.text('Rs. 125000'), findsWidgets);
+      expect(find.text('Rs. 125,000'), findsWidgets);
       expect(find.text('Toyota Corolla Grande 1.8'), findsWidgets);
     });
 
@@ -135,7 +135,7 @@ void main() {
         theme: AppTheme.lightTheme,
       );
       expect(find.text('Toyota Corolla Grande 1.8'), findsWidgets);
-      expect(find.text('Rs. 1250000'), findsWidgets);
+      expect(find.text('Rs. 1,250,000'), findsWidgets);
     });
 
     testWidgets('BookingTicketCard with a 7-digit total', (tester) async {
@@ -153,7 +153,7 @@ void main() {
         ),
         theme: AppTheme.lightTheme,
       );
-      expect(find.text('Total: Rs. 1250000'), findsWidgets);
+      expect(find.text('Total: Rs. 1,250,000'), findsWidgets);
     });
   });
 

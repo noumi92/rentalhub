@@ -13,6 +13,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:rentalhub/core/theme/app_theme.dart';
 import 'package:rentalhub/core/widgets/custom_curved_header.dart';
 import 'package:rentalhub/core/widgets/minimal_app_bar.dart';
+import 'package:rentalhub/l10n/app_localizations.dart';
 
 import 'test_helper.dart';
 
@@ -178,6 +179,31 @@ void main() {
       );
       await tester.tap(find.byIcon(Icons.refresh_rounded));
       expect(tapped, isTrue);
+    });
+
+    testWidgets('back tooltip is localized, not hardcoded English',
+        (tester) async {
+      await TestHarness.pumpScreenWithOverflowCheck(
+        tester: tester,
+        screen: MinimalAppBar(title: 'Fleet', onBack: () {}),
+        theme: AppTheme.lightTheme,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+      );
+      expect(find.byTooltip('Back'), findsOneWidget);
+    });
+
+    testWidgets('back tooltip reads "واپس" in Urdu', (tester) async {
+      await TestHarness.pumpScreenWithOverflowCheck(
+        tester: tester,
+        screen: MinimalAppBar(title: 'Fleet', onBack: () {}),
+        theme: AppTheme.lightTheme,
+        locale: const Locale('ur'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+      );
+      expect(find.byTooltip('واپس'), findsOneWidget);
+      expect(find.byTooltip('Back'), findsNothing);
     });
 
     testWidgets('login hero still renders the curved header', (tester) async {

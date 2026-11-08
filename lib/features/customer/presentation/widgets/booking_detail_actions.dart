@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/widgets/debounced_button.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../../core/utils/money_format.dart';
 
 /// The status-driven actions for one booking. Extracted from
 /// [CustomerBookingDetailView] so the view stays under the
@@ -50,7 +51,7 @@ class BookingDetailActions extends StatelessWidget {
         return [
           if (onPayAdvance != null)
             DebouncedButton(
-              text: l10n.payAdvanceAmount(booking.advanceRequired),
+              text: l10n.payAdvanceAmount(formatRs(booking.advanceRequired)),
               icon: Icons.payment_rounded,
               onPressed: () async => onPayAdvance!.call(),
             ),

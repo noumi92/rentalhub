@@ -166,8 +166,18 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Fixed Out-of-City Routes'), findsOneWidget);
       expect(find.text('Lahore → Islamabad'), findsOneWidget);
+      // Audit §8: the add-route form now sits above the list, so the
+      // 6th seeded route is below the fold in the default viewport
+      // and the lazy ListView only builds it once scrolled to. The
+      // ListView's own Scrollable is the first Scrollable in the tree
+      // (the form's TextFields each contain one too).
+      await tester.scrollUntilVisible(
+        find.text('Lahore → Karachi'),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
       expect(find.text('Lahore → Karachi'), findsOneWidget);
-      expect(find.text('300 km • Rs. 18000 fixed'), findsOneWidget);
+      expect(find.text('300 km • Rs. 18,000 fixed'), findsOneWidget);
     });
   });
 
@@ -364,13 +374,13 @@ void main() {
 
       expect(find.text('In-City'), findsOneWidget);
       expect(find.text('Out-of-City'), findsOneWidget);
-      expect(find.text('Total: Rs. 9000'), findsOneWidget);
+      expect(find.text('Total: Rs. 9,000'), findsOneWidget);
 
       await tester.tap(find.text('Out-of-City'));
       await tester.pumpAndSettle();
-      expect(find.text('Total: Rs. 11500'), findsOneWidget);
+      expect(find.text('Total: Rs. 11,500'), findsOneWidget);
       expect(find.text('Fixed routes from this shop'), findsOneWidget);
-      expect(find.text('Islamabad • Rs. 18000'), findsOneWidget);
+      expect(find.text('Islamabad • Rs. 18,000'), findsOneWidget);
 
       await tester.tap(find.text('Continue'));
       await tester.pumpAndSettle();
@@ -405,9 +415,9 @@ void main() {
 
       await tester.tap(find.text('Out-of-City'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Islamabad • Rs. 18000'));
+      await tester.tap(find.text('Islamabad • Rs. 18,000'));
       await tester.pumpAndSettle();
-      expect(find.text('Total: Rs. 18000'), findsOneWidget);
+      expect(find.text('Total: Rs. 18,000'), findsOneWidget);
 
       await tester.tap(find.text('Continue'));
       await tester.pumpAndSettle();

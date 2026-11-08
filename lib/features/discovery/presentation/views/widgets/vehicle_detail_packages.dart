@@ -4,6 +4,7 @@ import '../../../../../core/constants/app_colors.dart';
 import '../../../../fleet/domain/entities/vehicle_entity.dart';
 import 'vehicle_package_card.dart';
 import '../../../../../l10n/app_localizations.dart';
+import '../../../../../core/utils/money_format.dart';
 
 /// Phase A (A1): the drive-mode + package section of the car detail
 /// screen, extracted so the view stays under the 250-line cap.
@@ -85,8 +86,8 @@ class VehicleDetailPackages extends StatelessWidget {
               Expanded(
                 child: Text(
                   withDriver
-                      ? l10n.vehicleDriverPackageDetail(v.extraHourPkr ?? 0, v.rates.outOfCityDaily ?? 0)
-                      : l10n.vehicleDepositCnic(v.securityDepositPkr ?? 0),
+                      ? l10n.vehicleDriverPackageDetail(formatRs(v.extraHourPkr ?? 0), formatRs(v.rates.outOfCityDaily ?? 0))
+                      : l10n.vehicleDepositCnic(formatRs(v.securityDepositPkr ?? 0)),
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600, height: 1.3),
                 ),
               ),

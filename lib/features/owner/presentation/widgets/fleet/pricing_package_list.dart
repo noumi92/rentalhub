@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../core/constants/app_colors.dart';
+import '../../../../../core/utils/money_format.dart';
 import '../../../../../l10n/app_localizations.dart';
 
 import '../../../../fleet/domain/entities/vehicle_entity.dart';
@@ -45,14 +47,16 @@ class PricingPackageList extends StatelessWidget {
                 child: RateMatrixFieldWidget(
                   controller: priceController(packages[i].label),
                   label: _title(l10n, packages[i].label),
-                  hint: 'Rs. ${packages[i].pricePkr}',
+                  hint: l10n.amountRs(formatRs(packages[i].pricePkr)),
                   kmCap: l10n.pricingKmIncluded(packages[i].kmIncluded),
+                  // Audit §6: a disabled package's price is not editable.
+                  enabled: packages[i].enabled,
                 ),
               ),
               const SizedBox(width: 8),
               Switch(
                 value: packages[i].enabled,
-                activeThumbColor: Colors.green,
+                activeThumbColor: AppColors.accentSuccess,
                 onChanged: (val) => onToggle(packages[i].label, val),
               ),
             ],

@@ -1,21 +1,37 @@
+import 'dart:async';
 import 'dart:io';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:rentalhub/core/data/offline_sync_queue.dart';
+import 'package:rentalhub/core/data/sync_engine.dart';
+import 'package:rentalhub/core/data/sync_status_cubit.dart';
+import 'package:rentalhub/core/network/connectivity_service.dart';
 import 'package:rentalhub/core/routing/app_router.dart';
 import 'package:rentalhub/core/routing/app_shell.dart';
 import 'package:rentalhub/core/theme/app_theme.dart';
+import 'package:rentalhub/core/widgets/app_icon_chip.dart';
 import 'package:rentalhub/core/widgets/app_shell_nav.dart';
+import 'package:rentalhub/core/widgets/offline_banner.dart';
 import 'package:rentalhub/features/customer/presentation/widgets/customer_support_badge.dart';
 import 'package:rentalhub/features/owner/presentation/widgets/owner_requests_badge.dart';
+import 'package:rentalhub/l10n/app_localizations.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // Phase C (C1–C3): the navigation rebuild — StatefulShellRoute shells,
 // the single flush nav, badges, and the orphan-route scan.
 //
-// Phone-test #16/#17: the floating pill is gone — the bar is 56 px,
-// flush to the bottom edge, no margin/radius/SafeArea — and it is
-// visible only on the 10 tab roots (`AppShell.tabRootPaths`).
+// Phone-test #16/#17: the floating pill is gone — the bar is 56 px of
+// content, flush to the bottom edge, no margin/radius/SafeArea — and it
+// is visible only on the 10 tab roots (`AppShell.tabRootPaths`).
+//
+// Audit fix (gesture bar, §4.4 decision): the 56 px content height is
+// kept, but `MediaQuery.padding.bottom` is added BELOW it, so the tab
+// labels clear the Android system gesture pill. The bar stays flush —
+// the extra height is system inset, not padding around the bar.
 
 String _posix(String path) => path.replaceAll(r'\', '/');
 
@@ -292,20 +308,29 @@ void main() {
     Future<void> pumpNav(
       WidgetTester tester, {
       required ThemeData theme,
+      double bottomPadding = 0,
+      double textScale = 1.0,
     }) async {
       await tester.pumpWidget(
         MaterialApp(
           theme: theme,
-          home: Scaffold(
-            bottomNavigationBar: AppShellNav(
-              currentIndex: 0,
-              onTap: (_) {},
-              items: const [
-                ShellNavItem(icon: Icon(Icons.home_rounded), label: 'Home'),
-                ShellNavItem(
-                    icon: Icon(Icons.receipt_long_rounded),
-                    label: 'Bookings'),
-              ],
+          home: MediaQuery(
+            data: MediaQueryData(
+              size: const Size(360, 640),
+              padding: EdgeInsets.only(bottom: bottomPadding),
+              textScaler: TextScaler.linear(textScale),
+            ),
+            child: Scaffold(
+              bottomNavigationBar: AppShellNav(
+                currentIndex: 0,
+                onTap: (_) {},
+                items: const [
+                  ShellNavItem(icon: Icon(Icons.home_rounded), label: 'Home'),
+                  ShellNavItem(
+                      icon: Icon(Icons.receipt_long_rounded),
+                      label: 'Bookings'),
+                ],
+              ),
             ),
           ),
         ),
@@ -360,6 +385,46 @@ void main() {
         tester.element(find.byType(NavigationBar)),
       );
       expect(theme.navigationBarTheme.indicatorColor, AppColors.secondaryDark);
+    });
+
+    testWidgets(
+        'gesture inset: 24 px below the 56 px content, labels stay clear',
+        (tester) async {
+      await pumpNav(tester,
+          theme: AppTheme.lightTheme, bottomPadding: 24);
+      // 56 px of content + 24 px of system inset below it; the
+      // NavigationBar itself is still exactly 56 px tall.
+      final container = navContainer(tester, AppColors.primary);
+      expect(tester.getSize(find.byWidget(container)).height, 56 + 24);
+      expect(
+        tester.getSize(find.byType(NavigationBar)).height,
+        AppShellNav.navHeight,
+      );
+      // The bar is still flush: no margin, no radius, no SafeArea.
+      expect(container.margin, isNull);
+      expect(container.decoration, isNull);
+      expect(
+        find.ancestor(
+          of: find.byType(AppShellNav),
+          matching: find.byType(SafeArea),
+        ),
+        findsNothing,
+      );
+    });
+
+    testWidgets('tab bar grows past 56 px at 200% text scale, no overflow',
+        (tester) async {
+      await pumpNav(tester, theme: AppTheme.lightTheme, textScale: 2.0);
+      expect(tester.takeException(), isNull);
+      final container = navContainer(tester, AppColors.primary);
+      expect(tester.getSize(find.byWidget(container)).height,
+          greaterThan(AppShellNav.navHeight));
+      expect(
+        tester.getSize(find.byType(NavigationBar)).height,
+        greaterThan(AppShellNav.navHeight),
+      );
+      expect(find.text('Home'), findsOneWidget);
+      expect(find.text('Bookings'), findsOneWidget);
     });
   });
 
@@ -432,6 +497,99 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byType(Badge), findsNothing);
       expect(find.byIcon(Icons.support_agent_rounded), findsOneWidget);
+    });
+  });
+
+  group('Audit fix — shared chrome tap targets', () {
+    testWidgets('AppIconChip: 40 dp visual, 48 dp hit area when tappable',
+        (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: AppIconChip(
+              icon: Icons.notifications_rounded,
+              tooltip: 'Notifications',
+              onPressed: () {},
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      // The whole chip widget is the 48 dp tap target (§4.6).
+      expect(tester.getSize(find.byType(AppIconChip)),
+          const Size(48, 48));
+      // The visual circle inside it is still 40 dp.
+      final visual = find.byWidgetPredicate(
+        (w) =>
+            w is Container &&
+            (w.decoration as BoxDecoration?)?.shape == BoxShape.circle,
+      );
+      expect(tester.getSize(visual), const Size(40, 40));
+    });
+
+    testWidgets('AppIconChip without onPressed stays a 40 dp visual',
+        (tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: AppIconChip(icon: Icons.notifications_rounded),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(tester.getSize(find.byType(AppIconChip)),
+          const Size(40, 40));
+    });
+
+    testWidgets('failed sync banner is at least 48 dp tall', (tester) async {
+      // Drive a real cubit to the failed state (one exhausted entry),
+      // the same path offline_sync_test uses.
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+      final queue = OfflineSyncQueue(prefs: prefs);
+      final engine = SyncEngine(queue: queue);
+      engine.registerHandler('test', (_, __) async => false);
+      final controller = StreamController<List<ConnectivityResult>>();
+      final service = ConnectivityService(
+        checkConnectivity: () async => [ConnectivityResult.wifi],
+        connectivityChanges: controller.stream,
+        debounce: Duration.zero,
+      );
+      final cubit = SyncStatusCubit(connectivity: service, queue: queue);
+      await service.start();
+      await cubit.start();
+      await queue.enqueue(kind: 'test', entityId: 'a', payload: {'x': 1});
+      for (var i = 0; i < 5; i++) {
+        await engine.drain();
+        final entry = (await queue.pendingEntries()).first;
+        await queue.updateEntry(entry.copyWith(
+          nextRetryAt: DateTime.now().subtract(const Duration(seconds: 1)),
+        ));
+      }
+      await cubit.refresh();
+      expect(cubit.state.failedCount, 1);
+
+      await tester.pumpWidget(
+        BlocProvider<SyncStatusCubit>.value(
+          value: cubit,
+          child: const MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Scaffold(body: OfflineBanner()),
+          ),
+        ),
+      );
+      await tester.pump(const Duration(milliseconds: 50));
+      await tester.pump(const Duration(milliseconds: 50));
+      expect(find.text('Sync failed — tap to review'), findsOneWidget);
+      expect(tester.getSize(find.byType(OfflineBanner)).height,
+          greaterThanOrEqualTo(48));
+
+      await tester.runAsync(() async {
+        await cubit.close();
+        await service.dispose();
+        await controller.close();
+      });
     });
   });
 

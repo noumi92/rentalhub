@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 import '../../../../../core/constants/app_colors.dart';
+import '../../../../../core/widgets/debounced_button.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../blacklist/domain/entities/blacklist_entity.dart';
 
 class BlacklistStatusBanner extends StatelessWidget {
   final bool isChecked;
   final BlacklistEntity? blacklistedRecord;
+
+  /// Audit §19: the CNIC is confirmed blacklisted but no record came
+  /// back — the banner must say details are unavailable and refer to
+  /// the tribunal, NEVER invent a phone number, reporter or reference
+  /// (the old code fabricated a BLK-AUTO record).
+  final bool detailsUnavailable;
   final VoidCallback? onProceed;
   final VoidCallback? onDecline;
 
@@ -13,6 +20,7 @@ class BlacklistStatusBanner extends StatelessWidget {
     super.key,
     required this.isChecked,
     this.blacklistedRecord,
+    this.detailsUnavailable = false,
     this.onProceed,
     this.onDecline,
   });
@@ -38,7 +46,7 @@ class BlacklistStatusBanner extends StatelessWidget {
             Expanded(
               child: Text(
                 l10n?.blacklistScanPrompt ??
-                    'Enter CNIC above to run an instant real-time scan against the National Car Rental Fraud & Blacklist Database.',
+                    'Enter CNIC above to run an instant real-time scan against the RentalHub shared blacklist.',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(height: 1.4),
               ),
             ),
@@ -47,7 +55,7 @@ class BlacklistStatusBanner extends StatelessWidget {
       );
     }
 
-    final isBlacklisted = blacklistedRecord != null;
+    final isBlacklisted = blacklistedRecord != null || detailsUnavailable;
 
     if (isBlacklisted) {
       return Container(
@@ -55,7 +63,7 @@ class BlacklistStatusBanner extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.errorContainerFor(Theme.of(context).brightness),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Theme.of(context).brightness == Brightness.dark ? AppColors.accentDangerDark : Colors.red.shade400, width: 1.5),
+          border: Border.all(color: Theme.of(context).brightness == Brightness.dark ? AppColors.accentDangerDark : AppColors.accentDanger, width: 1.5),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -73,11 +81,12 @@ class BlacklistStatusBanner extends StatelessWidget {
                             'CRITICAL ALERT: BLACKLISTED CITIZEN',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w900, color: AppColors.errorOnContainerFor(Theme.of(context).brightness)),
                       ),
-                      Text(
-                        l10n?.blacklistIncidentRef(blacklistedRecord!.blacklistId) ??
-                            'Incident Ref: ${blacklistedRecord!.blacklistId}',
-                        style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600, color: Theme.of(context).brightness == Brightness.dark ? AppColors.errorOnContainerDark : Colors.red.shade900),
-                      ),
+                      if (blacklistedRecord != null)
+                        Text(
+                          l10n?.blacklistIncidentRef(blacklistedRecord!.blacklistId) ??
+                              'Incident Ref: ${blacklistedRecord!.blacklistId}',
+                          style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600, color: Theme.of(context).brightness == Brightness.dark ? AppColors.errorOnContainerDark : AppColors.errorDark),
+                        ),
                     ],
                   ),
                 ),
@@ -89,33 +98,36 @@ class BlacklistStatusBanner extends StatelessWidget {
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Theme.of(context).brightness == Brightness.dark ? Theme.of(context).dividerColor : Colors.red.shade200),
+                border: Border.all(color: Theme.of(context).brightness == Brightness.dark ? Theme.of(context).dividerColor : AppColors.accentDanger),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(l10n?.blacklistReason(blacklistedRecord!.reasonCategory) ?? 'Reason: ${blacklistedRecord!.reasonCategory}', style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: Theme.of(context).colorScheme.onSurface)),
-                  const SizedBox(height: 4),
-                  Text(blacklistedRecord!.description, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
-                  const SizedBox(height: 4),
-                  Text(l10n?.blacklistReportedBy(blacklistedRecord!.reportedByShopId) ?? 'Reported By: ${blacklistedRecord!.reportedByShopId}', style: Theme.of(context).textTheme.labelSmall?.copyWith(fontStyle: FontStyle.italic, color: AppColors.errorOnContainerFor(Theme.of(context).brightness))),
+                  if (detailsUnavailable)
+                    // No record returned: no reason, description,
+                    // reporter or reference is shown — none exists.
+                    Text(
+                      l10n?.blacklistDetailsUnavailable ??
+                          'Blacklisted — details unavailable, refer to tribunal',
+                      style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: Theme.of(context).colorScheme.onSurface),
+                    )
+                  else ...[
+                    Text(l10n?.blacklistReason(blacklistedRecord!.reasonCategory) ?? 'Reason: ${blacklistedRecord!.reasonCategory}', style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: Theme.of(context).colorScheme.onSurface)),
+                    const SizedBox(height: 4),
+                    Text(blacklistedRecord!.description, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
+                    const SizedBox(height: 4),
+                    Text(l10n?.blacklistReportedBy(blacklistedRecord!.reportedByShopId) ?? 'Reported By: ${blacklistedRecord!.reportedByShopId}', style: Theme.of(context).textTheme.labelSmall?.copyWith(fontStyle: FontStyle.italic, color: AppColors.errorOnContainerFor(Theme.of(context).brightness))),
+                  ],
                 ],
               ),
             ),
             const SizedBox(height: 14),
-            SizedBox(
-              width: double.infinity,
-              height: 44,
-              child: ElevatedButton.icon(
-                onPressed: onDecline,
-                icon: const Icon(Icons.block, size: 18),
-                label: Text(l10n?.blacklistDecline ?? 'Decline / Refuse Service', style: const TextStyle(fontWeight: FontWeight.w800)),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red.shade700,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                ),
-              ),
+            // Audit §19/C7: 54dp DebouncedButton (was 44dp).
+            DebouncedButton(
+              text: l10n?.blacklistDecline ?? 'Decline / Refuse Service',
+              icon: Icons.block,
+              backgroundColor: AppColors.errorDark,
+              onPressed: onDecline ?? () {},
             ),
           ],
         ),
@@ -128,7 +140,7 @@ class BlacklistStatusBanner extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.successContainerFor(Theme.of(context).brightness),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Theme.of(context).brightness == Brightness.dark ? AppColors.accentSuccessDark : Colors.green.shade400, width: 1.5),
+        border: Border.all(color: Theme.of(context).brightness == Brightness.dark ? AppColors.accentSuccessDark : AppColors.accentSuccess, width: 1.5),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -157,23 +169,16 @@ class BlacklistStatusBanner extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 14),
-          SizedBox(
-            width: double.infinity,
-            height: 44,
-            child: ElevatedButton.icon(
-              onPressed: onProceed,
-              icon: const Icon(Icons.arrow_forward_rounded, size: 18),
-              label: Text(l10n?.blacklistProceed ?? 'Add Customer', style: const TextStyle(fontWeight: FontWeight.w800)),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.secondary,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-              ),
-            ),
+          // Audit §19/C7: 54dp DebouncedButton (was 44dp). orangeFill
+          // carries the small white label in both modes (5.18:1).
+          DebouncedButton(
+            text: l10n?.blacklistProceed ?? 'Add Customer',
+            icon: Icons.arrow_forward_rounded,
+            backgroundColor: AppColors.orangeFill,
+            onPressed: onProceed ?? () {},
           ),
         ],
       ),
     );
   }
 }
-

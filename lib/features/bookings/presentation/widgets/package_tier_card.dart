@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../../core/utils/money_format.dart';
 
 class PackageTierCard extends StatelessWidget {
   final String title;
@@ -108,7 +109,7 @@ class PackageTierCard extends StatelessWidget {
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
                 ),
                 Text(
-                  l10n.tierAdvance((price * 0.2).round().clamp(1000, 5000)),
+                  l10n.tierAdvance(formatRs((price * 0.2).round().clamp(1000, 5000))),
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600, color: AppColors.secondary),
                 ),
               ],

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../core/constants/app_colors.dart';
+import '../../../../../core/utils/money_format.dart';
 import '../../../../../l10n/app_localizations.dart';
 import 'revenue_kpi_card.dart';
 
@@ -10,6 +11,7 @@ import 'revenue_kpi_card.dart';
 class DashboardKpis extends StatelessWidget {
   final int totalRevenue;
   final String growthLabel;
+  final KpiTrend growthTrend;
   final int activeCount;
   final int completedCount;
   final String settleLabel;
@@ -21,6 +23,7 @@ class DashboardKpis extends StatelessWidget {
     super.key,
     required this.totalRevenue,
     required this.growthLabel,
+    this.growthTrend = KpiTrend.neutral,
     required this.activeCount,
     required this.completedCount,
     required this.settleLabel,
@@ -36,8 +39,15 @@ class DashboardKpis extends StatelessWidget {
       children: [
         RevenueKpiCard(
           title: l10n.dashboardGrossRevenue,
-          amount: 'Rs. $totalRevenue',
+          // C5: grouped thousands — "Rs. 4,820,000", never "Rs. 4820000".
+          // The amount goes through the String-typed amountRs key so the
+          // Urdu word order is correct (rulebook §4.5).
+          amount: l10n.amountRs(formatRs(totalRevenue)),
           changeLabel: growthLabel,
+          // Only the revenue card carries a real trend; the other
+          // cards' labels ("On the road", "Needs review", ...) are
+          // states, not changes, so they stay neutral (no icon).
+          trend: growthTrend,
           icon: Icons.account_balance_wallet_rounded,
           color: AppColors.secondary,
         ),

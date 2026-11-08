@@ -77,11 +77,21 @@ class AppIconChip extends StatelessWidget {
     );
     final tappable = onPressed == null
         ? chip
-        : Material(
-            color: Colors.transparent,
-            clipBehavior: Clip.antiAlias,
-            shape: const CircleBorder(),
-            child: InkWell(onTap: onPressed, child: chip),
+        // Audit fix: the visual chip stays 40 dp, but the hit area is
+        // padded to the §4.6 48 dp minimum (the InkWell fills the
+        // 48 dp box; the 40 dp chip sits centred inside it).
+        : SizedBox(
+            width: 48,
+            height: 48,
+            child: Material(
+              color: Colors.transparent,
+              clipBehavior: Clip.antiAlias,
+              shape: const CircleBorder(),
+              child: InkWell(
+                onTap: onPressed,
+                child: Center(child: chip),
+              ),
+            ),
           );
     if (tooltip == null) return tappable;
     return Tooltip(message: tooltip!, child: tappable);
@@ -128,11 +138,20 @@ class AppInitialChip extends StatelessWidget {
     );
     final tappable = onPressed == null
         ? chip
-        : Material(
-            color: Colors.transparent,
-            clipBehavior: Clip.antiAlias,
-            shape: const CircleBorder(),
-            child: InkWell(onTap: onPressed, child: chip),
+        // Same 48 dp hit area as [AppIconChip]: the 40 dp visual
+        // stays, centred inside the 48 dp tap target.
+        : SizedBox(
+            width: 48,
+            height: 48,
+            child: Material(
+              color: Colors.transparent,
+              clipBehavior: Clip.antiAlias,
+              shape: const CircleBorder(),
+              child: InkWell(
+                onTap: onPressed,
+                child: Center(child: chip),
+              ),
+            ),
           );
     if (tooltip == null) return tappable;
     return Tooltip(message: tooltip!, child: tappable);

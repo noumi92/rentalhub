@@ -252,6 +252,10 @@ supportedLocales: AppLocalizations.supportedLocales,
         totalAmount: 14000,
         advanceRequired: 3500,
         remainingBalance: 10500,
+        // §10: a merely `requested` booking renders the decision
+        // detail, not the approved banner — this test pumps an
+        // approved booking on purpose.
+        status: 'approved',
       );
 
       await tester.pumpWidget(
@@ -300,7 +304,7 @@ supportedLocales: AppLocalizations.supportedLocales,
 
       expect(find.text('Submit Payment Proof'), findsNWidgets(2));
       expect(find.text('Changan Alsvin Lumiere'), findsOneWidget);
-      expect(find.text('Rs. 1500'), findsOneWidget);
+      expect(find.text('Rs. 1,500'), findsOneWidget);
       expect(find.text('Transaction Reference / TID'), findsOneWidget);
 
       await tester.enterText(find.byType(TextField), 'JAZZ-902189');

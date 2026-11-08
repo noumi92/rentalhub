@@ -7,6 +7,7 @@ import '../../../../core/widgets/debounced_button.dart';
 import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../../core/utils/money_format.dart';
 
 class CustomerCancelBookingView extends StatefulWidget {
   final BookingEntity booking;
@@ -127,7 +128,7 @@ class _CustomerCancelBookingViewState extends State<CustomerCancelBookingView> {
                           // showroom decides any refund.
                           Text(
                             widget.booking.advancePaid > 0
-                                ? l10n.cancelAdvancePaid(widget.booking.advancePaid)
+                                ? l10n.cancelAdvancePaid(formatRs(widget.booking.advancePaid))
                                 : l10n.cancelNoAdvanceNote,
                             style: Theme.of(context)
                                 .textTheme

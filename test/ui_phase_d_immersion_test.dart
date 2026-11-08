@@ -842,6 +842,7 @@ void main() {
                 onToggleAvailability: (_, __) {},
                 onEditRates: (_) {},
                 onViewCalendar: (_) {},
+                onTapVehicle: (_) {},
               ),
             ),
           ),
@@ -1167,9 +1168,13 @@ void main() {
 
     testWidgets('payment accounts: loading, then shared empty state',
         (tester) async {
+      // §10: a merely `requested` booking renders the decision
+      // detail, not the accounts — the accounts path needs an
+      // approved booking.
       await pumpScreen(
         tester,
-        OwnerPaymentAccountsView(booking: e2Booking()),
+        OwnerPaymentAccountsView(
+            booking: e2Booking().copyWith(status: 'approved')),
       );
       expect(find.byType(AppLoadingState), findsOneWidget);
       await tester.pumpAndSettle();

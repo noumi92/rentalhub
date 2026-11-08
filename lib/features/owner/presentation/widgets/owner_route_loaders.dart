@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/di/injection_container.dart';
+import '../../../../core/widgets/app_state_views.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
@@ -31,8 +32,13 @@ class BookingRouteLoader extends StatelessWidget {
       future: sl<BookingRemoteDataSource>().getBookingById(bookingId),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
+          // Requests-branch shared note: the bare spinner is now the
+          // shared loading state with a label.
+          final l10n = AppLocalizations.of(context);
+          return Scaffold(
+            body: AppLoadingState(
+              message: l10n?.requestsLoading ?? 'Loading booking…',
+            ),
           );
         }
         final booking = snapshot.data;
@@ -72,8 +78,11 @@ class VehicleRouteLoader extends StatelessWidget {
       future: sl<FleetRemoteDataSource>().getShopVehicles(shopId),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
+          final l10n = AppLocalizations.of(context);
+          return Scaffold(
+            body: AppLoadingState(
+              message: l10n?.requestsLoading ?? 'Loading vehicle…',
+            ),
           );
         }
         final vehicles = snapshot.data ?? const <VehicleEntity>[];
@@ -118,10 +127,12 @@ class RouteNotFoundScreen extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(
+                Icon(
                   Icons.search_off_rounded,
                   size: 52,
-                  color: Colors.grey,
+                  // Requests-branch shared note: theme colour, not a
+                  // hardcoded grey.
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
                 const SizedBox(height: 12),
                 Text(

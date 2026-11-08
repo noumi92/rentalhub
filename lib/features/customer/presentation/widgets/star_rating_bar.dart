@@ -60,7 +60,9 @@ class StarRatingBar extends StatelessWidget {
                   size: 36,
                   color: isFilled
                       ? AppColors.warning
-                      : Theme.of(context).dividerColor,
+                      // §16: dividerColor (#23274D in dark) made
+                      // unfilled stars nearly invisible in dark mode.
+                      : Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               );
             }),
