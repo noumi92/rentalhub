@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../constants/app_colors.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Unified alert, notification, and dialog feedback system for RentalHub.
 class AppFeedback {
@@ -106,11 +107,18 @@ class AppFeedback {
     required BuildContext context,
     required String title,
     required String message,
-    String confirmLabel = 'Confirm',
-    String cancelLabel = 'Cancel',
+    String? confirmLabel,
+    String? cancelLabel,
     bool isDestructive = false,
     IconData icon = Icons.security_rounded,
   }) async {
+    // Phase F: the action labels default to the localized
+    // 'Confirm'/'Cancel' (English fallback for delegate-less pumps).
+    final l10n = AppLocalizations.of(context);
+    final effectiveConfirmLabel =
+        confirmLabel ?? l10n?.commonConfirm ?? 'Confirm';
+    final effectiveCancelLabel =
+        cancelLabel ?? l10n?.cancel ?? 'Cancel';
     final result = await showDialog<bool>(
       context: context,
       barrierDismissible: false,
@@ -153,7 +161,7 @@ class AppFeedback {
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
             child: Text(
-              cancelLabel,
+              effectiveCancelLabel,
               style: TextStyle(
                 fontWeight: FontWeight.w700,
                 color: Theme.of(ctx).colorScheme.onSurfaceVariant,
@@ -171,7 +179,7 @@ class AppFeedback {
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
             ),
             child: Text(
-              confirmLabel,
+              effectiveConfirmLabel,
               style: const TextStyle(fontWeight: FontWeight.w800),
             ),
           ),

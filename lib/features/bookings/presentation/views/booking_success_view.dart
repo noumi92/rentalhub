@@ -7,6 +7,7 @@ import '../widgets/booking_status_chip.dart';
 import '../../../../core/widgets/custom_curved_header.dart';
 import '../../../../core/widgets/debounced_button.dart';
 import '../../domain/entities/booking_entity.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class BookingSuccessView extends StatelessWidget {
   final BookingEntity booking;
@@ -22,6 +23,7 @@ class BookingSuccessView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -29,7 +31,7 @@ class BookingSuccessView extends StatelessWidget {
             CustomCurvedHeader(
               variant: CustomCurvedHeaderVariant.compact,
               titleWidget: Text(
-                'Request Transmitted',
+                l10n.successTransmitted,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white),
               ),
             ),
@@ -53,17 +55,17 @@ class BookingSuccessView extends StatelessWidget {
                     ),
                     const SizedBox(height: 18),
                     Text(
-                      'Request Sent Successfully!',
+                      l10n.successTitle,
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      'Reference: ${booking.bookingId}',
+                      l10n.successReference(booking.bookingId),
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.secondary),
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      'Your reservation request for ${booking.vehicleName ?? "Vehicle"} has been delivered to ${booking.shopName ?? "the showroom"}. Once approved, you will be notified to submit the advance deposit.',
+                      l10n.successBody(booking.vehicleName ?? l10n.summaryVehicle, booking.shopName ?? 'the showroom'),
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary, height: 1.45),
                     ),
@@ -80,7 +82,7 @@ class BookingSuccessView extends StatelessWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text('Showroom Status:',
+                              Text(l10n.successShopStatus,
                                   style: Theme.of(context).textTheme.bodyMedium),
                               BookingStatusChip(status: booking.status),
                             ],
@@ -89,7 +91,7 @@ class BookingSuccessView extends StatelessWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text('Advance Due Upon Approval:',
+                              Text(l10n.successAdvanceDue,
                                   style: Theme.of(context).textTheme.bodyMedium),
                               Text('Rs. ${booking.advanceRequired}',
                                   style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900, color: AppColors.secondary)),
@@ -104,14 +106,12 @@ class BookingSuccessView extends StatelessWidget {
                         final uri = whatsappUri(
                           phone: booking.shopPhone ?? '',
                           message:
-                              'Hi ${booking.shopName ?? 'there'}, this is about '
-                              'my RentalHub booking ${booking.bookingId} '
-                              '(${booking.vehicleName ?? 'vehicle'}).',
+                              l10n.successWhatsapp(booking.shopName ?? 'there', booking.bookingId, booking.vehicleName ?? 'vehicle'),
                         );
                         if (uri == null) {
                           AppFeedback.showInfo(
                             context,
-                            'This showroom has no WhatsApp number listed.',
+                            l10n.shopNoWhatsappShowroom,
                           );
                           return;
                         }
@@ -122,7 +122,7 @@ class BookingSuccessView extends StatelessWidget {
                           if (context.mounted) {
                             AppFeedback.showError(
                               context,
-                              'Could not open WhatsApp.',
+                              l10n.couldNotOpenWhatsapp,
                             );
                           }
                         }
@@ -143,7 +143,7 @@ class BookingSuccessView extends StatelessWidget {
                       ),
                       icon: const Icon(Icons.chat_bubble_outline_rounded,
                           color: AppColors.accentSuccess),
-                      label: const Text('Message Showroom on WhatsApp',
+                      label:  Text(l10n.successMessageShop,
                           style: TextStyle(fontWeight: FontWeight.w700)),
                     ),
                   ],
@@ -165,7 +165,7 @@ class BookingSuccessView extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   DebouncedButton(
-                    text: 'View Payment Details / Status',
+                    text: l10n.successViewPayment,
                     icon: Icons.payments_outlined,
                     onPressed: () async {
                       onProceedToPayment?.call();
@@ -174,7 +174,7 @@ class BookingSuccessView extends StatelessWidget {
                   const SizedBox(height: 8),
                   TextButton(
                     onPressed: onViewBookings,
-                    child: Text('Return to My Bookings',
+                    child: Text(l10n.successBackToBookings,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
                   ),
                 ],

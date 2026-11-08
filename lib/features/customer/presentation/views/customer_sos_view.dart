@@ -11,6 +11,7 @@ import '../../../../core/widgets/custom_curved_header.dart';
 import '../widgets/sos_button.dart';
 import '../widgets/sos_emergency_option.dart';
 import '../../../bookings/data/datasources/booking_remote_data_source.dart';
+import '../../../../l10n/app_localizations.dart';
 
 // G2: real emergency actions. Police 15 and Rescue 1122 are Pakistan's
 // public emergency numbers (confirm them with the user — see the plan's
@@ -69,45 +70,48 @@ class _CustomerSosViewState extends State<CustomerSosView> {
   }
 
   Future<void> _callNumber(String number, String label) async {
+    final l10n = AppLocalizations.of(context)!;
     final uri = Uri(scheme: 'tel', path: number);
     if (!await launchUrl(uri)) {
       if (mounted) {
-        AppFeedback.showError(context, 'Could not call $label.');
+        AppFeedback.showError(context, l10n.sosCallError(label));
       }
     }
   }
 
   Future<void> _confirmAndCallPolice() async {
+    final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Call Police 15?'),
-        content: const Text(
-          'This dials the police emergency number (15). Use it only in a real emergency.',
+        title:  Text(l10n.sosCallPoliceConfirm),
+        content:  Text(
+          l10n.sosCallPoliceConfirmHint,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+            child:  Text(l10n.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Call Police 15'),
+            child:  Text(l10n.sosCallPolice),
           ),
         ],
       ),
     );
     if (confirmed == true) {
-      await _callNumber('15', 'Police 15');
+      await _callNumber('15', l10n.sosPolice);
     }
   }
 
   Future<void> _shareLiveLocation() async {
+    final l10n = AppLocalizations.of(context)!;
     final phone = (_shopPhone ?? '').trim();
     if (phone.isEmpty) {
       AppFeedback.showInfo(
         context,
-        'No booking yet — your live location is shared with your showroom once you have a booking.',
+        l10n.sosNoBookingHint,
       );
       return;
     }
@@ -122,7 +126,7 @@ class _CustomerSosViewState extends State<CustomerSosView> {
       if (mounted) {
         AppFeedback.showError(
           context,
-          'Location permission is needed to share your live location.',
+          l10n.sosLocationPermission,
         );
       }
       return;
@@ -135,7 +139,7 @@ class _CustomerSosViewState extends State<CustomerSosView> {
       );
     } catch (e) {
       if (mounted) {
-        AppFeedback.showError(context, 'Could not get your location: $e');
+        AppFeedback.showError(context, l10n.sosLocationError(e.toString()));
       }
       return;
     }
@@ -143,18 +147,19 @@ class _CustomerSosViewState extends State<CustomerSosView> {
         'https://www.google.com/maps/search/?api=1&query=${position.latitude},${position.longitude}';
     final uri = whatsappUri(
       phone: phone,
-      message: 'EMERGENCY — I need help. My live location: $mapsUrl',
+      message: l10n.sosEmergencyMessage(mapsUrl),
     );
     if (uri == null) return;
     if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
       if (mounted) {
-        AppFeedback.showError(context, 'Could not open WhatsApp.');
+        AppFeedback.showError(context, l10n.couldNotOpenWhatsapp);
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -163,14 +168,16 @@ class _CustomerSosViewState extends State<CustomerSosView> {
               variant: CustomCurvedHeaderVariant.compact,
               leadingWidget: widget.onBack != null
                   ? IconButton(
+                      tooltip: l10n.back,
                       icon: const Icon(Icons.arrow_back_ios_new_rounded,
                           color: Colors.white, size: 20),
                       onPressed: widget.onBack,
                     )
                   : null,
               titleWidget: Text(
-                'Emergency SOS Assistance',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white),
+                l10n.sosTitle,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w900, color: Colors.white),
               ),
             ),
             Expanded(
@@ -182,40 +189,46 @@ class _CustomerSosViewState extends State<CustomerSosView> {
                     SosButton(onTap: _confirmAndCallPolice),
                     const SizedBox(height: 16),
                     Text(
-                      'Press SOS in Emergency',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: AppColors.dangerTextFor(Theme.of(context).brightness)),
+                      l10n.sosPress,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w900,
+                          color: AppColors.dangerTextFor(
+                              Theme.of(context).brightness)),
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      'The SOS button calls Police 15. You can also call Rescue 1122 or share your live location with your showroom.',
+                      l10n.sosExplainer,
                       textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(height: 1.4),
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodySmall
+                          ?.copyWith(height: 1.4),
                     ),
                     const SizedBox(height: 24),
                     SosEmergencyOption(
                       icon: Icons.local_police_rounded,
-                      title: 'Call Police Emergency 15',
-                      subtitle: 'Direct Punjab & Federal Police helpline',
+                      title: l10n.sosCallPoliceEmergency,
+                      subtitle: l10n.sosPoliceSubtitle,
                       color: Theme.of(context).brightness == Brightness.dark
                           ? AppColors.primaryContainer
                           : AppColors.primary,
-                      onTap: () => _callNumber('15', 'Police 15'),
+                      onTap: () => _callNumber('15', l10n.sosPolice),
                     ),
                     const SizedBox(height: 10),
                     SosEmergencyOption(
                       icon: Icons.medical_services_rounded,
-                      title: 'Call Rescue 1122',
-                      subtitle: 'Ambulance, fire and rescue services',
+                      title: l10n.sosCallRescue,
+                      subtitle: l10n.sosRescueSubtitle,
                       color: AppColors.secondary,
-                      onTap: () => _callNumber('1122', 'Rescue 1122'),
+                      onTap: () => _callNumber('1122', l10n.sosRescue),
                     ),
                     const SizedBox(height: 10),
                     SosEmergencyOption(
                       icon: Icons.share_location_rounded,
-                      title: 'Share Live Location via WhatsApp',
+                      title: l10n.sosShareLocation,
                       subtitle: _shopName != null
-                          ? 'Send your live location to $_shopName'
-                          : 'Send your live location to your showroom',
+                          ? l10n.sosSendToShopNamed(_shopName!)
+                          : l10n.sosSendToShop,
                       color: Theme.of(context).brightness == Brightness.dark
                           ? AppColors.accentSuccessDark
                           : AppColors.accentSuccess,
@@ -230,6 +243,4 @@ class _CustomerSosViewState extends State<CustomerSosView> {
       ),
     );
   }
-
 }
-

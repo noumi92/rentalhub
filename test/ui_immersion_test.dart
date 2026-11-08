@@ -26,6 +26,7 @@ import 'package:rentalhub/features/fleet/domain/entities/vehicle_entity.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_dashboard_view.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_fleet_view.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_vehicle_calendar_view.dart';
+import 'package:rentalhub/l10n/app_localizations.dart';
 import 'test_helper.dart';
 
 /// The 1x1 transparent PNG (the canonical `kTransparentImage` bytes —
@@ -102,6 +103,7 @@ Future<void> _pumpAtWidth({
   required double width,
 }) async {
   await TestHarness.pumpScreenWithOverflowCheck(
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
     tester: tester,
     screen: DefaultAssetBundle(
       bundle: _TestAssetBundle(),
@@ -170,6 +172,7 @@ void main() {
         tester.view.devicePixelRatio = 2.0;
         await tester.pumpWidget(
           MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates, supportedLocales: AppLocalizations.supportedLocales,
             home: Builder(
               builder: (context) {
                 return Text(windowSizeClassOf(context).name);
@@ -354,6 +357,7 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates, supportedLocales: AppLocalizations.supportedLocales,
           theme: AppTheme.lightTheme,
           home: const CustomerHomeView(),
         ),

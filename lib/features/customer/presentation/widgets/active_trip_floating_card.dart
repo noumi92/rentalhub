@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class ActiveTripFloatingCard extends StatelessWidget {
   final BookingEntity booking;
@@ -14,6 +15,7 @@ class ActiveTripFloatingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -61,7 +63,7 @@ class ActiveTripFloatingCard extends StatelessWidget {
                 ),
               ),
               Text(
-                'ID: ${booking.bookingId}',
+                l10n.bookingIdLabel(booking.bookingId),
                 style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.secondary),
               ),
             ],
@@ -84,12 +86,12 @@ class ActiveTripFloatingCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      booking.vehicleName ?? 'Active Rental Car',
+                      booking.vehicleName ?? l10n.activeRentalCar,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      booking.shopName ?? 'Rental Showroom',
+                      booking.shopName ?? l10n.rentalShowroom,
                       style: Theme.of(context).textTheme.labelMedium,
                     ),
                   ],
@@ -104,7 +106,7 @@ class ActiveTripFloatingCard extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Total Fare',
+                  Text(l10n.activeTripTotalFare,
                       style: Theme.of(context).textTheme.labelSmall),
                   Text(
                     'Rs. ${booking.totalAmount}',
@@ -126,7 +128,7 @@ class ActiveTripFloatingCard extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        'View Pass / QR',
+                        l10n.viewPassQr,
                         style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: Colors.white),
                       ),
                       SizedBox(width: 4),

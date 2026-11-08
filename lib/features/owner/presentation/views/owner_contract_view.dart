@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import '../../../../l10n/app_localizations.dart';
 import 'package:printing/printing.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:share_plus/share_plus.dart';
@@ -92,10 +93,10 @@ class _OwnerContractViewState extends State<OwnerContractView> {
   }
 
   Future<void> _sharePdf() async {
+  final l10n = AppLocalizations.of(context)!;
     final bytes = _pdfBytes;
     if (bytes == null) {
-      AppFeedback.showError(
-          context, 'The agreement PDF is not available yet.');
+      AppFeedback.showError(context, l10n.contractPdfUnavailable);
       return;
     }
     await SharePlus.instance.share(
@@ -107,16 +108,16 @@ class _OwnerContractViewState extends State<OwnerContractView> {
             mimeType: 'application/pdf',
           ),
         ],
-        text: 'Rental agreement #${widget.booking.bookingId}',
+        text: l10n.contractShareText(widget.booking.bookingId),
       ),
     );
   }
 
   Future<void> _printPdf() async {
+  final l10n = AppLocalizations.of(context)!;
     final bytes = _pdfBytes;
     if (bytes == null) {
-      AppFeedback.showError(
-          context, 'The agreement PDF is not available yet.');
+      AppFeedback.showError(context, l10n.contractPdfUnavailable);
       return;
     }
     await Printing.layoutPdf(onLayout: (_) async => bytes);
@@ -124,6 +125,7 @@ class _OwnerContractViewState extends State<OwnerContractView> {
 
   @override
   Widget build(BuildContext context) {
+  final l10n = AppLocalizations.of(context)!;
     final booking = widget.booking;
     return Scaffold(
       body: SafeArea(
@@ -133,6 +135,7 @@ class _OwnerContractViewState extends State<OwnerContractView> {
               variant: CustomCurvedHeaderVariant.compact,
               leadingWidget: widget.onBack != null
                   ? IconButton(
+                      tooltip: l10n.back,
                       icon: const Icon(Icons.arrow_back_ios_new_rounded,
                           color: Colors.white, size: 20),
                       onPressed: widget.onBack,
@@ -141,21 +144,25 @@ class _OwnerContractViewState extends State<OwnerContractView> {
               titleWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Digital Rental Contract',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
-                  Text('Legal Agreement Ref: #${booking.bookingId}',
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.primaryContainer)),
+                  Text(l10n.contractTitle,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w900, color: Colors.white)),
+                  Text(l10n.contractLegalRef(booking.bookingId),
+                      style: Theme.of(context)
+                          .textTheme
+                          .labelSmall
+                          ?.copyWith(color: AppColors.primaryContainer)),
                 ],
               ),
               actions: [
                 IconButton(
                   icon: const Icon(Icons.share_rounded, color: Colors.white),
-                  tooltip: 'Share PDF',
+                  tooltip: l10n.contractSharePdf,
                   onPressed: _sharePdf,
                 ),
                 IconButton(
                   icon: const Icon(Icons.print_rounded, color: Colors.white),
-                  tooltip: 'Print PDF',
+                  tooltip: l10n.contractPrintPdf,
                   onPressed: _printPdf,
                 ),
               ],
@@ -181,7 +188,8 @@ class _OwnerContractViewState extends State<OwnerContractView> {
                         decoration: BoxDecoration(
                           color: Theme.of(context).colorScheme.surface,
                           borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: Theme.of(context).dividerColor),
+                          border:
+                              Border.all(color: Theme.of(context).dividerColor),
                         ),
                         child: Row(
                           children: [
@@ -192,9 +200,7 @@ class _OwnerContractViewState extends State<OwnerContractView> {
                             const SizedBox(width: 12),
                             Expanded(
                               child: Text(
-                                'Scan to verify this agreement — the '
-                                'page shows the booking, the shop and '
-                                'the signed PDF.',
+                                l10n.contractScanVerify,
                                 style: Theme.of(context).textTheme.bodySmall,
                               ),
                             ),
@@ -204,7 +210,7 @@ class _OwnerContractViewState extends State<OwnerContractView> {
                       const SizedBox(height: 20),
                     ],
                     DebouncedButton(
-                      text: 'Proceed to Return & Settlement',
+                      text: l10n.contractProceedReturn,
                       icon: Icons.assignment_return_rounded,
                       onPressed: () {
                         Navigator.of(context).push(
@@ -226,5 +232,4 @@ class _OwnerContractViewState extends State<OwnerContractView> {
       ),
     );
   }
-
 }

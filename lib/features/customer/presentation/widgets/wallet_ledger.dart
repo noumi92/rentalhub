@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/widgets/app_state_views.dart';
 import '../../data/services/customer_wallet_service.dart';
 import 'wallet_transaction_tile.dart';
+import '../../../../l10n/app_localizations.dart';
 
 /// F1: the wallet's transaction ledger — the customer's real advances
 /// and deposits, newest first. Extracted from [CustomerWalletView] so
@@ -11,47 +13,40 @@ class WalletLedger extends StatelessWidget {
     super.key,
     required this.isLoading,
     required this.entries,
+    this.hasError = false,
+    this.onRetry,
   });
 
   final bool isLoading;
   final List<WalletLedgerEntry> entries;
 
+  /// E2: when the load failed, the ledger shows an error state with
+  /// retry instead of an empty ledger.
+  final bool hasError;
+  final VoidCallback? onRetry;
+
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     if (isLoading) {
-      return const Center(
-          child: Padding(
-        padding: EdgeInsets.all(24),
-        child: CircularProgressIndicator(),
-      ));
+      // E2: shared loading state.
+      return  AppLoadingState(message: l10n.walletLoading);
+    }
+    if (hasError) {
+      // E2: shared error state with retry.
+      return AppErrorState(
+        message:
+            l10n.walletLoadError,
+        onRetry: onRetry,
+      );
     }
     if (entries.isEmpty) {
-      return Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Theme.of(context).dividerColor),
-        ),
-        child: Center(
-          child: Column(
-            children: [
-              Icon(Icons.account_balance_wallet_outlined,
-                  size: 40, color: Theme.of(context).colorScheme.onSurfaceVariant),
-              SizedBox(height: 8),
-              Text(
-                'No wallet activity yet.',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.onSurfaceVariant),
-              ),
-              SizedBox(height: 4),
-              Text(
-                'Advances you pay and deposits you leave will appear here.',
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-            ],
-          ),
-        ),
+      // E2: shared empty state (was a bare l10n.walletNoActivity
+      // text in a container).
+      return  AppEmptyState(
+        title: l10n.walletNoActivity,
+        message: l10n.walletLedgerEmptyHint,
+        icon: Icons.account_balance_wallet_outlined,
       );
     }
     return Column(

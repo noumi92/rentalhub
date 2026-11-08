@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import '../../../../../l10n/app_localizations.dart';
 import 'package:share_plus/share_plus.dart';
 
 import  '../../../../bookings/domain/entities/booking_entity.dart';
@@ -30,7 +31,10 @@ class FinancePnLReport extends StatefulWidget {
 class _FinancePnLReportState extends State<FinancePnLReport> {
   String _period = 'this_month';
 
-  ({DateTime? from, DateTime? to, String label}) get _range {
+  // Phase F: the period labels are localized (the dropdown already
+  // was — only the range record still carried English literals).
+  ({DateTime? from, DateTime? to, String label}) _range(
+      AppLocalizations l10n) {
     final now = DateTime.now();
     switch (_period) {
       case 'last_month':
@@ -38,23 +42,24 @@ class _FinancePnLReportState extends State<FinancePnLReport> {
         return (
           from: start,
           to: DateTime(now.year, now.month),
-          label: 'Last month',
+          label: l10n.financeLastMonth,
         );
       case 'all':
-        return (from: null, to: null, label: 'All time');
+        return (from: null, to: null, label: l10n.financeAllTime);
       case 'this_month':
       default:
         return (
           from: DateTime(now.year, now.month),
           to: DateTime(now.year, now.month + 1),
-          label: 'This month',
+          label: l10n.financeThisMonth,
         );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final range = _range;
+  final l10n = AppLocalizations.of(context)!;
+    final range = _range(l10n);
     final totals = FinanceSummary.periodTotals(
       widget.transfers,
       from: range.from,
@@ -80,19 +85,22 @@ class _FinancePnLReportState extends State<FinancePnLReport> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('P&L Statement',
+            Text(l10n.financePnlTitle,
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.w800,
                 )),
             DropdownButton<String>(
               dropdownColor: Theme.of(context).colorScheme.surface,
               value: _period,
-              items: const [
+              items: [
                 DropdownMenuItem(
-                    value: 'this_month', child: Text('This month')),
+                    value: 'this_month',
+                    child: Text(l10n.financeThisMonth)),
                 DropdownMenuItem(
-                    value: 'last_month', child: Text('Last month')),
-                DropdownMenuItem(value: 'all', child: Text('All time')),
+                    value: 'last_month',
+                    child: Text(l10n.financeLastMonth)),
+                DropdownMenuItem(
+                    value: 'all', child: Text(l10n.financeAllTime)),
               ],
               onChanged: (v) => setState(() => _period = v ?? 'this_month'),
             ),
@@ -109,11 +117,11 @@ class _FinancePnLReportState extends State<FinancePnLReport> {
           ),
           child: Column(
             children: [
-              _row('Booking revenue', revenue),
-              _row('Other income', totals.income),
-              _row('Expenses', -totals.expenses),
+              _row(l10n, l10n.financePnlBookingRevenue, revenue),
+              _row(l10n, l10n.financePnlOtherIncome, totals.income),
+              _row(l10n, l10n.financePnlExpenses, -totals.expenses),
               const Divider(height: 16),
-              _row('Net profit', net, bold: true),
+              _row(l10n, l10n.financePnlNetProfit, net, bold: true),
             ],
           ),
         ),
@@ -122,7 +130,7 @@ class _FinancePnLReportState extends State<FinancePnLReport> {
           width: double.infinity,
           child: OutlinedButton.icon(
             icon: const Icon(Icons.download_rounded, size: 18),
-            label: const Text('Export P&L as CSV (opens in Excel)'),
+            label: Text(l10n.financePnlExport),
             onPressed: () async {
               final csv = PnLCsv.build(
                 shopName: widget.shopName,
@@ -150,7 +158,7 @@ class _FinancePnLReportState extends State<FinancePnLReport> {
     );
   }
 
-  Widget _row(String label, int amount, {bool bold = false}) {
+  Widget _row(AppLocalizations l10n, String label, int amount, {bool bold = false}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 3),
       child: Row(
@@ -160,7 +168,7 @@ class _FinancePnLReportState extends State<FinancePnLReport> {
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 fontWeight: bold ? FontWeight.w900 : FontWeight.w700,
               )),
-          Text('Rs. $amount',
+          Text(l10n.amountRs(amount),
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 fontWeight: bold ? FontWeight.w900 : FontWeight.w700,
               )),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../../core/constants/app_colors.dart';
+import '../../../../../l10n/app_localizations.dart';
 
 class PakistanPhoneField extends StatelessWidget {
   final TextEditingController controller;
@@ -15,12 +16,13 @@ class PakistanPhoneField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final scheme = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'WhatsApp Number',
+          l10n.onboardingWhatsappNumber,
           style: Theme.of(context).textTheme.labelMedium?.copyWith(
             fontWeight: FontWeight.w700,
             color: scheme.onSurface,

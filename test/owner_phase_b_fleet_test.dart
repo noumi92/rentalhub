@@ -15,6 +15,7 @@ import 'package:rentalhub/features/fleet/domain/usecases/update_vehicle_status_u
 import 'package:rentalhub/features/fleet/presentation/cubit/fleet_cubit.dart';
 import 'package:rentalhub/features/fleet/presentation/cubit/fleet_state.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_fleet_view.dart';
+import 'package:rentalhub/l10n/app_localizations.dart';
 
 // The local copy's PNG assets are corrupt (downloaded through the
 // connector's text path), so any widget rendering a car photo throws
@@ -41,6 +42,8 @@ class _TestAssetBundle extends AssetBundle {
 
 Widget _withTestAssets(Widget child) {
   return MaterialApp(
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    supportedLocales: AppLocalizations.supportedLocales,
     home: DefaultAssetBundle(
       bundle: _TestAssetBundle(),
       child: child,

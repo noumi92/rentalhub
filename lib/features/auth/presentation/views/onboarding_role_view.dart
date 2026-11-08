@@ -10,6 +10,7 @@ import '../../data/datasources/auth_remote_data_source.dart';
 import 'widgets/auth_stepper_bar.dart';
 import 'widgets/role_selector_card.dart';
 import 'widgets/security_policy_banner.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class OnboardingRoleView extends StatefulWidget {
   final ValueChanged<String>? onRoleLocked;
@@ -24,21 +25,24 @@ class _OnboardingRoleViewState extends State<OnboardingRoleView> {
   String _selectedRole = 'customer';
 
   void _handleContinue() async {
+    final l10n = AppLocalizations.of(context)!;
     final isCustomer = _selectedRole == 'customer';
-    final roleTitle = isCustomer ? 'Customer (Rent a Vehicle)' : 'Fleet Owner (Showroom)';
+    final roleTitle =
+        isCustomer ? l10n.roleCustomerTitle : l10n.roleOwner;
 
     final confirmed = await AppFeedback.showConfirmDialog(
       context: context,
-      title: 'Confirm Permanent Role',
-      message: 'You are selecting "$roleTitle". In accordance with National NADRA KYC policies, this role is locked permanently and cannot be changed later.',
-      confirmLabel: 'Lock My Role & Proceed',
-      cancelLabel: 'Review Selection',
+      title: l10n.roleConfirm,
+      message:
+          l10n.roleSelectingNote(roleTitle),
+      confirmLabel: l10n.roleLockProceed,
+      cancelLabel: l10n.roleReview,
       icon: Icons.verified_user_rounded,
     );
 
     if (!confirmed || !mounted) return;
 
-    AppFeedback.showSuccess(context, 'Account role "$roleTitle" confirmed.');
+    AppFeedback.showSuccess(context, l10n.roleConfirmed(roleTitle));
 
     if (sl.isRegistered<AuthRemoteDataSource>()) {
       final auth = sl<AuthRemoteDataSource>();
@@ -67,6 +71,7 @@ class _OnboardingRoleViewState extends State<OnboardingRoleView> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -80,7 +85,9 @@ class _OnboardingRoleViewState extends State<OnboardingRoleView> {
                     CustomCurvedHeader(
                       variant: CustomCurvedHeaderVariant.compact,
                       leadingWidget: IconButton(
-                        icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
+                        tooltip: l10n.back,
+                        icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                            color: Colors.white, size: 20),
                         onPressed: () {
                           if (context.canPop()) {
                             context.pop();
@@ -93,18 +100,22 @@ class _OnboardingRoleViewState extends State<OnboardingRoleView> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Step 2: Account Role',
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w900,
-                            ),
+                            l10n.onboardingStep2,
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium
+                                ?.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w900,
+                                ),
                           ),
                           SizedBox(height: 2),
                           Text(
-                            'Choose how you want to use RentalHub',
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: AppColors.primaryContainer,
-                            ),
+                            l10n.roleSelectSubtitle,
+                            style:
+                                Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: AppColors.primaryContainer,
+                                    ),
                           ),
                         ],
                       ),
@@ -119,36 +130,43 @@ class _OnboardingRoleViewState extends State<OnboardingRoleView> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const SecurityPolicyBanner(
-                            message: 'Security Policy: Role selection is strictly one-way and immutable once confirmed.',
+                           SecurityPolicyBanner(
+                            message:
+                                l10n.roleSecurityPolicy,
                           ),
                           const SizedBox(height: 16),
                           Text(
-                            'Select Permanent Account Role',
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              fontWeight: FontWeight.w800,
-                            ),
+                            l10n.roleSelectTitle,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  fontWeight: FontWeight.w800,
+                                ),
                           ),
                           const SizedBox(height: 10),
-
                           RoleSelectorCard(
                             roleKey: 'customer',
-                            title: 'Rent a Vehicle (Customer)',
-                            urduSubtitle: 'گاڑی کرایہ پر لیں',
-                            description: 'Discover verified rental shops within 1–5 km, book Self-Drive or With-Driver packages.',
+                            title: l10n.roleCustomer,
+                            urduSubtitle: l10n.roleCustomerUrdu,
+                            description:
+                                l10n.roleCustomerDesc,
                             icon: Icons.person_pin_circle_rounded,
                             isSelected: _selectedRole == 'customer',
-                            onTap: () => setState(() => _selectedRole = 'customer'),
+                            onTap: () =>
+                                setState(() => _selectedRole = 'customer'),
                           ),
                           const SizedBox(height: 12),
                           RoleSelectorCard(
                             roleKey: 'owner',
-                            title: 'List My Fleet (Shop Owner)',
-                            urduSubtitle: 'شوروم رجسٹر کریں',
-                            description: 'Register your showroom, manage fleet rates, digital handovers, and National Blacklist.',
+                            title: l10n.roleOwnerTitle,
+                            urduSubtitle: l10n.roleOwnerUrdu,
+                            description:
+                                l10n.roleOwnerDesc,
                             icon: Icons.storefront_rounded,
                             isSelected: _selectedRole == 'owner',
-                            onTap: () => setState(() => _selectedRole = 'owner'),
+                            onTap: () =>
+                                setState(() => _selectedRole = 'owner'),
                           ),
                           const SizedBox(height: 20),
                         ],
@@ -164,13 +182,19 @@ class _OnboardingRoleViewState extends State<OnboardingRoleView> {
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.surface,
-                border: Border(top: BorderSide(color: Theme.of(context).dividerColor)),
+                border: Border(
+                    top: BorderSide(color: Theme.of(context).dividerColor)),
                 boxShadow: [
-                  BoxShadow(color: Color(0x0C000000), blurRadius: 8, offset: Offset(0, -3)),
+                  BoxShadow(
+                      color: Color(0x0C000000),
+                      blurRadius: 8,
+                      offset: Offset(0, -3)),
                 ],
               ),
               child: DebouncedButton(
-                text: _selectedRole == 'customer' ? 'Continue as Customer' : 'Continue as Fleet Owner',
+                text: _selectedRole == 'customer'
+                    ? l10n.roleContinueCustomer
+                    : l10n.roleContinueOwner,
                 icon: Icons.verified_user_rounded,
                 onPressed: () async => _handleContinue(),
               ),

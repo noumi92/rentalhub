@@ -1,22 +1,29 @@
 import 'package:flutter/material.dart';
 import '../constants/app_colors.dart';
+import '../../l10n/app_localizations.dart';
 
 class FuelGaugeWidget extends StatelessWidget {
   /// Value between 0.0 (Empty) and 1.0 (Full), quantized into 8 segments
   final double fuelLevel;
   final ValueChanged<double>? onChanged;
-  final String label;
+  final String? label;
 
   const FuelGaugeWidget({
     super.key,
     required this.fuelLevel,
     this.onChanged,
-    this.label = 'Calibrated 8-Segment Fuel Level',
+    this.label,
   });
 
   @override
   Widget build(BuildContext context) {
     final int activeSegments = (fuelLevel * 8).round().clamp(0, 8);
+    // Phase F: the label and the per-bar semantics label are
+    // localized; an explicit [label] still wins. English fallback
+    // for delegate-less pumps.
+    final l10n = AppLocalizations.of(context);
+    final gaugeLabel =
+        label ?? l10n?.fuelGaugeLabel ?? 'Calibrated 8-Segment Fuel Level';
 
     return Container(
       padding: const EdgeInsets.all(14),
@@ -31,22 +38,33 @@ class FuelGaugeWidget extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  const Icon(
-                    Icons.local_gas_station_rounded,
-                    size: 18,
-                    color: AppColors.secondary,
-                  ),
-                  const SizedBox(width: 6),
-                  Text(
-                    label,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
+              // E3: the label flexes and ellipsizes instead of pushing
+              // the value pill off-screen — at large text scales the
+              // 'Calibrated 8-Segment Fuel Level' label overflowed by
+              // 305px in the test font.
+              Expanded(
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.local_gas_station_rounded,
+                      size: 18,
+                      color: AppColors.secondary,
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 6),
+                    Flexible(
+                      child: Text(
+                        gaugeLabel,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.w700,
+                            ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
+              const SizedBox(width: 8),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
@@ -54,10 +72,12 @@ class FuelGaugeWidget extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  '$activeSegments / 8 Bars (${(activeSegments / 8 * 100).round()}%)',
+                  l10n?.fuelGaugeBars(
+                          activeSegments, (activeSegments / 8 * 100).round()) ??
+                      '$activeSegments / 8 Bars (${(activeSegments / 8 * 100).round()}%)',
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    fontWeight: FontWeight.w800,
-                  ),
+                        fontWeight: FontWeight.w800,
+                      ),
                 ),
               ),
             ],
@@ -75,22 +95,39 @@ class FuelGaugeWidget extends StatelessWidget {
               }
 
               return Expanded(
-                child: GestureDetector(
-                  onTap: onChanged != null
-                      ? () => onChanged!(barNumber / 8.0)
-                      : null,
-                  child: Container(
-                    height: 28,
-                    margin: EdgeInsets.only(right: index < 7 ? 4 : 0),
-                    decoration: BoxDecoration(
-                      color: isFilled
-                          ? barColor
-                          : Theme.of(context).dividerColor.withValues(alpha: 0.45),
-                      borderRadius: BorderRadius.circular(5),
-                      border: Border.all(
-                        color: isFilled
-                            ? barColor.withValues(alpha: 0.8)
-                            : Theme.of(context).dividerColor,
+                // E3: each bar is a labelled button (fuel level N of 8),
+                // and the tap target is 48dp tall — the 28dp coloured bar
+                // itself is centred inside the hit area, so the visual
+                // gauge is unchanged.
+                child: Semantics(
+                  button: true,
+                  enabled: onChanged != null,
+                  label: l10n?.fuelGaugeSetLevel(barNumber) ??
+                      'Set fuel level to $barNumber of 8',
+                  child: GestureDetector(
+                    onTap: onChanged != null
+                        ? () => onChanged!(barNumber / 8.0)
+                        : null,
+                    child: SizedBox(
+                      height: 48,
+                      child: Center(
+                        child: Container(
+                          height: 28,
+                          margin: EdgeInsets.only(right: index < 7 ? 4 : 0),
+                          decoration: BoxDecoration(
+                            color: isFilled
+                                ? barColor
+                                : Theme.of(context)
+                                    .dividerColor
+                                    .withValues(alpha: 0.45),
+                            borderRadius: BorderRadius.circular(5),
+                            border: Border.all(
+                              color: isFilled
+                                  ? barColor.withValues(alpha: 0.8)
+                                  : Theme.of(context).dividerColor,
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                   ),
@@ -105,34 +142,36 @@ class FuelGaugeWidget extends StatelessWidget {
               Text(
                 'E',
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  fontWeight: FontWeight.w900,
-                  color: AppColors.dangerTextFor(Theme.of(context).brightness),
-                ),
+                      fontWeight: FontWeight.w900,
+                      color:
+                          AppColors.dangerTextFor(Theme.of(context).brightness),
+                    ),
               ),
               Text(
                 '1/4',
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
+                      fontWeight: FontWeight.w600,
+                    ),
               ),
               Text(
                 '1/2',
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
+                      fontWeight: FontWeight.w700,
+                    ),
               ),
               Text(
                 '3/4',
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
+                      fontWeight: FontWeight.w600,
+                    ),
               ),
               Text(
                 'F',
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  fontWeight: FontWeight.w900,
-                  color: AppColors.successTextFor(Theme.of(context).brightness),
-                ),
+                      fontWeight: FontWeight.w900,
+                      color: AppColors.successTextFor(
+                          Theme.of(context).brightness),
+                    ),
               ),
             ],
           ),
@@ -141,4 +180,3 @@ class FuelGaugeWidget extends StatelessWidget {
     );
   }
 }
-

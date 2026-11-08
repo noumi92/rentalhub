@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../l10n/app_localizations.dart';
 
 
 /// Phase B (F1): the damage noted when the car left, shown at return
@@ -10,6 +11,7 @@ class HandoverNotesBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+  final l10n = AppLocalizations.of(context)!;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(12),
@@ -19,7 +21,7 @@ class HandoverNotesBanner extends StatelessWidget {
         border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Text(
-        'Noted at handover: ${notes.join('; ')}',
+        l10n.handoverNotedAt(notes.join('; ')),
         style:
             Theme.of(context).textTheme.bodySmall,
       ),

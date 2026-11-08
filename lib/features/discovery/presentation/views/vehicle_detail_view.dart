@@ -7,6 +7,7 @@ import 'widgets/vehicle_detail_action_bar.dart';
 import 'widgets/vehicle_detail_packages.dart';
 import 'widgets/vehicle_hero_card.dart';
 import 'widgets/vehicle_spec_box.dart';
+import '../../../../l10n/app_localizations.dart';
 
 /// Phase A (A1): the car detail screen now takes a real [VehicleEntity]
 /// (loaded by the route) instead of a [MockVehicle]. The showroom name and
@@ -48,18 +49,20 @@ class _VehicleDetailViewState extends State<VehicleDetailView> {
   }
 
   String _statusLabel(String status) {
+    final l10n = AppLocalizations.of(context)!;
     switch (status) {
       case 'rented':
-        return 'Rented Out';
+        return l10n.rentedOut;
       case 'maintenance':
-        return 'In Maintenance';
+        return l10n.inMaintenance;
       default:
-        return 'Available Now';
+        return l10n.availableNow;
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final v = widget.vehicle;
     final int selfDriveRate = v.rates.daily24;
     final int withDriverRate =
@@ -80,7 +83,9 @@ class _VehicleDetailViewState extends State<VehicleDetailView> {
                       variant: CustomCurvedHeaderVariant.compact,
                       leadingWidget: widget.onBack != null
                           ? IconButton(
-                              icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
+                              tooltip: l10n.back,
+                              icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                                  color: Colors.white, size: 20),
                               onPressed: widget.onBack,
                             )
                           : null,
@@ -114,7 +119,7 @@ class _VehicleDetailViewState extends State<VehicleDetailView> {
                                   children: [
                                     Text(v.displayName, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900)),
                                     const SizedBox(height: 4),
-                                    Text('Showroom: ${widget.shopName}', style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500, color: Theme.of(context).colorScheme.onSurfaceVariant)),
+                                    Text(l10n.vehicleShowroom(widget.shopName), style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500, color: Theme.of(context).colorScheme.onSurfaceVariant)),
                                   ],
                                 ),
                               ),
@@ -132,13 +137,13 @@ class _VehicleDetailViewState extends State<VehicleDetailView> {
                           const SizedBox(height: 16),
                           Row(
                             children: [
-                              Expanded(child: VehicleSpecBox(icon: Icons.settings_rounded, label: 'Transmission', value: v.transmission)),
+                              Expanded(child: VehicleSpecBox(icon: Icons.settings_rounded, label: l10n.vehicleTransmission, value: v.transmission)),
                               const SizedBox(width: 8),
-                              Expanded(child: VehicleSpecBox(icon: Icons.local_gas_station_rounded, label: 'Fuel Type', value: v.fuelType)),
+                              Expanded(child: VehicleSpecBox(icon: Icons.local_gas_station_rounded, label: l10n.vehicleFuelType, value: v.fuelType)),
                               const SizedBox(width: 8),
-                              Expanded(child: VehicleSpecBox(icon: Icons.airline_seat_recline_normal_rounded, label: 'Capacity', value: '${v.seats} Seats')),
+                              Expanded(child: VehicleSpecBox(icon: Icons.airline_seat_recline_normal_rounded, label: l10n.vehicleCapacity, value: '${v.seats} Seats')),
                               const SizedBox(width: 8),
-                              Expanded(child: VehicleSpecBox(icon: Icons.speed_rounded, label: 'Mileage', value: v.mileageKm != null ? '${v.mileageKm} km' : '—')),
+                              Expanded(child: VehicleSpecBox(icon: Icons.speed_rounded, label: l10n.vehicleMileage, value: v.mileageKm != null ? '${v.mileageKm} km' : '—')),
                             ],
                           ),
                           const SizedBox(height: 14),

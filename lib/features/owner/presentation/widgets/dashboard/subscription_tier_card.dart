@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../../l10n/app_localizations.dart';
 import '../../../../../core/constants/app_colors.dart';
 
 class SubscriptionTierCard extends StatelessWidget {
@@ -23,6 +24,7 @@ class SubscriptionTierCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+  final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
@@ -44,13 +46,13 @@ class SubscriptionTierCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                   decoration: BoxDecoration(color: AppColors.secondary, borderRadius: BorderRadius.circular(6)),
-                  child: Text('MOST POPULAR', style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.white, fontWeight: FontWeight.w900)),
+                  child: Text(l10n.subscriptionMostPopular, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.white, fontWeight: FontWeight.w900)),
                 )
               else if (isCurrent)
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                   decoration: BoxDecoration(color: AppColors.accentSuccess, borderRadius: BorderRadius.circular(6)),
-                  child: Text('CURRENT PLAN', style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.white, fontWeight: FontWeight.w900)),
+                  child: Text(l10n.subscriptionCurrentPlan, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.white, fontWeight: FontWeight.w900)),
                 ),
             ],
           ),
@@ -87,7 +89,7 @@ class SubscriptionTierCard extends StatelessWidget {
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               ),
               child: Text(
-                isCurrent ? 'Active Plan' : 'Upgrade to $title',
+                isCurrent ? l10n.subscriptionActivePlan : l10n.subscriptionUpgradeTo(title),
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800),
               ),
             ),

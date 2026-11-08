@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../../core/constants/app_colors.dart';
+import '../../../../../l10n/app_localizations.dart';
 import '../../../../bookings/domain/entities/booking_entity.dart';
 
 class RequestTriageCard extends StatelessWidget {
@@ -20,6 +21,7 @@ class RequestTriageCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -46,8 +48,8 @@ class RequestTriageCard extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    fontWeight: FontWeight.w800,
-                  ),
+                        fontWeight: FontWeight.w800,
+                      ),
                 ),
               ),
               const SizedBox(width: 8),
@@ -58,11 +60,14 @@ class RequestTriageCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(
-                  booking.status.toUpperCase(),
+                  // The stored status code stays as-is; only the
+                  // displayed label is localized (no upper-casing:
+                  // Urdu has no case, and the label reads as a word).
+                  _statusLabel(l10n, booking.status),
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    fontWeight: FontWeight.w900,
-                    color: AppColors.secondary,
-                  ),
+                        fontWeight: FontWeight.w900,
+                        color: AppColors.secondary,
+                      ),
                 ),
               ),
             ],
@@ -73,7 +78,8 @@ class RequestTriageCard extends StatelessWidget {
               CircleAvatar(
                 radius: 20,
                 backgroundColor: AppColors.primary.withAlpha(25),
-                child: Icon(Icons.person, color: Theme.of(context).colorScheme.primary),
+                child: Icon(Icons.person,
+                    color: Theme.of(context).colorScheme.primary),
               ),
               const SizedBox(width: 10),
               Expanded(
@@ -81,10 +87,10 @@ class RequestTriageCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      booking.customerName ?? 'Customer',
+                      booking.customerName ?? l10n.requestsCustomerFallback,
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w800,
-                      ),
+                            fontWeight: FontWeight.w800,
+                          ),
                     ),
                     Text(
                       booking.customerPhone ?? '0300-1234567',
@@ -101,22 +107,40 @@ class RequestTriageCard extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  booking.vehicleName ?? 'Requested Car',
+                  booking.vehicleName ?? l10n.requestsRequestedCar,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800),
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.copyWith(fontWeight: FontWeight.w800),
                 ),
               ),
               const SizedBox(width: 8),
-              Text(
-                'Rs. ${booking.totalAmount}',
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900, color: AppColors.secondary),
+              // E3: the amount shrinks to fit instead of overflowing —
+              // at 200% text scale 'Rs. 1250000' is wider than the card
+              // and pushed the row 23px past the edge. A money amount
+              // must stay fully visible, so it scales down rather than
+              // ellipsizing.
+              Flexible(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerRight,
+                  child: Text(
+                    'Rs. ${booking.totalAmount}',
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w900,
+                        color: AppColors.secondary),
+                  ),
+                ),
               ),
             ],
           ),
           const SizedBox(height: 4),
           Text(
-            '${booking.packageType.toUpperCase()} • ${booking.isWithDriver ? "With Chauffeur" : "Self Drive"}',
+            // The package code (e.g. '24h') is stored data and stays
+            // as-is; only the drive-mode words are localized.
+            '${booking.packageType.toUpperCase()} • ${booking.isWithDriver ? l10n.requestsWithChauffeur : l10n.selfDrive}',
             style: Theme.of(context).textTheme.labelSmall,
           ),
           const SizedBox(height: 14),
@@ -130,8 +154,8 @@ class RequestTriageCard extends StatelessWidget {
               child: ElevatedButton.icon(
                 onPressed: isProcessing ? null : onVerifyProof,
                 icon: const Icon(Icons.fact_check_rounded, size: 18),
-                label: const Text('Verify Payment Proof',
-                    style: TextStyle(fontWeight: FontWeight.w800)),
+                label: Text(l10n.requestsVerifyProof,
+                    style: const TextStyle(fontWeight: FontWeight.w800)),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
@@ -149,9 +173,11 @@ class RequestTriageCard extends StatelessWidget {
                     style: OutlinedButton.styleFrom(
                       foregroundColor: Colors.red.shade700,
                       side: BorderSide(color: Colors.red.shade300),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
                     ),
-                    child: const Text('Decline', style: TextStyle(fontWeight: FontWeight.w800)),
+                    child: Text(l10n.requestsDecline,
+                        style: const TextStyle(fontWeight: FontWeight.w800)),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -161,9 +187,11 @@ class RequestTriageCard extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.accentSuccess,
                       foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
                     ),
-                    child: const Text('Approve & Pay', style: TextStyle(fontWeight: FontWeight.w800)),
+                    child: Text(l10n.requestsApprovePay,
+                        style: const TextStyle(fontWeight: FontWeight.w800)),
                   ),
                 ),
               ],
@@ -174,3 +202,6 @@ class RequestTriageCard extends StatelessWidget {
   }
 }
 
+/// The stored status code stays as-is; only the displayed label is
+/// localized. Unknown codes fall back to the raw code.
+String _statusLabel(AppLocalizations l10n, String status) => {'requested': l10n.requestsStatusRequested, 'payment_submitted': l10n.statusProofSubmitted, 'approved': l10n.statusApproved, 'paid': l10n.statusPaid, 'active': l10n.active, 'completed': l10n.statusCompleted, 'rejected': l10n.statusRejected, 'cancelled': l10n.statusCancelled}[status] ?? status;

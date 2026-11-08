@@ -1,22 +1,24 @@
 import 'package:flutter/material.dart';
+import '../../../../../l10n/app_localizations.dart';
 import '../../../../../core/constants/app_colors.dart';
 
 class FuelOdometerInputWidget extends StatelessWidget {
   final TextEditingController odometerController;
   final String selectedFuel;
   final ValueChanged<String> onFuelSelected;
-  final String title;
+  final String? title;
 
   const FuelOdometerInputWidget({
     super.key,
     required this.odometerController,
     required this.selectedFuel,
     required this.onFuelSelected,
-    this.title = 'Vehicle Telemetry Inspection',
+    this.title,
   });
 
   @override
   Widget build(BuildContext context) {
+  final l10n = AppLocalizations.of(context)!;
     const fuelLevels = ['1/4 (25%)', '2/4 (50%)', '3/4 (75%)', '4/4 (Full)'];
 
     return Container(
@@ -30,22 +32,30 @@ class FuelOdometerInputWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            title,
+            title ?? l10n.handoverTelemetryTitle,
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w800,
-            ),
+                  fontWeight: FontWeight.w800,
+                ),
           ),
           const SizedBox(height: 12),
-          Text('Odometer Reading (KM):', style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700)),
+          Text(l10n.handoverOdometerLabel,
+              style: Theme.of(context)
+                  .textTheme
+                  .labelMedium
+                  ?.copyWith(fontWeight: FontWeight.w700)),
           const SizedBox(height: 6),
           TextField(
             controller: odometerController,
             keyboardType: TextInputType.number,
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
+            style: Theme.of(context)
+                .textTheme
+                .titleSmall
+                ?.copyWith(fontWeight: FontWeight.w800),
             decoration: InputDecoration(
-              hintText: 'e.g. 45200',
+              hintText: l10n.handoverOdometerHint,
               suffixText: 'KM',
-              suffixStyle: const TextStyle(fontWeight: FontWeight.w800, color: AppColors.secondary),
+              suffixStyle: const TextStyle(
+                  fontWeight: FontWeight.w800, color: AppColors.secondary),
               prefixIcon: const Icon(Icons.speed_rounded),
               filled: true,
               fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
@@ -53,11 +63,16 @@ class FuelOdometerInputWidget extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide(color: Theme.of(context).dividerColor),
               ),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
             ),
           ),
           const SizedBox(height: 14),
-          Text('Fuel Level Gauge:', style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700)),
+          Text(l10n.handoverFuelLabel,
+              style: Theme.of(context)
+                  .textTheme
+                  .labelMedium
+                  ?.copyWith(fontWeight: FontWeight.w700)),
           const SizedBox(height: 8),
           Wrap(
             spacing: 8,
@@ -65,14 +80,18 @@ class FuelOdometerInputWidget extends StatelessWidget {
             children: fuelLevels.map((lvl) {
               final isSelected = selectedFuel == lvl;
               return ChoiceChip(
-                label: Text(lvl),
+                materialTapTargetSize: MaterialTapTargetSize.padded,
+                label: Text(fuelLevelLabel(l10n, lvl)),
                 selected: isSelected,
                 selectedColor: AppColors.secondary,
-                backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                backgroundColor:
+                    Theme.of(context).colorScheme.surfaceContainerHighest,
                 labelStyle: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: isSelected ? Colors.white : Theme.of(context).colorScheme.onSurface,
-                ),
+                      fontWeight: FontWeight.w700,
+                      color: isSelected
+                          ? Colors.white
+                          : Theme.of(context).colorScheme.onSurface,
+                    ),
                 onSelected: (_) => onFuelSelected(lvl),
               );
             }).toList(),
@@ -83,3 +102,6 @@ class FuelOdometerInputWidget extends StatelessWidget {
   }
 }
 
+/// Stored fuel-level codes mapped to localized labels — the stored
+/// value itself is never changed.
+String fuelLevelLabel(AppLocalizations l10n, String level) => {'1/4 (25%)': l10n.handoverFuelQuarter, '2/4 (50%)': l10n.handoverFuelHalf, '3/4 (75%)': l10n.handoverFuelThreeQuarter, '4/4 (Full)': l10n.handoverFuelFull}[level] ?? level;

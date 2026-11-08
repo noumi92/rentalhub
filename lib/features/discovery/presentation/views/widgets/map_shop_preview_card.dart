@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/widgets/verified_badge.dart';
 import '../../../domain/entities/shop_entity.dart';
+import '../../../../../l10n/app_localizations.dart';
 
 class MapShopPreviewCard extends StatelessWidget {
   final ShopEntity shop;
@@ -15,6 +16,7 @@ class MapShopPreviewCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Positioned(
       bottom: 16,
       left: 16,
@@ -58,7 +60,7 @@ class MapShopPreviewCard extends StatelessWidget {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          '${shop.address} • ${shop.distanceKm} km away',
+                          l10n.mapShopDistance(shop.address, shop.distanceKm),
                           style: Theme.of(context).textTheme.bodySmall,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -74,12 +76,12 @@ class MapShopPreviewCard extends StatelessWidget {
                   VerifiedBadge(isVerified: shop.isVerified),
                   const SizedBox(width: 8),
                   Text(
-                    '★ ${shop.rating} Rating',
+                    l10n.shopRatingLabel(shop.rating),
                     style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700),
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    '• ${shop.availableCount} Cars Ready',
+                    l10n.shopCarsReady(shop.availableCount),
                     style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.successTextFor(Theme.of(context).brightness)),
                   ),
                 ],
@@ -95,7 +97,7 @@ class MapShopPreviewCard extends StatelessWidget {
                     onPressed: () {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text('Calling ${shop.shopName}...'),
+                          content: Text(l10n.callingShop(shop.shopName)),
                           backgroundColor: AppColors.primary,
                           duration: const Duration(seconds: 2),
                         ),
@@ -108,13 +110,13 @@ class MapShopPreviewCard extends StatelessWidget {
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     ),
                     icon: const Icon(Icons.call_rounded, size: 14),
-                    label: Text('Call', style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700)),
+                    label: Text(l10n.call, style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700)),
                   ),
                   OutlinedButton.icon(
                     onPressed: () {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text('Opening WhatsApp with ${shop.shopName}...'),
+                          content: Text(l10n.openingWhatsappShop(shop.shopName)),
                           backgroundColor: AppColors.successContainerFor(Theme.of(context).brightness),
                           duration: const Duration(seconds: 2),
                         ),
@@ -128,7 +130,7 @@ class MapShopPreviewCard extends StatelessWidget {
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     ),
                     icon: Icon(Icons.chat_bubble_outline_rounded, size: 14, color: AppColors.successOnContainerFor(Theme.of(context).brightness)),
-                    label: Text('WhatsApp', style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700)),
+                    label: Text(l10n.whatsapp, style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700)),
                   ),
                   ElevatedButton.icon(
                     onPressed: onViewShowroom,
@@ -139,7 +141,7 @@ class MapShopPreviewCard extends StatelessWidget {
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     ),
                     icon: const Icon(Icons.directions_car_rounded, size: 14),
-                    label: Text('View Fleet', style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800)),
+                    label: Text(l10n.viewFleet, style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800)),
                   ),
                 ],
               ),

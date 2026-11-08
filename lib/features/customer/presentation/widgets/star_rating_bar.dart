@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class StarRatingBar extends StatelessWidget {
   final String title;
@@ -20,6 +21,7 @@ class StarRatingBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -32,7 +34,10 @@ class StarRatingBar extends StatelessWidget {
         children: [
           Text(
             title,
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
+            style: Theme.of(context)
+                .textTheme
+                .titleSmall
+                ?.copyWith(fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 2),
           Text(
@@ -46,13 +51,16 @@ class StarRatingBar extends StatelessWidget {
               final star = index + 1;
               final isFilled = star <= rating;
               return IconButton(
+                tooltip: l10n.rateStarLabel(star),
                 onPressed: onRatingChanged == null
                     ? null
                     : () => onRatingChanged!(star),
                 icon: Icon(
                   isFilled ? Icons.star_rounded : Icons.star_border_rounded,
                   size: 36,
-                  color: isFilled ? AppColors.warning : Theme.of(context).dividerColor,
+                  color: isFilled
+                      ? AppColors.warning
+                      : Theme.of(context).dividerColor,
                 ),
               );
             }),
@@ -62,4 +70,3 @@ class StarRatingBar extends StatelessWidget {
     );
   }
 }
-

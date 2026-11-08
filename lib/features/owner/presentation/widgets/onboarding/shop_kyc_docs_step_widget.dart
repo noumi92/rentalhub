@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../../l10n/app_localizations.dart';
 import 'package:image_picker/image_picker.dart';
 import 'onboarding_document_tile.dart';
 import 'onboarding_photo_upload_box.dart';
@@ -66,22 +67,23 @@ class ShopKycDocsStepWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+  final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // 1 Picture as Shop Header (Back Camera / Gallery / Remove)
         Text(
-          'Shop Header Showcase Banner',
+          l10n.onboardingHeaderBannerTitle,
           style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900),
         ),
         const SizedBox(height: 4),
         Text(
-          'Upload photo from camera or gallery. Appears at the top of your public profile.',
+          l10n.onboardingHeaderBannerHint,
           style: Theme.of(context).textTheme.labelSmall,
         ),
         const SizedBox(height: 10),
         OnboardingPhotoUploadBox(
-          label: 'Shop Header Banner Photo',
+          label: l10n.onboardingHeaderBannerPhoto,
           file: shopHeaderFile,
           height: 130,
           onTap: onPickShopHeader,
@@ -91,12 +93,12 @@ class ShopKycDocsStepWidget extends StatelessWidget {
 
         // 3 Fleet Photos (Back Camera / Gallery / Remove)
         Text(
-          'Showroom Fleet Photos (3 Required)',
+          l10n.onboardingFleetPhotosTitle,
           style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900),
         ),
         const SizedBox(height: 4),
         Text(
-          'Upload authentic photos of cars parked at your showroom.',
+          l10n.onboardingFleetPhotosHint,
           style: Theme.of(context).textTheme.labelSmall,
         ),
         const SizedBox(height: 10),
@@ -104,7 +106,7 @@ class ShopKycDocsStepWidget extends StatelessWidget {
           children: [
             Expanded(
               child: OnboardingPhotoUploadBox(
-                label: 'Fleet Car 1',
+                label: l10n.onboardingFleetCar1,
                 file: fleetPhoto1File,
                 onTap: onPickFleet1,
                 onRemove: fleetPhoto1File != null ? onRemoveFleet1 : null,
@@ -113,7 +115,7 @@ class ShopKycDocsStepWidget extends StatelessWidget {
             const SizedBox(width: 8),
             Expanded(
               child: OnboardingPhotoUploadBox(
-                label: 'Fleet Car 2',
+                label: l10n.onboardingFleetCar2,
                 file: fleetPhoto2File,
                 onTap: onPickFleet2,
                 onRemove: fleetPhoto2File != null ? onRemoveFleet2 : null,
@@ -122,7 +124,7 @@ class ShopKycDocsStepWidget extends StatelessWidget {
             const SizedBox(width: 8),
             Expanded(
               child: OnboardingPhotoUploadBox(
-                label: 'Fleet Car 3',
+                label: l10n.onboardingFleetCar3,
                 file: fleetPhoto3File,
                 onTap: onPickFleet3,
                 onRemove: fleetPhoto3File != null ? onRemoveFleet3 : null,
@@ -134,19 +136,19 @@ class ShopKycDocsStepWidget extends StatelessWidget {
 
         // Legal & KYC Docs
         Text(
-          'Owner Identity & Tax Verification',
+          l10n.onboardingIdentityTitle,
           style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900),
         ),
         const SizedBox(height: 4),
         Text(
-          'Mandatory compliance for showroom verification.',
+          l10n.onboardingIdentityHint,
           style: Theme.of(context).textTheme.labelSmall,
         ),
         const SizedBox(height: 10),
 
         OnboardingDocumentTile(
-          title: 'CNIC Front Photo',
-          subtitle: 'Daylight photo of owner CNIC front',
+          title: l10n.onboardingCnicFront,
+          subtitle: l10n.onboardingCnicFrontHint,
           file: cnicFrontFile,
           onTap: onPickCnicFront,
           onRemove: cnicFrontFile != null ? onRemoveCnicFront : null,
@@ -154,8 +156,8 @@ class ShopKycDocsStepWidget extends StatelessWidget {
         const SizedBox(height: 10),
 
         OnboardingDocumentTile(
-          title: 'CNIC Back Photo',
-          subtitle: 'Daylight photo showing permanent address',
+          title: l10n.onboardingCnicBack,
+          subtitle: l10n.onboardingCnicBackHint,
           file: cnicBackFile,
           onTap: onPickCnicBack,
           onRemove: cnicBackFile != null ? onRemoveCnicBack : null,
@@ -163,8 +165,8 @@ class ShopKycDocsStepWidget extends StatelessWidget {
         const SizedBox(height: 10),
 
         OnboardingDocumentTile(
-          title: 'FBR NTN Certificate / Business Registration',
-          subtitle: 'Verified filer certificate or showroom deed',
+          title: l10n.onboardingNtn,
+          subtitle: l10n.onboardingNtnHint,
           file: ntnFile,
           onTap: onPickNtn,
           onRemove: ntnFile != null ? onRemoveNtn : null,
@@ -173,8 +175,8 @@ class ShopKycDocsStepWidget extends StatelessWidget {
 
         // Requirement 1: Owner Live Selfie (FRONT CAMERA ONLY + REMOVE)
         OnboardingDocumentTile(
-          title: 'Owner Live Selfie Holding CNIC (Front Camera Only)',
-          subtitle: 'Instant live biometric selfie capture',
+          title: l10n.onboardingSelfie,
+          subtitle: l10n.onboardingSelfieHint,
           file: selfieFile,
           onTap: onPickSelfie,
           onRemove: selfieFile != null ? onRemoveSelfie : null,

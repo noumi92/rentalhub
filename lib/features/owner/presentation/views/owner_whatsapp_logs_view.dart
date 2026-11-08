@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/custom_curved_header.dart';
@@ -49,11 +50,15 @@ class _OwnerWhatsAppLogsViewState extends State<OwnerWhatsAppLogsView> {
 
   List<Map<String, String>> get _filteredLogs {
     if (_filter == 'All') return _logs;
-    return _logs.where((l) => l['status']?.toLowerCase() == _filter.toLowerCase()).toList();
+    return _logs
+        .where((l) => l['status']?.toLowerCase() == _filter.toLowerCase())
+        .toList();
   }
 
   void _resendAlert(int index) {
-    AppFeedback.showSuccess(context, 'WhatsApp notification re-dispatched via Meta Cloud API!');
+  final l10n = AppLocalizations.of(context)!;
+    AppFeedback.showSuccess(
+        context, l10n.whatsappLogsResent);
     setState(() {
       _logs[index]['status'] = 'delivered';
     });
@@ -61,6 +66,7 @@ class _OwnerWhatsAppLogsViewState extends State<OwnerWhatsAppLogsView> {
 
   @override
   Widget build(BuildContext context) {
+  final l10n = AppLocalizations.of(context)!;
     final filtered = _filteredLogs;
 
     return Scaffold(
@@ -71,20 +77,30 @@ class _OwnerWhatsAppLogsViewState extends State<OwnerWhatsAppLogsView> {
               variant: CustomCurvedHeaderVariant.compact,
               leadingWidget: widget.onBack != null
                   ? IconButton(
-                      icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
+                      tooltip: l10n.back,
+                      icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                          color: Colors.white, size: 20),
                       onPressed: widget.onBack,
                     )
                   : null,
               titleWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('WhatsApp Alert Dispatches', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
-                  Text('Transactional Messaging Gateway • Live', style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.primaryContainer)),
+                  Text(l10n.whatsappLogsTitle,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w900, color: Colors.white)),
+                  Text(l10n.whatsappLogsSubtitle,
+                      style: Theme.of(context)
+                          .textTheme
+                          .labelSmall
+                          ?.copyWith(color: AppColors.primaryContainer)),
                 ],
               ),
             ),
+            // E3: 48dp chip + 6dp vertical padding each side — the
+            // old 48dp row squeezed the filter chips to 36dp.
             Container(
-              height: 48,
+              height: 60,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
               color: Theme.of(context).colorScheme.surface,
               child: ListView(
@@ -94,11 +110,20 @@ class _OwnerWhatsAppLogsViewState extends State<OwnerWhatsAppLogsView> {
                   return Padding(
                     padding: const EdgeInsets.only(right: 8),
                     child: ChoiceChip(
-                      label: Text(tab),
+                      materialTapTargetSize: MaterialTapTargetSize.padded,
+                      label: Text(_filterLabel(l10n, tab)),
                       selected: isSelected,
                       selectedColor: AppColors.secondary,
-                      backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-                      labelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700, color: isSelected ? Colors.white : Theme.of(context).colorScheme.onSurface),
+                      backgroundColor:
+                          Theme.of(context).colorScheme.surfaceContainerHighest,
+                      labelStyle: Theme.of(context)
+                          .textTheme
+                          .labelMedium
+                          ?.copyWith(
+                              fontWeight: FontWeight.w700,
+                              color: isSelected
+                                  ? Colors.white
+                                  : Theme.of(context).colorScheme.onSurface),
                       onSelected: (_) => setState(() => _filter = tab),
                     ),
                   );
@@ -108,7 +133,8 @@ class _OwnerWhatsAppLogsViewState extends State<OwnerWhatsAppLogsView> {
             const Divider(height: 1),
             Expanded(
               child: ListView.separated(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 itemCount: filtered.length,
                 separatorBuilder: (_, __) => const SizedBox(height: 10),
                 itemBuilder: (context, index) {
@@ -131,3 +157,6 @@ class _OwnerWhatsAppLogsViewState extends State<OwnerWhatsAppLogsView> {
   }
 }
 
+/// Stored log-filter codes mapped to localized labels — the stored
+/// value itself is never changed.
+String _filterLabel(AppLocalizations l10n, String tab) => {'All': l10n.filterAll, 'Delivered': l10n.whatsappLogsDelivered, 'Read': l10n.whatsappLogsRead, 'Failed': l10n.whatsappLogsFailed}[tab] ?? tab;

@@ -2,16 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
-import '../../../../core/constants/app_dimensions.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/current_shop.dart';
 import '../../../../core/utils/responsive.dart';
 import '../../../../core/widgets/custom_curved_header.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../fleet/domain/entities/vehicle_entity.dart';
 import '../../../fleet/presentation/cubit/fleet_cubit.dart';
 import '../../../fleet/presentation/cubit/fleet_state.dart';
 import '../widgets/fleet/fleet_body.dart';
+import '../widgets/fleet/fleet_filter_chips.dart';
 import '../widgets/fleet/fleet_metric_card.dart';
 import '../widgets/fleet/fleet_vehicle_card.dart';
 
@@ -77,8 +78,7 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
           vehicleId: v.vehicleId,
           status: val ? 'available' : 'maintenance',
         ),
-        onEditRates: () => context.push(
-            RouteNames.ownerRatesVehicle.replaceFirst(':vehicleId', v.vehicleId)),
+        onEditRates: () => context.push(RouteNames.ownerRatesVehicle.replaceFirst(':vehicleId', v.vehicleId)),
         onViewCalendar: () => context.push(
             RouteNames.ownerCalendar.replaceFirst(':vehicleId', v.vehicleId)),
       );
@@ -93,6 +93,7 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return BlocProvider.value(
       value: _cubit,
       child: Scaffold(
@@ -124,23 +125,23 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
                       titleWidget: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Fleet Management',
+                          Text(l10n.fleetTitle,
                               style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
                           SizedBox(height: 2),
-                          Text('Live Showroom',
+                          Text(l10n.fleetSubtitle,
                               style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.primaryContainer)),
                         ],
                       ),
                       actions: [
                         IconButton(
-                          tooltip: 'Fixed Routes',
+                          tooltip: l10n.fixedRoutes,
                           icon: const Icon(Icons.route_rounded,
                               color: Colors.white, size: 24),
                           onPressed: () =>
                               context.push(RouteNames.ownerFixedRoutes),
                         ),
                         IconButton(
-                          tooltip: 'Add Vehicle',
+                          tooltip: l10n.fleetAddVehicle,
                           icon: const Icon(Icons.add_circle_rounded,
                               color: AppColors.secondary, size: 28),
                           onPressed: _openAddVehicle,
@@ -156,20 +157,20 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
                       child: Row(
                         children: [
                           FleetMetricCard(
-                              label: 'Total Fleet',
-                              value: '$totalCount Cars',
+                              label: l10n.fleetTotalFleet,
+                              value: l10n.fleetTotalCars(totalCount),
                               icon: Icons.directions_car_rounded,
                               color: Theme.of(context).colorScheme.primary),
                           const SizedBox(width: 8),
                           FleetMetricCard(
-                              label: 'Available',
-                              value: '$availableCount Ready',
+                              label: l10n.available,
+                              value: l10n.fleetAvailableReady(availableCount),
                               icon: Icons.check_circle_outline_rounded,
                               color: AppColors.accentSuccess),
                           const SizedBox(width: 8),
                           FleetMetricCard(
-                              label: 'On Rent',
-                              value: '$onRentCount Active',
+                              label: l10n.fleetOnRent,
+                              value: l10n.fleetOnRentActive(onRentCount),
                               icon: Icons.key_rounded,
                               color: AppColors.secondary),
                         ],
@@ -177,23 +178,13 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
                     ),
 
                     // Filter Chips
-                    Container(
-                      height: AppDimensions.minTouchTarget,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 6),
-                      color: Theme.of(context).colorScheme.surface,
-                      child: ListView(
-                        scrollDirection: Axis.horizontal,
-                        children: [
-                          _filterChip('All', totalCount),
-                          const SizedBox(width: 8),
-                          _filterChip('Available', availableCount),
-                          const SizedBox(width: 8),
-                          _filterChip('On Rent', onRentCount),
-                          const SizedBox(width: 8),
-                          _filterChip('Maintenance', maintenanceCount),
-                        ],
-                      ),
+                    FleetFilterChips(
+                      selectedFilter: _selectedFilter,
+                      totalCount: totalCount,
+                      availableCount: availableCount,
+                      onRentCount: onRentCount,
+                      maintenanceCount: maintenanceCount,
+                      onSelected: (label) => setState(() => _selectedFilter = label),
                     ),
                     const Divider(height: 1),
 
@@ -215,12 +206,12 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
                           );
                         },
                         onEditRates: (v) => context.push(
-                          RouteNames.ownerRatesVehicle.replaceFirst(
-                              ':vehicleId', v.vehicleId),
+                          RouteNames.ownerRatesVehicle
+                              .replaceFirst(':vehicleId', v.vehicleId),
                         ),
                         onViewCalendar: (v) => context.push(
-                          RouteNames.ownerCalendar.replaceFirst(
-                              ':vehicleId', v.vehicleId),
+                          RouteNames.ownerCalendar
+                              .replaceFirst(':vehicleId', v.vehicleId),
                         ),
                       ),
                   ],
@@ -233,16 +224,4 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
     );
   }
 
-  Widget _filterChip(String label, int count) {
-    final isSelected = _selectedFilter == label;
-    return ChoiceChip(
-      label: Text('$label ($count)'),
-      selected: isSelected,
-      selectedColor: AppColors.secondary,
-      // No label colour: the theme's chipTheme drives both modes
-      // (dark-correct); the orange selected colour stays.
-      labelStyle: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700),
-      onSelected: (_) => setState(() => _selectedFilter = label),
-    );
-  }
 }

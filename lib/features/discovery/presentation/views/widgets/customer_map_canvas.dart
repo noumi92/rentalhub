@@ -4,6 +4,7 @@ import 'package:latlong2/latlong.dart' as ll;
 
 import '../../../../../core/constants/app_colors.dart';
 import '../../../domain/entities/shop_entity.dart';
+import '../../../../../l10n/app_localizations.dart';
 
 /// B2: the real map canvas for the customer map screen, extracted so the
 /// view stays under the 250-line cap. OpenStreetMap tiles, the customer's
@@ -28,6 +29,7 @@ class CustomerMapCanvas extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final selected = selectedShop;
     return FlutterMap(
       mapController: mapController,
@@ -90,47 +92,58 @@ class CustomerMapCanvas extends StatelessWidget {
                 width: 150,
                 height: 72,
                 alignment: Alignment.bottomCenter,
-                child: GestureDetector(
-                  onTap: () {
-                    onShopSelected(shop);
-                    mapController.move(pos, 14.0);
-                  },
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    alignment: Alignment.bottomCenter,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
+                // E3: the map marker is a labelled button for screen
+                // readers; the tap behaviour is unchanged.
+                child: Semantics(
+                  button: true,
+                  label: l10n.mapShowShop(shop.shopName),
+                  child: GestureDetector(
+                    onTap: () {
+                      onShopSelected(shop);
+                      mapController.move(pos, 14.0);
+                    },
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.bottomCenter,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: isSelected
+                                  ? AppColors.secondary
+                                  : AppColors.primary,
+                              borderRadius: BorderRadius.circular(10),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.3),
+                                  blurRadius: 6,
+                                ),
+                              ],
+                            ),
+                            child: Text(
+                              '${shop.shopName.split(' ').first} • ${shop.distanceKm.toStringAsFixed(1)}km',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .labelSmall
+                                  ?.copyWith(
+                                      fontWeight: FontWeight.w800,
+                                      color: Colors.white),
+                            ),
                           ),
-                          decoration: BoxDecoration(
+                          Icon(
+                            Icons.location_on_rounded,
+                            size: isSelected ? 32 : 26,
                             color: isSelected
                                 ? AppColors.secondary
                                 : AppColors.primary,
-                            borderRadius: BorderRadius.circular(10),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.3),
-                                blurRadius: 6,
-                              ),
-                            ],
                           ),
-                          child: Text(
-                            '${shop.shopName.split(' ').first} • ${shop.distanceKm.toStringAsFixed(1)}km',
-                            style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800, color: Colors.white),
-                          ),
-                        ),
-                        Icon(
-                          Icons.location_on_rounded,
-                          size: isSelected ? 32 : 26,
-                          color: isSelected
-                              ? AppColors.secondary
-                              : AppColors.primary,
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),

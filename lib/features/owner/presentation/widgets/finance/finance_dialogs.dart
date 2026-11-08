@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../../l10n/app_localizations.dart';
 
 import '../../../../../core/di/injection_container.dart';
 import '../../../../../core/widgets/app_feedback.dart';
@@ -14,26 +15,28 @@ class FinanceDialogs {
       BuildContext context, String shopId) async {
     final nameController = TextEditingController();
     String type = 'cash';
+    final l10n = AppLocalizations.of(context)!;
     final saved = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Add account'),
+        title: Text(l10n.financeAddAccount),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               controller: nameController,
-              decoration: const InputDecoration(
-                  labelText: 'Account name', border: OutlineInputBorder()),
+              decoration: InputDecoration(
+                  labelText: l10n.financeAccountName, border: OutlineInputBorder()),
             ),
             const SizedBox(height: 12),
             DropdownButtonFormField<String>(
               dropdownColor: Theme.of(context).colorScheme.surface,
               initialValue: type,
-              decoration: const InputDecoration(
-                  labelText: 'Type', border: OutlineInputBorder()),
+              decoration: InputDecoration(
+                  labelText: l10n.financeAccountTypeLabel, border: OutlineInputBorder()),
               items: const ['cash', 'bank', 'jazzcash', 'easypaisa']
-                  .map((t) => DropdownMenuItem(value: t, child: Text(t)))
+                  .map((t) => DropdownMenuItem(
+                      value: t, child: Text(_accountTypeLabel(l10n, t))))
                   .toList(),
               onChanged: (v) => type = v ?? 'cash',
             ),
@@ -42,10 +45,10 @@ class FinanceDialogs {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           DebouncedButton(
-            text: 'Save account',
+            text: l10n.financeSaveAccount,
             onPressed: () async {
               try {
                 await sl<FinanceAccountDataSource>().saveAccount(
@@ -71,34 +74,35 @@ class FinanceDialogs {
       BuildContext context, String shopId) async {
     final nameController = TextEditingController();
     final percentController = TextEditingController();
+    final l10n = AppLocalizations.of(context)!;
     final saved = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Add partner'),
+        title: Text(l10n.financeAddPartner),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               controller: nameController,
-              decoration: const InputDecoration(
-                  labelText: 'Partner name', border: OutlineInputBorder()),
+              decoration: InputDecoration(
+                  labelText: l10n.financePartnerName, border: OutlineInputBorder()),
             ),
             const SizedBox(height: 12),
             TextField(
               controller: percentController,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                  labelText: 'Share (%)', border: OutlineInputBorder()),
+              decoration: InputDecoration(
+                  labelText: l10n.financePartnerShare, border: OutlineInputBorder()),
             ),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           DebouncedButton(
-            text: 'Save partner',
+            text: l10n.financeSavePartner,
             onPressed: () async {
               try {
                 await sl<PartnerShareDataSource>().savePartner(
@@ -121,3 +125,7 @@ class FinanceDialogs {
     return saved == true;
   }
 }
+
+/// Stored account-type codes mapped to localized labels — the stored
+/// value itself is never changed.
+String _accountTypeLabel(AppLocalizations l10n, String type) => {'cash': l10n.financeAccountTypeCash, 'bank': l10n.financeAccountTypeBank, 'jazzcash': l10n.financeAccountTypeJazzCash, 'easypaisa': l10n.financeAccountTypeEasyPaisa}[type] ?? type;

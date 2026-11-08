@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../../l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../../core/constants/app_colors.dart';
@@ -21,6 +22,7 @@ class FinanceMonthSummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+  final l10n = AppLocalizations.of(context)!;
     final net = bookingRevenue + ledgerIncome - expenses;
     return Column(
       children: [
@@ -34,16 +36,16 @@ class FinanceMonthSummary extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('This month',
+              Text(l10n.financeThisMonth,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white70)),
-              Text('Net Rs. $net',
+              Text(l10n.financeNetAmount(net),
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.w900,
                   )),
               const SizedBox(height: 8),
               Text(
-                  'Bookings Rs. $bookingRevenue • Other income Rs. $ledgerIncome • Expenses Rs. $expenses',
+                  l10n.financeMonthBreakdown(bookingRevenue, ledgerIncome, expenses),
                   style:
                       Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white70)),
             ],
@@ -54,17 +56,17 @@ class FinanceMonthSummary extends StatelessWidget {
           children: [
             Expanded(
               child: _linkButton(context, Icons.people_rounded,
-                  'Customer dues', RouteNames.ownerDues),
+                  l10n.financeCustomerDues, RouteNames.ownerDues),
             ),
             const SizedBox(width: 10),
             Expanded(
               child: _linkButton(context, Icons.account_balance_wallet_rounded,
-                  'Cash closing', RouteNames.ownerCashClosing),
+                  l10n.financeCashClosing, RouteNames.ownerCashClosing),
             ),
             const SizedBox(width: 10),
             Expanded(
               child: _linkButton(context, Icons.directions_car_rounded,
-                  'Car P&L', RouteNames.ownerCarPnL),
+                  l10n.financeCarPnl, RouteNames.ownerCarPnL),
             ),
           ],
         ),

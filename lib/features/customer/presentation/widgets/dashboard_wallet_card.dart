@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../data/services/customer_wallet_service.dart';
+import '../../../../l10n/app_localizations.dart';
 
 /// E1/F1: the dashboard's wallet summary — the customer's real advances
 /// paid and security escrow held (from the same wallet service the
@@ -18,6 +19,7 @@ class DashboardWalletCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(16),
@@ -45,15 +47,14 @@ class DashboardWalletCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Wallet',
+                    l10n.walletLabel,
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     summary == null
-                        ? 'Advances and deposits will appear here.'
-                        : 'Advances Rs. ${summary!.advancesPaid} • '
-                            'Escrow Rs. ${summary!.escrowHeld}',
+                        ? l10n.walletEmptyHint
+                        : l10n.walletAdvancesEscrow(summary!.advancesPaid, summary!.escrowHeld),
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ],

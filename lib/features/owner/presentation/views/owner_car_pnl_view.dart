@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
@@ -54,13 +55,15 @@ class _OwnerCarPnLViewState extends State<OwnerCarPnLView> {
           _vehicleId ??= vehicles.firstOrNull?.vehicleId;
         });
       }
-    } catch (_) {} finally {
+    } catch (_) {
+    } finally {
       if (mounted) setState(() => _isLoading = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+  final l10n = AppLocalizations.of(context)!;
     final selected = _vehicleId == null
         ? null
         : FinanceSummary.vehiclePnL(
@@ -78,6 +81,7 @@ class _OwnerCarPnLViewState extends State<OwnerCarPnLView> {
             CustomCurvedHeader(
               variant: CustomCurvedHeaderVariant.compact,
               leadingWidget: IconButton(
+                tooltip: l10n.back,
                 icon: const Icon(Icons.arrow_back_ios_new_rounded,
                     color: Colors.white, size: 20),
                 onPressed: () => context.pop(),
@@ -85,10 +89,14 @@ class _OwnerCarPnLViewState extends State<OwnerCarPnLView> {
               titleWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Car P&L',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
-                  Text('One car, all its money',
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.primaryContainer)),
+                  Text(l10n.financeCarPnl,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w900, color: Colors.white)),
+                  Text(l10n.financeCarPnlSubtitle,
+                      style: Theme.of(context)
+                          .textTheme
+                          .labelSmall
+                          ?.copyWith(color: AppColors.primaryContainer)),
                 ],
               ),
             ),
@@ -97,9 +105,11 @@ class _OwnerCarPnLViewState extends State<OwnerCarPnLView> {
                   ? const Center(child: CircularProgressIndicator())
                   : _vehicles.isEmpty
                       ? Center(
-                          child: Text('No cars in the fleet yet.',
+                          child: Text(l10n.financeCarPnlNoCars,
                               style: TextStyle(
-                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurfaceVariant,
                                   fontWeight: FontWeight.w700)),
                         )
                       : SingleChildScrollView(
@@ -109,13 +119,16 @@ class _OwnerCarPnLViewState extends State<OwnerCarPnLView> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               DropdownButtonFormField<String>(
-                                dropdownColor: Theme.of(context).colorScheme.surface,
+                                dropdownColor:
+                                    Theme.of(context).colorScheme.surface,
                                 initialValue: _vehicleId,
                                 decoration: InputDecoration(
-                                    labelText: 'Vehicle',
+                                    labelText: l10n.summaryVehicle,
                                     border: OutlineInputBorder(),
                                     filled: true,
-                                    fillColor: Theme.of(context).colorScheme.surfaceContainerHighest),
+                                    fillColor: Theme.of(context)
+                                        .colorScheme
+                                        .surfaceContainerHighest),
                                 items: _vehicles
                                     .map((v) => DropdownMenuItem(
                                         value: v.vehicleId,
@@ -128,14 +141,20 @@ class _OwnerCarPnLViewState extends State<OwnerCarPnLView> {
                               if (selected != null) ...[
                                 _pnlCard(selected),
                                 const SizedBox(height: 16),
-                                Text('Tagged entries',
-                                    style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
+                                Text(l10n.financeCarPnlTagged,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleSmall
+                                        ?.copyWith(
+                                            fontWeight: FontWeight.w800)),
                                 const SizedBox(height: 8),
                                 if (tagged.isEmpty)
                                   Text(
-                                      'Nothing tagged to this car yet — tag an entry in the ledger.',
+                                      l10n.financeCarPnlNoTagged,
                                       style: TextStyle(
-                                          color: Theme.of(context).colorScheme.onSurfaceVariant)),
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onSurfaceVariant)),
                                 ...tagged.map((t) => _transferRow(t)),
                               ],
                             ],
@@ -148,8 +167,8 @@ class _OwnerCarPnLViewState extends State<OwnerCarPnLView> {
     );
   }
 
-  Widget _pnlCard(
-      ({int revenue, int income, int expenses, int net}) pnl) {
+  Widget _pnlCard(({int revenue, int income, int expenses, int net}) pnl) {
+  final l10n = AppLocalizations.of(context)!;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
@@ -160,18 +179,25 @@ class _OwnerCarPnLViewState extends State<OwnerCarPnLView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Net Rs. ${pnl.net}',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
+          Text(l10n.financeNetAmount(pnl.net),
+              style: Theme.of(context)
+                  .textTheme
+                  .titleLarge
+                  ?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
           const SizedBox(height: 8),
           Text(
-              'Booking revenue Rs. ${pnl.revenue} • Other income Rs. ${pnl.income} • Expenses Rs. ${pnl.expenses}',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white70)),
+              l10n.financeCarPnlBreakdown(pnl.revenue, pnl.income, pnl.expenses),
+              style: Theme.of(context)
+                  .textTheme
+                  .bodySmall
+                  ?.copyWith(color: Colors.white70)),
         ],
       ),
     );
   }
 
   Widget _transferRow(FinanceTransferEntity t) {
+  final l10n = AppLocalizations.of(context)!;
     final isIncome = t.kind == 'income';
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
@@ -184,14 +210,25 @@ class _OwnerCarPnLViewState extends State<OwnerCarPnLView> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(t.category,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800)),
+          Text(_categoryLabel(l10n, t.category),
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(fontWeight: FontWeight.w800)),
           Text(
-            '${isIncome ? '+' : '−'} Rs. ${t.amountPkr}',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w900, color: isIncome ? AppColors.successTextFor(Theme.of(context).brightness) : AppColors.dangerTextFor(Theme.of(context).brightness)),
+            l10n.financeLedgerAmount(isIncome ? '+' : '−', t.amountPkr),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w900,
+                color: isIncome
+                    ? AppColors.successTextFor(Theme.of(context).brightness)
+                    : AppColors.dangerTextFor(Theme.of(context).brightness)),
           ),
         ],
       ),
     );
   }
 }
+
+/// Stored ledger category codes mapped to localized labels — the
+/// stored value itself is never changed.
+String _categoryLabel(AppLocalizations l10n, String category) => {'rent': l10n.financeCategoryRent, 'deposit': l10n.addVehicleReviewDeposit, 'other': l10n.blacklistReasonOther, 'fuel': l10n.financeCategoryFuel, 'maintenance': l10n.fleetFilterMaintenance, 'salary': l10n.financeCategorySalary, 'partner_share': l10n.financeCategoryPartnerShare, 'deposit_refund': l10n.financeCategoryDepositRefund}[category] ?? category;

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../../l10n/app_localizations.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart' as ll;
 import '../../../../../core/constants/app_colors.dart';
@@ -29,12 +30,16 @@ class ShopLocationStepWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+  final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Select Your City',
-          style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800),
+          l10n.onboardingSelectCity,
+          style: Theme.of(context)
+              .textTheme
+              .labelMedium
+              ?.copyWith(fontWeight: FontWeight.w800),
         ),
         const SizedBox(height: 6),
         // Requirement 4: Single horizontal row for major cities BEFORE map view
@@ -46,13 +51,16 @@ class ShopLocationStepWidget extends StatelessWidget {
               return Padding(
                 padding: const EdgeInsets.only(right: 8),
                 child: FilterChip(
+                  materialTapTargetSize: MaterialTapTargetSize.padded,
                   label: Text(city['name'] as String),
                   selected: isSelected,
                   selectedColor: AppColors.secondary,
                   labelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    color: isSelected ? Colors.white : Theme.of(context).colorScheme.onSurface,
-                    fontWeight: FontWeight.w700,
-                  ),
+                        color: isSelected
+                            ? Colors.white
+                            : Theme.of(context).colorScheme.onSurface,
+                        fontWeight: FontWeight.w700,
+                      ),
                   onSelected: (_) {
                     onCityChanged(city['name'] as String);
                     final coords = city['coords'] as ll.LatLng;
@@ -71,17 +79,25 @@ class ShopLocationStepWidget extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Pin Showroom On Map',
-              style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800),
+              l10n.onboardingPinOnMap,
+              style: Theme.of(context)
+                  .textTheme
+                  .labelMedium
+                  ?.copyWith(fontWeight: FontWeight.w800),
             ),
             TextButton.icon(
               onPressed: isLocating ? null : onFetchGps,
               icon: isLocating
-                  ? const SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2))
-                  : const Icon(Icons.my_location_rounded, size: 16, color: AppColors.secondary),
+                  ? const SizedBox(
+                      width: 14,
+                      height: 14,
+                      child: CircularProgressIndicator(strokeWidth: 2))
+                  : const Icon(Icons.my_location_rounded,
+                      size: 16, color: AppColors.secondary),
               label: Text(
-                isLocating ? 'Locating...' : 'Use Current GPS',
-                style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.secondary),
+                isLocating ? l10n.onboardingLocating : l10n.onboardingUseGps,
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    fontWeight: FontWeight.w800, color: AppColors.secondary),
               ),
             ),
           ],
@@ -109,7 +125,8 @@ class ShopLocationStepWidget extends StatelessWidget {
                   ),
                   children: [
                     TileLayer(
-                      urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                      urlTemplate:
+                          'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                       userAgentPackageName: 'com.rentalhub.pk',
                     ),
                     MarkerLayer(
@@ -133,20 +150,27 @@ class ShopLocationStepWidget extends StatelessWidget {
                   left: 8,
                   right: 8,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.92),
                       borderRadius: BorderRadius.circular(8),
-                      boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 4)],
+                      boxShadow: const [
+                        BoxShadow(color: Colors.black12, blurRadius: 4)
+                      ],
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.touch_app_rounded, size: 14, color: AppColors.secondary),
+                        const Icon(Icons.touch_app_rounded,
+                            size: 14, color: AppColors.secondary),
                         const SizedBox(width: 6),
                         Expanded(
                           child: Text(
-                            'Tap anywhere on map to pin showroom (${shopPin.latitude.toStringAsFixed(4)}, ${shopPin.longitude.toStringAsFixed(4)})',
-                            style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600),
+                            l10n.onboardingTapToPin(shopPin.latitude.toStringAsFixed(4), shopPin.longitude.toStringAsFixed(4)),
+                            style: Theme.of(context)
+                                .textTheme
+                                .labelSmall
+                                ?.copyWith(fontWeight: FontWeight.w600),
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
@@ -162,30 +186,44 @@ class ShopLocationStepWidget extends StatelessWidget {
 
         // Physical Street Address Input
         Text(
-          'Physical Showroom Address',
-          style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800),
+          l10n.onboardingShopAddress,
+          style: Theme.of(context)
+              .textTheme
+              .labelMedium
+              ?.copyWith(fontWeight: FontWeight.w800),
         ),
         const SizedBox(height: 6),
         TextField(
           controller: addressController,
           maxLines: 2,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
+          style: Theme.of(context)
+              .textTheme
+              .bodyMedium
+              ?.copyWith(fontWeight: FontWeight.w700),
           decoration: InputDecoration(
-            hintText: 'Shop number, plaza, street, sector / commercial area',
+            hintText: l10n.onboardingAddressHint,
             prefixIcon: const Padding(
               padding: EdgeInsets.only(bottom: 24),
-              child: Icon(Icons.place_rounded, color: AppColors.secondary, size: 20),
+              child: Icon(Icons.place_rounded,
+                  color: AppColors.secondary, size: 20),
             ),
             filled: true,
             fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Theme.of(context).dividerColor)),
-            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Theme.of(context).dividerColor)),
-            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.secondary, width: 1.5)),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: Theme.of(context).dividerColor)),
+            enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: Theme.of(context).dividerColor)),
+            focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide:
+                    const BorderSide(color: AppColors.secondary, width: 1.5)),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           ),
         ),
       ],
     );
   }
 }
-

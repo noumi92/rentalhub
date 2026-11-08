@@ -9,6 +9,7 @@ import '../../../customer/data/datasources/customer_remote_data_source.dart';
 import '../../../customer/domain/entities/customer_entity.dart';
 import '../../../discovery/data/models/shop_model.dart';
 import '../../../discovery/domain/entities/shop_entity.dart';
+import '../../../../l10n/app_localizations.dart';
 
 // H5: saved showrooms now come from the signed-in customer's own
 // record (`savedShopIds`, heart on the shop detail screen) and the
@@ -26,8 +27,7 @@ class CustomerSavedShopsView extends StatefulWidget {
   });
 
   @override
-  State<CustomerSavedShopsView> createState() =>
-      _CustomerSavedShopsViewState();
+  State<CustomerSavedShopsView> createState() => _CustomerSavedShopsViewState();
 }
 
 class _CustomerSavedShopsViewState extends State<CustomerSavedShopsView> {
@@ -47,8 +47,7 @@ class _CustomerSavedShopsViewState extends State<CustomerSavedShopsView> {
     try {
       final uid = FirebaseAuth.instance.currentUser?.uid;
       if (uid != null) {
-        customer =
-            await sl<CustomerRemoteDataSource>().getCustomerById(uid);
+        customer = await sl<CustomerRemoteDataSource>().getCustomerById(uid);
         for (final shopId in customer?.savedShopIds ?? const <String>[]) {
           final doc = await FirebaseFirestore.instance
               .collection('shops')
@@ -71,10 +70,10 @@ class _CustomerSavedShopsViewState extends State<CustomerSavedShopsView> {
   }
 
   Future<void> _unsave(ShopEntity shop) async {
+    final l10n = AppLocalizations.of(context)!;
     final customer = _customer;
     if (customer == null) return;
-    final ids = List<String>.from(customer.savedShopIds)
-      ..remove(shop.shopId);
+    final ids = List<String>.from(customer.savedShopIds)..remove(shop.shopId);
     final updated = customer.copyWith(savedShopIds: ids);
     setState(() {
       _customer = updated;
@@ -84,7 +83,7 @@ class _CustomerSavedShopsViewState extends State<CustomerSavedShopsView> {
       await sl<CustomerRemoteDataSource>().upsertCustomer(updated);
     } catch (_) {
       if (mounted) {
-        AppFeedback.showError(context, 'Could not remove this showroom.');
+        AppFeedback.showError(context, l10n.savedShopsRemoveError);
         _load();
       }
     }
@@ -92,6 +91,7 @@ class _CustomerSavedShopsViewState extends State<CustomerSavedShopsView> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -100,14 +100,16 @@ class _CustomerSavedShopsViewState extends State<CustomerSavedShopsView> {
               variant: CustomCurvedHeaderVariant.compact,
               leadingWidget: widget.onBack != null
                   ? IconButton(
+                      tooltip: l10n.back,
                       icon: const Icon(Icons.arrow_back_ios_new_rounded,
                           color: Colors.white, size: 20),
                       onPressed: widget.onBack,
                     )
                   : null,
               titleWidget: Text(
-                'Saved Showrooms',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white),
+                l10n.profileSavedShops,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w900, color: Colors.white),
               ),
             ),
             Expanded(
@@ -121,12 +123,17 @@ class _CustomerSavedShopsViewState extends State<CustomerSavedShopsView> {
                               Icon(Icons.favorite_border_rounded,
                                   size: 46, color: AppColors.textSecondary),
                               SizedBox(height: 8),
-                              Text('No saved showrooms yet.',
-                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary)),
+                              Text(l10n.savedShopsEmpty,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium
+                                      ?.copyWith(
+                                          color: AppColors.textSecondary)),
                               SizedBox(height: 4),
                               Text(
-                                  'Tap the heart on any showroom to save it here.',
-                                  style: Theme.of(context).textTheme.labelSmall),
+                                  l10n.savedShopsEmptyHint,
+                                  style:
+                                      Theme.of(context).textTheme.labelSmall),
                             ],
                           ),
                         )
@@ -145,8 +152,7 @@ class _CustomerSavedShopsViewState extends State<CustomerSavedShopsView> {
                                     color: AppColors.borderSubtle),
                               ),
                               child: InkWell(
-                                onTap: () =>
-                                    widget.onSelectShop?.call(shop),
+                                onTap: () => widget.onSelectShop?.call(shop),
                                 borderRadius: BorderRadius.circular(16),
                                 child: Padding(
                                   padding: const EdgeInsets.all(14),
@@ -171,37 +177,57 @@ class _CustomerSavedShopsViewState extends State<CustomerSavedShopsView> {
                                               CrossAxisAlignment.start,
                                           children: [
                                             Text(shop.shopName,
-                                                style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .titleSmall
+                                                    ?.copyWith(
+                                                        fontWeight:
+                                                            FontWeight.w800)),
                                             const SizedBox(height: 2),
                                             Text(
                                                 '${shop.address}, ${shop.city}',
-                                                style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors
-                                                        .textSecondary)),
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .labelSmall
+                                                    ?.copyWith(
+                                                        color: AppColors
+                                                            .textSecondary)),
                                             const SizedBox(height: 4),
                                             Row(
                                               children: [
-                                                const Icon(
-                                                    Icons.star_rounded,
+                                                const Icon(Icons.star_rounded,
                                                     size: 14,
                                                     color: AppColors.warning),
                                                 const SizedBox(width: 3),
                                                 Text('${shop.rating}',
-                                                    style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700)),
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .labelSmall
+                                                        ?.copyWith(
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w700)),
                                                 const SizedBox(width: 8),
                                                 Text(
-                                                    '• ${shop.availableCount} Cars Ready',
-                                                    style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600, color: AppColors.accentSuccess)),
+                                                    l10n.shopCarsReady(shop.availableCount),
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .labelSmall
+                                                        ?.copyWith(
+                                                            fontWeight:
+                                                                FontWeight.w600,
+                                                            color: AppColors
+                                                                .accentSuccess)),
                                               ],
                                             ),
                                           ],
                                         ),
                                       ),
                                       IconButton(
-                                        icon: const Icon(
-                                            Icons.favorite_rounded,
+                                        icon: const Icon(Icons.favorite_rounded,
                                             size: 20,
                                             color: AppColors.secondary),
-                                        tooltip: 'Remove from saved',
+                                        tooltip: l10n.savedShopsRemove,
                                         onPressed: () => _unsave(shop),
                                       ),
                                     ],

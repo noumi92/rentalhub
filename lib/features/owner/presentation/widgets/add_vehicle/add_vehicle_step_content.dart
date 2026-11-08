@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/widgets/custom_curved_header.dart';
 import '../../../../../core/widgets/debounced_button.dart';
+import '../../../../../l10n/app_localizations.dart';
 import '../../constants/owner_vehicle_constants.dart';
 import 'vehicle_photos_step_widget.dart';
 import 'vehicle_rates_step_widget.dart';
@@ -23,27 +24,25 @@ class AddVehicleHeader extends StatelessWidget {
   final int currentStep;
   final VoidCallback onBack;
 
-  String get _title =>
-      const {
-        1: 'Add Vehicle - Specs',
-        2: 'Car Photos & Docs',
-        3: 'Rental Rates & Policy',
-      }[currentStep] ??
-      'Review & Publish';
+  String _title(AppLocalizations l10n) => {
+        1: l10n.addVehicleStep1Title,
+        2: l10n.addVehicleStep2Title,
+        3: l10n.addVehicleStep3Title,
+      }[currentStep] ?? l10n.addVehicleStep4Title;
 
-  String get _subtitle =>
-      const {
-        1: 'Capacity, AC, features & specs',
-        2: '4-angle photos, book & excise tax',
-        3: 'Hourly rates, deposit & fuel policy',
-      }[currentStep] ??
-      'Verify vehicle details before listing';
+  String _subtitle(AppLocalizations l10n) => {
+        1: l10n.addVehicleStep1Subtitle,
+        2: l10n.addVehicleStep2Subtitle,
+        3: l10n.addVehicleStep3Subtitle,
+      }[currentStep] ?? l10n.addVehicleStep4Subtitle;
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return CustomCurvedHeader(
       variant: CustomCurvedHeaderVariant.compact,
       leadingWidget: IconButton(
+        tooltip: l10n.back,
         icon: const Icon(Icons.arrow_back_ios_new_rounded,
             color: Colors.white, size: 20),
         onPressed: onBack,
@@ -51,16 +50,16 @@ class AddVehicleHeader extends StatelessWidget {
       titleWidget: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(_title,
+          Text(_title(l10n),
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: Colors.white,
-                fontWeight: FontWeight.w900,
-              )),
+                    color: Colors.white,
+                    fontWeight: FontWeight.w900,
+                  )),
           const SizedBox(height: 2),
-          Text(_subtitle,
+          Text(_subtitle(l10n),
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: AppColors.primaryContainer,
-              )),
+                    color: AppColors.primaryContainer,
+                  )),
         ],
       ),
       actions: [
@@ -70,11 +69,11 @@ class AddVehicleHeader extends StatelessWidget {
           decoration: BoxDecoration(
               color: Colors.white.withValues(alpha: 0.18),
               borderRadius: BorderRadius.circular(12)),
-          child: Text('Step $currentStep of 4',
+          child: Text(l10n.addVehicleStepCounter(currentStep),
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                color: Colors.white,
-                fontWeight: FontWeight.w700,
-              )),
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                  )),
         ),
       ],
     );
@@ -94,19 +93,19 @@ class AddVehicleBottomBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
-          border: Border(top: BorderSide(color: Theme.of(context).dividerColor)),
+          border:
+              Border(top: BorderSide(color: Theme.of(context).dividerColor)),
           boxShadow: [
             BoxShadow(
-                color: Color(0x12000000),
-                blurRadius: 8,
-                offset: Offset(0, -3))
+                color: Color(0x12000000), blurRadius: 8, offset: Offset(0, -3))
           ]),
       child: DebouncedButton(
-        text: currentStep == 4 ? 'Confirm & Publish Vehicle' : 'Next Step',
+        text: currentStep == 4 ? l10n.addVehicleConfirmPublish : l10n.addVehicleNextStep,
         icon: currentStep == 4
             ? Icons.check_circle_rounded
             : Icons.arrow_forward_rounded,

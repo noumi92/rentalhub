@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../../core/constants/app_colors.dart';
+import '../../../../../l10n/app_localizations.dart';
 
 class RadiusFilterPills extends StatelessWidget {
   final double selectedRadiusKm;
@@ -15,6 +16,7 @@ class RadiusFilterPills extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(
@@ -26,7 +28,7 @@ class RadiusFilterPills extends StatelessWidget {
           ),
           const SizedBox(width: 6),
           Text(
-            'Radius:',
+            l10n.radiusLabel,
             style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800),
           ),
           const SizedBox(width: 8),

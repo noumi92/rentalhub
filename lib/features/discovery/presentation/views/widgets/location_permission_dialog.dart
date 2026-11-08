@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../../core/constants/app_colors.dart';
+import '../../../../../l10n/app_localizations.dart';
 
 class LocationPermissionDialog extends StatelessWidget {
   final VoidCallback onAllow;
@@ -34,6 +35,7 @@ class LocationPermissionDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
@@ -59,13 +61,13 @@ class LocationPermissionDialog extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              'Enable Precise Location',
+              l10n.locationEnablePrecise,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
             ),
             const SizedBox(height: 8),
             Text(
-              'RentalHub uses your real-time GPS coordinates to calculate road distances and discover verified rental showrooms within 1–5 km around you in Pakistan.',
+              l10n.locationPermissionExplainer,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant, height: 1.4),
             ),
@@ -85,7 +87,7 @@ class LocationPermissionDialog extends StatelessWidget {
                 ),
                 icon: const Icon(Icons.my_location_rounded, size: 18),
                 label: Text(
-                  'Allow While Using App',
+                  l10n.locationAllowWhileUsing,
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
                 ),
               ),
@@ -104,7 +106,7 @@ class LocationPermissionDialog extends StatelessWidget {
                   ),
                 ),
                 child: Text(
-                  'Select City Manually (Lahore)',
+                  l10n.locationSelectCityManually,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
                 ),
               ),

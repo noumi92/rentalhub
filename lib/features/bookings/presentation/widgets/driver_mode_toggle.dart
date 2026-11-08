@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class DriverModeToggle extends StatelessWidget {
   final bool isWithDriver;
@@ -13,6 +14,7 @@ class DriverModeToggle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
@@ -24,8 +26,8 @@ class DriverModeToggle extends StatelessWidget {
         children: [
           Expanded(
             child: _buildOption(context, 
-              label: 'Self Drive',
-              sublabel: 'Requires CNIC + Deposit',
+              label: l10n.selfDrive,
+              sublabel: l10n.driverRequiresCnic,
               icon: Icons.directions_car_filled_rounded,
               isSelected: !isWithDriver,
               onTap: () => onChanged(false),
@@ -34,8 +36,8 @@ class DriverModeToggle extends StatelessWidget {
           const SizedBox(width: 4),
           Expanded(
             child: _buildOption(context, 
-              label: 'With Chauffeur',
-              sublabel: 'Verified Driver Included',
+              label: l10n.withChauffeur,
+              sublabel: l10n.driverVerifiedIncluded,
               icon: Icons.person_pin_circle_rounded,
               isSelected: isWithDriver,
               onTap: () => onChanged(true),

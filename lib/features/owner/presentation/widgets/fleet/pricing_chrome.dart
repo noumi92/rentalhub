@@ -4,6 +4,7 @@ import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/widgets/custom_curved_header.dart';
 import '../../../../../core/widgets/debounced_button.dart';
 import '../../../../../core/widgets/pakistani_plate_widget.dart';
+import '../../../../../l10n/app_localizations.dart';
 import '../../../../fleet/domain/entities/vehicle_entity.dart';
 
 /// Header and save bar of the rate matrix, extracted from
@@ -20,10 +21,12 @@ class PricingHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return CustomCurvedHeader(
       variant: CustomCurvedHeaderVariant.compact,
       leadingWidget: onBack != null
           ? IconButton(
+              tooltip: l10n.back,
               icon: const Icon(Icons.arrow_back_ios_new_rounded,
                   color: Colors.white, size: 20),
               onPressed: onBack,
@@ -32,15 +35,15 @@ class PricingHeader extends StatelessWidget {
       titleWidget: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Vehicle Pricing Matrix',
+          Text(l10n.pricingTitle,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: Colors.white,
-                fontWeight: FontWeight.w900,
-              )),
+                    color: Colors.white,
+                    fontWeight: FontWeight.w900,
+                  )),
           Text('${vehicle.make} ${vehicle.model} (${vehicle.year})',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: AppColors.primaryContainer,
-              )),
+                    color: AppColors.primaryContainer,
+                  )),
         ],
       ),
       actions: [
@@ -62,19 +65,18 @@ class PricingSaveBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         boxShadow: [
           BoxShadow(
-              color: Color(0x14000000),
-              blurRadius: 10,
-              offset: Offset(0, -3))
+              color: Color(0x14000000), blurRadius: 10, offset: Offset(0, -3))
         ],
       ),
       child: DebouncedButton(
-        text: isSaving ? 'Saving Matrix...' : 'Save Pricing Matrix',
+        text: isSaving ? l10n.pricingSaving : l10n.pricingSave,
         icon: Icons.check_circle_rounded,
         isLoading: isSaving,
         onPressed: () async => onPressed(),

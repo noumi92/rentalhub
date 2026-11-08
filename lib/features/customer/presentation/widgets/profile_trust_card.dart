@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 
 /// H1: the profile's trust card — the customer's real trust score from
 /// their `users` record, their real KYC state, and their real blacklist
@@ -21,6 +22,7 @@ class ProfileTrustCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(16),
@@ -50,13 +52,13 @@ class ProfileTrustCard extends StatelessWidget {
                 children: [
                   Text(
                     trustScore == null
-                        ? 'Trust Score: —'
-                        : 'Trust Score: ${trustScore!.toStringAsFixed(1)} / 5.0',
+                        ? l10n.reputationTrustScoreDash
+                        : l10n.profileTrustScoreValue(trustScore!.toStringAsFixed(1)),
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
                   ),
                   Text(
-                    '${kycVerified ? 'KYC verified' : 'KYC pending'} • '
-                    '${isBlacklisted ? 'Flagged on blacklist' : 'No blacklist record'}',
+                    '${kycVerified ? l10n.trustKycVerified : l10n.trustKycPending} • '
+                    '${isBlacklisted ? l10n.trustBlacklisted : l10n.trustNoBlacklist}',
                     style: Theme.of(context).textTheme.labelSmall,
                   ),
                 ],

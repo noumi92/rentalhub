@@ -6,6 +6,7 @@ import '../../../bookings/domain/entities/booking_entity.dart';
 import '../widgets/booking_detail_actions.dart';
 import '../widgets/booking_detail_summary.dart';
 import '../widgets/booking_ticket_card.dart';
+import '../../../../l10n/app_localizations.dart';
 
 /// Phase A (A1): the customer booking detail screen — the hub for one
 /// booking. It shows the ticket (with the QR once the booking is paid or
@@ -34,24 +35,24 @@ class CustomerBookingDetailView extends StatelessWidget {
     this.onBack,
   });
 
-  String _statusLabel(String status) {
+  String _statusLabel(AppLocalizations l10n, String status) {
     switch (status) {
       case 'requested':
-        return 'Request sent';
+        return l10n.statusRequestSent;
       case 'approved':
-        return 'Approved';
+        return l10n.statusApproved;
       case 'payment_submitted':
-        return 'Proof submitted';
+        return l10n.statusProofSubmitted;
       case 'paid':
-        return 'Paid';
+        return l10n.statusPaid;
       case 'active':
-        return 'On trip';
+        return l10n.statusOnTrip;
       case 'completed':
-        return 'Completed';
+        return l10n.statusCompleted;
       case 'rejected':
-        return 'Rejected';
+        return l10n.statusRejected;
       case 'cancelled':
-        return 'Cancelled';
+        return l10n.statusCancelled;
       default:
         return status;
     }
@@ -59,6 +60,7 @@ class CustomerBookingDetailView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final b = booking;
     return Scaffold(
       body: SafeArea(
@@ -68,6 +70,7 @@ class CustomerBookingDetailView extends StatelessWidget {
               variant: CustomCurvedHeaderVariant.compact,
               leadingWidget: onBack != null
                   ? IconButton(
+                      tooltip: l10n.back,
                       icon: const Icon(Icons.arrow_back_ios_new_rounded,
                           color: Colors.white, size: 20),
                       onPressed: onBack,
@@ -77,13 +80,17 @@ class CustomerBookingDetailView extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    b.vehicleName ?? 'Booking ${b.bookingId}',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white),
+                    b.vehicleName ?? l10n.bookingDetailTitle(b.bookingId),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w900, color: Colors.white),
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    '${b.shopName ?? 'Rental Showroom'} • ${b.bookingId}',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.primaryContainer),
+                    l10n.bookingShopLine(b.shopName ?? l10n.rentalShowroom, b.bookingId),
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodySmall
+                        ?.copyWith(color: AppColors.primaryContainer),
                   ),
                 ],
               ),
@@ -96,8 +103,9 @@ class CustomerBookingDetailView extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Text(
-                    _statusLabel(b.status),
-                    style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: Colors.white),
+                    _statusLabel(l10n, b.status),
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        fontWeight: FontWeight.w800, color: Colors.white),
                   ),
                 ),
               ],
@@ -132,8 +140,7 @@ class CustomerBookingDetailView extends StatelessWidget {
                       const SizedBox(height: 14),
                       BookingDetailRejectionCard(
                         reason: b.rejectionReason!,
-                        prefix:
-                            'Your payment proof was rejected — please upload a new one: ',
+                        prefix: l10n.proofRejectedPrefix,
                       ),
                     ],
                     if (b.status == 'cancelled' &&
@@ -141,14 +148,13 @@ class CustomerBookingDetailView extends StatelessWidget {
                       const SizedBox(height: 14),
                       BookingDetailRejectionCard(
                         reason: b.rejectionReason!,
-                        prefix: 'Cancellation reason: ',
+                        prefix: l10n.cancellationReasonPrefix,
                       ),
                     ],
                     if (b.status == 'payment_submitted') ...[
                       const SizedBox(height: 14),
                       BookingDetailInfoCard(
-                        text: 'Your payment proof is with the shop. '
-                            'You will see the pickup pass here once it is verified.',
+                        text: l10n.proofWithShop,
                       ),
                     ],
                     const SizedBox(height: 20),
@@ -170,5 +176,4 @@ class CustomerBookingDetailView extends StatelessWidget {
       ),
     );
   }
-
 }

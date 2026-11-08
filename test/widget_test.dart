@@ -27,6 +27,7 @@ import 'package:rentalhub/features/owner/presentation/views/owner_onboarding_vie
 import 'package:rentalhub/features/owner/presentation/views/owner_add_vehicle_view.dart';
 import 'package:rentalhub/core/widgets/custom_curved_header.dart';
 import 'package:rentalhub/main.dart';
+import 'package:rentalhub/l10n/app_localizations.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -82,6 +83,7 @@ void main() {
       'Phase 1 DoD (4.2): CustomerHomeView renders with 0 overflow on 360px viewport and 1.35x font scale',
       (WidgetTester tester) async {
     await TestHarness.pumpScreenWithOverflowCheck(
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
       tester: tester,
       screen: const CustomerHomeView(),
       width: 360.0,
@@ -100,6 +102,7 @@ void main() {
       (WidgetTester tester) async {
     await tester.pumpWidget(
       MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates, supportedLocales: AppLocalizations.supportedLocales,
         theme: AppTheme.lightTheme,
         home: const CustomerDocumentsView(),
       ),
@@ -136,6 +139,7 @@ void main() {
     int tapCount = 0;
     await tester.pumpWidget(
       MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates, supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(
           body: DebouncedButton(
             label: 'Submit',
@@ -303,6 +307,7 @@ void main() {
     // 1. Header rolls up with scroll on all screens (descendant of SingleChildScrollView)
     await tester.pumpWidget(
       MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates, supportedLocales: AppLocalizations.supportedLocales,
         theme: AppTheme.lightTheme,
         home: const OwnerOnboardingView(),
       ),
@@ -383,6 +388,7 @@ void main() {
     // 10. Verify Add Vehicle: Specs (Capacity, AC, Features) & Rates are editable
     await tester.pumpWidget(
       MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates, supportedLocales: AppLocalizations.supportedLocales,
         theme: AppTheme.lightTheme,
         home: const OwnerAddVehicleView(),
       ),
@@ -421,6 +427,7 @@ void main() {
     // Step 1: Profile Info View
     await tester.pumpWidget(
       MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates, supportedLocales: AppLocalizations.supportedLocales,
         theme: AppTheme.lightTheme,
         home: OnboardingProfileView(
           onProfileCompleted: () => profileDone = true,
@@ -443,6 +450,7 @@ void main() {
     // Step 2: Role Selection View
     await tester.pumpWidget(
       MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates, supportedLocales: AppLocalizations.supportedLocales,
         theme: AppTheme.lightTheme,
         home: OnboardingRoleView(
           onRoleLocked: (role) => lockedRole = role,

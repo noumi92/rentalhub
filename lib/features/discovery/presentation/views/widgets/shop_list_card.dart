@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/widgets/verified_badge.dart';
 import '../../../domain/entities/shop_entity.dart';
+import '../../../../../l10n/app_localizations.dart';
 
 class ShopListCard extends StatelessWidget {
   final ShopEntity shop;
@@ -19,6 +20,7 @@ class ShopListCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     // Alternate banner images between showrooms
     final bannerAsset = shop.shopId.hashCode % 2 == 0
         ? 'assets/images/showroom_banner_1.jpg'
@@ -46,14 +48,8 @@ class ShopListCard extends StatelessWidget {
                   width: double.infinity,
                   fit: BoxFit.cover,
                   errorBuilder: (_, __, ___) => Container(
-                    height: 135,
-                    color: AppColors.primaryContainer,
-                    child: const Center(
-                      child: Icon(
-                        Icons.storefront_rounded,
-                        size: 48,
-                      ),
-                    ),
+                    height: 135, color: AppColors.primaryContainer,
+                    child: const Center(child: Icon(Icons.storefront_rounded, size: 48)),
                   ),
                 ),
                 // Distance badge on top-right
@@ -61,10 +57,7 @@ class ShopListCard extends StatelessWidget {
                   top: 10,
                   right: 10,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 9,
-                      vertical: 5,
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
                     decoration: BoxDecoration(
                       color: Colors.black.withValues(alpha: 0.65),
                       borderRadius: BorderRadius.circular(12),
@@ -72,11 +65,7 @@ class ShopListCard extends StatelessWidget {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(
-                          Icons.location_on_rounded,
-                          size: 13,
-                          color: AppColors.secondary,
-                        ),
+                        const Icon(Icons.location_on_rounded, size: 13, color: AppColors.secondary),
                         const SizedBox(width: 3),
                         Text(
                           '${shop.distanceKm.toStringAsFixed(1)} km',
@@ -123,11 +112,7 @@ class ShopListCard extends StatelessWidget {
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(
-                            Icons.star_rounded,
-                            size: 16,
-                            color: AppColors.warning,
-                          ),
+                          const Icon(Icons.star_rounded, size: 16, color: AppColors.warning),
                           const SizedBox(width: 3),
                           Text(
                             shop.rating.toStringAsFixed(1),
@@ -142,7 +127,7 @@ class ShopListCard extends StatelessWidget {
                       ),
                       Text('•', style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
                       Text(
-                        '${shop.availableCount} cars available',
+                        l10n.shopCarsAvailable(shop.availableCount),
                         style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.successOnContainerFor(Theme.of(context).brightness)),
                       ),
                     ],
@@ -163,7 +148,7 @@ class ShopListCard extends StatelessWidget {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text(
-                                      'Calling ${shop.shopName} (${shop.phoneNumber})...'),
+                                      l10n.callingShopNumber(shop.shopName, shop.phoneNumber)),
                                   backgroundColor: AppColors.primary,
                                   duration: const Duration(seconds: 2),
                                 ),
@@ -182,7 +167,7 @@ class ShopListCard extends StatelessWidget {
                         ),
                         icon: const Icon(Icons.call_rounded,
                             size: 14),
-                        label: Text('Call',
+                        label: Text(l10n.call,
                             style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700)),
                       ),
 
@@ -193,7 +178,7 @@ class ShopListCard extends StatelessWidget {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text(
-                                      'Opening WhatsApp with ${shop.shopName}...'),
+                                      l10n.openingWhatsappShop(shop.shopName)),
                                   backgroundColor: AppColors.successContainerFor(Theme.of(context).brightness),
                                   duration: const Duration(seconds: 2),
                                 ),
@@ -213,7 +198,7 @@ class ShopListCard extends StatelessWidget {
                         ),
                         icon: Icon(Icons.chat_bubble_outline_rounded,
                             size: 14, color: AppColors.successOnContainerFor(Theme.of(context).brightness)),
-                        label: Text('WhatsApp',
+                        label: Text(l10n.whatsapp,
                             style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700)),
                       ),
 
@@ -235,7 +220,7 @@ class ShopListCard extends StatelessWidget {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text('View Fleet',
+                            Text(l10n.viewFleet,
                                 style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800)),
                             SizedBox(width: 4),
                             Icon(Icons.arrow_forward_rounded, size: 13),

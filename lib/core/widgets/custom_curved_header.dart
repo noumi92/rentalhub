@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_dimensions.dart';
+import '../../l10n/app_localizations.dart';
 import 'verified_badge.dart';
 
 /// Phase D (D1): one header system. Exactly two header heights exist:
@@ -27,7 +28,7 @@ class CustomCurvedHeader extends StatelessWidget {
   final CustomCurvedHeaderVariant variant;
   final bool showProfileGreeting;
   final String userName;
-  final String urduGreeting;
+  final String? urduGreeting;
   final bool isVerified;
   final VoidCallback? onNotificationTap;
 
@@ -44,7 +45,10 @@ class CustomCurvedHeader extends StatelessWidget {
     // user's real name; an empty name renders a neutral greeting and an
     // unverified badge instead of pretending to be a fake demo user.
     this.userName = '',
-    this.urduGreeting = 'اسلام علیکم',
+    // Phase F: no hardcoded Urdu default — the greeting resolves from
+    // AppLocalizations at render time (English fallback for
+    // delegate-less pumps). No call site passes this today.
+    this.urduGreeting,
     this.isVerified = false,
     this.onNotificationTap,
   });
@@ -57,7 +61,11 @@ class CustomCurvedHeader extends StatelessWidget {
   Widget? _autoBackButton(BuildContext context) {
     if (!showBackButton) return null;
     if (Navigator.maybeOf(context)?.canPop() != true) return null;
+    // Phase F: localized tooltip (English fallback for
+    // delegate-less pumps).
+    final l10n = AppLocalizations.of(context);
     return IconButton(
+      tooltip: l10n?.back ?? 'Back',
       icon: const Icon(Icons.arrow_back_ios_new_rounded,
           color: Colors.white, size: 20),
       onPressed: () => Navigator.of(context).maybePop(),
@@ -66,6 +74,14 @@ class CustomCurvedHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Phase F: greeting + notifications tooltip are localized
+    // (English fallback for delegate-less pumps).
+    final l10n = AppLocalizations.of(context);
+    final greeting = userName.isNotEmpty
+        ? l10n?.headerGreeting(userName) ?? 'Hi, $userName'
+        : l10n?.headerGreetingFallback ?? 'Hi there';
+    final urduGreetingText =
+        urduGreeting ?? l10n?.headerUrduGreeting ?? 'اسلام علیکم';
     final topPadding = MediaQuery.of(context).padding.top;
     // D1: the height comes from the variant, never from the caller.
     final double height = variant == CustomCurvedHeaderVariant.hero
@@ -142,9 +158,7 @@ class CustomCurvedHeader extends StatelessWidget {
                               spacing: 6,
                               children: [
                                 Text(
-                                  userName.isNotEmpty
-                                      ? 'Hi, $userName'
-                                      : 'Hi there',
+                                  greeting,
                                   style: Theme.of(context)
                                       .textTheme
                                       .titleSmall
@@ -154,7 +168,7 @@ class CustomCurvedHeader extends StatelessWidget {
                                       ),
                                 ),
                                 Text(
-                                  '($urduGreeting)',
+                                  '($urduGreetingText)',
                                   style: Theme.of(context)
                                       .textTheme
                                       .labelMedium
@@ -171,6 +185,7 @@ class CustomCurvedHeader extends StatelessWidget {
                         ),
                       ),
                       IconButton(
+                        tooltip: l10n?.notifications ?? 'Notifications',
                         onPressed: onNotificationTap,
                         icon: Stack(
                           clipBehavior: Clip.none,

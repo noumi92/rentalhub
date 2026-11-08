@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
@@ -42,15 +43,15 @@ class _OwnerQrScanViewState extends State<OwnerQrScanView> {
   }
 
   Future<void> _openBooking(String bookingId) async {
+  final l10n = AppLocalizations.of(context)!;
     if (_handled) return;
     setState(() => _handled = true);
     try {
-      final booking = await sl<BookingRemoteDataSource>()
-          .getBookingById(bookingId);
+      final booking =
+          await sl<BookingRemoteDataSource>().getBookingById(bookingId);
       if (booking == null) {
         if (mounted) {
-          AppFeedback.showError(
-              context, 'No booking found for #$bookingId.');
+          AppFeedback.showError(context, l10n.qrNoBooking(bookingId));
           setState(() => _handled = false);
         }
         return;
@@ -60,19 +61,19 @@ class _OwnerQrScanViewState extends State<OwnerQrScanView> {
       setState(() => _handled = false);
     } catch (e) {
       if (mounted) {
-        AppFeedback.showError(context, 'Could not open the booking: $e');
+        AppFeedback.showError(context, l10n.qrOpenFailed(e.toString()));
         setState(() => _handled = false);
       }
     }
   }
 
   void _onDetect(BarcodeCapture capture) {
+  final l10n = AppLocalizations.of(context)!;
     final code = capture.barcodes.firstOrNull?.rawValue;
     if (code == null || code.isEmpty) return;
     final bookingId = _bookingIdFromCode(code);
     if (bookingId == null) {
-      AppFeedback.showError(
-          context, 'This is not a RentalHub booking code.');
+      AppFeedback.showError(context, l10n.qrNotBookingCode);
       return;
     }
     _openBooking(bookingId);
@@ -80,6 +81,7 @@ class _OwnerQrScanViewState extends State<OwnerQrScanView> {
 
   @override
   Widget build(BuildContext context) {
+  final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -87,6 +89,7 @@ class _OwnerQrScanViewState extends State<OwnerQrScanView> {
             CustomCurvedHeader(
               variant: CustomCurvedHeaderVariant.compact,
               leadingWidget: IconButton(
+                tooltip: l10n.back,
                 icon: const Icon(Icons.arrow_back_ios_new_rounded,
                     color: Colors.white, size: 20),
                 onPressed: () => context.pop(),
@@ -94,10 +97,14 @@ class _OwnerQrScanViewState extends State<OwnerQrScanView> {
               titleWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Scan Booking QR',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
-                  Text('Point the camera at the customer’s booking code',
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.primaryContainer)),
+                  Text(l10n.qrScanTitle,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w900, color: Colors.white)),
+                  Text(l10n.qrScanSubtitle,
+                      style: Theme.of(context)
+                          .textTheme
+                          .labelSmall
+                          ?.copyWith(color: AppColors.primaryContainer)),
                 ],
               ),
             ),
@@ -123,10 +130,12 @@ class _OwnerQrScanViewState extends State<OwnerQrScanView> {
                           child: TextField(
                             controller: _idController,
                             decoration: InputDecoration(
-                              hintText: 'Or type the booking id, e.g. RH-…',
+                              hintText: l10n.qrTypeHint,
                               border: OutlineInputBorder(),
                               filled: true,
-                              fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                              fillColor: Theme.of(context)
+                                  .colorScheme
+                                  .surfaceContainerHighest,
                             ),
                           ),
                         ),
@@ -137,7 +146,7 @@ class _OwnerQrScanViewState extends State<OwnerQrScanView> {
                             if (id.isEmpty) return;
                             _openBooking(id);
                           },
-                          child: const Text('Open'),
+                          child: Text(l10n.disputeOpen),
                         ),
                       ],
                     ),

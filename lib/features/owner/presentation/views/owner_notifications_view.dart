@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
@@ -17,8 +18,7 @@ class OwnerNotificationsView extends StatefulWidget {
   const OwnerNotificationsView({super.key, this.shopId = 'shop-1'});
 
   @override
-  State<OwnerNotificationsView> createState() =>
-      _OwnerNotificationsViewState();
+  State<OwnerNotificationsView> createState() => _OwnerNotificationsViewState();
 }
 
 class _OwnerNotificationsViewState extends State<OwnerNotificationsView> {
@@ -37,7 +37,8 @@ class _OwnerNotificationsViewState extends State<OwnerNotificationsView> {
       final items = await sl<NotificationDataSource>()
           .getShopNotifications(widget.shopId);
       if (mounted) setState(() => _items = items);
-    } catch (_) {} finally {
+    } catch (_) {
+    } finally {
       if (mounted) setState(() => _isLoading = false);
     }
   }
@@ -46,14 +47,13 @@ class _OwnerNotificationsViewState extends State<OwnerNotificationsView> {
     await sl<NotificationDataSource>().markRead(n.notificationId);
     if (mounted) {
       setState(() => _items = _items
-          .map((i) => i.notificationId == n.notificationId
-              ? i.copyWith(read: true)
-              : i)
+          .map((i) =>
+              i.notificationId == n.notificationId ? i.copyWith(read: true) : i)
           .toList());
     }
     if (n.bookingId != null && mounted) {
-      context.push(RouteNames.ownerRequestsDetail
-          .replaceFirst(':id', n.bookingId!));
+      context.push(
+          RouteNames.ownerRequestsDetail.replaceFirst(':id', n.bookingId!));
     }
   }
 
@@ -74,6 +74,7 @@ class _OwnerNotificationsViewState extends State<OwnerNotificationsView> {
 
   @override
   Widget build(BuildContext context) {
+  final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -81,6 +82,7 @@ class _OwnerNotificationsViewState extends State<OwnerNotificationsView> {
             CustomCurvedHeader(
               variant: CustomCurvedHeaderVariant.compact,
               leadingWidget: IconButton(
+                tooltip: l10n.back,
                 icon: const Icon(Icons.arrow_back_ios_new_rounded,
                     color: Colors.white, size: 20),
                 onPressed: () => context.pop(),
@@ -88,10 +90,14 @@ class _OwnerNotificationsViewState extends State<OwnerNotificationsView> {
               titleWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Notifications',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
-                  Text('What needs your attention',
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.primaryContainer)),
+                  Text(l10n.notifications,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w900, color: Colors.white)),
+                  Text(l10n.notificationsSubtitle,
+                      style: Theme.of(context)
+                          .textTheme
+                          .labelSmall
+                          ?.copyWith(color: AppColors.primaryContainer)),
                 ],
               ),
               actions: [
@@ -104,7 +110,7 @@ class _OwnerNotificationsViewState extends State<OwnerNotificationsView> {
                           _items.map((i) => i.copyWith(read: true)).toList());
                     }
                   },
-                  child: const Text('Mark all read',
+                  child: Text(l10n.notificationsMarkAllRead,
                       style: TextStyle(
                           color: Colors.white, fontWeight: FontWeight.w700)),
                 ),
@@ -115,9 +121,11 @@ class _OwnerNotificationsViewState extends State<OwnerNotificationsView> {
                   ? const Center(child: CircularProgressIndicator())
                   : _items.isEmpty
                       ? Center(
-                          child: Text('No notifications yet.',
+                          child: Text(l10n.notificationsEmpty,
                               style: TextStyle(
-                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurfaceVariant,
                                   fontWeight: FontWeight.w700)),
                         )
                       : ListView.separated(
@@ -146,8 +154,9 @@ class _OwnerNotificationsViewState extends State<OwnerNotificationsView> {
                                 ),
                                 child: Row(
                                   children: [
-                                    Icon(_iconFor(n.type),
-                                        ),
+                                    Icon(
+                                      _iconFor(n.type),
+                                    ),
                                     const SizedBox(width: 12),
                                     Expanded(
                                       child: Column(
@@ -155,9 +164,19 @@ class _OwnerNotificationsViewState extends State<OwnerNotificationsView> {
                                             CrossAxisAlignment.start,
                                         children: [
                                           Text(n.title,
-                                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800)),
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyMedium
+                                                  ?.copyWith(
+                                                      fontWeight:
+                                                          FontWeight.w800)),
                                           Text(n.body,
-                                              style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors .textSecondary)),
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodySmall
+                                                  ?.copyWith(
+                                                      color: AppColors
+                                                          .textSecondary)),
                                         ],
                                       ),
                                     ),
@@ -166,7 +185,9 @@ class _OwnerNotificationsViewState extends State<OwnerNotificationsView> {
                                         width: 8,
                                         height: 8,
                                         decoration: BoxDecoration(
-                                            color: Theme.of(context).colorScheme.onSurface,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onSurface,
                                             shape: BoxShape.circle),
                                       ),
                                   ],

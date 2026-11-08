@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/pakistani_plate_widget.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class DigitalQrPassWidget extends StatelessWidget {
   final String bookingId;
@@ -20,6 +21,7 @@ class DigitalQrPassWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -100,7 +102,7 @@ class DigitalQrPassWidget extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  'Present this QR Code to showroom staff at handover',
+                  l10n.passShowQr,
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.textMuted),
                 ),
@@ -112,7 +114,7 @@ class DigitalQrPassWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Pickup Target:',
+                l10n.passPickupTarget,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.textMuted),
               ),
               const SizedBox(width: 8),

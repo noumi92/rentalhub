@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../l10n/app_localizations.dart';
 
 import '../../../../../core/constants/app_colors.dart';
 import '../../../fleet/domain/entities/vehicle_entity.dart';
@@ -19,6 +20,7 @@ class ManualBookingVehicleDropdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+  final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14),
       decoration: BoxDecoration(
@@ -31,15 +33,14 @@ class ManualBookingVehicleDropdown extends StatelessWidget {
           dropdownColor: Theme.of(context).colorScheme.surface,
           isExpanded: true,
           value: selectedVehicle,
-          hint: const Text('Select Showroom Vehicle'),
+          hint: Text(l10n.manualBookingSelectVehicleHint),
           items: vehicles.map((v) {
             return DropdownMenuItem(
               value: v,
-              child: Text(
-                  '${v.make} ${v.model} (${v.year}) - ${v.plateNumber}',
+              child: Text('${v.make} ${v.model} (${v.year}) - ${v.plateNumber}',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  )),
+                        fontWeight: FontWeight.w700,
+                      )),
             );
           }).toList(),
           onChanged: onChanged,
@@ -104,14 +105,15 @@ class ManualBookingPackageSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+  final l10n = AppLocalizations.of(context)!;
     final vehicle = this.vehicle;
     if (vehicle == null) {
-      return Text('Select a vehicle first to see its packages.',
+      return Text(l10n.manualBookingSelectVehicleFirst,
           style: Theme.of(context).textTheme.bodySmall);
     }
     final packages = vehicle.enabledPackages;
     if (packages.isEmpty) {
-      return Text('This vehicle has no packages enabled.',
+      return Text(l10n.manualBookingNoPackages,
           style: Theme.of(context).textTheme.bodySmall);
     }
     return Column(
@@ -123,14 +125,18 @@ class ManualBookingPackageSelector extends StatelessWidget {
           children: packages.map((p) {
             final selected = selectedPackage?.label == p.label;
             return ChoiceChip(
-              label: Text('${p.label} • Rs. ${p.pricePkr}'),
+              materialTapTargetSize: MaterialTapTargetSize.padded,
+              label: Text(l10n.manualBookingPackageChip(p.label, p.pricePkr)),
               selected: selected,
               selectedColor: AppColors.secondary,
-              backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+              backgroundColor:
+                  Theme.of(context).colorScheme.surfaceContainerHighest,
               labelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
-                fontWeight: FontWeight.w700,
-                color: selected ? Colors.white : Theme.of(context).colorScheme.onSurface,
-              ),
+                    fontWeight: FontWeight.w700,
+                    color: selected
+                        ? Colors.white
+                        : Theme.of(context).colorScheme.onSurface,
+                  ),
               onSelected: (_) => onPackageChanged(p),
             );
           }).toList(),
@@ -138,20 +144,20 @@ class ManualBookingPackageSelector extends StatelessWidget {
         const SizedBox(height: 10),
         Row(
           children: [
-            Text('With Driver',
+            Text(l10n.withDriver,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                )),
+                      fontWeight: FontWeight.w700,
+                    )),
             Switch(
               value: isWithDriver,
               activeThumbColor: AppColors.secondary,
               onChanged: onDriverModeChanged,
             ),
             const SizedBox(width: 8),
-            Text('Total: Rs. $_total',
+            Text(l10n.manualBookingTotal(_total),
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w900,
-                )),
+                      fontWeight: FontWeight.w900,
+                    )),
           ],
         ),
       ],

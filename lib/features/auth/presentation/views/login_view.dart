@@ -11,6 +11,7 @@ import '../../../../core/widgets/debounced_button.dart';
 import '../../data/datasources/auth_remote_data_source.dart';
 import 'widgets/auth_text_field.dart';
 import 'widgets/google_sign_in_button.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class LoginView extends StatefulWidget {
   final VoidCallback? onSignedIn;
@@ -34,15 +35,16 @@ class _LoginViewState extends State<LoginView> {
   }
 
   void _handleEmailSignIn() async {
+    final l10n = AppLocalizations.of(context)!;
     final email = _emailController.text.trim();
     final password = _passwordController.text;
 
     if (email.isEmpty || !RegExp(r'^[^@]+@[^@]+\.[^@]+$').hasMatch(email)) {
-      AppFeedback.showError(context, 'Please enter a valid email address.');
+      AppFeedback.showError(context, l10n.authValidEmail);
       return;
     }
     if (password.isEmpty || password.length < 6) {
-      AppFeedback.showError(context, 'Password must be at least 6 characters.');
+      AppFeedback.showError(context, l10n.authPasswordLength);
       return;
     }
 
@@ -57,7 +59,7 @@ class _LoginViewState extends State<LoginView> {
       }
 
       if (!mounted) return;
-      AppFeedback.showSuccess(context, 'Signed in successfully!');
+      AppFeedback.showSuccess(context, l10n.authSignedIn);
       if (widget.onSignedIn != null) {
         widget.onSignedIn!();
       } else {
@@ -75,6 +77,7 @@ class _LoginViewState extends State<LoginView> {
   }
 
   void _handleGoogleSignIn() async {
+    final l10n = AppLocalizations.of(context)!;
     setState(() => _isLoading = true);
 
     try {
@@ -83,7 +86,7 @@ class _LoginViewState extends State<LoginView> {
       }
 
       if (!mounted) return;
-      AppFeedback.showSuccess(context, 'Signed in with Google!');
+      AppFeedback.showSuccess(context, l10n.authSignedInGoogle);
       if (widget.onSignedIn != null) {
         widget.onSignedIn!();
       } else {
@@ -102,6 +105,7 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final scheme = Theme.of(context).colorScheme;
     return Scaffold(
       body: SafeArea(
@@ -123,7 +127,7 @@ class _LoginViewState extends State<LoginView> {
                   ),
                   SizedBox(height: 4),
                   Text(
-                    'Pakistan Premier Car Rental & Fleet Ecosystem • خوش آمدید',
+                    l10n.authTagline,
                     style: Theme.of(context).textTheme.labelMedium?.copyWith(
                       color: AppColors.primaryContainer,
                     ),
@@ -156,7 +160,7 @@ class _LoginViewState extends State<LoginView> {
                             ),
                             Center(
                               child: Text(
-                                'Welcome to RentalHub',
+                                l10n.authWelcome,
                                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                   fontWeight: FontWeight.w800,
                                 ),
@@ -165,7 +169,7 @@ class _LoginViewState extends State<LoginView> {
                             const SizedBox(height: 4),
                             Center(
                               child: Text(
-                                'Sign in to rent a car near you',
+                                l10n.authSignInSubtitle,
                                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                   color: scheme.onSurfaceVariant,
                                   fontWeight: FontWeight.w500,
@@ -175,7 +179,7 @@ class _LoginViewState extends State<LoginView> {
                             const SizedBox(height: 18),
                             AuthTextField(
                               controller: _emailController,
-                              label: 'Email Address',
+                              label: l10n.authEmail,
                               hint: 'you@example.com',
                               prefixIcon: Icons.email_outlined,
                               keyboardType: TextInputType.emailAddress,
@@ -183,14 +187,14 @@ class _LoginViewState extends State<LoginView> {
                             const SizedBox(height: 14),
                             AuthTextField(
                               controller: _passwordController,
-                              label: 'Password',
+                              label: l10n.authPassword,
                               hint: '••••••••',
                               prefixIcon: Icons.lock_outline_rounded,
                               obscureText: true,
                             ),
                             const SizedBox(height: 20),
                             DebouncedButton(
-                              text: 'Sign In with Email',
+                              text: l10n.authSignInEmail,
                               icon: Icons.login_rounded,
                               isLoading: _isLoading,
                               onPressed: () async => _handleEmailSignIn(),
@@ -215,7 +219,7 @@ class _LoginViewState extends State<LoginView> {
                                   }
                                 },
                                 child: Text(
-                                  'New to RentalHub? Choose Role & Register',
+                                  l10n.authNewUser,
                                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                     fontWeight: FontWeight.w700,
                                   ),

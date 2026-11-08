@@ -1,17 +1,18 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class PickupCountdownTimer extends StatefulWidget {
   final DateTime targetPickupTime;
   // E3: the label above the digits — the pickup pass counts down to
   // pickup; the active-trip view reuses this for the return.
-  final String label;
+  final String? label;
 
   const PickupCountdownTimer({
     super.key,
     required this.targetPickupTime,
-    this.label = 'COUNTDOWN TO PICKUP',
+    this.label,
   });
 
   @override
@@ -46,6 +47,7 @@ class _PickupCountdownTimerState extends State<PickupCountdownTimer> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final hours = _remaining.inHours.toString().padLeft(2, '0');
     final minutes = (_remaining.inMinutes % 60).toString().padLeft(2, '0');
     final seconds = (_remaining.inSeconds % 60).toString().padLeft(2, '0');
@@ -66,18 +68,18 @@ class _PickupCountdownTimerState extends State<PickupCountdownTimer> {
       child: Column(
         children: [
           Text(
-            widget.label,
+            (widget.label ?? l10n.countdownToPickup),
             style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primaryContainer, letterSpacing: 1.2),
           ),
           const SizedBox(height: 8),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _buildTimeUnit(hours, 'HRS'),
+              _buildTimeUnit(hours, l10n.countdownHours),
               _buildColon(),
-              _buildTimeUnit(minutes, 'MIN'),
+              _buildTimeUnit(minutes, l10n.countdownMinutes),
               _buildColon(),
-              _buildTimeUnit(seconds, 'SEC'),
+              _buildTimeUnit(seconds, l10n.countdownSeconds),
             ],
           ),
         ],

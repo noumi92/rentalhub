@@ -1,8 +1,32 @@
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 
+// Rulebook §2.2 / R1 / D19: view files are capped at 250 lines, not 300.
+// The one view still over the cap — `owner_add_vehicle_view.dart`
+// (259) — is registered debt: it may shrink, never grow past its
+// registered count. `owner_onboarding_view.dart` (250) and
+// `customer_dispute_view.dart` (192) shrank to the cap or below in
+// Phases C/D and left this map; `customer_dashboard_view.dart` was
+// deleted in Phase C.
+const Map<String, int> kOverLimitViews = {
+  'lib/features/owner/presentation/views/owner_add_vehicle_view.dart': 259,
+};
+
+// Rulebook §2.2: the shared widgets Phases E/F introduced must stay
+// granular — a shared widget over 250 lines is a view hiding in
+// `core/widgets/`. These four are the E/F set; every one is well
+// under the cap today, and the test fails if any of them grows past it.
+const Map<String, int> kSharedWidgetLineCap = {
+  'lib/core/widgets/quick_action_tiles.dart': 250,
+  'lib/core/widgets/masked_value.dart': 250,
+  'lib/core/widgets/app_state_views.dart': 250,
+  'lib/features/owner/presentation/widgets/fleet/fleet_filter_chips.dart':
+      250,
+};
+
 void main() {
-  test('No screen view file in views/ folders exceeds 300 lines of code', () {
+  test('No screen view file in views/ folders exceeds 250 lines of code',
+      () {
     final libDir = Directory('lib');
     expect(libDir.existsSync(), isTrue, reason: 'lib directory must exist');
 
@@ -25,7 +49,11 @@ void main() {
       final lines = file.readAsLinesSync();
       final relativePath = file.path.replaceAll(r'\', '/');
       allViewStats[relativePath] = lines.length;
-      if (lines.length > 300) {
+      if (lines.length <= 250) continue;
+      final registered = kOverLimitViews[relativePath];
+      if (registered == null) {
+        violatingFiles[relativePath] = lines.length;
+      } else if (lines.length > registered) {
         violatingFiles[relativePath] = lines.length;
       }
     }
@@ -42,14 +70,31 @@ void main() {
 
     if (violatingFiles.isNotEmpty) {
       final buffer = StringBuffer(
-        'The following ${violatingFiles.length} screen file(s) in views/ exceed 300 lines of code:\n',
+        'The following ${violatingFiles.length} screen file(s) in views/ exceed 250 lines of code:\n',
       );
       final sortedEntries = violatingFiles.entries.toList()
         ..sort((a, b) => b.value.compareTo(a.value));
       for (final entry in sortedEntries) {
-        buffer.writeln('  - ${entry.key}: ${entry.value} lines (exceeds 300 limit)');
+        buffer.writeln(
+            '  - ${entry.key}: ${entry.value} lines (exceeds 250 limit)');
       }
       fail(buffer.toString());
     }
+  });
+
+  test('Shared widgets from Phases E/F stay under the 250-line cap', () {
+    final violations = <String>[];
+    for (final entry in kSharedWidgetLineCap.entries) {
+      final file = File(entry.key);
+      expect(file.existsSync(), isTrue,
+          reason: 'shared widget missing from the tree: ${entry.key}');
+      final lines = file.readAsLinesSync().length;
+      if (lines > entry.value) {
+        violations.add('${entry.key}: $lines lines (exceeds ${entry.value})');
+      }
+    }
+    expect(violations, isEmpty,
+        reason:
+            'Rulebook §2.2: shared widgets must stay granular:\n${violations.join('\n')}');
   });
 }

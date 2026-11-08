@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../../../core/constants/app_colors.dart';
+import '../../../../../core/widgets/app_state_views.dart';
+import '../../../../../l10n/app_localizations.dart';
 import '../../../../fleet/domain/entities/vehicle_entity.dart';
 import '../../../../fleet/presentation/cubit/fleet_state.dart';
 import 'fleet_vehicle_card.dart';
@@ -31,69 +32,32 @@ class FleetBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     if (state is FleetLoading) {
-      return const Padding(
-        padding: EdgeInsets.all(48),
-        child: Center(child: CircularProgressIndicator()),
-      );
+      // E2: shared loading state.
+      return AppLoadingState(message: l10n.fleetLoading);
     }
     if (state is FleetError) {
-      return Padding(
-        padding: const EdgeInsets.all(32),
-        child: Center(
-          child: Column(
-            children: [
-              Icon(Icons.error_outline_rounded,
-                  size: 54, color: Theme.of(context).colorScheme.onSurfaceVariant),
-              const SizedBox(height: 12),
-              Text(
-                'Could not load your fleet: ${(state as FleetError).message}',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontWeight: FontWeight.w700, color: Theme.of(context).colorScheme.onSurfaceVariant),
-              ),
-              const SizedBox(height: 12),
-              ElevatedButton.icon(
-                onPressed: onRetry,
-                icon: const Icon(Icons.refresh, size: 18),
-                label: const Text('Retry'),
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.secondary,
-                    foregroundColor: Colors.white),
-              ),
-            ],
-          ),
-        ),
+      // E2: shared error state with retry.
+      return AppErrorState(
+        message: l10n.fleetLoadError((state as FleetError).message),
+        onRetry: onRetry,
       );
     }
     if (filtered.isEmpty) {
-      return Padding(
-        padding: const EdgeInsets.all(32),
-        child: Center(
-          child: Column(
-            children: [
-              Icon(Icons.no_crash_rounded,
-                  size: 54, color: Theme.of(context).colorScheme.onSurfaceVariant),
-              const SizedBox(height: 12),
-              Text(
-                fleet.isEmpty
-                    ? 'No vehicles yet — add your first car'
-                    : 'No vehicles found in this filter',
-                style: TextStyle(
-                    fontWeight: FontWeight.w700, color: Theme.of(context).colorScheme.onSurfaceVariant),
-              ),
-              const SizedBox(height: 12),
-              ElevatedButton.icon(
-                onPressed: onAddVehicle,
-                icon: const Icon(Icons.add, size: 18),
-                label: const Text('Add Vehicle Now'),
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.secondary,
-                    foregroundColor: Colors.white),
-              ),
-            ],
-          ),
-        ),
+      // E2: shared empty state; the action only adds a vehicle when
+      // the fleet itself is empty — a filter with no matches has no
+      // sensible "add" action.
+      return AppEmptyState(
+        title: fleet.isEmpty
+            ? l10n.fleetEmptyTitle
+            : l10n.fleetEmptyFilterTitle,
+        message: fleet.isEmpty
+            ? l10n.fleetEmptyMessage
+            : l10n.fleetEmptyFilterMessage,
+        icon: Icons.no_crash_rounded,
+        actionLabel: fleet.isEmpty ? l10n.fleetAddVehicleNow : null,
+        onAction: fleet.isEmpty ? onAddVehicle : null,
       );
     }
     return ListView.separated(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/di/injection_container.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
 import '../../../fleet/data/datasources/fleet_remote_data_source.dart';
@@ -36,8 +37,12 @@ class BookingRouteLoader extends StatelessWidget {
         }
         final booking = snapshot.data;
         if (booking == null) {
+          // Phase F: localized not-found message (English fallback
+          // for delegate-less pumps).
+          final l10n = AppLocalizations.of(context);
           return RouteNotFoundScreen(
-            message: 'Booking $bookingId was not found.',
+            message: l10n?.routeBookingNotFound(bookingId) ??
+                'Booking $bookingId was not found.',
           );
         }
         return builder(context, booking);
@@ -80,8 +85,12 @@ class VehicleRouteLoader extends StatelessWidget {
           }
         }
         if (vehicle == null) {
+          // Phase F: localized not-found message (English fallback
+          // for delegate-less pumps).
+          final l10n = AppLocalizations.of(context);
           return RouteNotFoundScreen(
-            message: 'Vehicle $vehicleId was not found.',
+            message: l10n?.routeVehicleNotFound(vehicleId) ??
+                'Vehicle $vehicleId was not found.',
           );
         }
         return builder(context, vehicle);
@@ -97,6 +106,10 @@ class RouteNotFoundScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Phase F: the back button is localized (English fallback for
+    // delegate-less pumps). The not-found message itself is data
+    // (an id interpolated into the caller's message).
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       body: SafeArea(
         child: Center(
@@ -119,7 +132,7 @@ class RouteNotFoundScreen extends StatelessWidget {
                 const SizedBox(height: 16),
                 FilledButton(
                   onPressed: () => context.pop(),
-                  child: const Text('Go back'),
+                  child: Text(l10n?.commonGoBack ?? 'Go back'),
                 ),
               ],
             ),

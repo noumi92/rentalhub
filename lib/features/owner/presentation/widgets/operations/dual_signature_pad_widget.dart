@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../../l10n/app_localizations.dart';
 import 'package:signature/signature.dart';
 
 import '../../../../../core/constants/app_colors.dart';
@@ -19,6 +20,7 @@ class DualSignaturePadWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+  final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -30,21 +32,21 @@ class DualSignaturePadWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Dual Legal Endorsement & Signatures',
+            l10n.handoverSignaturesTitle,
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w800,
             ),
           ),
           const SizedBox(height: 12),
-          _pad(context, 
-            title: 'Customer / Hirer Digital Signature',
-            subtitle: 'Certifies physical receipt of car & documents',
+          _pad(context, l10n,
+            title: l10n.handoverCustomerSignature,
+            subtitle: l10n.handoverCustomerSignatureHint,
             controller: customerController,
           ),
           const SizedBox(height: 12),
-          _pad(context, 
-            title: 'Showroom Host / Manager Signature',
-            subtitle: 'Authorized release by showroom representative',
+          _pad(context, l10n,
+            title: l10n.handoverHostSignature,
+            subtitle: l10n.handoverHostSignatureHint,
             controller: ownerController,
           ),
         ],
@@ -52,7 +54,7 @@ class DualSignaturePadWidget extends StatelessWidget {
     );
   }
 
-  Widget _pad(BuildContext context, {
+  Widget _pad(BuildContext context, AppLocalizations l10n, {
     required String title,
     required String subtitle,
     required SignatureController controller,
@@ -89,7 +91,7 @@ class DualSignaturePadWidget extends StatelessWidget {
           child: TextButton.icon(
             onPressed: controller.clear,
             icon: const Icon(Icons.clear_rounded, size: 16),
-            label: const Text('Clear'),
+            label: Text(l10n.handoverClear),
           ),
         ),
       ],

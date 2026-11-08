@@ -14,6 +14,7 @@ class TestHarness {
     double height = 640.0,
     double textScale = 1.35,
     ThemeData? theme,
+    Locale? locale,
     List<LocalizationsDelegate<dynamic>>? localizationsDelegates,
     List<Locale>? supportedLocales,
   }) async {
@@ -30,6 +31,7 @@ class TestHarness {
     try {
       await tester.pumpWidget(
         MaterialApp(
+          locale: locale,
           theme: theme ?? ThemeData.light(useMaterial3: true),
           localizationsDelegates: localizationsDelegates,
           supportedLocales:
@@ -73,6 +75,7 @@ class TestHarness {
     required WidgetTester tester,
     required Widget screen,
     ThemeData? theme,
+    Locale? locale,
     List<LocalizationsDelegate<dynamic>>? localizationsDelegates,
     List<Locale>? supportedLocales,
   }) async {
@@ -90,6 +93,7 @@ class TestHarness {
         height: config.height,
         textScale: config.scale,
         theme: theme,
+        locale: locale,
         localizationsDelegates: localizationsDelegates,
         supportedLocales: supportedLocales,
       );

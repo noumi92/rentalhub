@@ -8,6 +8,7 @@ import '../../../bookings/domain/entities/booking_entity.dart';
 import '../../data/datasources/review_remote_data_source.dart';
 import '../widgets/rate_trip_feedback_card.dart';
 import '../widgets/star_rating_bar.dart';
+import '../../../../l10n/app_localizations.dart';
 
 // H4: a rating now writes a real `reviews/{bookingId}` document —
 // one rating per booking per side — instead of a `customerRating`
@@ -53,8 +54,7 @@ class _CustomerRateTripViewState extends State<CustomerRateTripView> {
           setState(() {
             _alreadyRated = true;
             _shopRating = (review['shopRating'] as num?)?.toInt() ?? 5;
-            _vehicleRating =
-                (review['vehicleRating'] as num?)?.toInt() ?? 5;
+            _vehicleRating = (review['vehicleRating'] as num?)?.toInt() ?? 5;
             _commentController.text =
                 (review['customerComment'] as String?) ?? '';
           });
@@ -75,10 +75,10 @@ class _CustomerRateTripViewState extends State<CustomerRateTripView> {
   }
 
   Future<void> _submitFeedback() async {
+    final l10n = AppLocalizations.of(context)!;
     setState(() => _isSubmitting = true);
     try {
-      final synced =
-          await sl<ReviewRemoteDataSource>().submitCustomerReview(
+      final synced = await sl<ReviewRemoteDataSource>().submitCustomerReview(
         bookingId: widget.booking.bookingId,
         shopId: widget.booking.shopId,
         customerId: widget.booking.customerId,
@@ -92,14 +92,14 @@ class _CustomerRateTripViewState extends State<CustomerRateTripView> {
         AppFeedback.showSuccess(
           context,
           synced
-              ? 'Thank you! Your review is saved for this trip.'
-              : 'Saved on this device — it will sync when you are back online.',
+              ? l10n.rateSaved
+              : l10n.rateSavedOffline,
         );
         widget.onRatingSubmitted?.call();
       }
     } catch (e) {
       if (mounted) {
-        AppFeedback.showError(context, 'Failed to save rating: $e');
+        AppFeedback.showError(context, l10n.rateSaveError(e.toString()));
       }
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
@@ -108,6 +108,7 @@ class _CustomerRateTripViewState extends State<CustomerRateTripView> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -116,14 +117,16 @@ class _CustomerRateTripViewState extends State<CustomerRateTripView> {
               variant: CustomCurvedHeaderVariant.compact,
               leadingWidget: widget.onBack != null
                   ? IconButton(
+                      tooltip: l10n.back,
                       icon: const Icon(Icons.arrow_back_ios_new_rounded,
                           color: Colors.white, size: 20),
                       onPressed: widget.onBack,
                     )
                   : null,
               titleWidget: Text(
-                'Rate Your Experience',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white),
+                l10n.rateTitle,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w900, color: Colors.white),
               ),
             ),
             Expanded(
@@ -135,22 +138,30 @@ class _CustomerRateTripViewState extends State<CustomerRateTripView> {
                       child: Column(
                         children: [
                           Text(
-                            'Trip Reference: ${widget.booking.bookingId}',
-                            style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.secondary),
+                            l10n.rateTripRef(widget.booking.bookingId),
+                            style: Theme.of(context)
+                                .textTheme
+                                .labelMedium
+                                ?.copyWith(
+                                    fontWeight: FontWeight.w700,
+                                    color: AppColors.secondary),
                           ),
                           const SizedBox(height: 12),
                           if (_alreadyRated)
                             Padding(
                               padding: EdgeInsets.only(bottom: 12),
                               child: Text(
-                                'You already rated this trip — your review is shown below.',
-                                style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700),
+                                l10n.rateAlreadyRated,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .labelMedium
+                                    ?.copyWith(fontWeight: FontWeight.w700),
                               ),
                             ),
                           StarRatingBar(
-                            title: 'Showroom Service Quality',
+                            title: l10n.rateShopService,
                             subtitle:
-                                'Handover speed, staff behavior, transparency',
+                                l10n.rateShopHint,
                             rating: _shopRating,
                             onRatingChanged: _alreadyRated
                                 ? null
@@ -158,9 +169,9 @@ class _CustomerRateTripViewState extends State<CustomerRateTripView> {
                           ),
                           const SizedBox(height: 12),
                           StarRatingBar(
-                            title: 'Vehicle Condition & Cleanliness',
+                            title: l10n.rateVehicleCondition,
                             subtitle:
-                                'AC cooling, tires, interior, mechanical health',
+                                l10n.rateVehicleHint,
                             rating: _vehicleRating,
                             onRatingChanged: _alreadyRated
                                 ? null
@@ -190,7 +201,7 @@ class _CustomerRateTripViewState extends State<CustomerRateTripView> {
                   ],
                 ),
                 child: DebouncedButton(
-                  text: _isSubmitting ? 'Submitting...' : 'Submit Trip Review',
+                  text: _isSubmitting ? l10n.rateSubmitting : l10n.rateSubmit,
                   icon: Icons.check_circle_rounded,
                   isLoading: _isSubmitting,
                   onPressed: _submitFeedback,

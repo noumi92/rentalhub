@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/utils/pakistani_validators.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/debounced_button.dart';
+import '../../../../l10n/app_localizations.dart';
 
 /// H1: the edit-profile sheet — name, phone and CNIC with validation.
 /// The caller saves the values (the `customers` record + the Auth
@@ -52,11 +53,12 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
   }
 
   Future<void> _save() async {
+    final l10n = AppLocalizations.of(context)!;
     final name = _nameController.text.trim();
     final phone = _phoneController.text.trim();
     final cnic = _cnicController.text.trim();
     if (name.isEmpty) {
-      AppFeedback.showError(context, 'Please enter your name.');
+      AppFeedback.showError(context, l10n.editEnterName);
       return;
     }
     final phoneErr = PakistaniValidators.validatePakistaniPhone(phone);
@@ -78,13 +80,14 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
     } catch (e) {
       if (mounted) {
         setState(() => _saving = false);
-        AppFeedback.showError(context, 'Could not save profile: $e');
+        AppFeedback.showError(context, l10n.editSaveError(e.toString()));
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: EdgeInsets.only(
         left: 16,
@@ -97,21 +100,21 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Edit Profile',
+            l10n.editProfile,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 14),
           TextField(
             controller: _nameController,
             textCapitalization: TextCapitalization.words,
-            decoration: const InputDecoration(labelText: 'Full name'),
+            decoration:  InputDecoration(labelText: l10n.editFullName),
           ),
           const SizedBox(height: 12),
           TextField(
             controller: _phoneController,
             keyboardType: TextInputType.phone,
-            decoration: const InputDecoration(
-              labelText: 'Phone',
+            decoration:  InputDecoration(
+              labelText: l10n.editPhone,
               hintText: '03xx-xxxxxxx',
             ),
           ),
@@ -119,14 +122,14 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
           TextField(
             controller: _cnicController,
             keyboardType: TextInputType.number,
-            decoration: const InputDecoration(
-              labelText: 'CNIC (optional)',
+            decoration:  InputDecoration(
+              labelText: l10n.editCnicOptional,
               hintText: '35202-1234567-1',
             ),
           ),
           const SizedBox(height: 18),
           DebouncedButton(
-            text: _saving ? 'Saving...' : 'Save Profile',
+            text: _saving ? l10n.editSaving : l10n.editSaveProfile,
             icon: Icons.check_rounded,
             isLoading: _saving,
             onPressed: _save,

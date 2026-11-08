@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../../l10n/app_localizations.dart';
 
 import  '../../../../finance/domain/entities/finance_account_entity.dart';
 import  '../../../../finance/domain/entities/finance_transfer_entity.dart';
@@ -20,19 +21,20 @@ class FinanceAccountsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+  final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('Accounts',
+            Text(l10n.financeAccountsTitle,
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.w800,
                 )),
             TextButton.icon(
               icon: const Icon(Icons.add_rounded, size: 18),
-              label: const Text('Add account'),
+              label: Text(l10n.financeAddAccount),
               onPressed: onAddAccount,
             ),
           ],
@@ -58,11 +60,11 @@ class FinanceAccountsSection extends StatelessWidget {
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           fontWeight: FontWeight.w800,
                         )),
-                    Text(a.type,
+                    Text(_accountTypeLabel(l10n, a.type),
                         style: Theme.of(context).textTheme.labelSmall),
                   ],
                 ),
-                Text('Rs. $balance',
+                Text(l10n.amountRs(balance),
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.w900,
                     )),
@@ -74,3 +76,7 @@ class FinanceAccountsSection extends StatelessWidget {
     );
   }
 }
+
+/// Stored account-type codes mapped to localized labels — the stored
+/// value itself is never changed.
+String _accountTypeLabel(AppLocalizations l10n, String type) => {'cash': l10n.financeAccountTypeCash, 'bank': l10n.financeAccountTypeBank, 'jazzcash': l10n.financeAccountTypeJazzCash, 'easypaisa': l10n.financeAccountTypeEasyPaisa}[type] ?? type;

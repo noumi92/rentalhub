@@ -14,15 +14,19 @@ class ShopFleetPhotos extends StatelessWidget {
       spacing: 8,
       runSpacing: 8,
       children: photoUrls
-          .map((url) => GestureDetector(
+          .map((url) => Semantics(
+              button: true,
+              label: 'View photo full screen',
+              // E3: the thumbnail is a labelled button for screen
+              // readers; the tap behaviour is unchanged.
+              child: GestureDetector(
                 onTap: () => showDialog(
                   context: context,
                   builder: (_) => Dialog(
                     child: Image.network(url,
                         errorBuilder: (_, __, ___) => const Padding(
                             padding: EdgeInsets.all(24),
-                            child:
-                                Text('Photo could not be loaded.'))),
+                            child: Text('Photo could not be loaded.'))),
                   ),
                 ),
                 child: ClipRRect(
@@ -36,7 +40,7 @@ class ShopFleetPhotos extends StatelessWidget {
                           height: 72,
                           child: Icon(Icons.broken_image_rounded))),
                 ),
-              ))
+              )))
           .toList(),
     );
   }

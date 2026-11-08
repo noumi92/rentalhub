@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
+import '../../l10n/app_localizations.dart';
 
 /// Phase C (C2): the ONE bottom navigation for the whole app — the
 /// customer and owner shells both render this widget, parameterized by
@@ -18,11 +21,16 @@ import 'package:flutter/material.dart';
 /// so a tab can carry a live badge — the Requests and Support tabs
 /// pass a badge widget that wraps the icon in a [Badge] when its
 /// count is nonzero, and renders the plain icon otherwise.
+///
+/// [label] is the English fallback; [l10nKey] names the localized
+/// label (resolved at render time, so the tabs follow the locale).
+/// Tests construct items without a key and keep the plain label.
 class ShellNavItem {
   final Widget icon;
   final String label;
+  final String? l10nKey;
 
-  const ShellNavItem({required this.icon, required this.label});
+  const ShellNavItem({required this.icon, required this.label, this.l10nKey});
 }
 
 class AppShellNav extends StatelessWidget {
@@ -42,11 +50,42 @@ class AppShellNav extends StatelessWidget {
     required this.items,
   });
 
+  /// Phase F: the tab label in the current locale when the item
+  /// carries an [ShellNavItem.l10nKey], else its plain [ShellNavItem.label].
+  static String labelFor(AppLocalizations? l10n, ShellNavItem item) {
+    if (l10n == null || item.l10nKey == null) return item.label;
+    switch (item.l10nKey!) {
+      case 'navHome':
+        return l10n.navHome;
+      case 'navBookings':
+        return l10n.navBookings;
+      case 'navWallet':
+        return l10n.walletLabel;
+      case 'navSupport':
+        return l10n.navSupport;
+      case 'navProfile':
+        return l10n.navProfile;
+      case 'navDashboard':
+        return l10n.navDashboard;
+      case 'navFleet':
+        return l10n.dashboardFleet;
+      case 'navRequests':
+        return l10n.navRequests;
+      case 'navCustomers':
+        return l10n.customersTitle;
+      case 'navSettings':
+        return l10n.navSettings;
+      default:
+        return item.label;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final background = theme.navigationBarTheme.backgroundColor ??
-        theme.colorScheme.primary;
+    final background =
+        theme.navigationBarTheme.backgroundColor ?? theme.colorScheme.primary;
+    final l10n = AppLocalizations.of(context);
     return Container(
       height: navHeight,
       margin: const EdgeInsets.all(navMargin),
@@ -67,10 +106,15 @@ class AppShellNav extends StatelessWidget {
           height: navHeight,
           elevation: 0,
           selectedIndex: currentIndex,
-          onDestinationSelected: onTap,
+          // E2: a light selection click on every tab tap.
+          onDestinationSelected: (index) {
+            HapticFeedback.selectionClick();
+            onTap(index);
+          },
           destinations: [
             for (final item in items)
-              NavigationDestination(icon: item.icon, label: item.label),
+              NavigationDestination(
+                  icon: item.icon, label: labelFor(l10n, item)),
           ],
         ),
       ),

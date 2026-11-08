@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/widgets/app_feedback.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../fleet/domain/entities/vehicle_entity.dart';
 import '../../../fleet/domain/usecases/update_vehicle_pricing_usecase.dart';
 import '../constants/owner_vehicle_constants.dart';
@@ -101,6 +102,7 @@ class _OwnerRateMatrixViewState extends State<OwnerRateMatrixView> {
   }
 
   Future<void> _saveRates() async {
+    final l10n = AppLocalizations.of(context)!;
     setState(() => _isSaving = true);
     try {
       final updatedPackages = _packages
@@ -139,13 +141,12 @@ class _OwnerRateMatrixViewState extends State<OwnerRateMatrixView> {
       );
 
       if (mounted) {
-        AppFeedback.showSuccess(
-            context, 'Pricing matrix updated in showroom!');
+        AppFeedback.showSuccess(context, l10n.pricingSavedSuccess);
         widget.onRatesSaved?.call();
       }
     } catch (e) {
       if (mounted) {
-        AppFeedback.showError(context, 'Failed to update rates: $e');
+        AppFeedback.showError(context, l10n.pricingSaveFailed('$e'));
       }
     } finally {
       if (mounted) setState(() => _isSaving = false);
@@ -154,6 +155,7 @@ class _OwnerRateMatrixViewState extends State<OwnerRateMatrixView> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final v = widget.vehicle;
     return Scaffold(
       body: SafeArea(
@@ -167,7 +169,7 @@ class _OwnerRateMatrixViewState extends State<OwnerRateMatrixView> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Drive Mode Availability',
+                    Text(l10n.pricingDriveModeAvailability,
                         style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
                     const SizedBox(height: 8),
                     PricingDriveModeCard(
@@ -179,11 +181,11 @@ class _OwnerRateMatrixViewState extends State<OwnerRateMatrixView> {
                           setState(() => _isWithDriver = val),
                     ),
                     const SizedBox(height: 18),
-                    Text('Rental Packages',
+                    Text(l10n.pricingRentalPackages,
                         style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
                     const SizedBox(height: 4),
                     Text(
-                        'Switch a package off to hide it from customers.',
+                        l10n.pricingPackagesHint,
                         style: Theme.of(context).textTheme.labelSmall),
                     const SizedBox(height: 8),
                     PricingPackageList(
@@ -199,7 +201,7 @@ class _OwnerRateMatrixViewState extends State<OwnerRateMatrixView> {
                       priceController: (label) => _priceControllers[label]!,
                     ),
                     const SizedBox(height: 18),
-                    Text('Pricing Policy',
+                    Text(l10n.pricingPolicyTitle,
                         style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
                     const SizedBox(height: 8),
                     PricingPolicyFields(

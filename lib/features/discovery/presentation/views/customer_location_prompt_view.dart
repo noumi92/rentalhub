@@ -9,6 +9,7 @@ import '../../../../core/widgets/custom_curved_header.dart';
 import '../../data/datasources/customer_location_store.dart';
 import 'widgets/city_selector_bar.dart';
 import 'widgets/location_confirm_card.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class CustomerLocationPromptView extends StatefulWidget {
   const CustomerLocationPromptView({super.key});
@@ -52,13 +53,14 @@ class _CustomerLocationPromptViewState extends State<CustomerLocationPromptView>
   }
 
   Future<void> _fetchCurrentGpsLocation({bool silent = false}) async {
+    final l10n = AppLocalizations.of(context)!;
     setState(() => _isLocating = true);
     try {
       final serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
         if (!silent && mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Please enable GPS / Location Services on your device.'), backgroundColor: AppColors.warning),
+             SnackBar(content: Text(l10n.locationEnableGps), backgroundColor: AppColors.warning),
           );
         }
         setState(() => _isLocating = false);
@@ -71,7 +73,7 @@ class _CustomerLocationPromptViewState extends State<CustomerLocationPromptView>
         if (permission == LocationPermission.denied) {
           if (!silent && mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: const Text('Location permission denied. Tap a city to explore.'), backgroundColor: Theme.of(context).brightness == Brightness.dark ? AppColors.errorContainerDark : AppColors.accentDanger),
+              SnackBar(content:  Text(l10n.locationPermissionDenied), backgroundColor: Theme.of(context).brightness == Brightness.dark ? AppColors.errorContainerDark : AppColors.accentDanger),
             );
           }
           setState(() => _isLocating = false);
@@ -87,7 +89,7 @@ class _CustomerLocationPromptViewState extends State<CustomerLocationPromptView>
 
         setState(() {
           _currentCenter = userLatLng;
-          _selectedCity = 'My Live Location';
+          _selectedCity = l10n.homeMyLiveLocation;
           _addressLabel = '${userLatLng.latitude.toStringAsFixed(4)}°N, ${userLatLng.longitude.toStringAsFixed(4)}°E';
           _fromGps = true;
         });
@@ -118,6 +120,7 @@ class _CustomerLocationPromptViewState extends State<CustomerLocationPromptView>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -125,7 +128,9 @@ class _CustomerLocationPromptViewState extends State<CustomerLocationPromptView>
             CustomCurvedHeader(
               variant: CustomCurvedHeaderVariant.compact,
               leadingWidget: IconButton(
-                icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 18),
+                tooltip: l10n.back,
+                icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                    color: Colors.white, size: 18),
                 onPressed: () {
                   if (context.canPop()) {
                     context.pop();
@@ -135,7 +140,7 @@ class _CustomerLocationPromptViewState extends State<CustomerLocationPromptView>
                 },
               ),
               titleWidget: Text(
-                'Set Rental Location',
+                l10n.locationSetTitle,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800, color: Colors.white),
               ),
             ),
@@ -193,7 +198,7 @@ class _CustomerLocationPromptViewState extends State<CustomerLocationPromptView>
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                             decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(12)),
-                            child: Text('Center Location Pin', style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700, color: Colors.white)),
+                            child: Text(l10n.locationCenterPin, style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700, color: Colors.white)),
                           ),
                           const SizedBox(height: 2),
                           const Icon(Icons.location_on_rounded, size: 46, color: AppColors.secondary),

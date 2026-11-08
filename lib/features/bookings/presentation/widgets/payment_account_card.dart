@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../../../core/widgets/app_feedback.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class PaymentAccountCard extends StatelessWidget {
   final String methodTitle;
@@ -22,6 +23,7 @@ class PaymentAccountCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -62,22 +64,22 @@ class PaymentAccountCard extends StatelessWidget {
               IconButton(
                 icon: const Icon(Icons.copy_rounded,
                     size: 19),
-                tooltip: 'Copy Number',
+                tooltip: l10n.paymentCopyNumber,
                 onPressed: () {
                   Clipboard.setData(ClipboardData(text: iban ?? accountNumber));
                   AppFeedback.showSuccess(
-                      context, '$methodTitle account copied to clipboard');
+                      context, l10n.paymentCopied(methodTitle));
                 },
               ),
             ],
           ),
           const Divider(height: 18),
-          _buildInfoRow(context, 'Account Title', accountTitle),
+          _buildInfoRow(context, l10n.paymentAccountTitle, accountTitle),
           const SizedBox(height: 6),
-          _buildInfoRow(context, 'Account / Mobile', accountNumber),
+          _buildInfoRow(context, l10n.paymentAccountMobile, accountNumber),
           if (iban != null && iban!.isNotEmpty) ...[
             const SizedBox(height: 6),
-            _buildInfoRow(context, 'IBAN Number', iban!),
+            _buildInfoRow(context, l10n.paymentIban, iban!),
           ],
         ],
       ),

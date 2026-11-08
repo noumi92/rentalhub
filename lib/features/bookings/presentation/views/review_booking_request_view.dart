@@ -9,6 +9,7 @@ import '../../../customer/data/datasources/customer_remote_data_source.dart';
 import '../../domain/entities/booking_entity.dart';
 import '../widgets/advance_deposit_notice_card.dart';
 import '../widgets/booking_summary_card.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class ReviewBookingRequestView extends StatefulWidget {
   final Map<String, dynamic> bookingDraft;
@@ -38,6 +39,7 @@ class _ReviewBookingRequestViewState extends State<ReviewBookingRequestView> {
   }
 
   Future<void> _submitRequest() async {
+    final l10n = AppLocalizations.of(context)!;
     setState(() => _isSubmitting = true);
     try {
       // C2: the request is filed under the signed-in customer's own
@@ -55,8 +57,8 @@ class _ReviewBookingRequestViewState extends State<ReviewBookingRequestView> {
           customerName = user.displayName ?? customerName;
           customerPhone = user.phoneNumber ?? customerPhone;
           if (sl.isRegistered<CustomerRemoteDataSource>()) {
-            final record = await sl<CustomerRemoteDataSource>()
-                .getCustomerById(user.uid);
+            final record =
+                await sl<CustomerRemoteDataSource>().getCustomerById(user.uid);
             if (record != null) {
               customerName = record.name;
               customerPhone = record.phone;
@@ -92,12 +94,13 @@ class _ReviewBookingRequestViewState extends State<ReviewBookingRequestView> {
       );
 
       if (mounted) {
-        AppFeedback.showSuccess(context, 'Reservation request sent to showroom!');
+        AppFeedback.showSuccess(
+            context, l10n.reviewSent);
         widget.onRequestCreated?.call(booking);
       }
     } catch (e) {
       if (mounted) {
-        AppFeedback.showError(context, 'Failed to submit booking: $e');
+        AppFeedback.showError(context, l10n.reviewSubmitError(e.toString()));
       }
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
@@ -106,6 +109,7 @@ class _ReviewBookingRequestViewState extends State<ReviewBookingRequestView> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final d = widget.bookingDraft;
     return Scaffold(
       body: SafeArea(
@@ -115,14 +119,16 @@ class _ReviewBookingRequestViewState extends State<ReviewBookingRequestView> {
               variant: CustomCurvedHeaderVariant.compact,
               leadingWidget: widget.onBack != null
                   ? IconButton(
+                      tooltip: l10n.back,
                       icon: const Icon(Icons.arrow_back_ios_new_rounded,
                           color: Colors.white, size: 20),
                       onPressed: widget.onBack,
                     )
                   : null,
               titleWidget: Text(
-                'Review Reservation',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white),
+                l10n.reviewTitle,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w900, color: Colors.white),
               ),
             ),
             Expanded(
@@ -133,9 +139,9 @@ class _ReviewBookingRequestViewState extends State<ReviewBookingRequestView> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     BookingSummaryCard(
-                      carName: d['carName'] as String? ?? 'Vehicle',
+                      carName: d['carName'] as String? ?? l10n.summaryVehicle,
                       plateNumber: d['plateNumber'] as String? ?? 'PAK-1234',
-                      shopName: d['shopName'] as String? ?? 'Rental Showroom',
+                      shopName: d['shopName'] as String? ?? l10n.rentalShowroom,
                       isWithDriver: d['isWithDriver'] as bool? ?? false,
                       packageType: d['packageType'] as String? ?? '24h',
                       pickupTime:
@@ -146,8 +152,7 @@ class _ReviewBookingRequestViewState extends State<ReviewBookingRequestView> {
                       advanceRequired: d['advanceRequired'] as int? ?? 1000,
                       tripType: d['tripType'] as String? ?? 'in_city',
                       kmLimit: d['kmLimit'] as int?,
-                      securityDepositPkr:
-                          d['securityDepositPkr'] as int?,
+                      securityDepositPkr: d['securityDepositPkr'] as int?,
                       destinationCity: d['destinationCity'] as String?,
                     ),
                     const SizedBox(height: 14),
@@ -160,14 +165,18 @@ class _ReviewBookingRequestViewState extends State<ReviewBookingRequestView> {
                       decoration: BoxDecoration(
                         color: Theme.of(context).colorScheme.surface,
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: Theme.of(context).dividerColor),
+                        border:
+                            Border.all(color: Theme.of(context).dividerColor),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Special Instructions for Showroom',
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
+                            l10n.reviewSpecialInstructions,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(fontWeight: FontWeight.w700),
                           ),
                           const SizedBox(height: 8),
                           TextField(
@@ -175,14 +184,16 @@ class _ReviewBookingRequestViewState extends State<ReviewBookingRequestView> {
                             maxLines: 2,
                             decoration: InputDecoration(
                               hintText:
-                                  'E.g. Clean car required, airport terminal pickup...',
+                                  l10n.reviewInstructionsHint,
                               hintStyle: Theme.of(context).textTheme.bodySmall,
                               filled: true,
-                              fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                              fillColor: Theme.of(context)
+                                  .colorScheme
+                                  .surfaceContainerHighest,
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
-                                borderSide:
-                                    BorderSide(color: Theme.of(context).dividerColor),
+                                borderSide: BorderSide(
+                                    color: Theme.of(context).dividerColor),
                               ),
                               contentPadding: const EdgeInsets.all(10),
                             ),
@@ -207,7 +218,9 @@ class _ReviewBookingRequestViewState extends State<ReviewBookingRequestView> {
                 ],
               ),
               child: DebouncedButton(
-                text: _isSubmitting ? 'Sending Request...' : 'Send Request to Owner',
+                text: _isSubmitting
+                    ? l10n.reviewSending
+                    : l10n.reviewSendRequest,
                 icon: Icons.send_rounded,
                 isLoading: _isSubmitting,
                 onPressed: _submitRequest,

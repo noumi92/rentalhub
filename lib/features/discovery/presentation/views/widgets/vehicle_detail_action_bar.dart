@@ -6,6 +6,7 @@ import '../../../../../core/utils/whatsapp.dart';
 import '../../../../../core/widgets/app_feedback.dart';
 import '../../../../../core/widgets/debounced_button.dart';
 import '../../../../fleet/domain/entities/vehicle_entity.dart';
+import '../../../../../l10n/app_localizations.dart';
 
 /// Phase A (A1): the bottom action bar of the car detail screen —
 /// WhatsApp the shop + Book Now — extracted so the view stays under the
@@ -30,6 +31,7 @@ class VehicleDetailActionBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final v = vehicle;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -46,13 +48,12 @@ class VehicleDetailActionBar extends StatelessWidget {
             onPressed: () async {
               final uri = whatsappUri(
                 phone: shopPhone,
-                message: 'Hi $shopName, I am interested in the '
-                    '${v.displayName} (${v.plateNumber}) on RentalHub.',
+                message: l10n.vehicleWhatsappInterest(shopName, v.displayName, v.plateNumber),
               );
               if (uri == null) {
                 AppFeedback.showInfo(
                   context,
-                  'This shop has no WhatsApp number listed.',
+                  l10n.shopNoWhatsapp,
                 );
                 return;
               }
@@ -63,7 +64,7 @@ class VehicleDetailActionBar extends StatelessWidget {
                 if (context.mounted) {
                   AppFeedback.showError(
                     context,
-                    'Could not open WhatsApp.',
+                    l10n.couldNotOpenWhatsapp,
                   );
                 }
               }
@@ -79,13 +80,13 @@ class VehicleDetailActionBar extends StatelessWidget {
             ),
             icon: Icon(Icons.chat_bubble_outline_rounded,
                 size: 18, color: AppColors.successOnContainerFor(Theme.of(context).brightness)),
-            label: const Text('WhatsApp',
+            label:  Text(l10n.whatsapp,
                 style: TextStyle(fontWeight: FontWeight.w700)),
           ),
           const SizedBox(width: 10),
           Expanded(
             child: DebouncedButton(
-              text: 'Book Now (Rs. $selectedRate)',
+              text: l10n.bookNowWithRate(selectedRate),
               icon: Icons.check_circle_outline_rounded,
               onPressed: () async {
                 if (onBookNow != null) {
@@ -93,7 +94,7 @@ class VehicleDetailActionBar extends StatelessWidget {
                 } else {
                   AppFeedback.showInfo(
                     context,
-                    'Selected: ${withDriver ? "With Chauffeur" : "Self-Drive"}. Advance deposit required.',
+                    l10n.vehicleSelectedMode(withDriver ? l10n.withChauffeur : l10n.selfDriveHyphen),
                   );
                 }
               },

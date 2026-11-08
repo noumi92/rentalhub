@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../l10n/app_localizations.dart';
 
 
 /// The optional comment field on the rate-trip screen. Extracted
@@ -16,6 +17,7 @@ class RateTripFeedbackCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -27,7 +29,7 @@ class RateTripFeedbackCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Additional Feedback (Optional)',
+            l10n.rateFeedbackLabel,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 8),
@@ -37,7 +39,7 @@ class RateTripFeedbackCard extends StatelessWidget {
             readOnly: readOnly,
             decoration: InputDecoration(
               hintText:
-                  'Share any highlights or suggestions for future renters...',
+                  l10n.rateFeedbackHint,
               filled: true,
               fillColor:
                   Theme.of(context).colorScheme.surfaceContainerHighest,

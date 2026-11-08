@@ -8,6 +8,7 @@ import 'package:qr_flutter/qr_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:rentalhub/core/di/injection_container.dart' as di;
 import 'package:rentalhub/features/bookings/data/datasources/booking_remote_data_source.dart';
+import 'package:rentalhub/l10n/app_localizations.dart';
 import 'package:rentalhub/features/bookings/domain/entities/booking_entity.dart';
 import 'package:rentalhub/features/customer/presentation/widgets/booking_ticket_card.dart';
 import 'package:rentalhub/features/handover/data/datasources/handover_local_data_source.dart';
@@ -120,7 +121,11 @@ void main() {
         remainingBalance: 6000,
       );
       await tester.pumpWidget(
-        MaterialApp(home: OwnerHandoverSignatureView(booking: booking)),
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: OwnerHandoverSignatureView(booking: booking),
+        ),
       );
       await tester.pumpAndSettle();
       expect(find.text('Dual Legal Endorsement & Signatures'),
@@ -179,6 +184,8 @@ void main() {
       );
       await tester.pumpWidget(
         MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           home: OwnerContractView(
             booking: booking,
             pdfBytes: pdf,
@@ -217,6 +224,8 @@ void main() {
           );
       await tester.pumpWidget(
         MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
             body: BookingTicketCard(
               booking: booking('RH-E3-5', 'paid'),
@@ -230,6 +239,8 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
             body: BookingTicketCard(
               booking: booking('RH-E3-6', 'requested'),
@@ -264,6 +275,8 @@ void main() {
       );
       await tester.pumpWidget(
         const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           home: OwnerBookingRequestsView(shopId: 'shop-1'),
         ),
       );

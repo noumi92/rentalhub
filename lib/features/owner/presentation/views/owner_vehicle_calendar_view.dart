@@ -6,6 +6,7 @@ import '../../../../core/constants/app_dimensions.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/utils/responsive.dart';
 import '../../../../core/widgets/custom_curved_header.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
 import '../../../fleet/domain/entities/vehicle_entity.dart';
@@ -54,8 +55,8 @@ class _OwnerVehicleCalendarViewState extends State<OwnerVehicleCalendarView> {
   List<BookingEntity> _bookingsOn(DateTime day) {
     final d = DateTime(day.year, day.month, day.day);
     return _bookings.where((b) {
-      final from = DateTime(
-          b.pickupTime.year, b.pickupTime.month, b.pickupTime.day);
+      final from =
+          DateTime(b.pickupTime.year, b.pickupTime.month, b.pickupTime.day);
       final to =
           DateTime(b.returnTime.year, b.returnTime.month, b.returnTime.day);
       return !d.isBefore(from) && !d.isAfter(to);
@@ -65,6 +66,7 @@ class _OwnerVehicleCalendarViewState extends State<OwnerVehicleCalendarView> {
   /// The month grid + legend, shared by the compact stack and the
   /// medium+ side-by-side layout.
   Widget _gridSection() {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       children: [
         AvailabilityMonthGrid(
@@ -84,10 +86,14 @@ class _OwnerVehicleCalendarViewState extends State<OwnerVehicleCalendarView> {
           spacing: 16,
           runSpacing: 8,
           children: [
-            _legend(AppColors.successContainerFor(Theme.of(context).brightness), 'Free'),
-            _legend(AppColors.warningContainerFor(Theme.of(context).brightness), 'Requested'),
-            _legend(AppColors.errorContainerFor(Theme.of(context).brightness), 'Confirmed'),
-            _legend(Theme.of(context).colorScheme.surfaceContainerHighest, 'Past'),
+            _legend(AppColors.successContainerFor(Theme.of(context).brightness),
+                l10n.calendarFree),
+            _legend(AppColors.warningContainerFor(Theme.of(context).brightness),
+                l10n.calendarRequested),
+            _legend(AppColors.errorContainerFor(Theme.of(context).brightness),
+                l10n.calendarConfirmed),
+            _legend(
+                Theme.of(context).colorScheme.surfaceContainerHighest, l10n.calendarPast),
           ],
         ),
       ],
@@ -98,9 +104,10 @@ class _OwnerVehicleCalendarViewState extends State<OwnerVehicleCalendarView> {
   /// picked (as today); medium+ always shows the column, with a hint
   /// until a day is picked.
   Widget _detailSection({required bool showHint}) {
+    final l10n = AppLocalizations.of(context)!;
     if (_selectedDay == null) {
       if (!showHint) return const SizedBox.shrink();
-      return Text('Tap a day to see its bookings.',
+      return Text(l10n.calendarTapDayHint,
           style: Theme.of(context).textTheme.bodyMedium);
     }
     final selectedBookings = _bookingsOn(_selectedDay!);
@@ -108,12 +115,14 @@ class _OwnerVehicleCalendarViewState extends State<OwnerVehicleCalendarView> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Bookings on ${_selectedDay!.day}/${_selectedDay!.month}/${_selectedDay!.year}',
-          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
+          l10n.calendarBookingsOn(_selectedDay!.day, _selectedDay!.month, _selectedDay!.year),
+          style: Theme.of(context)
+              .textTheme
+              .titleSmall
+              ?.copyWith(fontWeight: FontWeight.w800),
         ),
         const SizedBox(height: 8),
-        if (selectedBookings.isEmpty)
-          const Text('No bookings on this day.'),
+        if (selectedBookings.isEmpty) Text(l10n.calendarNoBookingsDay),
         ...selectedBookings.map((b) => Card(
               margin: const EdgeInsets.only(bottom: 8),
               child: ListTile(
@@ -122,7 +131,7 @@ class _OwnerVehicleCalendarViewState extends State<OwnerVehicleCalendarView> {
                 subtitle: Text(
                     '${b.packageType} • ${b.pickupTime.hour}:${b.pickupTime.minute.toString().padLeft(2, '0')} → ${b.returnTime.day}/${b.returnTime.month}'),
                 trailing: Chip(
-                    label: Text(b.status,
+                    label: Text(_statusLabel(l10n, b.status),
                         style: Theme.of(context).textTheme.labelSmall)),
               ),
             )),
@@ -132,6 +141,7 @@ class _OwnerVehicleCalendarViewState extends State<OwnerVehicleCalendarView> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final v = widget.vehicle;
     return Scaffold(
       body: SafeArea(
@@ -140,6 +150,7 @@ class _OwnerVehicleCalendarViewState extends State<OwnerVehicleCalendarView> {
             CustomCurvedHeader(
               variant: CustomCurvedHeaderVariant.compact,
               leadingWidget: IconButton(
+                tooltip: l10n.back,
                 icon: const Icon(Icons.arrow_back_ios_new_rounded,
                     color: Colors.white, size: 20),
                 onPressed: widget.onBack ?? () => context.pop(),
@@ -147,10 +158,14 @@ class _OwnerVehicleCalendarViewState extends State<OwnerVehicleCalendarView> {
               titleWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Booking Calendar',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
+                  Text(l10n.calendarTitle,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w900, color: Colors.white)),
                   Text(v.displayName,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.primaryContainer)),
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodySmall
+                          ?.copyWith(color: AppColors.primaryContainer)),
                 ],
               ),
             ),
@@ -158,8 +173,8 @@ class _OwnerVehicleCalendarViewState extends State<OwnerVehicleCalendarView> {
               child: _loading
                   ? const Center(child: CircularProgressIndicator())
                   : ListView(
-                      padding: const EdgeInsets.all(
-                          AppDimensions.paddingVertical),
+                      padding:
+                          const EdgeInsets.all(AppDimensions.paddingVertical),
                       children: [
                         // D3: medium+ puts the month grid beside the
                         // day agenda; compact keeps the stacked
@@ -178,8 +193,7 @@ class _OwnerVehicleCalendarViewState extends State<OwnerVehicleCalendarView> {
                           )
                         else ...[
                           _gridSection(),
-                          const SizedBox(
-                              height: AppDimensions.paddingVertical),
+                          const SizedBox(height: AppDimensions.paddingVertical),
                           _detailSection(showHint: false),
                         ],
                       ],
@@ -207,3 +221,7 @@ class _OwnerVehicleCalendarViewState extends State<OwnerVehicleCalendarView> {
     );
   }
 }
+
+/// The stored status code stays as-is; only the displayed label is
+/// localized. Unknown codes fall back to the raw code.
+String _statusLabel(AppLocalizations l10n, String status) => {'requested': l10n.requestsStatusRequested, 'payment_submitted': l10n.statusProofSubmitted, 'approved': l10n.statusApproved, 'paid': l10n.statusPaid, 'active': l10n.active, 'completed': l10n.statusCompleted, 'rejected': l10n.statusRejected, 'cancelled': l10n.statusCancelled}[status] ?? status;

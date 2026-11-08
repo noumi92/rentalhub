@@ -45,6 +45,81 @@ const Map<String, String> kLightTokens = {
   'borderDark': '0xFF23274D',
 };
 
+// Rulebook §4.2 (Phase A3): the dark container / on-container tokens.
+// The pale light containers glare in dark mode, so dark mode uses
+// these darker slabs with a light on-container colour for the text
+// and icons that sit on them. `primaryFocusedOnDark` exists because
+// `primaryOnDark` is invisible against the dark field fill.
+const Map<String, String> kDarkContainerTokens = {
+  'successContainer': '0xFFECFDF5',
+  'successContainerDark': '0xFF123524',
+  'successOnContainerDark': '0xFF86EFAC',
+  'errorContainer': '0xFFFEF2F2',
+  'errorContainerDark': '0xFF3B1215',
+  'errorOnContainerDark': '0xFFFCA5A5',
+  'warning': '0xFFF59E0B',
+  'warningContainer': '0xFFFFFBEB',
+  'warningContainerDark': '0xFF3A2A05',
+  'warningOnContainerDark': '0xFFFCD34D',
+  'primaryFocusedOnDark': '0xFF6C72D9',
+  'surfaceContainerDark': '0xFF171A30',
+  'surfaceContainerHighestDark': '0xFF1E2138',
+  'surfaceContainerHighestLight': '0xFFF8FAFC',
+  'headerGradientEnd': '0xFF242875',
+  'errorDark': '0xFFDC2626',
+};
+
+// Rulebook §4.2: every canonical token NAME must bind to its rulebook
+// VALUE in `AppColors` — a hex-presence check alone would pass if the
+// value lived under the wrong name. Aliases (`background`,
+// `textPrimary`, `textSecondary`, `textMuted`) are excluded: they
+// reference another constant instead of a literal.
+const Map<String, String> kTokenBindings = {
+  'primary': '0xFF1B1E5C',
+  'primaryDark': '0xFF16194F',
+  'primaryOnDark': '0xFF252B7A',
+  'primaryContainerOnDark': '0xFF1A1D42',
+  'primaryDarkOnDark': '0xFF0B0D26',
+  'primaryLight': '0xFFEEF0FF',
+  'primaryContainer': '0xFFEEF0FF',
+  'secondary': '0xFFF95700',
+  'secondaryLight': '0xFFFFF3EB',
+  'secondaryDark': '0xFFFF6D24',
+  'secondaryLightDark': '0xFF3D1B08',
+  'secondaryContainer': '0xFFFFF3EB',
+  'backgroundLight': '0xFFF8FAFC',
+  'backgroundDark': '0xFF0A0B1A',
+  'surfaceLight': '0xFFFFFFFF',
+  'surfaceDark': '0xFF13152C',
+  'surfaceElevated': '0xFFF1F5F9',
+  'surfaceElevatedDark': '0xFF1C1F3D',
+  'onSurfaceLight': '0xFF0F172A',
+  'onSurfaceDark': '0xFFF8FAFC',
+  'onSurfaceVariantLight': '0xFF64748B',
+  'onSurfaceVariantDark': '0xFF94A3B8',
+  'accentDanger': '0xFFEF4444',
+  'accentDangerDark': '0xFFF87171',
+  'accentSuccess': '0xFF10B981',
+  'accentSuccessDark': '0xFF34D399',
+  'borderSubtle': '0xFFE2E8F0',
+  'borderDark': '0xFF23274D',
+  'successContainer': '0xFFECFDF5',
+  'successContainerDark': '0xFF123524',
+  'successOnContainerDark': '0xFF86EFAC',
+  'errorContainer': '0xFFFEF2F2',
+  'errorContainerDark': '0xFF3B1215',
+  'errorOnContainerDark': '0xFFFCA5A5',
+  'warning': '0xFFF59E0B',
+  'warningContainer': '0xFFFFFBEB',
+  'warningContainerDark': '0xFF3A2A05',
+  'warningOnContainerDark': '0xFFFCD34D',
+  'primaryFocusedOnDark': '0xFF6C72D9',
+  'surfaceContainerDark': '0xFF171A30',
+  'surfaceContainerHighestDark': '0xFF1E2138',
+  'headerGradientEnd': '0xFF242875',
+  'errorDark': '0xFFDC2626',
+};
+
 void main() {
   group('Rulebook §4.2 — colour tokens', () {
     test('AppColors contains every required light/dark token value', () {
@@ -57,6 +132,52 @@ void main() {
       expect(missing, isEmpty,
           reason:
               'Rulebook §4.2: token values missing from AppColors:\n${missing.join('\n')}');
+    });
+
+    test('AppColors contains the dark container / on-container tokens', () {
+      final content =
+          File('lib/core/constants/app_colors.dart').readAsStringSync();
+      final missing = <String>[];
+      kDarkContainerTokens.forEach((name, hex) {
+        if (!content.contains(hex)) missing.add('$name $hex');
+      });
+      expect(missing, isEmpty,
+          reason:
+              'Rulebook §4.2 (Phase A3): dark container tokens missing from AppColors:\n${missing.join('\n')}');
+    });
+
+    test('AppColors binds each canonical token name to its rulebook value',
+        () {
+      // A hex-presence check would pass if the value lived under the
+      // wrong name; this test pins the name -> value binding for
+      // every canonical token, light and dark, including the
+      // container / on-container tokens.
+      final content =
+          File('lib/core/constants/app_colors.dart').readAsStringSync();
+      final wrong = <String>[];
+      kTokenBindings.forEach((name, hex) {
+        if (!content.contains('static const Color $name = Color($hex)')) {
+          wrong.add('$name should be $hex');
+        }
+      });
+      expect(wrong, isEmpty,
+          reason:
+              'Rulebook §4.2: token name/value bindings wrong in AppColors:\n${wrong.join('\n')}');
+    });
+
+    test('app_theme.dart contains zero colour literals anywhere (D9)', () {
+      // Rulebook §6.3 / D9: every colour in the theme file comes from
+      // AppColors. The earlier test only scanned the dark section;
+      // this one scans the whole file. The file's doc comment mentions
+      // `Color(0xFF…)` with an ellipsis, which the strict regex below
+      // does not match — only a real 6-digit literal fails.
+      final content =
+          File('lib/core/theme/app_theme.dart').readAsStringSync();
+      final literals =
+          RegExp(r'Color\(0x[0-9A-Fa-f]{6,8}\)').allMatches(content).length;
+      expect(literals, 0,
+          reason:
+              'Rulebook §6.3 (D9): app_theme.dart has $literals hardcoded colour literals. New literals are banned — use AppColors.');
     });
 
     test('dark theme hardcodes no colour literals (D9 resolved in Phase A)',
@@ -98,6 +219,33 @@ void main() {
       expect(theme.colorScheme.primaryContainer, const Color(0xFF1A1D42));
       expect(theme.scaffoldBackgroundColor, const Color(0xFF0A0B1A));
       expect(theme.brightness, Brightness.dark);
+    });
+
+    testWidgets('dark theme uses the dark container tokens, light the light ones',
+        (tester) async {
+      // Rulebook §4.2 (Phase A3): the dark theme's surface containers
+      // are the dark container tokens, not the light tints — a pale
+      // container glares on a dark surface.
+      await tester.pumpWidget(
+        MaterialApp(theme: AppTheme.darkTheme, home: const Scaffold()),
+      );
+      final dark = Theme.of(tester.element(find.byType(Scaffold)));
+      expect(dark.colorScheme.surfaceContainer, const Color(0xFF171A30));
+      expect(
+          dark.colorScheme.surfaceContainerHighest, const Color(0xFF1E2138));
+      expect(dark.colorScheme.secondaryContainer, const Color(0xFF3D1B08));
+
+      await tester.pumpWidget(
+        MaterialApp(theme: AppTheme.lightTheme, home: const Scaffold()),
+      );
+      // AnimatedTheme lerps from the dark theme over 200 ms — settle
+      // the animation before reading, or Theme.of still returns dark.
+      await tester.pumpAndSettle();
+      final light = Theme.of(tester.element(find.byType(Scaffold)));
+      expect(light.colorScheme.surfaceContainer, const Color(0xFFF1F5F9));
+      expect(light.colorScheme.surfaceContainerHighest,
+          const Color(0xFFF8FAFC));
+      expect(light.colorScheme.secondaryContainer, const Color(0xFFFFF3EB));
     });
 
     testWidgets('light and dark themes differ (dark is not a copy of light)',

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import '../../../../../l10n/app_localizations.dart';
 
 import '../../../../../core/di/injection_container.dart';
 import '../../../../../core/widgets/debounced_button.dart';
-import  '../../../../finance/data/datasources/finance_transfer_data_source.dart';
-import  '../../../../finance/domain/entities/finance_account_entity.dart';
-import  '../../../../fleet/domain/entities/vehicle_entity.dart';
+import '../../../../finance/data/datasources/finance_transfer_data_source.dart';
+import '../../../../finance/domain/entities/finance_account_entity.dart';
+import '../../../../fleet/domain/entities/vehicle_entity.dart';
 
 /// Phase B (H2): the form for one ledger entry. Salaries are
 /// recorded here too — as an expense with the 'salary' category
@@ -53,11 +54,9 @@ class _AddTransferSheetState extends State<AddTransferSheet> {
   @override
   void initState() {
     super.initState();
-    _accountId = widget.accounts
-            .where((a) => a.isDefault)
-            .firstOrNull
-            ?.accountId ??
-        widget.accounts.firstOrNull?.accountId;
+    _accountId =
+        widget.accounts.where((a) => a.isDefault).firstOrNull?.accountId ??
+            widget.accounts.firstOrNull?.accountId;
   }
 
   @override
@@ -93,8 +92,9 @@ class _AddTransferSheetState extends State<AddTransferSheet> {
 
   @override
   Widget build(BuildContext context) {
+  final l10n = AppLocalizations.of(context)!;
     return AlertDialog(
-      title: const Text('Add ledger entry'),
+      title: Text(l10n.financeAddTransfer),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -102,7 +102,8 @@ class _AddTransferSheetState extends State<AddTransferSheet> {
             Row(
               children: [
                 ChoiceChip(
-                  label: const Text('Income'),
+                  materialTapTargetSize: MaterialTapTargetSize.padded,
+                  label: Text(l10n.financeIncome),
                   selected: _kind == 'income',
                   onSelected: (_) => setState(() {
                     _kind = 'income';
@@ -111,7 +112,8 @@ class _AddTransferSheetState extends State<AddTransferSheet> {
                 ),
                 const SizedBox(width: 8),
                 ChoiceChip(
-                  label: const Text('Expense'),
+                  materialTapTargetSize: MaterialTapTargetSize.padded,
+                  label: Text(l10n.financeExpense),
                   selected: _kind == 'expense',
                   onSelected: (_) => setState(() {
                     _kind = 'expense';
@@ -124,10 +126,11 @@ class _AddTransferSheetState extends State<AddTransferSheet> {
             DropdownButtonFormField<String>(
               dropdownColor: Theme.of(context).colorScheme.surface,
               initialValue: _category,
-              decoration: const InputDecoration(
-                  labelText: 'Category', border: OutlineInputBorder()),
+              decoration: InputDecoration(
+                  labelText: l10n.financeCategoryLabel, border: OutlineInputBorder()),
               items: _categories
-                  .map((c) => DropdownMenuItem(value: c, child: Text(c)))
+                  .map((c) => DropdownMenuItem(
+                      value: c, child: Text(_categoryLabel(l10n, c))))
                   .toList(),
               onChanged: (v) =>
                   setState(() => _category = v ?? _categories.first),
@@ -136,18 +139,18 @@ class _AddTransferSheetState extends State<AddTransferSheet> {
             TextField(
               controller: _amountController,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                  labelText: 'Amount (Rs.)', border: OutlineInputBorder()),
+              decoration: InputDecoration(
+                  labelText: l10n.financeAmountRs, border: OutlineInputBorder()),
             ),
             const SizedBox(height: 12),
             DropdownButtonFormField<String>(
               dropdownColor: Theme.of(context).colorScheme.surface,
               initialValue: _accountId,
-              decoration: const InputDecoration(
-                  labelText: 'Account', border: OutlineInputBorder()),
+              decoration: InputDecoration(
+                  labelText: l10n.financeAccountFallback, border: OutlineInputBorder()),
               items: widget.accounts
-                  .map((a) => DropdownMenuItem(
-                      value: a.accountId, child: Text(a.name)))
+                  .map((a) =>
+                      DropdownMenuItem(value: a.accountId, child: Text(a.name)))
                   .toList(),
               onChanged: (v) => setState(() => _accountId = v),
             ),
@@ -155,12 +158,12 @@ class _AddTransferSheetState extends State<AddTransferSheet> {
             DropdownButtonFormField<String?>(
               dropdownColor: Theme.of(context).colorScheme.surface,
               initialValue: _vehicleId,
-              decoration: const InputDecoration(
-                  labelText: 'Vehicle (optional — for car P&L)',
+              decoration: InputDecoration(
+                  labelText: l10n.financeVehicleOptional,
                   border: OutlineInputBorder()),
               items: [
-                const DropdownMenuItem<String?>(
-                    value: null, child: Text('No vehicle')),
+                DropdownMenuItem<String?>(
+                    value: null, child: Text(l10n.financeNoVehicle)),
                 ...widget.vehicles.map((v) => DropdownMenuItem<String?>(
                     value: v.vehicleId, child: Text(v.displayName))),
               ],
@@ -169,9 +172,9 @@ class _AddTransferSheetState extends State<AddTransferSheet> {
             const SizedBox(height: 12),
             TextField(
               controller: _noteController,
-              decoration: const InputDecoration(
-                  labelText: 'Note (optional)',
-                  hintText: 'e.g. driver salary — Ahmed',
+              decoration: InputDecoration(
+                  labelText: l10n.financeNoteOptional,
+                  hintText: l10n.financeNoteHint,
                   border: OutlineInputBorder()),
             ),
           ],
@@ -180,10 +183,10 @@ class _AddTransferSheetState extends State<AddTransferSheet> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
+          child: Text(l10n.cancel),
         ),
         DebouncedButton(
-          text: _isSaving ? 'Saving...' : 'Save entry',
+          text: _isSaving ? l10n.editSaving : l10n.financeSaveEntry,
           isLoading: _isSaving,
           onPressed: _save,
         ),
@@ -191,3 +194,7 @@ class _AddTransferSheetState extends State<AddTransferSheet> {
     );
   }
 }
+
+/// Stored ledger category codes mapped to localized labels — the
+/// stored value itself is never changed.
+String _categoryLabel(AppLocalizations l10n, String category) => {'rent': l10n.financeCategoryRent, 'deposit': l10n.addVehicleReviewDeposit, 'other': l10n.blacklistReasonOther, 'fuel': l10n.financeCategoryFuel, 'maintenance': l10n.fleetFilterMaintenance, 'salary': l10n.financeCategorySalary, 'partner_share': l10n.financeCategoryPartnerShare, 'deposit_refund': l10n.financeCategoryDepositRefund}[category] ?? category;

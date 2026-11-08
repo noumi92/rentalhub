@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/widgets/app_feedback.dart';
+import '../../../../core/widgets/app_state_views.dart';
 import '../../../../core/widgets/custom_curved_header.dart';
 import '../../../../core/widgets/verified_badge.dart';
 import 'widgets/shop_vehicle_card.dart';
@@ -11,6 +12,7 @@ import '../../../customer/domain/entities/customer_entity.dart';
 import '../../../fleet/data/datasources/fleet_remote_data_source.dart';
 import '../../../fleet/domain/entities/vehicle_entity.dart';
 import '../../domain/entities/shop_entity.dart';
+import '../../../../l10n/app_localizations.dart';
 
 /// Phase A (A1): the shop detail screen now loads the shop's real fleet
 /// from Firestore instead of the mock database. A shop with no cars shows
@@ -36,6 +38,9 @@ class ShopDetailView extends StatefulWidget {
 class _ShopDetailViewState extends State<ShopDetailView> {
   List<VehicleEntity>? _vehicles;
   bool _loading = true;
+  // E2: a load failure used to throw out of [_loadVehicles] unhandled;
+  // it now renders an error state with retry.
+  bool _hasError = false;
 
   // H5: whether this showroom is saved by the signed-in customer.
   CustomerEntity? _customer;
@@ -64,9 +69,10 @@ class _ShopDetailViewState extends State<ShopDetailView> {
   }
 
   Future<void> _toggleSaved() async {
+    final l10n = AppLocalizations.of(context)!;
     final customer = _customer;
     if (customer == null) {
-      AppFeedback.showInfo(context, 'Sign in to save showrooms.');
+      AppFeedback.showInfo(context, l10n.shopSaveSignIn);
       return;
     }
     final ids = List<String>.from(customer.savedShopIds);
@@ -89,24 +95,35 @@ class _ShopDetailViewState extends State<ShopDetailView> {
           _customer = customer;
           _saved = !nowSaved;
         });
-        AppFeedback.showError(context, 'Could not save this showroom.');
+        AppFeedback.showError(context, l10n.shopSaveError);
       }
     }
   }
 
   Future<void> _loadVehicles() async {
-    final list =
-        await sl<FleetRemoteDataSource>().getShopVehicles(widget.shop.shopId);
-    if (mounted) {
-      setState(() {
-        _vehicles = list;
-        _loading = false;
-      });
+    if (mounted) setState(() => _hasError = false);
+    try {
+      final list =
+          await sl<FleetRemoteDataSource>().getShopVehicles(widget.shop.shopId);
+      if (mounted) {
+        setState(() {
+          _vehicles = list;
+          _loading = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() {
+          _hasError = true;
+          _loading = false;
+        });
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final shop = widget.shop;
     final vehicles = _vehicles ?? const <VehicleEntity>[];
 
@@ -120,6 +137,7 @@ class _ShopDetailViewState extends State<ShopDetailView> {
                 variant: CustomCurvedHeaderVariant.hero,
                 leadingWidget: widget.onBack != null
                     ? IconButton(
+                        tooltip: l10n.back,
                         icon: const Icon(Icons.arrow_back_ios_new_rounded,
                             color: Colors.white, size: 18),
                         onPressed: widget.onBack,
@@ -153,7 +171,7 @@ class _ShopDetailViewState extends State<ShopDetailView> {
                       color: Colors.white,
                       size: 22,
                     ),
-                    tooltip: _saved ? 'Saved' : 'Save showroom',
+                    tooltip: _saved ? l10n.shopSaved : l10n.shopSave,
                     onPressed: _toggleSaved,
                   ),
                 ],
@@ -165,25 +183,22 @@ class _ShopDetailViewState extends State<ShopDetailView> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       if (_loading)
-                        const Padding(
-                          padding: EdgeInsets.all(28),
-                          child: Center(child: CircularProgressIndicator()),
+                        // E2: shared loading / error / empty states.
+                         AppLoadingState(
+                          message: l10n.shopLoadingCars,
+                        )
+                      else if (_hasError)
+                        AppErrorState(
+                          message:
+                              l10n.shopCarsLoadError,
+                          onRetry: _loadVehicles,
                         )
                       else if (vehicles.isEmpty)
-                        Padding(
-                          padding: EdgeInsets.symmetric(vertical: 32),
-                          child: Center(
-                            child: Text(
-                              'This shop has no cars listed yet.',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleSmall
-                                  ?.copyWith(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onSurfaceVariant),
-                            ),
-                          ),
+                         AppEmptyState(
+                          title: l10n.shopNoCars,
+                          message:
+                              l10n.shopCheckLater,
+                          icon: Icons.directions_car_outlined,
                         )
                       else ...[
                         ...vehicles.map(
@@ -203,8 +218,8 @@ class _ShopDetailViewState extends State<ShopDetailView> {
                                   Icons.directions_car_rounded,
                                   size: 18,
                                 ),
-                                label: const Text(
-                                  'View all cars with filters',
+                                label:  Text(
+                                  l10n.shopViewAllCars,
                                   style: TextStyle(
                                     fontWeight: FontWeight.w700,
                                   ),

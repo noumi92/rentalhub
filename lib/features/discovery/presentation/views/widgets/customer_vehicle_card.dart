@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/widgets/pakistani_plate_widget.dart';
 import '../../../../fleet/domain/entities/vehicle_entity.dart';
+import '../../../../../l10n/app_localizations.dart';
 
 /// B3: one car card on the shop's fleet screen, converted from MockVehicle
 /// to the real [VehicleEntity]. Shows the owner's uploaded photo when
@@ -46,6 +47,7 @@ class CustomerVehicleCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final v = vehicle;
     return Card(
       elevation: 0,
@@ -92,7 +94,7 @@ class CustomerVehicleCard extends StatelessWidget {
                   Row(
                     children: [
                       _specChip(context, 
-                          Icons.event_seat_rounded, '${v.seats} Seats'),
+                          Icons.event_seat_rounded, l10n.vehicleSeats(v.seats)),
                       const SizedBox(width: 6),
                       _specChip(context, 
                           Icons.settings_rounded, v.transmission),
@@ -106,11 +108,11 @@ class CustomerVehicleCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Self: Rs. ${v.rates.daily24}/day',
+                        l10n.vehicleSelfRate(v.rates.daily24),
                         style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800),
                       ),
                       Text(
-                        'With Driver: Rs. ${v.rates.daily24 + (v.withDriverSurchargePkr ?? 0)}/day',
+                        l10n.vehicleDriverRate(v.rates.daily24 + (v.withDriverSurchargePkr ?? 0)),
                         style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.secondary),
                       ),
                     ],

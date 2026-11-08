@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class DurationCalendarPicker extends StatelessWidget {
   final DateTime pickupDate;
@@ -26,6 +27,7 @@ class DurationCalendarPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -37,8 +39,11 @@ class DurationCalendarPicker extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Pickup Schedule',
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
+            l10n.pickerPickupSchedule,
+            style: Theme.of(context)
+                .textTheme
+                .titleSmall
+                ?.copyWith(fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 12),
           Row(
@@ -47,7 +52,7 @@ class DurationCalendarPicker extends StatelessWidget {
                 child: _buildClickableBox(
                   context,
                   icon: Icons.calendar_today_rounded,
-                  label: 'Pickup Date',
+                  label: l10n.pickerPickupDate,
                   value:
                       '${pickupDate.day}/${pickupDate.month}/${pickupDate.year}',
                   onTap: () async {
@@ -70,7 +75,7 @@ class DurationCalendarPicker extends StatelessWidget {
                 child: _buildClickableBox(
                   context,
                   icon: Icons.access_time_rounded,
-                  label: 'Pickup Time',
+                  label: l10n.summaryPickupTime,
                   value: pickupTime.format(context),
                   onTap: () async {
                     final picked = await showTimePicker(
@@ -88,22 +93,30 @@ class DurationCalendarPicker extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Rental Duration',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+                l10n.pickerDuration,
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(fontWeight: FontWeight.w600),
               ),
               Row(
                 children: [
                   IconButton(
+                    tooltip: l10n.pickerDecreaseDays,
                     onPressed: durationDays > 1
                         ? () => onDurationChanged(durationDays - 1)
                         : null,
                     icon: const Icon(Icons.remove_circle_outline_rounded),
                   ),
                   Text(
-                    '$durationDays Day${durationDays > 1 ? "s" : ""}',
-                    style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
+                    l10n.pickerDays(durationDays),
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleSmall
+                        ?.copyWith(fontWeight: FontWeight.w800),
                   ),
                   IconButton(
+                    tooltip: l10n.pickerIncreaseDays,
                     onPressed: durationDays < 30
                         ? () => onDurationChanged(durationDays + 1)
                         : null,
@@ -150,7 +163,10 @@ class DurationCalendarPicker extends StatelessWidget {
                   ),
                   Text(
                     value,
-                    style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700),
+                    style: Theme.of(context)
+                        .textTheme
+                        .labelMedium
+                        ?.copyWith(fontWeight: FontWeight.w700),
                   ),
                 ],
               ),
@@ -161,4 +177,3 @@ class DurationCalendarPicker extends StatelessWidget {
     );
   }
 }
-

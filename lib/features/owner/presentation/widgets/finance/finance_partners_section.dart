@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../../l10n/app_localizations.dart';
 
 import  '../../../../finance/domain/entities/partner_share_entity.dart';
 
@@ -17,26 +18,27 @@ class FinancePartnersSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+  final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('Partners',
+            Text(l10n.financePartners,
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.w800,
                 )),
             TextButton.icon(
               icon: const Icon(Icons.add_rounded, size: 18),
-              label: const Text('Add partner'),
+              label: Text(l10n.financeAddPartner),
               onPressed: onAddPartner,
             ),
           ],
         ),
         const SizedBox(height: 8),
         if (partners.isEmpty)
-          Text('No partners yet — add one to record their share.',
+          Text(l10n.financePartnersEmpty,
               style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
         ...partners.map((p) {
           return Container(
@@ -54,7 +56,7 @@ class FinancePartnersSection extends StatelessWidget {
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.w800,
                     )),
-                Text('${p.sharePercent}% of profit',
+                Text(l10n.financePartnerShareLine(p.sharePercent),
                     style: Theme.of(context).textTheme.bodySmall),
               ],
             ),

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/debounced_button.dart';
+import '../../../../l10n/app_localizations.dart';
 
 /// G1: the support ticket form. A message writes to the `support_tickets`
 /// collection (status 'open'). The admin tickets inbox (Gaari A16) does
@@ -33,9 +34,10 @@ class _SupportTicketFormState extends State<SupportTicketForm> {
   }
 
   Future<void> _submit() async {
+    final l10n = AppLocalizations.of(context)!;
     final message = _messageController.text.trim();
     if (message.isEmpty) {
-      AppFeedback.showError(context, 'Please write your message first.');
+      AppFeedback.showError(context, l10n.supportWriteFirst);
       return;
     }
     setState(() => _isSubmitting = true);
@@ -62,13 +64,14 @@ class _SupportTicketFormState extends State<SupportTicketForm> {
     } catch (e) {
       if (mounted) {
         setState(() => _isSubmitting = false);
-        AppFeedback.showError(context, 'Could not send your message: $e');
+        AppFeedback.showError(context, l10n.supportSendError(e.toString()));
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -80,12 +83,12 @@ class _SupportTicketFormState extends State<SupportTicketForm> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Message Support',
+            l10n.supportMessageTitle,
             style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 4),
           Text(
-            'Tell us what went wrong. Our team will reach you on WhatsApp — replies do not appear in the app yet.',
+            l10n.supportMessageHint,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(height: 1.4),
           ),
           const SizedBox(height: 10),
@@ -93,7 +96,7 @@ class _SupportTicketFormState extends State<SupportTicketForm> {
             controller: _messageController,
             maxLines: 3,
             decoration: InputDecoration(
-              hintText: 'What went wrong?',
+              hintText: l10n.supportMessageLabel,
               hintStyle: Theme.of(context).textTheme.bodySmall,
               filled: true,
               fillColor:
@@ -110,15 +113,15 @@ class _SupportTicketFormState extends State<SupportTicketForm> {
             isExpanded: true,
             dropdownColor: Theme.of(context).colorScheme.surface,
             initialValue: _priority,
-            items: const [
-              DropdownMenuItem(value: 'high', child: Text('High — urgent')),
-              DropdownMenuItem(value: 'medium', child: Text('Medium')),
-              DropdownMenuItem(value: 'low', child: Text('Low')),
+            items:  [
+              DropdownMenuItem(value: 'high', child: Text(l10n.supportUrgencyHigh)),
+              DropdownMenuItem(value: 'medium', child: Text(l10n.supportUrgencyMedium)),
+              DropdownMenuItem(value: 'low', child: Text(l10n.supportUrgencyLow)),
             ],
             onChanged: (v) =>
                 setState(() => _priority = v ?? 'medium'),
             decoration: InputDecoration(
-              hintText: 'How urgent is this?',
+              hintText: l10n.supportUrgencyLabel,
               filled: true,
               fillColor:
                   Theme.of(context).colorScheme.surfaceContainerHighest,
@@ -131,7 +134,7 @@ class _SupportTicketFormState extends State<SupportTicketForm> {
           ),
           const SizedBox(height: 10),
           DebouncedButton(
-            text: _isSubmitting ? 'Sending...' : 'Send Message',
+            text: _isSubmitting ? l10n.supportSending : l10n.supportSendMessage,
             icon: Icons.send_rounded,
             isLoading: _isSubmitting,
             onPressed: _submit,
@@ -145,7 +148,7 @@ class _SupportTicketFormState extends State<SupportTicketForm> {
                 SizedBox(width: 6),
                 Expanded(
                   child: Text(
-                    'Message sent. Our team will contact you on WhatsApp.',
+                    l10n.supportMessageSent,
                     style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w600, color: AppColors.successTextFor(Theme.of(context).brightness)),
                   ),
                 ),

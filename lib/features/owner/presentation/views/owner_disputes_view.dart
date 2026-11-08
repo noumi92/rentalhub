@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
@@ -36,10 +37,11 @@ class _OwnerDisputesViewState extends State<OwnerDisputesView> {
   Future<void> _load() async {
     setState(() => _isLoading = true);
     try {
-      final items = await sl<DisputeRemoteDataSource>()
-          .getShopDisputes(widget.shopId);
+      final items =
+          await sl<DisputeRemoteDataSource>().getShopDisputes(widget.shopId);
       if (mounted) setState(() => _items = items);
-    } catch (_) {} finally {
+    } catch (_) {
+    } finally {
       if (mounted) setState(() => _isLoading = false);
     }
   }
@@ -48,8 +50,7 @@ class _OwnerDisputesViewState extends State<OwnerDisputesView> {
       ? _items
       : _items.where((d) => d.status == _filter).toList();
 
-  int _count(String status) =>
-      _items.where((d) => d.status == status).length;
+  int _count(String status) => _items.where((d) => d.status == status).length;
 
   Future<void> _open(DisputeRecord d) async {
     await showModalBottomSheet<void>(
@@ -61,8 +62,7 @@ class _OwnerDisputesViewState extends State<OwnerDisputesView> {
       builder: (_) => DisputeDetailSheet(
         dispute: d,
         onStatusChanged: (status) async {
-          await sl<DisputeRemoteDataSource>()
-              .updateDisputeStatus(d.id, status);
+          await sl<DisputeRemoteDataSource>().updateDisputeStatus(d.id, status);
           await _load();
         },
       ),
@@ -71,6 +71,7 @@ class _OwnerDisputesViewState extends State<OwnerDisputesView> {
 
   @override
   Widget build(BuildContext context) {
+  final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -78,6 +79,7 @@ class _OwnerDisputesViewState extends State<OwnerDisputesView> {
             CustomCurvedHeader(
               variant: CustomCurvedHeaderVariant.compact,
               leadingWidget: IconButton(
+                tooltip: l10n.back,
                 icon: const Icon(Icons.arrow_back_ios_new_rounded,
                     color: Colors.white, size: 20),
                 onPressed: () => context.pop(),
@@ -85,10 +87,14 @@ class _OwnerDisputesViewState extends State<OwnerDisputesView> {
               titleWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Disputes',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
-                  Text('Complaints from your customers',
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.primaryContainer)),
+                  Text(l10n.disputes,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w900, color: Colors.white)),
+                  Text(l10n.disputesOwnerSubtitle,
+                      style: Theme.of(context)
+                          .textTheme
+                          .labelSmall
+                          ?.copyWith(color: AppColors.primaryContainer)),
                 ],
               ),
             ),
@@ -98,15 +104,14 @@ class _OwnerDisputesViewState extends State<OwnerDisputesView> {
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: [
-                    _filterChip('all', 'All (${_items.length})'),
+                    _filterChip('all', l10n.disputesFilterAll(_items.length)),
                     const SizedBox(width: 8),
-                    _filterChip('open', 'Open (${_count('open')})'),
-                    const SizedBox(width: 8),
-                    _filterChip(
-                        'in_review', 'In review (${_count('in_review')})'),
+                    _filterChip('open', l10n.disputesFilterOpen(_count('open'))),
                     const SizedBox(width: 8),
                     _filterChip(
-                        'resolved', 'Resolved (${_count('resolved')})'),
+                        'in_review', l10n.disputesFilterInReview(_count('in_review'))),
+                    const SizedBox(width: 8),
+                    _filterChip('resolved', l10n.disputesFilterResolved(_count('resolved'))),
                   ],
                 ),
               ),
@@ -119,10 +124,12 @@ class _OwnerDisputesViewState extends State<OwnerDisputesView> {
                           child: Padding(
                             padding: EdgeInsets.symmetric(horizontal: 32),
                             child: Text(
-                              'No disputes yet — customer disputes for your showroom will appear here.',
+                              l10n.disputesOwnerEmpty,
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurfaceVariant,
                                   fontWeight: FontWeight.w700),
                             ),
                           ),
@@ -130,9 +137,11 @@ class _OwnerDisputesViewState extends State<OwnerDisputesView> {
                       : _visible.isEmpty
                           ? Center(
                               child: Text(
-                                'No ${_filter == 'in_review' ? 'in-review' : _filter} disputes.',
+                                _filter == 'open' ? l10n.disputesNoneOpen : _filter == 'in_review' ? l10n.disputesNoneInReview : l10n.disputesNoneResolved,
                                 style: TextStyle(
-                                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurfaceVariant,
                                     fontWeight: FontWeight.w700),
                               ),
                             )
@@ -157,11 +166,16 @@ class _OwnerDisputesViewState extends State<OwnerDisputesView> {
   Widget _filterChip(String value, String label) {
     final selected = _filter == value;
     return ChoiceChip(
+      materialTapTargetSize: MaterialTapTargetSize.padded,
       label: Text(label),
       selected: selected,
       onSelected: (_) => setState(() => _filter = value),
       selectedColor: AppColors.primary,
-      labelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700, color: selected ? Colors.white : Theme.of(context).colorScheme.onSurface),
+      labelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
+          fontWeight: FontWeight.w700,
+          color: selected
+              ? Colors.white
+              : Theme.of(context).colorScheme.onSurface),
     );
   }
 }

@@ -6,6 +6,7 @@ import '../../../../core/network/firestore_service.dart';
 import '../../../../core/widgets/custom_curved_header.dart';
 import '../../data/datasources/review_remote_data_source.dart';
 import '../widgets/reputation_score_bar.dart';
+import '../../../../l10n/app_localizations.dart';
 
 // H3: reputation from the real `reviews` collection — the ratings
 // showrooms gave this customer (H4's owner half) — plus the real
@@ -19,8 +20,7 @@ class CustomerReputationView extends StatefulWidget {
   const CustomerReputationView({super.key, this.onBack});
 
   @override
-  State<CustomerReputationView> createState() =>
-      _CustomerReputationViewState();
+  State<CustomerReputationView> createState() => _CustomerReputationViewState();
 }
 
 class _CustomerReputationViewState extends State<CustomerReputationView> {
@@ -73,12 +73,12 @@ class _CustomerReputationViewState extends State<CustomerReputationView> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final care = _average('careRating');
     final punctuality = _average('punctualityRating');
     final behavior = _average('behaviorRating');
-    final overall = _ownerReviews.isEmpty
-        ? null
-        : (care + punctuality + behavior) / 3;
+    final overall =
+        _ownerReviews.isEmpty ? null : (care + punctuality + behavior) / 3;
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -87,14 +87,16 @@ class _CustomerReputationViewState extends State<CustomerReputationView> {
               variant: CustomCurvedHeaderVariant.compact,
               leadingWidget: widget.onBack != null
                   ? IconButton(
+                      tooltip: l10n.back,
                       icon: const Icon(Icons.arrow_back_ios_new_rounded,
                           color: Colors.white, size: 20),
                       onPressed: widget.onBack,
                     )
                   : null,
               titleWidget: Text(
-                'My Trust & Reputation',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white),
+                l10n.reputationTitle,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w900, color: Colors.white),
               ),
             ),
             Expanded(
@@ -110,11 +112,11 @@ class _CustomerReputationViewState extends State<CustomerReputationView> {
                             decoration: BoxDecoration(
                               color: Theme.of(context).colorScheme.surface,
                               borderRadius: BorderRadius.circular(20),
-                              border: Border.all(color: Theme.of(context).dividerColor),
+                              border: Border.all(
+                                  color: Theme.of(context).dividerColor),
                               boxShadow: [
                                 BoxShadow(
-                                  color:
-                                      Colors.black.withValues(alpha: 0.04),
+                                  color: Colors.black.withValues(alpha: 0.04),
                                   blurRadius: 10,
                                   offset: const Offset(0, 3),
                                 ),
@@ -130,29 +132,43 @@ class _CustomerReputationViewState extends State<CustomerReputationView> {
                                     shape: BoxShape.circle,
                                   ),
                                   child: Icon(Icons.verified_rounded,
-                                      color: AppColors.successTextFor(Theme.of(context).brightness), size: 50),
+                                      color: AppColors.successTextFor(
+                                          Theme.of(context).brightness),
+                                      size: 50),
                                 ),
                                 const SizedBox(height: 12),
                                 Text(
                                   overall == null
                                       ? '— / 5.0'
                                       : '${overall.toStringAsFixed(1)} / 5.0',
-                                  style: Theme.of(context).textTheme.displayLarge?.copyWith(fontWeight: FontWeight.w900),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .displayLarge
+                                      ?.copyWith(fontWeight: FontWeight.w900),
                                 ),
                                 const SizedBox(height: 2),
                                 Text(
                                   _trustScore == null
-                                      ? 'Trust Score: —'
-                                      : 'Trust Score: ${_trustScore!.toStringAsFixed(1)} / 5.0',
-                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.successTextFor(Theme.of(context).brightness)),
+                                      ? l10n.reputationTrustScoreDash
+                                      : l10n.reputationTrustScoreValue(_trustScore!.toStringAsFixed(1)),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium
+                                      ?.copyWith(
+                                          fontWeight: FontWeight.w700,
+                                          color: AppColors.successTextFor(
+                                              Theme.of(context).brightness)),
                                 ),
                                 const SizedBox(height: 8),
                                 Text(
                                   _ownerReviews.isEmpty
-                                      ? 'No showroom has rated you yet. Your reputation appears here after your first completed trip.'
-                                      : 'Based on ${_ownerReviews.length} showroom review${_ownerReviews.length == 1 ? '' : 's'} from your completed trips.',
+                                      ? l10n.reputationEmpty
+                                      : l10n.reputationBasedOnReviews(_ownerReviews.length),
                                   textAlign: TextAlign.center,
-                                  style: Theme.of(context).textTheme.labelSmall?.copyWith(height: 1.4),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .labelSmall
+                                      ?.copyWith(height: 1.4),
                                 ),
                               ],
                             ),
@@ -164,28 +180,32 @@ class _CustomerReputationViewState extends State<CustomerReputationView> {
                               decoration: BoxDecoration(
                                 color: Theme.of(context).colorScheme.surface,
                                 borderRadius: BorderRadius.circular(16),
-                                border: Border.all(color: Theme.of(context).dividerColor),
+                                border: Border.all(
+                                    color: Theme.of(context).dividerColor),
                               ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Showroom Ratings of You',
-                                    style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
+                                    l10n.reputationShopRatings,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleSmall
+                                        ?.copyWith(fontWeight: FontWeight.w800),
                                   ),
                                   const SizedBox(height: 14),
                                   ReputationScoreBar(
-                                      label: 'Vehicle Care & Cleanliness',
+                                      label: l10n.reputationVehicleCare,
                                       ratio: care / 5,
                                       score: care),
                                   const SizedBox(height: 10),
                                   ReputationScoreBar(
-                                      label: 'On-Time Handover Punctuality',
+                                      label: l10n.reputationPunctuality,
                                       ratio: punctuality / 5,
                                       score: punctuality),
                                   const SizedBox(height: 10),
                                   ReputationScoreBar(
-                                      label: 'Staff Interaction & Behavior',
+                                      label: l10n.reputationStaffBehavior,
                                       ratio: behavior / 5,
                                       score: behavior),
                                 ],
@@ -200,13 +220,15 @@ class _CustomerReputationViewState extends State<CustomerReputationView> {
                             ),
                             child: Row(
                               children: [
-                                Icon(Icons.shield_rounded,
-                                    size: 20),
+                                Icon(Icons.shield_rounded, size: 20),
                                 SizedBox(width: 10),
                                 Expanded(
                                   child: Text(
-                                    'Showrooms see these ratings when they review your booking requests.',
-                                    style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600),
+                                    l10n.reputationVisibleNote,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .labelSmall
+                                        ?.copyWith(fontWeight: FontWeight.w600),
                                   ),
                                 ),
                               ],

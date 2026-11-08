@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../../l10n/app_localizations.dart';
 import '../../../../../core/constants/app_colors.dart';
 
 class ShopPayoutStepWidget extends StatelessWidget {
@@ -41,16 +42,17 @@ class ShopPayoutStepWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+  final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Payout Accounts & Settlement',
+          l10n.onboardingPayoutTitle,
           style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900),
         ),
         const SizedBox(height: 4),
         Text(
-          'Select at least one payout channel to receive rental bookings and customer advance deposits.',
+          l10n.onboardingPayoutSubtitle,
           style: Theme.of(context).textTheme.bodySmall,
         ),
         const SizedBox(height: 14),
@@ -58,14 +60,15 @@ class ShopPayoutStepWidget extends StatelessWidget {
         // JazzCash Card (Initially disabled)
         _buildWalletCard(
           context: context,
-          title: 'JazzCash Mobile Account',
-          subtitle: 'Instant mobile wallet payout',
+          l10n: l10n,
+          title: l10n.onboardingJazzCashTitle,
+          subtitle: l10n.onboardingJazzCashSubtitle,
           isEnabled: jazzCashEnabled,
           onToggle: onJazzCashToggle,
           iconColor: const Color(0xFFE11D48),
           accountController: jazzCashAccount,
           titleController: jazzCashTitle,
-          accountLabel: 'JazzCash Mobile Number',
+          accountLabel: l10n.onboardingJazzCashNumber,
           hintAccount: '03001234567',
         ),
         const SizedBox(height: 12),
@@ -73,14 +76,15 @@ class ShopPayoutStepWidget extends StatelessWidget {
         // EasyPaisa Card (Initially disabled)
         _buildWalletCard(
           context: context,
-          title: 'EasyPaisa Wallet Account',
-          subtitle: 'Instant digital wallet payout',
+          l10n: l10n,
+          title: l10n.onboardingEasyPaisaTitle,
+          subtitle: l10n.onboardingEasyPaisaSubtitle,
           isEnabled: easyPaisaEnabled,
           onToggle: onEasyPaisaToggle,
           iconColor: const Color(0xFF16A34A),
           accountController: easyPaisaAccount,
           titleController: easyPaisaTitle,
-          accountLabel: 'EasyPaisa Mobile Number',
+          accountLabel: l10n.onboardingEasyPaisaNumber,
           hintAccount: '03457654321',
         ),
         const SizedBox(height: 12),
@@ -116,8 +120,8 @@ class ShopPayoutStepWidget extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Direct Commercial Bank', style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
-                          Text('1-Link / IBAN direct bank settlement', style: Theme.of(context).textTheme.labelSmall),
+                          Text(l10n.onboardingBankTitle, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
+                          Text(l10n.onboardingBankSubtitle, style: Theme.of(context).textTheme.labelSmall),
                         ],
                       ),
                     ),
@@ -131,7 +135,7 @@ class ShopPayoutStepWidget extends StatelessWidget {
                 if (bankEnabled) ...[
                   const Divider(height: 20),
                   // Bank Name Dropdown
-                  Text('Select Bank Name', style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800)),
+                  Text(l10n.onboardingSelectBank, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800)),
                   const SizedBox(height: 6),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 14),
@@ -155,13 +159,13 @@ class ShopPayoutStepWidget extends StatelessWidget {
                   const SizedBox(height: 12),
 
                   // Account Number / IBAN
-                  Text('Account Number / IBAN', style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800)),
+                  Text(l10n.onboardingAccountNumber, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800)),
                   const SizedBox(height: 6),
                   TextField(
                     controller: bankAccountController,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800),
                     decoration: InputDecoration(
-                      hintText: 'e.g. PK36MEZN0001234567890123',
+                      hintText: l10n.onboardingIbanHint,
                       filled: true,
                       fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                       isDense: true,
@@ -172,13 +176,13 @@ class ShopPayoutStepWidget extends StatelessWidget {
                   const SizedBox(height: 12),
 
                   // Account Title
-                  Text('Account Title (Business / Owner)', style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800)),
+                  Text(l10n.onboardingAccountTitleBusiness, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800)),
                   const SizedBox(height: 6),
                   TextField(
                     controller: bankAccountTitle,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800),
                     decoration: InputDecoration(
-                      hintText: 'e.g. Al-Falah Rent a Car',
+                      hintText: l10n.onboardingShopNameHint,
                       filled: true,
                       fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                       isDense: true,
@@ -197,6 +201,7 @@ class ShopPayoutStepWidget extends StatelessWidget {
 
   Widget _buildWalletCard({
     required BuildContext context,
+    required AppLocalizations l10n,
     required String title,
     required String subtitle,
     required bool isEnabled,
@@ -265,8 +270,8 @@ class ShopPayoutStepWidget extends StatelessWidget {
                 controller: titleController,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800),
                 decoration: InputDecoration(
-                  labelText: 'Account Title',
-                  hintText: 'Ahmed Raza',
+                  labelText: l10n.onboardingAccountTitle,
+                  hintText: l10n.onboardingTitleHint,
                   filled: true,
                   fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                   isDense: true,

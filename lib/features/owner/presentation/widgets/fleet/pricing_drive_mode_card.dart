@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../core/constants/app_colors.dart';
+import '../../../../../l10n/app_localizations.dart';
 
 /// The drive-mode availability card of the rate matrix.
 /// Extracted from [OwnerRateMatrixView] so the view stays under the
@@ -22,6 +23,7 @@ class PricingDriveModeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Material(
       color: Theme.of(context).colorScheme.surface,
       borderRadius: BorderRadius.circular(16),
@@ -34,11 +36,11 @@ class PricingDriveModeCard extends StatelessWidget {
           children: [
             SwitchListTile(
               activeThumbColor: AppColors.secondary,
-              title: Text('Self-Drive Allowed',
+              title: Text(l10n.pricingSelfDriveAllowed,
                   style:
                       Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
               subtitle: Text(
-                  'Requires original NADRA CNIC + security deposit',
+                  l10n.pricingSelfDriveHint,
                   style: Theme.of(context).textTheme.labelSmall),
               value: isSelfDrive,
               onChanged: onSelfDriveChanged,
@@ -46,11 +48,11 @@ class PricingDriveModeCard extends StatelessWidget {
             const Divider(height: 1),
             SwitchListTile(
               activeThumbColor: AppColors.secondary,
-              title: Text('Chauffeur Service Allowed',
+              title: Text(l10n.pricingChauffeurAllowed,
                   style:
                       Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
               subtitle:
-                  Text('Showroom driver assigned to booking',
+                  Text(l10n.pricingChauffeurHint,
                       style: Theme.of(context).textTheme.labelSmall),
               value: isWithDriver,
               onChanged: onWithDriverChanged,

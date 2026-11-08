@@ -12,6 +12,7 @@ import '../../../data/services/cnic_ocr_service.dart';
 import '../../../domain/entities/kyc_document_entity.dart';
 import 'document_slot_tile.dart';
 import 'pick_image_source.dart';
+import '../../../../../l10n/app_localizations.dart';
 
 /// G3: the KYC submission form — the CNIC field (prefilled from the
 /// customer's real record), the on-device CNIC scan, the three document
@@ -81,6 +82,7 @@ class _KycSubmissionFormState extends State<KycSubmissionForm> {
   // Scans the CNIC front with on-device OCR and fills the number; the
   // scanned photo becomes the front-side file.
   Future<void> _scanCnic() async {
+    final l10n = AppLocalizations.of(context)!;
     final picked = await ImagePicker().pickImage(
       source: ImageSource.camera,
       imageQuality: 85,
@@ -95,16 +97,16 @@ class _KycSubmissionFormState extends State<KycSubmissionForm> {
           _cnicController.text = result.cnicNumber!;
           _cnicFront = File(picked.path);
         });
-        AppFeedback.showSuccess(context, 'CNIC number read from the card.');
+        AppFeedback.showSuccess(context, l10n.kycCnicRead);
       } else {
         AppFeedback.showWarning(
           context,
-          'Could not read a CNIC number from that photo — please type it.',
+          l10n.kycScanUnreadable,
         );
       }
     } catch (e) {
       if (mounted) {
-        AppFeedback.showError(context, 'CNIC scan failed: $e');
+        AppFeedback.showError(context, l10n.kycScanError(e.toString()));
       }
     } finally {
       if (mounted) setState(() => _scanning = false);
@@ -112,6 +114,7 @@ class _KycSubmissionFormState extends State<KycSubmissionForm> {
   }
 
   Future<void> _submit(KycCubit cubit) async {
+    final l10n = AppLocalizations.of(context)!;
     final cnicErr = PakistaniValidators.validateCnic(_cnicController.text);
     if (cnicErr != null) {
       AppFeedback.showError(context, cnicErr);
@@ -120,7 +123,7 @@ class _KycSubmissionFormState extends State<KycSubmissionForm> {
     if (_cnicFront == null || _cnicBack == null) {
       AppFeedback.showWarning(
         context,
-        'Please attach both front and back photos of your NADRA CNIC.',
+        l10n.kycAttachBoth,
       );
       return;
     }
@@ -138,6 +141,7 @@ class _KycSubmissionFormState extends State<KycSubmissionForm> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return BlocListener<KycCubit, KycState>(
       listener: (context, state) {
         if (state is KycSubmitted) {
@@ -150,7 +154,7 @@ class _KycSubmissionFormState extends State<KycSubmissionForm> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            '13-Digit NADRA CNIC Number',
+            l10n.kycCnicNumber,
             style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 6),
@@ -172,34 +176,34 @@ class _KycSubmissionFormState extends State<KycSubmissionForm> {
               onPressed: _scanning ? null : _scanCnic,
               icon: const Icon(Icons.document_scanner_rounded, size: 18),
               label: Text(
-                  _scanning ? 'Scanning card...' : 'Scan CNIC card'),
+                  _scanning ? l10n.kycScanning : l10n.kycScanCard),
             ),
           ),
           const SizedBox(height: 14),
           DocumentSlotTile(
-            title: 'NADRA CNIC — Front Side',
+            title: l10n.kycCnicFront,
             subtitle: _cnicFront != null
-                ? 'Selected: ${_fileName(_cnicFront)}'
-                : 'High-resolution scan with clear photo',
+                ? l10n.kycSelectedFile(_fileName(_cnicFront))
+                : l10n.kycHighResHint,
             isUploaded:
                 _cnicFront != null || widget.existing != null,
             onTap: () => _pickSlot('front'),
           ),
           const SizedBox(height: 10),
           DocumentSlotTile(
-            title: 'NADRA CNIC — Back Side',
+            title: l10n.kycCnicBack,
             subtitle: _cnicBack != null
-                ? 'Selected: ${_fileName(_cnicBack)}'
-                : 'QR code & address clearly visible',
+                ? l10n.kycSelectedFile(_fileName(_cnicBack))
+                : l10n.kycQrHint,
             isUploaded: _cnicBack != null || widget.existing != null,
             onTap: () => _pickSlot('back'),
           ),
           const SizedBox(height: 10),
           DocumentSlotTile(
-            title: 'Valid Pakistan Driving License (LTV/HTV)',
+            title: l10n.kycLicense,
             subtitle: _license != null
-                ? 'Selected: ${_fileName(_license)}'
-                : 'Required for Self-Drive rental packages',
+                ? l10n.kycSelectedFile(_fileName(_license))
+                : l10n.kycSelfDriveNote,
             isUploaded: _license != null || widget.existing != null,
             onTap: () => _pickSlot('license'),
           ),
@@ -208,7 +212,7 @@ class _KycSubmissionFormState extends State<KycSubmissionForm> {
             builder: (context, state) {
               final uploading = state is KycUploading;
               return DebouncedButton(
-                text: uploading ? 'Uploading...' : 'Submit KYC Documents',
+                text: uploading ? l10n.kycUploading : l10n.kycSubmit,
                 icon: Icons.cloud_upload_rounded,
                 isLoading: uploading,
                 onPressed: () => _submit(context.read<KycCubit>()),

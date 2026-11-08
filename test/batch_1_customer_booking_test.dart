@@ -13,6 +13,7 @@ import 'package:rentalhub/features/bookings/presentation/views/rent_package_pick
 import 'package:rentalhub/features/bookings/presentation/views/review_booking_request_view.dart';
 import 'package:rentalhub/features/discovery/presentation/views/shop_cars_view.dart';
 import 'package:rentalhub/features/fleet/domain/entities/vehicle_entity.dart';
+import 'package:rentalhub/l10n/app_localizations.dart';
 
 void main() {
   setUpAll(() async {
@@ -107,6 +108,8 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+localizationsDelegates: AppLocalizations.localizationsDelegates,
+supportedLocales: AppLocalizations.supportedLocales,
           home: RentPackagePickerView(
             carId: 'car-civic',
             carName: 'Honda Civic RS',
@@ -165,6 +168,8 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+localizationsDelegates: AppLocalizations.localizationsDelegates,
+supportedLocales: AppLocalizations.supportedLocales,
           home: ReviewBookingRequestView(
             bookingDraft: draft,
             onRequestCreated: (b) => createdBooking = b,
@@ -214,6 +219,8 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+localizationsDelegates: AppLocalizations.localizationsDelegates,
+supportedLocales: AppLocalizations.supportedLocales,
           home: BookingSuccessView(
             booking: booking,
             onProceedToPayment: () => proceededToPayment = true,
@@ -249,6 +256,8 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+localizationsDelegates: AppLocalizations.localizationsDelegates,
+supportedLocales: AppLocalizations.supportedLocales,
           home: OwnerPaymentAccountsView(booking: booking),
         ),
       );
@@ -282,6 +291,8 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+localizationsDelegates: AppLocalizations.localizationsDelegates,
+supportedLocales: AppLocalizations.supportedLocales,
           home: PaymentProofUploadView(booking: booking),
         ),
       );
@@ -318,6 +329,8 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+localizationsDelegates: AppLocalizations.localizationsDelegates,
+supportedLocales: AppLocalizations.supportedLocales,
           home: PickupCountdownPassView(booking: booking),
         ),
       );
@@ -371,6 +384,8 @@ void main() {
       addTearDown(tester.view.resetPhysicalSize);
       await tester.pumpWidget(
         MaterialApp(
+localizationsDelegates: AppLocalizations.localizationsDelegates,
+supportedLocales: AppLocalizations.supportedLocales,
           home: ShopCarsView(
             shopId: 'shop-1',
             shopName: 'Lahore Luxury Motors',
@@ -425,6 +440,8 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+localizationsDelegates: AppLocalizations.localizationsDelegates,
+supportedLocales: AppLocalizations.supportedLocales,
           home: CustomerActiveTripView(booking: booking),
         ),
       );

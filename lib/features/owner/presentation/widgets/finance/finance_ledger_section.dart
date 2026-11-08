@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../../l10n/app_localizations.dart';
 
 import '../../../../../core/constants/app_colors.dart';
 import  '../../../../finance/domain/entities/finance_account_entity.dart';
@@ -18,36 +19,37 @@ class FinanceLedgerSection extends StatelessWidget {
     required this.onAddTransfer,
   });
 
-  String _accountName(String accountId) {
+  String _accountName(AppLocalizations l10n, String accountId) {
     return accounts
             .where((a) => a.accountId == accountId)
             .firstOrNull
             ?.name ??
-        'Account';
+        l10n.financeAccountFallback;
   }
 
   @override
   Widget build(BuildContext context) {
+  final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('Ledger',
+            Text(l10n.financeLedgerTitle,
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.w800,
                 )),
             TextButton.icon(
               icon: const Icon(Icons.add_rounded, size: 18),
-              label: const Text('Add entry'),
+              label: Text(l10n.financeAddEntry),
               onPressed: onAddTransfer,
             ),
           ],
         ),
         const SizedBox(height: 8),
         if (transfers.isEmpty)
-          Text('No entries yet — record your first income or expense.',
+          Text(l10n.financeLedgerEmpty,
               style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
         ...transfers.take(20).map((t) {
           final isIncome = t.kind == 'income';
@@ -66,18 +68,18 @@ class FinanceLedgerSection extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(t.category,
+                      Text(_categoryLabel(l10n, t.category),
                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             fontWeight: FontWeight.w800,
                           )),
                       Text(
-                          '${_accountName(t.accountId)} • ${t.createdAt.day}/${t.createdAt.month}/${t.createdAt.year}${t.note != null ? ' • ${t.note}' : ''}',
+                          '${_accountName(l10n, t.accountId)} • ${t.createdAt.day}/${t.createdAt.month}/${t.createdAt.year}${t.note != null ? ' • ${t.note}' : ''}',
                           style: Theme.of(context).textTheme.labelSmall),
                     ],
                   ),
                 ),
                 Text(
-                  '${isIncome ? '+' : '−'} Rs. ${t.amountPkr}',
+                  l10n.financeLedgerAmount(isIncome ? '+' : '−', t.amountPkr),
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w900,
                     color: isIncome
@@ -93,3 +95,7 @@ class FinanceLedgerSection extends StatelessWidget {
     );
   }
 }
+
+/// Stored ledger category codes mapped to localized labels — the
+/// stored value itself is never changed.
+String _categoryLabel(AppLocalizations l10n, String category) => {'rent': l10n.financeCategoryRent, 'deposit': l10n.addVehicleReviewDeposit, 'other': l10n.blacklistReasonOther, 'fuel': l10n.financeCategoryFuel, 'maintenance': l10n.fleetFilterMaintenance, 'salary': l10n.financeCategorySalary, 'partner_share': l10n.financeCategoryPartnerShare, 'deposit_refund': l10n.financeCategoryDepositRefund}[category] ?? category;

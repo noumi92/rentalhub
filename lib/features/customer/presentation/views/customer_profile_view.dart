@@ -4,15 +4,18 @@ import 'package:flutter/material.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/network/firestore_service.dart';
 import '../../../../core/widgets/app_feedback.dart';
+import '../../../../core/widgets/app_state_views.dart';
 import '../../../../core/widgets/custom_curved_header.dart';
 import '../../data/datasources/customer_remote_data_source.dart';
 import '../../domain/entities/customer_entity.dart';
 import '../../../trust/data/datasources/kyc_remote_data_source.dart';
 import '../widgets/edit_profile_sheet.dart';
+import '../widgets/profile_cnic_row.dart';
 import '../widgets/profile_header.dart';
 import '../widgets/profile_menu_card.dart';
 import '../widgets/profile_sign_out_tile.dart';
 import '../widgets/profile_trust_card.dart';
+import '../../../../l10n/app_localizations.dart';
 
 // H1: the profile is the customer's real record — name/phone/CNIC from
 // their `customers` record (the same record the owner sees in triage),
@@ -78,14 +81,13 @@ class _CustomerProfileViewState extends State<CustomerProfileView> {
         email = user.email ?? '';
         phone = user.phoneNumber ?? '';
         if (sl.isRegistered<FirestoreService>()) {
-          final record =
-              await sl<FirestoreService>().getUser(user.uid);
+          final record = await sl<FirestoreService>().getUser(user.uid);
           trustScore = record?.trustScore;
           isBlacklisted = record?.isBlacklisted ?? false;
         }
         if (sl.isRegistered<CustomerRemoteDataSource>()) {
-          final customer = await sl<CustomerRemoteDataSource>()
-              .getCustomerById(user.uid);
+          final customer =
+              await sl<CustomerRemoteDataSource>().getCustomerById(user.uid);
           if (customer != null) {
             name = customer.name;
             phone = customer.phone;
@@ -93,8 +95,7 @@ class _CustomerProfileViewState extends State<CustomerProfileView> {
           }
         }
         if (sl.isRegistered<KycRemoteDataSource>()) {
-          final kyc =
-              await sl<KycRemoteDataSource>().getKyc(user.uid);
+          final kyc = await sl<KycRemoteDataSource>().getKyc(user.uid);
           kycVerified = kyc?.status == 'verified';
         }
       }
@@ -118,9 +119,10 @@ class _CustomerProfileViewState extends State<CustomerProfileView> {
     required String phone,
     required String cnic,
   }) async {
+    final l10n = AppLocalizations.of(context)!;
     final uid = _uid();
     if (uid.isEmpty) {
-      throw Exception('Not signed in.');
+      throw Exception(l10n.profileNotSignedIn);
     }
     if (sl.isRegistered<CustomerRemoteDataSource>()) {
       final ds = sl<CustomerRemoteDataSource>();
@@ -146,7 +148,7 @@ class _CustomerProfileViewState extends State<CustomerProfileView> {
     } catch (_) {}
     await _loadProfile();
     if (mounted) {
-      AppFeedback.showSuccess(context, 'Profile saved.');
+      AppFeedback.showSuccess(context, l10n.profileSaved);
     }
   }
 
@@ -165,6 +167,7 @@ class _CustomerProfileViewState extends State<CustomerProfileView> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -175,7 +178,7 @@ class _CustomerProfileViewState extends State<CustomerProfileView> {
               // renders one only when the route can pop, which a
               // branch root never can.
               titleWidget: ProfileHeader(
-                name: _name,
+                name: _name == 'Guest' ? l10n.profileGuest : _name,
                 email: _email,
                 phone: _phone,
                 onEdit: _openEdit,
@@ -188,11 +191,10 @@ class _CustomerProfileViewState extends State<CustomerProfileView> {
                 child: Column(
                   children: [
                     if (_loading)
-                      const Center(
-                          child: Padding(
-                        padding: EdgeInsets.all(24),
-                        child: CircularProgressIndicator(),
-                      ))
+                      // E2: shared loading state.
+                       AppLoadingState(
+                        message: l10n.profileLoading,
+                      )
                     else ...[
                       ProfileTrustCard(
                         trustScore: _trustScore,
@@ -201,23 +203,32 @@ class _CustomerProfileViewState extends State<CustomerProfileView> {
                         onTap: widget.onOpenReputation,
                       ),
                       const SizedBox(height: 16),
+                      // E1: the customer's own CNIC, masked by
+                      // default. There was no read-only CNIC display
+                      // on this screen before — only the edit sheet's
+                      // raw input field, which stays unmasked so the
+                      // value can be edited.
+                      if (_cnic.isNotEmpty) ...[
+                        ProfileCnicRow(cnic: _cnic),
+                        const SizedBox(height: 16),
+                      ],
                       ProfileMenuCard(items: [
                         ProfileMenuItem(
                           icon: Icons.badge_outlined,
-                          title: 'My Documents (KYC)',
-                          subtitle: 'CNIC Front/Back & Driving License',
+                          title: l10n.profileMyDocuments,
+                          subtitle: l10n.profileKycSubtitle,
                           onTap: widget.onOpenDocuments,
                         ),
                         ProfileMenuItem(
                           icon: Icons.favorite_border_rounded,
-                          title: 'Saved Showrooms',
-                          subtitle: 'Bookmarked rental agencies',
+                          title: l10n.profileSavedShops,
+                          subtitle: l10n.profileSavedShopsSubtitle,
                           onTap: widget.onOpenSavedShops,
                         ),
                         ProfileMenuItem(
                           icon: Icons.settings_outlined,
-                          title: 'Settings & Language',
-                          subtitle: 'English / Urdu, Notifications',
+                          title: l10n.profileSettingsLanguage,
+                          subtitle: l10n.profileSettingsSubtitle,
                           onTap: widget.onOpenSettings,
                         ),
                       ]),
@@ -233,5 +244,4 @@ class _CustomerProfileViewState extends State<CustomerProfileView> {
       ),
     );
   }
-
 }

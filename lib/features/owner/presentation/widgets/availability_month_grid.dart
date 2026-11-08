@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../core/constants/app_colors.dart';
+import '../../../../../l10n/app_localizations.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
 import '../../../bookings/utils/booking_availability.dart';
 
@@ -24,10 +25,20 @@ class AvailabilityMonthGrid extends StatelessWidget {
   final ValueChanged<DateTime> onMonthChanged;
   final ValueChanged<DateTime> onDaySelected;
 
-  String get _monthLabel {
-    const months = [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December',
+  String _monthLabel(AppLocalizations l10n) {
+    final months = [
+      l10n.calendarMonthJanuary,
+      l10n.calendarMonthFebruary,
+      l10n.calendarMonthMarch,
+      l10n.calendarMonthApril,
+      l10n.calendarMonthMay,
+      l10n.calendarMonthJune,
+      l10n.calendarMonthJuly,
+      l10n.calendarMonthAugust,
+      l10n.calendarMonthSeptember,
+      l10n.calendarMonthOctober,
+      l10n.calendarMonthNovember,
+      l10n.calendarMonthDecember,
     ];
     return '${months[month.month - 1]} ${month.year}';
   }
@@ -67,23 +78,32 @@ class AvailabilityMonthGrid extends StatelessWidget {
           selectedDay!.month == date.month &&
           selectedDay!.day == date.day;
       cells.add(
-        GestureDetector(
-          onTap: () => onDaySelected(date),
-          child: Container(
-            margin: const EdgeInsets.all(2),
-            decoration: BoxDecoration(
-              color: _dayColor(context, date),
-              borderRadius: BorderRadius.circular(8),
-              border: isSelected
-                  ? Border.all(color: Theme.of(context).colorScheme.onSurface, width: 2)
-                  : null,
+        // E3: each day is a labelled button (selected state included)
+        // for screen readers; the tap behaviour is unchanged.
+        Semantics(
+          button: true,
+          selected: isSelected,
+          label: AppLocalizations.of(context)!.calendarSelectDay(day),
+          child: GestureDetector(
+            onTap: () => onDaySelected(date),
+            child: Container(
+              margin: const EdgeInsets.all(2),
+              decoration: BoxDecoration(
+                color: _dayColor(context, date),
+                borderRadius: BorderRadius.circular(8),
+                border: isSelected
+                    ? Border.all(
+                        color: Theme.of(context).colorScheme.onSurface,
+                        width: 2)
+                    : null,
+              ),
+              alignment: Alignment.center,
+              child: Text('$day',
+                  style: TextStyle(
+                      fontWeight:
+                          isSelected ? FontWeight.w900 : FontWeight.w600,
+                      color: Theme.of(context).colorScheme.onSurface)),
             ),
-            alignment: Alignment.center,
-            child: Text('$day',
-                style: TextStyle(
-                    fontWeight:
-                        isSelected ? FontWeight.w900 : FontWeight.w600,
-                    color: Theme.of(context).colorScheme.onSurface)),
           ),
         ),
       );
@@ -93,21 +113,24 @@ class AvailabilityMonthGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             IconButton(
+              tooltip: l10n.calendarPreviousMonth,
               icon: const Icon(Icons.chevron_left_rounded),
               onPressed: () =>
                   onMonthChanged(DateTime(month.year, month.month - 1)),
             ),
-            Text(_monthLabel,
+            Text(_monthLabel(l10n),
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w800,
-                )),
+                      fontWeight: FontWeight.w800,
+                    )),
             IconButton(
+              tooltip: l10n.calendarNextMonth,
               icon: const Icon(Icons.chevron_right_rounded),
               onPressed: () =>
                   onMonthChanged(DateTime(month.year, month.month + 1)),
@@ -118,18 +141,22 @@ class AvailabilityMonthGrid extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            Text('Mon', style: Theme.of(context).textTheme.labelSmall),
-            Text('Tue', style: Theme.of(context).textTheme.labelSmall),
-            Text('Wed', style: Theme.of(context).textTheme.labelSmall),
-            Text('Thu', style: Theme.of(context).textTheme.labelSmall),
-            Text('Fri', style: Theme.of(context).textTheme.labelSmall),
-            Text('Sat', style: Theme.of(context).textTheme.labelSmall),
-            Text('Sun', style: Theme.of(context).textTheme.labelSmall),
+            Text(l10n.calendarWeekdayMon, style: Theme.of(context).textTheme.labelSmall),
+            Text(l10n.calendarWeekdayTue, style: Theme.of(context).textTheme.labelSmall),
+            Text(l10n.calendarWeekdayWed, style: Theme.of(context).textTheme.labelSmall),
+            Text(l10n.calendarWeekdayThu, style: Theme.of(context).textTheme.labelSmall),
+            Text(l10n.calendarWeekdayFri, style: Theme.of(context).textTheme.labelSmall),
+            Text(l10n.calendarWeekdaySat, style: Theme.of(context).textTheme.labelSmall),
+            Text(l10n.calendarWeekdaySun, style: Theme.of(context).textTheme.labelSmall),
           ],
         ),
         const SizedBox(height: 4),
         GridView.count(
           crossAxisCount: 7,
+          // E3: cells are taller than wide so a day's tap target stays
+          // >= 48dp tall even on a 320px screen (7 columns of ~41dp
+          // wide need childAspectRatio <= 0.85 for a 48dp height).
+          childAspectRatio: 0.85,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           children: _monthCells(context),

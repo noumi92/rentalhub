@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../../l10n/app_localizations.dart';
 
 import  '../../../../finance/domain/entities/security_deposit_entity.dart';
 
@@ -11,6 +12,7 @@ class FinanceDepositsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+  final l10n = AppLocalizations.of(context)!;
     final held = deposits.where((d) => d.status == 'collected').toList();
     final released = deposits.where((d) => d.status == 'released').toList();
     final deducted = deposits.where((d) => d.status == 'deducted').toList();
@@ -23,7 +25,7 @@ class FinanceDepositsSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Security Deposits',
+        Text(l10n.financeSecurityDeposits,
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w800,
             )),
@@ -37,12 +39,12 @@ class FinanceDepositsSection extends StatelessWidget {
           ),
           child: Column(
             children: [
-              _row(context, 'Held now', '${held.length} deposits', heldAmount),
+              _row(context, l10n, l10n.financeDepositsHeld, l10n.financeDepositsCount(held.length), heldAmount),
               const Divider(height: 16),
-              _row(context, 'Refunded in full', '${released.length} deposits',
+              _row(context, l10n, l10n.financeDepositsRefunded, l10n.financeDepositsCount(released.length),
                   refundedAmount),
               const Divider(height: 16),
-              _row(context, 'Deducted at return', '${deducted.length} deposits',
+              _row(context, l10n, l10n.financeDepositsDeducted, l10n.financeDepositsCount(deducted.length),
                   deductedAmount),
             ],
           ),
@@ -51,7 +53,7 @@ class FinanceDepositsSection extends StatelessWidget {
     );
   }
 
-  Widget _row(BuildContext context, String label, String count, int amount) {
+  Widget _row(BuildContext context, AppLocalizations l10n, String label, String count, int amount) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -66,7 +68,7 @@ class FinanceDepositsSection extends StatelessWidget {
                     fontSize: 11, color: Theme.of(context).colorScheme.onSurfaceVariant)),
           ],
         ),
-        Text('Rs. $amount',
+        Text(l10n.amountRs(amount),
             style: const TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w900,

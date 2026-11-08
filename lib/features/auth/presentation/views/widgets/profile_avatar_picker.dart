@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../../../core/constants/app_colors.dart';
+import '../../../../../l10n/app_localizations.dart';
 
 class ProfileAvatarPicker extends StatelessWidget {
   final File? imageFile;
@@ -16,6 +17,7 @@ class ProfileAvatarPicker extends StatelessWidget {
   });
 
   Future<void> _pick(BuildContext context, ImageSource source) async {
+    final l10n = AppLocalizations.of(context)!;
     final picker = ImagePicker();
     try {
       final picked = await picker.pickImage(
@@ -31,7 +33,7 @@ class ProfileAvatarPicker extends StatelessWidget {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Could not open image picker: $e'),
+            content: Text(l10n.avatarPickerError(e.toString())),
             backgroundColor: AppColors.accentDanger,
           ),
         );
@@ -40,6 +42,7 @@ class ProfileAvatarPicker extends StatelessWidget {
   }
 
   void _showSheet(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -52,10 +55,10 @@ class ProfileAvatarPicker extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'Select Profile Photo',
+                l10n.avatarSelectPhoto,
                 style: Theme.of(ctx).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
+                      fontWeight: FontWeight.w700,
+                    ),
               ),
               const SizedBox(height: 12),
               ListTile(
@@ -63,8 +66,8 @@ class ProfileAvatarPicker extends StatelessWidget {
                   Icons.camera_alt_rounded,
                   color: AppColors.secondary,
                 ),
-                title: const Text(
-                  'Take Photo',
+                title:  Text(
+                  l10n.avatarTakePhoto,
                   style: TextStyle(fontWeight: FontWeight.w600),
                 ),
                 onTap: () {
@@ -76,8 +79,8 @@ class ProfileAvatarPicker extends StatelessWidget {
                 leading: const Icon(
                   Icons.photo_library_rounded,
                 ),
-                title: const Text(
-                  'Choose from Gallery',
+                title:  Text(
+                  l10n.avatarFromGallery,
                   style: TextStyle(fontWeight: FontWeight.w600),
                 ),
                 onTap: () {
@@ -94,74 +97,79 @@ class ProfileAvatarPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final diameter = radius * 2;
     return Column(
       children: [
-        GestureDetector(
-          onTap: () => _showSheet(context),
-          child: Stack(
-            children: [
-              Container(
-                width: diameter,
-                height: diameter,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: AppColors.primaryContainer,
-                  border: Border.all(
-                    color: Theme.of(context).dividerColor,
-                    width: 2,
-                  ),
-                ),
-                child: ClipOval(
-                  child: imageFile != null
-                      ? Image.file(
-                          imageFile!,
-                          width: diameter,
-                          height: diameter,
-                          fit: BoxFit.cover,
-                        )
-                      : Icon(
-                          Icons.person_rounded,
-                          size: radius * 1.15,
-                        ),
-                ),
-              ),
-              Positioned(
-                bottom: 0,
-                right: 0,
-                child: Container(
-                  padding: const EdgeInsets.all(7),
+        // E3: the avatar is a labelled button for screen readers.
+        Semantics(
+          button: true,
+          label: l10n.avatarChangePhoto,
+          child: GestureDetector(
+            onTap: () => _showSheet(context),
+            child: Stack(
+              children: [
+                Container(
+                  width: diameter,
+                  height: diameter,
                   decoration: BoxDecoration(
-                    color: AppColors.secondary,
                     shape: BoxShape.circle,
+                    color: AppColors.primaryContainer,
                     border: Border.all(
-                      color: Colors.white,
+                      color: Theme.of(context).dividerColor,
                       width: 2,
                     ),
                   ),
-                  child: const Icon(
-                    Icons.camera_alt_rounded,
-                    size: 15,
-                    color: Colors.white,
+                  child: ClipOval(
+                    child: imageFile != null
+                        ? Image.file(
+                            imageFile!,
+                            width: diameter,
+                            height: diameter,
+                            fit: BoxFit.cover,
+                          )
+                        : Icon(
+                            Icons.person_rounded,
+                            size: radius * 1.15,
+                          ),
                   ),
                 ),
-              ),
-            ],
+                Positioned(
+                  bottom: 0,
+                  right: 0,
+                  child: Container(
+                    padding: const EdgeInsets.all(7),
+                    decoration: BoxDecoration(
+                      color: AppColors.secondary,
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Colors.white,
+                        width: 2,
+                      ),
+                    ),
+                    child: const Icon(
+                      Icons.camera_alt_rounded,
+                      size: 15,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
         const SizedBox(height: 6),
         TextButton(
           onPressed: () => _showSheet(context),
           child: Text(
-            'Set Profile Picture',
+            l10n.avatarSetPicture,
             style: Theme.of(context).textTheme.labelMedium?.copyWith(
-              fontWeight: FontWeight.w700,
-              color: AppColors.secondary,
-            ),
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.secondary,
+                ),
           ),
         ),
       ],
     );
   }
 }
-

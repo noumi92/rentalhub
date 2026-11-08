@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import '../../../../l10n/app_localizations.dart';
 import 'package:signature/signature.dart';
 
 import '../../../../core/constants/app_colors.dart';
@@ -68,7 +69,8 @@ class _OwnerHandoverSignatureViewState
             .collection('shops')
             .doc(shopId)
             .get();
-        final name = (doc.data()?['name'] ?? doc.data()?['shopName']) as String?;
+        final name =
+            (doc.data()?['name'] ?? doc.data()?['shopName']) as String?;
         if (name != null && name.isNotEmpty && mounted) {
           setState(() => _shopName = name);
         }
@@ -94,15 +96,16 @@ class _OwnerHandoverSignatureViewState
   }
 
   Future<void> _completeHandover() async {
+  final l10n = AppLocalizations.of(context)!;
     final odo = int.tryParse(_odometerController.text.trim());
     if (odo == null || odo <= 0) {
-      AppFeedback.showError(context, 'Please enter a valid odometer reading.');
+      AppFeedback.showError(context, l10n.handoverOdometerInvalid);
       return;
     }
 
     if (_customerSig.isEmpty || _ownerSig.isEmpty) {
       AppFeedback.showError(context,
-          'Both customer and host must sign on the pads before vehicle departure.');
+          l10n.handoverSignRequired);
       return;
     }
 
@@ -115,11 +118,11 @@ class _OwnerHandoverSignatureViewState
         bookingId: booking.bookingId,
         shopId: booking.shopId,
         shopName: _shopName.isNotEmpty ? _shopName : 'RentalHub',
-        customerName: booking.customerName ?? 'Customer',
+        customerName: booking.customerName ?? l10n.requestsCustomerFallback,
         customerId: booking.customerId,
         customerPhone: booking.customerPhone ?? '',
         cnicNumber: booking.customerCnic ?? 'Not provided',
-        vehicleDetails: booking.vehicleName ?? 'Vehicle',
+        vehicleDetails: booking.vehicleName ?? l10n.summaryVehicle,
         packageType: booking.packageType,
         isWithDriver: booking.isWithDriver,
         pickupTime: booking.pickupTime,
@@ -141,7 +144,7 @@ class _OwnerHandoverSignatureViewState
 
       if (mounted) {
         AppFeedback.showSuccess(context,
-            'Handover certified! Digital A4 rental contract generated.');
+            l10n.handoverCertified);
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
             builder: (_) => OwnerContractView(
@@ -162,7 +165,7 @@ class _OwnerHandoverSignatureViewState
       }
     } catch (e) {
       if (mounted) {
-        AppFeedback.showError(context, 'Handover completion failed: $e');
+        AppFeedback.showError(context, l10n.handoverCompleteFailed(e.toString()));
       }
     } finally {
       if (mounted) setState(() => _isSaving = false);
@@ -171,6 +174,7 @@ class _OwnerHandoverSignatureViewState
 
   @override
   Widget build(BuildContext context) {
+  final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -179,6 +183,7 @@ class _OwnerHandoverSignatureViewState
               variant: CustomCurvedHeaderVariant.compact,
               leadingWidget: widget.onBack != null
                   ? IconButton(
+                      tooltip: l10n.back,
                       icon: const Icon(Icons.arrow_back_ios_new_rounded,
                           color: Colors.white, size: 20),
                       onPressed: widget.onBack,
@@ -187,11 +192,15 @@ class _OwnerHandoverSignatureViewState
               titleWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Vehicle Handover & Inspection',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
+                  Text(l10n.handoverTitle,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w900, color: Colors.white)),
                   Text(
-                      '#${widget.booking.bookingId} • ${widget.booking.vehicleName ?? "Vehicle"}',
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.primaryContainer)),
+                      '#${widget.booking.bookingId} • ${widget.booking.vehicleName ?? l10n.summaryVehicle}',
+                      style: Theme.of(context)
+                          .textTheme
+                          .labelSmall
+                          ?.copyWith(color: AppColors.primaryContainer)),
                 ],
               ),
             ),
@@ -219,8 +228,8 @@ class _OwnerHandoverSignatureViewState
                     const SizedBox(height: 24),
                     DebouncedButton(
                       text: _isSaving
-                          ? 'Issuing Digital Contract...'
-                          : 'Certify Handover & Generate Contract',
+                          ? l10n.handoverIssuing
+                          : l10n.handoverCertify,
                       icon: Icons.assignment_turned_in_rounded,
                       isLoading: _isSaving,
                       onPressed: _completeHandover,

@@ -7,6 +7,7 @@ import '../../../../core/widgets/offline_banner.dart';
 import '../../../../core/widgets/pakistani_plate_widget.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
 import '../../../handover/data/datasources/pdf_contract_generator.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class BookingTicketCard extends StatelessWidget {
   final BookingEntity booking;
@@ -53,6 +54,7 @@ class BookingTicketCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final statusColor = _getStatusColor(booking.status, Theme.of(context).brightness);
     return Card(
       elevation: 0,
@@ -76,11 +78,11 @@ class BookingTicketCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          booking.vehicleName ?? 'Rental Car',
+                          booking.vehicleName ?? l10n.rentalCar,
                           style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
                         ),
                         Text(
-                          booking.shopName ?? 'Showroom',
+                          booking.shopName ?? l10n.showroomLabel,
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                       ],
@@ -100,7 +102,7 @@ class BookingTicketCard extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      'Pickup: ${booking.pickupTime.day}/${booking.pickupTime.month}/${booking.pickupTime.year}',
+                      l10n.ticketPickupDate(booking.pickupTime.day, booking.pickupTime.month, booking.pickupTime.year),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w600, color: AppColors.textPrimary),
@@ -109,7 +111,7 @@ class BookingTicketCard extends StatelessWidget {
                   const SizedBox(width: 8),
                   Flexible(
                     child: Text(
-                      'Total: Rs. ${booking.totalAmount}',
+                      l10n.bookingTotalAmount(booking.totalAmount),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.end,
@@ -130,8 +132,7 @@ class BookingTicketCard extends StatelessWidget {
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        'Show this code at the counter for handover — '
-                        'it opens your booking and its agreement.',
+                        l10n.ticketShowCode,
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ),

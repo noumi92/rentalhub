@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../l10n/app_localizations.dart';
 
 import '../../../fleet/domain/entities/vehicle_entity.dart';
 import 'manual_booking_package_selector.dart';
@@ -32,6 +33,7 @@ class ManualBookingVehicleSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+  final l10n = AppLocalizations.of(context)!;
     return Column(
       children: [
         if (isLoadingVehicles)
@@ -56,7 +58,7 @@ class ManualBookingVehicleSection extends StatelessWidget {
           keyboardType: TextInputType.number,
           style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
           decoration: InputDecoration(
-            labelText: 'Security Deposit (Rs.)',
+            labelText: l10n.manualBookingDepositLabel,
             prefixIcon: const Icon(Icons.lock_clock_rounded,
                 size: 20),
             filled: true,

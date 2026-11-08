@@ -96,16 +96,20 @@ class _OwnerSettingsViewState extends State<OwnerSettingsView> {
                             runSpacing: 8,
                             children: [
                               ChoiceChip(
+                                materialTapTargetSize:
+                                    MaterialTapTargetSize.padded,
                                 label: Text(l10n.languageEnglish),
                                 selected: settings.localeCode == 'en',
-                                onSelected: (_) => sl<AppSettingsCubit>()
-                                    .setLocale('en'),
+                                onSelected: (_) =>
+                                    sl<AppSettingsCubit>().setLocale('en'),
                               ),
                               ChoiceChip(
+                                materialTapTargetSize:
+                                    MaterialTapTargetSize.padded,
                                 label: Text(l10n.languageUrdu),
                                 selected: settings.localeCode == 'ur',
-                                onSelected: (_) => sl<AppSettingsCubit>()
-                                    .setLocale('ur'),
+                                onSelected: (_) =>
+                                    sl<AppSettingsCubit>().setLocale('ur'),
                               ),
                             ],
                           ),
@@ -118,20 +122,24 @@ class _OwnerSettingsViewState extends State<OwnerSettingsView> {
                             runSpacing: 8,
                             children: [
                               ChoiceChip(
+                                materialTapTargetSize:
+                                    MaterialTapTargetSize.padded,
                                 label: Text(l10n.themeLight),
-                                selected:
-                                    settings.themeMode == ThemeMode.light,
+                                selected: settings.themeMode == ThemeMode.light,
                                 onSelected: (_) => sl<AppSettingsCubit>()
                                     .setThemeMode(ThemeMode.light),
                               ),
                               ChoiceChip(
+                                materialTapTargetSize:
+                                    MaterialTapTargetSize.padded,
                                 label: Text(l10n.themeDark),
-                                selected:
-                                    settings.themeMode == ThemeMode.dark,
+                                selected: settings.themeMode == ThemeMode.dark,
                                 onSelected: (_) => sl<AppSettingsCubit>()
                                     .setThemeMode(ThemeMode.dark),
                               ),
                               ChoiceChip(
+                                materialTapTargetSize:
+                                    MaterialTapTargetSize.padded,
                                 label: Text(l10n.themeSystem),
                                 selected:
                                     settings.themeMode == ThemeMode.system,
@@ -219,8 +227,7 @@ class _OwnerSettingsViewState extends State<OwnerSettingsView> {
       child: ListTile(
         contentPadding: EdgeInsets.zero,
         leading: Icon(icon),
-        title: Text(label,
-            style: const TextStyle(fontWeight: FontWeight.w700)),
+        title: Text(label, style: const TextStyle(fontWeight: FontWeight.w700)),
         trailing: const Icon(Icons.chevron_right_rounded),
         onTap: () => context.push(route),
       ),

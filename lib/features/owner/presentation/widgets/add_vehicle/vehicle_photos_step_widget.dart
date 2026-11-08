@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../../l10n/app_localizations.dart';
 import 'package:image_picker/image_picker.dart';
 import '../onboarding/onboarding_document_tile.dart';
 import '../onboarding/onboarding_photo_upload_box.dart';
@@ -59,16 +60,17 @@ class VehiclePhotosStepWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Vehicle 4-Angle Photos',
+          l10n.addVehiclePhotosTitle,
           style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900),
         ),
         const SizedBox(height: 4),
         Text(
-          'Upload photos using Camera or Gallery. Tap to change or remove.',
+          l10n.addVehiclePhotosHint,
           style: Theme.of(context).textTheme.bodySmall,
         ),
         const SizedBox(height: 12),
@@ -78,7 +80,7 @@ class VehiclePhotosStepWidget extends StatelessWidget {
           children: [
             Expanded(
               child: OnboardingPhotoUploadBox(
-                label: 'Front View',
+                label: l10n.addVehiclePhotoFront,
                 file: photoFrontFile,
                 onTap: onPickFront,
                 onRemove: photoFrontFile != null ? onRemoveFront : null,
@@ -88,7 +90,7 @@ class VehiclePhotosStepWidget extends StatelessWidget {
             const SizedBox(width: 10),
             Expanded(
               child: OnboardingPhotoUploadBox(
-                label: 'Rear View',
+                label: l10n.addVehiclePhotoRear,
                 file: photoBackFile,
                 onTap: onPickBack,
                 onRemove: photoBackFile != null ? onRemoveBack : null,
@@ -102,7 +104,7 @@ class VehiclePhotosStepWidget extends StatelessWidget {
           children: [
             Expanded(
               child: OnboardingPhotoUploadBox(
-                label: 'Side Profile',
+                label: l10n.addVehiclePhotoSide,
                 file: photoSideFile,
                 onTap: onPickSide,
                 onRemove: photoSideFile != null ? onRemoveSide : null,
@@ -112,7 +114,7 @@ class VehiclePhotosStepWidget extends StatelessWidget {
             const SizedBox(width: 10),
             Expanded(
               child: OnboardingPhotoUploadBox(
-                label: 'Interior & Dash',
+                label: l10n.addVehiclePhotoInterior,
                 file: photoInteriorFile,
                 onTap: onPickInterior,
                 onRemove: photoInteriorFile != null ? onRemoveInterior : null,
@@ -124,30 +126,30 @@ class VehiclePhotosStepWidget extends StatelessWidget {
         const SizedBox(height: 20),
 
         Text(
-          'Legal Documents',
+          l10n.addVehicleLegalDocs,
           style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900),
         ),
         const SizedBox(height: 8),
 
         OnboardingDocumentTile(
-          title: 'Vehicle Registration Book / Smart Card',
-          subtitle: 'Original ownership document required',
+          title: l10n.addVehicleDocRegBook,
+          subtitle: l10n.addVehicleDocRegBookHint,
           file: regBookFile,
           onTap: onPickRegBook,
           onRemove: regBookFile != null ? onRemoveRegBook : null,
         ),
         const SizedBox(height: 10),
         OnboardingDocumentTile(
-          title: 'Excise Token Tax Paid Receipt',
-          subtitle: 'Must be valid for current fiscal year',
+          title: l10n.addVehicleDocTokenTax,
+          subtitle: l10n.addVehicleDocTokenTaxHint,
           file: tokenTaxFile,
           onTap: onPickTokenTax,
           onRemove: tokenTaxFile != null ? onRemoveTokenTax : null,
         ),
         const SizedBox(height: 10),
         OnboardingDocumentTile(
-          title: 'Insurance / Tracker Certificate (Optional)',
-          subtitle: 'Provides verified VIP badge in search',
+          title: l10n.addVehicleDocInsurance,
+          subtitle: l10n.addVehicleDocInsuranceHint,
           file: insuranceFile,
           onTap: onPickInsurance,
           onRemove: insuranceFile != null ? onRemoveInsurance : null,

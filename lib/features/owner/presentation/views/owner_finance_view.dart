@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
@@ -79,7 +80,8 @@ class _OwnerFinanceViewState extends State<OwnerFinanceView> {
           _vehicles = vehicles;
         });
       }
-    } catch (_) {} finally {
+    } catch (_) {
+    } finally {
       if (mounted) setState(() => _isLoading = false);
     }
   }
@@ -129,6 +131,7 @@ class _OwnerFinanceViewState extends State<OwnerFinanceView> {
 
   @override
   Widget build(BuildContext context) {
+  final l10n = AppLocalizations.of(context)!;
     final month = _monthTotals;
     return Scaffold(
       body: SafeArea(
@@ -137,6 +140,7 @@ class _OwnerFinanceViewState extends State<OwnerFinanceView> {
             CustomCurvedHeader(
               variant: CustomCurvedHeaderVariant.compact,
               leadingWidget: IconButton(
+                tooltip: l10n.back,
                 icon: const Icon(Icons.arrow_back_ios_new_rounded,
                     color: Colors.white, size: 20),
                 onPressed: () => context.pop(),
@@ -144,14 +148,19 @@ class _OwnerFinanceViewState extends State<OwnerFinanceView> {
               titleWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Finance',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
-                  Text('Accounts, ledger and profit',
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.primaryContainer)),
+                  Text(l10n.finance,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w900, color: Colors.white)),
+                  Text(l10n.financeSubtitle,
+                      style: Theme.of(context)
+                          .textTheme
+                          .labelSmall
+                          ?.copyWith(color: AppColors.primaryContainer)),
                 ],
               ),
               actions: [
                 IconButton(
+                  tooltip: l10n.dashboardRefreshTooltip,
                   icon: const Icon(Icons.refresh_rounded, color: Colors.white),
                   onPressed: _load,
                 ),
@@ -199,6 +208,4 @@ class _OwnerFinanceViewState extends State<OwnerFinanceView> {
       ),
     );
   }
-
-
 }

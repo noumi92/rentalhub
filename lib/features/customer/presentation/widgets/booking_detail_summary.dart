@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
+import '../../../../l10n/app_localizations.dart';
 
 /// Phase A (A1): the booking summary section of the customer booking
 /// detail screen, extracted so the view stays under the 250-line cap.
@@ -19,6 +20,7 @@ class BookingDetailSummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final b = booking;
     return Container(
       padding: const EdgeInsets.all(14),
@@ -29,18 +31,18 @@ class BookingDetailSummary extends StatelessWidget {
       ),
       child: Column(
         children: [
-          _row(context, 'Vehicle', b.vehicleName ?? '—'),
-          _row(context, 'Plate', b.vehiclePlate ?? '—'),
-          _row(context, 'Package', b.packageType),
-          _row(context, 'Drive mode', b.isWithDriver ? 'With driver' : 'Self drive'),
-          _row(context, 'Trip', b.tripType == 'out_city' ? 'Out of city' : 'In city'),
-          _row(context, 'Pickup', _formatDateTime(b.pickupTime)),
-          _row(context, 'Return', _formatDateTime(b.returnTime)),
+          _row(context, l10n.summaryVehicle, b.vehicleName ?? '—'),
+          _row(context, l10n.summaryPlate, b.vehiclePlate ?? '—'),
+          _row(context, l10n.packageLabel, b.packageType),
+          _row(context, l10n.summaryDriveMode, b.isWithDriver ? l10n.summaryWithDriver : l10n.summarySelfDrive),
+          _row(context, l10n.summaryTrip, b.tripType == 'out_city' ? l10n.outOfCity : l10n.inCity),
+          _row(context, l10n.pickupLabel, _formatDateTime(b.pickupTime)),
+          _row(context, l10n.summaryReturn, _formatDateTime(b.returnTime)),
           const Divider(height: 18),
-          _row(context, 'Total', 'Rs. ${b.totalAmount}', bold: true),
-          _row(context, 'Advance required', 'Rs. ${b.advanceRequired}'),
-          _row(context, 'Advance paid', 'Rs. ${b.advancePaid}'),
-          _row(context, 'Remaining', 'Rs. ${b.remainingBalance}', bold: true),
+          _row(context, l10n.summaryTotal, 'Rs. ${b.totalAmount}', bold: true),
+          _row(context, l10n.summaryAdvanceRequired, 'Rs. ${b.advanceRequired}'),
+          _row(context, l10n.summaryAdvancePaid, 'Rs. ${b.advancePaid}'),
+          _row(context, l10n.summaryRemaining, 'Rs. ${b.remainingBalance}', bold: true),
         ],
       ),
     );
@@ -80,14 +82,15 @@ class BookingDetailRejectionCard extends StatelessWidget {
   const BookingDetailRejectionCard({
     super.key,
     required this.reason,
-    this.prefix = 'The shop declined this request: ',
+    this.prefix,
   });
 
   final String reason;
-  final String prefix;
+  final String? prefix;
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -96,7 +99,7 @@ class BookingDetailRejectionCard extends StatelessWidget {
         border: Border.all(color: AppColors.accentDanger.withValues(alpha: 0.3)),
       ),
       child: Text(
-        '$prefix$reason',
+        '${prefix ?? l10n.summaryDeclinedPrefix}$reason',
         style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
       ),
     );

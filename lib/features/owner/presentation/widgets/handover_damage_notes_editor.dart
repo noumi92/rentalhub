@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../l10n/app_localizations.dart';
 
 
 /// Phase B (E2): the damage notes the owner records at handover.
@@ -7,16 +8,15 @@ import 'package:flutter/material.dart';
 class HandoverDamageNotesEditor extends StatefulWidget {
   final List<String> initialNotes;
   final ValueChanged<List<String>> onChanged;
-  final String title;
-  final String subtitle;
+  final String? title;
+  final String? subtitle;
 
   const HandoverDamageNotesEditor({
     super.key,
     this.initialNotes = const [],
     required this.onChanged,
-    this.title = 'Damage & Condition Notes',
-    this.subtitle = 'Note every scratch, dent or missing item now — '
-        'this is what the return inspection compares against.',
+    this.title,
+    this.subtitle,
   });
 
   @override
@@ -53,6 +53,7 @@ class _HandoverDamageNotesEditorState
 
   @override
   Widget build(BuildContext context) {
+  final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -63,11 +64,11 @@ class _HandoverDamageNotesEditorState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(widget.title,
+          Text(widget.title ?? l10n.handoverDamageTitle,
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
                 fontWeight: FontWeight.w800,
               )),
-          Text(widget.subtitle,
+          Text(widget.subtitle ?? l10n.handoverDamageSubtitle,
               style:
                   Theme.of(context).textTheme.labelSmall),
           const SizedBox(height: 10),
@@ -93,7 +94,7 @@ class _HandoverDamageNotesEditorState
                 child: TextField(
                   controller: _controller,
                   decoration: InputDecoration(
-                    hintText: 'e.g. Scratch on right door',
+                    hintText: l10n.handoverDamageHint,
                     border: OutlineInputBorder(),
                     filled: true,
                     fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
@@ -102,7 +103,7 @@ class _HandoverDamageNotesEditorState
                 ),
               ),
               const SizedBox(width: 8),
-              ElevatedButton(onPressed: _add, child: const Text('Add')),
+              ElevatedButton(onPressed: _add, child: Text(l10n.handoverAdd)),
             ],
           ),
         ],

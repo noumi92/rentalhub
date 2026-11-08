@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../../l10n/app_localizations.dart';
 import '../../../../../core/constants/app_colors.dart';
 
 class VehicleRatesStepWidget extends StatelessWidget {
@@ -69,22 +70,23 @@ class VehicleRatesStepWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Duration Packages (Hourly & Daily)', style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900)),
+        Text(l10n.addVehicleDurationPackages, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900)),
         const SizedBox(height: 4),
-        Text('Enable packages and edit rates in PKR per booking tier.', style: Theme.of(context).textTheme.bodySmall),
+        Text(l10n.addVehicleDurationPackagesHint, style: Theme.of(context).textTheme.bodySmall),
         const SizedBox(height: 12),
 
-        _packageRow(context, '1 Hour Rate', rate1HourController, enable1Hour, onToggle1Hour),
-        _packageRow(context, '3 Hours Rate', rate3HoursController, enable3Hours, onToggle3Hours),
-        _packageRow(context, '6 Hours Rate', rate6HoursController, enable6Hours, onToggle6Hours),
-        _packageRow(context, 'Full Day (24h) Rate', rate24HoursController, enable24Hours, onToggle24Hours),
-        _packageRow(context, 'Weekly (7 Days) Rate', rateWeeklyController, enableWeekly, onToggleWeekly),
+        _packageRow(context, l10n.addVehicleRate1Hour, rate1HourController, enable1Hour, onToggle1Hour),
+        _packageRow(context, l10n.addVehicleRate3Hours, rate3HoursController, enable3Hours, onToggle3Hours),
+        _packageRow(context, l10n.addVehicleRate6Hours, rate6HoursController, enable6Hours, onToggle6Hours),
+        _packageRow(context, l10n.addVehicleRateFullDay, rate24HoursController, enable24Hours, onToggle24Hours),
+        _packageRow(context, l10n.addVehicleRateWeekly, rateWeeklyController, enableWeekly, onToggleWeekly),
         const SizedBox(height: 16),
 
-        Text('Service Type & Driver Options', style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900)),
+        Text(l10n.addVehicleServiceType, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900)),
         const SizedBox(height: 8),
 
         Card(
@@ -99,8 +101,8 @@ class VehicleRatesStepWidget extends StatelessWidget {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Self-Drive Service', style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800)),
-                        Text('Customer drives the vehicle themselves', style: Theme.of(context).textTheme.labelSmall),
+                        Text(l10n.addVehicleSelfDriveService, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800)),
+                        Text(l10n.addVehicleSelfDriveHint, style: Theme.of(context).textTheme.labelSmall),
                       ],
                     ),
                     Switch(value: supportSelfDrive, activeThumbColor: AppColors.secondary, onChanged: onToggleSelfDrive),
@@ -113,8 +115,8 @@ class VehicleRatesStepWidget extends StatelessWidget {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('With-Driver Service', style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800)),
-                        Text('Shop provides experienced chauffeur', style: Theme.of(context).textTheme.labelSmall),
+                        Text(l10n.addVehicleWithDriverService, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800)),
+                        Text(l10n.addVehicleWithDriverHint, style: Theme.of(context).textTheme.labelSmall),
                       ],
                     ),
                     Switch(value: supportWithDriver, activeThumbColor: AppColors.secondary, onChanged: onToggleWithDriver),
@@ -126,7 +128,7 @@ class VehicleRatesStepWidget extends StatelessWidget {
                     children: [
                       Expanded(
                         flex: 3,
-                        child: Text('Driver Daily Allowance:', style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700)),
+                        child: Text(l10n.addVehicleDriverAllowance, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700)),
                       ),
                       Expanded(
                         flex: 2,
@@ -138,7 +140,7 @@ class VehicleRatesStepWidget extends StatelessWidget {
                           decoration: InputDecoration(
                             prefixText: 'Rs. ',
                             prefixStyle: const TextStyle(fontWeight: FontWeight.w800),
-                            suffixText: '/day',
+                            suffixText: l10n.addVehiclePerDaySuffix,
                             suffixStyle: Theme.of(context).textTheme.labelSmall,
                             filled: true,
                             fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
@@ -157,7 +159,7 @@ class VehicleRatesStepWidget extends StatelessWidget {
         ),
         const SizedBox(height: 16),
 
-        Text('Security Deposit & Rental Policies', style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900)),
+        Text(l10n.addVehicleDepositPolicies, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900)),
         const SizedBox(height: 8),
 
         Card(
@@ -166,11 +168,11 @@ class VehicleRatesStepWidget extends StatelessWidget {
             padding: const EdgeInsets.all(14),
             child: Column(
               children: [
-                _policyInput(context, 'Security Deposit (Self-Drive)', 'Refunded on car return in clean condition', securityDepositController),
+                _policyInput(context, l10n.addVehicleSecurityDepositSelfDrive, l10n.addVehicleSecurityDepositHint, securityDepositController),
                 const Divider(height: 20),
-                _policyInput(context, 'Advance Booking Fee', 'Required up front to lock slot', advanceDepositController),
+                _policyInput(context, l10n.addVehicleAdvanceFee, l10n.addVehicleAdvanceHint, advanceDepositController),
                 const Divider(height: 20),
-                _policyInput(context, 'Extra Hour Overstay Charge', 'Billed per hour past scheduled return', extraHourChargeController, suffix: '/hr'),
+                _policyInput(context, l10n.addVehicleExtraHourCharge, l10n.addVehicleExtraHourHint, extraHourChargeController, suffix: l10n.addVehiclePerHourSuffix),
                 const Divider(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -179,8 +181,8 @@ class VehicleRatesStepWidget extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Fuel Policy', style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800)),
-                          Text('Condition expected upon return', style: Theme.of(context).textTheme.labelSmall),
+                          Text(l10n.addVehicleFuelPolicy, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800)),
+                          Text(l10n.addVehicleFuelPolicyHint, style: Theme.of(context).textTheme.labelSmall),
                         ],
                       ),
                     ),

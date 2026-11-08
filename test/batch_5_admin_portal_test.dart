@@ -6,6 +6,7 @@ import 'package:rentalhub/core/routing/admin_guard.dart';
 import 'package:rentalhub/features/admin/domain/admin_permissions.dart';
 import 'package:rentalhub/features/blacklist/data/datasources/blacklist_remote_data_source.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_dashboard_view.dart';
+import 'package:rentalhub/l10n/app_localizations.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_subscription_view.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_whatsapp_logs_view.dart';
 import 'package:rentalhub/features/admin/presentation/views/admin_dashboard_view.dart';
@@ -87,7 +88,11 @@ void main() {
     testWidgets('OwnerDashboardView: renders revenue telemetry and trip ledger',
         (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(home: OwnerDashboardView(shopId: 'shop-1')),
+        const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: OwnerDashboardView(shopId: 'shop-1'),
+        ),
       );
       await tester.pumpAndSettle();
 
@@ -99,7 +104,11 @@ void main() {
     testWidgets('OwnerSubscriptionView: renders tiers and opens upgrade dialog',
         (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(home: OwnerSubscriptionView()),
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const OwnerSubscriptionView(),
+        ),
       );
       await tester.pumpAndSettle();
 
@@ -120,7 +129,11 @@ void main() {
     testWidgets('OwnerWhatsAppLogsView: renders log tiles and filters',
         (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(home: OwnerWhatsAppLogsView()),
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const OwnerWhatsAppLogsView(),
+        ),
       );
       await tester.pumpAndSettle();
 

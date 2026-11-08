@@ -7,6 +7,7 @@ import 'package:rentalhub/features/fleet/data/datasources/fleet_remote_data_sour
 import 'package:rentalhub/features/fleet/domain/entities/vehicle_entity.dart';
 import 'package:rentalhub/features/fleet/domain/usecases/add_vehicle_usecase.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_fleet_view.dart';
+import 'package:rentalhub/l10n/app_localizations.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_rate_matrix_view.dart';
 
 void main() {
@@ -125,6 +126,8 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           home: OwnerRateMatrixView(
             vehicle: testCar,
             onRatesSaved: () => saved = true,
@@ -151,6 +154,8 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           home: OwnerFleetView(
             onAddVehicle: () => tappedAdd = true,
           ),

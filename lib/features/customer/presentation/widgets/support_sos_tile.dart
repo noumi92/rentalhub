@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 
 /// Phase C (C3): the Emergency SOS entry tile on the Support tab.
 /// Extracted from [CustomerSupportView] so the view stays under the
@@ -14,6 +15,7 @@ class SupportSosTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return ListTile(
       tileColor: AppColors.accentDanger.withValues(alpha: 0.08),
       shape: RoundedRectangleBorder(
@@ -23,12 +25,12 @@ class SupportSosTile extends StatelessWidget {
       ),
       leading:
           Icon(Icons.sos_rounded, color: AppColors.dangerTextFor(Theme.of(context).brightness)),
-      title: Text('Emergency SOS',
+      title: Text(l10n.supportSosTitle,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.w800,
               color: AppColors.dangerTextFor(Theme.of(context).brightness))),
       subtitle: Text(
-          'Police 15 · Rescue 1122 — one-tap emergency help.',
+          l10n.supportSosSubtitle,
           style: Theme.of(context).textTheme.labelSmall),
       trailing: Icon(Icons.arrow_forward_ios_rounded,
           size: 14, color: AppColors.dangerTextFor(Theme.of(context).brightness)),

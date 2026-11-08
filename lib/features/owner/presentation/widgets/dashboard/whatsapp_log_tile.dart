@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../../l10n/app_localizations.dart';
 import '../../../../../core/constants/app_colors.dart';
 
 class WhatsAppLogTile extends StatelessWidget {
@@ -21,6 +22,7 @@ class WhatsAppLogTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+  final l10n = AppLocalizations.of(context)!;
     Color statusColor;
     IconData statusIcon;
     switch (status.toLowerCase()) {
@@ -76,13 +78,13 @@ class WhatsAppLogTile extends StatelessWidget {
                 children: [
                   Icon(statusIcon, size: 14, color: statusColor),
                   const SizedBox(width: 4),
-                  Text(status.toUpperCase(), style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w900, color: statusColor)),
+                  Text(_statusLabel(l10n, status).toUpperCase(), style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w900, color: statusColor)),
                 ],
               ),
               const SizedBox(height: 2),
               InkWell(
                 onTap: onResend,
-                child: Text('Resend', style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700, color: AppColors.secondary)),
+                child: Text(l10n.whatsappLogsResend, style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700, color: AppColors.secondary)),
               ),
             ],
           ),
@@ -92,3 +94,7 @@ class WhatsAppLogTile extends StatelessWidget {
   }
 }
 
+
+/// Stored log-status codes mapped to localized labels — the stored
+/// value itself is never changed.
+String _statusLabel(AppLocalizations l10n, String status) => {'delivered': l10n.whatsappLogsDelivered, 'read': l10n.whatsappLogsRead, 'failed': l10n.whatsappLogsFailed}[status.toLowerCase()] ?? status;

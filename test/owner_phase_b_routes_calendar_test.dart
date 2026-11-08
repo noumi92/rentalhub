@@ -7,6 +7,7 @@ import 'package:rentalhub/core/di/injection_container.dart' as di;
 import 'package:rentalhub/features/bookings/data/datasources/booking_remote_data_source.dart';
 import 'package:rentalhub/features/bookings/data/models/booking_model.dart';
 import 'package:rentalhub/features/bookings/presentation/views/rent_package_picker_view.dart';
+import 'package:rentalhub/l10n/app_localizations.dart';
 import 'package:rentalhub/features/bookings/utils/booking_availability.dart';
 import 'package:rentalhub/features/bookings/utils/package_pricing.dart';
 import 'package:rentalhub/features/fleet/data/datasources/fixed_route_remote_data_source.dart';
@@ -157,6 +158,8 @@ void main() {
     testWidgets('fixed routes view lists the seeded routes', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           home: OwnerFixedRoutesView(shopId: 'shop-1'),
         ),
       );
@@ -275,6 +278,8 @@ void main() {
       );
       await tester.pumpWidget(
         const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           home: OwnerVehicleCalendarView(vehicle: vehicle),
         ),
       );
@@ -339,6 +344,8 @@ void main() {
       Map<String, dynamic>? draft;
       await tester.pumpWidget(
         MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           home: RentPackagePickerView(
             carId: 'veh-b3-1',
             carName: 'Honda Civic Oriel',
@@ -378,6 +385,8 @@ void main() {
       Map<String, dynamic>? draft;
       await tester.pumpWidget(
         MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           home: RentPackagePickerView(
             carId: 'veh-b3-1',
             carName: 'Honda Civic Oriel',

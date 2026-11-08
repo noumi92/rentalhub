@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/data/sync_status_cubit.dart';
 import '../../../../core/widgets/offline_banner.dart';
+import '../../../../l10n/app_localizations.dart';
 
 /// Phase B (B5): the owner settings "Sync" card — one live row
 /// showing offline / pending / failed / all-synced. Extracted from
@@ -13,6 +14,9 @@ class SyncStatusSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Phase F: the section title and status lines are localized
+    // (English fallback for delegate-less pumps).
+    final l10n = AppLocalizations.of(context);
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
@@ -24,7 +28,7 @@ class SyncStatusSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Sync',
+          Text(l10n?.syncTitle ?? 'Sync',
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.w800)),
           const SizedBox(height: 10),
@@ -38,15 +42,22 @@ class SyncStatusSection extends StatelessWidget {
               return BlocBuilder<SyncStatusCubit, SyncStatusState>(
                 bloc: cubit,
                 builder: (context, sync) {
+                  // Phase F: localized status lines (plural keys carry
+                  // the 1-vs-many form). English fallback for
+                  // delegate-less pumps.
                   final text = !sync.isOnline
                       ? (sync.pendingCount > 0
-                          ? "You're offline — ${sync.pendingCount} change${sync.pendingCount == 1 ? '' : 's'} will sync when you're back online"
-                          : "You're offline — changes will sync when you're back online")
+                          ? l10n?.syncOfflineWithPending(sync.pendingCount) ??
+                              "You're offline — ${sync.pendingCount} change${sync.pendingCount == 1 ? '' : 's'} will sync when you're back online"
+                          : l10n?.syncOffline ??
+                              "You're offline — changes will sync when you're back online")
                       : sync.failedCount > 0
-                          ? '${sync.failedCount} change${sync.failedCount == 1 ? '' : 's'} failed to sync — will retry'
+                          ? l10n?.syncFailed(sync.failedCount) ??
+                              '${sync.failedCount} change${sync.failedCount == 1 ? '' : 's'} failed to sync — will retry'
                           : sync.pendingCount > 0
-                              ? '${sync.pendingCount} change${sync.pendingCount == 1 ? '' : 's'} pending sync'
-                              : 'All changes synced';
+                              ? l10n?.syncPending(sync.pendingCount) ??
+                                  '${sync.pendingCount} change${sync.pendingCount == 1 ? '' : 's'} pending sync'
+                              : l10n?.syncAllSynced ?? 'All changes synced';
                   return Row(
                     children: [
                       Icon(

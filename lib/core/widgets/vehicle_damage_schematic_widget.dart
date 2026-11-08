@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../constants/app_colors.dart';
+import '../../l10n/app_localizations.dart';
 
 class DamagePin {
   final String zone; // 'Front', 'Rear', 'Left', 'Right', 'Roof'
@@ -64,6 +65,10 @@ class _VehicleDamageSchematicWidgetState
 
   @override
   Widget build(BuildContext context) {
+    // Phase F: the schematic chrome is localized (English fallback
+    // for delegate-less pumps). The zone/type strings stay as stored
+    // data values — they are the pin identity, not copy.
+    final l10n = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -86,7 +91,8 @@ class _VehicleDamageSchematicWidgetState
                   ),
                   SizedBox(width: 6),
                   Text(
-                    '4-Quadrant Exterior Inspection Schematic',
+                    l10n?.damageSchematicTitle ??
+                        '4-Quadrant Exterior Inspection Schematic',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.w800,
                     ),
@@ -102,7 +108,8 @@ class _VehicleDamageSchematicWidgetState
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  '${_pins.length} Marks Logged',
+                  l10n?.damageMarksLogged(_pins.length) ??
+                      '${_pins.length} Mark${_pins.length == 1 ? '' : 's'} Logged',
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
                     fontWeight: FontWeight.w800,
                     color: _pins.isEmpty
@@ -115,7 +122,8 @@ class _VehicleDamageSchematicWidgetState
           ),
           const SizedBox(height: 6),
           Text(
-            'Tap any vehicle quadrant below to pin/unpin pre-existing scratches or dents:',
+            l10n?.damageTapHint ??
+                'Tap any vehicle quadrant below to pin/unpin pre-existing scratches or dents:',
             style: Theme.of(context).textTheme.labelSmall,
           ),
           const SizedBox(height: 12),

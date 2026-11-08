@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../core/constants/app_colors.dart';
+import '../../../../../l10n/app_localizations.dart';
 
 /// G3: the KYC status banner on the documents screen — the real status
 /// of the customer's submission from `kyc_documents/{uid}`.
@@ -9,19 +10,20 @@ class KycStatusBanner extends StatelessWidget {
 
   final String status;
 
-  String get _label {
+  String _label(AppLocalizations l10n) {
     switch (status) {
       case 'verified':
-        return 'Verified';
+        return l10n.verified;
       case 'rejected':
-        return 'Rejected — please resubmit';
+        return l10n.kycStatusRejected;
       default:
-        return 'Submitted — pending verification';
+        return l10n.kycStatusSubmitted;
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final verified = status == 'verified';
     final color = verified
         ? AppColors.successOnContainerFor(Theme.of(context).brightness)
@@ -45,7 +47,7 @@ class KycStatusBanner extends StatelessWidget {
           const SizedBox(width: 8),
           Expanded(
             child: Text(
-              'KYC status: $_label',
+              l10n.kycStatus(_label(l10n)),
               style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700),
             ),
           ),

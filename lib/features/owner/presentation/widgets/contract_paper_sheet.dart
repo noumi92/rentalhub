@@ -1,8 +1,10 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import '../../../../../l10n/app_localizations.dart';
 
 import '../../../../../core/constants/app_colors.dart';
+import 'operations/fuel_odometer_input_widget.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
 
 /// Phase B (E3): the agreement rendered as a paper sheet, extracted
@@ -29,6 +31,7 @@ class ContractPaperSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+  final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -57,7 +60,7 @@ class ContractPaperSheet extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 2),
-                Text('Govt. Registered Commercial Motor Car Rental Agency',
+                Text(l10n.contractAgencyLine,
                     style:
                         Theme.of(context).textTheme.labelSmall),
                 const SizedBox(height: 6),
@@ -66,7 +69,7 @@ class ContractPaperSheet extends StatelessWidget {
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(4)),
-                  child: Text('CERTIFIED DIGITAL RENTAL CONTRACT',
+                  child: Text(l10n.contractCertifiedTitle,
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
                         color: Colors.white,
                         fontWeight: FontWeight.w800,
@@ -76,22 +79,22 @@ class ContractPaperSheet extends StatelessWidget {
             ),
           ),
           const Divider(height: 24, thickness: 1.5),
-          _fieldRow('Agreement No:', '#${booking.bookingId}'),
-          _fieldRow('Hirer / Customer:', booking.customerName ?? 'Walk-in Customer'),
-          _fieldRow('Customer Contact:', booking.customerPhone ?? '—'),
-          _fieldRow('CNIC:', booking.customerCnic ?? 'Not provided'),
+          _fieldRow(l10n.contractFieldAgreementNo, '#${booking.bookingId}'),
+          _fieldRow(l10n.contractFieldHirer, booking.customerName ?? l10n.contractWalkInCustomer),
+          _fieldRow(l10n.contractFieldContact, booking.customerPhone ?? '—'),
+          _fieldRow(l10n.contractFieldCnic, booking.customerCnic ?? l10n.contractNotProvided),
           const Divider(height: 20),
-          _fieldRow('Rented Vehicle:', booking.vehicleName ?? 'Vehicle'),
-          _fieldRow('Package Tier:',
-              '${booking.packageType} (${booking.isWithDriver ? "Chauffeur" : "Self-Drive"})'),
-          _fieldRow('Departure Odometer:', '$odometer KM'),
-          _fieldRow('Handover Fuel Gauge:', fuelLevel),
-          _fieldRow('Total Rental Paid:', 'Rs. ${booking.totalAmount}'),
-          _fieldRow('Security Deposit:',
-              securityDeposit != null ? 'Rs. $securityDeposit (refundable)' : '—'),
+          _fieldRow(l10n.contractFieldVehicle, booking.vehicleName ?? l10n.summaryVehicle),
+          _fieldRow(l10n.contractFieldPackage,
+              '${booking.packageType} (${booking.isWithDriver ? l10n.contractChauffeur : l10n.selfDriveHyphen})'),
+          _fieldRow(l10n.contractFieldOdometer, '$odometer KM'),
+          _fieldRow(l10n.contractFieldFuel, fuelLevelLabel(l10n, fuelLevel)),
+          _fieldRow(l10n.contractFieldTotalPaid, l10n.amountRs(booking.totalAmount)),
+          _fieldRow(l10n.contractFieldDeposit,
+              securityDeposit != null ? l10n.contractDepositRefundable(securityDeposit!) : '—'),
           const Divider(height: 20),
           Text(
-            'Legal Terms & Conditions (Pakistan Jurisdiction):',
+            l10n.contractTermsTitle,
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
               fontWeight: FontWeight.w800,
               color: AppColors.primary,
@@ -99,9 +102,7 @@ class ContractPaperSheet extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            '1. Vehicle shall not be driven across unauthorized provincial checkpoints without NOC.\n'
-            '2. Traffic challans, e-tickets and fuel consumed are sole liability of the hirer.\n'
-            '3. Any default will result in immediate non-bailable FIR and National Tribunal Blacklist listing.',
+            '${l10n.contractTerm1}\n${l10n.contractTerm2}\n${l10n.contractTerm3}',
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
               height: 1.4,
             ),
@@ -111,9 +112,9 @@ class ContractPaperSheet extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               _signatureColumn(
-                  'Hirer Signature', customerSignaturePng, 'Signed on the pad'),
-              _signatureColumn('Host Seal & Signature', ownerSignaturePng,
-                  'Authorized Agency Manager'),
+                  l10n.contractHirerSignature, customerSignaturePng, l10n.contractSignedOnPad),
+              _signatureColumn(l10n.contractHostSignature, ownerSignaturePng,
+                  l10n.contractAuthorizedManager),
             ],
           ),
         ],

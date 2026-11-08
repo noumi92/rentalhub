@@ -111,8 +111,7 @@ class DemoHudBar extends StatelessWidget {
             color: AppColors.primaryDark.withValues(alpha: 0.92),
             borderRadius: BorderRadius.circular(30),
             border: Border.all(
-                color: AppColors.secondary.withValues(alpha: 0.35),
-                width: 1),
+                color: AppColors.secondary.withValues(alpha: 0.35), width: 1),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.2),
@@ -223,10 +222,11 @@ class DemoHudBar extends StatelessWidget {
                     Text(
                       'Jump to 20 Core Anchor Screens',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w800,
-                      ),
+                            fontWeight: FontWeight.w800,
+                          ),
                     ),
                     IconButton(
+                      tooltip: 'Close',
                       icon: const Icon(Icons.close, size: 20),
                       onPressed: () => Navigator.pop(context),
                     ),
@@ -237,32 +237,41 @@ class DemoHudBar extends StatelessWidget {
                   child: ListView(
                     shrinkWrap: true,
                     children: [
-                      _buildMenuSection('Customer App Anchors (ANC-01 to 08)', [
-                        'ANC-01: Customer Discovery & Nav',
-                        'ANC-02: Vehicle Detail & Packages',
-                        'ANC-03: Upload Payment Proof',
-                        'ANC-04: Review & Send Reservation',
-                        'ANC-05: Pickup Pass & Countdown',
-                        'ANC-06: Active Trip Dashboard & SOS',
-                        'ANC-07: KYC Document Upload',
-                        'ANC-08: Rate Trip & Condition',
-                      ], context),
-                      _buildMenuSection('Owner App Anchors (ANC-09 to 16)', [
-                        'ANC-09: Shop Onboarding Step 1',
-                        'ANC-10: Fleet Dashboard & KPIs',
-                        'ANC-11: Fleet Inventory',
-                        'ANC-12: Add Vehicle Rate Matrix',
-                        'ANC-13: Booking Requests Triage',
-                        'ANC-14: Vehicle Handover & Signatures',
-                        'ANC-15: Return & Settle Voucher',
-                        'ANC-16: Fraud Blacklist Report',
-                      ], context),
-                      _buildMenuSection('Admin Web Anchors (ANC-17 to 20)', [
-                        'ANC-17: Super Admin Operations Dashboard',
-                        'ANC-18: Shop Accreditation Queue',
-                        'ANC-19: National Blacklist Registry',
-                        'ANC-20: Subscription Tiers & Quota',
-                      ], context),
+                      _buildMenuSection(
+                          'Customer App Anchors (ANC-01 to 08)',
+                          [
+                            'ANC-01: Customer Discovery & Nav',
+                            'ANC-02: Vehicle Detail & Packages',
+                            'ANC-03: Upload Payment Proof',
+                            'ANC-04: Review & Send Reservation',
+                            'ANC-05: Pickup Pass & Countdown',
+                            'ANC-06: Active Trip Dashboard & SOS',
+                            'ANC-07: KYC Document Upload',
+                            'ANC-08: Rate Trip & Condition',
+                          ],
+                          context),
+                      _buildMenuSection(
+                          'Owner App Anchors (ANC-09 to 16)',
+                          [
+                            'ANC-09: Shop Onboarding Step 1',
+                            'ANC-10: Fleet Dashboard & KPIs',
+                            'ANC-11: Fleet Inventory',
+                            'ANC-12: Add Vehicle Rate Matrix',
+                            'ANC-13: Booking Requests Triage',
+                            'ANC-14: Vehicle Handover & Signatures',
+                            'ANC-15: Return & Settle Voucher',
+                            'ANC-16: Fraud Blacklist Report',
+                          ],
+                          context),
+                      _buildMenuSection(
+                          'Admin Web Anchors (ANC-17 to 20)',
+                          [
+                            'ANC-17: Super Admin Operations Dashboard',
+                            'ANC-18: Shop Accreditation Queue',
+                            'ANC-19: National Blacklist Registry',
+                            'ANC-20: Subscription Tiers & Quota',
+                          ],
+                          context),
                     ],
                   ),
                 ),
@@ -284,9 +293,9 @@ class DemoHudBar extends StatelessWidget {
           child: Text(
             title,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w700,
-              color: AppColors.secondary,
-            ),
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.secondary,
+                ),
           ),
         ),
         ...items.map((item) {
@@ -294,12 +303,11 @@ class DemoHudBar extends StatelessWidget {
           return ListTile(
             dense: true,
             visualDensity: VisualDensity.compact,
-            leading: const Icon(Icons.arrow_forward_ios,
-                size: 12),
+            leading: const Icon(Icons.arrow_forward_ios, size: 12),
             title: Text(item,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
-                )),
+                      fontWeight: FontWeight.w500,
+                    )),
             onTap: () {
               Navigator.pop(context);
               DemoHudController.instance.jumpToAnchor(anchorId);

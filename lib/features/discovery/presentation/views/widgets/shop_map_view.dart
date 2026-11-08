@@ -4,6 +4,7 @@ import 'package:latlong2/latlong.dart' as ll;
 
 import '../../../../../core/constants/app_colors.dart';
 import '../../../domain/entities/shop_entity.dart';
+import '../../../../../l10n/app_localizations.dart';
 
 /// B2: the inline map on the customer home list — a real OpenStreetMap
 /// canvas with the customer's position and one marker per verified shop.
@@ -26,6 +27,7 @@ class ShopMapView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       height: 280,
       width: double.infinity,
@@ -89,41 +91,52 @@ class ShopMapView extends StatelessWidget {
                       width: 130,
                       height: 60,
                       alignment: Alignment.bottomCenter,
-                      child: GestureDetector(
-                        onTap: () => onShopSelected(shop),
-                        child: FittedBox(
-                          fit: BoxFit.scaleDown,
-                          alignment: Alignment.bottomCenter,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 4,
+                      // E3: the map marker is a labelled button for screen
+                      // readers; the tap behaviour is unchanged.
+                      child: Semantics(
+                        button: true,
+                        label: l10n.mapShowShop(shop.shopName),
+                        child: GestureDetector(
+                          onTap: () => onShopSelected(shop),
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            alignment: Alignment.bottomCenter,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 4,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.secondary,
+                                    borderRadius: BorderRadius.circular(10),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color:
+                                            Colors.black.withValues(alpha: 0.3),
+                                        blurRadius: 6,
+                                      ),
+                                    ],
+                                  ),
+                                  child: Text(
+                                    '${shop.shopName.split(' ').first} • ${shop.distanceKm.toStringAsFixed(1)}km',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .labelSmall
+                                        ?.copyWith(
+                                            fontWeight: FontWeight.w800,
+                                            color: Colors.white),
+                                  ),
                                 ),
-                                decoration: BoxDecoration(
+                                const Icon(
+                                  Icons.location_on_rounded,
+                                  size: 26,
                                   color: AppColors.secondary,
-                                  borderRadius: BorderRadius.circular(10),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color:
-                                          Colors.black.withValues(alpha: 0.3),
-                                      blurRadius: 6,
-                                    ),
-                                  ],
                                 ),
-                                child: Text(
-                                  '${shop.shopName.split(' ').first} • ${shop.distanceKm.toStringAsFixed(1)}km',
-                                  style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800, color: Colors.white),
-                                ),
-                              ),
-                              const Icon(
-                                Icons.location_on_rounded,
-                                size: 26,
-                                color: AppColors.secondary,
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -143,8 +156,9 @@ class ShopMapView extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
-                'GPS Radar: ${radiusKm.toInt()} km (${shops.length} Verified Shops)',
-                style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700, color: Colors.white),
+                l10n.mapGpsRadar(radiusKm.toInt(), shops.length),
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    fontWeight: FontWeight.w700, color: Colors.white),
               ),
             ),
           ),

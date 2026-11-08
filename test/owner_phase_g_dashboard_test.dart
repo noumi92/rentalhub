@@ -204,6 +204,8 @@ void main() {
 
       await tester.pumpWidget(
         const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           home: OwnerDashboardView(shopId: 'shop-1'),
         ),
       );

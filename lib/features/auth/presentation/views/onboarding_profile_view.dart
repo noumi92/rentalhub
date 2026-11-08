@@ -12,6 +12,7 @@ import 'widgets/auth_stepper_bar.dart';
 import 'widgets/auth_text_field.dart';
 import 'widgets/pakistan_phone_field.dart';
 import 'widgets/profile_avatar_picker.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class OnboardingProfileView extends StatefulWidget {
   final VoidCallback? onProfileCompleted;
@@ -40,11 +41,7 @@ class _OnboardingProfileViewState extends State<OnboardingProfileView> {
         _nameController.text = auth.fullName.trim();
       }
       if (auth.phoneNumber.trim().isNotEmpty) {
-        _phoneController.text = auth.phoneNumber
-            .replaceAll('+92 ', '')
-            .replaceAll('+92', '')
-            .replaceAll(RegExp(r'^0+'), '')
-            .trim();
+        _phoneController.text = auth.phoneNumber.replaceAll('+92 ', '').replaceAll('+92', '').replaceAll(RegExp(r'^0+'), '').trim();
       }
     }
   }
@@ -57,6 +54,7 @@ class _OnboardingProfileViewState extends State<OnboardingProfileView> {
   }
 
   bool _validateForm() {
+    final l10n = AppLocalizations.of(context)!;
     setState(() => _phoneErrorMessage = null);
     final isNameValid = _formKey.currentState?.validate() ?? false;
 
@@ -65,11 +63,11 @@ class _OnboardingProfileViewState extends State<OnboardingProfileView> {
     bool isPhoneValid = true;
 
     if (rawPhone.isEmpty) {
-      setState(() => _phoneErrorMessage = 'WhatsApp number is required');
+      setState(() => _phoneErrorMessage = l10n.onboardingPhoneRequired);
       isPhoneValid = false;
     } else if (rawPhone.length != 10 || !rawPhone.startsWith('3')) {
       setState(() {
-        _phoneErrorMessage = 'Enter a valid 10-digit number starting with 3 (e.g. 300 1234567)';
+        _phoneErrorMessage = l10n.onboardingValidPhone;
       });
       isPhoneValid = false;
     }
@@ -78,11 +76,9 @@ class _OnboardingProfileViewState extends State<OnboardingProfileView> {
   }
 
   void _handleContinue() async {
+    final l10n = AppLocalizations.of(context)!;
     if (!_validateForm()) {
-      AppFeedback.showError(
-        context,
-        'Please enter a valid full name and Pakistani WhatsApp number (+92 3XX or 03XX).',
-      );
+      AppFeedback.showError(context, l10n.onboardingValidNamePhone);
       return;
     }
 
@@ -98,7 +94,7 @@ class _OnboardingProfileViewState extends State<OnboardingProfileView> {
       }
 
       if (!mounted) return;
-      AppFeedback.showSuccess(context, 'Profile details verified.');
+      AppFeedback.showSuccess(context, l10n.onboardingProfileVerified);
       if (widget.onProfileCompleted != null) {
         widget.onProfileCompleted!();
       } else {
@@ -106,7 +102,7 @@ class _OnboardingProfileViewState extends State<OnboardingProfileView> {
       }
     } catch (e) {
       if (!mounted) return;
-      AppFeedback.showError(context, 'Error saving profile: $e');
+      AppFeedback.showError(context, l10n.onboardingSaveError(e.toString()));
     } finally {
       if (mounted) setState(() => _isSaving = false);
     }
@@ -114,6 +110,7 @@ class _OnboardingProfileViewState extends State<OnboardingProfileView> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -127,7 +124,9 @@ class _OnboardingProfileViewState extends State<OnboardingProfileView> {
                     CustomCurvedHeader(
                       variant: CustomCurvedHeaderVariant.compact,
                       leadingWidget: IconButton(
-                        icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
+                        tooltip: l10n.back,
+                        icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                            color: Colors.white, size: 20),
                         onPressed: () {
                           if (context.canPop()) {
                             context.pop();
@@ -140,7 +139,7 @@ class _OnboardingProfileViewState extends State<OnboardingProfileView> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Step 1: Your Profile',
+                            l10n.onboardingStep1,
                             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                               color: Colors.white,
                               fontWeight: FontWeight.w900,
@@ -148,7 +147,7 @@ class _OnboardingProfileViewState extends State<OnboardingProfileView> {
                           ),
                           SizedBox(height: 2),
                           Text(
-                            'Enter your contact information',
+                            l10n.onboardingEnterContact,
                             style: Theme.of(context).textTheme.bodySmall?.copyWith(
                               color: AppColors.primaryContainer,
                             ),
@@ -187,15 +186,15 @@ class _OnboardingProfileViewState extends State<OnboardingProfileView> {
                                 const SizedBox(height: 18),
                                 AuthTextField(
                                   controller: _nameController,
-                                  label: 'Full Name',
+                                  label: l10n.onboardingFullName,
                                   hint: 'Ahmed Khan',
                                   prefixIcon: Icons.person_outline_rounded,
                                   validator: (val) {
                                     if (val == null || val.trim().isEmpty) {
-                                      return 'Full name is required';
+                                      return l10n.onboardingNameRequired;
                                     }
                                     if (val.trim().length < 3) {
-                                      return 'Name must be at least 3 characters';
+                                      return l10n.onboardingNameLength;
                                     }
                                     return null;
                                   },
@@ -232,7 +231,7 @@ class _OnboardingProfileViewState extends State<OnboardingProfileView> {
                 ],
               ),
               child: DebouncedButton(
-                text: 'Continue to Role Selection',
+                text: l10n.onboardingContinueRole,
                 icon: Icons.arrow_forward_rounded,
                 isLoading: _isSaving,
                 onPressed: () async => _handleContinue(),
@@ -244,4 +243,3 @@ class _OnboardingProfileViewState extends State<OnboardingProfileView> {
     );
   }
 }
-

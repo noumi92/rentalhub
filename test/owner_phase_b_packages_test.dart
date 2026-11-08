@@ -9,6 +9,7 @@ import 'package:rentalhub/features/fleet/data/repositories/fleet_repository_impl
 import 'package:rentalhub/features/fleet/domain/entities/vehicle_entity.dart';
 import 'package:rentalhub/features/fleet/domain/usecases/update_vehicle_pricing_usecase.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_rate_matrix_view.dart';
+import 'package:rentalhub/l10n/app_localizations.dart';
 import 'package:rentalhub/features/owner/presentation/widgets/manual_booking_package_selector.dart';
 
 // Owner Module Plan — Phase B (B2): rent packages with real prices and
@@ -151,6 +152,8 @@ void main() {
       bool saved = false;
       await tester.pumpWidget(
         MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           home: OwnerRateMatrixView(
             vehicle: testVehicle,
             onRatesSaved: () => saved = true,
@@ -180,6 +183,8 @@ void main() {
       Map<String, dynamic>? draft;
       await tester.pumpWidget(
         MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           home: RentPackagePickerView(
             carId: 'veh-pkg-1',
             carName: 'Honda Civic Oriel',
@@ -223,6 +228,8 @@ void main() {
       Map<String, dynamic>? draft;
       await tester.pumpWidget(
         MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           home: RentPackagePickerView(
             carId: 'veh-pkg-1',
             carName: 'Honda Civic Oriel',

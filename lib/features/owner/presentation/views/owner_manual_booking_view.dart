@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/widgets/app_feedback.dart';
@@ -45,7 +46,8 @@ class _OwnerManualBookingViewState extends State<OwnerManualBookingView> {
   @override
   void initState() {
     super.initState();
-    _cnicController = TextEditingController(text: widget.prefilledCnic ?? '35201-1234567-1');
+    _cnicController =
+        TextEditingController(text: widget.prefilledCnic ?? '35201-1234567-1');
     _loadVehicles();
   }
 
@@ -78,12 +80,14 @@ class _OwnerManualBookingViewState extends State<OwnerManualBookingView> {
           if (cars.isNotEmpty) _selectVehicle(cars.first);
         });
       }
-    } catch (_) {} finally {
+    } catch (_) {
+    } finally {
       if (mounted) setState(() => _isLoadingVehicles = false);
     }
   }
 
   Future<void> _createBooking() async {
+  final l10n = AppLocalizations.of(context)!;
     final name = _nameController.text.trim();
     final phone = _phoneController.text.trim();
     final cnic = _cnicController.text.trim();
@@ -96,19 +100,19 @@ class _OwnerManualBookingViewState extends State<OwnerManualBookingView> {
     );
 
     if (name.isEmpty || phone.isEmpty || cnic.isEmpty) {
-      AppFeedback.showError(context, 'Please complete all customer details.');
+      AppFeedback.showError(context, l10n.manualBookingCompleteDetails);
       return;
     }
     if (_selectedVehicle == null || _selectedPackage == null) {
-      AppFeedback.showError(context, 'Please select a vehicle and package.');
+      AppFeedback.showError(context, l10n.manualBookingSelectVehicle);
       return;
     }
     // Phase B (D2): a blacklisted CNIC cannot book at the counter
     // either — the scan screen is not the only way in.
     if (await sl<BlacklistRemoteDataSource>().isCnicBlacklisted(cnic)) {
       if (mounted) {
-        AppFeedback.showError(context,
-            'This CNIC is blacklisted — walk-in booking refused.');
+        AppFeedback.showError(
+            context, l10n.manualBookingBlacklisted);
       }
       return;
     }
@@ -127,7 +131,8 @@ class _OwnerManualBookingViewState extends State<OwnerManualBookingView> {
       );
 
       if (mounted) {
-        AppFeedback.showSuccess(context, 'Walk-in booking #${booking.bookingId} registered!');
+        AppFeedback.showSuccess(
+            context, l10n.manualBookingRegistered(booking.bookingId));
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
             builder: (_) => OwnerHandoverSignatureView(
@@ -137,7 +142,9 @@ class _OwnerManualBookingViewState extends State<OwnerManualBookingView> {
         );
       }
     } catch (e) {
-      if (mounted) AppFeedback.showError(context, 'Booking creation failed: $e');
+      if (mounted) {
+        AppFeedback.showError(context, l10n.manualBookingCreateFailed(e.toString()));
+      }
     } finally {
       if (mounted) setState(() => _isCreating = false);
     }
@@ -145,6 +152,7 @@ class _OwnerManualBookingViewState extends State<OwnerManualBookingView> {
 
   @override
   Widget build(BuildContext context) {
+  final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -153,37 +161,46 @@ class _OwnerManualBookingViewState extends State<OwnerManualBookingView> {
               variant: CustomCurvedHeaderVariant.compact,
               leadingWidget: widget.onBack != null
                   ? IconButton(
-                      icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
+                      tooltip: l10n.back,
+                      icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                          color: Colors.white, size: 20),
                       onPressed: widget.onBack,
                     )
                   : null,
               titleWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Walk-in Booking Wizard', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
-                  Text('Showroom Counter Direct Issue', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.primaryContainer)),
+                  Text(l10n.manualBookingTitle,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w900, color: Colors.white)),
+                  Text(l10n.manualBookingSubtitle,
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodySmall
+                          ?.copyWith(color: AppColors.primaryContainer)),
                 ],
               ),
             ),
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _sectionHeader('Customer KYC Details'),
+                    _sectionHeader(l10n.manualBookingCustomerSection),
                     ManualBookingCustomerFields(
                       nameController: _nameController,
                       phoneController: _phoneController,
                       cnicController: _cnicController,
                     ),
                     const SizedBox(height: 18),
-                    _sectionHeader('Guarantor (optional)'),
+                    _sectionHeader(l10n.manualBookingGuarantorSection),
                     GuarantorPicker(
                       onChanged: (g) => setState(() => _guarantor = g),
                     ),
                     const SizedBox(height: 18),
-                    _sectionHeader('Vehicle & Package Selection'),
+                    _sectionHeader(l10n.manualBookingVehicleSection),
                     ManualBookingVehicleSection(
                       isLoadingVehicles: _isLoadingVehicles,
                       vehicles: _vehicles,
@@ -199,7 +216,9 @@ class _OwnerManualBookingViewState extends State<OwnerManualBookingView> {
                     ),
                     const SizedBox(height: 24),
                     DebouncedButton(
-                      text: _isCreating ? 'Creating Walk-in Record...' : 'Confirm & Proceed to Handover',
+                      text: _isCreating
+                          ? l10n.manualBookingCreating
+                          : l10n.manualBookingConfirm,
                       icon: Icons.check_circle_rounded,
                       isLoading: _isCreating,
                       onPressed: _createBooking,
@@ -217,7 +236,11 @@ class _OwnerManualBookingViewState extends State<OwnerManualBookingView> {
   Widget _sectionHeader(String title) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
-      child: Text(title, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
+      child: Text(title,
+          style: Theme.of(context)
+              .textTheme
+              .titleSmall
+              ?.copyWith(fontWeight: FontWeight.w800)),
     );
   }
 }

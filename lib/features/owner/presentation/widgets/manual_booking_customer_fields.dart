@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../l10n/app_localizations.dart';
 
 
 /// The customer KYC fields of the walk-in booking wizard: name,
@@ -43,25 +44,26 @@ class ManualBookingCustomerFields extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+  final l10n = AppLocalizations.of(context)!;
     return Column(
       children: [
         _inputField(
           context: context,
             controller: nameController,
-            label: 'Customer Full Name',
+            label: l10n.manualBookingCustomerName,
             icon: Icons.person_rounded),
         const SizedBox(height: 10),
         _inputField(
           context: context,
             controller: phoneController,
-            label: 'Phone Number',
+            label: l10n.customersCnicPhone,
             icon: Icons.phone_rounded,
             keyboard: TextInputType.phone),
         const SizedBox(height: 10),
         _inputField(
           context: context,
             controller: cnicController,
-            label: 'NADRA CNIC',
+            label: l10n.manualBookingNadraCnic,
             icon: Icons.badge_rounded,
             keyboard: TextInputType.number),
       ],

@@ -6,6 +6,7 @@ import '../../../../core/widgets/custom_curved_header.dart';
 import '../../../../core/widgets/debounced_button.dart';
 import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class CustomerCancelBookingView extends StatefulWidget {
   final BookingEntity booking;
@@ -36,7 +37,26 @@ class _CustomerCancelBookingViewState extends State<CustomerCancelBookingView> {
     'Other reason',
   ];
 
+  /// The stored reason stays English (it is written to the booking's
+  /// `rejectionReason`, which the detail screen and owner triage read);
+  /// only the displayed radio label is localized.
+  String _reasonLabel(AppLocalizations l10n, String reason) {
+    switch (reason) {
+      case 'Change of travel plans':
+        return l10n.cancelReasonPlans;
+      case 'Found another vehicle':
+        return l10n.cancelReasonOtherVehicle;
+      case 'Showroom delay in approval':
+        return l10n.cancelReasonShopDelay;
+      case 'Unexpected emergency':
+        return l10n.cancelReasonEmergency;
+      default:
+        return l10n.cancelReasonOther;
+    }
+  }
+
   Future<void> _cancelBooking() async {
+    final l10n = AppLocalizations.of(context)!;
     setState(() => _isSubmitting = true);
     try {
       final ds = sl<BookingRemoteDataSource>();
@@ -50,11 +70,11 @@ class _CustomerCancelBookingViewState extends State<CustomerCancelBookingView> {
       );
 
       if (mounted) {
-        AppFeedback.showInfo(context, 'Reservation cancelled.');
+        AppFeedback.showInfo(context, l10n.cancelDone);
         widget.onCancelled?.call();
       }
     } catch (e) {
-      if (mounted) AppFeedback.showError(context, 'Cancellation failed: $e');
+      if (mounted) AppFeedback.showError(context, l10n.cancelFailed(e.toString()));
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
     }
@@ -62,6 +82,7 @@ class _CustomerCancelBookingViewState extends State<CustomerCancelBookingView> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -70,14 +91,16 @@ class _CustomerCancelBookingViewState extends State<CustomerCancelBookingView> {
               variant: CustomCurvedHeaderVariant.compact,
               leadingWidget: widget.onBack != null
                   ? IconButton(
+                      tooltip: l10n.back,
                       icon: const Icon(Icons.arrow_back_ios_new_rounded,
                           color: Colors.white, size: 20),
                       onPressed: widget.onBack,
                     )
                   : null,
               titleWidget: Text(
-                'Cancel Reservation',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white),
+                l10n.cancelTitle,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w900, color: Colors.white),
               ),
             ),
             Expanded(
@@ -93,13 +116,20 @@ class _CustomerCancelBookingViewState extends State<CustomerCancelBookingView> {
                         color: AppColors.errorContainer,
                         borderRadius: BorderRadius.circular(14),
                         border: Border.all(
-                            color: AppColors.accentDanger.withValues(alpha: 0.3)),
+                            color:
+                                AppColors.accentDanger.withValues(alpha: 0.3)),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('What happens when you cancel',
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.dangerTextFor(Theme.of(context).brightness))),
+                          Text(l10n.cancelWhatHappens,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                      fontWeight: FontWeight.w800,
+                                      color: AppColors.dangerTextFor(
+                                          Theme.of(context).brightness))),
                           const SizedBox(height: 6),
                           // G5: there is no defined refund timetable in
                           // the app, so none is invented. What is true:
@@ -109,16 +139,22 @@ class _CustomerCancelBookingViewState extends State<CustomerCancelBookingView> {
                           // showroom decides any refund.
                           Text(
                             widget.booking.advancePaid > 0
-                                ? 'You paid Rs. ${widget.booking.advancePaid} advance directly to the showroom\'s account — the showroom decides the refund, so contact them about it. No security deposit was collected: deposits are only taken at handover.'
-                                : 'No advance has been paid yet, so there is nothing to refund. No security deposit was collected: deposits are only taken at handover.',
-                            style: Theme.of(context).textTheme.labelSmall?.copyWith(height: 1.4),
+                                ? l10n.cancelAdvancePaid(widget.booking.advancePaid)
+                                : l10n.cancelNoAdvanceNote,
+                            style: Theme.of(context)
+                                .textTheme
+                                .labelSmall
+                                ?.copyWith(height: 1.4),
                           ),
                         ],
                       ),
                     ),
                     const SizedBox(height: 18),
-                    Text('Reason for Cancellation',
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
+                    Text(l10n.cancelReasonLabel,
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleSmall
+                            ?.copyWith(fontWeight: FontWeight.w800)),
                     const SizedBox(height: 8),
                     Material(
                       color: Theme.of(context).colorScheme.surface,
@@ -126,7 +162,8 @@ class _CustomerCancelBookingViewState extends State<CustomerCancelBookingView> {
                       child: Container(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(14),
-                          border: Border.all(color: Theme.of(context).dividerColor),
+                          border:
+                              Border.all(color: Theme.of(context).dividerColor),
                         ),
                         child: RadioGroup<String>(
                           groupValue: _selectedReason,
@@ -139,8 +176,12 @@ class _CustomerCancelBookingViewState extends State<CustomerCancelBookingView> {
                             children: _reasons.map((r) {
                               return RadioListTile<String>(
                                 value: r,
-                                title: Text(r,
-                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600)),
+                                title: Text(_reasonLabel(l10n, r),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.copyWith(
+                                            fontWeight: FontWeight.w600)),
                               );
                             }).toList(),
                           ),
@@ -164,7 +205,7 @@ class _CustomerCancelBookingViewState extends State<CustomerCancelBookingView> {
                 ],
               ),
               child: DebouncedButton(
-                text: _isSubmitting ? 'Cancelling...' : 'Confirm Cancellation',
+                text: _isSubmitting ? l10n.cancelCancelling : l10n.cancelConfirm,
                 backgroundColor: AppColors.accentDanger,
                 icon: Icons.cancel_outlined,
                 isLoading: _isSubmitting,

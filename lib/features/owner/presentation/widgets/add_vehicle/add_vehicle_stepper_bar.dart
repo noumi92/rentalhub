@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../../core/constants/app_colors.dart';
+import '../../../../../l10n/app_localizations.dart';
 
 class AddVehicleStepperBar extends StatelessWidget {
   final int currentStep;
@@ -8,18 +9,19 @@ class AddVehicleStepperBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       color: Theme.of(context).colorScheme.surface,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
         children: [
-          _stepperItem(context, 1, 'Vehicle Specs'),
+          _stepperItem(context, 1, l10n.addVehicleStepperSpecs),
           _stepperDivider(context, 1),
-          _stepperItem(context, 2, 'Photos & Docs'),
+          _stepperItem(context, 2, l10n.addVehicleStepperPhotos),
           _stepperDivider(context, 2),
-          _stepperItem(context, 3, 'Rates & Policy'),
+          _stepperItem(context, 3, l10n.addVehicleStepperRates),
           _stepperDivider(context, 3),
-          _stepperItem(context, 4, 'Review'),
+          _stepperItem(context, 4, l10n.addVehicleStepperReview),
         ],
       ),
     );

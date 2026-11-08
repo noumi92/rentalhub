@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 
 /// H1: the profile's sign-out tile. Extracted from [CustomerProfileView]
 /// so the view stays under the 250-line cap.
@@ -11,6 +12,7 @@ class ProfileSignOutTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Material(
       color: Theme.of(context).colorScheme.surface,
       borderRadius: BorderRadius.circular(14),
@@ -21,7 +23,7 @@ class ProfileSignOutTile extends StatelessWidget {
         ),
         leading: Icon(Icons.logout_rounded,
             color: AppColors.dangerTextFor(Theme.of(context).brightness)),
-        title: Text('Sign Out',
+        title: Text(l10n.profileSignOut,
             style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700, color: AppColors.dangerTextFor(Theme.of(context).brightness))),
         onTap: onTap,
       ),

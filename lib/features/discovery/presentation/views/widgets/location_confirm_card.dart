@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/widgets/debounced_button.dart';
+import '../../../../../l10n/app_localizations.dart';
 
 class LocationConfirmCard extends StatelessWidget {
   final String selectedCity;
@@ -16,6 +17,7 @@ class LocationConfirmCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 14, 16, 18),
       decoration: BoxDecoration(
@@ -68,7 +70,7 @@ class LocationConfirmCard extends StatelessWidget {
           ),
           const SizedBox(height: 14),
           DebouncedButton(
-            text: 'Find Nearby Cars in $selectedCity',
+            text: l10n.locationFindCarsInCity(selectedCity),
             icon: Icons.directions_car_rounded,
             onPressed: () async => onConfirm(),
           ),

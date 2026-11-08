@@ -4,11 +4,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/data/sync_status_cubit.dart';
 import '../../../../core/di/injection_container.dart';
+import '../../../../core/widgets/app_state_views.dart';
 import '../../../../core/widgets/custom_curved_header.dart';
 import '../../../../core/widgets/offline_banner.dart';
 import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
 import '../widgets/booking_ticket_card.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class CustomerBookingsView extends StatefulWidget {
   final Function(BookingEntity booking)? onOpenBookingDetails;
@@ -28,9 +30,11 @@ class CustomerBookingsView extends StatefulWidget {
 
 class _CustomerBookingsViewState extends State<CustomerBookingsView> {
   int _selectedTab = 0;
-  final List<String> _tabs = ['All', 'Pending', 'Approved', 'Active', 'Done'];
   List<BookingEntity> _allBookings = [];
   bool _isLoading = true;
+  // E2: a load failure used to clear the spinner silently; it now
+  // renders an error state with retry.
+  bool _hasError = false;
 
   @override
   void initState() {
@@ -39,6 +43,7 @@ class _CustomerBookingsViewState extends State<CustomerBookingsView> {
   }
 
   Future<void> _fetchBookings() async {
+    if (mounted) setState(() => _hasError = false);
     try {
       String uid = 'cust-101';
       try {
@@ -55,7 +60,12 @@ class _CustomerBookingsViewState extends State<CustomerBookingsView> {
         });
       }
     } catch (_) {
-      if (mounted) setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() {
+          _hasError = true;
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -86,7 +96,9 @@ class _CustomerBookingsViewState extends State<CustomerBookingsView> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final list = _filteredBookings;
+    final tabs = [l10n.filterAll, l10n.pending, l10n.statusApproved, l10n.active, l10n.done];
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -97,27 +109,36 @@ class _CustomerBookingsViewState extends State<CustomerBookingsView> {
               // renders one only when the route can pop, which a
               // branch root never can.
               titleWidget: Text(
-                'My Reservations',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white),
+                l10n.bookingsTitle,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w900, color: Colors.white),
               ),
             ),
+            // E3: 48dp chip + 8dp vertical padding each side — the
+            // old 50dp row squeezed the filter chips to 34dp.
             Container(
-              height: 50,
+              height: 64,
               padding: const EdgeInsets.symmetric(vertical: 8),
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                itemCount: _tabs.length,
+                itemCount: tabs.length,
                 separatorBuilder: (_, __) => const SizedBox(width: 8),
                 itemBuilder: (context, i) {
                   final isSelected = i == _selectedTab;
                   return ChoiceChip(
-                    label: Text(_tabs[i]),
+                    materialTapTargetSize: MaterialTapTargetSize.padded,
+                    label: Text(tabs[i]),
                     selected: isSelected,
                     onSelected: (_) => setState(() => _selectedTab = i),
                     // No background/selected/label colours: the theme's
                     // chipTheme drives both modes (dark-correct).
-                    labelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600),
+                    labelStyle: Theme.of(context)
+                        .textTheme
+                        .labelMedium
+                        ?.copyWith(
+                            fontWeight:
+                                isSelected ? FontWeight.w800 : FontWeight.w600),
                     side: BorderSide(
                       color: isSelected
                           ? AppColors.primary
@@ -131,91 +152,89 @@ class _CustomerBookingsViewState extends State<CustomerBookingsView> {
             ),
             Expanded(
               child: _isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : RefreshIndicator(
-                      onRefresh: _fetchBookings,
-                      child: list.isEmpty
-                          ? Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(Icons.inbox_rounded,
-                                      size: 46,
-                                      color: Theme.of(context).colorScheme.onSurfaceVariant
-                                          .withValues(alpha: 0.5)),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    'No ${_tabs[_selectedTab]} bookings found.',
-                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
-                                  ),
-                                ],
-                              ),
-                            )
-                          : ListView.builder(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 16, vertical: 8),
-                              itemCount: list.length,
-                              itemBuilder: (context, index) {
-                                final b = list[index];
-                                String? actionLabel;
-                                VoidCallback? actionCallback;
+                  // E2: shared loading / error / empty states.
+                  ?  AppLoadingState(
+                      message: l10n.bookingsLoading,
+                    )
+                  : _hasError
+                      ? AppErrorState(
+                          message:
+                              l10n.bookingsLoadError,
+                          onRetry: _fetchBookings,
+                        )
+                      : RefreshIndicator(
+                          onRefresh: _fetchBookings,
+                          child: list.isEmpty
+                              ? AppEmptyState(
+                                  title:
+                                      l10n.bookingsEmptyForTab(tabs[_selectedTab]),
+                                  message:
+                                      l10n.bookingsEmptyHint,
+                                )
+                              : ListView.builder(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16, vertical: 8),
+                                  itemCount: list.length,
+                                  itemBuilder: (context, index) {
+                                    final b = list[index];
+                                    String? actionLabel;
+                                    VoidCallback? actionCallback;
 
-                                if (b.status == 'approved') {
-                                  actionLabel = 'Pay Advance';
-                                  actionCallback =
-                                      () => widget.onPayAdvance?.call(b);
-                                } else if (b.status == 'paid' ||
-                                    b.status == 'active') {
-                                  actionLabel = 'View Pass';
-                                  actionCallback = () =>
-                                      widget.onOpenBookingDetails?.call(b);
-                                } else if (b.status == 'completed') {
-                                  actionLabel = 'Rate Trip';
-                                  actionCallback =
-                                      () => widget.onRateTrip?.call(b);
-                                }
+                                    if (b.status == 'approved') {
+                                      actionLabel = l10n.bookingsPayAdvance;
+                                      actionCallback =
+                                          () => widget.onPayAdvance?.call(b);
+                                    } else if (b.status == 'paid' ||
+                                        b.status == 'active') {
+                                      actionLabel = l10n.bookingsViewPass;
+                                      actionCallback = () =>
+                                          widget.onOpenBookingDetails?.call(b);
+                                    } else if (b.status == 'completed') {
+                                      actionLabel = l10n.bookingsRateTrip;
+                                      actionCallback =
+                                          () => widget.onRateTrip?.call(b);
+                                    }
 
-                                Widget card(SyncEntryStatus status) =>
-                                    BookingTicketCard(
-                                      booking: b,
-                                      onTap: () => widget
-                                          .onOpenBookingDetails
-                                          ?.call(b),
-                                      actionLabel: actionLabel,
-                                      onAction: actionCallback,
-                                      syncStatus: status,
+                                    Widget card(SyncEntryStatus status) =>
+                                        BookingTicketCard(
+                                          booking: b,
+                                          onTap: () => widget
+                                              .onOpenBookingDetails
+                                              ?.call(b),
+                                          actionLabel: actionLabel,
+                                          onAction: actionCallback,
+                                          syncStatus: status,
+                                        );
+
+                                    return Padding(
+                                      padding:
+                                          const EdgeInsets.only(bottom: 10),
+                                      // Phase B (B5): the per-item sync chip
+                                      // follows the queue state.
+                                      child: Builder(
+                                        builder: (context) {
+                                          // Prefer a provided cubit, else
+                                          // the DI singleton, else no
+                                          // chip (never throw for a
+                                          // missing provider).
+                                          final syncCubit =
+                                              resolveSyncStatusCubit(context);
+                                          if (syncCubit == null) {
+                                            return card(SyncEntryStatus.synced);
+                                          }
+                                          return BlocBuilder<SyncStatusCubit,
+                                              SyncStatusState>(
+                                            bloc: syncCubit,
+                                            builder: (context, sync) => card(
+                                                sync.byEntity[b.bookingId] ??
+                                                    SyncEntryStatus.synced),
+                                          );
+                                        },
+                                      ),
                                     );
-
-                                return Padding(
-                                  padding: const EdgeInsets.only(bottom: 10),
-                                  // Phase B (B5): the per-item sync chip
-                                  // follows the queue state.
-                                  child: Builder(
-                                    builder: (context) {
-                                      // Prefer a provided cubit, else
-                                      // the DI singleton, else no
-                                      // chip (never throw for a
-                                      // missing provider).
-                                      final syncCubit =
-                                          resolveSyncStatusCubit(context);
-                                      if (syncCubit == null) {
-                                        return card(
-                                            SyncEntryStatus.synced);
-                                      }
-                                      return BlocBuilder<SyncStatusCubit,
-                                          SyncStatusState>(
-                                        bloc: syncCubit,
-                                        builder: (context, sync) =>
-                                            card(sync.byEntity[
-                                                    b.bookingId] ??
-                                                SyncEntryStatus.synced),
-                                      );
-                                    },
-                                  ),
-                                );
-                              },
-                            ),
-                    ),
+                                  },
+                                ),
+                        ),
             ),
           ],
         ),
@@ -223,4 +242,3 @@ class _CustomerBookingsViewState extends State<CustomerBookingsView> {
     );
   }
 }
-

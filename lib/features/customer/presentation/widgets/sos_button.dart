@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 
 /// G2: the big red SOS button on the emergency screen. Extracted from
 /// [CustomerSosView] so the view stays under the 250-line cap.
@@ -11,6 +12,7 @@ class SosButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       width: 140,
       height: 140,
@@ -40,7 +42,7 @@ class SosButton extends StatelessWidget {
             ),
             child: Center(
               child: Text(
-                'SOS',
+                l10n.sos,
                 style: Theme.of(context).textTheme.displayLarge?.copyWith(fontWeight: FontWeight.w900, color: Colors.white, letterSpacing: 2),
               ),
             ),

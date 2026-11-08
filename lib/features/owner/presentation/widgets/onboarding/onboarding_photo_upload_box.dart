@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import '../../../../../l10n/app_localizations.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../../../core/constants/app_colors.dart';
 
@@ -23,6 +24,7 @@ class OnboardingPhotoUploadBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+  final l10n = AppLocalizations.of(context)!;
     final hasFile = file != null;
     return InkWell(
       onTap: onTap,
@@ -93,7 +95,7 @@ class OnboardingPhotoUploadBox extends StatelessWidget {
                     textAlign: TextAlign.center,
                   ),
                   Text(
-                    isRequired ? 'Tap to Upload' : 'Optional',
+                    isRequired ? l10n.onboardingTapToUpload : l10n.onboardingOptional,
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(color: isRequired ? Theme.of(context).colorScheme.onSurfaceVariant : AppColors.primaryContainer),
                   ),
                 ],

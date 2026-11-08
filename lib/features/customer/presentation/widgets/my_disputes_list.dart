@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../data/datasources/dispute_remote_data_source.dart';
+import 'dispute_category_chips.dart';
+import '../../../../l10n/app_localizations.dart';
 
 /// G4: the customer's own disputes with their statuses, newest first.
 /// Extracted from [CustomerDisputeView] so the view stays under the
@@ -49,24 +51,26 @@ class _MyDisputesListState extends State<MyDisputesList> {
   }
 
   String _statusLabel(String status) {
+    final l10n = AppLocalizations.of(context)!;
     switch (status) {
       case 'resolved':
-        return 'Resolved';
+        return l10n.disputeResolved;
       case 'in_review':
-        return 'In review';
+        return l10n.inReview;
       default:
-        return 'Open';
+        return l10n.disputeOpen;
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final disputes = _disputes;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'My Disputes',
+          l10n.disputesMyTitle,
           style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
         ),
         const SizedBox(height: 10),
@@ -85,7 +89,7 @@ class _MyDisputesListState extends State<MyDisputesList> {
               border: Border.all(color: Theme.of(context).dividerColor),
             ),
             child: Text(
-              'No disputes filed yet.',
+              l10n.disputesEmpty,
               style: Theme.of(context).textTheme.bodySmall,
             ),
           )
@@ -106,7 +110,7 @@ class _MyDisputesListState extends State<MyDisputesList> {
                       children: [
                         Expanded(
                           child: Text(
-                            d.category,
+                            disputeCategoryLabel(l10n, d.category),
                             style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800),
                           ),
                         ),
@@ -127,7 +131,7 @@ class _MyDisputesListState extends State<MyDisputesList> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Booking ${d.bookingId}',
+                      l10n.bookingDetailTitle(d.bookingId),
                       style: Theme.of(context).textTheme.labelSmall,
                     ),
                     const SizedBox(height: 4),

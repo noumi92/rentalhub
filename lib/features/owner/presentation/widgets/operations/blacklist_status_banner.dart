@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../../core/constants/app_colors.dart';
+import '../../../../../l10n/app_localizations.dart';
 import '../../../../blacklist/domain/entities/blacklist_entity.dart';
 
 class BlacklistStatusBanner extends StatelessWidget {
@@ -18,6 +19,10 @@ class BlacklistStatusBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Phase F: the banner copy is localized (English fallback for
+    // delegate-less pumps). The record's own description, reason
+    // category and reporter id stay stored data.
+    final l10n = AppLocalizations.of(context);
     if (!isChecked) {
       return Container(
         padding: const EdgeInsets.all(16),
@@ -32,7 +37,8 @@ class BlacklistStatusBanner extends StatelessWidget {
             SizedBox(width: 12),
             Expanded(
               child: Text(
-                'Enter CNIC above to run an instant real-time scan against the National Car Rental Fraud & Blacklist Database.',
+                l10n?.blacklistScanPrompt ??
+                    'Enter CNIC above to run an instant real-time scan against the National Car Rental Fraud & Blacklist Database.',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(height: 1.4),
               ),
             ),
@@ -63,11 +69,13 @@ class BlacklistStatusBanner extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'CRITICAL ALERT: BLACKLISTED CITIZEN',
+                        l10n?.blacklistCriticalAlert ??
+                            'CRITICAL ALERT: BLACKLISTED CITIZEN',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w900, color: AppColors.errorOnContainerFor(Theme.of(context).brightness)),
                       ),
                       Text(
-                        'Incident Ref: ${blacklistedRecord!.blacklistId}',
+                        l10n?.blacklistIncidentRef(blacklistedRecord!.blacklistId) ??
+                            'Incident Ref: ${blacklistedRecord!.blacklistId}',
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600, color: Theme.of(context).brightness == Brightness.dark ? AppColors.errorOnContainerDark : Colors.red.shade900),
                       ),
                     ],
@@ -86,11 +94,11 @@ class BlacklistStatusBanner extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Reason: ${blacklistedRecord!.reasonCategory}', style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: Theme.of(context).colorScheme.onSurface)),
+                  Text(l10n?.blacklistReason(blacklistedRecord!.reasonCategory) ?? 'Reason: ${blacklistedRecord!.reasonCategory}', style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: Theme.of(context).colorScheme.onSurface)),
                   const SizedBox(height: 4),
                   Text(blacklistedRecord!.description, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
                   const SizedBox(height: 4),
-                  Text('Reported By: ${blacklistedRecord!.reportedByShopId}', style: Theme.of(context).textTheme.labelSmall?.copyWith(fontStyle: FontStyle.italic, color: AppColors.errorOnContainerFor(Theme.of(context).brightness))),
+                  Text(l10n?.blacklistReportedBy(blacklistedRecord!.reportedByShopId) ?? 'Reported By: ${blacklistedRecord!.reportedByShopId}', style: Theme.of(context).textTheme.labelSmall?.copyWith(fontStyle: FontStyle.italic, color: AppColors.errorOnContainerFor(Theme.of(context).brightness))),
                 ],
               ),
             ),
@@ -101,7 +109,7 @@ class BlacklistStatusBanner extends StatelessWidget {
               child: ElevatedButton.icon(
                 onPressed: onDecline,
                 icon: const Icon(Icons.block, size: 18),
-                label: const Text('Decline / Refuse Service', style: TextStyle(fontWeight: FontWeight.w800)),
+                label: Text(l10n?.blacklistDecline ?? 'Decline / Refuse Service', style: const TextStyle(fontWeight: FontWeight.w800)),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red.shade700,
                   foregroundColor: Colors.white,
@@ -134,11 +142,13 @@ class BlacklistStatusBanner extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'CLEAN NADRA RECORD VERIFIED',
+                      l10n?.blacklistCleanTitle ??
+                          'CLEAN NADRA RECORD VERIFIED',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w900, color: AppColors.successOnContainerFor(Theme.of(context).brightness)),
                     ),
                     Text(
-                      'Zero active defaults or tribunal complaints on file.',
+                      l10n?.blacklistCleanSubtitle ??
+                          'Zero active defaults or tribunal complaints on file.',
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.successOnContainerFor(Theme.of(context).brightness)),
                     ),
                   ],
@@ -153,7 +163,7 @@ class BlacklistStatusBanner extends StatelessWidget {
             child: ElevatedButton.icon(
               onPressed: onProceed,
               icon: const Icon(Icons.arrow_forward_rounded, size: 18),
-              label: const Text('Proceed to Walk-in Booking Wizard', style: TextStyle(fontWeight: FontWeight.w800)),
+              label: Text(l10n?.blacklistProceed ?? 'Proceed to Walk-in Booking Wizard', style: const TextStyle(fontWeight: FontWeight.w800)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.secondary,
                 foregroundColor: Colors.white,

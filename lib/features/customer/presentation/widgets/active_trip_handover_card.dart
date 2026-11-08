@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../l10n/app_localizations.dart';
 
 
 /// E3: the handover card on the active-trip screen — the odometer and
@@ -17,6 +18,7 @@ class ActiveTripHandoverCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -28,7 +30,7 @@ class ActiveTripHandoverCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Handover at Pickup',
+            l10n.handoverAtPickup,
             style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 8),
@@ -40,16 +42,16 @@ class ActiveTripHandoverCard extends StatelessWidget {
             ))
           else if (handover == null)
             Text(
-              'The shop records the odometer and fuel level at handover — they will appear here once the car is handed over.',
+              l10n.handoverPendingNote,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(height: 1.4),
             )
           else ...[
-            _fact(context, 'Odometer at pickup', '${handover!['initialOdometer'] ?? '—'} km'),
+            _fact(context, l10n.odometerAtPickup, '${handover!['initialOdometer'] ?? '—'} km'),
             const SizedBox(height: 8),
-            _fact(context, 'Fuel at pickup', '${handover!['fuelLevel'] ?? '—'}'),
+            _fact(context, l10n.fuelAtPickup, '${handover!['fuelLevel'] ?? '—'}'),
             if ((handover!['damageNotes'] as List?)?.isNotEmpty == true) ...[
               const SizedBox(height: 8),
-              _fact(context, 'Damage noted',
+              _fact(context, l10n.damageNoted,
                   (handover!['damageNotes'] as List).join(', ')),
             ],
           ],

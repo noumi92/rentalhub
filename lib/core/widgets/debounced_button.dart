@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../constants/app_dimensions.dart';
+import '../../l10n/app_localizations.dart';
 
 class DebouncedButton extends StatefulWidget {
   final String? text;
@@ -26,7 +28,11 @@ class DebouncedButton extends StatefulWidget {
     this.debounceMs,
   });
 
-  String get displayLabel => text ?? label ?? 'Submit';
+  // Phase F: the no-label fallback is the localized 'Submit'
+  // (English fallback for delegate-less pumps). Callers always pass
+  // a label in practice; this only covers a bare button.
+  String displayLabel(BuildContext context) =>
+      text ?? label ?? AppLocalizations.of(context)?.commonSubmit ?? 'Submit';
   Duration get effectiveDuration => debounceMs != null
       ? Duration(milliseconds: debounceMs!)
       : debounceDuration;
@@ -48,6 +54,8 @@ class _DebouncedButtonState extends State<DebouncedButton> {
   void _handleTap() {
     if (_isLocked || widget.isLoading) return;
 
+    // E2: a light impact on the primary CTA tap.
+    HapticFeedback.lightImpact();
     setState(() => _isLocked = true);
     widget.onPressed();
 
@@ -92,7 +100,7 @@ class _DebouncedButtonState extends State<DebouncedButton> {
                 ],
                 Flexible(
                   child: Text(
-                    widget.displayLabel,
+                    widget.displayLabel(context),
                     overflow: TextOverflow.ellipsis,
                     // No theme text colour here: the label must take the
                     // button's foregroundColor (white). The old titleSmall

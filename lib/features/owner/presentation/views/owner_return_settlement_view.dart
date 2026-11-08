@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../l10n/app_localizations.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/app_feedback.dart';
@@ -40,8 +41,7 @@ class OwnerReturnSettlementView extends StatefulWidget {
       _OwnerReturnSettlementViewState();
 }
 
-class _OwnerReturnSettlementViewState
-    extends State<OwnerReturnSettlementView> {
+class _OwnerReturnSettlementViewState extends State<OwnerReturnSettlementView> {
   late final TextEditingController _returnOdometerController;
   final _damageChargeController = TextEditingController();
   String _returnFuel = '4/4 (Full)';
@@ -113,8 +113,9 @@ class _OwnerReturnSettlementViewState
       );
 
   Future<void> _finalizeReturn() async {
+  final l10n = AppLocalizations.of(context)!;
     if (_returnOdometer < _initialOdometer) {
-      AppFeedback.showError(context, 'The return reading cannot be below the handover reading ($_initialOdometer KM).');
+      AppFeedback.showError(context, l10n.returnOdometerBelow(_initialOdometer));
       return;
     }
     setState(() => _isFinalizing = true);
@@ -133,7 +134,7 @@ class _OwnerReturnSettlementViewState
       );
       if (mounted) {
         AppFeedback.showSuccess(context,
-            'Vehicle returned! Deposit settled — Rs. ${breakdown.netRefund} refunded.');
+            l10n.returnSettled(breakdown.netRefund));
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
             builder: (_) => OwnerCustomerRatingView(
@@ -144,7 +145,7 @@ class _OwnerReturnSettlementViewState
       }
     } catch (e) {
       if (mounted) {
-        AppFeedback.showError(context, 'Finalizing return failed: $e');
+        AppFeedback.showError(context, l10n.returnFinalizeFailed(e.toString()));
       }
     } finally {
       if (mounted) setState(() => _isFinalizing = false);
@@ -153,6 +154,7 @@ class _OwnerReturnSettlementViewState
 
   @override
   Widget build(BuildContext context) {
+  final l10n = AppLocalizations.of(context)!;
     final breakdown = _breakdown;
     return Scaffold(
       body: SafeArea(
@@ -162,6 +164,7 @@ class _OwnerReturnSettlementViewState
               variant: CustomCurvedHeaderVariant.compact,
               leadingWidget: widget.onBack != null
                   ? IconButton(
+                      tooltip: l10n.back,
                       icon: const Icon(Icons.arrow_back_ios_new_rounded,
                           color: Colors.white, size: 20),
                       onPressed: widget.onBack,
@@ -170,8 +173,8 @@ class _OwnerReturnSettlementViewState
               titleWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Vehicle Return & Settlement', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
-                  Text('Trip Audit #${widget.booking.bookingId}', style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.primaryContainer)),
+                  Text(l10n.returnTitle, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
+                  Text(l10n.returnTripAudit(widget.booking.bookingId), style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.primaryContainer)),
                 ],
               ),
             ),
@@ -182,7 +185,7 @@ class _OwnerReturnSettlementViewState
                 child: Column(
                   children: [
                     FuelOdometerInputWidget(
-                      title: 'Return Telemetry Inspection',
+                      title: l10n.returnTelemetryTitle,
                       odometerController: _returnOdometerController,
                       selectedFuel: _returnFuel,
                       onFuelSelected: (f) => setState(() => _returnFuel = f),
@@ -193,9 +196,8 @@ class _OwnerReturnSettlementViewState
                     ],
                     const SizedBox(height: 16),
                     HandoverDamageNotesEditor(
-                      title: 'New Damage Found at Return',
-                      subtitle: 'Only damage that was not noted at '
-                          'handover — this is what the charge below covers.',
+                      title: l10n.returnNewDamageTitle,
+                      subtitle: l10n.returnNewDamageSubtitle,
                       onChanged: (notes) =>
                           setState(() => _returnDamageNotes = notes),
                     ),
@@ -205,8 +207,8 @@ class _OwnerReturnSettlementViewState
                       keyboardType: TextInputType.number,
                       onChanged: (_) => setState(() {}),
                       decoration: InputDecoration(
-                        labelText: 'Damage charge (Rs.)',
-                        hintText: '0 if nothing new was found',
+                        labelText: l10n.returnDamageChargeLabel,
+                        hintText: l10n.returnDamageChargeHint,
                         border: OutlineInputBorder(),
                         filled: true,
                         fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
@@ -227,8 +229,8 @@ class _OwnerReturnSettlementViewState
                     const SizedBox(height: 24),
                     DebouncedButton(
                       text: _isFinalizing
-                          ? 'Finalizing Settlement...'
-                          : 'Finalize Return & Settle Deposit',
+                          ? l10n.returnFinalizing
+                          : l10n.returnFinalize,
                       icon: Icons.check_circle_rounded,
                       isLoading: _isFinalizing,
                       onPressed: _finalizeReturn,

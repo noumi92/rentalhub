@@ -1,1 +1,2668 @@
-{"@@locale": "ur", "appTitle": "رینٹل ہب پاکستان", "blacklist": "بلیک لسٹ رپورٹس", "bookings": "بکنگز", "customers": "گاہک", "dashboard": "ڈیش بورڈ", "fixedRoutes": "مقررہ روٹس", "fleet": "فلیٹ", "language": "زبان", "languageEnglish": "انگریزی", "languageUrdu": "اردو", "notifications": "اطلاعات", "quickLinks": "فوری لنکس", "settings": "دکان کی ترتیبات", "settingsSubtitle": "زبان، تھیم اور آپ کا شوروم", "shop": "آپ کا شوروم", "shopNotSet": "دکان کا نام ابھی نہیں دیا گیا", "signOut": "سائن آؤٹ", "subscription": "سبسکرپشن", "theme": "تھیم", "themeDark": "تاریک", "themeLight": "روشن", "themeSystem": "سسٹم", "whatsappLogs": "واٹس ایپ لاگز", "finance": "مالیات", "customerSettings": "ترتیبات اور ترجیحات", "pushNotifications": "پش اطلاعات", "whatsappNotifications": "واٹس ایپ اطلاعات", "appVersion": "ایپ ورژن", "disputes": "تنازعات"}
+{
+  "@@locale": "ur",
+  "appTitle": "رینٹل ہب پاکستان",
+  "blacklist": "بلیک لسٹ رپورٹس",
+  "fixedRoutes": "مقررہ روٹس",
+  "language": "زبان",
+  "languageEnglish": "انگریزی",
+  "languageUrdu": "اردو",
+  "notifications": "اطلاعات",
+  "quickLinks": "فوری لنکس",
+  "settings": "دکان کی ترتیبات",
+  "settingsSubtitle": "زبان، تھیم اور آپ کا شوروم",
+  "shop": "آپ کا شوروم",
+  "shopNotSet": "دکان کا نام ابھی نہیں دیا گیا",
+  "signOut": "سائن آؤٹ",
+  "subscription": "سبسکرپشن",
+  "theme": "تھیم",
+  "themeDark": "تاریک",
+  "themeLight": "روشن",
+  "themeSystem": "سسٹم",
+  "whatsappLogs": "واٹس ایپ لاگز",
+  "finance": "مالیات",
+  "customerSettings": "ترتیبات اور ترجیحات",
+  "pushNotifications": "پش اطلاعات",
+  "whatsappNotifications": "واٹس ایپ اطلاعات",
+  "appVersion": "ایپ ورژن",
+  "disputes": "تنازعات",
+  "back": "واپس",
+  "cancel": "منسوخ کریں",
+  "sos": "ایس او ایس",
+  "active": "فعال",
+  "filterAll": "سب",
+  "pending": "زیر التواء",
+  "statusApproved": "منظور شدہ",
+  "done": "مکمل",
+  "statusCompleted": "مکمل",
+  "statusCancelled": "منسوخ",
+  "statusRejected": "مسترد",
+  "statusPaid": "ادا شدہ",
+  "statusOnTrip": "سفر جاری",
+  "statusProofSubmitted": "ثبوت جمع کرایا گیا",
+  "statusRequestSent": "درخواست بھیجی گئی",
+  "statusPendingReview": "جائزہ زیر التواء",
+  "inReview": "جائزے میں",
+  "disputeOpen": "کھلا",
+  "disputeResolved": "حل شدہ",
+  "verified": "تصدیق شدہ",
+  "available": "دستیاب",
+  "rentedOut": "کرایہ پر دیا گیا",
+  "inMaintenance": "مرمت میں",
+  "availableNow": "ابھی دستیاب",
+  "selfDrive": "سیلف ڈرائیو",
+  "withDriver": "ڈرائیور کے ساتھ",
+  "withChauffeur": "ڈرائیور کے ساتھ",
+  "selfDriveHyphen": "سیلف ڈرائیو",
+  "inCity": "شہر کے اندر",
+  "outOfCity": "شہر سے باہر",
+  "inCityHyphen": "شہر کے اندر",
+  "outOfCityHyphen": "شہر سے باہر",
+  "supportUrgencyLow": "کم",
+  "supportUrgencyMedium": "درمیانہ",
+  "supportUrgencyHigh": "زیادہ — فوری",
+  "call": "کال کریں",
+  "whatsapp": "واٹس ایپ",
+  "viewFleet": "گاڑیاں دیکھیں",
+  "showroomLabel": "شوروم",
+  "rentalCar": "کرایہ کی گاڑی",
+  "rentalShowroom": "کرایہ شوروم",
+  "summaryVehicle": "گاڑی",
+  "packageLabel": "پیکج",
+  "pickupLabel": "پک اپ",
+  "summaryReturn": "واپسی",
+  "summaryTotal": "کل",
+  "summaryTrip": "سفر",
+  "summaryMode": "موڈ",
+  "summaryPlate": "نمبر پلیٹ",
+  "summaryRemaining": "باقی رقم",
+  "packageContinue": "جاری رکھیں",
+  "kycUpload": "اپ لوڈ کریں",
+  "kycEncrypted": "خفیہ شدہ",
+  "kycCustomer": "گاہک",
+  "walletLabel": "والیٹ",
+  "profileGuest": "مہمان",
+  "homeTitle": "تصدیق شدہ کرایہ شوروم تلاش کریں",
+  "homeSwitchToMap": "انٹرایکٹو نقشہ دیکھیں",
+  "homeFindingShops": "قریبی شوروم تلاش کیے جا رہے ہیں…",
+  "homeNearbyShowrooms": "قریبی شورومز",
+  "homeMyLiveLocation": "میری موجودہ جگہ",
+  "homeSwitchToList": "فہرست دیکھیں",
+  "locationSetTitle": "کرایہ کی جگہ مقرر کریں",
+  "locationCenterPin": "جگہ کا پن مرکز میں رکھیں",
+  "locationPermissionDenied": "جگہ کی اجازت نہیں ملی۔ دریافت کے لیے شہر منتخب کریں۔",
+  "locationEnableGps": "براہ کرم اپنے آلے پر GPS / لوکیشن سروس آن کریں۔",
+  "locationSelectCityManually": "شہر دستی طور پر منتخب کریں (لاہور)",
+  "locationAllowWhileUsing": "ایپ استعمال کرتے ہوئے اجازت دیں",
+  "locationEnablePrecise": "درست جگہ فعال کریں",
+  "locationPermissionExplainer": "رینٹل ہب آپ کے GPS کوآرڈینیٹس استعمال کر کے پاکستان میں آپ کے آس پاس 1 تا 5 کلومیٹر کے اندر تصدیق شدہ شورومز تلاش کرتا ہے۔",
+  "emptyRadarExpandHint": "قریبی منظور شدہ شورومز دیکھنے کے لیے اپنی GPS تلاش کا دائرہ 5 کلومیٹر تک بڑھائیں۔",
+  "emptyRadarExpand": "ریڈار 5 کلومیٹر تک بڑھائیں",
+  "noShopsBanner": "اس دائرے میں ابھی کوئی تصدیق شدہ شوروم نہیں۔ وسیع دائرہ آزمائیں۔",
+  "radiusLabel": "دائرہ:",
+  "quickBookCar": "گاڑی بک کریں",
+  "quickScanPass": "پاس اسکین کریں",
+  "quickNearbyShops": "قریبی شورومز",
+  "shopCarsTitle": "دستیاب گاڑیاں",
+  "shopCarsLoading": "دستیاب گاڑیاں لوڈ ہو رہی ہیں…",
+  "shopCarsLoadError": "اس شوروم کی گاڑیاں لوڈ نہیں ہو سکیں۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔",
+  "shopCarsTryOther": "کوئی اور زمرہ آزمائیں، یا بعد میں دوبارہ دیکھیں۔",
+  "shopSave": "شوروم محفوظ کریں",
+  "shopSaved": "محفوظ شدہ",
+  "shopSaveError": "یہ شوروم محفوظ نہیں ہو سکا۔",
+  "shopSaveSignIn": "شوروم محفوظ کرنے کے لیے سائن ان کریں۔",
+  "shopNoCars": "اس شوروم کی کوئی گاڑی ابھی درج نہیں۔",
+  "shopCheckLater": "بعد میں دوبارہ دیکھیں، یا دوسرے شورومز دیکھیں۔",
+  "shopLoadingCars": "اس شوروم کی گاڑیاں لوڈ ہو رہی ہیں…",
+  "shopViewAllCars": "تمام گاڑیاں فلٹر کے ساتھ دیکھیں",
+  "vehicleCapacity": "گنجائش",
+  "vehicleFuelType": "ایندھن کی قسم",
+  "vehicleMileage": "مائلیج",
+  "vehicleTransmission": "ٹرانسمیشن",
+  "vehicleChoosePackage": "کرایہ پیکج منتخب کریں",
+  "couldNotOpenWhatsapp": "واٹس ایپ نہیں کھولا جا سکا۔",
+  "couldNotCall": "کال نہیں کی جا سکی۔",
+  "shopNoWhatsapp": "اس شوروم کا واٹس ایپ نمبر درج نہیں۔",
+  "shopNoWhatsappShowroom": "اس شوروم کا واٹس ایپ نمبر درج نہیں۔",
+  "bookingsTitle": "میری بکنگز",
+  "bookingsLoading": "آپ کی بکنگز لوڈ ہو رہی ہیں…",
+  "bookingsLoadError": "آپ کی بکنگز لوڈ نہیں ہو سکیں۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔",
+  "bookingsEmptyHint": "آپ کی بکنگز یہاں ظاہر ہوں گی۔",
+  "bookingsPayAdvance": "ایڈوانس ادا کریں",
+  "bookingsViewPass": "پاس دیکھیں",
+  "bookingsRateTrip": "سفر کی درجہ بندی کریں",
+  "activeTripTitle": "فعال سفر",
+  "countdownToPickup": "پک اپ تک باقی وقت",
+  "timeUntilReturn": "واپسی تک باقی وقت",
+  "kmIncluded": "کلومیٹر شامل",
+  "returnDue": "واپسی کی تاریخ",
+  "totalFare": "کل کرایہ",
+  "viewPickupPassQr": "پک اپ پاس (QR) دیکھیں",
+  "viewPassQr": "پاس / QR دیکھیں",
+  "activeRentalCar": "فعال کرایہ گاڑی",
+  "handoverAtPickup": "پک اپ پر حوالگی",
+  "odometerAtPickup": "پک اپ پر اوڈومیٹر",
+  "fuelAtPickup": "پک اپ پر ایندھن",
+  "damageNoted": "نقصان درج ہے",
+  "handoverPendingNote": "شوروم حوالگی کے وقت اوڈومیٹر اور ایندھن کی سطح درج کرتا ہے — گاڑی ملنے کے بعد یہ یہاں ظاہر ہوں گے۔",
+  "browseOtherShops": "دوسرے شورومز دیکھیں",
+  "cancelBooking": "بکنگ منسوخ کریں",
+  "fileDispute": "تنازع درج کریں",
+  "rateThisTrip": "اس سفر کی درجہ بندی کریں",
+  "viewPickupPass": "پک اپ پاس دیکھیں",
+  "summaryAdvancePaid": "ایڈوانس ادا شدہ",
+  "summaryAdvanceRequired": "ایڈوانس درکار",
+  "summaryDriveMode": "ڈرائیونگ موڈ",
+  "summaryPickupTime": "پک اپ کا وقت",
+  "summaryReturnDue": "واپسی کی تاریخ",
+  "summaryPackageTier": "پیکج کی قسم",
+  "summaryKmIncluded": "کلومیٹر شامل",
+  "summarySecurityDeposit": "سیکیورٹی ڈپازٹ",
+  "summaryTotalFare": "کل کرایہ",
+  "summaryAdvancePayable": "قابل ادا ایڈوانس",
+  "summaryBalanceAtHandover": "حوالگی پر باقی رقم",
+  "walletTitle": "والیٹ اور سیکیورٹی ایسکرو",
+  "walletActiveEscrow": "فعال ایسکرو اور ایڈوانس",
+  "walletAdvancesPaid": "ادا شدہ ایڈوانس",
+  "walletSecurityEscrow": "سیکیورٹی ایسکرو",
+  "walletLedger": "لین دین کی فہرست",
+  "walletHideAmount": "رقم چھپائیں",
+  "walletShowAmount": "رقم دکھائیں",
+  "walletHideBalance": "بیلنس چھپائیں",
+  "walletShowBalance": "بیلنس دکھائیں",
+  "walletEmptyHint": "ایڈوانس اور ڈپازٹ یہاں ظاہر ہوں گے۔",
+  "walletLedgerEmptyHint": "آپ کے ادا کردہ ایڈوانس اور ڈپازٹ یہاں ظاہر ہوں گے۔",
+  "walletLoadError": "آپ کا والیٹ لوڈ نہیں ہو سکا۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔",
+  "walletLoading": "آپ کا والیٹ لوڈ ہو رہا ہے…",
+  "walletNoActivity": "ابھی کوئی والیٹ سرگرمی نہیں۔",
+  "profileTotalTrips": "کل سفر",
+  "profileTrustScore": "اعتماد اسکور",
+  "profileLoading": "آپ کا پروفائل لوڈ ہو رہا ہے…",
+  "profileNotSignedIn": "سائن ان نہیں ہیں۔",
+  "profileNotSignedInShort": "سائن ان نہیں ہیں",
+  "profileSavedShops": "محفوظ شدہ شورومز",
+  "profileSavedShopsSubtitle": "محفوظ شدہ کرایہ ایجنسیاں",
+  "profileMyDocuments": "میرے دستاویزات (KYC)",
+  "profileKycSubtitle": "شناختی کارڈ (آگے/پیچھے) اور ڈرائیونگ لائسنس",
+  "profileSettingsLanguage": "ترتیبات اور زبان",
+  "profileSettingsSubtitle": "انگریزی / اردو، اطلاعات",
+  "profileSaved": "پروفائل محفوظ ہو گیا۔",
+  "editProfile": "پروفائل میں ترمیم کریں",
+  "editFullName": "پورا نام",
+  "editPhone": "فون",
+  "editCnicOptional": "شناختی کارڈ (اختیاری)",
+  "editEnterName": "براہ کرم اپنا نام درج کریں۔",
+  "editSaveProfile": "پروفائل محفوظ کریں",
+  "editSaving": "محفوظ کیا جا رہا ہے…",
+  "cnicLabel": "شناختی کارڈ",
+  "cnicHide": "شناختی کارڈ چھپائیں",
+  "cnicShow": "شناختی کارڈ دکھائیں",
+  "profileEditProfile": "پروفائل میں ترمیم کریں",
+  "reputationTitle": "میرا اعتماد اور ساکھ",
+  "reputationShopRatings": "شورومز کی آپ کے بارے میں درجہ بندی",
+  "reputationEmpty": "ابھی کسی شوروم نے آپ کی درجہ بندی نہیں کی۔ آپ کی ساکھ پہلے مکمل سفر کے بعد یہاں ظاہر ہوگی۔",
+  "reputationVisibleNote": "شورومز آپ کی بکنگ درخواستوں کا جائزہ لیتے وقت یہ درجہ بندی دیکھتے ہیں۔",
+  "reputationPunctuality": "وقت پر حوالگی کی پابندی",
+  "reputationVehicleCare": "گاڑی کی دیکھ بھال اور صفائی",
+  "reputationStaffBehavior": "عملے سے برتاؤ",
+  "reputationTrustScoreDash": "اعتماد اسکور: —",
+  "disputesMyTitle": "میرے تنازعات",
+  "disputesEmpty": "ابھی کوئی تنازع درج نہیں کیا گیا۔",
+  "savedShopsEmpty": "ابھی کوئی محفوظ شدہ شوروم نہیں۔",
+  "savedShopsEmptyHint": "کسی بھی شوروم پر دل والے نشان پر ٹیپ کر کے اسے یہاں محفوظ کریں۔",
+  "savedShopsRemove": "محفوظ شدہ سے ہٹائیں",
+  "savedShopsRemoveError": "یہ شوروم ہٹایا نہیں جا سکا۔",
+  "supportTitle": "مدد اور سپورٹ سینٹر",
+  "supportSearchHint": "مدد تلاش کریں",
+  "supportCallShop": "اپنے شوروم کو کال کریں",
+  "supportWhatsappShop": "اپنے شوروم کو واٹس ایپ کریں",
+  "supportNoBooking": "ابھی کوئی بکنگ نہیں",
+  "supportNoBookingHint": "ابھی کوئی بکنگ نہیں — بکنگ ہونے کے بعد شوروم کا رابطہ یہاں ظاہر ہوگا۔",
+  "supportFileDispute": "باقاعدہ شکایت / تنازع درج کریں",
+  "supportDisputeHint": "زیادہ چارج یا ڈپازٹ روکا گیا؟ ثالثی کا دعویٰ درج کریں۔",
+  "supportFaqTitle": "اکثر پوچھے جانے والے سوالات",
+  "supportFaqEmpty": "آپ کی تلاش سے کوئی مدد کا موضوع نہیں ملا۔",
+  "supportFaqEmptyHint": "کوئی اور لفظ آزمائیں، یا اپنے شوروم سے براہ راست پوچھیں۔",
+  "supportSosTitle": "ایمرجنسی SOS",
+  "supportSosSubtitle": "پولیس 15 · ریسکیو 1122 — ایک ٹیپ میں ایمرجنسی مدد۔",
+  "supportFaqQ1": "ایڈوانس ادائیگی میری بکنگ کی حفاظت کیسے کرتی ہے؟",
+  "supportFaqA1": "آپ کی ایڈوانس ادائیگی گاڑی کو آپ کے مقررہ وقت کے لیے خصوصی طور پر محفوظ کرتی ہے اور شوروم کی بکنگ کی ضمانت دیتی ہے۔ یہ محفوظ طریقے سے درج کی جاتی ہے اور آپ کے حتمی بل سے منہا کر دی جاتی ہے۔",
+  "supportFaqQ2": "میرا سیکیورٹی ڈپازٹ کب واپس ملتا ہے؟",
+  "supportFaqA2": "ڈپازٹ واپسی کی حوالگی پر طے کیا جاتا ہے۔ اضافی کلومیٹر، ایندھن یا نقصان کی کوئی بھی کٹوتی تصفیے میں دکھائی جاتی ہے، اور باقی رقم آپ کو واپس کر دی جاتی ہے۔",
+  "supportFaqQ3": "اگر گاڑی خراب ہو جائے تو کیا ہوتا ہے؟",
+  "supportFaqA3": "سڑک پر مدد شوروم پر منحصر ہے — گاڑی لیتے وقت اپنے شوروم سے پوچھیں۔ ایمرجنسی کے لیے ایمرجنسی SOS اسکرین استعمال کریں۔",
+  "supportFaqQ4": "کیا میں کرایہ کی گاڑی شہر سے باہر لے جا سکتا ہوں؟",
+  "supportFaqA4": "جی ہاں، شہر سے باہر کے پیکج دستیاب ہیں۔ \"Out of City\" درجہ منتخب کریں یا ٹریکر کلیئرنس کے لیے شوروم کو پہلے سے مطلع کریں۔",
+  "supportMessageTitle": "سپورٹ کو پیغام بھیجیں",
+  "supportMessageLabel": "کیا مسئلہ ہوا؟",
+  "supportMessageHint": "بتائیں کیا مسئلہ ہوا۔ ہماری ٹیم واٹس ایپ پر رابطہ کرے گی — جوابات ابھی ایپ میں ظاہر نہیں ہوتے۔",
+  "supportUrgencyLabel": "یہ کتنا ضروری ہے؟",
+  "supportSendMessage": "پیغام بھیجیں",
+  "supportSending": "بھیجا جا رہا ہے…",
+  "supportWriteFirst": "براہ کرم پہلے اپنا پیغام لکھیں۔",
+  "supportMessageSent": "پیغام بھیج دیا گیا۔ ہماری ٹیم واٹس ایپ پر رابطہ کرے گی۔",
+  "sosTitle": "ایمرجنسی SOS مدد",
+  "sosPress": "ایمرجنسی میں SOS دبائیں",
+  "sosExplainer": "SOS بٹن پولیس 15 کو کال کرتا ہے۔ آپ ریسکیو 1122 کو بھی کال کر سکتے ہیں یا اپنی موجودہ جگہ شوروم کے ساتھ شیئر کر سکتے ہیں۔",
+  "sosCallPolice": "پولیس 15 کو کال کریں",
+  "sosCallRescue": "ریسکیو 1122 کو کال کریں",
+  "sosCallPoliceEmergency": "پولیس ایمرجنسی 15 کو کال کریں",
+  "sosCallPoliceConfirm": "پولیس 15 کو کال کریں؟",
+  "sosCallPoliceConfirmHint": "اس سے پولیس ایمرجنسی نمبر (15) ڈائل ہوتا ہے۔ صرف حقیقی ایمرجنسی میں استعمال کریں۔",
+  "sosPoliceSubtitle": "پنجاب اور وفاقی پولیس کی براہ راست ہیلپ لائن",
+  "sosRescueSubtitle": "ایمبولینس، فائر اور ریسکیو سروسز",
+  "sosPolice": "پولیس 15",
+  "sosRescue": "ریسکیو 1122",
+  "sosShareLocation": "واٹس ایپ کے ذریعے موجودہ جگہ شیئر کریں",
+  "sosSendToShop": "اپنی موجودہ جگہ اپنے شوروم کو بھیجیں",
+  "sosNoBookingHint": "ابھی کوئی بکنگ نہیں — بکنگ ہونے کے بعد آپ کی موجودہ جگہ آپ کے شوروم کے ساتھ شیئر کی جائے گی۔",
+  "sosLocationPermission": "اپنی موجودہ جگہ شیئر کرنے کے لیے جگہ کی اجازت درکار ہے۔",
+  "disputeTitle": "شکایت / تنازع درج کریں",
+  "disputeDepositWithheld": "ڈپازٹ روکا گیا",
+  "disputeOvercharge": "شوروم کی زیادہ چارجنگ",
+  "disputeBreakdown": "گاڑی خراب ہونے سے تاخیر",
+  "disputeDamagePenalty": "ناانصافی پر مبنی نقصان کا جرمانہ",
+  "disputeRudeStaff": "بدتمیز / غیر پیشہ ور عملہ",
+  "disputeSelectCategory": "تنازع کی قسم منتخب کریں",
+  "disputeBookingId": "بکنگ ID / حوالہ",
+  "disputeBookingIdHint": "مثلاً RH-849201",
+  "disputeDetailsLabel": "تفصیلی وضاحت",
+  "disputeDetailsHint": "بتائیں کیا ہوا — تاریخوں، رقموں اور شوروم عملے کے ناموں کے ساتھ…",
+  "disputeRecordedNote": "آپ کا تنازع درج کر کے جائزے کے لیے شوروم کے ساتھ شیئر کیا جاتا ہے۔ حل کا کوئی مقررہ وقت ابھی نہیں۔",
+  "disputeEnterBookingId": "براہ کرم اپنی بکنگ ID درج کریں۔",
+  "disputeExplainIssue": "براہ کرم پیش آنے والا مسئلہ بیان کریں۔",
+  "disputeSubmit": "دعویٰ جمع کریں",
+  "disputeSubmitting": "تنازع جمع کیا جا رہا ہے…",
+  "disputeFiled": "تنازع درج ہو گیا۔ شوروم اسے اپنے تنازعات کے ان باکس میں دیکھ سکتا ہے۔",
+  "disputeSavedOffline": "تنازع اس آلے پر محفوظ ہو گیا — آن لائن ہونے پر شوروم تک پہنچ جائے گا۔",
+  "cancelReasonLabel": "منسوخی کی وجہ",
+  "cancelTitle": "بکنگ منسوخ کریں",
+  "cancelConfirm": "منسوخی کی تصدیق کریں",
+  "cancelCancelling": "منسوخ کیا جا رہا ہے…",
+  "cancelWhatHappens": "منسوخ کرنے پر کیا ہوتا ہے",
+  "cancelNoAdvanceNote": "ابھی کوئی ایڈوانس ادا نہیں ہوا، اس لیے واپسی کے لیے کچھ نہیں۔ کوئی سیکیورٹی ڈپازٹ نہیں لیا گیا: ڈپازٹ صرف حوالگی پر لیا جاتا ہے۔",
+  "cancelDone": "بکنگ منسوخ کر دی گئی۔",
+  "cancelReasonPlans": "سفر کے منصوبے بدل گئے",
+  "cancelReasonOtherVehicle": "دوسری گاڑی مل گئی",
+  "cancelReasonShopDelay": "شوروم کی منظوری میں تاخیر",
+  "cancelReasonEmergency": "اچانک ایمرجنسی",
+  "cancelReasonOther": "دوسری وجہ",
+  "rateTitle": "اپنے تجربے کی درجہ بندی کریں",
+  "rateVehicleCondition": "گاڑی کی حالت اور صفائی",
+  "rateVehicleHint": "AC کولنگ، ٹائر، اندرونی حالت، مکینکی حالت",
+  "rateShopService": "شوروم سروس کا معیار",
+  "rateShopHint": "حوالگی کی رفتار، عملے کا برتاؤ، شفافیت",
+  "rateFeedbackLabel": "اضافی رائے (اختیاری)",
+  "rateFeedbackHint": "مستقبل کے کرایہ داروں کے لیے کوئی خاص بات یا تجویز شیئر کریں…",
+  "rateSubmit": "سفر کا جائزہ جمع کریں",
+  "rateSubmitting": "جمع کیا جا رہا ہے…",
+  "rateSaved": "شکریہ! آپ کا جائزہ اس سفر کے لیے محفوظ ہو گیا۔",
+  "rateAlreadyRated": "آپ اس سفر کی درجہ بندی کر چکے ہیں — آپ کا جائزہ نیچے دکھایا گیا ہے۔",
+  "rateSavedOffline": "اس آلے پر محفوظ ہو گیا — آن لائن ہونے پر سنک ہو جائے گا۔",
+  "reviewTitle": "بکنگ کا جائزہ لیں",
+  "reviewSpecialInstructions": "شوروم کے لیے خصوصی ہدایات",
+  "reviewInstructionsHint": "مثلاً صاف گاڑی چاہیے، ایئرپورٹ ٹرمینل سے پک اپ…",
+  "reviewSendRequest": "مالک کو درخواست بھیجیں",
+  "reviewSending": "درخواست بھیجی جا رہی ہے…",
+  "reviewSent": "بکنگ کی درخواست شوروم کو بھیج دی گئی!",
+  "approvedTitle": "بکنگ منظور ہو گئی!",
+  "approvedReadyAdvance": "ایڈوانس ادائیگی کے لیے تیار",
+  "successTitle": "درخواست کامیابی سے بھیج دی گئی!",
+  "successTransmitted": "درخواست منتقل ہو گئی",
+  "successAdvanceDue": "منظوری پر قابل ادا ایڈوانس:",
+  "successShopStatus": "شوروم کی حالت:",
+  "successMessageShop": "شوروم کو واٹس ایپ پر پیغام بھیجیں",
+  "successViewPayment": "ادائیگی کی تفصیل / حالت دیکھیں",
+  "successBackToBookings": "میری بکنگز پر واپس جائیں",
+  "paymentAccountsTitle": "شوروم کے ادائیگی اکاؤنٹس",
+  "paymentAccountsDirect": "براہ راست منتقلی کے ذرائع",
+  "paymentBankTransfer": "بینک ٹرانسفر",
+  "paymentJazzcash": "جیز کیش",
+  "paymentEasypaisa": "ایزی پیسہ",
+  "paymentVerified": "رینٹل ہب تصدیق شدہ",
+  "paymentApprovedTitle": "بکنگ کی درخواست منظور ہو گئی!",
+  "paymentPayHint": "نیچے دیے گئے تصدیق شدہ شوروم اکاؤنٹس پر ادائیگی کریں اور اپنی منتقلی کا اسکرین شاٹ لیں۔",
+  "paymentNoAccounts": "اس شوروم کے لیے ابھی کوئی ادائیگی اکاؤنٹ مقرر نہیں۔",
+  "paymentAddAccountsNote": "شوروم کی ترتیبات میں جیز کیش، ایزی پیسہ یا بینک اکاؤنٹس شامل کریں تاکہ گاہکوں کو معلوم ہو کہاں ادائیگی کرنی ہے۔",
+  "paymentLoading": "ادائیگی اکاؤنٹس لوڈ ہو رہے ہیں…",
+  "paymentUploadProof": "ادائیگی کا ثبوت اور رسید اپ لوڈ کریں",
+  "proofSelectedCar": "منتخب شدہ گاڑی",
+  "proofScreenshot": "ثبوت کا اسکرین شاٹ",
+  "proofTidLabel": "لین دین کا حوالہ / TID",
+  "proofTidHint": "جیز کیش / بینک TID درج کریں (مثلاً 892019281)",
+  "proofAttachFirst": "براہ کرم اپنی ادائیگی کا اسکرین شاٹ یا رسید منسلک کریں۔",
+  "proofEnterTid": "براہ کرم لین دین کا حوالہ / TID درج کریں۔",
+  "proofSubmit": "ادائیگی کا ثبوت جمع کریں",
+  "proofUploading": "ثبوت اپ لوڈ ہو رہا ہے…",
+  "proofSubmitted": "ثبوت جمع ہو گیا! شوروم کی تصدیق کا انتظار ہے۔",
+  "proofSubmittedOffline": "ثبوت جمع ہو گیا! آن لائن ہونے پر رسید سنک ہو جائے گی۔",
+  "proofPrivateNote": "ثبوت نجی اسٹوریج پر اپ لوڈ ہوتا ہے۔ شوروم اسے چیک کر کے آپ کی بکنگ کی تصدیق کرتا ہے — انتظار کا کوئی مقررہ وقت نہیں۔",
+  "passTitle": "پک اپ کاؤنٹ ڈاؤن پاس",
+  "passDoneHome": "مکمل • ہوم پر واپس جائیں",
+  "passRentalVehicle": "کرایہ کی گاڑی",
+  "passPickupTarget": "پک اپ کا ہدف:",
+  "passShowQr": "حوالگی کے وقت یہ QR کوڈ شوروم عملے کو دکھائیں",
+  "countdownHours": "گھنٹے",
+  "countdownMinutes": "منٹ",
+  "countdownSeconds": "سیکنڈ",
+  "packageSelectTitle": "کرایہ پیکج منتخب کریں",
+  "packageTiersTitle": "دستیاب دورانیے کی اقسام",
+  "pkg1h": "1 گھنٹہ شہر کا سفر",
+  "pkg3h": "3 گھنٹہ فوری سفر",
+  "pkg6h": "6 گھنٹہ ایکسپریس",
+  "pkg12h": "12 گھنٹہ آدھا دن",
+  "pkgDaily": "روزانہ 24 گھنٹے",
+  "pkgWeeklyPackage": "ہفتہ وار پیکج",
+  "pkg1hDesc": "شہر میں فوری سفر",
+  "pkg3hDesc": "ایئرپورٹ ڈراپ/پک اپ اور مختصر سفر",
+  "pkg12hDesc": "شہر کے کاموں، شادیوں اور ملاقاتوں کے لیے بہترین",
+  "pkg6hDesc": "آدھے دن کی سیر و تقریبات",
+  "pkgDailyDesc": "پورے دن کی سہولت معہ مہلت واپسی",
+  "pkgWeeklyDesc": "سات دن، ایک قیمت",
+  "tripFixedRoutes": "اس شوروم کے مقررہ روٹس",
+  "tripTrackerNote": "ٹریکر کلیئرنس درکار ہے — شوروم پک اپ سے پہلے اس کی تصدیق کرتا ہے۔",
+  "advanceNoticeTitle": "ایڈوانس اور تصدیق کی اطلاع",
+  "pickerPickupDate": "پک اپ کی تاریخ",
+  "pickerPickupSchedule": "پک اپ کا شیڈول",
+  "pickerDuration": "کرایہ کی مدت",
+  "pickerIncreaseDays": "کرایہ کے دن بڑھائیں",
+  "pickerDecreaseDays": "کرایہ کے دن کم کریں",
+  "proofCaptureCamera": "کیمرے سے تصویر لیں",
+  "proofFromGallery": "گیلری سے",
+  "proofScreenshotReady": "اسکرین شاٹ تیار ہے",
+  "proofScreenshotSupport": "بینکنگ ایپ کی JPG، PNG رسید معاون ہے",
+  "proofUploadScreenshot": "منتقلی کا اسکرین شاٹ اپ لوڈ کریں",
+  "paymentAccountMobile": "اکاؤنٹ / موبائل",
+  "paymentAccountTitle": "اکاؤنٹ کا عنوان",
+  "paymentCopyNumber": "نمبر کاپی کریں",
+  "paymentIban": "IBAN نمبر",
+  "passCallShop": "شوروم کو کال کریں",
+  "passDirections": "راستہ",
+  "passHandoverPoint": "شوروم حوالگی کی جگہ",
+  "passViewAgreement": "کرایہ معاہدہ (PDF) دیکھیں",
+  "passAgreementHint": "حوالگی کے بعد آپ کا دستخط شدہ کرایہ معاہدہ یہاں ظاہر ہوگا۔",
+  "passNoLocation": "اس شوروم کی جگہ ابھی درج نہیں۔",
+  "passNoPhone": "اس شوروم کا فون نمبر ابھی درج نہیں۔",
+  "passOpenMapsError": "نقشہ نہیں کھولا جا سکا۔",
+  "passOpenAgreementError": "معاہدہ نہیں کھولا جا سکا۔",
+  "driverRequiresCnic": "شناختی کارڈ + ڈپازٹ درکار ہے",
+  "driverVerifiedIncluded": "تصدیق شدہ ڈرائیور شامل ہے",
+  "authWelcome": "رینٹل ہب میں خوش آمدید",
+  "authSignInSubtitle": "اپنے قریب گاڑی کرایہ پر لینے کے لیے سائن ان کریں",
+  "authEmail": "ای میل پتہ",
+  "authPassword": "پاس ورڈ",
+  "authSignInEmail": "ای میل سے سائن ان کریں",
+  "authSignedIn": "کامیابی سے سائن ان ہو گئے!",
+  "authSignedInGoogle": "گوگل سے سائن ان ہو گئے!",
+  "authValidEmail": "براہ کرم درست ای میل پتہ درج کریں۔",
+  "authPasswordLength": "پاس ورڈ کم از کم 6 حروف کا ہونا چاہیے۔",
+  "authNewUser": "رینٹل ہب پر نئے ہیں؟ کردار منتخب کریں اور رجسٹر کریں",
+  "authTagline": "پاکستان کا بہترین کار رینٹل اور فلیٹ نظام • خوش آمدید",
+  "authGoogle": "گوگل سے جاری رکھیں",
+  "onboardingStep1": "مرحلہ 1: آپ کا پروفائل",
+  "onboardingEnterContact": "اپنی رابطے کی معلومات درج کریں",
+  "onboardingFullName": "پورا نام",
+  "onboardingWhatsappNumber": "واٹس ایپ نمبر",
+  "onboardingValidPhone": "3 سے شروع ہونے والا درست 10 ہندسوں کا نمبر درج کریں (مثلاً 300 1234567)",
+  "onboardingValidNamePhone": "براہ کرم درست پورا نام اور پاکستانی واٹس ایپ نمبر (+92 3XX یا 03XX) درج کریں۔",
+  "onboardingNameRequired": "پورا نام درکار ہے",
+  "onboardingNameLength": "نام کم از کم 3 حروف کا ہونا چاہیے",
+  "onboardingPhoneRequired": "واٹس ایپ نمبر درکار ہے",
+  "onboardingContinueRole": "کردار کے انتخاب پر جائیں",
+  "onboardingProfileVerified": "پروفائل کی تفصیل کی تصدیق ہو گئی۔",
+  "onboardingStep2": "مرحلہ 2: اکاؤنٹ کا کردار",
+  "roleSelectTitle": "مستقل اکاؤنٹ کردار منتخب کریں",
+  "roleSelectSubtitle": "منتخب کریں کہ آپ رینٹل ہب کیسے استعمال کرنا چاہتے ہیں",
+  "roleCustomer": "گاڑی کرایہ پر لیں (گاہک)",
+  "roleCustomerTitle": "گاہک (گاڑی کرایہ پر لیں)",
+  "roleCustomerDesc": "1 تا 5 کلومیٹر کے اندر تصدیق شدہ شورومز تلاش کریں، سیلف ڈرائیو یا ڈرائیور والے پیکج بک کریں۔",
+  "roleOwner": "فلیٹ مالک (شوروم)",
+  "roleOwnerTitle": "میری گاڑیاں درج کریں (شوروم مالک)",
+  "roleOwnerDesc": "اپنا شوروم رجسٹر کریں، فلیٹ کے نرخ، ڈیجیٹل حوالگی اور قومی بلیک لسٹ کا انتظام کریں۔",
+  "roleContinueCustomer": "گاہک کے طور پر جاری رکھیں",
+  "roleContinueOwner": "فلیٹ مالک کے طور پر جاری رکھیں",
+  "roleReview": "انتخاب کا جائزہ لیں",
+  "roleSecurityPolicy": "سیکیورٹی پالیسی: کردار کا انتخاب ایک طرفہ ہے اور تصدیق کے بعد تبدیل نہیں ہو سکتا۔",
+  "roleLockProceed": "میرا کردار مقفل کریں اور آگے بڑھیں",
+  "roleConfirm": "مستقل کردار کی تصدیق کریں",
+  "stepperProfile": "1۔ پروفائل کی معلومات",
+  "stepperRole": "2۔ کردار منتخب کریں",
+  "avatarSelectPhoto": "پروفائل تصویر منتخب کریں",
+  "avatarSetPicture": "پروفائل تصویر لگائیں",
+  "avatarChangePhoto": "پروفائل تصویر تبدیل کریں",
+  "avatarTakePhoto": "تصویر لیں",
+  "avatarFromGallery": "گیلری سے منتخب کریں",
+  "kycTitle": "نادرا شناختی کارڈ اور ڈرائیونگ لائسنس KYC",
+  "kycSubmittedNote": "KYC دستاویزات جمع کرا دی گئیں — تصدیق زیر التواء ہے۔",
+  "kycVaultNote": "نجی cPanel والٹ • شناختی کارڈ تصدیق",
+  "kycStatusSubmitted": "جمع کرایا گیا — تصدیق زیر التواء ہے",
+  "kycStatusRejected": "مسترد — براہ کرم دوبارہ جمع کریں",
+  "kycCnicNumber": "13 ہندسوں کا نادرا شناختی کارڈ نمبر",
+  "kycCnicRead": "شناختی کارڈ نمبر کارڈ سے پڑھ لیا گیا۔",
+  "kycHighResHint": "صاف تصویر کے ساتھ ہائی ریزولوشن اسکین",
+  "kycCnicBack": "نادرا شناختی کارڈ — پچھلی جانب",
+  "kycCnicFront": "نادرا شناختی کارڈ — اگلی جانب",
+  "kycAttachBoth": "براہ کرم اپنے نادرا شناختی کارڈ کی اگلی اور پچھلی دونوں تصویریں منسلک کریں۔",
+  "kycQrHint": "QR کوڈ اور پتہ صاف نظر آئے",
+  "kycSelfDriveNote": "سیلف ڈرائیو کرایہ پیکجوں کے لیے درکار ہے",
+  "kycScanCard": "شناختی کارڈ اسکین کریں",
+  "kycScanning": "کارڈ اسکین ہو رہا ہے…",
+  "kycSubmit": "KYC دستاویزات جمع کریں",
+  "kycUploading": "اپ لوڈ ہو رہا ہے…",
+  "kycLicense": "درست پاکستانی ڈرائیونگ لائسنس (LTV/HTV)",
+  "kycFromGallery": "گیلری سے منتخب کریں",
+  "kycTakePhoto": "تصویر لیں",
+  "settingsPushSubtitle": "بکنگ کی منظوری اور ادائیگی کی اطلاعات",
+  "settingsWhatsappSubtitle": "معاہدہ اور حوالگی کی رسیدیں",
+  "settingsNotifNote": "اطلاعات کی ترجیحات آپ کے پروفائل پر محفوظ ہوتی ہیں جب آپ کا گاہک ریکارڈ بن جائے۔",
+  "shopCategorySedan": "سیڈان",
+  "shopCategorySuv": "ایس یو وی",
+  "shopCategoryHiace": "ہائی ایس",
+  "shopCategoryLuxury": "لگژری",
+  "summaryWithDriver": "ڈرائیور کے ساتھ",
+  "summarySelfDrive": "سیلف ڈرائیو",
+  "summaryDeclinedPrefix": "شوروم نے یہ درخواست مسترد کر دی: ",
+  "proofRejectedPrefix": "آپ کی ادائیگی کا ثبوت مسترد کر دیا گیا — براہ کرم نیا ثبوت اپ لوڈ کریں: ",
+  "cancellationReasonPrefix": "منسوخی کی وجہ: ",
+  "proofWithShop": "آپ کی ادائیگی کا ثبوت شوروم کے پاس ہے۔ تصدیق کے بعد آپ کا پک اپ پاس یہاں نظر آئے گا۔",
+  "kycScanUnreadable": "اس تصویر سے شناختی کارڈ نمبر نہیں پڑھا جا سکا — براہ کرم خود لکھیں۔",
+  "trustKycVerified": "KYC تصدیق شدہ",
+  "trustKycPending": "KYC زیر التواء",
+  "trustBlacklisted": "بلیک لسٹ میں شامل",
+  "trustNoBlacklist": "بلیک لسٹ کا کوئی ریکارڈ نہیں",
+  "vehicleSelfDriveUrdu": "سیلف ڈرائیو",
+  "vehicleWithDriverUrdu": "ڈرائیور کے ساتھ",
+  "roleCustomerUrdu": "گاڑی کرایہ پر لیں",
+  "roleOwnerUrdu": "شوروم رجسٹر کریں",
+  "advanceNoticeWithDriver": "• ڈرائیور شوروم / پک اپ پوائنٹ پر 15 منٹ پہلے پہنچتا ہے۔\n• ایڈوانس ادائیگی گاڑی کی بکنگ اور ایندھن کی ریزرویشن کی تصدیق کرتی ہے۔\n• آؤٹ اسٹیشن قیام: ڈرائیور کے کھانے اور رہائش کے لیے 1,500 روپے فی رات۔",
+  "advanceNoticeSelfDrive": "• حوالگی پر اصل نادرا شناختی کارڈ اور درست ڈرائیونگ لائسنس درکار ہے۔\n• ایڈوانس شوروم کے ساتھ گاڑی کی بکنگ کی تصدیق کرتا ہے۔\n• قابل واپسی سیکیورٹی ڈپازٹ حوالگی پر ڈیجیٹل یا نقد وصول کیا جاتا ہے۔",
+  "ticketShowCode": "حوالگی کے لیے یہ کوڈ کاؤنٹر پر دکھائیں — اس سے آپ کی بکنگ اور معاہدہ کھلتا ہے۔",
+  "bookingsEmptyForTab": "{tab} کی کوئی بکنگ نہیں ملی۔",
+  "@bookingsEmptyForTab": {
+    "placeholders": {
+      "tab": {
+        "type": "String"
+      }
+    }
+  },
+  "shopCarsNoneInCategory": "اس وقت {category} کی کوئی گاڑی دستیاب نہیں۔",
+  "@shopCarsNoneInCategory": {
+    "placeholders": {
+      "category": {
+        "type": "String"
+      }
+    }
+  },
+  "homeGpsActive": "{area} • GPS فعال",
+  "@homeGpsActive": {
+    "placeholders": {
+      "area": {
+        "type": "String"
+      }
+    }
+  },
+  "mapTapMarker": "{area} • پیش نظارہ کے لیے مارکر پر ٹیپ کریں",
+  "@mapTapMarker": {
+    "placeholders": {
+      "area": {
+        "type": "String"
+      }
+    }
+  },
+  "mapGpsRadar": "GPS ریڈار: {km} کلومیٹر ({count} تصدیق شدہ شورومز)",
+  "@mapGpsRadar": {
+    "placeholders": {
+      "km": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "mapShopDistance": "{address} • {km} کلومیٹر دور",
+  "@mapShopDistance": {
+    "placeholders": {
+      "address": {
+        "type": "String"
+      },
+      "km": {
+        "type": "Object"
+      }
+    }
+  },
+  "mapShowShop": "{name} دکھائیں",
+  "@mapShowShop": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "shopRatingLabel": "★ {rating} درجہ بندی",
+  "@shopRatingLabel": {
+    "placeholders": {
+      "rating": {
+        "type": "Object"
+      }
+    }
+  },
+  "shopCarsReady": "• {count} گاڑیاں تیار",
+  "@shopCarsReady": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "shopCarsAvailable": "{count} گاڑیاں دستیاب",
+  "@shopCarsAvailable": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "callingShop": "{name} کو کال کی جا رہی ہے…",
+  "@callingShop": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "callingShopNumber": "{name} ({phone}) کو کال کی جا رہی ہے…",
+  "@callingShopNumber": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
+  "openingWhatsappShop": "{name} کے ساتھ واٹس ایپ کھولا جا رہا ہے…",
+  "@openingWhatsappShop": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "vehicleSelfRate": "سیلف: {rate} روپے/دن",
+  "@vehicleSelfRate": {
+    "placeholders": {
+      "rate": {
+        "type": "int"
+      }
+    }
+  },
+  "vehicleDriverRate": "ڈرائیور کے ساتھ: {rate} روپے/دن",
+  "@vehicleDriverRate": {
+    "placeholders": {
+      "rate": {
+        "type": "int"
+      }
+    }
+  },
+  "vehicleSeats": "{count} نشستیں",
+  "@vehicleSeats": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "vehicleShowroom": "شوروم: {name}",
+  "@vehicleShowroom": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "vehicleDepositCnic": "سیکیورٹی ڈپازٹ: {amount} روپے + پک اپ پر اصل نادرا شناختی کارڈ ضمانت کے طور پر درکار ہے",
+  "@vehicleDepositCnic": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "vehicleDriverPackageDetail": "تصدیق شدہ ڈرائیور شامل • اوور ٹائم: {overtime} روپے/گھنٹہ • آؤٹ اسٹیشن: +{outstation} روپے/دن",
+  "@vehicleDriverPackageDetail": {
+    "placeholders": {
+      "overtime": {
+        "type": "int"
+      },
+      "outstation": {
+        "type": "int"
+      }
+    }
+  },
+  "vehicleSelectedMode": "منتخب: {mode}۔ ایڈوانس ڈپازٹ درکار ہے۔",
+  "@vehicleSelectedMode": {
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      }
+    }
+  },
+  "vehicleWhatsappInterest": "السلام علیکم {shop}، مجھے رینٹل ہب پر {vehicle} ({plate}) میں دلچسپی ہے۔",
+  "@vehicleWhatsappInterest": {
+    "placeholders": {
+      "shop": {
+        "type": "String"
+      },
+      "vehicle": {
+        "type": "String"
+      },
+      "plate": {
+        "type": "String"
+      }
+    }
+  },
+  "bookNowWithRate": "ابھی بک کریں ({rate} روپے)",
+  "@bookNowWithRate": {
+    "placeholders": {
+      "rate": {
+        "type": "int"
+      }
+    }
+  },
+  "bookingDetailTitle": "بکنگ {id}",
+  "@bookingDetailTitle": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "bookingShopLine": "{shop} • {id}",
+  "@bookingShopLine": {
+    "placeholders": {
+      "shop": {
+        "type": "String"
+      },
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "activeTripShopLine": "{shop} • {plate}",
+  "@activeTripShopLine": {
+    "placeholders": {
+      "shop": {
+        "type": "String"
+      },
+      "plate": {
+        "type": "String"
+      }
+    }
+  },
+  "activeTripPackageRental": "{type} کرایہ",
+  "@activeTripPackageRental": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "bookingIdLabel": "ID: {id}",
+  "@bookingIdLabel": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "summaryPackageRental": "{type} کرایہ",
+  "@summaryPackageRental": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "summaryShowroom": "شوروم: {shop}",
+  "@summaryShowroom": {
+    "placeholders": {
+      "shop": {
+        "type": "String"
+      }
+    }
+  },
+  "summaryOutOfCityTo": "شہر سے باہر → {city}",
+  "@summaryOutOfCityTo": {
+    "placeholders": {
+      "city": {
+        "type": "String"
+      }
+    }
+  },
+  "summaryDepositAtHandover": "{amount} روپے (حوالگی پر)",
+  "@summaryDepositAtHandover": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "payAdvanceAmount": "ایڈوانس ادا کریں ({amount} روپے)",
+  "@payAdvanceAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "shopNotFound": "شوروم {id} نہیں ملا۔",
+  "@shopNotFound": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "vehicleNotFound": "گاڑی {id} نہیں ملی۔",
+  "@vehicleNotFound": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "locationFindCarsInCity": "{city} میں قریبی گاڑیاں تلاش کریں",
+  "@locationFindCarsInCity": {
+    "placeholders": {
+      "city": {
+        "type": "String"
+      }
+    }
+  },
+  "sosCallError": "{label} کو کال نہیں کی جا سکی۔",
+  "@sosCallError": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "sosLocationError": "آپ کی جگہ حاصل نہیں ہو سکی: {error}",
+  "@sosLocationError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "sosEmergencyMessage": "ایمرجنسی — مجھے مدد چاہیے۔ میری موجودہ جگہ: {url}",
+  "@sosEmergencyMessage": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "sosSendToShopNamed": "اپنی موجودہ جگہ {shop} کو بھیجیں",
+  "@sosSendToShopNamed": {
+    "placeholders": {
+      "shop": {
+        "type": "String"
+      }
+    }
+  },
+  "supportWhatsappMessage": "السلام علیکم {shop}، مجھے اپنی رینٹل ہب بکنگ میں مدد چاہیے۔",
+  "@supportWhatsappMessage": {
+    "placeholders": {
+      "shop": {
+        "type": "String"
+      }
+    }
+  },
+  "disputeFileError": "تنازع درج نہیں ہو سکا: {error}",
+  "@disputeFileError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "cancelFailed": "منسوخی ناکام رہی: {error}",
+  "@cancelFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "cancelAdvancePaid": "آپ نے شوروم کے اکاؤنٹ میں براہ راست {amount} روپے ایڈوانس ادا کیا — رقم واپسی کا فیصلہ شوروم کرتا ہے، اس لیے اس بارے میں ان سے رابطہ کریں۔ کوئی سیکیورٹی ڈپازٹ نہیں لیا گیا: ڈپازٹ صرف حوالگی پر لیا جاتا ہے۔",
+  "@cancelAdvancePaid": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "rateSaveError": "درجہ بندی محفوظ نہیں ہو سکی: {error}",
+  "@rateSaveError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "rateTripRef": "سفر کا حوالہ: {id}",
+  "@rateTripRef": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "rateStarLabel": "{star} میں سے 5 کی درجہ بندی کریں",
+  "@rateStarLabel": {
+    "placeholders": {
+      "star": {
+        "type": "int"
+      }
+    }
+  },
+  "editSaveError": "پروفائل محفوظ نہیں ہو سکا: {error}",
+  "@editSaveError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "supportSendError": "آپ کا پیغام نہیں بھیجا جا سکا: {error}",
+  "@supportSendError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "proofSubmitError": "ادائیگی کا ثبوت جمع نہیں ہو سکا: {error}",
+  "@proofSubmitError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "proofBookingId": "بکنگ ID: {id}",
+  "@proofBookingId": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "reviewSubmitError": "بکنگ جمع نہیں ہو سکی: {error}",
+  "@reviewSubmitError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "successBody": "آپ کی بکنگ کی درخواست {vehicle} کے لیے {shop} کو پہنچا دی گئی ہے۔ منظوری کے بعد آپ کو ایڈوانس ڈپازٹ جمع کرنے کی اطلاع دی جائے گی۔",
+  "@successBody": {
+    "placeholders": {
+      "vehicle": {
+        "type": "String"
+      },
+      "shop": {
+        "type": "String"
+      }
+    }
+  },
+  "successReference": "حوالہ: {id}",
+  "@successReference": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "successWhatsapp": "السلام علیکم {shop}، یہ میری رینٹل ہب بکنگ {id} ({vehicle}) کے بارے میں ہے۔",
+  "@successWhatsapp": {
+    "placeholders": {
+      "shop": {
+        "type": "String"
+      },
+      "id": {
+        "type": "String"
+      },
+      "vehicle": {
+        "type": "String"
+      }
+    }
+  },
+  "paymentTransferToLock": "اپنی گاڑی محفوظ کرنے کے لیے {amount} روپے منتقل کریں۔",
+  "@paymentTransferToLock": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "approvedPayToGuarantee": "پک اپ یقینی بنانے کے لیے {amount} روپے ادا کریں۔",
+  "@approvedPayToGuarantee": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "packageAdvanceDue": "قابل ادا ایڈوانس: {amount} روپے",
+  "@packageAdvanceDue": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "packageSecurityDeposit": "سیکیورٹی ڈپازٹ: {amount} روپے",
+  "@packageSecurityDeposit": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "packageTotal": "کل: {amount} روپے",
+  "@packageTotal": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "tierAdvance": "ایڈوانس: {amount} روپے",
+  "@tierAdvance": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "paymentCopied": "{method} اکاؤنٹ کلپ بورڈ پر کاپی ہو گیا",
+  "@paymentCopied": {
+    "placeholders": {
+      "method": {
+        "type": "String"
+      }
+    }
+  },
+  "passShopNoAddress": "{shop} — پتہ ابھی درج نہیں۔",
+  "@passShopNoAddress": {
+    "placeholders": {
+      "shop": {
+        "type": "String"
+      }
+    }
+  },
+  "kycSelectedFile": "منتخب: {name}",
+  "@kycSelectedFile": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "kycScanError": "شناختی کارڈ اسکین ناکام رہا: {error}",
+  "@kycScanError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "kycStatus": "KYC حالت: {label}",
+  "@kycStatus": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "avatarPickerError": "تصویر منتخب کرنے والا نہیں کھولا جا سکا: {error}",
+  "@avatarPickerError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "onboardingSaveError": "پروفائل محفوظ کرنے میں خرابی: {error}",
+  "@onboardingSaveError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "roleSelectingNote": "آپ \"{role}\" منتخب کر رہے ہیں۔ قومی نادرا KYC پالیسیوں کے مطابق، یہ کردار مستقل طور پر مقفل ہو جاتا ہے اور بعد میں تبدیل نہیں کیا جا سکتا۔",
+  "@roleSelectingNote": {
+    "placeholders": {
+      "role": {
+        "type": "String"
+      }
+    }
+  },
+  "roleConfirmed": "اکاؤنٹ کا کردار \"{role}\" کی تصدیق ہو گئی۔",
+  "@roleConfirmed": {
+    "placeholders": {
+      "role": {
+        "type": "String"
+      }
+    }
+  },
+  "authCopyright": "© {year} رینٹل ہب۔ جملہ حقوق محفوظ ہیں۔",
+  "@authCopyright": {
+    "placeholders": {
+      "year": {
+        "type": "int"
+      }
+    }
+  },
+  "reputationBasedOnReviews": "{count, plural, other{آپ کے مکمل شدہ سفر سے {count} شوروم جائزوں کی بنیاد پر۔}}",
+  "@reputationBasedOnReviews": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reputationTrustScoreValue": "اعتماد اسکور: {score} / 5.0",
+  "@reputationTrustScoreValue": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "profileTrustScoreValue": "اعتماد اسکور: {score} / 5.0",
+  "@profileTrustScoreValue": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "pickerDays": "{count, plural, other{{count} دن}}",
+  "@pickerDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "walletAdvancesEscrow": "ایڈوانس {adv} روپے • ایسکرو {esc} روپے",
+  "@walletAdvancesEscrow": {
+    "placeholders": {
+      "adv": {
+        "type": "int"
+      },
+      "esc": {
+        "type": "int"
+      }
+    }
+  },
+  "ticketPickupDate": "پک اپ: {day}/{month}/{year}",
+  "@ticketPickupDate": {
+    "placeholders": {
+      "day": {
+        "type": "int"
+      },
+      "month": {
+        "type": "int"
+      },
+      "year": {
+        "type": "int"
+      }
+    }
+  },
+  "profileSignOut": "سائن آؤٹ",
+  "activeTripTotalFare": "کل کرایہ",
+  "emptyRadarNoShops": "{radiusKm} کلومیٹر کے اندر کوئی تصدیق شدہ شوروم نہیں ہے",
+  "@emptyRadarNoShops": {
+    "placeholders": {
+      "radiusKm": {
+        "type": "int"
+      }
+    }
+  },
+  "vehiclePerDay": "فی دن",
+  "bookingTotalAmount": "کل: {amount} روپے",
+  "@bookingTotalAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "fleetTitle": "فلیٹ مینجمنٹ",
+  "fleetSubtitle": "لائیو شوروم",
+  "fleetTotalFleet": "کل گاڑیاں",
+  "fleetTotalCars": "{count} گاڑیاں",
+  "@fleetTotalCars": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "fleetAvailableReady": "{count} تیار",
+  "@fleetAvailableReady": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "fleetOnRent": "کرائے پر",
+  "fleetOnRentActive": "{count} کرائے پر",
+  "@fleetOnRentActive": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "fleetFilterAll": "تمام",
+  "fleetFilterMaintenance": "مرمت",
+  "fleetFilterChip": "{label} ({count})",
+  "@fleetFilterChip": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "fleetLoading": "آپ کی گاڑیاں لوڈ ہو رہی ہیں…",
+  "fleetLoadError": "آپ کی گاڑیاں لوڈ نہیں ہو سکیں: {error}",
+  "@fleetLoadError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "fleetEmptyTitle": "ابھی کوئی گاڑی نہیں — اپنی پہلی گاڑی شامل کریں",
+  "fleetEmptyFilterTitle": "اس فلٹر میں کوئی گاڑی نہیں ملی",
+  "fleetEmptyMessage": "بکنگ شروع کرنے کے لیے گاڑی شامل کریں۔",
+  "fleetEmptyFilterMessage": "کوئی دوسرا فلٹر آزمائیں۔",
+  "fleetAddVehicleNow": "ابھی گاڑی شامل کریں",
+  "fleetDailySelfDriveRate": "روزانہ سیلف ڈرائیو کرایہ",
+  "fleetDailyRate": "{amount} روپے/دن",
+  "@fleetDailyRate": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "fleetEditRatesTooltip": "کرایے تبدیل کریں",
+  "fleetCalendarTooltip": "بکنگ کیلنڈر",
+  "fleetVehicleSpecs": "{transmission} • {fuelType} • {seats} نشستیں",
+  "@fleetVehicleSpecs": {
+    "placeholders": {
+      "transmission": {
+        "type": "String"
+      },
+      "fuelType": {
+        "type": "String"
+      },
+      "seats": {
+        "type": "int"
+      }
+    }
+  },
+  "dashboardTitle": "شوروم کی آمدنی اور معاملات",
+  "dashboardMyShowroom": "میرا شوروم",
+  "dashboardNotificationsTooltip": "اطلاعات",
+  "dashboardSettingsTooltip": "دکان کی ترتیبات",
+  "dashboardRefreshTooltip": "تازہ کریں",
+  "dashboardLoading": "آپ کا شوروم لوڈ ہو رہا ہے…",
+  "dashboardLoadError": "آپ کا ڈیش بورڈ لوڈ نہیں ہو سکا۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔",
+  "dashboardNoRevenueLastMonth": "پچھلے مہینے کوئی آمدنی نہیں",
+  "dashboardGrowthLabel": "پچھلے مہینے کے مقابلے میں {value}٪",
+  "@dashboardGrowthLabel": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "dashboardNoCompletedTrips": "ابھی کوئی مکمل سفر نہیں",
+  "dashboardSettleRate": "{percent}٪ ضمانتیں طے شدہ",
+  "@dashboardSettleRate": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "dashboardGrossRevenue": "کل آمدنی (اس مہینے)",
+  "dashboardActiveOnRent": "کرائے پر فعال",
+  "dashboardCompletedTrips": "مکمل سفر",
+  "dashboardRequestsWaiting": "منتظر درخواستیں",
+  "dashboardFleet": "فلیٹ",
+  "dashboardOnTheRoad": "سڑک پر",
+  "dashboardNeedsReview": "آپ کے جائزے کی منتظر",
+  "dashboardAvailableTotal": "دستیاب / کل گاڑیاں",
+  "dashboardCarsCount": "{count} گاڑیاں",
+  "@dashboardCarsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dashboardFinishedCount": "{count} مکمل",
+  "@dashboardFinishedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dashboardLedgerTitle": "مکمل سفروں کا کھاتہ اور تصفیے",
+  "dashboardLedgerEmpty": "ابھی کوئی سفر نہیں — بکنگ یہاں نظر آئے گی۔",
+  "dashboardLedgerVehicle": "گاڑی",
+  "dashboardLedgerCustomer": "گاہک",
+  "dashboardQuickAddCar": "گاڑی شامل کریں",
+  "dashboardQuickScanQr": "QR اسکین کریں",
+  "dashboardQuickNewBooking": "نئی بکنگ",
+  "dashboardQuickFinance": "مالیات",
+  "requestsTitle": "بکنگ درخواستوں کی جانچ",
+  "requestsAwaitingReview": "{count} درخواستیں جائزے کی منتظر",
+  "@requestsAwaitingReview": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "requestsScanQrTooltip": "بکنگ QR اسکین کریں",
+  "requestsRefreshTooltip": "تازہ کریں",
+  "requestsLoading": "بکنگ درخواستیں لوڈ ہو رہی ہیں…",
+  "requestsLoadError": "بکنگ درخواستیں لوڈ نہیں ہو سکیں۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔",
+  "requestsFilterNew": "نئی",
+  "requestsFilterProof": "ثبوت",
+  "requestsFilterChip": "{label} ({count})",
+  "@requestsFilterChip": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "requestsEmptyProof": "تصدیق کے منتظر کوئی ادائیگی ثبوت نہیں",
+  "requestsEmptyApproved": "ادائیگی کے منتظر کوئی منظور شدہ بکنگ نہیں",
+  "requestsEmptyNew": "کوئی زیر التواء بکنگ درخواست نہیں",
+  "requestsEmptyMessage": "نئی درخواستیں جائزے کے لیے یہاں نظر آئیں گی۔",
+  "requestsRejectTitle": "کیا یہ درخواست مسترد کرنی ہے؟",
+  "requestsRejectReasonLabel": "وجہ (لازمی)",
+  "requestsRejectReasonHint": "مثلاً ان تاریخوں میں گاڑی دستیاب نہیں",
+  "requestsRejectButton": "درخواست مسترد کریں",
+  "requestsApproved": "بکنگ #{id} منظور! ادائیگی کی ہدایات گاہک کو بھیج دی گئیں۔",
+  "@requestsApproved": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "requestsApprovalFailed": "منظوری ناکام: {error}",
+  "@requestsApprovalFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "requestsRejected": "بکنگ #{id} مسترد کر دی گئی۔",
+  "@requestsRejected": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "requestsDeclineFailed": "مسترد کرنا ناکام: {error}",
+  "@requestsDeclineFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "requestsCustomerFallback": "گاہک",
+  "requestsRequestedCar": "مطلوبہ گاڑی",
+  "requestsWithChauffeur": "ڈرائیور کے ساتھ",
+  "requestsVerifyProof": "ادائیگی ثبوت کی تصدیق کریں",
+  "requestsDecline": "مسترد کریں",
+  "requestsApprovePay": "منظور کریں اور ادائیگی",
+  "requestsStatusRequested": "درخواست شدہ",
+  "calendarTitle": "بکنگ کیلنڈر",
+  "calendarFree": "خالی",
+  "calendarRequested": "درخواست شدہ",
+  "calendarConfirmed": "تصدیق شدہ",
+  "calendarPast": "گزشتہ",
+  "calendarTapDayHint": "اس دن کی بکنگ دیکھنے کے لیے کسی دن پر ٹیپ کریں۔",
+  "calendarBookingsOn": "{day}/{month}/{year} کی بکنگ",
+  "@calendarBookingsOn": {
+    "placeholders": {
+      "day": {
+        "type": "int"
+      },
+      "month": {
+        "type": "int"
+      },
+      "year": {
+        "type": "int"
+      }
+    }
+  },
+  "calendarNoBookingsDay": "اس دن کوئی بکنگ نہیں۔",
+  "calendarMonthJanuary": "جنوری",
+  "calendarMonthFebruary": "فروری",
+  "calendarMonthMarch": "مارچ",
+  "calendarMonthApril": "اپریل",
+  "calendarMonthMay": "مئی",
+  "calendarMonthJune": "جون",
+  "calendarMonthJuly": "جولائی",
+  "calendarMonthAugust": "اگست",
+  "calendarMonthSeptember": "ستمبر",
+  "calendarMonthOctober": "اکتوبر",
+  "calendarMonthNovember": "نومبر",
+  "calendarMonthDecember": "دسمبر",
+  "calendarWeekdayMon": "پیر",
+  "calendarWeekdayTue": "منگل",
+  "calendarWeekdayWed": "بدھ",
+  "calendarWeekdayThu": "جمعرات",
+  "calendarWeekdayFri": "جمعہ",
+  "calendarWeekdaySat": "ہفتہ",
+  "calendarWeekdaySun": "اتوار",
+  "calendarPreviousMonth": "پچھلا مہینہ",
+  "calendarNextMonth": "اگلا مہینہ",
+  "calendarSelectDay": "دن {day} منتخب کریں",
+  "@calendarSelectDay": {
+    "placeholders": {
+      "day": {
+        "type": "int"
+      }
+    }
+  },
+  "addVehicleModelRequired": "براہ کرم گاڑی کا ماڈل بتائیں۔",
+  "addVehiclePlateRequired": "رجسٹریشن پلیٹ نمبر ضروری ہے۔",
+  "addVehicleAdded": "{name} شوروم کی فلیٹ میں شامل کر دی گئی!",
+  "@addVehicleAdded": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "addVehicleStep1Title": "گاڑی شامل کریں - خصوصیات",
+  "addVehicleStep2Title": "گاڑی کی تصاویر اور دستاویزات",
+  "addVehicleStep3Title": "کرایے اور پالیسی",
+  "addVehicleStep4Title": "جائزہ اور اشاعت",
+  "addVehicleStep1Subtitle": "گنجائش، AC، خصوصیات اور تفصیلات",
+  "addVehicleStep2Subtitle": "چار زاویوں کی تصاویر، بک اور ایکسائز ٹیکس",
+  "addVehicleStep3Subtitle": "گھنٹہ وار کرایے، ضمانت اور ایندھن پالیسی",
+  "addVehicleStep4Subtitle": "لسٹ کرنے سے پہلے گاڑی کی تفصیلات چیک کریں",
+  "addVehicleStepCounter": "مرحلہ {step} از 4",
+  "@addVehicleStepCounter": {
+    "placeholders": {
+      "step": {
+        "type": "int"
+      }
+    }
+  },
+  "addVehicleConfirmPublish": "تصدیق کریں اور گاڑی شائع کریں",
+  "addVehicleNextStep": "اگلا مرحلہ",
+  "addVehicleStepperSpecs": "گاڑی کی خصوصیات",
+  "addVehicleStepperPhotos": "تصاویر اور دستاویزات",
+  "addVehicleStepperRates": "کرایے اور پالیسی",
+  "addVehicleStepperReview": "جائزہ",
+  "addVehicleMakeBrand": "کمپنی / برانڈ",
+  "addVehicleModelVariant": "ماڈل",
+  "addVehicleModelHint": "مثلاً Corolla Altis 1.8 Grande",
+  "addVehicleManufacturingYear": "تیاری کا سال",
+  "addVehicleExteriorColor": "بیرونی رنگ",
+  "addVehicleBodyCategory": "باڈی کی قسم",
+  "addVehicleRegistrationNumber": "گاڑی کا رجسٹریشن نمبر",
+  "addVehicleTransmission": "گیئر",
+  "addVehicleAutomatic": "آٹومیٹک",
+  "addVehicleManual": "مینوئل",
+  "addVehicleFuelType": "ایندھن کی قسم",
+  "addVehicleSeatingCapacity": "گاڑی میں بیٹھنے کی گنجائش",
+  "addVehicleSeatsCount": "{count} نشستیں",
+  "@addVehicleSeatsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "addVehicleAcTitle": "ایئر کنڈیشننگ (مکمل AC)",
+  "addVehicleAcSubtitle": "گاڑی میں کام کرنے والا ٹھنڈا AC موجود ہے",
+  "addVehicleExtraFeatures": "اضافی خصوصیات (گاڑی کی تفصیل میں دکھائی جائیں گی)",
+  "addVehicleExtraFeaturesHint": "اس گاڑی کے ساتھ شامل سہولتیں منتخب کریں تاکہ زیادہ کرایہ دار متوجہ ہوں۔",
+  "addVehiclePhotosTitle": "گاڑی کی چار زاویوں کی تصاویر",
+  "addVehiclePhotosHint": "کیمرہ یا گیلری سے تصاویر اپ لوڈ کریں۔ تبدیل یا ہٹانے کے لیے ٹیپ کریں۔",
+  "addVehiclePhotoFront": "سامنے کا منظر",
+  "addVehiclePhotoRear": "پیچھے کا منظر",
+  "addVehiclePhotoSide": "سائیڈ پروفائل",
+  "addVehiclePhotoInterior": "اندرونی اور ڈیش",
+  "addVehicleLegalDocs": "قانونی دستاویزات",
+  "addVehicleDocRegBook": "گاڑی کی رجسٹریشن بک / اسمارٹ کارڈ",
+  "addVehicleDocRegBookHint": "اصل ملکیتی دستاویز درکار ہے",
+  "addVehicleDocTokenTax": "ایکسائز ٹوکن ٹیکس ادا شدہ رسید",
+  "addVehicleDocTokenTaxHint": "موجودہ مالی سال کے لیے درست ہونا ضروری ہے",
+  "addVehicleDocInsurance": "انشورنس / ٹریکر سرٹیفکیٹ (اختیاری)",
+  "addVehicleDocInsuranceHint": "تلاش میں تصدیق شدہ VIP بیج دیتا ہے",
+  "addVehicleDurationPackages": "مدت پیکجز (گھنٹہ وار اور روزانہ)",
+  "addVehicleDurationPackagesHint": "پیکجز فعال کریں اور ہر بکنگ درجے کے لیے PKR میں کرایے تبدیل کریں۔",
+  "addVehicleRate1Hour": "ایک گھنٹے کا کرایہ",
+  "addVehicleRate3Hours": "تین گھنٹوں کا کرایہ",
+  "addVehicleRate6Hours": "چھ گھنٹوں کا کرایہ",
+  "addVehicleRateFullDay": "پورے دن (24 گھنٹے) کا کرایہ",
+  "addVehicleRateWeekly": "ہفتہ وار (7 دن) کا کرایہ",
+  "addVehicleServiceType": "سروس کی قسم اور ڈرائیور کے اختیارات",
+  "addVehicleSelfDriveService": "سیلف ڈرائیو سروس",
+  "addVehicleSelfDriveHint": "گاہک خود گاڑی چلاتا ہے",
+  "addVehicleWithDriverService": "ڈرائیور کے ساتھ سروس",
+  "addVehicleWithDriverHint": "دکان تجربہ کار ڈرائیور فراہم کرتی ہے",
+  "addVehicleDriverAllowance": "ڈرائیور کا یومیہ الاؤنس:",
+  "addVehiclePerDaySuffix": "فی دن",
+  "addVehicleDepositPolicies": "ضمانت اور کرایے کی پالیسیاں",
+  "addVehicleSecurityDepositSelfDrive": "ضمانت (سیلف ڈرائیو)",
+  "addVehicleSecurityDepositHint": "گاڑی صاف حالت میں واپس کرنے پر واپس کی جائے گی",
+  "addVehicleAdvanceFee": "ایڈوانس بکنگ فیس",
+  "addVehicleAdvanceHint": "سلاٹ محفوظ کرنے کے لیے پیشگی درکار ہے",
+  "addVehicleExtraHourCharge": "اضافی گھنٹے کا چارج",
+  "addVehicleExtraHourHint": "مقررہ واپسی کے بعد ہر گھنٹے کا بل",
+  "addVehiclePerHourSuffix": "فی گھنٹہ",
+  "addVehicleFuelPolicy": "ایندھن پالیسی",
+  "addVehicleFuelPolicyHint": "واپسی پر متوقع حالت",
+  "addVehicleReviewGear": "گیئر",
+  "addVehicleReviewAuto": "آٹو",
+  "addVehicleReviewFuel": "ایندھن",
+  "addVehicleReviewSeats": "نشستیں",
+  "addVehicleReviewAc": "AC",
+  "addVehicleReviewFullAc": "مکمل AC",
+  "addVehicleReviewSelfDriveRate": "سیلف ڈرائیو کرایہ",
+  "addVehicleReviewWithDriverRate": "ڈرائیور کے ساتھ کرایہ",
+  "addVehicleReviewNotOffered": "دستیاب نہیں",
+  "addVehicleReviewDailyRate": "{amount} روپے/دن",
+  "@addVehicleReviewDailyRate": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "addVehicleReviewOverstayRate": "{amount} روپے/گھنٹہ",
+  "@addVehicleReviewOverstayRate": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "addVehicleReviewDeposit": "ضمانت",
+  "addVehicleReviewAdvance": "ایڈوانس",
+  "addVehicleReviewOverstay": "اضافی وقت",
+  "addVehicleReviewBanner": "یہ گاڑی منظوری کے بعد فوری طور پر آپ کی فلیٹ کیٹلاگ میں دستیاب ہوگی اور قریبی گاہکوں کو نظر آئے گی۔",
+  "pricingDriveModeAvailability": "ڈرائیو موڈ کی دستیابی",
+  "pricingRentalPackages": "کرایے کے پیکجز",
+  "pricingPackagesHint": "کسی پیکج کو بند کریں تاکہ گاہکوں سے چھپ جائے۔",
+  "pricingPolicyTitle": "قیمتوں کی پالیسی",
+  "pricingSavedSuccess": "قیمتوں کا میٹرکس شوروم میں اپ ڈیٹ کر دیا گیا!",
+  "pricingSaveFailed": "کرایے اپ ڈیٹ کرنے میں ناکامی: {error}",
+  "@pricingSaveFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "pricingTitle": "گاڑی کی قیمتوں کا میٹرکس",
+  "pricingSaving": "میٹرکس محفوظ ہو رہا ہے…",
+  "pricingSave": "قیمتوں کا میٹرکس محفوظ کریں",
+  "pricingSelfDriveAllowed": "سیلف ڈرائیو کی اجازت ہے",
+  "pricingSelfDriveHint": "اصل نادرا شناختی کارڈ + ضمانت درکار ہے",
+  "pricingChauffeurAllowed": "ڈرائیور سروس کی اجازت ہے",
+  "pricingChauffeurHint": "شوروم کا ڈرائیور بکنگ کے لیے مختص کیا جاتا ہے",
+  "pricingPackage1h": "ایک گھنٹے کا شہر کا سفر",
+  "pricingPackage3h": "تین گھنٹے کا ایئرپورٹ / فوری سفر",
+  "pricingPackage6h": "چھ گھنٹے کا ایکسپریس کرایہ",
+  "pricingPackage12h": "بارہ گھنٹے کا نصف دن",
+  "pricingPackage24h": "شہر کے اندر روزانہ (24 گھنٹے)",
+  "pricingPackageWeekly": "ہفتہ وار پیکج (7 دن)",
+  "pricingKmIncluded": "{km} کلومیٹر شامل",
+  "@pricingKmIncluded": {
+    "placeholders": {
+      "km": {
+        "type": "int"
+      }
+    }
+  },
+  "pricingOutOfCityDaily": "شہر سے باہر روزانہ (24 گھنٹے)",
+  "pricingOutOfCityDailyCap": "350 کلومیٹر شامل + ٹریکر کلیئر",
+  "pricingWithDriverSurcharge": "ڈرائیور کے ساتھ اضافی چارج (فی دن)",
+  "pricingWithDriverSurchargeCap": "پیکج کی قیمت کے علاوہ شامل کیا جاتا ہے",
+  "pricingSecurityDeposit": "ضمانت",
+  "pricingSecurityDepositCap": "واپسی کی جانچ کے بعد واپس کی جائے گی",
+  "pricingAdvanceRequired": "ایڈوانس درکار ہے",
+  "pricingAdvanceCap": "بکنگ کی تصدیق سے پہلے واجب الادا",
+  "pricingExtraHourCharge": "اضافی گھنٹے کا چارج",
+  "pricingExtraHourCap": "دیر سے واپسی پر چارج کیا جاتا ہے",
+  "pricingExtraKmCharge": "اضافی کلومیٹر کا چارج",
+  "pricingExtraKmCap": "شامل کلومیٹر سے زیادہ پر چارج کیا جاتا ہے",
+  "pricingOutOfCityKmAllowance": "شہر سے باہر کلومیٹر کی حد (فی دن)",
+  "pricingOutOfCityKmCap": "شہر سے باہر ٹریکر کلیئرنس درکار ہے",
+  "pricingFuelPolicy": "ایندھن پالیسی",
+  "fixedRoutesTitle": "شہر سے باہر کے مقررہ راستے",
+  "fixedRoutesSubtitle": "ہر منزل کے لیے ایک مقررہ قیمت",
+  "fixedRoutesDeleteTooltip": "مقررہ راستہ حذف کریں",
+  "fixedRoutesPriceRequired": "صفر سے زیادہ مقررہ قیمت درج کریں۔",
+  "fixedRoutesEmpty": "ابھی کوئی مقررہ راستہ نہیں — نیچے اپنی پہلی منزل شامل کریں۔",
+  "fixedRouteSummary": "{km} کلومیٹر • {price} روپے مقررہ",
+  "@fixedRouteSummary": {
+    "placeholders": {
+      "km": {
+        "type": "int"
+      },
+      "price": {
+        "type": "int"
+      }
+    }
+  },
+  "fixedRouteAddTitle": "راستہ شامل کریں",
+  "fixedRouteFromCity": "سے (شہر)",
+  "fixedRouteToCity": "تک (شہر)",
+  "fixedRouteDistance": "فاصلہ (کلومیٹر)",
+  "fixedRoutePrice": "مقررہ قیمت (Rs.)",
+  "fixedRouteAddButton": "مقررہ راستہ شامل کریں",
+  "fleetAddVehicle": "گاڑی شامل کریں",
+  "amountRs": "{amount} روپے",
+  "@amountRs": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "customersTitle": "گاہک",
+  "customersCount": "{count} گاہک",
+  "@customersCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "customersLoading": "لوڈ ہو رہا ہے…",
+  "customersLoadingMessage": "آپ کے گاہک لوڈ ہو رہے ہیں…",
+  "customersSearchHint": "نام، فون یا شناختی کارڈ تلاش کریں",
+  "customersLoadError": "آپ کے گاہک لوڈ نہیں ہو سکے۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔",
+  "customersEmptyTitle": "ابھی کوئی گاہک نہیں",
+  "customersEmptyMessage": "شناختی کارڈ اسکین کریں یا واک اِن بکنگ لیں۔",
+  "customersScanCnic": "شناختی کارڈ اسکین کریں",
+  "customersBlacklisted": "بلیک لسٹڈ",
+  "customersBookingsLine": "{count, plural, other{{count} بکنگز}} • {amount} روپے",
+  "@customersBookingsLine": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "customersNoBookings": "ابھی کوئی بکنگ نہیں — شناختی کارڈ اسکین یا ضامن کے طور پر محفوظ کیا گیا۔",
+  "customersScanTitle": "کے وائی سی اور بلیک لسٹ ریڈار",
+  "customersScanSubtitle": "قومی انسداد فراڈ نیٹ ورک • ریئل ٹائم",
+  "customersScanTribunalPolicy": "ٹرائیبیونل پالیسی",
+  "customersScanTribunalInfo": "ہر پاکستانی رینٹل شاپ رینٹل ہب کے ذریعے فوری فراڈ کی معلومات شیئر کرتی ہے۔",
+  "customersScanViewAll": "تمام گاہک دیکھیں",
+  "customersScanInvalidCnic": "براہ کرم درست 13 ہندسوں والا پاکستانی شناختی کارڈ درج کریں",
+  "customersScanLookupFailed": "تصدیقی تلاش ناکام ہوئی: {error}",
+  "@customersScanLookupFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "customersScanFailed": "شناختی کارڈ اسکین ناکام ہوا: {error}",
+  "@customersScanFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "customersScanUnreadable": "کارڈ پڑھا نہیں جا سکا — شناختی کارڈ دستی طور پر لکھیں۔",
+  "customersScanDeclined": "گاہک کو فلیگ کر کے شوروم میں داخلے سے منع کر دیا گیا۔",
+  "customersScanFallbackReason": "قومی بلیک لسٹ میں رپورٹ شدہ",
+  "customersScanFallbackDescription": "سنگین فراڈ / عدم ادائیگی کا واقعہ فلیگ شدہ۔",
+  "customersRatingTitle": "گاہک کی ساکھ اور جائزہ",
+  "customersRatingFallback": "گاہک کا جائزہ",
+  "customersRatingFeedbackTitle": "گاہک کی کارکردگی پر رائے",
+  "customersRatingPunctuality": "واپسی کی پابندی اور وقت کی پابندی",
+  "customersRatingPunctualityHint": "گاڑی معاہدے کے طے شدہ شیڈول کے مطابق واپس کی گئی",
+  "customersRatingCare": "گاڑی کی دیکھ بھال اور صفائی",
+  "customersRatingCareHint": "اندرونی صفائی اور بغیر خراش کے واپسی",
+  "customersRatingBehavior": "مجموعی رویہ اور شائستگی",
+  "customersRatingBehaviorHint": "پیشہ ورانہ رویہ اور شوروم کی پالیسیوں کی پابندی",
+  "customersRatingCommentHint": "کمیونٹی شوروم ریکارڈ کے لیے اختیاری رائے شامل کریں...",
+  "customersRatingFlagTitle": "گاہک کو مشترکہ بلیک لسٹ میں فلیگ کریں",
+  "customersRatingFlagNoCnic": "اس بکنگ کے لیے گاہک کا شناختی کارڈ درکار ہے — کوئی ریکارڈ نہیں، اس لیے یہاں سے رپورٹ درج نہیں ہو سکتی۔",
+  "customersRatingFlagVisible": "رینٹل ہب استعمال کرنے والے دیگر شوروم یہ رپورٹ دیکھ سکتے ہیں",
+  "customersRatingReasonLabel": "ٹرائیبیونل کے لیے وجہ کی قسم:",
+  "customersRatingReasonPayment": "ادائیگی میں ناکامی / تصفیے سے انکار",
+  "customersRatingReasonBorder": "غیر مجاز سرحد عبور کرنا",
+  "customersRatingReasonAbuse": "گاڑی کا غلط استعمال / چھوڑ دینا",
+  "customersRatingReasonFake": "جعلی شناخت / روپ دھارنا",
+  "customersRatingSubmitting": "جائزہ ریکارڈ ہو رہا ہے...",
+  "customersRatingSubmit": "جائزہ جمع کریں اور سفر بند کریں",
+  "customersRatingSavedOffline": "جائزہ اس ڈیوائس پر محفوظ ہو گیا — آن لائن آتے ہی سنک ہو جائے گا۔",
+  "customersRatingSavedBlacklisted": "جائزہ محفوظ ہو گیا اور گاہک کو مشترکہ بلیک لسٹ میں رپورٹ کر دیا گیا۔",
+  "customersRatingSaved": "گاہک کے بارے میں آپ کا جائزہ محفوظ ہو گیا۔",
+  "customersRatingSubmitFailed": "جمع کرانا ناکام ہوا: {error}",
+  "@customersRatingSubmitFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "customersCnicReviewTitle": "اسکین شدہ شناختی کارڈ کا جائزہ لیں",
+  "customersCnicReviewSubtitle": "او سی آر کی غلط پڑھت درست کریں",
+  "customersCnicFatherName": "والد کا نام",
+  "customersCnicNumber": "شناختی کارڈ نمبر",
+  "customersCnicDob": "تاریخ پیدائش (dd.mm.yyyy)",
+  "customersCnicExpiry": "شناختی کارڈ کی میعاد (dd.mm.yyyy)",
+  "customersCnicPhone": "فون نمبر",
+  "customersCnicAddress": "پتہ (کارڈ کے پچھلے حصے سے)",
+  "customersCnicScanBack": "شناختی کارڈ کا پچھلا حصہ اسکین کریں (پتہ)",
+  "customersCnicSave": "گاہک محفوظ کریں اور بلیک لسٹ چیک کریں",
+  "customersCnicNoAddress": "کارڈ کے پچھلے حصے سے کوئی پتہ نہیں پڑھا گیا۔",
+  "customersCnicBackScanFailed": "پچھلے حصے کا اسکین ناکام ہوا: {error}",
+  "@customersCnicBackScanFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "customersCnicNamePhoneRequired": "گاہک محفوظ کرنے کے لیے نام اور فون درکار ہیں۔",
+  "customersCnicSaveFailed": "محفوظ نہیں ہو سکا: {error}",
+  "@customersCnicSaveFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "blacklistSubtitle": "ہر شوروم کے ساتھ شیئر شدہ • ٹرائیبیونل سے جائزہ شدہ",
+  "blacklistReportTitle": "گاہک کی رپورٹ کریں",
+  "blacklistCustomerCnic": "گاہک کا شناختی کارڈ",
+  "blacklistCustomerPhone": "گاہک کا فون",
+  "blacklistReasonLabel": "وجہ",
+  "blacklistReasonNonPayment": "عدم ادائیگی",
+  "blacklistReasonCarDamage": "گاڑی کو نقصان",
+  "blacklistReasonLateReturn": "دیر سے واپسی",
+  "blacklistReasonFraud": "فراڈ / جعلی دستاویزات",
+  "blacklistReasonImpoundment": "ناکامی اور گاڑی کی ضبطی",
+  "blacklistReasonOther": "دیگر",
+  "blacklistWhatHappened": "کیا ہوا؟ (تاریخیں، گاڑی، رقم)",
+  "blacklistReportButton": "بلیک لسٹ میں رپورٹ کریں",
+  "blacklistMyReports": "میری رپورٹس ({count})",
+  "@blacklistMyReports": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "blacklistNoReports": "اس شوروم کی ابھی کوئی رپورٹ نہیں۔ رپورٹس شوروم واپس نہیں لے سکتا — صرف ٹرائیبیونل ایڈمن ہی واپس لے سکتا ہے۔",
+  "blacklistEnterCnic": "گاہک کا مکمل 13 ہندسوں والا شناختی کارڈ درج کریں۔",
+  "blacklistDescribe": "بیان کریں کیا ہوا — ٹرائیبیونل یہ پڑھتا ہے۔",
+  "blacklistReported": "رپورٹ ہو گئی۔ شناختی کارڈ اب ہر شوروم کے لیے فلیگ شدہ ہے۔",
+  "blacklistReportFailed": "رپورٹ ناکام ہوئی: {error}",
+  "@blacklistReportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "blacklistReverted": "واپس لی گئی",
+  "financeSubtitle": "اکاؤنٹس، لیجر اور منافع",
+  "financeThisMonth": "اس مہینے",
+  "financeLastMonth": "پچھلا مہینہ",
+  "financeAllTime": "اب تک",
+  "financeNetAmount": "خالص {amount} روپے",
+  "@financeNetAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "financeMonthBreakdown": "بکنگز {bookings} روپے • دیگر آمدنی {income} روپے • اخراجات {expenses} روپے",
+  "@financeMonthBreakdown": {
+    "placeholders": {
+      "bookings": {
+        "type": "int"
+      },
+      "income": {
+        "type": "int"
+      },
+      "expenses": {
+        "type": "int"
+      }
+    }
+  },
+  "financeCustomerDues": "گاہکوں کے واجبات",
+  "financeCashClosing": "کیش بندش",
+  "financeCarPnl": "گاڑی کا نفع نقصان",
+  "financeIncome": "آمدنی",
+  "financeExpense": "خرچ",
+  "financeCategoryRent": "کرایہ",
+  "financeCategoryFuel": "ایندھن",
+  "financeCategorySalary": "تنخواہ",
+  "financeCategoryPartnerShare": "پارٹنر کا حصہ",
+  "financeCategoryDepositRefund": "ڈپازٹ واپسی",
+  "financeCategoryLabel": "قسم",
+  "financeNoteOptional": "نوٹ (اختیاری)",
+  "financeLedgerAmount": "{sign} {amount} روپے",
+  "@financeLedgerAmount": {
+    "placeholders": {
+      "sign": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "financeAccountTypeCash": "نقد",
+  "financeAccountTypeBank": "بینک",
+  "financeAccountTypeJazzCash": "جیز کیش",
+  "financeAccountTypeEasyPaisa": "ایزی پیسہ",
+  "financeAccountTypeLabel": "قسم",
+  "financeAccountsTitle": "اکاؤنٹس",
+  "financeAddAccount": "اکاؤنٹ شامل کریں",
+  "financeLedgerTitle": "لیجر",
+  "financeAddEntry": "اندراج شامل کریں",
+  "financeLedgerEmpty": "ابھی کوئی اندراج نہیں — اپنی پہلی آمدنی یا خرچ ریکارڈ کریں۔",
+  "financeAccountFallback": "اکاؤنٹ",
+  "financeSecurityDeposits": "سیکیورٹی ڈپازٹس",
+  "financeDepositsHeld": "ابھی محفوظ",
+  "financeDepositsRefunded": "مکمل واپس",
+  "financeDepositsDeducted": "واپسی پر کاٹا گیا",
+  "financeDepositsCount": "{count, plural, other{{count} ڈپازٹس}}",
+  "@financeDepositsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "financePartners": "پارٹنرز",
+  "financeAddPartner": "پارٹنر شامل کریں",
+  "financePartnersEmpty": "ابھی کوئی پارٹنر نہیں — حصہ ریکارڈ کرنے کے لیے ایک شامل کریں۔",
+  "financePartnerShareLine": "منافع کا {percent}٪",
+  "@financePartnerShareLine": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "financeSaveAccount": "اکاؤنٹ محفوظ کریں",
+  "financeAccountName": "اکاؤنٹ کا نام",
+  "financeSavePartner": "پارٹنر محفوظ کریں",
+  "financePartnerName": "پارٹنر کا نام",
+  "financePartnerShare": "حصہ (٪)",
+  "financeAddTransfer": "لیجر اندراج شامل کریں",
+  "financeAmountRs": "رقم (روپے)",
+  "financeVehicleOptional": "گاڑی (اختیاری — کار کے نفع نقصان کے لیے)",
+  "financeNoVehicle": "کوئی گاڑی نہیں",
+  "financeNoteHint": "مثلاً ڈرائیور کی تنخواہ — احمد",
+  "financeSaveEntry": "اندراج محفوظ کریں",
+  "financeClosingExpected": "آج تجوری میں متوقع",
+  "financeClosingOpening": "اوپننگ {opening} روپے • فرق {difference} روپے",
+  "@financeClosingOpening": {
+    "placeholders": {
+      "opening": {
+        "type": "int"
+      },
+      "difference": {
+        "type": "int"
+      }
+    }
+  },
+  "financeClosingCounted": "گن کر {counted} روپے • فرق {difference} روپے",
+  "@financeClosingCounted": {
+    "placeholders": {
+      "counted": {
+        "type": "int"
+      },
+      "difference": {
+        "type": "int"
+      }
+    }
+  },
+  "financePnlTitle": "نفع نقصان کا بیان",
+  "financePnlBookingRevenue": "بکنگ کی آمدنی",
+  "financePnlOtherIncome": "دیگر آمدنی",
+  "financePnlExpenses": "اخراجات",
+  "financePnlNetProfit": "خالص منافع",
+  "financePnlExport": "نفع نقصان CSV کے طور پر ایکسپورٹ کریں (ایکسل میں کھلتا ہے)",
+  "financeCarPnlSubtitle": "ایک گاڑی، اس کا تمام حساب",
+  "financeCarPnlNoCars": "فلیٹ میں ابھی کوئی گاڑی نہیں۔",
+  "financeCarPnlTagged": "ٹیگ شدہ اندراجات",
+  "financeCarPnlNoTagged": "اس گاڑی سے ابھی کچھ ٹیگ نہیں — لیجر میں اندراج ٹیگ کریں۔",
+  "financeCarPnlBreakdown": "بکنگ کی آمدنی {revenue} روپے • دیگر آمدنی {income} روپے • اخراجات {expenses} روپے",
+  "@financeCarPnlBreakdown": {
+    "placeholders": {
+      "revenue": {
+        "type": "int"
+      },
+      "income": {
+        "type": "int"
+      },
+      "expenses": {
+        "type": "int"
+      }
+    }
+  },
+  "financeClosingSubtitle": "تجوری گنیں، دن بند کریں",
+  "financeClosingCountedLabel": "گنی ہوئی نقدی (روپے)",
+  "financeClosingSaving": "بند ہو رہا ہے...",
+  "financeClosingButton": "دن بند کریں",
+  "financeClosingPast": "گزشتہ بندشیں",
+  "financeClosingEmpty": "ابھی کوئی بندش نہیں۔",
+  "financeClosingEnterCounted": "پہلے گنی ہوئی نقدی درج کریں۔",
+  "financeClosingClosed": "دن بند ہو گیا — فرق {difference} روپے۔",
+  "@financeClosingClosed": {
+    "placeholders": {
+      "difference": {
+        "type": "int"
+      }
+    }
+  },
+  "financeDuesTitle": "گاہکوں کے واجبات",
+  "financeDuesOutstanding": "{amount} روپے واجب الادا",
+  "@financeDuesOutstanding": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "financeDuesEmpty": "کوئی واجب الادا رقم نہیں۔ سب صاف ہے۔",
+  "financeDuesBookingsLine": "{count, plural, other{{count} بکنگز}} • {phone}",
+  "@financeDuesBookingsLine": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
+  "financeDuesNoPhone": "فون نہیں",
+  "financeDuesLastReminded": "آخری یاد دہانی {day}/{month}/{year}",
+  "@financeDuesLastReminded": {
+    "placeholders": {
+      "day": {
+        "type": "int"
+      },
+      "month": {
+        "type": "int"
+      },
+      "year": {
+        "type": "int"
+      }
+    }
+  },
+  "financeDuesRemind": "واٹس ایپ پر یاد دہانی کرائیں",
+  "financeDuesRemindAgain": "واٹس ایپ پر دوبارہ یاد دہانی کرائیں",
+  "financeDuesNoPhoneError": "اس گاہک کا کوئی فون نمبر نہیں۔",
+  "financeDuesReminderMessage": "السلام علیکم {name}، آپ کا رینٹل ہب بیلنس {due} روپے واجب الادا ہے۔ براہ کرم جلد از جلد ادا کر دیں۔ شکریہ!",
+  "@financeDuesReminderMessage": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "due": {
+        "type": "int"
+      }
+    }
+  },
+  "financeDuesWhatsappFailed": "واٹس ایپ نہیں کھل سکا۔",
+  "financeDuesReminderSent": "واٹس ایپ کھل گیا — یاد دہانی بھیجی گئی قرار دی گئی۔",
+  "financeDuesAutoNote": "خودکار واٹس ایپ یاد دہانیوں (ہر 3 دن بعد) کے لیے واٹس ایپ بزنس سیٹ اپ درکار ہے — فیز I۔",
+  "handoverTitle": "گاڑی کی حوالگی اور معائنہ",
+  "handoverOdometerInvalid": "براہ کرم درست اوڈومیٹر ریڈنگ درج کریں۔",
+  "handoverSignRequired": "گاڑی روانگی سے پہلے گاہک اور میزبان دونوں کو پیڈ پر دستخط کرنا ہوں گے۔",
+  "handoverCertified": "حوالگی تصدیق شدہ! ڈیجیٹل A4 رینٹل معاہدہ تیار ہو گیا۔",
+  "handoverCompleteFailed": "حوالگی مکمل کرنا ناکام ہوا: {error}",
+  "@handoverCompleteFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "handoverIssuing": "ڈیجیٹل معاہدہ جاری ہو رہا ہے...",
+  "handoverCertify": "حوالگی تصدیق کریں اور معاہدہ تیار کریں",
+  "handoverTelemetryTitle": "گاڑی کا ٹیلی میٹری معائنہ",
+  "handoverOdometerLabel": "اوڈومیٹر ریڈنگ (کلومیٹر):",
+  "handoverOdometerHint": "مثلاً 45200",
+  "handoverFuelLabel": "ایندھن کی سطح:",
+  "handoverFuelQuarter": "1/4 (25٪)",
+  "handoverFuelHalf": "2/4 (50٪)",
+  "handoverFuelThreeQuarter": "3/4 (75٪)",
+  "handoverFuelFull": "4/4 (مکمل)",
+  "handoverSignaturesTitle": "دوہری قانونی توثیق اور دستخط",
+  "handoverCustomerSignature": "گاہک / کرایہ دار کے ڈیجیٹل دستخط",
+  "handoverCustomerSignatureHint": "گاڑی اور دستاویزات کی جسمانی وصولی کی تصدیق",
+  "handoverHostSignature": "شوروم میزبان / مینیجر کے دستخط",
+  "handoverHostSignatureHint": "شوروم کے نمائندے کی مجاز رہائی",
+  "handoverClear": "صاف کریں",
+  "handoverDamageTitle": "نقصان اور حالت کے نوٹس",
+  "handoverDamageSubtitle": "ہر خراش، دباؤ یا گم شدہ چیز ابھی نوٹ کریں — واپسی کا معائنہ اسی سے موازنہ کرتا ہے۔",
+  "handoverDamageHint": "مثلاً دائیں دروازے پر خراش",
+  "handoverAdd": "شامل کریں",
+  "handoverNotedAt": "حوالگی پر نوٹ کیا گیا: {notes}",
+  "@handoverNotedAt": {
+    "placeholders": {
+      "notes": {
+        "type": "String"
+      }
+    }
+  },
+  "returnTitle": "گاڑی کی واپسی اور تصفیہ",
+  "returnTripAudit": "سفر کا آڈٹ #{id}",
+  "@returnTripAudit": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "returnOdometerBelow": "واپسی کی ریڈنگ حوالگی کی ریڈنگ ({odometer} کلومیٹر) سے کم نہیں ہو سکتی۔",
+  "@returnOdometerBelow": {
+    "placeholders": {
+      "odometer": {
+        "type": "int"
+      }
+    }
+  },
+  "returnSettled": "گاڑی واپس ہو گئی! ڈپازٹ طے ہو گیا — {refund} روپے واپس کیے گئے۔",
+  "@returnSettled": {
+    "placeholders": {
+      "refund": {
+        "type": "int"
+      }
+    }
+  },
+  "returnFinalizeFailed": "واپسی مکمل کرنا ناکام ہوا: {error}",
+  "@returnFinalizeFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "returnTelemetryTitle": "واپسی کا ٹیلی میٹری معائنہ",
+  "returnNewDamageTitle": "واپسی پر نیا نقصان ملا",
+  "returnNewDamageSubtitle": "صرف وہ نقصان جو حوالگی پر نوٹ نہیں ہوا تھا — نیچے کا چارج اسی کا ہے۔",
+  "returnDamageChargeLabel": "نقصان کا چارج (روپے)",
+  "returnDamageChargeHint": "0 اگر کچھ نیا نہیں ملا",
+  "returnFinalizing": "تصفیہ مکمل ہو رہا ہے...",
+  "returnFinalize": "واپسی مکمل کریں اور ڈپازٹ طے کریں",
+  "returnReceiptTitle": "ڈپازٹ اور واپسی کے بیلنس کا تصفیہ",
+  "returnReceiptTotalKm": "کل چلائے گئے کلومیٹر",
+  "returnReceiptAllowance": "مجاز کلومیٹر کی حد",
+  "returnReceiptExcessPenalty": "اضافی کلومیٹر جرمانہ ({excess} کلومیٹر × {rate} روپے)",
+  "@returnReceiptExcessPenalty": {
+    "placeholders": {
+      "excess": {
+        "type": "int"
+      },
+      "rate": {
+        "type": "int"
+      }
+    }
+  },
+  "returnReceiptFuelDeficit": "ایندھن کی کمی",
+  "returnReceiptOvertime": "دیر سے واپسی کی فیس",
+  "returnReceiptDamage": "واپسی پر نقصان ملا",
+  "returnReceiptDepositHeld": "ابتدائی سیکیورٹی ڈپازٹ محفوظ",
+  "returnReceiptTotalDeductions": "کل واقعہ / جرمانہ کٹوتیاں",
+  "returnReceiptDeductionsAmount": "- {amount} روپے",
+  "@returnReceiptDeductionsAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "returnReceiptNetRefund": "گاہک کو خالص واپسی",
+  "contractTitle": "ڈیجیٹل رینٹل معاہدہ",
+  "contractLegalRef": "قانونی معاہدہ حوالہ: #{id}",
+  "@contractLegalRef": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "contractSharePdf": "پی ڈی ایف شیئر کریں",
+  "contractPrintPdf": "پی ڈی ایف پرنٹ کریں",
+  "contractPdfUnavailable": "معاہدے کی پی ڈی ایف ابھی دستیاب نہیں۔",
+  "contractShareText": "رینٹل معاہدہ #{id}",
+  "@contractShareText": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "contractScanVerify": "اس معاہدے کی تصدیق کے لیے اسکین کریں — صفحہ بکنگ، شوروم اور دستخط شدہ پی ڈی ایف دکھاتا ہے۔",
+  "contractProceedReturn": "واپسی اور تصفیے کی طرف بڑھیں",
+  "contractAgencyLine": "حکومت سے رجسٹرڈ کمرشل موٹر کار رینٹل ایجنسی",
+  "contractCertifiedTitle": "تصدیق شدہ ڈیجیٹل رینٹل معاہدہ",
+  "contractFieldAgreementNo": "معاہدہ نمبر:",
+  "contractFieldHirer": "کرایہ دار / گاہک:",
+  "contractFieldContact": "گاہک کا رابطہ:",
+  "contractFieldCnic": "شناختی کارڈ:",
+  "contractFieldVehicle": "کرائے کی گاڑی:",
+  "contractFieldPackage": "پیکیج کی قسم:",
+  "contractFieldOdometer": "روانگی اوڈومیٹر:",
+  "contractFieldFuel": "حوالگی ایندھن گیج:",
+  "contractFieldTotalPaid": "کل کرایہ ادا شدہ:",
+  "contractFieldDeposit": "سیکیورٹی ڈپازٹ:",
+  "contractWalkInCustomer": "واک اِن گاہک",
+  "contractNotProvided": "فراہم نہیں کیا گیا",
+  "contractChauffeur": "ڈرائیور کے ساتھ",
+  "contractDepositRefundable": "{amount} روپے (قابل واپسی)",
+  "@contractDepositRefundable": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "contractTermsTitle": "قانونی شرائط و ضوابط (پاکستان کا دائرہ اختیار):",
+  "contractTerm1": "1۔ گاڑی این او سی کے بغیر غیر مجاز صوبائی چیک پوائنٹس سے نہیں گزاری جائے گی۔",
+  "contractTerm2": "2۔ ٹریفک چالان، ای چالان اور استعمال شدہ ایندھن کی ذمہ داری صرف کرایہ دار پر ہے۔",
+  "contractTerm3": "3۔ کسی بھی ناکامی پر فوری ناقابل ضمانت ایف آئی آر اور نیشنل ٹرائیبیونل بلیک لسٹ میں شمولیت ہوگی۔",
+  "contractHirerSignature": "کرایہ دار کے دستخط",
+  "contractSignedOnPad": "پیڈ پر دستخط شدہ",
+  "contractHostSignature": "میزبان کی مہر اور دستخط",
+  "contractAuthorizedManager": "مجاز ایجنسی مینیجر",
+  "paymentVerificationTitle": "ادائیگی کے ثبوت کی تصدیق کریں",
+  "paymentVerificationBooking": "بکنگ #{id}",
+  "@paymentVerificationBooking": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "paymentVerificationConfirmed": "ادائیگی تصدیق شدہ — بکنگ #{id} ادا ہو گئی۔",
+  "@paymentVerificationConfirmed": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "paymentVerificationConfirmFailed": "تصدیق ناکام ہوئی: {error}",
+  "@paymentVerificationConfirmFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "paymentVerificationRejectTitle": "یہ ثبوت مسترد کریں؟",
+  "paymentVerificationRejectNote": "گاہک یہ وجہ دیکھتا ہے اور نیا ثبوت اپ لوڈ کر سکتا ہے۔",
+  "paymentVerificationReasonLabel": "وجہ (لازمی)",
+  "paymentVerificationReasonHint": "مثلاً اسکرین شاٹ پڑھا نہیں جا سکتا",
+  "paymentVerificationRejectButton": "ثبوت مسترد کریں",
+  "paymentVerificationRejected": "ثبوت مسترد ہو گیا — گاہک نیا ثبوت اپ لوڈ کر سکتا ہے۔",
+  "paymentVerificationRejectFailed": "مسترد کرنا ناکام ہوا: {error}",
+  "@paymentVerificationRejectFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "paymentVerificationTotalRent": "کل کرایہ",
+  "paymentVerificationAdvanceDue": "ایڈوانس واجب",
+  "paymentVerificationAdvancePaid": "ایڈوانس ادا شدہ",
+  "paymentVerificationTransactionId": "لین دین کی شناخت",
+  "paymentVerificationScreenshotTitle": "ادائیگی کا اسکرین شاٹ",
+  "paymentVerificationProofUnavailable": "ثبوت کی تصویر دستیاب نہیں — گاہک سے دوبارہ بھیجنے کو کہیں۔",
+  "paymentVerificationNoScreenshot": "کوئی اسکرین شاٹ منسلک نہیں۔",
+  "paymentVerificationPreviouslyRejected": "پہلے مسترد کیا گیا: {reason}",
+  "@paymentVerificationPreviouslyRejected": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "paymentVerificationConfirming": "تصدیق ہو رہی ہے…",
+  "paymentVerificationConfirmButton": "ادائیگی تصدیق کریں — {amount} روپے",
+  "@paymentVerificationConfirmButton": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "manualBookingTitle": "واک اِن بکنگ وزرڈ",
+  "manualBookingSubtitle": "شوروم کاؤنٹر سے براہ راست اجراء",
+  "manualBookingCustomerSection": "گاہک کی کے وائی سی تفصیلات",
+  "manualBookingGuarantorSection": "ضامن (اختیاری)",
+  "manualBookingVehicleSection": "گاڑی اور پیکیج کا انتخاب",
+  "manualBookingCompleteDetails": "براہ کرم گاہک کی تمام تفصیلات مکمل کریں۔",
+  "manualBookingSelectVehicle": "براہ کرم گاڑی اور پیکیج منتخب کریں۔",
+  "manualBookingBlacklisted": "یہ شناختی کارڈ بلیک لسٹڈ ہے — واک اِن بکنگ مسترد۔",
+  "manualBookingRegistered": "واک اِن بکنگ #{id} رجسٹر ہو گئی!",
+  "@manualBookingRegistered": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "manualBookingCreateFailed": "بکنگ بنانا ناکام ہوا: {error}",
+  "@manualBookingCreateFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "manualBookingCreating": "واک اِن ریکارڈ بن رہا ہے...",
+  "manualBookingConfirm": "تصدیق کریں اور حوالگی کی طرف بڑھیں",
+  "manualBookingCustomerName": "گاہک کا پورا نام",
+  "manualBookingNadraCnic": "نادرا شناختی کارڈ",
+  "manualBookingSelectVehicleHint": "شوروم کی گاڑی منتخب کریں",
+  "manualBookingSelectVehicleFirst": "پیکیجز دیکھنے کے لیے پہلے گاڑی منتخب کریں۔",
+  "manualBookingNoPackages": "اس گاڑی کے لیے کوئی پیکیج فعال نہیں۔",
+  "manualBookingPackageChip": "{label} • {price} روپے",
+  "@manualBookingPackageChip": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "price": {
+        "type": "int"
+      }
+    }
+  },
+  "manualBookingTotal": "کل: {total} روپے",
+  "@manualBookingTotal": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "manualBookingDepositLabel": "سیکیورٹی ڈپازٹ (روپے)",
+  "manualBookingGuarantorNotFound": "اس شناختی کارڈ کا کوئی محفوظ گاہک نہیں — نیچے شامل کریں۔",
+  "manualBookingGuarantorBlacklisted": "یہ شناختی کارڈ بلیک لسٹڈ ہے اور ضامن نہیں بن سکتا۔",
+  "manualBookingGuarantorRequired": "ضامن کے لیے نام، فون اور شناختی کارڈ درکار ہیں۔",
+  "manualBookingGuarantorRemove": "ضامن ہٹائیں",
+  "manualBookingGuarantorSearch": "شناختی کارڈ سے ضامن تلاش کریں",
+  "manualBookingGuarantorFind": "تلاش کریں",
+  "manualBookingGuarantorEmpty": "ابھی کوئی محفوظ گاہک نہیں۔",
+  "manualBookingGuarantorHide": "نیا ضامن چھپائیں",
+  "manualBookingGuarantorAdd": "نیا ضامن شامل کریں",
+  "manualBookingGuarantorName": "ضامن کا پورا نام",
+  "manualBookingGuarantorCnic": "شناختی کارڈ نمبر",
+  "manualBookingGuarantorRelationship": "رشتہ (مثلاً والد، بھائی، دوست)",
+  "manualBookingGuarantorSave": "ضامن محفوظ کریں اور منتخب کریں",
+  "qrScanTitle": "بکنگ کا کیو آر اسکین کریں",
+  "qrScanSubtitle": "کیمرہ گاہک کے بکنگ کوڈ کی طرف کریں",
+  "qrNoBooking": "#{id} کے لیے کوئی بکنگ نہیں ملی۔",
+  "@qrNoBooking": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "qrOpenFailed": "بکنگ نہیں کھل سکی: {error}",
+  "@qrOpenFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "qrNotBookingCode": "یہ رینٹل ہب کا بکنگ کوڈ نہیں ہے۔",
+  "qrTypeHint": "یا بکنگ آئی ڈی لکھیں، مثلاً RH-…",
+  "onboardingCurrentGps": "موجودہ GPS ({lat}, {lng})",
+  "@onboardingCurrentGps": {
+    "placeholders": {
+      "lat": {
+        "type": "String"
+      },
+      "lng": {
+        "type": "String"
+      }
+    }
+  },
+  "onboardingShopNameShort": "شوروم کا نام کم از کم 3 حروف کا ہونا چاہیے۔",
+  "onboardingAddressInvalid": "براہ کرم درست شوروم کا پتہ درج کریں۔",
+  "onboardingPayoutRequired": "براہ کرم کم از کم ایک ادائیگی کا طریقہ فعال کریں۔",
+  "onboardingSubmitted": "شوروم پروفائل تصدیق کے لیے جمع کر دی گئی!",
+  "onboardingStepOf": "مرحلہ {step} از 4",
+  "@onboardingStepOf": {
+    "placeholders": {
+      "step": {
+        "type": "int"
+      }
+    }
+  },
+  "onboardingSubmit": "تصدیق کے لیے شوروم جمع کرائیں",
+  "onboardingNextStep": "اگلا مرحلہ",
+  "onboardingHeaderShop": "شوروم رجسٹریشن",
+  "onboardingHeaderLocation": "مقام اور نقشے کا پن",
+  "onboardingHeaderPayout": "ادائیگی اکاؤنٹس",
+  "onboardingHeaderKyc": "کے وائی سی اور تصدیق",
+  "onboardingHeaderSubmitted": "درخواست جمع کر دی گئی",
+  "onboardingSubtitleShop": "کاروباری شناخت اور رابطے کی تفصیلات",
+  "onboardingSubtitleLocation": "جسمانی پتہ اور جغرافیائی کوآرڈینیٹس",
+  "onboardingSubtitlePayout": "جیز کیش، ایزی پیسہ یا پاکستانی بینک",
+  "onboardingSubtitleKyc": "شوروم بینر، 3 فلیٹ تصاویر اور شناختی کارڈ",
+  "onboardingSubtitleSubmitted": "جائزے کی حالت اور فلیٹ مینجمنٹ",
+  "onboardingChangeLogo": "شوروم کا لوگو تبدیل کریں",
+  "onboardingUploadLogo": "شوروم کا لوگو / اسٹور فرنٹ اپ لوڈ کریں",
+  "onboardingShopLegalName": "شوروم کا رجسٹرڈ قانونی نام",
+  "onboardingShopNameHint": "مثلاً الفلاح رینٹ اے کار",
+  "onboardingOwnerName": "مالک کا پورا نام (شناختی کارڈ کے مطابق)",
+  "onboardingOwnerNameHint": "مثلاً احمد رضا",
+  "onboardingOwnerCnic": "مالک کا شناختی کارڈ نمبر",
+  "onboardingShopPhone": "شوروم لینڈ لائن / متبادل فون",
+  "onboardingOperatingHours": "کام کے اوقات",
+  "onboardingHours9to10": "صبح 9:00 - رات 10:00",
+  "onboardingHours8toMidnight": "صبح 8:00 - آدھی رات",
+  "onboardingHours24x7": "24 گھنٹے / 7 دن",
+  "onboardingHours10to8": "صبح 10:00 - شام 8:00",
+  "onboardingSelectCity": "اپنا شہر منتخب کریں",
+  "onboardingPinOnMap": "شوروم نقشے پر پن کریں",
+  "onboardingLocating": "مقام تلاش ہو رہا ہے...",
+  "onboardingUseGps": "موجودہ GPS استعمال کریں",
+  "onboardingTapToPin": "شوروم پن کرنے کے لیے نقشے پر کہیں بھی ٹیپ کریں ({lat}, {lng})",
+  "@onboardingTapToPin": {
+    "placeholders": {
+      "lat": {
+        "type": "String"
+      },
+      "lng": {
+        "type": "String"
+      }
+    }
+  },
+  "onboardingShopAddress": "شوروم کا جسمانی پتہ",
+  "onboardingAddressHint": "دکان نمبر، پلازہ، گلی، سیکٹر / کمرشل ایریا",
+  "onboardingPayoutTitle": "ادائیگی اکاؤنٹس اور تصفیہ",
+  "onboardingPayoutSubtitle": "رینٹل بکنگز اور گاہکوں کے ایڈوانس ڈپازٹس وصول کرنے کے لیے کم از کم ایک ادائیگی چینل منتخب کریں۔",
+  "onboardingJazzCashTitle": "جیز کیش موبائل اکاؤنٹ",
+  "onboardingJazzCashSubtitle": "فوری موبائل والیٹ ادائیگی",
+  "onboardingEasyPaisaTitle": "ایزی پیسہ والیٹ اکاؤنٹ",
+  "onboardingEasyPaisaSubtitle": "فوری ڈیجیٹل والیٹ ادائیگی",
+  "onboardingJazzCashNumber": "جیز کیش موبائل نمبر",
+  "onboardingEasyPaisaNumber": "ایزی پیسہ موبائل نمبر",
+  "onboardingBankTitle": "براہ راست کمرشل بینک",
+  "onboardingBankSubtitle": "1-لنک / IBAN براہ راست بینک تصفیہ",
+  "onboardingSelectBank": "بینک کا نام منتخب کریں",
+  "onboardingAccountNumber": "اکاؤنٹ نمبر / IBAN",
+  "onboardingIbanHint": "مثلاً PK36MEZN0001234567890123",
+  "onboardingAccountTitleBusiness": "اکاؤنٹ ٹائٹل (کاروبار / مالک)",
+  "onboardingAccountTitle": "اکاؤنٹ ٹائٹل",
+  "onboardingTitleHint": "احمد رضا",
+  "onboardingStepShopDetails": "شوروم کی تفصیلات",
+  "onboardingStepLocation": "مقام",
+  "onboardingStepPayouts": "ادائیگیاں",
+  "onboardingStepKyc": "کے وائی سی دستاویزات",
+  "onboardingApprovalTitle": "شوروم کی درخواست جمع ہو گئی!",
+  "onboardingApprovalMessage": "آپ کا شوروم پروفائل اور کے وائی سی دستاویزات سپر ایڈمن ڈیسک کو بھیج دی گئی ہیں۔ آپ کو 2 سے 4 کاروباری گھنٹوں میں ایس ایم ایس اور واٹس ایپ تصدیق ملے گی۔",
+  "onboardingFleetReady": "فلیٹ کیٹلاگ تیار ہے",
+  "onboardingFleetReadyHint": "آپ ابھی اپنی گاڑیاں شامل کرنا، 1h/3h/6h/24h ریٹس اور تصاویر سیٹ کرنا شروع کر سکتے ہیں۔",
+  "onboardingManageFleet": "فلیٹ مینج کریں اور گاڑیاں شامل کریں",
+  "onboardingHeaderBannerTitle": "شوروم ہیڈر شوکیس بینر",
+  "onboardingHeaderBannerHint": "کیمرہ یا گیلری سے تصویر اپ لوڈ کریں۔ آپ کے عوامی پروفائل کے اوپر ظاہر ہوتی ہے۔",
+  "onboardingHeaderBannerPhoto": "شوروم ہیڈر بینر تصویر",
+  "onboardingFleetPhotosTitle": "شوروم فلیٹ تصاویر (3 درکار)",
+  "onboardingFleetPhotosHint": "اپنے شوروم پر کھڑی گاڑیوں کی اصلی تصاویر اپ لوڈ کریں۔",
+  "onboardingFleetCar1": "فلیٹ کار 1",
+  "onboardingFleetCar2": "فلیٹ کار 2",
+  "onboardingFleetCar3": "فلیٹ کار 3",
+  "onboardingIdentityTitle": "مالک کی شناخت اور ٹیکس تصدیق",
+  "onboardingIdentityHint": "شوروم تصدیق کے لیے لازمی تعمیل۔",
+  "onboardingCnicFront": "شناختی کارڈ کی سامنے کی تصویر",
+  "onboardingCnicFrontHint": "مالک کے شناختی کارڈ کے سامنے کی دن کی روشنی میں تصویر",
+  "onboardingCnicBack": "شناختی کارڈ کی پچھلی تصویر",
+  "onboardingCnicBackHint": "مستقل پتہ دکھانے والی دن کی روشنی میں تصویر",
+  "onboardingNtn": "ایف بی آر این ٹی این سرٹیفکیٹ / کاروباری رجسٹریشن",
+  "onboardingNtnHint": "تصدیق شدہ فائلر سرٹیفکیٹ یا شوروم دستاویز",
+  "onboardingSelfie": "مالک کی لائیو سیلفی شناختی کارڈ کے ساتھ (صرف سامنے والا کیمرہ)",
+  "onboardingSelfieHint": "فوری لائیو بائیومیٹرک سیلفی",
+  "onboardingDocReady": "تیار ✓",
+  "onboardingDocUpload": "اپ لوڈ کریں",
+  "onboardingDocRemove": "ہٹائیں",
+  "onboardingTapToUpload": "اپ لوڈ کرنے کے لیے ٹیپ کریں",
+  "onboardingOptional": "اختیاری",
+  "disputesOwnerSubtitle": "آپ کے گاہکوں کی شکایات",
+  "disputesFilterAll": "سب ({count})",
+  "@disputesFilterAll": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "disputesFilterOpen": "کھلا ({count})",
+  "@disputesFilterOpen": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "disputesFilterInReview": "جائزے میں ({count})",
+  "@disputesFilterInReview": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "disputesFilterResolved": "حل شدہ ({count})",
+  "@disputesFilterResolved": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "disputesNoneOpen": "کوئی کھلا تنازع نہیں۔",
+  "disputesNoneInReview": "کوئی جائزے میں تنازع نہیں۔",
+  "disputesNoneResolved": "کوئی حل شدہ تنازع نہیں۔",
+  "disputesFallbackTitle": "تنازع",
+  "disputesBookingLine": "بکنگ {id} • {name}",
+  "@disputesBookingLine": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "disputesNoDescription": "کوئی تفصیل نہیں دی گئی۔",
+  "disputesSaving": "محفوظ ہو رہا ہے…",
+  "disputesMarkInReview": "جائزے میں قرار دیں",
+  "disputesMarkResolved": "حل شدہ قرار دیں",
+  "disputesResolvedNote": "حل شدہ — مزید کارروائی کی ضرورت نہیں۔",
+  "disputesMonthJan": "جنوری",
+  "disputesMonthFeb": "فروری",
+  "disputesMonthMar": "مارچ",
+  "disputesMonthApr": "اپریل",
+  "disputesMonthMay": "مئی",
+  "disputesMonthJun": "جون",
+  "disputesMonthJul": "جولائی",
+  "disputesMonthAug": "اگست",
+  "disputesMonthSep": "ستمبر",
+  "disputesMonthOct": "اکتوبر",
+  "disputesMonthNov": "نومبر",
+  "disputesMonthDec": "دسمبر",
+  "notificationsSubtitle": "کس چیز پر آپ کی توجہ درکار ہے",
+  "notificationsMarkAllRead": "سب پڑھا ہوا قرار دیں",
+  "notificationsEmpty": "ابھی کوئی اطلاعات نہیں۔",
+  "subscriptionUpgradeTo": "{tier} پر اپ گریڈ کریں",
+  "@subscriptionUpgradeTo": {
+    "placeholders": {
+      "tier": {
+        "type": "String"
+      }
+    }
+  },
+  "subscriptionClose": "بند کریں",
+  "subscriptionTransfer": "فوری شوروم منظوری فعال کرنے کے لیے راست / IBAN کے ذریعے {price} روپے منتقل کریں۔",
+  "@subscriptionTransfer": {
+    "placeholders": {
+      "price": {
+        "type": "int"
+      }
+    }
+  },
+  "subscriptionTrxLabel": "بینک ٹرانسفر لین دین آئی ڈی / حوالہ",
+  "subscriptionTrxHint": "مثلاً TRX-998822",
+  "subscriptionSubmit": "اپ گریڈ تصدیق جمع کرائیں",
+  "subscriptionEnterTrx": "براہ کرم لین دین آئی ڈی درج کریں",
+  "subscriptionRequested": "اپ گریڈ کی درخواست ہو گئی! سپر ایڈمن کا جائزہ جاری ہے۔",
+  "subscriptionTitle": "شوروم ممبرشپ پلانز",
+  "subscriptionSubtitle": "رینٹل ہب کے ساتھ اپنے شوروم کا فلیٹ بڑھائیں",
+  "subscriptionPerMonth": "/ ماہ",
+  "subscriptionForeverFree": "ہمیشہ مفت",
+  "subscriptionFeatureMax3": "زیادہ سے زیادہ 3 شوروم گاڑیاں",
+  "subscriptionFeatureAgreements": "معیاری ڈیجیٹل معاہدے",
+  "subscriptionFeatureVerification": "گاہک کی تصدیق کی جانچ",
+  "subscriptionFeatureUnlimited": "لامحدود فلیٹ گاڑیاں",
+  "subscriptionFeatureRadar": "ریئل ٹائم قومی بلیک لسٹ ریڈار",
+  "subscriptionFeatureWhatsappInvoicing": "واٹس ایپ خودکار انوائسنگ اور پاس",
+  "subscriptionFeaturePricingMatrix": "اپنی مرضی کی ملٹی ٹیئر پرائسنگ میٹرکس",
+  "subscriptionFeatureMultiBranch": "ملٹی برانچ فلیٹ سنکرونائزیشن",
+  "subscriptionFeatureManager": "مخصوص اکاؤنٹ مینیجر",
+  "subscriptionFeatureGps": "GPS ٹیلی میٹکس API انضمام",
+  "subscriptionFeatureTribunal": "ترجیحی تنازع ٹرائیبیونل سماعتیں",
+  "subscriptionMostPopular": "سب سے مقبول",
+  "subscriptionCurrentPlan": "موجودہ پلان",
+  "subscriptionActivePlan": "فعال پلان",
+  "whatsappLogsTitle": "واٹس ایپ الرٹ ترسیلات",
+  "whatsappLogsSubtitle": "لین دین میسجنگ گیٹ وے • لائیو",
+  "whatsappLogsDelivered": "پہنچا دیا گیا",
+  "whatsappLogsRead": "پڑھا گیا",
+  "whatsappLogsFailed": "ناکام",
+  "whatsappLogsResent": "واٹس ایپ اطلاع میٹا کلاؤڈ API کے ذریعے دوبارہ بھیج دی گئی!",
+  "whatsappLogsResend": "دوبارہ بھیجیں",
+  "onboardingWhatsappBusinessNumber": "واٹس ایپ بزنس نمبر",
+  "disputesOwnerEmpty": "ابھی کوئی تنازع نہیں — آپ کے شوروم کے گاہکوں کے تنازعات یہاں ظاہر ہوں گے۔",
+  "manualBookingGuarantorPhone": "فون نمبر",
+  "navHome": "ہوم",
+  "navBookings": "بکنگز",
+  "navSupport": "مدد",
+  "navProfile": "پروفائل",
+  "navDashboard": "ڈیش بورڈ",
+  "navRequests": "درخواستیں",
+  "navSettings": "ترتیبات",
+  "syncOfflineWithPending": "{count, plural, =1{آپ آف لائن ہیں — 1 تبدیلی دوبارہ آن لائن ہونے پر ہم آہنگ ہو جائے گی} other{آپ آف لائن ہیں — {count} تبدیلیاں دوبارہ آن لائن ہونے پر ہم آہنگ ہو جائیں گی}}",
+  "@syncOfflineWithPending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "syncOffline": "آپ آف لائن ہیں — تبدیلیاں دوبارہ آن لائن ہونے پر ہم آہنگ ہو جائیں گی",
+  "syncPending": "{count, plural, =1{1 تبدیلی ہم آہنگی کے منتظر} other{{count} تبدیلیاں ہم آہنگی کے منتظر}}",
+  "@syncPending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "syncFailed": "{count, plural, =1{1 تبدیلی ہم آہنگ نہ ہو سکی — دوبارہ کوشش کی جائے گی} other{{count} تبدیلیاں ہم آہنگ نہ ہو سکیں — دوبارہ کوشش کی جائے گی}}",
+  "@syncFailed": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "syncFailedShort": "ہم آہنگی ناکام — دوبارہ کوشش کی جائے گی",
+  "syncPendingShort": "ہم آہنگی کے منتظر",
+  "syncAllSynced": "تمام تبدیلیاں ہم آہنگ ہو گئیں",
+  "syncTitle": "ہم آہنگی",
+  "commonRetry": "دوبارہ کوشش کریں",
+  "commonSubmit": "جمع کرائیں",
+  "commonConfirm": "تصدیق کریں",
+  "commonShowValue": "قدر دکھائیں",
+  "commonHideValue": "قدر چھپائیں",
+  "commonGoBack": "واپس جائیں",
+  "headerGreeting": "ہیلو، {name}",
+  "@headerGreeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "headerGreetingFallback": "ہیلو",
+  "headerUrduGreeting": "اسلام علیکم",
+  "mediaSelectSource": "میڈیا کا ذریعہ منتخب کریں",
+  "mediaTakePhoto": "تصویر لیں (پچھلا کیمرہ)",
+  "mediaTakePhotoHint": "ڈیوائس کا کیمرہ استعمال کریں",
+  "mediaChooseGalleryHint": "موجودہ تصویر یا اسکرین شاٹ منتخب کریں",
+  "mediaRemovePhoto": "تصویر ہٹائیں",
+  "mediaRemovePhotoHint": "یہ اپ لوڈ شدہ تصویر صاف کریں",
+  "signatureAutoSign": "خودکار دستخط",
+  "signatureDrawArea": "دستخط کرنے کی جگہ",
+  "signatureDrawHint": "اپنی انگلی سے دستخط کریں",
+  "signatureSignHere": "یہاں اسکرین پر دستخط کریں ({name})",
+  "@signatureSignHere": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "signatureSignedBy": "دستخط کنندہ: {name}",
+  "@signatureSignedBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "signatureNadraValidated": "نادرا سے تصدیق شدہ",
+  "badgeNadraVerified": "نادرا سے تصدیق شدہ",
+  "fuelGaugeLabel": "ایندھن کی سطح (8 درجے)",
+  "fuelGaugeSetLevel": "ایندھن کی سطح {n} از 8 مقرر کریں",
+  "@fuelGaugeSetLevel": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "damageSchematicTitle": "بیرونی معائنہ خاکہ (4 حصے)",
+  "damageMarksLogged": "{count, plural, =1{1 نشان درج} other{{count} نشانات درج}}",
+  "@damageMarksLogged": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "damageTapHint": "پہلے سے موجود خراشوں یا دھنسوں کو نشان زد کرنے کے لیے نیچے گاڑی کے کسی بھی حصے پر ٹیپ کریں:",
+  "blacklistScanPrompt": "قومی کار رینٹل فراڈ اور بلیک لسٹ ڈیٹا بیس کے خلاف فوری اسکین کے لیے اوپر شناختی کارڈ درج کریں۔",
+  "blacklistCriticalAlert": "اہم انتباہ: بلیک لسٹ شدہ شہری",
+  "blacklistIncidentRef": "واقعہ نمبر: {id}",
+  "@blacklistIncidentRef": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "blacklistReason": "وجہ: {reason}",
+  "@blacklistReason": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "blacklistReportedBy": "رپورٹ کنندہ: {shop}",
+  "@blacklistReportedBy": {
+    "placeholders": {
+      "shop": {
+        "type": "String"
+      }
+    }
+  },
+  "blacklistDecline": "انکار کریں / سروس سے انکار",
+  "blacklistCleanTitle": "نادرا ریکارڈ صاف اور تصدیق شدہ",
+  "blacklistCleanSubtitle": "کوئی فعال نادہندگی یا ٹریبونل شکایت درج نہیں۔",
+  "blacklistProceed": "واک ان بکنگ جاری رکھیں",
+  "cnicVerifyTitle": "نادرا شناختی کارڈ کی تصدیق",
+  "cnicScanTooltip": "شناختی کارڈ / بارکوڈ اسکین کریں",
+  "cnicVerifyButton": "شناختی کارڈ اور بلیک لسٹ کی تصدیق کریں",
+  "cnicChecking": "قومی ٹریبونل سے جانچ ہو رہی ہے...",
+  "noDraftTitle": "کوئی بکنگ جاری نہیں ہے۔",
+  "noDraftMessage": "پہلے گاڑی اور پیکج منتخب کریں — جائزہ اسکرین کو وہاں سے بکنگ کی تفصیلات درکار ہیں۔",
+  "noDraftBrowse": "شورومز دیکھیں",
+  "routeBookingNotFound": "بکنگ {id} نہیں ملی۔",
+  "@routeBookingNotFound": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "routeVehicleNotFound": "گاڑی {id} نہیں ملی۔",
+  "@routeVehicleNotFound": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "fuelGaugeBars": "{active} / 8 بار ({percent}٪)",
+  "@fuelGaugeBars": {
+    "placeholders": {
+      "active": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  }
+}

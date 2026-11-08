@@ -69,6 +69,7 @@ void main() {
   group('Seeded overflow: the fixed widgets at 3 viewports', () {
     testWidgets('RevenueKpiCard with a 7-digit amount', (tester) async {
       await TestHarness.pumpScreenMultiViewport(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         tester: tester,
         screen: const RevenueKpiCard(
           title: 'Completed Trips',
@@ -84,6 +85,7 @@ void main() {
     testWidgets('DashboardKpis with 7-digit revenue and 2–3 digit counts',
         (tester) async {
       await TestHarness.pumpScreenMultiViewport(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         tester: tester,
         screen: const DashboardKpis(
           totalRevenue: 1234567,
@@ -104,6 +106,7 @@ void main() {
     testWidgets('DashboardLedgerItem with a long id, name and 6-digit amount',
         (tester) async {
       await TestHarness.pumpScreenMultiViewport(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         tester: tester,
         screen: const DashboardLedgerItem(
           bookingId: 'RH-1762574400123-0042',
@@ -121,6 +124,7 @@ void main() {
     testWidgets('RequestTriageCard with a long vehicle name and 7-digit total',
         (tester) async {
       await TestHarness.pumpScreenMultiViewport(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         tester: tester,
         screen: RequestTriageCard(
           booking: _seededBooking(),
@@ -139,6 +143,7 @@ void main() {
       // scrollable like the real usage — its own height is not bounded by
       // the screen.
       await TestHarness.pumpScreenMultiViewport(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         tester: tester,
         screen: SingleChildScrollView(
           child: BookingTicketCard(
@@ -184,10 +189,15 @@ void main() {
       );
 
       await TestHarness.pumpScreenMultiViewport(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         tester: tester,
         screen: const CustomerWalletView(),
         theme: AppTheme.lightTheme,
       );
+      // E1: the balance is masked by default — reveal it so the long
+      // real-money value is visible for the overflow check.
+      await tester.tap(find.byTooltip('Show balance'));
+      await tester.pump();
       expect(find.text('Rs. 600000'), findsOneWidget);
     });
   });
@@ -202,6 +212,7 @@ void main() {
 
     testWidgets('Customer Home', (tester) async {
       await TestHarness.pumpScreenMultiViewport(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         tester: tester,
         screen: const CustomerHomeView(),
         theme: AppTheme.lightTheme,
@@ -211,6 +222,7 @@ void main() {
 
     testWidgets('Customer Bookings', (tester) async {
       await TestHarness.pumpScreenMultiViewport(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         tester: tester,
         screen: const CustomerBookingsView(),
         theme: AppTheme.lightTheme,
@@ -220,15 +232,25 @@ void main() {
 
     testWidgets('Customer Wallet (empty)', (tester) async {
       await TestHarness.pumpScreenMultiViewport(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         tester: tester,
         screen: const CustomerWalletView(),
         theme: AppTheme.lightTheme,
       );
+      // E1: the balance and both escrow pills are masked by default —
+      // reveal all three so the 'Rs. 0' values are visible.
+      await tester.tap(find.byTooltip('Show balance'));
+      await tester.pump();
+      await tester.tap(find.byTooltip('Show amount').first);
+      await tester.pump();
+      await tester.tap(find.byTooltip('Show amount').first);
+      await tester.pump();
       expect(find.text('Rs. 0'), findsNWidgets(3)); // balance + 2 pills
     });
 
     testWidgets('Customer Support', (tester) async {
       await TestHarness.pumpScreenMultiViewport(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         tester: tester,
         screen: const CustomerSupportView(),
         theme: AppTheme.lightTheme,
@@ -238,6 +260,7 @@ void main() {
 
     testWidgets('Customer Profile', (tester) async {
       await TestHarness.pumpScreenMultiViewport(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         tester: tester,
         screen: const CustomerProfileView(),
         theme: AppTheme.lightTheme,
@@ -247,6 +270,7 @@ void main() {
 
     testWidgets('Owner Dashboard (empty)', (tester) async {
       await TestHarness.pumpScreenMultiViewport(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         tester: tester,
         screen: const OwnerDashboardView(),
         theme: AppTheme.lightTheme,
@@ -256,6 +280,7 @@ void main() {
 
     testWidgets('Owner Fleet (empty)', (tester) async {
       await TestHarness.pumpScreenMultiViewport(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         tester: tester,
         screen: const OwnerFleetView(),
         theme: AppTheme.lightTheme,
@@ -265,6 +290,7 @@ void main() {
 
     testWidgets('Owner Requests (empty)', (tester) async {
       await TestHarness.pumpScreenMultiViewport(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         tester: tester,
         screen: const OwnerBookingRequestsView(),
         theme: AppTheme.lightTheme,
@@ -277,6 +303,7 @@ void main() {
         tester: tester,
         screen: const OwnerCustomersListView(),
         theme: AppTheme.lightTheme,
+        localizationsDelegates: l10nDelegates,
       );
       expect(find.text('Customers'), findsOneWidget);
     });

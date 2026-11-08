@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -85,19 +86,20 @@ class _OwnerDuesViewState extends State<OwnerDuesView> {
 
   Future<void> _remind(
       String customerId, String name, String? phone, int due) async {
+    final l10n = AppLocalizations.of(context)!;
     final number = _waNumber(phone);
     if (number.isEmpty) {
-      AppFeedback.showError(context, 'No phone number for this customer.');
+      AppFeedback.showError(context, l10n.financeDuesNoPhoneError);
       return;
     }
     final message =
-        'Assalam-o-Alaikum $name, your RentalHub balance of Rs. $due is pending. Please clear it at your earliest convenience. Thank you!';
-    final uri = Uri.parse(
-        'https://wa.me/$number?text=${Uri.encodeComponent(message)}');
+        l10n.financeDuesReminderMessage(name, due);
+    final uri =
+        Uri.parse('https://wa.me/$number?text=${Uri.encodeComponent(message)}');
     final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
     if (!opened) {
       if (mounted) {
-        AppFeedback.showError(context, 'Could not open WhatsApp.');
+        AppFeedback.showError(context, l10n.financeDuesWhatsappFailed);
       }
       return;
     }
@@ -105,18 +107,17 @@ class _OwnerDuesViewState extends State<OwnerDuesView> {
     await prefs.setString(
         'due_reminder_$customerId', DateTime.now().toIso8601String());
     if (mounted) {
-      setState(() =>
-          _lastReminded[customerId] = DateTime.now());
+      setState(() => _lastReminded[customerId] = DateTime.now());
       AppFeedback.showSuccess(
-          context, 'WhatsApp opened — reminder marked as sent.');
+          context, l10n.financeDuesReminderSent);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+  final l10n = AppLocalizations.of(context)!;
     final groups = _byCustomer;
-    final totalDue =
-        _dues.fold(0, (total, b) => total + b.remainingBalance);
+    final totalDue = _dues.fold(0, (total, b) => total + b.remainingBalance);
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -124,6 +125,7 @@ class _OwnerDuesViewState extends State<OwnerDuesView> {
             CustomCurvedHeader(
               variant: CustomCurvedHeaderVariant.compact,
               leadingWidget: IconButton(
+                tooltip: l10n.back,
                 icon: const Icon(Icons.arrow_back_ios_new_rounded,
                     color: Colors.white, size: 20),
                 onPressed: () => context.pop(),
@@ -131,9 +133,9 @@ class _OwnerDuesViewState extends State<OwnerDuesView> {
               titleWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Customer Dues',
+                  Text(l10n.financeDuesTitle,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
-                  Text('Rs. $totalDue outstanding',
+                  Text(l10n.financeDuesOutstanding(totalDue),
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.primaryContainer)),
                 ],
               ),
@@ -143,7 +145,7 @@ class _OwnerDuesViewState extends State<OwnerDuesView> {
                   ? const Center(child: CircularProgressIndicator())
                   : groups.isEmpty
                       ? Center(
-                          child: Text('No outstanding dues. All clear.',
+                          child: Text(l10n.financeDuesEmpty,
                               style: TextStyle(
                                   color: Theme.of(context).colorScheme.onSurfaceVariant,
                                   fontWeight: FontWeight.w700)),
@@ -160,7 +162,7 @@ class _OwnerDuesViewState extends State<OwnerDuesView> {
                             final due = bookings.fold(
                                 0, (total, b) => total + b.remainingBalance);
                             final name =
-                                bookings.first.customerName ?? 'Customer';
+                                bookings.first.customerName ?? l10n.requestsCustomerFallback;
                             final phone = bookings.first.customerPhone;
                             final last = _lastReminded[entry.key];
                             final overdue = last == null ||
@@ -183,29 +185,28 @@ class _OwnerDuesViewState extends State<OwnerDuesView> {
                                         child: Text(name,
                                             style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
                                       ),
-                                      Text('Rs. $due',
+                                      Text(l10n.amountRs(due),
                                           style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900, color: AppColors.dangerTextFor(Theme.of(context).brightness))),
                                     ],
                                   ),
                                   Text(
-                                      '${bookings.length} booking${bookings.length > 1 ? 's' : ''} • ${phone ?? 'no phone'}',
+                                      l10n.financeDuesBookingsLine(bookings.length, phone ?? l10n.financeDuesNoPhone),
                                       style: Theme.of(context).textTheme.labelSmall),
                                   if (last != null)
                                     Text(
-                                        'Last reminded ${last.day}/${last.month}/${last.year}',
+                                        l10n.financeDuesLastReminded(last.day, last.month, last.year),
                                         style: Theme.of(context).textTheme.labelSmall),
                                   const SizedBox(height: 8),
                                   SizedBox(
                                     width: double.infinity,
                                     child: OutlinedButton.icon(
-                                      icon: const Icon(
-                                          Icons.chat_rounded,
+                                      icon: const Icon(Icons.chat_rounded,
                                           size: 18),
                                       label: Text(overdue
-                                          ? 'Remind on WhatsApp'
-                                          : 'Remind again on WhatsApp'),
-                                      onPressed: () => _remind(
-                                          entry.key, name, phone, due),
+                                          ? l10n.financeDuesRemind
+                                          : l10n.financeDuesRemindAgain),
+                                      onPressed: () =>
+                                          _remind(entry.key, name, phone, due),
                                     ),
                                   ),
                                 ],
@@ -217,9 +218,8 @@ class _OwnerDuesViewState extends State<OwnerDuesView> {
             Padding(
               padding: EdgeInsets.fromLTRB(16, 0, 16, 14),
               child: Text(
-                  'Automated WhatsApp reminders (every 3 days) need the WhatsApp Business setup — Phase I.',
-                  style:
-                      Theme.of(context).textTheme.labelSmall,
+                  l10n.financeDuesAutoNote,
+                  style: Theme.of(context).textTheme.labelSmall,
                   textAlign: TextAlign.center),
             ),
           ],

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../constants/app_colors.dart';
+import '../../l10n/app_localizations.dart';
 
 class MediaPickerHelper {
   static final ImagePicker _picker = ImagePicker();
@@ -30,6 +31,10 @@ class MediaPickerHelper {
     }
 
     // Modal bottom sheet with Camera, Gallery, and optional Remove
+    // Phase F: the sheet copy is localized (English fallback for
+    // delegate-less pumps — the hardware-mock test pumps without
+    // delegates and asserts the English copy).
+    final l10n = AppLocalizations.of(context);
     showModalBottomSheet<void>(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -51,7 +56,7 @@ class MediaPickerHelper {
               ),
               const SizedBox(height: 14),
               Text(
-                'Select Media Source',
+                l10n?.mediaSelectSource ?? 'Select Media Source',
                 style: Theme.of(ctx).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w800,
                 ),
@@ -68,8 +73,8 @@ class MediaPickerHelper {
                   ),
                   child: const Icon(Icons.camera_alt_rounded, color: AppColors.secondary, size: 22),
                 ),
-                title: Text('Take Photo (Back Camera)', style: Theme.of(ctx).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
-                subtitle: Text('Use device camera', style: Theme.of(ctx).textTheme.labelSmall),
+                title: Text(l10n?.mediaTakePhoto ?? 'Take Photo (Back Camera)', style: Theme.of(ctx).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
+                subtitle: Text(l10n?.mediaTakePhotoHint ?? 'Use device camera', style: Theme.of(ctx).textTheme.labelSmall),
                 onTap: () async {
                   Navigator.of(ctx).pop();
                   final photo = await _picker.pickImage(
@@ -91,8 +96,8 @@ class MediaPickerHelper {
                   ),
                   child: const Icon(Icons.photo_library_rounded, size: 22),
                 ),
-                title: Text('Choose from Gallery', style: Theme.of(ctx).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
-                subtitle: Text('Pick existing photo or screenshot', style: Theme.of(ctx).textTheme.labelSmall),
+                title: Text(l10n?.avatarFromGallery ?? 'Choose from Gallery', style: Theme.of(ctx).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
+                subtitle: Text(l10n?.mediaChooseGalleryHint ?? 'Pick existing photo or screenshot', style: Theme.of(ctx).textTheme.labelSmall),
                 onTap: () async {
                   Navigator.of(ctx).pop();
                   final photo = await _picker.pickImage(
@@ -115,8 +120,8 @@ class MediaPickerHelper {
                     ),
                     child: Icon(Icons.delete_outline_rounded, color: AppColors.dangerTextFor(Theme.of(context).brightness), size: 22),
                   ),
-                  title: Text('Remove Photo', style: Theme.of(ctx).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700, color: AppColors.dangerTextFor(Theme.of(context).brightness))),
-                  subtitle: Text('Clear this uploaded image', style: Theme.of(ctx).textTheme.labelSmall),
+                  title: Text(l10n?.mediaRemovePhoto ?? 'Remove Photo', style: Theme.of(ctx).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700, color: AppColors.dangerTextFor(Theme.of(context).brightness))),
+                  subtitle: Text(l10n?.mediaRemovePhotoHint ?? 'Clear this uploaded image', style: Theme.of(ctx).textTheme.labelSmall),
                   onTap: () {
                     Navigator.of(ctx).pop();
                     onImageSelected(null);

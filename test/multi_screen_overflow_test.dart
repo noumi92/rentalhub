@@ -3,17 +3,22 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:rentalhub/core/di/injection_container.dart';
 import 'package:rentalhub/core/theme/app_theme.dart';
+import 'package:rentalhub/features/bookings/domain/entities/booking_entity.dart';
+import 'package:rentalhub/features/bookings/presentation/views/owner_payment_accounts_view.dart';
 import 'package:rentalhub/features/fleet/domain/entities/vehicle_entity.dart';
 import 'package:rentalhub/features/auth/presentation/views/onboarding_profile_view.dart';
 import 'package:rentalhub/features/auth/presentation/views/onboarding_role_view.dart';
 import 'package:rentalhub/features/discovery/domain/entities/shop_entity.dart';
+import 'package:rentalhub/features/customer/presentation/views/customer_wallet_view.dart';
 import 'package:rentalhub/features/discovery/presentation/views/customer_home_view.dart';
 import 'package:rentalhub/features/discovery/presentation/views/shop_detail_view.dart';
 import 'package:rentalhub/features/discovery/presentation/views/vehicle_detail_view.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_add_vehicle_view.dart';
+import 'package:rentalhub/features/owner/presentation/views/owner_dashboard_view.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_fleet_view.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_onboarding_view.dart';
 import 'package:rentalhub/features/trust/presentation/views/customer_documents_view.dart';
+import 'package:rentalhub/l10n/app_localizations.dart';
 import 'test_helper.dart';
 
 void main() {
@@ -47,6 +52,7 @@ void main() {
     testWidgets('CustomerHomeView renders without overflow on 360px viewport',
         (WidgetTester tester) async {
       await TestHarness.pumpScreenWithOverflowCheck(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         tester: tester,
         screen: const CustomerHomeView(),
         width: 360.0,
@@ -69,6 +75,7 @@ void main() {
         rates: VehicleRatesEntity(daily24: 9000),
       );
       await TestHarness.pumpScreenWithOverflowCheck(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         tester: tester,
         screen: VehicleDetailView(
           vehicle: sampleVehicle,
@@ -87,6 +94,7 @@ void main() {
     testWidgets('ShopDetailView renders without overflow on 360px viewport and 1.35x font scale',
         (WidgetTester tester) async {
       await TestHarness.pumpScreenWithOverflowCheck(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         tester: tester,
         screen: const ShopDetailView(shop: sampleShop),
         width: 360.0,
@@ -101,6 +109,7 @@ void main() {
     testWidgets('OwnerFleetView renders without overflow on 360px viewport and 1.35x font scale',
         (WidgetTester tester) async {
       await TestHarness.pumpScreenWithOverflowCheck(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         tester: tester,
         screen: const OwnerFleetView(),
         width: 360.0,
@@ -116,6 +125,7 @@ void main() {
     testWidgets('CustomerDocumentsView renders without overflow on 360px viewport and 1.35x font scale',
         (WidgetTester tester) async {
       await TestHarness.pumpScreenWithOverflowCheck(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         tester: tester,
         screen: const CustomerDocumentsView(),
         width: 360.0,
@@ -130,6 +140,7 @@ void main() {
     testWidgets('OnboardingProfileView renders without overflow on 360px viewport',
         (WidgetTester tester) async {
       await TestHarness.pumpScreenWithOverflowCheck(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         tester: tester,
         screen: const OnboardingProfileView(),
         width: 360.0,
@@ -144,6 +155,7 @@ void main() {
     testWidgets('OnboardingRoleView renders without overflow on 360px viewport',
         (WidgetTester tester) async {
       await TestHarness.pumpScreenWithOverflowCheck(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         tester: tester,
         screen: const OnboardingRoleView(),
         width: 360.0,
@@ -158,6 +170,7 @@ void main() {
     testWidgets('OwnerOnboardingView: Step 1 through Step 4 render with zero overflow on 360px viewport',
         (WidgetTester tester) async {
       await TestHarness.pumpScreenWithOverflowCheck(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         tester: tester,
         screen: const OwnerOnboardingView(),
         width: 360.0,
@@ -199,6 +212,7 @@ void main() {
     testWidgets('OwnerAddVehicleView: Step 1 through Step 3 render with zero overflow on 360px viewport',
         (WidgetTester tester) async {
       await TestHarness.pumpScreenWithOverflowCheck(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         tester: tester,
         screen: const OwnerAddVehicleView(),
         width: 360.0,
@@ -222,6 +236,103 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Rental Rates & Policy'), findsOneWidget);
       expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('OwnerPaymentAccountsView renders without overflow on 360px viewport and 1.35x font scale',
+        (WidgetTester tester) async {
+      // Phase E/F (E2): the booking-flow screen migrated to the shared
+      // AppLoadingState / AppEmptyState. No shop has accounts in the
+      // test env, so the Firestore read falls back to the empty state.
+      final sampleBooking = BookingEntity(
+        bookingId: 'RH-1762574400123-0042',
+        customerId: 'cust-101',
+        shopId: 'shop-1',
+        vehicleId: 'v-1',
+        packageType: '24h',
+        pickupTime: DateTime(2026, 11, 8, 10),
+        returnTime: DateTime(2026, 11, 9, 10),
+        totalAmount: 1250000,
+        remainingBalance: 1250000,
+        status: 'payment_submitted',
+        vehicleName: 'Toyota Corolla Grande 1.8',
+        vehiclePlate: 'LEA-21-4820',
+        shopName: 'Al-Madina Rent a Car',
+        customerName: 'Muhammad Ahmed Khan Butt',
+        customerPhone: '0300-1234567',
+      );
+      await TestHarness.pumpScreenWithOverflowCheck(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        tester: tester,
+        screen: OwnerPaymentAccountsView(booking: sampleBooking),
+        width: 360.0,
+        height: 640.0,
+        textScale: 1.35,
+        theme: AppTheme.lightTheme,
+      );
+      expect(find.text('Showroom Payment Accounts'), findsOneWidget);
+    });
+  });
+
+  group('Phase E/F migrated screens at 200% text scale', () {
+    // Phase E3 did the 200% text-scale overflow pass on all 10 tab
+    // screens; these four are the ones Phases E/F touched most
+    // (quick-action tiles, masked values, filter chips, shared state
+    // views). The pass pins the result so a later widget change
+    // cannot silently reintroduce a 200% overflow.
+    testWidgets('CustomerHomeView renders without overflow at 200% text scale',
+        (WidgetTester tester) async {
+      await TestHarness.pumpScreenWithOverflowCheck(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        tester: tester,
+        screen: const CustomerHomeView(),
+        width: 360.0,
+        height: 640.0,
+        textScale: 2.0,
+        theme: AppTheme.lightTheme,
+      );
+      expect(find.text('Find Verified Rental Shops'), findsOneWidget);
+    });
+
+    testWidgets('OwnerDashboardView renders without overflow at 200% text scale',
+        (WidgetTester tester) async {
+      await TestHarness.pumpScreenWithOverflowCheck(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        tester: tester,
+        screen: const OwnerDashboardView(),
+        width: 360.0,
+        height: 640.0,
+        textScale: 2.0,
+        theme: AppTheme.lightTheme,
+      );
+      expect(find.text('Showroom Revenue & Operations'), findsOneWidget);
+    });
+
+    testWidgets('CustomerWalletView renders without overflow at 200% text scale',
+        (WidgetTester tester) async {
+      await TestHarness.pumpScreenWithOverflowCheck(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        tester: tester,
+        screen: const CustomerWalletView(),
+        width: 360.0,
+        height: 640.0,
+        textScale: 2.0,
+        theme: AppTheme.lightTheme,
+      );
+      expect(find.byType(Scaffold), findsWidgets);
+    });
+
+    testWidgets('OwnerFleetView renders without overflow at 200% text scale',
+        (WidgetTester tester) async {
+      await TestHarness.pumpScreenWithOverflowCheck(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        tester: tester,
+        screen: const OwnerFleetView(),
+        width: 360.0,
+        height: 640.0,
+        textScale: 2.0,
+        theme: AppTheme.lightTheme,
+      );
+      expect(find.text('Fleet Management'), findsOneWidget);
     });
   });
 }

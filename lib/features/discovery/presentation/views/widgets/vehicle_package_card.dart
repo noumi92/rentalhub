@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../../core/constants/app_colors.dart';
+import '../../../../../l10n/app_localizations.dart';
 
 class VehiclePackageCard extends StatelessWidget {
   final String title;
@@ -21,6 +22,7 @@ class VehiclePackageCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(16),
@@ -76,7 +78,7 @@ class VehiclePackageCard extends StatelessWidget {
               style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
             ),
             Text(
-              '/ per day',
+              l10n.vehiclePerDay,
               style: Theme.of(context).textTheme.labelSmall,
             ),
           ],

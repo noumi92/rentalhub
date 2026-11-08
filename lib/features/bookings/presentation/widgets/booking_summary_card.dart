@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/pakistani_plate_widget.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class BookingSummaryCard extends StatelessWidget {
   final String carName;
@@ -38,6 +39,7 @@ class BookingSummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -68,7 +70,7 @@ class BookingSummaryCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      'Showroom: $shopName',
+                      l10n.summaryShowroom(shopName),
                       style: Theme.of(context).textTheme.labelMedium,
                     ),
                   ],
@@ -78,49 +80,51 @@ class BookingSummaryCard extends StatelessWidget {
             ],
           ),
           const Divider(height: 24),
-          _buildRow(context, 'Mode', isWithDriver ? 'With Chauffeur' : 'Self-Drive'),
+          _buildRow(context, l10n.summaryMode, isWithDriver ? l10n.withChauffeur : l10n.selfDriveHyphen),
           const SizedBox(height: 8),
-          _buildRow(context, 'Package Tier', '$packageType Rental'),
+          _buildRow(context, l10n.summaryPackageTier, l10n.summaryPackageRental(packageType)),
           const SizedBox(height: 8),
           _buildRow(context, 
-            'Trip',
+            l10n.summaryTrip,
             tripType == 'out_of_city'
-                ? 'Out of city${destinationCity != null ? ' → $destinationCity' : ''}'
-                : 'In city',
+                ? (destinationCity != null
+                    ? l10n.summaryOutOfCityTo(destinationCity!)
+                    : l10n.outOfCity)
+                : l10n.inCity,
           ),
           if (kmLimit != null) ...[
             const SizedBox(height: 8),
-            _buildRow(context, 'KM Included', '$kmLimit km'),
+            _buildRow(context, l10n.summaryKmIncluded, '$kmLimit km'),
           ],
           if (securityDepositPkr != null) ...[
             const SizedBox(height: 8),
             _buildRow(context, 
-              'Security Deposit',
-              'Rs. $securityDepositPkr (at handover)',
+              l10n.summarySecurityDeposit,
+              l10n.summaryDepositAtHandover(securityDepositPkr!),
             ),
           ],
           const SizedBox(height: 8),
           _buildRow(context, 
-            'Pickup Time',
+            l10n.summaryPickupTime,
             '${pickupTime.day}/${pickupTime.month}/${pickupTime.year} at ${pickupTime.hour.toString().padLeft(2, '0')}:${pickupTime.minute.toString().padLeft(2, '0')}',
           ),
           const SizedBox(height: 8),
           _buildRow(context, 
-            'Return Due',
+            l10n.summaryReturnDue,
             '${returnTime.day}/${returnTime.month}/${returnTime.year} at ${returnTime.hour.toString().padLeft(2, '0')}:${returnTime.minute.toString().padLeft(2, '0')}',
           ),
           const Divider(height: 24),
-          _buildRow(context, 'Total Rental Fare', 'Rs. $totalAmount', isBold: true),
+          _buildRow(context, l10n.summaryTotalFare, 'Rs. $totalAmount', isBold: true),
           const SizedBox(height: 8),
           _buildRow(context, 
-            'Advance Payable',
+            l10n.summaryAdvancePayable,
             'Rs. $advanceRequired',
             color: AppColors.secondary,
             isBold: true,
           ),
           const SizedBox(height: 8),
           _buildRow(context, 
-            'Balance at Handover',
+            l10n.summaryBalanceAtHandover,
             'Rs. ${totalAmount - advanceRequired}',
             color: Theme.of(context).colorScheme.onSurface,
           ),

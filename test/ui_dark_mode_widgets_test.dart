@@ -32,6 +32,7 @@ import 'package:rentalhub/features/owner/presentation/widgets/dashboard/dashboar
 import 'package:rentalhub/features/owner/presentation/widgets/dashboard/dashboard_ledger_item.dart';
 import 'package:rentalhub/features/owner/presentation/widgets/dashboard/revenue_kpi_card.dart';
 import 'package:rentalhub/features/owner/presentation/widgets/operations/request_triage_card.dart';
+import 'package:rentalhub/l10n/app_localizations.dart';
 import 'test_helper.dart';
 
 BookingEntity _seededBooking({String status = 'payment_submitted'}) =>
@@ -139,6 +140,7 @@ void main() {
     testWidgets('RevenueKpiCard: 7-digit amount stays readable in dark',
         (tester) async {
       await TestHarness.pumpScreenWithOverflowCheck(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         tester: tester,
         screen: const RevenueKpiCard(
           title: 'Completed Trips',
@@ -157,6 +159,7 @@ void main() {
     testWidgets('DashboardKpis: seeded 7-digit revenue, no white surfaces',
         (tester) async {
       await TestHarness.pumpScreenWithOverflowCheck(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         tester: tester,
         screen: const DashboardKpis(
           totalRevenue: 1234567,
@@ -181,6 +184,7 @@ void main() {
     testWidgets('DashboardLedgerItem: long id + name, 6-digit amount',
         (tester) async {
       await TestHarness.pumpScreenWithOverflowCheck(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         tester: tester,
         screen: const DashboardLedgerItem(
           bookingId: 'RH-1762574400123-0042',
@@ -195,13 +199,15 @@ void main() {
       expect(_textColor(tester, 'Rs. 125000'), darkOnSurface);
       expect(_textColor(tester, 'Toyota Corolla Grande 1.8'), darkOnSurface);
       // The status chip for an active booking uses the dark primary
-      // (light navy), never the brand navy.
-      expect(_textColor(tester, 'ACTIVE'), AppColors.primaryOnDark);
+      // (light navy), never the brand navy. The label is the localized
+      // 'Active', not the old uppercased status code.
+      expect(_textColor(tester, 'Active'), AppColors.primaryOnDark);
     });
 
     testWidgets('RequestTriageCard: long vehicle + 6-digit amount',
         (tester) async {
       await TestHarness.pumpScreenWithOverflowCheck(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         tester: tester,
         screen: RequestTriageCard(
           booking: _seededBooking(),
@@ -223,6 +229,7 @@ void main() {
     testWidgets('BookingTicketCard: requested status pill is not navy',
         (tester) async {
       await TestHarness.pumpScreenWithOverflowCheck(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         tester: tester,
         screen: BookingTicketCard(
           booking: _seededBooking(status: 'requested'),
@@ -242,6 +249,7 @@ void main() {
     testWidgets('BookingTicketCard: unknown status falls back to light navy',
         (tester) async {
       await TestHarness.pumpScreenWithOverflowCheck(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         tester: tester,
         screen: BookingTicketCard(
           booking: _seededBooking(status: 'active'),
@@ -258,6 +266,7 @@ void main() {
     testWidgets('BookingTicketCard: paid status pill uses the light green',
         (tester) async {
       await TestHarness.pumpScreenWithOverflowCheck(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         tester: tester,
         screen: BookingTicketCard(
           booking: _seededBooking(status: 'paid'),
@@ -273,6 +282,7 @@ void main() {
         'DigitalQrPassWidget: the white card is a keep, but its text is dark ink',
         (tester) async {
       await TestHarness.pumpScreenWithOverflowCheck(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         tester: tester,
         screen: DigitalQrPassWidget(
           bookingId: 'RH-1762574400123-0042',
@@ -324,6 +334,7 @@ void main() {
     testWidgets('CustomerWalletView has no white surface in dark',
         (tester) async {
       await TestHarness.pumpScreenWithOverflowCheck(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         tester: tester,
         screen: const CustomerWalletView(),
         theme: AppTheme.darkTheme,
@@ -335,6 +346,7 @@ void main() {
     testWidgets('OwnerFleetView has no white surface in dark',
         (tester) async {
       await TestHarness.pumpScreenWithOverflowCheck(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         tester: tester,
         screen: const OwnerFleetView(),
         theme: AppTheme.darkTheme,
@@ -346,6 +358,7 @@ void main() {
     testWidgets('CustomerBookingsView has no white surface in dark',
         (tester) async {
       await TestHarness.pumpScreenWithOverflowCheck(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         tester: tester,
         screen: const CustomerBookingsView(),
         theme: AppTheme.darkTheme,
@@ -357,6 +370,7 @@ void main() {
     testWidgets('OwnerDashboardView has no white surface in dark',
         (tester) async {
       await TestHarness.pumpScreenWithOverflowCheck(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         tester: tester,
         screen: const OwnerDashboardView(),
         theme: AppTheme.darkTheme,

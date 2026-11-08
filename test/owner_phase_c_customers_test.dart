@@ -15,6 +15,7 @@ import 'package:rentalhub/features/owner/presentation/views/owner_blacklist_view
 import 'package:rentalhub/features/owner/presentation/views/owner_cnic_review_view.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_customers_list_view.dart';
 import 'package:rentalhub/features/owner/presentation/widgets/guarantor_picker.dart';
+import 'package:rentalhub/l10n/app_localizations.dart';
 import 'package:rentalhub/features/trust/utils/cnic_text_parser.dart';
 
 // Owner Module Plan — Phase C: customers list, CNIC OCR with review,
@@ -223,8 +224,10 @@ House 12, Street 4, Gulberg III, Lahore
         customerCnic: '3520112345671',
       );
       await tester.pumpWidget(
-        const MaterialApp(
-          home: OwnerCustomersListView(shopId: 'shop-1'),
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const OwnerCustomersListView(shopId: 'shop-1'),
         ),
       );
       await tester.pumpAndSettle();
@@ -253,6 +256,8 @@ House 12, Street 4, Gulberg III, Lahore
       GuarantorSelection? picked;
       await tester.pumpWidget(
         MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
             body: GuarantorPicker(
               shopId: 'shop-1',
@@ -276,6 +281,8 @@ House 12, Street 4, Gulberg III, Lahore
         (tester) async {
       await tester.pumpWidget(
         MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
             body: GuarantorPicker(
               shopId: 'shop-1',
@@ -332,8 +339,10 @@ House 12, Street 4, Gulberg III, Lahore
     testWidgets('blacklist view files a report and lists it',
         (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: OwnerBlacklistView(shopId: 'shop-c4-view'),
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const OwnerBlacklistView(shopId: 'shop-c4-view'),
         ),
       );
       await tester.pumpAndSettle();
@@ -362,6 +371,8 @@ House 12, Street 4, Gulberg III, Lahore
       String? savedCnic;
       await tester.pumpWidget(
         MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           home: OwnerCnicReviewView(
             initial: CnicTextParser.parseFront(frontText),
             shopId: 'shop-1',

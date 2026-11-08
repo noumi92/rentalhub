@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../l10n/app_localizations.dart';
+
 import '../../../../fleet/domain/entities/vehicle_entity.dart';
 import 'rate_matrix_field_widget.dart';
 
@@ -20,17 +22,20 @@ class PricingPackageList extends StatelessWidget {
   final void Function(String label, bool enabled) onToggle;
   final TextEditingController Function(String label) priceController;
 
-  static const Map<String, String> _titles = {
-    '1h': '1-Hour City Commute',
-    '3h': '3-Hour Airport / Quick Trip',
-    '6h': '6-Hour Express Rate',
-    '12h': '12-Hour Half Day',
-    '24h': 'In-City Daily (24h)',
-    'Weekly': 'Weekly Package (7 Days)',
-  };
+  // Package codes ('1h', 'Weekly', …) are stored data and stay as-is;
+  // only the displayed titles are localized.
+  static String _title(AppLocalizations l10n, String label) => {
+        '1h': l10n.pricingPackage1h,
+        '3h': l10n.pricingPackage3h,
+        '6h': l10n.pricingPackage6h,
+        '12h': l10n.pricingPackage12h,
+        '24h': l10n.pricingPackage24h,
+        'Weekly': l10n.pricingPackageWeekly,
+      }[label] ?? label;
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       children: [
         for (int i = 0; i < packages.length; i++) ...[
@@ -39,9 +44,9 @@ class PricingPackageList extends StatelessWidget {
               Expanded(
                 child: RateMatrixFieldWidget(
                   controller: priceController(packages[i].label),
-                  label: _titles[packages[i].label] ?? packages[i].label,
+                  label: _title(l10n, packages[i].label),
                   hint: 'Rs. ${packages[i].pricePkr}',
-                  kmCap: '${packages[i].kmIncluded} km included',
+                  kmCap: l10n.pricingKmIncluded(packages[i].kmIncluded),
                 ),
               ),
               const SizedBox(width: 8),

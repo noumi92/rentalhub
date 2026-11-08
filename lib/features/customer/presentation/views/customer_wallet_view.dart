@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/widgets/custom_curved_header.dart';
+import '../../../../core/widgets/masked_value.dart';
 import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../finance/data/datasources/security_deposit_data_source.dart';
 import '../../data/services/customer_wallet_service.dart';
 import '../widgets/wallet_ledger.dart';
+import '../../../../l10n/app_localizations.dart';
 
 // F1: the wallet shows the customer's real money — advances paid on
 // their bookings and security deposits held on them — loaded from the
@@ -21,6 +23,9 @@ class CustomerWalletView extends StatefulWidget {
 class _CustomerWalletViewState extends State<CustomerWalletView> {
   CustomerWalletSummary? _summary;
   bool _isLoading = true;
+  // E2: a load failure used to render an empty ledger silently; it
+  // now renders an error state with retry.
+  bool _hasError = false;
 
   @override
   void initState() {
@@ -29,13 +34,13 @@ class _CustomerWalletViewState extends State<CustomerWalletView> {
   }
 
   Future<void> _load() async {
+    if (mounted) setState(() => _hasError = false);
     try {
       final service = CustomerWalletService(
         bookings: sl<BookingRemoteDataSource>(),
         deposits: sl<SecurityDepositDataSource>(),
       );
-      final summary =
-          await service.load(CustomerWalletService.currentUid());
+      final summary = await service.load(CustomerWalletService.currentUid());
       if (mounted) {
         setState(() {
           _summary = summary;
@@ -43,12 +48,18 @@ class _CustomerWalletViewState extends State<CustomerWalletView> {
         });
       }
     } catch (_) {
-      if (mounted) setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() {
+          _hasError = true;
+          _isLoading = false;
+        });
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final summary = _summary;
     return Scaffold(
       body: SafeArea(
@@ -57,8 +68,9 @@ class _CustomerWalletViewState extends State<CustomerWalletView> {
             CustomCurvedHeader(
               variant: CustomCurvedHeaderVariant.compact,
               titleWidget: Text(
-                'Wallet & Security Escrow',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white),
+                l10n.walletTitle,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w900, color: Colors.white),
               ),
             ),
             Expanded(
@@ -77,8 +89,7 @@ class _CustomerWalletViewState extends State<CustomerWalletView> {
                         borderRadius: BorderRadius.circular(18),
                         boxShadow: [
                           BoxShadow(
-                            color:
-                                AppColors.primary.withValues(alpha: 0.25),
+                            color: AppColors.primary.withValues(alpha: 0.25),
                             blurRadius: 12,
                             offset: const Offset(0, 4),
                           ),
@@ -88,16 +99,33 @@ class _CustomerWalletViewState extends State<CustomerWalletView> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Active Escrow & Advances',
-                            style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w600, color: AppColors.primaryContainer),
+                            l10n.walletActiveEscrow,
+                            style: Theme.of(context)
+                                .textTheme
+                                .labelMedium
+                                ?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.primaryContainer),
                           ),
                           const SizedBox(height: 6),
                           FittedBox(
                             fit: BoxFit.scaleDown,
                             alignment: Alignment.centerLeft,
-                            child: Text(
-                              'Rs. ${summary?.total ?? 0}',
-                              style: Theme.of(context).textTheme.displayLarge?.copyWith(fontWeight: FontWeight.w900, color: Colors.white),
+                            // E1: the balance is masked until the user
+                            // taps the eye; the eye stays light on the
+                            // navy card.
+                            child: MaskedValue(
+                              value: 'Rs. ${summary?.total ?? 0}',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .displayLarge
+                                  ?.copyWith(
+                                      fontWeight: FontWeight.w900,
+                                      color: Colors.white),
+                              iconColor: AppColors.primaryContainer,
+                              iconSize: 28,
+                              showTooltip: l10n.walletShowBalance,
+                              hideTooltip: l10n.walletHideBalance,
                             ),
                           ),
                           const SizedBox(height: 14),
@@ -105,14 +133,13 @@ class _CustomerWalletViewState extends State<CustomerWalletView> {
                             children: [
                               Expanded(
                                 child: _EscrowPill(
-                                    label: 'Advances Paid',
-                                    value:
-                                        'Rs. ${summary?.advancesPaid ?? 0}'),
+                                    label: l10n.walletAdvancesPaid,
+                                    value: 'Rs. ${summary?.advancesPaid ?? 0}'),
                               ),
                               const SizedBox(width: 10),
                               Expanded(
                                 child: _EscrowPill(
-                                    label: 'Security Escrow',
+                                    label: l10n.walletSecurityEscrow,
                                     value: 'Rs. ${summary?.escrowHeld ?? 0}'),
                               ),
                             ],
@@ -122,13 +149,18 @@ class _CustomerWalletViewState extends State<CustomerWalletView> {
                     ),
                     const SizedBox(height: 20),
                     Text(
-                      'Transaction Ledger',
-                      style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
+                      l10n.walletLedger,
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleSmall
+                          ?.copyWith(fontWeight: FontWeight.w800),
                     ),
                     const SizedBox(height: 10),
                     WalletLedger(
                       isLoading: _isLoading,
                       entries: summary?.entries ?? const [],
+                      hasError: _hasError,
+                      onRetry: _load,
                     ),
                   ],
                 ),
@@ -149,6 +181,7 @@ class _EscrowPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
@@ -161,14 +194,24 @@ class _EscrowPill extends StatelessWidget {
           Text(label,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.primaryContainer)),
-          Text(value,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: Colors.white)),
+              style: Theme.of(context)
+                  .textTheme
+                  .labelSmall
+                  ?.copyWith(color: AppColors.primaryContainer)),
+          // E1: pill amounts are masked like the main balance.
+          MaskedValue(
+            value: value,
+            style: Theme.of(context)
+                .textTheme
+                .labelMedium
+                ?.copyWith(fontWeight: FontWeight.w800, color: Colors.white),
+            iconColor: AppColors.primaryContainer,
+            iconSize: 18,
+            showTooltip: l10n.walletShowAmount,
+            hideTooltip: l10n.walletHideAmount,
+          ),
         ],
       ),
     );
   }
 }
-

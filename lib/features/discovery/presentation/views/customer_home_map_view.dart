@@ -15,6 +15,7 @@ import 'widgets/customer_map_canvas.dart';
 import 'widgets/map_shop_preview_card.dart';
 import 'widgets/no_shops_banner.dart';
 import 'widgets/radius_filter_pills.dart';
+import '../../../../l10n/app_localizations.dart';
 
 /// B2: the map view runs on real data. The centre is the customer's
 /// stored location (refreshed with a live GPS fix when one is available),
@@ -65,6 +66,7 @@ class _CustomerHomeMapViewState extends State<CustomerHomeMapView> {
   /// location prompt already did; without it we silently keep the stored
   /// location.
   Future<void> _refreshGpsFix() async {
+    final l10n = AppLocalizations.of(context)!;
     try {
       if (!await Geolocator.isLocationServiceEnabled()) return;
       final permission = await Geolocator.checkPermission();
@@ -81,7 +83,7 @@ class _CustomerHomeMapViewState extends State<CustomerHomeMapView> {
       final fix = CustomerLocation(
         latitude: position.latitude,
         longitude: position.longitude,
-        city: 'My Live Location',
+        city: l10n.homeMyLiveLocation,
         area:
             '${position.latitude.toStringAsFixed(4)}°N, ${position.longitude.toStringAsFixed(4)}°E',
         fromGps: true,
@@ -126,6 +128,7 @@ class _CustomerHomeMapViewState extends State<CustomerHomeMapView> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final userPoint = _latLng(_location);
     final selectedShop = _selectedShop;
 
@@ -136,22 +139,31 @@ class _CustomerHomeMapViewState extends State<CustomerHomeMapView> {
             CustomCurvedHeader(
               variant: CustomCurvedHeaderVariant.compact,
               leadingWidget: IconButton(
-                icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
+                tooltip: l10n.back,
+                icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                    color: Colors.white, size: 20),
                 onPressed: () => context.pop(),
               ),
               titleWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Nearby Showrooms', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
+                  Text(l10n.homeNearbyShowrooms,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w900, color: Colors.white)),
                   const SizedBox(height: 2),
-                  Text('${_location.area} • Tap marker to preview', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.primaryContainer)),
+                  Text(l10n.mapTapMarker(_location.area),
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodySmall
+                          ?.copyWith(color: AppColors.primaryContainer)),
                 ],
               ),
               actions: [
                 IconButton(
-                  tooltip: 'Switch to List View',
+                  tooltip: l10n.homeSwitchToList,
                   onPressed: () => context.go(RouteNames.customerHome),
-                  icon: const Icon(Icons.view_list_rounded, color: AppColors.secondary, size: 24),
+                  icon: const Icon(Icons.view_list_rounded,
+                      color: AppColors.secondary, size: 24),
                 ),
               ],
             ),
@@ -208,4 +220,3 @@ class _CustomerHomeMapViewState extends State<CustomerHomeMapView> {
     );
   }
 }
-

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../l10n/app_localizations.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
@@ -32,10 +33,8 @@ class _OwnerOnboardingViewState extends State<OwnerOnboardingView> {
 
   // Step 1: Details
   XFile? _shopLogoFile;
-  final _shopNameController = TextEditingController(text: 'Al-Falah Rent a Car');
-  final _ownerNameController = TextEditingController(text: 'Ahmed Raza');
-  final _cnicController = TextEditingController(text: '35201-9876543-1');
-  final _whatsappController = TextEditingController(text: '03001234567');
+  final _shopNameController = TextEditingController(text: 'Al-Falah Rent a Car'); final _ownerNameController = TextEditingController(text: 'Ahmed Raza');
+  final _cnicController = TextEditingController(text: '35201-9876543-1'); final _whatsappController = TextEditingController(text: '03001234567');
   final _phoneController = TextEditingController(text: '04235761234');
   String _openingHours = '9:00 AM - 10:00 PM';
 
@@ -48,13 +47,10 @@ class _OwnerOnboardingViewState extends State<OwnerOnboardingView> {
 
   // Step 3: Payout (Initially disabled)
   bool _jazzCashEnabled = false, _easyPaisaEnabled = false, _bankEnabled = false;
-  final _jazzCashAccount = TextEditingController(text: '03001234567');
-  final _jazzCashTitle = TextEditingController(text: 'Ahmed Raza');
-  final _easyPaisaAccount = TextEditingController(text: '03457654321');
-  final _easyPaisaTitle = TextEditingController(text: 'Ahmed Raza');
+  final _jazzCashAccount = TextEditingController(text: '03001234567'); final _jazzCashTitle = TextEditingController(text: 'Ahmed Raza');
+  final _easyPaisaAccount = TextEditingController(text: '03457654321'); final _easyPaisaTitle = TextEditingController(text: 'Ahmed Raza');
   String _selectedBankName = 'Meezan Bank';
-  final _bankAccountController = TextEditingController(text: 'PK36MEZN0001234567890123');
-  final _bankAccountTitle = TextEditingController(text: 'Al-Falah Rent a Car');
+  final _bankAccountController = TextEditingController(text: 'PK36MEZN0001234567890123'); final _bankAccountTitle = TextEditingController(text: 'Al-Falah Rent a Car');
 
   // Step 4: Documents & Photos
   XFile? _cnicFrontFile, _cnicBackFile, _shopHeaderFile;
@@ -62,8 +58,7 @@ class _OwnerOnboardingViewState extends State<OwnerOnboardingView> {
 
   @override
   void dispose() {
-    for (final c in [_shopNameController, _ownerNameController, _cnicController, _whatsappController, _phoneController, _addressController, _jazzCashAccount, _jazzCashTitle, _easyPaisaAccount, _easyPaisaTitle, _bankAccountController, _bankAccountTitle]) {
-      c.dispose();
+    for (final c in [_shopNameController, _ownerNameController, _cnicController, _whatsappController, _phoneController, _addressController, _jazzCashAccount, _jazzCashTitle, _easyPaisaAccount, _easyPaisaTitle, _bankAccountController, _bankAccountTitle]) { c.dispose();
     }
     super.dispose();
   }
@@ -73,6 +68,7 @@ class _OwnerOnboardingViewState extends State<OwnerOnboardingView> {
   }
 
   Future<void> _fetchCurrentGps() async {
+    final l10n = AppLocalizations.of(context)!;
     setState(() => _isLocating = true);
     try {
       LocationPermission perm = await Geolocator.checkPermission();
@@ -80,11 +76,7 @@ class _OwnerOnboardingViewState extends State<OwnerOnboardingView> {
       if (perm == LocationPermission.whileInUse || perm == LocationPermission.always) {
         final pos = await Geolocator.getCurrentPosition(locationSettings: const LocationSettings(accuracy: LocationAccuracy.high));
         final newPin = ll.LatLng(pos.latitude, pos.longitude);
-        setState(() {
-          _shopPin = newPin;
-          _addressController.text = 'Current GPS (${pos.latitude.toStringAsFixed(4)}, ${pos.longitude.toStringAsFixed(4)})';
-        });
-        _mapController.move(newPin, 15.0);
+        setState(() { _shopPin = newPin; _addressController.text = l10n.onboardingCurrentGps(pos.latitude.toStringAsFixed(4), pos.longitude.toStringAsFixed(4)); }); _mapController.move(newPin, 15.0);
       }
     } finally {
       if (mounted) setState(() => _isLocating = false);
@@ -92,38 +84,29 @@ class _OwnerOnboardingViewState extends State<OwnerOnboardingView> {
   }
 
   bool _validateStep() {
+    final l10n = AppLocalizations.of(context)!;
     if (_currentStep == 1) {
-      if (_shopNameController.text.trim().length < 3) {
-        AppFeedback.showError(context, 'Shop name must be at least 3 characters.');
-        return false;
-      }
+      if (_shopNameController.text.trim().length < 3) { AppFeedback.showError(context, l10n.onboardingShopNameShort); return false; }
       final phoneErr = PakistaniValidators.validatePakistaniPhone(_whatsappController.text);
       if (phoneErr != null) {
         AppFeedback.showError(context, phoneErr);
-        return false;
-      }
+        return false; }
     } else if (_currentStep == 2) {
-      if (_addressController.text.trim().length < 5) {
-        AppFeedback.showError(context, 'Please enter a valid showroom address.');
-        return false;
+      if (_addressController.text.trim().length < 5) { AppFeedback.showError(context, l10n.onboardingAddressInvalid); return false;
       }
     } else if (_currentStep == 3) {
-      if (!_jazzCashEnabled && !_easyPaisaEnabled && !_bankEnabled) {
-        AppFeedback.showWarning(context, 'Please enable at least one payout method.');
-        return false;
+      if (!_jazzCashEnabled && !_easyPaisaEnabled && !_bankEnabled) { AppFeedback.showWarning(context, l10n.onboardingPayoutRequired); return false;
       }
       if (_bankEnabled) {
         final ibanErr = PakistaniValidators.validatePakistaniIban(_bankAccountController.text);
-        if (ibanErr != null) {
-          AppFeedback.showError(context, ibanErr);
-          return false;
-        }
+        if (ibanErr != null) { AppFeedback.showError(context, ibanErr); return false; }
       }
     }
     return true;
   }
 
   Future<void> _handleSubmitShop() async {
+    final l10n = AppLocalizations.of(context)!;
     setState(() => _isLocating = true);
     try {
       final accounts = [
@@ -132,19 +115,16 @@ class _OwnerOnboardingViewState extends State<OwnerOnboardingView> {
         if (_bankEnabled) {'type': 'bank', 'bank_name': _selectedBankName, 'iban': _bankAccountController.text.trim(), 'title': _bankAccountTitle.text.trim()},
       ];
       await OwnerOnboardingSubmissionService.submitShowroomProfile(
-        shopName: _shopNameController.text, ownerName: _ownerNameController.text, cnic: _cnicController.text,
-        whatsapp: _whatsappController.text, phone: _phoneController.text, openingHours: _openingHours,
-        shopPin: _shopPin, address: _addressController.text, city: _selectedCity, bankAccounts: accounts,
-        shopLogoFile: _shopLogoFile, shopHeaderFile: _shopHeaderFile, fleetPhoto1File: _fleetPhoto1File,
-        fleetPhoto2File: _fleetPhoto2File, fleetPhoto3File: _fleetPhoto3File, cnicFrontFile: _cnicFrontFile,
-        cnicBackFile: _cnicBackFile, ntnFile: _ntnFile, selfieFile: _selfieFile,
+        shopName: _shopNameController.text, ownerName: _ownerNameController.text, cnic: _cnicController.text, whatsapp: _whatsappController.text, phone: _phoneController.text, openingHours: _openingHours,
+        shopPin: _shopPin, address: _addressController.text, city: _selectedCity, bankAccounts: accounts, shopLogoFile: _shopLogoFile, shopHeaderFile: _shopHeaderFile,
+        fleetPhoto1File: _fleetPhoto1File, fleetPhoto2File: _fleetPhoto2File, fleetPhoto3File: _fleetPhoto3File, cnicFrontFile: _cnicFrontFile, cnicBackFile: _cnicBackFile, ntnFile: _ntnFile, selfieFile: _selfieFile,
       );
       if (!mounted) return;
-      AppFeedback.showSuccess(context, 'Showroom profile submitted for verification!');
+      AppFeedback.showSuccess(context, l10n.onboardingSubmitted);
       setState(() => _currentStep = 5);
     } catch (e) {
       if (!mounted) return;
-      AppFeedback.showError(context, 'Submission failed: $e');
+      AppFeedback.showError(context, l10n.customersRatingSubmitFailed(e.toString()));
     } finally {
       if (mounted) setState(() => _isLocating = false);
     }
@@ -171,6 +151,7 @@ class _OwnerOnboardingViewState extends State<OwnerOnboardingView> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -182,13 +163,13 @@ class _OwnerOnboardingViewState extends State<OwnerOnboardingView> {
                   children: [
                     CustomCurvedHeader(
                       variant: CustomCurvedHeaderVariant.compact,
-                      leadingWidget: IconButton(icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20), onPressed: _prevStep),
+                      leadingWidget: IconButton(tooltip: l10n.back, icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20), onPressed: _prevStep),
                       titleWidget: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(_getHeaderTitle(), style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
+                          Text(_getHeaderTitle(l10n), style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
                           const SizedBox(height: 2),
-                          Text(_getHeaderSubtitle(), style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.primaryContainer)),
+                          Text(_getHeaderSubtitle(l10n), style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.primaryContainer)),
                         ],
                       ),
                       actions: [
@@ -197,7 +178,7 @@ class _OwnerOnboardingViewState extends State<OwnerOnboardingView> {
                             margin: const EdgeInsets.only(right: 8),
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                             decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.18), borderRadius: BorderRadius.circular(12)),
-                            child: Text('Step $_currentStep of 4', style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700, color: Colors.white)),
+                            child: Text(l10n.onboardingStepOf(_currentStep), style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700, color: Colors.white)),
                           ),
                       ],
                     ),
@@ -212,7 +193,7 @@ class _OwnerOnboardingViewState extends State<OwnerOnboardingView> {
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, border: Border(top: BorderSide(color: Theme.of(context).dividerColor)), boxShadow: [BoxShadow(color: Color(0x0C000000), blurRadius: 8, offset: Offset(0, -3))]),
                 child: DebouncedButton(
-                  text: _currentStep == 4 ? 'Submit Shop for Verification' : 'Next Step',
+                  text: _currentStep == 4 ? l10n.onboardingSubmit : l10n.onboardingNextStep,
                   icon: _currentStep == 4 ? Icons.check_circle_rounded : Icons.arrow_forward_rounded,
                   onPressed: () async => _handleNext(),
                 ),
@@ -229,25 +210,15 @@ class _OwnerOnboardingViewState extends State<OwnerOnboardingView> {
         return ShopDetailsStepWidget(
           shopLogoFile: _shopLogoFile,
           onPickLogo: () => _chooseMedia((f) => _shopLogoFile = f, hasExisting: _shopLogoFile != null),
-          shopNameController: _shopNameController,
-          ownerNameController: _ownerNameController,
-          cnicController: _cnicController,
-          whatsappController: _whatsappController,
-          phoneController: _phoneController,
+          shopNameController: _shopNameController, ownerNameController: _ownerNameController, cnicController: _cnicController, whatsappController: _whatsappController, phoneController: _phoneController,
           openingHours: _openingHours,
           onOpeningHoursChanged: (v) => setState(() => _openingHours = v),
         );
       case 2:
         return ShopLocationStepWidget(
-          mapController: _mapController,
-          shopPin: _shopPin,
-          onPinChanged: (p) => setState(() => _shopPin = p),
-          addressController: _addressController,
-          selectedCity: _selectedCity,
-          onCityChanged: (c) => setState(() => _selectedCity = c),
-          majorCities: OwnerOnboardingConstants.majorCities,
-          isLocating: _isLocating,
-          onFetchGps: _fetchCurrentGps,
+          mapController: _mapController, shopPin: _shopPin, onPinChanged: (p) => setState(() => _shopPin = p),
+          addressController: _addressController, selectedCity: _selectedCity, onCityChanged: (c) => setState(() => _selectedCity = c),
+          majorCities: OwnerOnboardingConstants.majorCities, isLocating: _isLocating, onFetchGps: _fetchCurrentGps,
         );
       case 3:
         return ShopPayoutStepWidget(
@@ -273,17 +244,7 @@ class _OwnerOnboardingViewState extends State<OwnerOnboardingView> {
     }
   }
 
-  String _getHeaderTitle() => const {
-    1: 'Shop Registration',
-    2: 'Location & Map Pin',
-    3: 'Payout Accounts',
-    4: 'KYC & Verification',
-  }[_currentStep] ?? 'Application Submitted';
+  String _getHeaderTitle(AppLocalizations l10n) => { 1: l10n.onboardingHeaderShop, 2: l10n.onboardingHeaderLocation, 3: l10n.onboardingHeaderPayout, 4: l10n.onboardingHeaderKyc, }[_currentStep] ?? l10n.onboardingHeaderSubmitted;
 
-  String _getHeaderSubtitle() => const {
-    1: 'Business identity and contact details',
-    2: 'Physical address and geo-coordinates',
-    3: 'JazzCash, EasyPaisa or Pakistani Bank',
-    4: 'Shop banner, 3 fleet photos & CNIC',
-  }[_currentStep] ?? 'Review status and fleet management';
+  String _getHeaderSubtitle(AppLocalizations l10n) => { 1: l10n.onboardingSubtitleShop, 2: l10n.onboardingSubtitleLocation, 3: l10n.onboardingSubtitlePayout, 4: l10n.onboardingSubtitleKyc, }[_currentStep] ?? l10n.onboardingSubtitleSubmitted;
 }

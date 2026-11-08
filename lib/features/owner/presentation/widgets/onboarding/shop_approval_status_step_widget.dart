@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../../l10n/app_localizations.dart';
 import '../../../../../core/constants/app_colors.dart';
 
 class ShopApprovalStatusStepWidget extends StatelessWidget {
@@ -11,6 +12,7 @@ class ShopApprovalStatusStepWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+  final l10n = AppLocalizations.of(context)!;
     return Column(
       children: [
         SizedBox(height: 20),
@@ -27,13 +29,13 @@ class ShopApprovalStatusStepWidget extends StatelessWidget {
         ),
         const SizedBox(height: 18),
         Text(
-          'Shop Application Submitted!',
+          l10n.onboardingApprovalTitle,
           style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 8),
         Text(
-          'Your shop profile and KYC credentials have been routed to the Super Admin desk. You will receive SMS & WhatsApp verification within 2 to 4 business hours.',
+          l10n.onboardingApprovalMessage,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant, height: 1.4),
           textAlign: TextAlign.center,
         ),
@@ -53,10 +55,10 @@ class ShopApprovalStatusStepWidget extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Fleet Catalog Ready', style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
+                    Text(l10n.onboardingFleetReady, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
                     SizedBox(height: 2),
                     Text(
-                      'You can start adding your cars, setting 1h/3h/6h/24h rates and photos right now.',
+                      l10n.onboardingFleetReadyHint,
                       style: Theme.of(context).textTheme.labelSmall,
                     ),
                   ],
@@ -72,7 +74,7 @@ class ShopApprovalStatusStepWidget extends StatelessWidget {
           child: ElevatedButton.icon(
             onPressed: onGoToFleet,
             icon: const Icon(Icons.arrow_forward_rounded, size: 18),
-            label: Text('Manage Fleet & Add Vehicles', style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
+            label: Text(l10n.onboardingManageFleet, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.secondary,
               foregroundColor: Colors.white,

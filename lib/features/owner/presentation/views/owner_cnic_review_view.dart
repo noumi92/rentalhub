@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import '../../../../l10n/app_localizations.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../../core/constants/app_colors.dart';
@@ -71,6 +72,7 @@ class _OwnerCnicReviewViewState extends State<OwnerCnicReviewView> {
   }
 
   Future<void> _scanBack() async {
+  final l10n = AppLocalizations.of(context)!;
     final picked = await ImagePicker().pickImage(
       source: ImageSource.camera,
       imageQuality: 85,
@@ -78,28 +80,28 @@ class _OwnerCnicReviewViewState extends State<OwnerCnicReviewView> {
     if (picked == null) return;
     setState(() => _scanningBack = true);
     try {
-      final result =
-          await CnicOcrService().scanBack(File(picked.path));
+      final result = await CnicOcrService().scanBack(File(picked.path));
       if (result.address != null && mounted) {
         setState(() => _addressController.text = result.address!);
       } else if (mounted) {
         AppFeedback.showInfo(
-            context, 'No address read from the back of the card.');
+            context, l10n.customersCnicNoAddress);
       }
     } catch (e) {
-      if (mounted) AppFeedback.showError(context, 'Back scan failed: $e');
+      if (mounted) AppFeedback.showError(context, l10n.customersCnicBackScanFailed(e.toString()));
     } finally {
       if (mounted) setState(() => _scanningBack = false);
     }
   }
 
   Future<void> _save() async {
+  final l10n = AppLocalizations.of(context)!;
     final name = _nameController.text.trim();
     final phone = _phoneController.text.trim();
     final cnic = _cnicController.text.trim();
     if (name.isEmpty || phone.isEmpty) {
       AppFeedback.showError(
-          context, 'Name and phone are required to save the customer.');
+          context, l10n.customersCnicNamePhoneRequired);
       return;
     }
     setState(() => _saving = true);
@@ -126,7 +128,7 @@ class _OwnerCnicReviewViewState extends State<OwnerCnicReviewView> {
       widget.onSaved?.call(cnic);
       Navigator.of(context).pop();
     } catch (e) {
-      if (mounted) AppFeedback.showError(context, 'Could not save: $e');
+      if (mounted) AppFeedback.showError(context, l10n.customersCnicSaveFailed(e.toString()));
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -151,6 +153,7 @@ class _OwnerCnicReviewViewState extends State<OwnerCnicReviewView> {
 
   @override
   Widget build(BuildContext context) {
+  final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -158,6 +161,7 @@ class _OwnerCnicReviewViewState extends State<OwnerCnicReviewView> {
             CustomCurvedHeader(
               variant: CustomCurvedHeaderVariant.compact,
               leadingWidget: IconButton(
+                tooltip: l10n.back,
                 icon: const Icon(Icons.arrow_back_ios_new_rounded,
                     color: Colors.white, size: 20),
                 onPressed: () => Navigator.of(context).pop(),
@@ -165,10 +169,14 @@ class _OwnerCnicReviewViewState extends State<OwnerCnicReviewView> {
               titleWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Review Scanned CNIC',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
-                  Text('Correct anything OCR misread',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.primaryContainer)),
+                  Text(l10n.customersCnicReviewTitle,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w900, color: Colors.white)),
+                  Text(l10n.customersCnicReviewSubtitle,
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodySmall
+                          ?.copyWith(color: AppColors.primaryContainer)),
                 ],
               ),
             ),
@@ -178,15 +186,15 @@ class _OwnerCnicReviewViewState extends State<OwnerCnicReviewView> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    _field(_nameController, 'Full Name'),
-                    _field(_fatherController, "Father's Name"),
-                    _field(_cnicController, 'CNIC Number',
+                    _field(_nameController, l10n.onboardingFullName),
+                    _field(_fatherController, l10n.customersCnicFatherName),
+                    _field(_cnicController, l10n.customersCnicNumber,
                         keyboard: TextInputType.number),
-                    _field(_dobController, 'Date of Birth (dd.mm.yyyy)'),
-                    _field(_expiryController, 'CNIC Expiry (dd.mm.yyyy)'),
-                    _field(_phoneController, 'Phone Number',
+                    _field(_dobController, l10n.customersCnicDob),
+                    _field(_expiryController, l10n.customersCnicExpiry),
+                    _field(_phoneController, l10n.customersCnicPhone,
                         keyboard: TextInputType.phone),
-                    _field(_addressController, 'Address (from back of card)'),
+                    _field(_addressController, l10n.customersCnicAddress),
                     OutlinedButton.icon(
                       onPressed: _scanningBack ? null : _scanBack,
                       icon: _scanningBack
@@ -195,13 +203,13 @@ class _OwnerCnicReviewViewState extends State<OwnerCnicReviewView> {
                               height: 16,
                               child: CircularProgressIndicator(strokeWidth: 2))
                           : const Icon(Icons.flip_to_back_rounded),
-                      label: const Text('Scan Back of CNIC (address)'),
+                      label: Text(l10n.customersCnicScanBack),
                     ),
                     const SizedBox(height: 12),
                     ElevatedButton.icon(
                       onPressed: _saving ? null : _save,
                       icon: const Icon(Icons.check_rounded),
-                      label: const Text('Save Customer & Check Blacklist'),
+                      label: Text(l10n.customersCnicSave),
                     ),
                   ],
                 ),

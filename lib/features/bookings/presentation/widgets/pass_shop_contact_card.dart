@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../discovery/data/models/shop_model.dart';
+import '../../../../l10n/app_localizations.dart';
 
 /// D3: the showroom contact card on the pickup pass — the shop's real
 /// address, a real call button, real directions, and the signed rental
@@ -84,12 +85,12 @@ class _PassShopContactCardState extends State<PassShopContactCard> {
     }
   }
 
-  String get _addressLine {
+  String _addressLine(AppLocalizations l10n) {
     if (!_loaded) return widget.shopName;
     final shop = _shop;
     if (shop == null) return widget.shopName;
     if (shop.address.trim().isEmpty) {
-      return '${shop.shopName} — address not listed yet.';
+      return l10n.passShopNoAddress(shop.shopName);
     }
     final city = shop.city.trim();
     return city.isEmpty ? shop.address : '${shop.address}, $city';
@@ -102,23 +103,25 @@ class _PassShopContactCardState extends State<PassShopContactCard> {
   }
 
   Future<void> _callShop() async {
+    final l10n = AppLocalizations.of(context)!;
     final phone = _phone;
     if (phone.isEmpty) {
       AppFeedback.showInfo(
         context,
-        'This showroom has no phone number listed.',
+        l10n.passNoPhone,
       );
       return;
     }
     final uri = Uri(scheme: 'tel', path: phone);
     if (!await launchUrl(uri)) {
       if (mounted) {
-        AppFeedback.showError(context, 'Could not place the call.');
+        AppFeedback.showError(context, l10n.couldNotCall);
       }
     }
   }
 
   Future<void> _openDirections() async {
+    final l10n = AppLocalizations.of(context)!;
     final shop = _shop;
     String? query;
     if (_lat != null && _lng != null) {
@@ -129,7 +132,7 @@ class _PassShopContactCardState extends State<PassShopContactCard> {
     if (query == null) {
       AppFeedback.showInfo(
         context,
-        'This showroom has no location listed yet.',
+        l10n.passNoLocation,
       );
       return;
     }
@@ -138,24 +141,26 @@ class _PassShopContactCardState extends State<PassShopContactCard> {
     );
     if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
       if (mounted) {
-        AppFeedback.showError(context, 'Could not open Maps.');
+        AppFeedback.showError(context, l10n.passOpenMapsError);
       }
     }
   }
 
   Future<void> _openAgreement() async {
+    final l10n = AppLocalizations.of(context)!;
     final url = _agreementUrl;
     if (url == null) return;
     final uri = Uri.parse(url);
     if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
       if (mounted) {
-        AppFeedback.showError(context, 'Could not open the agreement.');
+        AppFeedback.showError(context, l10n.passOpenAgreementError);
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -172,14 +177,14 @@ class _PassShopContactCardState extends State<PassShopContactCard> {
                   color: AppColors.secondary, size: 20),
               SizedBox(width: 8),
               Text(
-                'Showroom Handover Point',
+                l10n.passHandoverPoint,
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
               ),
             ],
           ),
           const SizedBox(height: 8),
           Text(
-            _addressLine,
+            _addressLine(l10n),
             style: Theme.of(context).textTheme.bodySmall?.copyWith(height: 1.4),
           ),
           const SizedBox(height: 12),
@@ -195,7 +200,7 @@ class _PassShopContactCardState extends State<PassShopContactCard> {
                         borderRadius: BorderRadius.circular(10)),
                   ),
                   icon: const Icon(Icons.call_rounded, size: 16),
-                  label: const Text('Call Shop'),
+                  label:  Text(l10n.passCallShop),
                 ),
               ),
               const SizedBox(width: 10),
@@ -210,7 +215,7 @@ class _PassShopContactCardState extends State<PassShopContactCard> {
                         borderRadius: BorderRadius.circular(10)),
                   ),
                   icon: const Icon(Icons.directions_rounded, size: 16),
-                  label: const Text('Directions'),
+                  label:  Text(l10n.passDirections),
                 ),
               ),
             ],
@@ -228,13 +233,13 @@ class _PassShopContactCardState extends State<PassShopContactCard> {
                       borderRadius: BorderRadius.circular(10)),
                 ),
                 icon: const Icon(Icons.description_rounded, size: 16),
-                label: const Text('View Rental Agreement (PDF)'),
+                label:  Text(l10n.passViewAgreement),
               ),
             ),
           ] else if (_loaded) ...[
             const SizedBox(height: 10),
             Text(
-              'Your signed rental agreement will appear here after handover.',
+              l10n.passAgreementHint,
               style: Theme.of(context).textTheme.labelSmall,
             ),
           ],

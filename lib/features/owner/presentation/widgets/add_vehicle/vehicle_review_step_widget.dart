@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import '../../../../../l10n/app_localizations.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/widgets/pakistani_plate_widget.dart';
@@ -48,6 +49,7 @@ class VehicleReviewStepWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -96,10 +98,10 @@ class VehicleReviewStepWidget extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    _reviewSpec(context, 'Gear', isAutomatic ? 'Auto' : 'Manual'),
-                    _reviewSpec(context, 'Fuel', fuelType),
-                    _reviewSpec(context, 'Seats', '$seats'),
-                    _reviewSpec(context, 'AC', 'Full AC'),
+                    _reviewSpec(context, l10n.addVehicleReviewGear, isAutomatic ? l10n.addVehicleReviewAuto : l10n.addVehicleManual),
+                    _reviewSpec(context, l10n.addVehicleReviewFuel, fuelType),
+                    _reviewSpec(context, l10n.addVehicleReviewSeats, '$seats'),
+                    _reviewSpec(context, l10n.addVehicleReviewAc, l10n.addVehicleReviewFullAc),
                   ],
                 ),
                 const Divider(height: 24),
@@ -109,9 +111,9 @@ class VehicleReviewStepWidget extends StatelessWidget {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Self-Drive Rate', style: Theme.of(context).textTheme.labelSmall),
+                        Text(l10n.addVehicleReviewSelfDriveRate, style: Theme.of(context).textTheme.labelSmall),
                         Text(
-                          supportSelfDrive ? 'Rs. $dailyRate/day' : 'Not Offered',
+                          supportSelfDrive ? l10n.addVehicleReviewDailyRate(dailyRate) : l10n.addVehicleReviewNotOffered,
                           style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900, color: supportSelfDrive ? Theme.of(context).colorScheme.onSurface : Theme.of(context).colorScheme.onSurfaceVariant),
                         ),
                       ],
@@ -119,9 +121,9 @@ class VehicleReviewStepWidget extends StatelessWidget {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        Text('With-Driver Rate', style: Theme.of(context).textTheme.labelSmall),
+                        Text(l10n.addVehicleReviewWithDriverRate, style: Theme.of(context).textTheme.labelSmall),
                         Text(
-                          supportWithDriver ? 'Rs. ${dailyRate + driverAllowance}/day' : 'Not Offered',
+                          supportWithDriver ? l10n.addVehicleReviewDailyRate(dailyRate + driverAllowance) : l10n.addVehicleReviewNotOffered,
                           style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900, color: supportWithDriver ? AppColors.secondary : Theme.of(context).colorScheme.onSurfaceVariant),
                         ),
                       ],
@@ -132,10 +134,10 @@ class VehicleReviewStepWidget extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    _reviewMiniDetail(context, 'Deposit', 'Rs. $deposit'),
-                    _reviewMiniDetail(context, 'Advance', 'Rs. $advance'),
-                    _reviewMiniDetail(context, 'Overstay', 'Rs. $extraHour/hr'),
-                    _reviewMiniDetail(context, 'Fuel', fuelPolicy),
+                    _reviewMiniDetail(context, l10n.addVehicleReviewDeposit, 'Rs. $deposit'),
+                    _reviewMiniDetail(context, l10n.addVehicleReviewAdvance, 'Rs. $advance'),
+                    _reviewMiniDetail(context, l10n.addVehicleReviewOverstay, l10n.addVehicleReviewOverstayRate(extraHour)),
+                    _reviewMiniDetail(context, l10n.addVehicleReviewFuel, fuelPolicy),
                   ],
                 ),
               ],
@@ -156,7 +158,7 @@ class VehicleReviewStepWidget extends StatelessWidget {
               SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  'This car will be immediately available in your fleet catalog and visible to nearby customers upon approval.',
+                  l10n.addVehicleReviewBanner,
                   style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w600, height: 1.3),
                 ),
               ),

@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import '../../../../../l10n/app_localizations.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../../../core/constants/app_colors.dart';
 
@@ -21,6 +22,7 @@ class OnboardingDocumentTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+  final l10n = AppLocalizations.of(context)!;
     final hasFile = file != null;
     return InkWell(
       onTap: onTap,
@@ -82,12 +84,12 @@ class OnboardingDocumentTile extends StatelessWidget {
             if (hasFile && onRemove != null)
               IconButton(
                 icon: Icon(Icons.delete_outline_rounded, color: AppColors.errorOnContainerFor(Theme.of(context).brightness), size: 20),
-                tooltip: 'Remove',
+                tooltip: l10n.onboardingDocRemove,
                 onPressed: onRemove,
               )
             else
               Text(
-                hasFile ? 'Ready ✓' : 'Upload',
+                hasFile ? l10n.onboardingDocReady : l10n.onboardingDocUpload,
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
                   fontWeight: FontWeight.w800,
                   color: hasFile ? AppColors.successOnContainerFor(Theme.of(context).brightness) : AppColors.secondary,

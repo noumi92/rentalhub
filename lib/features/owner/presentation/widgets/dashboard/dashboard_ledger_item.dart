@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../core/constants/app_colors.dart';
+import '../../../../../l10n/app_localizations.dart';
 
 /// Phase B (G1): one ledger row on the owner dashboard, extracted
 /// from [OwnerDashboardView]. The status chip is coloured by the
@@ -23,6 +24,7 @@ class DashboardLedgerItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final statusColor = status == 'completed'
         ? AppColors.successTextFor(Theme.of(context).brightness)
         : status == 'active'
@@ -66,7 +68,10 @@ class DashboardLedgerItem extends StatelessWidget {
                     fontWeight: FontWeight.w900,
                   )),
               const SizedBox(height: 2),
-              Text(status.toUpperCase(),
+              // The stored status code stays as-is; only the
+              // displayed label is localized (no upper-casing: Urdu
+              // has no case, and the label reads as a word, not a code).
+              Text(_statusLabel(l10n, status),
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
                     fontWeight: FontWeight.w900,
                     color: statusColor,
@@ -78,3 +83,7 @@ class DashboardLedgerItem extends StatelessWidget {
     );
   }
 }
+
+/// The stored status code stays as-is; only the displayed label is
+/// localized. Unknown codes fall back to the raw code.
+String _statusLabel(AppLocalizations l10n, String status) => {'requested': l10n.requestsStatusRequested, 'payment_submitted': l10n.statusProofSubmitted, 'approved': l10n.statusApproved, 'paid': l10n.statusPaid, 'active': l10n.active, 'completed': l10n.statusCompleted, 'rejected': l10n.statusRejected, 'cancelled': l10n.statusCancelled}[status] ?? status;

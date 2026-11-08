@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../../core/constants/app_colors.dart';
+import '../../../../../l10n/app_localizations.dart';
 
 class AuthStepperBar extends StatelessWidget {
   final int currentStep; // 1 or 2
@@ -8,6 +9,7 @@ class AuthStepperBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       color: Theme.of(context).colorScheme.surface,
@@ -17,7 +19,7 @@ class AuthStepperBar extends StatelessWidget {
             child: _stepPill(
               context,
               step: 1,
-              title: '1. Profile Info',
+              title: l10n.stepperProfile,
               isDone: currentStep > 1,
               isCurrent: currentStep == 1,
               icon: Icons.person_rounded,
@@ -33,7 +35,7 @@ class AuthStepperBar extends StatelessWidget {
             child: _stepPill(
               context,
               step: 2,
-              title: '2. Select Role',
+              title: l10n.stepperRole,
               isDone: false,
               isCurrent: currentStep == 2,
               icon: Icons.verified_user_rounded,

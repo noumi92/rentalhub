@@ -8,6 +8,7 @@ import '../../../bookings/presentation/widgets/booking_status_chip.dart';
 import '../../../bookings/presentation/widgets/pass_shop_contact_card.dart';
 import '../../../bookings/presentation/widgets/pickup_countdown_timer.dart';
 import '../widgets/active_trip_handover_card.dart';
+import '../../../../l10n/app_localizations.dart';
 
 /// E3: the customer's live trip screen. Everything on it comes from the
 /// booking and the real handover record (`handovers/{bookingId}`,
@@ -63,6 +64,7 @@ class _CustomerActiveTripViewState extends State<CustomerActiveTripView> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final b = widget.booking;
     final isActive = b.status == 'active';
     return Scaffold(
@@ -73,14 +75,16 @@ class _CustomerActiveTripViewState extends State<CustomerActiveTripView> {
               variant: CustomCurvedHeaderVariant.compact,
               leadingWidget: widget.onBack != null
                   ? IconButton(
+                      tooltip: l10n.back,
                       icon: const Icon(Icons.arrow_back_ios_new_rounded,
                           color: Colors.white, size: 20),
                       onPressed: widget.onBack,
                     )
                   : null,
               titleWidget: Text(
-                'Active Trip',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white),
+                l10n.activeTripTitle,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w900, color: Colors.white),
               ),
             ),
             Expanded(
@@ -91,11 +95,10 @@ class _CustomerActiveTripViewState extends State<CustomerActiveTripView> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     PickupCountdownTimer(
-                      targetPickupTime:
-                          isActive ? b.returnTime : b.pickupTime,
+                      targetPickupTime: isActive ? b.returnTime : b.pickupTime,
                       label: isActive
-                          ? 'TIME UNTIL RETURN'
-                          : 'COUNTDOWN TO PICKUP',
+                          ? l10n.timeUntilReturn
+                          : l10n.countdownToPickup,
                     ),
                     const SizedBox(height: 16),
                     Container(
@@ -103,7 +106,8 @@ class _CustomerActiveTripViewState extends State<CustomerActiveTripView> {
                       decoration: BoxDecoration(
                         color: Theme.of(context).colorScheme.surface,
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: Theme.of(context).dividerColor),
+                        border:
+                            Border.all(color: Theme.of(context).dividerColor),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -113,8 +117,11 @@ class _CustomerActiveTripViewState extends State<CustomerActiveTripView> {
                             children: [
                               Expanded(
                                 child: Text(
-                                  b.vehicleName ?? 'Rental Car',
-                                  style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
+                                  b.vehicleName ?? l10n.rentalCar,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleMedium
+                                      ?.copyWith(fontWeight: FontWeight.w900),
                                 ),
                               ),
                               BookingStatusChip(status: b.status),
@@ -122,21 +129,21 @@ class _CustomerActiveTripViewState extends State<CustomerActiveTripView> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            '${b.shopName ?? 'Showroom'} • ${b.vehiclePlate ?? ''}',
+                            l10n.activeTripShopLine(b.shopName ?? l10n.showroomLabel, b.vehiclePlate ?? ''),
                             style: Theme.of(context).textTheme.bodySmall,
                           ),
                           const Divider(height: 20),
-                          _fact('Pickup', _when(b.pickupTime)),
+                          _fact(l10n.pickupLabel, _when(b.pickupTime)),
                           const SizedBox(height: 8),
-                          _fact('Return due', _when(b.returnTime)),
+                          _fact(l10n.returnDue, _when(b.returnTime)),
                           const SizedBox(height: 8),
-                          _fact('Package', '${b.packageType} rental'),
+                          _fact(l10n.packageLabel, l10n.activeTripPackageRental(b.packageType)),
                           if (b.kmLimit != null) ...[
                             const SizedBox(height: 8),
-                            _fact('KM included', '${b.kmLimit} km'),
+                            _fact(l10n.kmIncluded, '${b.kmLimit} km'),
                           ],
                           const SizedBox(height: 8),
-                          _fact('Total fare', 'Rs. ${b.totalAmount}'),
+                          _fact(l10n.totalFare, 'Rs. ${b.totalAmount}'),
                         ],
                       ),
                     ),
@@ -148,7 +155,7 @@ class _CustomerActiveTripViewState extends State<CustomerActiveTripView> {
                     const SizedBox(height: 16),
                     PassShopContactCard(
                       shopId: b.shopId,
-                      shopName: b.shopName ?? 'Rental Showroom',
+                      shopName: b.shopName ?? l10n.rentalShowroom,
                       shopPhone: b.shopPhone,
                       bookingId: b.bookingId,
                     ),
@@ -169,7 +176,7 @@ class _CustomerActiveTripViewState extends State<CustomerActiveTripView> {
                 ],
               ),
               child: DebouncedButton(
-                text: 'View Pickup Pass (QR)',
+                text: l10n.viewPickupPassQr,
                 icon: Icons.qr_code_rounded,
                 onPressed: () async {
                   widget.onViewPass?.call();
@@ -187,11 +194,15 @@ class _CustomerActiveTripViewState extends State<CustomerActiveTripView> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(label,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant)),
         Flexible(
           child: Text(value,
               textAlign: TextAlign.right,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(fontWeight: FontWeight.w700)),
         ),
       ],
     );

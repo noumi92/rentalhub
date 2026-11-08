@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'app_shell.dart';
 import '../widgets/app_shell_nav.dart';
+import '../../l10n/app_localizations.dart';
 import 'auth_route_guard.dart';
 import 'route_names.dart';
 import '../../core/utils/current_shop.dart';
@@ -96,33 +97,57 @@ class AppRouter {
 
   /// Phase C (C1/C3): the five customer tabs. Support carries the live
   /// replied-ticket badge; the other tabs have plain icons.
+  /// Phase F: each tab carries an l10nKey — the label renders in the
+  /// current locale (the plain `label` stays the English fallback).
   static final customerTabs = <ShellNavItem>[
-    const ShellNavItem(icon: Icon(Icons.home_rounded), label: 'Home'),
     const ShellNavItem(
-        icon: Icon(Icons.receipt_long_rounded), label: 'Bookings'),
+        icon: Icon(Icons.home_rounded), label: 'Home', l10nKey: 'navHome'),
     const ShellNavItem(
-        icon: Icon(Icons.account_balance_wallet_rounded), label: 'Wallet'),
+        icon: Icon(Icons.receipt_long_rounded),
+        label: 'Bookings',
+        l10nKey: 'navBookings'),
+    const ShellNavItem(
+        icon: Icon(Icons.account_balance_wallet_rounded),
+        label: 'Wallet',
+        l10nKey: 'navWallet'),
     ShellNavItem(
         icon: CustomerSupportBadge(
             icon: const Icon(Icons.support_agent_rounded)),
-        label: 'Support'),
-    const ShellNavItem(icon: Icon(Icons.person_rounded), label: 'Profile'),
+        label: 'Support',
+        l10nKey: 'navSupport'),
+    const ShellNavItem(
+        icon: Icon(Icons.person_rounded),
+        label: 'Profile',
+        l10nKey: 'navProfile'),
   ];
 
   /// Phase C (C1/C3): the five owner tabs. Requests carries the live
   /// pending-request badge and is labelled "Requests" (it routes to
   /// /owner/requests — the old "Bookings" label lied about the
   /// destination). The other tabs have plain icons.
+  /// Phase F: labels are localized via l10nKey (see customerTabs).
   static final ownerTabs = <ShellNavItem>[
-    const ShellNavItem(icon: Icon(Icons.dashboard_rounded), label: 'Dashboard'),
     const ShellNavItem(
-        icon: Icon(Icons.directions_car_rounded), label: 'Fleet'),
+        icon: Icon(Icons.dashboard_rounded),
+        label: 'Dashboard',
+        l10nKey: 'navDashboard'),
+    const ShellNavItem(
+        icon: Icon(Icons.directions_car_rounded),
+        label: 'Fleet',
+        l10nKey: 'navFleet'),
     ShellNavItem(
         icon: OwnerRequestsBadge(
             icon: const Icon(Icons.receipt_long_rounded)),
-        label: 'Requests'),
-    const ShellNavItem(icon: Icon(Icons.people_rounded), label: 'Customers'),
-    const ShellNavItem(icon: Icon(Icons.settings_rounded), label: 'Settings'),
+        label: 'Requests',
+        l10nKey: 'navRequests'),
+    const ShellNavItem(
+        icon: Icon(Icons.people_rounded),
+        label: 'Customers',
+        l10nKey: 'navCustomers'),
+    const ShellNavItem(
+        icon: Icon(Icons.settings_rounded),
+        label: 'Settings',
+        l10nKey: 'navSettings'),
   ];
 
   static final GoRouter router = GoRouter(
@@ -940,6 +965,9 @@ class _CustomerNoDraftScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Phase F: the no-draft screen is user-facing copy, not a debug
+    // message — it renders through AppLocalizations.
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: SafeArea(
         child: Center(
@@ -954,21 +982,20 @@ class _CustomerNoDraftScreen extends StatelessWidget {
                   color: Colors.grey,
                 ),
                 const SizedBox(height: 12),
-                const Text(
-                  'No booking in progress.',
+                Text(
+                  l10n.noDraftTitle,
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontWeight: FontWeight.w700),
+                  style: const TextStyle(fontWeight: FontWeight.w700),
                 ),
                 const SizedBox(height: 8),
-                const Text(
-                  'Pick a car and a package first — the review screen '
-                  'needs the booking details from there.',
+                Text(
+                  l10n.noDraftMessage,
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 16),
                 FilledButton(
                   onPressed: onBrowseShops,
-                  child: const Text('Browse shops'),
+                  child: Text(l10n.noDraftBrowse),
                 ),
               ],
             ),

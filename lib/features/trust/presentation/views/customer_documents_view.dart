@@ -13,6 +13,7 @@ import '../../data/datasources/kyc_remote_data_source.dart';
 import '../../domain/entities/kyc_document_entity.dart';
 import 'widgets/kyc_status_banner.dart';
 import 'widgets/kyc_submission_form.dart';
+import '../../../../l10n/app_localizations.dart';
 
 // G3: the customer's real documents. The CNIC comes from their own
 // `customers` record (empty when they have none — no demo number), the
@@ -69,6 +70,7 @@ class _CustomerDocumentsViewState extends State<CustomerDocumentsView> {
   }
 
   Future<void> _onSubmitted(String cnic) async {
+    final l10n = AppLocalizations.of(context)!;
     // The owner's triage reads the CNIC off the `customers` record, so
     // the submitted number lands there too.
     try {
@@ -81,7 +83,7 @@ class _CustomerDocumentsViewState extends State<CustomerDocumentsView> {
           await ds.upsertCustomer(CustomerEntity(
             customerId: _uid(),
             shopId: '',
-            name: FirebaseAuth.instance.currentUser?.displayName ?? 'Customer',
+            name: FirebaseAuth.instance.currentUser?.displayName ?? l10n.kycCustomer,
             phone: FirebaseAuth.instance.currentUser?.phoneNumber ?? '',
             cnic: cnic,
             source: 'online',
@@ -94,7 +96,7 @@ class _CustomerDocumentsViewState extends State<CustomerDocumentsView> {
     if (mounted) {
       AppFeedback.showSuccess(
         context,
-        'KYC documents submitted — pending verification.',
+        l10n.kycSubmittedNote,
       );
       widget.onSubmitted?.call();
     }
@@ -102,6 +104,7 @@ class _CustomerDocumentsViewState extends State<CustomerDocumentsView> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return BlocProvider.value(
       value: sl<KycCubit>(),
       child: Scaffold(
@@ -116,7 +119,7 @@ class _CustomerDocumentsViewState extends State<CustomerDocumentsView> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'NADRA CNIC & Driving License KYC',
+                        l10n.kycTitle,
                         style: Theme.of(context)
                             .textTheme
                             .titleMedium
@@ -126,7 +129,7 @@ class _CustomerDocumentsViewState extends State<CustomerDocumentsView> {
                       ),
                       SizedBox(height: 4),
                       Text(
-                        'Private cPanel vault • شناختی کارڈ تصدیق',
+                        l10n.kycVaultNote,
                         style: Theme.of(context)
                             .textTheme
                             .labelSmall

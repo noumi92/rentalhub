@@ -4,6 +4,7 @@ import '../../../../core/widgets/custom_curved_header.dart';
 import '../../../../core/widgets/debounced_button.dart';
 import '../../domain/entities/booking_entity.dart';
 import '../widgets/booking_summary_card.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class BookingApprovedView extends StatelessWidget {
   final BookingEntity booking;
@@ -19,6 +20,7 @@ class BookingApprovedView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -27,14 +29,16 @@ class BookingApprovedView extends StatelessWidget {
               variant: CustomCurvedHeaderVariant.compact,
               leadingWidget: onBack != null
                   ? IconButton(
+                      tooltip: l10n.back,
                       icon: const Icon(Icons.arrow_back_ios_new_rounded,
                           color: Colors.white, size: 20),
                       onPressed: onBack,
                     )
                   : null,
               titleWidget: Text(
-                'Booking Approved!',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white),
+                l10n.approvedTitle,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w900, color: Colors.white),
               ),
             ),
             Expanded(
@@ -56,11 +60,14 @@ class BookingApprovedView extends StatelessWidget {
                           Container(
                             padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
-                              color: AppColors.accentSuccess.withValues(alpha: 0.2),
+                              color: AppColors.accentSuccess
+                                  .withValues(alpha: 0.2),
                               shape: BoxShape.circle,
                             ),
                             child: Icon(Icons.check_circle_rounded,
-                                color: AppColors.successTextFor(Theme.of(context).brightness), size: 30),
+                                color: AppColors.successTextFor(
+                                    Theme.of(context).brightness),
+                                size: 30),
                           ),
                           const SizedBox(width: 14),
                           Expanded(
@@ -68,13 +75,22 @@ class BookingApprovedView extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Ready for Advance Payment',
-                                  style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: Colors.white),
+                                  l10n.approvedReadyAdvance,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleSmall
+                                      ?.copyWith(
+                                          fontWeight: FontWeight.w800,
+                                          color: Colors.white),
                                 ),
                                 const SizedBox(height: 2),
                                 Text(
-                                  'Pay Rs. ${booking.advanceRequired} to guarantee pickup.',
-                                  style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.primaryContainer),
+                                  l10n.approvedPayToGuarantee(booking.advanceRequired),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .labelSmall
+                                      ?.copyWith(
+                                          color: AppColors.primaryContainer),
                                 ),
                               ],
                             ),
@@ -84,9 +100,9 @@ class BookingApprovedView extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
                     BookingSummaryCard(
-                      carName: booking.vehicleName ?? 'Vehicle',
+                      carName: booking.vehicleName ?? l10n.summaryVehicle,
                       plateNumber: booking.vehiclePlate ?? 'PAK-786',
-                      shopName: booking.shopName ?? 'Showroom',
+                      shopName: booking.shopName ?? l10n.showroomLabel,
                       isWithDriver: booking.isWithDriver,
                       packageType: booking.packageType,
                       pickupTime: booking.pickupTime,
@@ -113,7 +129,7 @@ class BookingApprovedView extends StatelessWidget {
                 ],
               ),
               child: DebouncedButton(
-                text: 'Pay Advance (Rs. ${booking.advanceRequired})',
+                text: l10n.payAdvanceAmount(booking.advanceRequired),
                 icon: Icons.payments_rounded,
                 onPressed: () async {
                   onPayAdvance?.call();
@@ -126,4 +142,3 @@ class BookingApprovedView extends StatelessWidget {
     );
   }
 }
-

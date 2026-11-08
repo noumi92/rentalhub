@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../../l10n/app_localizations.dart';
 import '../../../../../core/constants/app_colors.dart';
 
 class SettlementSummaryReceiptWidget extends StatelessWidget {
@@ -27,6 +28,7 @@ class SettlementSummaryReceiptWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+  final l10n = AppLocalizations.of(context)!;
     final totalDeductions =
         excessKmPenalty + fuelDeficitFee + overtimeFee + damageCharge;
 
@@ -41,33 +43,33 @@ class SettlementSummaryReceiptWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Deposit & Return Balance Settlement',
+            l10n.returnReceiptTitle,
             style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 12),
-          _itemRow(context, 'Total Kilometers Driven', '$totalKm KM'),
-          _itemRow(context, 'Allowed KM Allowance', '${totalKm - excessKm} KM'),
+          _itemRow(context, l10n.returnReceiptTotalKm, '$totalKm KM'),
+          _itemRow(context, l10n.returnReceiptAllowance, '${totalKm - excessKm} KM'),
           if (excessKm > 0)
-            _itemRow(context, 'Excess KM Penalty ($excessKm km × Rs. $extraKmRate)', 'Rs. $excessKmPenalty', isDeduction: true),
+            _itemRow(context, l10n.returnReceiptExcessPenalty(excessKm, extraKmRate), l10n.amountRs(excessKmPenalty), isDeduction: true),
           if (fuelDeficitFee > 0)
-            _itemRow(context, 'Fuel Level Deficit', 'Rs. $fuelDeficitFee', isDeduction: true),
+            _itemRow(context, l10n.returnReceiptFuelDeficit, l10n.amountRs(fuelDeficitFee), isDeduction: true),
           if (overtimeFee > 0)
-            _itemRow(context, 'Late Overtime Fee', 'Rs. $overtimeFee', isDeduction: true),
+            _itemRow(context, l10n.returnReceiptOvertime, l10n.amountRs(overtimeFee), isDeduction: true),
           if (damageCharge > 0)
-            _itemRow(context, 'Damage Found at Return', 'Rs. $damageCharge', isDeduction: true),
+            _itemRow(context, l10n.returnReceiptDamage, l10n.amountRs(damageCharge), isDeduction: true),
           const Divider(height: 18),
-          _itemRow(context, 'Initial Security Deposit Held', 'Rs. $securityDeposit'),
-          _itemRow(context, 'Total Incident / Penalty Deductions', '- Rs. $totalDeductions', isDeduction: true),
+          _itemRow(context, l10n.returnReceiptDepositHeld, l10n.amountRs(securityDeposit)),
+          _itemRow(context, l10n.returnReceiptTotalDeductions, l10n.returnReceiptDeductionsAmount(totalDeductions), isDeduction: true),
           const Divider(height: 18),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Net Refund to Customer',
+                l10n.returnReceiptNetRefund,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w900),
               ),
               Text(
-                'Rs. $netRefund',
+                l10n.amountRs(netRefund),
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w900,
                   color: netRefund >= 0 ? AppColors.successTextFor(Theme.of(context).brightness) : AppColors.dangerTextFor(Theme.of(context).brightness),

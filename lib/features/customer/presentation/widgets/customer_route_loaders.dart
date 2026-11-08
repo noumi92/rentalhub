@@ -7,6 +7,7 @@ import '../../../discovery/domain/entities/shop_entity.dart';
 import '../../../fleet/data/datasources/fleet_remote_data_source.dart';
 import '../../../fleet/domain/entities/vehicle_entity.dart';
 import '../../../owner/presentation/widgets/owner_route_loaders.dart';
+import '../../../../l10n/app_localizations.dart';
 
 /// Phase A (A1): the customer vehicle route. The customer does not know
 /// the shop up front, so the vehicle is fetched directly by id (see
@@ -30,8 +31,9 @@ class CustomerVehicleRouteLoader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return FutureBuilder<VehicleWithShop?>(
-      future: _load(vehicleId),
+      future: _load(vehicleId, l10n),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
@@ -41,7 +43,7 @@ class CustomerVehicleRouteLoader extends StatelessWidget {
         final loaded = snapshot.data;
         if (loaded == null) {
           return RouteNotFoundScreen(
-            message: 'Vehicle $vehicleId was not found.',
+            message: l10n.vehicleNotFound(vehicleId),
           );
         }
         return builder(
@@ -54,11 +56,11 @@ class CustomerVehicleRouteLoader extends StatelessWidget {
     );
   }
 
-  static Future<VehicleWithShop?> _load(String vehicleId) async {
+  static Future<VehicleWithShop?> _load(String vehicleId, AppLocalizations l10n) async {
     final vehicle =
         await sl<FleetRemoteDataSource>().getVehicleById(vehicleId);
     if (vehicle == null) return null;
-    var shopName = 'Rental Showroom';
+    var shopName = l10n.rentalShowroom;
     var shopPhone = '';
     try {
       final doc = await FirebaseFirestore.instance
@@ -107,6 +109,7 @@ class ShopRouteLoader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return FutureBuilder<ShopEntity?>(
       future: _loadShop(shopId),
       builder: (context, snapshot) {
@@ -118,7 +121,7 @@ class ShopRouteLoader extends StatelessWidget {
         final shop = snapshot.data;
         if (shop == null) {
           return RouteNotFoundScreen(
-            message: 'Shop $shopId was not found.',
+            message: l10n.shopNotFound(shopId),
           );
         }
         return builder(context, shop);

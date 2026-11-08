@@ -161,9 +161,16 @@ void main() {
     });
 
     test('Noto Nastaliq Urdu font is bundled for Urdu text', () {
-      fail('not implemented yet');
-    },
-        skip:
-            'D7/D20: no font files in assets/, no fonts: block in pubspec.yaml — see rulebook §13. Un-skip when Noto Nastaliq Urdu (and Inter) are bundled.');
+      // D7 RESOLVED (Phase G): both fonts are bundled and declared —
+      // Inter (variable, 876 KB) and Noto Nastaliq Urdu (690 KB), both
+      // valid TrueType, verified 2026-11-08. The theme wires the family
+      // per locale (AppTheme.fontFamilyFor); this test pins the files
+      // and the pubspec declarations so a future deletion fails loudly.
+      expect(File('assets/fonts/Inter.ttf').existsSync(), isTrue);
+      expect(File('assets/fonts/NotoNastaliqUrdu.ttf').existsSync(), isTrue);
+      final pubspec = File('pubspec.yaml').readAsStringSync();
+      expect(pubspec, contains('family: Inter'));
+      expect(pubspec, contains('family: Noto Nastaliq Urdu'));
+    });
   });
 }

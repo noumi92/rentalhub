@@ -89,6 +89,7 @@ class _CustomerSettingsViewState extends State<CustomerSettingsView> {
               variant: CustomCurvedHeaderVariant.compact,
               leadingWidget: widget.onBack != null
                   ? IconButton(
+                      tooltip: l10n.back,
                       icon: const Icon(Icons.arrow_back_ios_new_rounded,
                           color: Colors.white, size: 20),
                       onPressed: widget.onBack,
@@ -96,7 +97,8 @@ class _CustomerSettingsViewState extends State<CustomerSettingsView> {
                   : null,
               titleWidget: Text(
                 l10n.customerSettings,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white),
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w900, color: Colors.white),
               ),
             ),
             Expanded(
@@ -114,17 +116,21 @@ class _CustomerSettingsViewState extends State<CustomerSettingsView> {
                           child: Row(
                             children: [
                               ChoiceChip(
+                                materialTapTargetSize:
+                                    MaterialTapTargetSize.padded,
                                 label: Text(l10n.languageEnglish),
                                 selected: settings.localeCode == 'en',
-                                onSelected: (_) => sl<AppSettingsCubit>()
-                                    .setLocale('en'),
+                                onSelected: (_) =>
+                                    sl<AppSettingsCubit>().setLocale('en'),
                               ),
                               const SizedBox(width: 8),
                               ChoiceChip(
+                                materialTapTargetSize:
+                                    MaterialTapTargetSize.padded,
                                 label: Text(l10n.languageUrdu),
                                 selected: settings.localeCode == 'ur',
-                                onSelected: (_) => sl<AppSettingsCubit>()
-                                    .setLocale('ur'),
+                                onSelected: (_) =>
+                                    sl<AppSettingsCubit>().setLocale('ur'),
                               ),
                             ],
                           ),
@@ -135,22 +141,26 @@ class _CustomerSettingsViewState extends State<CustomerSettingsView> {
                           child: Row(
                             children: [
                               ChoiceChip(
+                                materialTapTargetSize:
+                                    MaterialTapTargetSize.padded,
                                 label: Text(l10n.themeLight),
-                                selected:
-                                    settings.themeMode == ThemeMode.light,
+                                selected: settings.themeMode == ThemeMode.light,
                                 onSelected: (_) => sl<AppSettingsCubit>()
                                     .setThemeMode(ThemeMode.light),
                               ),
                               const SizedBox(width: 8),
                               ChoiceChip(
+                                materialTapTargetSize:
+                                    MaterialTapTargetSize.padded,
                                 label: Text(l10n.themeDark),
-                                selected:
-                                    settings.themeMode == ThemeMode.dark,
+                                selected: settings.themeMode == ThemeMode.dark,
                                 onSelected: (_) => sl<AppSettingsCubit>()
                                     .setThemeMode(ThemeMode.dark),
                               ),
                               const SizedBox(width: 8),
                               ChoiceChip(
+                                materialTapTargetSize:
+                                    MaterialTapTargetSize.padded,
                                 label: Text(l10n.themeSystem),
                                 selected:
                                     settings.themeMode == ThemeMode.system,
@@ -168,37 +178,45 @@ class _CustomerSettingsViewState extends State<CustomerSettingsView> {
                               SwitchListTile(
                                 activeThumbColor: AppColors.secondary,
                                 title: Text(l10n.pushNotifications,
-                                    style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleSmall
+                                        ?.copyWith(
+                                            fontWeight: FontWeight.w700)),
                                 subtitle: Text(
-                                    'Booking approvals and payment alerts',
-                                    style: Theme.of(context).textTheme.labelSmall),
+                                    l10n.settingsPushSubtitle,
+                                    style:
+                                        Theme.of(context).textTheme.labelSmall),
                                 value: customer?.pushNotifications ?? true,
                                 onChanged: customer == null
                                     ? null
-                                    : (val) =>
-                                        _setNotifications(push: val),
+                                    : (val) => _setNotifications(push: val),
                               ),
                               const Divider(height: 1),
                               SwitchListTile(
                                 activeThumbColor: AppColors.secondary,
                                 title: Text(l10n.whatsappNotifications,
-                                    style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleSmall
+                                        ?.copyWith(
+                                            fontWeight: FontWeight.w700)),
                                 subtitle: Text(
-                                    'Agreement and handover receipts',
-                                    style: Theme.of(context).textTheme.labelSmall),
-                                value:
-                                    customer?.whatsappNotifications ?? true,
+                                    l10n.settingsWhatsappSubtitle,
+                                    style:
+                                        Theme.of(context).textTheme.labelSmall),
+                                value: customer?.whatsappNotifications ?? true,
                                 onChanged: customer == null
                                     ? null
-                                    : (val) =>
-                                        _setNotifications(whatsapp: val),
+                                    : (val) => _setNotifications(whatsapp: val),
                               ),
                               if (customer == null)
                                 Padding(
                                   padding: EdgeInsets.only(top: 8),
                                   child: Text(
-                                    'Notification preferences save to your profile once you have a customer record.',
-                                    style: Theme.of(context).textTheme.labelSmall,
+                                    l10n.settingsNotifNote,
+                                    style:
+                                        Theme.of(context).textTheme.labelSmall,
                                   ),
                                 ),
                             ],
@@ -209,7 +227,10 @@ class _CustomerSettingsViewState extends State<CustomerSettingsView> {
                           title: l10n.appVersion,
                           child: Text(
                             _version.isEmpty ? '—' : _version,
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(fontWeight: FontWeight.w700),
                           ),
                         ),
                         const SizedBox(height: 16),

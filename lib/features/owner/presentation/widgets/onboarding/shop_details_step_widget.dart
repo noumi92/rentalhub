@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import '../../../../../l10n/app_localizations.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../../../core/constants/app_colors.dart';
 
@@ -29,6 +30,7 @@ class ShopDetailsStepWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+  final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -74,7 +76,7 @@ class ShopDetailsStepWidget extends StatelessWidget {
             onPressed: onPickLogo,
             icon: const Icon(Icons.upload_rounded, size: 16, color: AppColors.secondary),
             label: Text(
-              shopLogoFile != null ? 'Change Shop Logo' : 'Upload Shop Logo / Storefront',
+              shopLogoFile != null ? l10n.onboardingChangeLogo : l10n.onboardingUploadLogo,
               style: Theme.of(context).textTheme.labelMedium?.copyWith(color: AppColors.secondary, fontWeight: FontWeight.w800),
             ),
           ),
@@ -83,25 +85,25 @@ class ShopDetailsStepWidget extends StatelessWidget {
 
         _inputField(
           context: context,
-          label: 'Shop Registered Legal Name',
+          label: l10n.onboardingShopLegalName,
           controller: shopNameController,
-          hint: 'e.g. Al-Falah Rent a Car',
+          hint: l10n.onboardingShopNameHint,
           icon: Icons.business_rounded,
         ),
         const SizedBox(height: 14),
 
         _inputField(
           context: context,
-          label: 'Owner Full Name (as on CNIC)',
+          label: l10n.onboardingOwnerName,
           controller: ownerNameController,
-          hint: 'e.g. Ahmed Raza',
+          hint: l10n.onboardingOwnerNameHint,
           icon: Icons.person_rounded,
         ),
         const SizedBox(height: 14),
 
         _inputField(
           context: context,
-          label: 'Owner CNIC Number',
+          label: l10n.onboardingOwnerCnic,
           controller: cnicController,
           hint: '35201-9876543-1',
           icon: Icons.credit_card_rounded,
@@ -114,7 +116,7 @@ class ShopDetailsStepWidget extends StatelessWidget {
             Expanded(
               child: _inputField(
                 context: context,
-                label: 'WhatsApp Business Number',
+                label: l10n.onboardingWhatsappBusinessNumber,
                 controller: whatsappController,
                 hint: '03001234567',
                 icon: Icons.chat_rounded,
@@ -125,7 +127,7 @@ class ShopDetailsStepWidget extends StatelessWidget {
             Expanded(
               child: _inputField(
                 context: context,
-                label: 'Shop Landline / Alt Phone',
+                label: l10n.onboardingShopPhone,
                 controller: phoneController,
                 hint: '04235761234',
                 icon: Icons.phone_rounded,
@@ -137,7 +139,7 @@ class ShopDetailsStepWidget extends StatelessWidget {
         const SizedBox(height: 14),
 
         // Opening Hours Dropdown
-        Text('Operating Hours', style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800)),
+        Text(l10n.onboardingOperatingHours, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800)),
         const SizedBox(height: 6),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 14),
@@ -156,7 +158,7 @@ class ShopDetailsStepWidget extends StatelessWidget {
                 '8:00 AM - Midnight',
                 '24 Hours / 7 Days',
                 '10:00 AM - 8:00 PM',
-              ].map((h) => DropdownMenuItem(value: h, child: Text(h, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)))).toList(),
+              ].map((h) => DropdownMenuItem(value: h, child: Text(_hoursLabel(l10n, h), style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)))).toList(),
               onChanged: (v) {
                 if (v != null) onOpeningHoursChanged(v);
               },
@@ -201,3 +203,7 @@ class ShopDetailsStepWidget extends StatelessWidget {
   }
 }
 
+
+/// Stored opening-hours codes mapped to localized labels — the stored
+/// value itself is never changed.
+String _hoursLabel(AppLocalizations l10n, String h) => {'9:00 AM - 10:00 PM': l10n.onboardingHours9to10, '8:00 AM - Midnight': l10n.onboardingHours8toMidnight, '24 Hours / 7 Days': l10n.onboardingHours24x7, '10:00 AM - 8:00 PM': l10n.onboardingHours10to8}[h] ?? h;

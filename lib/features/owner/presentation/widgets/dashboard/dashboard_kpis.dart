@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../core/constants/app_colors.dart';
+import '../../../../../l10n/app_localizations.dart';
 import 'revenue_kpi_card.dart';
 
 /// Phase B (G1): the dashboard's KPI cards, extracted from
@@ -30,10 +31,11 @@ class DashboardKpis extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       children: [
         RevenueKpiCard(
-          title: 'Gross Revenue (This Month)',
+          title: l10n.dashboardGrossRevenue,
           amount: 'Rs. $totalRevenue',
           changeLabel: growthLabel,
           icon: Icons.account_balance_wallet_rounded,
@@ -44,9 +46,9 @@ class DashboardKpis extends StatelessWidget {
           children: [
             Expanded(
               child: RevenueKpiCard(
-                title: 'Active on Rent',
-                amount: '$activeCount Cars',
-                changeLabel: 'On the road',
+                title: l10n.dashboardActiveOnRent,
+                amount: l10n.dashboardCarsCount(activeCount),
+                changeLabel: l10n.dashboardOnTheRoad,
                 icon: Icons.directions_car_rounded,
                 color: Theme.of(context).colorScheme.primary,
               ),
@@ -54,8 +56,8 @@ class DashboardKpis extends StatelessWidget {
             const SizedBox(width: 10),
             Expanded(
               child: RevenueKpiCard(
-                title: 'Completed Trips',
-                amount: '$completedCount Finished',
+                title: l10n.dashboardCompletedTrips,
+                amount: l10n.dashboardFinishedCount(completedCount),
                 changeLabel: settleLabel,
                 icon: Icons.task_alt_rounded,
                 color: AppColors.accentSuccess,
@@ -68,9 +70,9 @@ class DashboardKpis extends StatelessWidget {
           children: [
             Expanded(
               child: RevenueKpiCard(
-                title: 'Requests Waiting',
+                title: l10n.dashboardRequestsWaiting,
                 amount: '$waitingCount',
-                changeLabel: 'Needs your review',
+                changeLabel: l10n.dashboardNeedsReview,
                 icon: Icons.inbox_rounded,
                 color: AppColors.warning,
               ),
@@ -78,9 +80,9 @@ class DashboardKpis extends StatelessWidget {
             const SizedBox(width: 10),
             Expanded(
               child: RevenueKpiCard(
-                title: 'Fleet',
+                title: l10n.dashboardFleet,
                 amount: '$fleetAvailable / $fleetTotal',
-                changeLabel: 'Available / total cars',
+                changeLabel: l10n.dashboardAvailableTotal,
                 icon: Icons.local_taxi_rounded,
                 color: Theme.of(context).colorScheme.primary,
               ),

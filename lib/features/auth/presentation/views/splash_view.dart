@@ -4,6 +4,7 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/routing/auth_route_guard.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class SplashView extends StatefulWidget {
   final Duration duration;
@@ -67,6 +68,7 @@ class _SplashViewState extends State<SplashView>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: const Color(0xFF131842),
       body: Container(
@@ -129,7 +131,7 @@ class _SplashViewState extends State<SplashView>
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      '© ${DateTime.now().year} RentalHub. All rights reserved.',
+                      l10n.authCopyright(DateTime.now().year),
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
                         color: Colors.white.withValues(alpha: 0.5),
                         fontWeight: FontWeight.w400,

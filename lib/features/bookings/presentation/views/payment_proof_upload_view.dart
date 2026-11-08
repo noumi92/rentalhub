@@ -11,6 +11,7 @@ import '../../../../core/widgets/debounced_button.dart';
 import '../../data/datasources/booking_remote_data_source.dart';
 import '../../domain/entities/booking_entity.dart';
 import '../widgets/proof_screenshot_picker.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class PaymentProofUploadView extends StatefulWidget {
   final BookingEntity booking;
@@ -40,13 +41,14 @@ class _PaymentProofUploadViewState extends State<PaymentProofUploadView> {
   }
 
   Future<void> _submitProof() async {
+    final l10n = AppLocalizations.of(context)!;
     final tid = _tidController.text.trim();
     if (tid.isEmpty) {
-      AppFeedback.showError(context, 'Please enter the transaction reference / TID.');
+      AppFeedback.showError(context, l10n.proofEnterTid);
       return;
     }
     if (_selectedFile == null) {
-      AppFeedback.showError(context, 'Please attach your payment screenshot or receipt.');
+      AppFeedback.showError(context, l10n.proofAttachFirst);
       return;
     }
 
@@ -59,9 +61,8 @@ class _PaymentProofUploadViewState extends State<PaymentProofUploadView> {
       // receipt is queued and the proof is recorded with its TID —
       // the image follows on sync, and nothing fake is filed.
       final cpanel = sl<CPanelStorageClient>();
-      final queue = sl.isRegistered<OfflineSyncQueue>()
-          ? sl<OfflineSyncQueue>()
-          : null;
+      final queue =
+          sl.isRegistered<OfflineSyncQueue>() ? sl<OfflineSyncQueue>() : null;
       String proofUrl = '';
       try {
         final key = await cpanel.uploadFile(
@@ -98,13 +99,13 @@ class _PaymentProofUploadViewState extends State<PaymentProofUploadView> {
         AppFeedback.showSuccess(
             context,
             proofUrl.isEmpty
-                ? 'Proof submitted! Receipt will sync when you are back online.'
-                : 'Proof submitted! Waiting for showroom confirmation.');
+                ? l10n.proofSubmittedOffline
+                : l10n.proofSubmitted);
         widget.onProofSubmitted?.call(updated);
       }
     } catch (e) {
       if (mounted) {
-        AppFeedback.showError(context, 'Failed to submit payment proof: $e');
+        AppFeedback.showError(context, l10n.proofSubmitError(e.toString()));
       }
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
@@ -113,6 +114,7 @@ class _PaymentProofUploadViewState extends State<PaymentProofUploadView> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -121,13 +123,14 @@ class _PaymentProofUploadViewState extends State<PaymentProofUploadView> {
               variant: CustomCurvedHeaderVariant.compact,
               leadingWidget: widget.onBack != null
                   ? IconButton(
+                      tooltip: l10n.back,
                       icon: const Icon(Icons.arrow_back_ios_new_rounded,
                           color: Colors.white, size: 20),
                       onPressed: widget.onBack,
                     )
                   : null,
               titleWidget: Text(
-                'Submit Payment Proof',
+                l10n.proofSubmit,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white),
               ),
             ),
@@ -152,11 +155,11 @@ class _PaymentProofUploadViewState extends State<PaymentProofUploadView> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                widget.booking.vehicleName ?? 'Selected Car',
+                                widget.booking.vehicleName ?? l10n.proofSelectedCar,
                                 style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
                               ),
                               Text(
-                                'Booking ID: ${widget.booking.bookingId}',
+                                l10n.proofBookingId(widget.booking.bookingId),
                                 style: Theme.of(context).textTheme.bodySmall,
                               ),
                             ],
@@ -169,13 +172,13 @@ class _PaymentProofUploadViewState extends State<PaymentProofUploadView> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    Text('Transaction Reference / TID',
+                    Text(l10n.proofTidLabel,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
                     const SizedBox(height: 6),
                     TextField(
                       controller: _tidController,
                       decoration: InputDecoration(
-                        hintText: 'Enter JazzCash / Bank TID (e.g. 892019281)',
+                        hintText: l10n.proofTidHint,
                         hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                         filled: true,
                         fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
@@ -189,7 +192,7 @@ class _PaymentProofUploadViewState extends State<PaymentProofUploadView> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    Text('Proof Screenshot',
+                    Text(l10n.proofScreenshot,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
                     const SizedBox(height: 6),
                     ProofScreenshotPicker(
@@ -205,12 +208,11 @@ class _PaymentProofUploadViewState extends State<PaymentProofUploadView> {
                       ),
                       child: Row(
                         children: [
-                          Icon(Icons.lock_clock_rounded,
-                              size: 16),
+                          Icon(Icons.lock_clock_rounded, size: 16),
                           SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              'Proof is uploaded to private storage. The showroom checks it and confirms your booking — there is no fixed waiting time.',
+                              l10n.proofPrivateNote,
                               style: Theme.of(context).textTheme.labelSmall,
                             ),
                           ),
@@ -234,7 +236,7 @@ class _PaymentProofUploadViewState extends State<PaymentProofUploadView> {
                 ],
               ),
               child: DebouncedButton(
-                text: _isSubmitting ? 'Uploading Proof...' : 'Submit Payment Proof',
+                text: _isSubmitting ? l10n.proofUploading : l10n.proofSubmit,
                 icon: Icons.check_circle_rounded,
                 isLoading: _isSubmitting,
                 onPressed: _submitProof,
@@ -246,4 +248,3 @@ class _PaymentProofUploadViewState extends State<PaymentProofUploadView> {
     );
   }
 }
-

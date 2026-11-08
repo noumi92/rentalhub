@@ -10,6 +10,7 @@ import 'package:rentalhub/features/bookings/data/models/booking_model.dart';
 import 'package:rentalhub/features/bookings/presentation/views/owner_payment_accounts_view.dart';
 import 'package:rentalhub/features/fleet/domain/entities/vehicle_entity.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_booking_requests_view.dart';
+import 'package:rentalhub/l10n/app_localizations.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_payment_verification_view.dart';
 import 'package:rentalhub/features/owner/presentation/widgets/manual_booking_package_selector.dart';
 import 'package:rentalhub/features/owner/presentation/widgets/operations/request_triage_card.dart';
@@ -190,6 +191,8 @@ void main() {
 
       await tester.pumpWidget(
         const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           home: OwnerBookingRequestsView(shopId: 'shop-1'),
         ),
       );
@@ -220,6 +223,8 @@ void main() {
       await createInState(ds, 'Reject Me', 'requested');
       await tester.pumpWidget(
         const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           home: OwnerBookingRequestsView(shopId: 'shop-1'),
         ),
       );
@@ -295,7 +300,11 @@ void main() {
           ),
         ],
       );
-      return MaterialApp.router(routerConfig: router);
+      return MaterialApp.router(
+        routerConfig: router,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+      );
     }
 
     testWidgets('approving a proof marks the booking paid and opens handover',
@@ -342,6 +351,8 @@ void main() {
         (tester) async {
       await tester.pumpWidget(
         MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           home: OwnerPaymentAccountsView(booking: modelFor('RH-d4', 'Ayesha Khan')),
         ),
       );

@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class ProofScreenshotPicker extends StatelessWidget {
   final File? selectedFile;
@@ -27,6 +28,7 @@ class ProofScreenshotPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     if (selectedFile != null) {
       return Container(
         height: 190,
@@ -68,7 +70,7 @@ class ProofScreenshotPicker extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  'Screenshot Ready',
+                  l10n.proofScreenshotReady,
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600, color: Colors.white),
                 ),
               ),
@@ -99,12 +101,12 @@ class ProofScreenshotPicker extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           Text(
-            'Upload Transfer Screenshot',
+            l10n.proofUploadScreenshot,
             style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 4),
           Text(
-            'Support JPG, PNG receipt from banking app',
+            l10n.proofScreenshotSupport,
             style: Theme.of(context).textTheme.labelSmall,
           ),
           const SizedBox(height: 14),
@@ -120,7 +122,7 @@ class ProofScreenshotPicker extends StatelessWidget {
                       borderRadius: BorderRadius.circular(10)),
                 ),
                 icon: const Icon(Icons.photo_library_rounded, size: 16),
-                label: const Text('From Gallery'),
+                label:  Text(l10n.proofFromGallery),
               ),
               const SizedBox(width: 10),
               OutlinedButton.icon(
@@ -132,7 +134,7 @@ class ProofScreenshotPicker extends StatelessWidget {
                       borderRadius: BorderRadius.circular(10)),
                 ),
                 icon: const Icon(Icons.camera_alt_rounded, size: 16),
-                label: const Text('Capture Camera'),
+                label:  Text(l10n.proofCaptureCamera),
               ),
             ],
           ),

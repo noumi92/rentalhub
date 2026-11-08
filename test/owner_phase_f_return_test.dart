@@ -7,6 +7,7 @@ import 'package:rentalhub/features/finance/data/datasources/security_deposit_dat
 import 'package:rentalhub/features/finance/data/models/security_deposit_model.dart';
 import 'package:rentalhub/features/finance/domain/entities/security_deposit_entity.dart';
 import 'package:rentalhub/features/finance/utils/settlement_calculator.dart';
+import 'package:rentalhub/l10n/app_localizations.dart';
 import 'package:rentalhub/features/fleet/data/datasources/fleet_remote_data_source.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_return_settlement_view.dart';
 
@@ -201,6 +202,8 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           home: OwnerReturnSettlementView(
             booking: booking,
             initialOdometer: 45200,

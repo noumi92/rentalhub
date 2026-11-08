@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class CustomerStatsRow extends StatelessWidget {
   final int totalTrips;
@@ -17,11 +18,12 @@ class CustomerStatsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Row(
       children: [
         Expanded(
           child: _buildStatItem(context, 
-            label: 'Total Trips',
+            label: l10n.profileTotalTrips,
             value: '$totalTrips',
             icon: Icons.history_rounded,
             color: Theme.of(context).colorScheme.onSurface,
@@ -30,7 +32,7 @@ class CustomerStatsRow extends StatelessWidget {
         const SizedBox(width: 10),
         Expanded(
           child: _buildStatItem(context, 
-            label: 'Active',
+            label: l10n.active,
             value: '$activeBookings',
             icon: Icons.directions_car_rounded,
             color: AppColors.secondary,
@@ -39,7 +41,7 @@ class CustomerStatsRow extends StatelessWidget {
         const SizedBox(width: 10),
         Expanded(
           child: _buildStatItem(context, 
-            label: 'Trust Score',
+            label: l10n.profileTrustScore,
             value: trustScore == null ? '—' : '${trustScore!.toStringAsFixed(1)} ★',
             icon: Icons.verified_user_rounded,
             color: AppColors.successTextFor(Theme.of(context).brightness),

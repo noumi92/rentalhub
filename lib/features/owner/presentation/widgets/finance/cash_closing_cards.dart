@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../../l10n/app_localizations.dart';
 
 import '../../../../../core/constants/app_colors.dart';
 import  '../../../../finance/domain/entities/cash_closing_entity.dart';
@@ -20,6 +21,7 @@ class CashClosingSummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+  final l10n = AppLocalizations.of(context)!;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
@@ -30,15 +32,15 @@ class CashClosingSummaryCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Expected in till today',
+          Text(l10n.financeClosingExpected,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white70)),
-          Text('Rs. $expectedCash',
+          Text(l10n.amountRs(expectedCash),
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                 color: Colors.white,
                 fontWeight: FontWeight.w900,
               )),
           const SizedBox(height: 4),
-          Text('Opening Rs. $openingCash • Difference Rs. $difference',
+          Text(l10n.financeClosingOpening(openingCash, difference),
               style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white70)),
         ],
       ),
@@ -53,6 +55,7 @@ class CashClosingRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+  final l10n = AppLocalizations.of(context)!;
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(12),
@@ -67,7 +70,7 @@ class CashClosingRow extends StatelessWidget {
           Text('${closing.date.day}/${closing.date.month}/${closing.date.year}',
               style: const TextStyle(fontWeight: FontWeight.w800)),
           Text(
-              'Counted Rs. ${closing.countedCash} • Diff Rs. ${closing.difference}',
+              l10n.financeClosingCounted(closing.countedCash, closing.difference),
               style: Theme.of(context).textTheme.labelMedium?.copyWith(
                 color: closing.difference == 0
                       ? AppColors.successTextFor(Theme.of(context).brightness)

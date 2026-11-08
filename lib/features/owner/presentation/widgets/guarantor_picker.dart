@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../l10n/app_localizations.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
@@ -95,6 +96,7 @@ class _GuarantorPickerState extends State<GuarantorPicker> {
   }
 
   Future<void> _searchByCnic() async {
+  final l10n = AppLocalizations.of(context)!;
     final cnic = _searchController.text.trim();
     if (cnic.isEmpty) return;
     final found = await sl<CustomerRemoteDataSource>()
@@ -102,7 +104,7 @@ class _GuarantorPickerState extends State<GuarantorPicker> {
     if (!mounted) return;
     if (found == null) {
       AppFeedback.showInfo(context,
-          'No saved customer with that CNIC — add them below.');
+          l10n.manualBookingGuarantorNotFound);
       setState(() {
         _cnicController.text = cnic;
         _addingNew = true;
@@ -113,25 +115,26 @@ class _GuarantorPickerState extends State<GuarantorPicker> {
         .isCnicBlacklisted(found.cnic ?? cnic)) {
       if (!mounted) return;
       AppFeedback.showError(context,
-          'This CNIC is blacklisted and cannot be a guarantor.');
+          l10n.manualBookingGuarantorBlacklisted);
       return;
     }
     _select(found, _relationshipController.text.trim());
   }
 
   Future<void> _addNew() async {
+  final l10n = AppLocalizations.of(context)!;
     final name = _nameController.text.trim();
     final phone = _phoneController.text.trim();
     final cnic = _cnicController.text.trim();
     if (name.isEmpty || phone.isEmpty || cnic.isEmpty) {
       AppFeedback.showError(
-          context, 'Name, phone and CNIC are required for a guarantor.');
+          context, l10n.manualBookingGuarantorRequired);
       return;
     }
     if (await sl<BlacklistRemoteDataSource>().isCnicBlacklisted(cnic)) {
       if (!mounted) return;
       AppFeedback.showError(context,
-          'This CNIC is blacklisted and cannot be a guarantor.');
+          l10n.manualBookingGuarantorBlacklisted);
       return;
     }
     final digits = cnic.replaceAll(RegExp(r'\D'), '');
@@ -153,6 +156,7 @@ class _GuarantorPickerState extends State<GuarantorPicker> {
 
   @override
   Widget build(BuildContext context) {
+  final l10n = AppLocalizations.of(context)!;
     if (_selected != null) {
       final s = _selected!;
       return Card(
@@ -163,7 +167,7 @@ class _GuarantorPickerState extends State<GuarantorPicker> {
               style: const TextStyle(fontWeight: FontWeight.w800)),
           subtitle: Text('${s.cnic} • ${s.phone}\n${s.relationship}'),
           trailing: IconButton(
-            tooltip: 'Remove guarantor',
+            tooltip: l10n.manualBookingGuarantorRemove,
             icon: const Icon(Icons.close_rounded),
             onPressed: () {
               setState(() => _selected = null);
@@ -183,7 +187,7 @@ class _GuarantorPickerState extends State<GuarantorPicker> {
                 controller: _searchController,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
-                  hintText: 'Search guarantor by CNIC',
+                  hintText: l10n.manualBookingGuarantorSearch,
                   border: OutlineInputBorder(),
                   filled: true,
                   fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
@@ -193,7 +197,7 @@ class _GuarantorPickerState extends State<GuarantorPicker> {
             const SizedBox(width: 8),
             ElevatedButton(
               onPressed: _searchByCnic,
-              child: const Text('Find'),
+              child: Text(l10n.manualBookingGuarantorFind),
             ),
           ],
         ),
@@ -221,7 +225,7 @@ class _GuarantorPickerState extends State<GuarantorPicker> {
             ),
           )
         else
-          Text('No saved customers yet.',
+          Text(l10n.manualBookingGuarantorEmpty,
               style: Theme.of(context).textTheme.bodySmall),
         const SizedBox(height: 8),
         TextButton.icon(
@@ -229,13 +233,13 @@ class _GuarantorPickerState extends State<GuarantorPicker> {
           icon: Icon(_addingNew
               ? Icons.expand_less_rounded
               : Icons.person_add_rounded),
-          label: Text(_addingNew ? 'Hide new guarantor' : 'Add new guarantor'),
+          label: Text(_addingNew ? l10n.manualBookingGuarantorHide : l10n.manualBookingGuarantorAdd),
         ),
         if (_addingNew) ...[
           TextField(
             controller: _nameController,
             decoration: InputDecoration(
-              labelText: 'Guarantor full name',
+              labelText: l10n.manualBookingGuarantorName,
               border: OutlineInputBorder(),
               filled: true,
               fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
@@ -246,7 +250,7 @@ class _GuarantorPickerState extends State<GuarantorPicker> {
             controller: _phoneController,
             keyboardType: TextInputType.phone,
             decoration: InputDecoration(
-              labelText: 'Phone number',
+              labelText: l10n.manualBookingGuarantorPhone,
               border: OutlineInputBorder(),
               filled: true,
               fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
@@ -257,7 +261,7 @@ class _GuarantorPickerState extends State<GuarantorPicker> {
             controller: _cnicController,
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
-              labelText: 'CNIC number',
+              labelText: l10n.manualBookingGuarantorCnic,
               border: OutlineInputBorder(),
               filled: true,
               fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
@@ -267,7 +271,7 @@ class _GuarantorPickerState extends State<GuarantorPicker> {
           TextField(
             controller: _relationshipController,
             decoration: InputDecoration(
-              labelText: 'Relationship (e.g. Father, Brother, Friend)',
+              labelText: l10n.manualBookingGuarantorRelationship,
               border: OutlineInputBorder(),
               filled: true,
               fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
@@ -278,7 +282,7 @@ class _GuarantorPickerState extends State<GuarantorPicker> {
             width: double.infinity,
             child: ElevatedButton(
               onPressed: _addNew,
-              child: const Text('Save & Select Guarantor'),
+              child: Text(l10n.manualBookingGuarantorSave),
             ),
           ),
         ],

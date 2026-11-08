@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import '../../../../l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../../core/constants/app_colors.dart';
@@ -37,9 +38,11 @@ class _OwnerCustomerScanViewState extends State<OwnerCustomerScanView> {
   }
 
   Future<void> _verifyCnic() async {
+  final l10n = AppLocalizations.of(context)!;
     final cnic = _cnicController.text.trim();
     if (cnic.length < 13) {
-      AppFeedback.showError(context, 'Please enter a valid 13-digit Pakistani CNIC');
+      AppFeedback.showError(
+          context, l10n.customersScanInvalidCnic);
       return;
     }
 
@@ -50,14 +53,15 @@ class _OwnerCustomerScanViewState extends State<OwnerCustomerScanView> {
       if (isBlacklisted) {
         final record = await ds.getBlacklistRecordByCnic(cnic);
         setState(() {
-          _foundBlacklist = record ?? BlacklistEntity(
-            blacklistId: 'BLK-AUTO',
-            reportedByShopId: 'All-Pakistan Tribunal',
-            cnicNumber: cnic,
-            phoneNumber: '0300-0000000',
-            reasonCategory: 'Reported in National Blacklist',
-            description: 'Severe fraud / non-payment incident flagged.',
-          );
+          _foundBlacklist = record ??
+              BlacklistEntity(
+                blacklistId: 'BLK-AUTO',
+                reportedByShopId: 'All-Pakistan Tribunal',
+                cnicNumber: cnic,
+                phoneNumber: '0300-0000000',
+                reasonCategory: l10n.customersScanFallbackReason,
+                description: l10n.customersScanFallbackDescription,
+              );
           _hasSearched = true;
         });
       } else {
@@ -67,7 +71,9 @@ class _OwnerCustomerScanViewState extends State<OwnerCustomerScanView> {
         });
       }
     } catch (e) {
-      if (mounted) AppFeedback.showError(context, 'Verification lookup failed: $e');
+      if (mounted) {
+        AppFeedback.showError(context, l10n.customersScanLookupFailed(e.toString()));
+      }
     } finally {
       if (mounted) setState(() => _isVerifying = false);
     }
@@ -77,6 +83,7 @@ class _OwnerCustomerScanViewState extends State<OwnerCustomerScanView> {
   /// ML Kit, the owner reviews and corrects the result, and only then
   /// is the customer saved and the blacklist checked.
   Future<void> _scanCnicWithCamera() async {
+  final l10n = AppLocalizations.of(context)!;
     final picked = await ImagePicker().pickImage(
       source: ImageSource.camera,
       imageQuality: 85,
@@ -87,8 +94,8 @@ class _OwnerCustomerScanViewState extends State<OwnerCustomerScanView> {
       final result = await CnicOcrService().scanFront(File(picked.path));
       if (!mounted) return;
       if (!result.hasAnything) {
-        AppFeedback.showError(context,
-            "Couldn't read the card — type the CNIC manually.");
+        AppFeedback.showError(
+            context, l10n.customersScanUnreadable);
         return;
       }
       await Navigator.of(context).push(
@@ -104,7 +111,7 @@ class _OwnerCustomerScanViewState extends State<OwnerCustomerScanView> {
       );
     } catch (e) {
       if (mounted) {
-        AppFeedback.showError(context, 'CNIC scan failed: $e');
+        AppFeedback.showError(context, l10n.customersScanFailed(e.toString()));
       }
     } finally {
       if (mounted) setState(() => _isVerifying = false);
@@ -122,7 +129,9 @@ class _OwnerCustomerScanViewState extends State<OwnerCustomerScanView> {
   }
 
   void _declineCustomer() {
-    AppFeedback.showInfo(context, 'Customer flagged and declined entry into showroom.');
+  final l10n = AppLocalizations.of(context)!;
+    AppFeedback.showInfo(
+        context, l10n.customersScanDeclined);
     setState(() {
       _hasSearched = false;
       _foundBlacklist = null;
@@ -132,6 +141,7 @@ class _OwnerCustomerScanViewState extends State<OwnerCustomerScanView> {
 
   @override
   Widget build(BuildContext context) {
+  final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -140,28 +150,38 @@ class _OwnerCustomerScanViewState extends State<OwnerCustomerScanView> {
               variant: CustomCurvedHeaderVariant.compact,
               leadingWidget: widget.onBack != null
                   ? IconButton(
-                      icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
+                      tooltip: l10n.back,
+                      icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                          color: Colors.white, size: 20),
                       onPressed: widget.onBack,
                     )
                   : null,
               titleWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('KYC & Blacklist Radar', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
-                  Text('National Anti-Fraud Network • Real-time', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.primaryContainer)),
+                  Text(l10n.customersScanTitle,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w900, color: Colors.white)),
+                  Text(l10n.customersScanSubtitle,
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodySmall
+                          ?.copyWith(color: AppColors.primaryContainer)),
                 ],
               ),
               actions: [
                 IconButton(
                   icon: const Icon(Icons.info_outline, color: Colors.white),
-                  tooltip: 'Tribunal Policy',
-                  onPressed: () => AppFeedback.showInfo(context, 'Every Pakistani rental shop shares instant fraud telemetry via RentalHub.'),
+                  tooltip: l10n.customersScanTribunalPolicy,
+                  onPressed: () => AppFeedback.showInfo(context,
+                      l10n.customersScanTribunalInfo),
                 ),
               ],
             ),
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -182,20 +202,18 @@ class _OwnerCustomerScanViewState extends State<OwnerCustomerScanView> {
                     SizedBox(
                       width: double.infinity,
                       child: OutlinedButton.icon(
-                        onPressed: () =>
-                            context.push('/owner/customers'),
+                        onPressed: () => context.push('/owner/customers'),
                         icon: const Icon(Icons.people_rounded),
-                        label: const Text('View All Customers'),
+                        label: Text(l10n.customersScanViewAll),
                       ),
                     ),
                     const SizedBox(height: 8),
                     SizedBox(
                       width: double.infinity,
                       child: OutlinedButton.icon(
-                        onPressed: () =>
-                            context.push('/owner/blacklist'),
+                        onPressed: () => context.push('/owner/blacklist'),
                         icon: const Icon(Icons.flag_rounded),
-                        label: const Text('Blacklist Reports'),
+                        label: Text(l10n.blacklist),
                       ),
                     ),
                   ],

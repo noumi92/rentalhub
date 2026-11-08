@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../l10n/app_localizations.dart';
 import 'rate_matrix_field_widget.dart';
 
 /// The pricing-policy fields of the rate matrix: out-of-city daily rate,
@@ -34,59 +35,60 @@ class PricingPolicyFields extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         RateMatrixFieldWidget(
           controller: outOfCityController,
-          label: 'Out-of-City Daily (24h)',
+          label: l10n.pricingOutOfCityDaily,
           hint: 'Rs. 10,500 / day',
-          kmCap: '350 km included + tracker cleared',
+          kmCap: l10n.pricingOutOfCityDailyCap,
         ),
         const SizedBox(height: 10),
         RateMatrixFieldWidget(
           controller: surchargeController,
-          label: 'With-Driver Surcharge (per day)',
+          label: l10n.pricingWithDriverSurcharge,
           hint: 'Rs. 2,000 / day',
-          kmCap: 'Added on top of the package price',
+          kmCap: l10n.pricingWithDriverSurchargeCap,
         ),
         const SizedBox(height: 10),
         RateMatrixFieldWidget(
           controller: depositController,
-          label: 'Security Deposit',
+          label: l10n.pricingSecurityDeposit,
           hint: 'Rs. 25,000',
-          kmCap: 'Refundable after return inspection',
+          kmCap: l10n.pricingSecurityDepositCap,
         ),
         const SizedBox(height: 10),
         RateMatrixFieldWidget(
           controller: advanceController,
-          label: 'Advance Required',
+          label: l10n.pricingAdvanceRequired,
           hint: 'Rs. 2,000',
-          kmCap: 'Due before the booking is confirmed',
+          kmCap: l10n.pricingAdvanceCap,
         ),
         const SizedBox(height: 10),
         RateMatrixFieldWidget(
           controller: extraHourController,
-          label: 'Extra Hour Charge',
+          label: l10n.pricingExtraHourCharge,
           hint: 'Rs. 600 / hour',
-          kmCap: 'Charged for late returns',
+          kmCap: l10n.pricingExtraHourCap,
         ),
         const SizedBox(height: 10),
         RateMatrixFieldWidget(
           controller: extraKmController,
-          label: 'Extra KM Charge',
+          label: l10n.pricingExtraKmCharge,
           hint: 'Rs. 100 / km',
-          kmCap: 'Charged beyond the included km',
+          kmCap: l10n.pricingExtraKmCap,
         ),
         const SizedBox(height: 10),
         RateMatrixFieldWidget(
           controller: outOfCityKmController,
-          label: 'Out-of-City KM Allowance (per day)',
+          label: l10n.pricingOutOfCityKmAllowance,
           hint: '350 km / day',
-          kmCap: 'Tracker clearance required beyond the city',
+          kmCap: l10n.pricingOutOfCityKmCap,
         ),
         const SizedBox(height: 14),
-        Text('Fuel Policy',
+        Text(l10n.pricingFuelPolicy,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.w700,
             )),

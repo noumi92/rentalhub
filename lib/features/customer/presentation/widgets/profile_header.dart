@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 
 /// H1: the profile header — avatar initial, name, email/phone and the
 /// edit button. Extracted from [CustomerProfileView] so the view stays
@@ -21,6 +22,7 @@ class ProfileHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Row(
       children: [
         CircleAvatar(
@@ -41,7 +43,7 @@ class ProfileHeader extends StatelessWidget {
               Text(
                 email.isNotEmpty
                     ? email
-                    : (phone.isNotEmpty ? phone : 'Not signed in'),
+                    : (phone.isNotEmpty ? phone : l10n.profileNotSignedInShort),
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.primaryContainer),
               ),
             ],
@@ -50,7 +52,7 @@ class ProfileHeader extends StatelessWidget {
         IconButton(
           icon: const Icon(Icons.edit_rounded,
               color: Colors.white, size: 20),
-          tooltip: 'Edit profile',
+          tooltip: l10n.profileEditProfile,
           onPressed: onEdit,
         ),
       ],

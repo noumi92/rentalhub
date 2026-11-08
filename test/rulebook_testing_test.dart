@@ -19,6 +19,8 @@ const Set<String> kOverflowCoveredViews = {
   'OnboardingRoleView',
   'OwnerOnboardingView',
   'OwnerAddVehicleView',
+  // Phase G (G1): the booking-flow screen migrated in Phases E/F.
+  'OwnerPaymentAccountsView',
 };
 
 void main() {
@@ -35,8 +37,8 @@ void main() {
               'Rulebook §7.2 (D11): views dropped out of overflow coverage:\n${missing.join('\n')}');
       final cases =
           RegExp(r'testWidgets\(').allMatches(content).length;
-      expect(cases, greaterThanOrEqualTo(9),
-          reason: 'expected at least 9 overflow cases, found $cases');
+      expect(cases, greaterThanOrEqualTo(10),
+          reason: 'expected at least 10 overflow cases, found $cases');
     });
 
     test('the multi-viewport harness is actually used', () {
@@ -77,9 +79,16 @@ void main() {
     });
 
     test('the line-count test enforces the 250-line rule', () {
-      fail('not implemented yet');
-    },
-        skip:
-            'D14: file_line_count_test.dart enforces 300 lines, not the rulebook 250 — see rulebook §13. Un-skip when it is tightened to 250 (after the D19 views are split).');
+      // D14 RESOLVED 2026-11-08, Phase G (G1): file_line_count_test.dart
+      // now enforces 250 lines (rulebook §2.2 / R1). The single view
+      // still over the cap (`owner_add_vehicle_view.dart`, 259) is a
+      // registered D19 exception inside that file — the cap itself is
+      // 250, so this test pins the cap rather than the exception.
+      final content =
+          File('test/file_line_count_test.dart').readAsStringSync();
+      expect(content, contains('exceeds 250 lines of code'));
+      expect(content, isNot(contains('exceeds 300 lines of code')));
+      expect(content, contains('kOverLimitViews'));
+    });
   });
 }

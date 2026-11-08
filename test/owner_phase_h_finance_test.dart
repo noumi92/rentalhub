@@ -14,6 +14,7 @@ import 'package:rentalhub/features/finance/domain/entities/finance_account_entit
 import 'package:rentalhub/features/finance/domain/entities/finance_transfer_entity.dart';
 import 'package:rentalhub/features/finance/utils/finance_summary.dart';
 import 'package:rentalhub/features/finance/utils/pnl_csv.dart';
+import 'package:rentalhub/l10n/app_localizations.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_car_pnl_view.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_cash_closing_view.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_dues_view.dart';
@@ -220,12 +221,16 @@ void main() {
       );
 
       await tester.pumpWidget(
-        const MaterialApp(home: OwnerFinanceView(shopId: 'shop-1')),
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const OwnerFinanceView(shopId: 'shop-1'),
+        ),
       );
       await tester.pumpAndSettle();
       expect(find.text('Finance'), findsOneWidget);
       expect(find.text('Cash in Hand'), findsOneWidget);
-      expect(find.text('rent'), findsOneWidget);
+      expect(find.text('Rent'), findsOneWidget);
       expect(find.text('Rs. 7777'), findsWidgets);
     });
 
@@ -249,7 +254,11 @@ void main() {
           bookingId: booking.bookingId, status: 'paid');
 
       await tester.pumpWidget(
-        const MaterialApp(home: OwnerDuesView(shopId: 'shop-1')),
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const OwnerDuesView(shopId: 'shop-1'),
+        ),
       );
       await tester.pumpAndSettle();
       expect(find.text('Dues Customer'), findsOneWidget);
@@ -258,7 +267,11 @@ void main() {
 
     testWidgets('cash closing saves the counted cash', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(home: OwnerCashClosingView(shopId: 'shop-h3')),
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const OwnerCashClosingView(shopId: 'shop-h3'),
+        ),
       );
       await tester.pumpAndSettle();
       expect(find.text('Expected in till today'), findsOneWidget);
@@ -273,7 +286,11 @@ void main() {
 
     testWidgets('car P&L picks a vehicle and shows its net', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(home: OwnerCarPnLView(shopId: 'shop-basic')),
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const OwnerCarPnLView(shopId: 'shop-basic'),
+        ),
       );
       await tester.pumpAndSettle();
       expect(find.text('Honda Civic Oriel 2021'), findsOneWidget);

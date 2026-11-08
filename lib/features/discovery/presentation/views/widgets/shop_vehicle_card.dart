@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/widgets/pakistani_plate_widget.dart';
 import '../../../../fleet/domain/entities/vehicle_entity.dart';
+import 'vehicle_hero_card.dart' show vehicleHeroTag;
+import '../../../../../l10n/app_localizations.dart';
 
 /// Phase A (A1): one car card on the shop detail screen, extracted so the
 /// view stays under the 250-line cap. Shows the owner's uploaded photo
@@ -54,19 +56,20 @@ class ShopVehicleCard extends StatelessWidget {
     );
   }
 
-  String _statusLabel(String status) {
+  String _statusLabel(AppLocalizations l10n, String status) {
     switch (status) {
       case 'rented':
-        return 'Rented Out';
+        return l10n.rentedOut;
       case 'maintenance':
-        return 'In Maintenance';
+        return l10n.inMaintenance;
       default:
-        return 'Available';
+        return l10n.available;
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final v = vehicle;
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
@@ -89,7 +92,14 @@ class ShopVehicleCard extends StatelessWidget {
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                  _carImage(v),
+                  // E2: the hero wraps the image widget itself
+                  // (including its errorBuilder fallback); the
+                  // matching Hero lives in [VehicleHeroCard] on the
+                  // vehicle detail screen.
+                  Hero(
+                    tag: vehicleHeroTag(v.vehicleId),
+                    child: _carImage(v),
+                  ),
                   // Availability Pill
                   Positioned(
                     top: 10,
@@ -98,13 +108,19 @@ class ShopVehicleCard extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: AppColors.successContainerFor(Theme.of(context).brightness),
+                        color: AppColors.successContainerFor(
+                            Theme.of(context).brightness),
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: AppColors.successBorderFor(Theme.of(context).brightness)),
+                        border: Border.all(
+                            color: AppColors.successBorderFor(
+                                Theme.of(context).brightness)),
                       ),
                       child: Text(
-                        _statusLabel(v.status),
-                        style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700, color: AppColors.successOnContainerFor(Theme.of(context).brightness)),
+                        _statusLabel(AppLocalizations.of(context)!, v.status),
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.successOnContainerFor(
+                                Theme.of(context).brightness)),
                       ),
                     ),
                   ),
@@ -122,7 +138,10 @@ class ShopVehicleCard extends StatelessWidget {
                       Expanded(
                         child: Text(
                           v.displayName,
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleMedium
+                              ?.copyWith(fontWeight: FontWeight.w800),
                         ),
                       ),
                       PakistaniPlateWidget(
@@ -136,10 +155,12 @@ class ShopVehicleCard extends StatelessWidget {
                     spacing: 10,
                     runSpacing: 6,
                     children: [
-                      _specChip(context, 
-                          Icons.event_seat_rounded, '${v.seats} Seats'),
-                      _specChip(context, Icons.settings_rounded, v.transmission),
-                      _specChip(context, Icons.local_gas_station_rounded, v.fuelType),
+                      _specChip(context, Icons.event_seat_rounded,
+                          l10n.vehicleSeats(v.seats)),
+                      _specChip(
+                          context, Icons.settings_rounded, v.transmission),
+                      _specChip(
+                          context, Icons.local_gas_station_rounded, v.fuelType),
                     ],
                   ),
                   const Divider(height: 18),
@@ -149,12 +170,20 @@ class ShopVehicleCard extends StatelessWidget {
                     runSpacing: 4,
                     children: [
                       Text(
-                        'Self: Rs. ${v.rates.daily24}/day',
-                        style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800),
+                        l10n.vehicleSelfRate(v.rates.daily24),
+                        style: Theme.of(context)
+                            .textTheme
+                            .labelMedium
+                            ?.copyWith(fontWeight: FontWeight.w800),
                       ),
                       Text(
-                        'With Driver: Rs. ${v.rates.daily24 + (v.withDriverSurchargePkr ?? 0)}/day',
-                        style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.secondary),
+                        l10n.vehicleDriverRate(v.rates.daily24 + (v.withDriverSurchargePkr ?? 0)),
+                        style: Theme.of(context)
+                            .textTheme
+                            .labelMedium
+                            ?.copyWith(
+                                fontWeight: FontWeight.w800,
+                                color: AppColors.secondary),
                       ),
                     ],
                   ),
@@ -171,11 +200,14 @@ class ShopVehicleCard extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, size: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
+        Icon(icon,
+            size: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
         const SizedBox(width: 4),
         Text(
           text,
-          style: TextStyle(fontSize: 11.5, color: Theme.of(context).colorScheme.onSurfaceVariant),
+          style: TextStyle(
+              fontSize: 11.5,
+              color: Theme.of(context).colorScheme.onSurfaceVariant),
         ),
       ],
     );

@@ -8,6 +8,7 @@ import '../../data/datasources/dispute_remote_data_source.dart';
 import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../widgets/dispute_form_fields.dart';
 import '../widgets/my_disputes_list.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class CustomerDisputeView extends StatefulWidget {
   final String? initialBookingId;
@@ -32,8 +33,11 @@ class _CustomerDisputeViewState extends State<CustomerDisputeView> {
   bool _isSubmitting = false;
 
   final List<String> _categories = [
-    'Deposit Withheld', 'Unfair Damage Penalty', 'Showroom Overcharge',
-    'Vehicle Breakdown Delay', 'Rude / Unprofessional Staff',
+    'Deposit Withheld',
+    'Unfair Damage Penalty',
+    'Showroom Overcharge',
+    'Vehicle Breakdown Delay',
+    'Rude / Unprofessional Staff',
   ];
 
   @override
@@ -52,14 +56,15 @@ class _CustomerDisputeViewState extends State<CustomerDisputeView> {
   }
 
   Future<void> _submitDispute() async {
+    final l10n = AppLocalizations.of(context)!;
     final bId = _bookingIdController.text.trim();
     final desc = _descriptionController.text.trim();
     if (bId.isEmpty) {
-      AppFeedback.showError(context, 'Please enter your Booking ID.');
+      AppFeedback.showError(context, l10n.disputeEnterBookingId);
       return;
     }
     if (desc.isEmpty) {
-      AppFeedback.showError(context, 'Please explain the issue encountered.');
+      AppFeedback.showError(context, l10n.disputeExplainIssue);
       return;
     }
 
@@ -78,8 +83,7 @@ class _CustomerDisputeViewState extends State<CustomerDisputeView> {
       // it from the booking document instead.
       String? shopId;
       try {
-        final booking =
-            await sl<BookingRemoteDataSource>().getBookingById(bId);
+        final booking = await sl<BookingRemoteDataSource>().getBookingById(bId);
         shopId = booking?.shopId;
       } catch (_) {}
       // G4: the dispute is filed through the data source (Firestore
@@ -98,19 +102,19 @@ class _CustomerDisputeViewState extends State<CustomerDisputeView> {
         if (filed.synced) {
           AppFeedback.showSuccess(
             context,
-            'Dispute filed. The showroom can see it in their disputes inbox.',
+            l10n.disputeFiled,
           );
         } else {
           AppFeedback.showWarning(
             context,
-            'Dispute saved on this device — it will reach the showroom once you are back online.',
+            l10n.disputeSavedOffline,
           );
         }
         widget.onDisputeSubmitted?.call();
       }
     } catch (e) {
       if (mounted) {
-        AppFeedback.showError(context, 'Failed to file dispute: $e');
+        AppFeedback.showError(context, l10n.disputeFileError(e.toString()));
       }
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
@@ -119,6 +123,7 @@ class _CustomerDisputeViewState extends State<CustomerDisputeView> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -127,14 +132,16 @@ class _CustomerDisputeViewState extends State<CustomerDisputeView> {
               variant: CustomCurvedHeaderVariant.compact,
               leadingWidget: widget.onBack != null
                   ? IconButton(
+                      tooltip: l10n.back,
                       icon: const Icon(Icons.arrow_back_ios_new_rounded,
                           color: Colors.white, size: 20),
                       onPressed: widget.onBack,
                     )
                   : null,
               titleWidget: Text(
-                'File Complaint / Dispute',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white),
+                l10n.disputeTitle,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w900, color: Colors.white),
               ),
             ),
             Expanded(
@@ -171,7 +178,7 @@ class _CustomerDisputeViewState extends State<CustomerDisputeView> {
                 ],
               ),
               child: DebouncedButton(
-                text: _isSubmitting ? 'Submitting Dispute...' : 'Submit Claim',
+                text: _isSubmitting ? l10n.disputeSubmitting : l10n.disputeSubmit,
                 icon: Icons.gavel_rounded,
                 isLoading: _isSubmitting,
                 onPressed: _submitDispute,
@@ -183,4 +190,3 @@ class _CustomerDisputeViewState extends State<CustomerDisputeView> {
     );
   }
 }
-

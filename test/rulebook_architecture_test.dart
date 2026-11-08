@@ -19,10 +19,12 @@ import 'package:flutter_test/flutter_test.dart';
 // Phase B (B2) removed `owner_rate_matrix_view.dart` (261 -> 229).
 // Phase C (C3) deleted the orphaned `customer_dashboard_view.dart`
 // (295) outright — its route was unreferenced, a duplicate of Home.
+// Phase C/D shrank the other two D19 files to the cap or below:
+// `owner_onboarding_view.dart` is now 250 and
+// `customer_dispute_view.dart` is now 192, so they leave this map.
+// Only `owner_add_vehicle_view.dart` (259) is still over the cap.
 const Map<String, int> kOverLimitViews = {
-  'lib/features/owner/presentation/views/owner_onboarding_view.dart': 290,
   'lib/features/owner/presentation/views/owner_add_vehicle_view.dart': 259,
-  'lib/features/customer/presentation/views/customer_dispute_view.dart': 260,
 };
 
 // Rulebook §2.2 / D1–D3: the mock flow views, with line counts at
@@ -42,13 +44,13 @@ const Map<String, int> kFlowViews = {};
 // No new importer may appear; removing one is progress.
 // Phase B (B1) removed the three owner importers: `owner_add_vehicle_view`,
 // `owner_fleet_view`, `fleet_vehicle_card`.
-const Set<String> kMockDataImporters = {
-  'lib/features/discovery/presentation/views/shop_cars_view.dart',
-  'lib/features/discovery/presentation/views/shop_detail_view.dart',
-  'lib/features/discovery/presentation/views/vehicle_detail_view.dart',
-  'lib/features/discovery/presentation/views/widgets/customer_vehicle_card.dart',
-  'lib/features/discovery/presentation/views/widgets/vehicle_hero_card.dart',
-};
+// Phase G (G1) verified ZERO importers remain: the five discovery
+// importers (`shop_cars_view`, `shop_detail_view`, `vehicle_detail_view`,
+// `customer_vehicle_card`, `vehicle_hero_card`) no longer reference
+// `mock_data.dart` — the set is empty, matching rulebook §13 D4.
+// `mock_data.dart` itself still exists (see the test below); deleting
+// the file is the remaining D4 step.
+const Set<String> kMockDataImporters = <String>{};
 
 int _lineCount(File file) => file.readAsLinesSync().length;
 
@@ -171,6 +173,69 @@ void main() {
       }
       expect(violations, isEmpty,
           reason: 'Rulebook §2.2 (D1–D3):\n${violations.join('\n')}');
+    });
+  });
+
+  group('Rulebook §4.4 — nav shell is the only navigation mechanism', () {
+    // Phase C (C1/C2): the two StatefulShellRoute shells (customer +
+    // owner, five branches each) own the single floating nav
+    // (`AppShellNav`, via `AppShell`). The 10 tab-root screens must
+    // never embed a nav widget of their own — a second nav would
+    // double the pill and break the shell's branch state.
+    const tabScreens = <String>[
+      'lib/features/discovery/presentation/views/customer_home_view.dart',
+      'lib/features/customer/presentation/views/customer_bookings_view.dart',
+      'lib/features/customer/presentation/views/customer_wallet_view.dart',
+      'lib/features/customer/presentation/views/customer_support_view.dart',
+      'lib/features/customer/presentation/views/customer_profile_view.dart',
+      'lib/features/owner/presentation/views/owner_dashboard_view.dart',
+      'lib/features/owner/presentation/views/owner_fleet_view.dart',
+      'lib/features/owner/presentation/views/owner_booking_requests_view.dart',
+      'lib/features/owner/presentation/views/owner_customers_list_view.dart',
+      'lib/features/owner/presentation/views/owner_settings_view.dart',
+    ];
+
+    test('no tab screen embeds a nav widget directly', () {
+      final navPatterns = <RegExp>[
+        RegExp(r'bottomNavigationBar\s*:'),
+        RegExp(r'\bBottomNavigationBar\s*\('),
+        RegExp(r'\bNavigationBar\s*\('),
+        RegExp(r'AppShellNav'),
+      ];
+      final offenders = <String>[];
+      for (final path in tabScreens) {
+        final file = File(path);
+        expect(file.existsSync(), isTrue,
+            reason: 'tab screen missing from the tree: $path');
+        final content = file.readAsStringSync();
+        for (final pattern in navPatterns) {
+          if (pattern.hasMatch(content)) {
+            offenders.add('$path matches $pattern');
+          }
+        }
+      }
+      expect(offenders, isEmpty,
+          reason:
+              'Rulebook §4.4: the nav shell is the only navigation mechanism. '
+              'Tab screens must not embed a nav widget:\n${offenders.join('\n')}');
+    });
+
+    test('AppShellNav is embedded in exactly one place (AppShell)', () {
+      final embedders = <String>{};
+      for (final file in _dartFiles('lib')) {
+        if (file.readAsStringSync().contains('AppShellNav(')) {
+          embedders.add(_posix(file.path));
+        }
+      }
+      expect(
+        embedders,
+        {'lib/core/widgets/app_shell_nav.dart', 'lib/core/routing/app_shell.dart'},
+        reason:
+            'Rulebook §4.4: AppShellNav must be constructed only by its own '
+            'definition and by AppShell. A new embedder is a second nav.',
+      );
+      final shell = File('lib/core/routing/app_shell.dart').readAsStringSync();
+      expect(shell, contains('bottomNavigationBar'));
     });
   });
 

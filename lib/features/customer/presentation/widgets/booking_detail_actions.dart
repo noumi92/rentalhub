@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/widgets/debounced_button.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
+import '../../../../l10n/app_localizations.dart';
 
 /// The status-driven actions for one booking. Extracted from
 /// [CustomerBookingDetailView] so the view stays under the
@@ -30,17 +31,17 @@ class BookingDetailActions extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: _actions(),
+      children: _actions(AppLocalizations.of(context)!),
     );
   }
 
-  List<Widget> _actions() {
+  List<Widget> _actions(AppLocalizations l10n) {
     switch (booking.status) {
       case 'requested':
         return [
           if (onCancel != null)
             DebouncedButton(
-              text: 'Cancel booking',
+              text: l10n.cancelBooking,
               icon: Icons.cancel_outlined,
               onPressed: () async => onCancel!.call(),
             ),
@@ -49,7 +50,7 @@ class BookingDetailActions extends StatelessWidget {
         return [
           if (onPayAdvance != null)
             DebouncedButton(
-              text: 'Pay advance (Rs. ${booking.advanceRequired})',
+              text: l10n.payAdvanceAmount(booking.advanceRequired),
               icon: Icons.payment_rounded,
               onPressed: () async => onPayAdvance!.call(),
             ),
@@ -58,7 +59,7 @@ class BookingDetailActions extends StatelessWidget {
             OutlinedButton.icon(
               onPressed: onCancel,
               icon: const Icon(Icons.cancel_outlined),
-              label: const Text('Cancel booking'),
+              label:  Text(l10n.cancelBooking),
             ),
           ],
         ];
@@ -67,7 +68,7 @@ class BookingDetailActions extends StatelessWidget {
         return [
           if (onViewPass != null)
             DebouncedButton(
-              text: 'View pickup pass',
+              text: l10n.viewPickupPass,
               icon: Icons.qr_code_rounded,
               onPressed: () async => onViewPass!.call(),
             ),
@@ -76,7 +77,7 @@ class BookingDetailActions extends StatelessWidget {
         return [
           if (onRateTrip != null)
             DebouncedButton(
-              text: 'Rate this trip',
+              text: l10n.rateThisTrip,
               icon: Icons.star_rounded,
               onPressed: () async => onRateTrip!.call(),
             ),
@@ -85,7 +86,7 @@ class BookingDetailActions extends StatelessWidget {
             OutlinedButton.icon(
               onPressed: onFileDispute,
               icon: const Icon(Icons.report_problem_outlined),
-              label: const Text('File a dispute'),
+              label:  Text(l10n.fileDispute),
             ),
           ],
         ];
@@ -93,7 +94,7 @@ class BookingDetailActions extends StatelessWidget {
         return [
           if (onBrowseShops != null)
             DebouncedButton(
-              text: 'Browse other shops',
+              text: l10n.browseOtherShops,
               icon: Icons.search_rounded,
               onPressed: () async => onBrowseShops!.call(),
             ),
@@ -104,7 +105,7 @@ class BookingDetailActions extends StatelessWidget {
             OutlinedButton.icon(
               onPressed: onFileDispute,
               icon: const Icon(Icons.report_problem_outlined),
-              label: const Text('File a dispute'),
+              label:  Text(l10n.fileDispute),
             ),
         ];
       default:

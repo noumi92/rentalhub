@@ -5,6 +5,7 @@ import 'package:rentalhub/core/di/injection_container.dart' as di;
 import 'package:rentalhub/core/di/injection_container.dart';
 import 'package:rentalhub/features/customer/data/datasources/dispute_remote_data_source.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_disputes_view.dart';
+import 'package:rentalhub/l10n/app_localizations.dart';
 
 void main() {
   setUpAll(() async {
@@ -67,7 +68,11 @@ void main() {
         shopId: 'shop-1',
       );
       await tester.pumpWidget(
-          const MaterialApp(home: OwnerDisputesView(shopId: 'shop-1')));
+          MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: const OwnerDisputesView(shopId: 'shop-1'),
+          ));
       await tester.pumpAndSettle();
       expect(find.text('Late return'), findsOneWidget);
       expect(find.textContaining('RH-DSP-VIEW'), findsOneWidget);

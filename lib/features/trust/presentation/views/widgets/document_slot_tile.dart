@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../../core/constants/app_colors.dart';
+import '../../../../../l10n/app_localizations.dart';
 
 class DocumentSlotTile extends StatelessWidget {
   final String title;
@@ -17,6 +18,7 @@ class DocumentSlotTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(14),
@@ -77,7 +79,7 @@ class DocumentSlotTile extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
-                isUploaded ? 'Encrypted' : 'Upload',
+                isUploaded ? l10n.kycEncrypted : l10n.kycUpload,
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800, color: isUploaded
                       ? AppColors.successTextFor(Theme.of(context).brightness)
                       : AppColors.secondary),

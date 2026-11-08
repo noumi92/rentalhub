@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../../core/constants/app_colors.dart';
+import '../../../../../l10n/app_localizations.dart';
 
 class EmptyRadarState extends StatelessWidget {
   final double currentRadiusKm;
@@ -13,6 +14,7 @@ class EmptyRadarState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -38,13 +40,13 @@ class EmptyRadarState extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Text(
-            'No Verified Shops Within ${currentRadiusKm.toInt()} km',
+            l10n.emptyRadarNoShops(currentRadiusKm.toInt()),
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 6),
           Text(
-            'Expand your GPS discovery radius to 5 km to view accredited showrooms nearby.',
+            l10n.emptyRadarExpandHint,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodySmall,
           ),
@@ -52,7 +54,7 @@ class EmptyRadarState extends StatelessWidget {
           ElevatedButton.icon(
             onPressed: onExpandRadius,
             icon: const Icon(Icons.zoom_out_map_rounded, size: 16),
-            label: const Text('Expand Radar to 5 km'),
+            label:  Text(l10n.emptyRadarExpand),
           ),
         ],
       ),

@@ -5,14 +5,14 @@ import '../../../../core/utils/current_shop.dart';
 import '../../../../core/utils/pakistani_validators.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/media_picker_helper.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../fleet/domain/entities/vehicle_entity.dart';
 import '../../../fleet/domain/usecases/add_vehicle_usecase.dart';
 import '../services/vehicle_photo_upload_service.dart';
 import '../widgets/add_vehicle/add_vehicle_step_content.dart';
 import '../widgets/add_vehicle/add_vehicle_stepper_bar.dart';
 
-/// Phase B (B1): builds a real [VehicleEntity] and saves it through
-/// [AddVehicleUseCase] instead of returning a mock vehicle.
+/// Phase B (B1): builds a real [VehicleEntity] and saves it through [AddVehicleUseCase] instead of returning a mock vehicle.
 class OwnerAddVehicleView extends StatefulWidget {
   final ValueChanged<VehicleEntity>? onVehicleAdded;
   final String? shopId;
@@ -59,8 +59,8 @@ class _OwnerAddVehicleViewState extends State<OwnerAddVehicleView> {
 
   bool _validateStep() {
     if (_currentStep == 1) {
-      if (_selectedModel.trim().isEmpty) return _stepErr('Please specify vehicle model variant.');
-      if (_plateController.text.trim().isEmpty) return _stepErr('Registration plate number is required.');
+      if (_selectedModel.trim().isEmpty) return _stepErr(AppLocalizations.of(context)!.addVehicleModelRequired);
+      if (_plateController.text.trim().isEmpty) return _stepErr(AppLocalizations.of(context)!.addVehiclePlateRequired);
     } else if (_currentStep == 3) {
       final r = PakistaniValidators.validateRentalRate(_rate24HoursController.text, label: 'Full Day Rate');
       if (r != null) return _stepErr(r);
@@ -116,7 +116,7 @@ class _OwnerAddVehicleViewState extends State<OwnerAddVehicleView> {
     }
     if (!mounted) return;
     widget.onVehicleAdded?.call(vehicle);
-    AppFeedback.showSuccess(context, '${vehicle.displayName} added to showroom fleet!');
+    AppFeedback.showSuccess(context, AppLocalizations.of(context)!.addVehicleAdded(vehicle.displayName));
     Navigator.of(context).pop(vehicle);
   }
 

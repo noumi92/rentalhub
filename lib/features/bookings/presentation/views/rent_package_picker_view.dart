@@ -13,6 +13,7 @@ import '../widgets/package_picker_header.dart';
 import '../widgets/package_summary_bar.dart';
 import '../widgets/package_tier_list.dart';
 import '../widgets/trip_type_section.dart';
+import '../../../../l10n/app_localizations.dart';
 
 /// Phase B (B2): when a [vehicle] is supplied, the picker offers only
 /// that vehicle's enabled packages at their real prices, with the
@@ -153,6 +154,7 @@ class _RentPackagePickerViewState extends State<RentPackagePickerView> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final tiers = _tiers;
     final vehicle = widget.vehicle;
     return Scaffold(
@@ -191,7 +193,7 @@ class _RentPackagePickerViewState extends State<RentPackagePickerView> {
                       ),
                     ],
                     const SizedBox(height: 16),
-                    Text('Available Duration Tiers',
+                    Text(l10n.packageTiersTitle,
                         style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
                     const SizedBox(height: 10),
                     PackageTierList(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
@@ -44,10 +45,10 @@ class _OwnerCustomerRatingViewState extends State<OwnerCustomerRatingView> {
   /// The blacklist report uses the booking's real CNIC and phone (the old hardcoded CNIC/phone are gone); without a CNIC the report cannot
   /// be filed from here, and the switch is disabled.
   Future<void> _submitRating() async {
+  final l10n = AppLocalizations.of(context)!;
     setState(() => _isSubmitting = true);
     try {
-      final synced =
-          await sl<ReviewRemoteDataSource>().submitOwnerReview(
+      final synced = await sl<ReviewRemoteDataSource>().submitOwnerReview(
         bookingId: widget.booking.bookingId,
         shopId: widget.booking.shopId,
         customerId: widget.booking.customerId,
@@ -75,19 +76,13 @@ class _OwnerCustomerRatingViewState extends State<OwnerCustomerRatingView> {
       }
 
       if (mounted) {
-        AppFeedback.showSuccess(
-          context,
-          !synced
-              ? 'Rating saved on this device — it will sync when you are back online.'
-              : blacklisted
-                  ? 'Rating saved and the customer was reported to the shared blacklist.'
-                  : 'Your rating of the customer has been saved.',
+        AppFeedback.showSuccess( context, !synced ? l10n.customersRatingSavedOffline : blacklisted ? l10n.customersRatingSavedBlacklisted : l10n.customersRatingSaved,
         );
         // Flow complete: go to the Requests list (tab root); other tabs keep their state.
         context.go(RouteNames.ownerRequests);
       }
     } catch (e) {
-      if (mounted) AppFeedback.showError(context, 'Submission failed: $e');
+      if (mounted) AppFeedback.showError(context, l10n.customersRatingSubmitFailed(e.toString()));
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
     }
@@ -95,6 +90,7 @@ class _OwnerCustomerRatingViewState extends State<OwnerCustomerRatingView> {
 
   @override
   Widget build(BuildContext context) {
+  final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -103,15 +99,17 @@ class _OwnerCustomerRatingViewState extends State<OwnerCustomerRatingView> {
               variant: CustomCurvedHeaderVariant.compact,
               leadingWidget: widget.onBack != null
                   ? IconButton(
-                      icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
+                      tooltip: l10n.back,
+                      icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                          color: Colors.white, size: 20),
                       onPressed: widget.onBack,
                     )
                   : null,
               titleWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Customer Reputation & Review', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
-                  Text(widget.booking.customerName ?? 'Customer Review', style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.primaryContainer)),
+                  Text(l10n.customersRatingTitle, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
+                  Text(widget.booking.customerName ?? l10n.customersRatingFallback, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.primaryContainer)),
                 ],
               ),
             ),
@@ -126,7 +124,7 @@ class _OwnerCustomerRatingViewState extends State<OwnerCustomerRatingView> {
                     _blacklistSection(),
                     const SizedBox(height: 24),
                     DebouncedButton(
-                      text: _isSubmitting ? 'Recording Rating...' : 'Submit Rating & Close Trip',
+                      text: _isSubmitting ? l10n.customersRatingSubmitting : l10n.customersRatingSubmit,
                       icon: Icons.check_circle_rounded,
                       isLoading: _isSubmitting,
                       onPressed: _submitRating,
@@ -142,6 +140,7 @@ class _OwnerCustomerRatingViewState extends State<OwnerCustomerRatingView> {
   }
 
   Widget _ratingsContainer() {
+  final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -152,20 +151,20 @@ class _OwnerCustomerRatingViewState extends State<OwnerCustomerRatingView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Customer Performance Feedback', style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
+          Text(l10n.customersRatingFeedbackTitle, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
           const SizedBox(height: 12),
-          _starRow('Return Punctuality & Timekeeping', 'Vehicle returned as per agreed contract schedule', _punctualityRating, (r) => setState(() => _punctualityRating = r)),
+          _starRow(l10n.customersRatingPunctuality, l10n.customersRatingPunctualityHint, _punctualityRating, (r) => setState(() => _punctualityRating = r)),
           const SizedBox(height: 10),
-          _starRow('Vehicle Care & Cleanliness', 'Interior cleanliness and scratch-free return', _careRating, (r) => setState(() => _careRating = r)),
+          _starRow(l10n.customersRatingCare, l10n.customersRatingCareHint, _careRating, (r) => setState(() => _careRating = r)),
           const SizedBox(height: 10),
-          _starRow('Overall Behavior & Civility', 'Professionalism and adherence to showroom policies', _behaviorRating, (r) => setState(() => _behaviorRating = r)),
+          _starRow(l10n.customersRatingBehavior, l10n.customersRatingBehaviorHint, _behaviorRating, (r) => setState(() => _behaviorRating = r)),
           const SizedBox(height: 14),
           TextField(
             controller: _commentController,
             maxLines: 2,
             style: Theme.of(context).textTheme.bodyMedium,
             decoration: InputDecoration(
-              hintText: 'Add optional feedback notes for community showroom records...',
+              hintText: l10n.customersRatingCommentHint,
               filled: true,
               fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: AppColors.borderSubtle)),
@@ -187,6 +186,7 @@ class _OwnerCustomerRatingViewState extends State<OwnerCustomerRatingView> {
   }
 
   Widget _blacklistSection() {
+  final l10n = AppLocalizations.of(context)!;
     return Material(
       color: _flagForBlacklist ? Theme.of(context).colorScheme.errorContainer : Theme.of(context).colorScheme.surface,
       borderRadius: BorderRadius.circular(16),
@@ -202,13 +202,8 @@ class _OwnerCustomerRatingViewState extends State<OwnerCustomerRatingView> {
             SwitchListTile(
               activeThumbColor: Theme.of(context).colorScheme.error,
               contentPadding: EdgeInsets.zero,
-              title: Text('Flag Customer to Shared Blacklist', style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800, color: Theme.of(context).colorScheme.error)),
-              subtitle: Text(
-                  widget.booking.customerCnic == null ||
-                          widget.booking.customerCnic!.isEmpty
-                      ? 'Needs the customer CNIC on this booking — none is recorded, so a report cannot be filed from here.'
-                      : 'Other showrooms using RentalHub can see this report',
-                  style: Theme.of(context).textTheme.labelSmall),
+              title: Text(l10n.customersRatingFlagTitle, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800, color: Theme.of(context).colorScheme.error)),
+              subtitle: Text( widget.booking.customerCnic == null || widget.booking.customerCnic!.isEmpty ? l10n.customersRatingFlagNoCnic : l10n.customersRatingFlagVisible, style: Theme.of(context).textTheme.labelSmall),
               value: _flagForBlacklist,
               onChanged: widget.booking.customerCnic == null ||
                       widget.booking.customerCnic!.isEmpty
@@ -217,7 +212,7 @@ class _OwnerCustomerRatingViewState extends State<OwnerCustomerRatingView> {
             ),
             if (_flagForBlacklist) ...[
               const SizedBox(height: 10),
-              Text('Reason Category for Tribunal:', style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700)),
+              Text(l10n.customersRatingReasonLabel, style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700)),
               const SizedBox(height: 6),
               DropdownButtonFormField<String>(
                 initialValue: _selectedReason,
@@ -230,11 +225,11 @@ class _OwnerCustomerRatingViewState extends State<OwnerCustomerRatingView> {
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                 ),
-                items: const [
-                  DropdownMenuItem(value: 'Payment Default / Refusal to Settle Penalty', child: Text('Payment Default / Refusal to Settle')),
-                  DropdownMenuItem(value: 'Unauthorized Inter-provincial Border Crossing', child: Text('Unauthorized Border Crossing')),
-                  DropdownMenuItem(value: 'Vehicle Abuse / Major Collision Abandonment', child: Text('Vehicle Abuse / Abandonment')),
-                  DropdownMenuItem(value: 'Fake NADRA CNIC / Impersonation Fraud', child: Text('Fake Identity / Impersonation')),
+                items: [
+                  DropdownMenuItem(value: 'Payment Default / Refusal to Settle Penalty', child: Text(l10n.customersRatingReasonPayment)),
+                  DropdownMenuItem(value: 'Unauthorized Inter-provincial Border Crossing', child: Text(l10n.customersRatingReasonBorder)),
+                  DropdownMenuItem(value: 'Vehicle Abuse / Major Collision Abandonment', child: Text(l10n.customersRatingReasonAbuse)),
+                  DropdownMenuItem(value: 'Fake NADRA CNIC / Impersonation Fraud', child: Text(l10n.customersRatingReasonFake)),
                 ],
                 onChanged: (val) {
                   if (val != null) setState(() => _selectedReason = val);

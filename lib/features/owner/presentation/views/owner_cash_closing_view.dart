@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
@@ -52,8 +53,8 @@ class _OwnerCashClosingViewState extends State<OwnerCashClosingView> {
     try {
       final accounts =
           await sl<FinanceAccountDataSource>().getShopAccounts(widget.shopId);
-      final transfers = await sl<FinanceTransferDataSource>()
-          .getShopTransfers(widget.shopId);
+      final transfers =
+          await sl<FinanceTransferDataSource>().getShopTransfers(widget.shopId);
       final bookings =
           await sl<BookingRemoteDataSource>().getShopBookings(widget.shopId);
       final closings =
@@ -66,7 +67,8 @@ class _OwnerCashClosingViewState extends State<OwnerCashClosingView> {
           _closings = closings;
         });
       }
-    } catch (_) {} finally {
+    } catch (_) {
+    } finally {
       if (mounted) setState(() => _isLoading = false);
     }
   }
@@ -93,9 +95,10 @@ class _OwnerCashClosingViewState extends State<OwnerCashClosingView> {
   int get _counted => int.tryParse(_countedController.text.trim()) ?? 0;
 
   Future<void> _saveClosing() async {
+  final l10n = AppLocalizations.of(context)!;
     final counted = int.tryParse(_countedController.text.trim());
     if (counted == null) {
-      AppFeedback.showError(context, 'Enter the counted cash first.');
+      AppFeedback.showError(context, l10n.financeClosingEnterCounted);
       return;
     }
     setState(() => _isSaving = true);
@@ -111,8 +114,8 @@ class _OwnerCashClosingViewState extends State<OwnerCashClosingView> {
             : _noteController.text.trim(),
       );
       if (mounted) {
-        AppFeedback.showSuccess(context,
-            'Day closed — difference Rs. ${counted - _expectedCash}.');
+        AppFeedback.showSuccess(
+            context, l10n.financeClosingClosed(counted - _expectedCash));
         _countedController.clear();
         _noteController.clear();
         _load();
@@ -131,6 +134,7 @@ class _OwnerCashClosingViewState extends State<OwnerCashClosingView> {
 
   @override
   Widget build(BuildContext context) {
+  final l10n = AppLocalizations.of(context)!;
     final diff = _counted - _expectedCash;
     return Scaffold(
       body: SafeArea(
@@ -139,6 +143,7 @@ class _OwnerCashClosingViewState extends State<OwnerCashClosingView> {
             CustomCurvedHeader(
               variant: CustomCurvedHeaderVariant.compact,
               leadingWidget: IconButton(
+                tooltip: l10n.back,
                 icon: const Icon(Icons.arrow_back_ios_new_rounded,
                     color: Colors.white, size: 20),
                 onPressed: () => context.pop(),
@@ -146,10 +151,14 @@ class _OwnerCashClosingViewState extends State<OwnerCashClosingView> {
               titleWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Cash Closing',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
-                  Text('Count the till, close the day',
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.primaryContainer)),
+                  Text(l10n.financeCashClosing,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w900, color: Colors.white)),
+                  Text(l10n.financeClosingSubtitle,
+                      style: Theme.of(context)
+                          .textTheme
+                          .labelSmall
+                          ?.copyWith(color: AppColors.primaryContainer)),
                 ],
               ),
             ),
@@ -173,29 +182,31 @@ class _OwnerCashClosingViewState extends State<OwnerCashClosingView> {
                             keyboardType: TextInputType.number,
                             onChanged: (_) => setState(() {}),
                             decoration: InputDecoration(
-                              labelText: 'Counted cash (Rs.)',
+                              labelText: l10n.financeClosingCountedLabel,
                               border: OutlineInputBorder(),
                               filled: true,
-                              fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                              fillColor: Theme.of(context)
+                                  .colorScheme
+                                  .surfaceContainerHighest,
                             ),
                           ),
                           const SizedBox(height: 12),
                           TextField(
                             controller: _noteController,
                             decoration: InputDecoration(
-                              labelText: 'Note (optional)',
+                              labelText: l10n.financeNoteOptional,
                               border: OutlineInputBorder(),
                               filled: true,
-                              fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                              fillColor: Theme.of(context)
+                                  .colorScheme
+                                  .surfaceContainerHighest,
                             ),
                           ),
                           const SizedBox(height: 12),
                           SizedBox(
                             width: double.infinity,
                             child: DebouncedButton(
-                              text: _isSaving
-                                  ? 'Closing...'
-                                  : 'Close the day',
+                              text: _isSaving ? l10n.financeClosingSaving : l10n.financeClosingButton,
                               icon: Icons.lock_rounded,
                               isLoading: _isSaving,
                               onPressed: _saveClosing,
@@ -208,14 +219,21 @@ class _OwnerCashClosingViewState extends State<OwnerCashClosingView> {
                             transfers: _transfers,
                           ),
                           const SizedBox(height: 20),
-                          Text('Past closings',
-                              style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
+                          Text(l10n.financeClosingPast,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleSmall
+                                  ?.copyWith(fontWeight: FontWeight.w800)),
                           const SizedBox(height: 8),
                           if (_closings.isEmpty)
-                            Text('No closings yet.',
-                                style:
-                                    TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
-                          ..._closings.take(10).map((c) => CashClosingRow(closing: c)),
+                            Text(l10n.financeClosingEmpty,
+                                style: TextStyle(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurfaceVariant)),
+                          ..._closings
+                              .take(10)
+                              .map((c) => CashClosingRow(closing: c)),
                         ],
                       ),
                     ),
@@ -225,6 +243,4 @@ class _OwnerCashClosingViewState extends State<OwnerCashClosingView> {
       ),
     );
   }
-
-
 }

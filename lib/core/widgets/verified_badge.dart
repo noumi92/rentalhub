@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import '../constants/app_colors.dart';
+import '../../l10n/app_localizations.dart';
 
 class VerifiedBadge extends StatelessWidget {
-  final String label;
+  final String? label;
   final bool isSmall;
   final bool isVerified;
 
   const VerifiedBadge({
     super.key,
-    this.label = 'NADRA Verified',
+    this.label,
     this.isSmall = false,
     this.isVerified = true,
   });
@@ -16,6 +17,12 @@ class VerifiedBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final brightness = Theme.of(context).brightness;
+    // Phase F: the badge copy is localized; an explicit [label]
+    // still wins. English fallback for delegate-less pumps.
+    final l10n = AppLocalizations.of(context);
+    final verifiedLabel =
+        label ?? l10n?.badgeNadraVerified ?? 'NADRA Verified';
+    final pendingLabel = l10n?.statusPendingReview ?? 'Pending Review';
     final Color badgeColor = isVerified
         ? AppColors.successOnContainerFor(brightness)
         : AppColors.warningOnContainerFor(brightness);
@@ -47,7 +54,7 @@ class VerifiedBadge extends StatelessWidget {
           const SizedBox(width: 4),
           Flexible(
             child: Text(
-              isVerified ? label : 'Pending Review',
+              isVerified ? verifiedLabel : pendingLabel,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.labelSmall?.copyWith(

@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/widgets/pakistani_plate_widget.dart';
+import '../../../../../l10n/app_localizations.dart';
 import '../../../../fleet/domain/entities/vehicle_entity.dart';
 
 /// Phase B (B1): fleet card for a real [VehicleEntity] (was MockVehicle).
@@ -62,21 +63,13 @@ class FleetVehicleCard extends StatelessWidget {
     return 'assets/images/white_sedan_hero.png';
   }
 
-  String _statusLabel(String status) {
-    switch (status) {
-      case 'available':
-        return 'Available';
-      case 'rented':
-        return 'On Rent';
-      case 'maintenance':
-        return 'Maintenance';
-      default:
-        return status;
-    }
-  }
+  /// The stored status code stays as-is; only the displayed label
+  /// is localized.
+  String _statusLabel(AppLocalizations l10n, String status) => {'available': l10n.available, 'rented': l10n.fleetOnRent, 'maintenance': l10n.fleetFilterMaintenance}[status] ?? status;
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final isAvailable = vehicle.status == 'available';
 
     return Card(
@@ -111,7 +104,7 @@ class FleetVehicleCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        '${vehicle.transmission} • ${vehicle.fuelType} • ${vehicle.seats} Seats',
+                        l10n.fleetVehicleSpecs(vehicle.transmission, vehicle.fuelType, vehicle.seats),
                         style: Theme.of(context).textTheme.labelSmall,
                       ),
                     ],
@@ -135,10 +128,10 @@ class FleetVehicleCard extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Daily Self-Drive Rate',
+                    Text(l10n.fleetDailySelfDriveRate,
                         style: Theme.of(context).textTheme.labelSmall),
                     Text(
-                      'Rs. ${vehicle.rates.daily24}/day',
+                      l10n.fleetDailyRate(vehicle.rates.daily24),
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.w900,
                       ),
@@ -149,7 +142,7 @@ class FleetVehicleCard extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      _statusLabel(vehicle.status),
+                      _statusLabel(l10n, vehicle.status),
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
                         fontWeight: FontWeight.w800,
                         color: isAvailable
@@ -164,12 +157,12 @@ class FleetVehicleCard extends StatelessWidget {
                       onChanged: onToggleAvailability,
                     ),
                     IconButton(
-                      tooltip: 'Edit rates',
+                      tooltip: l10n.fleetEditRatesTooltip,
                       icon: const Icon(Icons.tune_rounded, size: 20),
                       onPressed: onEditRates,
                     ),
                     IconButton(
-                      tooltip: 'Booking calendar',
+                      tooltip: l10n.fleetCalendarTooltip,
                       icon: const Icon(Icons.calendar_month_rounded, size: 20),
                       onPressed: onViewCalendar,
                     ),

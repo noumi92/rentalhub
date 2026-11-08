@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/responsive.dart';
+import '../../../../core/widgets/app_state_views.dart';
 import '../../../../core/widgets/custom_curved_header.dart';
 import '../../data/datasources/customer_location_store.dart';
 import '../../data/datasources/discovery_remote_data_source.dart';
@@ -13,9 +14,11 @@ import '../../domain/entities/shop_entity.dart';
 import '../../domain/usecases/get_nearby_shops_usecase.dart';
 import '../cubit/discovery_cubit.dart';
 import 'widgets/empty_radar_state.dart';
+import 'widgets/home_quick_actions.dart';
 import 'widgets/radius_filter_pills.dart';
 import 'widgets/shop_list_card.dart';
 import 'widgets/shop_map_view.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class CustomerHomeView extends StatelessWidget {
   final ValueChanged<ShopEntity>? onShopSelected;
@@ -79,6 +82,7 @@ class _CustomerHomeBodyState extends State<_CustomerHomeBody> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       // Phase D (D2): the only tab root that lacked a SafeArea — the
       // header and content now clear the status bar like the other
@@ -87,112 +91,112 @@ class _CustomerHomeBodyState extends State<_CustomerHomeBody> {
         child: Column(
           children: [
             Expanded(
-            child: BlocBuilder<DiscoveryCubit, DiscoveryState>(
-              builder: (context, state) {
-          final cubit = context.read<DiscoveryCubit>();
-          double radiusKm = 3.0;
-          bool isMap = false;
-          List<ShopEntity> shops = const [];
+              child: BlocBuilder<DiscoveryCubit, DiscoveryState>(
+                builder: (context, state) {
+                  final cubit = context.read<DiscoveryCubit>();
+                  double radiusKm = 3.0;
+                  bool isMap = false;
+                  List<ShopEntity> shops = const [];
 
-          if (state is DiscoveryLoaded) {
-            radiusKm = state.currentRadiusKm;
-            isMap = state.isMapView;
-            shops = state.shops;
-          } else if (state is DiscoveryEmpty) {
-            radiusKm = state.currentRadiusKm;
-          }
+                  if (state is DiscoveryLoaded) {
+                    radiusKm = state.currentRadiusKm;
+                    isMap = state.isMapView;
+                    shops = state.shops;
+                  } else if (state is DiscoveryEmpty) {
+                    radiusKm = state.currentRadiusKm;
+                  }
 
-          return SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CustomCurvedHeader(
-                  variant: CustomCurvedHeaderVariant.hero,
-                  showProfileGreeting: true,
-                  titleWidget: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Find Verified Rental Shops',
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900, color: Colors.white),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        cubit.currentLocation.fromGps
-                            ? '${cubit.currentLocation.area} • GPS Active'
-                            : cubit.currentLocation.area,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.primaryContainer),
-                      ),
-                    ],
-                  ),
-                  actions: [
-                    IconButton(
-                      tooltip: 'Switch to Interactive Map',
-                      onPressed: () => context.push(RouteNames.customerHomeMap),
-                      icon: const Icon(
-                        Icons.map_rounded,
-                        color: AppColors.secondary,
-                      ),
-                    ),
-                  ],
-                ),
-                HeaderOverlapContainer(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                  return SingleChildScrollView(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Card(
+                        CustomCurvedHeader(
+                          variant: CustomCurvedHeaderVariant.hero,
+                          showProfileGreeting: true,
+                          titleWidget: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                l10n.homeTitle,
+                                style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900, color: Colors.white),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                cubit.currentLocation.fromGps
+                                    ? l10n.homeGpsActive(cubit.currentLocation.area)
+                                    : cubit.currentLocation.area,
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.primaryContainer),
+                              ),
+                            ],
+                          ),
+                          actions: [
+                            IconButton(
+                              tooltip: l10n.homeSwitchToMap,
+                              onPressed: () => context.push(RouteNames.customerHomeMap),
+                              icon: const Icon(Icons.map_rounded, color: AppColors.secondary),
+                            ),
+                          ],
+                        ),
+                        HeaderOverlapContainer(
                           child: Padding(
-                            padding: const EdgeInsets.all(12),
-                            child: RadiusFilterPills(
-                              selectedRadiusKm: radiusKm,
-                              onRadiusSelected: (km) =>
-                                  cubit.fetchNearbyShops(radiusKm: km),
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Card(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(12),
+                                    child: RadiusFilterPills(
+                                      selectedRadiusKm: radiusKm,
+                                      onRadiusSelected: (km) =>
+                                          cubit.fetchNearbyShops(radiusKm: km),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                                // E1: quick actions sit between the radius
+                                // filter and the shop list / map, in every
+                                // state (loading, empty, loaded).
+                                const CustomerHomeQuickActions(),
+                                const SizedBox(height: 12),
+                                if (state is DiscoveryLoading)
+                                  // E2: shared loading state; the empty
+                                  // state below stays the domain-specific
+                                  // EmptyRadarState (expand-radius action).
+                                   AppLoadingState(message: l10n.homeFindingShops)
+                                else if (state is DiscoveryEmpty)
+                                  EmptyRadarState(
+                                    currentRadiusKm: radiusKm,
+                                    onExpandRadius: () =>
+                                        cubit.fetchNearbyShops(radiusKm: 5.0),
+                                  )
+                                else if (isMap)
+                                  ShopMapView(
+                                    shops: shops,
+                                    radiusKm: radiusKm,
+                                    userLocation: ll.LatLng(
+                                      cubit.currentLocation.latitude,
+                                      cubit.currentLocation.longitude,
+                                    ),
+                                    onShopSelected: (shop) =>
+                                        _openShop(context, shop),
+                                  )
+                                else
+                                  HomeShopList(
+                                    shops: shops,
+                                    onShopSelected: (shop) =>
+                                        _openShop(context, shop),
+                                  ),
+                              ],
                             ),
                           ),
                         ),
-                        const SizedBox(height: 12),
-                        if (state is DiscoveryLoading)
-                          const Center(
-                            child: Padding(
-                              padding: EdgeInsets.all(28),
-                              child: CircularProgressIndicator(),
-                            ),
-                          )
-                        else if (state is DiscoveryEmpty)
-                          EmptyRadarState(
-                            currentRadiusKm: radiusKm,
-                            onExpandRadius: () =>
-                                cubit.fetchNearbyShops(radiusKm: 5.0),
-                          )
-                        else if (isMap)
-                          ShopMapView(
-                            shops: shops,
-                            radiusKm: radiusKm,
-                            userLocation: ll.LatLng(
-                              cubit.currentLocation.latitude,
-                              cubit.currentLocation.longitude,
-                            ),
-                            onShopSelected: (shop) =>
-                                _openShop(context, shop),
-                          )
-                        else
-                          HomeShopList(
-                            shops: shops,
-                            onShopSelected: (shop) =>
-                                _openShop(context, shop),
-                          ),
                       ],
                     ),
-                  ),
-                ),
-              ],
+                  );
+                },
+              ),
             ),
-          );
-        },
-            ),
-          ),
           ],
         ),
       ),
@@ -237,4 +241,3 @@ class HomeShopList extends StatelessWidget {
     );
   }
 }
-

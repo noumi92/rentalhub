@@ -11,6 +11,7 @@ import 'package:rentalhub/features/discovery/data/models/shop_model.dart';
 import 'package:rentalhub/features/discovery/domain/entities/shop_entity.dart';
 import 'package:rentalhub/features/fleet/data/models/vehicle_model.dart';
 import 'package:rentalhub/features/trust/presentation/views/customer_documents_view.dart';
+import 'package:rentalhub/l10n/app_localizations.dart';
 
 void main() {
   // G3: the documents view resolves its KycCubit from DI, so this
@@ -328,6 +329,8 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.lightTheme,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           home: CustomerDocumentsView(
             onSubmitted: () => submitted = true,
           ),

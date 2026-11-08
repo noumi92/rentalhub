@@ -1,1 +1,2668 @@
-{"@@locale": "en", "appTitle": "RentalHub Pakistan", "blacklist": "Blacklist Reports", "bookings": "Bookings", "customers": "Customers", "dashboard": "Dashboard", "fixedRoutes": "Fixed Routes", "fleet": "Fleet", "language": "Language", "languageEnglish": "English", "languageUrdu": "Urdu", "notifications": "Notifications", "quickLinks": "Quick links", "settings": "Shop Settings", "settingsSubtitle": "Language, theme and your showroom", "shop": "Your showroom", "shopNotSet": "Shop name not set yet", "signOut": "Sign Out", "subscription": "Subscription", "theme": "Theme", "themeDark": "Dark", "themeLight": "Light", "themeSystem": "System", "whatsappLogs": "WhatsApp Logs", "finance": "Finance", "customerSettings": "Settings & Preferences", "pushNotifications": "Push Notifications", "whatsappNotifications": "WhatsApp Notifications", "appVersion": "App Version", "disputes": "Disputes"}
+{
+  "@@locale": "en",
+  "appTitle": "RentalHub Pakistan",
+  "blacklist": "Blacklist Reports",
+  "fixedRoutes": "Fixed Routes",
+  "language": "Language",
+  "languageEnglish": "English",
+  "languageUrdu": "Urdu",
+  "notifications": "Notifications",
+  "quickLinks": "Quick links",
+  "settings": "Shop Settings",
+  "settingsSubtitle": "Language, theme and your showroom",
+  "shop": "Your showroom",
+  "shopNotSet": "Shop name not set yet",
+  "signOut": "Sign Out",
+  "subscription": "Subscription",
+  "theme": "Theme",
+  "themeDark": "Dark",
+  "themeLight": "Light",
+  "themeSystem": "System",
+  "whatsappLogs": "WhatsApp Logs",
+  "finance": "Finance",
+  "customerSettings": "Settings & Preferences",
+  "pushNotifications": "Push Notifications",
+  "whatsappNotifications": "WhatsApp Notifications",
+  "appVersion": "App Version",
+  "disputes": "Disputes",
+  "back": "Back",
+  "cancel": "Cancel",
+  "sos": "SOS",
+  "active": "Active",
+  "filterAll": "All",
+  "pending": "Pending",
+  "statusApproved": "Approved",
+  "done": "Done",
+  "statusCompleted": "Completed",
+  "statusCancelled": "Cancelled",
+  "statusRejected": "Rejected",
+  "statusPaid": "Paid",
+  "statusOnTrip": "On trip",
+  "statusProofSubmitted": "Proof submitted",
+  "statusRequestSent": "Request sent",
+  "statusPendingReview": "Pending Review",
+  "inReview": "In review",
+  "disputeOpen": "Open",
+  "disputeResolved": "Resolved",
+  "verified": "Verified",
+  "available": "Available",
+  "rentedOut": "Rented Out",
+  "inMaintenance": "In Maintenance",
+  "availableNow": "Available Now",
+  "selfDrive": "Self Drive",
+  "withDriver": "With Driver",
+  "withChauffeur": "With Chauffeur",
+  "selfDriveHyphen": "Self-Drive",
+  "inCity": "In city",
+  "outOfCity": "Out of city",
+  "inCityHyphen": "In-City",
+  "outOfCityHyphen": "Out-of-City",
+  "supportUrgencyLow": "Low",
+  "supportUrgencyMedium": "Medium",
+  "supportUrgencyHigh": "High — urgent",
+  "call": "Call",
+  "whatsapp": "WhatsApp",
+  "viewFleet": "View Fleet",
+  "showroomLabel": "Showroom",
+  "rentalCar": "Rental Car",
+  "rentalShowroom": "Rental Showroom",
+  "summaryVehicle": "Vehicle",
+  "packageLabel": "Package",
+  "pickupLabel": "Pickup",
+  "summaryReturn": "Return",
+  "summaryTotal": "Total",
+  "summaryTrip": "Trip",
+  "summaryMode": "Mode",
+  "summaryPlate": "Plate",
+  "summaryRemaining": "Remaining",
+  "packageContinue": "Continue",
+  "kycUpload": "Upload",
+  "kycEncrypted": "Encrypted",
+  "kycCustomer": "Customer",
+  "walletLabel": "Wallet",
+  "profileGuest": "Guest",
+  "homeTitle": "Find Verified Rental Shops",
+  "homeSwitchToMap": "Switch to Interactive Map",
+  "homeFindingShops": "Finding nearby shops…",
+  "homeNearbyShowrooms": "Nearby Showrooms",
+  "homeMyLiveLocation": "My Live Location",
+  "homeSwitchToList": "Switch to List View",
+  "locationSetTitle": "Set Rental Location",
+  "locationCenterPin": "Center Location Pin",
+  "locationPermissionDenied": "Location permission denied. Tap a city to explore.",
+  "locationEnableGps": "Please enable GPS / Location Services on your device.",
+  "locationSelectCityManually": "Select City Manually (Lahore)",
+  "locationAllowWhileUsing": "Allow While Using App",
+  "locationEnablePrecise": "Enable Precise Location",
+  "locationPermissionExplainer": "RentalHub uses your real-time GPS coordinates to calculate road distances and discover verified rental showrooms within 1–5 km around you in Pakistan.",
+  "emptyRadarExpandHint": "Expand your GPS discovery radius to 5 km to view accredited showrooms nearby.",
+  "emptyRadarExpand": "Expand Radar to 5 km",
+  "noShopsBanner": "No verified showrooms within this radius yet. Try a wider radius.",
+  "radiusLabel": "Radius:",
+  "quickBookCar": "Book a Car",
+  "quickScanPass": "Scan Pass",
+  "quickNearbyShops": "Nearby Shops",
+  "shopCarsTitle": "Available Fleet",
+  "shopCarsLoading": "Loading available cars…",
+  "shopCarsLoadError": "Could not load this showroom’s cars. Check your connection and try again.",
+  "shopCarsTryOther": "Try a different category, or check back later.",
+  "shopSave": "Save showroom",
+  "shopSaved": "Saved",
+  "shopSaveError": "Could not save this showroom.",
+  "shopSaveSignIn": "Sign in to save showrooms.",
+  "shopNoCars": "This shop has no cars listed yet.",
+  "shopCheckLater": "Check back later, or browse other showrooms.",
+  "shopLoadingCars": "Loading this showroom’s cars…",
+  "shopViewAllCars": "View all cars with filters",
+  "vehicleCapacity": "Capacity",
+  "vehicleFuelType": "Fuel Type",
+  "vehicleMileage": "Mileage",
+  "vehicleTransmission": "Transmission",
+  "vehicleChoosePackage": "Choose Rental Package",
+  "couldNotOpenWhatsapp": "Could not open WhatsApp.",
+  "couldNotCall": "Could not place the call.",
+  "shopNoWhatsapp": "This shop has no WhatsApp number listed.",
+  "shopNoWhatsappShowroom": "This showroom has no WhatsApp number listed.",
+  "bookingsTitle": "My Reservations",
+  "bookingsLoading": "Loading your reservations…",
+  "bookingsLoadError": "Could not load your bookings. Check your connection and try again.",
+  "bookingsEmptyHint": "Bookings you make will appear here.",
+  "bookingsPayAdvance": "Pay Advance",
+  "bookingsViewPass": "View Pass",
+  "bookingsRateTrip": "Rate Trip",
+  "activeTripTitle": "Active Trip",
+  "countdownToPickup": "COUNTDOWN TO PICKUP",
+  "timeUntilReturn": "TIME UNTIL RETURN",
+  "kmIncluded": "KM included",
+  "returnDue": "Return due",
+  "totalFare": "Total fare",
+  "viewPickupPassQr": "View Pickup Pass (QR)",
+  "viewPassQr": "View Pass / QR",
+  "activeRentalCar": "Active Rental Car",
+  "handoverAtPickup": "Handover at Pickup",
+  "odometerAtPickup": "Odometer at pickup",
+  "fuelAtPickup": "Fuel at pickup",
+  "damageNoted": "Damage noted",
+  "handoverPendingNote": "The shop records the odometer and fuel level at handover — they will appear here once the car is handed over.",
+  "browseOtherShops": "Browse other shops",
+  "cancelBooking": "Cancel booking",
+  "fileDispute": "File a dispute",
+  "rateThisTrip": "Rate this trip",
+  "viewPickupPass": "View pickup pass",
+  "summaryAdvancePaid": "Advance paid",
+  "summaryAdvanceRequired": "Advance required",
+  "summaryDriveMode": "Drive mode",
+  "summaryPickupTime": "Pickup Time",
+  "summaryReturnDue": "Return Due",
+  "summaryPackageTier": "Package Tier",
+  "summaryKmIncluded": "KM Included",
+  "summarySecurityDeposit": "Security Deposit",
+  "summaryTotalFare": "Total Rental Fare",
+  "summaryAdvancePayable": "Advance Payable",
+  "summaryBalanceAtHandover": "Balance at Handover",
+  "walletTitle": "Wallet & Security Escrow",
+  "walletActiveEscrow": "Active Escrow & Advances",
+  "walletAdvancesPaid": "Advances Paid",
+  "walletSecurityEscrow": "Security Escrow",
+  "walletLedger": "Transaction Ledger",
+  "walletHideAmount": "Hide amount",
+  "walletShowAmount": "Show amount",
+  "walletHideBalance": "Hide balance",
+  "walletShowBalance": "Show balance",
+  "walletEmptyHint": "Advances and deposits will appear here.",
+  "walletLedgerEmptyHint": "Advances you pay and deposits you leave will appear here.",
+  "walletLoadError": "Could not load your wallet. Check your connection and try again.",
+  "walletLoading": "Loading your wallet…",
+  "walletNoActivity": "No wallet activity yet.",
+  "profileTotalTrips": "Total Trips",
+  "profileTrustScore": "Trust Score",
+  "profileLoading": "Loading your profile…",
+  "profileNotSignedIn": "Not signed in.",
+  "profileNotSignedInShort": "Not signed in",
+  "profileSavedShops": "Saved Showrooms",
+  "profileSavedShopsSubtitle": "Bookmarked rental agencies",
+  "profileMyDocuments": "My Documents (KYC)",
+  "profileKycSubtitle": "CNIC Front/Back & Driving License",
+  "profileSettingsLanguage": "Settings & Language",
+  "profileSettingsSubtitle": "English / Urdu, Notifications",
+  "profileSaved": "Profile saved.",
+  "editProfile": "Edit Profile",
+  "editFullName": "Full name",
+  "editPhone": "Phone",
+  "editCnicOptional": "CNIC (optional)",
+  "editEnterName": "Please enter your name.",
+  "editSaveProfile": "Save Profile",
+  "editSaving": "Saving...",
+  "cnicLabel": "CNIC",
+  "cnicHide": "Hide CNIC",
+  "cnicShow": "Show CNIC",
+  "profileEditProfile": "Edit profile",
+  "reputationTitle": "My Trust & Reputation",
+  "reputationShopRatings": "Showroom Ratings of You",
+  "reputationEmpty": "No showroom has rated you yet. Your reputation appears here after your first completed trip.",
+  "reputationVisibleNote": "Showrooms see these ratings when they review your booking requests.",
+  "reputationPunctuality": "On-Time Handover Punctuality",
+  "reputationVehicleCare": "Vehicle Care & Cleanliness",
+  "reputationStaffBehavior": "Staff Interaction & Behavior",
+  "reputationTrustScoreDash": "Trust Score: —",
+  "disputesMyTitle": "My Disputes",
+  "disputesEmpty": "No disputes filed yet.",
+  "savedShopsEmpty": "No saved showrooms yet.",
+  "savedShopsEmptyHint": "Tap the heart on any showroom to save it here.",
+  "savedShopsRemove": "Remove from saved",
+  "savedShopsRemoveError": "Could not remove this showroom.",
+  "supportTitle": "Help & Support Center",
+  "supportSearchHint": "Search help",
+  "supportCallShop": "Call your showroom",
+  "supportWhatsappShop": "WhatsApp your showroom",
+  "supportNoBooking": "No booking yet",
+  "supportNoBookingHint": "No booking yet — the showroom contact appears here once you have a booking.",
+  "supportFileDispute": "File a Formal Complaint / Dispute",
+  "supportDisputeHint": "Overcharged or deposit withheld? File an arbitration claim.",
+  "supportFaqTitle": "Frequently Asked Questions",
+  "supportFaqEmpty": "No help topics match your search.",
+  "supportFaqEmptyHint": "Try a different keyword, or ask your showroom directly.",
+  "supportSosTitle": "Emergency SOS",
+  "supportSosSubtitle": "Police 15 · Rescue 1122 — one-tap emergency help.",
+  "supportFaqQ1": "How does advance payment protect my booking?",
+  "supportFaqA1": "Your advance payment locks the vehicle exclusively for your scheduled time and guarantees showroom reservation. It is safely recorded and deducted from your final bill.",
+  "supportFaqQ2": "When is my security deposit returned?",
+  "supportFaqA2": "The deposit is settled at return handover. Any deduction for excess kilometres, fuel or damage is shown on the settlement, and the rest is released to you.",
+  "supportFaqQ3": "What happens if a vehicle breaks down?",
+  "supportFaqA3": "Roadside help depends on the showroom — ask yours when you pick up the car. For an emergency, use the Emergency SOS screen.",
+  "supportFaqQ4": "Can I take the rental car out of city?",
+  "supportFaqA4": "Yes, out-of-city packages are available. Select the \"Out of City\" tier or inform the showroom beforehand to ensure tracker clearance.",
+  "supportMessageTitle": "Message Support",
+  "supportMessageLabel": "What went wrong?",
+  "supportMessageHint": "Tell us what went wrong. Our team will reach you on WhatsApp — replies do not appear in the app yet.",
+  "supportUrgencyLabel": "How urgent is this?",
+  "supportSendMessage": "Send Message",
+  "supportSending": "Sending...",
+  "supportWriteFirst": "Please write your message first.",
+  "supportMessageSent": "Message sent. Our team will contact you on WhatsApp.",
+  "sosTitle": "Emergency SOS Assistance",
+  "sosPress": "Press SOS in Emergency",
+  "sosExplainer": "The SOS button calls Police 15. You can also call Rescue 1122 or share your live location with your showroom.",
+  "sosCallPolice": "Call Police 15",
+  "sosCallRescue": "Call Rescue 1122",
+  "sosCallPoliceEmergency": "Call Police Emergency 15",
+  "sosCallPoliceConfirm": "Call Police 15?",
+  "sosCallPoliceConfirmHint": "This dials the police emergency number (15). Use it only in a real emergency.",
+  "sosPoliceSubtitle": "Direct Punjab & Federal Police helpline",
+  "sosRescueSubtitle": "Ambulance, fire and rescue services",
+  "sosPolice": "Police 15",
+  "sosRescue": "Rescue 1122",
+  "sosShareLocation": "Share Live Location via WhatsApp",
+  "sosSendToShop": "Send your live location to your showroom",
+  "sosNoBookingHint": "No booking yet — your live location is shared with your showroom once you have a booking.",
+  "sosLocationPermission": "Location permission is needed to share your live location.",
+  "disputeTitle": "File Complaint / Dispute",
+  "disputeDepositWithheld": "Deposit Withheld",
+  "disputeOvercharge": "Showroom Overcharge",
+  "disputeBreakdown": "Vehicle Breakdown Delay",
+  "disputeDamagePenalty": "Unfair Damage Penalty",
+  "disputeRudeStaff": "Rude / Unprofessional Staff",
+  "disputeSelectCategory": "Select Dispute Category",
+  "disputeBookingId": "Booking ID / Reference",
+  "disputeBookingIdHint": "E.g. RH-849201",
+  "disputeDetailsLabel": "Detailed Explanation",
+  "disputeDetailsHint": "Describe what happened with dates, amounts, and showroom staff names...",
+  "disputeRecordedNote": "Your dispute is recorded and shared with the showroom for review. There is no fixed resolution time yet.",
+  "disputeEnterBookingId": "Please enter your Booking ID.",
+  "disputeExplainIssue": "Please explain the issue encountered.",
+  "disputeSubmit": "Submit Claim",
+  "disputeSubmitting": "Submitting Dispute...",
+  "disputeFiled": "Dispute filed. The showroom can see it in their disputes inbox.",
+  "disputeSavedOffline": "Dispute saved on this device — it will reach the showroom once you are back online.",
+  "cancelReasonLabel": "Reason for Cancellation",
+  "cancelTitle": "Cancel Reservation",
+  "cancelConfirm": "Confirm Cancellation",
+  "cancelCancelling": "Cancelling...",
+  "cancelWhatHappens": "What happens when you cancel",
+  "cancelNoAdvanceNote": "No advance has been paid yet, so there is nothing to refund. No security deposit was collected: deposits are only taken at handover.",
+  "cancelDone": "Reservation cancelled.",
+  "cancelReasonPlans": "Change of travel plans",
+  "cancelReasonOtherVehicle": "Found another vehicle",
+  "cancelReasonShopDelay": "Showroom delay in approval",
+  "cancelReasonEmergency": "Unexpected emergency",
+  "cancelReasonOther": "Other reason",
+  "rateTitle": "Rate Your Experience",
+  "rateVehicleCondition": "Vehicle Condition & Cleanliness",
+  "rateVehicleHint": "AC cooling, tires, interior, mechanical health",
+  "rateShopService": "Showroom Service Quality",
+  "rateShopHint": "Handover speed, staff behavior, transparency",
+  "rateFeedbackLabel": "Additional Feedback (Optional)",
+  "rateFeedbackHint": "Share any highlights or suggestions for future renters...",
+  "rateSubmit": "Submit Trip Review",
+  "rateSubmitting": "Submitting...",
+  "rateSaved": "Thank you! Your review is saved for this trip.",
+  "rateAlreadyRated": "You already rated this trip — your review is shown below.",
+  "rateSavedOffline": "Saved on this device — it will sync when you are back online.",
+  "reviewTitle": "Review Reservation",
+  "reviewSpecialInstructions": "Special Instructions for Showroom",
+  "reviewInstructionsHint": "E.g. Clean car required, airport terminal pickup...",
+  "reviewSendRequest": "Send Request to Owner",
+  "reviewSending": "Sending Request...",
+  "reviewSent": "Reservation request sent to showroom!",
+  "approvedTitle": "Booking Approved!",
+  "approvedReadyAdvance": "Ready for Advance Payment",
+  "successTitle": "Request Sent Successfully!",
+  "successTransmitted": "Request Transmitted",
+  "successAdvanceDue": "Advance Due Upon Approval:",
+  "successShopStatus": "Showroom Status:",
+  "successMessageShop": "Message Showroom on WhatsApp",
+  "successViewPayment": "View Payment Details / Status",
+  "successBackToBookings": "Return to My Bookings",
+  "paymentAccountsTitle": "Showroom Payment Accounts",
+  "paymentAccountsDirect": "Direct Transfer Channels",
+  "paymentBankTransfer": "Bank Transfer",
+  "paymentJazzcash": "JazzCash",
+  "paymentEasypaisa": "EasyPaisa",
+  "paymentVerified": "RentalHub Verified",
+  "paymentApprovedTitle": "Reservation Request Approved!",
+  "paymentPayHint": "Pay to the verified showroom accounts below and capture a screenshot of your transfer.",
+  "paymentNoAccounts": "No payment accounts configured for this shop yet.",
+  "paymentAddAccountsNote": "Add JazzCash, EasyPaisa or bank accounts in Shop Settings so customers know where to pay.",
+  "paymentLoading": "Loading payment accounts…",
+  "paymentUploadProof": "Upload Payment Proof & Receipt",
+  "proofSelectedCar": "Selected Car",
+  "proofScreenshot": "Proof Screenshot",
+  "proofTidLabel": "Transaction Reference / TID",
+  "proofTidHint": "Enter JazzCash / Bank TID (e.g. 892019281)",
+  "proofAttachFirst": "Please attach your payment screenshot or receipt.",
+  "proofEnterTid": "Please enter the transaction reference / TID.",
+  "proofSubmit": "Submit Payment Proof",
+  "proofUploading": "Uploading Proof...",
+  "proofSubmitted": "Proof submitted! Waiting for showroom confirmation.",
+  "proofSubmittedOffline": "Proof submitted! Receipt will sync when you are back online.",
+  "proofPrivateNote": "Proof is uploaded to private storage. The showroom checks it and confirms your booking — there is no fixed waiting time.",
+  "passTitle": "Pickup Countdown Pass",
+  "passDoneHome": "Done • Back to Home",
+  "passRentalVehicle": "Rental Vehicle",
+  "passPickupTarget": "Pickup Target:",
+  "passShowQr": "Present this QR Code to showroom staff at handover",
+  "countdownHours": "HRS",
+  "countdownMinutes": "MIN",
+  "countdownSeconds": "SEC",
+  "packageSelectTitle": "Select Rental Package",
+  "packageTiersTitle": "Available Duration Tiers",
+  "pkg1h": "1-Hour City Commute",
+  "pkg3h": "3-Hour Quick Trip",
+  "pkg6h": "6-Hour Express",
+  "pkg12h": "12-Hour Half Day",
+  "pkgDaily": "Daily 24-Hours",
+  "pkgWeeklyPackage": "Weekly Package",
+  "pkg1hDesc": "Quick city hops",
+  "pkg3hDesc": "Airport drop/pickup & short commutes",
+  "pkg12hDesc": "Ideal for city errands, weddings & meetings",
+  "pkg6hDesc": "Half-day outings & events",
+  "pkgDailyDesc": "Full day flexibility with grace return period",
+  "pkgWeeklyDesc": "Seven days, one price",
+  "tripFixedRoutes": "Fixed routes from this shop",
+  "tripTrackerNote": "Tracker clearance required — the shop confirms it before pickup.",
+  "advanceNoticeTitle": "Advance & Verification Notice",
+  "pickerPickupDate": "Pickup Date",
+  "pickerPickupSchedule": "Pickup Schedule",
+  "pickerDuration": "Rental Duration",
+  "pickerIncreaseDays": "Increase rental days",
+  "pickerDecreaseDays": "Decrease rental days",
+  "proofCaptureCamera": "Capture Camera",
+  "proofFromGallery": "From Gallery",
+  "proofScreenshotReady": "Screenshot Ready",
+  "proofScreenshotSupport": "Support JPG, PNG receipt from banking app",
+  "proofUploadScreenshot": "Upload Transfer Screenshot",
+  "paymentAccountMobile": "Account / Mobile",
+  "paymentAccountTitle": "Account Title",
+  "paymentCopyNumber": "Copy Number",
+  "paymentIban": "IBAN Number",
+  "passCallShop": "Call Shop",
+  "passDirections": "Directions",
+  "passHandoverPoint": "Showroom Handover Point",
+  "passViewAgreement": "View Rental Agreement (PDF)",
+  "passAgreementHint": "Your signed rental agreement will appear here after handover.",
+  "passNoLocation": "This showroom has no location listed yet.",
+  "passNoPhone": "This showroom has no phone number listed.",
+  "passOpenMapsError": "Could not open Maps.",
+  "passOpenAgreementError": "Could not open the agreement.",
+  "driverRequiresCnic": "Requires CNIC + Deposit",
+  "driverVerifiedIncluded": "Verified Driver Included",
+  "authWelcome": "Welcome to RentalHub",
+  "authSignInSubtitle": "Sign in to rent a car near you",
+  "authEmail": "Email Address",
+  "authPassword": "Password",
+  "authSignInEmail": "Sign In with Email",
+  "authSignedIn": "Signed in successfully!",
+  "authSignedInGoogle": "Signed in with Google!",
+  "authValidEmail": "Please enter a valid email address.",
+  "authPasswordLength": "Password must be at least 6 characters.",
+  "authNewUser": "New to RentalHub? Choose Role & Register",
+  "authTagline": "Pakistan Premier Car Rental & Fleet Ecosystem • خوش آمدید",
+  "authGoogle": "Continue with Google",
+  "onboardingStep1": "Step 1: Your Profile",
+  "onboardingEnterContact": "Enter your contact information",
+  "onboardingFullName": "Full Name",
+  "onboardingWhatsappNumber": "WhatsApp Number",
+  "onboardingValidPhone": "Enter a valid 10-digit number starting with 3 (e.g. 300 1234567)",
+  "onboardingValidNamePhone": "Please enter a valid full name and Pakistani WhatsApp number (+92 3XX or 03XX).",
+  "onboardingNameRequired": "Full name is required",
+  "onboardingNameLength": "Name must be at least 3 characters",
+  "onboardingPhoneRequired": "WhatsApp number is required",
+  "onboardingContinueRole": "Continue to Role Selection",
+  "onboardingProfileVerified": "Profile details verified.",
+  "onboardingStep2": "Step 2: Account Role",
+  "roleSelectTitle": "Select Permanent Account Role",
+  "roleSelectSubtitle": "Choose how you want to use RentalHub",
+  "roleCustomer": "Rent a Vehicle (Customer)",
+  "roleCustomerTitle": "Customer (Rent a Vehicle)",
+  "roleCustomerDesc": "Discover verified rental shops within 1–5 km, book Self-Drive or With-Driver packages.",
+  "roleOwner": "Fleet Owner (Showroom)",
+  "roleOwnerTitle": "List My Fleet (Shop Owner)",
+  "roleOwnerDesc": "Register your showroom, manage fleet rates, digital handovers, and National Blacklist.",
+  "roleContinueCustomer": "Continue as Customer",
+  "roleContinueOwner": "Continue as Fleet Owner",
+  "roleReview": "Review Selection",
+  "roleSecurityPolicy": "Security Policy: Role selection is strictly one-way and immutable once confirmed.",
+  "roleLockProceed": "Lock My Role & Proceed",
+  "roleConfirm": "Confirm Permanent Role",
+  "stepperProfile": "1. Profile Info",
+  "stepperRole": "2. Select Role",
+  "avatarSelectPhoto": "Select Profile Photo",
+  "avatarSetPicture": "Set Profile Picture",
+  "avatarChangePhoto": "Change profile photo",
+  "avatarTakePhoto": "Take Photo",
+  "avatarFromGallery": "Choose from Gallery",
+  "kycTitle": "NADRA CNIC & Driving License KYC",
+  "kycSubmittedNote": "KYC documents submitted — pending verification.",
+  "kycVaultNote": "Private cPanel vault • شناختی کارڈ تصدیق",
+  "kycStatusSubmitted": "Submitted — pending verification",
+  "kycStatusRejected": "Rejected — please resubmit",
+  "kycCnicNumber": "13-Digit NADRA CNIC Number",
+  "kycCnicRead": "CNIC number read from the card.",
+  "kycHighResHint": "High-resolution scan with clear photo",
+  "kycCnicBack": "NADRA CNIC — Back Side",
+  "kycCnicFront": "NADRA CNIC — Front Side",
+  "kycAttachBoth": "Please attach both front and back photos of your NADRA CNIC.",
+  "kycQrHint": "QR code & address clearly visible",
+  "kycSelfDriveNote": "Required for Self-Drive rental packages",
+  "kycScanCard": "Scan CNIC card",
+  "kycScanning": "Scanning card...",
+  "kycSubmit": "Submit KYC Documents",
+  "kycUploading": "Uploading...",
+  "kycLicense": "Valid Pakistan Driving License (LTV/HTV)",
+  "kycFromGallery": "Choose from gallery",
+  "kycTakePhoto": "Take a photo",
+  "settingsPushSubtitle": "Booking approvals and payment alerts",
+  "settingsWhatsappSubtitle": "Agreement and handover receipts",
+  "settingsNotifNote": "Notification preferences save to your profile once you have a customer record.",
+  "shopCategorySedan": "Sedan",
+  "shopCategorySuv": "SUV",
+  "shopCategoryHiace": "Hiace",
+  "shopCategoryLuxury": "Luxury",
+  "summaryWithDriver": "With driver",
+  "summarySelfDrive": "Self drive",
+  "summaryDeclinedPrefix": "The shop declined this request: ",
+  "proofRejectedPrefix": "Your payment proof was rejected — please upload a new one: ",
+  "cancellationReasonPrefix": "Cancellation reason: ",
+  "proofWithShop": "Your payment proof is with the shop. You will see the pickup pass here once it is verified.",
+  "kycScanUnreadable": "Could not read a CNIC number from that photo — please type it.",
+  "trustKycVerified": "KYC verified",
+  "trustKycPending": "KYC pending",
+  "trustBlacklisted": "Flagged on blacklist",
+  "trustNoBlacklist": "No blacklist record",
+  "vehicleSelfDriveUrdu": "سیلف ڈرائیو",
+  "vehicleWithDriverUrdu": "ڈرائیور کے ساتھ",
+  "roleCustomerUrdu": "گاڑی کرایہ پر لیں",
+  "roleOwnerUrdu": "شوروم رجسٹر کریں",
+  "advanceNoticeWithDriver": "• Chauffeur arrives at showroom/pickup point 15 mins early.\n• Advance payment confirms vehicle lock and fuel reservation.\n• Outstation overnight stay: Rs. 1,500/night driver food & lodge.",
+  "advanceNoticeSelfDrive": "• Original NADRA CNIC & valid Driving License required at handover.\n• Advance confirms vehicle booking lock with showroom.\n• Refundable security deposit collected digitally or in cash at handover.",
+  "ticketShowCode": "Show this code at the counter for handover — it opens your booking and its agreement.",
+  "bookingsEmptyForTab": "No {tab} bookings found.",
+  "@bookingsEmptyForTab": {
+    "placeholders": {
+      "tab": {
+        "type": "String"
+      }
+    }
+  },
+  "shopCarsNoneInCategory": "No {category} vehicles available right now.",
+  "@shopCarsNoneInCategory": {
+    "placeholders": {
+      "category": {
+        "type": "String"
+      }
+    }
+  },
+  "homeGpsActive": "{area} • GPS Active",
+  "@homeGpsActive": {
+    "placeholders": {
+      "area": {
+        "type": "String"
+      }
+    }
+  },
+  "mapTapMarker": "{area} • Tap marker to preview",
+  "@mapTapMarker": {
+    "placeholders": {
+      "area": {
+        "type": "String"
+      }
+    }
+  },
+  "mapGpsRadar": "GPS Radar: {km} km ({count} Verified Shops)",
+  "@mapGpsRadar": {
+    "placeholders": {
+      "km": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "mapShopDistance": "{address} • {km} km away",
+  "@mapShopDistance": {
+    "placeholders": {
+      "address": {
+        "type": "String"
+      },
+      "km": {
+        "type": "Object"
+      }
+    }
+  },
+  "mapShowShop": "Show {name}",
+  "@mapShowShop": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "shopRatingLabel": "★ {rating} Rating",
+  "@shopRatingLabel": {
+    "placeholders": {
+      "rating": {
+        "type": "Object"
+      }
+    }
+  },
+  "shopCarsReady": "• {count} Cars Ready",
+  "@shopCarsReady": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "shopCarsAvailable": "{count} cars available",
+  "@shopCarsAvailable": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "callingShop": "Calling {name}...",
+  "@callingShop": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "callingShopNumber": "Calling {name} ({phone})...",
+  "@callingShopNumber": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
+  "openingWhatsappShop": "Opening WhatsApp with {name}...",
+  "@openingWhatsappShop": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "vehicleSelfRate": "Self: Rs. {rate}/day",
+  "@vehicleSelfRate": {
+    "placeholders": {
+      "rate": {
+        "type": "int"
+      }
+    }
+  },
+  "vehicleDriverRate": "With Driver: Rs. {rate}/day",
+  "@vehicleDriverRate": {
+    "placeholders": {
+      "rate": {
+        "type": "int"
+      }
+    }
+  },
+  "vehicleSeats": "{count} Seats",
+  "@vehicleSeats": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "vehicleShowroom": "Showroom: {name}",
+  "@vehicleShowroom": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "vehicleDepositCnic": "Security Deposit: Rs. {amount} + Original NADRA CNIC guarantee required at pickup",
+  "@vehicleDepositCnic": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "vehicleDriverPackageDetail": "Verified chauffeur included • Overtime: Rs. {overtime}/hr • Outstation: +Rs. {outstation}/day",
+  "@vehicleDriverPackageDetail": {
+    "placeholders": {
+      "overtime": {
+        "type": "int"
+      },
+      "outstation": {
+        "type": "int"
+      }
+    }
+  },
+  "vehicleSelectedMode": "Selected: {mode}. Advance deposit required.",
+  "@vehicleSelectedMode": {
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      }
+    }
+  },
+  "vehicleWhatsappInterest": "Hi {shop}, I am interested in the {vehicle} ({plate}) on RentalHub.",
+  "@vehicleWhatsappInterest": {
+    "placeholders": {
+      "shop": {
+        "type": "String"
+      },
+      "vehicle": {
+        "type": "String"
+      },
+      "plate": {
+        "type": "String"
+      }
+    }
+  },
+  "bookNowWithRate": "Book Now (Rs. {rate})",
+  "@bookNowWithRate": {
+    "placeholders": {
+      "rate": {
+        "type": "int"
+      }
+    }
+  },
+  "bookingDetailTitle": "Booking {id}",
+  "@bookingDetailTitle": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "bookingShopLine": "{shop} • {id}",
+  "@bookingShopLine": {
+    "placeholders": {
+      "shop": {
+        "type": "String"
+      },
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "activeTripShopLine": "{shop} • {plate}",
+  "@activeTripShopLine": {
+    "placeholders": {
+      "shop": {
+        "type": "String"
+      },
+      "plate": {
+        "type": "String"
+      }
+    }
+  },
+  "activeTripPackageRental": "{type} rental",
+  "@activeTripPackageRental": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "bookingIdLabel": "ID: {id}",
+  "@bookingIdLabel": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "summaryPackageRental": "{type} Rental",
+  "@summaryPackageRental": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "summaryShowroom": "Showroom: {shop}",
+  "@summaryShowroom": {
+    "placeholders": {
+      "shop": {
+        "type": "String"
+      }
+    }
+  },
+  "summaryOutOfCityTo": "Out of city → {city}",
+  "@summaryOutOfCityTo": {
+    "placeholders": {
+      "city": {
+        "type": "String"
+      }
+    }
+  },
+  "summaryDepositAtHandover": "Rs. {amount} (at handover)",
+  "@summaryDepositAtHandover": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "payAdvanceAmount": "Pay advance (Rs. {amount})",
+  "@payAdvanceAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "shopNotFound": "Shop {id} was not found.",
+  "@shopNotFound": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "vehicleNotFound": "Vehicle {id} was not found.",
+  "@vehicleNotFound": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "locationFindCarsInCity": "Find Nearby Cars in {city}",
+  "@locationFindCarsInCity": {
+    "placeholders": {
+      "city": {
+        "type": "String"
+      }
+    }
+  },
+  "sosCallError": "Could not call {label}.",
+  "@sosCallError": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "sosLocationError": "Could not get your location: {error}",
+  "@sosLocationError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "sosEmergencyMessage": "EMERGENCY — I need help. My live location: {url}",
+  "@sosEmergencyMessage": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "sosSendToShopNamed": "Send your live location to {shop}",
+  "@sosSendToShopNamed": {
+    "placeholders": {
+      "shop": {
+        "type": "String"
+      }
+    }
+  },
+  "supportWhatsappMessage": "Hi {shop}, I need help with my RentalHub booking.",
+  "@supportWhatsappMessage": {
+    "placeholders": {
+      "shop": {
+        "type": "String"
+      }
+    }
+  },
+  "disputeFileError": "Failed to file dispute: {error}",
+  "@disputeFileError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "cancelFailed": "Cancellation failed: {error}",
+  "@cancelFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "cancelAdvancePaid": "You paid Rs. {amount} advance directly to the showroom's account — the showroom decides the refund, so contact them about it. No security deposit was collected: deposits are only taken at handover.",
+  "@cancelAdvancePaid": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "rateSaveError": "Failed to save rating: {error}",
+  "@rateSaveError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "rateTripRef": "Trip Reference: {id}",
+  "@rateTripRef": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "rateStarLabel": "Rate {star} out of 5",
+  "@rateStarLabel": {
+    "placeholders": {
+      "star": {
+        "type": "int"
+      }
+    }
+  },
+  "editSaveError": "Could not save profile: {error}",
+  "@editSaveError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "supportSendError": "Could not send your message: {error}",
+  "@supportSendError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "proofSubmitError": "Failed to submit payment proof: {error}",
+  "@proofSubmitError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "proofBookingId": "Booking ID: {id}",
+  "@proofBookingId": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "reviewSubmitError": "Failed to submit booking: {error}",
+  "@reviewSubmitError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "successBody": "Your reservation request for {vehicle} has been delivered to {shop}. Once approved, you will be notified to submit the advance deposit.",
+  "@successBody": {
+    "placeholders": {
+      "vehicle": {
+        "type": "String"
+      },
+      "shop": {
+        "type": "String"
+      }
+    }
+  },
+  "successReference": "Reference: {id}",
+  "@successReference": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "successWhatsapp": "Hi {shop}, this is about my RentalHub booking {id} ({vehicle}).",
+  "@successWhatsapp": {
+    "placeholders": {
+      "shop": {
+        "type": "String"
+      },
+      "id": {
+        "type": "String"
+      },
+      "vehicle": {
+        "type": "String"
+      }
+    }
+  },
+  "paymentTransferToLock": "Transfer Rs. {amount} to lock your vehicle.",
+  "@paymentTransferToLock": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "approvedPayToGuarantee": "Pay Rs. {amount} to guarantee pickup.",
+  "@approvedPayToGuarantee": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "packageAdvanceDue": "Advance Due: Rs. {amount}",
+  "@packageAdvanceDue": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "packageSecurityDeposit": "Security Deposit: Rs. {amount}",
+  "@packageSecurityDeposit": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "packageTotal": "Total: Rs. {amount}",
+  "@packageTotal": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "tierAdvance": "Advance: Rs. {amount}",
+  "@tierAdvance": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "paymentCopied": "{method} account copied to clipboard",
+  "@paymentCopied": {
+    "placeholders": {
+      "method": {
+        "type": "String"
+      }
+    }
+  },
+  "passShopNoAddress": "{shop} — address not listed yet.",
+  "@passShopNoAddress": {
+    "placeholders": {
+      "shop": {
+        "type": "String"
+      }
+    }
+  },
+  "kycSelectedFile": "Selected: {name}",
+  "@kycSelectedFile": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "kycScanError": "CNIC scan failed: {error}",
+  "@kycScanError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "kycStatus": "KYC status: {label}",
+  "@kycStatus": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "avatarPickerError": "Could not open image picker: {error}",
+  "@avatarPickerError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "onboardingSaveError": "Error saving profile: {error}",
+  "@onboardingSaveError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "roleSelectingNote": "You are selecting \"{role}\". In accordance with National NADRA KYC policies, this role is locked permanently and cannot be changed later.",
+  "@roleSelectingNote": {
+    "placeholders": {
+      "role": {
+        "type": "String"
+      }
+    }
+  },
+  "roleConfirmed": "Account role \"{role}\" confirmed.",
+  "@roleConfirmed": {
+    "placeholders": {
+      "role": {
+        "type": "String"
+      }
+    }
+  },
+  "authCopyright": "© {year} RentalHub. All rights reserved.",
+  "@authCopyright": {
+    "placeholders": {
+      "year": {
+        "type": "int"
+      }
+    }
+  },
+  "reputationBasedOnReviews": "{count, plural, =1{Based on 1 showroom review from your completed trips.} other{Based on {count} showroom reviews from your completed trips.}}",
+  "@reputationBasedOnReviews": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reputationTrustScoreValue": "Trust Score: {score} / 5.0",
+  "@reputationTrustScoreValue": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "profileTrustScoreValue": "Trust Score: {score} / 5.0",
+  "@profileTrustScoreValue": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "pickerDays": "{count, plural, =1{1 Day} other{{count} Days}}",
+  "@pickerDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "walletAdvancesEscrow": "Advances Rs. {adv} • Escrow Rs. {esc}",
+  "@walletAdvancesEscrow": {
+    "placeholders": {
+      "adv": {
+        "type": "int"
+      },
+      "esc": {
+        "type": "int"
+      }
+    }
+  },
+  "ticketPickupDate": "Pickup: {day}/{month}/{year}",
+  "@ticketPickupDate": {
+    "placeholders": {
+      "day": {
+        "type": "int"
+      },
+      "month": {
+        "type": "int"
+      },
+      "year": {
+        "type": "int"
+      }
+    }
+  },
+  "profileSignOut": "Sign Out",
+  "activeTripTotalFare": "Total Fare",
+  "emptyRadarNoShops": "No Verified Shops Within {radiusKm} km",
+  "@emptyRadarNoShops": {
+    "placeholders": {
+      "radiusKm": {
+        "type": "int"
+      }
+    }
+  },
+  "vehiclePerDay": "/ per day",
+  "bookingTotalAmount": "Total: Rs. {amount}",
+  "@bookingTotalAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "fleetTitle": "Fleet Management",
+  "fleetSubtitle": "Live Showroom",
+  "fleetTotalFleet": "Total Fleet",
+  "fleetTotalCars": "{count} Cars",
+  "@fleetTotalCars": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "fleetAvailableReady": "{count} Ready",
+  "@fleetAvailableReady": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "fleetOnRent": "On Rent",
+  "fleetOnRentActive": "{count} Active",
+  "@fleetOnRentActive": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "fleetFilterAll": "All",
+  "fleetFilterMaintenance": "Maintenance",
+  "fleetFilterChip": "{label} ({count})",
+  "@fleetFilterChip": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "fleetLoading": "Loading your fleet…",
+  "fleetLoadError": "Could not load your fleet: {error}",
+  "@fleetLoadError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "fleetEmptyTitle": "No vehicles yet — add your first car",
+  "fleetEmptyFilterTitle": "No vehicles found in this filter",
+  "fleetEmptyMessage": "Add a car to start taking bookings.",
+  "fleetEmptyFilterMessage": "Try a different filter.",
+  "fleetAddVehicleNow": "Add Vehicle Now",
+  "fleetDailySelfDriveRate": "Daily Self-Drive Rate",
+  "fleetDailyRate": "Rs. {amount}/day",
+  "@fleetDailyRate": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "fleetEditRatesTooltip": "Edit rates",
+  "fleetCalendarTooltip": "Booking calendar",
+  "fleetVehicleSpecs": "{transmission} • {fuelType} • {seats} Seats",
+  "@fleetVehicleSpecs": {
+    "placeholders": {
+      "transmission": {
+        "type": "String"
+      },
+      "fuelType": {
+        "type": "String"
+      },
+      "seats": {
+        "type": "int"
+      }
+    }
+  },
+  "dashboardTitle": "Showroom Revenue & Operations",
+  "dashboardMyShowroom": "My Showroom",
+  "dashboardNotificationsTooltip": "Notifications",
+  "dashboardSettingsTooltip": "Shop settings",
+  "dashboardRefreshTooltip": "Refresh",
+  "dashboardLoading": "Loading your showroom…",
+  "dashboardLoadError": "Could not load your dashboard. Check your connection and try again.",
+  "dashboardNoRevenueLastMonth": "No revenue last month",
+  "dashboardGrowthLabel": "{value}% vs last month",
+  "@dashboardGrowthLabel": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "dashboardNoCompletedTrips": "No completed trips yet",
+  "dashboardSettleRate": "{percent}% deposits settled",
+  "@dashboardSettleRate": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "dashboardGrossRevenue": "Gross Revenue (This Month)",
+  "dashboardActiveOnRent": "Active on Rent",
+  "dashboardCompletedTrips": "Completed Trips",
+  "dashboardRequestsWaiting": "Requests Waiting",
+  "dashboardFleet": "Fleet",
+  "dashboardOnTheRoad": "On the road",
+  "dashboardNeedsReview": "Needs your review",
+  "dashboardAvailableTotal": "Available / total cars",
+  "dashboardCarsCount": "{count} Cars",
+  "@dashboardCarsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dashboardFinishedCount": "{count} Finished",
+  "@dashboardFinishedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dashboardLedgerTitle": "Completed Trip Ledger & Settlements",
+  "dashboardLedgerEmpty": "No trips yet — bookings will appear here.",
+  "dashboardLedgerVehicle": "Vehicle",
+  "dashboardLedgerCustomer": "Customer",
+  "dashboardQuickAddCar": "Add Car",
+  "dashboardQuickScanQr": "Scan QR",
+  "dashboardQuickNewBooking": "New Booking",
+  "dashboardQuickFinance": "Finance",
+  "requestsTitle": "Booking Requests Triage",
+  "requestsAwaitingReview": "{count} Requests Awaiting Review",
+  "@requestsAwaitingReview": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "requestsScanQrTooltip": "Scan booking QR",
+  "requestsRefreshTooltip": "Refresh",
+  "requestsLoading": "Loading booking requests…",
+  "requestsLoadError": "Could not load booking requests. Check your connection and try again.",
+  "requestsFilterNew": "New",
+  "requestsFilterProof": "Proof",
+  "requestsFilterChip": "{label} ({count})",
+  "@requestsFilterChip": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "requestsEmptyProof": "No payment proofs waiting for verification",
+  "requestsEmptyApproved": "No approved bookings waiting for payment",
+  "requestsEmptyNew": "No pending booking requests",
+  "requestsEmptyMessage": "New requests will appear here for review.",
+  "requestsRejectTitle": "Reject this request?",
+  "requestsRejectReasonLabel": "Reason (required)",
+  "requestsRejectReasonHint": "e.g. Vehicle is not available on those dates",
+  "requestsRejectButton": "Reject Request",
+  "requestsApproved": "Booking #{id} approved! Payment instructions sent to customer.",
+  "@requestsApproved": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "requestsApprovalFailed": "Approval failed: {error}",
+  "@requestsApprovalFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "requestsRejected": "Booking #{id} rejected.",
+  "@requestsRejected": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "requestsDeclineFailed": "Decline failed: {error}",
+  "@requestsDeclineFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "requestsCustomerFallback": "Customer",
+  "requestsRequestedCar": "Requested Car",
+  "requestsWithChauffeur": "With Chauffeur",
+  "requestsVerifyProof": "Verify Payment Proof",
+  "requestsDecline": "Decline",
+  "requestsApprovePay": "Approve & Pay",
+  "requestsStatusRequested": "Requested",
+  "calendarTitle": "Booking Calendar",
+  "calendarFree": "Free",
+  "calendarRequested": "Requested",
+  "calendarConfirmed": "Confirmed",
+  "calendarPast": "Past",
+  "calendarTapDayHint": "Tap a day to see its bookings.",
+  "calendarBookingsOn": "Bookings on {day}/{month}/{year}",
+  "@calendarBookingsOn": {
+    "placeholders": {
+      "day": {
+        "type": "int"
+      },
+      "month": {
+        "type": "int"
+      },
+      "year": {
+        "type": "int"
+      }
+    }
+  },
+  "calendarNoBookingsDay": "No bookings on this day.",
+  "calendarMonthJanuary": "January",
+  "calendarMonthFebruary": "February",
+  "calendarMonthMarch": "March",
+  "calendarMonthApril": "April",
+  "calendarMonthMay": "May",
+  "calendarMonthJune": "June",
+  "calendarMonthJuly": "July",
+  "calendarMonthAugust": "August",
+  "calendarMonthSeptember": "September",
+  "calendarMonthOctober": "October",
+  "calendarMonthNovember": "November",
+  "calendarMonthDecember": "December",
+  "calendarWeekdayMon": "Mon",
+  "calendarWeekdayTue": "Tue",
+  "calendarWeekdayWed": "Wed",
+  "calendarWeekdayThu": "Thu",
+  "calendarWeekdayFri": "Fri",
+  "calendarWeekdaySat": "Sat",
+  "calendarWeekdaySun": "Sun",
+  "calendarPreviousMonth": "Previous month",
+  "calendarNextMonth": "Next month",
+  "calendarSelectDay": "Select day {day}",
+  "@calendarSelectDay": {
+    "placeholders": {
+      "day": {
+        "type": "int"
+      }
+    }
+  },
+  "addVehicleModelRequired": "Please specify vehicle model variant.",
+  "addVehiclePlateRequired": "Registration plate number is required.",
+  "addVehicleAdded": "{name} added to showroom fleet!",
+  "@addVehicleAdded": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "addVehicleStep1Title": "Add Vehicle - Specs",
+  "addVehicleStep2Title": "Car Photos & Docs",
+  "addVehicleStep3Title": "Rental Rates & Policy",
+  "addVehicleStep4Title": "Review & Publish",
+  "addVehicleStep1Subtitle": "Capacity, AC, features & specs",
+  "addVehicleStep2Subtitle": "4-angle photos, book & excise tax",
+  "addVehicleStep3Subtitle": "Hourly rates, deposit & fuel policy",
+  "addVehicleStep4Subtitle": "Verify vehicle details before listing",
+  "addVehicleStepCounter": "Step {step} of 4",
+  "@addVehicleStepCounter": {
+    "placeholders": {
+      "step": {
+        "type": "int"
+      }
+    }
+  },
+  "addVehicleConfirmPublish": "Confirm & Publish Vehicle",
+  "addVehicleNextStep": "Next Step",
+  "addVehicleStepperSpecs": "Vehicle Specs",
+  "addVehicleStepperPhotos": "Photos & Docs",
+  "addVehicleStepperRates": "Rates & Policy",
+  "addVehicleStepperReview": "Review",
+  "addVehicleMakeBrand": "Make / Brand",
+  "addVehicleModelVariant": "Model Variant",
+  "addVehicleModelHint": "e.g. Corolla Altis 1.8 Grande",
+  "addVehicleManufacturingYear": "Manufacturing Year",
+  "addVehicleExteriorColor": "Exterior Color",
+  "addVehicleBodyCategory": "Body Category",
+  "addVehicleRegistrationNumber": "Vehicle Registration Number",
+  "addVehicleTransmission": "Transmission",
+  "addVehicleAutomatic": "Automatic",
+  "addVehicleManual": "Manual",
+  "addVehicleFuelType": "Fuel Type",
+  "addVehicleSeatingCapacity": "Vehicle Seating Capacity",
+  "addVehicleSeatsCount": "{count} Seats",
+  "@addVehicleSeatsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "addVehicleAcTitle": "Air Conditioning (Full AC)",
+  "addVehicleAcSubtitle": "Vehicle equipped with working chilled AC",
+  "addVehicleExtraFeatures": "Extra Features (Shown on Car Detail)",
+  "addVehicleExtraFeaturesHint": "Select amenities included with this vehicle to attract more renters.",
+  "addVehiclePhotosTitle": "Vehicle 4-Angle Photos",
+  "addVehiclePhotosHint": "Upload photos using Camera or Gallery. Tap to change or remove.",
+  "addVehiclePhotoFront": "Front View",
+  "addVehiclePhotoRear": "Rear View",
+  "addVehiclePhotoSide": "Side Profile",
+  "addVehiclePhotoInterior": "Interior & Dash",
+  "addVehicleLegalDocs": "Legal Documents",
+  "addVehicleDocRegBook": "Vehicle Registration Book / Smart Card",
+  "addVehicleDocRegBookHint": "Original ownership document required",
+  "addVehicleDocTokenTax": "Excise Token Tax Paid Receipt",
+  "addVehicleDocTokenTaxHint": "Must be valid for current fiscal year",
+  "addVehicleDocInsurance": "Insurance / Tracker Certificate (Optional)",
+  "addVehicleDocInsuranceHint": "Provides verified VIP badge in search",
+  "addVehicleDurationPackages": "Duration Packages (Hourly & Daily)",
+  "addVehicleDurationPackagesHint": "Enable packages and edit rates in PKR per booking tier.",
+  "addVehicleRate1Hour": "1 Hour Rate",
+  "addVehicleRate3Hours": "3 Hours Rate",
+  "addVehicleRate6Hours": "6 Hours Rate",
+  "addVehicleRateFullDay": "Full Day (24h) Rate",
+  "addVehicleRateWeekly": "Weekly (7 Days) Rate",
+  "addVehicleServiceType": "Service Type & Driver Options",
+  "addVehicleSelfDriveService": "Self-Drive Service",
+  "addVehicleSelfDriveHint": "Customer drives the vehicle themselves",
+  "addVehicleWithDriverService": "With-Driver Service",
+  "addVehicleWithDriverHint": "Shop provides experienced chauffeur",
+  "addVehicleDriverAllowance": "Driver Daily Allowance:",
+  "addVehiclePerDaySuffix": "/day",
+  "addVehicleDepositPolicies": "Security Deposit & Rental Policies",
+  "addVehicleSecurityDepositSelfDrive": "Security Deposit (Self-Drive)",
+  "addVehicleSecurityDepositHint": "Refunded on car return in clean condition",
+  "addVehicleAdvanceFee": "Advance Booking Fee",
+  "addVehicleAdvanceHint": "Required up front to lock slot",
+  "addVehicleExtraHourCharge": "Extra Hour Overstay Charge",
+  "addVehicleExtraHourHint": "Billed per hour past scheduled return",
+  "addVehiclePerHourSuffix": "/hr",
+  "addVehicleFuelPolicy": "Fuel Policy",
+  "addVehicleFuelPolicyHint": "Condition expected upon return",
+  "addVehicleReviewGear": "Gear",
+  "addVehicleReviewAuto": "Auto",
+  "addVehicleReviewFuel": "Fuel",
+  "addVehicleReviewSeats": "Seats",
+  "addVehicleReviewAc": "AC",
+  "addVehicleReviewFullAc": "Full AC",
+  "addVehicleReviewSelfDriveRate": "Self-Drive Rate",
+  "addVehicleReviewWithDriverRate": "With-Driver Rate",
+  "addVehicleReviewNotOffered": "Not Offered",
+  "addVehicleReviewDailyRate": "Rs. {amount}/day",
+  "@addVehicleReviewDailyRate": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "addVehicleReviewOverstayRate": "Rs. {amount}/hr",
+  "@addVehicleReviewOverstayRate": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "addVehicleReviewDeposit": "Deposit",
+  "addVehicleReviewAdvance": "Advance",
+  "addVehicleReviewOverstay": "Overstay",
+  "addVehicleReviewBanner": "This car will be immediately available in your fleet catalog and visible to nearby customers upon approval.",
+  "pricingDriveModeAvailability": "Drive Mode Availability",
+  "pricingRentalPackages": "Rental Packages",
+  "pricingPackagesHint": "Switch a package off to hide it from customers.",
+  "pricingPolicyTitle": "Pricing Policy",
+  "pricingSavedSuccess": "Pricing matrix updated in showroom!",
+  "pricingSaveFailed": "Failed to update rates: {error}",
+  "@pricingSaveFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "pricingTitle": "Vehicle Pricing Matrix",
+  "pricingSaving": "Saving Matrix...",
+  "pricingSave": "Save Pricing Matrix",
+  "pricingSelfDriveAllowed": "Self-Drive Allowed",
+  "pricingSelfDriveHint": "Requires original NADRA CNIC + security deposit",
+  "pricingChauffeurAllowed": "Chauffeur Service Allowed",
+  "pricingChauffeurHint": "Showroom driver assigned to booking",
+  "pricingPackage1h": "1-Hour City Commute",
+  "pricingPackage3h": "3-Hour Airport / Quick Trip",
+  "pricingPackage6h": "6-Hour Express Rate",
+  "pricingPackage12h": "12-Hour Half Day",
+  "pricingPackage24h": "In-City Daily (24h)",
+  "pricingPackageWeekly": "Weekly Package (7 Days)",
+  "pricingKmIncluded": "{km} km included",
+  "@pricingKmIncluded": {
+    "placeholders": {
+      "km": {
+        "type": "int"
+      }
+    }
+  },
+  "pricingOutOfCityDaily": "Out-of-City Daily (24h)",
+  "pricingOutOfCityDailyCap": "350 km included + tracker cleared",
+  "pricingWithDriverSurcharge": "With-Driver Surcharge (per day)",
+  "pricingWithDriverSurchargeCap": "Added on top of the package price",
+  "pricingSecurityDeposit": "Security Deposit",
+  "pricingSecurityDepositCap": "Refundable after return inspection",
+  "pricingAdvanceRequired": "Advance Required",
+  "pricingAdvanceCap": "Due before the booking is confirmed",
+  "pricingExtraHourCharge": "Extra Hour Charge",
+  "pricingExtraHourCap": "Charged for late returns",
+  "pricingExtraKmCharge": "Extra KM Charge",
+  "pricingExtraKmCap": "Charged beyond the included km",
+  "pricingOutOfCityKmAllowance": "Out-of-City KM Allowance (per day)",
+  "pricingOutOfCityKmCap": "Tracker clearance required beyond the city",
+  "pricingFuelPolicy": "Fuel Policy",
+  "fixedRoutesTitle": "Fixed Out-of-City Routes",
+  "fixedRoutesSubtitle": "One fixed price per destination",
+  "fixedRoutesDeleteTooltip": "Delete fixed route",
+  "fixedRoutesPriceRequired": "Enter a fixed price above zero.",
+  "fixedRoutesEmpty": "No fixed routes yet — add your first destination below.",
+  "fixedRouteSummary": "{km} km • Rs. {price} fixed",
+  "@fixedRouteSummary": {
+    "placeholders": {
+      "km": {
+        "type": "int"
+      },
+      "price": {
+        "type": "int"
+      }
+    }
+  },
+  "fixedRouteAddTitle": "Add a route",
+  "fixedRouteFromCity": "From (city)",
+  "fixedRouteToCity": "To (city)",
+  "fixedRouteDistance": "Distance (km)",
+  "fixedRoutePrice": "Fixed price (Rs.)",
+  "fixedRouteAddButton": "Add Fixed Route",
+  "fleetAddVehicle": "Add Vehicle",
+  "amountRs": "Rs. {amount}",
+  "@amountRs": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "customersTitle": "Customers",
+  "customersCount": "{count} customers",
+  "@customersCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "customersLoading": "Loading…",
+  "customersLoadingMessage": "Loading your customers…",
+  "customersSearchHint": "Search name, phone or CNIC",
+  "customersLoadError": "Could not load your customers. Check your connection and try again.",
+  "customersEmptyTitle": "No customers yet",
+  "customersEmptyMessage": "Scan a CNIC or take a walk-in booking.",
+  "customersScanCnic": "Scan a CNIC",
+  "customersBlacklisted": "Blacklisted",
+  "customersBookingsLine": "{count, plural, =1{{count} booking} other{{count} bookings}} • Rs. {amount}",
+  "@customersBookingsLine": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "customersNoBookings": "No bookings yet — saved from a CNIC scan or as a guarantor.",
+  "customersScanTitle": "KYC & Blacklist Radar",
+  "customersScanSubtitle": "National Anti-Fraud Network • Real-time",
+  "customersScanTribunalPolicy": "Tribunal Policy",
+  "customersScanTribunalInfo": "Every Pakistani rental shop shares instant fraud telemetry via RentalHub.",
+  "customersScanViewAll": "View All Customers",
+  "customersScanInvalidCnic": "Please enter a valid 13-digit Pakistani CNIC",
+  "customersScanLookupFailed": "Verification lookup failed: {error}",
+  "@customersScanLookupFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "customersScanFailed": "CNIC scan failed: {error}",
+  "@customersScanFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "customersScanUnreadable": "Couldn't read the card — type the CNIC manually.",
+  "customersScanDeclined": "Customer flagged and declined entry into showroom.",
+  "customersScanFallbackReason": "Reported in National Blacklist",
+  "customersScanFallbackDescription": "Severe fraud / non-payment incident flagged.",
+  "customersRatingTitle": "Customer Reputation & Review",
+  "customersRatingFallback": "Customer Review",
+  "customersRatingFeedbackTitle": "Customer Performance Feedback",
+  "customersRatingPunctuality": "Return Punctuality & Timekeeping",
+  "customersRatingPunctualityHint": "Vehicle returned as per agreed contract schedule",
+  "customersRatingCare": "Vehicle Care & Cleanliness",
+  "customersRatingCareHint": "Interior cleanliness and scratch-free return",
+  "customersRatingBehavior": "Overall Behavior & Civility",
+  "customersRatingBehaviorHint": "Professionalism and adherence to showroom policies",
+  "customersRatingCommentHint": "Add optional feedback notes for community showroom records...",
+  "customersRatingFlagTitle": "Flag Customer to Shared Blacklist",
+  "customersRatingFlagNoCnic": "Needs the customer CNIC on this booking — none is recorded, so a report cannot be filed from here.",
+  "customersRatingFlagVisible": "Other showrooms using RentalHub can see this report",
+  "customersRatingReasonLabel": "Reason Category for Tribunal:",
+  "customersRatingReasonPayment": "Payment Default / Refusal to Settle",
+  "customersRatingReasonBorder": "Unauthorized Border Crossing",
+  "customersRatingReasonAbuse": "Vehicle Abuse / Abandonment",
+  "customersRatingReasonFake": "Fake Identity / Impersonation",
+  "customersRatingSubmitting": "Recording Rating...",
+  "customersRatingSubmit": "Submit Rating & Close Trip",
+  "customersRatingSavedOffline": "Rating saved on this device — it will sync when you are back online.",
+  "customersRatingSavedBlacklisted": "Rating saved and the customer was reported to the shared blacklist.",
+  "customersRatingSaved": "Your rating of the customer has been saved.",
+  "customersRatingSubmitFailed": "Submission failed: {error}",
+  "@customersRatingSubmitFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "customersCnicReviewTitle": "Review Scanned CNIC",
+  "customersCnicReviewSubtitle": "Correct anything OCR misread",
+  "customersCnicFatherName": "Father's Name",
+  "customersCnicNumber": "CNIC Number",
+  "customersCnicDob": "Date of Birth (dd.mm.yyyy)",
+  "customersCnicExpiry": "CNIC Expiry (dd.mm.yyyy)",
+  "customersCnicPhone": "Phone Number",
+  "customersCnicAddress": "Address (from back of card)",
+  "customersCnicScanBack": "Scan Back of CNIC (address)",
+  "customersCnicSave": "Save Customer & Check Blacklist",
+  "customersCnicNoAddress": "No address read from the back of the card.",
+  "customersCnicBackScanFailed": "Back scan failed: {error}",
+  "@customersCnicBackScanFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "customersCnicNamePhoneRequired": "Name and phone are required to save the customer.",
+  "customersCnicSaveFailed": "Could not save: {error}",
+  "@customersCnicSaveFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "blacklistSubtitle": "Shared with every shop • Tribunal reviewed",
+  "blacklistReportTitle": "Report a customer",
+  "blacklistCustomerCnic": "Customer CNIC",
+  "blacklistCustomerPhone": "Customer phone",
+  "blacklistReasonLabel": "Reason",
+  "blacklistReasonNonPayment": "Non-payment",
+  "blacklistReasonCarDamage": "Car damage",
+  "blacklistReasonLateReturn": "Late return",
+  "blacklistReasonFraud": "Fraud / fake documents",
+  "blacklistReasonImpoundment": "Default & Car Impoundment",
+  "blacklistReasonOther": "Other",
+  "blacklistWhatHappened": "What happened? (dates, car, amount)",
+  "blacklistReportButton": "Report to Blacklist",
+  "blacklistMyReports": "My reports ({count})",
+  "@blacklistMyReports": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "blacklistNoReports": "No reports from this shop yet. Reports cannot be undone by the shop — only the tribunal admin can revert one.",
+  "blacklistEnterCnic": "Enter the full 13-digit CNIC of the customer.",
+  "blacklistDescribe": "Describe what happened — the tribunal reads this.",
+  "blacklistReported": "Reported. The CNIC is now flagged for every shop.",
+  "blacklistReportFailed": "Report failed: {error}",
+  "@blacklistReportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "blacklistReverted": "Reverted",
+  "financeSubtitle": "Accounts, ledger and profit",
+  "financeThisMonth": "This month",
+  "financeLastMonth": "Last month",
+  "financeAllTime": "All time",
+  "financeNetAmount": "Net Rs. {amount}",
+  "@financeNetAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "financeMonthBreakdown": "Bookings Rs. {bookings} • Other income Rs. {income} • Expenses Rs. {expenses}",
+  "@financeMonthBreakdown": {
+    "placeholders": {
+      "bookings": {
+        "type": "int"
+      },
+      "income": {
+        "type": "int"
+      },
+      "expenses": {
+        "type": "int"
+      }
+    }
+  },
+  "financeCustomerDues": "Customer dues",
+  "financeCashClosing": "Cash closing",
+  "financeCarPnl": "Car P&L",
+  "financeIncome": "Income",
+  "financeExpense": "Expense",
+  "financeCategoryRent": "Rent",
+  "financeCategoryFuel": "Fuel",
+  "financeCategorySalary": "Salary",
+  "financeCategoryPartnerShare": "Partner share",
+  "financeCategoryDepositRefund": "Deposit refund",
+  "financeCategoryLabel": "Category",
+  "financeNoteOptional": "Note (optional)",
+  "financeLedgerAmount": "{sign} Rs. {amount}",
+  "@financeLedgerAmount": {
+    "placeholders": {
+      "sign": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "financeAccountTypeCash": "Cash",
+  "financeAccountTypeBank": "Bank",
+  "financeAccountTypeJazzCash": "JazzCash",
+  "financeAccountTypeEasyPaisa": "EasyPaisa",
+  "financeAccountTypeLabel": "Type",
+  "financeAccountsTitle": "Accounts",
+  "financeAddAccount": "Add account",
+  "financeLedgerTitle": "Ledger",
+  "financeAddEntry": "Add entry",
+  "financeLedgerEmpty": "No entries yet — record your first income or expense.",
+  "financeAccountFallback": "Account",
+  "financeSecurityDeposits": "Security Deposits",
+  "financeDepositsHeld": "Held now",
+  "financeDepositsRefunded": "Refunded in full",
+  "financeDepositsDeducted": "Deducted at return",
+  "financeDepositsCount": "{count, plural, =1{{count} deposit} other{{count} deposits}}",
+  "@financeDepositsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "financePartners": "Partners",
+  "financeAddPartner": "Add partner",
+  "financePartnersEmpty": "No partners yet — add one to record their share.",
+  "financePartnerShareLine": "{percent}% of profit",
+  "@financePartnerShareLine": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "financeSaveAccount": "Save account",
+  "financeAccountName": "Account name",
+  "financeSavePartner": "Save partner",
+  "financePartnerName": "Partner name",
+  "financePartnerShare": "Share (%)",
+  "financeAddTransfer": "Add ledger entry",
+  "financeAmountRs": "Amount (Rs.)",
+  "financeVehicleOptional": "Vehicle (optional — for car P&L)",
+  "financeNoVehicle": "No vehicle",
+  "financeNoteHint": "e.g. driver salary — Ahmed",
+  "financeSaveEntry": "Save entry",
+  "financeClosingExpected": "Expected in till today",
+  "financeClosingOpening": "Opening Rs. {opening} • Difference Rs. {difference}",
+  "@financeClosingOpening": {
+    "placeholders": {
+      "opening": {
+        "type": "int"
+      },
+      "difference": {
+        "type": "int"
+      }
+    }
+  },
+  "financeClosingCounted": "Counted Rs. {counted} • Diff Rs. {difference}",
+  "@financeClosingCounted": {
+    "placeholders": {
+      "counted": {
+        "type": "int"
+      },
+      "difference": {
+        "type": "int"
+      }
+    }
+  },
+  "financePnlTitle": "P&L Statement",
+  "financePnlBookingRevenue": "Booking revenue",
+  "financePnlOtherIncome": "Other income",
+  "financePnlExpenses": "Expenses",
+  "financePnlNetProfit": "Net profit",
+  "financePnlExport": "Export P&L as CSV (opens in Excel)",
+  "financeCarPnlSubtitle": "One car, all its money",
+  "financeCarPnlNoCars": "No cars in the fleet yet.",
+  "financeCarPnlTagged": "Tagged entries",
+  "financeCarPnlNoTagged": "Nothing tagged to this car yet — tag an entry in the ledger.",
+  "financeCarPnlBreakdown": "Booking revenue Rs. {revenue} • Other income Rs. {income} • Expenses Rs. {expenses}",
+  "@financeCarPnlBreakdown": {
+    "placeholders": {
+      "revenue": {
+        "type": "int"
+      },
+      "income": {
+        "type": "int"
+      },
+      "expenses": {
+        "type": "int"
+      }
+    }
+  },
+  "financeClosingSubtitle": "Count the till, close the day",
+  "financeClosingCountedLabel": "Counted cash (Rs.)",
+  "financeClosingSaving": "Closing...",
+  "financeClosingButton": "Close the day",
+  "financeClosingPast": "Past closings",
+  "financeClosingEmpty": "No closings yet.",
+  "financeClosingEnterCounted": "Enter the counted cash first.",
+  "financeClosingClosed": "Day closed — difference Rs. {difference}.",
+  "@financeClosingClosed": {
+    "placeholders": {
+      "difference": {
+        "type": "int"
+      }
+    }
+  },
+  "financeDuesTitle": "Customer Dues",
+  "financeDuesOutstanding": "Rs. {amount} outstanding",
+  "@financeDuesOutstanding": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "financeDuesEmpty": "No outstanding dues. All clear.",
+  "financeDuesBookingsLine": "{count, plural, =1{{count} booking} other{{count} bookings}} • {phone}",
+  "@financeDuesBookingsLine": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
+  "financeDuesNoPhone": "no phone",
+  "financeDuesLastReminded": "Last reminded {day}/{month}/{year}",
+  "@financeDuesLastReminded": {
+    "placeholders": {
+      "day": {
+        "type": "int"
+      },
+      "month": {
+        "type": "int"
+      },
+      "year": {
+        "type": "int"
+      }
+    }
+  },
+  "financeDuesRemind": "Remind on WhatsApp",
+  "financeDuesRemindAgain": "Remind again on WhatsApp",
+  "financeDuesNoPhoneError": "No phone number for this customer.",
+  "financeDuesReminderMessage": "Assalam-o-Alaikum {name}, your RentalHub balance of Rs. {due} is pending. Please clear it at your earliest convenience. Thank you!",
+  "@financeDuesReminderMessage": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "due": {
+        "type": "int"
+      }
+    }
+  },
+  "financeDuesWhatsappFailed": "Could not open WhatsApp.",
+  "financeDuesReminderSent": "WhatsApp opened — reminder marked as sent.",
+  "financeDuesAutoNote": "Automated WhatsApp reminders (every 3 days) need the WhatsApp Business setup — Phase I.",
+  "handoverTitle": "Vehicle Handover & Inspection",
+  "handoverOdometerInvalid": "Please enter a valid odometer reading.",
+  "handoverSignRequired": "Both customer and host must sign on the pads before vehicle departure.",
+  "handoverCertified": "Handover certified! Digital A4 rental contract generated.",
+  "handoverCompleteFailed": "Handover completion failed: {error}",
+  "@handoverCompleteFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "handoverIssuing": "Issuing Digital Contract...",
+  "handoverCertify": "Certify Handover & Generate Contract",
+  "handoverTelemetryTitle": "Vehicle Telemetry Inspection",
+  "handoverOdometerLabel": "Odometer Reading (KM):",
+  "handoverOdometerHint": "e.g. 45200",
+  "handoverFuelLabel": "Fuel Level Gauge:",
+  "handoverFuelQuarter": "1/4 (25%)",
+  "handoverFuelHalf": "2/4 (50%)",
+  "handoverFuelThreeQuarter": "3/4 (75%)",
+  "handoverFuelFull": "4/4 (Full)",
+  "handoverSignaturesTitle": "Dual Legal Endorsement & Signatures",
+  "handoverCustomerSignature": "Customer / Hirer Digital Signature",
+  "handoverCustomerSignatureHint": "Certifies physical receipt of car & documents",
+  "handoverHostSignature": "Showroom Host / Manager Signature",
+  "handoverHostSignatureHint": "Authorized release by showroom representative",
+  "handoverClear": "Clear",
+  "handoverDamageTitle": "Damage & Condition Notes",
+  "handoverDamageSubtitle": "Note every scratch, dent or missing item now — this is what the return inspection compares against.",
+  "handoverDamageHint": "e.g. Scratch on right door",
+  "handoverAdd": "Add",
+  "handoverNotedAt": "Noted at handover: {notes}",
+  "@handoverNotedAt": {
+    "placeholders": {
+      "notes": {
+        "type": "String"
+      }
+    }
+  },
+  "returnTitle": "Vehicle Return & Settlement",
+  "returnTripAudit": "Trip Audit #{id}",
+  "@returnTripAudit": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "returnOdometerBelow": "The return reading cannot be below the handover reading ({odometer} KM).",
+  "@returnOdometerBelow": {
+    "placeholders": {
+      "odometer": {
+        "type": "int"
+      }
+    }
+  },
+  "returnSettled": "Vehicle returned! Deposit settled — Rs. {refund} refunded.",
+  "@returnSettled": {
+    "placeholders": {
+      "refund": {
+        "type": "int"
+      }
+    }
+  },
+  "returnFinalizeFailed": "Finalizing return failed: {error}",
+  "@returnFinalizeFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "returnTelemetryTitle": "Return Telemetry Inspection",
+  "returnNewDamageTitle": "New Damage Found at Return",
+  "returnNewDamageSubtitle": "Only damage that was not noted at handover — this is what the charge below covers.",
+  "returnDamageChargeLabel": "Damage charge (Rs.)",
+  "returnDamageChargeHint": "0 if nothing new was found",
+  "returnFinalizing": "Finalizing Settlement...",
+  "returnFinalize": "Finalize Return & Settle Deposit",
+  "returnReceiptTitle": "Deposit & Return Balance Settlement",
+  "returnReceiptTotalKm": "Total Kilometers Driven",
+  "returnReceiptAllowance": "Allowed KM Allowance",
+  "returnReceiptExcessPenalty": "Excess KM Penalty ({excess} km × Rs. {rate})",
+  "@returnReceiptExcessPenalty": {
+    "placeholders": {
+      "excess": {
+        "type": "int"
+      },
+      "rate": {
+        "type": "int"
+      }
+    }
+  },
+  "returnReceiptFuelDeficit": "Fuel Level Deficit",
+  "returnReceiptOvertime": "Late Overtime Fee",
+  "returnReceiptDamage": "Damage Found at Return",
+  "returnReceiptDepositHeld": "Initial Security Deposit Held",
+  "returnReceiptTotalDeductions": "Total Incident / Penalty Deductions",
+  "returnReceiptDeductionsAmount": "- Rs. {amount}",
+  "@returnReceiptDeductionsAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "returnReceiptNetRefund": "Net Refund to Customer",
+  "contractTitle": "Digital Rental Contract",
+  "contractLegalRef": "Legal Agreement Ref: #{id}",
+  "@contractLegalRef": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "contractSharePdf": "Share PDF",
+  "contractPrintPdf": "Print PDF",
+  "contractPdfUnavailable": "The agreement PDF is not available yet.",
+  "contractShareText": "Rental agreement #{id}",
+  "@contractShareText": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "contractScanVerify": "Scan to verify this agreement — the page shows the booking, the shop and the signed PDF.",
+  "contractProceedReturn": "Proceed to Return & Settlement",
+  "contractAgencyLine": "Govt. Registered Commercial Motor Car Rental Agency",
+  "contractCertifiedTitle": "CERTIFIED DIGITAL RENTAL CONTRACT",
+  "contractFieldAgreementNo": "Agreement No:",
+  "contractFieldHirer": "Hirer / Customer:",
+  "contractFieldContact": "Customer Contact:",
+  "contractFieldCnic": "CNIC:",
+  "contractFieldVehicle": "Rented Vehicle:",
+  "contractFieldPackage": "Package Tier:",
+  "contractFieldOdometer": "Departure Odometer:",
+  "contractFieldFuel": "Handover Fuel Gauge:",
+  "contractFieldTotalPaid": "Total Rental Paid:",
+  "contractFieldDeposit": "Security Deposit:",
+  "contractWalkInCustomer": "Walk-in Customer",
+  "contractNotProvided": "Not provided",
+  "contractChauffeur": "Chauffeur",
+  "contractDepositRefundable": "Rs. {amount} (refundable)",
+  "@contractDepositRefundable": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "contractTermsTitle": "Legal Terms & Conditions (Pakistan Jurisdiction):",
+  "contractTerm1": "1. Vehicle shall not be driven across unauthorized provincial checkpoints without NOC.",
+  "contractTerm2": "2. Traffic challans, e-tickets and fuel consumed are sole liability of the hirer.",
+  "contractTerm3": "3. Any default will result in immediate non-bailable FIR and National Tribunal Blacklist listing.",
+  "contractHirerSignature": "Hirer Signature",
+  "contractSignedOnPad": "Signed on the pad",
+  "contractHostSignature": "Host Seal & Signature",
+  "contractAuthorizedManager": "Authorized Agency Manager",
+  "paymentVerificationTitle": "Verify Payment Proof",
+  "paymentVerificationBooking": "Booking #{id}",
+  "@paymentVerificationBooking": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "paymentVerificationConfirmed": "Payment confirmed — booking #{id} is paid.",
+  "@paymentVerificationConfirmed": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "paymentVerificationConfirmFailed": "Confirmation failed: {error}",
+  "@paymentVerificationConfirmFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "paymentVerificationRejectTitle": "Reject this proof?",
+  "paymentVerificationRejectNote": "The customer sees this reason and can upload a new proof.",
+  "paymentVerificationReasonLabel": "Reason (required)",
+  "paymentVerificationReasonHint": "e.g. Screenshot is unreadable",
+  "paymentVerificationRejectButton": "Reject Proof",
+  "paymentVerificationRejected": "Proof rejected — the customer can upload a new one.",
+  "paymentVerificationRejectFailed": "Rejection failed: {error}",
+  "@paymentVerificationRejectFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "paymentVerificationTotalRent": "Total rent",
+  "paymentVerificationAdvanceDue": "Advance due",
+  "paymentVerificationAdvancePaid": "Advance paid",
+  "paymentVerificationTransactionId": "Transaction ID",
+  "paymentVerificationScreenshotTitle": "Payment screenshot",
+  "paymentVerificationProofUnavailable": "Proof image unavailable — ask the customer to resend it.",
+  "paymentVerificationNoScreenshot": "No screenshot attached.",
+  "paymentVerificationPreviouslyRejected": "Previously rejected: {reason}",
+  "@paymentVerificationPreviouslyRejected": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "paymentVerificationConfirming": "Confirming…",
+  "paymentVerificationConfirmButton": "Confirm Payment — Rs. {amount}",
+  "@paymentVerificationConfirmButton": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "manualBookingTitle": "Walk-in Booking Wizard",
+  "manualBookingSubtitle": "Showroom Counter Direct Issue",
+  "manualBookingCustomerSection": "Customer KYC Details",
+  "manualBookingGuarantorSection": "Guarantor (optional)",
+  "manualBookingVehicleSection": "Vehicle & Package Selection",
+  "manualBookingCompleteDetails": "Please complete all customer details.",
+  "manualBookingSelectVehicle": "Please select a vehicle and package.",
+  "manualBookingBlacklisted": "This CNIC is blacklisted — walk-in booking refused.",
+  "manualBookingRegistered": "Walk-in booking #{id} registered!",
+  "@manualBookingRegistered": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "manualBookingCreateFailed": "Booking creation failed: {error}",
+  "@manualBookingCreateFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "manualBookingCreating": "Creating Walk-in Record...",
+  "manualBookingConfirm": "Confirm & Proceed to Handover",
+  "manualBookingCustomerName": "Customer Full Name",
+  "manualBookingNadraCnic": "NADRA CNIC",
+  "manualBookingSelectVehicleHint": "Select Showroom Vehicle",
+  "manualBookingSelectVehicleFirst": "Select a vehicle first to see its packages.",
+  "manualBookingNoPackages": "This vehicle has no packages enabled.",
+  "manualBookingPackageChip": "{label} • Rs. {price}",
+  "@manualBookingPackageChip": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "price": {
+        "type": "int"
+      }
+    }
+  },
+  "manualBookingTotal": "Total: Rs. {total}",
+  "@manualBookingTotal": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "manualBookingDepositLabel": "Security Deposit (Rs.)",
+  "manualBookingGuarantorNotFound": "No saved customer with that CNIC — add them below.",
+  "manualBookingGuarantorBlacklisted": "This CNIC is blacklisted and cannot be a guarantor.",
+  "manualBookingGuarantorRequired": "Name, phone and CNIC are required for a guarantor.",
+  "manualBookingGuarantorRemove": "Remove guarantor",
+  "manualBookingGuarantorSearch": "Search guarantor by CNIC",
+  "manualBookingGuarantorFind": "Find",
+  "manualBookingGuarantorEmpty": "No saved customers yet.",
+  "manualBookingGuarantorHide": "Hide new guarantor",
+  "manualBookingGuarantorAdd": "Add new guarantor",
+  "manualBookingGuarantorName": "Guarantor full name",
+  "manualBookingGuarantorCnic": "CNIC number",
+  "manualBookingGuarantorRelationship": "Relationship (e.g. Father, Brother, Friend)",
+  "manualBookingGuarantorSave": "Save & Select Guarantor",
+  "qrScanTitle": "Scan Booking QR",
+  "qrScanSubtitle": "Point the camera at the customer’s booking code",
+  "qrNoBooking": "No booking found for #{id}.",
+  "@qrNoBooking": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "qrOpenFailed": "Could not open the booking: {error}",
+  "@qrOpenFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "qrNotBookingCode": "This is not a RentalHub booking code.",
+  "qrTypeHint": "Or type the booking id, e.g. RH-…",
+  "onboardingCurrentGps": "Current GPS ({lat}, {lng})",
+  "@onboardingCurrentGps": {
+    "placeholders": {
+      "lat": {
+        "type": "String"
+      },
+      "lng": {
+        "type": "String"
+      }
+    }
+  },
+  "onboardingShopNameShort": "Shop name must be at least 3 characters.",
+  "onboardingAddressInvalid": "Please enter a valid showroom address.",
+  "onboardingPayoutRequired": "Please enable at least one payout method.",
+  "onboardingSubmitted": "Showroom profile submitted for verification!",
+  "onboardingStepOf": "Step {step} of 4",
+  "@onboardingStepOf": {
+    "placeholders": {
+      "step": {
+        "type": "int"
+      }
+    }
+  },
+  "onboardingSubmit": "Submit Shop for Verification",
+  "onboardingNextStep": "Next Step",
+  "onboardingHeaderShop": "Shop Registration",
+  "onboardingHeaderLocation": "Location & Map Pin",
+  "onboardingHeaderPayout": "Payout Accounts",
+  "onboardingHeaderKyc": "KYC & Verification",
+  "onboardingHeaderSubmitted": "Application Submitted",
+  "onboardingSubtitleShop": "Business identity and contact details",
+  "onboardingSubtitleLocation": "Physical address and geo-coordinates",
+  "onboardingSubtitlePayout": "JazzCash, EasyPaisa or Pakistani Bank",
+  "onboardingSubtitleKyc": "Shop banner, 3 fleet photos & CNIC",
+  "onboardingSubtitleSubmitted": "Review status and fleet management",
+  "onboardingChangeLogo": "Change Shop Logo",
+  "onboardingUploadLogo": "Upload Shop Logo / Storefront",
+  "onboardingShopLegalName": "Shop Registered Legal Name",
+  "onboardingShopNameHint": "e.g. Al-Falah Rent a Car",
+  "onboardingOwnerName": "Owner Full Name (as on CNIC)",
+  "onboardingOwnerNameHint": "e.g. Ahmed Raza",
+  "onboardingOwnerCnic": "Owner CNIC Number",
+  "onboardingShopPhone": "Shop Landline / Alt Phone",
+  "onboardingOperatingHours": "Operating Hours",
+  "onboardingHours9to10": "9:00 AM - 10:00 PM",
+  "onboardingHours8toMidnight": "8:00 AM - Midnight",
+  "onboardingHours24x7": "24 Hours / 7 Days",
+  "onboardingHours10to8": "10:00 AM - 8:00 PM",
+  "onboardingSelectCity": "Select Your City",
+  "onboardingPinOnMap": "Pin Showroom On Map",
+  "onboardingLocating": "Locating...",
+  "onboardingUseGps": "Use Current GPS",
+  "onboardingTapToPin": "Tap anywhere on map to pin showroom ({lat}, {lng})",
+  "@onboardingTapToPin": {
+    "placeholders": {
+      "lat": {
+        "type": "String"
+      },
+      "lng": {
+        "type": "String"
+      }
+    }
+  },
+  "onboardingShopAddress": "Physical Showroom Address",
+  "onboardingAddressHint": "Shop number, plaza, street, sector / commercial area",
+  "onboardingPayoutTitle": "Payout Accounts & Settlement",
+  "onboardingPayoutSubtitle": "Select at least one payout channel to receive rental bookings and customer advance deposits.",
+  "onboardingJazzCashTitle": "JazzCash Mobile Account",
+  "onboardingJazzCashSubtitle": "Instant mobile wallet payout",
+  "onboardingEasyPaisaTitle": "EasyPaisa Wallet Account",
+  "onboardingEasyPaisaSubtitle": "Instant digital wallet payout",
+  "onboardingJazzCashNumber": "JazzCash Mobile Number",
+  "onboardingEasyPaisaNumber": "EasyPaisa Mobile Number",
+  "onboardingBankTitle": "Direct Commercial Bank",
+  "onboardingBankSubtitle": "1-Link / IBAN direct bank settlement",
+  "onboardingSelectBank": "Select Bank Name",
+  "onboardingAccountNumber": "Account Number / IBAN",
+  "onboardingIbanHint": "e.g. PK36MEZN0001234567890123",
+  "onboardingAccountTitleBusiness": "Account Title (Business / Owner)",
+  "onboardingAccountTitle": "Account Title",
+  "onboardingTitleHint": "Ahmed Raza",
+  "onboardingStepShopDetails": "Shop Details",
+  "onboardingStepLocation": "Location",
+  "onboardingStepPayouts": "Payouts",
+  "onboardingStepKyc": "KYC Docs",
+  "onboardingApprovalTitle": "Shop Application Submitted!",
+  "onboardingApprovalMessage": "Your shop profile and KYC credentials have been routed to the Super Admin desk. You will receive SMS & WhatsApp verification within 2 to 4 business hours.",
+  "onboardingFleetReady": "Fleet Catalog Ready",
+  "onboardingFleetReadyHint": "You can start adding your cars, setting 1h/3h/6h/24h rates and photos right now.",
+  "onboardingManageFleet": "Manage Fleet & Add Vehicles",
+  "onboardingHeaderBannerTitle": "Shop Header Showcase Banner",
+  "onboardingHeaderBannerHint": "Upload photo from camera or gallery. Appears at the top of your public profile.",
+  "onboardingHeaderBannerPhoto": "Shop Header Banner Photo",
+  "onboardingFleetPhotosTitle": "Showroom Fleet Photos (3 Required)",
+  "onboardingFleetPhotosHint": "Upload authentic photos of cars parked at your showroom.",
+  "onboardingFleetCar1": "Fleet Car 1",
+  "onboardingFleetCar2": "Fleet Car 2",
+  "onboardingFleetCar3": "Fleet Car 3",
+  "onboardingIdentityTitle": "Owner Identity & Tax Verification",
+  "onboardingIdentityHint": "Mandatory compliance for showroom verification.",
+  "onboardingCnicFront": "CNIC Front Photo",
+  "onboardingCnicFrontHint": "Daylight photo of owner CNIC front",
+  "onboardingCnicBack": "CNIC Back Photo",
+  "onboardingCnicBackHint": "Daylight photo showing permanent address",
+  "onboardingNtn": "FBR NTN Certificate / Business Registration",
+  "onboardingNtnHint": "Verified filer certificate or showroom deed",
+  "onboardingSelfie": "Owner Live Selfie Holding CNIC (Front Camera Only)",
+  "onboardingSelfieHint": "Instant live biometric selfie capture",
+  "onboardingDocReady": "Ready ✓",
+  "onboardingDocUpload": "Upload",
+  "onboardingDocRemove": "Remove",
+  "onboardingTapToUpload": "Tap to Upload",
+  "onboardingOptional": "Optional",
+  "disputesOwnerSubtitle": "Complaints from your customers",
+  "disputesFilterAll": "All ({count})",
+  "@disputesFilterAll": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "disputesFilterOpen": "Open ({count})",
+  "@disputesFilterOpen": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "disputesFilterInReview": "In review ({count})",
+  "@disputesFilterInReview": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "disputesFilterResolved": "Resolved ({count})",
+  "@disputesFilterResolved": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "disputesNoneOpen": "No open disputes.",
+  "disputesNoneInReview": "No in-review disputes.",
+  "disputesNoneResolved": "No resolved disputes.",
+  "disputesFallbackTitle": "Dispute",
+  "disputesBookingLine": "Booking {id} • {name}",
+  "@disputesBookingLine": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "disputesNoDescription": "No description given.",
+  "disputesSaving": "Saving…",
+  "disputesMarkInReview": "Mark in review",
+  "disputesMarkResolved": "Mark resolved",
+  "disputesResolvedNote": "Resolved — no further action needed.",
+  "disputesMonthJan": "Jan",
+  "disputesMonthFeb": "Feb",
+  "disputesMonthMar": "Mar",
+  "disputesMonthApr": "Apr",
+  "disputesMonthMay": "May",
+  "disputesMonthJun": "Jun",
+  "disputesMonthJul": "Jul",
+  "disputesMonthAug": "Aug",
+  "disputesMonthSep": "Sep",
+  "disputesMonthOct": "Oct",
+  "disputesMonthNov": "Nov",
+  "disputesMonthDec": "Dec",
+  "notificationsSubtitle": "What needs your attention",
+  "notificationsMarkAllRead": "Mark all read",
+  "notificationsEmpty": "No notifications yet.",
+  "subscriptionUpgradeTo": "Upgrade to {tier}",
+  "@subscriptionUpgradeTo": {
+    "placeholders": {
+      "tier": {
+        "type": "String"
+      }
+    }
+  },
+  "subscriptionClose": "Close",
+  "subscriptionTransfer": "Transfer Rs. {price} via Raast / IBAN to activate instant showroom accreditation.",
+  "@subscriptionTransfer": {
+    "placeholders": {
+      "price": {
+        "type": "int"
+      }
+    }
+  },
+  "subscriptionTrxLabel": "Bank Transfer Transaction ID / Reference",
+  "subscriptionTrxHint": "e.g. TRX-998822",
+  "subscriptionSubmit": "Submit Upgrade Verification",
+  "subscriptionEnterTrx": "Please enter transaction ID",
+  "subscriptionRequested": "Upgrade requested! Super Admin review in progress.",
+  "subscriptionTitle": "Showroom Membership Plans",
+  "subscriptionSubtitle": "Grow Your Showroom Fleet with RentalHub",
+  "subscriptionPerMonth": "/ month",
+  "subscriptionForeverFree": "Forever Free",
+  "subscriptionFeatureMax3": "Max 3 Showroom Vehicles",
+  "subscriptionFeatureAgreements": "Standard Digital Agreements",
+  "subscriptionFeatureVerification": "Customer Verification Check",
+  "subscriptionFeatureUnlimited": "Unlimited Fleet Vehicles",
+  "subscriptionFeatureRadar": "Real-time National Blacklist Radar",
+  "subscriptionFeatureWhatsappInvoicing": "WhatsApp Automated Invoicing & Pass",
+  "subscriptionFeaturePricingMatrix": "Custom Multi-tier Pricing Matrix",
+  "subscriptionFeatureMultiBranch": "Multi-branch Fleet Synchronization",
+  "subscriptionFeatureManager": "Dedicated Account Manager",
+  "subscriptionFeatureGps": "GPS Telematics API Integration",
+  "subscriptionFeatureTribunal": "Priority Dispute Tribunal Hearings",
+  "subscriptionMostPopular": "MOST POPULAR",
+  "subscriptionCurrentPlan": "CURRENT PLAN",
+  "subscriptionActivePlan": "Active Plan",
+  "whatsappLogsTitle": "WhatsApp Alert Dispatches",
+  "whatsappLogsSubtitle": "Transactional Messaging Gateway • Live",
+  "whatsappLogsDelivered": "Delivered",
+  "whatsappLogsRead": "Read",
+  "whatsappLogsFailed": "Failed",
+  "whatsappLogsResent": "WhatsApp notification re-dispatched via Meta Cloud API!",
+  "whatsappLogsResend": "Resend",
+  "onboardingWhatsappBusinessNumber": "WhatsApp Business Number",
+  "disputesOwnerEmpty": "No disputes yet — customer disputes for your showroom will appear here.",
+  "manualBookingGuarantorPhone": "Phone number",
+  "navHome": "Home",
+  "navBookings": "Bookings",
+  "navSupport": "Support",
+  "navProfile": "Profile",
+  "navDashboard": "Dashboard",
+  "navRequests": "Requests",
+  "navSettings": "Settings",
+  "syncOfflineWithPending": "{count, plural, =1{You're offline — 1 change will sync when you're back online} other{You're offline — {count} changes will sync when you're back online}}",
+  "@syncOfflineWithPending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "syncOffline": "You're offline — changes will sync when you're back online",
+  "syncPending": "{count, plural, =1{1 change pending sync} other{{count} changes pending sync}}",
+  "@syncPending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "syncFailed": "{count, plural, =1{1 change failed to sync — will retry} other{{count} changes failed to sync — will retry}}",
+  "@syncFailed": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "syncFailedShort": "Sync failed — will retry",
+  "syncPendingShort": "Pending sync",
+  "syncAllSynced": "All changes synced",
+  "syncTitle": "Sync",
+  "commonRetry": "Retry",
+  "commonSubmit": "Submit",
+  "commonConfirm": "Confirm",
+  "commonShowValue": "Show value",
+  "commonHideValue": "Hide value",
+  "commonGoBack": "Go back",
+  "headerGreeting": "Hi, {name}",
+  "@headerGreeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "headerGreetingFallback": "Hi there",
+  "headerUrduGreeting": "اسلام علیکم",
+  "mediaSelectSource": "Select Media Source",
+  "mediaTakePhoto": "Take Photo (Back Camera)",
+  "mediaTakePhotoHint": "Use device camera",
+  "mediaChooseGalleryHint": "Pick existing photo or screenshot",
+  "mediaRemovePhoto": "Remove Photo",
+  "mediaRemovePhotoHint": "Clear this uploaded image",
+  "signatureAutoSign": "Auto Sign",
+  "signatureDrawArea": "Signature drawing area",
+  "signatureDrawHint": "Draw your signature with your finger",
+  "signatureSignHere": "Sign here on screen ({name})",
+  "@signatureSignHere": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "signatureSignedBy": "Signed by: {name}",
+  "@signatureSignedBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "signatureNadraValidated": "NADRA Validated",
+  "badgeNadraVerified": "NADRA Verified",
+  "fuelGaugeLabel": "Calibrated 8-Segment Fuel Level",
+  "fuelGaugeSetLevel": "Set fuel level to {n} of 8",
+  "@fuelGaugeSetLevel": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "damageSchematicTitle": "4-Quadrant Exterior Inspection Schematic",
+  "damageMarksLogged": "{count, plural, =1{1 Mark Logged} other{{count} Marks Logged}}",
+  "@damageMarksLogged": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "damageTapHint": "Tap any vehicle quadrant below to pin/unpin pre-existing scratches or dents:",
+  "blacklistScanPrompt": "Enter CNIC above to run an instant real-time scan against the National Car Rental Fraud & Blacklist Database.",
+  "blacklistCriticalAlert": "CRITICAL ALERT: BLACKLISTED CITIZEN",
+  "blacklistIncidentRef": "Incident Ref: {id}",
+  "@blacklistIncidentRef": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "blacklistReason": "Reason: {reason}",
+  "@blacklistReason": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "blacklistReportedBy": "Reported By: {shop}",
+  "@blacklistReportedBy": {
+    "placeholders": {
+      "shop": {
+        "type": "String"
+      }
+    }
+  },
+  "blacklistDecline": "Decline / Refuse Service",
+  "blacklistCleanTitle": "CLEAN NADRA RECORD VERIFIED",
+  "blacklistCleanSubtitle": "Zero active defaults or tribunal complaints on file.",
+  "blacklistProceed": "Proceed to Walk-in Booking Wizard",
+  "cnicVerifyTitle": "NADRA CNIC Verification",
+  "cnicScanTooltip": "Scan CNIC / Barcode",
+  "cnicVerifyButton": "Verify CNIC & Blacklist",
+  "cnicChecking": "Checking National Tribunal...",
+  "noDraftTitle": "No booking in progress.",
+  "noDraftMessage": "Pick a car and a package first — the review screen needs the booking details from there.",
+  "noDraftBrowse": "Browse shops",
+  "routeBookingNotFound": "Booking {id} was not found.",
+  "@routeBookingNotFound": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "routeVehicleNotFound": "Vehicle {id} was not found.",
+  "@routeVehicleNotFound": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "fuelGaugeBars": "{active} / 8 Bars ({percent}%)",
+  "@fuelGaugeBars": {
+    "placeholders": {
+      "active": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  }
+}

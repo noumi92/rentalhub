@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import 'dispute_category_chips.dart';
+import '../../../../l10n/app_localizations.dart';
 
 /// The dispute form fields, extracted from CustomerDisputeView so the
 /// view stays under the 250-line cap: category chips, the booking
@@ -25,10 +26,11 @@ class DisputeFormFields extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Select Dispute Category',
+        Text(l10n.disputeSelectCategory,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
         const SizedBox(height: 8),
         DisputeCategoryChips(
@@ -37,13 +39,13 @@ class DisputeFormFields extends StatelessWidget {
           onSelected: onCategorySelected,
         ),
         const SizedBox(height: 16),
-        Text('Booking ID / Reference',
+        Text(l10n.disputeBookingId,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
         const SizedBox(height: 6),
         TextField(
           controller: bookingIdController,
           decoration: InputDecoration(
-            hintText: 'E.g. RH-849201',
+            hintText: l10n.disputeBookingIdHint,
             filled: true,
             fillColor:
                 Theme.of(context).colorScheme.surfaceContainerHighest,
@@ -56,7 +58,7 @@ class DisputeFormFields extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
-        Text('Detailed Explanation',
+        Text(l10n.disputeDetailsLabel,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
         const SizedBox(height: 6),
         TextField(
@@ -64,7 +66,7 @@ class DisputeFormFields extends StatelessWidget {
           maxLines: 4,
           decoration: InputDecoration(
             hintText:
-                'Describe what happened with dates, amounts, and showroom staff names...',
+                l10n.disputeDetailsHint,
             filled: true,
             fillColor:
                 Theme.of(context).colorScheme.surfaceContainerHighest,
@@ -89,7 +91,7 @@ class DisputeFormFields extends StatelessWidget {
               SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  'Your dispute is recorded and shared with the showroom for review. There is no fixed resolution time yet.',
+                  l10n.disputeRecordedNote,
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600),
                 ),
               ),

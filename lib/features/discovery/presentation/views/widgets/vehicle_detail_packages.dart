@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../fleet/domain/entities/vehicle_entity.dart';
 import 'vehicle_package_card.dart';
+import '../../../../../l10n/app_localizations.dart';
 
 /// Phase A (A1): the drive-mode + package section of the car detail
 /// screen, extracted so the view stays under the 250-line cap.
@@ -20,6 +21,7 @@ class VehicleDetailPackages extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final v = vehicle;
     final selfDriveRate = v.rates.daily24;
     final withDriverRate =
@@ -27,15 +29,15 @@ class VehicleDetailPackages extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Choose Rental Package',
+        Text(l10n.vehicleChoosePackage,
             style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900)),
         const SizedBox(height: 10),
         Row(
           children: [
             Expanded(
               child: VehiclePackageCard(
-                title: 'Self Drive',
-                urdu: 'سیلف ڈرائیو',
+                title: l10n.selfDrive,
+                urdu: l10n.vehicleSelfDriveUrdu,
                 price: selfDriveRate,
                 isSelected: !withDriver,
                 icon: Icons.drive_eta_rounded,
@@ -45,8 +47,8 @@ class VehicleDetailPackages extends StatelessWidget {
             const SizedBox(width: 12),
             Expanded(
               child: VehiclePackageCard(
-                title: 'With Driver',
-                urdu: 'ڈرائیور کے ساتھ',
+                title: l10n.withDriver,
+                urdu: l10n.vehicleWithDriverUrdu,
                 price: withDriverRate,
                 isSelected: withDriver,
                 icon: Icons.person_pin_rounded,
@@ -83,8 +85,8 @@ class VehicleDetailPackages extends StatelessWidget {
               Expanded(
                 child: Text(
                   withDriver
-                      ? 'Verified chauffeur included • Overtime: Rs. ${v.extraHourPkr ?? 0}/hr • Outstation: +Rs. ${v.rates.outOfCityDaily ?? 0}/day'
-                      : 'Security Deposit: Rs. ${v.securityDepositPkr ?? 0} + Original NADRA CNIC guarantee required at pickup',
+                      ? l10n.vehicleDriverPackageDetail(v.extraHourPkr ?? 0, v.rates.outOfCityDaily ?? 0)
+                      : l10n.vehicleDepositCnic(v.securityDepositPkr ?? 0),
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600, height: 1.3),
                 ),
               ),

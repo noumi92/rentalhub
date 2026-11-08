@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../../l10n/app_localizations.dart';
 
 
 /// B2: the empty state shown on the customer map when no verified shop is
@@ -8,6 +9,7 @@ class NoShopsBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
@@ -21,7 +23,7 @@ class NoShopsBanner extends StatelessWidget {
         ],
       ),
       child: Text(
-        'No verified showrooms within this radius yet. Try a wider radius.',
+        l10n.noShopsBanner,
         textAlign: TextAlign.center,
         style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
       ),

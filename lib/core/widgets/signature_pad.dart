@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 import '../theme/app_theme.dart';
 
 class SignaturePadWidget extends StatefulWidget {
@@ -44,6 +45,9 @@ class _SignaturePadWidgetState extends State<SignaturePadWidget> {
 
   @override
   Widget build(BuildContext context) {
+    // Phase F: the pad chrome is localized (English fallback for
+    // delegate-less pumps). The signer name stays data.
+    final l10n = AppLocalizations.of(context);
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -71,18 +75,19 @@ class _SignaturePadWidgetState extends State<SignaturePadWidget> {
                 children: [
                   Icon(
                     _isSigned ? Icons.check_circle : Icons.draw_outlined,
-                    color: _isSigned ? AppColors.accentSuccess : AppColors.primary,
+                    color:
+                        _isSigned ? AppColors.accentSuccess : AppColors.primary,
                     size: 18,
                   ),
                   const SizedBox(width: 6),
                   Text(
                     widget.signerLabel,
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      // The pad stays near-white for ink in both modes,
-                      // so the label stays a fixed dark colour.
-                      color: AppColors.textPrimary,
-                    ),
+                          fontWeight: FontWeight.w700,
+                          // The pad stays near-white for ink in both modes,
+                          // so the label stays a fixed dark colour.
+                          color: AppColors.textPrimary,
+                        ),
                   ),
                 ],
               ),
@@ -91,27 +96,29 @@ class _SignaturePadWidgetState extends State<SignaturePadWidget> {
                   TextButton(
                     onPressed: _autoSign,
                     style: TextButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 2),
                       minimumSize: Size.zero,
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
                     child: Text(
-                      'Auto Sign',
+                      l10n?.signatureAutoSign ?? 'Auto Sign',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppColors.secondary,
-                      ),
+                            color: AppColors.secondary,
+                          ),
                     ),
                   ),
                   const SizedBox(width: 8),
                   TextButton(
                     onPressed: _clear,
                     style: TextButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 2),
                       minimumSize: Size.zero,
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
                     child: Text(
-                      'Clear',
+                      l10n?.handoverClear ?? 'Clear',
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ),
@@ -126,30 +133,42 @@ class _SignaturePadWidgetState extends State<SignaturePadWidget> {
             decoration: BoxDecoration(
               color: AppColors.background,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColors.borderSubtle.withValues(alpha: 0.6), style: BorderStyle.solid),
+              border: Border.all(
+                  color: AppColors.borderSubtle.withValues(alpha: 0.6),
+                  style: BorderStyle.solid),
             ),
-            child: GestureDetector(
-              onPanUpdate: (details) {
-                final localPosition = details.localPosition;
-                setState(() {
-                  _points.add(localPosition);
-                  _isSigned = true;
-                });
-                widget.onSignedChange?.call(true);
-              },
-              onPanEnd: (details) => _points.add(null),
-              child: CustomPaint(
-                painter: _SignaturePainter(points: _points),
-                child: Center(
-                  child: _points.isEmpty
-                      ? Text(
-                          'Sign here on screen (${widget.signerName})',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: AppColors.textMuted.withValues(alpha: 0.7),
-                            fontStyle: FontStyle.italic,
-                          ),
-                        )
-                      : null,
+            // E3: the drawing area is a labelled semantics node so a
+            // screen reader can find and describe it.
+            child: Semantics(
+              label: l10n?.signatureDrawArea ?? 'Signature drawing area',
+              hint: l10n?.signatureDrawHint ??
+                  'Draw your signature with your finger',
+              child: GestureDetector(
+                onPanUpdate: (details) {
+                  final localPosition = details.localPosition;
+                  setState(() {
+                    _points.add(localPosition);
+                    _isSigned = true;
+                  });
+                  widget.onSignedChange?.call(true);
+                },
+                onPanEnd: (details) => _points.add(null),
+                child: CustomPaint(
+                  painter: _SignaturePainter(points: _points),
+                  child: Center(
+                    child: _points.isEmpty
+                        ? Text(
+                            l10n?.signatureSignHere(widget.signerName) ??
+                                'Sign here on screen (${widget.signerName})',
+                            style:
+                                Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: AppColors.textMuted
+                                          .withValues(alpha: 0.7),
+                                      fontStyle: FontStyle.italic,
+                                    ),
+                          )
+                        : null,
+                  ),
                 ),
               ),
             ),
@@ -159,22 +178,24 @@ class _SignaturePadWidgetState extends State<SignaturePadWidget> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Signed by: ${widget.signerName}',
+                l10n?.signatureSignedBy(widget.signerName) ??
+                    'Signed by: ${widget.signerName}',
                 style: Theme.of(context).textTheme.labelSmall,
               ),
               if (_isSigned)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   decoration: BoxDecoration(
                     color: AppColors.successContainer,
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Text(
-                    'NADRA Validated',
+                    l10n?.signatureNadraValidated ?? 'NADRA Validated',
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.accentSuccess,
-                    ),
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.accentSuccess,
+                        ),
                   ),
                 ),
             ],

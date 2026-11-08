@@ -9,6 +9,7 @@ import 'package:rentalhub/features/handover/data/datasources/handover_local_data
 import 'package:rentalhub/features/handover/presentation/cubit/handover_cubit.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_customer_scan_view.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_booking_requests_view.dart';
+import 'package:rentalhub/l10n/app_localizations.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_handover_signature_view.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_return_settlement_view.dart';
 
@@ -113,8 +114,10 @@ void main() {
   group('Batch 4: Screen UI Actions & Rendering Tests', () {
     testWidgets('OwnerCustomerScanView: scans CNIC and displays blacklist result', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: OwnerCustomerScanView(),
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const OwnerCustomerScanView(),
         ),
       );
       await tester.pumpAndSettle();
@@ -133,6 +136,8 @@ void main() {
     testWidgets('OwnerBookingRequestsView: displays incoming triage list', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           home: OwnerBookingRequestsView(shopId: 'shop-1'),
         ),
       );
@@ -163,6 +168,8 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           home: OwnerHandoverSignatureView(booking: testBooking),
         ),
       );
@@ -202,6 +209,8 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           home: OwnerReturnSettlementView(
             booking: testBooking,
             initialOdometer: 40000,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../../l10n/app_localizations.dart';
 import '../../../../../core/constants/app_colors.dart';
 
 class OnboardingStepperBar extends StatelessWidget {
@@ -8,18 +9,19 @@ class OnboardingStepperBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+  final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       color: Theme.of(context).colorScheme.surface,
       child: Row(
         children: [
-          _stepPill(context, 1, 'Shop Details', Icons.storefront_rounded),
+          _stepPill(context, 1, l10n.onboardingStepShopDetails, Icons.storefront_rounded),
           _stepLine(context, 1),
-          _stepPill(context, 2, 'Location', Icons.location_on_rounded),
+          _stepPill(context, 2, l10n.onboardingStepLocation, Icons.location_on_rounded),
           _stepLine(context, 2),
-          _stepPill(context, 3, 'Payouts', Icons.account_balance_wallet_rounded),
+          _stepPill(context, 3, l10n.onboardingStepPayouts, Icons.account_balance_wallet_rounded),
           _stepLine(context, 3),
-          _stepPill(context, 4, 'KYC Docs', Icons.verified_user_rounded),
+          _stepPill(context, 4, l10n.onboardingStepKyc, Icons.verified_user_rounded),
         ],
       ),
     );

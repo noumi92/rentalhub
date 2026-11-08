@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../data/sync_status_cubit.dart';
 import '../di/injection_container.dart';
 
@@ -50,6 +51,12 @@ class OfflineBanner extends StatelessWidget {
         }
         final theme = Theme.of(context);
         final isOffline = !state.isOnline;
+        // Phase F: the banner copy is localized; the plural keys carry
+        // the 1-vs-many form, so no English singular/plural ternary
+        // lives in the widget. The English fallback covers pumps
+        // without localization delegates (unit tests); the app always
+        // provides delegates, so users see the localized copy.
+        final l10n = AppLocalizations.of(context);
         final background = isOffline
             ? theme.colorScheme.errorContainer
             : theme.colorScheme.surfaceContainerHighest;
@@ -58,9 +65,12 @@ class OfflineBanner extends StatelessWidget {
             : theme.colorScheme.onSurface;
         final text = isOffline
             ? (state.pendingCount > 0
-                ? "You're offline — ${state.pendingCount} change${state.pendingCount == 1 ? '' : 's'} will sync when you're back online"
-                : "You're offline — changes will sync when you're back online")
-            : '${state.pendingCount} change${state.pendingCount == 1 ? '' : 's'} pending sync';
+                ? l10n?.syncOfflineWithPending(state.pendingCount) ??
+                    "You're offline — ${state.pendingCount} change${state.pendingCount == 1 ? '' : 's'} will sync when you're back online"
+                : l10n?.syncOffline ??
+                    "You're offline — changes will sync when you're back online")
+            : l10n?.syncPending(state.pendingCount) ??
+                '${state.pendingCount} change${state.pendingCount == 1 ? '' : 's'} pending sync';
         // Phase D (D2): the banner lives at the very top of the shell
         // body, so with edge-to-edge it would render under the status
         // bar when visible. The SafeArea wraps only the visible
@@ -111,6 +121,10 @@ class SyncStatusChip extends StatelessWidget {
     if (status == SyncEntryStatus.synced) return const SizedBox.shrink();
     final theme = Theme.of(context);
     final isFailed = status == SyncEntryStatus.failed;
+    // Phase F: the chip copy is localized (short forms — the chip
+    // carries no count, unlike the banner). English fallback for
+    // delegate-less pumps, as above.
+    final l10n = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
@@ -120,7 +134,9 @@ class SyncStatusChip extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
       ),
       child: Text(
-        isFailed ? 'Sync failed — will retry' : 'Pending sync',
+        isFailed
+            ? l10n?.syncFailedShort ?? 'Sync failed — will retry'
+            : l10n?.syncPendingShort ?? 'Pending sync',
         style: theme.textTheme.labelSmall?.copyWith(
           color: isFailed
               ? theme.colorScheme.onErrorContainer

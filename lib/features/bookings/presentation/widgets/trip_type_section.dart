@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../fleet/domain/entities/fixed_route_entity.dart';
+import '../../../../l10n/app_localizations.dart';
 
 /// Phase B (B3): the In-City / Out-of-City toggle of the booking
 /// picker, with the tracker-clearance note and the shop's fixed
@@ -25,6 +26,7 @@ class TripTypeSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -32,7 +34,8 @@ class TripTypeSection extends StatelessWidget {
           children: [
             Expanded(
               child: ChoiceChip(
-                label: const Text('In-City'),
+                materialTapTargetSize: MaterialTapTargetSize.padded,
+                label:  Text(l10n.inCityHyphen),
                 selected: !isOutOfCity,
                 selectedColor: AppColors.primary,
                 labelStyle: TextStyle(
@@ -46,7 +49,8 @@ class TripTypeSection extends StatelessWidget {
             const SizedBox(width: 10),
             Expanded(
               child: ChoiceChip(
-                label: const Text('Out-of-City'),
+                materialTapTargetSize: MaterialTapTargetSize.padded,
+                label:  Text(l10n.outOfCityHyphen),
                 selected: isOutOfCity,
                 selectedColor: AppColors.primary,
                 labelStyle: TextStyle(
@@ -62,13 +66,17 @@ class TripTypeSection extends StatelessWidget {
         if (isOutOfCity) ...[
           const SizedBox(height: 10),
           Text(
-            'Tracker clearance required — the shop confirms it before pickup.',
-            style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w600, color: AppColors.secondary),
+            l10n.tripTrackerNote,
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                fontWeight: FontWeight.w600, color: AppColors.secondary),
           ),
           if (fixedRoutes.isNotEmpty) ...[
             const SizedBox(height: 10),
-            Text('Fixed routes from this shop',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800)),
+            Text(l10n.tripFixedRoutes,
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(fontWeight: FontWeight.w800)),
             const SizedBox(height: 6),
             Wrap(
               spacing: 8,
@@ -76,8 +84,8 @@ class TripTypeSection extends StatelessWidget {
               children: fixedRoutes.map((r) {
                 final selected = selectedRoute?.routeId == r.routeId;
                 return ChoiceChip(
-                  label:
-                      Text('${r.destinationCity} • Rs. ${r.fixedPricePkr}'),
+                  materialTapTargetSize: MaterialTapTargetSize.padded,
+                  label: Text('${r.destinationCity} • Rs. ${r.fixedPricePkr}'),
                   selected: selected,
                   selectedColor: AppColors.secondary,
                   labelStyle: TextStyle(
@@ -85,8 +93,7 @@ class TripTypeSection extends StatelessWidget {
                       color: selected
                           ? Colors.white
                           : Theme.of(context).colorScheme.onSurface),
-                  onSelected: (_) =>
-                      onRouteSelected(selected ? null : r),
+                  onSelected: (_) => onRouteSelected(selected ? null : r),
                 );
               }).toList(),
             ),

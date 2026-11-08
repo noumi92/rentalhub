@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
+import '../../../../core/widgets/app_state_views.dart';
 import '../../../../core/widgets/custom_curved_header.dart';
 import '../../../fleet/data/datasources/fleet_remote_data_source.dart';
 import '../../../fleet/domain/entities/vehicle_entity.dart';
 import 'widgets/customer_vehicle_card.dart';
+import '../../../../l10n/app_localizations.dart';
 
 /// B3: the shop's fleet screen, converted from MockVehicle to the real
 /// [VehicleEntity]. Without a [vehicles] list it loads the shop's real
@@ -34,33 +36,69 @@ class _ShopCarsViewState extends State<ShopCarsView> {
   final List<String> _categories = ['All', 'Sedan', 'SUV', 'Hiace', 'Luxury'];
   List<VehicleEntity> _loaded = const [];
   bool _loading = false;
+  // E2: a load failure used to clear the spinner silently; it now
+  // renders an error state with retry.
+  bool _hasError = false;
 
   @override
   void initState() {
     super.initState();
     if (widget.vehicles == null) {
+      _load();
+    }
+  }
+
+  Future<void> _load() async {
+    setState(() {
       _loading = true;
-      sl<FleetRemoteDataSource>()
-          .getShopVehicles(widget.shopId)
-          .then((vehicles) {
-        if (mounted) {
-          setState(() {
-            _loaded = vehicles;
-            _loading = false;
-          });
-        }
-      }).catchError((_) {
-        if (mounted) setState(() => _loading = false);
-      });
+      _hasError = false;
+    });
+    try {
+      final vehicles =
+          await sl<FleetRemoteDataSource>().getShopVehicles(widget.shopId);
+      if (mounted) {
+        setState(() {
+          _loaded = vehicles;
+          _loading = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() {
+          _hasError = true;
+          _loading = false;
+        });
+      }
+    }
+  }
+
+  /// The stored filter value stays English (it is compared against the
+  /// vehicle's `category`); only the chip label is localized.
+  String _categoryLabel(AppLocalizations l10n, String category) {
+    switch (category) {
+      case 'Sedan':
+        return l10n.shopCategorySedan;
+      case 'SUV':
+        return l10n.shopCategorySuv;
+      case 'Hiace':
+        return l10n.shopCategoryHiace;
+      case 'Luxury':
+        return l10n.shopCategoryLuxury;
+      default:
+        return l10n.filterAll;
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final list = widget.vehicles ?? _loaded;
     final filtered = _selectedCategory == 'All'
         ? list
-        : list.where((v) => v.category.toLowerCase() == _selectedCategory.toLowerCase()).toList();
+        : list
+            .where((v) =>
+                v.category.toLowerCase() == _selectedCategory.toLowerCase())
+            .toList();
 
     return Scaffold(
       body: SafeArea(
@@ -70,6 +108,7 @@ class _ShopCarsViewState extends State<ShopCarsView> {
               variant: CustomCurvedHeaderVariant.compact,
               leadingWidget: widget.onBack != null
                   ? IconButton(
+                      tooltip: l10n.back,
                       icon: const Icon(Icons.arrow_back_ios_new_rounded,
                           color: Colors.white, size: 20),
                       onPressed: widget.onBack,
@@ -78,15 +117,21 @@ class _ShopCarsViewState extends State<ShopCarsView> {
               titleWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Available Fleet',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
+                  Text(l10n.shopCarsTitle,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w900, color: Colors.white)),
                   Text(widget.shopName,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.primaryContainer)),
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodySmall
+                          ?.copyWith(color: AppColors.primaryContainer)),
                 ],
               ),
             ),
+            // E3: 48dp chip + 8dp vertical padding each side — the
+            // old 52dp row squeezed the category chips to 36dp.
             Container(
-              height: 52,
+              height: 64,
               padding: const EdgeInsets.symmetric(vertical: 8),
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
@@ -97,13 +142,24 @@ class _ShopCarsViewState extends State<ShopCarsView> {
                   final cat = _categories[i];
                   final isSelected = cat == _selectedCategory;
                   return ChoiceChip(
-                    label: Text(cat),
+                    materialTapTargetSize: MaterialTapTargetSize.padded,
+                    label: Text(_categoryLabel(l10n, cat)),
                     selected: isSelected,
                     onSelected: (_) => setState(() => _selectedCategory = cat),
                     selectedColor: AppColors.primary,
-                    labelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600, color: isSelected ? Colors.white : Theme.of(context).colorScheme.onSurface),
+                    labelStyle: Theme.of(context)
+                        .textTheme
+                        .labelMedium
+                        ?.copyWith(
+                            fontWeight:
+                                isSelected ? FontWeight.w800 : FontWeight.w600,
+                            color: isSelected
+                                ? Colors.white
+                                : Theme.of(context).colorScheme.onSurface),
                     side: BorderSide(
-                      color: isSelected ? AppColors.primary : Theme.of(context).dividerColor,
+                      color: isSelected
+                          ? AppColors.primary
+                          : Theme.of(context).dividerColor,
                     ),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20)),
@@ -113,36 +169,40 @@ class _ShopCarsViewState extends State<ShopCarsView> {
             ),
             Expanded(
               child: _loading
-                  ? const Center(child: CircularProgressIndicator())
-                  : filtered.isEmpty
-                  ? Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.directions_car_outlined,
-                              size: 48, color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.5)),
-                          const SizedBox(height: 8),
-                          Text(
-                            'No $_selectedCategory vehicles available right now.',
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
-                          ),
-                        ],
-                      ),
+                  // E2: shared loading / error / empty states.
+                  ?  AppLoadingState(
+                      message: l10n.shopCarsLoading,
                     )
-                  : ListView.builder(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      itemCount: filtered.length,
-                      itemBuilder: (context, index) {
-                        final car = filtered[index];
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
-                          child: CustomerVehicleCard(
-                            vehicle: car,
-                            onTap: () => widget.onCarSelected?.call(car),
-                          ),
-                        );
-                      },
-                    ),
+                  : _hasError
+                      ? AppErrorState(
+                          message:
+                              l10n.shopCarsLoadError,
+                          onRetry: _load,
+                        )
+                      : filtered.isEmpty
+                          ? AppEmptyState(
+                              title:
+                                  l10n.shopCarsNoneInCategory(_categoryLabel(l10n, _selectedCategory)),
+                              message:
+                                  l10n.shopCarsTryOther,
+                              icon: Icons.directions_car_outlined,
+                            )
+                          : ListView.builder(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 8),
+                              itemCount: filtered.length,
+                              itemBuilder: (context, index) {
+                                final car = filtered[index];
+                                return Padding(
+                                  padding: const EdgeInsets.only(bottom: 12),
+                                  child: CustomerVehicleCard(
+                                    vehicle: car,
+                                    onTap: () =>
+                                        widget.onCarSelected?.call(car),
+                                  ),
+                                );
+                              },
+                            ),
             ),
           ],
         ),

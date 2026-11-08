@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../l10n/app_localizations.dart';
 
 import '../../../customer/data/datasources/dispute_remote_data_source.dart';
 import 'dispute_list_tile.dart';
@@ -32,6 +33,7 @@ class _DisputeDetailSheetState extends State<DisputeDetailSheet> {
 
   @override
   Widget build(BuildContext context) {
+  final l10n = AppLocalizations.of(context)!;
     final d = widget.dispute;
     final color = DisputeListTile.statusColor(d.status);
     return SafeArea(
@@ -56,7 +58,7 @@ class _DisputeDetailSheetState extends State<DisputeDetailSheet> {
               children: [
                 Expanded(
                   child: Text(
-                    d.category.isEmpty ? 'Dispute' : d.category,
+                    d.category.isEmpty ? l10n.disputesFallbackTitle : d.category,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w900,
                     ),
@@ -70,7 +72,7 @@ class _DisputeDetailSheetState extends State<DisputeDetailSheet> {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    DisputeListTile.statusLabel(d.status),
+                    DisputeListTile.statusLabel(l10n, d.status),
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
                       fontWeight: FontWeight.w800,
                       color: color,
@@ -81,13 +83,13 @@ class _DisputeDetailSheetState extends State<DisputeDetailSheet> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Booking ${d.bookingId} • ${d.customerName ?? d.customerId ?? 'Customer'}'
-              '${d.createdAt == null ? '' : ' • ${DisputeListTile.formatDate(d.createdAt)}'}',
+              l10n.disputesBookingLine(d.bookingId, d.customerName ?? d.customerId ?? l10n.requestsCustomerFallback) +
+              (d.createdAt == null ? '' : ' • ${DisputeListTile.formatDate(l10n, d.createdAt)}'),
               style: Theme.of(context).textTheme.bodySmall,
             ),
             const SizedBox(height: 16),
             Text(
-              d.description.isEmpty ? 'No description given.' : d.description,
+              d.description.isEmpty ? l10n.disputesNoDescription : d.description,
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 height: 1.5,
               ),
@@ -98,7 +100,7 @@ class _DisputeDetailSheetState extends State<DisputeDetailSheet> {
                 width: double.infinity,
                 child: FilledButton(
                   onPressed: _isWorking ? null : () => _change('in_review'),
-                  child: Text(_isWorking ? 'Saving…' : 'Mark in review'),
+                  child: Text(_isWorking ? l10n.disputesSaving : l10n.disputesMarkInReview),
                 ),
               ),
             if (d.status != 'resolved') ...[
@@ -107,13 +109,13 @@ class _DisputeDetailSheetState extends State<DisputeDetailSheet> {
                 width: double.infinity,
                 child: OutlinedButton(
                   onPressed: _isWorking ? null : () => _change('resolved'),
-                  child: Text(_isWorking ? 'Saving…' : 'Mark resolved'),
+                  child: Text(_isWorking ? l10n.disputesSaving : l10n.disputesMarkResolved),
                 ),
               ),
             ],
             if (d.status == 'resolved')
               Text(
-                'Resolved — no further action needed.',
+                l10n.disputesResolvedNote,
                 style: Theme.of(context).textTheme.labelMedium?.copyWith(
                   fontWeight: FontWeight.w700,
                 ),

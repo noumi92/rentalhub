@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/widgets/app_state_views.dart';
 import '../../../../core/widgets/custom_curved_header.dart';
 import '../../../../core/widgets/debounced_button.dart';
 import '../../domain/entities/booking_entity.dart';
 import '../widgets/payment_account_card.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class OwnerPaymentAccountsView extends StatelessWidget {
   final BookingEntity booking;
@@ -20,6 +22,7 @@ class OwnerPaymentAccountsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -28,14 +31,16 @@ class OwnerPaymentAccountsView extends StatelessWidget {
               variant: CustomCurvedHeaderVariant.compact,
               leadingWidget: onBack != null
                   ? IconButton(
+                      tooltip: l10n.back,
                       icon: const Icon(Icons.arrow_back_ios_new_rounded,
                           color: Colors.white, size: 20),
                       onPressed: onBack,
                     )
                   : null,
               titleWidget: Text(
-                'Showroom Payment Accounts',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white),
+                l10n.paymentAccountsTitle,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w900, color: Colors.white),
               ),
             ),
             Expanded(
@@ -57,20 +62,30 @@ class OwnerPaymentAccountsView extends StatelessWidget {
                       child: Row(
                         children: [
                           Icon(Icons.verified_rounded,
-                              color: AppColors.successTextFor(Theme.of(context).brightness), size: 28),
+                              color: AppColors.successTextFor(
+                                  Theme.of(context).brightness),
+                              size: 28),
                           const SizedBox(width: 12),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Reservation Request Approved!',
-                                  style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
+                                  l10n.paymentApprovedTitle,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleSmall
+                                      ?.copyWith(fontWeight: FontWeight.w800),
                                 ),
                                 const SizedBox(height: 2),
                                 Text(
-                                  'Transfer Rs. ${booking.advanceRequired} to lock your vehicle.',
-                                  style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w600, color: AppColors.secondary),
+                                  l10n.paymentTransferToLock(booking.advanceRequired),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .labelMedium
+                                      ?.copyWith(
+                                          fontWeight: FontWeight.w600,
+                                          color: AppColors.secondary),
                                 ),
                               ],
                             ),
@@ -80,16 +95,19 @@ class OwnerPaymentAccountsView extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'Direct Transfer Channels',
-                      style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
+                      l10n.paymentAccountsDirect,
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleSmall
+                          ?.copyWith(fontWeight: FontWeight.w800),
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Pay to the verified showroom accounts below and capture a screenshot of your transfer.',
+                      l10n.paymentPayHint,
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                     const SizedBox(height: 14),
-                    _buildDynamicAccountsList(),
+                    _buildDynamicAccountsList(context),
                     const SizedBox(height: 16),
                   ],
                 ),
@@ -107,7 +125,7 @@ class OwnerPaymentAccountsView extends StatelessWidget {
                 ],
               ),
               child: DebouncedButton(
-                text: 'Upload Payment Proof & Receipt',
+                text: l10n.paymentUploadProof,
                 icon: Icons.upload_file_rounded,
                 onPressed: () async {
                   onProceedToUploadProof?.call();
@@ -132,10 +150,18 @@ class OwnerPaymentAccountsView extends StatelessWidget {
     }
   }
 
-  Widget _buildDynamicAccountsList() {
+  Widget _buildDynamicAccountsList(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return FutureBuilder<Map<String, dynamic>?>(
       future: _getShopData(),
       builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          // E2: shared loading state (the FutureBuilder used to
+          // render the empty state while still loading).
+          return  AppLoadingState(
+            message: l10n.paymentLoading,
+          );
+        }
         if (snapshot.hasData && snapshot.data != null) {
           final data = snapshot.data!;
           // D1: the shop doc stores accounts under `bank_accounts`
@@ -149,13 +175,11 @@ class OwnerPaymentAccountsView extends StatelessWidget {
             return Column(
               children: rawAccounts.map((a) {
                 final acc = a as Map<String, dynamic>;
-                final type =
-                    (acc['type'] as String? ?? 'bank').toLowerCase();
-                final isWallet =
-                    type == 'jazzcash' || type == 'easypaisa';
+                final type = (acc['type'] as String? ?? 'bank').toLowerCase();
+                final isWallet = type == 'jazzcash' || type == 'easypaisa';
                 final methodTitle = isWallet
-                    ? (type == 'jazzcash' ? 'JazzCash' : 'EasyPaisa')
-                    : (acc['bank_name'] as String? ?? 'Bank Transfer');
+                    ? (type == 'jazzcash' ? l10n.paymentJazzcash : l10n.paymentEasypaisa)
+                    : (acc['bank_name'] as String? ?? l10n.paymentBankTransfer);
                 // Banks only store an IBAN (no separate account number);
                 // wallets store the mobile number.
                 final number = isWallet
@@ -166,7 +190,7 @@ class OwnerPaymentAccountsView extends StatelessWidget {
                   child: PaymentAccountCard(
                     methodTitle: methodTitle,
                     accountTitle:
-                        acc['title'] as String? ?? 'RentalHub Verified',
+                        acc['title'] as String? ?? l10n.paymentVerified,
                     accountNumber: number,
                     iban: null,
                     brandColor: isWallet
@@ -184,23 +208,12 @@ class OwnerPaymentAccountsView extends StatelessWidget {
         // Phase B (D1): when the shop has not configured any payment
         // accounts, say so — never show another shop's accounts as
         // if they were this shop's.
-        return Column(
-          children: [
-            Icon(Icons.account_balance_rounded,
-                size: 40, color: Theme.of(context).colorScheme.onSurfaceVariant),
-            SizedBox(height: 8),
-            Text(
-              'No payment accounts configured for this shop yet.',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontWeight: FontWeight.w700),
-            ),
-            SizedBox(height: 4),
-            Text(
-              'Add JazzCash, EasyPaisa or bank accounts in Shop Settings so customers know where to pay.',
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-          ],
+        // E2: shared empty state.
+        return  AppEmptyState(
+          title: l10n.paymentNoAccounts,
+          message:
+              l10n.paymentAddAccountsNote,
+          icon: Icons.account_balance_rounded,
         );
       },
     );

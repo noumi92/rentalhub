@@ -6,6 +6,7 @@ import '../../../../core/di/injection_container.dart';
 import '../../../../core/utils/current_shop.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/custom_curved_header.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../fleet/domain/entities/fixed_route_entity.dart';
 import '../../../fleet/domain/usecases/delete_fixed_route_usecase.dart';
 import '../../../fleet/domain/usecases/get_shop_fixed_routes_usecase.dart';
@@ -92,9 +93,10 @@ class _OwnerFixedRoutesViewState extends State<OwnerFixedRoutesView> {
   }
 
   Future<void> _addRoute() async {
+    final l10n = AppLocalizations.of(context)!;
     final price = int.tryParse(_priceController.text.trim());
     if (price == null || price <= 0) {
-      AppFeedback.showError(context, 'Enter a fixed price above zero.');
+      AppFeedback.showError(context, l10n.fixedRoutesPriceRequired);
       return;
     }
     final distance = int.tryParse(_distanceController.text.trim()) ?? 0;
@@ -111,6 +113,7 @@ class _OwnerFixedRoutesViewState extends State<OwnerFixedRoutesView> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -118,6 +121,7 @@ class _OwnerFixedRoutesViewState extends State<OwnerFixedRoutesView> {
             CustomCurvedHeader(
               variant: CustomCurvedHeaderVariant.compact,
               leadingWidget: IconButton(
+                tooltip: l10n.back,
                 icon: const Icon(Icons.arrow_back_ios_new_rounded,
                     color: Colors.white, size: 20),
                 onPressed: widget.onBack ?? () => context.pop(),
@@ -125,10 +129,14 @@ class _OwnerFixedRoutesViewState extends State<OwnerFixedRoutesView> {
               titleWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Fixed Out-of-City Routes',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
-                  Text('One fixed price per destination',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.primaryContainer)),
+                  Text(l10n.fixedRoutesTitle,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w900, color: Colors.white)),
+                  Text(l10n.fixedRoutesSubtitle,
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodySmall
+                          ?.copyWith(color: AppColors.primaryContainer)),
                 ],
               ),
             ),
@@ -141,32 +149,31 @@ class _OwnerFixedRoutesViewState extends State<OwnerFixedRoutesView> {
                           padding: const EdgeInsets.all(16),
                           children: [
                             ..._routes.map((r) => Card(
-                                  margin:
-                                      const EdgeInsets.only(bottom: 10),
+                                  margin: const EdgeInsets.only(bottom: 10),
                                   child: ListTile(
                                     leading: const Icon(
-                                        Icons.route_rounded,
-                                        ),
+                                      Icons.route_rounded,
+                                    ),
                                     title: Text(r.displayName,
                                         style: const TextStyle(
                                             fontWeight: FontWeight.w800)),
                                     subtitle: Text(
-                                        '${r.distanceKm} km • Rs. ${r.fixedPricePkr} fixed'),
+                                        l10n.fixedRouteSummary(r.distanceKm, r.fixedPricePkr)),
                                     trailing: Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
                                         Switch(
                                           value: r.enabled,
-                                          onChanged: (v) => _save(
-                                              r.copyWith(enabled: v)),
+                                          onChanged: (v) =>
+                                              _save(r.copyWith(enabled: v)),
                                         ),
                                         IconButton(
+                                          tooltip: l10n.fixedRoutesDeleteTooltip,
                                           icon: const Icon(
                                               Icons.delete_outline_rounded,
                                               color: Colors.redAccent),
                                           onPressed: () async {
-                                            await sl<
-                                                    DeleteFixedRouteUseCase>()(
+                                            await sl<DeleteFixedRouteUseCase>()(
                                                 r.routeId);
                                             await _load();
                                           },
@@ -176,10 +183,10 @@ class _OwnerFixedRoutesViewState extends State<OwnerFixedRoutesView> {
                                   ),
                                 )),
                             if (_routes.isEmpty)
-                              const Padding(
-                                padding: EdgeInsets.symmetric(vertical: 24),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 24),
                                 child: Text(
-                                  'No fixed routes yet — add your first destination below.',
+                                  l10n.fixedRoutesEmpty,
                                   textAlign: TextAlign.center,
                                 ),
                               ),
@@ -190,8 +197,8 @@ class _OwnerFixedRoutesViewState extends State<OwnerFixedRoutesView> {
                               destinations: _destinations,
                               distanceController: _distanceController,
                               priceController: _priceController,
-                              onDestinationChanged: (d) => setState(
-                                  () => _destination = d),
+                              onDestinationChanged: (d) =>
+                                  setState(() => _destination = d),
                               onAdd: _addRoute,
                             ),
                           ],

@@ -12,6 +12,7 @@ import '../widgets/support_contact_card.dart';
 import '../widgets/support_faq_list.dart';
 import '../widgets/support_sos_tile.dart';
 import '../widgets/support_ticket_form.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class CustomerSupportView extends StatefulWidget {
   final VoidCallback? onFileDispute;
@@ -69,58 +70,42 @@ class _CustomerSupportViewState extends State<CustomerSupportView> {
   }
 
   Future<void> _callShop() async {
+    final l10n = AppLocalizations.of(context)!;
     final phone = (_shopPhone ?? '').trim();
     if (phone.isEmpty) {
       AppFeedback.showInfo(
         context,
-        'No booking yet — the showroom contact appears here once you have a booking.',
+        l10n.supportNoBookingHint,
       );
       return;
     }
     final uri = Uri(scheme: 'tel', path: phone);
     if (!await launchUrl(uri)) {
       if (mounted) {
-        AppFeedback.showError(context, 'Could not place the call.');
+        AppFeedback.showError(context, l10n.couldNotCall);
       }
     }
   }
 
   Future<void> _whatsAppShop() async {
+    final l10n = AppLocalizations.of(context)!;
     final uri = whatsappUri(
       phone: _shopPhone ?? '',
-      message: 'Hi ${_shopName ?? 'there'}, I need help with my RentalHub booking.',
+      message: l10n.supportWhatsappMessage(_shopName ?? 'there'),
     );
     if (uri == null) {
       AppFeedback.showInfo(
         context,
-        'No booking yet — the showroom contact appears here once you have a booking.',
+        l10n.supportNoBookingHint,
       );
       return;
     }
     if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
       if (mounted) {
-        AppFeedback.showError(context, 'Could not open WhatsApp.');
+        AppFeedback.showError(context, l10n.couldNotOpenWhatsapp);
       }
     }
   }
-  final List<Map<String, String>> _faqs = [
-    {
-      'q': 'How does advance payment protect my booking?',
-      'a': 'Your advance payment locks the vehicle exclusively for your scheduled time and guarantees showroom reservation. It is safely recorded and deducted from your final bill.',
-    },
-    {
-      'q': 'When is my security deposit returned?',
-      'a': 'The deposit is settled at return handover. Any deduction for excess kilometres, fuel or damage is shown on the settlement, and the rest is released to you.'
-    },
-    {
-      'q': 'What happens if a vehicle breaks down?',
-      'a': 'Roadside help depends on the showroom — ask yours when you pick up the car. For an emergency, use the Emergency SOS screen.',
-    },
-    {
-      'q': 'Can I take the rental car out of city?',
-      'a': 'Yes, out-of-city packages are available. Select the "Out of City" tier or inform the showroom beforehand to ensure tracker clearance.',
-    },
-  ];
 
   @override
   void dispose() {
@@ -130,8 +115,15 @@ class _CustomerSupportViewState extends State<CustomerSupportView> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final query = _searchController.text.toLowerCase();
-    final filtered = _faqs
+    final faqs = <Map<String, String>>[
+      {'q': l10n.supportFaqQ1, 'a': l10n.supportFaqA1},
+      {'q': l10n.supportFaqQ2, 'a': l10n.supportFaqA2},
+      {'q': l10n.supportFaqQ3, 'a': l10n.supportFaqA3},
+      {'q': l10n.supportFaqQ4, 'a': l10n.supportFaqA4},
+    ];
+    final filtered = faqs
         .where((f) =>
             f['q']!.toLowerCase().contains(query) ||
             f['a']!.toLowerCase().contains(query))
@@ -147,7 +139,7 @@ class _CustomerSupportViewState extends State<CustomerSupportView> {
               // renders one only when the route can pop, which a
               // branch root never can.
               titleWidget: Text(
-                'Help & Support Center',
+                l10n.supportTitle,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white),
               ),
             ),
@@ -162,7 +154,7 @@ class _CustomerSupportViewState extends State<CustomerSupportView> {
                       controller: _searchController,
                       onChanged: (_) => setState(() {}),
                       decoration: InputDecoration(
-                        hintText: 'Search help',
+                        hintText: l10n.supportSearchHint,
                         // No hintStyle override: the theme's input hint
                         // style (onSurfaceVariant) drives both modes.
                         filled: true,
@@ -182,8 +174,8 @@ class _CustomerSupportViewState extends State<CustomerSupportView> {
                         Expanded(
                           child: SupportContactCard(
                             icon: Icons.phone_in_talk_rounded,
-                            title: 'Call your showroom',
-                            subtitle: _shopName ?? 'No booking yet',
+                            title: l10n.supportCallShop,
+                            subtitle: _shopName ?? l10n.supportNoBooking,
                             color: Theme.of(context).colorScheme.primary,
                             onTap: _callShop,
                           ),
@@ -192,8 +184,8 @@ class _CustomerSupportViewState extends State<CustomerSupportView> {
                         Expanded(
                           child: SupportContactCard(
                             icon: Icons.chat_rounded,
-                            title: 'WhatsApp your showroom',
-                            subtitle: _shopName ?? 'No booking yet',
+                            title: l10n.supportWhatsappShop,
+                            subtitle: _shopName ?? l10n.supportNoBooking,
                             color: AppColors.accentSuccess,
                             onTap: _whatsAppShop,
                           ),
@@ -211,10 +203,10 @@ class _CustomerSupportViewState extends State<CustomerSupportView> {
                       ),
                       leading: const Icon(Icons.gavel_rounded,
                           color: AppColors.secondary),
-                      title: Text('File a Formal Complaint / Dispute',
+                      title: Text(l10n.supportFileDispute,
                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.secondary)),
                       subtitle: Text(
-                          'Overcharged or deposit withheld? File an arbitration claim.',
+                          l10n.supportDisputeHint,
                           style: Theme.of(context).textTheme.labelSmall),
                       trailing: const Icon(Icons.arrow_forward_ios_rounded,
                           size: 14, color: AppColors.secondary),

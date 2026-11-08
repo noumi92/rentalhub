@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
@@ -68,17 +69,18 @@ class _OwnerBlacklistViewState extends State<OwnerBlacklistView> {
   }
 
   Future<void> _submit() async {
+  final l10n = AppLocalizations.of(context)!;
     final cnic = _cnicController.text.trim();
     final phone = _phoneController.text.trim();
     final description = _descriptionController.text.trim();
     if (cnic.replaceAll('-', '').trim().length != 13) {
       AppFeedback.showError(
-          context, 'Enter the full 13-digit CNIC of the customer.');
+          context, l10n.blacklistEnterCnic);
       return;
     }
     if (description.isEmpty) {
       AppFeedback.showError(
-          context, 'Describe what happened — the tribunal reads this.');
+          context, l10n.blacklistDescribe);
       return;
     }
     setState(() => _submitting = true);
@@ -91,14 +93,14 @@ class _OwnerBlacklistViewState extends State<OwnerBlacklistView> {
         description: description,
       );
       if (!mounted) return;
-      AppFeedback.showSuccess(context,
-          'Reported. The CNIC is now flagged for every shop.');
+      AppFeedback.showSuccess(
+          context, l10n.blacklistReported);
       _cnicController.clear();
       _phoneController.clear();
       _descriptionController.clear();
       await _load();
     } catch (e) {
-      if (mounted) AppFeedback.showError(context, 'Report failed: $e');
+      if (mounted) AppFeedback.showError(context, l10n.blacklistReportFailed(e.toString()));
     } finally {
       if (mounted) setState(() => _submitting = false);
     }
@@ -124,6 +126,7 @@ class _OwnerBlacklistViewState extends State<OwnerBlacklistView> {
 
   @override
   Widget build(BuildContext context) {
+  final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -131,6 +134,7 @@ class _OwnerBlacklistViewState extends State<OwnerBlacklistView> {
             CustomCurvedHeader(
               variant: CustomCurvedHeaderVariant.compact,
               leadingWidget: IconButton(
+                tooltip: l10n.back,
                 icon: const Icon(Icons.arrow_back_ios_new_rounded,
                     color: Colors.white, size: 20),
                 onPressed: widget.onBack ?? () => context.pop(),
@@ -138,10 +142,14 @@ class _OwnerBlacklistViewState extends State<OwnerBlacklistView> {
               titleWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Blacklist Reports',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
-                  Text('Shared with every shop • Tribunal reviewed',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.primaryContainer)),
+                  Text(l10n.blacklist,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w900, color: Colors.white)),
+                  Text(l10n.blacklistSubtitle,
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodySmall
+                          ?.copyWith(color: AppColors.primaryContainer)),
                 ],
               ),
             ),
@@ -151,70 +159,79 @@ class _OwnerBlacklistViewState extends State<OwnerBlacklistView> {
                   : ListView(
                       padding: const EdgeInsets.all(16),
                       children: [
-                        Text('Report a customer',
-                            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
+                        Text(l10n.blacklistReportTitle, style: Theme.of(context) .textTheme .titleSmall ?.copyWith(fontWeight: FontWeight.w800)),
                         const SizedBox(height: 10),
-                        _field(_cnicController, 'Customer CNIC',
+                        _field(_cnicController, l10n.blacklistCustomerCnic,
                             keyboard: TextInputType.number),
-                        _field(_phoneController, 'Customer phone',
+                        _field(_phoneController, l10n.blacklistCustomerPhone,
                             keyboard: TextInputType.phone),
                         DropdownButtonFormField<String>(
                           dropdownColor: Theme.of(context).colorScheme.surface,
                           initialValue: _reason,
                           decoration: InputDecoration(
-                            labelText: 'Reason',
+                            labelText: l10n.blacklistReasonLabel,
                             border: OutlineInputBorder(),
                             filled: true,
-                            fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                            fillColor: Theme.of(context)
+                                .colorScheme
+                                .surfaceContainerHighest,
                           ),
                           items: _reasons
                               .map((r) => DropdownMenuItem(
-                                  value: r, child: Text(r)))
+                                  value: r,
+                                  child: Text(_reasonLabel(l10n, r))))
                               .toList(),
                           onChanged: (r) =>
                               setState(() => _reason = r ?? _reason),
                         ),
                         const SizedBox(height: 12),
                         _field(_descriptionController,
-                            'What happened? (dates, car, amount)',
+                            l10n.blacklistWhatHappened,
                             maxLines: 3),
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton.icon(
                             onPressed: _submitting ? null : _submit,
                             icon: const Icon(Icons.flag_rounded),
-                            label: const Text('Report to Blacklist'),
+                            label: Text(l10n.blacklistReportButton),
                           ),
                         ),
                         const SizedBox(height: 20),
-                        Text('My reports (${_reports.length})',
-                            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
+                        Text(l10n.blacklistMyReports(_reports.length),
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleSmall
+                                ?.copyWith(fontWeight: FontWeight.w800)),
                         const SizedBox(height: 10),
                         if (_reports.isEmpty)
-                          const Text(
-                              'No reports from this shop yet. Reports cannot be undone by the shop — only the tribunal admin can revert one.'),
+                          Text(
+                              l10n.blacklistNoReports),
                         ..._reports.map((r) => Card(
                               margin: const EdgeInsets.only(bottom: 10),
                               child: ListTile(
                                 leading: Icon(
                                   Icons.flag_rounded,
-                                  color: r.isActive
-                                      ? Colors.red
-                                      : Colors.grey,
+                                  color: r.isActive ? Colors.red : Colors.grey,
                                 ),
                                 title: Text(r.cnicNumber,
                                     style: const TextStyle(
                                         fontWeight: FontWeight.w800)),
                                 subtitle: Text(
-                                    '${r.reasonCategory}\n${r.description}'),
+                                    '${_reasonLabel(l10n, r.reasonCategory)}\n${r.description}'),
                                 isThreeLine: true,
                                 trailing: Chip(
                                   label: Text(
-                                      r.isActive ? 'Active' : 'Reverted',
-                                      style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.white)),
+                                      r.isActive ? l10n.active : l10n.blacklistReverted,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .labelSmall
+                                          ?.copyWith(color: Colors.white)),
+                                  // E3: white on Colors.grey is 2.68:1
+                                  // (WCAG AA fail); AppColors.textMuted
+                                  // (#64748B) is 4.76:1 and passes.
                                   backgroundColor: r.isActive
                                       ? Colors.red
-                                      : Colors.grey,
+                                      : AppColors.textMuted,
                                 ),
                               ),
                             )),
@@ -227,3 +244,7 @@ class _OwnerBlacklistViewState extends State<OwnerBlacklistView> {
     );
   }
 }
+
+/// Stored blacklist reason categories mapped to localized labels —
+/// the stored value itself is never changed.
+String _reasonLabel(AppLocalizations l10n, String reason) => {'Non-payment': l10n.blacklistReasonNonPayment, 'Car damage': l10n.blacklistReasonCarDamage, 'Late return': l10n.blacklistReasonLateReturn, 'Fraud / fake documents': l10n.blacklistReasonFraud, 'Default & Car Impoundment': l10n.blacklistReasonImpoundment, 'Other': l10n.blacklistReasonOther}[reason] ?? reason;

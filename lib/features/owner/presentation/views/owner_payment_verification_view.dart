@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
@@ -37,6 +38,7 @@ class _OwnerPaymentVerificationViewState
   BookingEntity get _booking => widget.booking;
 
   Future<void> _approve() async {
+  final l10n = AppLocalizations.of(context)!;
     setState(() => _processing = true);
     try {
       await sl<BookingRemoteDataSource>().verifyPayment(
@@ -45,37 +47,37 @@ class _OwnerPaymentVerificationViewState
       );
       if (!mounted) return;
       AppFeedback.showSuccess(context,
-          'Payment confirmed — booking #${_booking.bookingId} is paid.');
+          l10n.paymentVerificationConfirmed(_booking.bookingId));
       context.push(
         RouteNames.ownerHandover.replaceFirst(':id', _booking.bookingId),
       );
     } catch (e) {
-      if (mounted) AppFeedback.showError(context, 'Confirmation failed: $e');
+      if (mounted) AppFeedback.showError(context, l10n.paymentVerificationConfirmFailed(e.toString()));
     } finally {
       if (mounted) setState(() => _processing = false);
     }
   }
 
   Future<void> _reject() async {
+  final l10n = AppLocalizations.of(context)!;
     final reasonController = TextEditingController();
     final reason = await showDialog<String>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Reject this proof?'),
+        title: Text(l10n.paymentVerificationRejectTitle),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-                'The customer sees this reason and can upload a new proof.'),
+            Text(l10n.paymentVerificationRejectNote),
             const SizedBox(height: 12),
             TextField(
               controller: reasonController,
               autofocus: true,
               maxLines: 3,
-              decoration: const InputDecoration(
-                labelText: 'Reason (required)',
-                hintText: 'e.g. Screenshot is unreadable',
+              decoration: InputDecoration(
+                labelText: l10n.paymentVerificationReasonLabel,
+                hintText: l10n.paymentVerificationReasonHint,
                 border: OutlineInputBorder(),
               ),
             ),
@@ -84,12 +86,12 @@ class _OwnerPaymentVerificationViewState
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           FilledButton(
-            onPressed: () => Navigator.of(dialogContext)
-                .pop(reasonController.text.trim()),
-            child: const Text('Reject Proof'),
+            onPressed: () =>
+                Navigator.of(dialogContext).pop(reasonController.text.trim()),
+            child: Text(l10n.paymentVerificationRejectButton),
           ),
         ],
       ),
@@ -102,11 +104,11 @@ class _OwnerPaymentVerificationViewState
         reason: reason,
       );
       if (!mounted) return;
-      AppFeedback.showInfo(context,
-          'Proof rejected — the customer can upload a new one.');
+      AppFeedback.showInfo(
+          context, l10n.paymentVerificationRejected);
       context.pop();
     } catch (e) {
-      if (mounted) AppFeedback.showError(context, 'Rejection failed: $e');
+      if (mounted) AppFeedback.showError(context, l10n.paymentVerificationRejectFailed(e.toString()));
     } finally {
       if (mounted) setState(() => _processing = false);
     }
@@ -118,9 +120,10 @@ class _OwnerPaymentVerificationViewState
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
-          Text(value,
-              style: const TextStyle(fontWeight: FontWeight.w800)),
+          Text(label,
+              style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant)),
+          Text(value, style: const TextStyle(fontWeight: FontWeight.w800)),
         ],
       ),
     );
@@ -128,6 +131,7 @@ class _OwnerPaymentVerificationViewState
 
   @override
   Widget build(BuildContext context) {
+  final l10n = AppLocalizations.of(context)!;
     final b = _booking;
     return Scaffold(
       body: SafeArea(
@@ -136,6 +140,7 @@ class _OwnerPaymentVerificationViewState
             CustomCurvedHeader(
               variant: CustomCurvedHeaderVariant.compact,
               leadingWidget: IconButton(
+                tooltip: l10n.back,
                 icon: const Icon(Icons.arrow_back_ios_new_rounded,
                     color: Colors.white, size: 20),
                 onPressed: widget.onBack ?? () => context.pop(),
@@ -143,10 +148,14 @@ class _OwnerPaymentVerificationViewState
               titleWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Verify Payment Proof',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
-                  Text('Booking #${b.bookingId}',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.primaryContainer)),
+                  Text(l10n.paymentVerificationTitle,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w900, color: Colors.white)),
+                  Text(l10n.paymentVerificationBooking(b.bookingId),
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodySmall
+                          ?.copyWith(color: AppColors.primaryContainer)),
                 ],
               ),
             ),
@@ -161,25 +170,20 @@ class _OwnerPaymentVerificationViewState
                         padding: const EdgeInsets.all(14),
                         child: Column(
                           children: [
-                            _row('Vehicle',
-                                b.vehicleName ?? b.vehicleId),
-                            _row('Customer',
-                                b.customerName ?? b.customerId),
-                            _row('Phone', b.customerPhone ?? '—'),
-                            _row('Package', b.packageType),
-                            _row('Total rent', 'Rs. ${b.totalAmount}'),
-                            _row('Advance due',
-                                'Rs. ${b.advanceRequired}'),
-                            _row('Advance paid', 'Rs. ${b.advancePaid}'),
-                            _row('Transaction ID',
-                                b.transactionId ?? '—'),
+                            _row(l10n.summaryVehicle, b.vehicleName ?? b.vehicleId),
+                            _row(l10n.requestsCustomerFallback, b.customerName ?? b.customerId),
+                            _row(l10n.editPhone, b.customerPhone ?? '—'),
+                            _row(l10n.packageLabel, b.packageType),
+                            _row(l10n.paymentVerificationTotalRent, l10n.amountRs(b.totalAmount)),
+                            _row(l10n.paymentVerificationAdvanceDue, l10n.amountRs(b.advanceRequired)),
+                            _row(l10n.paymentVerificationAdvancePaid, l10n.amountRs(b.advancePaid)),
+                            _row(l10n.paymentVerificationTransactionId, b.transactionId ?? '—'),
                           ],
                         ),
                       ),
                     ),
                     const SizedBox(height: 14),
-                    Text('Payment screenshot',
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
+                    Text(l10n.paymentVerificationScreenshotTitle, style: Theme.of(context) .textTheme .titleSmall ?.copyWith(fontWeight: FontWeight.w800)),
                     const SizedBox(height: 8),
                     if (b.paymentProofUrl != null)
                       ClipRRect(
@@ -194,25 +198,24 @@ class _OwnerPaymentVerificationViewState
                             height: 120,
                             alignment: Alignment.center,
                             color: AppColors.primaryContainer,
-                            child: const Text(
-                                'Proof image unavailable — ask the customer to resend it.'),
+                            child: Text(
+                                l10n.paymentVerificationProofUnavailable),
                           ),
                         ),
                       )
                     else
-                      const Text('No screenshot attached.'),
+                      Text(l10n.paymentVerificationNoScreenshot),
                     if (b.rejectionReason != null) ...[
                       const SizedBox(height: 14),
-                      Text('Previously rejected: ${b.rejectionReason}',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.orange.shade800)),
+                      Text(l10n.paymentVerificationPreviouslyRejected(b.rejectionReason!), style: Theme.of(context) .textTheme .bodyMedium ?.copyWith(color: Colors.orange.shade800)),
                     ],
                     const SizedBox(height: 20),
                     SizedBox(
                       width: double.infinity,
                       child: DebouncedButton(
                         text: _processing
-                            ? 'Confirming…'
-                            : 'Confirm Payment — Rs. ${b.advanceRequired}',
+                            ? l10n.paymentVerificationConfirming
+                            : l10n.paymentVerificationConfirmButton(b.advanceRequired),
                         icon: Icons.check_circle_rounded,
                         isLoading: _processing,
                         onPressed: _approve,
@@ -223,9 +226,9 @@ class _OwnerPaymentVerificationViewState
                       width: double.infinity,
                       child: OutlinedButton.icon(
                         onPressed: _processing ? null : _reject,
-                        icon: const Icon(Icons.close_rounded,
-                            color: Colors.red),
-                        label: const Text('Reject Proof',
+                        icon:
+                            const Icon(Icons.close_rounded, color: Colors.red),
+                        label: Text(l10n.paymentVerificationRejectButton,
                             style: TextStyle(color: Colors.red)),
                       ),
                     ),

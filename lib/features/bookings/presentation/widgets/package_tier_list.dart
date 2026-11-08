@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../fleet/domain/entities/vehicle_entity.dart';
 import 'package_tier_card.dart';
+import '../../../../l10n/app_localizations.dart';
 
 /// One selectable duration tier in the booking picker.
 class PackageTierOption {
@@ -166,14 +167,56 @@ class PackageTierList extends StatelessWidget {
     ];
   }
 
+  /// Titles/subtitles are display-only: the tier `label` ('1h', '24h',
+  /// 'Weekly') is the data key and stays English; the card shows the
+  /// localized copy for that label.
+  static String _titleFor(AppLocalizations l10n, PackageTierOption o) {
+    switch (o.label) {
+      case '1h':
+        return l10n.pkg1h;
+      case '3h':
+        return l10n.pkg3h;
+      case '6h':
+        return l10n.pkg6h;
+      case '12h':
+        return l10n.pkg12h;
+      case '24h':
+        return l10n.pkgDaily;
+      case 'Weekly':
+        return l10n.pkgWeeklyPackage;
+      default:
+        return o.title;
+    }
+  }
+
+  static String _subtitleFor(AppLocalizations l10n, PackageTierOption o) {
+    switch (o.label) {
+      case '1h':
+        return l10n.pkg1hDesc;
+      case '3h':
+        return l10n.pkg3hDesc;
+      case '6h':
+        return l10n.pkg6hDesc;
+      case '12h':
+        return l10n.pkg12hDesc;
+      case '24h':
+        return l10n.pkgDailyDesc;
+      case 'Weekly':
+        return l10n.pkgWeeklyDesc;
+      default:
+        return o.subtitle;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       children: [
         for (int i = 0; i < options.length; i++) ...[
           PackageTierCard(
-            title: options[i].title,
-            subtitle: options[i].subtitle,
+            title: _titleFor(l10n, options[i]),
+            subtitle: _subtitleFor(l10n, options[i]),
             price: options[i].price + surchargeFor(options[i]),
             kmIncluded: options[i].kmIncluded,
             isSelected: selectedLabel == options[i].label,

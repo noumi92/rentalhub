@@ -31,6 +31,8 @@ void main() {
     testWidgets('CustomerBookingsView: switches between 5 tabs and filters records', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
+localizationsDelegates: AppLocalizations.localizationsDelegates,
+supportedLocales: AppLocalizations.supportedLocales,
           home: CustomerBookingsView(),
         ),
       );
@@ -82,10 +84,24 @@ void main() {
 
       await tester.pumpWidget(
         const MaterialApp(
+localizationsDelegates: AppLocalizations.localizationsDelegates,
+supportedLocales: AppLocalizations.supportedLocales,
           home: CustomerWalletView(),
         ),
       );
       await tester.pumpAndSettle();
+
+      // Phase E (E1): the balance and escrow amounts are masked by
+      // default — reveal them via the eye toggles before asserting
+      // the seeded amounts. A pump is needed between taps: without
+      // it both taps land on the same pill (reveal then hide again)
+      // because the tree has not rebuilt yet.
+      await tester.tap(find.byTooltip('Show balance'));
+      await tester.pump();
+      await tester.tap(find.byTooltip('Show amount').first);
+      await tester.pump();
+      await tester.tap(find.byTooltip('Show amount').first);
+      await tester.pump();
 
       expect(find.text('Wallet & Security Escrow'), findsOneWidget);
       expect(find.text('Active Escrow & Advances'), findsOneWidget);
@@ -103,6 +119,8 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+localizationsDelegates: AppLocalizations.localizationsDelegates,
+supportedLocales: AppLocalizations.supportedLocales,
           home: CustomerSupportView(
             onFileDispute: () => filedDispute = true,
           ),
@@ -136,6 +154,8 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+localizationsDelegates: AppLocalizations.localizationsDelegates,
+supportedLocales: AppLocalizations.supportedLocales,
           home: CustomerDisputeView(
             initialBookingId: 'RH-849201',
             onDisputeSubmitted: () => submitted = true,
@@ -181,6 +201,8 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+localizationsDelegates: AppLocalizations.localizationsDelegates,
+supportedLocales: AppLocalizations.supportedLocales,
           home: CustomerRateTripView(
             booking: booking,
             onRatingSubmitted: () => submitted = true,
@@ -215,6 +237,8 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+localizationsDelegates: AppLocalizations.localizationsDelegates,
+supportedLocales: AppLocalizations.supportedLocales,
           home: CustomerCancelBookingView(
             booking: booking,
             onCancelled: () => cancelled = true,
@@ -248,6 +272,8 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+localizationsDelegates: AppLocalizations.localizationsDelegates,
+supportedLocales: AppLocalizations.supportedLocales,
           home: CustomerProfileView(
             onOpenDocuments: () => openedDocs = true,
             onOpenSavedShops: () => openedSaved = true,
@@ -275,6 +301,8 @@ void main() {
     testWidgets('CustomerSavedShopsView: displays bookmarked showrooms list', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
+localizationsDelegates: AppLocalizations.localizationsDelegates,
+supportedLocales: AppLocalizations.supportedLocales,
           home: CustomerSavedShopsView(),
         ),
       );
@@ -314,6 +342,8 @@ void main() {
     testWidgets('CustomerSosView: renders SOS pulse button and emergency contacts', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
+localizationsDelegates: AppLocalizations.localizationsDelegates,
+supportedLocales: AppLocalizations.supportedLocales,
           home: CustomerSosView(),
         ),
       );
@@ -331,6 +361,8 @@ void main() {
     testWidgets('CustomerReputationView: shows unknown score with no owner reviews', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
+localizationsDelegates: AppLocalizations.localizationsDelegates,
+supportedLocales: AppLocalizations.supportedLocales,
           home: CustomerReputationView(),
         ),
       );
