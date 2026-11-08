@@ -9,7 +9,6 @@ import '../../../blacklist/data/datasources/blacklist_remote_data_source.dart';
 import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../customer/domain/usecases/get_shop_customers_usecase.dart';
 import '../../../customer/utils/customer_grouping.dart';
-import '../widgets/owner_bottom_nav.dart';
 
 /// Phase B (C1): the shop's customers — every person who booked,
 /// rolled up with their booking count, total spent and last booking,
@@ -79,7 +78,6 @@ class _OwnerCustomersListViewState extends State<OwnerCustomersListView> {
   Widget build(BuildContext context) {
     final filtered = _filtered;
     return Scaffold(
-      bottomNavigationBar: const OwnerBottomNav(currentIndex: 3),
       body: SafeArea(
         child: Column(
           children: [

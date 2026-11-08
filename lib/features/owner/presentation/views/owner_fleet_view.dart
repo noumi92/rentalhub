@@ -11,7 +11,6 @@ import '../../../fleet/presentation/cubit/fleet_cubit.dart';
 import '../../../fleet/presentation/cubit/fleet_state.dart';
 import '../widgets/fleet/fleet_body.dart';
 import '../widgets/fleet/fleet_metric_card.dart';
-import '../widgets/owner_bottom_nav.dart';
 
 /// Phase B (B1): the fleet list now reads real vehicles through
 /// [FleetCubit] (Firestore, with the in-memory fallback when offline)
@@ -75,7 +74,6 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
     return BlocProvider.value(
       value: _cubit,
       child: Scaffold(
-        bottomNavigationBar: const OwnerBottomNav(currentIndex: 1),
         body: SafeArea(
           child: BlocBuilder<FleetCubit, FleetState>(
             builder: (context, state) {

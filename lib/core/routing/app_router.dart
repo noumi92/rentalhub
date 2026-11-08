@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'app_shell.dart';
+import '../widgets/app_shell_nav.dart';
 import 'auth_route_guard.dart';
 import 'route_names.dart';
 import '../../core/utils/current_shop.dart';
@@ -18,9 +20,9 @@ import '../../features/bookings/presentation/views/review_booking_request_view.d
 import '../../features/customer/presentation/views/customer_booking_detail_view.dart';
 import '../../features/customer/presentation/views/customer_bookings_view.dart';
 import '../../features/customer/presentation/widgets/customer_route_loaders.dart';
+import '../../features/customer/presentation/widgets/customer_support_badge.dart';
 import '../../features/customer/presentation/views/customer_cancel_booking_view.dart';
 import '../../features/customer/presentation/views/customer_active_trip_view.dart';
-import '../../features/customer/presentation/views/customer_dashboard_view.dart';
 import '../../features/customer/presentation/views/customer_dispute_view.dart';
 import '../../features/customer/presentation/views/customer_profile_view.dart';
 import '../../features/customer/presentation/views/customer_rate_trip_view.dart';
@@ -65,6 +67,7 @@ import '../../features/owner/presentation/views/owner_vehicle_calendar_view.dart
 import '../../features/owner/presentation/views/owner_whatsapp_logs_view.dart';
 import '../../features/owner/presentation/views/owner_fleet_view.dart';
 import '../../features/owner/presentation/widgets/owner_route_loaders.dart';
+import '../../features/owner/presentation/widgets/owner_requests_badge.dart';
 import '../../features/admin/presentation/views/admin_activity_log_view.dart';
 import '../../features/admin/presentation/views/admin_cars_view.dart';
 import '../../features/admin/presentation/views/admin_customer_detail_view.dart';
@@ -90,18 +93,47 @@ class AppRouter {
   static final GlobalKey<NavigatorState> rootNavigatorKey =
       GlobalKey<NavigatorState>(debugLabel: 'rootNav');
 
+
+  /// Phase C (C1/C3): the five customer tabs. Support carries the live
+  /// replied-ticket badge; the other tabs have plain icons.
+  static final customerTabs = <ShellNavItem>[
+    const ShellNavItem(icon: Icon(Icons.home_rounded), label: 'Home'),
+    const ShellNavItem(
+        icon: Icon(Icons.receipt_long_rounded), label: 'Bookings'),
+    const ShellNavItem(
+        icon: Icon(Icons.account_balance_wallet_rounded), label: 'Wallet'),
+    ShellNavItem(
+        icon: CustomerSupportBadge(
+            icon: const Icon(Icons.support_agent_rounded)),
+        label: 'Support'),
+    const ShellNavItem(icon: Icon(Icons.person_rounded), label: 'Profile'),
+  ];
+
+  /// Phase C (C1/C3): the five owner tabs. Requests carries the live
+  /// pending-request badge and is labelled "Requests" (it routes to
+  /// /owner/requests — the old "Bookings" label lied about the
+  /// destination). The other tabs have plain icons.
+  static final ownerTabs = <ShellNavItem>[
+    const ShellNavItem(icon: Icon(Icons.dashboard_rounded), label: 'Dashboard'),
+    const ShellNavItem(
+        icon: Icon(Icons.directions_car_rounded), label: 'Fleet'),
+    ShellNavItem(
+        icon: OwnerRequestsBadge(
+            icon: const Icon(Icons.receipt_long_rounded)),
+        label: 'Requests'),
+    const ShellNavItem(icon: Icon(Icons.people_rounded), label: 'Customers'),
+    const ShellNavItem(icon: Icon(Icons.settings_rounded), label: 'Settings'),
+  ];
+
   static final GoRouter router = GoRouter(
     navigatorKey: rootNavigatorKey,
     initialLocation: RouteNames.splash,
     redirect: AuthRouteGuard.guardRoute,
     routes: [
-      // Splash Screen
       GoRoute(
         path: RouteNames.splash,
         builder: (context, state) => const SplashView(),
       ),
-
-      // Authentication & Onboarding Routes
       GoRoute(
         path: RouteNames.auth,
         builder: (context, state) => LoginView(
@@ -128,566 +160,655 @@ class AppRouter {
           },
         ),
       ),
-
-      // Customer Onboarding Location Prompt
       GoRoute(
         path: RouteNames.customerLocationPrompt,
         builder: (context, state) => const CustomerLocationPromptView(),
       ),
 
-      // Customer Routes — Phase A (A1): real views, no mock flow view.
-      // Views that take a booking/vehicle/shop id load the entity first
-      // via BookingRouteLoader / CustomerVehicleRouteLoader / ShopRouteLoader
-      // (loading + not-found states). The review route takes the picker's
-      // draft map as `extra`; without it there is nothing to review.
-      GoRoute(
-        path: RouteNames.customerHome,
-        builder: (context, state) => const CustomerHomeView(),
-      ),
-      GoRoute(
-        path: RouteNames.customerHomeMap,
-        builder: (context, state) => const CustomerHomeMapView(),
-      ),
-      GoRoute(
-        path: RouteNames.customerShopDetail,
-        builder: (context, state) => ShopRouteLoader(
-          shopId: state.pathParameters['shopId']!,
-          builder: (context, shop) => ShopDetailView(
-            shop: shop,
-            onVehicleSelected: (vehicle) => context.push(
-              RouteNames.customerVehicleDetail
-                  .replaceFirst(':id', vehicle.vehicleId),
+      // Phase C (C1): customer shell — five branches, one per tab.
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) => AppShell(
+              navigationShell: navigationShell,
+              tabs: customerTabs,
             ),
-            onViewAllCars: () => context.push(
-              RouteNames.customerShopCars
-                  .replaceFirst(':shopId', shop.shopId),
-            ),
-            onBack: () => context.pop(),
+        branches: [
+          StatefulShellBranch(
+            routes: [
+              // Home: customerHome
+              GoRoute(
+                path: RouteNames.customerHome,
+                builder: (context, state) => const CustomerHomeView(),
+              ),
+              // Home: customerHomeMap
+              GoRoute(
+                path: RouteNames.customerHomeMap,
+                builder: (context, state) => const CustomerHomeMapView(),
+              ),
+              // Home: customerShopDetail
+              GoRoute(
+                path: RouteNames.customerShopDetail,
+                builder: (context, state) => ShopRouteLoader(
+                  shopId: state.pathParameters['shopId']!,
+                  builder: (context, shop) => ShopDetailView(
+                    shop: shop,
+                    onVehicleSelected: (vehicle) => context.push(
+                      RouteNames.customerVehicleDetail
+                          .replaceFirst(':id', vehicle.vehicleId),
+                    ),
+                    onViewAllCars: () => context.push(
+                      RouteNames.customerShopCars
+                          .replaceFirst(':shopId', shop.shopId),
+                    ),
+                    onBack: () => context.pop(),
+                  ),
+                ),
+              ),
+              // Home: customerShopCars
+              GoRoute(
+                // B3: the shop's full fleet with category filters — reachable
+                // from the shop detail screen.
+                path: RouteNames.customerShopCars,
+                builder: (context, state) => ShopRouteLoader(
+                  shopId: state.pathParameters['shopId']!,
+                  builder: (context, shop) => ShopCarsView(
+                    shopId: shop.shopId,
+                    shopName: shop.shopName,
+                    onCarSelected: (vehicle) => context.push(
+                      RouteNames.customerVehicleDetail
+                          .replaceFirst(':id', vehicle.vehicleId),
+                    ),
+                    onBack: () => context.pop(),
+                  ),
+                ),
+              ),
+              // Home: customerVehicleDetail
+              GoRoute(
+                path: RouteNames.customerVehicleDetail,
+                builder: (context, state) => CustomerVehicleRouteLoader(
+                  vehicleId: state.pathParameters['id']!,
+                  builder: (context, vehicle, shopName, shopPhone) =>
+                      VehicleDetailView(
+                    vehicle: vehicle,
+                    shopName: shopName,
+                    shopPhone: shopPhone,
+                    onBookNow: () => context.push(
+                      RouteNames.customerPackagePicker
+                          .replaceFirst(':vehicleId', vehicle.vehicleId),
+                    ),
+                    onBack: () => context.pop(),
+                  ),
+                ),
+              ),
+              // Home: customerPackagePicker
+              GoRoute(
+                path: RouteNames.customerPackagePicker,
+                builder: (context, state) => CustomerVehicleRouteLoader(
+                  vehicleId: state.pathParameters['vehicleId']!,
+                  builder: (context, vehicle, shopName, shopPhone) =>
+                      RentPackagePickerView(
+                    carId: vehicle.vehicleId,
+                    carName: vehicle.displayName,
+                    plateNumber: vehicle.plateNumber,
+                    shopId: vehicle.shopId,
+                    shopName: shopName,
+                    dailySelfDriveRate: vehicle.rates.daily24,
+                    dailyWithDriverRate:
+                        vehicle.rates.daily24 + (vehicle.withDriverSurchargePkr ?? 0),
+                    hourlyRate: vehicle.rates.hourly1,
+                    vehicle: vehicle,
+                    onProceedToReview: (draft) => context.push(
+                      RouteNames.customerReviewBooking
+                          .replaceFirst(':id', vehicle.vehicleId),
+                      extra: draft,
+                    ),
+                    onBack: () => context.pop(),
+                  ),
+                ),
+              ),
+              // Home: customerReviewBooking
+              GoRoute(
+                path: RouteNames.customerReviewBooking,
+                builder: (context, state) {
+                  final draft = state.extra as Map<String, dynamic>?;
+                  if (draft == null) {
+                    return _CustomerNoDraftScreen(
+                      onBrowseShops: () => context.go(RouteNames.customerHome),
+                    );
+                  }
+                  return ReviewBookingRequestView(
+                    bookingDraft: draft,
+                    onRequestCreated: (booking) => context.push(
+                      RouteNames.customerBookingSuccess
+                          .replaceFirst(':id', booking.bookingId),
+                    ),
+                    onBack: () => context.pop(),
+                  );
+                },
+              ),
+              // Home: customerBookingSuccess
+              GoRoute(
+                path: RouteNames.customerBookingSuccess,
+                builder: (context, state) => BookingRouteLoader(
+                  bookingId: state.pathParameters['id']!,
+                  builder: (context, booking) => BookingSuccessView(
+                    booking: booking,
+                    onProceedToPayment: () => context.push(
+                      RouteNames.customerPaymentProof
+                          .replaceFirst(':id', booking.bookingId),
+                    ),
+                    onViewBookings: () => context.go(RouteNames.customerBookings),
+                  ),
+                ),
+              ),
+              // Home: customerActiveTrip
+              GoRoute(
+                // E3: the dedicated active-trip view (booking + real handover
+                // record). The dashboard's active-trip card opens the same
+                // screen via the pass route's booking loader.
+                path: RouteNames.customerActiveTrip,
+                builder: (context, state) => BookingRouteLoader(
+                  bookingId: state.pathParameters['id']!,
+                  builder: (context, booking) => CustomerActiveTripView(
+                    booking: booking,
+                    onViewPass: () => context.push(
+                      RouteNames.customerPickupPass
+                          .replaceFirst(':id', booking.bookingId),
+                    ),
+                    onBack: () => context.pop(),
+                  ),
+                ),
+              ),
+            ],
           ),
-        ),
-      ),
-      GoRoute(
-        // B3: the shop's full fleet with category filters — reachable
-        // from the shop detail screen.
-        path: RouteNames.customerShopCars,
-        builder: (context, state) => ShopRouteLoader(
-          shopId: state.pathParameters['shopId']!,
-          builder: (context, shop) => ShopCarsView(
-            shopId: shop.shopId,
-            shopName: shop.shopName,
-            onCarSelected: (vehicle) => context.push(
-              RouteNames.customerVehicleDetail
-                  .replaceFirst(':id', vehicle.vehicleId),
-            ),
-            onBack: () => context.pop(),
+          StatefulShellBranch(
+            routes: [
+              // Bookings: customerBookings
+              GoRoute(
+                path: RouteNames.customerBookings,
+                builder: (context, state) => CustomerBookingsView(
+                  onOpenBookingDetails: (booking) => context.push(
+                    RouteNames.customerBookingDetail
+                        .replaceFirst(':id', booking.bookingId),
+                  ),
+                  onPayAdvance: (booking) => context.push(
+                    RouteNames.customerBookingApproved
+                        .replaceFirst(':id', booking.bookingId),
+                  ),
+                  onRateTrip: (booking) => context.push(
+                    RouteNames.customerRateTrip
+                        .replaceFirst(':id', booking.bookingId),
+                  ),
+                  onBack: () => context.pop(),
+                ),
+              ),
+              // Bookings: customerBookingDetail
+              GoRoute(
+                path: RouteNames.customerBookingDetail,
+                builder: (context, state) => BookingRouteLoader(
+                  bookingId: state.pathParameters['id']!,
+                  builder: (context, booking) => CustomerBookingDetailView(
+                    booking: booking,
+                    onPayAdvance: () => context.push(
+                      RouteNames.customerBookingApproved
+                          .replaceFirst(':id', booking.bookingId),
+                    ),
+                    onViewPass: () => context.push(
+                      RouteNames.customerPickupPass
+                          .replaceFirst(':id', booking.bookingId),
+                    ),
+                    onCancel: () => context.push(
+                      RouteNames.customerCancelBooking
+                          .replaceFirst(':id', booking.bookingId),
+                    ),
+                    onRateTrip: () => context.push(
+                      RouteNames.customerRateTrip
+                          .replaceFirst(':id', booking.bookingId),
+                    ),
+                    onFileDispute: () => context.push(
+                      '${RouteNames.customerDisputes}?bookingId=${booking.bookingId}',
+                    ),
+                    onBrowseShops: () => context.go(RouteNames.customerHome),
+                    onBack: () => context.pop(),
+                  ),
+                ),
+              ),
+              // Bookings: customerBookingApproved
+              GoRoute(
+                path: RouteNames.customerBookingApproved,
+                builder: (context, state) => BookingRouteLoader(
+                  bookingId: state.pathParameters['id']!,
+                  builder: (context, booking) => BookingApprovedView(
+                    booking: booking,
+                    onPayAdvance: () => context.push(
+                      RouteNames.customerPaymentProof
+                          .replaceFirst(':id', booking.bookingId),
+                    ),
+                    onBack: () => context.pop(),
+                  ),
+                ),
+              ),
+              // Bookings: customerPaymentProof
+              GoRoute(
+                path: RouteNames.customerPaymentProof,
+                builder: (context, state) => BookingRouteLoader(
+                  bookingId: state.pathParameters['id']!,
+                  builder: (context, booking) => OwnerPaymentAccountsView(
+                    booking: booking,
+                    onProceedToUploadProof: () => context.push(
+                      RouteNames.customerPaymentProofUpload
+                          .replaceFirst(':id', booking.bookingId),
+                    ),
+                    onBack: () => context.pop(),
+                  ),
+                ),
+              ),
+              // Bookings: customerPaymentProofUpload
+              GoRoute(
+                path: RouteNames.customerPaymentProofUpload,
+                builder: (context, state) => BookingRouteLoader(
+                  bookingId: state.pathParameters['id']!,
+                  builder: (context, booking) => PaymentProofUploadView(
+                    booking: booking,
+                    onProofSubmitted: (_) =>
+                        context.go(RouteNames.customerBookings),
+                    onBack: () => context.pop(),
+                  ),
+                ),
+              ),
+              // Bookings: customerPickupPass
+              GoRoute(
+                path: RouteNames.customerPickupPass,
+                builder: (context, state) => BookingRouteLoader(
+                  bookingId: state.pathParameters['id']!,
+                  builder: (context, booking) => PickupCountdownPassView(
+                    booking: booking,
+                    onReturnHome: () => context.go(RouteNames.customerHome),
+                    onBack: () => context.pop(),
+                  ),
+                ),
+              ),
+              // Bookings: customerRateTrip
+              GoRoute(
+                path: RouteNames.customerRateTrip,
+                builder: (context, state) => BookingRouteLoader(
+                  bookingId: state.pathParameters['id']!,
+                  builder: (context, booking) => CustomerRateTripView(
+                    booking: booking,
+                    onRatingSubmitted: () => context.go(RouteNames.customerBookings),
+                    onBack: () => context.pop(),
+                  ),
+                ),
+              ),
+              // Bookings: customerCancelBooking
+              GoRoute(
+                path: RouteNames.customerCancelBooking,
+                builder: (context, state) => BookingRouteLoader(
+                  bookingId: state.pathParameters['id']!,
+                  builder: (context, booking) => CustomerCancelBookingView(
+                    booking: booking,
+                    onCancelled: () => context.go(RouteNames.customerBookings),
+                    onBack: () => context.pop(),
+                  ),
+                ),
+              ),
+            ],
           ),
-        ),
-      ),
-      GoRoute(
-        path: RouteNames.customerVehicleDetail,
-        builder: (context, state) => CustomerVehicleRouteLoader(
-          vehicleId: state.pathParameters['id']!,
-          builder: (context, vehicle, shopName, shopPhone) =>
-              VehicleDetailView(
-            vehicle: vehicle,
-            shopName: shopName,
-            shopPhone: shopPhone,
-            onBookNow: () => context.push(
-              RouteNames.customerPackagePicker
-                  .replaceFirst(':vehicleId', vehicle.vehicleId),
-            ),
-            onBack: () => context.pop(),
+          StatefulShellBranch(
+            routes: [
+              // Wallet: customerWallet
+              GoRoute(
+                path: RouteNames.customerWallet,
+                builder: (context, state) =>
+                    CustomerWalletView(onBack: () => context.pop()),
+              ),
+            ],
           ),
-        ),
-      ),
-      GoRoute(
-        path: RouteNames.customerPackagePicker,
-        builder: (context, state) => CustomerVehicleRouteLoader(
-          vehicleId: state.pathParameters['vehicleId']!,
-          builder: (context, vehicle, shopName, shopPhone) =>
-              RentPackagePickerView(
-            carId: vehicle.vehicleId,
-            carName: vehicle.displayName,
-            plateNumber: vehicle.plateNumber,
-            shopId: vehicle.shopId,
-            shopName: shopName,
-            dailySelfDriveRate: vehicle.rates.daily24,
-            dailyWithDriverRate:
-                vehicle.rates.daily24 + (vehicle.withDriverSurchargePkr ?? 0),
-            hourlyRate: vehicle.rates.hourly1,
-            vehicle: vehicle,
-            onProceedToReview: (draft) => context.push(
-              RouteNames.customerReviewBooking
-                  .replaceFirst(':id', vehicle.vehicleId),
-              extra: draft,
-            ),
-            onBack: () => context.pop(),
+          StatefulShellBranch(
+            routes: [
+              // Support: customerSupport
+              GoRoute(
+                path: RouteNames.customerSupport,
+                builder: (context, state) => CustomerSupportView(
+                  onFileDispute: () => context.push(RouteNames.customerDisputes),
+                  onOpenSos: () => context.push(RouteNames.customerSos),
+                  onBack: () => context.pop(),
+                ),
+              ),
+              // Support: customerSos
+              GoRoute(
+                path: RouteNames.customerSos,
+                builder: (context, state) =>
+                    CustomerSosView(onBack: () => context.pop()),
+              ),
+              // Support: customerDisputes
+              GoRoute(
+                path: RouteNames.customerDisputes,
+                builder: (context, state) => CustomerDisputeView(
+                  initialBookingId: state.uri.queryParameters['bookingId'],
+                  onDisputeSubmitted: () => context.pop(),
+                  onBack: () => context.pop(),
+                ),
+              ),
+            ],
           ),
-        ),
-      ),
-      GoRoute(
-        path: RouteNames.customerReviewBooking,
-        builder: (context, state) {
-          final draft = state.extra as Map<String, dynamic>?;
-          if (draft == null) {
-            return _CustomerNoDraftScreen(
-              onBrowseShops: () => context.go(RouteNames.customerHome),
-            );
-          }
-          return ReviewBookingRequestView(
-            bookingDraft: draft,
-            onRequestCreated: (booking) => context.push(
-              RouteNames.customerBookingSuccess
-                  .replaceFirst(':id', booking.bookingId),
-            ),
-            onBack: () => context.pop(),
-          );
-        },
-      ),
-      GoRoute(
-        path: RouteNames.customerBookingSuccess,
-        builder: (context, state) => BookingRouteLoader(
-          bookingId: state.pathParameters['id']!,
-          builder: (context, booking) => BookingSuccessView(
-            booking: booking,
-            onProceedToPayment: () => context.push(
-              RouteNames.customerPaymentProof
-                  .replaceFirst(':id', booking.bookingId),
-            ),
-            onViewBookings: () => context.go(RouteNames.customerBookings),
+          StatefulShellBranch(
+            routes: [
+              // Profile: customerProfile
+              GoRoute(
+                path: RouteNames.customerProfile,
+                builder: (context, state) => CustomerProfileView(
+                  onOpenDocuments: () => context.push(RouteNames.customerKyc),
+                  onOpenSavedShops: () => context.push(RouteNames.customerSavedShops),
+                  onOpenSettings: () => context.push(RouteNames.customerSettings),
+                  onOpenReputation: () => context.push(RouteNames.customerReputation),
+                  onSignOut: () async {
+                    await FirebaseAuth.instance.signOut();
+                    if (context.mounted) {
+                      context.go(RouteNames.auth);
+                    }
+                  },
+                  onBack: () => context.pop(),
+                ),
+              ),
+              // Profile: customerKyc
+              GoRoute(
+                path: RouteNames.customerKyc,
+                builder: (context, state) => const CustomerDocumentsView(),
+              ),
+              // Profile: customerSettings
+              GoRoute(
+                path: RouteNames.customerSettings,
+                builder: (context, state) => CustomerSettingsView(
+                      onBack: () => context.pop(),
+                      onSignOut: () async {
+                        await FirebaseAuth.instance.signOut();
+                        if (context.mounted) {
+                          context.go(RouteNames.auth);
+                        }
+                      },
+                    ),
+              ),
+              // Profile: customerReputation
+              GoRoute(
+                path: RouteNames.customerReputation,
+                builder: (context, state) =>
+                    CustomerReputationView(onBack: () => context.pop()),
+              ),
+              // Profile: customerSavedShops
+              GoRoute(
+                path: RouteNames.customerSavedShops,
+                builder: (context, state) => CustomerSavedShopsView(
+                  onSelectShop: (shop) => context.push(
+                    RouteNames.customerShopDetail
+                        .replaceFirst(':shopId', shop.shopId),
+                  ),
+                  onBack: () => context.pop(),
+                ),
+              ),
+            ],
           ),
-        ),
-      ),
-      GoRoute(
-        path: RouteNames.customerBookingApproved,
-        builder: (context, state) => BookingRouteLoader(
-          bookingId: state.pathParameters['id']!,
-          builder: (context, booking) => BookingApprovedView(
-            booking: booking,
-            onPayAdvance: () => context.push(
-              RouteNames.customerPaymentProof
-                  .replaceFirst(':id', booking.bookingId),
-            ),
-            onBack: () => context.pop(),
-          ),
-        ),
-      ),
-      GoRoute(
-        path: RouteNames.customerPaymentProof,
-        builder: (context, state) => BookingRouteLoader(
-          bookingId: state.pathParameters['id']!,
-          builder: (context, booking) => OwnerPaymentAccountsView(
-            booking: booking,
-            onProceedToUploadProof: () => context.push(
-              RouteNames.customerPaymentProofUpload
-                  .replaceFirst(':id', booking.bookingId),
-            ),
-            onBack: () => context.pop(),
-          ),
-        ),
-      ),
-      GoRoute(
-        path: RouteNames.customerPaymentProofUpload,
-        builder: (context, state) => BookingRouteLoader(
-          bookingId: state.pathParameters['id']!,
-          builder: (context, booking) => PaymentProofUploadView(
-            booking: booking,
-            onProofSubmitted: (_) =>
-                context.go(RouteNames.customerBookings),
-            onBack: () => context.pop(),
-          ),
-        ),
-      ),
-      GoRoute(
-        path: RouteNames.customerPickupPass,
-        builder: (context, state) => BookingRouteLoader(
-          bookingId: state.pathParameters['id']!,
-          builder: (context, booking) => PickupCountdownPassView(
-            booking: booking,
-            onReturnHome: () => context.go(RouteNames.customerHome),
-            onBack: () => context.pop(),
-          ),
-        ),
-      ),
-      GoRoute(
-        // E3: the dedicated active-trip view (booking + real handover
-        // record). The dashboard's active-trip card opens the same
-        // screen via the pass route's booking loader.
-        path: RouteNames.customerActiveTrip,
-        builder: (context, state) => BookingRouteLoader(
-          bookingId: state.pathParameters['id']!,
-          builder: (context, booking) => CustomerActiveTripView(
-            booking: booking,
-            onViewPass: () => context.push(
-              RouteNames.customerPickupPass
-                  .replaceFirst(':id', booking.bookingId),
-            ),
-            onBack: () => context.pop(),
-          ),
-        ),
-      ),
-      GoRoute(
-        path: RouteNames.customerRateTrip,
-        builder: (context, state) => BookingRouteLoader(
-          bookingId: state.pathParameters['id']!,
-          builder: (context, booking) => CustomerRateTripView(
-            booking: booking,
-            onRatingSubmitted: () => context.go(RouteNames.customerBookings),
-            onBack: () => context.pop(),
-          ),
-        ),
-      ),
-      GoRoute(
-        path: RouteNames.customerCancelBooking,
-        builder: (context, state) => BookingRouteLoader(
-          bookingId: state.pathParameters['id']!,
-          builder: (context, booking) => CustomerCancelBookingView(
-            booking: booking,
-            onCancelled: () => context.go(RouteNames.customerBookings),
-            onBack: () => context.pop(),
-          ),
-        ),
-      ),
-      GoRoute(
-        path: RouteNames.customerKyc,
-        builder: (context, state) => const CustomerDocumentsView(),
-      ),
-      GoRoute(
-        path: RouteNames.customerDashboard,
-        builder: (context, state) => CustomerDashboardView(
-          onExploreShops: () => context.go(RouteNames.customerHome),
-          onOpenBookings: () => context.go(RouteNames.customerBookings),
-          onOpenDocuments: () => context.push(RouteNames.customerKyc),
-          onOpenSos: () => context.push(RouteNames.customerSos),
-          onOpenWallet: () => context.push(RouteNames.customerWallet),
-          onOpenActiveBooking: (booking) => context.push(
-            RouteNames.customerActiveTrip
-                .replaceFirst(':id', booking.bookingId),
-          ),
-        ),
-      ),
-      GoRoute(
-        path: RouteNames.customerBookings,
-        builder: (context, state) => CustomerBookingsView(
-          onOpenBookingDetails: (booking) => context.push(
-            RouteNames.customerBookingDetail
-                .replaceFirst(':id', booking.bookingId),
-          ),
-          onPayAdvance: (booking) => context.push(
-            RouteNames.customerBookingApproved
-                .replaceFirst(':id', booking.bookingId),
-          ),
-          onRateTrip: (booking) => context.push(
-            RouteNames.customerRateTrip
-                .replaceFirst(':id', booking.bookingId),
-          ),
-          onBack: () => context.pop(),
-        ),
-      ),
-      GoRoute(
-        path: RouteNames.customerBookingDetail,
-        builder: (context, state) => BookingRouteLoader(
-          bookingId: state.pathParameters['id']!,
-          builder: (context, booking) => CustomerBookingDetailView(
-            booking: booking,
-            onPayAdvance: () => context.push(
-              RouteNames.customerBookingApproved
-                  .replaceFirst(':id', booking.bookingId),
-            ),
-            onViewPass: () => context.push(
-              RouteNames.customerPickupPass
-                  .replaceFirst(':id', booking.bookingId),
-            ),
-            onCancel: () => context.push(
-              RouteNames.customerCancelBooking
-                  .replaceFirst(':id', booking.bookingId),
-            ),
-            onRateTrip: () => context.push(
-              RouteNames.customerRateTrip
-                  .replaceFirst(':id', booking.bookingId),
-            ),
-            onFileDispute: () => context.push(
-              '${RouteNames.customerDisputes}?bookingId=${booking.bookingId}',
-            ),
-            onBrowseShops: () => context.go(RouteNames.customerHome),
-            onBack: () => context.pop(),
-          ),
-        ),
-      ),
-      GoRoute(
-        path: RouteNames.customerWallet,
-        builder: (context, state) =>
-            CustomerWalletView(onBack: () => context.pop()),
-      ),
-      GoRoute(
-        path: RouteNames.customerSupport,
-        builder: (context, state) => CustomerSupportView(
-          onFileDispute: () => context.push(RouteNames.customerDisputes),
-          onBack: () => context.pop(),
-        ),
-      ),
-      GoRoute(
-        path: RouteNames.customerSos,
-        builder: (context, state) =>
-            CustomerSosView(onBack: () => context.pop()),
-      ),
-      GoRoute(
-        path: RouteNames.customerProfile,
-        builder: (context, state) => CustomerProfileView(
-          onOpenDocuments: () => context.push(RouteNames.customerKyc),
-          onOpenSavedShops: () => context.push(RouteNames.customerSavedShops),
-          onOpenSettings: () => context.push(RouteNames.customerSettings),
-          onOpenReputation: () => context.push(RouteNames.customerReputation),
-          onSignOut: () async {
-            await FirebaseAuth.instance.signOut();
-            if (context.mounted) {
-              context.go(RouteNames.auth);
-            }
-          },
-          onBack: () => context.pop(),
-        ),
-      ),
-      GoRoute(
-        path: RouteNames.customerSettings,
-        builder: (context, state) => CustomerSettingsView(
-              onBack: () => context.pop(),
-              onSignOut: () async {
-                await FirebaseAuth.instance.signOut();
-                if (context.mounted) {
-                  context.go(RouteNames.auth);
-                }
-              },
-            ),
-      ),
-      GoRoute(
-        path: RouteNames.customerDisputes,
-        builder: (context, state) => CustomerDisputeView(
-          initialBookingId: state.uri.queryParameters['bookingId'],
-          onDisputeSubmitted: () => context.pop(),
-          onBack: () => context.pop(),
-        ),
-      ),
-      GoRoute(
-        path: RouteNames.customerReputation,
-        builder: (context, state) =>
-            CustomerReputationView(onBack: () => context.pop()),
-      ),
-      GoRoute(
-        path: RouteNames.customerSavedShops,
-        builder: (context, state) => CustomerSavedShopsView(
-          onSelectShop: (shop) => context.push(
-            RouteNames.customerShopDetail
-                .replaceFirst(':shopId', shop.shopId),
-          ),
-          onBack: () => context.pop(),
-        ),
+        ],
       ),
 
-      // Owner Routes — Phase A (A1): real views, no mock flow view.
-      // Views that take a booking/vehicle id load the entity first via
-      // BookingRouteLoader / VehicleRouteLoader (loading + not-found states).
+      // Phase C (C1): owner shell — five branches, one per tab.
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) => AppShell(
+              navigationShell: navigationShell,
+              tabs: ownerTabs,
+            ),
+        branches: [
+          StatefulShellBranch(
+            routes: [
+              // Dashboard: ownerDashboard
+              GoRoute(
+                path: RouteNames.ownerDashboard,
+                builder: (context, state) =>
+                    OwnerDashboardView(shopId: currentShopId()),
+              ),
+              // Dashboard: ownerNotifications
+              GoRoute(
+                path: RouteNames.ownerNotifications,
+                builder: (context, state) => OwnerNotificationsView(
+                  shopId: currentShopId(),
+                ),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              // Fleet: ownerFleet
+              GoRoute(
+                path: RouteNames.ownerFleet,
+                builder: (context, state) => const OwnerFleetView(),
+              ),
+              // Fleet: ownerAddVehicle
+              GoRoute(
+                path: RouteNames.ownerAddVehicle,
+                builder: (context, state) => const OwnerAddVehicleView(),
+              ),
+              // Fleet: ownerRatesVehicle
+              GoRoute(
+                path: RouteNames.ownerRatesVehicle,
+                builder: (context, state) => VehicleRouteLoader(
+                  vehicleId: state.pathParameters['vehicleId']!,
+                  shopId: currentShopId(),
+                  builder: (context, vehicle) => OwnerRateMatrixView(
+                    vehicle: vehicle,
+                    onBack: () => context.pop(),
+                  ),
+                ),
+              ),
+              // Fleet: ownerCalendar
+              GoRoute(
+                path: RouteNames.ownerCalendar,
+                builder: (context, state) => VehicleRouteLoader(
+                  vehicleId: state.pathParameters['vehicleId']!,
+                  shopId: currentShopId(),
+                  builder: (context, vehicle) => OwnerVehicleCalendarView(
+                    vehicle: vehicle,
+                    onBack: () => context.pop(),
+                  ),
+                ),
+              ),
+              // Fleet: ownerFixedRoutes
+              GoRoute(
+                path: RouteNames.ownerFixedRoutes,
+                builder: (context, state) => OwnerFixedRoutesView(
+                  shopId: currentShopId(),
+                  onBack: () => context.pop(),
+                ),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              // Requests: ownerRequests
+              GoRoute(
+                path: RouteNames.ownerRequests,
+                builder: (context, state) =>
+                    OwnerBookingRequestsView(shopId: currentShopId()),
+              ),
+              // Requests: ownerRequestsDetail
+              GoRoute(
+                path: RouteNames.ownerRequestsDetail,
+                builder: (context, state) => BookingRouteLoader(
+                  bookingId: state.pathParameters['id']!,
+                  // Phase B (D3): a submitted proof goes to verification;
+                  // anything else shows the payment accounts + proof upload.
+                  builder: (context, booking) =>
+                      booking.status == 'payment_submitted'
+                          ? OwnerPaymentVerificationView(
+                              booking: booking,
+                              onBack: () => context.pop(),
+                            )
+                          : OwnerPaymentAccountsView(
+                              booking: booking,
+                              onProceedToUploadProof: () => context.push(
+                                RouteNames.ownerPaymentProof
+                                    .replaceFirst(':id', booking.bookingId),
+                              ),
+                              onBack: () => context.pop(),
+                            ),
+                ),
+              ),
+              // Requests: ownerPaymentProof
+              GoRoute(
+                path: RouteNames.ownerPaymentProof,
+                builder: (context, state) => BookingRouteLoader(
+                  bookingId: state.pathParameters['id']!,
+                  builder: (context, booking) => PaymentProofUploadView(
+                    booking: booking,
+                    onBack: () => context.pop(),
+                  ),
+                ),
+              ),
+              // Requests: ownerManualBooking
+              GoRoute(
+                path: RouteNames.ownerManualBooking,
+                builder: (context, state) => const OwnerManualBookingView(),
+              ),
+              // Requests: ownerHandover
+              GoRoute(
+                path: RouteNames.ownerHandover,
+                builder: (context, state) => BookingRouteLoader(
+                  bookingId: state.pathParameters['id']!,
+                  builder: (context, booking) => OwnerHandoverSignatureView(
+                    booking: booking,
+                    onBack: () => context.pop(),
+                  ),
+                ),
+              ),
+              // Requests: ownerReturn
+              GoRoute(
+                path: RouteNames.ownerReturn,
+                builder: (context, state) => BookingRouteLoader(
+                  bookingId: state.pathParameters['id']!,
+                  builder: (context, booking) => OwnerReturnSettlementView(
+                    booking: booking,
+                    onBack: () => context.pop(),
+                  ),
+                ),
+              ),
+              // Requests: ownerContract
+              GoRoute(
+                path: RouteNames.ownerContract,
+                builder: (context, state) => BookingRouteLoader(
+                  bookingId: state.pathParameters['id']!,
+                  builder: (context, booking) => OwnerContractView(
+                    booking: booking,
+                    onBack: () => context.pop(),
+                  ),
+                ),
+              ),
+              // Requests: ownerRateCustomer
+              GoRoute(
+                path: RouteNames.ownerRateCustomer,
+                builder: (context, state) => BookingRouteLoader(
+                  bookingId: state.pathParameters['id']!,
+                  builder: (context, booking) => OwnerCustomerRatingView(
+                    booking: booking,
+                    onBack: () => context.pop(),
+                  ),
+                ),
+              ),
+              // Requests: ownerQrScan
+              GoRoute(
+                path: RouteNames.ownerQrScan,
+                builder: (context, state) => const OwnerQrScanView(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              // Customers: ownerCustomers
+              GoRoute(
+                path: RouteNames.ownerCustomers,
+                builder: (context, state) => OwnerCustomersListView(
+                  shopId: currentShopId(),
+                  onBack: () => context.pop(),
+                ),
+              ),
+              // Customers: ownerCustomerScan
+              GoRoute(
+                path: RouteNames.ownerCustomerScan,
+                builder: (context, state) => const OwnerCustomerScanView(),
+              ),
+              // Customers: ownerBlacklist
+              GoRoute(
+                path: RouteNames.ownerBlacklist,
+                // Phase B (C4): the dedicated report form + my-reports list.
+                builder: (context, state) => OwnerBlacklistView(
+                  shopId: currentShopId(),
+                  onBack: () => context.pop(),
+                ),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              // Settings: ownerSettings
+              GoRoute(
+                path: RouteNames.ownerSettings,
+                builder: (context, state) => const OwnerSettingsView(),
+              ),
+              // Settings: ownerFinance
+              GoRoute(
+                path: RouteNames.ownerFinance,
+                builder: (context, state) => OwnerFinanceView(
+                  shopId: currentShopId(),
+                ),
+              ),
+              // Settings: ownerDues
+              GoRoute(
+                path: RouteNames.ownerDues,
+                builder: (context, state) => OwnerDuesView(
+                  shopId: currentShopId(),
+                ),
+              ),
+              // Settings: ownerCashClosing
+              GoRoute(
+                path: RouteNames.ownerCashClosing,
+                builder: (context, state) => OwnerCashClosingView(
+                  shopId: currentShopId(),
+                ),
+              ),
+              // Settings: ownerCarPnL
+              GoRoute(
+                path: RouteNames.ownerCarPnL,
+                builder: (context, state) => OwnerCarPnLView(
+                  shopId: currentShopId(),
+                ),
+              ),
+              // Settings: ownerSubscription
+              GoRoute(
+                path: RouteNames.ownerSubscription,
+                builder: (context, state) => const OwnerSubscriptionView(),
+              ),
+              // Settings: ownerWhatsappLogs
+              GoRoute(
+                path: RouteNames.ownerWhatsappLogs,
+                builder: (context, state) => const OwnerWhatsAppLogsView(),
+              ),
+              // Settings: ownerDisputes
+              GoRoute(
+                path: RouteNames.ownerDisputes,
+                builder: (context, state) => OwnerDisputesView(
+                  shopId: currentShopId(),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+
       GoRoute(
         path: RouteNames.ownerOnboarding,
         builder: (context, state) => const OwnerOnboardingView(),
       ),
       GoRoute(
-        path: RouteNames.ownerDashboard,
-        builder: (context, state) =>
-            OwnerDashboardView(shopId: currentShopId()),
-      ),
-      GoRoute(
-        path: RouteNames.ownerFleet,
-        builder: (context, state) => const OwnerFleetView(),
-      ),
-      GoRoute(
-        path: RouteNames.ownerAddVehicle,
-        builder: (context, state) => const OwnerAddVehicleView(),
-      ),
-      GoRoute(
         path: RouteNames.ownerRates,
         // Rates are per vehicle: pick a vehicle in the fleet first.
         redirect: (context, state) => RouteNames.ownerFleet,
-      ),
-      GoRoute(
-        path: RouteNames.ownerRatesVehicle,
-        builder: (context, state) => VehicleRouteLoader(
-          vehicleId: state.pathParameters['vehicleId']!,
-          shopId: currentShopId(),
-          builder: (context, vehicle) => OwnerRateMatrixView(
-            vehicle: vehicle,
-            onBack: () => context.pop(),
-          ),
-        ),
-      ),
-      GoRoute(
-        path: RouteNames.ownerFixedRoutes,
-        builder: (context, state) => OwnerFixedRoutesView(
-          shopId: currentShopId(),
-          onBack: () => context.pop(),
-        ),
-      ),
-      GoRoute(
-        path: RouteNames.ownerCalendar,
-        builder: (context, state) => VehicleRouteLoader(
-          vehicleId: state.pathParameters['vehicleId']!,
-          shopId: currentShopId(),
-          builder: (context, vehicle) => OwnerVehicleCalendarView(
-            vehicle: vehicle,
-            onBack: () => context.pop(),
-          ),
-        ),
-      ),
-      GoRoute(
-        path: RouteNames.ownerRequests,
-        builder: (context, state) =>
-            OwnerBookingRequestsView(shopId: currentShopId()),
-      ),
-      GoRoute(
-        path: RouteNames.ownerRequestsDetail,
-        builder: (context, state) => BookingRouteLoader(
-          bookingId: state.pathParameters['id']!,
-          // Phase B (D3): a submitted proof goes to verification;
-          // anything else shows the payment accounts + proof upload.
-          builder: (context, booking) =>
-              booking.status == 'payment_submitted'
-                  ? OwnerPaymentVerificationView(
-                      booking: booking,
-                      onBack: () => context.pop(),
-                    )
-                  : OwnerPaymentAccountsView(
-                      booking: booking,
-                      onProceedToUploadProof: () => context.push(
-                        RouteNames.ownerPaymentProof
-                            .replaceFirst(':id', booking.bookingId),
-                      ),
-                      onBack: () => context.pop(),
-                    ),
-        ),
-      ),
-      GoRoute(
-        path: RouteNames.ownerManualBooking,
-        builder: (context, state) => const OwnerManualBookingView(),
-      ),
-      GoRoute(
-        path: RouteNames.ownerPaymentProof,
-        builder: (context, state) => BookingRouteLoader(
-          bookingId: state.pathParameters['id']!,
-          builder: (context, booking) => PaymentProofUploadView(
-            booking: booking,
-            onBack: () => context.pop(),
-          ),
-        ),
-      ),
-      GoRoute(
-        path: RouteNames.ownerQrScan,
-        builder: (context, state) => const OwnerQrScanView(),
-      ),
-      GoRoute(
-        path: RouteNames.ownerHandover,
-        builder: (context, state) => BookingRouteLoader(
-          bookingId: state.pathParameters['id']!,
-          builder: (context, booking) => OwnerHandoverSignatureView(
-            booking: booking,
-            onBack: () => context.pop(),
-          ),
-        ),
-      ),
-      GoRoute(
-        path: RouteNames.ownerReturn,
-        builder: (context, state) => BookingRouteLoader(
-          bookingId: state.pathParameters['id']!,
-          builder: (context, booking) => OwnerReturnSettlementView(
-            booking: booking,
-            onBack: () => context.pop(),
-          ),
-        ),
-      ),
-      GoRoute(
-        path: RouteNames.ownerContract,
-        builder: (context, state) => BookingRouteLoader(
-          bookingId: state.pathParameters['id']!,
-          builder: (context, booking) => OwnerContractView(
-            booking: booking,
-            onBack: () => context.pop(),
-          ),
-        ),
-      ),
-      GoRoute(
-        path: RouteNames.ownerRateCustomer,
-        builder: (context, state) => BookingRouteLoader(
-          bookingId: state.pathParameters['id']!,
-          builder: (context, booking) => OwnerCustomerRatingView(
-            booking: booking,
-            onBack: () => context.pop(),
-          ),
-        ),
-      ),
-      GoRoute(
-        path: RouteNames.ownerCustomerScan,
-        builder: (context, state) => const OwnerCustomerScanView(),
-      ),
-      GoRoute(
-        path: RouteNames.ownerCustomers,
-        builder: (context, state) => OwnerCustomersListView(
-          shopId: currentShopId(),
-          onBack: () => context.pop(),
-        ),
-      ),
-      GoRoute(
-        path: RouteNames.ownerBlacklist,
-        // Phase B (C4): the dedicated report form + my-reports list.
-        builder: (context, state) => OwnerBlacklistView(
-          shopId: currentShopId(),
-          onBack: () => context.pop(),
-        ),
-      ),
-      GoRoute(
-        path: RouteNames.ownerSubscription,
-        builder: (context, state) => const OwnerSubscriptionView(),
-      ),
-      GoRoute(
-        path: RouteNames.ownerWhatsappLogs,
-        builder: (context, state) => const OwnerWhatsAppLogsView(),
-      ),
-      GoRoute(
-        path: RouteNames.ownerNotifications,
-        builder: (context, state) => OwnerNotificationsView(
-          shopId: currentShopId(),
-        ),
-      ),
-      GoRoute(
-        path: RouteNames.ownerDisputes,
-        builder: (context, state) => OwnerDisputesView(
-          shopId: currentShopId(),
-        ),
-      ),
-      GoRoute(
-        path: RouteNames.ownerSettings,
-        builder: (context, state) => const OwnerSettingsView(),
-      ),
-      GoRoute(
-        path: RouteNames.ownerFinance,
-        builder: (context, state) => OwnerFinanceView(
-          shopId: currentShopId(),
-        ),
-      ),
-      GoRoute(
-        path: RouteNames.ownerDues,
-        builder: (context, state) => OwnerDuesView(
-          shopId: currentShopId(),
-        ),
-      ),
-      GoRoute(
-        path: RouteNames.ownerCashClosing,
-        builder: (context, state) => OwnerCashClosingView(
-          shopId: currentShopId(),
-        ),
-      ),
-      GoRoute(
-        path: RouteNames.ownerCarPnL,
-        builder: (context, state) => OwnerCarPnLView(
-          shopId: currentShopId(),
-        ),
       ),
 
       // Super Admin Web Routes (Phase A): the login screen is public;

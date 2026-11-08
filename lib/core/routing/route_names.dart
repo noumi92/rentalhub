@@ -24,7 +24,6 @@ class RouteNames {
   static const String customerRateTrip = '/customer/rate/:id';
   static const String customerCancelBooking = '/customer/cancel/:id';
   static const String customerKyc = '/customer/kyc';
-  static const String customerDashboard = '/customer/dashboard';
   static const String customerBookings = '/customer/bookings';
   static const String customerBookingDetail = '/customer/bookings/:id';
   static const String customerWallet = '/customer/wallet';

@@ -22,6 +22,7 @@ import '../../features/auth/domain/usecases/sign_in_with_email_usecase.dart';
 import '../../features/auth/domain/usecases/sign_in_with_google_usecase.dart';
 import '../../features/auth/presentation/cubit/auth_cubit.dart';
 import '../../features/customer/data/datasources/customer_remote_data_source.dart';
+import '../../features/customer/data/datasources/customer_support_data_source.dart';
 import '../../features/customer/data/datasources/dispute_remote_data_source.dart';
 import '../../features/admin/data/datasources/admin_remote_data_source.dart';
 import '../../features/admin/data/datasources/admin_shops_data_source.dart';
@@ -195,6 +196,11 @@ Future<void> initDependencies() async {
   // fallback like the booking data source.
   sl.registerLazySingleton<DisputeRemoteDataSource>(
     () => DisputeRemoteDataSource(),
+  );
+  // Phase C (C3): the Support tab badge reads the customer's tickets
+  // (replied = 'in_progress'). Lazy Firestore, like the other DSs.
+  sl.registerLazySingleton<CustomerSupportDataSource>(
+    () => CustomerSupportDataSource(),
   );
   // Phase A (A1): the admin panel's data layer — Cloud Functions for
   // TOTP + roles, Firestore for invites and the team list.

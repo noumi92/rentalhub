@@ -11,7 +11,6 @@ import '../../../../core/settings/app_settings_cubit.dart';
 import '../../../../core/utils/current_shop.dart';
 import '../../../../core/widgets/custom_curved_header.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../widgets/owner_bottom_nav.dart';
 import '../widgets/sync_status_section.dart';
 
 /// Phase B (G3): the owner settings screen. The language and theme
@@ -52,7 +51,6 @@ class _OwnerSettingsViewState extends State<OwnerSettingsView> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      bottomNavigationBar: const OwnerBottomNav(currentIndex: 4),
       body: SafeArea(
         child: Column(
           children: [

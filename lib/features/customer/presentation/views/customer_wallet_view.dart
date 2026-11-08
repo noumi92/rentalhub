@@ -5,7 +5,6 @@ import '../../../../core/widgets/custom_curved_header.dart';
 import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../finance/data/datasources/security_deposit_data_source.dart';
 import '../../data/services/customer_wallet_service.dart';
-import '../widgets/customer_bottom_nav.dart';
 import '../widgets/wallet_ledger.dart';
 
 // F1: the wallet shows the customer's real money — advances paid on
@@ -54,7 +53,6 @@ class _CustomerWalletViewState extends State<CustomerWalletView> {
   Widget build(BuildContext context) {
     final summary = _summary;
     return Scaffold(
-      bottomNavigationBar: const CustomerBottomNav(currentIndex: 2),
       body: SafeArea(
         child: Column(
           children: [

@@ -6,7 +6,6 @@ import 'package:rentalhub/features/bookings/data/datasources/booking_remote_data
 import 'package:rentalhub/features/bookings/domain/entities/booking_entity.dart';
 import 'package:rentalhub/features/customer/presentation/views/customer_bookings_view.dart';
 import 'package:rentalhub/features/customer/presentation/views/customer_cancel_booking_view.dart';
-import 'package:rentalhub/features/customer/presentation/views/customer_dashboard_view.dart';
 import 'package:rentalhub/features/customer/presentation/views/customer_dispute_view.dart';
 import 'package:rentalhub/features/customer/presentation/views/customer_profile_view.dart';
 import 'package:rentalhub/features/customer/presentation/views/customer_rate_trip_view.dart';
@@ -28,34 +27,6 @@ void main() {
   });
 
   group('Batch 2: Customer Post-Trip & Dashboard Tests', () {
-    testWidgets('CustomerDashboardView: renders header, stats, and quick service buttons', (tester) async {
-      bool explored = false;
-      bool openedBookings = false;
-
-      await tester.pumpWidget(
-        MaterialApp(
-          home: CustomerDashboardView(
-            onExploreShops: () => explored = true,
-            onOpenBookings: () => openedBookings = true,
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      expect(find.text('Customer Dashboard'), findsOneWidget);
-      expect(find.text('Total Trips'), findsOneWidget);
-      expect(find.text('Trust Score'), findsOneWidget);
-      expect(find.text('Explore Shops'), findsOneWidget);
-      expect(find.text('My Bookings'), findsOneWidget);
-
-      await tester.tap(find.text('Explore Shops'));
-      await tester.pumpAndSettle();
-      expect(explored, isTrue);
-
-      await tester.tap(find.text('My Bookings'));
-      await tester.pumpAndSettle();
-      expect(openedBookings, isTrue);
-    });
 
     testWidgets('CustomerBookingsView: switches between 5 tabs and filters records', (tester) async {
       await tester.pumpWidget(

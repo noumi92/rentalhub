@@ -17,9 +17,9 @@ import 'package:flutter_test/flutter_test.dart';
 // `master` `af8c73c`. A file may shrink; it must never grow past its
 // registered count, and no new file may exceed 250.
 // Phase B (B2) removed `owner_rate_matrix_view.dart` (261 -> 229).
+// Phase C (C3) deleted the orphaned `customer_dashboard_view.dart`
+// (295) outright — its route was unreferenced, a duplicate of Home.
 const Map<String, int> kOverLimitViews = {
-  'lib/features/customer/presentation/views/customer_dashboard_view.dart':
-      295,
   'lib/features/owner/presentation/views/owner_onboarding_view.dart': 290,
   'lib/features/owner/presentation/views/owner_add_vehicle_view.dart': 259,
   'lib/features/customer/presentation/views/customer_dispute_view.dart': 260,

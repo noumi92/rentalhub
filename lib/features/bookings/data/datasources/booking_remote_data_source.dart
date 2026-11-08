@@ -494,6 +494,28 @@ class BookingRemoteDataSource {
     return Stream.value(_inMemoryFallback[bookingId]);
   }
 
+  /// Phase C (C3): the live bookings of one shop, for the Requests
+  /// tab badge — same source as the dashboard KPI
+  /// (`getShopBookings`, waiting = 'requested' or
+  /// 'payment_submitted'). Firestore snapshots when available; the
+  /// in-memory fallback list when offline or in tests (no Firebase
+  /// app), so the badge hides instead of throwing.
+  Stream<List<BookingEntity>> streamShopBookings(String shopId) {
+    final fs = _resolvedFirestore;
+    if (fs != null) {
+      return fs
+          .collection('bookings')
+          .where('shopId', isEqualTo: shopId)
+          .snapshots()
+          .map((snap) => snap.docs
+              .map((d) => BookingModel.fromMap(d.data(), d.id))
+              .toList());
+    }
+    return Stream.value(_inMemoryFallback.values
+        .where((b) => b.shopId == shopId)
+        .toList());
+  }
+
   Future<List<BookingEntity>> getCustomerBookings(String customerId) async {
     final fs = _resolvedFirestore;
     if (fs != null) {

@@ -5,14 +5,12 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/widgets/custom_curved_header.dart';
-import '../../../../core/widgets/offline_banner.dart';
 import '../../data/datasources/customer_location_store.dart';
 import '../../data/datasources/discovery_remote_data_source.dart';
 import '../../data/repositories/discovery_repository_impl.dart';
 import '../../domain/entities/shop_entity.dart';
 import '../../domain/usecases/get_nearby_shops_usecase.dart';
 import '../cubit/discovery_cubit.dart';
-import '../../../customer/presentation/widgets/customer_bottom_nav.dart';
 import 'widgets/empty_radar_state.dart';
 import 'widgets/radius_filter_pills.dart';
 import 'widgets/shop_list_card.dart';
@@ -81,12 +79,8 @@ class _CustomerHomeBodyState extends State<_CustomerHomeBody> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: const CustomerBottomNav(currentIndex: 0),
-      // Phase B (B5): the offline / pending-sync banner sits above
-      // the content and stays put while the list scrolls.
       body: Column(
         children: [
-          const OfflineBanner(),
           Expanded(
             child: BlocBuilder<DiscoveryCubit, DiscoveryState>(
               builder: (context, state) {
@@ -129,7 +123,7 @@ class _CustomerHomeBodyState extends State<_CustomerHomeBody> {
                   actions: [
                     IconButton(
                       tooltip: 'Switch to Interactive Map',
-                      onPressed: () => context.go(RouteNames.customerHomeMap),
+                      onPressed: () => context.push(RouteNames.customerHomeMap),
                       icon: const Icon(
                         Icons.map_rounded,
                         color: AppColors.secondary,

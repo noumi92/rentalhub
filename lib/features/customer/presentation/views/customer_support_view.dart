@@ -8,16 +8,18 @@ import '../../../../core/utils/whatsapp.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/custom_curved_header.dart';
 import '../../../bookings/data/datasources/booking_remote_data_source.dart';
-import '../widgets/customer_bottom_nav.dart';
 import '../widgets/support_contact_card.dart';
 import '../widgets/support_faq_list.dart';
+import '../widgets/support_sos_tile.dart';
 import '../widgets/support_ticket_form.dart';
 
 class CustomerSupportView extends StatefulWidget {
   final VoidCallback? onFileDispute;
+  final VoidCallback? onOpenSos;
   final VoidCallback? onBack;
 
-  const CustomerSupportView({super.key, this.onFileDispute, this.onBack});
+  const CustomerSupportView(
+      {super.key, this.onFileDispute, this.onOpenSos, this.onBack});
 
   @override
   State<CustomerSupportView> createState() => _CustomerSupportViewState();
@@ -137,7 +139,6 @@ class _CustomerSupportViewState extends State<CustomerSupportView> {
         .toList();
 
     return Scaffold(
-      bottomNavigationBar: const CustomerBottomNav(currentIndex: 3),
       body: SafeArea(
         child: Column(
           children: [
@@ -224,6 +225,13 @@ class _CustomerSupportViewState extends State<CustomerSupportView> {
                           size: 14, color: AppColors.secondary),
                       onTap: widget.onFileDispute,
                     ),
+                    const SizedBox(height: 14),
+                    // Phase C (C3): the Emergency SOS entry point. The
+                    // orphaned customer dashboard was the screen's only
+                    // entry point; with the dashboard deleted, Support
+                    // is its home — the FAQ already tells users to use
+                    // the SOS screen for emergencies.
+                    SupportSosTile(onTap: widget.onOpenSos),
                     const SizedBox(height: 14),
                     const SupportTicketForm(),
                     const SizedBox(height: 20),

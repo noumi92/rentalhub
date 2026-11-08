@@ -6,7 +6,6 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/widgets/custom_curved_header.dart';
-import '../../../../core/widgets/offline_banner.dart';
 import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
 import '../../../finance/data/datasources/security_deposit_data_source.dart';
@@ -14,7 +13,6 @@ import '../../../fleet/data/datasources/fleet_remote_data_source.dart';
 import '../../../notifications/data/datasources/notification_data_source.dart';
 import '../widgets/dashboard/dashboard_kpis.dart';
 import '../widgets/dashboard/dashboard_ledger_item.dart';
-import '../widgets/owner_bottom_nav.dart';
 
 class OwnerDashboardView extends StatefulWidget {
   final String shopId;
@@ -139,7 +137,6 @@ class _OwnerDashboardViewState extends State<OwnerDashboardView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: const OwnerBottomNav(currentIndex: 0),
       body: SafeArea(
         child: Column(
           children: [
@@ -192,8 +189,6 @@ class _OwnerDashboardViewState extends State<OwnerDashboardView> {
                 ),
               ],
             ),
-            // Phase B (B5): the offline / pending-sync banner.
-            const OfflineBanner(),
             Expanded(
               child: _isLoading
                   ? const Center(child: CircularProgressIndicator())

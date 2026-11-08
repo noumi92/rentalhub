@@ -8,7 +8,6 @@ import '../../../../core/widgets/custom_curved_header.dart';
 import '../../data/datasources/customer_remote_data_source.dart';
 import '../../domain/entities/customer_entity.dart';
 import '../../../trust/data/datasources/kyc_remote_data_source.dart';
-import '../widgets/customer_bottom_nav.dart';
 import '../widgets/edit_profile_sheet.dart';
 import '../widgets/profile_header.dart';
 import '../widgets/profile_menu_card.dart';
@@ -169,7 +168,6 @@ class _CustomerProfileViewState extends State<CustomerProfileView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: const CustomerBottomNav(currentIndex: 4),
       body: SafeArea(
         child: Column(
           children: [

@@ -11,7 +11,6 @@ import '../../data/datasources/discovery_remote_data_source.dart';
 import '../../data/repositories/discovery_repository_impl.dart';
 import '../../domain/entities/shop_entity.dart';
 import '../../domain/usecases/get_nearby_shops_usecase.dart';
-import '../../../customer/presentation/widgets/customer_bottom_nav.dart';
 import 'widgets/customer_map_canvas.dart';
 import 'widgets/map_shop_preview_card.dart';
 import 'widgets/no_shops_banner.dart';
@@ -131,7 +130,6 @@ class _CustomerHomeMapViewState extends State<CustomerHomeMapView> {
     final selectedShop = _selectedShop;
 
     return Scaffold(
-      bottomNavigationBar: const CustomerBottomNav(currentIndex: 0),
       body: SafeArea(
         child: Column(
           children: [

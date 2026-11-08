@@ -9,7 +9,6 @@ import '../../../../core/widgets/offline_banner.dart';
 import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
 import '../widgets/booking_ticket_card.dart';
-import '../widgets/customer_bottom_nav.dart';
 
 class CustomerBookingsView extends StatefulWidget {
   final Function(BookingEntity booking)? onOpenBookingDetails;
@@ -91,7 +90,6 @@ class _CustomerBookingsViewState extends State<CustomerBookingsView> {
   Widget build(BuildContext context) {
     final list = _filteredBookings;
     return Scaffold(
-      bottomNavigationBar: const CustomerBottomNav(currentIndex: 1),
       body: SafeArea(
         child: Column(
           children: [
