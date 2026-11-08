@@ -95,8 +95,8 @@ class _ShopDetailViewState extends State<ShopDetailView> {
   }
 
   Future<void> _loadVehicles() async {
-    final list = await sl<FleetRemoteDataSource>()
-        .getShopVehicles(widget.shop.shopId);
+    final list =
+        await sl<FleetRemoteDataSource>().getShopVehicles(widget.shop.shopId);
     if (mounted) {
       setState(() {
         _vehicles = list;
@@ -111,105 +111,116 @@ class _ShopDetailViewState extends State<ShopDetailView> {
     final vehicles = _vehicles ?? const <VehicleEntity>[];
 
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            CustomCurvedHeader(
-              height: 170,
-              leadingWidget: widget.onBack != null
-                  ? IconButton(
-                      icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                          color: Colors.white, size: 18),
-                      onPressed: widget.onBack,
-                    )
-                  : null,
-              titleWidget: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    shop.shopName,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '${shop.address}, ${shop.city} (${shop.distanceKm} km)',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.primaryContainer),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CustomCurvedHeader(
+                variant: CustomCurvedHeaderVariant.hero,
+                leadingWidget: widget.onBack != null
+                    ? IconButton(
+                        icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                            color: Colors.white, size: 18),
+                        onPressed: widget.onBack,
+                      )
+                    : null,
+                titleWidget: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      shop.shopName,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w900, color: Colors.white),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '${shop.address}, ${shop.city} (${shop.distanceKm} km)',
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodySmall
+                          ?.copyWith(color: AppColors.primaryContainer),
+                    ),
+                  ],
+                ),
+                bottomWidget: VerifiedBadge(isVerified: shop.isVerified),
+                actions: [
+                  IconButton(
+                    icon: Icon(
+                      _saved
+                          ? Icons.favorite_rounded
+                          : Icons.favorite_border_rounded,
+                      color: Colors.white,
+                      size: 22,
+                    ),
+                    tooltip: _saved ? 'Saved' : 'Save showroom',
+                    onPressed: _toggleSaved,
                   ),
                 ],
               ),
-              bottomWidget: VerifiedBadge(isVerified: shop.isVerified),
-              actions: [
-                IconButton(
-                  icon: Icon(
-                    _saved
-                        ? Icons.favorite_rounded
-                        : Icons.favorite_border_rounded,
-                    color: Colors.white,
-                    size: 22,
-                  ),
-                  tooltip: _saved ? 'Saved' : 'Save showroom',
-                  onPressed: _toggleSaved,
-                ),
-              ],
-            ),
-            HeaderOverlapContainer(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (_loading)
-                      const Padding(
-                        padding: EdgeInsets.all(28),
-                        child: Center(child: CircularProgressIndicator()),
-                      )
-                    else if (vehicles.isEmpty)
-                      Padding(
-                        padding: EdgeInsets.symmetric(vertical: 32),
-                        child: Center(
-                          child: Text(
-                            'This shop has no cars listed yet.',
-                            style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+              HeaderOverlapContainer(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (_loading)
+                        const Padding(
+                          padding: EdgeInsets.all(28),
+                          child: Center(child: CircularProgressIndicator()),
+                        )
+                      else if (vehicles.isEmpty)
+                        Padding(
+                          padding: EdgeInsets.symmetric(vertical: 32),
+                          child: Center(
+                            child: Text(
+                              'This shop has no cars listed yet.',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleSmall
+                                  ?.copyWith(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurfaceVariant),
+                            ),
+                          ),
+                        )
+                      else ...[
+                        ...vehicles.map(
+                          (vehicle) => ShopVehicleCard(
+                            vehicle: vehicle,
+                            onTap: () =>
+                                widget.onVehicleSelected?.call(vehicle),
                           ),
                         ),
-                      )
-                    else ...[
-                      ...vehicles.map(
-                        (vehicle) => ShopVehicleCard(
-                          vehicle: vehicle,
-                          onTap: () =>
-                              widget.onVehicleSelected?.call(vehicle),
-                        ),
-                      ),
-                      if (widget.onViewAllCars != null)
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 8),
-                          child: Center(
-                            child: TextButton.icon(
-                              onPressed: widget.onViewAllCars,
-                              icon: const Icon(
-                                Icons.directions_car_rounded,
-                                size: 18,
-                              ),
-                              label: const Text(
-                                'View all cars with filters',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w700,
+                        if (widget.onViewAllCars != null)
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 8),
+                            child: Center(
+                              child: TextButton.icon(
+                                onPressed: widget.onViewAllCars,
+                                icon: const Icon(
+                                  Icons.directions_car_rounded,
+                                  size: 18,
+                                ),
+                                label: const Text(
+                                  'View all cars with filters',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
+                      ],
                     ],
-                  ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
-
 }

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'features/notifications/data/services/push_token_service.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,6 +21,12 @@ import 'l10n/app_localizations.dart';
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  // Phase D (D2): edge-to-edge — the app draws behind the status and
+  // navigation bars. The bars themselves are styled per theme by the
+  // AnnotatedRegion around MaterialApp.router below (never a
+  // setSystemUIOverlayStyle side effect inside build); every screen
+  // insets its own content with SafeArea.
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
   try {
     await Firebase.initializeApp(
@@ -63,11 +70,29 @@ class RentalHubApp extends StatelessWidget {
     return BlocBuilder<AppSettingsCubit, AppSettingsState>(
       bloc: sl<AppSettingsCubit>(),
       builder: (context, settings) {
+        // Phase D (D2): the system bars follow the theme — light icons
+        // on the dark header / dark scaffold, dark icons on the light
+        // one. The region wins over MaterialApp's own default overlay
+        // style; transparent bars keep the edge-to-edge draw.
+        final isDark = settings.themeMode == ThemeMode.dark ||
+            (settings.themeMode == ThemeMode.system &&
+                MediaQuery.platformBrightnessOf(context) == Brightness.dark);
+        final overlayStyle = SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness:
+              isDark ? Brightness.light : Brightness.dark,
+          statusBarBrightness: isDark ? Brightness.dark : Brightness.light,
+          systemNavigationBarColor: Colors.transparent,
+          systemNavigationBarIconBrightness:
+              isDark ? Brightness.light : Brightness.dark,
+        );
         // Phase B (B5): the sync-status cubit is provided app-wide
         // so every screen can show the offline banner / sync chips.
         return BlocProvider<SyncStatusCubit>.value(
           value: sl<SyncStatusCubit>(),
-          child: MaterialApp.router(
+          child: AnnotatedRegion<SystemUiOverlayStyle>(
+            value: overlayStyle,
+            child: MaterialApp.router(
           title: 'RentalHub Pakistan',
           debugShowCheckedModeBanner: false,
           // Phase A (A1): the font family follows the locale — Inter for
@@ -89,6 +114,7 @@ class RentalHubApp extends StatelessWidget {
             GlobalCupertinoLocalizations.delegate,
           ],
           routerConfig: AppRouter.router,
+            ),
           ),
         );
       },

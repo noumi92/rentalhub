@@ -81,8 +81,7 @@ class _CustomerDocumentsViewState extends State<CustomerDocumentsView> {
           await ds.upsertCustomer(CustomerEntity(
             customerId: _uid(),
             shopId: '',
-            name:
-                FirebaseAuth.instance.currentUser?.displayName ?? 'Customer',
+            name: FirebaseAuth.instance.currentUser?.displayName ?? 'Customer',
             phone: FirebaseAuth.instance.currentUser?.phoneNumber ?? '',
             cnic: cnic,
             source: 'online',
@@ -106,60 +105,69 @@ class _CustomerDocumentsViewState extends State<CustomerDocumentsView> {
     return BlocProvider.value(
       value: sl<KycCubit>(),
       child: Scaffold(
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              CustomCurvedHeader(
-                height: 165,
-                showProfileGreeting: true,
-                titleWidget: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'NADRA CNIC & Driving License KYC',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white),
-                    ),
-                    SizedBox(height: 4),
-                    Text(
-                      'Private cPanel vault • شناختی کارڈ تصدیق',
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.primaryContainer),
-                    ),
-                  ],
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                CustomCurvedHeader(
+                  variant: CustomCurvedHeaderVariant.hero,
+                  showProfileGreeting: true,
+                  titleWidget: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'NADRA CNIC & Driving License KYC',
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleMedium
+                            ?.copyWith(
+                                fontWeight: FontWeight.w900,
+                                color: Colors.white),
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        'Private cPanel vault • شناختی کارڈ تصدیق',
+                        style: Theme.of(context)
+                            .textTheme
+                            .labelSmall
+                            ?.copyWith(color: AppColors.primaryContainer),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              HeaderOverlapContainer(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: _loading
-                          ? const Center(
-                              child: Padding(
-                              padding: EdgeInsets.all(16),
-                              child: CircularProgressIndicator(),
-                            ))
-                          : Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                if (_existing != null) ...[
-                                  KycStatusBanner(
-                                      status: _existing!.status),
-                                  const SizedBox(height: 14),
+                HeaderOverlapContainer(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: _loading
+                            ? const Center(
+                                child: Padding(
+                                padding: EdgeInsets.all(16),
+                                child: CircularProgressIndicator(),
+                              ))
+                            : Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if (_existing != null) ...[
+                                    KycStatusBanner(status: _existing!.status),
+                                    const SizedBox(height: 14),
+                                  ],
+                                  KycSubmissionForm(
+                                    initialCnic: _initialCnic,
+                                    existing: _existing,
+                                    userUid: _uid(),
+                                    onSubmitted: _onSubmitted,
+                                  ),
                                 ],
-                                KycSubmissionForm(
-                                  initialCnic: _initialCnic,
-                                  existing: _existing,
-                                  userUid: _uid(),
-                                  onSubmitted: _onSubmitted,
-                                ),
-                              ],
-                            ),
+                              ),
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

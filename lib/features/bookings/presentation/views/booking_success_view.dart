@@ -27,7 +27,7 @@ class BookingSuccessView extends StatelessWidget {
         child: Column(
           children: [
             CustomCurvedHeader(
-              height: 100,
+              variant: CustomCurvedHeaderVariant.compact,
               titleWidget: Text(
                 'Request Transmitted',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white),

@@ -135,7 +135,7 @@ class _OwnerFinanceViewState extends State<OwnerFinanceView> {
         child: Column(
           children: [
             CustomCurvedHeader(
-              height: 100,
+              variant: CustomCurvedHeaderVariant.compact,
               leadingWidget: IconButton(
                 icon: const Icon(Icons.arrow_back_ios_new_rounded,
                     color: Colors.white, size: 20),

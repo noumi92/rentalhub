@@ -21,7 +21,7 @@ class PricingHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CustomCurvedHeader(
-      height: 100,
+      variant: CustomCurvedHeaderVariant.compact,
       leadingWidget: onBack != null
           ? IconButton(
               icon: const Icon(Icons.arrow_back_ios_new_rounded,

@@ -137,7 +137,7 @@ class _OwnerCashClosingViewState extends State<OwnerCashClosingView> {
         child: Column(
           children: [
             CustomCurvedHeader(
-              height: 100,
+              variant: CustomCurvedHeaderVariant.compact,
               leadingWidget: IconButton(
                 icon: const Icon(Icons.arrow_back_ios_new_rounded,
                     color: Colors.white, size: 20),

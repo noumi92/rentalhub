@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_dimensions.dart';
 import '../../../../core/di/injection_container.dart';
+import '../../../../core/utils/responsive.dart';
 import '../../../../core/widgets/custom_curved_header.dart';
 import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
@@ -60,17 +62,83 @@ class _OwnerVehicleCalendarViewState extends State<OwnerVehicleCalendarView> {
     }).toList();
   }
 
+  /// The month grid + legend, shared by the compact stack and the
+  /// medium+ side-by-side layout.
+  Widget _gridSection() {
+    return Column(
+      children: [
+        AvailabilityMonthGrid(
+          month: _month,
+          bookings: _bookings,
+          selectedDay: _selectedDay,
+          onMonthChanged: (m) => setState(() => _month = m),
+          onDaySelected: (d) => setState(() => _selectedDay = d),
+        ),
+        const SizedBox(height: 12),
+        // D3: a Wrap, not a Row — the four legend chips fit on one
+        // row on a phone, but at large text scales (and in the wide
+        // test font) they flow onto a second row instead of
+        // overflowing the 390px viewport.
+        Wrap(
+          alignment: WrapAlignment.spaceEvenly,
+          spacing: 16,
+          runSpacing: 8,
+          children: [
+            _legend(AppColors.successContainerFor(Theme.of(context).brightness), 'Free'),
+            _legend(AppColors.warningContainerFor(Theme.of(context).brightness), 'Requested'),
+            _legend(AppColors.errorContainerFor(Theme.of(context).brightness), 'Confirmed'),
+            _legend(Theme.of(context).colorScheme.surfaceContainerHighest, 'Past'),
+          ],
+        ),
+      ],
+    );
+  }
+
+  /// The day-detail agenda. Compact shows it only once a day is
+  /// picked (as today); medium+ always shows the column, with a hint
+  /// until a day is picked.
+  Widget _detailSection({required bool showHint}) {
+    if (_selectedDay == null) {
+      if (!showHint) return const SizedBox.shrink();
+      return Text('Tap a day to see its bookings.',
+          style: Theme.of(context).textTheme.bodyMedium);
+    }
+    final selectedBookings = _bookingsOn(_selectedDay!);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Bookings on ${_selectedDay!.day}/${_selectedDay!.month}/${_selectedDay!.year}',
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
+        ),
+        const SizedBox(height: 8),
+        if (selectedBookings.isEmpty)
+          const Text('No bookings on this day.'),
+        ...selectedBookings.map((b) => Card(
+              margin: const EdgeInsets.only(bottom: 8),
+              child: ListTile(
+                title: Text(b.customerName ?? b.customerId,
+                    style: const TextStyle(fontWeight: FontWeight.w700)),
+                subtitle: Text(
+                    '${b.packageType} • ${b.pickupTime.hour}:${b.pickupTime.minute.toString().padLeft(2, '0')} → ${b.returnTime.day}/${b.returnTime.month}'),
+                trailing: Chip(
+                    label: Text(b.status,
+                        style: Theme.of(context).textTheme.labelSmall)),
+              ),
+            )),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final v = widget.vehicle;
-    final selectedBookings =
-        _selectedDay == null ? <BookingEntity>[] : _bookingsOn(_selectedDay!);
     return Scaffold(
       body: SafeArea(
         child: Column(
           children: [
             CustomCurvedHeader(
-              height: 100,
+              variant: CustomCurvedHeaderVariant.compact,
               leadingWidget: IconButton(
                 icon: const Icon(Icons.arrow_back_ios_new_rounded,
                     color: Colors.white, size: 20),
@@ -90,51 +158,29 @@ class _OwnerVehicleCalendarViewState extends State<OwnerVehicleCalendarView> {
               child: _loading
                   ? const Center(child: CircularProgressIndicator())
                   : ListView(
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(
+                          AppDimensions.paddingVertical),
                       children: [
-                        AvailabilityMonthGrid(
-                          month: _month,
-                          bookings: _bookings,
-                          selectedDay: _selectedDay,
-                          onMonthChanged: (m) => setState(() => _month = m),
-                          onDaySelected: (d) =>
-                              setState(() => _selectedDay = d),
-                        ),
-                        const SizedBox(height: 12),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            _legend(AppColors.successContainerFor(Theme.of(context).brightness), 'Free'),
-                            _legend(AppColors.warningContainerFor(Theme.of(context).brightness), 'Requested'),
-                            _legend(AppColors.errorContainerFor(Theme.of(context).brightness), 'Confirmed'),
-                            _legend(Theme.of(context).colorScheme.surfaceContainerHighest, 'Past'),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        if (_selectedDay != null) ...[
-                          Text(
-                            'Bookings on ${_selectedDay!.day}/${_selectedDay!.month}/${_selectedDay!.year}',
-                            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
-                          ),
-                          const SizedBox(height: 8),
-                          if (selectedBookings.isEmpty)
-                            const Text('No bookings on this day.'),
-                          ...selectedBookings.map((b) => Card(
-                                margin:
-                                    const EdgeInsets.only(bottom: 8),
-                                child: ListTile(
-                                  title: Text(
-                                      b.customerName ??
-                                          b.customerId,
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.w700)),
-                                  subtitle: Text(
-                                      '${b.packageType} • ${b.pickupTime.hour}:${b.pickupTime.minute.toString().padLeft(2, '0')} → ${b.returnTime.day}/${b.returnTime.month}'),
-                                  trailing: Chip(
-                                      label: Text(b.status,
-                                          style: Theme.of(context).textTheme.labelSmall)),
-                                ),
-                              )),
+                        // D3: medium+ puts the month grid beside the
+                        // day agenda; compact keeps the stacked
+                        // layout exactly as before.
+                        if (isMediumOrLarger(context))
+                          Row(
+                            key: const Key('calendar-two-columns'),
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(flex: 3, child: _gridSection()),
+                              const SizedBox(width: 20),
+                              Expanded(
+                                  flex: 2,
+                                  child: _detailSection(showHint: true)),
+                            ],
+                          )
+                        else ...[
+                          _gridSection(),
+                          const SizedBox(
+                              height: AppDimensions.paddingVertical),
+                          _detailSection(showHint: false),
                         ],
                       ],
                     ),

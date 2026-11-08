@@ -67,7 +67,7 @@ class _ShopCarsViewState extends State<ShopCarsView> {
         child: Column(
           children: [
             CustomCurvedHeader(
-              height: 100,
+              variant: CustomCurvedHeaderVariant.compact,
               leadingWidget: widget.onBack != null
                   ? IconButton(
                       icon: const Icon(Icons.arrow_back_ios_new_rounded,

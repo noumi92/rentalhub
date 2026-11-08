@@ -181,7 +181,7 @@ class _OwnerOnboardingViewState extends State<OwnerOnboardingView> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     CustomCurvedHeader(
-                      height: 105,
+                      variant: CustomCurvedHeaderVariant.compact,
                       leadingWidget: IconButton(icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20), onPressed: _prevStep),
                       titleWidget: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,

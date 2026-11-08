@@ -3,6 +3,13 @@ import '../constants/app_colors.dart';
 import '../constants/app_dimensions.dart';
 import 'verified_badge.dart';
 
+/// Phase D (D1): one header system. Exactly two header heights exist:
+/// [CustomCurvedHeaderVariant.hero] (230, rulebook §4.3) for screens
+/// whose hero card overlaps the header, and
+/// [CustomCurvedHeaderVariant.compact] (100) for every title-only
+/// screen. Callers pass a variant, never a height.
+enum CustomCurvedHeaderVariant { hero, compact }
+
 class CustomCurvedHeader extends StatelessWidget {
   final Widget titleWidget;
   final Widget? leadingWidget;
@@ -17,7 +24,7 @@ class CustomCurvedHeader extends StatelessWidget {
   final bool showBackButton;
   final List<Widget>? actions;
   final Widget? bottomWidget;
-  final double height;
+  final CustomCurvedHeaderVariant variant;
   final bool showProfileGreeting;
   final String userName;
   final String urduGreeting;
@@ -31,7 +38,7 @@ class CustomCurvedHeader extends StatelessWidget {
     this.showBackButton = true,
     this.actions,
     this.bottomWidget,
-    this.height = AppDimensions.headerHeight,
+    this.variant = CustomCurvedHeaderVariant.hero,
     this.showProfileGreeting = false,
     // Phase A (A5): no fake identity. Callers must pass the signed-in
     // user's real name; an empty name renders a neutral greeting and an
@@ -60,6 +67,10 @@ class CustomCurvedHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final topPadding = MediaQuery.of(context).padding.top;
+    // D1: the height comes from the variant, never from the caller.
+    final double height = variant == CustomCurvedHeaderVariant.hero
+        ? AppDimensions.headerHeight
+        : AppDimensions.headerCompactHeight;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     // Explicit leadingWidget wins; otherwise the automatic back button
     // decides from canPop (renders on pushed screens, never at a tab root).
@@ -114,10 +125,11 @@ class CustomCurvedHeader extends StatelessWidget {
                         alignment: Alignment.center,
                         child: Text(
                           userName.isNotEmpty ? userName[0].toUpperCase() : 'U',
-                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w800,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w800,
+                                  ),
                         ),
                       ),
                       const SizedBox(width: 10),
@@ -133,17 +145,23 @@ class CustomCurvedHeader extends StatelessWidget {
                                   userName.isNotEmpty
                                       ? 'Hi, $userName'
                                       : 'Hi there',
-                                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w800,
-                                  ),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleSmall
+                                      ?.copyWith(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w800,
+                                      ),
                                 ),
                                 Text(
                                   '($urduGreeting)',
-                                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                                    color: AppColors.primaryContainer,
-                                    fontWeight: FontWeight.w600,
-                                  ),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .labelMedium
+                                      ?.copyWith(
+                                        color: AppColors.primaryContainer,
+                                        fontWeight: FontWeight.w600,
+                                      ),
                                 ),
                               ],
                             ),
@@ -213,18 +231,14 @@ class CurvedGradientHeaderPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final rect = Offset.zero & size;
 
-    // 1. Base gradient fill (Deep Midnight Navy to Rich Indigo)
+    // 1. Base gradient fill (rulebook §4.3): #16194F → #242875 light,
+    // #0B0D26 → #16194F dark.
     final baseGradient = LinearGradient(
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,
       colors: isDark
-          ? const [Color(0xFF090B20), Color(0xFF101338), Color(0xFF16194F)]
-          : const [
-              Color(0xFF0F1336), // Deep midnight navy
-              Color(0xFF16194F), // Primary dark
-              Color(0xFF22286E), // Rich indigo base
-            ],
-      stops: const [0.0, 0.55, 1.0],
+          ? const [AppColors.primaryDarkOnDark, AppColors.primaryDark]
+          : const [AppColors.primaryDark, AppColors.headerGradientEnd],
     );
 
     final basePaint = Paint()..shader = baseGradient.createShader(rect);
@@ -236,9 +250,9 @@ class CurvedGradientHeaderPainter extends CustomPainter {
         center: const Alignment(0.95, -0.6),
         radius: 1.15,
         colors: [
-          (isDark ? const Color(0xFF2B338A) : const Color(0xFF2E3792))
+          (isDark ? AppColors.headerArcDark : AppColors.headerArcLight)
               .withValues(alpha: 0.55),
-          (isDark ? const Color(0xFF1D2362) : const Color(0xFF1F256C))
+          (isDark ? AppColors.headerArcDarkSoft : AppColors.headerArcLightSoft)
               .withValues(alpha: 0.15),
           Colors.transparent,
         ],
@@ -263,7 +277,7 @@ class CurvedGradientHeaderPainter extends CustomPainter {
         begin: Alignment.topRight,
         end: Alignment.bottomLeft,
         colors: [
-          (isDark ? const Color(0xFF3B46B6) : const Color(0xFF3843AC))
+          (isDark ? AppColors.headerArc2Dark : AppColors.headerArc2Light)
               .withValues(alpha: 0.28),
           Colors.transparent,
         ],
@@ -289,7 +303,7 @@ class CurvedGradientHeaderPainter extends CustomPainter {
         center: const Alignment(-0.85, -0.7),
         radius: 0.65,
         colors: [
-          (isDark ? const Color(0xFF2B338A) : const Color(0xFF2E3896))
+          (isDark ? AppColors.headerArcDark : AppColors.headerGlowLight)
               .withValues(alpha: 0.40),
           Colors.transparent,
         ],

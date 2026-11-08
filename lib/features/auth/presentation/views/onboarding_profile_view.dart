@@ -125,7 +125,7 @@ class _OnboardingProfileViewState extends State<OnboardingProfileView> {
                   children: [
                     // Header rolls up with scroll
                     CustomCurvedHeader(
-                      height: 105,
+                      variant: CustomCurvedHeaderVariant.compact,
                       leadingWidget: IconButton(
                         icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
                         onPressed: () {

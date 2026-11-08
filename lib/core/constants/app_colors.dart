@@ -6,6 +6,23 @@ import 'package:flutter/material.dart';
 /// and dark; where the old file disagreed with the rulebook, the rulebook
 /// wins (see the notes on `primaryLight`, `secondaryLight`, `borderDark`).
 class AppColors {
+  // Header gradient (rulebook §4.3): the curved header's base gradient
+  // is #16194F → #242875 in light mode and #0B0D26 → #16194F in dark
+  // mode. The light end #242875 was removed earlier as a redundant navy
+  // (see primaryLight) — it now has rulebook meaning as the header
+  // gradient end, so it lives here under a header- name.
+  static const Color headerGradientEnd = Color(0xFF242875);
+  // Decorative arc/glow hues of the header painter (same hues in both
+  // modes, light and dark variants). These are the painter's organic
+  // layered curves behind the base gradient, not rulebook tokens.
+  static const Color headerArcLight = Color(0xFF2E3792);
+  static const Color headerArcLightSoft = Color(0xFF1F256C);
+  static const Color headerArcDark = Color(0xFF2B338A);
+  static const Color headerArcDarkSoft = Color(0xFF1D2362);
+  static const Color headerArc2Light = Color(0xFF3843AC);
+  static const Color headerArc2Dark = Color(0xFF3B46B6);
+  static const Color headerGlowLight = Color(0xFF2E3896);
+
   // Primary palette (Deep Midnight Navy)
   static const Color primaryDark = Color(0xFF16194F);
   static const Color primary = Color(0xFF1B1E5C);

@@ -4,6 +4,7 @@ import 'package:latlong2/latlong.dart' as ll;
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/routing/route_names.dart';
+import '../../../../core/utils/responsive.dart';
 import '../../../../core/widgets/custom_curved_header.dart';
 import '../../data/datasources/customer_location_store.dart';
 import '../../data/datasources/discovery_remote_data_source.dart';
@@ -79,9 +80,13 @@ class _CustomerHomeBodyState extends State<_CustomerHomeBody> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          Expanded(
+      // Phase D (D2): the only tab root that lacked a SafeArea — the
+      // header and content now clear the status bar like the other
+      // nine tab roots do.
+      body: SafeArea(
+        child: Column(
+          children: [
+            Expanded(
             child: BlocBuilder<DiscoveryCubit, DiscoveryState>(
               builder: (context, state) {
           final cubit = context.read<DiscoveryCubit>();
@@ -102,7 +107,7 @@ class _CustomerHomeBodyState extends State<_CustomerHomeBody> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 CustomCurvedHeader(
-                  height: 195,
+                  variant: CustomCurvedHeaderVariant.hero,
                   showProfileGreeting: true,
                   titleWidget: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -173,11 +178,10 @@ class _CustomerHomeBodyState extends State<_CustomerHomeBody> {
                                 _openShop(context, shop),
                           )
                         else
-                          ...shops.map(
-                            (shop) => ShopListCard(
-                              shop: shop,
-                              onTap: () => _openShop(context, shop),
-                            ),
+                          HomeShopList(
+                            shops: shops,
+                            onShopSelected: (shop) =>
+                                _openShop(context, shop),
                           ),
                       ],
                     ),
@@ -189,7 +193,46 @@ class _CustomerHomeBodyState extends State<_CustomerHomeBody> {
         },
             ),
           ),
-        ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Phase D (D3): the shop list section of the customer home. Compact
+/// shows the single-column list exactly as before; medium+ shows two
+/// columns of shop cards via [twoColumnLayout]. The map view is
+/// untouched — it stays full-width.
+class HomeShopList extends StatelessWidget {
+  final List<ShopEntity> shops;
+  final ValueChanged<ShopEntity> onShopSelected;
+
+  const HomeShopList({
+    super.key,
+    required this.shops,
+    required this.onShopSelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (!isMediumOrLarger(context)) {
+      return Column(
+        children: shops
+            .map((shop) => ShopListCard(
+                  shop: shop,
+                  onTap: () => onShopSelected(shop),
+                ))
+            .toList(),
+      );
+    }
+    return twoColumnLayout(
+      key: const Key('home-shop-two-columns'),
+      items: shops,
+      itemSpacing: 0, // ShopListCard already has a 16 bottom margin.
+      itemBuilder: (shop) => ShopListCard(
+        shop: shop,
+        onTap: () => onShopSelected(shop),
       ),
     );
   }

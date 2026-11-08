@@ -48,10 +48,20 @@ class AppShell extends StatelessWidget {
           Expanded(child: navigationShell),
         ],
       ),
-      bottomNavigationBar: AppShellNav(
-        currentIndex: navigationShell.currentIndex,
-        onTap: _onTap,
-        items: tabs,
+      // Phase D (D2): with edge-to-edge the floating pill must clear
+      // the bottom system inset (gesture bar / 3-button nav) instead
+      // of sitting on top of the system buttons. The SafeArea adds
+      // only the bottom inset; the pill's own geometry is untouched.
+      bottomNavigationBar: SafeArea(
+        top: false,
+        left: false,
+        right: false,
+        bottom: true,
+        child: AppShellNav(
+          currentIndex: navigationShell.currentIndex,
+          onTap: _onTap,
+          items: tabs,
+        ),
       ),
     );
   }

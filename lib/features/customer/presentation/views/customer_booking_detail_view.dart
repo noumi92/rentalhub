@@ -65,7 +65,7 @@ class CustomerBookingDetailView extends StatelessWidget {
         child: Column(
           children: [
             CustomCurvedHeader(
-              height: 100,
+              variant: CustomCurvedHeaderVariant.compact,
               leadingWidget: onBack != null
                   ? IconButton(
                       icon: const Icon(Icons.arrow_back_ios_new_rounded,

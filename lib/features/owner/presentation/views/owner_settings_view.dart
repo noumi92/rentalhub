@@ -55,7 +55,7 @@ class _OwnerSettingsViewState extends State<OwnerSettingsView> {
         child: Column(
           children: [
             CustomCurvedHeader(
-              height: 100,
+              variant: CustomCurvedHeaderVariant.compact,
               // Tab root: no back button. The header's back policy
               // renders one only when the route can pop, which a
               // branch root never can.

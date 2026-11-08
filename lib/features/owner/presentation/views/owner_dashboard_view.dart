@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_dimensions.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
+import '../../../../core/utils/responsive.dart';
 import '../../../../core/widgets/custom_curved_header.dart';
 import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
@@ -100,46 +102,92 @@ class _OwnerDashboardViewState extends State<OwnerDashboardView> {
       .where((b) => b.status == 'requested' || b.status == 'payment_submitted')
       .length;
 
+  /// Revenue from paid / active / completed bookings picked up in one month.
+  int _monthRevenue(int year, int month) => _allBookings
+      .where((b) =>
+          (b.status == 'completed' ||
+              b.status == 'active' ||
+              b.status == 'paid') &&
+          b.pickupTime.year == year &&
+          b.pickupTime.month == month)
+      .fold(0, (total, b) => total + b.totalAmount);
+
   /// Real month-on-month revenue change, from the bookings' pickup
   /// dates. Null when there is no last-month revenue to compare.
   String get _growthLabel {
     final now = DateTime.now();
-    final thisMonth = _allBookings
-        .where((b) =>
-            (b.status == 'completed' ||
-                b.status == 'active' ||
-                b.status == 'paid') &&
-            b.pickupTime.year == now.year &&
-            b.pickupTime.month == now.month)
-        .fold(0, (total, b) => total + b.totalAmount);
+    final thisMonth = _monthRevenue(now.year, now.month);
     final lastMonthDate = DateTime(now.year, now.month - 1);
-    final lastMonth = _allBookings
-        .where((b) =>
-            (b.status == 'completed' ||
-                b.status == 'active' ||
-                b.status == 'paid') &&
-            b.pickupTime.year == lastMonthDate.year &&
-            b.pickupTime.month == lastMonthDate.month)
-        .fold(0, (total, b) => total + b.totalAmount);
+    final lastMonth = _monthRevenue(lastMonthDate.year, lastMonthDate.month);
     if (lastMonth == 0) return 'No revenue last month';
     final pct = ((thisMonth - lastMonth) / lastMonth * 100).round();
     return '${pct >= 0 ? '+' : ''}$pct% vs last month';
   }
 
-  List<BookingEntity> get _ledger {
-    final sorted = List<BookingEntity>.of(_allBookings)
-      ..sort((a, b) => b.pickupTime.compareTo(a.pickupTime));
-    return sorted.take(8).toList();
-  }
+  List<BookingEntity> get _ledger =>
+      (List<BookingEntity>.of(_allBookings)
+            ..sort((a, b) => b.pickupTime.compareTo(a.pickupTime)))
+          .take(8)
+          .toList();
 
   @override
   Widget build(BuildContext context) {
+    final kpis = DashboardKpis(
+      totalRevenue: _totalRevenue,
+      growthLabel: _growthLabel,
+      activeCount: _activeCount,
+      completedCount: _completedCount,
+      settleLabel: _settleRate == null
+          ? 'No completed trips yet'
+          : '${(_settleRate! * 100).round()}% deposits settled',
+      waitingCount: _waitingCount,
+      fleetAvailable: _fleetAvailable,
+      fleetTotal: _fleetTotal,
+    );
+    final ledger = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Completed Trip Ledger & Settlements', style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
+        const SizedBox(height: 10),
+        if (_allBookings.isEmpty)
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 24),
+              child: Text('No trips yet — bookings will appear here.',
+                  style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontWeight: FontWeight.w700)),
+            ),
+          )
+        else
+          ..._ledger.map((b) => DashboardLedgerItem(
+                bookingId: b.bookingId,
+                vehicleName: b.vehicleName ?? 'Vehicle',
+                customerName: b.customerName ?? 'Customer',
+                amount: b.totalAmount,
+                status: b.status,
+              )),
+      ],
+    );
+    // D3: compact stacks KPIs above the ledger; medium+ puts them side by side.
+    final body = isMediumOrLarger(context)
+        ? Row(
+            key: const Key('dashboard-two-columns'),
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(child: kpis),
+              const SizedBox(width: 20),
+              Expanded(child: ledger),
+            ],
+          )
+        : Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [kpis, const SizedBox(height: 20), ledger],
+          );
     return Scaffold(
       body: SafeArea(
         child: Column(
           children: [
             CustomCurvedHeader(
-              height: 100,
+              variant: CustomCurvedHeaderVariant.compact,
               titleWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -185,43 +233,10 @@ class _OwnerDashboardViewState extends State<OwnerDashboardView> {
               child: _isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : SingleChildScrollView(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          DashboardKpis(
-                            totalRevenue: _totalRevenue,
-                            growthLabel: _growthLabel,
-                            activeCount: _activeCount,
-                            completedCount: _completedCount,
-                            settleLabel: _settleRate == null
-                                ? 'No completed trips yet'
-                                : '${(_settleRate! * 100).round()}% deposits settled',
-                            waitingCount: _waitingCount,
-                            fleetAvailable: _fleetAvailable,
-                            fleetTotal: _fleetTotal,
-                          ),
-                          const SizedBox(height: 20),
-                          Text('Completed Trip Ledger & Settlements', style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
-                          SizedBox(height: 10),
-                          if (_allBookings.isEmpty)
-                            Center(
-                              child: Padding(
-                                padding: EdgeInsets.symmetric(vertical: 24),
-                                child: Text('No trips yet — bookings will appear here.',
-                                    style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontWeight: FontWeight.w700)),
-                              ),
-                            )
-                          else
-                            ..._ledger.map((b) => DashboardLedgerItem(
-                                  bookingId: b.bookingId,
-                                  vehicleName: b.vehicleName ?? 'Vehicle',
-                                  customerName: b.customerName ?? 'Customer',
-                                  amount: b.totalAmount,
-                                  status: b.status,
-                                )),
-                        ],
-                      ),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: AppDimensions.spaceBetweenCards),
+                      child: body,
                     ),
             ),
           ],

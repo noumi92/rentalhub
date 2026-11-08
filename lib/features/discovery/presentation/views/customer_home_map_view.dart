@@ -134,7 +134,7 @@ class _CustomerHomeMapViewState extends State<CustomerHomeMapView> {
         child: Column(
           children: [
             CustomCurvedHeader(
-              height: 110,
+              variant: CustomCurvedHeaderVariant.compact,
               leadingWidget: IconButton(
                 icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
                 onPressed: () => context.pop(),

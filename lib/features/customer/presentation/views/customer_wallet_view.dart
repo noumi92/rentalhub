@@ -55,7 +55,7 @@ class _CustomerWalletViewState extends State<CustomerWalletView> {
         child: Column(
           children: [
             CustomCurvedHeader(
-              height: 100,
+              variant: CustomCurvedHeaderVariant.compact,
               titleWidget: Text(
                 'Wallet & Security Escrow',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white),

@@ -109,7 +109,7 @@ class _LoginViewState extends State<LoginView> {
         child: Column(
           children: [
             CustomCurvedHeader(
-              height: 160,
+              variant: CustomCurvedHeaderVariant.hero,
               titleWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

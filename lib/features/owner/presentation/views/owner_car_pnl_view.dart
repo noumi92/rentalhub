@@ -76,7 +76,7 @@ class _OwnerCarPnLViewState extends State<OwnerCarPnLView> {
         child: Column(
           children: [
             CustomCurvedHeader(
-              height: 100,
+              variant: CustomCurvedHeaderVariant.compact,
               leadingWidget: IconButton(
                 icon: const Icon(Icons.arrow_back_ios_new_rounded,
                     color: Colors.white, size: 20),

@@ -61,10 +61,19 @@ class OfflineBanner extends StatelessWidget {
                 ? "You're offline — ${state.pendingCount} change${state.pendingCount == 1 ? '' : 's'} will sync when you're back online"
                 : "You're offline — changes will sync when you're back online")
             : '${state.pendingCount} change${state.pendingCount == 1 ? '' : 's'} pending sync';
-        return Container(
-          width: double.infinity,
-          color: background,
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        // Phase D (D2): the banner lives at the very top of the shell
+        // body, so with edge-to-edge it would render under the status
+        // bar when visible. The SafeArea wraps only the visible
+        // banner — the hidden branch above stays a zero-size shrink.
+        return SafeArea(
+          top: true,
+          bottom: false,
+          left: false,
+          right: false,
+          child: Container(
+            width: double.infinity,
+            color: background,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           child: Row(
             children: [
               Icon(
@@ -82,6 +91,7 @@ class OfflineBanner extends StatelessWidget {
                 ),
               ),
             ],
+          ),
           ),
         );
       },

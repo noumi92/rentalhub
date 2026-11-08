@@ -170,7 +170,7 @@ class _CustomerProfileViewState extends State<CustomerProfileView> {
         child: Column(
           children: [
             CustomCurvedHeader(
-              height: 120,
+              variant: CustomCurvedHeaderVariant.compact,
               // Tab root: no back button. The header's back policy
               // renders one only when the route can pop, which a
               // branch root never can.

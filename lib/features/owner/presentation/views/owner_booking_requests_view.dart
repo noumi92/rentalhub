@@ -153,7 +153,7 @@ class _OwnerBookingRequestsViewState extends State<OwnerBookingRequestsView> {
         child: Column(
           children: [
             CustomCurvedHeader(
-              height: 100,
+              variant: CustomCurvedHeaderVariant.compact,
               titleWidget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

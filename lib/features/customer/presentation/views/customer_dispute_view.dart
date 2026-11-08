@@ -124,7 +124,7 @@ class _CustomerDisputeViewState extends State<CustomerDisputeView> {
         child: Column(
           children: [
             CustomCurvedHeader(
-              height: 100,
+              variant: CustomCurvedHeaderVariant.compact,
               leadingWidget: widget.onBack != null
                   ? IconButton(
                       icon: const Icon(Icons.arrow_back_ios_new_rounded,

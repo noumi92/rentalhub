@@ -2,15 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_dimensions.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/current_shop.dart';
+import '../../../../core/utils/responsive.dart';
 import '../../../../core/widgets/custom_curved_header.dart';
 import '../../../fleet/domain/entities/vehicle_entity.dart';
 import '../../../fleet/presentation/cubit/fleet_cubit.dart';
 import '../../../fleet/presentation/cubit/fleet_state.dart';
 import '../widgets/fleet/fleet_body.dart';
 import '../widgets/fleet/fleet_metric_card.dart';
+import '../widgets/fleet/fleet_vehicle_card.dart';
 
 /// Phase B (B1): the fleet list now reads real vehicles through
 /// [FleetCubit] (Firestore, with the in-memory fallback when offline)
@@ -46,17 +49,14 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
   }
 
   List<VehicleEntity> _filteredFleet(List<VehicleEntity> fleet) {
-    switch (_selectedFilter) {
-      case 'Available':
-        return fleet.where((v) => v.status == 'available').toList();
-      case 'On Rent':
-        return fleet.where((v) => v.status == 'rented').toList();
-      case 'Maintenance':
-        return fleet.where((v) => v.status == 'maintenance').toList();
-      case 'All':
-      default:
-        return fleet;
-    }
+    const statuses = {
+      'Available': 'available',
+      'On Rent': 'rented',
+      'Maintenance': 'maintenance',
+    };
+    final status = statuses[_selectedFilter];
+    if (status == null) return fleet;
+    return fleet.where((v) => v.status == status).toList();
   }
 
   void _openAddVehicle() {
@@ -68,6 +68,28 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
       if (mounted) _cubit.loadVehicles(_shopId);
     });
   }
+
+  /// D3: one fleet card for both the compact list and the two-column grid.
+  Widget _vehicleCard(VehicleEntity v) => FleetVehicleCard(
+        vehicle: v,
+        onToggleAvailability: (val) => _cubit.updateVehicleStatus(
+          shopId: _shopId,
+          vehicleId: v.vehicleId,
+          status: val ? 'available' : 'maintenance',
+        ),
+        onEditRates: () => context.push(
+            RouteNames.ownerRatesVehicle.replaceFirst(':vehicleId', v.vehicleId)),
+        onViewCalendar: () => context.push(
+            RouteNames.ownerCalendar.replaceFirst(':vehicleId', v.vehicleId)),
+      );
+
+  /// D3: medium+ shows the fleet in two columns.
+  Widget _twoColumnFleet(List<VehicleEntity> vehicles) => twoColumnLayout(
+        key: const Key('fleet-two-columns'),
+        items: vehicles,
+        padding: const EdgeInsets.all(16),
+        itemBuilder: _vehicleCard,
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -94,7 +116,7 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
                   children: [
                     // Header rolls up with scroll (Requirement 1)
                     CustomCurvedHeader(
-                      height: 115,
+                      variant: CustomCurvedHeaderVariant.compact,
                       // Tab root: no back button, and never an exit from
                       // the shell. The header's back policy renders one
                       // only when the route can pop, which a branch root
@@ -156,7 +178,7 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
 
                     // Filter Chips
                     Container(
-                      height: 48,
+                      height: AppDimensions.minTouchTarget,
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16, vertical: 6),
                       color: Theme.of(context).colorScheme.surface,
@@ -175,28 +197,32 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
                     ),
                     const Divider(height: 1),
 
-                    FleetBody(
-                      state: state,
-                      fleet: fleet,
-                      filtered: filtered,
-                      onAddVehicle: _openAddVehicle,
-                      onRetry: () => _cubit.loadVehicles(_shopId),
-                      onToggleAvailability: (v, val) {
-                        _cubit.updateVehicleStatus(
-                          shopId: _shopId,
-                          vehicleId: v.vehicleId,
-                          status: val ? 'available' : 'maintenance',
-                        );
-                      },
-                      onEditRates: (v) => context.push(
-                        RouteNames.ownerRatesVehicle.replaceFirst(
-                            ':vehicleId', v.vehicleId),
+                    // D3: medium+ shows two columns; compact keeps FleetBody.
+                    if (isMediumOrLarger(context) && filtered.isNotEmpty)
+                      _twoColumnFleet(filtered)
+                    else
+                      FleetBody(
+                        state: state,
+                        fleet: fleet,
+                        filtered: filtered,
+                        onAddVehicle: _openAddVehicle,
+                        onRetry: () => _cubit.loadVehicles(_shopId),
+                        onToggleAvailability: (v, val) {
+                          _cubit.updateVehicleStatus(
+                            shopId: _shopId,
+                            vehicleId: v.vehicleId,
+                            status: val ? 'available' : 'maintenance',
+                          );
+                        },
+                        onEditRates: (v) => context.push(
+                          RouteNames.ownerRatesVehicle.replaceFirst(
+                              ':vehicleId', v.vehicleId),
+                        ),
+                        onViewCalendar: (v) => context.push(
+                          RouteNames.ownerCalendar.replaceFirst(
+                              ':vehicleId', v.vehicleId),
+                        ),
                       ),
-                      onViewCalendar: (v) => context.push(
-                        RouteNames.ownerCalendar.replaceFirst(
-                            ':vehicleId', v.vehicleId),
-                      ),
-                    ),
                   ],
                 ),
               );

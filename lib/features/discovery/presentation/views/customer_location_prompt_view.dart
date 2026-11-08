@@ -123,7 +123,7 @@ class _CustomerLocationPromptViewState extends State<CustomerLocationPromptView>
         child: Column(
           children: [
             CustomCurvedHeader(
-              height: 56,
+              variant: CustomCurvedHeaderVariant.compact,
               leadingWidget: IconButton(
                 icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 18),
                 onPressed: () {
