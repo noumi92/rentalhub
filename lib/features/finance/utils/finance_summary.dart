@@ -39,6 +39,26 @@ class FinanceSummary {
     return (income: income, expenses: expenses, net: income - expenses);
   }
 
+  /// Audit impl (O45/O37): ledger totals per category code for one
+  /// kind ('income' | 'expense') inside a period. Codes the caller
+  /// does not recognise stay under their own code, so a custom
+  /// category still shows up instead of vanishing.
+  static Map<String, int> categoryTotals(
+    List<FinanceTransferEntity> transfers, {
+    required String kind,
+    DateTime? from,
+    DateTime? to,
+  }) {
+    final totals = <String, int>{};
+    for (final t in transfers) {
+      if (t.kind != kind) continue;
+      if (from != null && t.createdAt.isBefore(from)) continue;
+      if (to != null && !t.createdAt.isBefore(to)) continue;
+      totals[t.category] = (totals[t.category] ?? 0) + t.amountPkr;
+    }
+    return totals;
+  }
+
   /// A car's profit and loss: booking revenue (completed, paid and
   /// active trips) plus ledger income tagged to the car, minus the
   /// ledger expenses tagged to it.

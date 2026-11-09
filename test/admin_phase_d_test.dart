@@ -9,6 +9,7 @@ import 'package:rentalhub/features/admin/presentation/views/admin_disputes_view.
 import 'package:rentalhub/features/admin/presentation/views/admin_reviews_view.dart';
 import 'package:rentalhub/features/admin/presentation/widgets/dispute_decision_sheet.dart';
 import 'package:rentalhub/features/customer/data/datasources/dispute_remote_data_source.dart';
+import 'package:rentalhub/l10n/app_localizations.dart';
 
 void main() {
   setUpAll(() async {
@@ -102,7 +103,10 @@ void main() {
     testWidgets('bookings list shows status filters and empty state',
         (tester) async {
       await tester.pumpWidget(
-          const MaterialApp(home: AdminBookingsView()));
+          const MaterialApp(
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
+              home: AdminBookingsView()));
       await tester.pumpAndSettle();
       expect(find.text('Bookings'), findsWidgets);
       expect(find.text('requested'), findsOneWidget);
@@ -113,6 +117,8 @@ void main() {
     testWidgets('booking detail says not found for an unknown booking',
         (tester) async {
       await tester.pumpWidget(const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           home: AdminBookingDetailView(bookingId: 'no-such-booking')));
       await tester.pumpAndSettle();
       expect(find.text('Booking not found.'), findsOneWidget);

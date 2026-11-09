@@ -3,6 +3,7 @@ import '../../../../core/data/offline_sync_queue.dart';
 import '../../../../core/data/sync_engine.dart';
 import '../../../../core/data/sync_queue_entry.dart';
 import '../../../../core/error/exceptions.dart';
+import '../../../../core/utils/money_format.dart';
 import '../../../blacklist/data/datasources/blacklist_remote_data_source.dart';
 import '../../../notifications/data/datasources/notification_data_source.dart';
 import '../../domain/entities/booking_entity.dart';
@@ -325,7 +326,7 @@ class BookingRemoteDataSource {
         shopId: shopId,
         title: 'New booking request',
         body:
-            '${customerName ?? 'A customer'} requested ${vehicleName ?? 'a car'} • $packageType • Rs. $totalAmount',
+            '${customerName ?? 'A customer'} requested ${vehicleName ?? 'a car'} • $packageType • Rs. ${formatRs(totalAmount)}',
         type: 'booking_request',
         bookingId: id,
       );
@@ -442,6 +443,40 @@ class BookingRemoteDataSource {
     final fields = <String, dynamic>{
       'status': 'paid',
       'advancePaid': advanceAmount,
+      'remainingBalance': updated.remainingBalance,
+    };
+    final written = await _writeBookingDoc(bookingId, fields);
+    if (!written) {
+      await _queueWrite('booking_update', bookingId, {'fields': fields});
+    }
+    return model;
+  }
+
+  /// Audit §5 item 1 (O16/O17): a walk-in advance that does not cover
+  /// the required advance yet. The booking is `approved` — not `paid`
+  /// — with the received amount recorded, so the remaining balance
+  /// stays collectable. A full advance goes through [verifyPayment]
+  /// instead; this method never marks a booking paid on its own
+  /// unless the received amount covers the required advance.
+  Future<BookingEntity> recordAdvancePayment({
+    required String bookingId,
+    required int advanceAmount,
+  }) async {
+    final existing = await getBookingById(bookingId);
+    if (existing == null) {
+      throw Exception('Booking not found: $bookingId');
+    }
+    final received = advanceAmount.clamp(0, existing.totalAmount);
+    final updated = existing.copyWith(
+      status: received >= existing.advanceRequired ? 'paid' : 'approved',
+      advancePaid: received,
+    );
+    final model = BookingModel.fromEntity(updated);
+    _inMemoryFallback[bookingId] = model;
+
+    final fields = <String, dynamic>{
+      'status': updated.status,
+      'advancePaid': received,
       'remainingBalance': updated.remainingBalance,
     };
     final written = await _writeBookingDoc(bookingId, fields);

@@ -198,7 +198,7 @@ void main() {
       // real-money value is visible for the overflow check.
       await tester.tap(find.byTooltip('Show balance'));
       await tester.pump();
-      expect(find.text('Rs. 600000'), findsOneWidget);
+      expect(find.text('Rs. 600,000'), findsOneWidget);
     });
   });
 

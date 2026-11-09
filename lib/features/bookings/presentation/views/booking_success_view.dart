@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/utils/money_format.dart';
 import '../../../../core/utils/whatsapp.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../widgets/booking_status_chip.dart';
@@ -89,7 +90,7 @@ class BookingSuccessView extends StatelessWidget {
                             children: [
                               Text(l10n.successAdvanceDue,
                                   style: Theme.of(context).textTheme.bodyMedium),
-                              Text('Rs. ${booking.advanceRequired}',
+                              Text(l10n.amountRs(formatRs(booking.advanceRequired)),
                                   style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900, color: AppColors.secondary)),
                             ],
                           ),

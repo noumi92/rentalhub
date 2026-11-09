@@ -220,9 +220,25 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('350 KM'), findsOneWidget);
 
-      await tester.ensureVisible(
-          find.text('Finalize Return & Settle Deposit'));
-      await tester.tap(find.text('Finalize Return & Settle Deposit'));
+      // Finish build (O26): two steps, not one Finalize button.
+      // Step 1 records the refund (Rs. 10,000 net); step 2 closes.
+      // The recorded-refund line appears twice: the success snackbar
+      // and the steps widget's recorded-state banner.
+      await tester.ensureVisible(find.text('Refund Deposit').last);
+      await tester.tap(find.text('Refund Deposit').last);
+      await tester.pumpAndSettle();
+      expect(find.text('Deposit refund of Rs. 10,000 recorded.'),
+          findsNWidgets(2));
+
+      // The refund snackbar floats over the bottom of the screen
+      // where the Close button sits; let its 3s duration elapse
+      // (pumpAndSettle alone does not advance the fake clock) and
+      // settle the exit animation, so the tap lands on the button.
+      await tester.pump(const Duration(seconds: 4));
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(find.text('Complete & Close Booking'));
+      await tester.tap(find.text('Complete & Close Booking'));
       await tester.pumpAndSettle();
 
       final done =
@@ -247,7 +263,7 @@ void main() {
     });
 
     testWidgets(
-        'Finalize is not rendered until the real values load (audit §14)',
+        'Refund/Close steps are not rendered until the real values load (audit §14)',
         (tester) async {
       final bookingDs = di.sl<BookingRemoteDataSource>();
       final booking = await bookingDs.createBookingRequest(
@@ -281,16 +297,18 @@ void main() {
         ),
       );
       // No settle: the real-values load is still in flight, so the
-      // form — and its Finalize button — must not be rendered yet.
+      // form — and its Refund/Close steps — must not be rendered yet.
       // The old code settled against 45200 / 250 km / Rs. 15,000
       // fallbacks while the load was pending.
-      expect(find.text('Finalize Return & Settle Deposit'), findsNothing);
+      expect(find.text('Refund Deposit'), findsNothing);
+      expect(find.text('Complete & Close Booking'), findsNothing);
       expect(find.byType(AppLoadingState), findsOneWidget);
 
-      // Once the load lands the button appears and the booking can
+      // Once the load lands the steps appear and the booking can
       // be settled; it must still be 'active' — nothing settled early.
       await tester.pumpAndSettle();
-      expect(find.text('Finalize Return & Settle Deposit'), findsOneWidget);
+      expect(find.text('Refund Deposit'), findsNWidgets(2));
+      expect(find.text('Complete & Close Booking'), findsOneWidget);
       final stillActive =
           await bookingDs.getBookingById(booking.bookingId);
       expect(stillActive?.status, 'active');

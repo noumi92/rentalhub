@@ -180,8 +180,8 @@ supportedLocales: AppLocalizations.supportedLocales,
 
       expect(find.text('Review Reservation'), findsOneWidget);
       expect(find.text('Toyota Corolla Altis'), findsOneWidget);
-      expect(find.text('Rs. 7500'), findsOneWidget);
-      expect(find.text('Rs. 1875'), findsOneWidget);
+      expect(find.text('Rs. 7,500'), findsOneWidget);
+      expect(find.text('Rs. 1,875'), findsOneWidget);
 
       // Enter special instructions
       await tester.enterText(

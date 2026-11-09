@@ -10,6 +10,7 @@ import 'revenue_kpi_card.dart';
 /// Every number is passed in from the real dashboard data.
 class DashboardKpis extends StatelessWidget {
   final int totalRevenue;
+  final int todayEarnings;
   final String growthLabel;
   final KpiTrend growthTrend;
   final int activeCount;
@@ -22,6 +23,7 @@ class DashboardKpis extends StatelessWidget {
   const DashboardKpis({
     super.key,
     required this.totalRevenue,
+    this.todayEarnings = 0,
     required this.growthLabel,
     this.growthTrend = KpiTrend.neutral,
     required this.activeCount,
@@ -37,6 +39,16 @@ class DashboardKpis extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     return Column(
       children: [
+        // Audit impl (O29): today's earnings — today's completed /
+        // paid bookings revenue — above the month gross figure.
+        RevenueKpiCard(
+          title: l10n.dashboardTodayEarnings,
+          amount: l10n.amountRs(formatRs(todayEarnings)),
+          changeLabel: l10n.dashboardToday,
+          icon: Icons.today_rounded,
+          color: AppColors.accentSuccess,
+        ),
+        const SizedBox(height: 12),
         RevenueKpiCard(
           title: l10n.dashboardGrossRevenue,
           // C5: grouped thousands — "Rs. 4,820,000", never "Rs. 4820000".

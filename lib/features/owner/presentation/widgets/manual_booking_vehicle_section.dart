@@ -19,6 +19,9 @@ class ManualBookingVehicleSection extends StatelessWidget {
     required this.isWithDriver,
     required this.onDriverModeChanged,
     required this.depositController,
+    this.isOutOfCity = false,
+    this.pickup,
+    this.returnTime,
   });
 
   final bool isLoadingVehicles;
@@ -30,6 +33,12 @@ class ManualBookingVehicleSection extends StatelessWidget {
   final bool isWithDriver;
   final ValueChanged<bool> onDriverModeChanged;
   final TextEditingController depositController;
+
+  /// Audit §5 item 1: passed through to the package selector so the
+  /// displayed total follows the trip type and the picked dates.
+  final bool isOutOfCity;
+  final DateTime? pickup;
+  final DateTime? returnTime;
 
   @override
   Widget build(BuildContext context) {
@@ -51,6 +60,9 @@ class ManualBookingVehicleSection extends StatelessWidget {
           onPackageChanged: onPackageChanged,
           isWithDriver: isWithDriver,
           onDriverModeChanged: onDriverModeChanged,
+          isOutOfCity: isOutOfCity,
+          pickup: pickup,
+          returnTime: returnTime,
         ),
         const SizedBox(height: 12),
         TextField(

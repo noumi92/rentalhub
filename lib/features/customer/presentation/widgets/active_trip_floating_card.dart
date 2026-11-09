@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/utils/money_format.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
 import '../../../../l10n/app_localizations.dart';
 
@@ -109,7 +110,7 @@ class ActiveTripFloatingCard extends StatelessWidget {
                   Text(l10n.activeTripTotalFare,
                       style: Theme.of(context).textTheme.labelSmall),
                   Text(
-                    'Rs. ${booking.totalAmount}',
+                    l10n.amountRs(formatRs(booking.totalAmount)),
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900),
                   ),
                 ],

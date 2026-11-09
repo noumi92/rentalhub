@@ -299,9 +299,9 @@ void main() {
                 OwnerPaymentVerificationView(booking: booking),
           ),
           GoRoute(
-            path: '/owner/handover/:id',
+            path: '/owner/booking-confirmed/:id',
             builder: (context, state) => const Scaffold(
-              body: Center(child: Text('Handover Screen')),
+              body: Center(child: Text('Booking Confirmed')),
             ),
           ),
         ],
@@ -313,7 +313,7 @@ void main() {
       );
     }
 
-    testWidgets('approving a proof marks the booking paid and opens handover',
+    testWidgets('approving a proof marks the booking paid and opens the confirmed screen',
         (tester) async {
       final ds = di.sl<BookingRemoteDataSource>();
       final booking = await proofBooking(ds);
@@ -322,9 +322,16 @@ void main() {
       expect(find.text('TID-999'), findsOneWidget);
       expect(find.textContaining('Confirm Payment'), findsOneWidget);
 
+      // The confirm button sits below the fold in the 800x600 test
+      // viewport (the fare breakdown card made the view taller) —
+      // scroll it into view first, as a user would on a phone.
+      await tester.ensureVisible(find.textContaining('Confirm Payment'));
+      await tester.pumpAndSettle();
       await tester.tap(find.textContaining('Confirm Payment'));
       await tester.pumpAndSettle();
-      expect(find.text('Handover Screen'), findsOneWidget);
+      // Audit §5 item 3 (O18): approval lands on Booking Confirmed,
+      // not straight on handover.
+      expect(find.text('Booking Confirmed'), findsOneWidget);
       final stored = await ds.getBookingById(booking.bookingId);
       expect(stored?.status, 'paid');
       expect(stored?.advancePaid, 3000);

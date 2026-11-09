@@ -1,13 +1,21 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import '../../../../l10n/app_localizations.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/current_shop.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
-import '../../../../core/widgets/debounced_button.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../widgets/dashboard/subscription_tier_card.dart';
-import '../../../../core/utils/money_format.dart';
+import '../widgets/manual_bank_transfer_sheet.dart';
+import 'owner_subscription_limit_sheet.dart';
+import '../services/subscription_data_source.dart';
 
+/// S1 — Choose a plan (deck p.17 screen 1). Gated on D1 (Play Console):
+/// the deck's Monthly/Yearly picker and prices are built, but Google
+/// Play billing is NOT connected — Subscribe opens the existing manual
+/// bank-transfer flow, the only payment path. The current tier is read
+/// from the real `shops` doc, never hardcoded.
 class OwnerSubscriptionView extends StatefulWidget {
   final VoidCallback? onBack;
 
@@ -18,161 +26,79 @@ class OwnerSubscriptionView extends StatefulWidget {
 }
 
 class _OwnerSubscriptionViewState extends State<OwnerSubscriptionView> {
-  // Audit §28: no stored current-tier source — shops start on Basic; pending upgrades track separately.
-  final String _currentTier = 'basic';
-  String? _pendingTier;
-  final _trxIdController = TextEditingController();
-  bool _isSubmitting = false;
+  final _dataSource = SubscriptionDataSource();
+  bool _yearly = false;
+  ShopSubscriptionState _state = const ShopSubscriptionState(tier: 'free');
 
   @override
   void initState() {
     super.initState();
-    _loadPendingRequest();
+    _load();
   }
 
-  // Audit §28: the upgrade was local `setState` only and reset on reopen; a pending record now persists.
-  Future<void> _loadPendingRequest() async {
-    try {
-      final snap = await FirebaseFirestore.instance
-          .collection('subscription_requests')
-          .where('shopId', isEqualTo: currentShopId())
-          .where('status', isEqualTo: 'pending')
-          .orderBy('createdAt', descending: true)
-          .limit(1)
-          .get();
-      final tier = snap.docs.firstOrNull?.data()['tier'] as String?;
-      if (tier != null && tier.isNotEmpty && mounted) {
-        setState(() => _pendingTier = tier);
-      }
-    } catch (_) {
-      // No pending request visible (offline / no index yet) — tiers still render; the submit path reports its own error.
-    }
+  Future<void> _load() async {
+    final state = await _dataSource.getShopSubscription(currentShopId());
+    if (mounted) setState(() => _state = state);
   }
 
-  @override
-  void dispose() {
-    _trxIdController.dispose();
-    super.dispose();
-  }
+  String _planName(AppLocalizations l10n, String id) => switch (id) {
+        'pro' => l10n.subscriptionPlanPro,
+        'business' => l10n.subscriptionPlanBusiness,
+        _ => l10n.subscriptionPlanFree,
+      };
 
-  void _showUpgradeModal(String tierId, String tierName, int price) {
+  List<String> _features(AppLocalizations l10n, String id) => switch (id) {
+        'pro' => [
+            l10n.subscriptionProCars,
+            l10n.subscriptionProKyc,
+            l10n.subscriptionProStamp,
+            l10n.subscriptionProAccounts,
+            l10n.subscriptionProListing,
+            l10n.subscriptionProTrial,
+          ],
+        'business' => [
+            l10n.subscriptionBusinessCars,
+            l10n.subscriptionBusinessStaff,
+            l10n.subscriptionBusinessReports,
+            l10n.subscriptionBusinessExport,
+            l10n.subscriptionBusinessBadge,
+            l10n.subscriptionBusinessSupport,
+          ],
+        _ => [
+            l10n.subscriptionFreeCars,
+            l10n.subscriptionFreeBookings,
+            l10n.subscriptionFreeBranding,
+            l10n.subscriptionFreeLogins,
+          ],
+      };
+
+  void _subscribe(SubscriptionPlan plan) {
     final l10n = AppLocalizations.of(context)!;
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-      builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setModalState) => Padding(
-          padding: EdgeInsets.only(
-              left: 20,
-              right: 20,
-              top: 20,
-              bottom: MediaQuery.of(ctx).viewInsets.bottom + 20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(l10n.subscriptionUpgradeTo(tierName),
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleMedium
-                          ?.copyWith(fontWeight: FontWeight.w900)),
-                  IconButton(
-                      tooltip: l10n.subscriptionClose,
-                      icon: const Icon(Icons.close),
-                      onPressed: () => Navigator.pop(ctx)),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Text(l10n.subscriptionTransfer(formatRs(price)),
-                  style: Theme.of(context).textTheme.bodySmall),
-              const SizedBox(height: 14),
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                    color:
-                        Theme.of(context).colorScheme.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(10)),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Bank: Meezan Bank Ltd.',
-                        style: Theme.of(context)
-                            .textTheme
-                            .labelMedium
-                            ?.copyWith(fontWeight: FontWeight.w800)),
-                    Text('Title: RentalHub Pakistan PVT Ltd.',
-                        style: Theme.of(context).textTheme.bodySmall),
-                    // Audit §28: was orange small text (~3.5:1); now
-                    // `onSurface`. Still hardcoded — no bank-details
-                    // field exists in `platform_settings/global`.
-                    Text('IBAN: PK64MEZN0001234567890123',
-                        style: Theme.of(context)
-                            .textTheme
-                            .labelMedium
-                            ?.copyWith(fontWeight: FontWeight.w800)),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 14),
-              TextField(
-                controller: _trxIdController,
-                decoration: InputDecoration(
-                  labelText: l10n.subscriptionTrxLabel,
-                  hintText: l10n.subscriptionTrxHint,
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10)),
-                  contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 12, vertical: 12),
-                ),
-              ),
-              const SizedBox(height: 16),
-              DebouncedButton(
-                text: l10n.subscriptionSubmit,
-                icon: Icons.check_circle_rounded,
-                isLoading: _isSubmitting,
-                onPressed: () async {
-                  if (_trxIdController.text.trim().isEmpty) {
-                    AppFeedback.showError(ctx, l10n.subscriptionEnterTrx);
-                    return;
-                  }
-                  setModalState(() => _isSubmitting = true);
-                  setState(() => _isSubmitting = true);
-                  try {
-                    await FirebaseFirestore.instance
-                        .collection('subscription_requests')
-                        .add({
-                      'shopId': currentShopId(),
-                      'tier': tierId,
-                      'transactionId': _trxIdController.text.trim(),
-                      'status': 'pending',
-                      'createdAt': FieldValue.serverTimestamp(),
-                    });
-                    if (!ctx.mounted) return;
-                    Navigator.pop(ctx);
-                    _trxIdController.clear();
-                    if (mounted) {
-                      setState(() => _pendingTier = tierId);
-                      AppFeedback.showSuccess(
-                          context, l10n.subscriptionRequested);
-                    }
-                  } catch (_) {
-                    if (mounted) {
-                      AppFeedback.showError(context, l10n.shopSaveError);
-                    }
-                  } finally {
-                    if (mounted) setState(() => _isSubmitting = false);
-                  }
-                },
-              ),
-            ],
-          ),
-        ),
+    ManualBankTransferSheet.show(
+      context,
+      title: l10n.subscriptionUpgradeTo(_planName(l10n, plan.id)),
+      amount: plan.priceFor(_yearly),
+      note: l10n.subscriptionPayByBank,
+      onSubmit: (trxId) => _dataSource.submitSubscriptionRequest(
+        shopId: currentShopId(),
+        tier: plan.id,
+        billingPeriod: _yearly ? 'yearly' : 'monthly',
+        price: plan.priceFor(_yearly),
+        transactionId: trxId,
+        isTrial: false,
       ),
+      onSubmitted: () {
+        setState(() => _state = ShopSubscriptionState(
+              tier: _state.tier,
+              status: _state.status,
+              trialEndsAt: _state.trialEndsAt,
+              nextBillingAt: _state.nextBillingAt,
+              suspended: _state.suspended,
+              suspensionReason: _state.suspensionReason,
+              pendingTier: plan.id,
+            ));
+        AppFeedback.showSuccess(context, l10n.subscriptionRequested);
+      },
     );
   }
 
@@ -185,59 +111,96 @@ class _OwnerSubscriptionViewState extends State<OwnerSubscriptionView> {
         child: Column(
           children: [
             MinimalAppBar(
-              title: l10n.subscriptionTitle,
-              subtitle: l10n.subscriptionSubtitle,
+              title: l10n.subscriptionChoosePlanTitle,
+              subtitle: l10n.subscriptionChoosePlanSubtitle,
               onBack: widget.onBack,
+              actions: [
+                IconButton(
+                  tooltip: l10n.subscriptionMySubscription,
+                  icon: const Icon(Icons.receipt_long_rounded,
+                      color: Colors.white),
+                  onPressed: () =>
+                      context.push(RouteNames.ownerSubscriptionMy),
+                ),
+              ],
             ),
             Expanded(
               child: ListView(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 children: [
-                  SubscriptionTierCard(
-                    title: l10n.subscriptionTierStarter,
-                    pricePkr: 0,
-                    billingPeriod: l10n.subscriptionForeverFree,
-                    isCurrent: _currentTier == 'basic',
-                    isPending: _pendingTier == 'basic',
-                    features: [
-                      l10n.subscriptionFeatureMax3,
-                      l10n.subscriptionFeatureAgreements,
-                      l10n.subscriptionFeatureVerification,
+                  if (_state.hasPaymentIssue) ...[
+                    SubscriptionPaymentIssueBanner(
+                        reason: _state.suspensionReason),
+                    const SizedBox(height: 14),
+                  ],
+                  SegmentedButton<bool>(
+                    segments: [
+                      ButtonSegment(
+                          value: false, label: Text(l10n.subscriptionBillingMonthly)),
+                      ButtonSegment(
+                          value: true,
+                          label: Text(
+                              '${l10n.subscriptionBillingYearly} · ${l10n.subscriptionYearlySave}')),
                     ],
-                    onSelect: () {},
+                    selected: {_yearly},
+                    onSelectionChanged: (selected) =>
+                        setState(() => _yearly = selected.first),
                   ),
                   const SizedBox(height: 14),
-                  SubscriptionTierCard(
-                    title: l10n.subscriptionTierPro,
-                    pricePkr: 4999,
-                    billingPeriod: l10n.subscriptionPerMonth,
-                    isPopular: true,
-                    isCurrent: _currentTier == 'pro',
-                    isPending: _pendingTier == 'pro',
-                    features: [
-                      l10n.subscriptionFeatureUnlimited,
-                      l10n.subscriptionFeatureRadar,
-                      l10n.subscriptionFeatureWhatsappInvoicing,
-                      l10n.subscriptionFeaturePricingMatrix,
-                    ],
-                    onSelect: () => _showUpgradeModal('pro', 'Pro', 4999),
+                  ...subscriptionPlans.map((plan) {
+                    final isCurrent =
+                        normalizeSubscriptionTier(_state.tier) == plan.id;
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 14),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          SubscriptionTierCard(
+                            title: _planName(l10n, plan.id),
+                            pricePkr: plan.priceFor(_yearly),
+                            billingPeriod: _yearly
+                                ? l10n.subscriptionPerYear
+                                : l10n.subscriptionPerMonth,
+                            isCurrent: isCurrent,
+                            isPopular: plan.id == 'pro',
+                            isPending:
+                                _state.pendingTier == plan.id ||
+                                    (_state.pendingTier != null &&
+                                        normalizeSubscriptionTier(
+                                                _state.pendingTier) ==
+                                            plan.id),
+                            features: _features(l10n, plan.id),
+                            onSelect: () => plan.id == 'free'
+                                ? context.push(
+                                    RouteNames.ownerSubscriptionPlan,
+                                    extra: plan.id)
+                                : _subscribe(plan),
+                          ),
+                          if (plan.id != 'free')
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: TextButton(
+                                onPressed: () => context.push(
+                                    RouteNames.ownerSubscriptionPlan,
+                                    extra: plan.id),
+                                child: Text(l10n.subscriptionViewDetails),
+                              ),
+                            ),
+                        ],
+                      ),
+                    );
+                  }),
+                  Text(
+                    l10n.subscriptionExamplePrices,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodySmall,
                   ),
-                  const SizedBox(height: 14),
-                  SubscriptionTierCard(
-                    title: l10n.subscriptionTierEnterprise,
-                    pricePkr: 12999,
-                    billingPeriod: l10n.subscriptionPerMonth,
-                    isCurrent: _currentTier == 'enterprise',
-                    isPending: _pendingTier == 'enterprise',
-                    features: [
-                      l10n.subscriptionFeatureMultiBranch,
-                      l10n.subscriptionFeatureManager,
-                      l10n.subscriptionFeatureGps,
-                      l10n.subscriptionFeatureTribunal,
-                    ],
-                    onSelect: () => _showUpgradeModal('enterprise',
-                        'Enterprise', 12999),
+                  const SizedBox(height: 8),
+                  Text(
+                    l10n.subscriptionPlayNotConnectedNote,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ],
               ),

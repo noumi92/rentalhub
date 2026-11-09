@@ -12,6 +12,7 @@ class FinanceTransferModel extends FinanceTransferEntity {
     super.vehicleId,
     super.customerId,
     super.note,
+    super.paymentMethod,
     required super.createdAt,
   });
 
@@ -27,6 +28,7 @@ class FinanceTransferModel extends FinanceTransferEntity {
       vehicleId: e.vehicleId,
       customerId: e.customerId,
       note: e.note,
+      paymentMethod: e.paymentMethod,
       createdAt: e.createdAt,
     );
   }
@@ -43,6 +45,7 @@ class FinanceTransferModel extends FinanceTransferEntity {
       vehicleId: map['vehicleId'],
       customerId: map['customerId'],
       note: map['note'],
+      paymentMethod: map['paymentMethod'],
       createdAt: DateTime.tryParse(map['createdAt']?.toString() ?? '') ??
           DateTime.now(),
     );
@@ -60,6 +63,7 @@ class FinanceTransferModel extends FinanceTransferEntity {
       if (vehicleId != null) 'vehicleId': vehicleId,
       if (customerId != null) 'customerId': customerId,
       if (note != null) 'note': note,
+      if (paymentMethod != null) 'paymentMethod': paymentMethod,
       'createdAt': createdAt.toIso8601String(),
     };
   }

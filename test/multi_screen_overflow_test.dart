@@ -89,7 +89,7 @@ void main() {
         theme: AppTheme.lightTheme,
       );
       expect(find.textContaining(sampleVehicle.model), findsWidgets);
-      expect(find.textContaining('Rs. 9000'), findsWidgets);
+      expect(find.textContaining('Rs. 9,000'), findsWidgets);
     });
 
     testWidgets('ShopDetailView renders without overflow on 360px viewport and 1.35x font scale',
@@ -281,9 +281,13 @@ void main() {
           enable24Hours: true,
           onToggle24Hours: (_) {},
           rate24HoursController: TextEditingController(text: '8500'),
+          outCityDayRateController: TextEditingController(text: '9500'),
           enableWeekly: true,
           onToggleWeekly: (_) {},
           rateWeeklyController: TextEditingController(text: '52000'),
+          enableMonthly: true,
+          onToggleMonthly: (_) {},
+          rateMonthlyController: TextEditingController(text: '210000'),
           supportSelfDrive: true,
           onToggleSelfDrive: (_) {},
           supportWithDriver: true,

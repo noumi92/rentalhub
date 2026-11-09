@@ -23,6 +23,16 @@ class VehicleRatesStepWidget extends StatelessWidget {
   final ValueChanged<bool> onToggleWeekly;
   final TextEditingController rateWeeklyController;
 
+  final bool enableMonthly;
+  final ValueChanged<bool> onToggleMonthly;
+  final TextEditingController rateMonthlyController;
+
+  // Audit §5 finish (O07): the Out-City day rate. The In-City day
+  // rate IS the 24h package rate, so its row below reuses
+  // [rate24HoursController] — one rate, shown in both places. Typing
+  // the full-day rate prefills the out-city field while it is empty.
+  final TextEditingController outCityDayRateController;
+
   final bool supportSelfDrive;
   final ValueChanged<bool> onToggleSelfDrive;
 
@@ -55,6 +65,10 @@ class VehicleRatesStepWidget extends StatelessWidget {
     required this.enableWeekly,
     required this.onToggleWeekly,
     required this.rateWeeklyController,
+    required this.enableMonthly,
+    required this.onToggleMonthly,
+    required this.rateMonthlyController,
+    required this.outCityDayRateController,
     required this.supportSelfDrive,
     required this.onToggleSelfDrive,
     required this.supportWithDriver,
@@ -82,8 +96,28 @@ class VehicleRatesStepWidget extends StatelessWidget {
         _packageRow(context, l10n.addVehicleRate1Hour, rate1HourController, enable1Hour, onToggle1Hour),
         _packageRow(context, l10n.addVehicleRate3Hours, rate3HoursController, enable3Hours, onToggle3Hours),
         _packageRow(context, l10n.addVehicleRate6Hours, rate6HoursController, enable6Hours, onToggle6Hours),
-        _packageRow(context, l10n.addVehicleRateFullDay, rate24HoursController, enable24Hours, onToggle24Hours),
+        _packageRow(context, l10n.addVehicleRateFullDay, rate24HoursController, enable24Hours, onToggle24Hours, onChanged: (v) { if (outCityDayRateController.text.isEmpty) outCityDayRateController.text = v; }),
         _packageRow(context, l10n.addVehicleRateWeekly, rateWeeklyController, enableWeekly, onToggleWeekly),
+        _packageRow(context, l10n.addVehicleRateMonthly, rateMonthlyController, enableMonthly, onToggleMonthly),
+        const SizedBox(height: 16),
+
+        Text(l10n.addVehicleCityRatesTitle, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900)),
+        const SizedBox(height: 4),
+        Text(l10n.addVehicleCityRatesHint, style: Theme.of(context).textTheme.bodySmall),
+        const SizedBox(height: 12),
+        Card(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14), side: BorderSide(color: Theme.of(context).dividerColor)),
+          child: Padding(
+            padding: const EdgeInsets.all(14),
+            child: Column(
+              children: [
+                _policyInput(context, l10n.addVehicleInCityDayRate, l10n.addVehicleInCityDayRateHint, rate24HoursController, onChanged: (v) { if (outCityDayRateController.text.isEmpty) outCityDayRateController.text = v; }),
+                const Divider(height: 20),
+                _policyInput(context, l10n.addVehicleOutCityDayRate, l10n.addVehicleOutCityDayRateHint, outCityDayRateController),
+              ],
+            ),
+          ),
+        ),
         const SizedBox(height: 16),
 
         Text(l10n.addVehicleServiceType, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900)),
@@ -216,7 +250,7 @@ class VehicleRatesStepWidget extends StatelessWidget {
     );
   }
 
-  Widget _packageRow(BuildContext context, String label, TextEditingController controller, bool isEnabled, ValueChanged<bool> onToggle) {
+  Widget _packageRow(BuildContext context, String label, TextEditingController controller, bool isEnabled, ValueChanged<bool> onToggle, {ValueChanged<String>? onChanged}) {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
@@ -235,6 +269,7 @@ class VehicleRatesStepWidget extends StatelessWidget {
               controller: controller,
               enabled: isEnabled,
               keyboardType: TextInputType.number,
+              onChanged: onChanged,
               textAlign: TextAlign.end,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w900, color: isEnabled ? Theme.of(context).colorScheme.onSurface : Theme.of(context).colorScheme.onSurfaceVariant),
               decoration: InputDecoration(
@@ -253,7 +288,7 @@ class VehicleRatesStepWidget extends StatelessWidget {
     );
   }
 
-  Widget _policyInput(BuildContext context, String label, String subtitle, TextEditingController controller, {String? suffix}) {
+  Widget _policyInput(BuildContext context, String label, String subtitle, TextEditingController controller, {String? suffix, ValueChanged<String>? onChanged}) {
     return Row(
       children: [
         Expanded(
@@ -272,6 +307,7 @@ class VehicleRatesStepWidget extends StatelessWidget {
           child: TextField(
             controller: controller,
             keyboardType: TextInputType.number,
+            onChanged: onChanged,
             textAlign: TextAlign.end,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w900),
             decoration: InputDecoration(

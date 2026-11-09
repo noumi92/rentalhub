@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../core/widgets/minimal_app_bar.dart';
+import '../../../../core/utils/money_format.dart';
 import '../../../../core/widgets/debounced_button.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
 import '../../../bookings/presentation/widgets/booking_status_chip.dart';
@@ -131,7 +132,7 @@ class _CustomerActiveTripViewState extends State<CustomerActiveTripView> {
                             _fact(l10n.kmIncluded, '${b.kmLimit} km'),
                           ],
                           const SizedBox(height: 8),
-                          _fact(l10n.totalFare, 'Rs. ${b.totalAmount}'),
+                          _fact(l10n.totalFare, l10n.amountRs(formatRs(b.totalAmount))),
                         ],
                       ),
                     ),

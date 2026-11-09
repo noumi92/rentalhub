@@ -30,7 +30,7 @@ class VehicleRatesEntity extends Equatable {
 /// picker only offers enabled packages and totals from these prices —
 /// never from a formula.
 class VehiclePackageEntity extends Equatable {
-  /// '1h' | '3h' | '6h' | '12h' | '24h' | 'Weekly'
+  /// '1h' | '3h' | '6h' | '12h' | '24h' | 'Weekly' | 'Monthly'
   final String label;
   final int hours;
   final int pricePkr;
@@ -82,6 +82,47 @@ class VehiclePackageEntity extends Equatable {
   List<Object?> get props => [label, hours, pricePkr, enabled, kmIncluded];
 }
 
+/// Audit §5 (P4-O07): one owner-defined custom rate on a vehicle —
+/// a named price for a period the seven standard packages do not
+/// cover. `period` is 'hourly' | 'daily' | 'weekly' | 'monthly'.
+/// A custom rate is never invented: it only exists when the owner
+/// adds it in the rate matrix, and it can be deleted there.
+class CustomRateEntity extends Equatable {
+  final String name;
+  final int pricePkr;
+  final String period;
+
+  const CustomRateEntity({
+    required this.name,
+    required this.pricePkr,
+    this.period = 'daily',
+  });
+
+  CustomRateEntity copyWith({String? name, int? pricePkr, String? period}) {
+    return CustomRateEntity(
+      name: name ?? this.name,
+      pricePkr: pricePkr ?? this.pricePkr,
+      period: period ?? this.period,
+    );
+  }
+
+  Map<String, dynamic> toMap() => {
+        'name': name,
+        'pricePkr': pricePkr,
+        'period': period,
+      };
+
+  factory CustomRateEntity.fromMap(Map<String, dynamic> map) =>
+      CustomRateEntity(
+        name: (map['name'] as String?) ?? '',
+        pricePkr: (map['pricePkr'] as num?)?.toInt() ?? 0,
+        period: (map['period'] as String?) ?? 'daily',
+      );
+
+  @override
+  List<Object?> get props => [name, pricePkr, period];
+}
+
 class VehicleEntity extends Equatable {
   final String vehicleId;
   final String shopId;
@@ -120,6 +161,11 @@ class VehicleEntity extends Equatable {
   final String? trackerProvider;
   final String? insurancePolicy;
   final int? weeklyRate;
+  /// Audit §5 (O07): the Monthly package price (30 days). Like
+  /// [weeklyRate], a stored override; when unset, [effectivePackages]
+  /// derives it as 24 × the daily rate (30 days less 20% — the same
+  /// rule as Weekly = daily × 6, i.e. 7 days less ~14%).
+  final int? monthlyRate;
   final int? securityDepositPkr;
   final int? advanceRequiredPkr;
   final int? extraHourPkr;
@@ -131,8 +177,18 @@ class VehicleEntity extends Equatable {
   final int? extraKmPkr;
   final int? outOfCityKmPerDay;
 
+  /// Audit §5 (P4-O07): the "Per KM Pricing?" on/off answer for the
+  /// extra-km charge. True by default (the charge always applied
+  /// before this toggle existed); false means no extra-km charge is
+  /// applied even when [extraKmPkr] is set.
+  final bool perKmPricingEnabled;
+
+  /// Audit §5 (P4-O07): the owner's custom rates (see
+  /// [CustomRateEntity]). Empty by default — never prefilled.
+  final List<CustomRateEntity> customRates;
+
   /// Phase B (B2): the vehicle's rentable packages. Empty means "never
-  /// set" — readers must use [effectivePackages], which derives the six
+  /// set" — readers must use [effectivePackages], which derives the seven
   /// standard packages from the legacy [rates] for older documents.
   final List<VehiclePackageEntity> packages;
 
@@ -167,6 +223,7 @@ class VehicleEntity extends Equatable {
     this.trackerProvider,
     this.insurancePolicy,
     this.weeklyRate,
+    this.monthlyRate,
     this.securityDepositPkr,
     this.advanceRequiredPkr,
     this.extraHourPkr,
@@ -175,15 +232,18 @@ class VehicleEntity extends Equatable {
     this.packages = const [],
     this.extraKmPkr,
     this.outOfCityKmPerDay,
+    this.perKmPricingEnabled = true,
+    this.customRates = const [],
   });
 
   /// Display name used across owner and customer screens.
   String get displayName => '$make $model $year';
 
   /// The packages the booking picker offers: the stored list when the
-  /// owner has set one, otherwise the six standard packages derived from
+  /// owner has set one, otherwise the seven standard packages derived from
   /// the legacy rates (12h defaults to 60% of the daily rate, Weekly to
-  /// the stored weekly rate or six days).
+  /// the stored weekly rate or six days, Monthly to the stored monthly
+  /// rate or 24 days — 30 days less 20%).
   List<VehiclePackageEntity> get effectivePackages {
     if (packages.isNotEmpty) return packages;
     final daily = rates.daily24;
@@ -215,6 +275,11 @@ class VehicleEntity extends Equatable {
           hours: 168,
           pricePkr: weeklyRate ?? daily * 6,
           kmIncluded: 1750),
+      VehiclePackageEntity(
+          label: 'Monthly',
+          hours: 720,
+          pricePkr: monthlyRate ?? daily * 24,
+          kmIncluded: 7500),
     ];
   }
 
@@ -253,6 +318,7 @@ class VehicleEntity extends Equatable {
     String? trackerProvider,
     String? insurancePolicy,
     int? weeklyRate,
+    int? monthlyRate,
     int? securityDepositPkr,
     int? advanceRequiredPkr,
     int? extraHourPkr,
@@ -261,6 +327,8 @@ class VehicleEntity extends Equatable {
     List<VehiclePackageEntity>? packages,
     int? extraKmPkr,
     int? outOfCityKmPerDay,
+    bool? perKmPricingEnabled,
+    List<CustomRateEntity>? customRates,
   }) {
     return VehicleEntity(
       vehicleId: vehicleId ?? this.vehicleId,
@@ -294,6 +362,7 @@ class VehicleEntity extends Equatable {
       trackerProvider: trackerProvider ?? this.trackerProvider,
       insurancePolicy: insurancePolicy ?? this.insurancePolicy,
       weeklyRate: weeklyRate ?? this.weeklyRate,
+      monthlyRate: monthlyRate ?? this.monthlyRate,
       securityDepositPkr: securityDepositPkr ?? this.securityDepositPkr,
       advanceRequiredPkr: advanceRequiredPkr ?? this.advanceRequiredPkr,
       extraHourPkr: extraHourPkr ?? this.extraHourPkr,
@@ -303,6 +372,8 @@ class VehicleEntity extends Equatable {
       packages: packages ?? this.packages,
       extraKmPkr: extraKmPkr ?? this.extraKmPkr,
       outOfCityKmPerDay: outOfCityKmPerDay ?? this.outOfCityKmPerDay,
+      perKmPricingEnabled: perKmPricingEnabled ?? this.perKmPricingEnabled,
+      customRates: customRates ?? this.customRates,
     );
   }
 
@@ -338,6 +409,7 @@ class VehicleEntity extends Equatable {
         trackerProvider,
         insurancePolicy,
         weeklyRate,
+        monthlyRate,
         securityDepositPkr,
         advanceRequiredPkr,
         extraHourPkr,
@@ -346,6 +418,8 @@ class VehicleEntity extends Equatable {
         packages,
         extraKmPkr,
         outOfCityKmPerDay,
+        perKmPricingEnabled,
+        customRates,
       ];
 }
 

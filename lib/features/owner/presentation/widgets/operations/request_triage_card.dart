@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/utils/money_format.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../bookings/domain/entities/booking_entity.dart';
+import 'booking_fare_breakdown.dart';
 
 class RequestTriageCard extends StatelessWidget {
   final BookingEntity booking;
@@ -158,6 +160,17 @@ class RequestTriageCard extends StatelessWidget {
             // as-is; only the drive-mode words are localized.
             '${booking.packageType.toUpperCase()} • ${booking.isWithDriver ? l10n.requestsWithChauffeur : l10n.selfDrive}',
             style: Theme.of(context).textTheme.labelSmall,
+          ),
+          const SizedBox(height: 4),
+          // Audit §5 item 2 (O14): the pickup/return dates and the
+          // day count the request cards were missing.
+          Text(
+            '${DateFormat('d MMM, h:mm a').format(booking.pickupTime)} → ${DateFormat('d MMM, h:mm a').format(booking.returnTime)} • ${l10n.bookingDaysCount(bookingDayCount(booking))}',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
           ),
           const SizedBox(height: 14),
           // Phase B (D1): the actions depend on where the booking is

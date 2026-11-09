@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
+import '../../../../core/utils/money_format.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../bookings/data/models/booking_model.dart';
 import '../../data/datasources/admin_platform_data_source.dart';
 import '../widgets/admin_shell.dart';
@@ -71,6 +73,7 @@ class _AdminBookingsViewState extends State<AdminBookingsView> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return AdminShell(
       activeRoute: RouteNames.adminBookings,
       title: 'Bookings',
@@ -160,7 +163,7 @@ class _AdminBookingsViewState extends State<AdminBookingsView> {
                                         fontWeight: FontWeight.w800,
                                         )),
                                 subtitle: Text(
-                                  '${b.customerName ?? 'Customer'} • ${b.shopName ?? ''} • Rs. ${b.totalAmount} • ${b.tripType}',
+                                  '${b.customerName ?? 'Customer'} • ${b.shopName ?? ''} • ${l10n.amountRs(formatRs(b.totalAmount))} • ${b.tripType}',
                                   style: TextStyle(
                                       fontSize: 12,
                                       color: Theme.of(context).colorScheme.onSurfaceVariant),

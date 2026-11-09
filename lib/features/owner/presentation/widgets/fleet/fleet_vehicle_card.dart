@@ -1,9 +1,11 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/widgets/pakistani_plate_widget.dart';
 import '../../../../../features/discovery/presentation/views/widgets/vehicle_hero_card.dart'
     show vehicleHeroTag;
+import 'fleet_card_actions.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../fleet/domain/entities/vehicle_entity.dart';
 import '../../../../../core/utils/money_format.dart';
@@ -26,6 +28,14 @@ class FleetVehicleCard extends StatelessWidget {
   final VoidCallback onEditRates;
   final VoidCallback onViewCalendar;
 
+  /// Audit §5 (O05/O30): return date of the active booking, when
+  /// one exists — "On Rent until `<date>`". Null omits the line.
+  final DateTime? rentedUntil;
+
+  /// Audit §5 (O05/O30): literal "Edit Rent" / "Update Price" actions.
+  final VoidCallback? onEditRent;
+  final VoidCallback? onUpdatePrice;
+
   /// Tapping the photo opens the vehicle-detail route (the hero tag
   /// only works when the image is actually tappable). Null in tests
   /// or embeds that render the card without navigation.
@@ -38,6 +48,9 @@ class FleetVehicleCard extends StatelessWidget {
     required this.onEditRates,
     required this.onViewCalendar,
     this.onTap,
+    this.rentedUntil,
+    this.onEditRent,
+    this.onUpdatePrice,
   });
 
   Widget _carImage(VehicleEntity v) {
@@ -217,19 +230,30 @@ class FleetVehicleCard extends StatelessWidget {
               ],
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(14, 0, 14, 12),
-            child: Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton.icon(icon: const Icon(Icons.tune_rounded, size: 18), label: Text(l10n.fleetEditRatesTooltip), onPressed: onEditRates),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: OutlinedButton.icon(icon: const Icon(Icons.calendar_month_rounded, size: 18), label: Text(l10n.fleetCalendarTooltip), onPressed: onViewCalendar),
-                ),
-              ],
+          // Audit §5 (O05/O30): "On Rent until <date>".
+          if (isRented && rentedUntil != null)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(14, 0, 14, 6),
+              child: Row(
+                children: [
+                  const Icon(Icons.event_rounded, size: 16),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      l10n.fleetOnRentUntil(DateFormat('d MMM yyyy').format(rentedUntil!)),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700),
+                    ),
+                  ),
+                ],
+              ),
             ),
+          FleetCardActions(
+            onEditRates: onEditRates,
+            onViewCalendar: onViewCalendar,
+            onEditRent: onEditRent,
+            onUpdatePrice: onUpdatePrice,
           ),
         ],
       ),

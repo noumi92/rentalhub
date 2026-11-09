@@ -429,7 +429,6 @@
   "authSignedInGoogle": "Signed in with Google!",
   "authValidEmail": "Please enter a valid email address.",
   "authPasswordLength": "Password must be at least 6 characters.",
-  "authNewUser": "New to RentalHub? Choose Role & Register",
   "authTagline": "Pakistan Premier Car Rental & Fleet Ecosystem • خوش آمدید",
   "authGoogle": "Continue with Google",
   "onboardingStep1": "Step 1: Your Profile",
@@ -2200,7 +2199,7 @@
   "contractScanVerify": "Scan to verify this agreement — the page shows the booking, the shop and the signed PDF.",
   "contractProceedReturn": "Proceed to Return & Settlement",
   "contractAgencyLine": "Govt. Registered Commercial Motor Car Rental Agency",
-  "contractCertifiedTitle": "CERTIFIED DIGITAL RENTAL CONTRACT",
+  "contractCertifiedTitle": "RENTAL AGREEMENT",
   "contractFieldAgreementNo": "Agreement No:",
   "contractFieldHirer": "Hirer / Customer:",
   "contractFieldContact": "Customer Contact:",
@@ -2223,7 +2222,7 @@
     }
   },
   "contractTermsTitle": "Legal Terms & Conditions (Pakistan Jurisdiction):",
-  "contractTerm1": "1. Vehicle shall not be driven across unauthorized provincial checkpoints without NOC.",
+  "contractTerm1": "1. The vehicle shall be used within city limits unless an out-city rate has been agreed.",
   "contractTerm2": "2. Traffic challans, e-tickets and fuel consumed are sole liability of the hirer.",
   "contractTerm3": "3. Any default will result in immediate non-bailable FIR and National Tribunal Blacklist listing.",
   "contractHirerSignature": "Hirer Signature",
@@ -2822,5 +2821,962 @@
         "type": "int"
       }
     }
-  }
+  },
+  "kycWizardStepCnic": "CNIC",
+  "kycWizardStepPhoto": "Photo",
+  "kycWizardStepDocs": "Docs & Sign",
+  "kycWizardStepGuarantor": "Guarantor",
+  "kycWizardNext": "Next",
+  "kycWizardScanFront": "Scan CNIC front",
+  "kycWizardScanBack": "Scan CNIC back",
+  "kycWizardFrontScanned": "Front scanned",
+  "kycWizardBackScanned": "Back scanned",
+  "kycWizardFatherName": "Father name",
+  "kycWizardDateOfBirth": "Date of birth",
+  "kycWizardCnicExpiry": "CNIC expiry",
+  "kycWizardAddress": "Address",
+  "kycWizardWhatsappNumber": "WhatsApp number",
+  "kycWizardManualEntry": "Or enter the details manually below",
+  "kycWizardBlacklisted": "This CNIC is blacklisted and cannot be added.",
+  "kycWizardLivePhoto": "Live photo",
+  "kycWizardFaceHint": "Take a clear photo of the customer's face",
+  "kycWizardRetake": "Retake",
+  "kycWizardThumbprint": "Thumbprint",
+  "kycWizardThumbHint": "Photograph the right thumb",
+  "kycWizardPhotoRequired": "A photo is required to continue",
+  "kycWizardLicense": "Driving license",
+  "kycWizardLicenseFront": "License front",
+  "kycWizardLicenseBack": "License back",
+  "kycWizardLicenseNumber": "License number",
+  "kycWizardLicenseExpiry": "License expiry",
+  "kycWizardUtilityBill": "Utility bill (proof of address)",
+  "kycWizardExtraDocs": "Extra documents (optional)",
+  "kycWizardAddPhoto": "Add photo",
+  "kycWizardSignature": "Customer signature",
+  "kycWizardSignatureClear": "Clear",
+  "kycWizardAgreeTerms": "I agree to the rental terms",
+  "kycWizardViewTerms": "View Terms",
+  "kycWizardSearchGuarantor": "Search existing customers",
+  "kycWizardRelation": "Relation with customer",
+  "kycWizardRelationFriend": "Friend",
+  "kycWizardRelationFamily": "Family",
+  "kycWizardRelationColleague": "Colleague",
+  "kycWizardRelationOther": "Other",
+  "kycWizardGuarantorOnFile": "Signature & thumbprint on file — fetched automatically",
+  "kycWizardKycComplete": "KYC complete: CNIC, Photo, Thumb, License, Signature",
+  "kycWizardStepIncomplete": "Please complete all required items on this step",
+  "kycWizardPhotosPending": "Saved — some photos will upload when you're back online",
+  "kycWizardUploadFailed": "Photo upload failed",
+  "kycWizardGuarantorOptional": "Guarantor is optional — you can save without one",
+  "kycWizardExtraSkipped": "Saved — some extra documents couldn't upload while offline",
+  "bookingSearchHint": "Search name, phone, car or booking #",
+  "bookingEmptyRejected": "No rejected requests",
+  "bookingDaysCount": "{count} days",
+  "@bookingDaysCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "bookingFareTitle": "Fare breakdown",
+  "bookingFarePickup": "Pickup",
+  "bookingFareReturn": "Return",
+  "bookingFareDailyRate": "Daily rate",
+  "bookingFareDailyRateTimes": "Daily rate × {count} days",
+  "@bookingFareDailyRateTimes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "bookingFarePackagePrice": "Package price",
+  "bookingFareTotal": "Total",
+  "bookingFareAdvanceRequired": "Advance required",
+  "bookingFareAdvancePaid": "Advance paid",
+  "bookingFareRemaining": "Remaining",
+  "bookingChecklistTitle": "Before you accept",
+  "bookingCheckKyc": "Customer KYC documents on file",
+  "bookingCheckCar": "Car available",
+  "bookingCheckAdvance": "Advance received",
+  "bookingConfirmTermsTitle": "Confirm Terms",
+  "bookingTermCondition": "Car Condition",
+  "bookingTermFuel": "Fuel Level",
+  "bookingTermMileage": "Mileage",
+  "bookingTermDocuments": "Documents",
+  "bookingTermsIncomplete": "Tick all four items to confirm the booking.",
+  "bookingConvertToManual": "Convert to manual entry",
+  "bookingConfirmedTitle": "Booking Confirmed",
+  "bookingConfirmedHandoverScheduled": "Handover scheduled {date}",
+  "@bookingConfirmedHandoverScheduled": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "bookingConfirmedStartHandover": "Start Handover",
+  "bookingConfirmedViewBooking": "View Booking",
+  "bookingConfirmedMessageCustomer": "Message Customer",
+  "bookingConfirmedWhatsappMessage": "Assalam-o-Alaikum {name}, your booking for {vehicle} is confirmed. Pickup: {date}. Total: Rs. {total}. Thank you!",
+  "@bookingConfirmedWhatsappMessage": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "vehicle": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "bookingConfirmedWhatsappFailed": "Could not open WhatsApp.",
+  "manualBookingNext": "Next",
+  "manualBookingReturnAfterPickup": "Return must be after pickup.",
+  "manualBookingConfirmTitle": "Review Fare",
+  "manualBookingConfirmBooking": "Confirm Booking",
+  "contractTerm4": "4. Fuel shall be returned at the same level as at handover.",
+  "contractTerm5": "5. Late return is charged per hour or per day as per the agreed package.",
+  "contractTerm6": "6. Damage is charged as per inspection at return.",
+  "contractTerm7": "7. The owner is not liable for personal belongings left in the vehicle.",
+  "contractTerm8": "8. This agreement is governed by the laws of Pakistan.",
+  "contractTerm9": "9. The security deposit is refunded after inspection at return, less any damage or extra-kilometre charges.",
+  "contractTerm10": "10. Both parties agree to the terms above.",
+  "contractFieldAdvance": "Advance:",
+  "contractFieldRemaining": "Remaining:",
+  "contractFieldPlate": "Plate:",
+  "contractGuarantorSignature": "Guarantor Signature",
+  "contractGuarantorPending": "Pending",
+  "contractDownloadPdf": "Download PDF",
+  "contractPdfDownloaded": "Agreement PDF saved: {file}",
+  "@contractPdfDownloaded": {
+    "placeholders": {
+      "file": {
+        "type": "String"
+      }
+    }
+  },
+  "contractPdfDownloadFailed": "Could not save the agreement PDF: {error}",
+  "@contractPdfDownloadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "handoverPhotosTitle": "Exterior Photos",
+  "handoverPhotoFront": "Front",
+  "handoverPhotoBack": "Back",
+  "handoverPhotoLeft": "Left",
+  "handoverPhotoRight": "Right",
+  "handoverPhotoUploading": "Uploading…",
+  "handoverDocumentsTitle": "Documents Given",
+  "handoverDocumentRegistration": "Registration",
+  "handoverDocumentInsurance": "Insurance",
+  "handoverAccessoriesTitle": "Accessories",
+  "handoverAccessorySpareTyre": "Spare Tyre",
+  "handoverAccessoryJack": "Jack",
+  "handoverAccessoryToolKit": "Tool Kit",
+  "handoverKeysTitle": "Keys Handed Over",
+  "returnLandingTitle": "Return & Settlement",
+  "returnLandingSummary": "Booking #{id} • {customer} — {vehicle}",
+  "@returnLandingSummary": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      },
+      "customer": {
+        "type": "String"
+      },
+      "vehicle": {
+        "type": "String"
+      }
+    }
+  },
+  "returnLandingDueBack": "Return due",
+  "returnLandingStart": "Start Return Inspection",
+  "returnConditionTitle": "Vehicle Condition",
+  "returnConditionGood": "Good",
+  "returnConditionMinorDamage": "Minor damage",
+  "returnConditionRecordDamage": "Record Damage",
+  "returnFareTitle": "Fare Summary",
+  "returnFareRent": "Rent",
+  "returnFareAdvancePaid": "Advance Paid",
+  "returnFareRemaining": "Remaining",
+  "returnFareTotalDue": "Total Due",
+  "returnPaymentTitle": "Payment Received",
+  "returnPaymentCash": "Cash",
+  "returnPaymentBankTransfer": "Bank Transfer",
+  "returnPaymentJazzCash": "JazzCash",
+  "returnPaymentEasyPaisa": "EasyPaisa",
+  "returnPaymentAmountLabel": "Amount Received",
+  "returnPaymentAmountHint": "e.g. 16000",
+  "returnPaymentMarkReceived": "Mark Payment Received",
+  "returnPaymentReceived": "Payment Received",
+  "returnPaymentUndo": "Undo",
+  "returnPaymentRecordExtraCharges": "Record Extra Charges",
+  "returnReceiptExtraCharges": "Extra Charges",
+  "damageTitle": "Record Damage",
+  "damageAddPhoto": "Add Photo",
+  "damageDescriptionLabel": "Description",
+  "damageDescriptionHint": "e.g. Scratch on the rear bumper",
+  "damageDescriptionRequired": "Please describe the damage.",
+  "damageRepairCostLabel": "Repair Cost",
+  "damageRepairCostHint": "e.g. 5000",
+  "damageDeductFromDeposit": "Deduct from Deposit",
+  "damageSave": "Save",
+  "damageSaved": "Damage report saved.",
+  "damageSaveFailed": "Could not save the damage report. Please try again.",
+  "extraChargeTitle": "Record Extra Charges",
+  "extraChargeTypeLabel": "Charge Type",
+  "extraChargeTypeLateReturn": "Late Return",
+  "extraChargeTypeExtraKm": "Extra KM",
+  "extraChargeTypeDamage": "Damage",
+  "extraChargeTypeCleaning": "Cleaning",
+  "extraChargeAmountLabel": "Amount",
+  "extraChargeAmountHint": "e.g. 2000",
+  "extraChargeRemarksLabel": "Remarks",
+  "extraChargeRemarksHint": "e.g. Returned 3 hours late",
+  "extraChargeAdd": "Add Charge",
+  "extraChargeAdded": "Charge added.",
+  "extraChargeSaveFailed": "Could not save the charge. Please try again.",
+  "extraChargeAmountRequired": "Please enter an amount greater than zero.",
+  "extraChargeSavedTitle": "Saved Charges",
+  "rentalStartedTitle": "On the Road",
+  "rentalStartedBanner": "Rental Started",
+  "rentalStartedBooking": "Booking #{id}",
+  "@rentalStartedBooking": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "rentalStartedReturnDue": "Return due {date}, {time}",
+  "@rentalStartedReturnDue": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "rentalStartedViewAgreement": "View Agreement",
+  "rentalStartedMessageCustomer": "Message Customer",
+  "rentalStartedMessage": "Assalam-o-Alaikum {name}, your rental of {vehicle} has started. Please return it on time. — RentalHub",
+  "@rentalStartedMessage": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "vehicle": {
+        "type": "String"
+      }
+    }
+  },
+  "rentalStartedNoPhone": "No phone number saved for this customer.",
+  "rentalStartedWhatsappFailed": "Could not open WhatsApp.",
+  "agreementSignedTitle": "Agreement Signed",
+  "agreementSignedBanner": "Agreement Signed Successfully",
+  "agreementSignedSubtitle": "The rental agreement has been signed by all parties.",
+  "agreementSignedDownloadPdf": "Download PDF",
+  "agreementSignedShare": "Share",
+  "agreementSignedSendCustomer": "Send to Customer",
+  "agreementSignedContinue": "Continue",
+  "agreementSignedSendMessage": "Assalam-o-Alaikum {name}, your rental agreement is ready: {url}",
+  "@agreementSignedSendMessage": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "dashboardGreeting": "Assalam-o-Alaikum, {name}",
+  "@dashboardGreeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "dashboardQuickAddCustomer": "Add Customer",
+  "dashboardQuickViewReports": "View Reports",
+  "dashboardReturnsEmpty": "No returns due in the next 7 days.",
+  "dashboardScheduleBooking": "Booking",
+  "dashboardScheduleEmpty": "Nothing scheduled for today.",
+  "dashboardScheduleHandover": "Handover",
+  "dashboardScheduleReturn": "Return",
+  "dashboardToday": "Today",
+  "dashboardTodayEarnings": "Today's Earnings",
+  "dashboardTodaySchedule": "Today's Schedule",
+  "dashboardUpcomingReturns": "Upcoming Returns",
+  "financeBookingNumberHint": "e.g. BK-1234",
+  "financeBookingNumberLabel": "Booking #",
+  "financeDateLabel": "Date",
+  "financeFilterAll": "All",
+  "financePaymentBank": "Bank Transfer",
+  "financePaymentCash": "Cash",
+  "financePaymentEasyPaisa": "EasyPaisa",
+  "financePaymentJazzCash": "JazzCash",
+  "financePaymentMethodLabel": "Payment method",
+  "financeCategoryAdvance": "Advance",
+  "financeCategoryWash": "Wash",
+  "financePnlDaily": "Daily",
+  "financePnlWeekly": "Weekly",
+  "financePnlMonthly": "Monthly",
+  "financePnlIncomeBreakdown": "Income Breakdown",
+  "financePnlExpenseBreakdown": "Expense Breakdown",
+  "financeCategoriesAdd": "Add Category",
+  "financeCategoriesAddTitle": "Add Category",
+  "financeCategoriesDelete": "Delete",
+  "financeCategoriesDeleteMessage": "Delete the “{name}” category? Old ledger entries keep this category.",
+  "@financeCategoriesDeleteMessage": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "financeCategoriesDeleteTitle": "Delete Category",
+  "financeCategoriesEdit": "Edit",
+  "financeCategoriesEditTitle": "Edit Category",
+  "financeCategoriesEmpty": "No categories yet.",
+  "financeCategoriesNameLabel": "Category name",
+  "financeCategoriesSubtitle": "Income and expense categories for the ledger",
+  "financeCategoriesTitle": "Income & Expense Categories",
+  "financeSettingsAutoReceipt": "Auto-send WhatsApp receipt",
+  "financeSettingsAutoReceiptNote": "Receipts are sent only after the WhatsApp Business setup (Phase I). Until then this only records your preference.",
+  "financeSettingsCurrency": "Default Currency",
+  "financeSettingsCurrencyNote": "The app only trades in Pakistani Rupees (PKR).",
+  "financeSettingsEmpty": "Finance settings are not available right now.",
+  "financeSettingsInvalidPercent": "Enter a valid percentage number.",
+  "financeSettingsPaymentMethods": "Payment Methods",
+  "financeSettingsReceipts": "Receipt Settings",
+  "financeSettingsSave": "Save Settings",
+  "financeSettingsSaved": "Finance settings saved.",
+  "financeSettingsServiceCharge": "Service Charges (%)",
+  "financeSettingsSubtitle": "Currency, charges, payment methods and receipts",
+  "financeSettingsTax": "Tax (%)",
+  "financeSettingsTitle": "Finance Settings",
+  "financeStatementColBooking": "Booking",
+  "financeStatementColDate": "Date",
+  "financeStatementColDue": "Due",
+  "financeStatementColPaid": "Paid",
+  "financeStatementColRent": "Rent",
+  "financeStatementDownload": "Download PDF",
+  "financeStatementDownloaded": "Statement PDF saved to your device.",
+  "financeStatementEmpty": "This customer has no bookings yet.",
+  "financeStatementMessageRow": "#{booking} • {date} • Rent Rs. {rent} • Paid Rs. {paid} • Due Rs. {due}",
+  "@financeStatementMessageRow": {
+    "placeholders": {
+      "booking": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      },
+      "rent": {
+        "type": "String"
+      },
+      "paid": {
+        "type": "String"
+      },
+      "due": {
+        "type": "String"
+      }
+    }
+  },
+  "financeStatementMessageTitle": "RentalHub statement for {name}:",
+  "@financeStatementMessageTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "financeStatementMessageTotal": "Total due: Rs. {amount}",
+  "@financeStatementMessageTotal": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "financeStatementSend": "Send Statement (WhatsApp)",
+  "financeStatementShare": "Share",
+  "financeStatementTitle": "Customer Statement",
+  "financeStatementTotalDue": "Total Due",
+  "financeSummaryEarnings": "Earnings",
+  "financeSummaryExpenses": "Expenses",
+  "financeSummaryNet": "Net",
+  "financeTabOverview": "Overview",
+  "financeTabReports": "Reports",
+  "financeTabTransactions": "Transactions",
+  "financeViewReports": "View Reports",
+  "reportCarBookings": "{count, plural, =1{{count} booking} other{{count} bookings}}",
+  "@reportCarBookings": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reportCarTableTitle": "Car — Bookings — Earnings",
+  "reportCarWise": "Car-wise Earnings",
+  "reportCarWiseHint": "Earnings for every car in the fleet",
+  "reportCustomerHistory": "Customer History",
+  "reportCustomerHistoryHint": "Bookings and spend per customer",
+  "reportCustomerTableTitle": "Customer — Bookings — Spend",
+  "reportEarningsLast6Months": "Earnings — last 6 months",
+  "reportMonthlyEarnings": "Monthly Earnings Report",
+  "reportMonthlyEarningsHint": "Revenue by month, as a bar chart",
+  "reportNoCars": "No cars in the fleet yet.",
+  "reportNoCustomers": "No customer bookings in this period.",
+  "reportPeriod": "Period",
+  "reportShare": "Share Report",
+  "reportSubtitle": "Earnings, cars and customers",
+  "reportTitle": "Reports",
+  "resetAction": "Reset",
+  "resetAllData": "Reset All Data",
+  "resetAllHint": "Bookings, customers, cars, finance records and staff for this shop.",
+  "resetBookings": "Reset Bookings",
+  "resetBookingsHint": "Deletes all bookings for this shop.",
+  "resetCars": "Reset Cars",
+  "resetCarsHint": "Deletes all vehicles for this shop.",
+  "resetConfirmMessage": "Are you sure? This will permanently delete {what} for this shop. This cannot be undone.",
+  "@resetConfirmMessage": {
+    "placeholders": {
+      "what": {
+        "type": "String"
+      }
+    }
+  },
+  "resetConfirmTitle": "Reset data?",
+  "resetCustomers": "Reset Customers",
+  "resetCustomersHint": "Deletes all customers for this shop.",
+  "resetDone": "Deleted {count} records.",
+  "@resetDone": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "resetFailed": "Reset failed. Check your connection and try again.",
+  "resetSubtitle": "Delete this shop's data — carefully",
+  "resetTitle": "Reset Options",
+  "resetWarning": "Warning: resetting deletes data permanently. Only reset what you mean to lose. The shop itself and its finance settings are kept.",
+  "resetYesReset": "Yes, Reset",
+  "signOutConfirmBody": "Are you sure you want to sign out?",
+  "signOutConfirmTitle": "Sign out?",
+  "signOutConfirmYes": "Yes, Sign Out",
+  "signOutSignInAgain": "Sign In Again",
+  "signOutSignedOutBody": "You have been signed out. Sign in again to continue managing your showroom.",
+  "signOutSignedOutTitle": "You have been signed out",
+  "staffAdd": "Add Staff",
+  "staffAddTitle": "Add Staff Member",
+  "staffDelete": "Remove staff member",
+  "staffEmpty": "No staff yet — add your first team member.",
+  "staffNameLabel": "Name",
+  "staffPermissionAddCars": "Add Cars",
+  "staffPermissionManageFinance": "Manage Finance",
+  "staffPermissionViewBookings": "View Bookings",
+  "staffPhoneLabel": "Phone",
+  "staffRoleLabel": "Role",
+  "staffSubtitle": "Team members and their permissions",
+  "staffTitle": "Staff & Roles",
+  "onboardingStepOfFive": "Step {step} of 5",
+  "@onboardingStepOfFive": {
+    "placeholders": {
+      "step": {
+        "type": "int"
+      }
+    }
+  },
+  "onboardingHeaderReview": "Review Application",
+  "onboardingSubtitleReview": "Check everything before submitting",
+  "onboardingStepReview": "Review",
+  "onboardingReviewTitle": "Review your application",
+  "onboardingReviewHint": "Check the details below. You can go back to change anything before submitting.",
+  "onboardingReviewShopName": "Shop name",
+  "onboardingReviewOwnerName": "Owner name",
+  "onboardingReviewCnic": "Owner CNIC",
+  "onboardingReviewWhatsapp": "WhatsApp number",
+  "onboardingReviewPhone": "Phone number",
+  "onboardingReviewOpeningHours": "Opening hours",
+  "onboardingReviewShopLogo": "Shop logo",
+  "onboardingReviewAddress": "Address",
+  "onboardingReviewCity": "City",
+  "onboardingReviewNoDocuments": "No documents attached yet",
+  "onboardingReviewCnicFront": "CNIC front",
+  "onboardingReviewCnicBack": "CNIC back",
+  "onboardingReviewSelfie": "Selfie with CNIC",
+  "onboardingReviewNtn": "NTN document",
+  "onboardingReviewShopPhoto": "Shop photo",
+  "onboardingReviewFleetPhoto1": "Fleet photo 1",
+  "onboardingReviewFleetPhoto2": "Fleet photo 2",
+  "onboardingReviewFleetPhoto3": "Fleet photo 3",
+  "onboardingApprovalWithin24h": "Usually approved within 24 hours",
+  "onboardingTimelineSubmitted": "Submitted",
+  "onboardingTimelineSubmittedHint": "Your application was received",
+  "onboardingTimelineUnderReview": "Under Review",
+  "onboardingTimelineUnderReviewHint": "Our team is checking your details",
+  "onboardingTimelineApproved": "Approved",
+  "onboardingTimelineApprovedHint": "Your shop goes live after approval",
+  "onboardingContactAdminWhatsapp": "Contact Admin on WhatsApp",
+  "onboardingAdminWhatsappMissing": "Admin WhatsApp is not set up yet. Please try again later.",
+  "onboardingAdminWhatsappFailed": "Could not open WhatsApp.",
+  "pricingPackageMonthly": "Monthly Package (30 Days)",
+  "addVehicleRateMonthly": "Monthly Package (30 Days)",
+  "ratesViewEstimate": "View estimated rates",
+  "pricingPerKmQuestion": "Per KM Pricing?",
+  "pricingPerKmQuestionHint": "Charge for kilometres beyond the package limit",
+  "ratesCustomTitle": "Custom Rates",
+  "ratesCustomAdd": "Add rate",
+  "ratesCustomEmpty": "No custom rates yet. Add one for a period the standard packages do not cover.",
+  "ratesCustomAddTitle": "Add custom rate",
+  "ratesCustomNameLabel": "Rate name",
+  "ratesCustomNameHint": "e.g. Airport transfer",
+  "ratesCustomPriceLabel": "Price",
+  "ratesCustomPeriodLabel": "Period",
+  "ratesCustomPeriodHourly": "Hourly",
+  "ratesCustomPeriodDaily": "Daily",
+  "ratesCustomPeriodWeekly": "Weekly",
+  "ratesCustomPeriodMonthly": "Monthly",
+  "ratesCustomDelete": "Delete rate",
+  "ratesCustomInvalid": "Enter a name and a price greater than zero.",
+  "pkgMonthlyPackage": "Monthly Package",
+  "pkgMonthlyDesc": "Thirty days, one price",
+  "fleetOnRentUntil": "On Rent until {date}",
+  "@fleetOnRentUntil": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "fleetActiveRentals": "{count} active rentals",
+  "@fleetActiveRentals": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "fleetSchedule": "Schedule",
+  "fleetEditRent": "Edit Rent",
+  "fleetUpdatePrice": "Update Price",
+  "fleetShopSettings": "Shop Settings",
+  "shopProfileOwnerUnknown": "Owner",
+  "fleetAddBlockedTitle": "Shop approval pending",
+  "fleetAddBlockedBody": "Your shop is still under review. You can add vehicles once your shop is approved — usually within 24 hours.",
+  "fleetAddBlockedViewStatus": "View status",
+  "fareTableTitle": "Fare Table",
+  "fareTabInCity": "In-City",
+  "fareTabOutCity": "Out-City",
+  "fareTabHourly": "Hourly",
+  "fareTabMonthly": "Monthly",
+  "fareFreeDelivery": "Default Free delivery",
+  "fareKmIncluded": "{km} km included",
+  "@fareKmIncluded": {
+    "placeholders": {
+      "km": {
+        "type": "int"
+      }
+    }
+  },
+  "fareOutCityDaily": "Out-City day rate: {rate}",
+  "@fareOutCityDaily": {
+    "placeholders": {
+      "rate": {
+        "type": "String"
+      }
+    }
+  },
+  "fareNoRows": "No fares for this tab yet.",
+  "fareProceed": "Proceed",
+  "estimateTitle": "Estimated Rates",
+  "estimateCardTitle": "Estimated Rates",
+  "estimateInCityDay": "In-City / Day",
+  "estimateOutCityDay": "Out-City / Day",
+  "estimateWeekly": "Weekly",
+  "estimateMonthly": "Monthly",
+  "estimateWithDriverSurcharge": "With-driver surcharge",
+  "estimatePerDay": "{amount} / day",
+  "@estimatePerDay": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "estimateDeposit": "Security deposit",
+  "estimateHint": "Estimates use your current rates. Change them in the rate matrix.",
+  "estimateGoToMyCars": "Go to My Cars",
+  "vehiclePublishedTitle": "Car Published",
+  "vehiclePublishedHeading": "Your {vehicle} has been successfully published",
+  "@vehiclePublishedHeading": {
+    "placeholders": {
+      "vehicle": {
+        "type": "String"
+      }
+    }
+  },
+  "vehiclePublishedLinkCopied": "Listing link copied",
+  "vehiclePublishedShareText": "Rent {vehicle} for {rate} / day on RentalHub: {link}",
+  "@vehiclePublishedShareText": {
+    "placeholders": {
+      "vehicle": {
+        "type": "String"
+      },
+      "rate": {
+        "type": "String"
+      },
+      "link": {
+        "type": "String"
+      }
+    }
+  },
+  "vehiclePublishedViewInApp": "View in App",
+  "vehiclePublishedCopyLink": "Copy Link",
+  "vehiclePublishedShareListing": "Share Listing",
+  "vehiclePublishedAddAnother": "Publish another car",
+  "vehicleDetailDailyRate": "{amount} / day",
+  "@vehicleDetailDailyRate": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "vehicleDetailSeats": "{count} seats",
+  "@vehicleDetailSeats": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "vehicleDetailRatesTitle": "Rates",
+  "vehicleDetailDeposit": "Security deposit",
+  "vehicleDetailFareTable": "Fare table",
+  "vehicleDetailBookingsTitle": "Bookings",
+  "vehicleDetailNoBookings": "No bookings for this car yet.",
+  "vehicleDetailManageRates": "Manage rates",
+  "vehicleDetailCalendar": "Booking calendar",
+  "vehicleDetailEdit": "Edit",
+  "shopSettingsTitle": "Shop Settings",
+  "shopSettingsSubtitle": "Your shop name and details",
+  "shopSettingsShopName": "Shop name",
+  "shopSettingsOwnerName": "Owner name",
+  "shopSettingsPhone": "Phone number",
+  "shopSettingsAddress": "Address",
+  "shopSettingsCity": "City",
+  "shopSettingsOpeningHours": "Opening hours",
+  "shopSettingsSave": "Save shop settings",
+  "shopSettingsSaved": "Shop settings saved",
+  "shopSettingsNameShort": "Enter a shop name of at least 3 characters.",
+  "shopSettingsSaveFailed": "Could not save shop settings: {error}",
+  "@shopSettingsSaveFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "shopSettingsLoadError": "Could not load shop settings.",
+  "fleetCalendarTitle": "Fleet Schedule",
+  "fleetCalendarPrevMonth": "Previous month",
+  "fleetCalendarNextMonth": "Next month",
+  "fleetCalendarLoadError": "Could not load the fleet calendar.",
+  "fleetCalendarEmptyTitle": "No cars in your fleet yet",
+  "fleetCalendarEmptyMessage": "Add a car to see its schedule here.",
+  "fleetCalendarBooked": "Booked",
+  "fleetCalendarAvailable": "Available",
+  "vehicleReviewDelivery": "Delivery & Collection",
+  "vehicleReviewDiscounts": "Discounts",
+  "vehicleReviewInsurance": "Insurance & Protection",
+  "vehicleReviewYourEarning": "Your Earning",
+  "subscriptionChoosePlanTitle": "Choose a plan",
+  "subscriptionChoosePlanSubtitle": "Grow your rental business",
+  "subscriptionBillingMonthly": "Monthly",
+  "subscriptionBillingYearly": "Yearly",
+  "subscriptionYearlySave": "Save 17%",
+  "subscriptionPlanFree": "Free",
+  "subscriptionPlanPro": "Pro",
+  "subscriptionPlanBusiness": "Business",
+  "subscriptionFreeCars": "Up to 3 cars",
+  "subscriptionFreeBookings": "Basic bookings",
+  "subscriptionFreeBranding": "Gaari branding",
+  "subscriptionFreeLogins": "1 login",
+  "subscriptionProCars": "Up to 10 cars",
+  "subscriptionProKyc": "Customer KYC",
+  "subscriptionProStamp": "Own shop stamp",
+  "subscriptionProAccounts": "Accounts & reports",
+  "subscriptionProListing": "Priority listing",
+  "subscriptionProTrial": "14-day trial",
+  "subscriptionBusinessCars": "Unlimited cars",
+  "subscriptionBusinessStaff": "5 staff logins",
+  "subscriptionBusinessReports": "Advanced reports",
+  "subscriptionBusinessExport": "PDF & Excel export",
+  "subscriptionBusinessBadge": "Featured badge",
+  "subscriptionBusinessSupport": "Priority support",
+  "subscriptionExamplePrices": "Example prices — final pricing to be decided",
+  "subscriptionViewDetails": "View details",
+  "subscriptionMySubscription": "My subscription",
+  "subscriptionPlayNotConnected": "Google Play billing is not connected yet",
+  "subscriptionPlayNotConnectedNote": "Play Console setup is still pending. You can subscribe by bank transfer below — nothing is charged through Google Play.",
+  "subscriptionPayByBank": "Pay by bank transfer — Google Play billing arrives once the Play Console setup is done",
+  "subscriptionTrialNote": "Your 14-day free trial starts after the admin approves your bank-transfer request.",
+  "subscriptionStartTrial": "Start 14-day free trial",
+  "subscriptionManageInPlay": "Manage in Google Play",
+  "subscriptionManageInPlayNote": "Available once Google Play billing is connected.",
+  "subscriptionCarsUsed": "Cars used",
+  "subscriptionStaffLogins": "Staff logins",
+  "subscriptionBillingHistory": "Billing history",
+  "subscriptionBillingEmpty": "No subscription payments yet",
+  "subscriptionPendingReview": "Pending admin review",
+  "subscriptionStatusApproved": "Approved",
+  "subscriptionStatusRejected": "Rejected",
+  "subscriptionStatusPending": "Pending",
+  "subscriptionTrialActive": "Free trial active",
+  "subscriptionActive": "Active",
+  "subscriptionTrialEnds": "Trial ends",
+  "subscriptionNextBilling": "Next billing date",
+  "subscriptionPaymentMethod": "Payment method",
+  "subscriptionNoPaymentMethod": "No payment method on file",
+  "subscriptionReceiptNote": "Receipts will be sent to your Google account email once Google Play billing is connected.",
+  "subscriptionGoToDashboard": "Go to dashboard",
+  "subscriptionChangePlan": "Change plan",
+  "subscriptionCarLimitTitle": "Car limit reached",
+  "subscriptionCarLimitBody": "Your {plan} plan allows {limit} cars. Upgrade to Business to add unlimited cars and staff.",
+  "@subscriptionCarLimitBody": {
+    "placeholders": {
+      "plan": {
+        "type": "String"
+      },
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "subscriptionUpgradeToBusiness": "Upgrade to Business",
+  "subscriptionNotNow": "Not now",
+  "subscriptionPaymentIssue": "Payment issue · account on hold",
+  "subscriptionPaymentIssueBody": "Update your payment method, or pay by bank transfer. Your data is kept.",
+  "subscriptionDowngradeNote": "If it is not fixed, you move to Free. Your data is kept; extra cars are hidden from listing.",
+  "subscriptionTrialTerms": "Free for 14 days, then billed monthly through Google Play. Auto-renews until cancelled; cancel in Google Play > Subscriptions at least 24 hours before the trial ends.",
+  "subscriptionBilledMonthly": "Billed every month",
+  "subscriptionPerYear": "/ year",
+  "subscriptionPlaySheetTitle": "Google Play purchase",
+  "subscriptionPlayTodayFree": "Today: free for 14 days",
+  "subscriptionPlayThen": "Then billed monthly",
+  "subscriptionFreePlanNote": "You are on the Free plan",
+  "subscriptionCurrentTier": "Current plan",
+  "creditsTitle": "WhatsApp Credits",
+  "creditsBalance": "Credit balance",
+  "creditsEmpty": "No credits yet",
+  "creditsOneMessage": "1 message = 1 credit · credits never expire",
+  "creditsAutoMessages": "Auto messages",
+  "creditsAutoNote": "Messages send automatically only once WhatsApp is connected.",
+  "creditsToggleBooking": "Booking request & approval",
+  "creditsToggleAdvance": "Advance payment receipt",
+  "creditsTogglePickup": "Pickup reminder",
+  "creditsTogglePickupNote": "2 hours before pickup",
+  "creditsToggleAgreement": "Agreement PDF at handover",
+  "creditsToggleReturn": "Return reminder & late warning",
+  "creditsToggleDeposit": "Deposit refunded",
+  "creditsToggleDues": "Dues reminder",
+  "creditsToggleDuesNote": "Every 3 days until paid",
+  "creditsBuy": "Buy credits",
+  "creditsBuyTitle": "Buy credits",
+  "creditsPackBestValue": "Best value",
+  "creditsPerMessage": "per message",
+  "creditsFreeMonthly": "Free credits every month",
+  "creditsFreePlanFree": "Free plan — 10 messages",
+  "creditsFreePlanPro": "Pro plan — 30 credits",
+  "creditsFreePlanBusiness": "Business plan — 100 credits",
+  "creditsBuyPack": "Buy this pack",
+  "creditsPayByBank": "Pay by bank transfer — Google Play billing arrives once the Play Console setup is done",
+  "creditsRequestSubmittedTitle": "Request submitted",
+  "creditsRequestSubmittedBody": "Credits will be added after payment verification.",
+  "creditsAddedTitle": "Credits added",
+  "creditsAddedBody": "Your payment was verified and the credits were added to your balance.",
+  "creditsPreviousBalance": "Previous balance",
+  "creditsNewBalance": "New balance",
+  "creditsPack": "Pack",
+  "creditsPrice": "Price",
+  "creditsDone": "Done",
+  "creditsHistoryTitle": "Message history",
+  "creditsSent": "Sent",
+  "creditsDelivered": "Delivered",
+  "creditsRead": "Read",
+  "creditsHistoryEmpty": "No WhatsApp messages sent yet",
+  "creditsFilterAll": "All",
+  "creditsFilterBookings": "Bookings",
+  "creditsFilterReminders": "Reminders",
+  "creditsFilterReceipts": "Receipts",
+  "creditsUsedLabel": "Messages used",
+  "creditsFreeLabel": "Free credits this month",
+  "creditsTemplateTitle": "Template preview — Booking confirmation",
+  "creditsTemplateNote": "Templates are approved by WhatsApp. Customer name, car, time and amount are filled in automatically.",
+  "creditsSendTest": "Send test to my number",
+  "creditsSendTestDisabled": "Available once WhatsApp is connected.",
+  "creditsZeroTitle": "No credits left",
+  "creditsZeroBody": "The pickup reminder was not sent automatically. Buy credits, or send it yourself from your own WhatsApp.",
+  "creditsZeroBanner": "WhatsApp credits: 0 left",
+  "creditsZeroBannerNote": "You were alerted at 10 credits",
+  "creditsSendViaWhatsapp": "Send via my WhatsApp",
+  "creditsViaWhatsappNote": "Your WhatsApp opens with the message already written. You just tap send.",
+  "creditsViewHistory": "View message history",
+  "creditsViewTemplates": "View templates",
+  "customerDetailTitle": "Customer Profile",
+  "customerDetailNotFound": "Customer not found",
+  "customerDetailNotFoundMessage": "This customer could not be found.",
+  "customerDetailKycTitle": "KYC status",
+  "customerDetailKycOnFile": "KYC documents are on file for this customer.",
+  "customerDetailKycNotOnFile": "No KYC record on file — this customer is known only from bookings.",
+  "customerDetailDocuments": "Documents & photo",
+  "customerDetailNoDocument": "Not provided",
+  "customerDetailProfilePhoto": "Profile photo",
+  "customerDetailCnicFront": "CNIC front",
+  "customerDetailCnicBack": "CNIC back",
+  "customerDetailLicenseFront": "License front",
+  "customerDetailLicenseBack": "License back",
+  "customerDetailSignature": "Signature",
+  "customerDetailRentalHistory": "Rental history",
+  "customerDetailTotalSpent": "Total spent",
+  "customerDetailTotalDues": "Outstanding dues",
+  "customerDetailNotBlacklisted": "Not blacklisted",
+  "customerDetailApprovalPending": "Pending review",
+  "customerDetailApprove": "Approve profile",
+  "customerDetailReject": "Reject profile",
+  "customerDetailRejectReasonTitle": "Reason for rejection",
+  "customerDetailRejectReasonHint": "Write the reason…",
+  "customerDetailRejectReasonRequired": "A reason is required to reject a profile",
+  "customerDetailRejectConfirm": "Reject",
+  "customerAddedTitle": "Customer added",
+  "customerAddedReady": "{name}'s profile is ready — you can now start a booking.",
+  "@customerAddedReady": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "customerAddedStartBooking": "Start Booking",
+  "customerAddedViewProfile": "View Profile",
+  "customersFilterAll": "All",
+  "customersFilterRegular": "Regular",
+  "customersFilterNew": "New",
+  "customersFilterFlagged": "Flagged",
+  "customersBadgeRegular": "Regular",
+  "customersBadgeNew": "New",
+  "customersViewProfile": "View Profile",
+  "returnRefundDeposit": "Refund Deposit",
+  "returnRefundRecorded": "Deposit refund of Rs. {amount} recorded.",
+  "@returnRefundRecorded": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "returnRefundFailed": "Could not record the deposit refund. Please try again.",
+  "returnRecordingRefund": "Recording refund…",
+  "returnCloseBooking": "Complete & Close Booking",
+  "contractFareTitle": "Fare Breakdown",
+  "contractFareDailyRate": "Daily Rate",
+  "contractFareRentalDays": "Rental Days",
+  "contractFareDays": "{days} days",
+  "@contractFareDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "contractFareTotal": "Total Rent",
+  "contractAgreeTerms": "I agree to the terms above",
+  "contractAgreeSaveFailed": "Could not save your agreement choice. Please try again.",
+  "contractGuarantorTitle": "Guarantor / Witness Signature",
+  "contractGuarantorHint": "Ask the guarantor to sign in the box below.",
+  "contractSignAgreement": "Sign Agreement",
+  "contractSigning": "Signing…",
+  "contractAgreementSigned": "Agreement fully signed",
+  "contractSignFailed": "Could not save the signature. Please try again.",
+  "contractShareTitle": "Share Agreement",
+  "contractShareWhatsapp": "WhatsApp",
+  "contractShareEmail": "Email",
+  "contractSharePrint": "Print",
+  "contractShareNote": "The agreement file is shared to the app you choose. Nothing is sent automatically.",
+  "authTermsOfService": "Terms of Service",
+  "authPrivacyPolicy": "Privacy Policy",
+  "authLegalIntro": "By continuing, you agree to our",
+  "authLegalAnd": "and",
+  "legalTermsBody": "RentalHub Terms of Service\n\n1. What RentalHub is\nRentalHub is a car rental marketplace in Pakistan that connects vehicle owners (shops) with customers. Owners list their vehicles and set their own rates; customers book through the app.\n\n2. Your account\nYou are responsible for keeping your sign-in details safe and for everything done with your account. Give true information about yourself, your shop and your vehicles.\n\n3. Bookings and payments\nBooking prices are set by the vehicle owner. Payments, advances and security deposits follow the terms shown at booking time. A booking can be cancelled under the cancellation terms shown for that booking.\n\n4. Your responsibilities\nOwners must keep their vehicles roadworthy, insured and legally registered, and must honour confirmed bookings. Customers must return vehicles on time, in the condition received, and pay any agreed extra charges for damage, late return or extra kilometres.\n\n5. Prohibited use\nDo not use RentalHub for anything unlawful, do not list a vehicle you do not have the right to rent out, and do not share another person's personal information without their permission.\n\n6. Liability\nRentalHub provides the marketplace and the booking tools. Owners and customers are responsible for their own vehicles, driving and agreements with each other. To the extent allowed by law, RentalHub is not liable for loss or damage arising from a rental between an owner and a customer.\n\n7. Changes and contact\nWe may update these terms and will show the current version in the app. Questions: contact RentalHub support from the Help section in the app.",
+  "legalPrivacyBody": "RentalHub Privacy Policy\n\n1. What we collect\nWe collect the information you give us: your name, phone number, email address, CNIC details and documents, shop details, vehicle details and photos, booking and payment records, and messages you send through the app. We also collect basic technical information such as device type and app usage needed to run the service.\n\n2. How we use it\nWe use your information to run RentalHub: to create and verify accounts, list vehicles, process bookings and payments, prevent fraud and blacklisted rentals, and to contact you about your bookings and your shop.\n\n3. How we share it\nWe share your information only as needed to run the service: with the other party to your booking (owner or customer), with payment providers to process payments, and with the authorities when the law requires it. We do not sell your personal information.\n\n4. Photos and documents\nCNIC photos, selfies, licences and shop photos are used only for verification and for the rental record. They are not used for face matching and are not shared publicly.\n\n5. How long we keep it\nWe keep your information while your account is active and for as long as needed for bookings, payments, disputes and legal records. You can ask us to delete your account and its personal information from the Help section, subject to records we must keep by law.\n\n6. Your choices\nYou can update your profile and shop details in the app, and you can turn app notifications on or off in Settings.\n\n7. Contact\nQuestions about your data: contact RentalHub support from the Help section in the app.",
+  "onboardingSubmitForReview": "Submit for Review",
+  "onboardingDocRequired": "{document} is required before submitting.",
+  "@onboardingDocRequired": {
+    "placeholders": {
+      "document": {
+        "type": "String"
+      }
+    }
+  },
+  "addVehicleCityRatesTitle": "In-City / Out-City Day Rates",
+  "addVehicleCityRatesHint": "Prefilled from your full-day rate. Change either rate if trips outside the city cost more.",
+  "addVehicleInCityDayRate": "In-City Day Rate",
+  "addVehicleInCityDayRateHint": "Same-city bookings, per day",
+  "addVehicleOutCityDayRate": "Out-City Day Rate",
+  "addVehicleOutCityDayRateHint": "Trips outside the city, per day",
+  "shareTitle": "Share with Customers",
+  "shareStepOfTwo": "Step {step} of 2",
+  "@shareStepOfTwo": {
+    "placeholders": {
+      "step": {
+        "type": "int"
+      }
+    }
+  },
+  "shareChoosePrice": "Choose a price to share",
+  "shareWithCustomersText": "Rent {vehicle} for {rate} ({period}) on RentalHub: {link}",
+  "@shareWithCustomersText": {
+    "placeholders": {
+      "vehicle": {
+        "type": "String"
+      },
+      "rate": {
+        "type": "String"
+      },
+      "period": {
+        "type": "String"
+      },
+      "link": {
+        "type": "String"
+      }
+    }
+  },
+  "shareLinkNote": "The web listing page behind this link is not live yet.",
+  "rateMatrixInCityTitle": "In-City Rent Rates",
+  "rateMatrixOutCityTitle": "Out-City Rent Rates",
+  "settingsNotifyBookingRequests": "Booking requests",
+  "settingsNotifyPaymentProofs": "Payment proofs",
+  "settingsNotifyHandover": "Handover",
+  "settingsNotifyReturns": "Returns",
+  "settingsNotifyMaintenance": "Maintenance reminders",
+  "reportDownloadPdf": "Download PDF",
+  "reportDownloadPdfSaved": "Report PDF saved to your device."
 }

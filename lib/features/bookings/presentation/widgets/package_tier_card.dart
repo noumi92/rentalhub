@@ -105,7 +105,7 @@ class PackageTierCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  'Rs. $price',
+                  l10n.amountRs(formatRs(price)),
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
                 ),
                 Text(

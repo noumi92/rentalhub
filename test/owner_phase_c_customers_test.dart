@@ -12,7 +12,8 @@ import 'package:rentalhub/features/customer/data/datasources/customer_remote_dat
 import 'package:rentalhub/features/customer/data/models/customer_model.dart';
 import 'package:rentalhub/features/customer/domain/entities/customer_entity.dart';
 import 'package:rentalhub/features/customer/utils/customer_grouping.dart';
-import 'package:rentalhub/features/owner/presentation/views/owner_add_customer_view.dart';
+import 'package:rentalhub/features/owner/presentation/views/add_customer/step2_photo.dart';
+import 'package:rentalhub/features/owner/presentation/views/owner_add_customer_wizard.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_blacklist_view.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_cnic_review_view.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_customer_scan_view.dart';
@@ -462,11 +463,11 @@ House 12, Street 4, Gulberg III, Lahore
       final router =
           await File('lib/core/routing/app_router.dart').readAsString();
       expect(names, contains("ownerAddCustomer = '/owner/customers/add'"));
-      expect(router, contains('OwnerAddCustomerView'));
+      expect(router, contains('OwnerAddCustomerWizard'));
       expect(router, contains("state.uri.queryParameters['cnic']"));
     });
 
-    testWidgets('the form prefills the CNIC, validates, and saves',
+    testWidgets('the wizard prefills the CNIC and gates Next on step 1',
         (tester) async {
       // A CNIC no earlier test in this file has saved, so the
       // pre-save absence check below is meaningful (the shared
@@ -477,7 +478,7 @@ House 12, Street 4, Gulberg III, Lahore
         routes: [
           GoRoute(
             path: '/owner/customers/add',
-            builder: (context, state) => OwnerAddCustomerView(
+            builder: (context, state) => OwnerAddCustomerWizard(
               prefilledCnic: state.uri.queryParameters['cnic'],
             ),
           ),
@@ -501,10 +502,15 @@ House 12, Street 4, Gulberg III, Lahore
           find.widgetWithText(TextField, 'CNIC Number'));
       expect(cnicField.controller?.text, cnic);
 
-      // Saving with no name/phone shows validation errors, not a save.
-      await tester.tap(find.text('Save customer'));
+      // Next with no name/phone stays on step 1 — nothing is saved
+      // yet (the wizard saves once, at step 4; the full save flow
+      // is covered in kyc_wizard_full_flow_test.dart).
+      await tester.ensureVisible(find.text('Next'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Next'));
       await tester.pumpAndSettle();
       expect(find.text('Add Customer'), findsOneWidget);
+      expect(find.byType(Step2Photo), findsNothing);
       expect(
         await di.sl<CustomerRemoteDataSource>()
             .getCustomerByCnic('shop-1', cnic),
@@ -514,17 +520,19 @@ House 12, Street 4, Gulberg III, Lahore
       await tester.enterText(
           find.widgetWithText(TextField, 'Full name'), 'Ayesha Khan');
       await tester.enterText(
-          find.widgetWithText(TextField, 'Phone number'), '0300-3333333');
-      await tester.tap(find.text('Save customer'));
+          find.widgetWithText(TextField, 'WhatsApp number'), '0300-3333333');
+      await tester.ensureVisible(find.text('Verify CNIC & Blacklist'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Verify CNIC & Blacklist'));
+      await tester.pumpAndSettle();
+      expect(find.text('No blacklist record found'), findsOneWidget);
+      await tester.ensureVisible(find.text('Next'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Next'));
       await tester.pumpAndSettle();
 
-      // Lands back on the Customers list with the new customer visible.
-      expect(find.text('Customer saved'), findsOneWidget);
-      expect(find.text('Ayesha Khan'), findsOneWidget);
-      final saved = await di.sl<CustomerRemoteDataSource>()
-          .getCustomerByCnic('shop-1', cnic);
-      expect(saved?.name, 'Ayesha Khan');
-      expect(saved?.phone, '0300-3333333');
+      // Step 2: live photo.
+      expect(find.byType(Step2Photo), findsOneWidget);
     });
 
     testWidgets('a clean scan proceeds to Add Customer, not to booking',
@@ -538,7 +546,7 @@ House 12, Street 4, Gulberg III, Lahore
           ),
           GoRoute(
             path: '/owner/customers/add',
-            builder: (context, state) => OwnerAddCustomerView(
+            builder: (context, state) => OwnerAddCustomerWizard(
               prefilledCnic: state.uri.queryParameters['cnic'],
             ),
           ),
@@ -567,7 +575,9 @@ House 12, Street 4, Gulberg III, Lahore
       final cnicField = tester.widget<TextField>(
           find.widgetWithText(TextField, 'CNIC Number'));
       expect(cnicField.controller?.text, '35201-1234567-1');
-      expect(find.text('Save customer'), findsOneWidget);
+      // The wizard opens on step 1 (CNIC); Save lives on step 4.
+      expect(find.text('Next'), findsOneWidget);
+      expect(find.text('Save customer'), findsNothing);
     });
   });
 }

@@ -4,18 +4,19 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import '../../../../l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
-import 'package:printing/printing.dart';
-import 'package:share_plus/share_plus.dart';
 
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
-import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/app_state_views.dart';
-import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../core/widgets/debounced_button.dart';
+import '../widgets/contract_app_bar.dart';
+import '../widgets/contract_fare_table.dart';
+import '../widgets/contract_share_sheet.dart';
+import '../widgets/contract_signing_section.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
 import '../../../handover/data/datasources/handover_local_data_source.dart';
 import '../../../handover/data/datasources/pdf_contract_generator.dart';
+import '../services/contract_pdf_actions.dart';
 import '../widgets/contract_paper_sheet.dart';
 import '../widgets/contract_verify_card.dart';
 
@@ -68,6 +69,15 @@ class _OwnerContractViewState extends State<OwnerContractView> {
   // '4/4 (Full)'. They now come from the stored handover.
   int? _storedOdometer;
   String? _storedFuelLevel;
+  // Audit item 18 (O20): the wizard-saved guarantor signature, if
+  // one exists — absent renders as "pending", never invented.
+  String? _guarantorSignatureUrl;
+  String? _guarantorName;
+  // Finish build (O20): the guarantor PNG captured on this view's
+  // signing section, and the stored handover's damage notes (needed
+  // to regenerate the PDF with the third signature block).
+  Uint8List? _guarantorSigPng;
+  List<String> _storedDamageNotes = const [];
   // §15: while the stored handover is still loading we cannot know
   // whether an agreement exists — the paper must not render on
   // fallbacks in the meantime.
@@ -90,6 +100,12 @@ class _OwnerContractViewState extends State<OwnerContractView> {
       _loadingStored = true;
       _loadStoredHandover();
     }
+    // Audit item 18 (O20): the wizard-saved guarantor signature, if
+    // one exists — resolved inline (was a one-call method) so the
+    // view stays under the 250-line cap.
+    ContractPdfActions.resolveGuarantorSignature(customerId: widget.booking.customerId, bookingGuarantorName: widget.booking.guarantorName).then((resolved) {
+      if (mounted) setState(() { _guarantorSignatureUrl = resolved.signatureUrl; _guarantorName = resolved.name; });
+    });
   }
 
   Future<void> _loadStoredHandover() async {
@@ -99,7 +115,7 @@ class _OwnerContractViewState extends State<OwnerContractView> {
       if (!mounted) return;
       setState(() {
         if (handover != null) {
-          _storedOdometer = handover.initialOdometer; _storedFuelLevel = handover.fuelLevel;
+          _storedOdometer = handover.initialOdometer; _storedFuelLevel = handover.fuelLevel; _storedDamageNotes = handover.damageNotes;
           if (handover.agreementPdfB64 != null) {
             _pdfBytes = base64Decode(handover.agreementPdfB64!);
           }
@@ -120,37 +136,6 @@ class _OwnerContractViewState extends State<OwnerContractView> {
     }
   }
 
-  Future<void> _sharePdf() async {
-  final l10n = AppLocalizations.of(context)!;
-    final bytes = _pdfBytes;
-    if (bytes == null) {
-      AppFeedback.showError(context, l10n.contractPdfUnavailable);
-      return;
-    }
-    await SharePlus.instance.share(
-      ShareParams(
-        files: [
-          XFile.fromData(
-            bytes,
-            name: 'agreement-${widget.booking.bookingId}.pdf',
-            mimeType: 'application/pdf',
-          ),
-        ],
-        text: l10n.contractShareText(widget.booking.bookingId),
-      ),
-    );
-  }
-
-  Future<void> _printPdf() async {
-  final l10n = AppLocalizations.of(context)!;
-    final bytes = _pdfBytes;
-    if (bytes == null) {
-      AppFeedback.showError(context, l10n.contractPdfUnavailable);
-      return;
-    }
-    await Printing.layoutPdf(onLayout: (_) async => bytes);
-  }
-
   @override
   Widget build(BuildContext context) {
   final l10n = AppLocalizations.of(context)!;
@@ -161,22 +146,15 @@ class _OwnerContractViewState extends State<OwnerContractView> {
         top: false,
         child: Column(
           children: [
-            MinimalAppBar(
+            ContractAppBar(
               title: l10n.contractTitle,
               subtitle: l10n.contractLegalRef(booking.bookingId),
               onBack: widget.onBack,
-              actions: [
-                IconButton(
-                  icon: const Icon(Icons.share_rounded, color: Colors.white),
-                  tooltip: l10n.contractSharePdf,
-                  onPressed: _sharePdf,
-                ),
-                IconButton(
-                  icon: const Icon(Icons.print_rounded, color: Colors.white),
-                  tooltip: l10n.contractPrintPdf,
-                  onPressed: _printPdf,
-                ),
-              ],
+              onDownload: () => ContractPdfActions.downloadPdf(context: context, bookingId: booking.bookingId, bytes: _pdfBytes),
+              // Finish build (O24): Share opens the WhatsApp / Email /
+              // Print option sheet instead of sharing directly.
+              onShare: () => ContractShareSheet.show(context: context, bookingId: booking.bookingId, bytes: _pdfBytes),
+              onPrint: () => ContractPdfActions.printPdf(context: context, bytes: _pdfBytes),
             ),
             Expanded(
               child: _loadingStored
@@ -201,6 +179,26 @@ class _OwnerContractViewState extends State<OwnerContractView> {
                                 securityDeposit: _deposit,
                                 customerSignaturePng: _customerSig,
                                 ownerSignaturePng: _ownerSig,
+                                guarantorSignatureUrl: _guarantorSignatureUrl,
+                                guarantorSignaturePng: _guarantorSigPng,
+                                guarantorName: _guarantorName,
+                              ),
+                              const SizedBox(height: 20),
+                              // Finish build (O20): fare breakdown.
+                              ContractFareTable(booking: booking),
+                              const SizedBox(height: 20),
+                              // Finish build (O20): agree checkbox +
+                              // guarantor pad + Sign Agreement.
+                              ContractSigningSection(
+                                booking: booking,
+                                odometer: widget.odometer ?? _storedOdometer,
+                                fuelLevel: widget.fuelLevel ?? _storedFuelLevel,
+                                securityDeposit: _deposit,
+                                customerSignaturePng: _customerSig,
+                                ownerSignaturePng: _ownerSig,
+                                damageNotes: _storedDamageNotes,
+                                onGuarantorSigned: (png) => setState(() => _guarantorSigPng = png),
+                                onPdfRegenerated: (bytes) => setState(() => _pdfBytes = bytes),
                               ),
                               const SizedBox(height: 20),
                               if (_verificationUrl != null) ...[
@@ -210,12 +208,15 @@ class _OwnerContractViewState extends State<OwnerContractView> {
                               ],
                               // §15: Proceed only once handed over
                               // ('active'); C11: go_router, not push.
+                              // Finish build (O25): Proceed lands on
+                              // the return landing screen, not the
+                              // inspection directly.
                               if (booking.status == 'active')
                                 DebouncedButton(
                                   text: l10n.contractProceedReturn,
                                   icon: Icons.assignment_return_rounded,
                                   onPressed: () => context.push(
-                                    RouteNames.ownerReturn.replaceFirst(
+                                    RouteNames.ownerReturnLanding.replaceFirst(
                                         ':id', booking.bookingId),
                                   ),
                                 )

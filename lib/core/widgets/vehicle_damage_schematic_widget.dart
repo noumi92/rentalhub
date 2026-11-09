@@ -82,22 +82,28 @@ class _VehicleDamageSchematicWidgetState
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  Icon(
-                    Icons.car_crash_rounded,
-                    size: 18,
-                    color: AppColors.secondary,
-                  ),
-                  SizedBox(width: 6),
-                  Text(
-                    l10n?.damageSchematicTitle ??
-                        '4-Quadrant Exterior Inspection Schematic',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w800,
+              Expanded(
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.car_crash_rounded,
+                      size: 18,
+                      color: AppColors.secondary,
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 6),
+                    Flexible(
+                      child: Text(
+                        l10n?.damageSchematicTitle ??
+                            '4-Quadrant Exterior Inspection Schematic',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.w800,
+                            ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),

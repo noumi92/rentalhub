@@ -40,12 +40,18 @@ import '../../features/discovery/presentation/views/shop_cars_view.dart';
 import '../../features/discovery/presentation/views/shop_detail_view.dart';
 import '../../features/discovery/presentation/views/vehicle_detail_view.dart';
 import '../../features/trust/presentation/views/customer_documents_view.dart';
-import '../../features/owner/presentation/views/owner_add_customer_view.dart';
+import '../../features/owner/presentation/views/owner_add_customer_wizard.dart';
 import '../../features/owner/presentation/views/owner_cnic_review_view.dart';
 import '../../features/trust/utils/cnic_text_parser.dart';
 import '../../features/owner/presentation/views/owner_add_vehicle_view.dart';
 import '../../features/owner/presentation/views/owner_booking_requests_view.dart';
 import '../../features/owner/presentation/views/owner_contract_view.dart';
+import '../../features/owner/presentation/views/owner_customer_detail_view.dart';
+import '../../features/owner/presentation/views/owner_customer_added_view.dart';
+import '../../features/owner/presentation/views/owner_return_landing_view.dart';
+import '../../features/owner/presentation/views/owner_share_with_customers_view.dart';
+import '../../features/auth/presentation/views/legal_text_view.dart';
+import '../../features/customer/domain/entities/customer_entity.dart';
 import '../../features/owner/presentation/views/owner_qr_scan_view.dart';
 import '../../features/owner/presentation/views/owner_customer_rating_view.dart';
 import '../../features/owner/presentation/views/owner_blacklist_view.dart';
@@ -67,7 +73,34 @@ import '../../features/owner/presentation/views/owner_disputes_view.dart';
 import '../../features/owner/presentation/views/owner_notifications_view.dart';
 import '../../features/owner/presentation/views/owner_settings_view.dart';
 import '../../features/owner/presentation/views/owner_subscription_view.dart';
+import '../../features/owner/presentation/views/owner_subscription_plan_detail_view.dart';
+import '../../features/owner/presentation/views/owner_subscription_play_purchase_view.dart';
+import '../../features/owner/presentation/views/owner_subscription_active_view.dart';
+import '../../features/owner/presentation/views/owner_subscription_my_view.dart';
+import '../../features/owner/presentation/views/owner_whatsapp_credits_view.dart';
+import '../../features/owner/presentation/views/owner_whatsapp_buy_credits_view.dart';
+import '../../features/owner/presentation/views/owner_whatsapp_credits_added_view.dart';
+import '../../features/owner/presentation/views/owner_whatsapp_history_view.dart';
+import '../../features/owner/presentation/views/owner_whatsapp_template_preview_view.dart';
 import '../../features/owner/presentation/views/owner_vehicle_calendar_view.dart';
+import '../../features/owner/presentation/views/owner_vehicle_detail_view.dart';
+import '../../features/owner/presentation/views/owner_vehicle_published_view.dart';
+import '../../features/owner/presentation/views/owner_fare_table_view.dart';
+import '../../features/owner/presentation/views/owner_price_estimate_view.dart';
+import '../../features/owner/presentation/views/owner_shop_settings_view.dart';
+import '../../features/owner/presentation/views/owner_fleet_calendar_view.dart';
+import '../../features/owner/presentation/views/owner_booking_confirmed_view.dart';
+import '../../features/owner/presentation/views/owner_agreement_signed_view.dart';
+import '../../features/owner/presentation/views/owner_rental_started_view.dart';
+import '../../features/owner/presentation/views/owner_record_damage_view.dart';
+import '../../features/owner/presentation/views/owner_record_extra_charges_view.dart';
+import '../../features/owner/presentation/views/owner_reports_view.dart';
+import '../../features/owner/presentation/views/owner_customer_statement_view.dart';
+import '../../features/owner/presentation/views/owner_finance_settings_view.dart';
+import '../../features/owner/presentation/views/owner_finance_categories_view.dart';
+import '../../features/owner/presentation/views/owner_reset_options_view.dart';
+import '../../features/owner/presentation/views/owner_staff_roles_view.dart';
+import '../../features/owner/presentation/views/owner_signed_out_view.dart';
 import '../../features/owner/presentation/views/owner_whatsapp_logs_view.dart';
 import '../../features/owner/presentation/views/owner_fleet_view.dart';
 import '../../features/owner/presentation/widgets/owner_route_loaders.dart';
@@ -627,32 +660,159 @@ class AppRouter {
               // Fleet: ownerRatesVehicle
               GoRoute(
                 path: RouteNames.ownerRatesVehicle,
-                builder: (context, state) => VehicleRouteLoader(
-                  vehicleId: state.pathParameters['vehicleId']!,
-                  shopId: currentShopId(),
-                  builder: (context, vehicle) => OwnerRateMatrixView(
-                    vehicle: vehicle,
-                    onBack: () => context.pop(),
-                  ),
-                ),
+                pageBuilder: (context, state) {
+                  final vehicleId = state.pathParameters['vehicleId']!;
+                  return MaterialPage(
+                    // Phone bug: go_router keys a page by its route
+                    // PATTERN ('/owner/rates/:vehicleId'), so two rates
+                    // pages — the same vehicle pushed twice, or rates
+                    // for two vehicles — share one key and trip the
+                    // branch Navigator's duplicate-key assertion
+                    // (debug red screen on "Manage rates"). Key by
+                    // the concrete vehicle instead.
+                    key: ValueKey('owner-rates-$vehicleId'),
+                    child: VehicleRouteLoader(
+                      vehicleId: vehicleId,
+                      shopId: currentShopId(),
+                      builder: (context, vehicle) => OwnerRateMatrixView(
+                        vehicle: vehicle,
+                        onBack: () => context.pop(),
+                      ),
+                    ),
+                  );
+                },
               ),
               // Fleet: ownerCalendar
               GoRoute(
                 path: RouteNames.ownerCalendar,
-                builder: (context, state) => VehicleRouteLoader(
-                  vehicleId: state.pathParameters['vehicleId']!,
-                  shopId: currentShopId(),
-                  builder: (context, vehicle) => OwnerVehicleCalendarView(
-                    vehicle: vehicle,
-                    onBack: () => context.pop(),
-                  ),
-                ),
+                pageBuilder: (context, state) {
+                  final vehicleId = state.pathParameters['vehicleId']!;
+                  return MaterialPage(
+                    // Same pattern-key hazard as ownerRatesVehicle.
+                    key: ValueKey('owner-calendar-$vehicleId'),
+                    child: VehicleRouteLoader(
+                      vehicleId: vehicleId,
+                      shopId: currentShopId(),
+                      builder: (context, vehicle) =>
+                          OwnerVehicleCalendarView(
+                        vehicle: vehicle,
+                        onBack: () => context.pop(),
+                      ),
+                    ),
+                  );
+                },
               ),
               // Fleet: ownerFixedRoutes
               GoRoute(
                 path: RouteNames.ownerFixedRoutes,
                 builder: (context, state) => OwnerFixedRoutesView(
                   shopId: currentShopId(),
+                  onBack: () => context.pop(),
+                ),
+              ),
+              // Fleet: ownerVehicleDetail (audit impl, worker D)
+              GoRoute(
+                path: RouteNames.ownerVehicleDetail,
+                pageBuilder: (context, state) {
+                  final vehicleId = state.pathParameters['id']!;
+                  return MaterialPage(
+                    // Same pattern-key hazard as ownerRatesVehicle.
+                    key: ValueKey('owner-vehicle-detail-$vehicleId'),
+                    child: VehicleRouteLoader(
+                      vehicleId: vehicleId,
+                      shopId: currentShopId(),
+                      builder: (context, vehicle) => OwnerVehicleDetailView(
+                        vehicle: vehicle,
+                        onBack: () => context.pop(),
+                      ),
+                    ),
+                  );
+                },
+              ),
+              // Fleet: ownerVehiclePublished (audit impl, worker D)
+              GoRoute(
+                path: RouteNames.ownerVehiclePublished,
+                pageBuilder: (context, state) {
+                  final vehicleId = state.pathParameters['vehicleId']!;
+                  return MaterialPage(
+                    // Same pattern-key hazard as ownerRatesVehicle.
+                    key: ValueKey('owner-vehicle-published-$vehicleId'),
+                    child: VehicleRouteLoader(
+                      vehicleId: vehicleId,
+                      shopId: currentShopId(),
+                      builder: (context, vehicle) =>
+                          OwnerVehiclePublishedView(
+                        vehicle: vehicle,
+                        onBack: () => context.pop(),
+                      ),
+                    ),
+                  );
+                },
+              ),
+              // Fleet: ownerShareWithCustomers (audit impl finish,
+              // worker C) — VehicleRouteLoader pattern, per-vehicle
+              // MaterialPage key, like ownerVehiclePublished.
+              GoRoute(
+                path: RouteNames.ownerShareWithCustomers,
+                pageBuilder: (context, state) {
+                  final vehicleId = state.pathParameters['vehicleId']!;
+                  return MaterialPage(
+                    // Same pattern-key hazard as ownerRatesVehicle.
+                    key: ValueKey('owner-share-$vehicleId'),
+                    child: VehicleRouteLoader(
+                      vehicleId: vehicleId,
+                      shopId: currentShopId(),
+                      builder: (context, vehicle) =>
+                          OwnerShareWithCustomersView(
+                        vehicle: vehicle,
+                        onBack: () => context.pop(),
+                      ),
+                    ),
+                  );
+                },
+              ),
+              // Fleet: ownerFareTable (audit impl, worker D)
+              GoRoute(
+                path: RouteNames.ownerFareTable,
+                pageBuilder: (context, state) {
+                  final vehicleId = state.pathParameters['vehicleId']!;
+                  return MaterialPage(
+                    // Same pattern-key hazard as ownerRatesVehicle.
+                    key: ValueKey('owner-fare-table-$vehicleId'),
+                    child: VehicleRouteLoader(
+                      vehicleId: vehicleId,
+                      shopId: currentShopId(),
+                      builder: (context, vehicle) => OwnerFareTableView(
+                        vehicle: vehicle,
+                        onBack: () => context.pop(),
+                      ),
+                    ),
+                  );
+                },
+              ),
+              // Fleet: ownerPriceEstimate (audit impl, worker D)
+              GoRoute(
+                path: RouteNames.ownerPriceEstimate,
+                pageBuilder: (context, state) {
+                  final vehicleId = state.pathParameters['vehicleId']!;
+                  return MaterialPage(
+                    // Same pattern-key hazard as ownerRatesVehicle.
+                    key: ValueKey('owner-price-estimate-$vehicleId'),
+                    child: VehicleRouteLoader(
+                      vehicleId: vehicleId,
+                      shopId: currentShopId(),
+                      builder: (context, vehicle) => OwnerPriceEstimateView(
+                        vehicle: vehicle,
+                        onBack: () => context.pop(),
+                      ),
+                    ),
+                  );
+                },
+              ),
+              // Fleet: ownerFleetCalendar (audit impl, worker D)
+              GoRoute(
+                path: RouteNames.ownerFleetCalendar,
+                builder: (context, state) => OwnerFleetCalendarView(
                   onBack: () => context.pop(),
                 ),
               ),
@@ -703,12 +863,79 @@ class AppRouter {
               // Requests: ownerManualBooking — #18: name/phone/CNIC
               // arrive as query params from the Customers list Book
               // action (or the scan view's CNIC-only prefill).
+              // Audit impl (worker A): vehicle/dates/trip type arrive
+              // as query params from the request-detail "Convert to
+              // manual entry" action.
               GoRoute(
                 path: RouteNames.ownerManualBooking,
                 builder: (context, state) => OwnerManualBookingView(
                   prefilledCnic: state.uri.queryParameters['cnic'],
                   prefilledName: state.uri.queryParameters['name'],
                   prefilledPhone: state.uri.queryParameters['phone'],
+                  prefilledVehicleId:
+                      state.uri.queryParameters['vehicle'],
+                  prefilledPickupTime: DateTime.tryParse(
+                      state.uri.queryParameters['pickup'] ?? ''),
+                  prefilledReturnTime: DateTime.tryParse(
+                      state.uri.queryParameters['return'] ?? ''),
+                  prefilledTripType:
+                      state.uri.queryParameters['tripType'],
+                ),
+              ),
+              // Requests: ownerBookingConfirmed (audit impl, worker A)
+              GoRoute(
+                path: RouteNames.ownerBookingConfirmed,
+                builder: (context, state) => BookingRouteLoader(
+                  bookingId: state.pathParameters['id']!,
+                  builder: (context, booking) => OwnerBookingConfirmedView(
+                    booking: booking,
+                    onBack: () => context.pop(),
+                  ),
+                ),
+              ),
+              // Requests: ownerAgreementSigned (audit impl, worker B)
+              GoRoute(
+                path: RouteNames.ownerAgreementSigned,
+                builder: (context, state) => BookingRouteLoader(
+                  bookingId: state.pathParameters['id']!,
+                  builder: (context, booking) => OwnerAgreementSignedView(
+                    booking: booking,
+                    onBack: () => context.pop(),
+                  ),
+                ),
+              ),
+              // Requests: ownerRentalStarted (audit impl, worker B)
+              GoRoute(
+                path: RouteNames.ownerRentalStarted,
+                builder: (context, state) => BookingRouteLoader(
+                  bookingId: state.pathParameters['id']!,
+                  builder: (context, booking) => OwnerRentalStartedView(
+                    booking: booking,
+                    onBack: () => context.pop(),
+                  ),
+                ),
+              ),
+              // Requests: ownerRecordDamage (audit impl, worker B)
+              GoRoute(
+                path: RouteNames.ownerRecordDamage,
+                builder: (context, state) => BookingRouteLoader(
+                  bookingId: state.pathParameters['id']!,
+                  builder: (context, booking) => OwnerRecordDamageView(
+                    booking: booking,
+                    onBack: () => context.pop(),
+                  ),
+                ),
+              ),
+              // Requests: ownerRecordExtraCharges (audit impl, worker B)
+              GoRoute(
+                path: RouteNames.ownerRecordExtraCharges,
+                builder: (context, state) => BookingRouteLoader(
+                  bookingId: state.pathParameters['id']!,
+                  builder: (context, booking) =>
+                      OwnerRecordExtraChargesView(
+                    booking: booking,
+                    onBack: () => context.pop(),
+                  ),
                 ),
               ),
               // Requests: ownerHandover
@@ -728,6 +955,19 @@ class AppRouter {
                 builder: (context, state) => BookingRouteLoader(
                   bookingId: state.pathParameters['id']!,
                   builder: (context, booking) => OwnerReturnSettlementView(
+                    booking: booking,
+                    onBack: () => context.pop(),
+                  ),
+                ),
+              ),
+              // Requests: ownerReturnLanding (audit impl finish,
+              // worker B) — the contract view's "Proceed to Return"
+              // lands here; Start goes to ownerReturn.
+              GoRoute(
+                path: RouteNames.ownerReturnLanding,
+                builder: (context, state) => BookingRouteLoader(
+                  bookingId: state.pathParameters['id']!,
+                  builder: (context, booking) => OwnerReturnLandingView(
                     booking: booking,
                     onBack: () => context.pop(),
                   ),
@@ -780,7 +1020,7 @@ class AppRouter {
               // view's Proceed lands here, not in the booking wizard).
               GoRoute(
                 path: RouteNames.ownerAddCustomer,
-                builder: (context, state) => OwnerAddCustomerView(
+                builder: (context, state) => OwnerAddCustomerWizard(
                   prefilledCnic: state.uri.queryParameters['cnic'],
                 ),
               ),
@@ -809,6 +1049,29 @@ class AppRouter {
                 builder: (context, state) => OwnerBlacklistView(
                   shopId: currentShopId(),
                   onBack: () => context.pop(),
+                ),
+              ),
+              // Customers: ownerCustomerAdded (audit impl finish,
+              // worker A) — O13 success screen after the wizard saves.
+              // 4 segments, so it cannot collide with the 3-segment
+              // ownerCustomerDetail below.
+              GoRoute(
+                path: RouteNames.ownerCustomerAdded,
+                builder: (context, state) => OwnerCustomerAddedView(
+                  customerId: state.pathParameters['id']!,
+                  customer: state.extra as CustomerEntity?,
+                ),
+              ),
+              // Customers: ownerCustomerDetail (audit impl finish,
+              // worker A) — the 1 missing screen (#35). Declared LAST
+              // in this branch, after the static /add, /scan and
+              // /cnic-review routes, so they keep matching first.
+              // Sub-screen — never in tabRootPaths.
+              GoRoute(
+                path: RouteNames.ownerCustomerDetail,
+                builder: (context, state) => OwnerCustomerDetailView(
+                  customerId: state.pathParameters['id']!,
+                  shopId: currentShopId(),
                 ),
               ),
             ],
@@ -865,6 +1128,134 @@ class AppRouter {
                   shopId: currentShopId(),
                 ),
               ),
+              // Settings: ownerReports (audit impl, worker C)
+              GoRoute(
+                path: RouteNames.ownerReports,
+                builder: (context, state) => OwnerReportsView(
+                  shopId: currentShopId(),
+                ),
+              ),
+              // Settings: ownerCustomerStatement (audit impl, worker C)
+              GoRoute(
+                path: RouteNames.ownerCustomerStatement,
+                builder: (context, state) => OwnerCustomerStatementView(
+                  shopId: currentShopId(),
+                  customerId: state.pathParameters['customerId']!,
+                ),
+              ),
+              // Settings: ownerFinanceSettings (audit impl, worker C)
+              GoRoute(
+                path: RouteNames.ownerFinanceSettings,
+                builder: (context, state) => OwnerFinanceSettingsView(
+                  shopId: currentShopId(),
+                ),
+              ),
+              // Settings: ownerFinanceCategories (audit impl, worker C)
+              GoRoute(
+                path: RouteNames.ownerFinanceCategories,
+                builder: (context, state) => OwnerFinanceCategoriesView(
+                  shopId: currentShopId(),
+                ),
+              ),
+              // Settings: ownerResetOptions (audit impl, worker C)
+              GoRoute(
+                path: RouteNames.ownerResetOptions,
+                builder: (context, state) => OwnerResetOptionsView(
+                  shopId: currentShopId(),
+                ),
+              ),
+              // Settings: ownerStaffRoles (audit impl, worker C)
+              GoRoute(
+                path: RouteNames.ownerStaffRoles,
+                builder: (context, state) => OwnerStaffRolesView(
+                  shopId: currentShopId(),
+                ),
+              ),
+              // Settings: ownerShopSettings (audit impl, worker D)
+              GoRoute(
+                path: RouteNames.ownerShopSettings,
+                builder: (context, state) => const OwnerShopSettingsView(),
+              ),
+              // Settings: ownerSubscriptionPlan (audit impl, worker E).
+              // state.extra is the plan id: 'free' | 'pro' | 'business'.
+              GoRoute(
+                path: RouteNames.ownerSubscriptionPlan,
+                builder: (context, state) {
+                  final planId = state.extra as String? ?? 'free';
+                  return OwnerSubscriptionPlanDetailView(planId: planId);
+                },
+              ),
+              // Settings: ownerSubscriptionPlayPurchase (audit impl,
+              // worker E). state.extra is {'planId': String,
+              // 'yearly': bool}; no in-app navigation reaches it yet
+              // (D1-gated), the route exists so the sheet is built and
+              // reachable once Play billing lands.
+              GoRoute(
+                path: RouteNames.ownerSubscriptionPlayPurchase,
+                builder: (context, state) {
+                  final extra = state.extra as Map<String, dynamic>?;
+                  return OwnerSubscriptionPlayPurchaseView(
+                    planId: extra?['planId'] as String? ?? 'free',
+                    yearly: extra?['yearly'] as bool? ?? false,
+                  );
+                },
+              ),
+              // Settings: ownerSubscriptionActive (audit impl, worker E)
+              GoRoute(
+                path: RouteNames.ownerSubscriptionActive,
+                builder: (context, state) =>
+                    const OwnerSubscriptionActiveView(),
+              ),
+              // Settings: ownerSubscriptionMy (audit impl, worker E)
+              GoRoute(
+                path: RouteNames.ownerSubscriptionMy,
+                builder: (context, state) =>
+                    const OwnerSubscriptionMyView(),
+              ),
+              // Settings: ownerWhatsappCredits (audit impl, worker E)
+              GoRoute(
+                path: RouteNames.ownerWhatsappCredits,
+                builder: (context, state) => OwnerWhatsappCreditsView(
+                  onBack: () => context.pop(),
+                ),
+              ),
+              // Settings: ownerWhatsappBuyCredits (audit impl, worker E)
+              GoRoute(
+                path: RouteNames.ownerWhatsappBuyCredits,
+                builder: (context, state) =>
+                    const OwnerWhatsappBuyCreditsView(),
+              ),
+              // Settings: ownerWhatsappCreditsAdded (audit impl,
+              // worker E). state.extra is {'requestSubmitted': bool,
+              // 'pack': int?, 'price': int?, 'previousBalance': int?,
+              // 'newBalance': int?}.
+              GoRoute(
+                path: RouteNames.ownerWhatsappCreditsAdded,
+                builder: (context, state) {
+                  final extra = state.extra as Map<String, dynamic>?;
+                  return OwnerWhatsappCreditsAddedView(
+                    requestSubmitted:
+                        extra?['requestSubmitted'] as bool? ?? false,
+                    pack: (extra?['pack'] as num?)?.toInt(),
+                    price: (extra?['price'] as num?)?.toInt(),
+                    previousBalance:
+                        (extra?['previousBalance'] as num?)?.toInt(),
+                    newBalance: (extra?['newBalance'] as num?)?.toInt(),
+                  );
+                },
+              ),
+              // Settings: ownerWhatsappHistory (audit impl, worker E)
+              GoRoute(
+                path: RouteNames.ownerWhatsappHistory,
+                builder: (context, state) =>
+                    const OwnerWhatsappHistoryView(),
+              ),
+              // Settings: ownerWhatsappTemplate (audit impl, worker E)
+              GoRoute(
+                path: RouteNames.ownerWhatsappTemplate,
+                builder: (context, state) =>
+                    const OwnerWhatsappTemplatePreviewView(),
+              ),
             ],
           ),
         ],
@@ -872,13 +1263,41 @@ class AppRouter {
 
       GoRoute(
         path: RouteNames.ownerOnboarding,
-        builder: (context, state) => const OwnerOnboardingView(),
+        builder: (context, state) => OwnerOnboardingView(
+          // Audit impl (worker D): the fleet-add gate links to the
+          // Application Status step (?step=status opens step 6).
+          initialStep:
+              state.uri.queryParameters['step'] == 'status' ? 6 : 1,
+        ),
       ),
       GoRoute(
         // Phone-test #4: top-level (not inside a shell branch) so the
         // failed-sync banner and Settings can open it without a tab bar.
         path: RouteNames.syncDetails,
         builder: (context, state) => const SyncDetailsView(),
+      ),
+      GoRoute(
+        // Audit impl (worker C, O49): top-level, like syncDetails —
+        // the signed-out screen has no tab bar. Reached from the
+        // Settings sign-out action after the confirm dialog.
+        path: RouteNames.ownerSignedOut,
+        builder: (context, state) => const OwnerSignedOutView(),
+      ),
+      GoRoute(
+        // Audit impl finish (worker C): top-level, like syncDetails —
+        // the legal texts have no shell and no tab bar. Reached from
+        // the login footer.
+        path: RouteNames.legalTermsOfService,
+        builder: (context, state) => const LegalTextView(
+          document: LegalDocument.terms,
+        ),
+      ),
+      GoRoute(
+        // Audit impl finish (worker C): top-level, like syncDetails.
+        path: RouteNames.legalPrivacyPolicy,
+        builder: (context, state) => const LegalTextView(
+          document: LegalDocument.privacy,
+        ),
       ),
       GoRoute(
         path: RouteNames.ownerRates,

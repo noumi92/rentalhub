@@ -8,6 +8,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/booking_entity.dart';
 import 'payment_account_card.dart';
 import '../../../../core/utils/money_format.dart';
+import '../../../owner/presentation/widgets/operations/booking_fare_breakdown.dart';
 
 /// The approved-state body of [OwnerPaymentAccountsView]: the
 /// "Reservation Request Approved!" banner, the shop's payment accounts,
@@ -86,6 +87,10 @@ class ApprovedAccountsBody extends StatelessWidget {
                     ],
                   ),
                 ),
+                const SizedBox(height: 16),
+                // Audit §5 item 2 (O15): the fare breakdown — dates,
+                // day count, daily rate × days, advance / remaining.
+                BookingFareBreakdown(booking: booking),
                 const SizedBox(height: 16),
                 Text(
                   l10n.paymentAccountsDirect,

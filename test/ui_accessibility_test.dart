@@ -516,9 +516,9 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.byTooltip('Show amount').first);
       await tester.pumpAndSettle();
-      expect(find.text('Rs. 600000'), findsOneWidget);
-      expect(find.text('Rs. 450000'), findsOneWidget);
-      expect(find.text('Rs. 150000'), findsOneWidget);
+      expect(find.text('Rs. 600,000'), findsOneWidget);
+      expect(find.text('Rs. 450,000'), findsOneWidget);
+      expect(find.text('Rs. 150,000'), findsOneWidget);
     });
 
     testWidgets('Customer Bookings with a 7-digit booking at 200%',

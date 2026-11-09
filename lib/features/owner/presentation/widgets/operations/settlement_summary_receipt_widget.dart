@@ -13,6 +13,9 @@ class SettlementSummaryReceiptWidget extends StatelessWidget {
   final int damageCharge;
   final int securityDeposit;
   final int netRefund;
+  /// Audit item 6 (O28): manually recorded extra charges, shown as
+  /// their own deduction row and included in the total.
+  final int extraCharges;
 
   const SettlementSummaryReceiptWidget({
     super.key,
@@ -25,13 +28,14 @@ class SettlementSummaryReceiptWidget extends StatelessWidget {
     this.damageCharge = 0,
     required this.securityDeposit,
     required this.netRefund,
+    this.extraCharges = 0,
   });
 
   @override
   Widget build(BuildContext context) {
   final l10n = AppLocalizations.of(context)!;
     final totalDeductions =
-        excessKmPenalty + fuelDeficitFee + overtimeFee + damageCharge;
+        excessKmPenalty + fuelDeficitFee + overtimeFee + damageCharge + extraCharges;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -58,6 +62,8 @@ class SettlementSummaryReceiptWidget extends StatelessWidget {
             _itemRow(context, l10n.returnReceiptOvertime, l10n.returnReceiptDeductionsAmount(formatRs(overtimeFee)), isDeduction: true),
           if (damageCharge > 0)
             _itemRow(context, l10n.returnReceiptDamage, l10n.returnReceiptDeductionsAmount(formatRs(damageCharge)), isDeduction: true),
+          if (extraCharges > 0)
+            _itemRow(context, l10n.returnReceiptExtraCharges, l10n.returnReceiptDeductionsAmount(formatRs(extraCharges)), isDeduction: true),
           const Divider(height: 18),
           _itemRow(context, l10n.returnReceiptDepositHeld, l10n.amountRs(formatRs(securityDeposit))),
           _itemRow(context, l10n.returnReceiptTotalDeductions, l10n.returnReceiptDeductionsAmount(formatRs(totalDeductions)), isDeduction: true),

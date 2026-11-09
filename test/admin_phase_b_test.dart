@@ -10,6 +10,7 @@ import 'package:rentalhub/features/admin/presentation/views/admin_shops_view.dar
 import 'package:rentalhub/features/admin/presentation/widgets/shop_application_detail_sheet.dart';
 import 'package:rentalhub/features/discovery/data/models/shop_model.dart';
 import 'package:rentalhub/features/discovery/domain/entities/shop_entity.dart';
+import 'package:rentalhub/l10n/app_localizations.dart';
 
 ShopModel _shop({
   String name = 'Metro Car Rentals',
@@ -137,7 +138,10 @@ void main() {
 
     testWidgets('cars list shows search and review filters',
         (tester) async {
-      await tester.pumpWidget(const MaterialApp(home: AdminCarsView()));
+      await tester.pumpWidget(const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: AdminCarsView()));
       await tester.pumpAndSettle();
       expect(find.text('Cars'), findsOneWidget);
       expect(find.text('Pending'), findsOneWidget);

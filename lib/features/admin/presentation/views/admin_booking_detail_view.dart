@@ -5,7 +5,9 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
+import '../../../../core/utils/money_format.dart';
 import '../../../../core/widgets/app_feedback.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../data/datasources/admin_platform_data_source.dart';
 import '../widgets/admin_shell.dart';
 
@@ -50,14 +52,15 @@ class _AdminBookingDetailViewState extends State<AdminBookingDetailView> {
     final d = _detail;
     if (d == null) return;
     final b = d.booking;
+    final l10n = AppLocalizations.of(context)!;
     final summary = '''
 Booking ${b.bookingId}
 Status: ${b.status} • Trip: ${b.tripType} (${b.kmLimit ?? '—'} km limit)
 Vehicle: ${b.vehicleName ?? b.vehicleId} (${b.vehiclePlate ?? '—'})
 Shop: ${b.shopName ?? b.shopId} • Customer: ${b.customerName ?? b.customerId}
 Pickup: ${b.pickupTime} • Return: ${b.returnTime}
-Total: Rs. ${b.totalAmount} • Advance required: Rs. ${b.advanceRequired} • Paid: Rs. ${b.advancePaid} • Remaining: Rs. ${b.remainingBalance}
-Deposit: ${d.deposit == null ? 'none' : 'Rs. ${d.deposit!.amount} (${d.deposit!.status})'}
+Total: ${l10n.amountRs(formatRs(b.totalAmount))} • Advance required: ${l10n.amountRs(formatRs(b.advanceRequired))} • Paid: ${l10n.amountRs(formatRs(b.advancePaid))} • Remaining: ${l10n.amountRs(formatRs(b.remainingBalance))}
+Deposit: ${d.deposit == null ? 'none' : '${l10n.amountRs(formatRs(d.deposit!.amount))} (${d.deposit!.status})'}
 Agreement PDF: ${d.agreementPdfUrl ?? 'none'}
 Handover: ${d.handover == null ? 'none' : 'odometer ${d.handover!.initialOdometer} km, fuel ${d.handover!.fuelLevel}, damage: ${d.handover!.damageNotes.join('; ')}'}
 ''';
@@ -69,6 +72,7 @@ Handover: ${d.handover == null ? 'none' : 'odometer ${d.handover!.initialOdomete
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return AdminShell(
       activeRoute: RouteNames.adminBookings,
       title: 'Booking detail',
@@ -116,10 +120,11 @@ Handover: ${d.handover == null ? 'none' : 'odometer ${d.handover!.initialOdomete
                       ),
                       const SizedBox(height: 16),
                       _section('Amounts', [
-                        'Total: Rs. ${_detail!.booking.totalAmount}',
-                        'Advance required: Rs. ${_detail!.booking.advanceRequired}',
-                        'Advance paid: Rs. ${_detail!.booking.advancePaid}',
-                        'Remaining balance: Rs. ${_detail!.booking.remainingBalance}',
+                        l10n.bookingTotalAmount(
+                            formatRs(_detail!.booking.totalAmount)),
+                        'Advance required: ${l10n.amountRs(formatRs(_detail!.booking.advanceRequired))}',
+                        'Advance paid: ${l10n.amountRs(formatRs(_detail!.booking.advancePaid))}',
+                        'Remaining balance: ${l10n.amountRs(formatRs(_detail!.booking.remainingBalance))}',
                         if ((_detail!.booking.transactionId ?? '').isNotEmpty)
                           'Transaction: ${_detail!.booking.transactionId}',
                       ]),
@@ -128,8 +133,8 @@ Handover: ${d.handover == null ? 'none' : 'odometer ${d.handover!.initialOdomete
                           'Payment proof: ${_detail!.booking.paymentProofUrl}',
                         _detail!.deposit == null
                             ? 'No deposit record.'
-                            : 'Deposit Rs. ${_detail!.deposit!.amount} — ${_detail!.deposit!.status}'
-                                '${_detail!.deposit!.deductedAmount != null ? ' (deducted Rs. ${_detail!.deposit!.deductedAmount})' : ''}',
+                            : 'Deposit ${l10n.amountRs(formatRs(_detail!.deposit!.amount))} — ${_detail!.deposit!.status}'
+                                '${_detail!.deposit!.deductedAmount != null ? ' (deducted ${l10n.amountRs(formatRs(_detail!.deposit!.deductedAmount!))})' : ''}',
                       ]),
                       _section('Agreement', [
                         if (_detail!.agreementPdfUrl != null)

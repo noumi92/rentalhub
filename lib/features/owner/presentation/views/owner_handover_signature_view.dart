@@ -17,7 +17,9 @@ import '../../../fleet/data/datasources/fleet_remote_data_source.dart';
 import '../../../handover/presentation/cubit/handover_cubit.dart';
 import '../widgets/handover_damage_notes_editor.dart';
 import '../widgets/operations/dual_signature_pad_widget.dart';
+import '../widgets/operations/exterior_photo_picker.dart';
 import '../widgets/operations/fuel_odometer_input_widget.dart';
+import '../widgets/operations/handover_checklist_section.dart';
 
 class OwnerHandoverSignatureView extends StatefulWidget {
   final BookingEntity booking;
@@ -48,6 +50,21 @@ class _OwnerHandoverSignatureViewState
   String? _loadError;
   String _shopName = '';
   int _securityDeposit = 0;
+  // Audit item 4 (O19): exterior photos (side → signed URL), the
+  // documents/accessories checklist, and the keys toggle.
+  Map<String, String?> _photos = const {
+    'front': null,
+    'back': null,
+    'left': null,
+    'right': null,
+  };
+  Set<String> _documentsGiven = {};
+  Set<String> _accessories = {};
+  bool _keysHandedOver = false;
+  // Audit item 14 (O23): real vehicle detail for the agreement PDF.
+  String? _vehiclePlate;
+  String? _vehicleColour;
+  String? _vehicleFuel;
 
   @override
   void initState() {
@@ -68,11 +85,20 @@ class _OwnerHandoverSignatureViewState
       if (_shopName.isEmpty && shopId.isNotEmpty) {
         final doc = await FirebaseFirestore.instance.collection('shops').doc(shopId).get();
         final name = (doc.data()?['name'] ?? doc.data()?['shopName']) as String?;
-        if (name != null && name.isNotEmpty && mounted) setState(() => _shopName = name);
+        if (name != null && name.isNotEmpty && mounted) {
+          setState(() => _shopName = name);
+        }
       }
       final vehicles = await sl<FleetRemoteDataSource>().getShopVehicles(shopId);
       final vehicle = vehicles.where((v) => v.vehicleId == widget.booking.vehicleId).toList();
-      if (vehicle.isNotEmpty && mounted) setState(() => _securityDeposit = vehicle.first.securityDepositPkr ?? 0);
+      if (vehicle.isNotEmpty && mounted) {
+        setState(() {
+          _securityDeposit = vehicle.first.securityDepositPkr ?? 0;
+          _vehiclePlate = vehicle.first.plateNumber;
+          _vehicleColour = vehicle.first.color;
+          _vehicleFuel = vehicle.first.fuelType;
+        });
+      }
     } catch (e) {
       error = e.toString();
     }
@@ -116,6 +142,9 @@ class _OwnerHandoverSignatureViewState
         isWithDriver: booking.isWithDriver, pickupTime: booking.pickupTime, returnTime: booking.returnTime,
         totalAmount: booking.totalAmount, advancePaid: booking.advancePaid, securityDeposit: _securityDeposit,
         initialOdometer: odo, fuelLevel: _selectedFuel, damageNotes: _damageNotes,
+        photoFrontUrl: _photos['front'], photoBackUrl: _photos['back'], photoLeftUrl: _photos['left'], photoRightUrl: _photos['right'],
+        documentsGiven: _documentsGiven.toList(), accessories: _accessories.toList(), keysHandedOver: _keysHandedOver,
+        vehiclePlate: _vehiclePlate, vehicleColour: _vehicleColour, vehicleFuel: _vehicleFuel,
         customerSignaturePng: customerPng, ownerSignaturePng: ownerPng, isOnline: true,
       );
 
@@ -124,8 +153,9 @@ class _OwnerHandoverSignatureViewState
 
       if (mounted) {
         AppFeedback.showSuccess(context, l10n.handoverCertified);
-        // C11: route through go_router (the contract route loads the stored handover — PDF + signatures — by booking id).
-        context.pushReplacement(RouteNames.ownerContract.replaceFirst(':id', booking.bookingId));
+        // Audit item 17 (O24): handover completion lands on the
+        // Agreement Signed screen, which continues to Rental Started.
+        context.pushReplacement(RouteNames.ownerAgreementSigned.replaceFirst(':id', booking.bookingId));
       }
     } catch (e) {
       if (mounted) AppFeedback.showError(context, l10n.handoverCompleteFailed(e.toString()));
@@ -156,6 +186,10 @@ class _OwnerHandoverSignatureViewState
                         const SizedBox(height: 16),
                       ],
                       FuelOdometerInputWidget(odometerController: _odometerController, selectedFuel: _selectedFuel, onFuelSelected: (f) => setState(() => _selectedFuel = f)),
+                      const SizedBox(height: 16),
+                      ExteriorPhotoPicker(bookingId: widget.booking.bookingId, shopId: widget.booking.shopId, photos: _photos, onChanged: (photos) => setState(() => _photos = photos)),
+                      const SizedBox(height: 16),
+                      HandoverChecklistSection(documentsGiven: _documentsGiven, accessories: _accessories, keysHandedOver: _keysHandedOver, onDocumentsChanged: (v) => setState(() => _documentsGiven = v), onAccessoriesChanged: (v) => setState(() => _accessories = v), onKeysChanged: (v) => setState(() => _keysHandedOver = v)),
                       const SizedBox(height: 16),
                       HandoverDamageNotesEditor(onChanged: (notes) => setState(() => _damageNotes = notes)),
                       const SizedBox(height: 16),

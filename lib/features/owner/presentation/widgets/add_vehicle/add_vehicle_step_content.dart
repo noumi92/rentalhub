@@ -277,6 +277,10 @@ class AddVehicleRatesStep extends StatelessWidget {
     required this.enableWeekly,
     required this.onToggleWeekly,
     required this.rateWeeklyController,
+    required this.enableMonthly,
+    required this.onToggleMonthly,
+    required this.rateMonthlyController,
+    required this.outCityDayRateController,
     required this.supportSelfDrive,
     required this.onToggleSelfDrive,
     required this.supportWithDriver,
@@ -304,6 +308,10 @@ class AddVehicleRatesStep extends StatelessWidget {
   final bool enableWeekly;
   final ValueChanged<bool> onToggleWeekly;
   final TextEditingController rateWeeklyController;
+  final bool enableMonthly;
+  final ValueChanged<bool> onToggleMonthly;
+  final TextEditingController rateMonthlyController;
+  final TextEditingController outCityDayRateController;
   final bool supportSelfDrive;
   final ValueChanged<bool> onToggleSelfDrive;
   final bool supportWithDriver;
@@ -333,6 +341,10 @@ class AddVehicleRatesStep extends StatelessWidget {
       enableWeekly: enableWeekly,
       onToggleWeekly: onToggleWeekly,
       rateWeeklyController: rateWeeklyController,
+      enableMonthly: enableMonthly,
+      onToggleMonthly: onToggleMonthly,
+      rateMonthlyController: rateMonthlyController,
+      outCityDayRateController: outCityDayRateController,
       supportSelfDrive: supportSelfDrive,
       onToggleSelfDrive: onToggleSelfDrive,
       supportWithDriver: supportWithDriver,
@@ -363,6 +375,7 @@ class AddVehicleReviewStep extends StatelessWidget {
     required this.seats,
     required this.dailyRate,
     required this.driverAllowance,
+    this.monthlyRate = 0,
     required this.supportSelfDrive,
     required this.supportWithDriver,
     required this.deposit,
@@ -385,6 +398,7 @@ class AddVehicleReviewStep extends StatelessWidget {
   final int seats;
   final int dailyRate;
   final int driverAllowance;
+  final int monthlyRate;
   final bool supportSelfDrive;
   final bool supportWithDriver;
   final int deposit;
@@ -409,6 +423,7 @@ class AddVehicleReviewStep extends StatelessWidget {
       seats: seats,
       dailyRate: dailyRate,
       driverAllowance: driverAllowance,
+      monthlyRate: monthlyRate,
       supportSelfDrive: supportSelfDrive,
       supportWithDriver: supportWithDriver,
       deposit: deposit,

@@ -271,6 +271,10 @@ class FleetRemoteDataSource {
       'isSelfDriveAvailable': model.isSelfDriveAvailable,
       'isWithDriverAvailable': model.isWithDriverAvailable,
       if (map['weeklyRate'] != null) 'weeklyRate': map['weeklyRate'],
+      if (map['monthlyRate'] != null) 'monthlyRate': map['monthlyRate'],
+      if (map['customRates'] != null) 'customRates': map['customRates'],
+      if (map['perKmPricingEnabled'] != null)
+        'perKmPricingEnabled': map['perKmPricingEnabled'],
       if (map['securityDepositPkr'] != null)
         'securityDepositPkr': map['securityDepositPkr'],
       if (map['advanceRequiredPkr'] != null)

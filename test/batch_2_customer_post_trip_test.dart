@@ -105,9 +105,9 @@ supportedLocales: AppLocalizations.supportedLocales,
 
       expect(find.text('Wallet & Security Escrow'), findsOneWidget);
       expect(find.text('Active Escrow & Advances'), findsOneWidget);
-      expect(find.text('Rs. 12500'), findsOneWidget);
-      expect(find.text('Rs. 2500'), findsOneWidget);
-      expect(find.text('Rs. 10000'), findsOneWidget);
+      expect(find.text('Rs. 12,500'), findsOneWidget);
+      expect(find.text('Rs. 2,500'), findsOneWidget);
+      expect(find.text('Rs. 10,000'), findsOneWidget);
       expect(find.text('Transaction Ledger'), findsOneWidget);
       expect(find.textContaining('Advance paid — Honda Civic'), findsOneWidget);
       expect(find.textContaining('Security deposit held — Honda Civic'),

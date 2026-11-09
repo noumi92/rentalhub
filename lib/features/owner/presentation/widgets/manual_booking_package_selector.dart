@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../../../l10n/app_localizations.dart';
 
-import '../../../../../core/constants/app_colors.dart';
-import '../../../../../core/utils/money_format.dart';
+import '../../../../core/constants/app_colors.dart';
+import '../../../../core/utils/money_format.dart';
 import '../../../fleet/domain/entities/vehicle_entity.dart';
+import 'operations/booking_fare_breakdown.dart';
 
 /// The vehicle dropdown of the walk-in booking wizard. Extracted from
 /// [OwnerManualBookingView] so the view stays under the 250-line cap.
@@ -65,6 +66,9 @@ class ManualBookingPackageSelector extends StatelessWidget {
     required this.onPackageChanged,
     required this.isWithDriver,
     required this.onDriverModeChanged,
+    this.isOutOfCity = false,
+    this.pickup,
+    this.returnTime,
   });
 
   final VehicleEntity? vehicle;
@@ -73,20 +77,69 @@ class ManualBookingPackageSelector extends StatelessWidget {
   final bool isWithDriver;
   final ValueChanged<bool> onDriverModeChanged;
 
-  /// The counter total for a package, shared with the view that creates
-  /// the booking so the displayed total and the booked total never drift.
-  static int totalFor({
+  /// Audit §5 item 1: the trip type and the picked dates drive the
+  /// displayed total, exactly as they drive the booked total.
+  final bool isOutOfCity;
+  final DateTime? pickup;
+  final DateTime? returnTime;
+
+  /// The single-unit price of a package: the package price (scaled
+  /// by the out-of-city ratio when the trip leaves the city — the
+  /// same ratio the customer picker applies in
+  /// `PackageTierList.optionsFor`) plus the with-driver surcharge.
+  /// [totalFor] multiplies this by days/weeks; [unitFor] is the
+  /// per-day (or per-week) rate the fare summary shows.
+  static int unitFor({
     required VehicleEntity? vehicle,
     required VehiclePackageEntity? package,
     required bool isWithDriver,
+    bool isOutOfCity = false,
   }) {
     if (vehicle == null || package == null) return 0;
-    if (!isWithDriver) return package.pricePkr;
+    var unit = package.pricePkr;
+    if (isOutOfCity && vehicle.rates.daily24 > 0) {
+      final outDaily =
+          vehicle.rates.outOfCityDaily ?? vehicle.rates.daily24;
+      unit = (unit * outDaily / vehicle.rates.daily24).round();
+    }
+    if (!isWithDriver) return unit;
     final perDay = vehicle.withDriverSurchargePkr ?? 0;
     final surcharge = package.hours >= 24
         ? perDay * (package.hours ~/ 24)
         : (perDay * package.hours / 24).round();
-    return package.pricePkr + surcharge;
+    return unit + surcharge;
+  }
+
+  /// The counter total for a package, shared with the view that creates
+  /// the booking so the displayed total and the booked total never drift.
+  /// Audit §5 item 1: with pickup/return dates the total is day-aware
+  /// — a 24h package costs the unit price per day, a Weekly package
+  /// per week; hourly packages stay a single unit. Without dates the
+  /// old single-unit total is returned, so existing callers are
+  /// unaffected.
+  static int totalFor({
+    required VehicleEntity? vehicle,
+    required VehiclePackageEntity? package,
+    required bool isWithDriver,
+    bool isOutOfCity = false,
+    DateTime? pickup,
+    DateTime? returnTime,
+  }) {
+    final unit = unitFor(
+      vehicle: vehicle,
+      package: package,
+      isWithDriver: isWithDriver,
+      isOutOfCity: isOutOfCity,
+    );
+    if (unit == 0 || package == null || pickup == null || returnTime == null) {
+      return unit;
+    }
+    final days = dayCountBetween(pickup, returnTime);
+    if (package.label == '24h') return unit * days;
+    if (package.label == 'Weekly') return unit * ((days + 6) ~/ 7);
+    // Audit §5 (Monthly): one unit per 30-day block, like Weekly.
+    if (package.label == 'Monthly') return unit * ((days + 29) ~/ 30);
+    return unit;
   }
 
   /// Phase B (D2): the return time follows the chosen package — a
@@ -102,6 +155,9 @@ class ManualBookingPackageSelector extends StatelessWidget {
         vehicle: vehicle,
         package: selectedPackage,
         isWithDriver: isWithDriver,
+        isOutOfCity: isOutOfCity,
+        pickup: pickup,
+        returnTime: returnTime,
       );
 
   @override
@@ -189,7 +245,7 @@ class ManualBookingStepIndicator extends StatelessWidget {
     final labels = [
       l10n.manualBookingCustomerSection,
       l10n.manualBookingVehicleSection,
-      l10n.manualBookingConfirm,
+      l10n.manualBookingConfirmTitle,
     ];
     final colorScheme = Theme.of(context).colorScheme;
     return Row(

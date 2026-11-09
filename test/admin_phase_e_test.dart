@@ -8,6 +8,7 @@ import 'package:rentalhub/features/admin/presentation/views/admin_platform_setti
 import 'package:rentalhub/features/admin/presentation/views/admin_reports_view.dart';
 import 'package:rentalhub/features/admin/presentation/views/admin_tickets_view.dart';
 import 'package:rentalhub/features/admin/presentation/widgets/ticket_detail_sheet.dart';
+import 'package:rentalhub/l10n/app_localizations.dart';
 
 void main() {
   setUpAll(() async {
@@ -202,7 +203,10 @@ void main() {
     });
 
     testWidgets('reports view shows the range and export', (tester) async {
-      await tester.pumpWidget(const MaterialApp(home: AdminReportsView()));
+      await tester.pumpWidget(const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: AdminReportsView()));
       await tester.pumpAndSettle();
       expect(find.text('Reports'), findsWidgets);
       expect(find.text('Export CSV'), findsOneWidget);

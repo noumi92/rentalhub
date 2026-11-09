@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../../core/constants/app_colors.dart';
+import '../../../../../core/utils/money_format.dart';
 import '../../../../../l10n/app_localizations.dart';
 
 class VehiclePackageCard extends StatelessWidget {
@@ -74,7 +75,7 @@ class VehiclePackageCard extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'Rs. $price',
+              l10n.amountRs(formatRs(price)),
               style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
             ),
             Text(

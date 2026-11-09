@@ -1,23 +1,22 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_dimensions.dart';
 import '../../../../core/di/injection_container.dart';
-import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/responsive.dart';
-import '../../../../core/widgets/app_icon_chip.dart';
 import '../../../../core/widgets/app_state_views.dart';
-import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
 import '../../../finance/data/datasources/security_deposit_data_source.dart';
 import '../../../fleet/data/datasources/fleet_remote_data_source.dart';
 import '../../../notifications/data/datasources/notification_data_source.dart';
+import '../widgets/dashboard/dashboard_app_bar.dart';
+import '../widgets/dashboard/dashboard_greeting_header.dart';
 import '../widgets/dashboard/dashboard_kpis.dart';
 import '../widgets/dashboard/dashboard_ledger_section.dart';
 import '../widgets/dashboard/dashboard_quick_actions.dart';
+import '../widgets/dashboard/dashboard_schedule_section.dart';
 import '../widgets/dashboard/revenue_kpi_card.dart';
 
 class OwnerDashboardView extends StatefulWidget {
@@ -35,10 +34,9 @@ class OwnerDashboardView extends StatefulWidget {
 class _OwnerDashboardViewState extends State<OwnerDashboardView> {
   List<BookingEntity> _allBookings = [];
   bool _isLoading = true;
-  // E2: a load failure used to render an empty dashboard silently;
-  // it now renders an error state with retry.
   bool _hasError = false;
   String _shopName = '';
+  String _ownerName = '';
   int _fleetTotal = 0;
   int _fleetAvailable = 0;
   int _unreadNotifications = 0;
@@ -63,16 +61,16 @@ class _OwnerDashboardViewState extends State<OwnerDashboardView> {
       final notifications = await sl<NotificationDataSource>()
           .getShopNotifications(widget.shopId);
       String shopName = '';
+      String ownerName = '';
       try {
         final doc = await FirebaseFirestore.instance
             .collection('shops')
             .doc(widget.shopId)
             .get();
-        shopName =
-            (doc.data()?['name'] ?? doc.data()?['shopName'] ?? '') as String;
+        final data = doc.data() ?? {};
+        shopName = (data['name'] ?? data['shopName'] ?? '') as String;
+        ownerName = (data['owner_name'] ?? data['ownerName'] ?? '') as String;
       } catch (_) {}
-      // The settle rate is real: completed trips whose deposit the
-      // return flow actually settled, over all completed trips.
       final completed = list.where((b) => b.status == 'completed').toList();
       double? settleRate;
       if (completed.isNotEmpty) {
@@ -88,6 +86,7 @@ class _OwnerDashboardViewState extends State<OwnerDashboardView> {
         setState(() {
           _allBookings = list;
           _shopName = shopName;
+          _ownerName = ownerName;
           _fleetTotal = vehicles.length;
           _fleetAvailable =
               vehicles.where((v) => v.status == 'available').length;
@@ -106,13 +105,27 @@ class _OwnerDashboardViewState extends State<OwnerDashboardView> {
       .where((b) => b.status == 'completed' || b.status == 'active' || b.status == 'paid')
       .fold(0, (total, b) => total + b.totalAmount);
 
+  /// Audit impl (O29): today's earnings — today's completed / paid
+  /// bookings revenue, by pickup date.
+  int get _todayEarnings {
+    final now = DateTime.now();
+    return _allBookings
+        .where((b) =>
+            (b.status == 'completed' ||
+                b.status == 'active' ||
+                b.status == 'paid') &&
+            b.pickupTime.year == now.year &&
+            b.pickupTime.month == now.month &&
+            b.pickupTime.day == now.day)
+        .fold(0, (total, b) => total + b.totalAmount);
+  }
+
   int get _activeCount => _allBookings.where((b) => b.status == 'active').length;
   int get _completedCount => _allBookings.where((b) => b.status == 'completed').length;
   int get _waitingCount => _allBookings
       .where((b) => b.status == 'requested' || b.status == 'payment_submitted')
       .length;
 
-  /// Revenue from paid / active / completed bookings picked up in one month.
   int _monthRevenue(int year, int month) => _allBookings
       .where((b) =>
           (b.status == 'completed' ||
@@ -122,8 +135,6 @@ class _OwnerDashboardViewState extends State<OwnerDashboardView> {
           b.pickupTime.month == month)
       .fold(0, (total, b) => total + b.totalAmount);
 
-  /// Real month-on-month revenue change in percent, from the bookings'
-  /// pickup dates. Null when there is no last-month revenue to compare.
   int? get _growthPct {
     final now = DateTime.now();
     final thisMonth = _monthRevenue(now.year, now.month);
@@ -141,13 +152,14 @@ class _OwnerDashboardViewState extends State<OwnerDashboardView> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    // One source of truth for the revenue trend: the label and the
-    // direction come from the same pct, so they can never disagree
-    // (audit §2 — never an up arrow in green for a negative month;
-    // no last-month revenue or a flat month is neutral, no icon).
     final growthPct = _growthPct;
+    final greeting = DashboardGreetingHeader(
+      ownerName: _ownerName,
+      shopName: _shopName,
+    );
     final kpis = DashboardKpis(
       totalRevenue: _totalRevenue,
+      todayEarnings: _todayEarnings,
       growthLabel: growthPct == null ? l10n.dashboardNoRevenueLastMonth : l10n.dashboardGrowthLabel('${growthPct >= 0 ? '+' : ''}$growthPct'),
       growthTrend: growthPct == null || growthPct == 0 ? KpiTrend.neutral : growthPct > 0 ? KpiTrend.up : KpiTrend.down,
       activeCount: _activeCount,
@@ -159,76 +171,58 @@ class _OwnerDashboardViewState extends State<OwnerDashboardView> {
       fleetAvailable: _fleetAvailable,
       fleetTotal: _fleetTotal,
     );
-    // E1: the ledger section lives in its own widget file so this view
-    // stays under the 250-line cap with the quick actions added.
+    final schedule = DashboardScheduleSection(bookings: _allBookings);
     final ledger = DashboardLedgerSection(
       isEmpty: _allBookings.isEmpty,
       ledger: _ledger,
     );
-    // D3: compact stacks KPIs above the ledger; medium+ puts them side by side.
+    final leftColumn = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        greeting,
+        const SizedBox(height: 16),
+        kpis,
+        const SizedBox(height: 20),
+        schedule,
+      ],
+    );
     final body = isMediumOrLarger(context)
         ? Row(
             key: const Key('dashboard-two-columns'),
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(child: kpis),
+              Expanded(child: leftColumn),
               const SizedBox(width: 20),
               Expanded(child: ledger),
             ],
           )
         : Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [kpis, const SizedBox(height: 20), ledger],
+            children: [
+              greeting,
+              const SizedBox(height: 16),
+              kpis,
+              const SizedBox(height: 20),
+              schedule,
+              const SizedBox(height: 20),
+              ledger,
+            ],
           );
     return Scaffold(
-      // C1: MinimalAppBar owns the top inset; this SafeArea must not add it again.
       body: SafeArea(
         top: false,
         child: Column(
           children: [
-            // #9/#12: MinimalAppBar — bell (with unread badge),
-            // settings and refresh, each in a tinted AppIconChip.
-            MinimalAppBar(
-              title: l10n.dashboardTitle,
-              subtitle:
-                  _shopName.isNotEmpty ? _shopName : l10n.dashboardMyShowroom,
-              actions: [
-                AppIconChip(
-                  icon: Icons.notifications_rounded,
-                  tooltip: l10n.dashboardNotificationsTooltip,
-                  background: Colors.white.withValues(alpha: 0.15),
-                  iconColor: Colors.white,
-                  badgeCount:
-                      _unreadNotifications > 0 ? _unreadNotifications : null,
-                  onPressed: () => context.push(RouteNames.ownerNotifications),
-                ),
-                const SizedBox(width: 8),
-                AppIconChip(
-                  icon: Icons.settings_rounded,
-                  tooltip: l10n.dashboardSettingsTooltip,
-                  background: Colors.white.withValues(alpha: 0.15),
-                  iconColor: Colors.white,
-                  onPressed: () => context.push(RouteNames.ownerSettings),
-                ),
-                const SizedBox(width: 8),
-                AppIconChip(
-                  icon: Icons.refresh_rounded,
-                  tooltip: l10n.dashboardRefreshTooltip,
-                  background: Colors.white.withValues(alpha: 0.15),
-                  iconColor: Colors.white,
-                  onPressed: _loadDashboardData,
-                ),
-              ],
+            DashboardAppBar(
+              shopName: _shopName,
+              unreadNotifications: _unreadNotifications,
+              onRefresh: _loadDashboardData,
             ),
-            // E1: quick actions sit between the header and the KPIs,
-            // always visible (they do not scroll away with the ledger).
             const Padding(
               padding: EdgeInsets.fromLTRB(16, 12, 16, 4),
               child: DashboardQuickActions(),
             ),
             Expanded(
-              // E2: shared loading / error states (the ledger's own
-              // empty text lives in DashboardLedgerSection, untouched).
               child: _isLoading
                   ? AppLoadingState(message: l10n.dashboardLoading)
                   : _hasError

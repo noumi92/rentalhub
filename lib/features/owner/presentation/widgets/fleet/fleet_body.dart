@@ -19,6 +19,9 @@ class FleetBody extends StatelessWidget {
     required this.onEditRates,
     required this.onViewCalendar,
     required this.onTapVehicle,
+    this.rentedUntil = const {},
+    this.onEditRent,
+    this.onUpdatePrice,
   });
 
   final FleetState state;
@@ -31,6 +34,12 @@ class FleetBody extends StatelessWidget {
   final void Function(VehicleEntity vehicle) onEditRates;
   final void Function(VehicleEntity vehicle) onViewCalendar;
   final void Function(VehicleEntity vehicle) onTapVehicle;
+
+  /// Audit §5 (O05/O30): active-booking return dates by vehicle id,
+  /// plus the literal "Edit Rent" / "Update Price" actions.
+  final Map<String, DateTime> rentedUntil;
+  final void Function(VehicleEntity vehicle)? onEditRent;
+  final void Function(VehicleEntity vehicle)? onUpdatePrice;
 
   @override
   Widget build(BuildContext context) {
@@ -76,6 +85,9 @@ class FleetBody extends StatelessWidget {
           onEditRates: () => onEditRates(v),
           onViewCalendar: () => onViewCalendar(v),
           onTap: () => onTapVehicle(v),
+          rentedUntil: rentedUntil[v.vehicleId],
+          onEditRent: onEditRent == null ? null : () => onEditRent!(v),
+          onUpdatePrice: onUpdatePrice == null ? null : () => onUpdatePrice!(v),
         );
       },
     );

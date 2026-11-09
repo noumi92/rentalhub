@@ -60,7 +60,7 @@ void main() {
           reason: 'Phone-test #4: the failed-banner/details target.');
       final router =
           File('lib/core/routing/app_router.dart').readAsStringSync();
-      expect(router, contains('OwnerAddCustomerView'));
+      expect(router, contains('OwnerAddCustomerWizard'));
       expect(router, contains('SyncDetailsView'));
       // syncDetails is a top-level route (no tab bar), not a shell
       // branch route: it must be registered outside the shells.

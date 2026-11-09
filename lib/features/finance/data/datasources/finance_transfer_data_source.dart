@@ -38,6 +38,7 @@ class FinanceTransferDataSource {
     String? vehicleId,
     String? customerId,
     String? note,
+    String? paymentMethod,
     DateTime? createdAt,
   }) async {
     if (kind != 'income' && kind != 'expense') {
@@ -59,6 +60,7 @@ class FinanceTransferDataSource {
       vehicleId: vehicleId,
       customerId: customerId,
       note: note,
+      paymentMethod: paymentMethod,
       createdAt: createdAt ?? DateTime.now(),
     );
     _inMemory.add(model);

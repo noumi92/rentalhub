@@ -3,32 +3,27 @@ import 'package:flutter/material.dart';
 import '../../../../../l10n/app_localizations.dart';
 import 'rate_matrix_field_widget.dart';
 
-/// The pricing-policy fields of the rate matrix: out-of-city daily rate,
-/// with-driver surcharge, security deposit, advance, extra-hour charge
-/// and fuel policy. Extracted from [OwnerRateMatrixView] so the view
-/// stays under the 250-line cap.
+/// The pricing-policy fields of the rate matrix: with-driver
+/// surcharge, security deposit, advance, extra-hour charge and fuel
+/// policy. The out-of-city rates live in [PricingOutCityRates] now
+/// (audit §5 finish, P4-O07/P4-O09). Extracted from
+/// [OwnerRateMatrixView] so the view stays under the 250-line cap.
 class PricingPolicyFields extends StatelessWidget {
   const PricingPolicyFields({
     super.key,
-    required this.outOfCityController,
     required this.surchargeController,
     required this.depositController,
     required this.advanceController,
     required this.extraHourController,
-    required this.extraKmController,
-    required this.outOfCityKmController,
     required this.fuelPolicy,
     required this.onFuelPolicyChanged,
     required this.fuelPolicies,
   });
 
-  final TextEditingController outOfCityController;
   final TextEditingController surchargeController;
   final TextEditingController depositController;
   final TextEditingController advanceController;
   final TextEditingController extraHourController;
-  final TextEditingController extraKmController;
-  final TextEditingController outOfCityKmController;
   final String fuelPolicy;
   final ValueChanged<String> onFuelPolicyChanged;
   final List<String> fuelPolicies;
@@ -39,13 +34,6 @@ class PricingPolicyFields extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        RateMatrixFieldWidget(
-          controller: outOfCityController,
-          label: l10n.pricingOutOfCityDaily,
-          hint: 'Rs. 10,500 / day',
-          kmCap: l10n.pricingOutOfCityDailyCap,
-        ),
-        const SizedBox(height: 10),
         RateMatrixFieldWidget(
           controller: surchargeController,
           label: l10n.pricingWithDriverSurcharge,
@@ -72,20 +60,6 @@ class PricingPolicyFields extends StatelessWidget {
           label: l10n.pricingExtraHourCharge,
           hint: 'Rs. 600 / hour',
           kmCap: l10n.pricingExtraHourCap,
-        ),
-        const SizedBox(height: 10),
-        RateMatrixFieldWidget(
-          controller: extraKmController,
-          label: l10n.pricingExtraKmCharge,
-          hint: 'Rs. 100 / km',
-          kmCap: l10n.pricingExtraKmCap,
-        ),
-        const SizedBox(height: 10),
-        RateMatrixFieldWidget(
-          controller: outOfCityKmController,
-          label: l10n.pricingOutOfCityKmAllowance,
-          hint: '350 km / day',
-          kmCap: l10n.pricingOutOfCityKmCap,
         ),
         const SizedBox(height: 14),
         Text(l10n.pricingFuelPolicy,

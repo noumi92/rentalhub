@@ -66,6 +66,11 @@ const Map<String, ({String title, String subtitle, String km})>
     subtitle: 'Seven days, one price',
     km: '250 km/day',
   ),
+  'Monthly': (
+    title: 'Monthly Package',
+    subtitle: 'Thirty days, one price',
+    km: '250 km/day',
+  ),
 };
 
 /// The tier cards of the booking picker, extracted from
@@ -184,6 +189,8 @@ class PackageTierList extends StatelessWidget {
         return l10n.pkgDaily;
       case 'Weekly':
         return l10n.pkgWeeklyPackage;
+      case 'Monthly':
+        return l10n.pkgMonthlyPackage;
       default:
         return o.title;
     }
@@ -203,6 +210,8 @@ class PackageTierList extends StatelessWidget {
         return l10n.pkgDailyDesc;
       case 'Weekly':
         return l10n.pkgWeeklyDesc;
+      case 'Monthly':
+        return l10n.pkgMonthlyDesc;
       default:
         return o.subtitle;
     }

@@ -229,7 +229,11 @@ void main() {
       );
       await tester.pumpAndSettle();
       expect(find.byType(AppShellNav), findsOneWidget);
-      expect(find.byType(NavigationBar), findsOneWidget);
+      // Phone bug: the bar used to be a Material NavigationBar forced
+      // to 56 px, which clipped the labels — the custom bar renders
+      // every tab label fully inside the bar instead.
+      expect(find.text('Tab A'), findsOneWidget);
+      expect(find.text('Tab B'), findsOneWidget);
     });
 
     testWidgets('tab switch preserves the previous tab scroll position',
@@ -275,7 +279,6 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Detail A'), findsOneWidget);
       expect(find.byType(AppShellNav), findsNothing);
-      expect(find.byType(NavigationBar), findsNothing);
 
       router.pop();
       await tester.pumpAndSettle();
@@ -298,7 +301,7 @@ void main() {
       expect(find.text('Screen A'), findsOneWidget);
       expect(find.byType(AppShellNav), findsOneWidget);
       expect(
-        tester.widget<NavigationBar>(find.byType(NavigationBar)).selectedIndex,
+        tester.widget<AppShellNav>(find.byType(AppShellNav)).currentIndex,
         0,
       );
     });
@@ -359,12 +362,16 @@ void main() {
         tester.getSize(find.byWidget(container)).height,
         AppShellNav.navHeight,
       );
-      expect(
-        tester.getSize(find.byType(NavigationBar)).height,
-        AppShellNav.navHeight,
-      );
+      // Phone bug: the old NavigationBar clipped the labels below
+      // the 56 px edge — every label must sit fully inside the bar.
+      final barRect = tester.getRect(find.byType(AppShellNav));
+      for (final label in ['Home', 'Bookings']) {
+        final labelRect = tester.getRect(find.text(label));
+        expect(labelRect.top >= barRect.top, isTrue, reason: label);
+        expect(labelRect.bottom <= barRect.bottom, isTrue, reason: label);
+      }
       final theme = Theme.of(
-        tester.element(find.byType(NavigationBar)),
+        tester.element(find.byType(AppShellNav)),
       );
       expect(theme.navigationBarTheme.indicatorColor, AppColors.secondary);
       expect(
@@ -382,7 +389,7 @@ void main() {
       expect(container.margin, isNull);
       expect(container.decoration, isNull);
       final theme = Theme.of(
-        tester.element(find.byType(NavigationBar)),
+        tester.element(find.byType(AppShellNav)),
       );
       expect(theme.navigationBarTheme.indicatorColor, AppColors.secondaryDark);
     });
@@ -393,13 +400,17 @@ void main() {
       await pumpNav(tester,
           theme: AppTheme.lightTheme, bottomPadding: 24);
       // 56 px of content + 24 px of system inset below it; the
-      // NavigationBar itself is still exactly 56 px tall.
+      // destinations themselves are still exactly 56 px tall, so the
+      // labels stay clear of the gesture pill.
       final container = navContainer(tester, AppColors.primary);
       expect(tester.getSize(find.byWidget(container)).height, 56 + 24);
-      expect(
-        tester.getSize(find.byType(NavigationBar)).height,
-        AppShellNav.navHeight,
-      );
+      final barRect = tester.getRect(find.byType(AppShellNav));
+      for (final label in ['Home', 'Bookings']) {
+        final labelRect = tester.getRect(find.text(label));
+        expect(labelRect.bottom <= barRect.top + AppShellNav.navHeight,
+            isTrue,
+            reason: label);
+      }
       // The bar is still flush: no margin, no radius, no SafeArea.
       expect(container.margin, isNull);
       expect(container.decoration, isNull);
@@ -419,12 +430,15 @@ void main() {
       final container = navContainer(tester, AppColors.primary);
       expect(tester.getSize(find.byWidget(container)).height,
           greaterThan(AppShellNav.navHeight));
-      expect(
-        tester.getSize(find.byType(NavigationBar)).height,
-        greaterThan(AppShellNav.navHeight),
-      );
       expect(find.text('Home'), findsOneWidget);
       expect(find.text('Bookings'), findsOneWidget);
+      // The labels still sit fully inside the grown bar.
+      final barRect = tester.getRect(find.byType(AppShellNav));
+      for (final label in ['Home', 'Bookings']) {
+        final labelRect = tester.getRect(find.text(label));
+        expect(labelRect.top >= barRect.top, isTrue, reason: label);
+        expect(labelRect.bottom <= barRect.bottom, isTrue, reason: label);
+      }
     });
   });
 

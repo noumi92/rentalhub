@@ -27,6 +27,18 @@ import '../../l10n/app_localizations.dart';
 /// [label] is the English fallback; [l10nKey] names the localized
 /// label (resolved at render time, so the tabs follow the locale).
 /// Tests construct items without a key and keep the plain label.
+///
+/// Phone bug (run #50 APK): this used to be a Material
+/// [NavigationBar] forced to 56 px. NavigationBar is designed for an
+/// 80 px bar: its destination layout centres the icon and puts the
+/// label below it, so icon + label need ~64 px — at 56 px the icons
+/// poked out of the top of the bar and the labels were clipped at
+/// the bottom edge (reproduced in a widget test: unselected icons
+/// 3 px above the bar, labels 7 px below it). The bar is now a plain
+/// [Row] of icon-over-label destinations sized to fit 56 px exactly:
+/// selected 32 (pill) + 2 + ~17 (label) = 51 px, unselected
+/// 24 + 2 + ~17 = 43 px, both centred — no overflow at any text
+/// scale the bar grows for (see [contentHeight]).
 class ShellNavItem {
   final Widget icon;
   final String label;
@@ -92,35 +104,116 @@ class AppShellNav extends StatelessWidget {
     final theme = Theme.of(context);
     final background =
         theme.navigationBarTheme.backgroundColor ?? theme.colorScheme.primary;
+    final indicatorColor = theme.navigationBarTheme.indicatorColor ??
+        theme.colorScheme.secondary;
     final l10n = AppLocalizations.of(context);
     // Audit fix: the 56 px content height is kept, but the system
     // gesture inset is added below it (Scaffold passes the full
     // MediaQuery padding to bottomNavigationBar). At large text
     // scales the 12 sp labels need more room, so the content grows
-    // past 56 px instead of clipping.
+    // past 56 px instead of clipping: the tallest column is the
+    // selected one (32 px pill + 2 px gap + the scaled label), so
+    // the growth budget is 36 px + 1.4x the scaled label size.
     final bottomInset = MediaQuery.of(context).padding.bottom;
     final textScaler = MediaQuery.textScalerOf(context);
     final contentHeight =
-        math.max(navHeight, 40 + textScaler.scale(12));
+        math.max(navHeight, 36 + textScaler.scale(12) * 1.4);
+    // Phone bug: a Material NavigationBar forced to 56 px clips the
+    // labels (its destinations need ~64 px). Each destination here
+    // is an explicit icon-over-label column that fits 56 px, with a
+    // full-height tap target.
     return Container(
       height: contentHeight + bottomInset,
       padding: EdgeInsets.only(bottom: bottomInset),
       color: background,
-      child: NavigationBar(
+      child: SizedBox(
         height: contentHeight,
-        backgroundColor: background,
-        elevation: 0,
-        selectedIndex: currentIndex,
-        // E2: a light selection click on every tab tap.
-        onDestinationSelected: (index) {
-          HapticFeedback.selectionClick();
-          onTap(index);
-        },
-        destinations: [
-          for (final item in items)
-            NavigationDestination(
-                icon: item.icon, label: labelFor(l10n, item)),
-        ],
+        child: Row(
+          children: [
+            for (var i = 0; i < items.length; i++)
+              Expanded(
+                child: _TabDestination(
+                  item: items[i],
+                  label: labelFor(l10n, items[i]),
+                  selected: i == currentIndex,
+                  indicatorColor: indicatorColor,
+                  iconTheme: theme.navigationBarTheme.iconTheme,
+                  labelStyle: theme.navigationBarTheme.labelTextStyle,
+                  onTap: () {
+                    // E2: a light selection click on every tab tap.
+                    HapticFeedback.selectionClick();
+                    onTap(i);
+                  },
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// One tab: icon over label, centred in the 56 px content height.
+/// The selected tab gets the orange pill behind its icon (64x32,
+/// the M3 indicator shape); unselected tabs show the bare icon.
+/// Both columns are centred, so the icon centres line up across
+/// tabs and the labels always sit fully inside the bar.
+class _TabDestination extends StatelessWidget {
+  final ShellNavItem item;
+  final String label;
+  final bool selected;
+  final Color indicatorColor;
+  final WidgetStateProperty<IconThemeData?>? iconTheme;
+  final WidgetStateProperty<TextStyle?>? labelStyle;
+  final VoidCallback onTap;
+
+  const _TabDestination({
+    required this.item,
+    required this.label,
+    required this.selected,
+    required this.indicatorColor,
+    required this.iconTheme,
+    required this.labelStyle,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final states = selected ? {WidgetState.selected} : <WidgetState>{};
+    final resolvedIcon =
+        iconTheme?.resolve(states) ?? const IconThemeData(size: 24);
+    final resolvedLabel = labelStyle?.resolve(states) ??
+        const TextStyle(fontSize: 12, fontWeight: FontWeight.w500);
+    final icon = selected
+        ? Container(
+            width: 64,
+            height: 32,
+            decoration: BoxDecoration(
+              color: indicatorColor,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            alignment: Alignment.center,
+            child: item.icon,
+          )
+        : item.icon;
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            IconTheme(data: resolvedIcon, child: icon),
+            const SizedBox(height: 2),
+            Text(
+              label,
+              style: resolvedLabel,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
       ),
     );
   }

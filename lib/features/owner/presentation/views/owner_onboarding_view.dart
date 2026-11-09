@@ -15,20 +15,24 @@ import '../constants/owner_onboarding_constants.dart';
 import '../services/owner_onboarding_submission_service.dart';
 import '../widgets/onboarding/onboarding_stepper_bar.dart';
 import '../widgets/onboarding/shop_approval_status_step_widget.dart';
+import '../widgets/onboarding/shop_review_step_widget.dart';
 import '../widgets/onboarding/shop_details_step_widget.dart';
 import '../widgets/onboarding/shop_kyc_docs_step_widget.dart';
 import '../widgets/onboarding/shop_location_step_widget.dart';
 import '../widgets/onboarding/shop_payout_step_widget.dart';
 
 class OwnerOnboardingView extends StatefulWidget {
-  const OwnerOnboardingView({super.key});
+  /// Audit §5 (P2-5): the fleet-add gate links to the status step, so
+  /// the router may open the wizard straight at it (`initialStep: 6`).
+  final int initialStep;
+  const OwnerOnboardingView({super.key, this.initialStep = 1});
 
   @override
   State<OwnerOnboardingView> createState() => _OwnerOnboardingViewState();
 }
 
 class _OwnerOnboardingViewState extends State<OwnerOnboardingView> {
-  int _currentStep = 1;
+  late int _currentStep = widget.initialStep;
 
   // Step 1: Details — controllers start EMPTY (audit §1/C6): the old prefilled shop name / owner / CNIC / phones were publishable as-is. Hints live on the fields (see the step widgets).
   XFile? _shopLogoFile;
@@ -102,6 +106,10 @@ class _OwnerOnboardingViewState extends State<OwnerOnboardingView> {
         final ibanErr = PakistaniValidators.validatePakistaniIban(_bankAccountController.text);
         if (ibanErr != null) { AppFeedback.showError(context, ibanErr); return false; }
       }
+    } else if (_currentStep == 4) {
+      // Audit §5 finish (P2-4): CNIC front + back + selfie are REQUIRED — missing ones block submit with field errors, never a success.
+      final missing = <String>[if (_cnicFrontFile == null) l10n.onboardingCnicFront, if (_cnicBackFile == null) l10n.onboardingCnicBack, if (_selfieFile == null) l10n.onboardingSelfie];
+      if (missing.isNotEmpty) { AppFeedback.showError(context, l10n.onboardingDocRequired(missing.join(', '))); return false; }
     }
     return true;
   }
@@ -122,7 +130,7 @@ class _OwnerOnboardingViewState extends State<OwnerOnboardingView> {
       );
       if (!mounted) return;
       AppFeedback.showSuccess(context, l10n.onboardingSubmitted);
-      setState(() => _currentStep = 5);
+      setState(() => _currentStep = 6);
     } catch (e) {
       if (!mounted) return;
       AppFeedback.showError(context, l10n.customersRatingSubmitFailed(e.toString()));
@@ -133,7 +141,7 @@ class _OwnerOnboardingViewState extends State<OwnerOnboardingView> {
 
   void _handleNext() async {
     if (!_validateStep()) return;
-    if (_currentStep == 4) {
+    if (_currentStep == 5) {
       await _handleSubmitShop();
       return;
     }
@@ -171,28 +179,28 @@ class _OwnerOnboardingViewState extends State<OwnerOnboardingView> {
                       subtitle: _getHeaderSubtitle(l10n),
                       onBack: _prevStep,
                       actions: [
-                        if (_currentStep < 5)
+                        if (_currentStep < 6)
                           Container(
                             margin: const EdgeInsets.only(right: 8),
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                             decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.18), borderRadius: BorderRadius.circular(12)),
-                            child: Text(l10n.onboardingStepOf(_currentStep), style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700, color: Colors.white)),
+                            child: Text(l10n.onboardingStepOfFive(_currentStep), style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700, color: Colors.white)),
                           ),
                       ],
                     ),
-                    if (_currentStep < 5) OnboardingStepperBar(currentStep: _currentStep),
+                    if (_currentStep < 6) OnboardingStepperBar(currentStep: _currentStep),
                     Padding(padding: const EdgeInsets.all(16), child: _buildCurrentStepContent()),
                   ],
                 ),
               ),
             ),
-            if (_currentStep < 5)
+            if (_currentStep < 6)
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, border: Border(top: BorderSide(color: Theme.of(context).dividerColor)), boxShadow: [BoxShadow(color: Color(0x0C000000), blurRadius: 8, offset: Offset(0, -3))]),
                 child: DebouncedButton(
-                  text: _currentStep == 4 ? l10n.onboardingSubmit : l10n.onboardingNextStep,
-                  icon: _currentStep == 4 ? Icons.check_circle_rounded : Icons.arrow_forward_rounded,
+                  text: _currentStep == 5 ? l10n.onboardingSubmitForReview : l10n.onboardingNextStep, // Audit §5 finish (P2-4): review-step button reads "Submit for Review".
+                  icon: _currentStep == 5 ? Icons.check_circle_rounded : Icons.arrow_forward_rounded,
                   isLoading: _isSubmitting,
                   onPressed: () async => _handleNext(),
                 ),
@@ -204,46 +212,38 @@ class _OwnerOnboardingViewState extends State<OwnerOnboardingView> {
   }
 
   Widget _buildCurrentStepContent() {
+    final l10n = AppLocalizations.of(context)!;
     switch (_currentStep) {
       case 1:
-        return ShopDetailsStepWidget(
-          shopLogoFile: _shopLogoFile,
-          onPickLogo: () => _chooseMedia((f) => _shopLogoFile = f, hasExisting: _shopLogoFile != null),
+        return ShopDetailsStepWidget(shopLogoFile: _shopLogoFile, onPickLogo: () => _chooseMedia((f) => _shopLogoFile = f, hasExisting: _shopLogoFile != null),
           shopNameController: _shopNameController, ownerNameController: _ownerNameController, cnicController: _cnicController, whatsappController: _whatsappController, phoneController: _phoneController,
-          openingHours: _openingHours,
-          onOpeningHoursChanged: (v) => setState(() => _openingHours = v),
-        );
+          openingHours: _openingHours, onOpeningHoursChanged: (v) => setState(() => _openingHours = v));
       case 2:
-        return ShopLocationStepWidget(
-          mapController: _mapController, shopPin: _shopPin, onPinChanged: (p) { setState(() => _shopPin = p); _mapController.move(p, 14.0); },
-          addressController: _addressController, selectedCity: _selectedCity, onCityChanged: (c) => setState(() => _selectedCity = c),
-          majorCities: OwnerOnboardingConstants.majorCities, isLocating: _isLocating, onFetchGps: _fetchCurrentGps,
-        );
+        return ShopLocationStepWidget(mapController: _mapController, shopPin: _shopPin, onPinChanged: (p) { setState(() => _shopPin = p); _mapController.move(p, 14.0); },
+          addressController: _addressController, selectedCity: _selectedCity, onCityChanged: (c) => setState(() => _selectedCity = c), majorCities: OwnerOnboardingConstants.majorCities, isLocating: _isLocating, onFetchGps: _fetchCurrentGps);
       case 3:
-        return ShopPayoutStepWidget(
-          jazzCashEnabled: _jazzCashEnabled, onJazzCashToggle: (v) => setState(() => _jazzCashEnabled = v), jazzCashAccount: _jazzCashAccount, jazzCashTitle: _jazzCashTitle,
+        return ShopPayoutStepWidget(jazzCashEnabled: _jazzCashEnabled, onJazzCashToggle: (v) => setState(() => _jazzCashEnabled = v), jazzCashAccount: _jazzCashAccount, jazzCashTitle: _jazzCashTitle,
           easyPaisaEnabled: _easyPaisaEnabled, onEasyPaisaToggle: (v) => setState(() => _easyPaisaEnabled = v), easyPaisaAccount: _easyPaisaAccount, easyPaisaTitle: _easyPaisaTitle,
-          bankEnabled: _bankEnabled, onBankToggle: (v) => setState(() => _bankEnabled = v), selectedBankName: _selectedBankName, onBankNameChanged: (b) => setState(() => _selectedBankName = b),
-          pakistaniBanks: OwnerOnboardingConstants.pakistaniBanks, bankAccountController: _bankAccountController, bankAccountTitle: _bankAccountTitle,
-        );
+          bankEnabled: _bankEnabled, onBankToggle: (v) => setState(() => _bankEnabled = v), selectedBankName: _selectedBankName, onBankNameChanged: (b) => setState(() => _selectedBankName = b), pakistaniBanks: OwnerOnboardingConstants.pakistaniBanks, bankAccountController: _bankAccountController, bankAccountTitle: _bankAccountTitle);
       case 4:
-        return ShopKycDocsStepWidget(
-          shopHeaderFile: _shopHeaderFile, onPickShopHeader: () => _chooseMedia((f) => _shopHeaderFile = f, hasExisting: _shopHeaderFile != null), onRemoveShopHeader: () => setState(() => _shopHeaderFile = null),
-          fleetPhoto1File: _fleetPhoto1File, onPickFleet1: () => _chooseMedia((f) => _fleetPhoto1File = f, hasExisting: _fleetPhoto1File != null), onRemoveFleet1: () => setState(() => _fleetPhoto1File = null),
-          fleetPhoto2File: _fleetPhoto2File, onPickFleet2: () => _chooseMedia((f) => _fleetPhoto2File = f, hasExisting: _fleetPhoto2File != null), onRemoveFleet2: () => setState(() => _fleetPhoto2File = null),
-          fleetPhoto3File: _fleetPhoto3File, onPickFleet3: () => _chooseMedia((f) => _fleetPhoto3File = f, hasExisting: _fleetPhoto3File != null), onRemoveFleet3: () => setState(() => _fleetPhoto3File = null),
-          cnicFrontFile: _cnicFrontFile, onPickCnicFront: () => _chooseMedia((f) => _cnicFrontFile = f, hasExisting: _cnicFrontFile != null), onRemoveCnicFront: () => setState(() => _cnicFrontFile = null),
-          cnicBackFile: _cnicBackFile, onPickCnicBack: () => _chooseMedia((f) => _cnicBackFile = f, hasExisting: _cnicBackFile != null), onRemoveCnicBack: () => setState(() => _cnicBackFile = null),
-          ntnFile: _ntnFile, onPickNtn: () => _chooseMedia((f) => _ntnFile = f, hasExisting: _ntnFile != null), onRemoveNtn: () => setState(() => _ntnFile = null),
-          selfieFile: _selfieFile, onPickSelfie: () => _chooseMedia((f) => _selfieFile = f, frontOnly: true, hasExisting: _selfieFile != null), onRemoveSelfie: () => setState(() => _selfieFile = null),
-        );
+        return ShopKycDocsStepWidget(shopHeaderFile: _shopHeaderFile, onPickShopHeader: () => _chooseMedia((f) => _shopHeaderFile = f, hasExisting: _shopHeaderFile != null), onRemoveShopHeader: () => setState(() => _shopHeaderFile = null),
+          fleetPhoto1File: _fleetPhoto1File, onPickFleet1: () => _chooseMedia((f) => _fleetPhoto1File = f, hasExisting: _fleetPhoto1File != null), onRemoveFleet1: () => setState(() => _fleetPhoto1File = null), fleetPhoto2File: _fleetPhoto2File, onPickFleet2: () => _chooseMedia((f) => _fleetPhoto2File = f, hasExisting: _fleetPhoto2File != null), onRemoveFleet2: () => setState(() => _fleetPhoto2File = null),
+          fleetPhoto3File: _fleetPhoto3File, onPickFleet3: () => _chooseMedia((f) => _fleetPhoto3File = f, hasExisting: _fleetPhoto3File != null), onRemoveFleet3: () => setState(() => _fleetPhoto3File = null), cnicFrontFile: _cnicFrontFile, onPickCnicFront: () => _chooseMedia((f) => _cnicFrontFile = f, hasExisting: _cnicFrontFile != null), onRemoveCnicFront: () => setState(() => _cnicFrontFile = null),
+          cnicBackFile: _cnicBackFile, onPickCnicBack: () => _chooseMedia((f) => _cnicBackFile = f, hasExisting: _cnicBackFile != null), onRemoveCnicBack: () => setState(() => _cnicBackFile = null), ntnFile: _ntnFile, onPickNtn: () => _chooseMedia((f) => _ntnFile = f, hasExisting: _ntnFile != null), onRemoveNtn: () => setState(() => _ntnFile = null), selfieFile: _selfieFile, onPickSelfie: () => _chooseMedia((f) => _selfieFile = f, frontOnly: true, hasExisting: _selfieFile != null), onRemoveSelfie: () => setState(() => _selfieFile = null));
       case 5:
+        return ShopReviewStepWidget(
+          shopName: _shopNameController.text.trim(), ownerName: _ownerNameController.text.trim(), cnic: _cnicController.text.trim(), whatsapp: _whatsappController.text.trim(),
+          phone: _phoneController.text.trim(), openingHours: _openingHours, shopLogoName: _shopLogoFile?.name, address: _addressController.text.trim(), city: _selectedCity,
+          payoutMethods: [if (_jazzCashEnabled) 'JazzCash', if (_easyPaisaEnabled) 'EasyPaisa', if (_bankEnabled) _selectedBankName],
+          attachedDocuments: [if (_cnicFrontFile != null) l10n.onboardingReviewCnicFront, if (_cnicBackFile != null) l10n.onboardingReviewCnicBack, if (_selfieFile != null) l10n.onboardingReviewSelfie, if (_ntnFile != null) l10n.onboardingReviewNtn, if (_shopHeaderFile != null) l10n.onboardingReviewShopPhoto, if (_fleetPhoto1File != null) l10n.onboardingReviewFleetPhoto1, if (_fleetPhoto2File != null) l10n.onboardingReviewFleetPhoto2, if (_fleetPhoto3File != null) l10n.onboardingReviewFleetPhoto3],
+        );
+      case 6:
       default:
         return ShopApprovalStatusStepWidget(onGoToFleet: () => context.go(RouteNames.ownerFleet));
     }
   }
 
-  String _getHeaderTitle(AppLocalizations l10n) => { 1: l10n.onboardingHeaderShop, 2: l10n.onboardingHeaderLocation, 3: l10n.onboardingHeaderPayout, 4: l10n.onboardingHeaderKyc, }[_currentStep] ?? l10n.onboardingHeaderSubmitted;
+  String _getHeaderTitle(AppLocalizations l10n) => { 1: l10n.onboardingHeaderShop, 2: l10n.onboardingHeaderLocation, 3: l10n.onboardingHeaderPayout, 4: l10n.onboardingHeaderKyc, 5: l10n.onboardingHeaderReview, }[_currentStep] ?? l10n.onboardingHeaderSubmitted;
 
-  String _getHeaderSubtitle(AppLocalizations l10n) => { 1: l10n.onboardingSubtitleShop, 2: l10n.onboardingSubtitleLocation, 3: l10n.onboardingSubtitlePayout, 4: l10n.onboardingSubtitleKyc, }[_currentStep] ?? l10n.onboardingSubtitleSubmitted;
+  String _getHeaderSubtitle(AppLocalizations l10n) => { 1: l10n.onboardingSubtitleShop, 2: l10n.onboardingSubtitleLocation, 3: l10n.onboardingSubtitlePayout, 4: l10n.onboardingSubtitleKyc, 5: l10n.onboardingSubtitleReview, }[_currentStep] ?? l10n.onboardingSubtitleSubmitted;
 }

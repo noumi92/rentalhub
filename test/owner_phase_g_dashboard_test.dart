@@ -158,7 +158,9 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      expect(find.text('دکان کی ترتیبات'), findsOneWidget);
+      // The string renders twice by design: the MinimalAppBar title
+      // (l10n.settings) and the quick link (l10n.fleetShopSettings).
+      expect(find.text('دکان کی ترتیبات'), findsNWidgets(2));
       expect(find.text('زبان'), findsOneWidget);
       expect(find.text('تھیم'), findsOneWidget);
     });
@@ -175,7 +177,9 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      expect(find.text('Shop Settings'), findsOneWidget);
+      // The string renders twice by design: the MinimalAppBar title
+      // (l10n.settings) and the quick link (l10n.fleetShopSettings).
+      expect(find.text('Shop Settings'), findsNWidgets(2));
 
       // In the English locale the chip is labelled 'Urdu' (the .arb
       // English value); tapping it persists 'ur' in the cubit.
@@ -219,9 +223,11 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      // The amount appears twice: the revenue KPI and the ledger row.
-      // C5: grouped thousands — "Rs. 9,000", never "Rs. 9000".
-      expect(find.text('Rs. 9,000'), findsNWidgets(2));
+      // The amount appears three times: the revenue KPI, the Today's
+      // Earnings KPI (the seeded booking's pickup is today), and the
+      // ledger row. C5: grouped thousands — "Rs. 9,000", never
+      // "Rs. 9000".
+      expect(find.text('Rs. 9,000'), findsNWidgets(3));
       expect(find.text('Rs. 9000'), findsNothing);
       expect(find.text('Rs. 148,500'), findsNothing);
       expect(find.text('Honda Civic Oriel 2021'), findsOneWidget);

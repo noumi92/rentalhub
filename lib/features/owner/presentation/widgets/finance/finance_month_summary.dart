@@ -13,11 +13,17 @@ class FinanceMonthSummary extends StatelessWidget {
   final int ledgerIncome;
   final int expenses;
 
+  /// Audit impl (O34): the label for the period these numbers
+  /// cover — the finance hub's period selector changes it, so it
+  /// is passed in instead of always reading "This month".
+  final String? periodLabel;
+
   const FinanceMonthSummary({
     super.key,
     required this.bookingRevenue,
     required this.ledgerIncome,
     required this.expenses,
+    this.periodLabel,
   });
 
   @override
@@ -38,7 +44,7 @@ class FinanceMonthSummary extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(l10n.financeThisMonth,
+              Text(periodLabel ?? l10n.financeThisMonth,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white70)),
               Text(l10n.financeNetAmount(formatRs(net)),
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(

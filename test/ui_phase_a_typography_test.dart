@@ -109,7 +109,7 @@ void main() {
       }
     });
 
-    test('mobile modules have no ad-hoc fontSize beyond the 35 known leftovers',
+    test('mobile modules have no ad-hoc fontSize beyond the 40 known leftovers',
         () {
       // Phase A1 migration (2026-11-07): 657 sites moved to theme slots.
       // The 32 that remain are all deliberate — 29 inside private helpers
@@ -123,6 +123,13 @@ void main() {
       // (rulebook §4.3 — white-on-navy header, no slot is 18/12) and
       // the AppIconChip badge count at 10sp (sub-scale, same class as
       // the plate labels). New total 35.
+      // Audit-impl finish build (2026-11-09): +7 sites in
+      // report_pdf_generator.dart — `pdf`-package print point sizes
+      // in a generator with no BuildContext, the same class as
+      // statement_pdf_generator.dart's 7 already inside the 35. The
+      // 5 new UI sites from the same build (customer detail/added
+      // views) were migrated to theme slots instead of counting here.
+      // New total 40.
       const scopes = [
         'lib/features/auth',
         'lib/features/customer',
@@ -142,8 +149,8 @@ void main() {
           count += RegExp(r'fontSize:').allMatches(file.readAsStringSync()).length;
         }
       }
-      expect(count, lessThanOrEqualTo(35),
-          reason: 'Ad-hoc fontSize sites grew to $count (was 35).');
+      expect(count, lessThanOrEqualTo(40),
+          reason: 'Ad-hoc fontSize sites grew to $count (was 40).');
     });
   });
 

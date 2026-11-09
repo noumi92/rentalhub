@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/di/injection_container.dart';
+import '../../../../core/routing/route_names.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/app_state_views.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
@@ -190,15 +191,26 @@ class _OwnerDuesViewState extends State<OwnerDuesView> {
                                     0,
                                     (total, b) =>
                                         total + b.remainingBalance);
-                                return DuesGroupCard(
-                                  bookings: bookings,
-                                  lastReminded: _lastReminded[entry.key],
-                                  onRemind: () => _remind(
-                                    entry.key,
-                                    bookings.first.customerName ??
-                                        l10n.requestsCustomerFallback,
-                                    bookings.first.customerPhone,
-                                    due,
+                                // Audit impl (worker C, O46): tapping
+                                // a customer group opens that customer's
+                                // statement.
+                                return InkWell(
+                                  borderRadius: BorderRadius.circular(12),
+                                  onTap: () => context.push(
+                                    RouteNames.ownerCustomerStatement
+                                        .replaceFirst(
+                                            ':customerId', entry.key),
+                                  ),
+                                  child: DuesGroupCard(
+                                    bookings: bookings,
+                                    lastReminded: _lastReminded[entry.key],
+                                    onRemind: () => _remind(
+                                      entry.key,
+                                      bookings.first.customerName ??
+                                          l10n.requestsCustomerFallback,
+                                      bookings.first.customerPhone,
+                                      due,
+                                    ),
                                   ),
                                 );
                               },

@@ -4,13 +4,16 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/app_state_views.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
-import '../../../../core/widgets/debounced_button.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
 import '../../../finance/utils/settlement_calculator.dart';
 import '../services/return_settlement_service.dart';
 import '../widgets/handover_damage_notes_editor.dart';
 import '../widgets/handover_notes_banner.dart';
+import '../widgets/operations/exterior_photo_picker.dart';
 import '../widgets/operations/fuel_odometer_input_widget.dart';
+import '../widgets/operations/return_fare_payment_section.dart';
+import '../widgets/operations/return_inspection_sections.dart';
+import '../widgets/operations/return_payment_steps.dart';
 import '../widgets/operations/settlement_summary_receipt_widget.dart';
 import 'owner_customer_rating_view.dart';
 import '../../../../core/utils/money_format.dart';
@@ -56,6 +59,13 @@ class _OwnerReturnSettlementViewState extends State<OwnerReturnSettlementView> {
   int _deposit = 0;
   int _extraKmPkr = 100;
   int _extraHourPkr = 0;
+  // Audit item 5/18 (O25/O26): inspection condition, return photos,
+  // and the remaining rent collected at return.
+  String _condition = 'good';
+  Map<String, String?> _returnPhotos = const {'front': null, 'back': null, 'left': null, 'right': null};
+  ({int amount, String? method}) _collected = (amount: 0, method: null);
+  int _deductibleDamage = 0;
+  int _extraCharges = 0;
 
   @override
   void initState() {
@@ -92,6 +102,8 @@ class _OwnerReturnSettlementViewState extends State<OwnerReturnSettlementView> {
         _extraKmPkr = values.extraKmPkr;
         _extraHourPkr = values.extraHourPkr;
         _deposit = values.deposit;
+        _deductibleDamage = values.deductibleDamage;
+        _extraCharges = values.extraCharges;
         _valuesLoaded = true;
       });
     } catch (e) {
@@ -123,7 +135,8 @@ class _OwnerReturnSettlementViewState extends State<OwnerReturnSettlementView> {
 
   SettlementBreakdown get _breakdown => SettlementCalculator.calculate(
         totalKmDriven: _totalKmDriven, kmAllowance: _kmAllowance, extraKmPkr: _extraKmPkr, fuelLevel: _returnFuel,
-        damageCharge: _damageCharge, overtimeHours: _overtimeHours, extraHourPkr: _extraHourPkr, securityDeposit: _deposit,
+        damageCharge: _damageCharge + _deductibleDamage, overtimeHours: _overtimeHours, extraHourPkr: _extraHourPkr, securityDeposit: _deposit,
+        extraCharges: _extraCharges,
       );
 
   void _onDamageChargeChanged(String value) {
@@ -150,6 +163,8 @@ class _OwnerReturnSettlementViewState extends State<OwnerReturnSettlementView> {
         booking: widget.booking, returnOdometer: _returnOdometer, initialOdometer: _initialOdometer, kmAllowance: _kmAllowance,
         extraKmPkr: _extraKmPkr, extraHourPkr: _extraHourPkr, deposit: _deposit, fuelLevel: _returnFuel,
         returnDamageNotes: _returnDamageNotes, damageCharge: _damageCharge,
+        condition: _condition, returnPhotoUrls: _returnPhotos, deductibleDamage: _deductibleDamage, extraCharges: _extraCharges,
+        remainingRentCollected: _collected.amount, paymentMethod: _collected.method,
       );
       if (mounted) {
         AppFeedback.showSuccess(context, l10n.returnSettled(formatRs(breakdown.netRefund)));
@@ -182,6 +197,13 @@ class _OwnerReturnSettlementViewState extends State<OwnerReturnSettlementView> {
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                   child: Column(
                     children: [
+                    // Finish build (O25): the landing moved to its own
+                    // route (/owner/return-landing/:id) — this view now
+                    // starts directly at the inspection.
+                    ReturnConditionSelector(bookingId: widget.booking.bookingId, condition: _condition, onChanged: (c) => setState(() => _condition = c)),
+                      const SizedBox(height: 16),
+                      ExteriorPhotoPicker(bookingId: widget.booking.bookingId, shopId: widget.booking.shopId, photos: _returnPhotos, targetCollection: 'return_settlements', onChanged: (photos) => setState(() => _returnPhotos = photos)),
+                      const SizedBox(height: 16),
                       FuelOdometerInputWidget(title: l10n.returnTelemetryTitle, odometerController: _returnOdometerController, selectedFuel: _returnFuel, onFuelSelected: (f) => setState(() => _returnFuel = f)),
                       if (_handoverDamageNotes.isNotEmpty) ...[
                         const SizedBox(height: 12),
@@ -197,13 +219,19 @@ class _OwnerReturnSettlementViewState extends State<OwnerReturnSettlementView> {
                         decoration: InputDecoration(labelText: l10n.returnDamageChargeLabel, hintText: l10n.returnDamageChargeHint, border: OutlineInputBorder(), filled: true, fillColor: Theme.of(context).colorScheme.surfaceContainerHighest),
                       ),
                       const SizedBox(height: 16),
-                      SettlementSummaryReceiptWidget(
-                        totalKm: breakdown.totalKmDriven, excessKm: breakdown.excessKm, excessKmPenalty: breakdown.excessKmCharge, extraKmRate: _extraKmPkr,
-                        fuelDeficitFee: breakdown.fuelDeficit, overtimeFee: breakdown.overtimeFee, damageCharge: breakdown.damageCharge,
-                        securityDeposit: _deposit, netRefund: breakdown.netRefund,
-                      ),
+                      ReturnFarePaymentSection(booking: widget.booking, onCollected: (amount, method) => setState(() => _collected = (amount: amount, method: method))),
+                      const SizedBox(height: 16),
+                      SettlementSummaryReceiptWidget(totalKm: breakdown.totalKmDriven, excessKm: breakdown.excessKm, excessKmPenalty: breakdown.excessKmCharge, extraKmRate: _extraKmPkr, fuelDeficitFee: breakdown.fuelDeficit, overtimeFee: breakdown.overtimeFee, damageCharge: breakdown.damageCharge, extraCharges: breakdown.extraCharges, securityDeposit: _deposit, netRefund: breakdown.netRefund),
                       const SizedBox(height: 24),
-                      DebouncedButton(text: _isFinalizing ? l10n.returnFinalizing : l10n.returnFinalize, icon: Icons.check_circle_rounded, isLoading: _isFinalizing, onPressed: _finalizeReturn),
+                      // Finish build (O26): refund first, then close —
+                      // the steps widget owns the refund record; close
+                      // still runs _finalizeReturn below.
+                      ReturnPaymentSteps(
+                        bookingId: widget.booking.bookingId,
+                        netRefund: breakdown.netRefund,
+                        isFinalizing: _isFinalizing,
+                        onCompleteClose: _finalizeReturn,
+                      ),
                     ],
                   ),
                 ),

@@ -1,15 +1,17 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../auth/presentation/utils/sign_out_helper.dart';
+import '../../../auth/presentation/utils/sign_out_confirm_dialog.dart';
+import '../../../auth/domain/repositories/auth_repository.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/settings/app_settings_cubit.dart';
-import '../../../../core/utils/current_shop.dart';
+import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../widgets/notification_preferences_section.dart';
+import '../widgets/shop_profile_card.dart';
 import '../widgets/sync_status_section.dart';
 
 /// Phase B (G3): the owner settings screen. The language and theme
@@ -25,33 +27,6 @@ class OwnerSettingsView extends StatefulWidget {
 }
 
 class _OwnerSettingsViewState extends State<OwnerSettingsView> {
-  String _shopName = '';
-  bool _shopNameLoaded = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadShopName();
-  }
-
-  Future<void> _loadShopName() async {
-    try {
-      final doc = await FirebaseFirestore.instance
-          .collection('shops')
-          .doc(currentShopId())
-          .get();
-      final name = (doc.data()?['name'] ?? doc.data()?['shopName']) as String?;
-      if (name != null && name.isNotEmpty && mounted) {
-        setState(() => _shopName = name);
-      }
-    } catch (_) {
-      // Audit §23: a failed shop read keeps the fallback text; the
-      // loading state below still resolves so the screen never
-      // flashes "not set yet" forever.
-    } finally {
-      if (mounted) setState(() => _shopNameLoaded = true);
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -75,20 +50,9 @@ class _OwnerSettingsViewState extends State<OwnerSettingsView> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _sectionCard(
-                          title: l10n.shop,
-                          // Audit §23: blank until the Firestore read
-                          // completes — "Shop name not set yet" used to
-                          // flash for shops that do have a name.
-                          child: _shopNameLoaded
-                              ? Text(
-                                  _shopName.isNotEmpty
-                                      ? _shopName
-                                      : l10n.shopNotSet,
-                                  style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
-                                )
-                              : const SizedBox(height: 20),
-                        ),
+                        // Audit §5 (O33): owner name + avatar above
+                        // the shop name (was shop-name-only).
+                        const ShopProfileCard(),
                         const SizedBox(height: 16),
                         _sectionCard(
                           title: l10n.language,
@@ -151,12 +115,19 @@ class _OwnerSettingsViewState extends State<OwnerSettingsView> {
                           ),
                         ),
                         const SizedBox(height: 16),
+                        // Audit impl (O33): persisted notification
+                        // toggles — which in-app notification types
+                        // the owner wants (toggles only, no dispatch).
+                        const NotificationPreferencesSection(),
+                        const SizedBox(height: 16),
                         const SyncStatusSection(),
                         const SizedBox(height: 16),
                         _sectionCard(
                           title: l10n.quickLinks,
                           child: Column(
                             children: [
+                              _link(context, Icons.storefront_rounded,
+                                  l10n.fleetShopSettings, RouteNames.ownerShopSettings),
                               _link(context, Icons.route_rounded,
                                   l10n.fixedRoutes, RouteNames.ownerFixedRoutes),
                               _link(context, Icons.shield_rounded,
@@ -165,6 +136,10 @@ class _OwnerSettingsViewState extends State<OwnerSettingsView> {
                                   l10n.subscription, RouteNames.ownerSubscription),
                               _link(context, Icons.chat_rounded,
                                   l10n.whatsappLogs, RouteNames.ownerWhatsappLogs),
+                              // Audit impl (worker E): WhatsApp Credits
+                              // sits next to the WhatsApp Logs link.
+                              _link(context, Icons.message_rounded,
+                                  l10n.creditsTitle, RouteNames.ownerWhatsappCredits),
                               _link(context, Icons.notifications_rounded,
                                   l10n.notifications, RouteNames.ownerNotifications),
                               _link(context, Icons.sync_rounded,
@@ -173,6 +148,16 @@ class _OwnerSettingsViewState extends State<OwnerSettingsView> {
                                   l10n.disputes, RouteNames.ownerDisputes),
                               _link(context, Icons.account_balance_rounded,
                                   l10n.finance, RouteNames.ownerFinance),
+                              // Audit impl (worker C): finance settings +
+                              // categories, staff & roles, reset options.
+                              _link(context, Icons.tune_rounded,
+                                  l10n.financeSettingsTitle, RouteNames.ownerFinanceSettings),
+                              _link(context, Icons.category_rounded,
+                                  l10n.financeCategoriesTitle, RouteNames.ownerFinanceCategories),
+                              _link(context, Icons.group_rounded,
+                                  l10n.staffTitle, RouteNames.ownerStaffRoles),
+                              _link(context, Icons.restart_alt_rounded,
+                                  l10n.resetTitle, RouteNames.ownerResetOptions),
                             ],
                           ),
                         ),
@@ -183,7 +168,26 @@ class _OwnerSettingsViewState extends State<OwnerSettingsView> {
                             icon: const Icon(Icons.logout_rounded),
                             label: Text(l10n.signOut),
                             onPressed: () async {
-                              await signOutToAuth(context);
+                              // Audit impl (worker C, O49): confirm
+                              // first; on confirm sign out (same
+                              // repository path as signOutToAuth, same
+                              // error feedback) and land on the
+                              // signed-out screen instead of /auth.
+                              final confirmed =
+                                  await showSignOutConfirmDialog(context);
+                              if (!confirmed || !context.mounted) return;
+                              try {
+                                await sl<AuthRepository>().signOut();
+                              } catch (_) {
+                                if (!context.mounted) return;
+                                AppFeedback.showError(
+                                  context,
+                                  'Could not sign out. Please try again.',
+                                );
+                                return;
+                              }
+                              if (!context.mounted) return;
+                              context.go(RouteNames.ownerSignedOut);
                             },
                           ),
                         ),

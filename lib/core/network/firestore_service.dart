@@ -13,6 +13,57 @@ class FirestoreService {
   final Map<String, Map<String, dynamic>> _inMemoryShops = {};
   final Map<String, Map<String, dynamic>> _inMemoryVehicles = {};
   final Map<String, Map<String, dynamic>> _inMemoryBookings = {};
+  // Audit impl finish (O26): generic documents for callers that used
+  // to reach `FirebaseFirestore.instance` directly (the return-refund
+  // step). Same rule as the typed stores above: live Firestore when
+  // it is initialized, the in-memory map otherwise — so widget tests
+  // run against the fallback instead of throwing `core/no-app`.
+  final Map<String, Map<String, dynamic>> _inMemoryDocs = {};
+
+  /// Reads one document by collection + id. Returns null when the
+  /// document does not exist. A live-Firestore read failure resolves
+  /// to the in-memory copy (or null), never a throw — the caller
+  /// treats "unreadable" as "not recorded".
+  Future<Map<String, dynamic>?> getDocument(
+      String collection, String docId) async {
+    final key = '$collection/$docId';
+    if (_hasLiveFirestore) {
+      try {
+        final doc =
+            await _firestore!.collection(collection).doc(docId).get();
+        final data = doc.data();
+        if (data != null) return Map<String, dynamic>.from(data);
+      } catch (e) {
+        debugPrint('Firestore getDocument error: $e');
+      }
+    }
+    final stored = _inMemoryDocs[key];
+    return stored == null ? null : Map<String, dynamic>.from(stored);
+  }
+
+  /// Writes one document by collection + id (merge by default).
+  /// Throws when live Firestore is initialized and the write fails,
+  /// so the caller can show the failure state instead of pretending
+  /// the write landed. With no live Firestore (tests / uninitialized)
+  /// the write lands in the in-memory map; `FieldValue` sentinels are
+  /// stored as the write time.
+  Future<void> setDocument(String collection, String docId,
+      Map<String, dynamic> data, {bool merge = true}) async {
+    final key = '$collection/$docId';
+    if (_hasLiveFirestore) {
+      await _firestore!.collection(collection).doc(docId).set(
+            data,
+            SetOptions(merge: merge),
+          );
+      return;
+    }
+    final stored = merge ? Map<String, dynamic>.from(_inMemoryDocs[key] ?? {}) : <String, dynamic>{};
+    for (final entry in data.entries) {
+      stored[entry.key] =
+          entry.value is FieldValue ? DateTime.now() : entry.value;
+    }
+    _inMemoryDocs[key] = stored;
+  }
 
   FirestoreService({FirebaseFirestore? firestore}) : _firestore = firestore;
 

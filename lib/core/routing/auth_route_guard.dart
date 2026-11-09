@@ -116,10 +116,13 @@ class AuthRouteGuard {
 
     final loggedIn = isLoggedIn;
 
-    // 2. Unauthenticated user: only login/auth is allowed
+    // 2. Unauthenticated user: only login/auth is allowed, plus the
+    // signed-out confirmation screen (reached right after sign-out,
+    // while already logged out — same exemption pattern as splash).
     // Requirement 2: only logged in users can use app (requires login / onboarding)
     if (!loggedIn) {
-      if (location != RouteNames.auth) {
+      if (location != RouteNames.auth &&
+          location != RouteNames.ownerSignedOut) {
         return RouteNames.auth;
       }
       return null;

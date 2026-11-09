@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
-import '../../../../../l10n/app_localizations.dart';
+import '../../../../l10n/app_localizations.dart';
 
 /// The scan-to-verify QR card on the contract screen. Extracted so
 /// [OwnerContractView] stays under the 250-line cap.

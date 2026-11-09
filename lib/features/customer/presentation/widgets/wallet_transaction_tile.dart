@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/utils/money_format.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class WalletTransactionTile extends StatelessWidget {
   final String title;
@@ -19,6 +21,7 @@ class WalletTransactionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
@@ -80,7 +83,7 @@ class WalletTransactionTile extends StatelessWidget {
                   fit: BoxFit.scaleDown,
                   alignment: Alignment.centerRight,
                   child: Text(
-                    '${isDebit ? "-" : "+"} Rs. $amount',
+                    l10n.financeLedgerAmount(isDebit ? '-' : '+', formatRs(amount)),
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.w800,
                         color: isDebit

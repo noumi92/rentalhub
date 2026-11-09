@@ -199,33 +199,39 @@ class _LoginViewState extends State<LoginView> {
                               isLoading: _isLoading,
                               onPressed: _handleGoogleSignIn,
                             ),
-                            const SizedBox(height: 16),
-                            Center(
-                              child: TextButton(
-                                onPressed: () async {
-                                  if (sl.isRegistered<AuthRemoteDataSource>()) {
-                                    final auth = sl<AuthRemoteDataSource>();
-                                    if (!auth.isLoggedIn) {
-                                      await auth.setLoggedIn(true);
-                                    }
-                                  }
-                                  if (context.mounted) {
-                                    context.go(RouteNames.onboardingProfile);
-                                  }
-                                },
-                                child: Text(
-                                  l10n.authNewUser,
-                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ),
-                            ),
                           ],
                         ),
                       ),
                     ),
                     const SizedBox(height: 24),
+                    // Audit §5 finish (P2-1): Terms / Privacy footer.
+                    // Real documents, top-level routes, no dead links.
+                    // (The old authNewUser bypass button stays removed.)
+                    Wrap(
+                      alignment: WrapAlignment.center,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        Text(
+                          l10n.authLegalIntro,
+                          style: Theme.of(context).textTheme.labelSmall,
+                        ),
+                        TextButton(
+                          onPressed: () =>
+                              context.push(RouteNames.legalTermsOfService),
+                          child: Text(l10n.authTermsOfService),
+                        ),
+                        Text(
+                          l10n.authLegalAnd,
+                          style: Theme.of(context).textTheme.labelSmall,
+                        ),
+                        TextButton(
+                          onPressed: () =>
+                              context.push(RouteNames.legalPrivacyPolicy),
+                          child: Text(l10n.authPrivacyPolicy),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
                   ],
                 ),
               ),

@@ -28,6 +28,19 @@ class HandoverEntity extends Equatable {
   final String? vehicleDetails;
   final int? totalAmount;
 
+  /// Audit item 4 (O19 1/2 + 2/2): the exterior photos taken at
+  /// handover, the documents handed to the customer, the accessories
+  /// in the car, and whether the keys were handed over. All four
+  /// photo URLs are cPanel signed URLs (or null when not taken);
+  /// nothing here is ever a demo value.
+  final String? photoFrontUrl;
+  final String? photoBackUrl;
+  final String? photoLeftUrl;
+  final String? photoRightUrl;
+  final List<String> documentsGiven; // 'registration' | 'insurance'
+  final List<String> accessories; // 'spare_tyre' | 'jack' | 'tool_kit'
+  final bool keysHandedOver;
+
   const HandoverEntity({
     required this.bookingId,
     required this.initialOdometer,
@@ -46,12 +59,26 @@ class HandoverEntity extends Equatable {
     this.cnicNumber,
     this.vehicleDetails,
     this.totalAmount,
+    this.photoFrontUrl,
+    this.photoBackUrl,
+    this.photoLeftUrl,
+    this.photoRightUrl,
+    this.documentsGiven = const [],
+    this.accessories = const [],
+    this.keysHandedOver = false,
   });
 
   HandoverEntity copyWith({
     String? agreementPdfUrl,
     bool? isSynced,
     String? agreementPdfB64,
+    String? photoFrontUrl,
+    String? photoBackUrl,
+    String? photoLeftUrl,
+    String? photoRightUrl,
+    List<String>? documentsGiven,
+    List<String>? accessories,
+    bool? keysHandedOver,
   }) {
     return HandoverEntity(
       bookingId: bookingId,
@@ -71,6 +98,13 @@ class HandoverEntity extends Equatable {
       cnicNumber: cnicNumber,
       vehicleDetails: vehicleDetails,
       totalAmount: totalAmount,
+      photoFrontUrl: photoFrontUrl ?? this.photoFrontUrl,
+      photoBackUrl: photoBackUrl ?? this.photoBackUrl,
+      photoLeftUrl: photoLeftUrl ?? this.photoLeftUrl,
+      photoRightUrl: photoRightUrl ?? this.photoRightUrl,
+      documentsGiven: documentsGiven ?? this.documentsGiven,
+      accessories: accessories ?? this.accessories,
+      keysHandedOver: keysHandedOver ?? this.keysHandedOver,
     );
   }
 
@@ -93,6 +127,12 @@ class HandoverEntity extends Equatable {
         cnicNumber,
         vehicleDetails,
         totalAmount,
+        photoFrontUrl,
+        photoBackUrl,
+        photoLeftUrl,
+        photoRightUrl,
+        documentsGiven,
+        accessories,
+        keysHandedOver,
       ];
 }
-

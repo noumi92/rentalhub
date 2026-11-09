@@ -42,35 +42,52 @@ class ShopLocationStepWidget extends StatelessWidget {
               ?.copyWith(fontWeight: FontWeight.w800),
         ),
         const SizedBox(height: 6),
-        // Requirement 4: Single horizontal row for major cities BEFORE map view
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children: majorCities.map((city) {
-              final isSelected = selectedCity == city['name'];
-              return Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: FilterChip(
-                  materialTapTargetSize: MaterialTapTargetSize.padded,
-                  label: Text(city['name'] as String),
-                  selected: isSelected,
-                  selectedColor: AppColors.secondary,
-                  labelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
-                        color: isSelected
-                            ? Colors.white
-                            : Theme.of(context).colorScheme.onSurface,
-                        fontWeight: FontWeight.w700,
-                      ),
-                  onSelected: (_) {
-                    onCityChanged(city['name'] as String);
-                    final coords = city['coords'] as ll.LatLng;
-                    onPinChanged(coords);
-                    mapController.move(coords, 13.0);
-                  },
-                ),
-              );
-            }).toList(),
+        // Audit §5 finish (P2-3): city is a dropdown, not chips.
+        // `initialValue` (not the deprecated `value`) keeps the
+        // selection without a second analyze info finding.
+        DropdownButtonFormField<String>(
+          // Audit §5: DropdownButtonFormField's `initialValue` is
+          // the non-deprecated API; do not switch it to `value`.
+          initialValue: majorCities.any((c) => c['name'] == selectedCity)
+              ? selectedCity
+              : (majorCities.first['name'] as String),
+          isExpanded: true,
+          decoration: InputDecoration(
+            prefixIcon: const Icon(Icons.location_city_rounded,
+                color: AppColors.secondary, size: 20),
+            filled: true,
+            fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+            border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: Theme.of(context).dividerColor)),
+            enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: Theme.of(context).dividerColor)),
+            focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide:
+                    const BorderSide(color: AppColors.secondary, width: 1.5)),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           ),
+          items: majorCities
+              .map((city) => DropdownMenuItem<String>(
+                    value: city['name'] as String,
+                    child: Text(city['name'] as String,
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyMedium
+                            ?.copyWith(fontWeight: FontWeight.w700)),
+                  ))
+              .toList(),
+          onChanged: (name) {
+            if (name == null) return;
+            onCityChanged(name);
+            final coords = majorCities
+                .firstWhere((c) => c['name'] == name)['coords'] as ll.LatLng;
+            onPinChanged(coords);
+            mapController.move(coords, 13.0);
+          },
         ),
         const SizedBox(height: 14),
 

@@ -10,6 +10,7 @@ import 'package:rentalhub/features/admin/presentation/views/admin_customers_view
 import 'package:rentalhub/features/admin/presentation/views/admin_blacklist_tribunal_view.dart';
 import 'package:rentalhub/features/blacklist/data/datasources/blacklist_remote_data_source.dart';
 import 'package:rentalhub/features/bookings/data/datasources/booking_remote_data_source.dart';
+import 'package:rentalhub/l10n/app_localizations.dart';
 
 void main() {
   setUpAll(() async {
@@ -190,6 +191,8 @@ void main() {
     testWidgets('customer detail says not found for an unknown customer',
         (tester) async {
       await tester.pumpWidget(const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           home: AdminCustomerDetailView(customerId: 'no-such-customer')));
       await tester.pumpAndSettle();
       expect(find.text('Customer not found.'), findsOneWidget);

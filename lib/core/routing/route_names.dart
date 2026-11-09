@@ -39,6 +39,14 @@ class RouteNames {
   static const String ownerOnboarding = '/owner/onboarding';
   static const String ownerDashboard = '/owner/dashboard';
   static const String ownerFleet = '/owner/fleet';
+  static const String ownerVehicleDetail = '/owner/vehicles/:id';
+  static const String ownerVehiclePublished =
+      '/owner/fleet/published/:vehicleId';
+  static const String ownerShareWithCustomers =
+      '/owner/fleet/share/:vehicleId';
+  static const String ownerFareTable = '/owner/fares/:vehicleId';
+  static const String ownerPriceEstimate = '/owner/estimate/:vehicleId';
+  static const String ownerFleetCalendar = '/owner/fleet/calendar';
   static const String ownerAddVehicle = '/owner/fleet/add';
   static const String ownerRates = '/owner/rates';
   static const String ownerRatesVehicle = '/owner/rates/:vehicleId';
@@ -47,29 +55,65 @@ class RouteNames {
   static const String ownerRequests = '/owner/requests';
   static const String ownerRequestsDetail = '/owner/requests/:id';
   static const String ownerManualBooking = '/owner/manual-booking';
+  static const String ownerBookingConfirmed = '/owner/booking-confirmed/:id';
   static const String ownerPaymentProof = '/owner/payment/:id';
   static const String ownerHandover = '/owner/handover/:id';
+  static const String ownerAgreementSigned = '/owner/agreement-signed/:id';
+  static const String ownerRentalStarted = '/owner/rental-started/:id';
+  static const String ownerRecordDamage = '/owner/record-damage/:id';
+  static const String ownerRecordExtraCharges =
+      '/owner/record-extra-charges/:id';
   static const String ownerQrScan = '/owner/scan';
   static const String ownerReturn = '/owner/return/:id';
+  static const String ownerReturnLanding = '/owner/return-landing/:id';
   static const String ownerContract = '/owner/contract/:id';
   static const String ownerRateCustomer = '/owner/rate-customer/:id';
   static const String ownerCustomerScan = '/owner/customers/scan';
   static const String ownerAddCustomer = '/owner/customers/add';
   static const String ownerCustomers = '/owner/customers';
+  // Audit impl finish (worker A): customer detail is LAST in the
+  // Customers branch so the static routes above match first.
+  static const String ownerCustomerDetail = '/owner/customers/:id';
+  static const String ownerCustomerAdded = '/owner/customers/added/:id';
   static const String ownerBlacklist = '/owner/blacklist';
   static const String ownerSubscription = '/owner/subscription';
+  static const String ownerSubscriptionPlan = '/owner/subscription/plan';
+  static const String ownerSubscriptionPlayPurchase =
+      '/owner/subscription/play-purchase';
+  static const String ownerSubscriptionActive = '/owner/subscription/active';
+  static const String ownerSubscriptionMy = '/owner/subscription/my';
   static const String ownerWhatsappLogs = '/owner/whatsapp';
+  static const String ownerWhatsappCredits = '/owner/whatsapp/credits';
+  static const String ownerWhatsappBuyCredits = '/owner/whatsapp/credits/buy';
+  static const String ownerWhatsappCreditsAdded =
+      '/owner/whatsapp/credits/added';
+  static const String ownerWhatsappHistory = '/owner/whatsapp/history';
+  static const String ownerWhatsappTemplate = '/owner/whatsapp/template';
+  static const String ownerSignedOut = '/signed-out';
   static const String ownerNotifications = '/owner/notifications';
   static const String ownerDisputes = '/owner/disputes';
   static const String ownerSettings = '/owner/settings';
   static const String ownerFinance = '/owner/finance';
+  static const String ownerReports = '/owner/finance/reports';
+  static const String ownerCustomerStatement =
+      '/owner/finance/statement/:customerId';
+  static const String ownerFinanceSettings = '/owner/finance/settings';
+  static const String ownerFinanceCategories = '/owner/finance/categories';
   static const String ownerDues = '/owner/finance/dues';
   static const String ownerCashClosing = '/owner/finance/closing';
   static const String ownerCarPnL = '/owner/finance/car';
+  static const String ownerResetOptions = '/owner/settings/reset';
+  static const String ownerStaffRoles = '/owner/settings/staff';
+  static const String ownerShopSettings = '/owner/settings/shop';
 
   // Sync details (top-level, reachable from Settings and the failed
   // sync banner) — Phone-test #4.
   static const String syncDetails = '/sync-details';
+
+  // Audit impl finish (worker C): legal texts, top-level like
+  // syncDetails — no shell, no tab bar.
+  static const String legalTermsOfService = '/terms';
+  static const String legalPrivacyPolicy = '/privacy';
 
   // Super Admin Routes (Web)
   static const String adminLogin = '/admin/login';

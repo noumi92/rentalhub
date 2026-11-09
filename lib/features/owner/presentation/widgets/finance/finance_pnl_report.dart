@@ -7,6 +7,7 @@ import 'package:share_plus/share_plus.dart';
 import  '../../../../bookings/domain/entities/booking_entity.dart';
 import  '../../../../finance/domain/entities/finance_transfer_entity.dart';
 import  '../../../../finance/utils/finance_summary.dart';
+import 'finance_pnl_breakdown.dart';
 import  '../../../../finance/utils/pnl_csv.dart';
 import '../../../../../core/utils/money_format.dart';
 
@@ -31,12 +32,23 @@ class FinancePnLReport extends StatefulWidget {
 
 class _FinancePnLReportState extends State<FinancePnLReport> {
   String _period = 'this_month';
+  // Audit impl (O45): Daily / Weekly / Monthly granularity. Daily
+  // is today, Weekly is the last 7 days, Monthly is the period
+  // dropdown's range (this / last month / all time).
+  String _granularity = 'monthly';
 
-  // Phase F: the period labels are localized (the dropdown already
-  // was — only the range record still carried English literals).
   ({DateTime? from, DateTime? to, String label}) _range(
       AppLocalizations l10n) {
     final now = DateTime.now();
+    if (_granularity == 'daily') {
+      final start = DateTime(now.year, now.month, now.day);
+      return (from: start, to: start.add(const Duration(days: 1)), label: l10n.financePnlDaily);
+    }
+    if (_granularity == 'weekly') {
+      final start = DateTime(now.year, now.month, now.day)
+          .subtract(const Duration(days: 6));
+      return (from: start, to: DateTime(now.year, now.month, now.day).add(const Duration(days: 1)), label: l10n.financePnlWeekly);
+    }
     switch (_period) {
       case 'last_month':
         final start = DateTime(now.year, now.month - 1);
@@ -108,6 +120,27 @@ class _FinancePnLReportState extends State<FinancePnLReport> {
           ],
         ),
         const SizedBox(height: 8),
+        Wrap(
+          spacing: 8,
+          children: [
+            ChoiceChip(
+              label: Text(l10n.financePnlDaily),
+              selected: _granularity == 'daily',
+              onSelected: (_) => setState(() => _granularity = 'daily'),
+            ),
+            ChoiceChip(
+              label: Text(l10n.financePnlWeekly),
+              selected: _granularity == 'weekly',
+              onSelected: (_) => setState(() => _granularity = 'weekly'),
+            ),
+            ChoiceChip(
+              label: Text(l10n.financePnlMonthly),
+              selected: _granularity == 'monthly',
+              onSelected: (_) => setState(() => _granularity = 'monthly'),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
         Container(
           width: double.infinity,
           padding: const EdgeInsets.all(16),
@@ -126,6 +159,8 @@ class _FinancePnLReportState extends State<FinancePnLReport> {
             ],
           ),
         ),
+        const SizedBox(height: 12),
+        FinancePnLBreakdown(transfers: periodTransfers),
         const SizedBox(height: 12),
         SizedBox(
           width: double.infinity,

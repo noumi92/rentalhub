@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/di/injection_container.dart';
+import '../../../../core/utils/money_format.dart';
 import '../../../../core/widgets/app_feedback.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../fleet/domain/entities/vehicle_entity.dart';
 import '../../data/datasources/admin_shops_data_source.dart';
 
@@ -67,6 +69,7 @@ class _CarReviewDetailSheetState extends State<CarReviewDetailSheet> {
   @override
   Widget build(BuildContext context) {
     final v = widget.vehicle;
+    final l10n = AppLocalizations.of(context)!;
     return DraggableScrollableSheet(
       initialChildSize: 0.85,
       minChildSize: 0.5,
@@ -110,19 +113,22 @@ class _CarReviewDetailSheetState extends State<CarReviewDetailSheet> {
                             child: Icon(Icons.broken_image_rounded)))),
               ),
             const SizedBox(height: 16),
-            _row('Daily (24 h)', 'Rs. ${v.rates.daily24}'),
+            _row('Daily (24 h)',
+                l10n.addVehicleReviewDailyRate(formatRs(v.rates.daily24))),
             _row('Out-of-city daily',
                 v.rates.outOfCityDaily == null
                     ? 'Not set'
-                    : 'Rs. ${v.rates.outOfCityDaily}'),
+                    : l10n.amountRs(formatRs(v.rates.outOfCityDaily!))),
             _row('1 h / 3 h / 6 h',
-                '${v.rates.hourly1 ?? '—'} / ${v.rates.hourly3 ?? '—'} / ${v.rates.hourly6 ?? '—'}'),
+                '${v.rates.hourly1 == null ? '—' : l10n.amountRs(formatRs(v.rates.hourly1!))} / ${v.rates.hourly3 == null ? '—' : l10n.amountRs(formatRs(v.rates.hourly3!))} / ${v.rates.hourly6 == null ? '—' : l10n.amountRs(formatRs(v.rates.hourly6!))}'),
             _row('Weekly rate',
-                v.weeklyRate == null ? 'Not set' : 'Rs. ${v.weeklyRate}'),
+                v.weeklyRate == null
+                    ? 'Not set'
+                    : l10n.amountRs(formatRs(v.weeklyRate!))),
             _row('Security deposit',
                 v.securityDepositPkr == null
                     ? 'Not set'
-                    : 'Rs. ${v.securityDepositPkr}'),
+                    : l10n.amountRs(formatRs(v.securityDepositPkr!))),
             _row('Self drive',
                 v.isSelfDriveAvailable ? 'Yes' : 'No'),
             _row('With driver',

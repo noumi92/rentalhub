@@ -3,12 +3,13 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/widgets/app_feedback.dart';
-import '../../../../core/widgets/app_state_views.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
-import '../widgets/operations/request_triage_card.dart';
+import '../services/whatsapp_credits_data_source.dart';
+import '../widgets/operations/request_reject_dialog.dart';
+import '../widgets/operations/requests_list_body.dart';
 
 class OwnerBookingRequestsView extends StatefulWidget {
   final String shopId;
@@ -30,14 +31,55 @@ class _OwnerBookingRequestsViewState extends State<OwnerBookingRequestsView> {
   bool _hasError = false;
   String? _processingId;
   String _filter = 'requested';
+  final _searchController = TextEditingController();
+  String _searchQuery = '';
+  // Audit impl (worker E, W6): the WhatsApp zero-balance banner only
+  // shows once the real balance is known (null = not loaded yet).
+  int? _waBalance;
+  int _waSkipped = 0;
 
-  List<BookingEntity> get _filtered =>
-      _requests.where((b) => b.status == _filter).toList();
+  List<BookingEntity> get _filtered {
+    final query = _searchQuery.trim().toLowerCase();
+    return _requests.where((b) {
+      if (b.status != _filter) return false;
+      if (query.isEmpty) return true;
+      return (b.customerName ?? '').toLowerCase().contains(query) ||
+          (b.customerPhone ?? '').toLowerCase().contains(query) ||
+          (b.vehicleName ?? '').toLowerCase().contains(query) ||
+          b.bookingId.toLowerCase().contains(query);
+    }).toList();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
     super.initState();
     _loadRequests();
+    _loadWaBanner();
+  }
+
+  /// Audit impl (worker E, W6): reads the real WhatsApp credit
+  /// balance and the real skipped-message count; the banner stays
+  /// hidden when either read fails.
+  Future<void> _loadWaBanner() async {
+    try {
+      final ds = WhatsappCreditsDataSource();
+      final balance = await ds.getBalance(widget.shopId);
+      final skipped = await ds.getSkippedCount(widget.shopId);
+      if (mounted) {
+        setState(() {
+          _waBalance = balance;
+          _waSkipped = skipped;
+        });
+      }
+    } catch (_) {
+      // Banner stays hidden when credits cannot be read.
+    }
   }
 
   Future<void> _loadRequests() async {
@@ -51,12 +93,14 @@ class _OwnerBookingRequestsViewState extends State<OwnerBookingRequestsView> {
       setState(() {
         // Phase B (D1): the whole pipeline stays visible — new
         // requests, proofs waiting for verification, and approved
-        // bookings waiting for the customer to pay.
+        // bookings waiting for the customer to pay. Audit §5 item 2:
+        // rejected bookings stay visible too, under the Rejected tab.
         _requests = bookings
             .where((b) =>
                 b.status == 'requested' ||
                 b.status == 'payment_submitted' ||
-                b.status == 'approved')
+                b.status == 'approved' ||
+                b.status == 'rejected')
             .toList();
       });
     } catch (_) {
@@ -93,34 +137,8 @@ class _OwnerBookingRequestsViewState extends State<OwnerBookingRequestsView> {
     // Phase B (D3): a rejection always carries a reason — the
     // customer sees it and knows what to fix.
     final l10n = AppLocalizations.of(context)!;
-    final reasonController = TextEditingController();
-    final reason = await showDialog<String>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(l10n.requestsRejectTitle),
-        content: TextField(
-          controller: reasonController,
-          autofocus: true,
-          maxLines: 3,
-          decoration: InputDecoration(
-            labelText: l10n.requestsRejectReasonLabel,
-            hintText: l10n.requestsRejectReasonHint,
-            border: const OutlineInputBorder(),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: Text(l10n.cancel),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(dialogContext).pop(reasonController.text.trim()),
-            child: Text(l10n.requestsRejectButton),
-          ),
-        ],
-      ),
-    );
-    if (reason == null || reason.isEmpty || !mounted) return;
+    final reason = await showRequestRejectDialog(context);
+    if (reason == null || !mounted) return;
     setState(() => _processingId = booking.bookingId);
     try {
       final ds = sl<BookingRemoteDataSource>();
@@ -131,7 +149,13 @@ class _OwnerBookingRequestsViewState extends State<OwnerBookingRequestsView> {
       );
       if (mounted) {
         AppFeedback.showInfo(context, l10n.requestsRejected(booking.bookingId));
-        setState(() => _requests.removeWhere((b) => b.bookingId == booking.bookingId));
+        // Audit §5 item 2: a rejected booking stays in the list
+        // under the Rejected tab instead of vanishing.
+        setState(() => _requests = _requests
+            .map((b) => b.bookingId == booking.bookingId
+                ? b.copyWith(status: 'rejected')
+                : b)
+            .toList());
       }
     } catch (e) {
       if (mounted) AppFeedback.showError(context, l10n.requestsDeclineFailed('$e'));
@@ -140,18 +164,12 @@ class _OwnerBookingRequestsViewState extends State<OwnerBookingRequestsView> {
     }
   }
 
-  Widget _filterChip(AppLocalizations l10n, String status, String label) {
-    final selected = _filter == status;
-    final count = _requests.where((b) => b.status == status).length;
-    return ChoiceChip(
-      materialTapTargetSize: MaterialTapTargetSize.padded,
-      label: Text(l10n.requestsFilterChip(label, count)),
-      selected: selected,
-      onSelected: (_) => setState(() => _filter = status),
-    );
-  }
-
-  String _emptyLabel(AppLocalizations l10n) => {'payment_submitted': l10n.requestsEmptyProof, 'approved': l10n.requestsEmptyApproved}[_filter] ?? l10n.requestsEmptyNew;
+  String _emptyLabel(AppLocalizations l10n) => {
+        'payment_submitted': l10n.requestsEmptyProof,
+        'approved': l10n.requestsEmptyApproved,
+        'rejected': l10n.bookingEmptyRejected,
+      }[_filter] ??
+      l10n.requestsEmptyNew;
 
   @override
   Widget build(BuildContext context) {
@@ -184,62 +202,31 @@ class _OwnerBookingRequestsViewState extends State<OwnerBookingRequestsView> {
               ],
             ),
             Expanded(
-              // E2: shared loading / error / empty states.
-              child: _isLoading
-                  ? AppLoadingState(message: l10n.requestsLoading)
-                  : _hasError
-                      ? AppErrorState(message: l10n.requestsLoadError, onRetry: _loadRequests)
-                      : Column(
-                          children: [
-                            SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-                              child: Row(
-                                children: [
-                                  _filterChip(l10n, 'requested', l10n.requestsFilterNew),
-                                  const SizedBox(width: 8),
-                                  _filterChip(l10n, 'payment_submitted', l10n.requestsFilterProof),
-                                  const SizedBox(width: 8),
-                                  _filterChip(l10n, 'approved', l10n.statusApproved),
-                                ],
-                              ),
-                            ),
-                            Expanded(
-                              child: _filtered.isEmpty
-                                  // E2: shared empty state.
-                                  ? AppEmptyState(title: _emptyLabel(l10n), message: l10n.requestsEmptyMessage)
-                                  : ListView.separated(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 16, vertical: 14),
-                                      itemCount: _filtered.length,
-                                      separatorBuilder: (_, __) =>
-                                          const SizedBox(height: 12),
-                                      itemBuilder: (context, index) {
-                                        final b = _filtered[index];
-                                        return InkWell(
-                                          borderRadius:
-                                              BorderRadius.circular(12),
-                                          onTap: () => context.push(RouteNames
-                                              .ownerRequestsDetail
-                                              .replaceFirst(
-                                                  ':id', b.bookingId)),
-                                          child: RequestTriageCard(
-                                            booking: b,
-                                            isProcessing:
-                                                _processingId == b.bookingId,
-                                            onApprove: () => _approveRequest(b),
-                                            onReject: () => _rejectRequest(b),
-                                            onVerifyProof: () => context.push(
-                                                RouteNames.ownerRequestsDetail
-                                                    .replaceFirst(
-                                                        ':id', b.bookingId)),
-                                          ),
-                                        );
-                                      },
-                                    ),
-                            ),
-                          ],
-                        ),
+              // The list body lives in RequestsListBody so this view
+              // stays under the 250-line cap.
+              child: RequestsListBody(
+                isLoading: _isLoading,
+                hasError: _hasError,
+                loadingMessage: l10n.requestsLoading,
+                errorMessage: l10n.requestsLoadError,
+                emptyTitle: _emptyLabel(l10n),
+                emptyMessage: l10n.requestsEmptyMessage,
+                requests: _requests,
+                filtered: _filtered,
+                filter: _filter,
+                searchController: _searchController,
+                onSearchChanged: (q) => setState(() => _searchQuery = q),
+                onFilterChanged: (s) => setState(() => _filter = s),
+                waBalance: _waBalance,
+                waSkipped: _waSkipped,
+                processingId: _processingId,
+                onRetry: _loadRequests,
+                onApprove: _approveRequest,
+                onReject: _rejectRequest,
+                onOpenDetail: (b) => context.push(RouteNames
+                    .ownerRequestsDetail
+                    .replaceFirst(':id', b.bookingId)),
+              ),
             ),
           ],
         ),

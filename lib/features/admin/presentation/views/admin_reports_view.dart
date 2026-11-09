@@ -5,6 +5,8 @@ import 'package:share_plus/share_plus.dart';
 
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
+import '../../../../core/utils/money_format.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../data/datasources/admin_support_data_source.dart';
 import '../widgets/admin_shell.dart';
 
@@ -66,6 +68,7 @@ class _AdminReportsViewState extends State<AdminReportsView> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final r = _report;
     return AdminShell(
       activeRoute: RouteNames.adminReports,
@@ -132,9 +135,12 @@ class _AdminReportsViewState extends State<AdminReportsView> {
                 children: [
                   _kpi('Bookings', '${r.totalBookings}'),
                   _kpi('Completed', '${r.completedBookings}'),
-                  _kpi('Booking revenue', 'Rs. ${r.bookingRevenue}'),
-                  _kpi('Finance income', 'Rs. ${r.financeIncome}'),
-                  _kpi('Finance expense', 'Rs. ${r.financeExpense}'),
+                  _kpi('Booking revenue',
+                      l10n.amountRs(formatRs(r.bookingRevenue))),
+                  _kpi('Finance income',
+                      l10n.amountRs(formatRs(r.financeIncome))),
+                  _kpi('Finance expense',
+                      l10n.amountRs(formatRs(r.financeExpense))),
                   _kpi('New customers', '${r.newCustomers}'),
                   _kpi('Disputes open', '${r.disputesOpen}'),
                   _kpi('Disputes resolved', '${r.disputesResolved}'),
@@ -146,9 +152,11 @@ class _AdminReportsViewState extends State<AdminReportsView> {
               _section('Top shops',
                   r.topShops.map((e) => '${e.key}: ${e.value} bookings')),
               _section('Income by category',
-                  r.incomeByCategory.entries.map((e) => '${e.key}: Rs. ${e.value}')),
+                  r.incomeByCategory.entries.map((e) =>
+                      '${e.key}: ${l10n.amountRs(formatRs(e.value))}')),
               _section('Expense by category',
-                  r.expenseByCategory.entries.map((e) => '${e.key}: Rs. ${e.value}')),
+                  r.expenseByCategory.entries.map((e) =>
+                      '${e.key}: ${l10n.amountRs(formatRs(e.value))}')),
             ],
           ],
         ),

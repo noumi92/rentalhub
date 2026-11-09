@@ -33,6 +33,7 @@ class PricingPackageList extends StatelessWidget {
         '12h': l10n.pricingPackage12h,
         '24h': l10n.pricingPackage24h,
         'Weekly': l10n.pricingPackageWeekly,
+        'Monthly': l10n.pricingPackageMonthly,
       }[label] ?? label;
 
   @override

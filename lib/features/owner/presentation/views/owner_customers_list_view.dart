@@ -13,6 +13,7 @@ import '../../../blacklist/data/datasources/blacklist_remote_data_source.dart';
 import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../customer/domain/usecases/get_shop_customers_usecase.dart';
 import '../../../customer/utils/customer_grouping.dart';
+import '../widgets/customer_list_filter_chips.dart';
 import '../widgets/customer_row_book_action.dart';
 
 /// Phase B (C1): the shop's customers — every person who booked,
@@ -38,6 +39,7 @@ class _OwnerCustomersListViewState extends State<OwnerCustomersListView> {
   String _query = '';
   final _searchController = TextEditingController();
   String? _expandedKey;
+  CustomerListFilter _chipFilter = CustomerListFilter.all;
 
   @override
   void dispose() {
@@ -75,10 +77,24 @@ class _OwnerCustomersListViewState extends State<OwnerCustomersListView> {
     return cnic != null && _blacklistedCnics.contains(cnic);
   }
 
+  // O11 classification: Regular = 2+ rentals, New = 0–1 rentals,
+  // Flagged = blacklisted or has dues. "Has dues" is the dues-screen
+  // definition: a booking in an approved/paid/active/completed status
+  // with a remaining balance — derived from the bookings already
+  // loaded for the row, never a new collection.
+  static const _dueStatuses = {'approved', 'paid', 'active', 'completed'};
+  bool _hasDues(CustomerSummary c) => c.bookings.any((b) => _dueStatuses.contains(b.status) && b.remainingBalance > 0);
+  bool _matchesChip(CustomerSummary c) => switch (_chipFilter) {
+        CustomerListFilter.all => true,
+        CustomerListFilter.regular => c.bookingCount >= 2,
+        CustomerListFilter.isNew => c.bookingCount <= 1,
+        CustomerListFilter.flagged => _isBlacklisted(c) || _hasDues(c),
+      };
+
   List<CustomerSummary> get _filtered {
     final q = _query.trim().toLowerCase();
-    if (q.isEmpty) return _customers;
-    return _customers.where((c) => c.name.toLowerCase().contains(q) || c.phone.toLowerCase().contains(q) || (c.cnic ?? '').toLowerCase().contains(q)).toList();
+    final byQuery = q.isEmpty ? _customers : _customers.where((c) => c.name.toLowerCase().contains(q) || c.phone.toLowerCase().contains(q) || (c.cnic ?? '').toLowerCase().contains(q)).toList();
+    return byQuery.where(_matchesChip).toList();
   }
 
   @override
@@ -129,6 +145,8 @@ class _OwnerCustomersListViewState extends State<OwnerCustomersListView> {
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
               child: DebouncedButton(text: l10n.addCustomerTitle, icon: Icons.person_add_rounded, onPressed: () => context.push('/owner/customers/add')),
             ),
+            // O11: filter chips (All / Regular / New / Flagged).
+            CustomerListFilterChips(selected: _chipFilter, onSelected: (f) => setState(() => _chipFilter = f)),
             Expanded(
               // E2: shared loading / error / empty states.
               child: _loading
@@ -156,6 +174,10 @@ class _OwnerCustomersListViewState extends State<OwnerCustomersListView> {
                                         title: Row(
                                           children: [
                                             Expanded(child: Text(c.name, style: const TextStyle(fontWeight: FontWeight.w800))),
+                                            if (c.bookingCount >= 2)
+                                              Chip(label: Text(l10n.customersBadgeRegular, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.white)), backgroundColor: AppColors.accentSuccessStrong, padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
+                                            if (c.bookingCount <= 1)
+                                              Chip(label: Text(l10n.customersBadgeNew, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.white)), backgroundColor: AppColors.orangeFill, padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
                                             if (blacklisted)
                                               // Audit §18: white on
                                               // Colors.red is 3.68:1 —

@@ -10,6 +10,9 @@ class SettlementBreakdown {
   final int damageCharge;
   final int overtimeHours;
   final int overtimeFee;
+  /// Audit item 6 (O28): manually recorded extra charges, folded
+  /// into the deductions — never silently dropped.
+  final int extraCharges;
   final int totalDeductions;
   final int netRefund;
 
@@ -21,6 +24,7 @@ class SettlementBreakdown {
     required this.damageCharge,
     required this.overtimeHours,
     required this.overtimeFee,
+    this.extraCharges = 0,
     required this.totalDeductions,
     required this.netRefund,
   });
@@ -57,13 +61,14 @@ class SettlementCalculator {
     int overtimeHours = 0,
     required int extraHourPkr,
     required int securityDeposit,
+    int extraCharges = 0,
   }) {
     final excessKm = (totalKmDriven - kmAllowance).clamp(0, 1 << 30);
     final excessKmCharge = excessKm * extraKmPkr;
     final fuelDeficit = fuelDeficitFor(fuelLevel);
     final overtimeFee = overtimeHours * extraHourPkr;
     final totalDeductions =
-        excessKmCharge + fuelDeficit + damageCharge + overtimeFee;
+        excessKmCharge + fuelDeficit + damageCharge + overtimeFee + extraCharges;
     final netRefund = (securityDeposit - totalDeductions).clamp(0, 1 << 30);
     return SettlementBreakdown(
       totalKmDriven: totalKmDriven,
@@ -73,6 +78,7 @@ class SettlementCalculator {
       damageCharge: damageCharge,
       overtimeHours: overtimeHours,
       overtimeFee: overtimeFee,
+      extraCharges: extraCharges,
       totalDeductions: totalDeductions,
       netRefund: netRefund,
     );

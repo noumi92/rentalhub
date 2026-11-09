@@ -393,7 +393,9 @@ void main() {
         theme: AppTheme.darkTheme,
       );
       expect(_whiteSurfaces(tester), isEmpty);
-      expect(find.text('Shop Settings'), findsOneWidget);
+      // The string renders twice by design: the MinimalAppBar title
+      // (l10n.settings) and the quick link (l10n.fleetShopSettings).
+      expect(find.text('Shop Settings'), findsNWidgets(2));
     });
   });
 }

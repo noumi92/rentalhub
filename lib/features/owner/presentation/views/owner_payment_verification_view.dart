@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
-import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/money_format.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
@@ -13,6 +12,7 @@ import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
 import '../../../bookings/presentation/widgets/proof_image_viewer.dart';
 import '../../../bookings/presentation/widgets/shop_payment_accounts.dart';
+import '../widgets/operations/booking_fare_breakdown.dart';
 
 /// Phase B (D3): the owner checks a submitted payment proof — the
 /// screenshot and the transaction id — and either confirms the
@@ -51,8 +51,13 @@ class _OwnerPaymentVerificationViewState
       if (!mounted) return;
       AppFeedback.showSuccess(context,
           l10n.paymentVerificationConfirmed(_booking.bookingId));
-      context.push(
-        RouteNames.ownerHandover.replaceFirst(':id', _booking.bookingId),
+      // Audit §5 item 3 (O18): approval lands on the Booking
+      // Confirmed screen, not straight on handover.
+      // Registrar: RouteNames.ownerBookingConfirmed =
+      // '/owner/booking-confirmed/:id' (see
+      // audit_impl_manifest_worker_a.md).
+      context.pushReplacement(
+        '/owner/booking-confirmed/${_booking.bookingId}',
       );
     } catch (e) {
       if (mounted) AppFeedback.showError(context, l10n.paymentVerificationConfirmFailed(e.toString()));
@@ -181,6 +186,10 @@ class _OwnerPaymentVerificationViewState
                         ),
                       ),
                     ),
+                    const SizedBox(height: 14),
+                    // Audit §5 item 2 (O15): fare breakdown — daily
+                    // rate × days, dates + times, trip tag, remaining.
+                    BookingFareBreakdown(booking: b),
                     const SizedBox(height: 14),
                     // §10: the method/account the proof was paid to.
                     // No per-booking assigned account exists on the

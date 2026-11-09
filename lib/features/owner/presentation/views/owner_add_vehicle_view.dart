@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../../core/di/injection_container.dart';
+import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/current_shop.dart';
 import '../../../../core/utils/pakistani_validators.dart';
 import '../../../../core/widgets/app_feedback.dart';
@@ -39,15 +41,17 @@ class _OwnerAddVehicleViewState extends State<OwnerAddVehicleView> {
   XFile? _regBookFile, _tokenTaxFile, _insuranceFile;
 
   // Step 3: Rates & Policies — start empty (audit §5/C6): no sample rates, deposit or allowance.
-  bool _enable1Hour = true, _enable3Hours = true, _enable6Hours = true, _enable24Hours = true, _enableWeekly = true;
-  final _rate1HourController = TextEditingController(), _rate3HoursController = TextEditingController(), _rate6HoursController = TextEditingController(), _rate24HoursController = TextEditingController(), _rateWeeklyController = TextEditingController();
+  bool _enable1Hour = true, _enable3Hours = true, _enable6Hours = true, _enable24Hours = true, _enableWeekly = true, _enableMonthly = true;
+  final _rate1HourController = TextEditingController(), _rate3HoursController = TextEditingController(), _rate6HoursController = TextEditingController(), _rate24HoursController = TextEditingController(), _rateWeeklyController = TextEditingController(), _rateMonthlyController = TextEditingController();
+  // Audit §5 finish (O07): out-city day rate, prefilled from the entered full-day rate (mirrored live in the rates widget); the in-city day rate IS the 24h package rate, so it shares _rate24HoursController.
+  final _outCityDayRateController = TextEditingController();
   bool _supportSelfDrive = true, _supportWithDriver = true;
   final _driverAllowanceController = TextEditingController(), _securityDepositController = TextEditingController(), _advanceDepositController = TextEditingController(), _extraHourChargeController = TextEditingController();
   String _fuelPolicy = 'Same to Same';
 
   @override
   void dispose() {
-    for (final c in [_plateController, _rate1HourController, _rate3HoursController, _rate6HoursController, _rate24HoursController, _rateWeeklyController, _driverAllowanceController, _securityDepositController, _advanceDepositController, _extraHourChargeController]) {
+    for (final c in [_plateController, _rate1HourController, _rate3HoursController, _rate6HoursController, _rate24HoursController, _rateWeeklyController, _rateMonthlyController, _outCityDayRateController, _driverAllowanceController, _securityDepositController, _advanceDepositController, _extraHourChargeController]) {
       c.dispose();
     }
     super.dispose();
@@ -82,15 +86,12 @@ class _OwnerAddVehicleViewState extends State<OwnerAddVehicleView> {
 
   bool _validateRates(AppLocalizations l10n) {
     final fields = <(bool, TextEditingController, String, bool)>[
-      (_enable1Hour, _rate1HourController, l10n.addVehicleRate1Hour, false),
-      (_enable3Hours, _rate3HoursController, l10n.addVehicleRate3Hours, false),
-      (_enable6Hours, _rate6HoursController, l10n.addVehicleRate6Hours, false),
-      (_enable24Hours, _rate24HoursController, l10n.addVehicleRateFullDay, false),
-      (_enableWeekly, _rateWeeklyController, l10n.addVehicleRateWeekly, false),
-      (true, _securityDepositController, l10n.addVehicleSecurityDepositSelfDrive, true),
-      (true, _advanceDepositController, l10n.addVehicleAdvanceFee, true),
-      (true, _extraHourChargeController, l10n.addVehicleExtraHourCharge, false),
-      (_supportWithDriver, _driverAllowanceController, l10n.addVehicleDriverAllowance, false),
+      (_enable1Hour, _rate1HourController, l10n.addVehicleRate1Hour, false), (_enable3Hours, _rate3HoursController, l10n.addVehicleRate3Hours, false),
+      (_enable6Hours, _rate6HoursController, l10n.addVehicleRate6Hours, false), (_enable24Hours, _rate24HoursController, l10n.addVehicleRateFullDay, false),
+      (_enableWeekly, _rateWeeklyController, l10n.addVehicleRateWeekly, false), (_enableMonthly, _rateMonthlyController, l10n.addVehicleRateMonthly, false),
+      (true, _outCityDayRateController, l10n.addVehicleOutCityDayRate, false),
+      (true, _securityDepositController, l10n.addVehicleSecurityDepositSelfDrive, true), (true, _advanceDepositController, l10n.addVehicleAdvanceFee, true),
+      (true, _extraHourChargeController, l10n.addVehicleExtraHourCharge, false), (_supportWithDriver, _driverAllowanceController, l10n.addVehicleDriverAllowance, false),
     ];
     for (final (enabled, ctrl, label, allowZero) in fields) {
       if (!enabled) continue;
@@ -116,12 +117,8 @@ class _OwnerAddVehicleViewState extends State<OwnerAddVehicleView> {
     final l10n = AppLocalizations.of(context)!;
     final names = <String>[];
     void add(String label, XFile? f) { if (f != null) names.add('$label: ${f.name}'); }
-    add(l10n.addVehiclePhotoRear, _photoBackFile);
-    add(l10n.addVehiclePhotoSide, _photoSideFile);
-    add(l10n.addVehiclePhotoInterior, _photoInteriorFile);
-    add(l10n.addVehicleDocRegBook, _regBookFile);
-    add(l10n.addVehicleDocTokenTax, _tokenTaxFile);
-    add(l10n.addVehicleDocInsurance, _insuranceFile);
+    add(l10n.addVehiclePhotoRear, _photoBackFile); add(l10n.addVehiclePhotoSide, _photoSideFile); add(l10n.addVehiclePhotoInterior, _photoInteriorFile);
+    add(l10n.addVehicleDocRegBook, _regBookFile); add(l10n.addVehicleDocTokenTax, _tokenTaxFile); add(l10n.addVehicleDocInsurance, _insuranceFile);
     return names;
   }
 
@@ -141,26 +138,29 @@ class _OwnerAddVehicleViewState extends State<OwnerAddVehicleView> {
         hourly1: _enable1Hour ? _getInt(_rate1HourController, 0) : null,
         hourly3: _enable3Hours ? _getInt(_rate3HoursController, 0) : null,
         hourly6: _enable6Hours ? _getInt(_rate6HoursController, 0) : null,
-        daily24: _getInt(_rate24HoursController, 0)),
+        daily24: _getInt(_rate24HoursController, 0), outOfCityDaily: _getInt(_outCityDayRateController, 0)),
       imageUrl: imageUrl, color: _color, features: _selectedFeatures.toList(),
       // Audit §5 (integration): link the other six uploads — without these fields their URLs were uploaded but lost.
       photoBackUrl: uploads['photoBackUrl'], photoSideUrl: uploads['photoSideUrl'], photoInteriorUrl: uploads['photoInteriorUrl'],
       regBookUrl: uploads['regBookUrl'], tokenTaxUrl: uploads['tokenTaxUrl'], insuranceUrl: uploads['insuranceUrl'],
       weeklyRate: _enableWeekly ? _getInt(_rateWeeklyController, 0) : null,
+      monthlyRate: _enableMonthly ? _getInt(_rateMonthlyController, 0) : null,
       securityDepositPkr: _getInt(_securityDepositController, 0), advanceRequiredPkr: _getInt(_advanceDepositController, 0),
       extraHourPkr: _getInt(_extraHourChargeController, 0), withDriverSurchargePkr: _getInt(_driverAllowanceController, 0), fuelPolicy: _fuelPolicy,
     );
-    try {
-      await sl<AddVehicleUseCase>()(shopId: shopId, vehicle: vehicle);
-    } catch (e) {
+    try { await sl<AddVehicleUseCase>()(shopId: shopId, vehicle: vehicle); } catch (e) {
       // Freemium 3-car limit and other save failures surface here.
       if (mounted) _stepErr(e.toString());
       return;
     }
     if (!mounted) return;
     widget.onVehicleAdded?.call(vehicle);
-    AppFeedback.showSuccess(context, AppLocalizations.of(context)!.addVehicleAdded(vehicle.displayName));
-    Navigator.of(context).pop(vehicle);
+    // Audit §5 (O10): a saved car lands on the published-confirmation screen (View in App / Copy Link / Share), not a pop + snackbar. No router in tests: fall back to the pop.
+    try {
+      context.pushReplacement(RouteNames.ownerVehiclePublished.replaceFirst(':vehicleId', vehicle.vehicleId));
+    } catch (_) {
+      if (mounted) Navigator.of(context).pop(vehicle);
+    }
   }
 
   @override
@@ -182,10 +182,7 @@ class _OwnerAddVehicleViewState extends State<OwnerAddVehicleView> {
                 child: Padding(padding: const EdgeInsets.all(16), child: _buildCurrentStep()),
               ),
             ),
-            AddVehicleBottomBar(
-              currentStep: _currentStep,
-              onPressed: _next,
-            ),
+            AddVehicleBottomBar(currentStep: _currentStep, onPressed: _next),
           ],
         ),
       ),
@@ -234,7 +231,8 @@ class _OwnerAddVehicleViewState extends State<OwnerAddVehicleView> {
           enable3Hours: _enable3Hours, onToggle3Hours: (v) => setState(() => _enable3Hours = v), rate3HoursController: _rate3HoursController,
           enable6Hours: _enable6Hours, onToggle6Hours: (v) => setState(() => _enable6Hours = v), rate6HoursController: _rate6HoursController,
           enable24Hours: _enable24Hours, onToggle24Hours: (v) => setState(() => _enable24Hours = v), rate24HoursController: _rate24HoursController,
-          enableWeekly: _enableWeekly, onToggleWeekly: (v) => setState(() => _enableWeekly = v), rateWeeklyController: _rateWeeklyController,
+          enableWeekly: _enableWeekly, onToggleWeekly: (v) => setState(() => _enableWeekly = v), rateWeeklyController: _rateWeeklyController, enableMonthly: _enableMonthly, onToggleMonthly: (v) => setState(() => _enableMonthly = v), rateMonthlyController: _rateMonthlyController,
+          outCityDayRateController: _outCityDayRateController,
           supportSelfDrive: _supportSelfDrive, onToggleSelfDrive: (v) => setState(() => _supportSelfDrive = v),
           supportWithDriver: _supportWithDriver, onToggleWithDriver: (v) => setState(() => _supportWithDriver = v),
           driverAllowanceController: _driverAllowanceController, securityDepositController: _securityDepositController,
@@ -248,7 +246,7 @@ class _OwnerAddVehicleViewState extends State<OwnerAddVehicleView> {
           selectedMake: _selectedMake, selectedModel: _selectedModel, category: _category, selectedYear: _selectedYear, color: _color,
           plateNumber: _plateController.text.trim(),
           isAutomatic: _isAutomatic, fuelType: _fuelType, seats: _seats,
-          dailyRate: _getInt(_rate24HoursController, 0), driverAllowance: _getInt(_driverAllowanceController, 0),
+          dailyRate: _getInt(_rate24HoursController, 0), driverAllowance: _getInt(_driverAllowanceController, 0), monthlyRate: _getInt(_rateMonthlyController, 0),
           supportSelfDrive: _supportSelfDrive, supportWithDriver: _supportWithDriver,
           deposit: _getInt(_securityDepositController, 0), advance: _getInt(_advanceDepositController, 0),
           extraHour: _getInt(_extraHourChargeController, 0), fuelPolicy: _fuelPolicy,

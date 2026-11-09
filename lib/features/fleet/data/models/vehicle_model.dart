@@ -68,6 +68,7 @@ class VehicleModel extends VehicleEntity {
     super.trackerProvider,
     super.insurancePolicy,
     super.weeklyRate,
+    super.monthlyRate,
     super.securityDepositPkr,
     super.advanceRequiredPkr,
     super.extraHourPkr,
@@ -76,6 +77,8 @@ class VehicleModel extends VehicleEntity {
     super.packages,
     super.extraKmPkr,
     super.outOfCityKmPerDay,
+    super.perKmPricingEnabled,
+    super.customRates,
   });
 
   @override
@@ -110,6 +113,7 @@ class VehicleModel extends VehicleEntity {
     String? trackerProvider,
     String? insurancePolicy,
     int? weeklyRate,
+    int? monthlyRate,
     int? securityDepositPkr,
     int? advanceRequiredPkr,
     int? extraHourPkr,
@@ -118,6 +122,8 @@ class VehicleModel extends VehicleEntity {
     List<VehiclePackageEntity>? packages,
     int? extraKmPkr,
     int? outOfCityKmPerDay,
+    bool? perKmPricingEnabled,
+    List<CustomRateEntity>? customRates,
   }) {
     return VehicleModel(
       vehicleId: vehicleId ?? this.vehicleId,
@@ -151,6 +157,7 @@ class VehicleModel extends VehicleEntity {
       trackerProvider: trackerProvider ?? this.trackerProvider,
       insurancePolicy: insurancePolicy ?? this.insurancePolicy,
       weeklyRate: weeklyRate ?? this.weeklyRate,
+      monthlyRate: monthlyRate ?? this.monthlyRate,
       securityDepositPkr: securityDepositPkr ?? this.securityDepositPkr,
       advanceRequiredPkr: advanceRequiredPkr ?? this.advanceRequiredPkr,
       extraHourPkr: extraHourPkr ?? this.extraHourPkr,
@@ -160,6 +167,9 @@ class VehicleModel extends VehicleEntity {
       packages: packages ?? this.packages,
       extraKmPkr: extraKmPkr ?? this.extraKmPkr,
       outOfCityKmPerDay: outOfCityKmPerDay ?? this.outOfCityKmPerDay,
+      perKmPricingEnabled:
+          perKmPricingEnabled ?? this.perKmPricingEnabled,
+      customRates: customRates ?? this.customRates,
     );
   }
 
@@ -195,6 +205,7 @@ class VehicleModel extends VehicleEntity {
       if (trackerProvider != null) 'trackerProvider': trackerProvider,
       if (insurancePolicy != null) 'insurancePolicy': insurancePolicy,
       if (weeklyRate != null) 'weeklyRate': weeklyRate,
+      if (monthlyRate != null) 'monthlyRate': monthlyRate,
       if (securityDepositPkr != null)
         'securityDepositPkr': securityDepositPkr,
       if (advanceRequiredPkr != null)
@@ -207,6 +218,9 @@ class VehicleModel extends VehicleEntity {
         'packages': packages.map((p) => p.toMap()).toList(),
       if (extraKmPkr != null) 'extraKmPkr': extraKmPkr,
       if (outOfCityKmPerDay != null) 'outOfCityKmPerDay': outOfCityKmPerDay,
+      'perKmPricingEnabled': perKmPricingEnabled,
+      if (customRates.isNotEmpty)
+        'customRates': customRates.map((r) => r.toMap()).toList(),
     };
   }
 
@@ -248,6 +262,7 @@ class VehicleModel extends VehicleEntity {
       trackerProvider: map['trackerProvider'] as String?,
       insurancePolicy: map['insurancePolicy'] as String?,
       weeklyRate: (map['weeklyRate'] as num?)?.toInt(),
+      monthlyRate: (map['monthlyRate'] as num?)?.toInt(),
       securityDepositPkr: (map['securityDepositPkr'] as num?)?.toInt(),
       advanceRequiredPkr: (map['advanceRequiredPkr'] as num?)?.toInt(),
       extraHourPkr: (map['extraHourPkr'] as num?)?.toInt(),
@@ -261,6 +276,12 @@ class VehicleModel extends VehicleEntity {
           const [],
       extraKmPkr: (map['extraKmPkr'] as num?)?.toInt(),
       outOfCityKmPerDay: (map['outOfCityKmPerDay'] as num?)?.toInt(),
+      perKmPricingEnabled: (map['perKmPricingEnabled'] as bool?) ?? true,
+      customRates: (map['customRates'] as List?)
+              ?.map((e) => CustomRateEntity.fromMap(
+                  Map<String, dynamic>.from(e as Map)))
+              .toList() ??
+          const [],
     );
   }
 
@@ -296,6 +317,7 @@ class VehicleModel extends VehicleEntity {
       trackerProvider: entity.trackerProvider,
       insurancePolicy: entity.insurancePolicy,
       weeklyRate: entity.weeklyRate,
+      monthlyRate: entity.monthlyRate,
       securityDepositPkr: entity.securityDepositPkr,
       advanceRequiredPkr: entity.advanceRequiredPkr,
       extraHourPkr: entity.extraHourPkr,
@@ -304,6 +326,8 @@ class VehicleModel extends VehicleEntity {
       packages: entity.packages,
       extraKmPkr: entity.extraKmPkr,
       outOfCityKmPerDay: entity.outOfCityKmPerDay,
+      perKmPricingEnabled: entity.perKmPricingEnabled,
+      customRates: entity.customRates,
     );
   }
 }

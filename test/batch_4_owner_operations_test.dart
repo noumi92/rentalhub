@@ -231,7 +231,11 @@ void main() {
 
       expect(find.text('Vehicle Return & Settlement'), findsOneWidget);
       expect(find.text('Deposit & Return Balance Settlement'), findsOneWidget);
-      expect(find.text('Finalize Return & Settle Deposit'), findsOneWidget);
+      // Finish build (O26): the single Finalize button is gone —
+      // Refund Deposit first, then Complete & Close Booking.
+      expect(find.text('Finalize Return & Settle Deposit'), findsNothing);
+      expect(find.text('Refund Deposit'), findsNWidgets(2));
+      expect(find.text('Complete & Close Booking'), findsOneWidget);
     });
   });
 }

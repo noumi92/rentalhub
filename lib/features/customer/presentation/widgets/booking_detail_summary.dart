@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/utils/money_format.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
 import '../../../../l10n/app_localizations.dart';
 
@@ -39,10 +40,10 @@ class BookingDetailSummary extends StatelessWidget {
           _row(context, l10n.pickupLabel, _formatDateTime(b.pickupTime)),
           _row(context, l10n.summaryReturn, _formatDateTime(b.returnTime)),
           const Divider(height: 18),
-          _row(context, l10n.summaryTotal, 'Rs. ${b.totalAmount}', bold: true),
-          _row(context, l10n.summaryAdvanceRequired, 'Rs. ${b.advanceRequired}'),
-          _row(context, l10n.summaryAdvancePaid, 'Rs. ${b.advancePaid}'),
-          _row(context, l10n.summaryRemaining, 'Rs. ${b.remainingBalance}', bold: true),
+          _row(context, l10n.summaryTotal, l10n.amountRs(formatRs(b.totalAmount)), bold: true),
+          _row(context, l10n.summaryAdvanceRequired, l10n.amountRs(formatRs(b.advanceRequired))),
+          _row(context, l10n.summaryAdvancePaid, l10n.amountRs(formatRs(b.advancePaid))),
+          _row(context, l10n.summaryRemaining, l10n.amountRs(formatRs(b.remainingBalance)), bold: true),
         ],
       ),
     );

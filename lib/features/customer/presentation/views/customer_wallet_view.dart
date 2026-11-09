@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
+import '../../../../core/utils/money_format.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../core/widgets/masked_value.dart';
 import '../../../bookings/data/datasources/booking_remote_data_source.dart';
@@ -110,7 +111,7 @@ class _CustomerWalletViewState extends State<CustomerWalletView> {
                             // taps the eye; the eye stays light on the
                             // navy card.
                             child: MaskedValue(
-                              value: 'Rs. ${summary?.total ?? 0}',
+                              value: l10n.amountRs(formatRs(summary?.total ?? 0)),
                               style: Theme.of(context)
                                   .textTheme
                                   .displayLarge
@@ -129,13 +130,13 @@ class _CustomerWalletViewState extends State<CustomerWalletView> {
                               Expanded(
                                 child: _EscrowPill(
                                     label: l10n.walletAdvancesPaid,
-                                    value: 'Rs. ${summary?.advancesPaid ?? 0}'),
+                                    value: l10n.amountRs(formatRs(summary?.advancesPaid ?? 0))),
                               ),
                               const SizedBox(width: 10),
                               Expanded(
                                 child: _EscrowPill(
                                     label: l10n.walletSecurityEscrow,
-                                    value: 'Rs. ${summary?.escrowHeld ?? 0}'),
+                                    value: l10n.amountRs(formatRs(summary?.escrowHeld ?? 0))),
                               ),
                             ],
                           ),

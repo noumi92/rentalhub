@@ -58,6 +58,8 @@ void main() {
           label: '24h', hours: 24, pricePkr: 9000, kmIncluded: 250),
       VehiclePackageEntity(
           label: 'Weekly', hours: 168, pricePkr: 52000, kmIncluded: 1750),
+      VehiclePackageEntity(
+          label: 'Monthly', hours: 720, pricePkr: 216000, kmIncluded: 7500),
     ],
   );
 
@@ -67,15 +69,15 @@ void main() {
       final restored = VehicleModel.fromMap(model.toMap(), 'veh-pkg-1');
       // Equatable compares runtime types, so compare the maps instead.
       expect(restored.toMap(), model.toMap());
-      expect(restored.packages.length, 6);
-      expect(restored.enabledPackages.length, 5);
+      expect(restored.packages.length, 7);
+      expect(restored.enabledPackages.length, 6);
       expect(
         restored.enabledPackages.any((p) => p.label == '3h'),
         isFalse,
       );
     });
 
-    test('old documents without packages derive the six defaults', () {
+    test('old documents without packages derive the seven defaults', () {
       const old = VehicleModel(
         vehicleId: 'veh-old-1',
         shopId: 'shop-1',
@@ -94,10 +96,14 @@ void main() {
       );
       final packages = old.effectivePackages;
       expect(packages.map((p) => p.label).toList(),
-          ['1h', '3h', '6h', '12h', '24h', 'Weekly']);
+          ['1h', '3h', '6h', '12h', '24h', 'Weekly', 'Monthly']);
       expect(packages[3].pricePkr, (8500 * 0.6).round());
       expect(packages[4].pricePkr, 8500);
       expect(packages[5].pricePkr, 50000);
+      // Monthly = daily x 24 (30 days less 20%).
+      expect(packages[6].pricePkr, 8500 * 24);
+      expect(packages[6].hours, 720);
+      expect(packages[6].kmIncluded, 7500);
       expect(packages.every((p) => p.enabled), isTrue);
     });
   });
@@ -164,7 +170,9 @@ void main() {
 
       expect(find.text('Vehicle Pricing Matrix'), findsOneWidget);
       expect(find.text('Honda Civic Oriel (2021)'), findsOneWidget);
-      expect(find.text('Rental Packages'), findsOneWidget);
+      // Finish build (P4-O07): the "Rental Packages" heading is now
+      // the in-city list heading; the duration packages are unchanged.
+      expect(find.text('In-City Rent Rates'), findsOneWidget);
       expect(find.text('12-Hour Half Day'), findsOneWidget);
       expect(find.text('Weekly Package (7 Days)'), findsOneWidget);
       expect(find.text('Pricing Policy'), findsOneWidget);

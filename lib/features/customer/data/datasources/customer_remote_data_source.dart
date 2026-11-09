@@ -122,4 +122,28 @@ class CustomerRemoteDataSource {
     final written = await _writeDoc('customers', customer.customerId, model.toMap());
     if (!written) await _queueDoc('customers', customer.customerId, model.toMap());
   }
+
+  /// Owner-deck finish (#35): owner approval of a customer profile.
+  /// Writes only the approval fields (merge set, same [_writeDoc]
+  /// pattern as [upsertCustomer]) so the rest of the record is
+  /// untouched; a failed write is queued like any other. Approving
+  /// clears a previous rejection reason (the field is written null).
+  Future<void> updateApprovalStatus({
+    required String customerId,
+    required String status, // 'pending' | 'approved' | 'rejected'
+    String? rejectionReason,
+  }) async {
+    final fields = <String, dynamic>{
+      'approvalStatus': status,
+      'rejectionReason': rejectionReason,
+      'reviewedAt': DateTime.now().toIso8601String(),
+    };
+    final existing = _inMemoryCustomers[customerId];
+    if (existing != null) {
+      _inMemoryCustomers[customerId] =
+          CustomerModel.fromMap({...existing.toMap(), ...fields}, customerId);
+    }
+    final written = await _writeDoc('customers', customerId, fields);
+    if (!written) await _queueDoc('customers', customerId, fields);
+  }
 }

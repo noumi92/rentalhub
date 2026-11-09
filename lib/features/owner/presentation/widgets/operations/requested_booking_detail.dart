@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/di/injection_container.dart';
+import '../../../../../core/routing/route_names.dart';
 import '../../../../../core/widgets/app_feedback.dart';
 import '../../../../../core/widgets/debounced_button.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../../bookings/domain/entities/booking_entity.dart';
+import 'booking_fare_breakdown.dart';
+import 'booking_request_checklist.dart';
+import 'confirm_terms_step.dart';
+import 'request_reject_dialog.dart';
 import 'request_triage_card.dart';
 
 /// §10: the requested-state detail for a booking that has not been
@@ -66,35 +72,8 @@ class _RequestedBookingDetailState extends State<RequestedBookingDetail> {
 
   Future<void> _reject() async {
     final l10n = AppLocalizations.of(context)!;
-    final reasonController = TextEditingController();
-    final reason = await showDialog<String>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(l10n.requestsRejectTitle),
-        content: TextField(
-          controller: reasonController,
-          autofocus: true,
-          maxLines: 3,
-          decoration: InputDecoration(
-            labelText: l10n.requestsRejectReasonLabel,
-            hintText: l10n.requestsRejectReasonHint,
-            border: const OutlineInputBorder(),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: Text(l10n.cancel),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(dialogContext)
-                .pop(reasonController.text.trim()),
-            child: Text(l10n.requestsRejectButton),
-          ),
-        ],
-      ),
-    );
-    if (reason == null || reason.isEmpty || !mounted) return;
+    final reason = await showRequestRejectDialog(context);
+    if (reason == null || !mounted) return;
     setState(() => _processing = true);
     try {
       final ds = sl<BookingRemoteDataSource>();
@@ -158,7 +137,31 @@ class _RequestedBookingDetailState extends State<RequestedBookingDetail> {
             onApprove: _approve,
             onReject: _reject,
           ),
+          const SizedBox(height: 12),
+          // Audit §5 item 2 (O15): the fare breakdown — daily rate ×
+          // days, advance paid / remaining, dates + times, trip tag.
+          BookingFareBreakdown(booking: widget.booking),
           if (widget.showActions) ...[
+            const SizedBox(height: 12),
+            // Audit §5 item 16 (O15 variant): the pre-accept
+            // checklist, shown before Accept.
+            BookingRequestChecklist(booking: widget.booking),
+            const SizedBox(height: 12),
+            // Audit §5 item 16 (O16 p.6): the Confirm Terms step —
+            // all four items ticked, then Confirm Booking accepts.
+            ConfirmTermsStep(onConfirm: _approve),
+            const SizedBox(height: 12),
+            // Audit §5 item 16 (O17 p.6): convert the request into a
+            // manual entry, prefilled with its customer / car / dates.
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () => _convertToManual(context),
+                icon: const Icon(Icons.edit_note_rounded),
+                label: Text(l10n.bookingConvertToManual,
+                    style: const TextStyle(fontWeight: FontWeight.w800)),
+              ),
+            ),
             const SizedBox(height: 16),
             // The card's buttons are the actions; this pinned CTA is the
             // same approve for owners who scroll past the card.
@@ -173,5 +176,30 @@ class _RequestedBookingDetailState extends State<RequestedBookingDetail> {
         ],
       ),
     );
+  }
+
+  void _convertToManual(BuildContext context) {
+    final booking = widget.booking;
+    final params = <String, String>{};
+    if ((booking.customerName ?? '').isNotEmpty) {
+      params['name'] = booking.customerName!;
+    }
+    if ((booking.customerPhone ?? '').isNotEmpty) {
+      params['phone'] = booking.customerPhone!;
+    }
+    if ((booking.customerCnic ?? '').isNotEmpty) {
+      params['cnic'] = booking.customerCnic!;
+    }
+    params['vehicle'] = booking.vehicleId;
+    params['pickup'] = booking.pickupTime.toIso8601String();
+    params['return'] = booking.returnTime.toIso8601String();
+    params['tripType'] = booking.tripType;
+    // Registrar: the manual-booking route reads vehicle / pickup /
+    // return / tripType from these query params (see
+    // audit_impl_manifest_worker_a.md).
+    context.push(Uri(
+      path: RouteNames.ownerManualBooking,
+      queryParameters: params,
+    ).toString());
   }
 }

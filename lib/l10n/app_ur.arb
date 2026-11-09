@@ -429,7 +429,6 @@
   "authSignedInGoogle": "گوگل سے سائن ان ہو گئے!",
   "authValidEmail": "براہ کرم درست ای میل پتہ درج کریں۔",
   "authPasswordLength": "پاس ورڈ کم از کم 6 حروف کا ہونا چاہیے۔",
-  "authNewUser": "رینٹل ہب پر نئے ہیں؟ کردار منتخب کریں اور رجسٹر کریں",
   "authTagline": "پاکستان کا بہترین کار رینٹل اور فلیٹ نظام • خوش آمدید",
   "authGoogle": "گوگل سے جاری رکھیں",
   "onboardingStep1": "مرحلہ 1: آپ کا پروفائل",
@@ -2200,7 +2199,7 @@
   "contractScanVerify": "اس معاہدے کی تصدیق کے لیے اسکین کریں — صفحہ بکنگ، شوروم اور دستخط شدہ پی ڈی ایف دکھاتا ہے۔",
   "contractProceedReturn": "واپسی اور تصفیے کی طرف بڑھیں",
   "contractAgencyLine": "حکومت سے رجسٹرڈ کمرشل موٹر کار رینٹل ایجنسی",
-  "contractCertifiedTitle": "تصدیق شدہ ڈیجیٹل رینٹل معاہدہ",
+  "contractCertifiedTitle": "رینٹل معاہدہ",
   "contractFieldAgreementNo": "معاہدہ نمبر:",
   "contractFieldHirer": "کرایہ دار / گاہک:",
   "contractFieldContact": "گاہک کا رابطہ:",
@@ -2223,7 +2222,7 @@
     }
   },
   "contractTermsTitle": "قانونی شرائط و ضوابط (پاکستان کا دائرہ اختیار):",
-  "contractTerm1": "1۔ گاڑی این او سی کے بغیر غیر مجاز صوبائی چیک پوائنٹس سے نہیں گزاری جائے گی۔",
+  "contractTerm1": "1۔ گاڑی شہر کی حدود میں استعمال کی جائے گی جب تک کہ شہر سے باہر کا کرایہ طے نہ ہو۔",
   "contractTerm2": "2۔ ٹریفک چالان، ای چالان اور استعمال شدہ ایندھن کی ذمہ داری صرف کرایہ دار پر ہے۔",
   "contractTerm3": "3۔ کسی بھی ناکامی پر فوری ناقابل ضمانت ایف آئی آر اور نیشنل ٹرائیبیونل بلیک لسٹ میں شمولیت ہوگی۔",
   "contractHirerSignature": "کرایہ دار کے دستخط",
@@ -2822,5 +2821,962 @@
         "type": "int"
       }
     }
-  }
+  },
+  "kycWizardStepCnic": "شناختی کارڈ",
+  "kycWizardStepPhoto": "تصویر",
+  "kycWizardStepDocs": "دستاویزات اور دستخط",
+  "kycWizardStepGuarantor": "ضامن",
+  "kycWizardNext": "آگے",
+  "kycWizardScanFront": "شناختی کارڈ کا سامنے والا حصہ اسکین کریں",
+  "kycWizardScanBack": "شناختی کارڈ کا پچھلا حصہ اسکین کریں",
+  "kycWizardFrontScanned": "سامنے والا حصہ اسکین ہو گیا",
+  "kycWizardBackScanned": "پچھلا حصہ اسکین ہو گیا",
+  "kycWizardFatherName": "والد کا نام",
+  "kycWizardDateOfBirth": "تاریخ پیدائش",
+  "kycWizardCnicExpiry": "شناختی کارڈ کی میعاد",
+  "kycWizardAddress": "پتہ",
+  "kycWizardWhatsappNumber": "واٹس ایپ نمبر",
+  "kycWizardManualEntry": "یا نیچے تفصیلات دستی طور پر درج کریں",
+  "kycWizardBlacklisted": "یہ شناختی کارڈ بلیک لسٹ میں ہے اور شامل نہیں کیا جا سکتا۔",
+  "kycWizardLivePhoto": "براہ راست تصویر",
+  "kycWizardFaceHint": "گاہک کے چہرے کی واضح تصویر لیں",
+  "kycWizardRetake": "دوبارہ لیں",
+  "kycWizardThumbprint": "انگوٹھے کا نشان",
+  "kycWizardThumbHint": "دائیں انگوٹھے کی تصویر لیں",
+  "kycWizardPhotoRequired": "جاری رکھنے کے لیے تصویر ضروری ہے",
+  "kycWizardLicense": "ڈرائیونگ لائسنس",
+  "kycWizardLicenseFront": "لائسنس کا سامنے والا حصہ",
+  "kycWizardLicenseBack": "لائسنس کا پچھلا حصہ",
+  "kycWizardLicenseNumber": "لائسنس نمبر",
+  "kycWizardLicenseExpiry": "لائسنس کی میعاد",
+  "kycWizardUtilityBill": "یوٹیلیٹی بل (پتے کا ثبوت)",
+  "kycWizardExtraDocs": "اضافی دستاویزات (اختیاری)",
+  "kycWizardAddPhoto": "تصویر شامل کریں",
+  "kycWizardSignature": "گاہک کے دستخط",
+  "kycWizardSignatureClear": "صاف کریں",
+  "kycWizardAgreeTerms": "میں کرایے کی شرائط سے متفق ہوں",
+  "kycWizardViewTerms": "شرائط دیکھیں",
+  "kycWizardSearchGuarantor": "موجودہ گاہک تلاش کریں",
+  "kycWizardRelation": "گاہک سے رشتہ",
+  "kycWizardRelationFriend": "دوست",
+  "kycWizardRelationFamily": "خاندان",
+  "kycWizardRelationColleague": "ساتھی",
+  "kycWizardRelationOther": "دیگر",
+  "kycWizardGuarantorOnFile": "دستخط اور انگوٹھے کا نشان محفوظ ہے — خود بخود حاصل کر لیا گیا",
+  "kycWizardKycComplete": "KYC مکمل: شناختی کارڈ، تصویر، انگوٹھا، لائسنس، دستخط",
+  "kycWizardStepIncomplete": "براہ کرم اس مرحلے کی تمام ضروری چیزیں مکمل کریں",
+  "kycWizardPhotosPending": "محفوظ ہو گیا — کچھ تصاویر آن لائن ہونے پر اپ لوڈ ہو جائیں گی",
+  "kycWizardUploadFailed": "تصویر اپ لوڈ ناکام ہو گئی",
+  "kycWizardGuarantorOptional": "ضامن اختیاری ہے — آپ اس کے بغیر بھی محفوظ کر سکتے ہیں",
+  "kycWizardExtraSkipped": "محفوظ ہو گیا — کچھ اضافی دستاویزات آف لائن اپ لوڈ نہیں ہو سکیں",
+  "bookingSearchHint": "نام، فون، گاڑی یا بکنگ نمبر تلاش کریں",
+  "bookingEmptyRejected": "کوئی مسترد شدہ درخواست نہیں ہے",
+  "bookingDaysCount": "{count} دن",
+  "@bookingDaysCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "bookingFareTitle": "کرایہ کی تفصیل",
+  "bookingFarePickup": "پک اپ",
+  "bookingFareReturn": "واپسی",
+  "bookingFareDailyRate": "یومیہ کرایہ",
+  "bookingFareDailyRateTimes": "یومیہ کرایہ × {count} دن",
+  "@bookingFareDailyRateTimes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "bookingFarePackagePrice": "پیکیج کی قیمت",
+  "bookingFareTotal": "کل رقم",
+  "bookingFareAdvanceRequired": "مطلوبہ پیشگی رقم",
+  "bookingFareAdvancePaid": "ادا شدہ پیشگی رقم",
+  "bookingFareRemaining": "باقی رقم",
+  "bookingChecklistTitle": "قبول کرنے سے پہلے",
+  "bookingCheckKyc": "گاہک کی KYC دستاویزات موجود ہیں",
+  "bookingCheckCar": "گاڑی دستیاب ہے",
+  "bookingCheckAdvance": "پیشگی رقم موصول ہو گئی",
+  "bookingConfirmTermsTitle": "شرائط کی تصدیق کریں",
+  "bookingTermCondition": "گاڑی کی حالت",
+  "bookingTermFuel": "ایندھن کی سطح",
+  "bookingTermMileage": "مائلیج",
+  "bookingTermDocuments": "دستاویزات",
+  "bookingTermsIncomplete": "بکنگ کی تصدیق کے لیے چاروں نکات پر نشان لگائیں۔",
+  "bookingConvertToManual": "دستی اندراج میں تبدیل کریں",
+  "bookingConfirmedTitle": "بکنگ کی تصدیق ہو گئی",
+  "bookingConfirmedHandoverScheduled": "حوالگی مقرر ہے {date}",
+  "@bookingConfirmedHandoverScheduled": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "bookingConfirmedStartHandover": "حوالگی شروع کریں",
+  "bookingConfirmedViewBooking": "بکنگ دیکھیں",
+  "bookingConfirmedMessageCustomer": "گاہک کو پیغام بھیجیں",
+  "bookingConfirmedWhatsappMessage": "السلام علیکم {name}، آپ کی بکنگ {vehicle} کے لیے منظور ہو گئی ہے۔ پک اپ: {date}۔ کل رقم: {total} روپے۔ شکریہ!",
+  "@bookingConfirmedWhatsappMessage": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "vehicle": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "bookingConfirmedWhatsappFailed": "واٹس ایپ نہیں کھولا جا سکا۔",
+  "manualBookingNext": "اگلا",
+  "manualBookingReturnAfterPickup": "واپسی کا وقت پک اپ کے بعد ہونا چاہیے۔",
+  "manualBookingConfirmTitle": "کرایہ کا جائزہ",
+  "manualBookingConfirmBooking": "بکنگ کی تصدیق کریں",
+  "contractTerm4": "4۔ ایندھن اسی سطح پر واپس کیا جائے گا جس سطح پر حوالگی کے وقت تھا۔",
+  "contractTerm5": "5۔ دیر سے واپسی پر طے شدہ پیکج کے مطابق فی گھنٹہ یا فی دن چارج ہوگا۔",
+  "contractTerm6": "6۔ نقصان کا چارج واپسی پر معائنے کے مطابق ہوگا۔",
+  "contractTerm7": "7۔ گاڑی میں رہ جانے والے ذاتی سامان کا مالک ذمہ دار نہیں ہے۔",
+  "contractTerm8": "8۔ یہ معاہدہ پاکستان کے قوانین کے تحت ہے۔",
+  "contractTerm9": "9۔ سیکیورٹی ڈپازٹ واپسی پر معائنے کے بعد واپس کیا جائے گا، نقصان یا اضافی کلومیٹر کے چارجز منہا کر کے۔",
+  "contractTerm10": "10۔ دونوں فریقین مندرجہ بالا شرائط سے متفق ہیں۔",
+  "contractFieldAdvance": "ایڈوانس:",
+  "contractFieldRemaining": "بقایا:",
+  "contractFieldPlate": "نمبر پلیٹ:",
+  "contractGuarantorSignature": "ضامن کے دستخط",
+  "contractGuarantorPending": "زیر التواء",
+  "contractDownloadPdf": "پی ڈی ایف ڈاؤن لوڈ کریں",
+  "contractPdfDownloaded": "معاہدے کی پی ڈی ایف محفوظ ہو گئی: {file}",
+  "@contractPdfDownloaded": {
+    "placeholders": {
+      "file": {
+        "type": "String"
+      }
+    }
+  },
+  "contractPdfDownloadFailed": "معاہدے کی پی ڈی ایف محفوظ نہ ہو سکی: {error}",
+  "@contractPdfDownloadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "handoverPhotosTitle": "گاڑی کی بیرونی تصاویر",
+  "handoverPhotoFront": "سامنے",
+  "handoverPhotoBack": "پیچھے",
+  "handoverPhotoLeft": "بائیں",
+  "handoverPhotoRight": "دائیں",
+  "handoverPhotoUploading": "اپ لوڈ ہو رہی ہے…",
+  "handoverDocumentsTitle": "دیے گئے دستاویزات",
+  "handoverDocumentRegistration": "رجسٹریشن",
+  "handoverDocumentInsurance": "انشورنس",
+  "handoverAccessoriesTitle": "لوازمات",
+  "handoverAccessorySpareTyre": "اسپیئر ٹائر",
+  "handoverAccessoryJack": "جیک",
+  "handoverAccessoryToolKit": "ٹول کٹ",
+  "handoverKeysTitle": "چابیاں حوالے کر دی گئیں",
+  "returnLandingTitle": "واپسی اور حساب",
+  "returnLandingSummary": "بکنگ #{id} • {customer} — {vehicle}",
+  "@returnLandingSummary": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      },
+      "customer": {
+        "type": "String"
+      },
+      "vehicle": {
+        "type": "String"
+      }
+    }
+  },
+  "returnLandingDueBack": "واپسی کی تاریخ",
+  "returnLandingStart": "واپسی کا معائنہ شروع کریں",
+  "returnConditionTitle": "گاڑی کی حالت",
+  "returnConditionGood": "اچھی",
+  "returnConditionMinorDamage": "معمولی نقصان",
+  "returnConditionRecordDamage": "نقصان درج کریں",
+  "returnFareTitle": "کرایے کی تفصیل",
+  "returnFareRent": "کرایہ",
+  "returnFareAdvancePaid": "ایڈوانس ادا شدہ",
+  "returnFareRemaining": "بقایا",
+  "returnFareTotalDue": "کل واجب الادا",
+  "returnPaymentTitle": "موصول شدہ ادائیگی",
+  "returnPaymentCash": "نقد",
+  "returnPaymentBankTransfer": "بینک ٹرانسفر",
+  "returnPaymentJazzCash": "جیز کیش",
+  "returnPaymentEasyPaisa": "ایزی پیسہ",
+  "returnPaymentAmountLabel": "موصول شدہ رقم",
+  "returnPaymentAmountHint": "مثلاً 16000",
+  "returnPaymentMarkReceived": "ادائیگی موصول نشان زد کریں",
+  "returnPaymentReceived": "ادائیگی موصول ہو گئی",
+  "returnPaymentUndo": "واپس لیں",
+  "returnPaymentRecordExtraCharges": "اضافی چارجز درج کریں",
+  "returnReceiptExtraCharges": "اضافی چارجز",
+  "damageTitle": "نقصان درج کریں",
+  "damageAddPhoto": "تصویر شامل کریں",
+  "damageDescriptionLabel": "تفصیل",
+  "damageDescriptionHint": "مثلاً پچھلے بمپر پر خراش",
+  "damageDescriptionRequired": "براہ کرم نقصان کی تفصیل لکھیں۔",
+  "damageRepairCostLabel": "مرمت کی لاگت",
+  "damageRepairCostHint": "مثلاً 5000",
+  "damageDeductFromDeposit": "ڈپازٹ سے کاٹیں",
+  "damageSave": "محفوظ کریں",
+  "damageSaved": "نقصان کی رپورٹ محفوظ ہو گئی۔",
+  "damageSaveFailed": "نقصان کی رپورٹ محفوظ نہ ہو سکی۔ دوبارہ کوشش کریں۔",
+  "extraChargeTitle": "اضافی چارجز درج کریں",
+  "extraChargeTypeLabel": "چارج کی قسم",
+  "extraChargeTypeLateReturn": "دیر سے واپسی",
+  "extraChargeTypeExtraKm": "اضافی کلومیٹر",
+  "extraChargeTypeDamage": "نقصان",
+  "extraChargeTypeCleaning": "صفائی",
+  "extraChargeAmountLabel": "رقم",
+  "extraChargeAmountHint": "مثلاً 2000",
+  "extraChargeRemarksLabel": "تبصرہ",
+  "extraChargeRemarksHint": "مثلاً 3 گھنٹے دیر سے واپس",
+  "extraChargeAdd": "چارج شامل کریں",
+  "extraChargeAdded": "چارج شامل کر دیا گیا۔",
+  "extraChargeSaveFailed": "چارج محفوظ نہ ہو سکا۔ دوبارہ کوشش کریں۔",
+  "extraChargeAmountRequired": "براہ کرم صفر سے زیادہ رقم درج کریں۔",
+  "extraChargeSavedTitle": "محفوظ شدہ چارجز",
+  "rentalStartedTitle": "سفر پر",
+  "rentalStartedBanner": "کرایہ شروع ہو گیا",
+  "rentalStartedBooking": "بکنگ #{id}",
+  "@rentalStartedBooking": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "rentalStartedReturnDue": "واپسی {date}، {time}",
+  "@rentalStartedReturnDue": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "rentalStartedViewAgreement": "معاہدہ دیکھیں",
+  "rentalStartedMessageCustomer": "کسٹمر کو پیغام بھیجیں",
+  "rentalStartedMessage": "السلام علیکم {name}، آپ کی {vehicle} کا کرایہ شروع ہو گیا ہے۔ براہ کرم وقت پر واپس کریں۔ — رینٹل ہب",
+  "@rentalStartedMessage": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "vehicle": {
+        "type": "String"
+      }
+    }
+  },
+  "rentalStartedNoPhone": "اس کسٹمر کا فون نمبر محفوظ نہیں ہے۔",
+  "rentalStartedWhatsappFailed": "واٹس ایپ نہیں کھل سکا۔",
+  "agreementSignedTitle": "معاہدہ دستخط شدہ",
+  "agreementSignedBanner": "معاہدہ کامیابی سے دستخط ہو گیا",
+  "agreementSignedSubtitle": "کرایے کے معاہدے پر تمام فریقوں نے دستخط کر دیے ہیں۔",
+  "agreementSignedDownloadPdf": "پی ڈی ایف ڈاؤن لوڈ کریں",
+  "agreementSignedShare": "شیئر کریں",
+  "agreementSignedSendCustomer": "کسٹمر کو بھیجیں",
+  "agreementSignedContinue": "جاری رکھیں",
+  "agreementSignedSendMessage": "السلام علیکم {name}، آپ کا کرایے کا معاہدہ تیار ہے: {url}",
+  "@agreementSignedSendMessage": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "dashboardGreeting": "السلام علیکم، {name}",
+  "@dashboardGreeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "dashboardQuickAddCustomer": "گاہک شامل کریں",
+  "dashboardQuickViewReports": "رپورٹس دیکھیں",
+  "dashboardReturnsEmpty": "اگلے 7 دنوں میں کوئی واپسی نہیں ہے۔",
+  "dashboardScheduleBooking": "بکنگ",
+  "dashboardScheduleEmpty": "آج کے لیے کچھ طے نہیں ہے۔",
+  "dashboardScheduleHandover": "حوالگی",
+  "dashboardScheduleReturn": "واپسی",
+  "dashboardToday": "آج",
+  "dashboardTodayEarnings": "آج کی آمدنی",
+  "dashboardTodaySchedule": "آج کا شیڈول",
+  "dashboardUpcomingReturns": "آنے والی واپسیاں",
+  "financeBookingNumberHint": "مثلاً BK-1234",
+  "financeBookingNumberLabel": "بکنگ نمبر",
+  "financeDateLabel": "تاریخ",
+  "financeFilterAll": "سب",
+  "financePaymentBank": "بینک ٹرانسفر",
+  "financePaymentCash": "نقد",
+  "financePaymentEasyPaisa": "ایزی پیسہ",
+  "financePaymentJazzCash": "جاز کیش",
+  "financePaymentMethodLabel": "ادائیگی کا طریقہ",
+  "financeCategoryAdvance": "ایڈوانس",
+  "financeCategoryWash": "دھلائی",
+  "financePnlDaily": "روزانہ",
+  "financePnlWeekly": "ہفتہ وار",
+  "financePnlMonthly": "ماہانہ",
+  "financePnlIncomeBreakdown": "آمدنی کی تفصیل",
+  "financePnlExpenseBreakdown": "اخراجات کی تفصیل",
+  "financeCategoriesAdd": "زمرہ شامل کریں",
+  "financeCategoriesAddTitle": "زمرہ شامل کریں",
+  "financeCategoriesDelete": "حذف کریں",
+  "financeCategoriesDeleteMessage": "زمرہ ”{name}“ حذف کر دیں؟ پرانے لیجر اندراجات میں یہ زمرہ رہے گا۔",
+  "@financeCategoriesDeleteMessage": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "financeCategoriesDeleteTitle": "زمرہ حذف کریں",
+  "financeCategoriesEdit": "ترمیم کریں",
+  "financeCategoriesEditTitle": "زمرہ میں ترمیم کریں",
+  "financeCategoriesEmpty": "ابھی کوئی زمرہ نہیں ہے۔",
+  "financeCategoriesNameLabel": "زمرے کا نام",
+  "financeCategoriesSubtitle": "لیجر کے لیے آمدنی اور اخراجات کے زمرے",
+  "financeCategoriesTitle": "آمدنی اور اخراجات کے زمرے",
+  "financeSettingsAutoReceipt": "واٹس ایپ رسید خودکار بھیجیں",
+  "financeSettingsAutoReceiptNote": "رسیدیں صرف واٹس ایپ بزنس سیٹ اپ (فیز I) کے بعد بھیجی جائیں گی۔ تب تک یہ صرف آپ کی ترجیح محفوظ کرتا ہے۔",
+  "financeSettingsCurrency": "طے شدہ کرنسی",
+  "financeSettingsCurrencyNote": "ایپ صرف پاکستانی روپے (PKR) میں لین دین کرتی ہے۔",
+  "financeSettingsEmpty": "مالیاتی ترتیبات ابھی دستیاب نہیں ہیں۔",
+  "financeSettingsInvalidPercent": "درست فیصد درج کریں۔",
+  "financeSettingsPaymentMethods": "ادائیگی کے طریقے",
+  "financeSettingsReceipts": "رسید کی ترتیبات",
+  "financeSettingsSave": "ترتیبات محفوظ کریں",
+  "financeSettingsSaved": "مالیاتی ترتیبات محفوظ ہو گئیں۔",
+  "financeSettingsServiceCharge": "سروس چارجز (٪)",
+  "financeSettingsSubtitle": "کرنسی، چارجز، ادائیگی کے طریقے اور رسیدیں",
+  "financeSettingsTax": "ٹیکس (٪)",
+  "financeSettingsTitle": "مالیاتی ترتیبات",
+  "financeStatementColBooking": "بکنگ",
+  "financeStatementColDate": "تاریخ",
+  "financeStatementColDue": "واجب",
+  "financeStatementColPaid": "ادا شدہ",
+  "financeStatementColRent": "کرایہ",
+  "financeStatementDownload": "پی ڈی ایف ڈاؤن لوڈ کریں",
+  "financeStatementDownloaded": "بیان کی پی ڈی ایف آپ کے آلے میں محفوظ ہو گئی۔",
+  "financeStatementEmpty": "اس گاہک کی ابھی کوئی بکنگ نہیں ہے۔",
+  "financeStatementMessageRow": "#{booking} • {date} • کرایہ {rent} روپے • ادا شدہ {paid} روپے • واجب {due} روپے",
+  "@financeStatementMessageRow": {
+    "placeholders": {
+      "booking": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      },
+      "rent": {
+        "type": "String"
+      },
+      "paid": {
+        "type": "String"
+      },
+      "due": {
+        "type": "String"
+      }
+    }
+  },
+  "financeStatementMessageTitle": "{name} کے لیے رینٹل ہب کا بیان:",
+  "@financeStatementMessageTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "financeStatementMessageTotal": "کل واجب: {amount} روپے",
+  "@financeStatementMessageTotal": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "financeStatementSend": "بیان بھیجیں (واٹس ایپ)",
+  "financeStatementShare": "شیئر کریں",
+  "financeStatementTitle": "گاہک کا بیان",
+  "financeStatementTotalDue": "کل واجب",
+  "financeSummaryEarnings": "آمدنی",
+  "financeSummaryExpenses": "اخراجات",
+  "financeSummaryNet": "خالص",
+  "financeTabOverview": "جائزہ",
+  "financeTabReports": "رپورٹس",
+  "financeTabTransactions": "لین دین",
+  "financeViewReports": "رپورٹس دیکھیں",
+  "reportCarBookings": "{count, plural, =1{{count} بکنگ} other{{count} بکنگیں}}",
+  "@reportCarBookings": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reportCarTableTitle": "گاڑی — بکنگیں — آمدنی",
+  "reportCarWise": "گاڑی کے حساب سے آمدنی",
+  "reportCarWiseHint": "فلیٹ کی ہر گاڑی کی آمدنی",
+  "reportCustomerHistory": "گاہک کی تاریخ",
+  "reportCustomerHistoryHint": "ہر گاہک کی بکنگیں اور خرچ",
+  "reportCustomerTableTitle": "گاہک — بکنگیں — خرچ",
+  "reportEarningsLast6Months": "آمدنی — پچھلے 6 مہینے",
+  "reportMonthlyEarnings": "ماہانہ آمدنی کی رپورٹ",
+  "reportMonthlyEarningsHint": "مہینے کے حساب سے آمدنی، بار چارٹ میں",
+  "reportNoCars": "فلیٹ میں ابھی کوئی گاڑی نہیں ہے۔",
+  "reportNoCustomers": "اس مدت میں گاہکوں کی کوئی بکنگ نہیں ہے۔",
+  "reportPeriod": "مدت",
+  "reportShare": "رپورٹ شیئر کریں",
+  "reportSubtitle": "آمدنی، گاڑیاں اور گاہک",
+  "reportTitle": "رپورٹس",
+  "resetAction": "ری سیٹ کریں",
+  "resetAllData": "تمام ڈیٹا ری سیٹ کریں",
+  "resetAllHint": "اس شوروم کی بکنگیں، گاہک، گاڑیاں، مالیاتی ریکارڈ اور عملہ۔",
+  "resetBookings": "بکنگیں ری سیٹ کریں",
+  "resetBookingsHint": "اس شوروم کی تمام بکنگیں حذف کر دیتا ہے۔",
+  "resetCars": "گاڑیاں ری سیٹ کریں",
+  "resetCarsHint": "اس شوروم کی تمام گاڑیاں حذف کر دیتا ہے۔",
+  "resetConfirmMessage": "کیا آپ یقین رکھتے ہیں؟ یہ اس شوروم کے لیے {what} مستقل طور پر حذف کر دے گا۔ یہ واپس نہیں ہو سکتا۔",
+  "@resetConfirmMessage": {
+    "placeholders": {
+      "what": {
+        "type": "String"
+      }
+    }
+  },
+  "resetConfirmTitle": "ڈیٹا ری سیٹ کریں؟",
+  "resetCustomers": "گاہک ری سیٹ کریں",
+  "resetCustomersHint": "اس شوروم کے تمام گاہک حذف کر دیتا ہے۔",
+  "resetDone": "{count} ریکارڈ حذف کر دیے گئے۔",
+  "@resetDone": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "resetFailed": "ری سیٹ ناکام ہوا۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔",
+  "resetSubtitle": "اس شوروم کا ڈیٹا حذف کریں — احتیاط سے",
+  "resetTitle": "ری سیٹ کے اختیارات",
+  "resetWarning": "خبردار: ری سیٹ کرنے سے ڈیٹا مستقل طور پر حذف ہو جاتا ہے۔ صرف وہی ری سیٹ کریں جو آپ کھونا چاہتے ہیں۔ شوروم اور اس کی مالیاتی ترتیبات محفوظ رہتی ہیں۔",
+  "resetYesReset": "جی ہاں، ری سیٹ کریں",
+  "signOutConfirmBody": "کیا آپ واقعی سائن آؤٹ کرنا چاہتے ہیں؟",
+  "signOutConfirmTitle": "سائن آؤٹ کریں؟",
+  "signOutConfirmYes": "جی ہاں، سائن آؤٹ کریں",
+  "signOutSignInAgain": "دوبارہ سائن ان کریں",
+  "signOutSignedOutBody": "آپ سائن آؤٹ ہو چکے ہیں۔ اپنا شوروم جاری رکھنے کے لیے دوبارہ سائن ان کریں۔",
+  "signOutSignedOutTitle": "آپ سائن آؤٹ ہو چکے ہیں",
+  "staffAdd": "عملہ شامل کریں",
+  "staffAddTitle": "عملے کا رکن شامل کریں",
+  "staffDelete": "عملے کا رکن ہٹائیں",
+  "staffEmpty": "ابھی کوئی عملہ نہیں ہے — اپنا پہلا ٹیم ممبر شامل کریں۔",
+  "staffNameLabel": "نام",
+  "staffPermissionAddCars": "گاڑیاں شامل کریں",
+  "staffPermissionManageFinance": "مالیات سنبھالیں",
+  "staffPermissionViewBookings": "بکنگیں دیکھیں",
+  "staffPhoneLabel": "فون",
+  "staffRoleLabel": "کردار",
+  "staffSubtitle": "ٹیم ممبر اور ان کی اجازتیں",
+  "staffTitle": "عملہ اور کردار",
+  "onboardingStepOfFive": "مرحلہ {step} از 5",
+  "@onboardingStepOfFive": {
+    "placeholders": {
+      "step": {
+        "type": "int"
+      }
+    }
+  },
+  "onboardingHeaderReview": "درخواست کا جائزہ",
+  "onboardingSubtitleReview": "جمع کرانے سے پہلے سب کچھ چیک کریں",
+  "onboardingStepReview": "جائزہ",
+  "onboardingReviewTitle": "اپنی درخواست کا جائزہ لیں",
+  "onboardingReviewHint": "نیچے دی گئی تفصیلات چیک کریں۔ جمع کرانے سے پہلے کچھ بھی بدلنے کے لیے واپس جا سکتے ہیں۔",
+  "onboardingReviewShopName": "دکان کا نام",
+  "onboardingReviewOwnerName": "مالک کا نام",
+  "onboardingReviewCnic": "مالک کا شناختی کارڈ",
+  "onboardingReviewWhatsapp": "واٹس ایپ نمبر",
+  "onboardingReviewPhone": "فون نمبر",
+  "onboardingReviewOpeningHours": "کھلنے کے اوقات",
+  "onboardingReviewShopLogo": "دکان کا لوگو",
+  "onboardingReviewAddress": "پتہ",
+  "onboardingReviewCity": "شہر",
+  "onboardingReviewNoDocuments": "ابھی کوئی دستاویز منسلک نہیں",
+  "onboardingReviewCnicFront": "شناختی کارڈ سامنے",
+  "onboardingReviewCnicBack": "شناختی کارڈ پیچھے",
+  "onboardingReviewSelfie": "شناختی کارڈ کے ساتھ سیلفی",
+  "onboardingReviewNtn": "NTN دستاویز",
+  "onboardingReviewShopPhoto": "دکان کی تصویر",
+  "onboardingReviewFleetPhoto1": "گاڑی کی تصویر 1",
+  "onboardingReviewFleetPhoto2": "گاڑی کی تصویر 2",
+  "onboardingReviewFleetPhoto3": "گاڑی کی تصویر 3",
+  "onboardingApprovalWithin24h": "عام طور پر 24 گھنٹوں میں منظور ہو جاتی ہے",
+  "onboardingTimelineSubmitted": "جمع کر دی گئی",
+  "onboardingTimelineSubmittedHint": "آپ کی درخواست موصول ہو گئی",
+  "onboardingTimelineUnderReview": "جائزے میں ہے",
+  "onboardingTimelineUnderReviewHint": "ہماری ٹیم آپ کی تفصیلات چیک کر رہی ہے",
+  "onboardingTimelineApproved": "منظور شدہ",
+  "onboardingTimelineApprovedHint": "منظوری کے بعد آپ کی دکان لائیو ہو جائے گی",
+  "onboardingContactAdminWhatsapp": "واٹس ایپ پر ایڈمن سے رابطہ کریں",
+  "onboardingAdminWhatsappMissing": "ایڈمن کا واٹس ایپ ابھی سیٹ نہیں ہوا۔ براہ کرم بعد میں دوبارہ کوشش کریں۔",
+  "onboardingAdminWhatsappFailed": "واٹس ایپ نہیں کھل سکا۔",
+  "pricingPackageMonthly": "ماہانہ پیکج (30 دن)",
+  "addVehicleRateMonthly": "ماہانہ پیکج (30 دن)",
+  "ratesViewEstimate": "تخمینی نرخ دیکھیں",
+  "pricingPerKmQuestion": "فی کلومیٹر قیمت؟",
+  "pricingPerKmQuestionHint": "پیکج کی حد سے زیادہ کلومیٹر کا چارج",
+  "ratesCustomTitle": "اپنی مرضی کے نرخ",
+  "ratesCustomAdd": "نرخ شامل کریں",
+  "ratesCustomEmpty": "ابھی کوئی اپنی مرضی کا نرخ نہیں۔ اس مدت کے لیے ایک شامل کریں جو معیاری پیکجز میں نہیں ہے۔",
+  "ratesCustomAddTitle": "اپنی مرضی کا نرخ شامل کریں",
+  "ratesCustomNameLabel": "نرخ کا نام",
+  "ratesCustomNameHint": "مثلاً ایئرپورٹ ٹرانسفر",
+  "ratesCustomPriceLabel": "قیمت",
+  "ratesCustomPeriodLabel": "مدت",
+  "ratesCustomPeriodHourly": "فی گھنٹہ",
+  "ratesCustomPeriodDaily": "روزانہ",
+  "ratesCustomPeriodWeekly": "ہفتہ وار",
+  "ratesCustomPeriodMonthly": "ماہانہ",
+  "ratesCustomDelete": "نرخ حذف کریں",
+  "ratesCustomInvalid": "نام اور صفر سے زیادہ قیمت درج کریں۔",
+  "pkgMonthlyPackage": "ماہانہ پیکج",
+  "pkgMonthlyDesc": "تیس دن، ایک قیمت",
+  "fleetOnRentUntil": "{date} تک کرائے پر",
+  "@fleetOnRentUntil": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "fleetActiveRentals": "{count} جاری کرائے",
+  "@fleetActiveRentals": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "fleetSchedule": "شیڈول",
+  "fleetEditRent": "کرایہ تبدیل کریں",
+  "fleetUpdatePrice": "قیمت اپ ڈیٹ کریں",
+  "fleetShopSettings": "دکان کی ترتیبات",
+  "shopProfileOwnerUnknown": "مالک",
+  "fleetAddBlockedTitle": "دکان کی منظوری زیر التوا ہے",
+  "fleetAddBlockedBody": "آپ کی دکان ابھی جائزے میں ہے۔ منظوری کے بعد آپ گاڑیاں شامل کر سکیں گے — عام طور پر 24 گھنٹوں میں۔",
+  "fleetAddBlockedViewStatus": "حیثیت دیکھیں",
+  "fareTableTitle": "کرایہ جدول",
+  "fareTabInCity": "شہر کے اندر",
+  "fareTabOutCity": "شہر سے باہر",
+  "fareTabHourly": "فی گھنٹہ",
+  "fareTabMonthly": "ماہانہ",
+  "fareFreeDelivery": "پہلے سے طے شدہ مفت ڈیلیوری",
+  "fareKmIncluded": "{km} کلومیٹر شامل",
+  "@fareKmIncluded": {
+    "placeholders": {
+      "km": {
+        "type": "int"
+      }
+    }
+  },
+  "fareOutCityDaily": "شہر سے باہر یومیہ نرخ: {rate}",
+  "@fareOutCityDaily": {
+    "placeholders": {
+      "rate": {
+        "type": "String"
+      }
+    }
+  },
+  "fareNoRows": "اس ٹیب کے لیے ابھی کوئی کرایہ نہیں۔",
+  "fareProceed": "آگے بڑھیں",
+  "estimateTitle": "تخمینی نرخ",
+  "estimateCardTitle": "تخمینی نرخ",
+  "estimateInCityDay": "شہر کے اندر / دن",
+  "estimateOutCityDay": "شہر سے باہر / دن",
+  "estimateWeekly": "ہفتہ وار",
+  "estimateMonthly": "ماہانہ",
+  "estimateWithDriverSurcharge": "ڈرائیور کے ساتھ اضافی چارج",
+  "estimatePerDay": "{amount} / دن",
+  "@estimatePerDay": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "estimateDeposit": "سیکیورٹی ڈپازٹ",
+  "estimateHint": "تخمینے آپ کے موجودہ نرخوں پر مبنی ہیں۔ انہیں ریٹ میٹرکس میں تبدیل کریں۔",
+  "estimateGoToMyCars": "میری گاڑیوں پر جائیں",
+  "vehiclePublishedTitle": "گاڑی شائع ہو گئی",
+  "vehiclePublishedHeading": "آپ کی {vehicle} کامیابی سے شائع ہو گئی ہے",
+  "@vehiclePublishedHeading": {
+    "placeholders": {
+      "vehicle": {
+        "type": "String"
+      }
+    }
+  },
+  "vehiclePublishedLinkCopied": "لسٹنگ کا لنک کاپی ہو گیا",
+  "vehiclePublishedShareText": "رینٹل ہب پر {vehicle} کرائے پر لیں، {rate} / دن: {link}",
+  "@vehiclePublishedShareText": {
+    "placeholders": {
+      "vehicle": {
+        "type": "String"
+      },
+      "rate": {
+        "type": "String"
+      },
+      "link": {
+        "type": "String"
+      }
+    }
+  },
+  "vehiclePublishedViewInApp": "ایپ میں دیکھیں",
+  "vehiclePublishedCopyLink": "لنک کاپی کریں",
+  "vehiclePublishedShareListing": "لسٹنگ شیئر کریں",
+  "vehiclePublishedAddAnother": "ایک اور گاڑی شائع کریں",
+  "vehicleDetailDailyRate": "{amount} / دن",
+  "@vehicleDetailDailyRate": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "vehicleDetailSeats": "{count} سیٹیں",
+  "@vehicleDetailSeats": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "vehicleDetailRatesTitle": "نرخ",
+  "vehicleDetailDeposit": "سیکیورٹی ڈپازٹ",
+  "vehicleDetailFareTable": "کرایہ جدول",
+  "vehicleDetailBookingsTitle": "بکنگز",
+  "vehicleDetailNoBookings": "اس گاڑی کی ابھی کوئی بکنگ نہیں۔",
+  "vehicleDetailManageRates": "نرخ مینیج کریں",
+  "vehicleDetailCalendar": "بکنگ کیلنڈر",
+  "vehicleDetailEdit": "تبدیل کریں",
+  "shopSettingsTitle": "دکان کی ترتیبات",
+  "shopSettingsSubtitle": "آپ کی دکان کا نام اور تفصیلات",
+  "shopSettingsShopName": "دکان کا نام",
+  "shopSettingsOwnerName": "مالک کا نام",
+  "shopSettingsPhone": "فون نمبر",
+  "shopSettingsAddress": "پتہ",
+  "shopSettingsCity": "شہر",
+  "shopSettingsOpeningHours": "کھلنے کے اوقات",
+  "shopSettingsSave": "دکان کی ترتیبات محفوظ کریں",
+  "shopSettingsSaved": "دکان کی ترتیبات محفوظ ہو گئیں",
+  "shopSettingsNameShort": "کم از کم 3 حروف کا دکان کا نام درج کریں۔",
+  "shopSettingsSaveFailed": "دکان کی ترتیبات محفوظ نہیں ہو سکیں: {error}",
+  "@shopSettingsSaveFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "shopSettingsLoadError": "دکان کی ترتیبات لوڈ نہیں ہو سکیں۔",
+  "fleetCalendarTitle": "فلیٹ شیڈول",
+  "fleetCalendarPrevMonth": "پچھلا مہینہ",
+  "fleetCalendarNextMonth": "اگلا مہینہ",
+  "fleetCalendarLoadError": "فلیٹ کیلنڈر لوڈ نہیں ہو سکا۔",
+  "fleetCalendarEmptyTitle": "آپ کے فلیٹ میں ابھی کوئی گاڑی نہیں",
+  "fleetCalendarEmptyMessage": "اس کا شیڈول یہاں دیکھنے کے لیے گاڑی شامل کریں۔",
+  "fleetCalendarBooked": "بک شدہ",
+  "fleetCalendarAvailable": "دستیاب",
+  "vehicleReviewDelivery": "ڈیلیوری اور وصولی",
+  "vehicleReviewDiscounts": "رعایتیں",
+  "vehicleReviewInsurance": "انشورنس اور تحفظ",
+  "vehicleReviewYourEarning": "آپ کی کمائی",
+  "subscriptionChoosePlanTitle": "منصوبہ منتخب کریں",
+  "subscriptionChoosePlanSubtitle": "اپنا رینٹل کاروبار بڑھائیں",
+  "subscriptionBillingMonthly": "ماہانہ",
+  "subscriptionBillingYearly": "سالانہ",
+  "subscriptionYearlySave": "17٪ بچائیں",
+  "subscriptionPlanFree": "مفت",
+  "subscriptionPlanPro": "پرو",
+  "subscriptionPlanBusiness": "بزنس",
+  "subscriptionFreeCars": "3 گاڑیوں تک",
+  "subscriptionFreeBookings": "بنیادی بکنگز",
+  "subscriptionFreeBranding": "گاڑی برانڈنگ",
+  "subscriptionFreeLogins": "1 لاگ ان",
+  "subscriptionProCars": "10 گاڑیوں تک",
+  "subscriptionProKyc": "کسٹمر KYC",
+  "subscriptionProStamp": "اپنی دکان کی مہر",
+  "subscriptionProAccounts": "اکاؤنٹس اور رپورٹس",
+  "subscriptionProListing": "ترجیحی لسٹنگ",
+  "subscriptionProTrial": "14 دن کا ٹرائل",
+  "subscriptionBusinessCars": "لامحدود گاڑیاں",
+  "subscriptionBusinessStaff": "5 اسٹاف لاگ ان",
+  "subscriptionBusinessReports": "جدید رپورٹس",
+  "subscriptionBusinessExport": "PDF اور Excel ایکسپورٹ",
+  "subscriptionBusinessBadge": "نمایاں بیج",
+  "subscriptionBusinessSupport": "ترجیحی سپورٹ",
+  "subscriptionExamplePrices": "مثالی قیمتیں — حتمی قیمتوں کا فیصلہ ہونا باقی ہے",
+  "subscriptionViewDetails": "تفصیلات دیکھیں",
+  "subscriptionMySubscription": "میری سبسکرپشن",
+  "subscriptionPlayNotConnected": "گوگل پلے بلنگ ابھی منسلک نہیں ہوئی",
+  "subscriptionPlayNotConnectedNote": "پلے کنسول سیٹ اپ ابھی باقی ہے۔ آپ نیچے بینک ٹرانسفر سے سبسکرائب کر سکتے ہیں — گوگل پلے سے کوئی رقم نہیں کاٹی جائے گی۔",
+  "subscriptionPayByBank": "بینک ٹرانسفر سے ادائیگی کریں — پلے کنسول سیٹ اپ مکمل ہونے پر گوگل پلے بلنگ آئے گی",
+  "subscriptionTrialNote": "آپ کا 14 دن کا مفت ٹرائل ایڈمن کی جانب سے بینک ٹرانسفر کی منظوری کے بعد شروع ہوگا۔",
+  "subscriptionStartTrial": "14 دن کا مفت ٹرائل شروع کریں",
+  "subscriptionManageInPlay": "گوگل پلے میں انتظام کریں",
+  "subscriptionManageInPlayNote": "گوگل پلے بلنگ منسلک ہونے کے بعد دستیاب ہوگا۔",
+  "subscriptionCarsUsed": "استعمال شدہ گاڑیاں",
+  "subscriptionStaffLogins": "اسٹاف لاگ ان",
+  "subscriptionBillingHistory": "بلنگ کی تاریخ",
+  "subscriptionBillingEmpty": "ابھی تک کوئی سبسکرپشن ادائیگی نہیں",
+  "subscriptionPendingReview": "ایڈمن کے جائزے کا انتظار ہے",
+  "subscriptionStatusApproved": "منظور شدہ",
+  "subscriptionStatusRejected": "مسترد شدہ",
+  "subscriptionStatusPending": "زیر التواء",
+  "subscriptionTrialActive": "مفت ٹرائل فعال ہے",
+  "subscriptionActive": "فعال",
+  "subscriptionTrialEnds": "ٹرائل ختم ہوتا ہے",
+  "subscriptionNextBilling": "اگلی بلنگ کی تاریخ",
+  "subscriptionPaymentMethod": "ادائیگی کا طریقہ",
+  "subscriptionNoPaymentMethod": "کوئی ادائیگی کا طریقہ محفوظ نہیں",
+  "subscriptionReceiptNote": "گوگل پلے بلنگ منسلک ہونے کے بعد رسیدیں آپ کے گوگل اکاؤنٹ ای میل پر بھیجی جائیں گی۔",
+  "subscriptionGoToDashboard": "ڈیش بورڈ پر جائیں",
+  "subscriptionChangePlan": "منصوبہ تبدیل کریں",
+  "subscriptionCarLimitTitle": "گاڑیوں کی حد پوری ہو گئی",
+  "subscriptionCarLimitBody": "آپ کا {plan} منصوبہ {limit} گاڑیوں کی اجازت دیتا ہے۔ لامحدود گاڑیاں اور اسٹاف کے لیے بزنس میں اپ گریڈ کریں۔",
+  "@subscriptionCarLimitBody": {
+    "placeholders": {
+      "plan": {
+        "type": "String"
+      },
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "subscriptionUpgradeToBusiness": "بزنس میں اپ گریڈ کریں",
+  "subscriptionNotNow": "ابھی نہیں",
+  "subscriptionPaymentIssue": "ادائیگی کا مسئلہ · اکاؤنٹ معطل ہے",
+  "subscriptionPaymentIssueBody": "اپنا ادائیگی کا طریقہ اپ ڈیٹ کریں یا بینک ٹرانسفر سے ادائیگی کریں۔ آپ کا ڈیٹا محفوظ رہے گا۔",
+  "subscriptionDowngradeNote": "اگر مسئلہ حل نہ ہوا تو آپ مفت منصوبے پر منتقل ہو جائیں گے۔ آپ کا ڈیٹا محفوظ رہے گا؛ اضافی گاڑیاں لسٹنگ سے چھپ جائیں گی۔",
+  "subscriptionTrialTerms": "14 دن مفت، پھر گوگل پلے کے ذریعے ماہانہ بلنگ۔ منسوخی تک خودکار تجدید؛ ٹرائل ختم ہونے سے کم از کم 24 گھنٹے پہلے گوگل پلے > سبسکرپشنز میں منسوخ کریں۔",
+  "subscriptionBilledMonthly": "ہر ماہ بل کیا جاتا ہے",
+  "subscriptionPerYear": "/ سال",
+  "subscriptionPlaySheetTitle": "گوگل پلے خریداری",
+  "subscriptionPlayTodayFree": "آج: 14 دن مفت",
+  "subscriptionPlayThen": "پھر ماہانہ بلنگ",
+  "subscriptionFreePlanNote": "آپ مفت منصوبے پر ہیں",
+  "subscriptionCurrentTier": "موجودہ منصوبہ",
+  "creditsTitle": "واٹس ایپ کریڈٹس",
+  "creditsBalance": "کریڈٹ بیلنس",
+  "creditsEmpty": "ابھی کوئی کریڈٹ نہیں",
+  "creditsOneMessage": "1 پیغام = 1 کریڈٹ · کریڈٹس کبھی ختم نہیں ہوتے",
+  "creditsAutoMessages": "خودکار پیغامات",
+  "creditsAutoNote": "پیغامات خودکار طور پر صرف واٹس ایپ منسلک ہونے کے بعد بھیجے جائیں گے۔",
+  "creditsToggleBooking": "بکنگ کی درخواست اور منظوری",
+  "creditsToggleAdvance": "ایڈوانس ادائیگی کی رسید",
+  "creditsTogglePickup": "پک اپ یاد دہانی",
+  "creditsTogglePickupNote": "پک اپ سے 2 گھنٹے پہلے",
+  "creditsToggleAgreement": "حوالگی پر معاہدے کی PDF",
+  "creditsToggleReturn": "واپسی کی یاد دہانی اور تاخیر کی تنبیہ",
+  "creditsToggleDeposit": "ڈپازٹ واپس کر دیا گیا",
+  "creditsToggleDues": "بقایا جات کی یاد دہانی",
+  "creditsToggleDuesNote": "ادائیگی تک ہر 3 دن بعد",
+  "creditsBuy": "کریڈٹس خریدیں",
+  "creditsBuyTitle": "کریڈٹس خریدیں",
+  "creditsPackBestValue": "بہترین قیمت",
+  "creditsPerMessage": "فی پیغام",
+  "creditsFreeMonthly": "ہر ماہ مفت کریڈٹس",
+  "creditsFreePlanFree": "مفت منصوبہ — 10 پیغامات",
+  "creditsFreePlanPro": "پرو منصوبہ — 30 کریڈٹس",
+  "creditsFreePlanBusiness": "بزنس منصوبہ — 100 کریڈٹس",
+  "creditsBuyPack": "یہ پیک خریدیں",
+  "creditsPayByBank": "بینک ٹرانسفر سے ادائیگی کریں — پلے کنسول سیٹ اپ مکمل ہونے پر گوگل پلے بلنگ آئے گی",
+  "creditsRequestSubmittedTitle": "درخواست جمع کر دی گئی",
+  "creditsRequestSubmittedBody": "ادائیگی کی تصدیق کے بعد کریڈٹس شامل کر دیے جائیں گے۔",
+  "creditsAddedTitle": "کریڈٹس شامل کر دیے گئے",
+  "creditsAddedBody": "آپ کی ادائیگی کی تصدیق ہو گئی اور کریڈٹس آپ کے بیلنس میں شامل کر دیے گئے۔",
+  "creditsPreviousBalance": "پچھلا بیلنس",
+  "creditsNewBalance": "نیا بیلنس",
+  "creditsPack": "پیک",
+  "creditsPrice": "قیمت",
+  "creditsDone": "ہو گیا",
+  "creditsHistoryTitle": "پیغامات کی تاریخ",
+  "creditsSent": "بھیجے گئے",
+  "creditsDelivered": "موصول ہوئے",
+  "creditsRead": "پڑھے گئے",
+  "creditsHistoryEmpty": "ابھی تک کوئی واٹس ایپ پیغام نہیں بھیجا گیا",
+  "creditsFilterAll": "سب",
+  "creditsFilterBookings": "بکنگز",
+  "creditsFilterReminders": "یاد دہانیاں",
+  "creditsFilterReceipts": "رسیدیں",
+  "creditsUsedLabel": "استعمال شدہ پیغامات",
+  "creditsFreeLabel": "اس ماہ مفت کریڈٹس",
+  "creditsTemplateTitle": "ٹیمپلیٹ کا پیش نظارہ — بکنگ کی تصدیق",
+  "creditsTemplateNote": "ٹیمپلیٹس واٹس ایپ سے منظور شدہ ہیں۔ کسٹمر کا نام، گاڑی، وقت اور رقم خودکار طور پر بھر دی جاتی ہے۔",
+  "creditsSendTest": "میرے نمبر پر ٹیسٹ بھیجیں",
+  "creditsSendTestDisabled": "واٹس ایپ منسلک ہونے کے بعد دستیاب ہوگا۔",
+  "creditsZeroTitle": "کوئی کریڈٹ باقی نہیں",
+  "creditsZeroBody": "پک اپ کی یاد دہانی خودکار طور پر نہیں بھیجی گئی۔ کریڈٹس خریدیں یا اپنی واٹس ایپ سے خود بھیجیں۔",
+  "creditsZeroBanner": "واٹس ایپ کریڈٹس: 0 باقی",
+  "creditsZeroBannerNote": "آپ کو 10 کریڈٹس پر مطلع کیا گیا تھا",
+  "creditsSendViaWhatsapp": "میری واٹس ایپ سے بھیجیں",
+  "creditsViaWhatsappNote": "آپ کی واٹس ایپ کھل جائے گی جس میں پیغام پہلے سے لکھا ہوگا۔ آپ کو صرف بھیجنا ہے۔",
+  "creditsViewHistory": "پیغامات کی تاریخ دیکھیں",
+  "creditsViewTemplates": "ٹیمپلیٹس دیکھیں",
+  "customerDetailTitle": "پروفائل",
+  "customerDetailNotFound": "گاہک نہیں ملا",
+  "customerDetailNotFoundMessage": "یہ گاہک نہیں مل سکا۔",
+  "customerDetailKycTitle": "کے وائی سی حیثیت",
+  "customerDetailKycOnFile": "اس گاہک کی کے وائی سی دستاویزات موجود ہیں۔",
+  "customerDetailKycNotOnFile": "کوئی کے وائی سی ریکارڈ موجود نہیں — یہ گاہک صرف بکنگ سے جانا جاتا ہے۔",
+  "customerDetailDocuments": "دستاویزات اور تصویر",
+  "customerDetailNoDocument": "فراہم نہیں کی گئی",
+  "customerDetailProfilePhoto": "پروفائل تصویر",
+  "customerDetailCnicFront": "شناختی کارڈ سامنے",
+  "customerDetailCnicBack": "شناختی کارڈ پیچھے",
+  "customerDetailLicenseFront": "لائسنس سامنے",
+  "customerDetailLicenseBack": "لائسنس پیچھے",
+  "customerDetailSignature": "دستخط",
+  "customerDetailRentalHistory": "کرایہ کی تاریخ",
+  "customerDetailTotalSpent": "کل خرچ",
+  "customerDetailTotalDues": "بقایا رقم",
+  "customerDetailNotBlacklisted": "بلیک لسٹ میں نہیں",
+  "customerDetailApprovalPending": "جائزہ زیر التواء",
+  "customerDetailApprove": "پروفائل منظور کریں",
+  "customerDetailReject": "پروفائل مسترد کریں",
+  "customerDetailRejectReasonTitle": "مسترد کرنے کی وجہ",
+  "customerDetailRejectReasonHint": "وجہ لکھیں…",
+  "customerDetailRejectReasonRequired": "پروفائل مسترد کرنے کے لیے وجہ ضروری ہے",
+  "customerDetailRejectConfirm": "مسترد کریں",
+  "customerAddedTitle": "گاہک شامل کر دیا گیا",
+  "customerAddedReady": "{name} کی پروفائل تیار ہے — اب آپ بکنگ شروع کر سکتے ہیں۔",
+  "@customerAddedReady": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "customerAddedStartBooking": "بکنگ شروع کریں",
+  "customerAddedViewProfile": "پروفائل دیکھیں",
+  "customersFilterAll": "تمام",
+  "customersFilterRegular": "مستقل",
+  "customersFilterNew": "نیا",
+  "customersFilterFlagged": "نشاندہ",
+  "customersBadgeRegular": "مستقل",
+  "customersBadgeNew": "نیا",
+  "customersViewProfile": "پروفائل دیکھیں",
+  "returnRefundDeposit": "ڈپازٹ واپس کریں",
+  "returnRefundRecorded": "ڈپازٹ کی واپسی درج کر دی گئی: {amount} روپے۔",
+  "@returnRefundRecorded": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "returnRefundFailed": "ڈپازٹ کی واپسی درج نہ ہو سکی۔ دوبارہ کوشش کریں۔",
+  "returnRecordingRefund": "واپسی درج ہو رہی ہے…",
+  "returnCloseBooking": "بکنگ مکمل کر کے بند کریں",
+  "contractFareTitle": "کرایے کی تفصیل",
+  "contractFareDailyRate": "یومیہ کرایہ",
+  "contractFareRentalDays": "کرایے کے دن",
+  "contractFareDays": "{days} دن",
+  "@contractFareDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "contractFareTotal": "کل کرایہ",
+  "contractAgreeTerms": "میں مندرجہ بالا شرائط سے متفق ہوں",
+  "contractAgreeSaveFailed": "آپ کی رضامندی محفوظ نہ ہو سکی۔ دوبارہ کوشش کریں۔",
+  "contractGuarantorTitle": "ضامن / گواہ کے دستخط",
+  "contractGuarantorHint": "ضامن سے نیچے والے خانے میں دستخط کروائیں۔",
+  "contractSignAgreement": "معاہدے پر دستخط کریں",
+  "contractSigning": "دستخط ہو رہے ہیں…",
+  "contractAgreementSigned": "معاہدہ مکمل دستخط شدہ",
+  "contractSignFailed": "دستخط محفوظ نہ ہو سکے۔ دوبارہ کوشش کریں۔",
+  "contractShareTitle": "معاہدہ شیئر کریں",
+  "contractShareWhatsapp": "واٹس ایپ",
+  "contractShareEmail": "ای میل",
+  "contractSharePrint": "پرنٹ کریں",
+  "contractShareNote": "معاہدے کی فائل آپ کی منتخب کردہ ایپ کو بھیجی جائے گی۔ کچھ بھی خود بخود نہیں بھیجا جاتا۔",
+  "authTermsOfService": "شرائطِ خدمت",
+  "authPrivacyPolicy": "رازداری کی پالیسی",
+  "authLegalIntro": "جاری رکھ کر آپ ہماری",
+  "authLegalAnd": "اور",
+  "legalTermsBody": "رینٹل ہب کی شرائطِ خدمت\n\n1. رینٹل ہب کیا ہے\nرینٹل ہب پاکستان میں گاڑیاں کرائے پر دینے کا ایک بازار ہے جو گاڑیوں کے مالکان (دکانوں) کو گاہکوں سے جوڑتا ہے۔ مالکان اپنی گاڑیاں لسٹ کرتے ہیں اور اپنے نرخ خود مقرر کرتے ہیں؛ گاہک ایپ کے ذریعے بکنگ کرتے ہیں۔\n\n2. آپ کا اکاؤنٹ\nآپ اپنے سائن ان کی تفصیلات محفوظ رکھنے اور اپنے اکاؤنٹ سے ہونے والے ہر کام کے ذمہ دار ہیں۔ اپنے، اپنی دکان اور اپنی گاڑیوں کے بارے میں درست معلومات دیں۔\n\n3. بکنگ اور ادائیگیاں\nبکنگ کی قیمتیں گاڑی کے مالک مقرر کرتے ہیں۔ ادائیگیاں، ایڈوانس اور سیکیورٹی ڈپازٹ بکنگ کے وقت دکھائی گئی شرائط کے مطابق ہوں گے۔ بکنگ اس بکنگ کے لیے دکھائی گئی منسوخی کی شرائط کے تحت منسوخ کی جا سکتی ہے۔\n\n4. آپ کی ذمہ داریاں\nمالکان کو اپنی گاڑیاں سڑک کے قابل، بیمہ شدہ اور قانونی طور پر رجسٹرڈ رکھنا چاہیے اور تصدیق شدہ بکنگوں کی پاسداری کرنی چاہیے۔ گاہکوں کو گاڑیاں وقت پر، موصول شدہ حالت میں واپس کرنی چاہییں اور نقصان، دیر سے واپسی یا اضافی کلومیٹر کے طے شدہ اضافی چارجز ادا کرنے چاہییں۔\n\n5. ممنوعہ استعمال\nرینٹل ہب کو کسی غیر قانونی کام کے لیے استعمال نہ کریں، ایسی گاڑی لسٹ نہ کریں جسے کرائے پر دینے کا حق آپ کو حاصل نہ ہو، اور کسی دوسرے شخص کی ذاتی معلومات ان کی اجازت کے بغیر شیئر نہ کریں۔\n\n6. ذمہ داری\nرینٹل ہب بازار اور بکنگ کے اوزار فراہم کرتا ہے۔ مالکان اور گاہک اپنی گاڑیوں، ڈرائیونگ اور ایک دوسرے کے ساتھ اپنے معاہدوں کے خود ذمہ دار ہیں۔ قانون کی اجازت کی حد تک، رینٹل ہب مالک اور گاہک کے درمیان کرائے سے ہونے والے نقصان یا خرابی کا ذمہ دار نہیں ہے۔\n\n7. تبدیلیاں اور رابطہ\nہم ان شرائط کو اپ ڈیٹ کر سکتے ہیں اور موجودہ نسخہ ایپ میں دکھایا جائے گا۔ سوالات کے لیے ایپ کے مدد کے حصے سے رینٹل ہب سپورٹ سے رابطہ کریں۔",
+  "legalPrivacyBody": "رینٹل ہب کی رازداری کی پالیسی\n\n1. ہم کیا جمع کرتے ہیں\nہم وہ معلومات جمع کرتے ہیں جو آپ ہمیں دیتے ہیں: آپ کا نام، فون نمبر، ای میل پتہ، شناختی کارڈ کی تفصیلات اور دستاویزات، دکان کی تفصیلات، گاڑیوں کی تفصیلات اور تصاویر، بکنگ اور ادائیگی کا ریکارڈ، اور ایپ کے ذریعے بھیجے گئے پیغامات۔ ہم بنیادی تکنیکی معلومات بھی جمع کرتے ہیں جیسے ڈیوائس کی قسم اور ایپ کا استعمال جو سروس چلانے کے لیے ضروری ہے۔\n\n2. ہم اسے کیسے استعمال کرتے ہیں\nہم آپ کی معلومات رینٹل ہب چلانے کے لیے استعمال کرتے ہیں: اکاؤنٹ بنانے اور تصدیق کرنے، گاڑیاں لسٹ کرنے، بکنگ اور ادائیگیاں مکمل کرنے، دھوکہ دہی اور بلیک لسٹ شدہ کرایوں کو روکنے، اور آپ کی بکنگوں اور آپ کی دکان کے بارے میں آپ سے رابطہ کرنے کے لیے۔\n\n3. ہم اسے کیسے شیئر کرتے ہیں\nہم آپ کی معلومات صرف سروس چلانے کے لیے ضرورت کے مطابق شیئر کرتے ہیں: آپ کی بکنگ کے دوسرے فریق (مالک یا گاہک) کے ساتھ، ادائیگیاں مکمل کرنے کے لیے ادائیگی فراہم کرنے والوں کے ساتھ، اور جب قانون کا تقاضا ہو تو حکام کے ساتھ۔ ہم آپ کی ذاتی معلومات فروخت نہیں کرتے۔\n\n4. تصاویر اور دستاویزات\nشناختی کارڈ کی تصاویر، سیلفیز، لائسنس اور دکان کی تصاویر صرف تصدیق اور کرائے کے ریکارڈ کے لیے استعمال ہوتی ہیں۔ وہ چہرے کی شناخت کے لیے استعمال نہیں ہوتیں اور عوامی طور پر شیئر نہیں کی جاتیں۔\n\n5. ہم اسے کب تک رکھتے ہیں\nہم آپ کی معلومات اس وقت تک رکھتے ہیں جب تک آپ کا اکاؤنٹ فعال ہے اور جب تک بکنگ، ادائیگیوں، تنازعات اور قانونی ریکارڈ کے لیے ضرورت ہو۔ آپ مدد کے حصے سے اپنے اکاؤنٹ اور اس کی ذاتی معلومات حذف کرنے کے لیے کہہ سکتے ہیں، سوائے ان ریکارڈوں کے جو قانون کے مطابق رکھنا ضروری ہیں۔\n\n6. آپ کے انتخاب\nآپ ایپ میں اپنی پروفائل اور دکان کی تفصیلات اپ ڈیٹ کر سکتے ہیں، اور سیٹنگز میں ایپ کی اطلاعات آن یا آف کر سکتے ہیں۔\n\n7. رابطہ\nاپنے ڈیٹا کے بارے میں سوالات کے لیے ایپ کے مدد کے حصے سے رینٹل ہب سپورٹ سے رابطہ کریں۔",
+  "onboardingSubmitForReview": "جائزے کے لیے جمع کرائیں",
+  "onboardingDocRequired": "{document} جمع کرانے سے پہلے ضروری ہے۔",
+  "@onboardingDocRequired": {
+    "placeholders": {
+      "document": {
+        "type": "String"
+      }
+    }
+  },
+  "addVehicleCityRatesTitle": "شہر کے اندر / باہر یومیہ نرخ",
+  "addVehicleCityRatesHint": "آپ کے پورے دن کے نرخ سے پہلے سے بھرا ہوا ہے۔ اگر شہر سے باہر کے سفر زیادہ مہنگے ہوں تو کوئی بھی نرخ تبدیل کریں۔",
+  "addVehicleInCityDayRate": "شہر کے اندر یومیہ نرخ",
+  "addVehicleInCityDayRateHint": "ایک ہی شہر کی بکنگ، فی دن",
+  "addVehicleOutCityDayRate": "شہر سے باہر یومیہ نرخ",
+  "addVehicleOutCityDayRateHint": "شہر سے باہر کے سفر، فی دن",
+  "shareTitle": "گاہکوں کے ساتھ شیئر کریں",
+  "shareStepOfTwo": "مرحلہ {step} از 2",
+  "@shareStepOfTwo": {
+    "placeholders": {
+      "step": {
+        "type": "int"
+      }
+    }
+  },
+  "shareChoosePrice": "شیئر کرنے کے لیے قیمت منتخب کریں",
+  "shareWithCustomersText": "رینٹل ہب پر {vehicle} کرائے پر لیں، {rate} ({period}): {link}",
+  "@shareWithCustomersText": {
+    "placeholders": {
+      "vehicle": {
+        "type": "String"
+      },
+      "rate": {
+        "type": "String"
+      },
+      "period": {
+        "type": "String"
+      },
+      "link": {
+        "type": "String"
+      }
+    }
+  },
+  "shareLinkNote": "اس لنک کے پیچھے والا ویب لسٹنگ صفحہ ابھی لائیو نہیں ہے۔",
+  "rateMatrixInCityTitle": "شہر کے اندر کرایہ کے نرخ",
+  "rateMatrixOutCityTitle": "شہر سے باہر کرایہ کے نرخ",
+  "settingsNotifyBookingRequests": "بکنگ کی درخواستیں",
+  "settingsNotifyPaymentProofs": "ادائیگی کے ثبوت",
+  "settingsNotifyHandover": "حوالگی",
+  "settingsNotifyReturns": "واپسیاں",
+  "settingsNotifyMaintenance": "دیکھ بھال کی یاد دہانیاں",
+  "reportDownloadPdf": "پی ڈی ایف ڈاؤن لوڈ کریں",
+  "reportDownloadPdfSaved": "رپورٹ کی پی ڈی ایف آپ کے آلے میں محفوظ ہو گئی۔"
 }

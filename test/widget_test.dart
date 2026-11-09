@@ -353,10 +353,19 @@ void main() {
     await tester.tap(find.text('Next Step'));
     await tester.pumpAndSettle();
 
-    // Verify single horizontal row for major cities before map view
-    expect(find.text('Lahore'), findsOneWidget);
+    // Verify the city picker is a dropdown listing the major cities
+    // (finish build P2-3: the chips row was replaced by a
+    // DropdownButtonFormField); picking a city moves the pin.
+    expect(find.byType(DropdownButtonFormField<String>), findsOneWidget);
+    expect(find.byType(FilterChip), findsNothing);
+    await tester.tap(find.byType(DropdownButtonFormField<String>));
+    await tester.pumpAndSettle();
+    // 'Lahore' is both the selected value and a menu item.
+    expect(find.text('Lahore'), findsNWidgets(2));
     expect(find.text('Karachi'), findsOneWidget);
     expect(find.text('Islamabad'), findsOneWidget);
+    await tester.tap(find.text('Karachi').last);
+    await tester.pumpAndSettle();
 
     // 5. Map & GPS button are connected
     expect(find.text('Use Current GPS'), findsOneWidget);

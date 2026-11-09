@@ -30,19 +30,6 @@ class _SignaturePadWidgetState extends State<SignaturePadWidget> {
     widget.onSignedChange?.call(false);
   }
 
-  void _autoSign() {
-    setState(() {
-      _points.clear();
-      // Draw a stylish signature path
-      for (double x = 30; x <= 220; x += 5) {
-        final y = 45 + (12 * (x % 20 == 0 ? 1 : -1)) + (x * 0.05);
-        _points.add(Offset(x, y));
-      }
-      _isSigned = true;
-    });
-    widget.onSignedChange?.call(true);
-  }
-
   @override
   Widget build(BuildContext context) {
     // Phase F: the pad chrome is localized (English fallback for
@@ -91,38 +78,21 @@ class _SignaturePadWidgetState extends State<SignaturePadWidget> {
                   ),
                 ],
               ),
-              Row(
-                children: [
-                  TextButton(
-                    onPressed: _autoSign,
-                    style: TextButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 2),
-                      minimumSize: Size.zero,
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    ),
-                    child: Text(
-                      l10n?.signatureAutoSign ?? 'Auto Sign',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: AppColors.secondary,
-                          ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  TextButton(
-                    onPressed: _clear,
-                    style: TextButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 2),
-                      minimumSize: Size.zero,
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    ),
-                    child: Text(
-                      l10n?.handoverClear ?? 'Clear',
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                  ),
-                ],
+              // Audit item 18: the "Auto Sign" button drew a fake
+              // signature path — removed entirely. A signature is
+              // only ever what a person draws on the pad.
+              TextButton(
+                onPressed: _clear,
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 8, vertical: 2),
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                child: Text(
+                  l10n?.handoverClear ?? 'Clear',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
               ),
             ],
           ),

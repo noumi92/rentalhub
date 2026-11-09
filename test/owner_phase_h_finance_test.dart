@@ -230,6 +230,10 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Finance'), findsOneWidget);
       expect(find.text('Cash in Hand'), findsOneWidget);
+      // Audit impl (O34): the ledger renders under the Transactions
+      // tab; the hub now defaults to Overview.
+      await tester.tap(find.text('Transactions'));
+      await tester.pumpAndSettle();
       expect(find.text('Rent'), findsOneWidget);
       expect(find.text('Rs. 7,777'), findsWidgets);
     });

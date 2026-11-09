@@ -28,6 +28,20 @@ class VehicleReviewStepWidget extends StatelessWidget {
   final List<String> documentNames;
   final int dailyRate;
   final int driverAllowance;
+
+  /// Audit §5 (O08): the Monthly package rate, when the owner set
+  /// one — the "Your Earning" row below is computed from it and only
+  /// renders when it is greater than zero.
+  final int monthlyRate;
+
+  /// Audit §5 (O08): Delivery & Collection, Discounts and Insurance
+  /// rows render ONLY when the caller supplies the underlying data.
+  /// The add-vehicle flow has no delivery setting, discount or
+  /// insurance date, so those rows are omitted there — never invented.
+  final String? deliveryNote;
+  final String? discountNote;
+  final String? insuranceNote;
+
   final bool supportSelfDrive;
   final bool supportWithDriver;
   final int deposit;
@@ -49,6 +63,10 @@ class VehicleReviewStepWidget extends StatelessWidget {
     required this.seats,
     required this.dailyRate,
     required this.driverAllowance,
+    this.monthlyRate = 0,
+    this.deliveryNote,
+    this.discountNote,
+    this.insuranceNote,
     required this.supportSelfDrive,
     required this.supportWithDriver,
     required this.deposit,
@@ -155,6 +173,23 @@ class VehicleReviewStepWidget extends StatelessWidget {
                     _reviewMiniDetail(context, l10n.addVehicleReviewFuel, fuelPolicy),
                   ],
                 ),
+                // Audit §5 (O08): only rows with real underlying data.
+                if (deliveryNote != null) ...[
+                  const Divider(height: 20),
+                  _reviewLine(context, l10n.vehicleReviewDelivery, deliveryNote!),
+                ],
+                if (discountNote != null) ...[
+                  const Divider(height: 20),
+                  _reviewLine(context, l10n.vehicleReviewDiscounts, discountNote!),
+                ],
+                if (insuranceNote != null) ...[
+                  const Divider(height: 20),
+                  _reviewLine(context, l10n.vehicleReviewInsurance, insuranceNote!),
+                ],
+                if (monthlyRate > 0) ...[
+                  const Divider(height: 20),
+                  _reviewLine(context, l10n.vehicleReviewYourEarning, l10n.amountRs(formatRs(monthlyRate))),
+                ],
                 // Audit §5: the picked photos/documents are listed,
                 // so the review shows what will actually be uploaded.
                 if (documentNames.isNotEmpty) ...[
@@ -214,6 +249,17 @@ class VehicleReviewStepWidget extends StatelessWidget {
           Text(title, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
         ],
       ),
+    );
+  }
+
+  Widget _reviewLine(BuildContext context, String title, String val) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Expanded(child: Text(title, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant))),
+        const SizedBox(width: 8),
+        Text(val, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800)),
+      ],
     );
   }
 

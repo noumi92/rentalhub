@@ -37,10 +37,14 @@ class PricingSaveBar extends StatelessWidget {
     super.key,
     required this.isSaving,
     required this.onPressed,
+    this.onViewEstimate,
   });
 
   final bool isSaving;
   final VoidCallback onPressed;
+
+  /// Audit §5 (P4-O08): optional link to the estimated-rates card.
+  final VoidCallback? onViewEstimate;
 
   @override
   Widget build(BuildContext context) {
@@ -54,11 +58,22 @@ class PricingSaveBar extends StatelessWidget {
               color: Color(0x14000000), blurRadius: 10, offset: Offset(0, -3))
         ],
       ),
-      child: DebouncedButton(
-        text: isSaving ? l10n.pricingSaving : l10n.pricingSave,
-        icon: Icons.check_circle_rounded,
-        isLoading: isSaving,
-        onPressed: () async => onPressed(),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (onViewEstimate != null)
+            TextButton.icon(
+              onPressed: onViewEstimate,
+              icon: const Icon(Icons.calculate_outlined, size: 18),
+              label: Text(l10n.ratesViewEstimate),
+            ),
+          DebouncedButton(
+            text: isSaving ? l10n.pricingSaving : l10n.pricingSave,
+            icon: Icons.check_circle_rounded,
+            isLoading: isSaving,
+            onPressed: () async => onPressed(),
+          ),
+        ],
       ),
     );
   }

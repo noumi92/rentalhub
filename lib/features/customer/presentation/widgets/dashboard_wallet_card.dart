@@ -62,7 +62,7 @@ class DashboardWalletCard extends StatelessWidget {
               ),
             ),
             Text(
-              'Rs. ${summary?.total ?? 0}',
+              l10n.amountRs(formatRs(summary?.total ?? 0)),
               style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
             ),
             const SizedBox(width: 4),

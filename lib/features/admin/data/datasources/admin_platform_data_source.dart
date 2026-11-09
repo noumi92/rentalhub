@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../../../core/utils/money_format.dart';
 import '../../../bookings/data/models/booking_model.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
 import '../../../customer/data/datasources/dispute_remote_data_source.dart';
@@ -201,7 +202,7 @@ class AdminPlatformDataSource {
           shopId: shopId,
           title: 'Dispute decided',
           body:
-              'Dispute $disputeId was decided: $decision (Rs. $decisionAmount).',
+              'Dispute $disputeId was decided: $decision (Rs. ${formatRs(decisionAmount)}).',
           type: 'dispute_decided',
           bookingId: bookingId,
         );
@@ -210,7 +211,7 @@ class AdminPlatformDataSource {
         action: 'dispute_decided_$decision',
         targetType: 'dispute',
         targetId: disputeId,
-        detail: 'Rs. $decisionAmount — $adminNote',
+        detail: 'Rs. ${formatRs(decisionAmount)} — $adminNote',
       );
       return true;
     } catch (_) {

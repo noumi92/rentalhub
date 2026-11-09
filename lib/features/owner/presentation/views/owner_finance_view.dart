@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import '../../../../l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/widgets/app_state_views.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
 import '../../../finance/data/datasources/finance_account_data_source.dart';
@@ -20,16 +20,18 @@ import '../../../fleet/data/datasources/fleet_remote_data_source.dart';
 import '../../../fleet/domain/entities/vehicle_entity.dart';
 import '../widgets/finance/add_transfer_sheet.dart';
 import '../widgets/finance/finance_dialogs.dart';
-import '../widgets/finance/finance_month_summary.dart';
-import '../widgets/finance/finance_accounts_section.dart';
-import '../widgets/finance/finance_deposits_section.dart';
+import '../widgets/finance/finance_hub_header.dart';
 import '../widgets/finance/finance_ledger_section.dart';
-import '../widgets/finance/finance_partners_section.dart';
+import '../widgets/finance/finance_overview_section.dart';
+import '../widgets/finance/finance_reports_section.dart';
+import '../widgets/finance/finance_summary_cards.dart';
 
 /// Phase B (H): the finance hub — accounts and their live
 /// balances, the ledger, the deposits held, partners, and the
-/// month's P&L. Dues, cash closing and per-car P&L live on their
-/// own screens, linked from here.
+/// month's P&L. Audit impl (O34): Overview / Transactions /
+/// Reports tabs, a period selector, and separate earnings /
+/// expenses / net summary cards. Dues, cash closing and per-car
+/// P&L live on their own screens, linked from here.
 class OwnerFinanceView extends StatefulWidget {
   final String shopId;
 
@@ -48,6 +50,8 @@ class _OwnerFinanceViewState extends State<OwnerFinanceView> {
   List<VehicleEntity> _vehicles = [];
   bool _isLoading = true;
   bool _hasError = false;
+  String _tab = 'overview';
+  String _period = 'this_month';
 
   @override
   void initState() {
@@ -85,30 +89,46 @@ class _OwnerFinanceViewState extends State<OwnerFinanceView> {
         });
       }
     } catch (_) {
-      // Audit §24/C4: a failed load used to render as "empty / Rs. 0"
-      // — surface it with a retry instead.
       if (mounted) setState(() => _hasError = true);
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
   }
 
-  ({int income, int expenses, int net}) get _monthTotals {
+  ({DateTime? from, DateTime? to}) get _range {
     final now = DateTime.now();
-    final from = DateTime(now.year, now.month);
-    final to = DateTime(now.year, now.month + 1);
-    return FinanceSummary.periodTotals(_transfers, from: from, to: to);
+    switch (_period) {
+      case 'last_month':
+        return (
+          from: DateTime(now.year, now.month - 1),
+          to: DateTime(now.year, now.month),
+        );
+      case 'all':
+        return (from: null, to: null);
+      case 'this_month':
+      default:
+        return (
+          from: DateTime(now.year, now.month),
+          to: DateTime(now.year, now.month + 1),
+        );
+    }
   }
 
-  int get _monthBookingRevenue {
-    final now = DateTime.now();
+  ({int income, int expenses, int net}) get _periodTotals {
+    final range = _range;
+    return FinanceSummary.periodTotals(_transfers,
+        from: range.from, to: range.to);
+  }
+
+  int get _periodBookingRevenue {
+    final range = _range;
     return _bookings
         .where((b) =>
             (b.status == 'completed' ||
                 b.status == 'paid' ||
                 b.status == 'active') &&
-            b.pickupTime.year == now.year &&
-            b.pickupTime.month == now.month)
+            (range.from == null || !b.pickupTime.isBefore(range.from!)) &&
+            (range.to == null || b.pickupTime.isBefore(range.to!)))
         .fold(0, (total, b) => total + b.totalAmount);
   }
 
@@ -138,8 +158,9 @@ class _OwnerFinanceViewState extends State<OwnerFinanceView> {
 
   @override
   Widget build(BuildContext context) {
-  final l10n = AppLocalizations.of(context)!;
-    final month = _monthTotals;
+    final l10n = AppLocalizations.of(context)!;
+    final month = _periodTotals;
+    final earnings = _periodBookingRevenue + month.income;
     return Scaffold(
       body: SafeArea(
         top: false,
@@ -171,30 +192,50 @@ class _OwnerFinanceViewState extends State<OwnerFinanceView> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          FinanceMonthSummary(
-                            bookingRevenue: _monthBookingRevenue,
-                            ledgerIncome: month.income,
+                          FinanceSummaryCards(
+                            earnings: earnings,
                             expenses: month.expenses,
                           ),
-                          const SizedBox(height: 16),
-                          FinanceAccountsSection(
-                            accounts: _accounts,
-                            transfers: _transfers,
-                            onAddAccount: _addAccount,
+                          const SizedBox(height: 12),
+                          FinanceHubHeader(
+                            tab: _tab,
+                            period: _period,
+                            onTabChanged: (tab) =>
+                                setState(() => _tab = tab),
+                            onPeriodChanged: (period) =>
+                                setState(() => _period = period),
                           ),
                           const SizedBox(height: 16),
-                          FinanceDepositsSection(deposits: _deposits),
-                          const SizedBox(height: 16),
-                          FinancePartnersSection(
-                            partners: _partners,
-                            onAddPartner: _addPartner,
-                          ),
-                          const SizedBox(height: 16),
-                          FinanceLedgerSection(
-                            transfers: _transfers,
-                            accounts: _accounts,
-                            onAddTransfer: _addTransfer,
-                          ),
+                          if (_tab == 'overview')
+                            FinanceOverviewSection(
+                              bookingRevenue: _periodBookingRevenue,
+                              ledgerIncome: month.income,
+                              expenses: month.expenses,
+                              periodLabel: _period == 'last_month'
+                                  ? l10n.financeLastMonth
+                                  : _period == 'all'
+                                      ? l10n.financeAllTime
+                                      : l10n.financeThisMonth,
+                              accounts: _accounts,
+                              transfers: _transfers,
+                              deposits: _deposits,
+                              partners: _partners,
+                              onAddAccount: _addAccount,
+                              onAddPartner: _addPartner,
+                            ),
+                          if (_tab == 'transactions')
+                            FinanceLedgerSection(
+                              transfers: _transfers,
+                              accounts: _accounts,
+                              bookings: _bookings,
+                              onAddTransfer: _addTransfer,
+                            ),
+                          if (_tab == 'reports')
+                            FinanceReportsSection(
+                              shopId: widget.shopId,
+                              bookings: _bookings,
+                              transfers: _transfers,
+                            ),
                         ],
                       ),
                     ),

@@ -1,10 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
 import '../../../../core/di/injection_container.dart';
+import '../../../../core/network/firestore_service.dart';
 import '../../../finance/data/datasources/security_deposit_data_source.dart';
 import '../../../finance/utils/settlement_calculator.dart';
 import '../../../fleet/data/datasources/fleet_remote_data_source.dart';
 import '../../../handover/data/datasources/handover_local_data_source.dart';
+import 'handover_photo_upload_service.dart' show ReturnRecordsService;
 
 /// Phase B (F1/F2): the return settlement, extracted from
 /// [OwnerReturnSettlementView] so the view stays under the 250-line
@@ -18,6 +22,8 @@ class ReturnSettlementService {
     int extraKmPkr,
     int extraHourPkr,
     int deposit,
+    int deductibleDamage,
+    int extraCharges,
   })> loadRealValues(
     BookingEntity booking, {
     int fallbackOdometer = 45200,
@@ -28,6 +34,16 @@ class ReturnSettlementService {
     var extraKmPkr = 100;
     var extraHourPkr = 0;
     var deposit = fallbackDeposit;
+    // Audit item 6 (O27/O28): damage reports and extra charges
+    // recorded on their own screens fold into the settlement.
+    var deductibleDamage = 0;
+    var extraCharges = 0;
+    try {
+      final totals =
+          await ReturnRecordsService().loadTotals(booking.bookingId);
+      deductibleDamage = totals.deductibleDamage;
+      extraCharges = totals.extraCharges;
+    } catch (_) {}
     try {
       // The handover record holds the true departure odometer and
       // the damage noted when the car left.
@@ -59,6 +75,8 @@ class ReturnSettlementService {
       extraKmPkr: extraKmPkr,
       extraHourPkr: extraHourPkr,
       deposit: deposit,
+      deductibleDamage: deductibleDamage,
+      extraCharges: extraCharges,
     );
   }
 
@@ -73,6 +91,15 @@ class ReturnSettlementService {
     required String fuelLevel,
     required List<String> returnDamageNotes,
     required int damageCharge,
+    // Audit item 5 (O25/O26): the return-inspection condition and
+    // photos, the itemized records folded into the settlement, and
+    // the remaining rent collected at return with its method.
+    String condition = 'good',
+    Map<String, String?> returnPhotoUrls = const {},
+    int deductibleDamage = 0,
+    int extraCharges = 0,
+    int remainingRentCollected = 0,
+    String? paymentMethod,
   }) async {
     final totalKmDriven = (returnOdometer - initialOdometer).clamp(0, 99999);
     final overtimeHours = _overtimeHours(booking.returnTime);
@@ -81,11 +108,41 @@ class ReturnSettlementService {
       kmAllowance: kmAllowance,
       extraKmPkr: extraKmPkr,
       fuelLevel: fuelLevel,
-      damageCharge: damageCharge,
+      damageCharge: damageCharge + deductibleDamage,
       overtimeHours: overtimeHours,
       extraHourPkr: extraHourPkr,
       securityDeposit: deposit,
+      extraCharges: extraCharges,
     );
+    // The remaining rent collected here reduces what the customer
+    // still owes; it is not a deposit deduction, so it never changes
+    // the refund — it is recorded on the settlement doc below.
+    final remainingRentDue =
+        (booking.remainingBalance - remainingRentCollected).clamp(0, 1 << 30);
+
+    // The return record: condition, photos, payment and totals, on
+    // `return_settlements/{bookingId}` (merge). Firestore resolves
+    // lazily — a failed write never fails the settlement itself.
+    try {
+      final fs = FirebaseFirestore.instance;
+      await fs.collection('return_settlements').doc(booking.bookingId).set({
+        'bookingId': booking.bookingId,
+        'shopId': booking.shopId,
+        'condition': condition,
+        'returnPhotoUrls': {
+          for (final e in returnPhotoUrls.entries)
+            if (e.value != null) e.key: e.value,
+        },
+        'paymentMethod': paymentMethod,
+        'remainingRentCollected': remainingRentCollected,
+        'remainingRentDue': remainingRentDue,
+        'deductibleDamage': deductibleDamage,
+        'extraCharges': extraCharges,
+        'totalDeductions': breakdown.totalDeductions,
+        'netRefund': breakdown.netRefund,
+        'completedAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+    } catch (_) {}
 
     final depositDs = sl<SecurityDepositDataSource>();
     // The handover normally collects the deposit; if it never did
@@ -134,5 +191,50 @@ class ReturnSettlementService {
     final late = DateTime.now().difference(dueBack);
     if (late.isNegative) return 0;
     return (late.inMinutes / 60).ceil();
+  }
+
+  /// Finish build (O26): the distinct "Refund Deposit" step. Reads the
+  /// refund recorded on `return_settlements/{bookingId}` — absent (or
+  /// unreadable, e.g. offline) resolves to "not recorded", never an
+  /// error, so the return flow never blocks on this read. Goes through
+  /// the DI [FirestoreService] (in-memory fallback in tests) instead
+  /// of `FirebaseFirestore.instance`, which throws `core/no-app`
+  /// wherever Firebase was never initialized.
+  static Future<({bool recorded, int amount})> loadRefundState(
+      String bookingId) async {
+    try {
+      final data = await sl<FirestoreService>()
+          .getDocument('return_settlements', bookingId);
+      if (data == null) return (recorded: false, amount: 0);
+      return (
+        recorded: data['refundRecorded'] == true,
+        amount: (data['depositRefunded'] as num?)?.toInt() ?? 0,
+      );
+    } catch (_) {
+      return (recorded: false, amount: 0);
+    }
+  }
+
+  /// Finish build (O26): records the deposit refund as its own step on
+  /// `return_settlements/{bookingId}` (merge — the settlement totals
+  /// written by [finalizeReturn] are untouched, and no booking money
+  /// field is mutated). Throws on failure so the caller can show the
+  /// failure state instead of pretending the refund was recorded.
+  static Future<void> recordRefund({
+    required String bookingId,
+    required int amount,
+  }) async {
+    await sl<FirestoreService>().setDocument(
+      'return_settlements',
+      bookingId,
+      {
+        'bookingId': bookingId,
+        'refundRecorded': true,
+        'depositRefunded': amount,
+        'depositRefundedAt': FieldValue.serverTimestamp(),
+        'updatedAt': FieldValue.serverTimestamp(),
+      },
+      merge: true,
+    );
   }
 }

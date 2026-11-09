@@ -34,6 +34,10 @@ class PackagePricing {
       if (tier.label == 'Weekly') {
         return unit * ((durationDays + 6) ~/ 7);
       }
+      // Monthly is one price per 30-day block, like Weekly per week.
+      if (tier.label == 'Monthly') {
+        return unit * ((durationDays + 29) ~/ 30);
+      }
       return unit;
     }
     if (tier.label == '24h') return tier.price * durationDays;

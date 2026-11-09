@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
+import '../../../../core/utils/money_format.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../fleet/domain/entities/vehicle_entity.dart';
 import '../../data/datasources/admin_shops_data_source.dart';
 import '../widgets/admin_shell.dart';
@@ -64,6 +66,7 @@ class _AdminCarsViewState extends State<AdminCarsView> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return AdminShell(
       activeRoute: RouteNames.adminCars,
       title: 'Cars',
@@ -157,7 +160,7 @@ class _AdminCarsViewState extends State<AdminCarsView> {
                                         fontWeight: FontWeight.w800,
                                         )),
                                 subtitle: Text(
-                                  '${car.plateNumber} • Rs. ${car.rates.daily24}/day • ${car.status}',
+                                  '${car.plateNumber} • ${l10n.fleetDailyRate(formatRs(car.rates.daily24))} • ${car.status}',
                                   style: TextStyle(
                                       fontSize: 12,
                                       color: Theme.of(context).colorScheme.onSurfaceVariant),

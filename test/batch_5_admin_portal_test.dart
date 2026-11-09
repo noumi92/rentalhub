@@ -112,17 +112,19 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Showroom Membership Plans'), findsOneWidget);
-      expect(find.text('Starter Freemium'), findsOneWidget);
-      expect(find.text('Pro Showroom'), findsOneWidget);
+      // Worker E (2026-11-09): deck chooser replaced the old
+      // "Showroom Membership Plans" / Starter Freemium / Pro Showroom
+      // copy; the manual bank-transfer sheet is unchanged.
+      expect(find.text('Choose a plan'), findsOneWidget);
+      expect(find.text('Free'), findsOneWidget);
+      expect(find.text('Pro'), findsOneWidget);
 
-      await tester.ensureVisible(find.text('Upgrade to Pro Showroom'));
+      await tester.ensureVisible(find.text('Upgrade to Pro'));
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('Upgrade to Pro Showroom'));
+      await tester.tap(find.text('Upgrade to Pro'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Upgrade to Pro'), findsOneWidget);
       expect(find.text('Submit Upgrade Verification'), findsOneWidget);
     });
 

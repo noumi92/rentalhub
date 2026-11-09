@@ -22,6 +22,8 @@ class OnboardingStepperBar extends StatelessWidget {
           _stepPill(context, 3, l10n.onboardingStepPayouts, Icons.account_balance_wallet_rounded),
           _stepLine(context, 3),
           _stepPill(context, 4, l10n.onboardingStepKyc, Icons.verified_user_rounded),
+          _stepLine(context, 4),
+          _stepPill(context, 5, l10n.onboardingStepReview, Icons.fact_check_rounded),
         ],
       ),
     );

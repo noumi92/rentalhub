@@ -3,7 +3,9 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
+import '../../../../core/utils/money_format.dart';
 import '../../../../core/widgets/app_feedback.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../data/datasources/admin_people_data_source.dart';
 import '../widgets/admin_shell.dart';
 import '../widgets/customer_detail_actions.dart';
@@ -101,6 +103,7 @@ class _AdminCustomerDetailViewState extends State<AdminCustomerDetailView> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return AdminShell(
       activeRoute: RouteNames.adminCustomers,
       title: 'Customer detail',
@@ -163,7 +166,7 @@ class _AdminCustomerDetailViewState extends State<AdminCustomerDetailView> {
                               : _detail!.bookings
                                   .take(10)
                                   .map((b) =>
-                                      '${b.vehicleName ?? b.vehicleId} • ${b.status} • Rs. ${b.totalAmount}')
+                                      '${b.vehicleName ?? b.vehicleId} • ${b.status} • ${l10n.amountRs(formatRs(b.totalAmount))}')
                                   .toList()),
                       _section(
                           'Guarantors',

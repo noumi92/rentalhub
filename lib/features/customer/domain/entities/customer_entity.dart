@@ -24,6 +24,33 @@ class CustomerEntity extends Equatable {
   final String? fatherName;
   final String? address;
 
+  /// Add Customer wizard (O12–O15): the KYC media + documents the
+  /// wizard captures. All nullable (older records predate the wizard)
+  /// and all store URLs/keys only — never bytes. Face matching is
+  /// NOT done in the app: the photo is saved and an admin reviews
+  /// it manually, so there is no match score or isVerified flag here.
+  final String? profilePhotoUrl;
+  final String? thumbprintUrl;
+  final String? cnicFrontUrl;
+  final String? cnicBackUrl;
+  final String? licenseNumber;
+  final String? licenseExpiry;
+  final String? licenseFrontUrl;
+  final String? licenseBackUrl;
+  final String? utilityBillUrl;
+  final List<String> extraDocumentUrls;
+  final String? signatureUrl;
+  final String? guarantorCustomerId;
+  final String? guarantorRelation;
+
+  /// Owner-deck finish (#35): owner approval of a customer profile.
+  /// 'pending' | 'approved' | 'rejected'. New records start pending;
+  /// older records without the field read as pending. [reviewedAt] is
+  /// when the owner last approved or rejected the profile.
+  final String approvalStatus;
+  final String? rejectionReason;
+  final DateTime? reviewedAt;
+
   /// H2: notification preferences, persisted on the customer record.
   /// Actual push delivery is backend/FCM (out of scope) — these record
   /// what the customer wants.
@@ -46,6 +73,22 @@ class CustomerEntity extends Equatable {
     this.cnicExpiry,
     this.fatherName,
     this.address,
+    this.profilePhotoUrl,
+    this.thumbprintUrl,
+    this.cnicFrontUrl,
+    this.cnicBackUrl,
+    this.licenseNumber,
+    this.licenseExpiry,
+    this.licenseFrontUrl,
+    this.licenseBackUrl,
+    this.utilityBillUrl,
+    this.extraDocumentUrls = const [],
+    this.signatureUrl,
+    this.guarantorCustomerId,
+    this.guarantorRelation,
+    this.approvalStatus = 'pending',
+    this.rejectionReason,
+    this.reviewedAt,
     this.pushNotifications = true,
     this.whatsappNotifications = true,
     this.savedShopIds = const [],
@@ -60,6 +103,23 @@ class CustomerEntity extends Equatable {
     String? cnicExpiry,
     String? fatherName,
     String? address,
+    String? profilePhotoUrl,
+    String? thumbprintUrl,
+    String? cnicFrontUrl,
+    String? cnicBackUrl,
+    String? licenseNumber,
+    String? licenseExpiry,
+    String? licenseFrontUrl,
+    String? licenseBackUrl,
+    String? utilityBillUrl,
+    List<String>? extraDocumentUrls,
+    String? signatureUrl,
+    String? guarantorCustomerId,
+    String? guarantorRelation,
+    String? approvalStatus,
+    String? rejectionReason,
+    bool clearRejectionReason = false,
+    DateTime? reviewedAt,
     bool? pushNotifications,
     bool? whatsappNotifications,
     List<String>? savedShopIds,
@@ -76,6 +136,24 @@ class CustomerEntity extends Equatable {
       cnicExpiry: cnicExpiry ?? this.cnicExpiry,
       fatherName: fatherName ?? this.fatherName,
       address: address ?? this.address,
+      profilePhotoUrl: profilePhotoUrl ?? this.profilePhotoUrl,
+      thumbprintUrl: thumbprintUrl ?? this.thumbprintUrl,
+      cnicFrontUrl: cnicFrontUrl ?? this.cnicFrontUrl,
+      cnicBackUrl: cnicBackUrl ?? this.cnicBackUrl,
+      licenseNumber: licenseNumber ?? this.licenseNumber,
+      licenseExpiry: licenseExpiry ?? this.licenseExpiry,
+      licenseFrontUrl: licenseFrontUrl ?? this.licenseFrontUrl,
+      licenseBackUrl: licenseBackUrl ?? this.licenseBackUrl,
+      utilityBillUrl: utilityBillUrl ?? this.utilityBillUrl,
+      extraDocumentUrls: extraDocumentUrls ?? this.extraDocumentUrls,
+      signatureUrl: signatureUrl ?? this.signatureUrl,
+      guarantorCustomerId: guarantorCustomerId ?? this.guarantorCustomerId,
+      guarantorRelation: guarantorRelation ?? this.guarantorRelation,
+      approvalStatus: approvalStatus ?? this.approvalStatus,
+      rejectionReason: clearRejectionReason
+          ? null
+          : (rejectionReason ?? this.rejectionReason),
+      reviewedAt: reviewedAt ?? this.reviewedAt,
       pushNotifications: pushNotifications ?? this.pushNotifications,
       whatsappNotifications:
           whatsappNotifications ?? this.whatsappNotifications,
@@ -99,5 +177,21 @@ class CustomerEntity extends Equatable {
         cnicExpiry,
         fatherName,
         address,
+        profilePhotoUrl,
+        thumbprintUrl,
+        cnicFrontUrl,
+        cnicBackUrl,
+        licenseNumber,
+        licenseExpiry,
+        licenseFrontUrl,
+        licenseBackUrl,
+        utilityBillUrl,
+        extraDocumentUrls,
+        signatureUrl,
+        guarantorCustomerId,
+        guarantorRelation,
+        approvalStatus,
+        rejectionReason,
+        reviewedAt,
       ];
 }

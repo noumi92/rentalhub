@@ -4,23 +4,27 @@ import '../../../../core/di/injection_container.dart';
 import '../../../../core/utils/current_shop.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
-import '../../../../core/widgets/debounced_button.dart';
-import '../../../blacklist/data/datasources/blacklist_remote_data_source.dart';
 import '../../../fleet/data/datasources/fleet_remote_data_source.dart';
 import '../../../fleet/domain/entities/vehicle_entity.dart';
 import '../services/walk_in_booking_service.dart';
 import '../widgets/guarantor_picker.dart';
-import '../widgets/manual_booking_customer_fields.dart';
+import '../widgets/manual_booking_form_body.dart';
 import '../widgets/manual_booking_package_selector.dart';
-import '../widgets/manual_booking_vehicle_section.dart';
-import 'owner_handover_signature_view.dart';
+import 'owner_manual_booking_confirm_view.dart';
 
+/// Audit §5 item 1 (O16/O17 p.7): the manual booking entry — customer,
+/// vehicle + package, pickup/return date+time pickers, In-City /
+/// Out-City toggle — then "Next" to the confirm step.
 class OwnerManualBookingView extends StatefulWidget {
   final String? prefilledCnic;
-  // #18: booking for an existing customer (from the Customers list) prefills
-  // name + phone as well as the CNIC; all three arrive as query params.
+  // #18 + audit §5 item 16: name/phone/CNIC (Customers list) and
+  // vehicle/dates/trip type (request-to-manual) arrive as query params.
   final String? prefilledName;
   final String? prefilledPhone;
+  final String? prefilledVehicleId;
+  final DateTime? prefilledPickupTime;
+  final DateTime? prefilledReturnTime;
+  final String? prefilledTripType;
   final VoidCallback? onBack;
 
   const OwnerManualBookingView({
@@ -28,6 +32,10 @@ class OwnerManualBookingView extends StatefulWidget {
     this.prefilledCnic,
     this.prefilledName,
     this.prefilledPhone,
+    this.prefilledVehicleId,
+    this.prefilledPickupTime,
+    this.prefilledReturnTime,
+    this.prefilledTripType,
     this.onBack,
   });
 
@@ -39,8 +47,8 @@ class _OwnerManualBookingViewState extends State<OwnerManualBookingView> {
   late final TextEditingController _nameController;
   late final TextEditingController _phoneController;
   late final TextEditingController _cnicController;
-  // Audit §12 (Critical): no demo identity defaults — controllers start empty
-  // and are prefilled only from real query params / scan; submit validates.
+  // Audit §12: no demo identity defaults — controllers start empty
+  // and are prefilled only from real query params / scan.
   final _depositController = TextEditingController();
 
   List<VehicleEntity> _vehicles = [];
@@ -49,8 +57,13 @@ class _OwnerManualBookingViewState extends State<OwnerManualBookingView> {
   bool _isWithDriver = false;
   bool _isLoadingVehicles = true;
   String? _vehiclesError;
-  bool _isCreating = false;
+  bool _isChecking = false;
   GuarantorSelection? _guarantor;
+
+  late DateTime _pickupTime;
+  late DateTime _returnTime;
+  bool _returnEdited = false;
+  late bool _isOutOfCity;
 
   @override
   void initState() {
@@ -58,6 +71,12 @@ class _OwnerManualBookingViewState extends State<OwnerManualBookingView> {
     _nameController = TextEditingController(text: widget.prefilledName ?? '');
     _phoneController = TextEditingController(text: widget.prefilledPhone ?? '');
     _cnicController = TextEditingController(text: widget.prefilledCnic ?? '');
+    _pickupTime = widget.prefilledPickupTime ??
+        DateTime.now().add(const Duration(hours: 1));
+    _returnTime = widget.prefilledReturnTime ??
+        _pickupTime.add(const Duration(hours: 24));
+    _returnEdited = widget.prefilledReturnTime != null;
+    _isOutOfCity = widget.prefilledTripType == 'out_of_city';
     // Keep the step indicator live as the owner types.
     _nameController.addListener(_refreshStep);
     _phoneController.addListener(_refreshStep);
@@ -93,6 +112,20 @@ class _OwnerManualBookingViewState extends State<OwnerManualBookingView> {
       _selectedPackage = packages.isNotEmpty ? packages.first : null;
       final deposit = v?.securityDepositPkr;
       if (deposit != null) _depositController.text = deposit.toString();
+      if (!_returnEdited && _selectedPackage != null) {
+        _returnTime = ManualBookingPackageSelector.returnTimeFor(
+            pickup: _pickupTime, package: _selectedPackage!);
+      }
+    });
+  }
+
+  void _onPickupChanged(DateTime next) {
+    setState(() {
+      _pickupTime = next;
+      if (!_returnEdited && _selectedPackage != null) {
+        _returnTime = ManualBookingPackageSelector.returnTimeFor(
+            pickup: _pickupTime, package: _selectedPackage!);
+      }
     });
   }
 
@@ -107,25 +140,26 @@ class _OwnerManualBookingViewState extends State<OwnerManualBookingView> {
       if (mounted) {
         setState(() {
           _vehicles = cars;
-          if (cars.isNotEmpty) _selectVehicle(cars.first);
+          VehicleEntity? prefilled;
+          for (final v in cars) {
+            if (v.vehicleId == widget.prefilledVehicleId) prefilled = v;
+          }
+          _selectVehicle(
+              prefilled ?? (cars.isNotEmpty ? cars.first : null));
         });
       }
     } catch (e) {
-      // Audit C4: a failed vehicle load is a visible error with a retry, never a silent empty dropdown.
       if (mounted) setState(() => _vehiclesError = e.toString());
     } finally {
       if (mounted) setState(() => _isLoadingVehicles = false);
     }
   }
 
-  Future<void> _createBooking() async {
-  final l10n = AppLocalizations.of(context)!;
+  Future<void> _goToConfirm() async {
+    final l10n = AppLocalizations.of(context)!;
     final name = _nameController.text.trim();
     final phone = _phoneController.text.trim();
     final cnic = _cnicController.text.trim();
-    // Phase B (B2): the counter total comes from the chosen package, not from a typed number.
-    final rentAmount = ManualBookingPackageSelector.totalFor(vehicle: _selectedVehicle, package: _selectedPackage, isWithDriver: _isWithDriver);
-
     if (name.isEmpty || phone.isEmpty || cnic.isEmpty) {
       AppFeedback.showError(context, l10n.manualBookingCompleteDetails);
       return;
@@ -134,50 +168,37 @@ class _OwnerManualBookingViewState extends State<OwnerManualBookingView> {
       AppFeedback.showError(context, l10n.manualBookingSelectVehicle);
       return;
     }
-    // Phase B (D2): a blacklisted CNIC cannot book at the counter either — the scan screen is not the only way in.
-    // Integration: the blacklist lookup itself is inside the guard —
-    // if it throws (Firestore unreachable), the booking is refused
-    // with an error instead of proceeding unchecked or crashing on
-    // an unhandled async error. The save-side check in
-    // saveWalkInCustomer is only a backstop: the booking service
-    // swallows save errors by design, so this pre-submit check is
-    // the block that actually stops a blacklisted walk-in.
+    if (!_returnTime.isAfter(_pickupTime)) {
+      AppFeedback.showError(context, l10n.manualBookingReturnAfterPickup);
+      return;
+    }
+    // Phase B (D2): a blacklisted CNIC cannot book at the counter
+    // either — the scan screen is not the only way in.
+    setState(() => _isChecking = true);
     bool blacklisted;
     try {
       blacklisted =
-          await sl<BlacklistRemoteDataSource>().isCnicBlacklisted(cnic);
+          await WalkInBookingService.isCnicBlacklisted(cnic);
     } catch (e) {
       if (mounted) {
         AppFeedback.showError(
             context, l10n.manualBookingCreateFailed(e.toString()));
       }
+      setState(() => _isChecking = false);
       return;
     }
+    setState(() => _isChecking = false);
     if (blacklisted) {
       if (mounted) AppFeedback.showError(context, l10n.manualBookingBlacklisted);
       return;
     }
-
-    setState(() => _isCreating = true);
-    try {
-      final booking = await WalkInBookingService.createWalkInBooking(name: name, phone: phone, cnic: cnic, guarantor: _guarantor, vehicle: _selectedVehicle!, package: _selectedPackage!, isWithDriver: _isWithDriver, rentAmount: rentAmount);
-
-      if (mounted) {
-        AppFeedback.showSuccess(context, l10n.manualBookingRegistered(booking.bookingId));
-        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => OwnerHandoverSignatureView(booking: booking.copyWith(status: 'paid'))));
-      }
-    } catch (e) {
-      if (mounted) {
-        AppFeedback.showError(context, l10n.manualBookingCreateFailed(e.toString()));
-      }
-    } finally {
-      if (mounted) setState(() => _isCreating = false);
-    }
+    if (!mounted) return;
+    OwnerManualBookingConfirmView.open(context, customerName: name, customerPhone: phone, customerCnic: cnic, guarantor: _guarantor, vehicle: _selectedVehicle!, package: _selectedPackage!, isWithDriver: _isWithDriver, isOutOfCity: _isOutOfCity, pickupTime: _pickupTime, returnTime: _returnTime);
   }
 
   @override
   Widget build(BuildContext context) {
-  final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: SafeArea(
         top: false,
@@ -186,42 +207,34 @@ class _OwnerManualBookingViewState extends State<OwnerManualBookingView> {
             MinimalAppBar(title: l10n.manualBookingTitle, subtitle: l10n.manualBookingSubtitle, onBack: widget.onBack),
             Padding(padding: const EdgeInsets.fromLTRB(16, 14, 16, 4), child: ManualBookingStepIndicator(currentStep: _currentStep)),
             Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _sectionHeader(l10n.manualBookingCustomerSection),
-                    ManualBookingCustomerFields(nameController: _nameController, phoneController: _phoneController, cnicController: _cnicController),
-                    const SizedBox(height: 18),
-                    _sectionHeader(l10n.manualBookingGuarantorSection),
-                    GuarantorPicker(onChanged: (g) => setState(() => _guarantor = g)),
-                    const SizedBox(height: 18),
-                    _sectionHeader(l10n.manualBookingVehicleSection),
-                    if (_vehiclesError != null)
-                      ManualBookingLoadErrorCard(message: l10n.fleetLoadError(_vehiclesError!), onRetry: _loadVehicles)
-                    else
-                      ManualBookingVehicleSection(
-                        isLoadingVehicles: _isLoadingVehicles, vehicles: _vehicles, selectedVehicle: _selectedVehicle, onVehicleChanged: (v) => _selectVehicle(v),
-                        selectedPackage: _selectedPackage, onPackageChanged: (p) => setState(() => _selectedPackage = p),
-                        isWithDriver: _isWithDriver, onDriverModeChanged: (v) => setState(() => _isWithDriver = v), depositController: _depositController,
-                      ),
-                    const SizedBox(height: 24),
-                    DebouncedButton(text: _isCreating ? l10n.manualBookingCreating : l10n.manualBookingConfirm, icon: Icons.check_circle_rounded, isLoading: _isCreating, onPressed: _createBooking),
-                  ],
-                ),
+              child: ManualBookingFormBody(
+                nameController: _nameController, phoneController: _phoneController, cnicController: _cnicController,
+                onGuarantorChanged: (g) => setState(() => _guarantor = g),
+                vehiclesError: _vehiclesError, onRetryLoad: _loadVehicles,
+                isLoadingVehicles: _isLoadingVehicles, vehicles: _vehicles,
+                selectedVehicle: _selectedVehicle, onVehicleChanged: (v) => _selectVehicle(v),
+                selectedPackage: _selectedPackage,
+                onPackageChanged: (p) => setState(() {
+                  _selectedPackage = p;
+                  if (!_returnEdited && p != null) {
+                    _returnTime = ManualBookingPackageSelector.returnTimeFor(pickup: _pickupTime, package: p);
+                  }
+                }),
+                isWithDriver: _isWithDriver, onDriverModeChanged: (v) => setState(() => _isWithDriver = v),
+                depositController: _depositController,
+                isOutOfCity: _isOutOfCity, pickupTime: _pickupTime, returnTime: _returnTime,
+                onPickupChanged: _onPickupChanged,
+                onReturnChanged: (next) => setState(() {
+                  _returnTime = next;
+                  _returnEdited = true;
+                }),
+                onTripTypeChanged: (v) => setState(() => _isOutOfCity = v),
+                isChecking: _isChecking, onNext: _goToConfirm,
               ),
             ),
           ],
         ),
       ),
-    );
-  }
-
-  Widget _sectionHeader(String title) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Text(title, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
     );
   }
 }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/current_shop.dart';
@@ -13,9 +12,13 @@ import '../../../fleet/domain/entities/vehicle_entity.dart';
 import '../../../fleet/presentation/cubit/fleet_cubit.dart';
 import '../../../fleet/presentation/cubit/fleet_state.dart';
 import '../widgets/fleet/fleet_body.dart';
+import '../widgets/fleet/fleet_helpers.dart';
 import '../widgets/fleet/fleet_filter_chips.dart';
-import '../widgets/fleet/fleet_metric_card.dart';
+import '../widgets/fleet/fleet_metrics_row.dart';
+import '../widgets/fleet/fleet_search_field.dart';
 import '../widgets/fleet/fleet_vehicle_card.dart';
+import '../services/subscription_data_source.dart';
+import 'owner_subscription_limit_sheet.dart';
 
 /// Phase B (B1): the fleet list now reads real vehicles through
 /// [FleetCubit] (Firestore, with the in-memory fallback when offline)
@@ -37,12 +40,29 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
   String _searchQuery = '';
   late final FleetCubit _cubit;
 
+  /// Audit §5 (O05/O30): active-booking return dates by vehicle id,
+  /// loaded alongside the fleet (empty on any load failure).
+  Map<String, DateTime> _rentedUntil = {};
+
   String get _shopId => widget.shopId ?? currentShopId();
+
+  // Phone bug: double-tap duplicate pushes are guarded by
+  // PushOnceGuard (see fleet_helpers.dart).
+  final _pushGuard = PushOnceGuard();
+
+  Future<Object?> _pushOnce(String location) =>
+      _pushGuard.push(context, location);
 
   @override
   void initState() {
     super.initState();
     _cubit = sl<FleetCubit>()..loadVehicles(_shopId);
+    _loadRentals();
+  }
+
+  Future<void> _loadRentals() async {
+    final map = await FleetRentalLookup.activeRentalsByVehicle(_shopId);
+    if (mounted) setState(() => _rentedUntil = map);
   }
 
   @override
@@ -62,16 +82,49 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
     return result;
   }
 
-  /// Audit §4: the card photo pushes the vehicle-detail route. The owner module has no own detail route (router out of scope), so this reuses the existing customer vehicle-detail route.
-  void _openVehicleDetail(VehicleEntity v) => context.push(RouteNames.customerVehicleDetail.replaceFirst(':id', v.vehicleId));
+  /// Audit §5 (item 15): the card opens the OWNER vehicle-detail
+  /// route — the customer detail route it used to reuse is gone.
+  void _openVehicleDetail(VehicleEntity v) =>
+      _pushOnce(RouteNames.ownerVehicleDetail.replaceFirst(':id', v.vehicleId));
 
-  void _openAddVehicle() {
+  /// Audit §5 (P2-5): adding a car is gated on shop approval — a
+  /// 'pending' shop sees the gate dialog instead of the add flow.
+  void _openAddVehicle() async {
     if (widget.onAddVehicle != null) {
       widget.onAddVehicle!();
       return;
     }
-    context.push(RouteNames.ownerAddVehicle).then((_) {
-      if (mounted) _cubit.loadVehicles(_shopId);
+    final allowed = await FleetAddGate.ensureApproved(context, _shopId);
+    if (!allowed || !mounted) return;
+    // Audit impl (worker E, S6): the plan car cap is enforced when
+    // opening Add Vehicle — at the cap the sheet offers the upgrade
+    // instead of the add flow. The cap is the plan's real limit
+    // (Free 3, Pro 10, Business unlimited).
+    final currentFleet = _cubit.state is FleetLoaded
+        ? (_cubit.state as FleetLoaded).vehicles
+        : const <VehicleEntity>[];
+    final subscription =
+        await SubscriptionDataSource().getShopSubscription(_shopId);
+    final plan = subscriptionPlanFor(subscription.tier);
+    final carLimit = plan.carLimit;
+    if (carLimit != null && currentFleet.length >= carLimit) {
+      if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
+      final planName = switch (plan.id) {
+        'pro' => l10n.subscriptionPlanPro,
+        'business' => l10n.subscriptionPlanBusiness,
+        _ => l10n.subscriptionPlanFree,
+      };
+      await CarLimitSheet.show(
+        context,
+        carsUsed: currentFleet.length,
+        carLimit: carLimit,
+        planName: planName,
+      );
+      return;
+    }
+    _pushOnce(RouteNames.ownerAddVehicle).then((_) {
+      if (mounted) { _cubit.loadVehicles(_shopId); _loadRentals(); }
     });
   }
 
@@ -82,8 +135,11 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
         vehicle: v,
         onTap: () => _openVehicleDetail(v),
         onToggleAvailability: (val) => _toggle(v, val),
-        onEditRates: () => context.push(RouteNames.ownerRatesVehicle.replaceFirst(':vehicleId', v.vehicleId)),
-        onViewCalendar: () => context.push(RouteNames.ownerCalendar.replaceFirst(':vehicleId', v.vehicleId)),
+        onEditRates: () => _pushOnce(RouteNames.ownerRatesVehicle.replaceFirst(':vehicleId', v.vehicleId)),
+        onViewCalendar: () => _pushOnce(RouteNames.ownerCalendar.replaceFirst(':vehicleId', v.vehicleId)),
+        rentedUntil: _rentedUntil[v.vehicleId],
+        onEditRent: () => _pushOnce(RouteNames.ownerRatesVehicle.replaceFirst(':vehicleId', v.vehicleId)),
+        onUpdatePrice: () => _pushOnce(RouteNames.ownerFareTable.replaceFirst(':vehicleId', v.vehicleId)),
       );
 
   /// D3: medium+ shows the fleet in two columns.
@@ -118,40 +174,30 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
                       actions: [
                         AppIconChip(icon: Icons.route_rounded, tooltip: l10n.fixedRoutes, background: Colors.white.withValues(alpha: 0.15), iconColor: Colors.white, onPressed: () => context.push(RouteNames.ownerFixedRoutes)),
                         const SizedBox(width: 8),
+                        // Audit §5 (O31): "Schedule" opens the multi-car calendar.
+                        AppIconChip(icon: Icons.calendar_month_rounded, tooltip: l10n.fleetSchedule, background: Colors.white.withValues(alpha: 0.15), iconColor: Colors.white, onPressed: () => _pushOnce(RouteNames.ownerFleetCalendar)),
+                        const SizedBox(width: 8),
                         AppIconChip(icon: Icons.add_circle_rounded, tooltip: l10n.fleetAddVehicle, background: Colors.white.withValues(alpha: 0.15), iconColor: Colors.white, onPressed: _openAddVehicle),
                       ],
                     ),
 
-                    // Metrics Row
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                      color: Theme.of(context).colorScheme.surface,
-                      child: Row(
-                        children: [
-                          FleetMetricCard(label: l10n.fleetTotalFleet, value: l10n.fleetTotalCars(totalCount), icon: Icons.directions_car_rounded, color: Theme.of(context).colorScheme.primary),
-                          const SizedBox(width: 8),
-                          FleetMetricCard(label: l10n.available, value: l10n.fleetAvailableReady(availableCount), icon: Icons.check_circle_outline_rounded, color: AppColors.accentSuccess),
-                          const SizedBox(width: 8),
-                          // Audit §4: the On-Rent value is small text, so it uses the brightness-aware orange TEXT token in both modes (light #C2410C 5.18:1, dark #FB923C 7.92:1) — never the #F95700 fill as text.
-                          FleetMetricCard(label: l10n.fleetOnRent, value: l10n.fleetOnRentActive(onRentCount), icon: Icons.key_rounded, color: AppColors.orangeTextFor(Theme.of(context).brightness)),
-                        ],
-                      ),
+                    // Metrics Row (extracted: FleetMetricsRow).
+                    FleetMetricsRow(
+                      totalCount: totalCount,
+                      availableCount: availableCount,
+                      onRentCount: onRentCount,
                     ),
 
-                    // Audit §4: search (name/plate) above the chips.
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-                      child: TextField(
-                        onChanged: (q) => setState(() => _searchQuery = q),
-                        decoration: InputDecoration(
-                          hintText: l10n.fleetSearchHint,
-                          prefixIcon: const Icon(Icons.search_rounded),
-                          filled: true,
-                          fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Theme.of(context).dividerColor)),
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                        ),
+                    // Audit §5 (O05/O30): "N active rentals" header count.
+                    if (onRentCount > 0)
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
+                        child: Text(l10n.fleetActiveRentals(onRentCount), style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
                       ),
+
+                    // Audit §4: search (name/plate) above the chips.
+                    FleetSearchField(
+                      onChanged: (q) => setState(() => _searchQuery = q),
                     ),
 
                     // Filter Chips
@@ -176,9 +222,12 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
                         onAddVehicle: _openAddVehicle,
                         onRetry: () => _cubit.loadVehicles(_shopId),
                         onToggleAvailability: _toggle,
-                        onEditRates: (v) => context.push(RouteNames.ownerRatesVehicle.replaceFirst(':vehicleId', v.vehicleId)),
-                        onViewCalendar: (v) => context.push(RouteNames.ownerCalendar.replaceFirst(':vehicleId', v.vehicleId)),
+                        onEditRates: (v) => _pushOnce(RouteNames.ownerRatesVehicle.replaceFirst(':vehicleId', v.vehicleId)),
+                        onViewCalendar: (v) => _pushOnce(RouteNames.ownerCalendar.replaceFirst(':vehicleId', v.vehicleId)),
                         onTapVehicle: _openVehicleDetail,
+                        rentedUntil: _rentedUntil,
+                        onEditRent: (v) => _pushOnce(RouteNames.ownerRatesVehicle.replaceFirst(':vehicleId', v.vehicleId)),
+                        onUpdatePrice: (v) => _pushOnce(RouteNames.ownerFareTable.replaceFirst(':vehicleId', v.vehicleId)),
                       ),
                   ],
                 ),

@@ -82,7 +82,9 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      expect(find.text('دکان کی ترتیبات'), findsOneWidget);
+      // The string renders twice by design: the MinimalAppBar title
+      // (l10n.settings) and the quick link (l10n.fleetShopSettings).
+      expect(find.text('دکان کی ترتیبات'), findsNWidgets(2));
       expect(find.text('Shop Settings'), findsNothing);
     });
 

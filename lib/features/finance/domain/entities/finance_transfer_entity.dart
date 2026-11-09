@@ -14,6 +14,10 @@ class FinanceTransferEntity extends Equatable {
   final String? vehicleId;
   final String? customerId;
   final String? note;
+  /// Audit impl (O35/O36): how this entry was paid — 'cash' |
+  /// 'bank' | 'jazzcash' | 'easypaisa'. Null on entries recorded
+  /// before payment methods were captured.
+  final String? paymentMethod;
   final DateTime createdAt;
 
   const FinanceTransferEntity({
@@ -27,6 +31,7 @@ class FinanceTransferEntity extends Equatable {
     this.vehicleId,
     this.customerId,
     this.note,
+    this.paymentMethod,
     required this.createdAt,
   });
 
@@ -42,6 +47,7 @@ class FinanceTransferEntity extends Equatable {
         vehicleId,
         customerId,
         note,
+        paymentMethod,
         createdAt,
       ];
 }
