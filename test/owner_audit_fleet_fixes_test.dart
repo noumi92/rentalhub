@@ -101,10 +101,10 @@ void main() {
       expect(find.byType(Switch), findsNothing);
       expect(find.text('On Rent'), findsOneWidget);
       expect(find.text('Available'), findsNothing);
-      expect(find.byType(OutlinedButton), findsNWidgets(2));
-      expect(find.text('Edit rates'), findsOneWidget);
+      expect(find.byType(OutlinedButton), findsNothing);
+      expect(find.text('Rates'), findsOneWidget);
       expect(find.text('Out-of-city rules'), findsOneWidget);
-      await tester.tap(find.text('Edit rates'));
+      await tester.tap(find.text('Rates'));
       await tester.tap(find.text('Out-of-city rules'));
       expect(ratesTapped, isTrue);
       expect(rulesTapped, isTrue);
@@ -120,8 +120,8 @@ void main() {
       expect(find.byType(Switch), findsNothing);
       expect(find.text('Available'), findsOneWidget);
       expect(find.text('On Rent'), findsNothing);
-      expect(find.byType(OutlinedButton), findsNWidgets(2));
-      expect(find.text('Edit rates'), findsOneWidget);
+      expect(find.byType(OutlinedButton), findsNothing);
+      expect(find.text('Rates'), findsOneWidget);
       expect(find.text('Out-of-city rules'), findsOneWidget);
     });
 

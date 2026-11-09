@@ -7,10 +7,10 @@ import 'fleet_vehicle_card.dart';
 
 /// The body of the fleet list: loading, error, empty and populated states.
 /// Extracted from [OwnerFleetView] so the view stays under the 250-line cap.
-/// Simplified card (2026-11-09): the card now has only two actions —
-/// "Rates" (09b editor) and "Out-of-city rules" (010b screen) — so the
-/// body no longer carries the availability toggle, calendar, rent-edit,
-/// price-edit or rented-until plumbing.
+/// Header rework (2026-11-09): the card carries the whole header on
+/// the photo and exactly one icon-button row below it — Rates (09b
+/// editor), Out-of-city rules (010b) and Edit (edit-details route,
+/// only when [onEditDetails] is provided; wired by the fleet view).
 class FleetBody extends StatelessWidget {
   const FleetBody({
     super.key,
@@ -22,6 +22,7 @@ class FleetBody extends StatelessWidget {
     required this.onEditRates,
     required this.onOutCityRules,
     required this.onTapVehicle,
+    this.onEditDetails,
   });
 
   final FleetState state;
@@ -32,6 +33,10 @@ class FleetBody extends StatelessWidget {
   final void Function(VehicleEntity vehicle) onEditRates;
   final void Function(VehicleEntity vehicle) onOutCityRules;
   final void Function(VehicleEntity vehicle) onTapVehicle;
+
+  /// Opens the edit-details route for the vehicle; null hides the
+  /// card's Edit icon button. The fleet view wires this.
+  final void Function(VehicleEntity vehicle)? onEditDetails;
 
   @override
   Widget build(BuildContext context) {
@@ -75,6 +80,7 @@ class FleetBody extends StatelessWidget {
           vehicle: v,
           onEditRates: () => onEditRates(v),
           onOutCityRules: () => onOutCityRules(v),
+          onEditDetails: onEditDetails == null ? null : () => onEditDetails!(v),
           onTap: () => onTapVehicle(v),
         );
       },

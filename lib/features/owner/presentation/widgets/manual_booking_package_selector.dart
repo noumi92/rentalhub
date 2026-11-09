@@ -240,6 +240,16 @@ class _ManualBookingPackageSelectorState
   bool _loadingRoutes = false, _routesFailed = false;
   String _routesKey = '';
 
+  /// One key per package chip, so a tap can scroll the selected chip
+  /// into view — the chips live in one horizontal row.
+  final Map<String, GlobalKey> _chipKeys = {};
+
+  /// Reports the pick and scrolls its chip into view.
+  void _selectPackage(VehiclePackageEntity package) {
+    widget.onPackageChanged(package);
+    WidgetsBinding.instance.addPostFrameCallback((_) { final c = _chipKeys[package.label]?.currentContext; if (c != null) Scrollable.ensureVisible(c, alignment: 0.5, duration: const Duration(milliseconds: 250)); });
+  }
+
   /// The load key: routes are (re)loaded only for a fixed-route
   /// vehicle on an out-of-city trip, and once per vehicle.
   String get _loadKey {
@@ -336,29 +346,34 @@ class _ManualBookingPackageSelectorState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: packages.map((p) {
-            final selected = widget.selectedPackage?.label == p.label;
-            return ChoiceChip(
-              materialTapTargetSize: MaterialTapTargetSize.padded,
-              // C5: grouped amount via the String-typed {price}
-              // placeholder (rulebook §4.5).
-              label: Text(l10n.manualBookingPackageChip(p.label, formatRs(p.pricePkr))),
-              selected: selected,
-              selectedColor: AppColors.orangeFill,
-              backgroundColor:
-                  Theme.of(context).colorScheme.surfaceContainerHighest,
-              labelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: selected
-                        ? Colors.white
-                        : Theme.of(context).colorScheme.onSurface,
-                  ),
-              onSelected: (_) => widget.onPackageChanged(p),
-            );
-          }).toList(),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: packages.map((p) {
+              final selected = widget.selectedPackage?.label == p.label;
+              return Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: ChoiceChip(
+                  key: _chipKeys.putIfAbsent(p.label, () => GlobalKey()),
+                  materialTapTargetSize: MaterialTapTargetSize.padded,
+                  // C5: grouped amount via the String-typed {price}
+                  // placeholder (rulebook §4.5).
+                  label: Text(l10n.manualBookingPackageChip(p.label, formatRs(p.pricePkr))),
+                  selected: selected,
+                  selectedColor: AppColors.orangeFill,
+                  backgroundColor:
+                      Theme.of(context).colorScheme.surfaceContainerHighest,
+                  labelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: selected
+                            ? Colors.white
+                            : Theme.of(context).colorScheme.onSurface,
+                      ),
+                  onSelected: (_) => _selectPackage(p),
+                ),
+              );
+            }).toList(),
+          ),
         ),
         if (showRoutePicker) ...[
           const SizedBox(height: 12),

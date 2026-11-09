@@ -15,6 +15,7 @@ import '../widgets/fleet/fleet_body.dart';
 import '../widgets/fleet/fleet_helpers.dart';
 import '../widgets/fleet/fleet_filter_chips.dart';
 import '../widgets/fleet/fleet_metrics_row.dart';
+import '../widgets/fleet/fleet_quick_actions.dart';
 import '../widgets/fleet/fleet_search_field.dart';
 import '../widgets/fleet/fleet_vehicle_card.dart';
 import '../services/subscription_data_source.dart';
@@ -128,6 +129,9 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
         onTap: () => _openVehicleDetail(v),
         onEditRates: () => _pushOnce(RouteNames.ownerRatesVehicle.replaceFirst(':vehicleId', v.vehicleId)),
         onOutCityRules: () => _pushOnce(RouteNames.ownerOutCityRules.replaceFirst(':vehicleId', v.vehicleId)),
+        // Phone-test round 4 (Worker 3 owns the card): the Edit icon
+        // opens the car-details editor, same route as the detail view.
+        onEditDetails: () => _pushOnce(RouteNames.ownerEditVehicle.replaceFirst(':id', v.vehicleId)),
       );
 
   /// D3: medium+ shows the fleet in two columns.
@@ -176,6 +180,19 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
                       onRentCount: onRentCount,
                     ),
 
+                    // Phone-test round 4: quick actions directly
+                    // beneath the KPI tiles. Cross-branch destinations
+                    // (Requests, Customers, QR scan) use `go` — the
+                    // tab-switch semantic used elsewhere for those
+                    // branches; same-branch ones use `_pushOnce`.
+                    FleetQuickActions(
+                      onHandover: () => context.go(RouteNames.ownerQrScan),
+                      onRequests: () => context.go(RouteNames.ownerRequests),
+                      onAddVehicle: _openAddVehicle,
+                      onSchedule: () => _pushOnce(RouteNames.ownerFleetCalendar),
+                      onCustomers: () => context.go(RouteNames.ownerCustomers),
+                    ),
+
                     // Audit §5 (O05/O30): "N active rentals" header count.
                     if (onRentCount > 0)
                       Padding(
@@ -211,6 +228,10 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
                         onRetry: () => _cubit.loadVehicles(_shopId),
                         onEditRates: (v) => _pushOnce(RouteNames.ownerRatesVehicle.replaceFirst(':vehicleId', v.vehicleId)),
                         onOutCityRules: (v) => _pushOnce(RouteNames.ownerOutCityRules.replaceFirst(':vehicleId', v.vehicleId)),
+                        // Phone-test round 4 (Worker 3 owns FleetBody):
+                        // the card's Edit icon opens the car-details
+                        // editor, same route as the detail view.
+                        onEditDetails: (v) => _pushOnce(RouteNames.ownerEditVehicle.replaceFirst(':id', v.vehicleId)),
                         onTapVehicle: _openVehicleDetail,
                       ),
                   ],

@@ -39,7 +39,7 @@ class _OwnerRateMatrixViewState extends State<OwnerRateMatrixView> {
   String _selectedLabel = '24h';
   late TextEditingController _outOfCityController, _perKmController, _surchargeController, _extraHourController, _extraKmController, _outOfCityKmController;
   late bool _isSelfDrive, _isWithDriver, _perKmEnabled;
-  late String _outCityMode; late String? _selectedRouteId;
+  late String _outCityMode; late String? _selectedRouteId; final Map<String, GlobalKey> _chipKeys = {};
   bool _isSaving = false;
   late String _initialSnapshot;
   bool _discardConfirmed = false;
@@ -54,9 +54,7 @@ class _OwnerRateMatrixViewState extends State<OwnerRateMatrixView> {
     super.initState();
     final v = widget.vehicle;
     _packages = List.of(v.effectivePackages);
-    for (final p in _packages) {
-      _priceControllers[p.label] = TextEditingController(text: p.pricePkr.toString());
-    }
+    for (final p in _packages) { _priceControllers[p.label] = TextEditingController(text: p.pricePkr.toString()); _chipKeys[p.label] = GlobalKey(); }
     _outOfCityController = TextEditingController(text: (v.rates.outOfCityDaily ?? (v.rates.daily24 * 1.3).round()).toString());
     _perKmController = TextEditingController(text: (v.outCityPerKmPkr ?? 30).toString());
     _outCityMode = v.outCityMode ?? 'perDay'; _selectedRouteId = v.outCityFixedRouteId;
@@ -96,6 +94,11 @@ class _OwnerRateMatrixViewState extends State<OwnerRateMatrixView> {
     } else if (mounted) {
       Navigator.of(context).maybePop();
     }
+  }
+
+  /// Selects a package and scrolls its chip into view (one horizontal row).
+  void _selectPackage(String label) {
+    setState(() => _selectedLabel = label); WidgetsBinding.instance.addPostFrameCallback((_) { final c = _chipKeys[label]?.currentContext; if (c != null) Scrollable.ensureVisible(c, alignment: 0.5, duration: const Duration(milliseconds: 250)); });
   }
 
   /// Audit §6 (C10): back with unsaved edits confirms first — edited prices are otherwise lost silently.
@@ -212,13 +215,12 @@ class _OwnerRateMatrixViewState extends State<OwnerRateMatrixView> {
                       const SizedBox(height: 18),
                       Text(l10n.rateMatrixInCityTitle, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
                       const SizedBox(height: 8),
-                      // 09b: pick ONE package, edit its price. All
-                      // seven controllers live in initState, so
-                      // switching chips never discards an edit.
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: _packages.map((p) => ChoiceChip(label: Text(_packageTitle(l10n, p.label)), selected: p.label == _selectedLabel, onSelected: (_) => setState(() => _selectedLabel = p.label))).toList(),
+                      // 09b: pick ONE package, edit its price — one
+                      // horizontal row of chips. All seven controllers
+                      // live in initState, so switching never discards an edit.
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(children: _packages.map((p) => Padding(padding: const EdgeInsets.only(right: 8), child: ChoiceChip(key: _chipKeys[p.label], label: Text(_packageTitle(l10n, p.label)), selected: p.label == _selectedLabel, onSelected: (_) => _selectPackage(p.label)))).toList()),
                       ),
                       const SizedBox(height: 12),
                       RateMatrixFieldWidget(controller: _priceControllers[selected.label]!, label: _packageTitle(l10n, selected.label), hint: 'Rs. ${selected.pricePkr}', kmCap: l10n.pricingKmIncluded(selected.kmIncluded)),

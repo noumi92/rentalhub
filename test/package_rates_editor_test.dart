@@ -63,6 +63,16 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  /// The chips are one horizontal scrolling row — scroll a far chip
+  /// into view before tapping it, or the tap misses.
+  Future<void> tapChip(WidgetTester tester, int index) async {
+    final finder = find.byType(ChoiceChip).at(index);
+    await tester.ensureVisible(finder);
+    await tester.pumpAndSettle();
+    await tester.tap(finder);
+    await tester.pumpAndSettle();
+  }
+
   bool fieldShows(WidgetTester tester, String value) =>
       tester.widgetList<TextField>(find.byType(TextField)).any((f) => f.controller?.text == value);
 
@@ -105,8 +115,7 @@ void main() {
     testWidgets('switching chips changes the displayed price and keeps edits', (tester) async {
       await pumpEditor(tester);
       // Chips are in package order: 1h, 3h, 6h, 12h, 24h, Weekly, Monthly.
-      await tester.tap(find.byType(ChoiceChip).at(3));
-      await tester.pumpAndSettle();
+      await tapChip(tester, 3);
       expect(fieldShows(tester, '4200'), isTrue);
 
       // Edit the 12h price, switch away and back — the edit survives.
@@ -114,11 +123,9 @@ void main() {
       final priceField = fields.firstWhere((f) => f.controller?.text == '4200');
       await tester.enterText(find.byWidget(priceField), '6000');
       await tester.pumpAndSettle();
-      await tester.tap(find.byType(ChoiceChip).at(4));
-      await tester.pumpAndSettle();
+      await tapChip(tester, 4);
       expect(fieldShows(tester, '7000'), isTrue);
-      await tester.tap(find.byType(ChoiceChip).at(3));
-      await tester.pumpAndSettle();
+      await tapChip(tester, 3);
       expect(fieldShows(tester, '6000'), isTrue);
     });
 
@@ -128,8 +135,7 @@ void main() {
       bool saved = false;
       await pumpEditor(tester, onSaved: () => saved = true);
 
-      await tester.tap(find.byType(ChoiceChip).at(3));
-      await tester.pumpAndSettle();
+      await tapChip(tester, 3);
       TextField fieldWithText(String value) =>
           tester.widgetList<TextField>(find.byType(TextField)).firstWhere((f) => f.controller?.text == value);
       await tester.enterText(find.byWidget(fieldWithText('4200')), '6000');

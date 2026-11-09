@@ -8,18 +8,18 @@ import '../../../../../l10n/app_localizations.dart';
 import '../../../../fleet/domain/entities/vehicle_entity.dart';
 import '../../../../../core/utils/money_format.dart';
 
-/// Simplified fleet card (2026-11-09): the old card carried an
-/// availability switch, an "On Rent until" row and four actions
-/// (Edit rates, Booking calendar, Edit Rent, Update Price) — too
-/// much for a list item. The simple card is a hero photo with the
-/// name, plate and status badge, one in-city daily price row, and
-/// exactly two actions: "Rates" (the per-package editor, 09b) and
-/// "Out-of-city rules" (the shared rules screen, 010b). Availability,
-/// calendar, edit-rent and price edits live on the detail / editor
-/// screens, not here. Tapping the photo flies into vehicle detail
-/// via the existing hero tag. The old hardcoded light strip
-/// (Color(0xFFF8FAFC), near-white in dark mode) is gone — the card
-/// below the photo uses the theme surface.
+/// Simplified fleet card (2026-11-09, header rework round 4): the car
+/// header lives ON the photo — the name, plate, one in-city daily
+/// rate and the self-drive badge stack over the bottom gradient scrim
+/// (white text, status chip beside the drive badge), so the photo
+/// carries the whole identity. UNDER the photo there is exactly ONE
+/// row: small orange icon buttons with short regular labels — Rates
+/// (the per-package editor, 09b), Out-of-city rules (010b) and Edit
+/// (the edit-details route, only when [onEditDetails] is provided).
+/// The old price block and the two OutlinedButtons below the photo
+/// are gone. Availability, calendar and price edits live on the
+/// detail / editor screens, not here. Tapping the photo flies into
+/// vehicle detail via the existing hero tag.
 /// The photo is the vehicle's uploaded image when one exists (network
 /// URL from cPanel, or a local file path on the owner's phone);
 /// otherwise the old name-based asset fallback is kept so cars without
@@ -28,6 +28,12 @@ class FleetVehicleCard extends StatelessWidget {
   final VehicleEntity vehicle;
   final VoidCallback onEditRates;
   final VoidCallback onOutCityRules;
+
+  /// Opens the edit-details route (`/owner/vehicles/:id/edit`).
+  /// Null in embeds that render the card without navigation — the
+  /// Edit icon button is only shown when this is provided. Wired by
+  /// the fleet view via [FleetBody]; Worker 4 owns that wiring.
+  final VoidCallback? onEditDetails;
 
   /// Tapping the photo opens the vehicle-detail route (the hero tag
   /// only works when the image is actually tappable). Null in tests
@@ -39,6 +45,7 @@ class FleetVehicleCard extends StatelessWidget {
     required this.vehicle,
     required this.onEditRates,
     required this.onOutCityRules,
+    this.onEditDetails,
     this.onTap,
   });
 
@@ -105,8 +112,8 @@ class FleetVehicleCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // The photo is tappable — it pushes the vehicle-detail
-          // route (hero tag above). The Rates / Out-of-city buttons
-          // below stay outside the tap area.
+          // route (hero tag above). The icon-button row below stays
+          // outside the tap area.
           InkWell(
             onTap: onTap,
             child: SizedBox(
@@ -119,6 +126,9 @@ class FleetVehicleCard extends StatelessWidget {
                     tag: vehicleHeroTag(vehicle.vehicleId),
                     child: _carImage(vehicle),
                   ),
+                  // The scrim deepens towards the bottom so the four
+                  // stacked lines (name, rate, badges) stay readable
+                  // on any photo.
                   Positioned.fill(
                     child: DecoratedBox(
                       decoration: BoxDecoration(
@@ -127,10 +137,11 @@ class FleetVehicleCard extends StatelessWidget {
                           end: Alignment.bottomCenter,
                           colors: [
                             Colors.transparent,
-                            Colors.black.withValues(alpha: 0.15),
-                            Colors.black.withValues(alpha: 0.72),
+                            Colors.black.withValues(alpha: 0.10),
+                            Colors.black.withValues(alpha: 0.45),
+                            Colors.black.withValues(alpha: 0.78),
                           ],
-                          stops: const [0.4, 0.7, 1.0],
+                          stops: const [0.30, 0.55, 0.80, 1.0],
                         ),
                       ),
                     ),
@@ -156,14 +167,20 @@ class FleetVehicleCard extends StatelessWidget {
                             PakistaniPlateWidget(plateNumber: vehicle.plateNumber, isCompact: true),
                           ],
                         ),
+                        const SizedBox(height: 4),
+                        Text(
+                          l10n.fleetDailyRate(formatRs(vehicle.rates.daily24)),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white),
+                        ),
                         const SizedBox(height: 6),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                          decoration: BoxDecoration(color: chipColor, borderRadius: BorderRadius.circular(10)),
-                          child: Text(
-                            _statusLabel(l10n, vehicle.status),
-                            style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800, color: Colors.white),
-                          ),
+                        Row(
+                          children: [
+                            Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3), decoration: BoxDecoration(color: chipColor, borderRadius: BorderRadius.circular(10)), child: Text(_statusLabel(l10n, vehicle.status), style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800, color: Colors.white))),
+                            const SizedBox(width: 8),
+                            Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3), decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.22), borderRadius: BorderRadius.circular(10), border: Border.all(color: Colors.white.withValues(alpha: 0.65))), child: Text(vehicle.isSelfDriveAvailable ? l10n.selfDriveHyphen : l10n.withDriver, style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700, color: Colors.white))),
+                          ],
                         ),
                       ],
                     ),
@@ -172,37 +189,55 @@ class FleetVehicleCard extends StatelessWidget {
               ),
             ),
           ),
+          // Exactly ONE row under the image: small orange icon
+          // buttons with short regular labels (never bold).
           Padding(
-            padding: const EdgeInsets.fromLTRB(14, 12, 14, 6),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(l10n.fleetDailySelfDriveRate, style: Theme.of(context).textTheme.labelSmall),
-                Text(l10n.fleetDailyRate(formatRs(vehicle.rates.daily24)), style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w900)),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(14, 6, 14, 14),
+            padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
             child: Row(
               children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: onEditRates,
-                    child: Text(l10n.fleetEditRatesTooltip),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: onOutCityRules,
-                    child: Text(l10n.outCityRulesTitle),
-                  ),
-                ),
+                Expanded(child: _headerAction(context, icon: Icons.tune_rounded, label: l10n.vehicleDetailRatesTitle, onPressed: onEditRates)),
+                const SizedBox(width: 8),
+                Expanded(child: _headerAction(context, icon: Icons.route_rounded, label: l10n.outCityRulesTitle, onPressed: onOutCityRules)),
+                if (onEditDetails != null) ...[
+                  const SizedBox(width: 8),
+                  Expanded(child: _headerAction(context, icon: Icons.edit_rounded, label: l10n.vehicleDetailEdit, onPressed: onEditDetails!)),
+                ],
               ],
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  /// One eye-catching action: orange icon over a short regular
+  /// (never bold) label on a pale orange container.
+  Widget _headerAction(BuildContext context, {required IconData icon, required String label, required VoidCallback onPressed}) {
+    final brightness = Theme.of(context).brightness;
+    final orange = AppColors.orangeTextFor(brightness);
+    return Material(
+      color: AppColors.orangeContainerFor(brightness),
+      borderRadius: BorderRadius.circular(12),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onPressed,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 20, color: orange),
+              const SizedBox(height: 2),
+              Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(color: orange),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

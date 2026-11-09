@@ -10,12 +10,15 @@ import 'package:rentalhub/features/owner/presentation/widgets/fleet/fleet_body.d
 import 'package:rentalhub/features/owner/presentation/widgets/fleet/fleet_vehicle_card.dart';
 import 'package:rentalhub/l10n/app_localizations.dart';
 
-// Simplified fleet card (2026-11-09): the card is a hero photo with
-// name/plate/status, one in-city daily price row, and exactly two
-// actions — "Rates" (09b editor) and "Out-of-city rules" (010b).
-// No availability switch, no "On Rent until" row, no calendar /
-// edit-rent / update-price actions. Pure widget tests — no DI,
-// no Firebase.
+// Simplified fleet card (2026-11-09, header rework round 4): the car
+// header lives ON the photo — name, plate, one in-city daily rate and
+// the self-drive badge stack over the bottom gradient scrim — and
+// UNDER the photo there is exactly ONE row of small orange icon
+// buttons: Rates (09b editor), Out-of-city rules (010b) and Edit
+// (edit-details route, only when onEditDetails is provided). No price
+// block and no OutlinedButtons below the photo. No availability
+// switch, no "On Rent until" row, no calendar / edit-rent /
+// update-price actions. Pure widget tests — no DI, no Firebase.
 class _TestAssetBundle extends AssetBundle {
   static final ByteData _pixel = ByteData.view(base64Decode(
     'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
@@ -69,7 +72,8 @@ const _rentedVehicle = VehicleEntity(
 
 void main() {
   group('Simplified fleet card', () {
-    testWidgets('shows name, plate, price and status badge', (tester) async {
+    testWidgets('shows name, plate, rate and badges on the photo',
+        (tester) async {
       await tester.pumpWidget(_wrap(FleetVehicleCard(
         vehicle: _testVehicle,
         onEditRates: () {},
@@ -78,13 +82,15 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Toyota Corolla Grande 2022'), findsOneWidget);
       expect(find.text('LEA-23-4567'), findsOneWidget);
-      expect(find.text('Daily Self-Drive Rate'), findsOneWidget);
+      // The rate now lives on the photo, not in a price block below it.
       expect(find.text('Rs. 8,500/day'), findsOneWidget);
+      expect(find.text('Daily Self-Drive Rate'), findsNothing);
       expect(find.text('Available'), findsOneWidget);
+      expect(find.text('Self-Drive'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
 
-    testWidgets('exactly two action buttons and both callbacks fire',
+    testWidgets('one icon-button row: Rates + Out-of-city rules fire, no Edit without callback',
         (tester) async {
       var ratesFired = false;
       var rulesFired = false;
@@ -94,11 +100,33 @@ void main() {
         onOutCityRules: () => rulesFired = true,
       )));
       await tester.pumpAndSettle();
-      expect(find.byType(OutlinedButton), findsNWidgets(2));
-      await tester.tap(find.text('Edit rates'));
+      // The old stacked text buttons are gone.
+      expect(find.byType(OutlinedButton), findsNothing);
+      expect(find.byType(TextButton), findsNothing);
+      expect(find.byType(ElevatedButton), findsNothing);
+      expect(find.text('Rates'), findsOneWidget);
+      expect(find.text('Out-of-city rules'), findsOneWidget);
+      expect(find.text('Edit'), findsNothing);
+      await tester.tap(find.text('Rates'));
       expect(ratesFired, isTrue);
       await tester.tap(find.text('Out-of-city rules'));
       expect(rulesFired, isTrue);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('Edit icon button appears and fires when onEditDetails is provided',
+        (tester) async {
+      var editFired = false;
+      await tester.pumpWidget(_wrap(FleetVehicleCard(
+        vehicle: _testVehicle,
+        onEditRates: () {},
+        onOutCityRules: () {},
+        onEditDetails: () => editFired = true,
+      )));
+      await tester.pumpAndSettle();
+      expect(find.text('Edit'), findsOneWidget);
+      await tester.tap(find.text('Edit'));
+      expect(editFired, isTrue);
       expect(tester.takeException(), isNull);
     });
 
@@ -146,8 +174,29 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byType(FleetVehicleCard), findsOneWidget);
       expect(find.text('Toyota Corolla Grande 2022'), findsOneWidget);
-      expect(find.byType(OutlinedButton), findsNWidgets(2));
+      expect(find.byType(OutlinedButton), findsNothing);
+      expect(find.text('Rates'), findsOneWidget);
       expect(find.byType(Switch), findsNothing);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('passes onEditDetails through to the card', (tester) async {
+      var editedId = '';
+      await tester.pumpWidget(_wrap(FleetBody(
+        state: const FleetLoaded(vehicles: [_testVehicle], tier: 'free'),
+        fleet: const [_testVehicle],
+        filtered: const [_testVehicle],
+        onAddVehicle: () {},
+        onRetry: () {},
+        onEditRates: (_) {},
+        onOutCityRules: (_) {},
+        onTapVehicle: (_) {},
+        onEditDetails: (v) => editedId = v.vehicleId,
+      )));
+      await tester.pumpAndSettle();
+      expect(find.text('Edit'), findsOneWidget);
+      await tester.tap(find.text('Edit'));
+      expect(editedId, 'veh-test-1');
       expect(tester.takeException(), isNull);
     });
   });

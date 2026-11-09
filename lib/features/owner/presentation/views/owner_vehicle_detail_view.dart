@@ -106,23 +106,51 @@ class _OwnerVehicleDetailViewState extends State<OwnerVehicleDetailView> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    ClipRRect(borderRadius: const BorderRadius.vertical(bottom: Radius.circular(20)), child: _photo(v)),
+                    // Header rework (2026-11-09): the same pattern as
+                    // the fleet card — the rate, the self-drive badge
+                    // and the status chip sit ON the photo over the
+                    // bottom gradient scrim. Name/plate stay in the
+                    // app bar above (the screen title) and are not
+                    // repeated on the photo. Nothing but content
+                    // sections sits below the image.
+                    ClipRRect(
+                      borderRadius: const BorderRadius.vertical(bottom: Radius.circular(20)),
+                      child: SizedBox(
+                        height: 210,
+                        width: double.infinity,
+                        child: Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            _photo(v),
+                            Positioned.fill(child: DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.transparent, Colors.black.withValues(alpha: 0.10), Colors.black.withValues(alpha: 0.45), Colors.black.withValues(alpha: 0.78)], stops: const [0.30, 0.55, 0.80, 1.0])))),
+                            Positioned(
+                              left: 16,
+                              right: 16,
+                              bottom: 12,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(l10n.fleetDailyRate(formatRs(v.rates.daily24)), maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
+                                  const SizedBox(height: 6),
+                                  Row(
+                                    children: [
+                                      Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4), decoration: BoxDecoration(color: isAvailable ? AppColors.accentSuccessStrong : AppColors.orangeFill, borderRadius: BorderRadius.circular(10)), child: Text(isAvailable ? l10n.available : l10n.fleetOnRent, style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800, color: Colors.white))),
+                                      const SizedBox(width: 8),
+                                      Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3), decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.22), borderRadius: BorderRadius.circular(10), border: Border.all(color: Colors.white.withValues(alpha: 0.65))), child: Text(v.isSelfDriveAvailable ? l10n.selfDriveHyphen : l10n.withDriver, style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700, color: Colors.white))),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                     Padding(
                       padding: const EdgeInsets.all(16),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Row(
-                            children: [
-                              Expanded(child: Text(l10n.vehicleDetailDailyRate(l10n.amountRs(formatRs(v.rates.daily24))), style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900))),
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                decoration: BoxDecoration(color: isAvailable ? AppColors.accentSuccessStrong : AppColors.orangeFill, borderRadius: BorderRadius.circular(10)),
-                                child: Text(isAvailable ? l10n.available : l10n.fleetOnRent, style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800, color: Colors.white)),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 12),
                           Wrap(
                             spacing: 8,
                             runSpacing: 8,

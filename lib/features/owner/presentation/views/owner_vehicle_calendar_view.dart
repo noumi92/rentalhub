@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_dimensions.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/utils/responsive.dart';
@@ -13,6 +12,7 @@ import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
 import '../../../fleet/domain/entities/vehicle_entity.dart';
 import '../widgets/availability_month_grid.dart';
+import '../widgets/calendar_status_chip.dart';
 
 /// Phase B (B3): the booking calendar of one vehicle. Each day shows
 /// whether the car is free, has a pending request (amber) or is
@@ -84,6 +84,7 @@ class _OwnerVehicleCalendarViewState extends State<OwnerVehicleCalendarView> {
   /// medium+ side-by-side layout.
   Widget _gridSection() {
     final l10n = AppLocalizations.of(context)!;
+    final brightness = Theme.of(context).brightness;
     return Column(
       children: [
         AvailabilityMonthGrid(
@@ -103,14 +104,10 @@ class _OwnerVehicleCalendarViewState extends State<OwnerVehicleCalendarView> {
           spacing: 16,
           runSpacing: 8,
           children: [
-            _legend(AppColors.successContainerFor(Theme.of(context).brightness),
-                l10n.calendarFree),
-            _legend(AppColors.warningContainerFor(Theme.of(context).brightness),
-                l10n.calendarRequested),
-            _legend(AppColors.errorContainerFor(Theme.of(context).brightness),
-                l10n.calendarConfirmed),
-            _legend(
-                Theme.of(context).colorScheme.surfaceContainerHighest, l10n.calendarPast),
+            _legend(CalendarDayState.free, brightness, l10n.calendarFree),
+            _legend(CalendarDayState.requested, brightness, l10n.calendarRequested),
+            _legend(CalendarDayState.confirmed, brightness, l10n.calendarConfirmed),
+            _legend(CalendarDayState.past, brightness, l10n.calendarPast),
           ],
         ),
       ],
@@ -138,15 +135,6 @@ class _OwnerVehicleCalendarViewState extends State<OwnerVehicleCalendarView> {
         const SizedBox(height: 8),
         if (selectedBookings.isEmpty) Text(l10n.calendarNoBookingsDay),
         ...selectedBookings.map((b) {
-          final brightness = Theme.of(context).brightness;
-          // Audit §7: the status chip is tinted by status, matching
-          // the legend (success / warning / error containers).
-          final (chipBg, chipFg) = switch (b.status) {
-            'completed' || 'active' || 'approved' || 'paid' => (AppColors.successContainerFor(brightness), AppColors.successOnContainerFor(brightness)),
-            'requested' || 'payment_submitted' => (AppColors.warningContainerFor(brightness), AppColors.warningOnContainerFor(brightness)),
-            'rejected' || 'cancelled' => (AppColors.errorContainerFor(brightness), AppColors.errorOnContainerFor(brightness)),
-            _ => (Theme.of(context).colorScheme.surfaceContainerHighest, Theme.of(context).colorScheme.onSurface),
-          };
           return Card(
             margin: const EdgeInsets.only(bottom: 8),
             child: ListTile(
@@ -156,11 +144,12 @@ class _OwnerVehicleCalendarViewState extends State<OwnerVehicleCalendarView> {
               // (intl `h:mm a`), not "9:05 → 12/11".
               subtitle: Text(
                   '${b.packageType} • ${DateFormat('d MMM, h:mm a').format(b.pickupTime)} → ${DateFormat('d MMM, h:mm a').format(b.returnTime)}'),
-              trailing: Chip(
-                  backgroundColor: chipBg,
-                  label: Text(_statusLabel(l10n, b.status),
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(color: chipFg, fontWeight: FontWeight.w700)),
-              ),
+              // Round 4: the status chip colours live in
+              // CalendarStatusChip — light theme uses an onSurface
+              // label + strong border (the light on-container tokens
+              // are 2.07–3.44:1 on their containers).
+              trailing: CalendarStatusChip(
+                  status: b.status, label: _statusLabel(l10n, b.status)),
             ),
           );
         }),
@@ -226,7 +215,10 @@ class _OwnerVehicleCalendarViewState extends State<OwnerVehicleCalendarView> {
     );
   }
 
-  Widget _legend(Color color, String label) {
+  // Legend swatches use the grid's own fill + border for the state, so
+  // the legend can never drift from the cells (before, both were the
+  // bare pale containers with no border — near-invisible on white).
+  Widget _legend(CalendarDayState state, Brightness brightness, String label) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -234,7 +226,9 @@ class _OwnerVehicleCalendarViewState extends State<OwnerVehicleCalendarView> {
           width: 14,
           height: 14,
           decoration: BoxDecoration(
-              color: color, borderRadius: BorderRadius.circular(4)),
+              color: AvailabilityMonthGrid.fillFor(brightness, state),
+              borderRadius: BorderRadius.circular(4),
+              border: AvailabilityMonthGrid.borderFor(brightness, state)),
         ),
         const SizedBox(width: 4),
         Text(label, style: Theme.of(context).textTheme.labelSmall),
