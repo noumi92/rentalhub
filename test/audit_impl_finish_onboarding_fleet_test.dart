@@ -347,19 +347,25 @@ void main() {
   });
 
   group('P4-O07/P4-O09 rate matrix lists', () {
-    testWidgets('shows separate In-City and Out-City rate lists', (tester) async {
+    testWidgets('09b editor: separate In-City and Out-City rate lists', (tester) async {
       await tester.pumpWidget(_wrap(OwnerRateMatrixView(vehicle: _vehicle)));
       await tester.pumpAndSettle();
 
       expect(find.text('In-City Rent Rates'), findsOneWidget);
       expect(find.text('Out-City Rent Rates'), findsOneWidget);
-      // In-city: the duration packages; out-city: day rate + extra-KM.
+      // In-city: the package chips; out-city: day rate + extra-KM,
+      // shared across all packages.
+      expect(find.byType(ChoiceChip), findsNWidgets(7));
       expect(find.text('Monthly Package (30 Days)'), findsOneWidget);
       expect(find.text('Out-of-City Daily (24h)'), findsOneWidget);
       expect(find.text('Extra KM Charge'), findsOneWidget);
       expect(find.text('Per KM Pricing?'), findsOneWidget);
-      // The editor behaviour is unchanged: custom rates still separate.
-      expect(find.text('Custom Rates'), findsOneWidget);
+      expect(find.text('Applies to all packages'), findsOneWidget);
+      expect(find.text('Save package'), findsOneWidget);
+      // 09b no longer edits custom rates here — they pass through
+      // unchanged on save; deposit / advance / fuel policy live on
+      // the 010b out-of-city rules screen.
+      expect(find.text('Custom Rates'), findsNothing);
     });
   });
 }

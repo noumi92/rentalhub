@@ -1,20 +1,22 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/widgets/pakistani_plate_widget.dart';
 import '../../../../../features/discovery/presentation/views/widgets/vehicle_hero_card.dart'
     show vehicleHeroTag;
-import 'fleet_card_actions.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../fleet/domain/entities/vehicle_entity.dart';
 import '../../../../../core/utils/money_format.dart';
 
-/// Phase B (B1) + #13: fleet card for a real [VehicleEntity], rebuilt
-/// image-led on the [VehicleHeroCard] pattern — a full-width hero photo
-/// on top with a gradient overlay carrying the name, plate and status
-/// chip, the price row below, and availability / rates / calendar as
-/// clear action buttons. Tapping the photo flies into vehicle detail
+/// Simplified fleet card (2026-11-09): the old card carried an
+/// availability switch, an "On Rent until" row and four actions
+/// (Edit rates, Booking calendar, Edit Rent, Update Price) — too
+/// much for a list item. The simple card is a hero photo with the
+/// name, plate and status badge, one in-city daily price row, and
+/// exactly two actions: "Rates" (the per-package editor, 09b) and
+/// "Out-of-city rules" (the shared rules screen, 010b). Availability,
+/// calendar, edit-rent and price edits live on the detail / editor
+/// screens, not here. Tapping the photo flies into vehicle detail
 /// via the existing hero tag. The old hardcoded light strip
 /// (Color(0xFFF8FAFC), near-white in dark mode) is gone — the card
 /// below the photo uses the theme surface.
@@ -24,17 +26,8 @@ import '../../../../../core/utils/money_format.dart';
 /// photos still show a sensible image.
 class FleetVehicleCard extends StatelessWidget {
   final VehicleEntity vehicle;
-  final ValueChanged<bool> onToggleAvailability;
   final VoidCallback onEditRates;
-  final VoidCallback onViewCalendar;
-
-  /// Audit §5 (O05/O30): return date of the active booking, when
-  /// one exists — "On Rent until `<date>`". Null omits the line.
-  final DateTime? rentedUntil;
-
-  /// Audit §5 (O05/O30): literal "Edit Rent" / "Update Price" actions.
-  final VoidCallback? onEditRent;
-  final VoidCallback? onUpdatePrice;
+  final VoidCallback onOutCityRules;
 
   /// Tapping the photo opens the vehicle-detail route (the hero tag
   /// only works when the image is actually tappable). Null in tests
@@ -44,13 +37,9 @@ class FleetVehicleCard extends StatelessWidget {
   const FleetVehicleCard({
     super.key,
     required this.vehicle,
-    required this.onToggleAvailability,
     required this.onEditRates,
-    required this.onViewCalendar,
+    required this.onOutCityRules,
     this.onTap,
-    this.rentedUntil,
-    this.onEditRent,
-    this.onUpdatePrice,
   });
 
   Widget _carImage(VehicleEntity v) {
@@ -100,16 +89,11 @@ class FleetVehicleCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final isAvailable = vehicle.status == 'available';
-    final isRented = vehicle.status == 'rented';
-    final brightness = Theme.of(context).brightness;
     // Audit §4: the status chip is small white text, so it sits on a
     // filled token — orangeFill #C2410C (white 5.18:1, both modes) for
     // non-available, accentSuccessStrong #047857 (white 5.48:1) for
     // available. Never white on #F95700 / #FF6D24 (~3:1).
     final chipColor = isAvailable ? AppColors.accentSuccessStrong : AppColors.orangeFill;
-    // Small status text next to the switch uses the brightness-aware
-    // text tokens, not the fill colours.
-    final statusTextColor = isAvailable ? AppColors.successTextFor(brightness) : AppColors.orangeTextFor(brightness);
     return Card(
       elevation: 2,
       clipBehavior: Clip.antiAlias,
@@ -120,10 +104,9 @@ class FleetVehicleCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Audit §4: the photo is tappable — it pushes the
-          // vehicle-detail route (hero tag above). The Rates /
-          // Calendar buttons and the availability switch below stay
-          // outside the tap area.
+          // The photo is tappable — it pushes the vehicle-detail
+          // route (hero tag above). The Rates / Out-of-city buttons
+          // below stay outside the tap area.
           InkWell(
             onTap: onTap,
             child: SizedBox(
@@ -136,124 +119,88 @@ class FleetVehicleCard extends StatelessWidget {
                     tag: vehicleHeroTag(vehicle.vehicleId),
                     child: _carImage(vehicle),
                   ),
-                Positioned.fill(
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Colors.transparent,
-                          Colors.black.withValues(alpha: 0.15),
-                          Colors.black.withValues(alpha: 0.72),
-                        ],
-                        stops: const [0.4, 0.7, 1.0],
+                  Positioned.fill(
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.transparent,
+                            Colors.black.withValues(alpha: 0.15),
+                            Colors.black.withValues(alpha: 0.72),
+                          ],
+                          stops: const [0.4, 0.7, 1.0],
+                        ),
                       ),
                     ),
                   ),
-                ),
-                Positioned(
-                  left: 12,
-                  right: 12,
-                  bottom: 10,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              vehicle.displayName,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white),
+                  Positioned(
+                    left: 12,
+                    right: 12,
+                    bottom: 10,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                vehicle.displayName,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white),
+                              ),
                             ),
+                            const SizedBox(width: 8),
+                            PakistaniPlateWidget(plateNumber: vehicle.plateNumber, isCompact: true),
+                          ],
+                        ),
+                        const SizedBox(height: 6),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                          decoration: BoxDecoration(color: chipColor, borderRadius: BorderRadius.circular(10)),
+                          child: Text(
+                            _statusLabel(l10n, vehicle.status),
+                            style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800, color: Colors.white),
                           ),
-                          const SizedBox(width: 8),
-                          PakistaniPlateWidget(plateNumber: vehicle.plateNumber, isCompact: true),
-                        ],
-                      ),
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              l10n.fleetVehicleSpecs(vehicle.transmission, vehicle.fuelType, vehicle.seats),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.white70),
-                            ),
-                          ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                            decoration: BoxDecoration(color: chipColor, borderRadius: BorderRadius.circular(10)),
-                            child: Text(
-                              _statusLabel(l10n, vehicle.status),
-                              style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800, color: Colors.white),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(14, 12, 14, 6),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(l10n.fleetDailySelfDriveRate, style: Theme.of(context).textTheme.labelSmall),
-                      Text(l10n.fleetDailyRate(formatRs(vehicle.rates.daily24)), style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w900)),
-                    ],
-                  ),
-                ),
-                // Audit §4: the switch means Available ↔ Maintenance
-                // and is labelled as such. A rented car shows it
-                // disabled — flipping it must never write
-                // 'maintenance' for a car that is out on rent.
-                Text(
-                  l10n.available,
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800, color: statusTextColor),
-                ),
-                Switch(
-                  value: isAvailable,
-                  activeThumbColor: AppColors.accentSuccess,
-                  onChanged: isRented ? null : onToggleAvailability,
-                ),
-              ],
-            ),
-          ),
-          // Audit §5 (O05/O30): "On Rent until <date>".
-          if (isRented && rentedUntil != null)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(14, 0, 14, 6),
-              child: Row(
-                children: [
-                  const Icon(Icons.event_rounded, size: 16),
-                  const SizedBox(width: 6),
-                  Expanded(
-                    child: Text(
-                      l10n.fleetOnRentUntil(DateFormat('d MMM yyyy').format(rentedUntil!)),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700),
+                        ),
+                      ],
                     ),
                   ),
                 ],
               ),
             ),
-          FleetCardActions(
-            onEditRates: onEditRates,
-            onViewCalendar: onViewCalendar,
-            onEditRent: onEditRent,
-            onUpdatePrice: onUpdatePrice,
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(14, 12, 14, 6),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(l10n.fleetDailySelfDriveRate, style: Theme.of(context).textTheme.labelSmall),
+                Text(l10n.fleetDailyRate(formatRs(vehicle.rates.daily24)), style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w900)),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(14, 6, 14, 14),
+            child: Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: onEditRates,
+                    child: Text(l10n.fleetEditRatesTooltip),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: onOutCityRules,
+                    child: Text(l10n.outCityRulesTitle),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),

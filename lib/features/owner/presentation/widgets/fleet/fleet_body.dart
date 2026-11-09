@@ -7,6 +7,10 @@ import 'fleet_vehicle_card.dart';
 
 /// The body of the fleet list: loading, error, empty and populated states.
 /// Extracted from [OwnerFleetView] so the view stays under the 250-line cap.
+/// Simplified card (2026-11-09): the card now has only two actions —
+/// "Rates" (09b editor) and "Out-of-city rules" (010b screen) — so the
+/// body no longer carries the availability toggle, calendar, rent-edit,
+/// price-edit or rented-until plumbing.
 class FleetBody extends StatelessWidget {
   const FleetBody({
     super.key,
@@ -15,13 +19,9 @@ class FleetBody extends StatelessWidget {
     required this.filtered,
     required this.onAddVehicle,
     required this.onRetry,
-    required this.onToggleAvailability,
     required this.onEditRates,
-    required this.onViewCalendar,
+    required this.onOutCityRules,
     required this.onTapVehicle,
-    this.rentedUntil = const {},
-    this.onEditRent,
-    this.onUpdatePrice,
   });
 
   final FleetState state;
@@ -29,17 +29,9 @@ class FleetBody extends StatelessWidget {
   final List<VehicleEntity> filtered;
   final VoidCallback onAddVehicle;
   final VoidCallback onRetry;
-  final void Function(VehicleEntity vehicle, bool available)
-      onToggleAvailability;
   final void Function(VehicleEntity vehicle) onEditRates;
-  final void Function(VehicleEntity vehicle) onViewCalendar;
+  final void Function(VehicleEntity vehicle) onOutCityRules;
   final void Function(VehicleEntity vehicle) onTapVehicle;
-
-  /// Audit §5 (O05/O30): active-booking return dates by vehicle id,
-  /// plus the literal "Edit Rent" / "Update Price" actions.
-  final Map<String, DateTime> rentedUntil;
-  final void Function(VehicleEntity vehicle)? onEditRent;
-  final void Function(VehicleEntity vehicle)? onUpdatePrice;
 
   @override
   Widget build(BuildContext context) {
@@ -81,13 +73,9 @@ class FleetBody extends StatelessWidget {
         final v = filtered[index];
         return FleetVehicleCard(
           vehicle: v,
-          onToggleAvailability: (val) => onToggleAvailability(v, val),
           onEditRates: () => onEditRates(v),
-          onViewCalendar: () => onViewCalendar(v),
+          onOutCityRules: () => onOutCityRules(v),
           onTap: () => onTapVehicle(v),
-          rentedUntil: rentedUntil[v.vehicleId],
-          onEditRent: onEditRent == null ? null : () => onEditRent!(v),
-          onUpdatePrice: onUpdatePrice == null ? null : () => onUpdatePrice!(v),
         );
       },
     );

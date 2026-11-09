@@ -1,9 +1,13 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../../core/utils/money_format.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../bookings/domain/entities/booking_entity.dart';
+import '../../../../fleet/domain/entities/vehicle_entity.dart';
+import '../fleet/pricing_trip_charges.dart';
 
 /// Whole days between two moments, rounded up, at least 1 — the day
 /// count the deck shows on request cards and in fare breakdowns
@@ -18,17 +22,47 @@ int dayCountBetween(DateTime start, DateTime end) {
 int bookingDayCount(BookingEntity booking) =>
     dayCountBetween(booking.pickupTime, booking.returnTime);
 
+/// Driver night stay (deck p.4, 024b): a 3-day out-of-city trip
+/// shows 2 nights — nights = days − 1, so a 1-day trip has 0 nights.
+int nightStayNightsFor(DateTime pickup, DateTime returnTime) =>
+    math.max(0, dayCountBetween(pickup, returnTime) - 1);
+
+/// The night-stay charge for a trip: nights × the vehicle's
+/// per-night rate ([kDefaultDriverNightStayPkr] when unset).
+/// Only out-of-city WITH-DRIVER trips — no driver, no night stay;
+/// in-city and 1-day trips are always 0.
+int nightStayTotalFor({
+  required VehicleEntity? vehicle,
+  required bool isWithDriver,
+  required bool isOutOfCity,
+  required DateTime pickup,
+  required DateTime returnTime,
+}) {
+  if (!isOutOfCity || !isWithDriver) return 0;
+  final nights = nightStayNightsFor(pickup, returnTime);
+  if (nights == 0) return 0;
+  return nights * (vehicle?.driverNightStayPkr ?? kDefaultDriverNightStayPkr);
+}
+
 /// Audit §5 item 2 (O15): the fare breakdown the owner booking detail
 /// was missing — pickup/return dates + times, day count, the In-City /
 /// Out-City tag, daily rate × days = total, advance paid and remaining.
 /// The entity already carries every value; this is display work.
 /// Reused by the requested detail, the approved body, the payment
 /// verification view and the manual-booking confirm step.
+///
+/// Night stay + tolls: shown only when the vehicle (or the explicit
+/// overrides) is passed — the three owner detail callers only have
+/// the booking, so they show neither row. The manual confirm step
+/// passes the vehicle, so it shows both.
 class BookingFareBreakdown extends StatelessWidget {
   const BookingFareBreakdown({
     super.key,
     required this.booking,
     this.dailyRate,
+    this.vehicle,
+    this.nightStayTotal,
+    this.tollsPaidBy,
   });
 
   final BookingEntity booking;
@@ -37,13 +71,41 @@ class BookingFareBreakdown extends StatelessWidget {
   /// day count, so daily rate × days always equals the total.
   final int? dailyRate;
 
+  /// The booked vehicle. When given, the night-stay total is derived
+  /// from its per-night rate and the tolls note from its tolls choice.
+  final VehicleEntity? vehicle;
+
+  /// Explicit night-stay total, overriding the vehicle derivation.
+  /// Null means "derive from [vehicle]"; no vehicle means no row.
+  final int? nightStayTotal;
+
+  /// Explicit tolls choice ('customer' | 'included'), overriding the
+  /// vehicle derivation. Null means "derive from [vehicle]".
+  final String? tollsPaidBy;
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final days = bookingDayCount(booking);
-    final rate = dailyRate ?? (booking.totalAmount / days).round();
-    final dateFormat = DateFormat('d MMM yyyy, h:mm a');
     final isOutOfCity = booking.tripType == 'out_of_city';
+    final nights = nightStayNightsFor(booking.pickupTime, booking.returnTime);
+    final stay = nightStayTotal ??
+        (vehicle == null
+            ? 0
+            : nightStayTotalFor(
+                vehicle: vehicle,
+                isWithDriver: booking.isWithDriver,
+                isOutOfCity: isOutOfCity,
+                pickup: booking.pickupTime,
+                returnTime: booking.returnTime,
+              ));
+    // The stored total already includes the night stay (manual
+    // bookings add it at creation), so the derived daily rate is the
+    // total net of the stay — daily × days + night stay = total.
+    final rate =
+        dailyRate ?? ((booking.totalAmount - stay) / days).round();
+    final tolls = tollsPaidBy ?? vehicle?.tollsPaidBy;
+    final dateFormat = DateFormat('d MMM yyyy, h:mm a');
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(14),
@@ -87,12 +149,28 @@ class BookingFareBreakdown extends StatelessWidget {
                 dateFormat.format(booking.pickupTime)),
             _row(context, l10n.bookingFareReturn,
                 dateFormat.format(booking.returnTime)),
+            // Gap (b): the stored fixed route, shown when the trip
+            // was priced by fixed route — absent on older bookings
+            // and on non-route trips, so no row renders then.
+            if (booking.fixedRouteSummary != null &&
+                booking.fixedRouteSummary!.isNotEmpty)
+              _row(context, l10n.outCityFixedRouteLabel,
+                  booking.fixedRouteSummary!),
             _row(context, l10n.bookingFareDailyRate,
                 l10n.amountRs(formatRs(rate))),
             _row(
                 context,
                 l10n.bookingFareDailyRateTimes(days),
                 l10n.amountRs(formatRs(rate * days))),
+            if (stay > 0)
+              _row(context, l10n.bookingFareNightStay(nights),
+                  l10n.amountRs(formatRs(stay))),
+            if (isOutOfCity && (vehicle != null || tolls != null))
+              _note(
+                  context,
+                  tolls == 'included'
+                      ? l10n.bookingFareTollsIncluded
+                      : l10n.bookingFareTollsCustomer),
             const Divider(height: 20),
             _row(context, l10n.bookingFareTotal,
                 l10n.amountRs(formatRs(booking.totalAmount)),
@@ -139,6 +217,17 @@ class BookingFareBreakdown extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  /// A full-width note row (no amount): the tolls & parking note is
+  /// "Paid by customer" / "Included in rent", never a charge.
+  Widget _note(BuildContext context, String text) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: Text(text,
+          style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurfaceVariant)),
     );
   }
 }

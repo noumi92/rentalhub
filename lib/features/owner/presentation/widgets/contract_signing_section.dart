@@ -6,9 +6,13 @@ import '../../../../l10n/app_localizations.dart';
 
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/debounced_button.dart';
+import '../../../../core/di/injection_container.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
+import '../../../fleet/data/datasources/fleet_remote_data_source.dart';
+import '../../../fleet/domain/entities/vehicle_entity.dart';
 import '../../../handover/data/datasources/pdf_contract_generator.dart';
 import '../services/contract_pdf_actions.dart';
+import '../services/contract_trip_charges.dart';
 
 /// Finish build (O20): the explicit-agreement section on the contract
 /// view — an "I agree to the terms" checkbox, a guarantor / witness
@@ -130,6 +134,22 @@ class _ContractSigningSectionState extends State<ContractSigningSection> {
       final booking = widget.booking;
       Uint8List? newPdf;
       if (widget.odometer != null && widget.fuelLevel != null) {
+        // Gap (a): the vehicle behind this booking, looked up at the
+        // signing point — the handover cubit has no vehicle context,
+        // so the rates are resolved here instead. A failed lookup
+        // resolves to null rates, and the resolver then omits the
+        // night-stay / tolls lines rather than printing defaults.
+        VehicleEntity? vehicle;
+        try {
+          if (sl.isRegistered<FleetRemoteDataSource>()) {
+            vehicle = await sl<FleetRemoteDataSource>()
+                .getVehicleById(booking.vehicleId);
+          }
+        } catch (_) {
+          vehicle = null;
+        }
+        final charges =
+            resolvePdfTripCharges(booking: booking, vehicle: vehicle);
         newPdf = await PdfContractGenerator.generateA4Agreement(
           agreementId: booking.bookingId,
           shopName: booking.shopName ?? 'RentalHub',
@@ -152,6 +172,9 @@ class _ContractSigningSectionState extends State<ContractSigningSection> {
           guarantorSignaturePng: png,
           guarantorName: booking.guarantorName,
           vehiclePlate: booking.vehiclePlate,
+          tripType: charges.tripType,
+          driverNightStayPkr: charges.driverNightStayPkr,
+          tollsPaidBy: charges.tollsPaidBy,
         );
       }
       final ok = await ContractPdfActions.saveAgreementState(

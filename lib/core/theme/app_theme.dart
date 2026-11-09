@@ -137,10 +137,14 @@ class AppTheme {
     );
   }
 
+  // Button labels (user decision 2026-11-09): regular weight, never bold.
+  // Primary (elevated/filled) labels are 14sp; secondary
+  // (outlined/text) labels are 12sp. `fontSize` picks the tier.
   static ButtonStyle _buttonStyle({
     required Color backgroundColor,
     required Color foregroundColor,
     Color? borderColor,
+    double fontSize = 14,
   }) {
     // Disabled buttons dim instead of looking identical to enabled
     // ones (the old WidgetStateProperty.all never dimmed).
@@ -168,7 +172,7 @@ class AppTheme {
         ),
       ),
       textStyle: WidgetStateProperty.all(
-        const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+        TextStyle(fontSize: fontSize, fontWeight: FontWeight.w400),
       ),
     );
   }
@@ -238,12 +242,14 @@ class AppTheme {
           backgroundColor: Colors.transparent,
           foregroundColor: AppColors.primary,
           borderColor: AppColors.primary,
+          fontSize: 12,
         ),
       ),
       textButtonTheme: TextButtonThemeData(
         style: _buttonStyle(
           backgroundColor: Colors.transparent,
           foregroundColor: AppColors.primary,
+          fontSize: 12,
         ),
       ),
       cardTheme: CardThemeData(
@@ -432,12 +438,14 @@ class AppTheme {
           backgroundColor: Colors.transparent,
           foregroundColor: AppColors.onSurfaceDark,
           borderColor: AppColors.onSurfaceDark,
+          fontSize: 12,
         ),
       ),
       textButtonTheme: TextButtonThemeData(
         style: _buttonStyle(
           backgroundColor: Colors.transparent,
           foregroundColor: AppColors.onSurfaceDark,
+          fontSize: 12,
         ),
       ),
       cardTheme: CardThemeData(

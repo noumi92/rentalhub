@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/widgets/debounced_button.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../fleet/domain/entities/fixed_route_entity.dart';
 import '../../../fleet/domain/entities/vehicle_entity.dart';
 import 'guarantor_picker.dart';
 import 'manual_booking_customer_fields.dart';
@@ -38,6 +39,8 @@ class ManualBookingFormBody extends StatelessWidget {
     required this.onTripTypeChanged,
     required this.isChecking,
     required this.onNext,
+    this.selectedFixedRoute,
+    this.onFixedRouteChanged,
   });
 
   final TextEditingController nameController;
@@ -63,6 +66,10 @@ class ManualBookingFormBody extends StatelessWidget {
   final ValueChanged<bool> onTripTypeChanged;
   final bool isChecking;
   final VoidCallback onNext;
+
+  /// 09b §2: the fixed route chosen for this out-of-city trip.
+  final FixedRouteEntity? selectedFixedRoute;
+  final ValueChanged<FixedRouteEntity?>? onFixedRouteChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -100,6 +107,8 @@ class ManualBookingFormBody extends StatelessWidget {
               isOutOfCity: isOutOfCity,
               pickup: pickupTime,
               returnTime: returnTime,
+              selectedFixedRoute: selectedFixedRoute,
+              onFixedRouteChanged: onFixedRouteChanged,
             ),
           const SizedBox(height: 18),
           ManualBookingScheduleSection(

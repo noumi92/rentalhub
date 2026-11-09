@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/money_format.dart';
 import '../../../../core/widgets/debounced_button.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../fleet/domain/entities/fixed_route_entity.dart';
 import '../../../fleet/domain/entities/vehicle_entity.dart';
+import '../../../fleet/domain/usecases/get_shop_fixed_routes_usecase.dart';
 
 /// Audit §5 (O09): the fare table — the read-only price list for one
 /// vehicle, in In-City / Out-City / Hourly / Monthly tabs. Every row
@@ -31,14 +34,56 @@ class OwnerFareTableView extends StatefulWidget {
 class _OwnerFareTableViewState extends State<OwnerFareTableView> {
   int _tab = 0;
 
+  /// 09b §2: the vehicle's fixed route (resolved from its stored id)
+  /// so the Out-City tab can show the route and its flat price.
+  FixedRouteEntity? _fixedRoute;
+  bool _loadingRoute = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final v = widget.vehicle;
+    if (v.outCityMode == 'fixedRoute' && v.outCityFixedRouteId != null) {
+      _loadFixedRoute(v);
+    }
+  }
+
+  Future<void> _loadFixedRoute(VehicleEntity v) async {
+    if (!sl.isRegistered<GetShopFixedRoutesUseCase>()) return;
+    setState(() => _loadingRoute = true);
+    try {
+      final routes = await sl<GetShopFixedRoutesUseCase>()(v.shopId);
+      if (!mounted) return;
+      FixedRouteEntity? match;
+      for (final r in routes) {
+        if (r.routeId == v.outCityFixedRouteId) match = r;
+      }
+      setState(() { _fixedRoute = match; _loadingRoute = false; });
+    } catch (_) {
+      if (mounted) setState(() => _loadingRoute = false);
+    }
+  }
+
   static String _packageTitle(AppLocalizations l10n, String label) => {'1h': l10n.pricingPackage1h, '3h': l10n.pricingPackage3h, '6h': l10n.pricingPackage6h, '12h': l10n.pricingPackage12h, '24h': l10n.pricingPackage24h, 'Weekly': l10n.pricingPackageWeekly, 'Monthly': l10n.pricingPackageMonthly}[label] ?? label;
 
   List<VehiclePackageEntity> _rowsForTab() {
     final packages = widget.vehicle.effectivePackages;
     switch (_tab) {
       case 1:
-        // Out-City: the same packages scaled by the out-of-city ratio
-        // (out-city daily / in-city daily), as the picker does.
+        // Out-City (09b §2): Fixed-route trips cost the route's flat
+        // price whatever the package; Per-km trips cost the estimate
+        // (rate × km/day × hours/24) with the estimated km as the
+        // allowance; Per-day keeps the out-of-city ratio scaling.
+        final v = widget.vehicle;
+        if (v.outCityMode == 'fixedRoute' && _fixedRoute != null) {
+          final route = _fixedRoute!;
+          return packages.map((p) => p.copyWith(pricePkr: route.fixedPricePkr, kmIncluded: route.distanceKm)).toList();
+        }
+        if (v.outCityMode == 'perKm' && (v.outCityPerKmPkr ?? 0) > 0) {
+          final rate = v.outCityPerKmPkr!;
+          final kmPerDay = v.outOfCityKmPerDay ?? kDefaultOutCityKmPerDay;
+          return packages.map((p) => p.copyWith(pricePkr: (rate * kmPerDay * p.hours / 24).round(), kmIncluded: (kmPerDay * p.hours / 24).round())).toList();
+        }
         final daily = widget.vehicle.rates.daily24;
         final outDaily = widget.vehicle.rates.outOfCityDaily ?? daily;
         final ratio = daily > 0 ? outDaily / daily : 1.0;
@@ -104,11 +149,7 @@ class _OwnerFareTableViewState extends State<OwnerFareTableView> {
                       ],
                     ),
                     const SizedBox(height: 14),
-                    if (_tab == 1)
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        child: Text(l10n.fareOutCityDaily(l10n.amountRs(formatRs(v.rates.outOfCityDaily ?? (v.rates.daily24 * 1.3).round()))), style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
-                      ),
+                    if (_tab == 1) _OutCityModeHeader(vehicle: v, fixedRoute: _fixedRoute, loadingRoute: _loadingRoute),
                     if (rows.isEmpty)
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 24),
@@ -145,6 +186,63 @@ class _OwnerFareTableViewState extends State<OwnerFareTableView> {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// The Out-City tab header (09b §2): the active mode instead of only
+/// the daily rate — the per-day rate, the per-km rate with its
+/// estimate note, or the fixed route with its flat price. A
+/// fixed-route vehicle whose route cannot be resolved says so and
+/// the rows below fall back to the per-day ratio scaling.
+class _OutCityModeHeader extends StatelessWidget {
+  const _OutCityModeHeader({required this.vehicle, required this.fixedRoute, required this.loadingRoute});
+
+  final VehicleEntity vehicle;
+  final FixedRouteEntity? fixedRoute;
+  final bool loadingRoute;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final v = vehicle;
+    final bold = Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700);
+    if (v.outCityMode == 'perKm' && (v.outCityPerKmPkr ?? 0) > 0) {
+      final rate = v.outCityPerKmPkr!;
+      final kmPerDay = v.outOfCityKmPerDay ?? kDefaultOutCityKmPerDay;
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(l10n.farePerKmUnit(l10n.amountRs(formatRs(rate))), style: bold),
+            Text(l10n.farePerKmEstimate(kmPerDay), style: Theme.of(context).textTheme.labelSmall),
+          ],
+        ),
+      );
+    }
+    if (v.outCityMode == 'fixedRoute') {
+      if (loadingRoute) {
+        return const Padding(padding: EdgeInsets.only(bottom: 8), child: CircularProgressIndicator());
+      }
+      final route = fixedRoute;
+      if (route == null) {
+        return Padding(padding: const EdgeInsets.only(bottom: 8), child: Text(l10n.outCityFixedRouteNone, style: bold));
+      }
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(l10n.fareFixedRoute(route.displayName), style: bold),
+            Text(l10n.fixedRouteSummary(route.distanceKm, formatRs(route.fixedPricePkr)), style: Theme.of(context).textTheme.labelSmall),
+          ],
+        ),
+      );
+    }
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Text(l10n.fareOutCityDaily(l10n.amountRs(formatRs(v.rates.outOfCityDaily ?? (v.rates.daily24 * 1.3).round()))), style: bold),
     );
   }
 }

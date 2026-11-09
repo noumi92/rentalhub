@@ -37,6 +37,8 @@ class BookingDetailSummary extends StatelessWidget {
           _row(context, l10n.packageLabel, b.packageType),
           _row(context, l10n.summaryDriveMode, b.isWithDriver ? l10n.summaryWithDriver : l10n.summarySelfDrive),
           _row(context, l10n.summaryTrip, b.tripType == 'out_city' ? l10n.outOfCity : l10n.inCity),
+          if (b.fixedRouteSummary != null && b.fixedRouteSummary!.isNotEmpty)
+            _row(context, l10n.outCityFixedRouteLabel, b.fixedRouteSummary!),
           _row(context, l10n.pickupLabel, _formatDateTime(b.pickupTime)),
           _row(context, l10n.summaryReturn, _formatDateTime(b.returnTime)),
           const Divider(height: 18),

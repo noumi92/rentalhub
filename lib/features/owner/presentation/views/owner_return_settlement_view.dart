@@ -59,6 +59,8 @@ class _OwnerReturnSettlementViewState extends State<OwnerReturnSettlementView> {
   int _deposit = 0;
   int _extraKmPkr = 100;
   int _extraHourPkr = 0;
+  // Gap (c): vehicle per-km pricing (booking-snapshot fallback).
+  PerKmPricing _perKmPricing = const PerKmPricing();
   // Audit item 5/18 (O25/O26): inspection condition, return photos,
   // and the remaining rent collected at return.
   String _condition = 'good';
@@ -101,6 +103,7 @@ class _OwnerReturnSettlementViewState extends State<OwnerReturnSettlementView> {
         _handoverDamageNotes = values.handoverDamageNotes;
         _extraKmPkr = values.extraKmPkr;
         _extraHourPkr = values.extraHourPkr;
+        _perKmPricing = values.perKmPricing;
         _deposit = values.deposit;
         _deductibleDamage = values.deductibleDamage;
         _extraCharges = values.extraCharges;
@@ -134,10 +137,13 @@ class _OwnerReturnSettlementViewState extends State<OwnerReturnSettlementView> {
   }
 
   SettlementBreakdown get _breakdown => SettlementCalculator.calculate(
-        totalKmDriven: _totalKmDriven, kmAllowance: _kmAllowance, extraKmPkr: _extraKmPkr, fuelLevel: _returnFuel,
+        totalKmDriven: _totalKmDriven, kmAllowance: _kmAllowance, extraKmPkr: _perKm != null ? 0 : _extraKmPkr, fuelLevel: _returnFuel,
         damageCharge: _damageCharge + _deductibleDamage, overtimeHours: _overtimeHours, extraHourPkr: _extraHourPkr, securityDeposit: _deposit,
         extraCharges: _extraCharges,
       );
+
+  // Gap (c): the live per-km reconciliation; null for non-per-km bookings.
+  PerKmSettlement? get _perKm => ReturnSettlementService.perKmSettlementFor(booking: widget.booking, totalKmDriven: _totalKmDriven, pricing: _perKmPricing);
 
   void _onDamageChargeChanged(String value) {
     // Keep the field and the receipt consistent: a negative charge is reset to 0 as soon as it is typed.
@@ -164,7 +170,7 @@ class _OwnerReturnSettlementViewState extends State<OwnerReturnSettlementView> {
         extraKmPkr: _extraKmPkr, extraHourPkr: _extraHourPkr, deposit: _deposit, fuelLevel: _returnFuel,
         returnDamageNotes: _returnDamageNotes, damageCharge: _damageCharge,
         condition: _condition, returnPhotoUrls: _returnPhotos, deductibleDamage: _deductibleDamage, extraCharges: _extraCharges,
-        remainingRentCollected: _collected.amount, paymentMethod: _collected.method,
+        remainingRentCollected: _collected.amount, paymentMethod: _collected.method, perKmSettlement: _perKm,
       );
       if (mounted) {
         AppFeedback.showSuccess(context, l10n.returnSettled(formatRs(breakdown.netRefund)));
@@ -221,7 +227,7 @@ class _OwnerReturnSettlementViewState extends State<OwnerReturnSettlementView> {
                       const SizedBox(height: 16),
                       ReturnFarePaymentSection(booking: widget.booking, onCollected: (amount, method) => setState(() => _collected = (amount: amount, method: method))),
                       const SizedBox(height: 16),
-                      SettlementSummaryReceiptWidget(totalKm: breakdown.totalKmDriven, excessKm: breakdown.excessKm, excessKmPenalty: breakdown.excessKmCharge, extraKmRate: _extraKmPkr, fuelDeficitFee: breakdown.fuelDeficit, overtimeFee: breakdown.overtimeFee, damageCharge: breakdown.damageCharge, extraCharges: breakdown.extraCharges, securityDeposit: _deposit, netRefund: breakdown.netRefund),
+                      SettlementSummaryReceiptWidget(totalKm: breakdown.totalKmDriven, excessKm: breakdown.excessKm, excessKmPenalty: breakdown.excessKmCharge, extraKmRate: _extraKmPkr, fuelDeficitFee: breakdown.fuelDeficit, overtimeFee: breakdown.overtimeFee, damageCharge: breakdown.damageCharge, extraCharges: breakdown.extraCharges, securityDeposit: _deposit, netRefund: breakdown.netRefund, perKm: _perKm),
                       const SizedBox(height: 24),
                       // Finish build (O26): refund first, then close —
                       // the steps widget owns the refund record; close

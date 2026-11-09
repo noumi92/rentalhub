@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'dart:typed_data';
 
 import 'package:pdf/pdf.dart';
@@ -34,7 +35,30 @@ class PdfContractGenerator {
     '10. Both parties agree to the terms above.',
   ];
 
-  /// The page that proves an agreement is genuine. The id is the
+  /// Driver night stay, same rule as the fare breakdown (deck p.4,
+  /// 024b): nights = days − 1, so a 1-day trip has 0 nights. Pure so
+  /// tests can assert the PDF math without parsing PDF bytes.
+  static int nightStayNights(DateTime pickup, DateTime returnTime) {
+    final minutes = returnTime.difference(pickup).inMinutes;
+    final days = minutes <= 0 ? 1 : (minutes / (24 * 60)).ceil();
+    return math.max(0, days - 1);
+  }
+
+  /// The night-stay charge: nights × the vehicle's per-night rate
+  /// (Rs 2,000 deck default when unset). Only out-of-city
+  /// WITH-DRIVER trips — no driver, no night stay.
+  static int nightStayTotal({
+    required bool isWithDriver,
+    required bool isOutOfCity,
+    required DateTime pickupTime,
+    required DateTime returnTime,
+    int? driverNightStayPkr,
+  }) {
+    if (!isOutOfCity || !isWithDriver) return 0;
+    final nights = nightStayNights(pickupTime, returnTime);
+    if (nights == 0) return 0;
+    return nights * (driverNightStayPkr ?? 2000);
+  }
   /// booking id; the PHP page reads the matching `agreements` doc
   /// from Firestore (see `verify_agreement.php`, D6).
   static String verificationUrlFor(String agreementId) {
@@ -72,9 +96,26 @@ class PdfContractGenerator {
     String? vehicleColour,
     String? vehicleFuel,
     String? ownerName,
+    // 010b night stay + tolls: the out-of-city trip charges for the
+    // charges section. Null tripType means "not an out-of-city trip
+    // as far as this PDF knows" — the rows are omitted, never faked.
+    // No caller passes these yet (see the report); until one does,
+    // the agreement prints no night-stay / tolls lines.
+    String? tripType,
+    int? driverNightStayPkr,
+    String? tollsPaidBy,
   }) async {
     final doc = pw.Document();
     final verifyUrl = verificationUrlFor(agreementId);
+    final isOutOfCity = tripType == 'out_of_city';
+    final nights = nightStayNights(pickupTime, returnTime);
+    final nightStay = nightStayTotal(
+      isWithDriver: isWithDriver,
+      isOutOfCity: isOutOfCity,
+      pickupTime: pickupTime,
+      returnTime: returnTime,
+      driverNightStayPkr: driverNightStayPkr,
+    );
     final style = pw.TextStyle(fontSize: 11, color: PdfColors.black);
     final heading = pw.TextStyle(
         fontSize: 13, fontWeight: pw.FontWeight.bold, color: PdfColors.black);
@@ -152,6 +193,12 @@ class PdfContractGenerator {
               row('Pickup:', _dateTime(pickupTime)),
               row('Return:', _dateTime(returnTime)),
               row('Total rent:', 'Rs. ${formatRs(totalAmount)}'),
+              if (nightStay > 0)
+                row('Driver night stay ($nights nights):',
+                    'Rs. ${formatRs(nightStay)}'),
+              if (isOutOfCity)
+                row('Tolls & parking:',
+                    tollsPaidBy == 'included' ? 'Included in rent' : 'Paid by customer'),
               row('Advance paid:', 'Rs. ${formatRs(advancePaid)}'),
               row('Remaining:', 'Rs. ${formatRs(totalAmount - advancePaid)}'),
               row('Security deposit:',

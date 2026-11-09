@@ -88,7 +88,6 @@ class LocationPermissionDialog extends StatelessWidget {
                 icon: const Icon(Icons.my_location_rounded, size: 18),
                 label: Text(
                   l10n.locationAllowWhileUsing,
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
                 ),
               ),
             ),
@@ -105,10 +104,7 @@ class LocationPermissionDialog extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: Text(
-                  l10n.locationSelectCityManually,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
-                ),
+                child: Text(l10n.locationSelectCityManually),
               ),
             ),
           ],

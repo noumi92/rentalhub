@@ -25,9 +25,10 @@ import 'package:rentalhub/l10n/app_localizations.dart';
 // Audit §5 implementation (worker D): Monthly package, custom rates,
 // Per KM toggle, fare table, price estimate, published confirmation,
 // owner vehicle detail, onboarding Review + status timeline, fleet
-// card "On Rent until" + Edit Rent / Update Price, shop settings,
-// multi-car fleet calendar. Pure widget/entity tests; the rate matrix
-// save goes through DI (in-memory fallback), like the Phase B tests.
+// card (simplified 2026-11-09: Rates / Out-of-city rules, no switch,
+// no "On Rent until" row), shop settings, multi-car fleet calendar.
+// Pure widget/entity tests; the rate matrix save goes through DI
+// (in-memory fallback), like the Phase B tests.
 class _TestAssetBundle extends AssetBundle {
   static final ByteData _pixel = ByteData.view(base64Decode(
     'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
@@ -178,7 +179,7 @@ void main() {
   });
 
   group('Rate matrix', () {
-    testWidgets('shows the Monthly row, the Per KM toggle and custom rates', (tester) async {
+    testWidgets('09b editor: seven chips, Per KM toggle, no custom-rates UI', (tester) async {
       bool saved = false;
       await tester.pumpWidget(_wrap(OwnerRateMatrixView(
         vehicle: _vehicle,
@@ -186,13 +187,20 @@ void main() {
       )));
       await tester.pumpAndSettle();
 
+      expect(find.text('Package rates'), findsOneWidget);
+      expect(find.byType(ChoiceChip), findsNWidgets(7));
       expect(find.text('Monthly Package (30 Days)'), findsOneWidget);
       expect(find.text('Per KM Pricing?'), findsOneWidget);
-      expect(find.text('Custom Rates'), findsOneWidget);
-      expect(find.text('Airport transfer'), findsOneWidget);
-      expect(find.text('View estimated rates'), findsOneWidget);
+      expect(find.text('Applies to all packages'), findsOneWidget);
+      expect(find.text('Out-of-City Daily (24h)'), findsOneWidget);
+      // 09b has no custom-rates editor and no estimate link — the
+      // stored custom rates pass through the save untouched (covered
+      // by update_vehicle_usecase_test.dart).
+      expect(find.text('Custom Rates'), findsNothing);
+      expect(find.text('Airport transfer'), findsNothing);
+      expect(find.text('View estimated rates'), findsNothing);
 
-      await tester.tap(find.text('Save Pricing Matrix'));
+      await tester.tap(find.text('Save package'));
       await tester.pumpAndSettle();
       expect(saved, isTrue);
     });
@@ -283,7 +291,7 @@ void main() {
   });
 
   group('Fleet card (O05/O30)', () {
-    testWidgets('rented car shows On Rent until + Edit Rent / Update Price', (tester) async {
+    testWidgets('rented car shows On Rent badge and the two simple actions', (tester) async {
       const rented = VehicleEntity(
         vehicleId: 'veh-rented-d',
         shopId: 'shop-1',
@@ -294,32 +302,44 @@ void main() {
         status: 'rented',
         rates: VehicleRatesEntity(daily24: 9000),
       );
+      var ratesTapped = false;
+      var rulesTapped = false;
       await tester.pumpWidget(_wrap(FleetVehicleCard(
         vehicle: rented,
-        onToggleAvailability: (_) {},
-        onEditRates: () {},
-        onViewCalendar: () {},
-        rentedUntil: DateTime(2026, 10, 29),
-        onEditRent: () {},
-        onUpdatePrice: () {},
+        onEditRates: () => ratesTapped = true,
+        onOutCityRules: () => rulesTapped = true,
       )));
       await tester.pumpAndSettle();
 
-      expect(find.textContaining('On Rent until 29 Oct 2026'), findsOneWidget);
-      expect(find.text('Edit Rent'), findsOneWidget);
-      expect(find.text('Update Price'), findsOneWidget);
+      // Simplified card (2026-11-09): no "On Rent until" row, no
+      // Edit Rent / Update Price, no availability switch.
+      expect(find.text('On Rent'), findsOneWidget);
+      expect(find.textContaining('On Rent until'), findsNothing);
+      expect(find.text('Edit Rent'), findsNothing);
+      expect(find.text('Update Price'), findsNothing);
+      expect(find.byType(Switch), findsNothing);
+      expect(find.byType(OutlinedButton), findsNWidgets(2));
+      expect(find.text('Edit rates'), findsOneWidget);
+      expect(find.text('Out-of-city rules'), findsOneWidget);
+      await tester.tap(find.text('Edit rates'));
+      await tester.tap(find.text('Out-of-city rules'));
+      expect(ratesTapped, isTrue);
+      expect(rulesTapped, isTrue);
     });
 
-    testWidgets('available car omits the On Rent until line', (tester) async {
+    testWidgets('available car shows Available badge and no On Rent line', (tester) async {
       await tester.pumpWidget(_wrap(FleetVehicleCard(
         vehicle: _vehicle,
-        onToggleAvailability: (_) {},
         onEditRates: () {},
-        onViewCalendar: () {},
+        onOutCityRules: () {},
       )));
       await tester.pumpAndSettle();
 
+      expect(find.text('Available'), findsOneWidget);
       expect(find.textContaining('On Rent until'), findsNothing);
+      expect(find.text('On Rent'), findsNothing);
+      expect(find.byType(Switch), findsNothing);
+      expect(find.byType(OutlinedButton), findsNWidgets(2));
     });
   });
 

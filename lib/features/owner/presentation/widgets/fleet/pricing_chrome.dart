@@ -13,16 +13,21 @@ class PricingHeader extends StatelessWidget {
     super.key,
     required this.vehicle,
     required this.onBack,
+    this.title,
   });
 
   final VehicleEntity vehicle;
   final VoidCallback? onBack;
 
+  /// 09b: the package-rates editor shows "Package rates" instead of
+  /// the old "Vehicle Pricing Matrix" title. Null keeps the old title.
+  final String? title;
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return MinimalAppBar(
-      title: l10n.pricingTitle,
+      title: title ?? l10n.pricingTitle,
       subtitle: '${vehicle.make} ${vehicle.model} (${vehicle.year})',
       onBack: onBack,
       actions: [
@@ -38,6 +43,7 @@ class PricingSaveBar extends StatelessWidget {
     required this.isSaving,
     required this.onPressed,
     this.onViewEstimate,
+    this.label,
   });
 
   final bool isSaving;
@@ -45,6 +51,10 @@ class PricingSaveBar extends StatelessWidget {
 
   /// Audit §5 (P4-O08): optional link to the estimated-rates card.
   final VoidCallback? onViewEstimate;
+
+  /// 09b/010b: the save button label ("Save package" / "Save rules").
+  /// Null keeps the old "Save Pricing Matrix" label.
+  final String? label;
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +78,7 @@ class PricingSaveBar extends StatelessWidget {
               label: Text(l10n.ratesViewEstimate),
             ),
           DebouncedButton(
-            text: isSaving ? l10n.pricingSaving : l10n.pricingSave,
+            text: isSaving ? l10n.pricingSaving : (label ?? l10n.pricingSave),
             icon: Icons.check_circle_rounded,
             isLoading: isSaving,
             onPressed: () async => onPressed(),

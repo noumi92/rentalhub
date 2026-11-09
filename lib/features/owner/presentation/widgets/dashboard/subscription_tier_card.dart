@@ -100,7 +100,6 @@ class SubscriptionTierCard extends StatelessWidget {
                     : isPending
                         ? l10n.subscriptionRequested
                         : l10n.subscriptionUpgradeTo(title),
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800),
               ),
             ),
           ),

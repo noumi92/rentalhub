@@ -110,7 +110,7 @@ class MapShopPreviewCard extends StatelessWidget {
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     ),
                     icon: const Icon(Icons.call_rounded, size: 14),
-                    label: Text(l10n.call, style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700)),
+                    label: Text(l10n.call),
                   ),
                   OutlinedButton.icon(
                     onPressed: () {
@@ -130,7 +130,7 @@ class MapShopPreviewCard extends StatelessWidget {
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     ),
                     icon: Icon(Icons.chat_bubble_outline_rounded, size: 14, color: AppColors.successOnContainerFor(Theme.of(context).brightness)),
-                    label: Text(l10n.whatsapp, style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700)),
+                    label: Text(l10n.whatsapp),
                   ),
                   ElevatedButton.icon(
                     onPressed: onViewShowroom,
@@ -141,7 +141,7 @@ class MapShopPreviewCard extends StatelessWidget {
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     ),
                     icon: const Icon(Icons.directions_car_rounded, size: 14),
-                    label: Text(l10n.viewFleet, style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800)),
+                    label: Text(l10n.viewFleet),
                   ),
                 ],
               ),

@@ -23,9 +23,10 @@ import 'owner_subscription_limit_sheet.dart';
 /// Phase B (B1): the fleet list now reads real vehicles through
 /// [FleetCubit] (Firestore, with the in-memory fallback when offline)
 /// instead of `MockDatabase.vehicles`. Status values are the entity's
-/// lowercase ones ('available' | 'rented' | 'maintenance'); the toggle
-/// writes back through the cubit, and the rates button opens the
-/// per-vehicle rate matrix (Phase A route `/owner/rates/:vehicleId`).
+/// lowercase ones ('available' | 'rented' | 'maintenance'). The
+/// simplified card (2026-11-09) has only two actions: Rates opens the
+/// per-vehicle rate matrix (Phase A route `/owner/rates/:vehicleId`)
+/// and Out-of-city rules opens `/owner/out-city-rules/:vehicleId`.
 class OwnerFleetView extends StatefulWidget {
   final String? shopId;
   final VoidCallback? onAddVehicle;
@@ -40,10 +41,6 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
   String _searchQuery = '';
   late final FleetCubit _cubit;
 
-  /// Audit §5 (O05/O30): active-booking return dates by vehicle id,
-  /// loaded alongside the fleet (empty on any load failure).
-  Map<String, DateTime> _rentedUntil = {};
-
   String get _shopId => widget.shopId ?? currentShopId();
 
   // Phone bug: double-tap duplicate pushes are guarded by
@@ -57,12 +54,6 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
   void initState() {
     super.initState();
     _cubit = sl<FleetCubit>()..loadVehicles(_shopId);
-    _loadRentals();
-  }
-
-  Future<void> _loadRentals() async {
-    final map = await FleetRentalLookup.activeRentalsByVehicle(_shopId);
-    if (mounted) setState(() => _rentedUntil = map);
   }
 
   @override
@@ -124,22 +115,19 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
       return;
     }
     _pushOnce(RouteNames.ownerAddVehicle).then((_) {
-      if (mounted) { _cubit.loadVehicles(_shopId); _loadRentals(); }
+      if (mounted) { _cubit.loadVehicles(_shopId); }
     });
   }
 
-  void _toggle(VehicleEntity v, bool val) => _cubit.updateVehicleStatus(shopId: _shopId, vehicleId: v.vehicleId, status: val ? 'available' : 'maintenance');
-
   /// D3: one fleet card for both the compact list and the two-column grid.
+  /// Simplified card (2026-11-09): only Rates (09b) and Out-of-city
+  /// rules (010b) — no availability toggle, calendar, rent-edit or
+  /// price-edit actions on the card.
   Widget _vehicleCard(VehicleEntity v) => FleetVehicleCard(
         vehicle: v,
         onTap: () => _openVehicleDetail(v),
-        onToggleAvailability: (val) => _toggle(v, val),
         onEditRates: () => _pushOnce(RouteNames.ownerRatesVehicle.replaceFirst(':vehicleId', v.vehicleId)),
-        onViewCalendar: () => _pushOnce(RouteNames.ownerCalendar.replaceFirst(':vehicleId', v.vehicleId)),
-        rentedUntil: _rentedUntil[v.vehicleId],
-        onEditRent: () => _pushOnce(RouteNames.ownerRatesVehicle.replaceFirst(':vehicleId', v.vehicleId)),
-        onUpdatePrice: () => _pushOnce(RouteNames.ownerFareTable.replaceFirst(':vehicleId', v.vehicleId)),
+        onOutCityRules: () => _pushOnce(RouteNames.ownerOutCityRules.replaceFirst(':vehicleId', v.vehicleId)),
       );
 
   /// D3: medium+ shows the fleet in two columns.
@@ -221,13 +209,9 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
                         filtered: filtered,
                         onAddVehicle: _openAddVehicle,
                         onRetry: () => _cubit.loadVehicles(_shopId),
-                        onToggleAvailability: _toggle,
                         onEditRates: (v) => _pushOnce(RouteNames.ownerRatesVehicle.replaceFirst(':vehicleId', v.vehicleId)),
-                        onViewCalendar: (v) => _pushOnce(RouteNames.ownerCalendar.replaceFirst(':vehicleId', v.vehicleId)),
+                        onOutCityRules: (v) => _pushOnce(RouteNames.ownerOutCityRules.replaceFirst(':vehicleId', v.vehicleId)),
                         onTapVehicle: _openVehicleDetail,
-                        rentedUntil: _rentedUntil,
-                        onEditRent: (v) => _pushOnce(RouteNames.ownerRatesVehicle.replaceFirst(':vehicleId', v.vehicleId)),
-                        onUpdatePrice: (v) => _pushOnce(RouteNames.ownerFareTable.replaceFirst(':vehicleId', v.vehicleId)),
                       ),
                   ],
                 ),

@@ -287,6 +287,52 @@ class FleetRemoteDataSource {
       if (map['extraKmPkr'] != null) 'extraKmPkr': map['extraKmPkr'],
       if (map['outOfCityKmPerDay'] != null)
         'outOfCityKmPerDay': map['outOfCityKmPerDay'],
+      if (map['homeCity'] != null) 'homeCity': map['homeCity'],
+      if (map['homeCityRadiusKm'] != null)
+        'homeCityRadiusKm': map['homeCityRadiusKm'],
+      if (map['outCityMode'] != null) 'outCityMode': map['outCityMode'],
+      if (map['outCityPerKmPkr'] != null)
+        'outCityPerKmPkr': map['outCityPerKmPkr'],
+      if (map['outCityFixedRouteId'] != null)
+        'outCityFixedRouteId': map['outCityFixedRouteId'],
+      if (map['driverNightStayPkr'] != null)
+        'driverNightStayPkr': map['driverNightStayPkr'],
+      if (map['tollsPaidBy'] != null) 'tollsPaidBy': map['tollsPaidBy'],
+    };
+    final written = await _writeVehicleDoc(vehicleId, update);
+    if (!written) await _queueVehicleWrite(vehicleId, update);
+  }
+
+  /// Car-details edit: writes the identity subset only. The
+  /// in-memory list gets the full updated entity; Firestore gets the
+  /// same fields (the identity subset of `toMap`, so the document
+  /// keeps its rates, packages and pricing policy untouched).
+  Future<void> updateVehicleDetails({
+    required String vehicleId,
+    required VehicleEntity vehicle,
+  }) async {
+    final model = VehicleModel.fromEntity(vehicle);
+    final idx = _inMemoryVehicles.indexWhere((v) => v.vehicleId == vehicleId);
+    if (idx != -1) {
+      _inMemoryVehicles[idx] = model;
+    }
+
+    final map = model.toMap();
+    // Firestore deletes a field on a null update value, so only
+    // send the fields that are actually set.
+    final update = <String, dynamic>{
+      'make': model.make,
+      'model': model.model,
+      'year': model.year,
+      'plateNumber': model.plateNumber,
+      'category': model.category,
+      'transmission': model.transmission,
+      'fuelType': model.fuelType,
+      'seats': model.seats,
+      'features': model.features,
+      'status': model.status,
+      if (map['color'] != null) 'color': map['color'],
+      if (map['imageUrl'] != null) 'imageUrl': map['imageUrl'],
     };
     final written = await _writeVehicleDoc(vehicleId, update);
     if (!written) await _queueVehicleWrite(vehicleId, update);

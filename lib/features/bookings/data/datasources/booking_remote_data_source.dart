@@ -248,6 +248,10 @@ class BookingRemoteDataSource {
     String? guarantorPhone,
     String tripType = 'in_city',
     int? kmLimit,
+    String? fixedRouteId,
+    String? fixedRouteSummary,
+    String? outCityMode,
+    int? outCityPerKmPkr,
   }) async {
     // Phase C (C2): the booking-time blacklist check. The owner
     // walk-in flow already refuses blacklisted CNICs; the customer
@@ -299,6 +303,10 @@ class BookingRemoteDataSource {
       guarantorPhone: guarantorPhone,
       tripType: tripType,
       kmLimit: kmLimit,
+      fixedRouteId: fixedRouteId,
+      fixedRouteSummary: fixedRouteSummary,
+      outCityMode: outCityMode,
+      outCityPerKmPkr: outCityPerKmPkr,
     );
 
     _inMemoryFallback[id] = model;

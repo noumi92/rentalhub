@@ -171,7 +171,7 @@ class _ShopApprovalStatusStepWidgetState
           child: ElevatedButton.icon(
             onPressed: widget.onGoToFleet,
             icon: const Icon(Icons.arrow_forward_rounded, size: 18),
-            label: Text(l10n.onboardingManageFleet, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
+            label: Text(l10n.onboardingManageFleet),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.secondary,
               foregroundColor: Colors.white,

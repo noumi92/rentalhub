@@ -93,8 +93,7 @@ class VehicleDetailActionBar extends StatelessWidget {
             ),
             icon: Icon(Icons.chat_bubble_outline_rounded,
                 size: 18, color: AppColors.successOnContainerFor(Theme.of(context).brightness)),
-            label:  Text(l10n.whatsapp,
-                style: TextStyle(fontWeight: FontWeight.w700)),
+            label: Text(l10n.whatsapp),
           ),
           const SizedBox(width: 10),
           Expanded(

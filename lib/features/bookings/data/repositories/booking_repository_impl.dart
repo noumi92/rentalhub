@@ -17,6 +17,10 @@ class BookingRepositoryImpl implements BookingRepository {
     required DateTime returnTime,
     required int totalAmount,
     required int advanceRequired,
+    String? fixedRouteId,
+    String? fixedRouteSummary,
+    String? outCityMode,
+    int? outCityPerKmPkr,
   }) =>
       remoteDataSource.createBookingRequest(
         customerId: customerId,
@@ -28,6 +32,10 @@ class BookingRepositoryImpl implements BookingRepository {
         returnTime: returnTime,
         totalAmount: totalAmount,
         advanceRequired: advanceRequired,
+        fixedRouteId: fixedRouteId,
+        fixedRouteSummary: fixedRouteSummary,
+        outCityMode: outCityMode,
+        outCityPerKmPkr: outCityPerKmPkr,
       );
 
   @override

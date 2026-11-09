@@ -97,6 +97,9 @@ class _RentPackagePickerViewState extends State<RentPackagePickerView> {
         dailyWithDriverRate: widget.dailyWithDriverRate,
         hourlyRate: widget.hourlyRate,
         isOutOfCity: _isOutOfCity,
+        // 09b §2: when a fixed route is chosen the tiers show its flat
+        // price (the total already charges it in _calculatedRate).
+        fixedRoute: _selectedRoute,
       );
 
   PackageTierOption get _selectedTier =>
@@ -143,7 +146,10 @@ class _RentPackagePickerViewState extends State<RentPackagePickerView> {
       securityDepositPkr: widget.vehicle?.securityDepositPkr,
       tripType: _isOutOfCity ? 'out_of_city' : 'in_city',
       fixedRouteId: _selectedRoute?.routeId,
+      fixedRouteSummary: _selectedRoute?.displayName,
       destinationCity: _selectedRoute?.destinationCity,
+      outCityMode: widget.vehicle?.outCityMode,
+      outCityPerKmPkr: widget.vehicle?.outCityPerKmPkr,
       pickupDate: _pickupDate,
       pickupTime: _pickupTime,
       durationDays: _durationDays,

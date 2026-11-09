@@ -76,7 +76,7 @@ void main() {
   });
 
   group('Audit §4 — fleet card', () {
-    testWidgets('rented car: availability switch is disabled', (tester) async {
+    testWidgets('rented car: shows On Rent badge and two actions, no switch', (tester) async {
       const rented = VehicleEntity(
         vehicleId: 'veh-rented',
         shopId: 'shop-1',
@@ -87,28 +87,42 @@ void main() {
         status: 'rented',
         rates: VehicleRatesEntity(daily24: 9000),
       );
+      var ratesTapped = false;
+      var rulesTapped = false;
       await tester.pumpWidget(_wrap(FleetVehicleCard(
         vehicle: rented,
-        onToggleAvailability: (_) {},
-        onEditRates: () {},
-        onViewCalendar: () {},
+        onEditRates: () => ratesTapped = true,
+        onOutCityRules: () => rulesTapped = true,
       )));
       await tester.pumpAndSettle();
-      final sw = tester.widget<Switch>(find.byType(Switch));
-      expect(sw.onChanged, isNull);
-      expect(find.text('Available'), findsWidgets);
+      // Simplified card (2026-11-09): no availability switch, no
+      // "On Rent until" row — the status is a badge, and the only
+      // actions are Rates and Out-of-city rules.
+      expect(find.byType(Switch), findsNothing);
+      expect(find.text('On Rent'), findsOneWidget);
+      expect(find.text('Available'), findsNothing);
+      expect(find.byType(OutlinedButton), findsNWidgets(2));
+      expect(find.text('Edit rates'), findsOneWidget);
+      expect(find.text('Out-of-city rules'), findsOneWidget);
+      await tester.tap(find.text('Edit rates'));
+      await tester.tap(find.text('Out-of-city rules'));
+      expect(ratesTapped, isTrue);
+      expect(rulesTapped, isTrue);
     });
 
-    testWidgets('available car: availability switch is enabled', (tester) async {
+    testWidgets('available car: shows Available badge and two actions, no switch', (tester) async {
       await tester.pumpWidget(_wrap(FleetVehicleCard(
         vehicle: _testVehicle,
-        onToggleAvailability: (_) {},
         onEditRates: () {},
-        onViewCalendar: () {},
+        onOutCityRules: () {},
       )));
       await tester.pumpAndSettle();
-      final sw = tester.widget<Switch>(find.byType(Switch));
-      expect(sw.onChanged, isNotNull);
+      expect(find.byType(Switch), findsNothing);
+      expect(find.text('Available'), findsOneWidget);
+      expect(find.text('On Rent'), findsNothing);
+      expect(find.byType(OutlinedButton), findsNWidgets(2));
+      expect(find.text('Edit rates'), findsOneWidget);
+      expect(find.text('Out-of-city rules'), findsOneWidget);
     });
 
     testWidgets('selected filter chip label is white on orange', (tester) async {
@@ -150,7 +164,7 @@ void main() {
       ));
       await tester.pumpAndSettle();
       await tester.enterText(find.byType(TextField).first, 'abc');
-      await tester.tap(find.text('Save Pricing Matrix'));
+      await tester.tap(find.text('Save package'));
       await tester.pumpAndSettle();
       expect(saved, isFalse);
       expect(find.textContaining('Enter a valid number for'), findsOneWidget);

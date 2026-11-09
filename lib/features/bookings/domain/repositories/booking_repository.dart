@@ -11,6 +11,10 @@ abstract class BookingRepository {
     required DateTime returnTime,
     required int totalAmount,
     required int advanceRequired,
+    String? fixedRouteId,
+    String? fixedRouteSummary,
+    String? outCityMode,
+    int? outCityPerKmPkr,
   });
 
   Future<BookingEntity> updateBookingStatus({

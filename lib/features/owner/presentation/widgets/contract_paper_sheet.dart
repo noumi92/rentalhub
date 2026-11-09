@@ -109,6 +109,11 @@ class ContractPaperSheet extends StatelessWidget {
             _fieldRow(context, l10n.contractFieldPlate, booking.vehiclePlate!),
           _fieldRow(context, l10n.contractFieldPackage,
               '${booking.packageType} (${booking.isWithDriver ? l10n.contractChauffeur : l10n.selfDriveHyphen})'),
+          // Gap (b): the stored fixed route, shown when the trip was
+          // priced by fixed route — absent on older bookings, so no
+          // row renders then.
+          if (booking.fixedRouteSummary != null && booking.fixedRouteSummary!.isNotEmpty)
+            _fieldRow(context, l10n.outCityFixedRouteLabel, booking.fixedRouteSummary!),
           _fieldRow(context, l10n.contractFieldOdometer,
               odometer == null ? '—' : '$odometer KM'),
           _fieldRow(context, l10n.contractFieldFuel,

@@ -183,8 +183,7 @@ class RequestTriageCard extends StatelessWidget {
               child: ElevatedButton.icon(
                 onPressed: isProcessing ? null : onVerifyProof,
                 icon: const Icon(Icons.fact_check_rounded, size: 18),
-                label: Text(l10n.requestsVerifyProof,
-                    style: const TextStyle(fontWeight: FontWeight.w800)),
+                label: Text(l10n.requestsVerifyProof),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
@@ -209,8 +208,7 @@ class RequestTriageCard extends StatelessWidget {
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10)),
                     ),
-                    child: Text(l10n.requestsDecline,
-                        style: const TextStyle(fontWeight: FontWeight.w800)),
+                    child: Text(l10n.requestsDecline),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -226,8 +224,7 @@ class RequestTriageCard extends StatelessWidget {
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10)),
                     ),
-                    child: Text(l10n.requestsApprovePay,
-                        style: const TextStyle(fontWeight: FontWeight.w800)),
+                    child: Text(l10n.requestsApprovePay),
                   ),
                 ),
               ],

@@ -83,7 +83,19 @@ class AppShell extends StatelessWidget {
     // time — no ~status-bar-height empty strip appears between the
     // banner and the header when the banner is visible, and the
     // header still clears the status bar when it is hidden.
+    // Phone bug (run #51 APK): this outer Scaffold must NOT resize
+    // for the keyboard. Every in-shell view is itself a Scaffold
+    // (default resizeToAvoidBottomInset: true) and resizes its own
+    // body for the keyboard; if this outer Scaffold resized too, the
+    // inner body lost the keyboard height TWICE and the form's
+    // scroll area collapsed to ~0 px — the screen was almost
+    // entirely empty space while typing, with the focused field
+    // invisible. With resize off here, the inner Scaffold does the
+    // single resize; the tab bar stays at the screen bottom behind
+    // the keyboard while typing, which is the standard behaviour.
+    // (Regression: test/keyboard_layout_test.dart.)
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: SafeArea(
         top: true,
         bottom: false,

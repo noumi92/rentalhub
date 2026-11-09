@@ -32,6 +32,10 @@ class BookingModel extends BookingEntity {
     super.tripType,
     super.kmLimit,
     super.trackerCleared,
+    super.fixedRouteId,
+    super.fixedRouteSummary,
+    super.outCityMode,
+    super.outCityPerKmPkr,
   });
 
   Map<String, dynamic> toMap() {
@@ -66,6 +70,10 @@ class BookingModel extends BookingEntity {
       'tripType': tripType,
       if (kmLimit != null) 'kmLimit': kmLimit,
       'trackerCleared': trackerCleared,
+      if (fixedRouteId != null) 'fixedRouteId': fixedRouteId,
+      if (fixedRouteSummary != null) 'fixedRouteSummary': fixedRouteSummary,
+      if (outCityMode != null) 'outCityMode': outCityMode,
+      if (outCityPerKmPkr != null) 'outCityPerKmPkr': outCityPerKmPkr,
     };
   }
 
@@ -107,6 +115,10 @@ class BookingModel extends BookingEntity {
       tripType: (map['tripType'] as String?) ?? 'in_city',
       kmLimit: (map['kmLimit'] as num?)?.toInt(),
       trackerCleared: (map['trackerCleared'] as bool?) ?? false,
+      fixedRouteId: map['fixedRouteId'] as String?,
+      fixedRouteSummary: map['fixedRouteSummary'] as String?,
+      outCityMode: map['outCityMode'] as String?,
+      outCityPerKmPkr: (map['outCityPerKmPkr'] as num?)?.toInt(),
     );
   }
 
@@ -142,6 +154,10 @@ class BookingModel extends BookingEntity {
       tripType: entity.tripType,
       kmLimit: entity.kmLimit,
       trackerCleared: entity.trackerCleared,
+      fixedRouteId: entity.fixedRouteId,
+      fixedRouteSummary: entity.fixedRouteSummary,
+      outCityMode: entity.outCityMode,
+      outCityPerKmPkr: entity.outCityPerKmPkr,
     );
   }
 }

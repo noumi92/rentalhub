@@ -254,9 +254,8 @@ void main() {
           body: SingleChildScrollView(
             child: FleetVehicleCard(
               vehicle: _testCar,
-              onToggleAvailability: (_) {},
               onEditRates: () {},
-              onViewCalendar: () {},
+              onOutCityRules: () {},
             ),
           ),
         ),
@@ -266,7 +265,8 @@ void main() {
       expect(find.text('Honda Civic Oriel 2021'), findsOneWidget);
       expect(find.text('Rs. 9,000/day'), findsOneWidget);
       expect(find.text('Edit rates'), findsOneWidget);
-      expect(find.text('Booking calendar'), findsOneWidget);
+      expect(find.text('Out-of-city rules'), findsOneWidget);
+      expect(find.byType(Switch), findsNothing);
       // The old hardcoded 0xFFF8FAFC bottom strip must be gone.
       for (final el in find.byType(Container).evaluate()) {
         final w = el.widget as Container;

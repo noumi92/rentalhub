@@ -196,11 +196,8 @@ class _ShopDetailViewState extends State<ShopDetailView> {
                                 Icons.directions_car_rounded,
                                 size: 18,
                               ),
-                              label:  Text(
+                              label: Text(
                                 l10n.shopViewAllCars,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                ),
                               ),
                             ),
                           ),

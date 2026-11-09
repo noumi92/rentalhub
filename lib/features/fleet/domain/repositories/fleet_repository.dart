@@ -19,5 +19,13 @@ abstract class FleetRepository {
     required String vehicleId,
     required VehicleEntity vehicle,
   });
+  /// Car-details edit: writes the identity subset only (make, model,
+  /// year, plate, category, transmission, fuel, seats, color, front
+  /// photo, features, status) from one updated [VehicleEntity].
+  /// Rates, packages and pricing policy fields are never touched.
+  Future<void> updateVehicleDetails({
+    required String vehicleId,
+    required VehicleEntity vehicle,
+  });
 }
 

@@ -167,8 +167,7 @@ class ShopListCard extends StatelessWidget {
                         ),
                         icon: const Icon(Icons.call_rounded,
                             size: 14),
-                        label: Text(l10n.call,
-                            style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700)),
+                        label: Text(l10n.call),
                       ),
 
                       // Direct WhatsApp Chat Button
@@ -198,8 +197,7 @@ class ShopListCard extends StatelessWidget {
                         ),
                         icon: Icon(Icons.chat_bubble_outline_rounded,
                             size: 14, color: AppColors.successOnContainerFor(Theme.of(context).brightness)),
-                        label: Text(l10n.whatsapp,
-                            style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700)),
+                        label: Text(l10n.whatsapp),
                       ),
 
                       // View Showroom Fleet CTA
@@ -220,8 +218,7 @@ class ShopListCard extends StatelessWidget {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text(l10n.viewFleet,
-                                style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800)),
+                            Text(l10n.viewFleet),
                             SizedBox(width: 4),
                             Icon(Icons.arrow_forward_rounded, size: 13),
                           ],

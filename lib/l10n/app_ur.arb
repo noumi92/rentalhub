@@ -1609,7 +1609,7 @@
     }
   },
   "pricingOutOfCityDaily": "شہر سے باہر روزانہ (24 گھنٹے)",
-  "pricingOutOfCityDailyCap": "350 کلومیٹر شامل + ٹریکر کلیئر",
+  "pricingOutOfCityDailyCap": "300 کلومیٹر شامل + ٹریکر کلیئر",
   "pricingWithDriverSurcharge": "ڈرائیور کے ساتھ اضافی چارج (فی دن)",
   "pricingWithDriverSurchargeCap": "پیکج کی قیمت کے علاوہ شامل کیا جاتا ہے",
   "pricingSecurityDeposit": "ضمانت",
@@ -2175,6 +2175,9 @@
     }
   },
   "returnReceiptNetRefund": "گاہک کو خالص واپسی",
+  "returnPerKmActualFare": "فی کلومیٹر کرایہ (اصل کلومیٹر)",
+  "returnPerKmExtraDue": "اضافی کرایہ واجب الادا",
+  "returnPerKmRefundDue": "کرایہ کی واپسی واجب الادا",
   "contractTitle": "ڈیجیٹل رینٹل معاہدہ",
   "contractLegalRef": "قانونی معاہدہ حوالہ: #{id}",
   "@contractLegalRef": {
@@ -3778,5 +3781,69 @@
   "settingsNotifyReturns": "واپسیاں",
   "settingsNotifyMaintenance": "دیکھ بھال کی یاد دہانیاں",
   "reportDownloadPdf": "پی ڈی ایف ڈاؤن لوڈ کریں",
-  "reportDownloadPdfSaved": "رپورٹ کی پی ڈی ایف آپ کے آلے میں محفوظ ہو گئی۔"
+  "reportDownloadPdfSaved": "رپورٹ کی پی ڈی ایف آپ کے آلے میں محفوظ ہو گئی۔",
+  "carEditorTitle": "پیکج کے کرایے",
+  "carEditorSave": "پیکج محفوظ کریں",
+  "carEditorSaved": "کرایے محفوظ ہو گئے",
+  "outCityRulesTitle": "شہر سے باہر کے قواعد",
+  "outCityRulesSave": "قواعد محفوظ کریں",
+  "outCityRulesSaved": "قواعد محفوظ ہو گئے",
+  "outCityTripCharges": "سفر کے چارجز",
+  "outCityRulesAppliesAll": "تمام پیکجز پر لاگو",
+  "outCityBoundaryTitle": "ہوم سٹی کی حد",
+  "outCityBoundaryCity": "شہر",
+  "outCityBoundaryRadius": "رداس (کلومیٹر)",
+  "editVehicleTitle": "گاڑی کی تفصیلات بدلیں",
+  "editVehicleSave": "تفصیلات محفوظ کریں",
+  "editVehicleSaved": "گاڑی کی تفصیلات محفوظ ہو گئیں",
+  "editVehicleStatus": "حالت",
+  "outCityModePerDay": "فی دن",
+  "outCityModePerKm": "فی کلومیٹر",
+  "outCityModeFixedRoute": "مقررہ راستہ",
+  "outCityPricingMode": "قیمت کا طریقہ",
+  "outCityPerKmRate": "فی کلومیٹر نرخ (روپے/کلومیٹر)",
+  "outCityFixedRouteLabel": "مقررہ راستہ",
+  "outCityFixedRouteNone": "کوئی مقررہ راستہ منتخب نہیں",
+  "outCityFixedRouteChoose": "مقررہ راستہ منتخب کریں",
+  "farePerKmUnit": "{rate} / کلومیٹر",
+  "fareFixedRoute": "مقررہ راستہ: {route}",
+  "farePerKmEstimate": "تخمینہ {km} کلومیٹر پر — حتمی رقم واپسی پر اصل کلومیٹر کے مطابق",
+  "outCityNightStay": "ڈرائیور کا رات کا قیام (فی رات)",
+  "outCityNightStayCap": "ہوم سٹی سے باہر ہر رات پر چارج",
+  "outCityTolls": "ٹول اور پارکنگ",
+  "outCityTollsCustomer": "گاہک ادا کرے گا",
+  "outCityTollsIncluded": "کرائے میں شامل",
+  "bookingFareNightStay": "ڈرائیور کا رات کا قیام ({nights} راتیں)",
+  "bookingFareTollsCustomer": "ٹول اور پارکنگ — گاہک ادا کرے گا",
+  "bookingFareTollsIncluded": "ٹول اور پارکنگ — کرائے میں شامل ہے",
+  "outCityMapOffline": "آف لائن نقشہ دستیاب نہیں",
+  "outCityMapNoLocation": "شوروم کا مقام مقرر نہیں — حد بطور متن دکھائی گئی ہے",
+  "@farePerKmUnit": {
+    "placeholders": {
+      "rate": {
+        "type": "String"
+      }
+    }
+  },
+  "@fareFixedRoute": {
+    "placeholders": {
+      "route": {
+        "type": "String"
+      }
+    }
+  },
+  "@farePerKmEstimate": {
+    "placeholders": {
+      "km": {
+        "type": "int"
+      }
+    }
+  },
+  "@bookingFareNightStay": {
+    "placeholders": {
+      "nights": {
+        "type": "int"
+      }
+    }
+  }
 }

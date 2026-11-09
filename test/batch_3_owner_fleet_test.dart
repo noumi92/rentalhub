@@ -106,7 +106,7 @@ void main() {
   });
 
   group('Batch 3: Screen UI Actions & Rendering Tests', () {
-    testWidgets('OwnerRateMatrixView: renders switches, text inputs and saves matrix', (tester) async {
+    testWidgets('OwnerRateMatrixView: renders package chips, drive-mode switches and saves the package', (tester) async {
       bool saved = false;
       const testCar = VehicleEntity(
         vehicleId: 'veh-civic-matrix',
@@ -136,14 +136,19 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Vehicle Pricing Matrix'), findsOneWidget);
+      expect(find.text('Package rates'), findsOneWidget);
       expect(find.text('Honda Civic RS Turbo (2023)'), findsOneWidget);
       expect(find.text('Self-Drive Allowed'), findsOneWidget);
       expect(find.text('Chauffeur Service Allowed'), findsOneWidget);
-      expect(find.text('In-City Daily (24h)'), findsOneWidget);
+      expect(find.text('In-City Rent Rates'), findsOneWidget);
+      expect(find.text('Out-City Rent Rates'), findsOneWidget);
+      expect(find.text('Applies to all packages'), findsOneWidget);
+      expect(find.byType(ChoiceChip), findsNWidgets(7));
+      // The daily label appears twice: its chip AND its price row.
+      expect(find.text('In-City Daily (24h)'), findsWidgets);
       expect(find.text('Out-of-City Daily (24h)'), findsOneWidget);
 
-      await tester.tap(find.text('Save Pricing Matrix'));
+      await tester.tap(find.text('Save package'));
       await tester.pumpAndSettle();
 
       expect(saved, isTrue);

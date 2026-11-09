@@ -10,6 +10,26 @@ import '../../../fleet/data/datasources/fleet_remote_data_source.dart';
 import '../../../handover/data/datasources/handover_local_data_source.dart';
 import 'handover_photo_upload_service.dart' show ReturnRecordsService;
 
+/// Gap (c): the vehicle's out-of-city pricing as it stands at
+/// return time — the fallback when the booking carries no pricing
+/// snapshot of its own (older bookings). `driverNightStayPkr` is
+/// resolved here (Rs 2,000 deck default when unset, the same default
+/// the fare breakdown and the PDF use) so the pure settlement math
+/// downstream only ever sees ints.
+class PerKmPricing {
+  final String? outCityMode;
+  final int? outCityPerKmPkr;
+  final int driverAllowancePerDay;
+  final int driverNightStayPkr;
+
+  const PerKmPricing({
+    this.outCityMode,
+    this.outCityPerKmPkr,
+    this.driverAllowancePerDay = 0,
+    this.driverNightStayPkr = 2000,
+  });
+}
+
 /// Phase B (F1/F2): the return settlement, extracted from
 /// [OwnerReturnSettlementView] so the view stays under the 250-line
 /// cap. Loads the real handover/vehicle/deposit values and writes
@@ -24,6 +44,7 @@ class ReturnSettlementService {
     int deposit,
     int deductibleDamage,
     int extraCharges,
+    PerKmPricing perKmPricing,
   })> loadRealValues(
     BookingEntity booking, {
     int fallbackOdometer = 45200,
@@ -34,6 +55,7 @@ class ReturnSettlementService {
     var extraKmPkr = 100;
     var extraHourPkr = 0;
     var deposit = fallbackDeposit;
+    var perKmPricing = const PerKmPricing();
     // Audit item 6 (O27/O28): damage reports and extra charges
     // recorded on their own screens fold into the settlement.
     var deductibleDamage = 0;
@@ -66,6 +88,13 @@ class ReturnSettlementService {
         extraKmPkr = vehicle.first.extraKmPkr ?? 100;
         extraHourPkr = vehicle.first.extraHourPkr ?? 0;
         deposit = vehicle.first.securityDepositPkr ?? deposit;
+        perKmPricing = PerKmPricing(
+          outCityMode: vehicle.first.outCityMode,
+          outCityPerKmPkr: vehicle.first.outCityPerKmPkr,
+          driverAllowancePerDay:
+              vehicle.first.withDriverSurchargePkr ?? 0,
+          driverNightStayPkr: vehicle.first.driverNightStayPkr ?? 2000,
+        );
       }
       if (depositRecord != null) deposit = depositRecord.amount;
     } catch (_) {}
@@ -77,6 +106,48 @@ class ReturnSettlementService {
       deposit: deposit,
       deductibleDamage: deductibleDamage,
       extraCharges: extraCharges,
+      perKmPricing: perKmPricing,
+    );
+  }
+
+  /// Gap (c): whether this booking settles per-km, and the
+  /// reconciliation on its actual km. The booking's own pricing
+  /// snapshot wins — it is the rate agreed at booking time; the
+  /// vehicle's current rates are only the fallback for older
+  /// bookings that carry no snapshot. Returns null for every
+  /// non-per-km booking (in-city, per-day and fixed-route trips all
+  /// settle exactly as today — an in-city trip on a per-km-mode
+  /// vehicle is priced by its in-city package, never per-km) and
+  /// when no per-km rate is known.
+  /// [totalKmDriven] is return odometer − the handover record's
+  /// pickup odometer ([HandoverEntity.initialOdometer]) — the
+  /// caller computes it, so no value is ever invented here. Days
+  /// follow the same rule as the fare breakdown (sub-day counts as
+  /// 1 day); nights are days − 1, out-of-city with-driver only.
+  static PerKmSettlement? perKmSettlementFor({
+    required BookingEntity booking,
+    required int totalKmDriven,
+    required PerKmPricing pricing,
+  }) {
+    final mode = booking.outCityMode ?? pricing.outCityMode;
+    if (booking.tripType != 'out_of_city') return null;
+    if (mode != 'perKm') return null;
+    final rate = booking.outCityPerKmPkr ?? pricing.outCityPerKmPkr;
+    if (rate == null || rate <= 0) return null;
+    final minutes =
+        booking.returnTime.difference(booking.pickupTime).inMinutes;
+    final days = minutes <= 0 ? 1 : (minutes / (24 * 60)).ceil();
+    final nights = booking.tripType == 'out_of_city' && booking.isWithDriver
+        ? (days - 1).clamp(0, 1 << 30)
+        : 0;
+    return SettlementCalculator.calculatePerKm(
+      actualKm: totalKmDriven,
+      perKmRate: rate,
+      driverAllowancePerDay: pricing.driverAllowancePerDay,
+      days: days,
+      isWithDriver: booking.isWithDriver,
+      nightStayTotal: nights * pricing.driverNightStayPkr,
+      estimatedFare: booking.totalAmount,
     );
   }
 
@@ -100,13 +171,21 @@ class ReturnSettlementService {
     int extraCharges = 0,
     int remainingRentCollected = 0,
     String? paymentMethod,
+    // Gap (c): the per-km reconciliation for a per-km-mode booking
+    // (null for every other booking). It is persisted on the
+    // settlement doc below; it never changes the deposit math.
+    PerKmSettlement? perKmSettlement,
   }) async {
     final totalKmDriven = (returnOdometer - initialOdometer).clamp(0, 99999);
     final overtimeHours = _overtimeHours(booking.returnTime);
+    // Gap (c): a per-km trip has no included-km allowance — every
+    // km is paid at the per-km rate through the reconciliation, so
+    // the package excess-km charge must not also apply on top of it.
+    final effectiveExtraKmPkr = perKmSettlement != null ? 0 : extraKmPkr;
     final breakdown = SettlementCalculator.calculate(
       totalKmDriven: totalKmDriven,
       kmAllowance: kmAllowance,
-      extraKmPkr: extraKmPkr,
+      extraKmPkr: effectiveExtraKmPkr,
       fuelLevel: fuelLevel,
       damageCharge: damageCharge + deductibleDamage,
       overtimeHours: overtimeHours,
@@ -140,6 +219,15 @@ class ReturnSettlementService {
         'extraCharges': extraCharges,
         'totalDeductions': breakdown.totalDeductions,
         'netRefund': breakdown.netRefund,
+        if (perKmSettlement != null) ...{
+          'perKmMode': true,
+          'perKmRate': perKmSettlement.perKmRate,
+          'perKmActualKm': perKmSettlement.actualKm,
+          'perKmActualFare': perKmSettlement.actualFare,
+          'perKmEstimatedFare': perKmSettlement.estimatedFare,
+          'perKmExtraDue': perKmSettlement.extraDue,
+          'perKmRefundDue': perKmSettlement.refundDue,
+        },
         'completedAt': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
     } catch (_) {}

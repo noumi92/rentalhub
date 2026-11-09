@@ -1,5 +1,12 @@
 import 'package:equatable/equatable.dart';
 
+/// The out-of-city km allowance per day (km/day) used wherever a
+/// vehicle has no stored [VehicleEntity.outOfCityKmPerDay]. Decided
+/// by the user 2026-11-09: 300 km/day, editable per vehicle on the
+/// 09b rates screen. Existing documents keep their stored value —
+/// the 300 applies only where nothing is stored (no migration).
+const kDefaultOutCityKmPerDay = 300;
+
 class VehicleRatesEntity extends Equatable {
   final int? hourly1;
   final int? hourly3;
@@ -173,7 +180,8 @@ class VehicleEntity extends Equatable {
   final String? fuelPolicy;
 
   /// Phase B (B3): extra-km charge (Rs per km beyond the package's
-  /// included km) and the out-of-city km allowance per day (default 350).
+  /// included km) and the out-of-city km allowance per day (default
+  /// [kDefaultOutCityKmPerDay] when unset).
   final int? extraKmPkr;
   final int? outOfCityKmPerDay;
 
@@ -186,6 +194,30 @@ class VehicleEntity extends Equatable {
   /// Audit §5 (P4-O07): the owner's custom rates (see
   /// [CustomRateEntity]). Empty by default — never prefilled.
   final List<CustomRateEntity> customRates;
+
+  /// 010b out-of-city rules: the shop's home city and the radius (km)
+  /// around it that counts as "in city". Nullable — older documents
+  /// without them display the Lahore / 40 km defaults.
+  final String? homeCity;
+  final int? homeCityRadiusKm;
+
+  /// 09b §2 out-of-city modes (deck p.4): how out-of-city trips are
+  /// priced for this vehicle — 'perDay' (daily rate + km allowance),
+  /// 'perKm' (Rs per km, see [outCityPerKmPkr]) or 'fixedRoute'
+  /// (the flat price of [outCityFixedRouteId]). Nullable — older
+  /// documents without it price out-of-city per day.
+  final String? outCityMode;
+  /// Per-km rate (Rs/km) for [outCityMode] == 'perKm'. Nullable.
+  final int? outCityPerKmPkr;
+  /// Fixed-route id for [outCityMode] == 'fixedRoute'. Nullable.
+  final String? outCityFixedRouteId;
+
+  /// 010b trip charges: driver night-stay amount (Rs/night, deck
+  /// default 2000) and who pays tolls & parking ('customer' |
+  /// 'included', deck default 'customer'). Nullable — older documents
+  /// without them use the defaults at display.
+  final int? driverNightStayPkr;
+  final String? tollsPaidBy;
 
   /// Phase B (B2): the vehicle's rentable packages. Empty means "never
   /// set" — readers must use [effectivePackages], which derives the seven
@@ -234,6 +266,13 @@ class VehicleEntity extends Equatable {
     this.outOfCityKmPerDay,
     this.perKmPricingEnabled = true,
     this.customRates = const [],
+    this.homeCity,
+    this.homeCityRadiusKm,
+    this.outCityMode,
+    this.outCityPerKmPkr,
+    this.outCityFixedRouteId,
+    this.driverNightStayPkr,
+    this.tollsPaidBy,
   });
 
   /// Display name used across owner and customer screens.
@@ -329,6 +368,13 @@ class VehicleEntity extends Equatable {
     int? outOfCityKmPerDay,
     bool? perKmPricingEnabled,
     List<CustomRateEntity>? customRates,
+    String? homeCity,
+    int? homeCityRadiusKm,
+    String? outCityMode,
+    int? outCityPerKmPkr,
+    String? outCityFixedRouteId,
+    int? driverNightStayPkr,
+    String? tollsPaidBy,
   }) {
     return VehicleEntity(
       vehicleId: vehicleId ?? this.vehicleId,
@@ -374,6 +420,13 @@ class VehicleEntity extends Equatable {
       outOfCityKmPerDay: outOfCityKmPerDay ?? this.outOfCityKmPerDay,
       perKmPricingEnabled: perKmPricingEnabled ?? this.perKmPricingEnabled,
       customRates: customRates ?? this.customRates,
+      homeCity: homeCity ?? this.homeCity,
+      homeCityRadiusKm: homeCityRadiusKm ?? this.homeCityRadiusKm,
+      outCityMode: outCityMode ?? this.outCityMode,
+      outCityPerKmPkr: outCityPerKmPkr ?? this.outCityPerKmPkr,
+      outCityFixedRouteId: outCityFixedRouteId ?? this.outCityFixedRouteId,
+      driverNightStayPkr: driverNightStayPkr ?? this.driverNightStayPkr,
+      tollsPaidBy: tollsPaidBy ?? this.tollsPaidBy,
     );
   }
 
@@ -420,6 +473,13 @@ class VehicleEntity extends Equatable {
         outOfCityKmPerDay,
         perKmPricingEnabled,
         customRates,
+        homeCity,
+        homeCityRadiusKm,
+        outCityMode,
+        outCityPerKmPkr,
+        outCityFixedRouteId,
+        driverNightStayPkr,
+        tollsPaidBy,
       ];
 }
 

@@ -1,30 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import '../../../../core/di/injection_container.dart';
-import '../../../../core/routing/route_names.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../fleet/domain/entities/vehicle_entity.dart';
 import '../../../fleet/domain/usecases/update_vehicle_pricing_usecase.dart';
-import '../constants/owner_vehicle_constants.dart';
 import '../widgets/fleet/pricing_chrome.dart';
-import '../widgets/fleet/pricing_custom_rates.dart';
 import '../widgets/fleet/pricing_drive_mode_card.dart';
-import '../widgets/fleet/pricing_out_city_rates.dart';
-import '../widgets/fleet/pricing_package_list.dart';
-import '../widgets/fleet/pricing_policy_fields.dart';
+import '../widgets/fleet/pricing_out_city_modes.dart';
+import '../widgets/fleet/rate_matrix_field_widget.dart';
 
-/// Phase B (B2): the rate matrix now edits the vehicle's real packages
-/// (price + on/off toggle per package, incl. 12h and Weekly), the
-/// out-of-city rate, the with-driver surcharge, security deposit,
-/// advance, extra-hour charge and fuel policy — and it actually saves
-/// the drive-mode switches too (they used to be loaded but never
-/// persisted). Everything saves in one write via
-/// [UpdateVehiclePricingUseCase]; the legacy `rates` fields are kept
-/// in sync so existing readers keep working.
-/// Audit §6: every numeric field is validated before saving (an
-/// unparseable field used to silently overwrite a real price with a
-/// hardcoded default); back with unsaved edits asks first.
+/// 09b "Package Rates" (deck p.4): the SIMPLE per-package price editor.
+/// One package at a time — seven package chips, the selected package's
+/// price row, then the shared out-of-city values (labelled as applying
+/// to all packages: the model stores ONE out-of-city daily rate, ONE
+/// extra-km charge and ONE km allowance per vehicle, never per-package
+/// prices). No per-package enable toggles, no custom-rates editor, no
+/// "View estimate" link — those lived in the old complex matrix.
+/// Everything saves in one write via [UpdateVehiclePricingUseCase];
+/// the legacy `rates` fields are kept in sync so existing readers
+/// keep working. Deposit / advance / fuel policy live on the
+/// out-of-city rules screen (010b) now and are left untouched here.
+/// Audit §6: every numeric field is validated before saving; back
+/// with unsaved edits asks first.
 class OwnerRateMatrixView extends StatefulWidget {
   final VehicleEntity vehicle;
   final VoidCallback? onRatesSaved;
@@ -39,12 +36,10 @@ class OwnerRateMatrixView extends StatefulWidget {
 class _OwnerRateMatrixViewState extends State<OwnerRateMatrixView> {
   late List<VehiclePackageEntity> _packages;
   final Map<String, TextEditingController> _priceControllers = {};
-  late TextEditingController _outOfCityController, _surchargeController, _depositController, _advanceController, _extraHourController, _extraKmController, _outOfCityKmController;
-  late bool _isSelfDrive, _isWithDriver;
-  // Audit §5 (P4-O07): the owner's custom rates + the Per KM toggle.
-  late List<CustomRateEntity> _customRates;
-  late bool _perKmEnabled;
-  late String _fuelPolicy;
+  String _selectedLabel = '24h';
+  late TextEditingController _outOfCityController, _perKmController, _surchargeController, _extraHourController, _extraKmController, _outOfCityKmController;
+  late bool _isSelfDrive, _isWithDriver, _perKmEnabled;
+  late String _outCityMode; late String? _selectedRouteId;
   bool _isSaving = false;
   late String _initialSnapshot;
   bool _discardConfirmed = false;
@@ -63,17 +58,15 @@ class _OwnerRateMatrixViewState extends State<OwnerRateMatrixView> {
       _priceControllers[p.label] = TextEditingController(text: p.pricePkr.toString());
     }
     _outOfCityController = TextEditingController(text: (v.rates.outOfCityDaily ?? (v.rates.daily24 * 1.3).round()).toString());
+    _perKmController = TextEditingController(text: (v.outCityPerKmPkr ?? 30).toString());
+    _outCityMode = v.outCityMode ?? 'perDay'; _selectedRouteId = v.outCityFixedRouteId;
     _surchargeController = TextEditingController(text: (v.withDriverSurchargePkr ?? 2000).toString());
-    _depositController = TextEditingController(text: (v.securityDepositPkr ?? 25000).toString());
-    _advanceController = TextEditingController(text: (v.advanceRequiredPkr ?? 2000).toString());
     _extraHourController = TextEditingController(text: (v.extraHourPkr ?? 600).toString());
     _extraKmController = TextEditingController(text: (v.extraKmPkr ?? 100).toString());
-    _outOfCityKmController = TextEditingController(text: (v.outOfCityKmPerDay ?? 350).toString());
+    _outOfCityKmController = TextEditingController(text: (v.outOfCityKmPerDay ?? kDefaultOutCityKmPerDay).toString());
     _isSelfDrive = v.isSelfDriveAvailable;
     _isWithDriver = v.isWithDriverAvailable;
-    _customRates = List.of(v.customRates);
     _perKmEnabled = v.perKmPricingEnabled;
-    _fuelPolicy = v.fuelPolicy ?? 'Same to Same';
     _initialSnapshot = _snapshot();
   }
 
@@ -82,10 +75,8 @@ class _OwnerRateMatrixViewState extends State<OwnerRateMatrixView> {
     for (final c in _priceControllers.values) {
       c.dispose();
     }
-    _outOfCityController.dispose();
+    _outOfCityController.dispose(); _perKmController.dispose();
     _surchargeController.dispose();
-    _depositController.dispose();
-    _advanceController.dispose();
     _extraHourController.dispose();
     _extraKmController.dispose();
     _outOfCityKmController.dispose();
@@ -93,7 +84,9 @@ class _OwnerRateMatrixViewState extends State<OwnerRateMatrixView> {
   }
 
   /// One string capturing every editable value, for the dirty check.
-  String _snapshot() => [..._priceControllers.values.map((c) => c.text), _outOfCityController.text, _surchargeController.text, _depositController.text, _advanceController.text, _extraHourController.text, _extraKmController.text, _outOfCityKmController.text, '$_isSelfDrive', '$_isWithDriver', _fuelPolicy, ..._packages.map((p) => '${p.label}:${p.enabled}'), '$_perKmEnabled', ..._customRates.map((r) => '${r.name}:${r.pricePkr}:${r.period}')].join('|');
+  /// The selected chip is UI state, not data — switching packages
+  /// never marks the form dirty.
+  String _snapshot() => [..._priceControllers.values.map((c) => c.text), _outOfCityController.text, _surchargeController.text, _extraHourController.text, _extraKmController.text, _outOfCityKmController.text, '$_isSelfDrive', '$_isWithDriver', '$_perKmEnabled', _outCityMode, _perKmController.text, '$_selectedRouteId'].join('|');
 
   bool get _isDirty => _snapshot() != _initialSnapshot;
 
@@ -137,17 +130,14 @@ class _OwnerRateMatrixViewState extends State<OwnerRateMatrixView> {
     }
 
     for (final p in _packages) {
-      if (p.enabled && bad(_packageTitle(l10n, p.label), _priceControllers[p.label]?.text)) return false;
+      if (bad(_packageTitle(l10n, p.label), _priceControllers[p.label]?.text)) return false;
     }
-    if (bad(l10n.pricingOutOfCityDaily, _outOfCityController.text)) return false;
+    // 09b §2 modes: only the active mode's fields are validated — in Per-km mode the daily rate, km allowance and extra-km charge do not apply (the base price IS per km); in Fixed-route mode the flat route price replaces them, so a route must be selected. Audit §5 (P4-O07): no extra-km charge to validate when Per KM pricing is off — the field is disabled and keeps its last value.
+    if (_outCityMode == 'perKm') { if (bad(l10n.outCityPerKmRate, _perKmController.text)) return false; }
+    else if (_outCityMode == 'fixedRoute') { if (_selectedRouteId == null) { AppFeedback.showError(context, l10n.rateMatrixInvalidField(l10n.outCityFixedRouteLabel)); return false; } }
+    else { if (bad(l10n.pricingOutOfCityDaily, _outOfCityController.text)) return false; if (_perKmEnabled && bad(l10n.pricingExtraKmCharge, _extraKmController.text)) return false; if (bad(l10n.pricingOutOfCityKmAllowance, _outOfCityKmController.text)) return false; }
     if (bad(l10n.pricingWithDriverSurcharge, _surchargeController.text)) return false;
-    if (bad(l10n.pricingSecurityDeposit, _depositController.text, allowZero: true)) return false;
-    if (bad(l10n.pricingAdvanceRequired, _advanceController.text, allowZero: true)) return false;
     if (bad(l10n.pricingExtraHourCharge, _extraHourController.text)) return false;
-    // Audit §5 (P4-O07): no extra-km charge to validate when Per KM
-    // pricing is off — the field is disabled and keeps its last value.
-    if (_perKmEnabled && bad(l10n.pricingExtraKmCharge, _extraKmController.text)) return false;
-    if (bad(l10n.pricingOutOfCityKmAllowance, _outOfCityKmController.text)) return false;
     return true;
   }
 
@@ -156,7 +146,7 @@ class _OwnerRateMatrixViewState extends State<OwnerRateMatrixView> {
     if (!_validateAll()) return;
     setState(() => _isSaving = true);
     try {
-      // Disabled packages keep their last price (never a default).
+      // Enabled flags are preserved as stored — this screen has no toggles for them.
       final updatedPackages = _packages.map((p) => p.copyWith(pricePkr: _priceOf(p.label) ?? p.pricePkr)).toList();
       final r = widget.vehicle.rates;
       final updated = widget.vehicle.copyWith(
@@ -166,20 +156,23 @@ class _OwnerRateMatrixViewState extends State<OwnerRateMatrixView> {
         monthlyRate: _priceOf('Monthly') ?? widget.vehicle.monthlyRate,
         isSelfDriveAvailable: _isSelfDrive, isWithDriverAvailable: _isWithDriver,
         withDriverSurchargePkr: int.parse(_surchargeController.text.trim()),
-        securityDepositPkr: int.parse(_depositController.text.trim()),
-        advanceRequiredPkr: int.parse(_advanceController.text.trim()),
         extraHourPkr: int.parse(_extraHourController.text.trim()),
         extraKmPkr: int.parse(_extraKmController.text.trim()),
         outOfCityKmPerDay: int.parse(_outOfCityKmController.text.trim()),
         perKmPricingEnabled: _perKmEnabled,
-        customRates: _customRates,
-        fuelPolicy: _fuelPolicy,
+        // 09b §2 modes: the mode's own value is saved; the other
+        // modes' values pass through untouched (copyWith cannot clear
+        // a field, and the fare path only reads the active mode's).
+        outCityMode: _outCityMode, outCityPerKmPkr: _outCityMode == 'perKm' ? int.parse(_perKmController.text.trim()) : widget.vehicle.outCityPerKmPkr, outCityFixedRouteId: _outCityMode == 'fixedRoute' ? _selectedRouteId : widget.vehicle.outCityFixedRouteId,
+        // Deposit / advance / fuel policy / custom rates are edited
+        // elsewhere (010b / legacy data) — pass them through untouched.
+        customRates: widget.vehicle.customRates,
       );
       await sl<UpdateVehiclePricingUseCase>()(vehicleId: widget.vehicle.vehicleId, vehicle: updated);
       if (mounted) {
         // The saved values are the new clean state — back no longer asks.
         _initialSnapshot = _snapshot();
-        AppFeedback.showSuccess(context, l10n.pricingSavedSuccess);
+        AppFeedback.showSuccess(context, l10n.carEditorSaved);
         widget.onRatesSaved?.call();
       }
     } catch (e) {
@@ -193,6 +186,7 @@ class _OwnerRateMatrixViewState extends State<OwnerRateMatrixView> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final v = widget.vehicle;
+    final selected = _packages.firstWhere((p) => p.label == _selectedLabel, orElse: () => _packages.first);
     return PopScope(
       // Clean (or discard-confirmed) pops go through; a dirty pop is vetoed and routed to the confirm dialog instead.
       canPop: !_isDirty || _discardConfirmed,
@@ -205,7 +199,7 @@ class _OwnerRateMatrixViewState extends State<OwnerRateMatrixView> {
           top: false,
           child: Column(
             children: [
-              PricingHeader(vehicle: v, onBack: _handleBack),
+              PricingHeader(vehicle: v, onBack: _handleBack, title: l10n.carEditorTitle),
               Expanded(
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -216,29 +210,34 @@ class _OwnerRateMatrixViewState extends State<OwnerRateMatrixView> {
                       const SizedBox(height: 8),
                       PricingDriveModeCard(isSelfDrive: _isSelfDrive, onSelfDriveChanged: (val) => setState(() => _isSelfDrive = val), isWithDriver: _isWithDriver, onWithDriverChanged: (val) => setState(() => _isWithDriver = val)),
                       const SizedBox(height: 18),
-                      // Audit §5 finish (P4-O07/P4-O09): two separate lists — In-City packages, then Out-City day rate + extra-KM. Editor behaviour unchanged (inline price edit + enable toggle); the fixed package set is never added to or deleted from here.
                       Text(l10n.rateMatrixInCityTitle, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
-                      const SizedBox(height: 4),
-                      Text(l10n.pricingPackagesHint, style: Theme.of(context).textTheme.labelSmall),
                       const SizedBox(height: 8),
-                      PricingPackageList(packages: _packages, onToggle: (label, val) => setState(() { final i = _packages.indexWhere((p) => p.label == label); if (i != -1) _packages[i] = _packages[i].copyWith(enabled: val); }), priceController: (label) => _priceControllers[label]!),
+                      // 09b: pick ONE package, edit its price. All
+                      // seven controllers live in initState, so
+                      // switching chips never discards an edit.
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: _packages.map((p) => ChoiceChip(label: Text(_packageTitle(l10n, p.label)), selected: p.label == _selectedLabel, onSelected: (_) => setState(() => _selectedLabel = p.label))).toList(),
+                      ),
+                      const SizedBox(height: 12),
+                      RateMatrixFieldWidget(controller: _priceControllers[selected.label]!, label: _packageTitle(l10n, selected.label), hint: 'Rs. ${selected.pricePkr}', kmCap: l10n.pricingKmIncluded(selected.kmIncluded)),
+                      const SizedBox(height: 10),
+                      RateMatrixFieldWidget(controller: _extraHourController, label: l10n.pricingExtraHourCharge, hint: 'Rs. 600 / hour', kmCap: l10n.pricingExtraHourCap),
                       const SizedBox(height: 18),
                       Text(l10n.rateMatrixOutCityTitle, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
+                      const SizedBox(height: 4),
+                      Text(l10n.outCityRulesAppliesAll, style: Theme.of(context).textTheme.labelSmall),
                       const SizedBox(height: 8),
-                      PricingOutCityRates(outOfCityController: _outOfCityController, extraKmController: _extraKmController, outOfCityKmController: _outOfCityKmController, perKmEnabled: _perKmEnabled, onPerKmChanged: (val) => setState(() => _perKmEnabled = val)),
-                      const SizedBox(height: 18),
-                      Text(l10n.pricingPolicyTitle, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
-                      const SizedBox(height: 8),
-                      PricingPolicyFields(surchargeController: _surchargeController, depositController: _depositController, advanceController: _advanceController, extraHourController: _extraHourController, fuelPolicy: _fuelPolicy, onFuelPolicyChanged: (f) => setState(() => _fuelPolicy = f), fuelPolicies: OwnerVehicleConstants.fuelPolicies),
-                      const SizedBox(height: 18),
-                      // Audit §5 (P4-O07): owner-added custom rates with add + delete.
-                      PricingCustomRates(customRates: _customRates, onChanged: (rates) => setState(() => _customRates = rates)),
+                      PricingOutCityModes(mode: _outCityMode, onModeChanged: (m) => setState(() => _outCityMode = m), outOfCityController: _outOfCityController, perKmController: _perKmController, extraKmController: _extraKmController, outOfCityKmController: _outOfCityKmController, perKmEnabled: _perKmEnabled, onPerKmChanged: (val) => setState(() => _perKmEnabled = val), shopId: v.shopId, selectedRouteId: _selectedRouteId, onRouteChanged: (id) => setState(() => _selectedRouteId = id)),
+                      const SizedBox(height: 10),
+                      RateMatrixFieldWidget(controller: _surchargeController, label: l10n.pricingWithDriverSurcharge, hint: 'Rs. 2,000 / day', kmCap: l10n.pricingWithDriverSurchargeCap),
                       const SizedBox(height: 20),
                     ],
                   ),
                 ),
               ),
-              PricingSaveBar(isSaving: _isSaving, onPressed: _saveRates, onViewEstimate: () => context.push(RouteNames.ownerPriceEstimate.replaceFirst(':vehicleId', v.vehicleId))),
+              PricingSaveBar(isSaving: _isSaving, onPressed: _saveRates, label: l10n.carEditorSave),
             ],
           ),
         ),

@@ -175,10 +175,7 @@ class BookingTicketCard extends StatelessWidget {
                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         foregroundColor: AppColors.secondary,
                       ),
-                      child: Text(
-                        actionLabel!,
-                        style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800),
-                      ),
+                      child: Text(actionLabel!),
                     ),
                 ],
               ),

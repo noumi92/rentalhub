@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../../../../core/utils/money_format.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../bookings/utils/package_pricing.dart';
+import '../../../fleet/domain/entities/fixed_route_entity.dart';
 import '../../../fleet/domain/entities/vehicle_entity.dart';
 import 'manual_booking_package_selector.dart';
 import 'operations/booking_fare_breakdown.dart';
@@ -24,6 +25,7 @@ class ManualBookingFareSummary extends StatelessWidget {
     required this.returnTime,
     required this.customerName,
     required this.advanceReceived,
+    this.fixedRoute,
   });
 
   final VehicleEntity vehicle;
@@ -34,6 +36,8 @@ class ManualBookingFareSummary extends StatelessWidget {
   final DateTime returnTime;
   final String customerName;
   final int advanceReceived;
+  /// 09b §2: the fixed route chosen for this out-of-city trip.
+  final FixedRouteEntity? fixedRoute;
 
   @override
   Widget build(BuildContext context) {
@@ -44,6 +48,7 @@ class ManualBookingFareSummary extends StatelessWidget {
       package: package,
       isWithDriver: isWithDriver,
       isOutOfCity: isOutOfCity,
+      fixedRoute: fixedRoute,
     );
     final total = ManualBookingPackageSelector.totalFor(
       vehicle: vehicle,
@@ -52,12 +57,14 @@ class ManualBookingFareSummary extends StatelessWidget {
       isOutOfCity: isOutOfCity,
       pickup: pickupTime,
       returnTime: returnTime,
+      fixedRoute: fixedRoute,
     );
     final days = dayCountBetween(pickupTime, returnTime);
     final advanceRequired =
         PackagePricing.advanceFor(vehicle: vehicle, total: total);
     final isDaily = package.label == '24h';
     final isWeekly = package.label == 'Weekly';
+    final route = fixedRoute;
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(14),
@@ -76,6 +83,19 @@ class ManualBookingFareSummary extends StatelessWidget {
                 isOutOfCity
                     ? '${package.label} • ${l10n.outOfCityHyphen}'
                     : '${package.label} • ${l10n.inCityHyphen}'),
+            // 09b §2: the chosen fixed route, and the per-km estimate
+            // note (final total settles on actual km at return).
+            if (isOutOfCity && route != null)
+              _row(context, l10n.outCityFixedRouteLabel,
+                  route.displayName),
+            if (isOutOfCity && vehicle.outCityMode == 'perKm')
+              Padding(
+                padding: const EdgeInsets.only(bottom: 6),
+                child: Text(
+                    l10n.farePerKmEstimate(
+                        days * (vehicle.outOfCityKmPerDay ?? kDefaultOutCityKmPerDay)),
+                    style: Theme.of(context).textTheme.labelSmall),
+              ),
             _row(
                 context,
                 isDaily

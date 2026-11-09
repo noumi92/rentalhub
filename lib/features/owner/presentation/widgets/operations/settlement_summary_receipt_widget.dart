@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/utils/money_format.dart';
+import '../../../../finance/utils/settlement_calculator.dart';
 
 class SettlementSummaryReceiptWidget extends StatelessWidget {
   final int totalKm;
@@ -16,6 +17,12 @@ class SettlementSummaryReceiptWidget extends StatelessWidget {
   /// Audit item 6 (O28): manually recorded extra charges, shown as
   /// their own deduction row and included in the total.
   final int extraCharges;
+  /// Gap (c): the per-km fare reconciliation for a per-km-mode
+  /// booking — null for every other booking, so the receipt is
+  /// unchanged for those trips. The extra-due / refund rows are
+  /// rent, not deposit deductions, so they never enter
+  /// [totalDeductions] / [netRefund] below.
+  final PerKmSettlement? perKm;
 
   const SettlementSummaryReceiptWidget({
     super.key,
@@ -29,6 +36,7 @@ class SettlementSummaryReceiptWidget extends StatelessWidget {
     required this.securityDeposit,
     required this.netRefund,
     this.extraCharges = 0,
+    this.perKm,
   });
 
   @override
@@ -54,6 +62,17 @@ class SettlementSummaryReceiptWidget extends StatelessWidget {
           const SizedBox(height: 12),
           _itemRow(context, l10n.returnReceiptTotalKm, '$totalKm KM'),
           _itemRow(context, l10n.returnReceiptAllowance, '${totalKm - excessKm} KM'),
+          // Gap (c): the per-km reconciliation, only for per-km-mode
+          // bookings — rate, actual fare on the real km, and the
+          // extra due / refund against the booked estimate.
+          if (perKm != null) ...[
+            _itemRow(context, l10n.outCityPerKmRate, l10n.farePerKmUnit(formatRs(perKm!.perKmRate))),
+            _itemRow(context, l10n.returnPerKmActualFare, l10n.amountRs(formatRs(perKm!.actualFare))),
+            if (perKm!.extraDue > 0)
+              _itemRow(context, l10n.returnPerKmExtraDue, l10n.returnReceiptDeductionsAmount(formatRs(perKm!.extraDue)), isDeduction: true),
+            if (perKm!.refundDue > 0)
+              _itemRow(context, l10n.returnPerKmRefundDue, l10n.amountRs(formatRs(perKm!.refundDue))),
+          ],
           if (excessKm > 0)
             _itemRow(context, l10n.returnReceiptExcessPenalty(excessKm, formatRs(extraKmRate)), l10n.returnReceiptDeductionsAmount(formatRs(excessKmPenalty)), isDeduction: true),
           if (fuelDeficitFee > 0)

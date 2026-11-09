@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../../../fleet/domain/entities/fixed_route_entity.dart';
 import '../../../fleet/domain/entities/vehicle_entity.dart';
 import 'package_tier_card.dart';
+import '../../../../core/utils/money_format.dart';
 import '../../../../l10n/app_localizations.dart';
 
 /// One selectable duration tier in the booking picker.
@@ -13,6 +15,8 @@ class PackageTierOption {
     required this.subtitle,
     required this.price,
     required this.kmIncluded,
+    this.perKmRatePkr,
+    this.perKmKmPerDay,
   });
 
   final String label;
@@ -22,7 +26,15 @@ class PackageTierOption {
   final int price;
   final String kmIncluded;
 
-  PackageTierOption copyWith({int? price, String? kmIncluded}) {
+  /// 09b §2: set when the tier price is a per-km ESTIMATE, not a flat
+  /// package price — the Rs/km rate and the km/day it was estimated
+  /// on (stored allowance, default [kDefaultOutCityKmPerDay]). The card shows the rate
+  /// ([PackageTierList] renders it via `farePerKmUnit`) and the
+  /// estimate note; the final total settles on actual km at return.
+  final int? perKmRatePkr;
+  final int? perKmKmPerDay;
+
+  PackageTierOption copyWith({int? price, String? kmIncluded, int? perKmRatePkr, int? perKmKmPerDay}) {
     return PackageTierOption(
       label: label,
       hours: hours,
@@ -30,6 +42,8 @@ class PackageTierOption {
       subtitle: subtitle,
       price: price ?? this.price,
       kmIncluded: kmIncluded ?? this.kmIncluded,
+      perKmRatePkr: perKmRatePkr ?? this.perKmRatePkr,
+      perKmKmPerDay: perKmKmPerDay ?? this.perKmKmPerDay,
     );
   }
 }
@@ -108,6 +122,7 @@ class PackageTierList extends StatelessWidget {
     required int dailyWithDriverRate,
     required int? hourlyRate,
     bool isOutOfCity = false,
+    FixedRouteEntity? fixedRoute,
   }) {
     if (vehicle != null) {
       var options = vehicle.enabledPackages.map((p) {
@@ -121,19 +136,46 @@ class PackageTierList extends StatelessWidget {
           kmIncluded: copy.km,
         );
       }).toList();
-      // Out-of-city: the daily rate is the out-of-city rate, so every
-      // tier scales by the same ratio; the km allowance becomes the
-      // out-of-city allowance (350 km/day by default).
-      if (isOutOfCity && vehicle.rates.daily24 > 0) {
-        final outDaily =
-            vehicle.rates.outOfCityDaily ?? vehicle.rates.daily24;
-        final ratio = outDaily / vehicle.rates.daily24;
-        final outKm = vehicle.outOfCityKmPerDay ?? 350;
-        options = options.map((o) {
-          final km = o.hours >= 24 ? '$outKm km/day' : o.kmIncluded;
-          return o.copyWith(
-              price: (o.price * ratio).round(), kmIncluded: km);
-        }).toList();
+      // Out-of-city modes (09b §2). A chosen fixed route is one flat
+      // trip price — the picker already charges it in
+      // [RentPackagePickerView._calculatedRate] — so every tier shows
+      // that price and the route distance, whatever the vehicle mode.
+      // Per-km tiers show the ESTIMATE for their duration (rate ×
+      // km/day × hours/24) with the rate on the card, never a flat
+      // package price. Per-day keeps the ratio scaling below.
+      if (isOutOfCity) {
+        if (fixedRoute != null) {
+          options = options
+              .map((o) => o.copyWith(
+                  price: fixedRoute.fixedPricePkr,
+                  kmIncluded: '${fixedRoute.distanceKm} km'))
+              .toList();
+        } else if (vehicle.outCityMode == 'perKm' &&
+            (vehicle.outCityPerKmPkr ?? 0) > 0) {
+          final rate = vehicle.outCityPerKmPkr!;
+          final kmPerDay = vehicle.outOfCityKmPerDay ?? kDefaultOutCityKmPerDay;
+          options = options.map((o) {
+            final estKm = (kmPerDay * o.hours / 24).round();
+            return o.copyWith(
+                price: (rate * kmPerDay * o.hours / 24).round(),
+                kmIncluded: '$estKm km',
+                perKmRatePkr: rate,
+                perKmKmPerDay: kmPerDay);
+          }).toList();
+        } else if (vehicle.rates.daily24 > 0) {
+          // Out-of-city: the daily rate is the out-of-city rate, so every
+          // tier scales by the same ratio; the km allowance becomes the
+          // out-of-city allowance ([kDefaultOutCityKmPerDay] km/day by default).
+          final outDaily =
+              vehicle.rates.outOfCityDaily ?? vehicle.rates.daily24;
+          final ratio = outDaily / vehicle.rates.daily24;
+          final outKm = vehicle.outOfCityKmPerDay ?? kDefaultOutCityKmPerDay;
+          options = options.map((o) {
+            final km = o.hours >= 24 ? '$outKm km/day' : o.kmIncluded;
+            return o.copyWith(
+                price: (o.price * ratio).round(), kmIncluded: km);
+          }).toList();
+        }
       }
       return options;
     }
@@ -220,6 +262,12 @@ class PackageTierList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    // 09b §2: per-km tiers carry the rate — the card's km pill shows
+    // "Rs. 30 / km" (farePerKmUnit) instead of a km allowance, and
+    // the estimate note says the total is estimated on the allowance.
+    final perKmRate = options.isNotEmpty ? options.first.perKmRatePkr : null;
+    final perKmKmPerDay =
+        options.isNotEmpty ? options.first.perKmKmPerDay : null;
     return Column(
       children: [
         for (int i = 0; i < options.length; i++) ...[
@@ -227,11 +275,18 @@ class PackageTierList extends StatelessWidget {
             title: _titleFor(l10n, options[i]),
             subtitle: _subtitleFor(l10n, options[i]),
             price: options[i].price + surchargeFor(options[i]),
-            kmIncluded: options[i].kmIncluded,
+            kmIncluded: perKmRate != null
+                ? l10n.farePerKmUnit(l10n.amountRs(formatRs(perKmRate)))
+                : options[i].kmIncluded,
             isSelected: selectedLabel == options[i].label,
             onTap: () => onSelect(options[i].label),
           ),
           if (i < options.length - 1) const SizedBox(height: 10),
+        ],
+        if (perKmRate != null && perKmKmPerDay != null) ...[
+          const SizedBox(height: 10),
+          Text(l10n.farePerKmEstimate(perKmKmPerDay),
+              style: Theme.of(context).textTheme.labelSmall),
         ],
       ],
     );

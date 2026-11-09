@@ -4,6 +4,7 @@ import '../../../bookings/domain/entities/booking_entity.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/utils/current_shop.dart';
 import '../../../customer/utils/save_walk_in_customer.dart';
+import '../../../fleet/domain/entities/fixed_route_entity.dart';
 import '../../../fleet/domain/entities/vehicle_entity.dart';
 import '../widgets/guarantor_picker.dart';
 import '../widgets/manual_booking_package_selector.dart';
@@ -43,6 +44,7 @@ class WalkInBookingService {
     DateTime? pickupTime,
     DateTime? returnTime,
     String tripType = 'in_city',
+    FixedRouteEntity? fixedRoute,
     int advanceReceived = 0,
   }) async {
     final ds = sl<BookingRemoteDataSource>();
@@ -70,6 +72,10 @@ class WalkInBookingService {
       totalAmount: rentAmount,
       advanceRequired: advanceRequired,
       tripType: tripType,
+      fixedRouteId: fixedRoute?.routeId,
+      fixedRouteSummary: fixedRoute?.displayName,
+      outCityMode: vehicle.outCityMode,
+      outCityPerKmPkr: vehicle.outCityPerKmPkr,
     );
 
     // Phase B (C1): the walk-in customer is saved with their CNIC,

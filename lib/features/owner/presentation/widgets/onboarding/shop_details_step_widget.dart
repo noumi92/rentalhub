@@ -84,7 +84,7 @@ class ShopDetailsStepWidget extends StatelessWidget {
             icon: Icon(Icons.upload_rounded, size: 16, color: AppColors.orangeTextFor(Theme.of(context).brightness)),
             label: Text(
               shopLogoFile != null ? l10n.onboardingChangeLogo : l10n.onboardingUploadLogo,
-              style: Theme.of(context).textTheme.labelMedium?.copyWith(color: AppColors.orangeTextFor(Theme.of(context).brightness), fontWeight: FontWeight.w800),
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(color: AppColors.orangeTextFor(Theme.of(context).brightness), fontWeight: FontWeight.w400),
             ),
           ),
         ),

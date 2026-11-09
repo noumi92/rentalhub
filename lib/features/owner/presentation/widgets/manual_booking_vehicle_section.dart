@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../l10n/app_localizations.dart';
 
+import '../../../fleet/domain/entities/fixed_route_entity.dart';
 import '../../../fleet/domain/entities/vehicle_entity.dart';
 import 'manual_booking_package_selector.dart';
 
@@ -22,6 +23,8 @@ class ManualBookingVehicleSection extends StatelessWidget {
     this.isOutOfCity = false,
     this.pickup,
     this.returnTime,
+    this.selectedFixedRoute,
+    this.onFixedRouteChanged,
   });
 
   final bool isLoadingVehicles;
@@ -39,6 +42,10 @@ class ManualBookingVehicleSection extends StatelessWidget {
   final bool isOutOfCity;
   final DateTime? pickup;
   final DateTime? returnTime;
+
+  /// 09b §2: the fixed route chosen for this out-of-city trip.
+  final FixedRouteEntity? selectedFixedRoute;
+  final ValueChanged<FixedRouteEntity?>? onFixedRouteChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -63,6 +70,8 @@ class ManualBookingVehicleSection extends StatelessWidget {
           isOutOfCity: isOutOfCity,
           pickup: pickup,
           returnTime: returnTime,
+          selectedFixedRoute: selectedFixedRoute,
+          onFixedRouteChanged: onFixedRouteChanged,
         ),
         const SizedBox(height: 12),
         TextField(

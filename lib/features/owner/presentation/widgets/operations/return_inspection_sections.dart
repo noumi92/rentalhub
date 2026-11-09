@@ -57,6 +57,13 @@ class ReturnLandingSection extends StatelessWidget {
             l10n.amountRs(formatRs(booking.totalAmount))),
         _row(context, l10n.returnFareRemaining,
             l10n.amountRs(formatRs(booking.remainingBalance))),
+        // Gap (b): the stored fixed route, shown when the trip was
+        // priced by fixed route — absent on older bookings and on
+        // non-route trips, so no row renders then.
+        if (booking.fixedRouteSummary != null &&
+            booking.fixedRouteSummary!.isNotEmpty)
+          _row(context, l10n.outCityFixedRouteLabel,
+              booking.fixedRouteSummary!),
         const SizedBox(height: 20),
         DebouncedButton(
           text: l10n.returnLandingStart,

@@ -19,9 +19,8 @@ import '../../../fleet/domain/entities/vehicle_entity.dart';
 /// card used to open the customer detail route. Photo, identity,
 /// specs, rates summary, the vehicle's bookings, and the owner
 /// actions: Manage rates, Booking calendar, and Edit. Edit opens the
-/// rate matrix: it is the only vehicle editor that exists today
-/// (there is no specs/photos edit screen), so it is the honest
-/// destination for the button until one is built.
+/// car-details editor (ownerEditVehicle); Manage rates opens the
+/// per-package rates editor.
 class OwnerVehicleDetailView extends StatefulWidget {
   final VehicleEntity vehicle;
 
@@ -180,7 +179,7 @@ class _OwnerVehicleDetailViewState extends State<OwnerVehicleDetailView> {
                   const SizedBox(width: 8),
                   Expanded(child: OutlinedButton.icon(icon: const Icon(Icons.calendar_month_rounded, size: 18), label: Text(l10n.vehicleDetailCalendar), onPressed: () => context.push(RouteNames.ownerCalendar.replaceFirst(':vehicleId', v.vehicleId)))),
                   const SizedBox(width: 8),
-                  Expanded(child: FilledButton.icon(icon: const Icon(Icons.edit_rounded, size: 18), label: Text(l10n.vehicleDetailEdit), onPressed: () => context.push(RouteNames.ownerRatesVehicle.replaceFirst(':vehicleId', v.vehicleId)))),
+                  Expanded(child: FilledButton.icon(icon: const Icon(Icons.edit_rounded, size: 18), label: Text(l10n.vehicleDetailEdit), onPressed: () => context.push(RouteNames.ownerEditVehicle.replaceFirst(':id', v.vehicleId)))),
                 ],
               ),
             ),

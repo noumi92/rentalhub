@@ -1609,7 +1609,7 @@
     }
   },
   "pricingOutOfCityDaily": "Out-of-City Daily (24h)",
-  "pricingOutOfCityDailyCap": "350 km included + tracker cleared",
+  "pricingOutOfCityDailyCap": "300 km included + tracker cleared",
   "pricingWithDriverSurcharge": "With-Driver Surcharge (per day)",
   "pricingWithDriverSurchargeCap": "Added on top of the package price",
   "pricingSecurityDeposit": "Security Deposit",
@@ -2175,6 +2175,9 @@
     }
   },
   "returnReceiptNetRefund": "Net Refund to Customer",
+  "returnPerKmActualFare": "Per-km fare (actual km)",
+  "returnPerKmExtraDue": "Extra fare due",
+  "returnPerKmRefundDue": "Fare refund due",
   "contractTitle": "Digital Rental Contract",
   "contractLegalRef": "Legal Agreement Ref: #{id}",
   "@contractLegalRef": {
@@ -3778,5 +3781,69 @@
   "settingsNotifyReturns": "Returns",
   "settingsNotifyMaintenance": "Maintenance reminders",
   "reportDownloadPdf": "Download PDF",
-  "reportDownloadPdfSaved": "Report PDF saved to your device."
+  "reportDownloadPdfSaved": "Report PDF saved to your device.",
+  "carEditorTitle": "Package rates",
+  "carEditorSave": "Save package",
+  "carEditorSaved": "Rates saved",
+  "outCityRulesTitle": "Out-of-city rules",
+  "outCityRulesSave": "Save rules",
+  "outCityRulesSaved": "Rules saved",
+  "outCityTripCharges": "Trip charges",
+  "outCityRulesAppliesAll": "Applies to all packages",
+  "outCityBoundaryTitle": "Home city boundary",
+  "outCityBoundaryCity": "City",
+  "outCityBoundaryRadius": "Radius (km)",
+  "editVehicleTitle": "Edit car details",
+  "editVehicleSave": "Save details",
+  "editVehicleSaved": "Car details saved",
+  "editVehicleStatus": "Status",
+  "outCityModePerDay": "Per day",
+  "outCityModePerKm": "Per km",
+  "outCityModeFixedRoute": "Fixed route",
+  "outCityPricingMode": "Pricing mode",
+  "outCityPerKmRate": "Per-km rate (Rs/km)",
+  "outCityFixedRouteLabel": "Fixed route",
+  "outCityFixedRouteNone": "No fixed route selected",
+  "outCityFixedRouteChoose": "Choose a fixed route",
+  "farePerKmUnit": "{rate} / km",
+  "fareFixedRoute": "Fixed route: {route}",
+  "farePerKmEstimate": "Estimated on {km} km — final total on actual km at return",
+  "outCityNightStay": "Driver night stay (per night)",
+  "outCityNightStayCap": "Charged for each night away from the home city",
+  "outCityTolls": "Tolls & parking",
+  "outCityTollsCustomer": "Paid by customer",
+  "outCityTollsIncluded": "Included in rent",
+  "bookingFareNightStay": "Driver night stay ({nights} nights)",
+  "bookingFareTollsCustomer": "Tolls & parking — paid by customer",
+  "bookingFareTollsIncluded": "Tolls & parking — included in rent",
+  "outCityMapOffline": "Map unavailable offline",
+  "outCityMapNoLocation": "Shop location not set — boundary shown as text",
+  "@farePerKmUnit": {
+    "placeholders": {
+      "rate": {
+        "type": "String"
+      }
+    }
+  },
+  "@fareFixedRoute": {
+    "placeholders": {
+      "route": {
+        "type": "String"
+      }
+    }
+  },
+  "@farePerKmEstimate": {
+    "placeholders": {
+      "km": {
+        "type": "int"
+      }
+    }
+  },
+  "@bookingFareNightStay": {
+    "placeholders": {
+      "nights": {
+        "type": "int"
+      }
+    }
+  }
 }

@@ -115,8 +115,8 @@ class ShopLocationStepWidget extends StatelessWidget {
                       size: 16, color: AppColors.orangeTextFor(Theme.of(context).brightness)),
               label: Text(
                 isLocating ? l10n.onboardingLocating : l10n.onboardingUseGps,
-                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    fontWeight: FontWeight.w800, color: AppColors.orangeTextFor(Theme.of(context).brightness)),
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    fontWeight: FontWeight.w400, color: AppColors.orangeTextFor(Theme.of(context).brightness)),
               ),
             ),
           ],

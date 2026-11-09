@@ -40,6 +40,7 @@ class RouteNames {
   static const String ownerDashboard = '/owner/dashboard';
   static const String ownerFleet = '/owner/fleet';
   static const String ownerVehicleDetail = '/owner/vehicles/:id';
+  static const String ownerEditVehicle = '/owner/vehicles/:id/edit';
   static const String ownerVehiclePublished =
       '/owner/fleet/published/:vehicleId';
   static const String ownerShareWithCustomers =
@@ -50,6 +51,7 @@ class RouteNames {
   static const String ownerAddVehicle = '/owner/fleet/add';
   static const String ownerRates = '/owner/rates';
   static const String ownerRatesVehicle = '/owner/rates/:vehicleId';
+  static const String ownerOutCityRules = '/owner/out-city-rules/:vehicleId';
   static const String ownerFixedRoutes = '/owner/fixed-routes';
   static const String ownerCalendar = '/owner/calendar/:vehicleId';
   static const String ownerRequests = '/owner/requests';

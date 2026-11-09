@@ -158,8 +158,7 @@ class _RequestedBookingDetailState extends State<RequestedBookingDetail> {
               child: OutlinedButton.icon(
                 onPressed: () => _convertToManual(context),
                 icon: const Icon(Icons.edit_note_rounded),
-                label: Text(l10n.bookingConvertToManual,
-                    style: const TextStyle(fontWeight: FontWeight.w800)),
+                label: Text(l10n.bookingConvertToManual),
               ),
             ),
             const SizedBox(height: 16),

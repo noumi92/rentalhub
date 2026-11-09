@@ -178,9 +178,7 @@ class _OwnerBookingConfirmedViewState
                               .replaceFirst(':id', booking.bookingId),
                         ),
                         icon: const Icon(Icons.receipt_long_rounded),
-                        label: Text(l10n.bookingConfirmedViewBooking,
-                            style: const TextStyle(
-                                fontWeight: FontWeight.w800)),
+                        label: Text(l10n.bookingConfirmedViewBooking),
                       ),
                     ),
                     const SizedBox(height: 10),
@@ -189,9 +187,7 @@ class _OwnerBookingConfirmedViewState
                       child: OutlinedButton.icon(
                         onPressed: _messageCustomer,
                         icon: const Icon(Icons.chat_rounded),
-                        label: Text(l10n.bookingConfirmedMessageCustomer,
-                            style: const TextStyle(
-                                fontWeight: FontWeight.w800)),
+                        label: Text(l10n.bookingConfirmedMessageCustomer),
                       ),
                     ),
                   ],

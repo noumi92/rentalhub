@@ -46,6 +46,24 @@ class BookingEntity extends Equatable {
   final int? kmLimit;
   final bool trackerCleared;
 
+  /// Gap (b): the fixed route chosen for an out-of-city trip, and
+  /// its denormalised display name (e.g. "Lahore → Islamabad") so
+  /// detail / return / agreement screens can show the route without
+  /// a lookup. Null on older bookings and on trips that were not
+  /// priced by fixed route — never invented.
+  final String? fixedRouteId;
+  final String? fixedRouteSummary;
+
+  /// Gap (b/c): the out-of-city pricing snapshot agreed at booking
+  /// time — the vehicle's mode ('perDay' | 'perKm' | 'fixedRoute')
+  /// and per-km rate (Rs/km) as they were when the trip was booked.
+  /// The return settlement reads these first, so an owner editing
+  /// the vehicle's rates mid-trip can never re-price a signed trip.
+  /// Null on older bookings (the return flow then falls back to the
+  /// vehicle's current rates).
+  final String? outCityMode;
+  final int? outCityPerKmPkr;
+
   const BookingEntity({
     required this.bookingId,
     required this.customerId,
@@ -77,6 +95,10 @@ class BookingEntity extends Equatable {
     this.tripType = 'in_city',
     this.kmLimit,
     this.trackerCleared = false,
+    this.fixedRouteId,
+    this.fixedRouteSummary,
+    this.outCityMode,
+    this.outCityPerKmPkr,
   });
 
   BookingEntity copyWith({
@@ -100,6 +122,10 @@ class BookingEntity extends Equatable {
     String? tripType,
     int? kmLimit,
     bool? trackerCleared,
+    String? fixedRouteId,
+    String? fixedRouteSummary,
+    String? outCityMode,
+    int? outCityPerKmPkr,
   }) {
     return BookingEntity(
       bookingId: bookingId,
@@ -134,6 +160,10 @@ class BookingEntity extends Equatable {
       tripType: tripType ?? this.tripType,
       kmLimit: kmLimit ?? this.kmLimit,
       trackerCleared: trackerCleared ?? this.trackerCleared,
+      fixedRouteId: fixedRouteId ?? this.fixedRouteId,
+      fixedRouteSummary: fixedRouteSummary ?? this.fixedRouteSummary,
+      outCityMode: outCityMode ?? this.outCityMode,
+      outCityPerKmPkr: outCityPerKmPkr ?? this.outCityPerKmPkr,
     );
   }
 
@@ -169,5 +199,9 @@ class BookingEntity extends Equatable {
         tripType,
         kmLimit,
         trackerCleared,
+        fixedRouteId,
+        fixedRouteSummary,
+        outCityMode,
+        outCityPerKmPkr,
       ];
 }

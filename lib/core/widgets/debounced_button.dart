@@ -102,11 +102,13 @@ class _DebouncedButtonState extends State<DebouncedButton> {
                   child: Text(
                     widget.displayLabel(context),
                     overflow: TextOverflow.ellipsis,
-                    // No theme text colour here: the label must take the
-                    // button's foregroundColor (white). The old titleSmall
-                    // colour forced onSurface text onto the orange button.
-                    style: TextStyle(
-                      fontWeight: FontWeight.w700,
+                    // Size/weight come from the labelLarge theme slot
+                    // (14sp); only the colour is overridden so the label
+                    // takes the button's foregroundColor (white). The old
+                    // titleSmall colour forced onSurface text onto the
+                    // orange button.
+                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                      fontWeight: FontWeight.w400,
                       color: widget.textColor ?? Colors.white,
                     ),
                   ),

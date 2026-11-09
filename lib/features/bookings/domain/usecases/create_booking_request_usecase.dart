@@ -15,6 +15,10 @@ class CreateBookingRequestUseCase {
     required DateTime returnTime,
     required int totalAmount,
     required int advanceRequired,
+    String? fixedRouteId,
+    String? fixedRouteSummary,
+    String? outCityMode,
+    int? outCityPerKmPkr,
   }) =>
       repository.createBookingRequest(
         customerId: customerId,
@@ -26,6 +30,10 @@ class CreateBookingRequestUseCase {
         returnTime: returnTime,
         totalAmount: totalAmount,
         advanceRequired: advanceRequired,
+        fixedRouteId: fixedRouteId,
+        fixedRouteSummary: fixedRouteSummary,
+        outCityMode: outCityMode,
+        outCityPerKmPkr: outCityPerKmPkr,
       );
 }
 

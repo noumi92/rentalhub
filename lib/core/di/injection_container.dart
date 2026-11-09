@@ -56,6 +56,7 @@ import '../../features/fleet/domain/usecases/delete_fixed_route_usecase.dart';
 import '../../features/fleet/domain/usecases/get_shop_fixed_routes_usecase.dart';
 import '../../features/fleet/domain/usecases/get_shop_vehicles_usecase.dart';
 import '../../features/fleet/domain/usecases/save_fixed_route_usecase.dart';
+import '../../features/fleet/domain/usecases/update_vehicle_usecase.dart';
 import '../../features/fleet/domain/usecases/update_vehicle_pricing_usecase.dart';
 import '../../features/fleet/domain/usecases/update_vehicle_status_usecase.dart';
 import '../../features/fleet/presentation/cubit/fleet_cubit.dart';
@@ -275,6 +276,7 @@ Future<void> initDependencies() async {
       () => UpdateVehicleStatusUseCase(sl<FleetRepository>()));
   sl.registerLazySingleton(
       () => UpdateVehiclePricingUseCase(sl<FleetRepository>()));
+  sl.registerLazySingleton(() => UpdateVehicleUseCase(sl<FleetRepository>()));
   sl.registerLazySingleton<FixedRouteRemoteDataSource>(
     () => FixedRouteRemoteDataSource(syncQueue: sl<OfflineSyncQueue>()),
   );

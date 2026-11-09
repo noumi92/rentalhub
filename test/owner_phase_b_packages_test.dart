@@ -168,19 +168,28 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Vehicle Pricing Matrix'), findsOneWidget);
+      expect(find.text('Package rates'), findsOneWidget);
       expect(find.text('Honda Civic Oriel (2021)'), findsOneWidget);
-      // Finish build (P4-O07): the "Rental Packages" heading is now
-      // the in-city list heading; the duration packages are unchanged.
+      // 09b: seven package chips, one price row at a time; the
+      // in-city list heading is unchanged.
       expect(find.text('In-City Rent Rates'), findsOneWidget);
       expect(find.text('12-Hour Half Day'), findsOneWidget);
       expect(find.text('Weekly Package (7 Days)'), findsOneWidget);
-      expect(find.text('Pricing Policy'), findsOneWidget);
-      expect(find.text('Security Deposit'), findsOneWidget);
-      expect(find.text('Fuel Policy'), findsOneWidget);
+      expect(find.byType(ChoiceChip), findsNWidgets(7));
+      expect(find.text('Out-City Rent Rates'), findsOneWidget);
+      expect(find.text('Applies to all packages'), findsOneWidget);
+      expect(find.text('Out-of-City Daily (24h)'), findsOneWidget);
+      expect(find.text('Extra Hour Charge'), findsOneWidget);
+      expect(find.text('With-Driver Surcharge (per day)'), findsOneWidget);
+      expect(find.text('Per KM Pricing?'), findsOneWidget);
       expect(find.text('Self-Drive Allowed'), findsOneWidget);
+      // Deposit / advance / fuel policy moved to the 010b rules
+      // screen — they are no longer on the rates editor.
+      expect(find.text('Security Deposit'), findsNothing);
+      expect(find.text('Fuel Policy'), findsNothing);
+      expect(find.text('Pricing Policy'), findsNothing);
 
-      await tester.tap(find.text('Save Pricing Matrix'));
+      await tester.tap(find.text('Save package'));
       await tester.pumpAndSettle();
       expect(saved, isTrue);
     });

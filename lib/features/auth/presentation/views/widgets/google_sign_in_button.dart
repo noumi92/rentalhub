@@ -39,8 +39,8 @@ class GoogleSignInButton extends StatelessWidget {
             const SizedBox(width: 12),
             Text(
               l10n.authGoogle,
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w700,
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                fontWeight: FontWeight.w400,
                 color: AppColors.primary,
               ),
             ),

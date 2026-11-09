@@ -163,7 +163,7 @@ class AppFeedback {
             child: Text(
               effectiveCancelLabel,
               style: TextStyle(
-                fontWeight: FontWeight.w700,
+                fontWeight: FontWeight.w400,
                 color: Theme.of(ctx).colorScheme.onSurfaceVariant,
               ),
             ),
@@ -180,7 +180,6 @@ class AppFeedback {
             ),
             child: Text(
               effectiveConfirmLabel,
-              style: const TextStyle(fontWeight: FontWeight.w800),
             ),
           ),
         ],

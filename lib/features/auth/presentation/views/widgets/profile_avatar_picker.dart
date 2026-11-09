@@ -164,7 +164,7 @@ class ProfileAvatarPicker extends StatelessWidget {
           child: Text(
             l10n.avatarSetPicture,
             style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w400,
                   color: AppColors.secondary,
                 ),
           ),

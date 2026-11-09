@@ -79,6 +79,13 @@ class VehicleModel extends VehicleEntity {
     super.outOfCityKmPerDay,
     super.perKmPricingEnabled,
     super.customRates,
+    super.homeCity,
+    super.homeCityRadiusKm,
+    super.outCityMode,
+    super.outCityPerKmPkr,
+    super.outCityFixedRouteId,
+    super.driverNightStayPkr,
+    super.tollsPaidBy,
   });
 
   @override
@@ -124,6 +131,13 @@ class VehicleModel extends VehicleEntity {
     int? outOfCityKmPerDay,
     bool? perKmPricingEnabled,
     List<CustomRateEntity>? customRates,
+    String? homeCity,
+    int? homeCityRadiusKm,
+    String? outCityMode,
+    int? outCityPerKmPkr,
+    String? outCityFixedRouteId,
+    int? driverNightStayPkr,
+    String? tollsPaidBy,
   }) {
     return VehicleModel(
       vehicleId: vehicleId ?? this.vehicleId,
@@ -170,6 +184,13 @@ class VehicleModel extends VehicleEntity {
       perKmPricingEnabled:
           perKmPricingEnabled ?? this.perKmPricingEnabled,
       customRates: customRates ?? this.customRates,
+      homeCity: homeCity ?? this.homeCity,
+      homeCityRadiusKm: homeCityRadiusKm ?? this.homeCityRadiusKm,
+      outCityMode: outCityMode ?? this.outCityMode,
+      outCityPerKmPkr: outCityPerKmPkr ?? this.outCityPerKmPkr,
+      outCityFixedRouteId: outCityFixedRouteId ?? this.outCityFixedRouteId,
+      driverNightStayPkr: driverNightStayPkr ?? this.driverNightStayPkr,
+      tollsPaidBy: tollsPaidBy ?? this.tollsPaidBy,
     );
   }
 
@@ -218,6 +239,15 @@ class VehicleModel extends VehicleEntity {
         'packages': packages.map((p) => p.toMap()).toList(),
       if (extraKmPkr != null) 'extraKmPkr': extraKmPkr,
       if (outOfCityKmPerDay != null) 'outOfCityKmPerDay': outOfCityKmPerDay,
+      if (homeCity != null) 'homeCity': homeCity,
+      if (homeCityRadiusKm != null) 'homeCityRadiusKm': homeCityRadiusKm,
+      if (outCityMode != null) 'outCityMode': outCityMode,
+      if (outCityPerKmPkr != null) 'outCityPerKmPkr': outCityPerKmPkr,
+      if (outCityFixedRouteId != null)
+        'outCityFixedRouteId': outCityFixedRouteId,
+      if (driverNightStayPkr != null)
+        'driverNightStayPkr': driverNightStayPkr,
+      if (tollsPaidBy != null) 'tollsPaidBy': tollsPaidBy,
       'perKmPricingEnabled': perKmPricingEnabled,
       if (customRates.isNotEmpty)
         'customRates': customRates.map((r) => r.toMap()).toList(),
@@ -277,6 +307,13 @@ class VehicleModel extends VehicleEntity {
       extraKmPkr: (map['extraKmPkr'] as num?)?.toInt(),
       outOfCityKmPerDay: (map['outOfCityKmPerDay'] as num?)?.toInt(),
       perKmPricingEnabled: (map['perKmPricingEnabled'] as bool?) ?? true,
+      homeCity: map['homeCity'] as String?,
+      homeCityRadiusKm: (map['homeCityRadiusKm'] as num?)?.toInt(),
+      outCityMode: map['outCityMode'] as String?,
+      outCityPerKmPkr: (map['outCityPerKmPkr'] as num?)?.toInt(),
+      outCityFixedRouteId: map['outCityFixedRouteId'] as String?,
+      driverNightStayPkr: (map['driverNightStayPkr'] as num?)?.toInt(),
+      tollsPaidBy: map['tollsPaidBy'] as String?,
       customRates: (map['customRates'] as List?)
               ?.map((e) => CustomRateEntity.fromMap(
                   Map<String, dynamic>.from(e as Map)))
@@ -328,6 +365,13 @@ class VehicleModel extends VehicleEntity {
       outOfCityKmPerDay: entity.outOfCityKmPerDay,
       perKmPricingEnabled: entity.perKmPricingEnabled,
       customRates: entity.customRates,
+      homeCity: entity.homeCity,
+      homeCityRadiusKm: entity.homeCityRadiusKm,
+      outCityMode: entity.outCityMode,
+      outCityPerKmPkr: entity.outCityPerKmPkr,
+      outCityFixedRouteId: entity.outCityFixedRouteId,
+      driverNightStayPkr: entity.driverNightStayPkr,
+      tollsPaidBy: entity.tollsPaidBy,
     );
   }
 }

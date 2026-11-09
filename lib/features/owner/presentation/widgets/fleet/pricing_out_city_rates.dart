@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../l10n/app_localizations.dart';
+import '../../../../fleet/domain/entities/vehicle_entity.dart';
 import 'rate_matrix_field_widget.dart';
 
 /// Audit §5 finish (P4-O07/P4-O09): the "Out-City Rent Rates" list of
@@ -10,6 +11,12 @@ import 'rate_matrix_field_widget.dart';
 /// Moved out of [PricingPolicyFields] so the matrix reads as two
 /// separate lists: in-city packages, then these out-city rates.
 /// Extracted so [OwnerRateMatrixView] stays under the 250-line cap.
+/// 09b §2 modes: each section can be hidden — in Per-km mode the
+/// daily rate, the extra-km charge and the km allowance do not apply
+/// (the base price IS per km); in Fixed-route mode the flat route
+/// price replaces them all. Hidden sections keep their last value
+/// and are skipped by validation; the flags default to true so
+/// existing callers render exactly as before.
 class PricingOutCityRates extends StatelessWidget {
   const PricingOutCityRates({
     super.key,
@@ -18,6 +25,10 @@ class PricingOutCityRates extends StatelessWidget {
     required this.outOfCityKmController,
     required this.perKmEnabled,
     required this.onPerKmChanged,
+    this.showDailyRate = true,
+    this.showPerKmToggle = true,
+    this.showExtraKm = true,
+    this.showKmAllowance = true,
   });
 
   final TextEditingController outOfCityController;
@@ -25,6 +36,10 @@ class PricingOutCityRates extends StatelessWidget {
   final TextEditingController outOfCityKmController;
   final bool perKmEnabled;
   final ValueChanged<bool> onPerKmChanged;
+  final bool showDailyRate;
+  final bool showPerKmToggle;
+  final bool showExtraKm;
+  final bool showKmAllowance;
 
   @override
   Widget build(BuildContext context) {
@@ -32,42 +47,49 @@ class PricingOutCityRates extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        RateMatrixFieldWidget(
-          controller: outOfCityController,
-          label: l10n.pricingOutOfCityDaily,
-          hint: 'Rs. 10,500 / day',
-          kmCap: l10n.pricingOutOfCityDailyCap,
-        ),
-        const SizedBox(height: 10),
-        Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(l10n.pricingPerKmQuestion, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
-                  Text(l10n.pricingPerKmQuestionHint, style: Theme.of(context).textTheme.labelSmall),
-                ],
+        if (showDailyRate) ...[
+          RateMatrixFieldWidget(
+            controller: outOfCityController,
+            label: l10n.pricingOutOfCityDaily,
+            hint: 'Rs. 10,500 / day',
+            kmCap: l10n.pricingOutOfCityDailyCap,
+          ),
+          const SizedBox(height: 10),
+        ],
+        if (showPerKmToggle) ...[
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(l10n.pricingPerKmQuestion, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
+                    Text(l10n.pricingPerKmQuestionHint, style: Theme.of(context).textTheme.labelSmall),
+                  ],
+                ),
               ),
-            ),
-            Switch(value: perKmEnabled, activeThumbColor: AppColors.accentSuccess, onChanged: onPerKmChanged),
-          ],
-        ),
-        const SizedBox(height: 10),
-        RateMatrixFieldWidget(
-          controller: extraKmController,
-          label: l10n.pricingExtraKmCharge,
-          hint: 'Rs. 100 / km',
-          kmCap: l10n.pricingExtraKmCap,
-          enabled: perKmEnabled,
-        ),
-        const SizedBox(height: 10),
-        RateMatrixFieldWidget(
-          controller: outOfCityKmController,
-          label: l10n.pricingOutOfCityKmAllowance,
-          hint: '350 km / day',
-          kmCap: l10n.pricingOutOfCityKmCap,
-        ),
+              Switch(value: perKmEnabled, activeThumbColor: AppColors.accentSuccess, onChanged: onPerKmChanged),
+            ],
+          ),
+          const SizedBox(height: 10),
+        ],
+        if (showExtraKm) ...[
+          RateMatrixFieldWidget(
+            controller: extraKmController,
+            label: l10n.pricingExtraKmCharge,
+            hint: 'Rs. 100 / km',
+            kmCap: l10n.pricingExtraKmCap,
+            enabled: perKmEnabled,
+          ),
+          const SizedBox(height: 10),
+        ],
+        if (showKmAllowance)
+          RateMatrixFieldWidget(
+            controller: outOfCityKmController,
+            label: l10n.pricingOutOfCityKmAllowance,
+            hint: '$kDefaultOutCityKmPerDay km / day',
+            kmCap: l10n.pricingOutOfCityKmCap,
+          ),
       ],
     );
   }

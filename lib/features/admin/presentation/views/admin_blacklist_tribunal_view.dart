@@ -150,7 +150,7 @@ class _AdminBlacklistTribunalViewState extends State<AdminBlacklistTribunalView>
                 OutlinedButton(
                   onPressed: () => _showReversalDialog(record),
                   style: OutlinedButton.styleFrom(foregroundColor: AppColors.successTextFor(Theme.of(context).brightness)),
-                  child: const Text('Decide appeal — Keep or Remove', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 11.5)),
+                  child: const Text('Decide appeal — Keep or Remove', style: TextStyle(fontWeight: FontWeight.w400, fontSize: 12)),
                 ),
               ],
             ),

@@ -64,6 +64,8 @@ import '../../features/owner/presentation/views/owner_handover_signature_view.da
 import '../../features/owner/presentation/views/owner_manual_booking_view.dart';
 import '../../features/owner/presentation/views/owner_onboarding_view.dart';
 import '../../features/owner/presentation/views/owner_rate_matrix_view.dart';
+import '../../features/owner/presentation/views/owner_out_city_rules_view.dart';
+import '../../features/owner/presentation/views/owner_edit_vehicle_view.dart';
 import '../../features/owner/presentation/views/owner_return_settlement_view.dart';
 import '../../features/owner/presentation/views/owner_car_pnl_view.dart';
 import '../../features/owner/presentation/views/owner_cash_closing_view.dart';
@@ -675,6 +677,46 @@ class AppRouter {
                       vehicleId: vehicleId,
                       shopId: currentShopId(),
                       builder: (context, vehicle) => OwnerRateMatrixView(
+                        vehicle: vehicle,
+                        onBack: () => context.pop(),
+                      ),
+                    ),
+                  );
+                },
+              ),
+              // Fleet: ownerOutCityRules (09b/010b simplification,
+              // worker B) — car-level shared out-of-city rules.
+              GoRoute(
+                path: RouteNames.ownerOutCityRules,
+                pageBuilder: (context, state) {
+                  final vehicleId = state.pathParameters['vehicleId']!;
+                  return MaterialPage(
+                    // Same pattern-key hazard as ownerRatesVehicle.
+                    key: ValueKey('owner-out-city-rules-$vehicleId'),
+                    child: VehicleRouteLoader(
+                      vehicleId: vehicleId,
+                      shopId: currentShopId(),
+                      builder: (context, vehicle) => OwnerOutCityRulesView(
+                        vehicle: vehicle,
+                        onBack: () => context.pop(),
+                      ),
+                    ),
+                  );
+                },
+              ),
+              // Fleet: ownerEditVehicle (09b/010b simplification,
+              // worker B route wiring; the view is worker C's).
+              GoRoute(
+                path: RouteNames.ownerEditVehicle,
+                pageBuilder: (context, state) {
+                  final vehicleId = state.pathParameters['id']!;
+                  return MaterialPage(
+                    // Same pattern-key hazard as ownerRatesVehicle.
+                    key: ValueKey('owner-edit-vehicle-$vehicleId'),
+                    child: VehicleRouteLoader(
+                      vehicleId: vehicleId,
+                      shopId: currentShopId(),
+                      builder: (context, vehicle) => OwnerEditVehicleView(
                         vehicle: vehicle,
                         onBack: () => context.pop(),
                       ),

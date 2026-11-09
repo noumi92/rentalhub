@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import '../../../../l10n/app_localizations.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/di/injection_container.dart';
 import '../../../../core/utils/money_format.dart';
+import '../../../fleet/domain/entities/fixed_route_entity.dart';
 import '../../../fleet/domain/entities/vehicle_entity.dart';
+import '../../../fleet/domain/usecases/get_shop_fixed_routes_usecase.dart';
 import 'operations/booking_fare_breakdown.dart';
 
 /// The vehicle dropdown of the walk-in booking wizard. Extracted from
@@ -57,8 +60,11 @@ class ManualBookingVehicleDropdown extends StatelessWidget {
 /// (package price + with-driver surcharge) shown below. Extracted from
 /// [OwnerManualBookingView] so the view stays under the 250-line cap.
 /// Phase B (B2): the counter total comes from the vehicle's package,
-/// not from a typed number.
-class ManualBookingPackageSelector extends StatelessWidget {
+/// not from a typed number. Stateful only so it can load the shop's
+/// fixed routes for a fixed-route vehicle (09b §2): when the trip is
+/// out-of-city and the vehicle prices by fixed route, a route picker
+/// appears and the chosen route drives the total.
+class ManualBookingPackageSelector extends StatefulWidget {
   const ManualBookingPackageSelector({
     super.key,
     required this.vehicle,
@@ -69,6 +75,8 @@ class ManualBookingPackageSelector extends StatelessWidget {
     this.isOutOfCity = false,
     this.pickup,
     this.returnTime,
+    this.selectedFixedRoute,
+    this.onFixedRouteChanged,
   });
 
   final VehicleEntity? vehicle;
@@ -83,24 +91,51 @@ class ManualBookingPackageSelector extends StatelessWidget {
   final DateTime? pickup;
   final DateTime? returnTime;
 
+  /// 09b §2: the fixed route chosen for this out-of-city trip, and
+  /// the callback that reports a (de)selection to the wizard, which
+  /// owns it and threads it into the confirm step's total.
+  final FixedRouteEntity? selectedFixedRoute;
+  final ValueChanged<FixedRouteEntity?>? onFixedRouteChanged;
+
+  @override
+  State<ManualBookingPackageSelector> createState() =>
+      _ManualBookingPackageSelectorState();
+
   /// The single-unit price of a package: the package price (scaled
   /// by the out-of-city ratio when the trip leaves the city — the
   /// same ratio the customer picker applies in
   /// `PackageTierList.optionsFor`) plus the with-driver surcharge.
   /// [totalFor] multiplies this by days/weeks; [unitFor] is the
   /// per-day (or per-week) rate the fare summary shows.
+  /// 09b §2 modes, out-of-city only: Per-km prices by the kilometre
+  /// — the unit is the ESTIMATE for this package's duration, rate ×
+  /// km/day (stored, default 300) × hours/24, so a 24h package
+  /// estimates one full allowance; the final total settles on the
+  /// actual km at return. Fixed-route prices at the chosen route's
+  /// flat price (see [fixedRoute]); without a chosen route the
+  /// per-day ratio is the fallback, never zero.
   static int unitFor({
     required VehicleEntity? vehicle,
     required VehiclePackageEntity? package,
     required bool isWithDriver,
     bool isOutOfCity = false,
+    FixedRouteEntity? fixedRoute,
   }) {
     if (vehicle == null || package == null) return 0;
     var unit = package.pricePkr;
-    if (isOutOfCity && vehicle.rates.daily24 > 0) {
-      final outDaily =
-          vehicle.rates.outOfCityDaily ?? vehicle.rates.daily24;
-      unit = (unit * outDaily / vehicle.rates.daily24).round();
+    if (isOutOfCity) {
+      if (vehicle.outCityMode == 'fixedRoute' && fixedRoute != null) {
+        unit = fixedRoute.fixedPricePkr;
+      } else if (vehicle.outCityMode == 'perKm' &&
+          (vehicle.outCityPerKmPkr ?? 0) > 0) {
+        final kmPerDay = vehicle.outOfCityKmPerDay ?? kDefaultOutCityKmPerDay;
+        unit = (vehicle.outCityPerKmPkr! * kmPerDay * package.hours / 24)
+            .round();
+      } else if (vehicle.rates.daily24 > 0) {
+        final outDaily =
+            vehicle.rates.outOfCityDaily ?? vehicle.rates.daily24;
+        unit = (unit * outDaily / vehicle.rates.daily24).round();
+      }
     }
     if (!isWithDriver) return unit;
     final perDay = vehicle.withDriverSurchargePkr ?? 0;
@@ -116,7 +151,10 @@ class ManualBookingPackageSelector extends StatelessWidget {
   /// — a 24h package costs the unit price per day, a Weekly package
   /// per week; hourly packages stay a single unit. Without dates the
   /// old single-unit total is returned, so existing callers are
-  /// unaffected.
+  /// unaffected. 09b §2: a fixed route is one flat trip price plus the
+  /// driver surcharge per day — the route price is NEVER multiplied
+  /// by days. A per-km total is the estimate days × km/day × rate
+  /// (plus driver per day); the final total settles on actual km.
   static int totalFor({
     required VehicleEntity? vehicle,
     required VehiclePackageEntity? package,
@@ -124,22 +162,66 @@ class ManualBookingPackageSelector extends StatelessWidget {
     bool isOutOfCity = false,
     DateTime? pickup,
     DateTime? returnTime,
+    FixedRouteEntity? fixedRoute,
   }) {
+    final v = vehicle;
+    if (isOutOfCity && v != null && v.outCityMode == 'fixedRoute' && fixedRoute != null) {
+      if (pickup == null || returnTime == null) {
+        return unitFor(
+          vehicle: vehicle,
+          package: package,
+          isWithDriver: isWithDriver,
+          isOutOfCity: isOutOfCity,
+          fixedRoute: fixedRoute,
+        );
+      }
+      final days = dayCountBetween(pickup, returnTime);
+      final driver =
+          isWithDriver ? (v.withDriverSurchargePkr ?? 0) * days : 0;
+      // Night stay (010b): out-of-city with-driver trips add nights ×
+      // the vehicle's per-night rate; 0 otherwise.
+      return fixedRoute.fixedPricePkr +
+          driver +
+          nightStayTotalFor(
+            vehicle: vehicle,
+            isWithDriver: isWithDriver,
+            isOutOfCity: isOutOfCity,
+            pickup: pickup,
+            returnTime: returnTime,
+          );
+    }
     final unit = unitFor(
       vehicle: vehicle,
       package: package,
       isWithDriver: isWithDriver,
       isOutOfCity: isOutOfCity,
+      fixedRoute: fixedRoute,
     );
     if (unit == 0 || package == null || pickup == null || returnTime == null) {
       return unit;
     }
     final days = dayCountBetween(pickup, returnTime);
-    if (package.label == '24h') return unit * days;
-    if (package.label == 'Weekly') return unit * ((days + 6) ~/ 7);
-    // Audit §5 (Monthly): one unit per 30-day block, like Weekly.
-    if (package.label == 'Monthly') return unit * ((days + 29) ~/ 30);
-    return unit;
+    final int base;
+    if (package.label == '24h') {
+      base = unit * days;
+    } else if (package.label == 'Weekly') {
+      base = unit * ((days + 6) ~/ 7);
+    } else if (package.label == 'Monthly') {
+      // Audit §5 (Monthly): one unit per 30-day block, like Weekly.
+      base = unit * ((days + 29) ~/ 30);
+    } else {
+      base = unit;
+    }
+    // Night stay (010b): out-of-city with-driver trips add nights ×
+    // the vehicle's per-night rate; 0 otherwise.
+    return base +
+        nightStayTotalFor(
+          vehicle: vehicle,
+          isWithDriver: isWithDriver,
+          isOutOfCity: isOutOfCity,
+          pickup: pickup,
+          returnTime: returnTime,
+        );
   }
 
   /// Phase B (D2): the return time follows the chosen package — a
@@ -150,20 +232,95 @@ class ManualBookingPackageSelector extends StatelessWidget {
   }) {
     return pickup.add(Duration(hours: package.hours));
   }
+}
 
-  int get _total => totalFor(
-        vehicle: vehicle,
-        package: selectedPackage,
-        isWithDriver: isWithDriver,
-        isOutOfCity: isOutOfCity,
-        pickup: pickup,
-        returnTime: returnTime,
+class _ManualBookingPackageSelectorState
+    extends State<ManualBookingPackageSelector> {
+  List<FixedRouteEntity> _routes = [];
+  bool _loadingRoutes = false, _routesFailed = false;
+  String _routesKey = '';
+
+  /// The load key: routes are (re)loaded only for a fixed-route
+  /// vehicle on an out-of-city trip, and once per vehicle.
+  String get _loadKey {
+    final v = widget.vehicle;
+    if (v == null || !widget.isOutOfCity || v.outCityMode != 'fixedRoute') {
+      return '';
+    }
+    return '${v.vehicleId}|${v.shopId}';
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _maybeLoadRoutes();
+  }
+
+  @override
+  void didUpdateWidget(covariant ManualBookingPackageSelector oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _maybeLoadRoutes();
+  }
+
+  void _maybeLoadRoutes() {
+    final key = _loadKey;
+    if (key.isEmpty || key == _routesKey) return;
+    _routesKey = key;
+    if (!sl.isRegistered<GetShopFixedRoutesUseCase>()) {
+      setState(() => _routesFailed = true);
+      return;
+    }
+    setState(() => _loadingRoutes = true);
+    sl<GetShopFixedRoutesUseCase>()(widget.vehicle!.shopId).then((routes) {
+      if (!mounted) return;
+      setState(() {
+        _routes = routes.where((r) => r.enabled).toList();
+        _loadingRoutes = false;
+      });
+      // Default to the route the owner set on the vehicle (09b §2),
+      // when the wizard has not chosen one yet for this trip.
+      if (widget.selectedFixedRoute == null) {
+        FixedRouteEntity? stored;
+        for (final r in _routes) {
+          if (r.routeId == widget.vehicle?.outCityFixedRouteId) stored = r;
+        }
+        if (stored != null) widget.onFixedRouteChanged?.call(stored);
+      }
+    }).catchError((_) {
+      if (!mounted) return;
+      setState(() { _routesFailed = true; _loadingRoutes = false; });
+    });
+  }
+
+  int get _total => ManualBookingPackageSelector.totalFor(
+        vehicle: widget.vehicle,
+        package: widget.selectedPackage,
+        isWithDriver: widget.isWithDriver,
+        isOutOfCity: widget.isOutOfCity,
+        pickup: widget.pickup,
+        returnTime: widget.returnTime,
+        fixedRoute: widget.selectedFixedRoute,
       );
+
+  /// The per-km estimate note: estimated km for this trip (days ×
+  /// km/day, one allowance when no dates are picked yet).
+  String? get _perKmEstimateNote {
+    final v = widget.vehicle;
+    if (!widget.isOutOfCity || v?.outCityMode != 'perKm') return null;
+    final rate = v?.outCityPerKmPkr ?? 0;
+    if (rate <= 0) return null;
+    final kmPerDay = v?.outOfCityKmPerDay ?? kDefaultOutCityKmPerDay;
+    final days = widget.pickup != null && widget.returnTime != null
+        ? dayCountBetween(widget.pickup!, widget.returnTime!)
+        : 1;
+    return AppLocalizations.of(context)!
+        .farePerKmEstimate(days * kmPerDay);
+  }
 
   @override
   Widget build(BuildContext context) {
-  final l10n = AppLocalizations.of(context)!;
-    final vehicle = this.vehicle;
+    final l10n = AppLocalizations.of(context)!;
+    final vehicle = widget.vehicle;
     if (vehicle == null) {
       return Text(l10n.manualBookingSelectVehicleFirst,
           style: Theme.of(context).textTheme.bodySmall);
@@ -173,6 +330,9 @@ class ManualBookingPackageSelector extends StatelessWidget {
       return Text(l10n.manualBookingNoPackages,
           style: Theme.of(context).textTheme.bodySmall);
     }
+    final showRoutePicker =
+        widget.isOutOfCity && vehicle.outCityMode == 'fixedRoute';
+    final estimateNote = _perKmEstimateNote;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -180,7 +340,7 @@ class ManualBookingPackageSelector extends StatelessWidget {
           spacing: 8,
           runSpacing: 8,
           children: packages.map((p) {
-            final selected = selectedPackage?.label == p.label;
+            final selected = widget.selectedPackage?.label == p.label;
             return ChoiceChip(
               materialTapTargetSize: MaterialTapTargetSize.padded,
               // C5: grouped amount via the String-typed {price}
@@ -196,10 +356,63 @@ class ManualBookingPackageSelector extends StatelessWidget {
                         ? Colors.white
                         : Theme.of(context).colorScheme.onSurface,
                   ),
-              onSelected: (_) => onPackageChanged(p),
+              onSelected: (_) => widget.onPackageChanged(p),
             );
           }).toList(),
         ),
+        if (showRoutePicker) ...[
+          const SizedBox(height: 12),
+          Text(l10n.outCityFixedRouteLabel,
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(fontWeight: FontWeight.w700)),
+          const SizedBox(height: 6),
+          if (_loadingRoutes)
+            const Center(child: CircularProgressIndicator())
+          else if (_routesFailed)
+            Text(l10n.fixedRoutesLoadError,
+                style: Theme.of(context).textTheme.bodyMedium)
+          else if (_routes.isEmpty)
+            Text(l10n.outCityFixedRouteNone,
+                style: Theme.of(context).textTheme.bodyMedium)
+          else
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surface,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Theme.of(context).dividerColor),
+              ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<FixedRouteEntity>(
+                  dropdownColor: Theme.of(context).colorScheme.surface,
+                  isExpanded: true,
+                  value: _routes.contains(widget.selectedFixedRoute)
+                      ? widget.selectedFixedRoute
+                      : null,
+                  hint: Text(l10n.outCityFixedRouteChoose),
+                  items: _routes
+                      .map((r) => DropdownMenuItem(
+                          value: r, child: Text(r.displayName)))
+                      .toList(),
+                  onChanged: (r) => widget.onFixedRouteChanged?.call(r),
+                ),
+              ),
+            ),
+          if (widget.selectedFixedRoute != null) ...[
+            const SizedBox(height: 6),
+            Text(l10n.fareFixedRoute(widget.selectedFixedRoute!.displayName),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(fontWeight: FontWeight.w800)),
+            Text(
+                l10n.fixedRouteSummary(widget.selectedFixedRoute!.distanceKm,
+                    formatRs(widget.selectedFixedRoute!.fixedPricePkr)),
+                style: Theme.of(context).textTheme.labelSmall),
+          ],
+        ],
         const SizedBox(height: 10),
         Row(
           children: [
@@ -208,9 +421,9 @@ class ManualBookingPackageSelector extends StatelessWidget {
                       fontWeight: FontWeight.w700,
                     )),
             Switch(
-              value: isWithDriver,
+              value: widget.isWithDriver,
               activeThumbColor: AppColors.secondary,
-              onChanged: onDriverModeChanged,
+              onChanged: widget.onDriverModeChanged,
             ),
             const SizedBox(width: 8),
             Flexible(
@@ -225,6 +438,10 @@ class ManualBookingPackageSelector extends StatelessWidget {
             ),
           ],
         ),
+        if (estimateNote != null) ...[
+          const SizedBox(height: 4),
+          Text(estimateNote, style: Theme.of(context).textTheme.labelSmall),
+        ],
       ],
     );
   }

@@ -90,6 +90,10 @@ class _ReviewBookingRequestViewState extends State<ReviewBookingRequestView> {
         customerCnic: customerCnic,
         tripType: draft['tripType'] as String? ?? 'in_city',
         kmLimit: draft['kmLimit'] as int?,
+        fixedRouteId: draft['fixedRouteId'] as String?,
+        fixedRouteSummary: draft['fixedRouteSummary'] as String?,
+        outCityMode: draft['outCityMode'] as String?,
+        outCityPerKmPkr: draft['outCityPerKmPkr'] as int?,
         notes: _notesController.text.trim(),
       );
 

@@ -5,6 +5,7 @@ import '../../../../core/utils/current_shop.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../fleet/data/datasources/fleet_remote_data_source.dart';
+import '../../../fleet/domain/entities/fixed_route_entity.dart';
 import '../../../fleet/domain/entities/vehicle_entity.dart';
 import '../services/walk_in_booking_service.dart';
 import '../widgets/guarantor_picker.dart';
@@ -54,6 +55,8 @@ class _OwnerManualBookingViewState extends State<OwnerManualBookingView> {
   List<VehicleEntity> _vehicles = [];
   VehicleEntity? _selectedVehicle;
   VehiclePackageEntity? _selectedPackage;
+  // 09b §2: the fixed route chosen for this out-of-city trip.
+  FixedRouteEntity? _selectedRoute;
   bool _isWithDriver = false;
   bool _isLoadingVehicles = true;
   String? _vehiclesError;
@@ -108,6 +111,7 @@ class _OwnerManualBookingViewState extends State<OwnerManualBookingView> {
   void _selectVehicle(VehicleEntity? v) {
     setState(() {
       _selectedVehicle = v;
+      _selectedRoute = null;
       final packages = v?.enabledPackages ?? const [];
       _selectedPackage = packages.isNotEmpty ? packages.first : null;
       final deposit = v?.securityDepositPkr;
@@ -168,6 +172,11 @@ class _OwnerManualBookingViewState extends State<OwnerManualBookingView> {
       AppFeedback.showError(context, l10n.manualBookingSelectVehicle);
       return;
     }
+    // 09b §2: a fixed-route vehicle prices by its route — without one chosen there is no honest total, so block, don't fall back.
+    if (_isOutOfCity && _selectedVehicle?.outCityMode == 'fixedRoute' && _selectedRoute == null) {
+      AppFeedback.showError(context, l10n.outCityFixedRouteNone);
+      return;
+    }
     if (!_returnTime.isAfter(_pickupTime)) {
       AppFeedback.showError(context, l10n.manualBookingReturnAfterPickup);
       return;
@@ -193,7 +202,7 @@ class _OwnerManualBookingViewState extends State<OwnerManualBookingView> {
       return;
     }
     if (!mounted) return;
-    OwnerManualBookingConfirmView.open(context, customerName: name, customerPhone: phone, customerCnic: cnic, guarantor: _guarantor, vehicle: _selectedVehicle!, package: _selectedPackage!, isWithDriver: _isWithDriver, isOutOfCity: _isOutOfCity, pickupTime: _pickupTime, returnTime: _returnTime);
+    OwnerManualBookingConfirmView.open(context, customerName: name, customerPhone: phone, customerCnic: cnic, guarantor: _guarantor, vehicle: _selectedVehicle!, package: _selectedPackage!, isWithDriver: _isWithDriver, isOutOfCity: _isOutOfCity, pickupTime: _pickupTime, returnTime: _returnTime, fixedRoute: _selectedRoute);
   }
 
   @override
@@ -229,6 +238,7 @@ class _OwnerManualBookingViewState extends State<OwnerManualBookingView> {
                   _returnEdited = true;
                 }),
                 onTripTypeChanged: (v) => setState(() => _isOutOfCity = v),
+                selectedFixedRoute: _selectedRoute, onFixedRouteChanged: (r) => setState(() => _selectedRoute = r),
                 isChecking: _isChecking, onNext: _goToConfirm,
               ),
             ),
