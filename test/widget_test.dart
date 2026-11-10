@@ -93,8 +93,16 @@ void main() {
     );
 
     expect(find.text('Find Verified Rental Shops'), findsOneWidget);
-    expect(find.text('1 km'), findsOneWidget);
-    expect(find.text('5 km'), findsOneWidget);
+    // Customer rework (Worker C): the radius pills moved to the
+    // Shops tab with discovery — Home now shows the dashboard
+    // (KPIs, KYC, quick actions, recent bookings) with honest
+    // empty states when nothing is loaded. The tile key pins the
+    // quick action itself: the recent-bookings empty state has a
+    // second 'Book a Car' button, so the text finder is ambiguous.
+    expect(find.byKey(const ValueKey('quick-action-Book a Car')),
+        findsOneWidget);
+    expect(find.text('No bookings yet'), findsOneWidget);
+    expect(find.text('Nothing coming up'), findsOneWidget);
   });
 
   testWidgets(

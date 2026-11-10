@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/utils/money_format.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../../core/theme/card_decoration.dart';
 
 class WalletTransactionTile extends StatelessWidget {
   final String title;
@@ -27,7 +28,7 @@ class WalletTransactionTile extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Theme.of(context).dividerColor),
+        boxShadow: AppCardDecoration.shadow(context)
       ),
       child: Row(
         children: [

@@ -16,7 +16,7 @@ class BoardingPassCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Theme.of(context).dividerColor),
+        
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.06),
@@ -65,7 +65,7 @@ class BoardingPassCard extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: Theme.of(context).scaffoldBackgroundColor,
                       shape: BoxShape.circle,
-                      border: Border.all(color: Theme.of(context).dividerColor),
+                      
                     ),
                   ),
                 ),
@@ -77,7 +77,7 @@ class BoardingPassCard extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: Theme.of(context).scaffoldBackgroundColor,
                       shape: BoxShape.circle,
-                      border: Border.all(color: Theme.of(context).dividerColor),
+                      
                     ),
                   ),
                 ),

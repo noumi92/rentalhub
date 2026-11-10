@@ -9,6 +9,7 @@ import '../../../../core/widgets/debounced_button.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../services/whatsapp_credits_data_source.dart';
+import '../../../../core/theme/card_decoration.dart';
 
 /// W1 — WhatsApp credits + auto-message toggles (deck p.19 screen 1;
 /// also O53 toggles and O54 balance card — one screen covers all
@@ -148,8 +149,7 @@ class _OwnerWhatsappCreditsViewState
                           decoration: BoxDecoration(
                             color: Theme.of(context).colorScheme.surface,
                             borderRadius: BorderRadius.circular(16),
-                            border: Border.all(
-                                color: Theme.of(context).dividerColor),
+                            boxShadow: AppCardDecoration.shadow(context),
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,

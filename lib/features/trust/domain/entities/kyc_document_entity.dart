@@ -6,6 +6,9 @@ class KycDocumentEntity extends Equatable {
   final String cnicFrontKey;
   final String cnicBackKey;
   final String licenseKey;
+  final String licenseBackKey;
+  final String licenseNumber;
+  final String licenseExpiry;
   final String status; // 'pending' | 'submitted' | 'verified' | 'rejected'
 
   const KycDocumentEntity({
@@ -14,6 +17,9 @@ class KycDocumentEntity extends Equatable {
     required this.cnicFrontKey,
     required this.cnicBackKey,
     required this.licenseKey,
+    this.licenseBackKey = '',
+    this.licenseNumber = '',
+    this.licenseExpiry = '',
     this.status = 'submitted',
   });
 
@@ -24,6 +30,9 @@ class KycDocumentEntity extends Equatable {
         cnicFrontKey,
         cnicBackKey,
         licenseKey,
+        licenseBackKey,
+        licenseNumber,
+        licenseExpiry,
         status,
       ];
 }

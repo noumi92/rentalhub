@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/widgets/debounced_button.dart';
 import '../../../../../l10n/app_localizations.dart';
+import '../../../../../core/theme/card_decoration.dart';
 
 class CnicScannerInputWidget extends StatelessWidget {
   final TextEditingController controller;
@@ -36,7 +37,7 @@ class CnicScannerInputWidget extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Theme.of(context).dividerColor),
+        boxShadow: AppCardDecoration.shadow(context)
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

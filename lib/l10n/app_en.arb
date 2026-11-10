@@ -3845,5 +3845,48 @@
         "type": "int"
       }
     }
-  }
+  },
+  "tab2_navShops": "Shops",
+  "shops_title": "Shops",
+  "shops_showMap": "Map view",
+  "shops_showList": "List view",
+  "shops_allCities": "All cities",
+  "shops_unverified": "Unverified",
+  "shops_emptyTitle": "No shops match these filters",
+  "shops_emptySubtitle": "Try a different city or filter.",
+  "shops_mapOffline": "Map unavailable offline — the list still works",
+  "shops_chooseCity": "Choose a city to browse shops",
+  "shops_noPinNote": "Shops without a saved location appear in the list only",
+  "home2_kpiActive": "Active bookings",
+  "home2_kpiWallet": "Wallet balance",
+  "home2_support": "Support",
+  "home2_kycNotStarted": "Not started",
+  "home2_kycProgress": "{done} of {total} documents ready",
+  "home2_kycView": "View documents",
+  "home2_recentBookings": "Recent bookings",
+  "home2_upcoming": "Upcoming",
+  "home2_viewAll": "View all",
+  "home2_noBookings": "No bookings yet",
+  "home2_noUpcoming": "Nothing coming up",
+  "home2_paymentOverdue": "Payment overdue",
+  "home2_paymentDue": "Payment due",
+  "@home2_kycProgress": {
+    "description": "KYC documents completed, e.g. 2 of 4 documents ready",
+    "placeholders": {
+      "done": {
+        "type": "Object"
+      },
+      "total": {
+        "type": "Object"
+      }
+    }
+  },
+  "admin2_displayUnverifiedShops": "Display unverified shops",
+  "admin2_displayUnverifiedShopsHint": "When off, unverified shops are hidden from the Shops tab.",
+  "admin2_allowBookingsFromUnverifiedShops": "Allow bookings from unverified shops",
+  "admin2_allowBookingsFromUnverifiedShopsHint": "When off, customers cannot book from unverified shops.",
+  "admin2_unverifiedBookingsDisabled": "Bookings from unverified shops are currently disabled by the platform.",
+  "kyc2_qrCode": "QR Code",
+  "kyc2_qrRead": "QR code saved.",
+  "kyc2_licenseUnreadable": "Could not read the license number from that photo — please type it."
 }

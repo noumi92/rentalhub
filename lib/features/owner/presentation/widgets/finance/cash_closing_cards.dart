@@ -4,6 +4,7 @@ import '../../../../../l10n/app_localizations.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/utils/money_format.dart';
 import '../../../../finance/domain/entities/cash_closing_entity.dart';
+import '../../../../../core/theme/card_decoration.dart';
 
 /// Phase B (H5): the cash-closing summary card and one past
 /// closing row, extracted from [OwnerCashClosingView] so the view
@@ -115,7 +116,7 @@ class CashClosingRow extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Theme.of(context).dividerColor),
+        boxShadow: AppCardDecoration.shadow(context)
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,

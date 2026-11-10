@@ -8,6 +8,7 @@ import 'package:signature/signature.dart';
 import '../../../../../core/widgets/app_feedback.dart';
 import '../../../../../core/widgets/media_picker_helper.dart';
 import '../../../../../l10n/app_localizations.dart';
+import '../../../../trust/data/services/cnic_ocr_service.dart';
 import 'kyc_draft.dart';
 import 'kyc_step.dart';
 
@@ -28,6 +29,8 @@ class Step3DocsState extends KycStepState<Step3Docs> {
   late final TextEditingController _licenseExpiryController;
   late final SignatureController _signatureController;
   late bool _signed;
+  bool _scanningLicenseFront = false;
+  bool _scanningLicenseBack = false;
 
   @override
   void initState() {
@@ -69,14 +72,42 @@ class Step3DocsState extends KycStepState<Step3Docs> {
   }
 
   Future<void> _pick(ValueSetter<XFile> set) async {
-    await MediaPickerHelper.showMediaSourceSheet(
-      context: context,
-      onImageSelected: (file) {
-        if (file == null || !mounted) return;
-        setState(() => set(file));
+    await MediaPickerHelper.showMediaSourceSheet(context: context, onImageSelected: (file) { if (file == null || !mounted) return; setState(() => set(file)); widget.onChanged(); });
+  }
+
+  void _syncLicenseControllers() {
+    _licenseNumberController.text = widget.draft.licenseNumber;
+    _licenseExpiryController.text = widget.draft.licenseExpiry;
+  }
+
+  /// License front/back: rear camera only (no gallery), then the
+  /// on-device OCR reads the number and expiry into the fields. The
+  /// front is the primary source; the back fills what the front did
+  /// not yield. Both images are saved with the wizard.
+  Future<void> _captureLicense({required bool front}) async {
+    // Per-side guard: a front OCR still in flight must not block
+    // the back capture (and vice versa).
+    if (front ? _scanningLicenseFront : _scanningLicenseBack) return;
+    XFile? picked;
+    await MediaPickerHelper.showMediaSourceSheet(context: context, cameraOnly: true, onImageSelected: (file) => picked = file);
+    final photo = picked;
+    if (photo == null || !mounted) return;
+    setState(() { if (front) { widget.draft.licenseFrontPhoto = photo; _scanningLicenseFront = true; } else { widget.draft.licenseBackPhoto = photo; _scanningLicenseBack = true; } });
+    widget.onChanged();
+    try {
+      final result = await CnicOcrService().scanLicense(File(photo.path));
+      if (!mounted) return;
+      if (result.hasAnything) {
+        setState(() { widget.draft.applyLicenseScan(result, overwrite: front); _syncLicenseControllers(); });
         widget.onChanged();
-      },
-    );
+      } else if (front) {
+        AppFeedback.showWarning(context, AppLocalizations.of(context)!.kyc2_licenseUnreadable);
+      }
+    } catch (_) {
+      if (mounted && front) AppFeedback.showWarning(context, AppLocalizations.of(context)!.kyc2_licenseUnreadable);
+    } finally {
+      if (mounted) setState(() { if (front) { _scanningLicenseFront = false; } else { _scanningLicenseBack = false; } });
+    }
   }
 
   Future<void> _confirmSignature() async {
@@ -149,9 +180,9 @@ class Step3DocsState extends KycStepState<Step3Docs> {
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(child: _photoTile(label: l10n.kycWizardLicenseFront, file: draft.licenseFrontPhoto, buttonKey: const ValueKey('step3_license_front'), onPick: () => _pick((f) => draft.licenseFrontPhoto = f))),
+            Expanded(child: _photoTile(label: l10n.kycWizardLicenseFront, file: draft.licenseFrontPhoto, buttonKey: const ValueKey('step3_license_front'), onPick: () => _captureLicense(front: true))),
             const SizedBox(width: 12),
-            Expanded(child: _photoTile(label: l10n.kycWizardLicenseBack, file: draft.licenseBackPhoto, buttonKey: const ValueKey('step3_license_back'), onPick: () => _pick((f) => draft.licenseBackPhoto = f))),
+            Expanded(child: _photoTile(label: l10n.kycWizardLicenseBack, file: draft.licenseBackPhoto, buttonKey: const ValueKey('step3_license_back'), onPick: () => _captureLicense(front: false))),
           ],
         ),
         const SizedBox(height: 12),

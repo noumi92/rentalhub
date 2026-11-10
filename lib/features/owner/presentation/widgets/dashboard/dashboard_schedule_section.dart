@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../bookings/domain/entities/booking_entity.dart';
+import '../../../../../core/theme/card_decoration.dart';
 
 /// Audit impl (O29): "Today's Schedule" (today's handovers,
 /// returns and new bookings, from the real booking pickup/return
@@ -91,7 +92,7 @@ class DashboardScheduleSection extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Theme.of(context).dividerColor),
+        boxShadow: AppCardDecoration.shadow(context)
       ),
       child: Row(
         children: [

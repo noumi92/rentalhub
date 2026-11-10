@@ -5,6 +5,7 @@ import '../../../../../core/utils/money_format.dart';
 import '../../../../../core/widgets/app_feedback.dart';
 import '../../../../../core/widgets/debounced_button.dart';
 import '../../services/return_settlement_service.dart';
+import '../../../../../core/theme/card_decoration.dart';
 
 /// Finish build (O26): the return payment steps — a distinct
 /// "Refund Deposit" action that records the refund as its own step
@@ -102,7 +103,7 @@ class _ReturnPaymentStepsState extends State<ReturnPaymentSteps> {
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Theme.of(context).dividerColor),
+              boxShadow: AppCardDecoration.shadow(context)
             ),
             child: Row(
               children: [

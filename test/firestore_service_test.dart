@@ -349,6 +349,15 @@ void main() {
       // form taller), so bring it into view before tapping.
       await tester.ensureVisible(find.text('Submit KYC Documents'));
       await tester.pumpAndSettle();
+      // The form grew with the license section: ensureVisible alone can
+      // leave the button's centre just below the fold (it scrolls the
+      // minimum to peek the button into view), so scroll to the end
+      // before tapping.
+      await tester.drag(
+        find.byType(SingleChildScrollView).first,
+        const Offset(0, -500),
+      );
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Submit KYC Documents'));
       await tester.pumpAndSettle();
 

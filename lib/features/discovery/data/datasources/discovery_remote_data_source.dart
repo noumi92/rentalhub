@@ -44,6 +44,27 @@ class DiscoveryRemoteDataSource {
     return shops;
   }
 
+  /// Shops tab: every shop document, not just the verified ones
+  /// within a GPS radius — the tab's own city + verified filters do
+  /// the narrowing, so unverified shops must be in the list too.
+  /// Sorted by city, then name. An empty or unreachable `shops`
+  /// collection honestly returns an empty list.
+  Future<List<ShopModel>> fetchAllShops() async {
+    final snapshot =
+        await FirebaseFirestore.instance.collection('shops').get();
+    final shops = snapshot.docs
+        .map((doc) => ShopModel.fromMap(doc.data(), id: doc.id))
+        .toList();
+    shops.sort((a, b) {
+      final byCity =
+          a.city.toLowerCase().compareTo(b.city.toLowerCase());
+      return byCity != 0
+          ? byCity
+          : a.shopName.toLowerCase().compareTo(b.shopName.toLowerCase());
+    });
+    return shops;
+  }
+
   /// Great-circle distance in kilometres between two coordinates.
   static double _haversineKm(
     double lat1,

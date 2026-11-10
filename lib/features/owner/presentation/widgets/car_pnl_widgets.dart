@@ -5,6 +5,7 @@ import '../../../../../core/constants/app_colors.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../finance/domain/entities/finance_transfer_entity.dart';
 import '../../../../core/utils/money_format.dart';
+import '../../../../core/theme/card_decoration.dart';
 
 /// Audit §27 (extracted from [OwnerCarPnLView] so the view stays
 /// under the 250-line cap): the net card — a loss is coloured with
@@ -76,7 +77,7 @@ class CarPnlTransferRow extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Theme.of(context).dividerColor),
+        boxShadow: AppCardDecoration.shadow(context)
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,

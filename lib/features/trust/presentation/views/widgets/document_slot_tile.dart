@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../../core/constants/app_colors.dart';
+import '../../../../../core/theme/card_decoration.dart';
 import '../../../../../l10n/app_localizations.dart';
 
 class DocumentSlotTile extends StatelessWidget {
@@ -29,10 +30,10 @@ class DocumentSlotTile extends StatelessWidget {
               ? AppColors.accentSuccess.withValues(alpha: 0.08)
               : Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(
-            color: isUploaded ? AppColors.accentSuccess : Theme.of(context).dividerColor,
-            width: isUploaded ? 1.5 : 1,
-          ),
+          border: isUploaded
+              ? Border.all(color: AppColors.accentSuccess, width: 1.5)
+              : null,
+          boxShadow: AppCardDecoration.shadow(context),
         ),
         child: Row(
           children: [

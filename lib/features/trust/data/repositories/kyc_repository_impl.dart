@@ -19,6 +19,10 @@ class KycRepositoryImpl implements KycRepository {
     File? cnicFront,
     File? cnicBack,
     File? license,
+    File? licenseBack,
+    String? licenseNumber,
+    String? licenseExpiry,
+    String? qrCode,
   }) =>
       remoteDataSource.uploadCnicAndLicense(
         userUid: userUid,
@@ -26,6 +30,10 @@ class KycRepositoryImpl implements KycRepository {
         cnicFront: cnicFront,
         cnicBack: cnicBack,
         license: license,
+        licenseBack: licenseBack,
+        licenseNumber: licenseNumber,
+        licenseExpiry: licenseExpiry,
+        qrCode: qrCode,
       );
 }
 

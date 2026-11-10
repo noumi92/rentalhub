@@ -4,6 +4,7 @@ import '../../../../../l10n/app_localizations.dart';
 import '../../../../finance/domain/entities/finance_transfer_entity.dart';
 import '../../../../finance/utils/finance_summary.dart';
 import '../../../../../core/utils/money_format.dart';
+import '../../../../../core/theme/card_decoration.dart';
 
 /// Audit impl (O45): income and expense breakdowns by category for
 /// the shown period — Rent / Advance / Other income, and Fuel /
@@ -62,7 +63,7 @@ class FinancePnLBreakdown extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Theme.of(context).dividerColor),
+        boxShadow: AppCardDecoration.shadow(context)
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

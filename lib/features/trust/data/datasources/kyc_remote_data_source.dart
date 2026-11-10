@@ -6,6 +6,7 @@ import '../../../../core/data/offline_sync_queue.dart';
 import '../../../../core/data/queued_upload.dart';
 import '../../../../core/network/cpanel_storage_client.dart';
 import '../../domain/entities/kyc_document_entity.dart';
+import '../services/customer_qr_code_service.dart';
 
 class KycRemoteDataSource {
   final CPanelStorageClient storageClient;
@@ -54,10 +55,15 @@ class KycRemoteDataSource {
     File? cnicFront,
     File? cnicBack,
     File? license,
+    File? licenseBack,
+    String? licenseNumber,
+    String? licenseExpiry,
+    String? qrCode,
   }) async {
     String frontKey = '';
     String backKey = '';
     String licenseKey = '';
+    String licenseBackKey = '';
 
     if (cnicFront != null && cnicFront.existsSync()) {
       frontKey = await _uploadOrQueueFile(
@@ -80,6 +86,13 @@ class KycRemoteDataSource {
         field: 'licenseKey',
       );
     }
+    if (licenseBack != null && licenseBack.existsSync()) {
+      licenseBackKey = await _uploadOrQueueFile(
+        userUid: userUid,
+        file: licenseBack,
+        field: 'licenseBackKey',
+      );
+    }
 
     final entity = KycDocumentEntity(
       userUid: userUid,
@@ -87,6 +100,9 @@ class KycRemoteDataSource {
       cnicFrontKey: frontKey,
       cnicBackKey: backKey,
       licenseKey: licenseKey,
+      licenseBackKey: licenseBackKey,
+      licenseNumber: licenseNumber ?? '',
+      licenseExpiry: licenseExpiry ?? '',
       status: 'submitted',
     );
     // G3: record the submission so the documents screen (and the owner
@@ -100,8 +116,21 @@ class KycRemoteDataSource {
       'cnicFrontKey': frontKey,
       'cnicBackKey': backKey,
       'licenseKey': licenseKey,
+      'licenseBackKey': licenseBackKey,
+      'licenseNumber': licenseNumber ?? '',
+      'licenseExpiry': licenseExpiry ?? '',
       'status': 'submitted',
     };
+    // The CNIC back-QR number goes to the restricted
+    // `customer_qr_codes/{userUid}` doc, never onto this record — a
+    // best-effort write that must not fail the submission.
+    final qr = qrCode?.trim() ?? '';
+    if (qr.isNotEmpty) {
+      await CustomerQrCodeService(syncQueue: syncQueue).saveQrCode(
+        customerId: userUid,
+        qrCode: qr,
+      );
+    }
     try {
       await FirebaseFirestore.instance
           .collection('kyc_documents')
@@ -145,6 +174,9 @@ class KycRemoteDataSource {
         cnicFrontKey: d['cnicFrontKey'] as String? ?? '',
         cnicBackKey: d['cnicBackKey'] as String? ?? '',
         licenseKey: d['licenseKey'] as String? ?? '',
+        licenseBackKey: d['licenseBackKey'] as String? ?? '',
+        licenseNumber: d['licenseNumber'] as String? ?? '',
+        licenseExpiry: d['licenseExpiry'] as String? ?? '',
         status: d['status'] as String? ?? 'submitted',
       );
     } catch (_) {

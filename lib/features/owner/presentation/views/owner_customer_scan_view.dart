@@ -74,7 +74,7 @@ class _OwnerCustomerScanViewState extends State<OwnerCustomerScanView> {
   /// is the customer saved and the blacklist checked.
   Future<void> _scanCnicWithCamera() async {
   final l10n = AppLocalizations.of(context)!;
-    final picked = await ImagePicker().pickImage(source: ImageSource.camera, imageQuality: 85);
+    final picked = await ImagePicker().pickImage(source: ImageSource.camera, preferredCameraDevice: CameraDevice.rear, imageQuality: 85);
     if (picked == null || !mounted) return;
     setState(() => _isVerifying = true);
     try {

@@ -21,6 +21,7 @@ import 'package:rentalhub/core/theme/app_theme.dart';
 import 'package:rentalhub/core/utils/responsive.dart';
 import 'package:rentalhub/features/discovery/domain/entities/shop_entity.dart';
 import 'package:rentalhub/features/discovery/presentation/views/customer_home_view.dart';
+import 'package:rentalhub/features/discovery/presentation/views/customer_shops_view.dart';
 import 'package:rentalhub/features/fleet/data/datasources/fleet_remote_data_source.dart';
 import 'package:rentalhub/features/fleet/domain/entities/vehicle_entity.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_dashboard_view.dart';
@@ -189,7 +190,7 @@ void main() {
 
   group('D3: Home shop list at phone / tablet widths', () {
     testWidgets('390px shows one column', (tester) async {
-      // The list lives in the Home view's scroll view in the app, so
+      // The list lives in the Shops view's scroll view in the app, so
       // pump it in one here too — the bare list is taller than the
       // viewport.
       await _pumpAtWidth(

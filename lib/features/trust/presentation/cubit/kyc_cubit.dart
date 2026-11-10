@@ -47,6 +47,10 @@ class KycCubit extends Cubit<KycState> {
     File? cnicFront,
     File? cnicBack,
     File? license,
+    File? licenseBack,
+    String? licenseNumber,
+    String? licenseExpiry,
+    String? qrCode,
   }) async {
     emit(const KycUploading());
     try {
@@ -56,6 +60,10 @@ class KycCubit extends Cubit<KycState> {
         cnicFront: cnicFront,
         cnicBack: cnicBack,
         license: license,
+        licenseBack: licenseBack,
+        licenseNumber: licenseNumber,
+        licenseExpiry: licenseExpiry,
+        qrCode: qrCode,
       );
       emit(KycSubmitted(doc));
     } catch (e) {

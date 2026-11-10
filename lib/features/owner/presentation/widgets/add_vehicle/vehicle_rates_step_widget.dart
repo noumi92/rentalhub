@@ -106,7 +106,7 @@ class VehicleRatesStepWidget extends StatelessWidget {
         Text(l10n.addVehicleCityRatesHint, style: Theme.of(context).textTheme.bodySmall),
         const SizedBox(height: 12),
         Card(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14), side: BorderSide(color: Theme.of(context).dividerColor)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
           child: Padding(
             padding: const EdgeInsets.all(14),
             child: Column(
@@ -124,7 +124,7 @@ class VehicleRatesStepWidget extends StatelessWidget {
         const SizedBox(height: 8),
 
         Card(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14), side: BorderSide(color: Theme.of(context).dividerColor)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
           child: Padding(
             padding: const EdgeInsets.all(14),
             child: Column(
@@ -203,7 +203,7 @@ class VehicleRatesStepWidget extends StatelessWidget {
         const SizedBox(height: 8),
 
         Card(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14), side: BorderSide(color: Theme.of(context).dividerColor)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
           child: Padding(
             padding: const EdgeInsets.all(14),
             child: Column(

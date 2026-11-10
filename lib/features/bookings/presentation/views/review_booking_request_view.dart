@@ -1,26 +1,37 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../../../../core/di/injection_container.dart';
-import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../core/widgets/debounced_button.dart';
-import '../../data/datasources/booking_remote_data_source.dart';
-import '../../../customer/data/datasources/customer_remote_data_source.dart';
+import '../../../../core/widgets/verified_badge.dart';
+import '../../../admin/data/repositories/platform_settings_repository.dart';
 import '../../domain/entities/booking_entity.dart';
+import '../../utils/unverified_shop_gate.dart';
 import '../widgets/advance_deposit_notice_card.dart';
 import '../widgets/booking_summary_card.dart';
+import '../widgets/review_booking_submitter.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../../core/theme/card_decoration.dart';
 
 class ReviewBookingRequestView extends StatefulWidget {
   final Map<String, dynamic> bookingDraft;
   final Function(BookingEntity booking)? onRequestCreated;
   final VoidCallback? onBack;
+  // Customer rework (Worker E): the shop's verification state when
+  // the caller knows it (draft['shopIsVerified'] is the other
+  // source). Null = unknown; the view looks the shop up and fails
+  // open, so an unknown shop is never blocked. [bookingGate] is the
+  // test seam — production resolves the platform settings through
+  // the service locator.
+  final bool? shopIsVerified;
+  final UnverifiedShopBookingGate? bookingGate;
 
   const ReviewBookingRequestView({
     super.key,
     required this.bookingDraft,
     this.onRequestCreated,
     this.onBack,
+    this.shopIsVerified,
+    this.bookingGate,
   });
 
   @override
@@ -31,6 +42,40 @@ class ReviewBookingRequestView extends StatefulWidget {
 class _ReviewBookingRequestViewState extends State<ReviewBookingRequestView> {
   final _notesController = TextEditingController();
   bool _isSubmitting = false;
+  // Null until the shop's verification state is known (an explicit
+  // flag, or the `shops/{shopId}` lookup). Null renders no badge.
+  bool? _shopIsVerified;
+
+  @override
+  void initState() {
+    super.initState();
+    final known = widget.shopIsVerified ??
+        widget.bookingDraft['shopIsVerified'] as bool?;
+    if (known != null) {
+      _shopIsVerified = known;
+    } else {
+      _resolveShopVerification();
+    }
+  }
+
+  UnverifiedShopBookingGate _defaultGate() {
+    try {
+      if (sl.isRegistered<PlatformSettingsRepository>()) {
+        return UnverifiedShopBookingGate(
+            settings: sl<PlatformSettingsRepository>());
+      }
+    } catch (_) {}
+    return UnverifiedShopBookingGate();
+  }
+
+  Future<void> _resolveShopVerification() async {
+    final gate = widget.bookingGate ?? _defaultGate();
+    final verified = await gate.isShopVerified(
+      shopId: widget.bookingDraft['shopId'] as String? ?? 'shop-default',
+    );
+    if (!mounted) return;
+    setState(() => _shopIsVerified = verified);
+  }
 
   @override
   void dispose() {
@@ -39,72 +84,18 @@ class _ReviewBookingRequestViewState extends State<ReviewBookingRequestView> {
   }
 
   Future<void> _submitRequest() async {
-    final l10n = AppLocalizations.of(context)!;
     setState(() => _isSubmitting = true);
     try {
-      // C2: the request is filed under the signed-in customer's own
-      // record (name, phone, CNIC) when one exists. The placeholder
-      // identity below is only for a signed-out/demo flow — a real
-      // customer never sees it.
-      String customerId = 'cust-101';
-      String customerName = 'Valued Customer';
-      String customerPhone = '+923001234567';
-      String? customerCnic;
-      try {
-        final user = FirebaseAuth.instance.currentUser;
-        if (user != null) {
-          customerId = user.uid;
-          customerName = user.displayName ?? customerName;
-          customerPhone = user.phoneNumber ?? customerPhone;
-          if (sl.isRegistered<CustomerRemoteDataSource>()) {
-            final record =
-                await sl<CustomerRemoteDataSource>().getCustomerById(user.uid);
-            if (record != null) {
-              customerName = record.name;
-              customerPhone = record.phone;
-              customerCnic = record.cnic;
-            }
-          }
-        }
-      } catch (_) {}
-
-      final draft = widget.bookingDraft;
-      final ds = sl<BookingRemoteDataSource>();
-
-      final booking = await ds.createBookingRequest(
-        customerId: customerId,
-        shopId: draft['shopId'] as String? ?? 'shop-default',
-        vehicleId: draft['carId'] as String? ?? 'car-default',
-        packageType: draft['packageType'] as String? ?? '24h',
-        isWithDriver: draft['isWithDriver'] as bool? ?? false,
-        pickupTime: draft['pickupTime'] as DateTime? ?? DateTime.now(),
-        returnTime: draft['returnTime'] as DateTime? ??
-            DateTime.now().add(const Duration(days: 1)),
-        totalAmount: draft['totalAmount'] as int? ?? 5000,
-        advanceRequired: draft['advanceRequired'] as int? ?? 1000,
-        vehicleName: draft['carName'] as String?,
-        vehiclePlate: draft['plateNumber'] as String?,
-        shopName: draft['shopName'] as String?,
-        customerName: customerName,
-        customerPhone: customerPhone,
-        customerCnic: customerCnic,
-        tripType: draft['tripType'] as String? ?? 'in_city',
-        kmLimit: draft['kmLimit'] as int?,
-        fixedRouteId: draft['fixedRouteId'] as String?,
-        fixedRouteSummary: draft['fixedRouteSummary'] as String?,
-        outCityMode: draft['outCityMode'] as String?,
-        outCityPerKmPkr: draft['outCityPerKmPkr'] as int?,
+      final booking = await ReviewBookingSubmitter(
+        bookingGate: widget.bookingGate,
+      ).submit(
+        context: context,
+        draft: widget.bookingDraft,
+        shopIsVerified: _shopIsVerified,
         notes: _notesController.text.trim(),
       );
-
-      if (mounted) {
-        AppFeedback.showSuccess(
-            context, l10n.reviewSent);
+      if (booking != null && mounted) {
         widget.onRequestCreated?.call(booking);
-      }
-    } catch (e) {
-      if (mounted) {
-        AppFeedback.showError(context, l10n.reviewSubmitError(e.toString()));
       }
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
@@ -147,6 +138,17 @@ class _ReviewBookingRequestViewState extends State<ReviewBookingRequestView> {
                       securityDepositPkr: d['securityDepositPkr'] as int?,
                       destinationCity: d['destinationCity'] as String?,
                     ),
+                    // Customer rework (Worker E): the shop's
+                    // unverified state is shown honestly during
+                    // booking — a label, never a block while the
+                    // platform setting is ON.
+                    if (_shopIsVerified == false) ...[
+                      const SizedBox(height: 10),
+                      VerifiedBadge(
+                        isVerified: false,
+                        label: l10n.shops_unverified,
+                      ),
+                    ],
                     const SizedBox(height: 14),
                     AdvanceDepositNoticeCard(
                       isWithDriver: d['isWithDriver'] as bool? ?? false,
@@ -157,8 +159,7 @@ class _ReviewBookingRequestViewState extends State<ReviewBookingRequestView> {
                       decoration: BoxDecoration(
                         color: Theme.of(context).colorScheme.surface,
                         borderRadius: BorderRadius.circular(16),
-                        border:
-                            Border.all(color: Theme.of(context).dividerColor),
+                        boxShadow: AppCardDecoration.shadow(context),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,

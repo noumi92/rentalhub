@@ -3,6 +3,7 @@ import '../../../../../l10n/app_localizations.dart';
 
 import  '../../../../finance/domain/entities/security_deposit_entity.dart';
 import '../../../../../core/utils/money_format.dart';
+import '../../../../../core/theme/card_decoration.dart';
 
 /// Phase B (H4): the deposits the shop holds — what is still held,
 /// what was refunded in full, and what was deducted at return.
@@ -36,7 +37,7 @@ class FinanceDepositsSection extends StatelessWidget {
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Theme.of(context).dividerColor),
+            boxShadow: AppCardDecoration.shadow(context)
           ),
           child: Column(
             children: [

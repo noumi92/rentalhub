@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/data/sync_status_cubit.dart';
 import '../../../../core/widgets/offline_banner.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../../core/theme/card_decoration.dart';
 
 /// Phase B (B5): the owner settings "Sync" card — one live row
 /// showing offline / pending / failed / all-synced. Extracted from
@@ -23,7 +24,7 @@ class SyncStatusSection extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Theme.of(context).dividerColor),
+        boxShadow: AppCardDecoration.shadow(context)
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

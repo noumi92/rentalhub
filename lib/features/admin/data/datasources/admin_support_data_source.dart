@@ -525,6 +525,10 @@ class PlatformSettings {
     this.supportHours = '9am – 9pm',
     this.defaultAgreementTerms = '',
     this.maintenanceMode = false,
+    // Customer rework (Worker E): both default ON. A document or
+    // field that does not exist yet is read as ON everywhere.
+    this.displayUnverifiedShops = true,
+    this.allowBookingsFromUnverifiedShops = true,
   });
 
   final List<String> liveCities;
@@ -535,6 +539,8 @@ class PlatformSettings {
   final String supportHours;
   final String defaultAgreementTerms;
   final bool maintenanceMode;
+  final bool displayUnverifiedShops;
+  final bool allowBookingsFromUnverifiedShops;
 
   factory PlatformSettings.fromMap(Map<String, dynamic> data) {
     return PlatformSettings(
@@ -549,6 +555,10 @@ class PlatformSettings {
       defaultAgreementTerms:
           data['default_agreement_terms'] as String? ?? '',
       maintenanceMode: data['maintenance_mode'] as bool? ?? false,
+      displayUnverifiedShops:
+          data['displayUnverifiedShops'] as bool? ?? true,
+      allowBookingsFromUnverifiedShops:
+          data['allowBookingsFromUnverifiedShops'] as bool? ?? true,
     );
   }
 
@@ -562,6 +572,9 @@ class PlatformSettings {
       'support_hours': supportHours,
       'default_agreement_terms': defaultAgreementTerms,
       'maintenance_mode': maintenanceMode,
+      'displayUnverifiedShops': displayUnverifiedShops,
+      'allowBookingsFromUnverifiedShops':
+          allowBookingsFromUnverifiedShops,
     };
   }
 }

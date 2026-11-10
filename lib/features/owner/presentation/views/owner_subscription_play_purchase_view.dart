@@ -8,6 +8,7 @@ import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../widgets/manual_bank_transfer_sheet.dart';
 import '../services/subscription_data_source.dart';
+import '../../../../core/theme/card_decoration.dart';
 
 /// S3 — Google Play purchase sheet (deck p.17 screen 3), built as an
 /// honest not-connected state. The deck shows saved cards and a green
@@ -53,8 +54,7 @@ class OwnerSubscriptionPlayPurchaseView extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.surface,
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                          color: Theme.of(context).dividerColor),
+                      boxShadow: AppCardDecoration.shadow(context),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,

@@ -9,6 +9,13 @@ class RouteNames {
   static const String customerLocationPrompt = '/customer/location-prompt';
   static const String customerHome = '/customer/home';
   static const String customerHomeMap = '/customer/home/map';
+  // Customer rework (tabs: Home, Shops, Bookings, Wallet, Profile):
+  // the Shops tab root — the map/list discovery screen (Worker B).
+  static const String customerShops = '/customer/shops';
+  // Customer rework (07:42 PKT clarification): the Shops tab is the
+  // LISTING by default; the full-screen Nearby showrooms map is a
+  // sub-screen of the Shops branch (back returns to the listing).
+  static const String customerShopsMap = '/customer/shops/map';
   static const String customerShopDetail = '/customer/shop/:shopId';
   static const String customerShopCars = '/customer/shop/:shopId/cars';
   static const String customerVehicleDetail = '/customer/vehicle/:id';

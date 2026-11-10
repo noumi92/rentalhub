@@ -54,6 +54,23 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // CNIC back-QR numbers (Worker G, 2026-11-10): the QR code on
+    // the back of a CNIC holds a NUMBER used later for manual legal
+    // verification with the government. It is stored apart from the
+    // customer record because Firestore rules are document-level and
+    // cannot hide a single field: ONLY a super admin may read it —
+    // never the customer, never an owner, never operations/support.
+    // The capturing apps (owner wizard / customer KYC / CNIC review)
+    // write it at scan time; nobody may delete it. The payload must
+    // carry the same customerId as the doc id and a string qrCode.
+    match /customer_qr_codes/{customerId} {
+      allow read: if isSuperAdmin();
+      allow create, update: if isSignedIn()
+        && request.resource.data.get('customerId', '') == customerId
+        && request.resource.data.get('qrCode', '') is string;
+      allow delete: if false;
+    }
+
     // Team invites (A4): super admin only. The grant itself is enforced
     // server-side in setAdminRole (invite + 48 h expiry).
     match /admin_invites/{inviteId} {

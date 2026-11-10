@@ -10,6 +10,7 @@ import '../../../bookings/presentation/widgets/pass_shop_contact_card.dart';
 import '../../../bookings/presentation/widgets/pickup_countdown_timer.dart';
 import '../widgets/active_trip_handover_card.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../../core/theme/card_decoration.dart';
 
 /// E3: the customer's live trip screen. Everything on it comes from the
 /// booking and the real handover record (`handovers/{bookingId}`,
@@ -95,8 +96,7 @@ class _CustomerActiveTripViewState extends State<CustomerActiveTripView> {
                       decoration: BoxDecoration(
                         color: Theme.of(context).colorScheme.surface,
                         borderRadius: BorderRadius.circular(16),
-                        border:
-                            Border.all(color: Theme.of(context).dividerColor),
+                        boxShadow: AppCardDecoration.shadow(context),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,

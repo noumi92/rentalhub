@@ -6,11 +6,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:latlong2/latlong.dart' as ll;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:rentalhub/core/di/injection_container.dart' as di;
 import 'package:rentalhub/features/auth/presentation/views/legal_text_view.dart';
 import 'package:rentalhub/features/auth/presentation/views/login_view.dart';
+import 'package:rentalhub/features/auth/presentation/views/widgets/google_sign_in_button.dart';
 import 'package:rentalhub/features/fleet/domain/entities/vehicle_entity.dart';
 import 'package:rentalhub/features/owner/presentation/constants/owner_onboarding_constants.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_onboarding_view.dart';
@@ -160,19 +162,76 @@ void main() {
   });
 
   group('P2-1 login Terms/Privacy footer', () {
-    testWidgets('shows Terms of Service and Privacy Policy links', (tester) async {
+    testWidgets('shows Terms of Service and Privacy Policy links',
+        (tester) async {
       await tester.pumpWidget(_wrap(const LoginView()));
       await tester.pump();
 
-      expect(find.text('Terms of Service'), findsOneWidget);
-      expect(find.text('Privacy Policy'), findsOneWidget);
-      // The only TextButtons on the login screen are the two legal
-      // links — the old authNewUser bypass button stays removed.
-      expect(find.byType(TextButton), findsNWidgets(2));
+      // The disclaimer is one flowing paragraph with inline tappable
+      // links (a RichText), not buttons — find.text only matches whole
+      // Text widgets, so match on the contained link text.
+      expect(find.textContaining('Terms of Service'), findsOneWidget);
+      expect(find.textContaining('Privacy Policy'), findsOneWidget);
+      // No buttons in the footer at all, and no sign-up affordance:
+      // users are onboarded by the business, there is no self sign-up.
+      expect(find.byType(TextButton), findsNothing);
+      expect(find.textContaining('Sign up'), findsNothing);
+      expect(find.textContaining("Don't have an account"), findsNothing);
+
+      // Compactness: the whole below-card block (gap + disclaimer +
+      // trailing gap) is one short paragraph. Measured in this test
+      // run: the disclaimer is 32px tall (the test font renders wider
+      // than real Inter, so the sentence wraps to 2 lines even at the
+      // 800px test width; on a real phone it is 2 lines at ~28px) and
+      // the block from the card bottom to the disclaimer bottom is
+      // 44px — vs the old 64px at test width (24 gap + 40px
+      // TextButton row) and ~104px on a 360px phone, where the old
+      // Wrap broke into two 40px button rows.
+      final cardRect = tester.getRect(find.byType(Card).first);
+      final footerRect =
+          tester.getRect(find.textContaining('Privacy Policy'));
+      expect(footerRect.height, lessThanOrEqualTo(36));
+      expect(footerRect.bottom - cardRect.bottom, lessThanOrEqualTo(48));
 
       // HeroCarSlider runs a periodic timer: dispose the view before
       // the test ends instead of leaving it to teardown.
       await tester.pumpWidget(const SizedBox.shrink());
+    });
+
+    testWidgets('Google sign-in button renders the package Google icon',
+        (tester) async {
+      await tester.pumpWidget(
+        _wrap(GoogleSignInButton(onPressed: () {})),
+      );
+      await tester.pump();
+
+      expect(
+        find.byWidgetPredicate(
+          // FaIcon extends Icon and exposes the unwrapped IconData via
+          // its `icon` getter; the FaIconData wrapper itself lives in
+          // `FontAwesomeIcons.google.data`.
+          (w) => w is FaIcon && w.icon == FontAwesomeIcons.google.data,
+        ),
+        findsOneWidget,
+      );
+      // The hand-drawn CustomPaint "G" is gone from the button: no
+      // ancestor Row of the icon holds a CustomPaint child. (A bare
+      // `find.byType(CustomPaint)` would also match the framework's
+      // own ink-splash painting inside OutlinedButton.)
+      final rows = find.ancestor(
+        of: find.byWidgetPredicate(
+          (w) => w is FaIcon && w.icon == FontAwesomeIcons.google.data,
+        ),
+        matching: find.byType(Row),
+      );
+      expect(rows, findsWidgets);
+      for (final element in rows.evaluate()) {
+        expect(
+          (element.widget as Row).children.whereType<CustomPaint>(),
+          isEmpty,
+        );
+      }
+      expect(find.text('Continue with Google'), findsOneWidget);
     });
 
     testWidgets('terms screen shows the real terms text', (tester) async {

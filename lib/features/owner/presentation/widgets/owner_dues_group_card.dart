@@ -5,6 +5,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
 import '../../../../core/utils/money_format.dart';
+import '../../../../core/theme/card_decoration.dart';
 
 /// Audit §25 (extracted from [OwnerDuesView] so the view stays under
 /// the 250-line cap): the total-due summary card and one customer's
@@ -24,7 +25,7 @@ class DuesTotalCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Theme.of(context).dividerColor),
+        boxShadow: AppCardDecoration.shadow(context)
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -74,7 +75,7 @@ class DuesGroupCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Theme.of(context).dividerColor),
+        boxShadow: AppCardDecoration.shadow(context)
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

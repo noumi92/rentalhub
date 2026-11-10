@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/widgets/app_state_views.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../../core/theme/card_decoration.dart';
 
 /// G1: the support screen's FAQ list (search-filtered). Extracted from
 /// [CustomerSupportView] so the view stays under the 250-line cap.
@@ -38,7 +39,7 @@ class SupportFaqList extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Theme.of(context).dividerColor),
+                  boxShadow: AppCardDecoration.shadow(context)
                 ),
                 child: ExpansionTile(
                   shape: const Border(),

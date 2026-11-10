@@ -1,29 +1,56 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart' as ll;
-import '../../../../core/constants/app_colors.dart';
+
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../data/datasources/customer_location_store.dart';
-import '../../data/datasources/discovery_remote_data_source.dart';
-import '../../data/repositories/discovery_repository_impl.dart';
 import '../../domain/entities/shop_entity.dart';
-import '../../domain/usecases/get_nearby_shops_usecase.dart';
-import 'widgets/customer_map_canvas.dart';
+import '../cubit/shops_filter_state.dart';
+import 'widgets/city_selector_bar.dart';
 import 'widgets/map_shop_preview_card.dart';
-import 'widgets/no_shops_banner.dart';
-import 'widgets/radius_filter_pills.dart';
+import 'widgets/shops_empty_banner.dart';
+import 'widgets/shops_filter_bar.dart';
+import 'widgets/shops_filter_logic.dart';
+import 'widgets/shops_location_note.dart';
+import 'widgets/shops_map_canvas.dart';
+import 'widgets/shops_tab_data.dart';
 import '../../../../l10n/app_localizations.dart';
 
-/// B2: the map view runs on real data. The centre is the customer's
-/// stored location (refreshed with a live GPS fix when one is available),
-/// the markers are the verified shops from Firestore within the selected
-/// radius, and changing the radius re-fetches — the old version showed 4
-/// hardcoded shops around a hardcoded Gulberg III pin.
+/// The full-screen Nearby showrooms map — the ONE customer map
+/// screen, reused as the Shops tab's map view (`/customer/shops/map`;
+/// the old `/customer/home/map` route still lands here too). It starts
+/// on the WHOLE of Pakistan and carries the SAME filters as the Shops
+/// listing through the shared [ShopsFilterState]. Pins are real shop
+/// locations only, every pin carries its Verified/Unverified status,
+/// and tapping a pin shows the shop preview. The "you are here" pin is
+/// DRAGGABLE: dragging it re-sorts the nearby shops by distance from
+/// its new point (shop pins never move).
 class CustomerHomeMapView extends StatefulWidget {
-  const CustomerHomeMapView({super.key});
+  const CustomerHomeMapView({
+    super.key,
+    this.shopsLoader,
+    this.displayUnverifiedLoader,
+    this.isOnlineOverride,
+    this.filterState,
+    this.onShopSelected,
+  });
+
+  /// Test seam: override the Firestore shop read.
+  final Future<List<ShopEntity>> Function()? shopsLoader;
+
+  /// Test seam: override the `displayUnverifiedShops` setting read.
+  final Future<bool> Function()? displayUnverifiedLoader;
+
+  /// Test seam: force the online/offline decision.
+  final bool? isOnlineOverride;
+
+  /// Test seam: the shared filter state (default [ShopsFilterState.shared]).
+  final ShopsFilterState? filterState;
+
+  /// Test seam: override the shop-page navigation.
+  final ValueChanged<ShopEntity>? onShopSelected;
 
   @override
   State<CustomerHomeMapView> createState() => _CustomerHomeMapViewState();
@@ -31,174 +58,192 @@ class CustomerHomeMapView extends StatefulWidget {
 
 class _CustomerHomeMapViewState extends State<CustomerHomeMapView> {
   final MapController _mapController = MapController();
-  final _locationStore = CustomerLocationStore();
-  late final GetNearbyShopsUseCase _getNearbyShops;
-
-  double _selectedRadiusKm = 3.0;
-  CustomerLocation _location = CustomerLocation.defaultLocation;
+  late final ShopsFilterState _filters;
   List<ShopEntity> _shops = const [];
   ShopEntity? _selectedShop;
   bool _loading = true;
+  bool _online = true;
+  bool? _locationAvailable;
+  String? _lastCity;
 
   @override
   void initState() {
     super.initState();
-    _getNearbyShops = GetNearbyShopsUseCase(
-      DiscoveryRepositoryImpl(
-        remoteDataSource: DiscoveryRemoteDataSource(),
-      ),
-    );
-    _loadFromStoredLocation();
+    _filters = widget.filterState ?? ShopsFilterState.shared;
+    _lastCity = _filters.city;
+    _filters.addListener(_onFiltersChanged);
+    _loadShops();
+    _checkLocation();
+    _checkOnline();
+    _loadStoredLocation();
   }
 
-  Future<void> _loadFromStoredLocation() async {
-    final stored = await _locationStore.load();
-    if (stored != null && mounted) {
-      setState(() => _location = stored);
-      _mapController.move(_latLng(stored), 13.5);
+  @override
+  void dispose() {
+    _filters.removeListener(_onFiltersChanged);
+    _mapController.dispose();
+    super.dispose();
+  }
+
+  /// A city pick recentres this map; dropping the previewed shop clears it.
+  void _onFiltersChanged() {
+    if (_filters.city != _lastCity) {
+      _lastCity = _filters.city;
+      _mapController.move(_filters.mapCenter, _filters.mapZoom);
     }
-    await _loadShops();
-    await _refreshGpsFix();
-  }
-
-  /// A fresh GPS fix, when the device offers one: the stored location may
-  /// be from an earlier session. Never asks for permission here — the
-  /// location prompt already did; without it we silently keep the stored
-  /// location.
-  Future<void> _refreshGpsFix() async {
-    final l10n = AppLocalizations.of(context)!;
-    try {
-      if (!await Geolocator.isLocationServiceEnabled()) return;
-      final permission = await Geolocator.checkPermission();
-      if (permission != LocationPermission.whileInUse &&
-          permission != LocationPermission.always) {
-        return;
-      }
-      final position = await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(
-          accuracy: LocationAccuracy.high,
-        ),
-      );
-      if (!mounted) return;
-      final fix = CustomerLocation(
-        latitude: position.latitude,
-        longitude: position.longitude,
-        city: l10n.homeMyLiveLocation,
-        area:
-            '${position.latitude.toStringAsFixed(4)}°N, ${position.longitude.toStringAsFixed(4)}°E',
-        fromGps: true,
-      );
-      if ((fix.latitude - _location.latitude).abs() > 0.0005 ||
-          (fix.longitude - _location.longitude).abs() > 0.0005) {
-        setState(() => _location = fix);
-        _mapController.move(_latLng(fix), 14.5);
-        await _loadShops();
-      }
-    } catch (_) {
-      // No fix available — the stored location stands.
+    final filtered = _filters.apply(_shops);
+    // Compare by id: the preview holds a distance-sorted copy whose
+    // recomputed distanceKm differs from the stored entity, so
+    // Equatable contains() would wrongly clear it on every change.
+    if (_selectedShop != null &&
+        !filtered.any((s) => s.shopId == _selectedShop!.shopId)) {
+      setState(() => _selectedShop = null);
     }
   }
 
   Future<void> _loadShops() async {
-    setState(() => _loading = true);
+    final shops = await ShopsTabData.loadShops(
+      filters: _filters,
+      shopsLoader: widget.shopsLoader,
+      displayUnverifiedLoader: widget.displayUnverifiedLoader,
+    );
+    if (!mounted) return;
+    setState(() {
+      _shops = shops;
+      _loading = false;
+      if (_selectedShop == null) _selectNearest();
+    });
+  }
+
+  /// The stored location (from the set-location flow) places the user
+  /// pin on first open; a drag after that wins over it.
+  Future<void> _loadStoredLocation() async {
+    if (_filters.userPoint != null) return;
     try {
-      final shops = await _getNearbyShops(
-        radiusKm: _selectedRadiusKm,
-        latitude: _location.latitude,
-        longitude: _location.longitude,
-      );
-      if (!mounted) return;
-      setState(() {
-        _shops = shops;
-        _selectedShop = shops.isEmpty ? null : shops.first;
-        _loading = false;
-      });
+      final stored = await CustomerLocationStore().load();
+      if (!mounted || stored == null) return;
+      _filters.setUserPoint(ll.LatLng(stored.latitude, stored.longitude));
     } catch (_) {
-      if (!mounted) return;
-      setState(() {
-        _shops = const [];
-        _selectedShop = null;
-        _loading = false;
-      });
+      // No stored location — the pin falls back to the map centre.
     }
   }
 
-  ll.LatLng _latLng(CustomerLocation location) =>
-      ll.LatLng(location.latitude, location.longitude);
+  /// The point distances sort from: the dragged pin, else the map centre.
+  ll.LatLng get _userPoint => _filters.userPoint ?? _filters.mapCenter;
+
+  List<ShopEntity> _sortedShops() =>
+      sortShopsByDistance(_filters.apply(_shops), _userPoint);
+
+  void _selectNearest() {
+    final sorted = _sortedShops();
+    if (sorted.isNotEmpty) _selectedShop = sorted.first;
+  }
+
+  void _onUserPointDragEnd(ll.LatLng point) {
+    final sorted = _sortedShops();
+    if (sorted.isEmpty) return;
+    if (_selectedShop?.shopId != sorted.first.shopId) {
+      setState(() => _selectedShop = sorted.first);
+    }
+  }
+
+  Future<void> _checkLocation() async {
+    final available = await ShopsTabData.locationAvailable();
+    if (!mounted) return;
+    setState(() => _locationAvailable = available);
+  }
+
+  Future<void> _checkOnline() async {
+    final online =
+        await ShopsTabData.onlineStatus(override: widget.isOnlineOverride);
+    if (!mounted) return;
+    setState(() => _online = online);
+  }
+
+  void _selectCity(Map<String, dynamic> city) {
+    _filters.setCity(
+        city['all'] == true ? null : city['name'] as String);
+  }
+
+  void _openShop(ShopEntity shop) {
+    if (widget.onShopSelected != null) {
+      widget.onShopSelected!.call(shop);
+    } else {
+      context.push(
+        RouteNames.customerShopDetail.replaceFirst(':shopId', shop.shopId),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final userPoint = _latLng(_location);
-    final selectedShop = _selectedShop;
-
-    return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
-            MinimalAppBar(
-              title: l10n.homeNearbyShowrooms,
-              subtitle: l10n.mapTapMarker(_location.area),
-              onBack: () => context.pop(),
-              actions: [
-                IconButton(
-                  tooltip: l10n.homeSwitchToList,
-                  onPressed: () => context.go(RouteNames.customerHome),
-                  icon: const Icon(Icons.view_list_rounded,
-                      color: AppColors.secondary, size: 24),
+    return ListenableBuilder(
+      listenable: _filters,
+      builder: (context, _) {
+        // Filtered AND distance-sorted from the user pin, nearest first.
+        final shops = _sortedShops();
+        final selectedShop = _selectedShop;
+        return Scaffold(
+          body: SafeArea(
+            child: Column(
+              children: [
+                MinimalAppBar(
+                  title: l10n.homeNearbyShowrooms,
+                  subtitle: l10n.mapTapMarker(
+                      _filters.city ?? l10n.shops_allCities),
+                  onBack: () => context.pop(),
+                ),
+                CitySelectorBar(
+                  majorCities: shopsCityMenuEntries(l10n),
+                  selectedCity: _filters.city ?? l10n.shops_allCities,
+                  onSelectCity: _selectCity,
+                ),
+                ShopsFilterBar(
+                  verification: _filters.verification,
+                  onVerificationChanged: _filters.setVerification,
+                  showUnverifiedFilter: _filters.displayUnverifiedShops,
+                ),
+                if (_locationAvailable == false)
+                  ShopsLocationNote(text: l10n.shops_chooseCity),
+                Expanded(
+                  child: Stack(
+                    children: [
+                      ShopsMapCanvas(
+                        mapController: _mapController,
+                        shops: shops,
+                        isOnline: _online,
+                        onShopSelected: (shop) =>
+                            setState(() => _selectedShop = shop),
+                        initialCenter: _filters.mapCenter,
+                        initialZoom: _filters.mapZoom,
+                        userPoint: _userPoint,
+                        onUserPointChanged: _filters.setUserPoint,
+                        onUserPointChangeEnd: _onUserPointDragEnd,
+                      ),
+                      if (_loading)
+                        const Center(child: CircularProgressIndicator()),
+                      if (!_loading && shops.isEmpty)
+                        Positioned(
+                          left: 16,
+                          right: 16,
+                          bottom: 16,
+                          child: ShopsEmptyBanner(
+                              text: l10n.shops_emptyTitle),
+                        )
+                      else if (selectedShop != null)
+                        MapShopPreviewCard(
+                          shop: selectedShop,
+                          onViewShowroom: () => _openShop(selectedShop),
+                        ),
+                    ],
+                  ),
                 ),
               ],
             ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              color: Colors.white,
-              child: RadiusFilterPills(
-                selectedRadiusKm: _selectedRadiusKm,
-                onRadiusSelected: (km) {
-                  setState(() => _selectedRadiusKm = km);
-                  _loadShops();
-                },
-              ),
-            ),
-            Expanded(
-              child: Stack(
-                children: [
-                  CustomerMapCanvas(
-                    mapController: _mapController,
-                    userPoint: userPoint,
-                    radiusKm: _selectedRadiusKm,
-                    shops: _shops,
-                    selectedShop: selectedShop,
-                    onShopSelected: (shop) =>
-                        setState(() => _selectedShop = shop),
-                  ),
-                  if (_loading)
-                    const Center(child: CircularProgressIndicator()),
-                  if (!_loading && _shops.isEmpty)
-                    const Positioned(
-                      left: 16,
-                      right: 16,
-                      bottom: 16,
-                      child: NoShopsBanner(),
-                    )
-                  else if (selectedShop != null)
-                    MapShopPreviewCard(
-                      shop: selectedShop,
-                      onViewShowroom: () {
-                        context.push(
-                          RouteNames.customerShopDetail.replaceFirst(
-                            ':shopId',
-                            selectedShop.shopId,
-                          ),
-                        );
-                      },
-                    ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }

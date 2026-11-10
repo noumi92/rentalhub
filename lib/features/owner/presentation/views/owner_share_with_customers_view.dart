@@ -127,7 +127,7 @@ class _OwnerShareWithCustomersViewState
                                   final key = row.$1;
                                   final selected = _period == key;
                                   return Card(
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14), side: BorderSide(color: selected ? Theme.of(context).colorScheme.primary : Theme.of(context).dividerColor)),
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14), side: selected ? BorderSide(color: Theme.of(context).colorScheme.primary) : BorderSide.none),
                                     child: RadioListTile<String>(
                                       value: key,
                                       title: Text(row.$2, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800)),
@@ -149,9 +149,7 @@ class _OwnerShareWithCustomersViewState
                         children: [
                           Card(
                             shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(14),
-                                side: BorderSide(
-                                    color: Theme.of(context).dividerColor)),
+                                borderRadius: BorderRadius.circular(14)),
                             child: Padding(
                               padding: const EdgeInsets.all(16),
                               child: Column(

@@ -56,7 +56,7 @@ class ContractPaperSheet extends StatelessWidget {
               blurRadius: 10,
               offset: Offset(0, 4)),
         ],
-        border: Border.all(color: Theme.of(context).dividerColor),
+        
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

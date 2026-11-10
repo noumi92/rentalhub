@@ -3,6 +3,7 @@ import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/widgets/verified_badge.dart';
 import '../../../domain/entities/shop_entity.dart';
 import '../../../../../l10n/app_localizations.dart';
+import 'shops_filter_logic.dart';
 
 class ShopListCard extends StatelessWidget {
   final ShopEntity shop;
@@ -97,7 +98,17 @@ class ShopListCard extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 8),
-                      VerifiedBadge(isVerified: shop.isVerified),
+                      // Shops tab: every shop states its verification
+                      // plainly — "Verified" for verified shops, an
+                      // explicit "Unverified" label for the rest
+                      // (the badge's own fallback reads "Pending
+                      // Review", which is not the same claim).
+                      VerifiedBadge(
+                        isVerified: isShopVerified(shop),
+                        label: isShopVerified(shop)
+                            ? null
+                            : l10n.shops_unverified,
+                      ),
                     ],
                   ),
                   const SizedBox(height: 5),

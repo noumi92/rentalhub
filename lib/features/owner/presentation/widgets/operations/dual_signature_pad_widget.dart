@@ -3,6 +3,7 @@ import '../../../../../l10n/app_localizations.dart';
 import 'package:signature/signature.dart';
 
 import '../../../../../core/constants/app_colors.dart';
+import '../../../../../core/theme/card_decoration.dart';
 
 /// Phase B (E2): two real signature pads. The caller owns the
 /// controllers and exports the PNG bytes at handover time — the old
@@ -29,7 +30,7 @@ class DualSignaturePadWidget extends StatelessWidget {
         // (signature paper — a deliberate keep, like the contract sheet).
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Theme.of(context).dividerColor),
+        boxShadow: AppCardDecoration.shadow(context)
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

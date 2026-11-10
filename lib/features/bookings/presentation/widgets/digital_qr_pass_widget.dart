@@ -27,7 +27,7 @@ class DigitalQrPassWidget extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Theme.of(context).dividerColor),
+        
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.06),

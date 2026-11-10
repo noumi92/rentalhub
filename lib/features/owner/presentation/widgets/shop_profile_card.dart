@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../../core/utils/current_shop.dart';
 import '../../../../../l10n/app_localizations.dart';
+import '../../../../core/theme/card_decoration.dart';
 
 /// Audit §5 (O33): the settings profile card — the owner's name and
 /// avatar (shop logo) above the shop name. Previously the card was
@@ -53,7 +54,7 @@ class _ShopProfileCardState extends State<ShopProfileCard> {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Theme.of(context).dividerColor),
+        boxShadow: AppCardDecoration.shadow(context)
       ),
       child: _loaded
           ? Row(

@@ -58,10 +58,8 @@ class BookingTicketCard extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final statusColor = _getStatusColor(booking.status, Theme.of(context).brightness);
     return Card(
-      elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: const BorderSide(color: AppColors.borderSubtle),
       ),
       child: InkWell(
         onTap: onTap,
@@ -141,29 +139,43 @@ class BookingTicketCard extends StatelessWidget {
                 ),
               if (_showQr) const SizedBox(height: 10),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 3),
-                        decoration: BoxDecoration(
-                          color: statusColor.withValues(alpha: 0.12),
-                          borderRadius: BorderRadius.circular(6),
+                  // Customer Home at 200% text scale: the status chip
+                  // ('PAYMENT_SUBMITTED') plus the action button are
+                  // wider than the card — the chip shrinks and
+                  // ellipsizes instead of overflowing.
+                  Flexible(
+                    child: Row(
+                      children: [
+                        Flexible(
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: statusColor.withValues(alpha: 0.12),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              booking.status.toUpperCase(),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .labelSmall
+                                  ?.copyWith(
+                                      fontWeight: FontWeight.w800,
+                                      color: statusColor),
+                            ),
+                          ),
                         ),
-                        child: Text(
-                          booking.status.toUpperCase(),
-                          style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800, color: statusColor),
-                        ),
-                      ),
-                      // Phase B (B5): per-item sync state.
-                      if (syncStatus != null &&
-                          syncStatus != SyncEntryStatus.synced) ...[
-                        const SizedBox(width: 6),
-                        SyncStatusChip(status: syncStatus!),
+                        // Phase B (B5): per-item sync state.
+                        if (syncStatus != null &&
+                            syncStatus != SyncEntryStatus.synced) ...[
+                          const SizedBox(width: 6),
+                          SyncStatusChip(status: syncStatus!),
+                        ],
                       ],
-                    ],
+                    ),
                   ),
                   if (actionLabel != null && onAction != null)
                     TextButton(

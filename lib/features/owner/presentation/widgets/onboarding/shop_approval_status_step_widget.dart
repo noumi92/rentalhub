@@ -5,6 +5,7 @@ import '../../../../../l10n/app_localizations.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/widgets/app_feedback.dart';
 import '../../../../../core/widgets/debounced_button.dart';
+import '../../../../../core/theme/card_decoration.dart';
 
 /// Audit §5 (P2-5): the Application Status step — the 3-step timeline
 /// (Submitted ✓ / Under Review / Approved), the "Usually approved
@@ -112,7 +113,7 @@ class _ShopApprovalStatusStepWidgetState
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Theme.of(context).dividerColor),
+            boxShadow: AppCardDecoration.shadow(context)
           ),
           child: Column(
             children: [
@@ -142,7 +143,7 @@ class _ShopApprovalStatusStepWidgetState
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Theme.of(context).dividerColor),
+            boxShadow: AppCardDecoration.shadow(context)
           ),
           child: Row(
             children: [

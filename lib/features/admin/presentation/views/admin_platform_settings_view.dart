@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/widgets/app_feedback.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../data/datasources/admin_support_data_source.dart';
 import '../widgets/admin_shell.dart';
 
@@ -11,8 +12,16 @@ import '../widgets/admin_shell.dart';
 /// and the global defaults (advance %, default deposit, late grace,
 /// support hours, default agreement terms). This replaces the old
 /// mock settings view.
+///
+/// Customer rework (Worker E): the two unverified-shop toggles live
+/// here too — "Display unverified shops" and "Allow bookings from
+/// unverified shops". Both default ON; the customer side reads them
+/// through [PlatformSettingsRepository] and treats a missing
+/// document/field as ON.
 class AdminPlatformSettingsView extends StatefulWidget {
-  const AdminPlatformSettingsView({super.key});
+  final AdminSupportDataSource? dataSource;
+
+  const AdminPlatformSettingsView({super.key, this.dataSource});
 
   @override
   State<AdminPlatformSettingsView> createState() =>
@@ -29,8 +38,13 @@ class _AdminPlatformSettingsViewState
   final _hoursController = TextEditingController();
   final _termsController = TextEditingController();
   bool _maintenanceMode = false;
+  bool _displayUnverifiedShops = true;
+  bool _allowBookingsFromUnverifiedShops = true;
   bool _isLoading = true;
   bool _isSaving = false;
+
+  AdminSupportDataSource get _dataSource =>
+      widget.dataSource ?? sl<AdminSupportDataSource>();
 
   @override
   void initState() {
@@ -51,8 +65,7 @@ class _AdminPlatformSettingsViewState
   }
 
   Future<void> _load() async {
-    final settings =
-        await sl<AdminSupportDataSource>().getPlatformSettings();
+    final settings = await _dataSource.getPlatformSettings();
     if (!mounted) return;
     _citiesController.text = settings.liveCities.join(', ');
     _categoriesController.text = settings.carCategories.join(', ');
@@ -63,6 +76,9 @@ class _AdminPlatformSettingsViewState
     _termsController.text = settings.defaultAgreementTerms;
     setState(() {
       _maintenanceMode = settings.maintenanceMode;
+      _displayUnverifiedShops = settings.displayUnverifiedShops;
+      _allowBookingsFromUnverifiedShops =
+          settings.allowBookingsFromUnverifiedShops;
       _isLoading = false;
     });
   }
@@ -77,7 +93,7 @@ class _AdminPlatformSettingsViewState
       return;
     }
     setState(() => _isSaving = true);
-    final synced = await sl<AdminSupportDataSource>().savePlatformSettings(
+    final synced = await _dataSource.savePlatformSettings(
       PlatformSettings(
         liveCities: _citiesController.text
             .split(',')
@@ -95,6 +111,9 @@ class _AdminPlatformSettingsViewState
         supportHours: _hoursController.text.trim(),
         defaultAgreementTerms: _termsController.text.trim(),
         maintenanceMode: _maintenanceMode,
+        displayUnverifiedShops: _displayUnverifiedShops,
+        allowBookingsFromUnverifiedShops:
+            _allowBookingsFromUnverifiedShops,
       ),
     );
     if (!mounted) return;
@@ -108,6 +127,9 @@ class _AdminPlatformSettingsViewState
 
   @override
   Widget build(BuildContext context) {
+    // The admin panel pumps without localizations delegates in
+    // tests, so every toggle label falls back to English.
+    final l10n = AppLocalizations.of(context);
     return AdminShell(
       activeRoute: RouteNames.adminSettings,
       title: 'Cities & settings',
@@ -140,6 +162,27 @@ class _AdminPlatformSettingsViewState
                     value: _maintenanceMode,
                     onChanged: (v) =>
                         setState(() => _maintenanceMode = v),
+                  ),
+                  SwitchListTile(
+                    title: Text(l10n?.admin2_displayUnverifiedShops ??
+                        'Display unverified shops'),
+                    subtitle: Text(
+                        l10n?.admin2_displayUnverifiedShopsHint ??
+                            'When off, unverified shops are hidden from the Shops tab.'),
+                    value: _displayUnverifiedShops,
+                    onChanged: (v) =>
+                        setState(() => _displayUnverifiedShops = v),
+                  ),
+                  SwitchListTile(
+                    title: Text(
+                        l10n?.admin2_allowBookingsFromUnverifiedShops ??
+                            'Allow bookings from unverified shops'),
+                    subtitle: Text(
+                        l10n?.admin2_allowBookingsFromUnverifiedShopsHint ??
+                            'When off, customers cannot book from unverified shops.'),
+                    value: _allowBookingsFromUnverifiedShops,
+                    onChanged: (v) => setState(
+                        () => _allowBookingsFromUnverifiedShops = v),
                   ),
                   const SizedBox(height: 16),
                   SizedBox(

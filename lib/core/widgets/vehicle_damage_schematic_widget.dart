@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../constants/app_colors.dart';
 import '../../l10n/app_localizations.dart';
+import '../../core/theme/card_decoration.dart';
 
 class DamagePin {
   final String zone; // 'Front', 'Rear', 'Left', 'Right', 'Roof'
@@ -72,9 +73,12 @@ class _VehicleDamageSchematicWidgetState
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: AppColors.surfaceLight,
+        // Card rework (2026-11-10): theme surface, not a hardcoded
+        // white — the schematic text uses theme styles, so a hardcoded
+        // white fill was unreadable in dark mode.
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Theme.of(context).dividerColor),
+        boxShadow: AppCardDecoration.shadow(context)
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

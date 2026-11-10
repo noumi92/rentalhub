@@ -9,6 +9,7 @@ import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../core/widgets/debounced_button.dart';
 import '../../domain/entities/booking_entity.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../../core/theme/card_decoration.dart';
 
 class BookingSuccessView extends StatelessWidget {
   final BookingEntity booking;
@@ -72,7 +73,7 @@ class BookingSuccessView extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: Theme.of(context).colorScheme.surface,
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+                        boxShadow: AppCardDecoration.shadow(context)
                       ),
                       child: Column(
                         children: [

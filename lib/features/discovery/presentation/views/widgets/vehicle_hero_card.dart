@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../../core/constants/app_colors.dart';
+import '../../../../../core/theme/card_decoration.dart';
 import '../../../../fleet/domain/entities/vehicle_entity.dart';
 
 /// E2: the shared hero tag for a vehicle's image. [ShopVehicleCard]
@@ -29,18 +30,7 @@ class VehicleHeroCard extends StatelessWidget {
     return Container(
       width: double.infinity,
       height: 200,
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Theme.of(context).dividerColor),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
+      decoration: AppCardDecoration.of(context, radius: 20),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(20),
         child: Stack(

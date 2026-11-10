@@ -3,6 +3,7 @@ import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/widgets/debounced_button.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../blacklist/domain/entities/blacklist_entity.dart';
+import '../../../../../core/theme/card_decoration.dart';
 
 class BlacklistStatusBanner extends StatelessWidget {
   final bool isChecked;
@@ -37,7 +38,7 @@ class BlacklistStatusBanner extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.primaryContainer.withAlpha(50),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Theme.of(context).dividerColor),
+          boxShadow: AppCardDecoration.shadow(context)
         ),
         child: Row(
           children: [

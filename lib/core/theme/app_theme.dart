@@ -252,13 +252,18 @@ class AppTheme {
           fontSize: 12,
         ),
       ),
+      // Card rework (2026-11-10): cards lift off the screen on a
+      // different background with a soft shadow — never a dark/grey
+      // border. The old 1px borderSubtle side read as a dark outline
+      // around every white card. Light: white card on the #F8FAFC
+      // screen; elevation 3 with a soft shadow.
       cardTheme: CardThemeData(
         color: AppColors.surfaceLight,
-        elevation: 1,
-        shadowColor: Colors.black.withValues(alpha: 0.05),
+        elevation: 3,
+        shadowColor: Colors.black.withValues(alpha: 0.12),
+        surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
-          side: const BorderSide(color: AppColors.borderSubtle, width: 1),
         ),
       ),
       navigationBarTheme: NavigationBarThemeData(
@@ -448,13 +453,17 @@ class AppTheme {
           fontSize: 12,
         ),
       ),
+      // Card rework (2026-11-10): same borderless lift as light.
+      // Dark: #13152C card on the #0A0B1A screen, so the card is a
+      // lighter slab than the screen and still lifts without a border;
+      // the shadow is stronger because it falls on near-black.
       cardTheme: CardThemeData(
         color: AppColors.surfaceDark,
-        elevation: 1,
-        shadowColor: Colors.black.withValues(alpha: 0.3),
+        elevation: 3,
+        shadowColor: Colors.black.withValues(alpha: 0.5),
+        surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
-          side: const BorderSide(color: AppColors.borderDark, width: 1),
         ),
       ),
       navigationBarTheme: NavigationBarThemeData(

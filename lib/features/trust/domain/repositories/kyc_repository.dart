@@ -8,6 +8,12 @@ abstract class KycRepository {
     File? cnicFront,
     File? cnicBack,
     File? license,
+    File? licenseBack,
+    String? licenseNumber,
+    String? licenseExpiry,
+    // The CNIC back-QR number: written to the restricted
+    // `customer_qr_codes/{userUid}` doc, never onto this record.
+    String? qrCode,
   });
 
   Future<KycDocumentEntity?> getKyc(String userUid);

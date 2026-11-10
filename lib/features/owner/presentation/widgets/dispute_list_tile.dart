@@ -99,10 +99,8 @@ class DisputeListTile extends StatelessWidget {
     final sla = slaLine(l10n, dispute.createdAt);
     return Card(
       margin: EdgeInsets.zero,
-      elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: Theme.of(context).dividerColor),
       ),
       child: ListTile(
         onTap: onTap,

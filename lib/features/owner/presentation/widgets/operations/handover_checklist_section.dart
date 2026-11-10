@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../l10n/app_localizations.dart';
+import '../../../../../core/theme/card_decoration.dart';
 
 /// Audit item 4 (O19 2/2): the handover checklist — Documents Given
 /// (Registration, Insurance), Accessories (Spare Tyre, Jack, Tool
@@ -33,7 +34,7 @@ class HandoverChecklistSection extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Theme.of(context).dividerColor),
+        boxShadow: AppCardDecoration.shadow(context)
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

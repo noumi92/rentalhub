@@ -25,11 +25,36 @@ class ShopModel extends ShopEntity {
     super.plan,
     super.suspended,
     super.suspensionReason,
+    super.hasRealLocation,
   });
 
   factory ShopModel.fromMap(Map<String, dynamic> d, {String? id}) {
-    final lat = (d['latitude'] ?? 31.5102).toDouble();
-    final lng = (d['longitude'] ?? 74.3441).toDouble();
+    // Shops tab: a document with no stored location must not inherit
+    // a pin. The 31.5102/74.3441 fallback below is display-only for
+    // the legacy non-nullable geoLocation; [hasRealLocation] records
+    // whether the document actually stored coordinates — a Firestore
+    // GeoPoint `location` field, or numeric `latitude`/`longitude`.
+    double? lat;
+    double? lng;
+    final storedPoint = d['location'];
+    if (storedPoint != null) {
+      try {
+        lat = (storedPoint.latitude as num).toDouble();
+        lng = (storedPoint.longitude as num).toDouble();
+      } catch (_) {
+        lat = null;
+        lng = null;
+      }
+    }
+    if ((lat == null || lng == null) &&
+        d['latitude'] is num &&
+        d['longitude'] is num) {
+      lat = (d['latitude'] as num).toDouble();
+      lng = (d['longitude'] as num).toDouble();
+    }
+    final hasRealLocation = lat != null && lng != null;
+    lat ??= 31.5102;
+    lng ??= 74.3441;
     return ShopModel(
       shopId: id ?? d['shop_id'] ?? '',
       ownerId: d['owner_id'] ?? '',
@@ -54,6 +79,7 @@ class ShopModel extends ShopEntity {
       plan: d['plan'] as String? ?? 'free',
       suspended: d['suspended'] as bool? ?? false,
       suspensionReason: d['suspension_reason'] as String?,
+      hasRealLocation: hasRealLocation,
     );
   }
 

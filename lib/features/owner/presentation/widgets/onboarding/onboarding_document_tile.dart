@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../../l10n/app_localizations.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../../../core/constants/app_colors.dart';
+import '../../../../../core/theme/card_decoration.dart';
 
 class OnboardingDocumentTile extends StatelessWidget {
   final String title;
@@ -32,10 +33,14 @@ class OnboardingDocumentTile extends StatelessWidget {
         decoration: BoxDecoration(
           color: hasFile ? AppColors.successContainerFor(Theme.of(context).brightness) : Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: hasFile ? AppColors.successBorderFor(Theme.of(context).brightness) : Theme.of(context).dividerColor,
-            width: hasFile ? 1.5 : 1,
-          ),
+          border: hasFile
+              ? Border.all(
+                  color: AppColors.successBorderFor(
+                      Theme.of(context).brightness),
+                  width: 1.5,
+                )
+              : null,
+          boxShadow: AppCardDecoration.shadow(context),
         ),
         child: Row(
           children: [

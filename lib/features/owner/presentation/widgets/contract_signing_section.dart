@@ -13,6 +13,7 @@ import '../../../fleet/domain/entities/vehicle_entity.dart';
 import '../../../handover/data/datasources/pdf_contract_generator.dart';
 import '../services/contract_pdf_actions.dart';
 import '../services/contract_trip_charges.dart';
+import '../../../../core/theme/card_decoration.dart';
 
 /// Finish build (O20): the explicit-agreement section on the contract
 /// view — an "I agree to the terms" checkbox, a guarantor / witness
@@ -213,7 +214,7 @@ class _ContractSigningSectionState extends State<ContractSigningSection> {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Theme.of(context).dividerColor),
+        boxShadow: AppCardDecoration.shadow(context)
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

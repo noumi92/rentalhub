@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../../../../core/widgets/media_picker_helper.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../services/handover_photo_upload_service.dart';
+import '../../../../../core/theme/card_decoration.dart';
 
 /// Audit item 4/5 (O19, O25): the exterior-photo picker shared by
 /// the handover and return flows — Front / Back / Left / Right, each
@@ -86,7 +87,7 @@ class _ExteriorPhotoPickerState extends State<ExteriorPhotoPicker> {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Theme.of(context).dividerColor),
+        boxShadow: AppCardDecoration.shadow(context)
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

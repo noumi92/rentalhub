@@ -30,6 +30,8 @@ class RentPackagePickerView extends StatefulWidget {
   final int dailyWithDriverRate;
   final int? hourlyRate;
   final VehicleEntity? vehicle;
+  // Worker E: carried into the booking draft when the caller knows the shop's verification state (null = unknown; the review screen looks it up and fails open).
+  final bool? shopIsVerified;
   final Function(Map<String, dynamic> bookingDraft)? onProceedToReview;
   final VoidCallback? onBack;
 
@@ -44,6 +46,7 @@ class RentPackagePickerView extends StatefulWidget {
     required this.dailyWithDriverRate,
     this.hourlyRate,
     this.vehicle,
+    this.shopIsVerified,
     this.onProceedToReview,
     this.onBack,
   });
@@ -155,6 +158,7 @@ class _RentPackagePickerViewState extends State<RentPackagePickerView> {
       durationDays: _durationDays,
       totalAmount: _calculatedRate,
       advanceRequired: _advanceRequired,
+      shopIsVerified: widget.shopIsVerified,
     ));
   }
 

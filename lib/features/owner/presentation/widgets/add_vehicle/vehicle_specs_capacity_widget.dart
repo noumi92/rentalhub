@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../constants/owner_vehicle_constants.dart';
+import '../../../../../core/theme/card_decoration.dart';
 
 /// Seating capacity, AC switch and extra-features chips of the
 /// add-vehicle specs step. Extracted from [VehicleSpecsStepWidget]
@@ -69,7 +70,7 @@ Container(
   decoration: BoxDecoration(
     color: Theme.of(context).colorScheme.surface,
     borderRadius: BorderRadius.circular(12),
-    border: Border.all(color: Theme.of(context).dividerColor),
+    boxShadow: AppCardDecoration.shadow(context)
   ),
   child: Row(
     children: [

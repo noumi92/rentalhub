@@ -31,6 +31,13 @@ class ShopEntity extends Equatable {
   final String? ownerName;
   final String? cnicNumber;
   final String? openingHours;
+  // Shops tab: true only when the shop document actually stored a
+  // location. ShopModel.fromMap defaults a missing lat/lng to Gulberg,
+  // Lahore — a shop without a stored location must never get a pin
+  // at that default, so the model records whether the pin is real.
+  // Directly constructed entities (owner onboarding always pins the
+  // shop on the map) default to true.
+  final bool hasRealLocation;
   // Phase B (B2): the shop's subscription plan ('free' until Phase F
   // sets real plans) and the suspension state, set by an admin.
   final String plan;
@@ -61,7 +68,38 @@ class ShopEntity extends Equatable {
     this.plan = 'free',
     this.suspended = false,
     this.suspensionReason,
+    this.hasRealLocation = true,
   });
+
+  /// Copy with a recomputed distance — the Shops map re-sorts by
+  /// distance from the draggable "you are here" pin without
+  /// mutating the stored entity.
+  ShopEntity withDistance(double distanceKm) => ShopEntity(
+        shopId: shopId,
+        ownerId: ownerId,
+        shopName: shopName,
+        phoneNumber: phoneNumber,
+        address: address,
+        city: city,
+        geoLocation: geoLocation,
+        distanceKm: distanceKm,
+        rating: rating,
+        availableCount: availableCount,
+        isVerified: isVerified,
+        bankAccounts: bankAccounts,
+        logoUrl: logoUrl,
+        headerUrl: headerUrl,
+        fleetPhotos: fleetPhotos,
+        kycDocuments: kycDocuments,
+        verificationStatus: verificationStatus,
+        ownerName: ownerName,
+        cnicNumber: cnicNumber,
+        openingHours: openingHours,
+        plan: plan,
+        suspended: suspended,
+        suspensionReason: suspensionReason,
+        hasRealLocation: hasRealLocation,
+      );
 
   @override
   List<Object?> get props => [
@@ -88,6 +126,7 @@ class ShopEntity extends Equatable {
         plan,
         suspended,
         suspensionReason,
+        hasRealLocation,
       ];
 }
 

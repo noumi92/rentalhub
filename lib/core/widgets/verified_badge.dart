@@ -22,7 +22,10 @@ class VerifiedBadge extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final verifiedLabel =
         label ?? l10n?.badgeNadraVerified ?? 'Verified';
-    final pendingLabel = l10n?.statusPendingReview ?? 'Pending Review';
+    // An explicit [label] overrides both states: the review screen
+    // passes the 'Unverified' label for an unverified shop.
+    final pendingLabel =
+        label ?? l10n?.statusPendingReview ?? 'Pending Review';
     final Color badgeColor = isVerified
         ? AppColors.successOnContainerFor(brightness)
         : AppColors.warningOnContainerFor(brightness);

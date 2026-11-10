@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/utils/money_format.dart';
+import '../../../../../core/theme/card_decoration.dart';
 
 class SubscriptionTierCard extends StatelessWidget {
   final String title;
@@ -33,10 +34,15 @@ class SubscriptionTierCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: isPopular ? AppColors.secondary : (isCurrent ? AppColors.accentSuccess : Theme.of(context).dividerColor),
-          width: isPopular || isCurrent ? 2 : 1,
-        ),
+        border: (isPopular || isCurrent)
+            ? Border.all(
+                color: isPopular
+                    ? AppColors.secondary
+                    : AppColors.accentSuccess,
+                width: 2,
+              )
+            : null,
+        boxShadow: AppCardDecoration.shadow(context),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

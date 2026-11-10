@@ -68,9 +68,9 @@ void main() {
         firstPaths,
         containsAll([
           '/customer/home',
+          '/customer/shops',
           '/customer/bookings',
           '/customer/wallet',
-          '/customer/support',
           '/customer/profile',
           '/owner/dashboard',
           '/owner/fleet',
@@ -84,9 +84,9 @@ void main() {
     test('AppShell.tabRootPaths is exactly the 10 tab roots', () {
       expect(AppShell.tabRootPaths, {
         '/customer/home',
+        '/customer/shops',
         '/customer/bookings',
         '/customer/wallet',
-        '/customer/support',
         '/customer/profile',
         '/owner/dashboard',
         '/owner/fleet',
@@ -140,9 +140,9 @@ void main() {
       ]);
       expect(AppRouter.customerTabs.map((t) => t.label).toList(), [
         'Home',
+        'Shops',
         'Bookings',
         'Wallet',
-        'Support',
         'Profile',
       ]);
     });
@@ -613,9 +613,9 @@ void main() {
       // branches by index, never by route name.
       const tabRoots = {
         '/customer/home',
+        '/customer/shops',
         '/customer/bookings',
         '/customer/wallet',
-        '/customer/support',
         '/customer/profile',
         '/owner/dashboard',
         '/owner/fleet',

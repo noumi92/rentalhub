@@ -132,12 +132,9 @@ class _CustomerSavedShopsViewState extends State<CustomerSavedShopsView> {
                           itemBuilder: (context, index) {
                             final shop = _shops[index];
                             return Card(
-                              elevation: 0,
                               margin: const EdgeInsets.only(bottom: 10),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(16),
-                                side: const BorderSide(
-                                    color: AppColors.borderSubtle),
                               ),
                               child: InkWell(
                                 onTap: () => widget.onSelectShop?.call(shop),

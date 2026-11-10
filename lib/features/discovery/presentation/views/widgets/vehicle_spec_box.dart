@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../core/theme/card_decoration.dart';
+
 class VehicleSpecBox extends StatelessWidget {
   final IconData icon;
   final String label;
@@ -16,11 +18,7 @@ class VehicleSpecBox extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 6),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Theme.of(context).dividerColor),
-      ),
+      decoration: AppCardDecoration.of(context, radius: 12),
       child: Column(
         children: [
           Icon(icon, size: 20),

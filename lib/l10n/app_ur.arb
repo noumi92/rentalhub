@@ -3845,5 +3845,48 @@
         "type": "int"
       }
     }
-  }
+  },
+  "tab2_navShops": "شاپس",
+  "shops_title": "شاپس",
+  "shops_showMap": "نقشہ",
+  "shops_showList": "فہرست",
+  "shops_allCities": "تمام شہر",
+  "shops_unverified": "غیر تصدیق شدہ",
+  "shops_emptyTitle": "ان فلٹرز کے مطابق کوئی شاپ نہیں ملی",
+  "shops_emptySubtitle": "کوئی اور شہر یا فلٹر آزمائیں۔",
+  "shops_mapOffline": "آف لائن نقشہ دستیاب نہیں ۔ فہرست اب بھی کام کر رہی ہے",
+  "shops_chooseCity": "شاپس دیکھنے کے لیے شہر منتخب کریں",
+  "shops_noPinNote": "جن شاپس کا مقام محفوظ نہیں وہ صرف فہرست میں نظر آتی ہیں",
+  "home2_kpiActive": "فعال بکنگز",
+  "home2_kpiWallet": "والیٹ بیلنس",
+  "home2_support": "سپورٹ",
+  "home2_kycNotStarted": "شروع نہیں ہوا",
+  "home2_kycProgress": "{done} از {total} دستاویزات تیار ہیں",
+  "home2_kycView": "دستاویزات دیکھیں",
+  "home2_recentBookings": "حالیہ بکنگز",
+  "home2_upcoming": "آنے والے",
+  "home2_viewAll": "سب دیکھیں",
+  "home2_noBookings": "ابھی کوئی بکنگ نہیں",
+  "home2_noUpcoming": "فی الحال کچھ نہیں",
+  "home2_paymentOverdue": "ادائیگی زائد المیعاد ہے",
+  "home2_paymentDue": "ادائیگی باقی ہے",
+  "@home2_kycProgress": {
+    "description": "KYC documents completed, e.g. 2 of 4 documents ready",
+    "placeholders": {
+      "done": {
+        "type": "Object"
+      },
+      "total": {
+        "type": "Object"
+      }
+    }
+  },
+  "admin2_displayUnverifiedShops": "غیر تصدیق شدہ دکانیں دکھائیں",
+  "admin2_displayUnverifiedShopsHint": "بند ہونے پر غیر تصدیق شدہ دکانیں شاپس ٹیب سے چھپ جائیں گی۔",
+  "admin2_allowBookingsFromUnverifiedShops": "غیر تصدیق شدہ دکانوں سے بکنگ کی اجازت دیں",
+  "admin2_allowBookingsFromUnverifiedShopsHint": "بند ہونے پر صارفین غیر تصدیق شدہ دکانوں سے بکنگ نہیں کر سکیں گے۔",
+  "admin2_unverifiedBookingsDisabled": "پلیٹ فارم کی جانب سے غیر تصدیق شدہ دکانوں سے بکنگ فی الحال بند ہے۔",
+  "kyc2_qrCode": "کیو آر کوڈ",
+  "kyc2_qrRead": "کیو آر کوڈ محفوظ کر لیا گیا۔",
+  "kyc2_licenseUnreadable": "اس تصویر سے لائسنس نمبر نہیں پڑھا جا سکا — براہ کرم خود لکھیں۔"
 }

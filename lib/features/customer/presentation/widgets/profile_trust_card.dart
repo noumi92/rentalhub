@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/theme/card_decoration.dart';
 import '../../../../l10n/app_localizations.dart';
 
 /// H1: the profile's trust card — the customer's real trust score from
@@ -28,11 +29,7 @@ class ProfileTrustCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(16),
       child: Container(
         padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Theme.of(context).dividerColor),
-        ),
+        decoration: AppCardDecoration.of(context, radius: 16),
         child: Row(
           children: [
             Container(

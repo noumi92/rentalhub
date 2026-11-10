@@ -1,87 +1,76 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:latlong2/latlong.dart' as ll;
 import 'package:go_router/go_router.dart';
 import '../../../../core/routing/route_names.dart';
-import '../../../../core/utils/responsive.dart';
 import '../../../../core/widgets/app_state_views.dart';
-import 'widgets/empty_radar_state.dart';
+import '../../../customer/data/services/customer_home_service.dart';
 import 'widgets/home_app_bar.dart';
-import '../../data/datasources/customer_location_store.dart';
-import '../../data/datasources/discovery_remote_data_source.dart';
-import '../../data/repositories/discovery_repository_impl.dart';
-import '../../domain/entities/shop_entity.dart';
-import '../../domain/usecases/get_nearby_shops_usecase.dart';
-import '../cubit/discovery_cubit.dart';
+import 'widgets/home_kpi_grid.dart';
+import 'widgets/home_kyc_card.dart';
 import 'widgets/home_quick_actions.dart';
-import 'widgets/radius_filter_pills.dart';
-import 'widgets/shop_list_card.dart';
-import 'widgets/shop_map_view.dart';
+import 'widgets/home_recent_bookings.dart';
+import 'widgets/home_upcoming_events.dart';
 import '../../../../l10n/app_localizations.dart';
 
-class CustomerHomeView extends StatelessWidget {
-  final ValueChanged<ShopEntity>? onShopSelected;
+/// Customer rework (Worker C): the customer Home is a dashboard now
+/// — KPIs, KYC status, quick actions, upcoming events and recent
+/// bookings, all from the real repositories through
+/// [CustomerHomeService]. Shop discovery (list/map) moved to the
+/// Shops tab (Worker B). The hero is unchanged — the MinimalAppBar
+/// with map, bell and avatar — and the bell still opens the support
+/// inbox as a sub-screen.
+class CustomerHomeView extends StatefulWidget {
+  const CustomerHomeView({super.key, this.homeService});
 
-  const CustomerHomeView({super.key, this.onShopSelected});
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => DiscoveryCubit(
-        getNearbyShopsUseCase: GetNearbyShopsUseCase(
-          DiscoveryRepositoryImpl(
-            remoteDataSource: DiscoveryRemoteDataSource(),
-          ),
-        ),
-      )..fetchNearbyShops(radiusKm: 3.0),
-      child: _CustomerHomeBody(onShopSelected: onShopSelected),
-    );
-  }
-}
-
-class _CustomerHomeBody extends StatefulWidget {
-  final ValueChanged<ShopEntity>? onShopSelected;
-
-  const _CustomerHomeBody({this.onShopSelected});
+  /// Injected in tests (in-memory data sources); the real app
+  /// resolves the service from the locator.
+  final CustomerHomeService? homeService;
 
   @override
-  State<_CustomerHomeBody> createState() => _CustomerHomeBodyState();
+  State<CustomerHomeView> createState() => _CustomerHomeViewState();
 }
 
-class _CustomerHomeBodyState extends State<_CustomerHomeBody> {
+class _CustomerHomeViewState extends State<CustomerHomeView> {
+  CustomerHomeData? _data;
+  bool _loading = true;
+
   @override
   void initState() {
     super.initState();
-    // B1: the location prompt saved the customer's pick; search from it
-    // instead of the Lahore default the cubit starts with.
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final stored = await CustomerLocationStore().load();
-      if (!mounted || stored == null) return;
-      final cubit = context.read<DiscoveryCubit>();
-      final current = cubit.currentLocation;
-      if (stored.latitude != current.latitude ||
-          stored.longitude != current.longitude) {
-        cubit.setLocation(stored);
-      }
-    });
+    _load();
   }
 
-  /// Phase A (A1): a shop tap opens the real shop route. The
-  /// [onShopSelected] override is kept for embedded use (tests / widgets
-  /// that host the home view); the app itself always uses the route.
-  void _openShop(BuildContext context, ShopEntity shop) {
-    if (widget.onShopSelected != null) {
-      widget.onShopSelected!.call(shop);
-    } else {
-      context.push(
-        RouteNames.customerShopDetail.replaceFirst(':shopId', shop.shopId),
-      );
+  Future<void> _load() async {
+    final service = widget.homeService ?? CustomerHomeService.resolve();
+    final data = service == null
+        ? const CustomerHomeData(bookings: [])
+        : await service.load(_uid());
+    if (mounted) {
+      setState(() {
+        _data = data;
+        _loading = false;
+      });
     }
   }
 
-  /// #5: the signed-in user's initial for the header avatar. Firebase
-  /// is best-effort here — 'U' when there is no signed-in user yet.
+  Future<void> _reload() async {
+    if (mounted) setState(() => _loading = true);
+    await _load();
+  }
+
+  /// The signed-in uid, or the 'cust-101' fallback the bookings
+  /// view and wallet service use when nobody is signed in.
+  String _uid() {
+    try {
+      return FirebaseAuth.instance.currentUser?.uid ?? 'cust-101';
+    } catch (_) {
+      return 'cust-101';
+    }
+  }
+
+  /// The signed-in user's initial for the header avatar.
+  /// Firebase is best-effort here — 'U' when there is no
+  /// signed-in user yet.
   String _userInitial() {
     try {
       final user = FirebaseAuth.instance.currentUser;
@@ -91,20 +80,23 @@ class _CustomerHomeBodyState extends State<_CustomerHomeBody> {
     return 'U';
   }
 
-  /// #3: the next radius in [1, 2, 3, 5] km after [current], or 5.0
-  /// when already at the maximum (the empty state then shows the
-  /// no-shops message instead of another expand).
-  double _nextRadius(double current) {
-    const radii = [1.0, 2.0, 3.0, 5.0];
-    for (final r in radii) {
-      if (r > current) return r;
+  /// First name for the greeting subtitle, or null when unknown
+  /// (no signed-in user) — the app bar then shows the title only.
+  String? _greetingName() {
+    try {
+      final name = FirebaseAuth.instance.currentUser?.displayName ?? '';
+      if (name.isEmpty) return null;
+      return name.split(' ').first;
+    } catch (_) {
+      return null;
     }
-    return 5.0;
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final name = _greetingName();
+    final data = _data;
     return Scaffold(
       // Phase D (D2): the only tab root that lacked a SafeArea — the
       // header and content now clear the status bar like the other
@@ -112,136 +104,59 @@ class _CustomerHomeBodyState extends State<_CustomerHomeBody> {
       body: SafeArea(
         child: Column(
           children: [
+            CustomerHomeAppBar(
+              title: l10n.homeTitle,
+              subtitle:
+                  name == null ? null : l10n.dashboardGreeting(name),
+              userInitial: _userInitial(),
+            ),
             Expanded(
-              child: BlocBuilder<DiscoveryCubit, DiscoveryState>(
-                builder: (context, state) {
-                  final cubit = context.read<DiscoveryCubit>();
-                  double radiusKm = 3.0;
-                  bool isMap = false;
-                  List<ShopEntity> shops = const [];
-
-                  if (state is DiscoveryLoaded) {
-                    radiusKm = state.currentRadiusKm;
-                    isMap = state.isMapView;
-                    shops = state.shops;
-                  } else if (state is DiscoveryEmpty) {
-                    radiusKm = state.currentRadiusKm;
-                  }
-
-                  return Column(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // #5/#6/#16: the curved hero is gone — a pinned
-                      // MinimalAppBar, with the map, bell and avatar
-                      // all wired to real destinations.
-                      CustomerHomeAppBar(
-                        title: l10n.homeTitle,
-                        subtitle: cubit.currentLocation.fromGps
-                            ? l10n.homeGpsActive(cubit.currentLocation.area)
-                            : cubit.currentLocation.area,
-                        userInitial: _userInitial(),
-                      ),
-                      Expanded(
-                        child: SingleChildScrollView(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const SizedBox(height: 12),
-                                Card(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(12),
-                                    child: RadiusFilterPills(
-                                      selectedRadiusKm: radiusKm,
-                                      onRadiusSelected: (km) =>
-                                          cubit.fetchNearbyShops(radiusKm: km),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 12),
-                                // E1: quick actions sit between the radius
-                                // filter and the shop list / map, in every
-                                // state (loading, empty, loaded).
-                                const CustomerHomeQuickActions(),
-                                const SizedBox(height: 12),
-                                if (state is DiscoveryLoading)
-                                  // E2: shared loading state; the empty
-                                  // state below stays the domain-specific
-                                  // EmptyRadarState (expand-radius action).
-                                   AppLoadingState(message: l10n.homeFindingShops)
-                                else if (state is DiscoveryEmpty)
-                                  EmptyRadarState(
-                                    currentRadiusKm: radiusKm,
-                                    onExpandRadius: () => cubit.fetchNearbyShops(
-                                        radiusKm: _nextRadius(radiusKm)),
-                                  )
-                                else if (isMap)
-                                  ShopMapView(
-                                    shops: shops,
-                                    radiusKm: radiusKm,
-                                    userLocation: ll.LatLng(
-                                      cubit.currentLocation.latitude,
-                                      cubit.currentLocation.longitude,
-                                    ),
-                                    onShopSelected: (shop) =>
-                                        _openShop(context, shop),
-                                  )
-                                else
-                                  HomeShopList(
-                                    shops: shops,
-                                    onShopSelected: (shop) =>
-                                        _openShop(context, shop),
-                                  ),
-                              ],
-                            ),
-                          ),
+                      const SizedBox(height: 12),
+                      if (_loading)
+                        const AppLoadingState()
+                      else if (data != null) ...[
+                        HomeKpiGrid(
+                          activeBookings: data.activeBookings,
+                          totalTrips: data.totalTrips,
+                          walletTotal: data.walletTotal,
+                          trustScore: data.trustScore,
+                          onTrustTap: () => context
+                              .push(RouteNames.customerReputation),
                         ),
+                        const SizedBox(height: 12),
+                        HomeKycCard(kyc: data.kyc),
+                        const SizedBox(height: 16),
+                      ],
+                      Text(
+                        l10n.quickLinks,
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleSmall
+                            ?.copyWith(fontWeight: FontWeight.w800),
                       ),
+                      const SizedBox(height: 8),
+                      const CustomerHomeQuickActions(),
+                      if (!_loading && data != null) ...[
+                        const SizedBox(height: 16),
+                        if (!data.bookingsFailed)
+                          HomeUpcomingEvents(data: data),
+                        const SizedBox(height: 16),
+                        HomeRecentBookings(data: data, onRetry: _reload),
+                        const SizedBox(height: 12),
+                      ],
                     ],
-                  );
-                },
+                  ),
+                ),
               ),
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-/// Phase D (D3): the shop list section of the customer home. Compact
-/// shows the single-column list exactly as before; medium+ shows two
-/// columns of shop cards via [twoColumnLayout]. The map view is
-/// untouched — it stays full-width.
-class HomeShopList extends StatelessWidget {
-  final List<ShopEntity> shops;
-  final ValueChanged<ShopEntity> onShopSelected;
-
-  const HomeShopList({
-    super.key,
-    required this.shops,
-    required this.onShopSelected,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    if (!isMediumOrLarger(context)) {
-      return Column(
-        children: shops
-            .map((shop) => ShopListCard(
-                  shop: shop,
-                  onTap: () => onShopSelected(shop),
-                ))
-            .toList(),
-      );
-    }
-    return twoColumnLayout(
-      key: const Key('home-shop-two-columns'),
-      items: shops,
-      itemSpacing: 0, // ShopListCard already has a 16 bottom margin.
-      itemBuilder: (shop) => ShopListCard(
-        shop: shop,
-        onTap: () => onShopSelected(shop),
       ),
     );
   }

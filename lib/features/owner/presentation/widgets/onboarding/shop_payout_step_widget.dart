@@ -97,10 +97,9 @@ class ShopPayoutStepWidget extends StatelessWidget {
           elevation: 2,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
-            side: BorderSide(
-              color: bankEnabled ? AppColors.secondary : Theme.of(context).dividerColor,
-              width: bankEnabled ? 1.5 : 1,
-            ),
+            side: bankEnabled
+                ? const BorderSide(color: AppColors.secondary, width: 1.5)
+                : BorderSide.none,
           ),
           child: Padding(
             padding: const EdgeInsets.all(14),
@@ -221,10 +220,9 @@ class ShopPayoutStepWidget extends StatelessWidget {
       elevation: 2,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: BorderSide(
-          color: isEnabled ? AppColors.secondary : Theme.of(context).dividerColor,
-          width: isEnabled ? 1.5 : 1,
-        ),
+        side: isEnabled
+            ? const BorderSide(color: AppColors.secondary, width: 1.5)
+            : BorderSide.none,
       ),
       child: Padding(
         padding: const EdgeInsets.all(14),

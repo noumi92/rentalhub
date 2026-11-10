@@ -76,6 +76,8 @@ class AppShellNav extends StatelessWidget {
     switch (item.l10nKey!) {
       case 'navHome':
         return l10n.navHome;
+      case 'tab2_navShops':
+        return l10n.tab2_navShops;
       case 'navBookings':
         return l10n.navBookings;
       case 'navWallet':

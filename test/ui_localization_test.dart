@@ -238,10 +238,11 @@ void main() {
         supportedLocales: supported,
       );
       expect(find.text('ہوم'), findsOneWidget);
+      expect(find.text('شاپس'), findsOneWidget);
       expect(find.text('بکنگز'), findsOneWidget);
       expect(find.text('والیٹ'), findsOneWidget);
-      expect(find.text('مدد'), findsOneWidget);
       expect(find.text('پروفائل'), findsOneWidget);
+      expect(find.text('مدد'), findsNothing);
       expect(find.text('Home'), findsNothing);
       expect(find.text('Bookings'), findsNothing);
     });

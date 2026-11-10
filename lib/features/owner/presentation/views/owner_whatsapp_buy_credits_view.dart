@@ -11,6 +11,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../widgets/manual_bank_transfer_sheet.dart';
 import '../services/subscription_data_source.dart';
 import '../services/whatsapp_credits_data_source.dart';
+import '../../../../core/theme/card_decoration.dart';
 
 /// W2 — Buy credits (deck p.19 screen 2). Pack cards with the deck's
 /// prices, free monthly credits per plan, and a Buy button that opens
@@ -96,12 +97,13 @@ class _OwnerWhatsappBuyCreditsViewState
                           decoration: BoxDecoration(
                             color: Theme.of(context).colorScheme.surface,
                             borderRadius: BorderRadius.circular(16),
-                            border: Border.all(
-                              color: selected
-                                  ? Theme.of(context).colorScheme.primary
-                                  : Theme.of(context).dividerColor,
-                              width: selected ? 2 : 1,
-                            ),
+                            border: selected
+                                ? Border.all(
+                                    color: Theme.of(context).colorScheme.primary,
+                                    width: 2,
+                                  )
+                                : null,
+                            boxShadow: AppCardDecoration.shadow(context),
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,

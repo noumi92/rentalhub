@@ -4,7 +4,6 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/error/exceptions.dart';
 import '../../../../core/routing/auth_route_guard.dart';
-import '../../../../core/routing/route_names.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/custom_curved_header.dart';
 import '../../../../core/widgets/debounced_button.dart';
@@ -12,6 +11,7 @@ import '../../../../core/widgets/hero_car_slider.dart';
 import '../../data/datasources/auth_remote_data_source.dart';
 import 'widgets/auth_text_field.dart';
 import 'widgets/google_sign_in_button.dart';
+import 'widgets/login_legal_footer.dart';
 import '../../../../l10n/app_localizations.dart';
 
 class LoginView extends StatefulWidget {
@@ -203,35 +203,12 @@ class _LoginViewState extends State<LoginView> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 24),
-                    // Audit §5 finish (P2-1): Terms / Privacy footer.
-                    // Real documents, top-level routes, no dead links.
-                    // (The old authNewUser bypass button stays removed.)
-                    Wrap(
-                      alignment: WrapAlignment.center,
-                      crossAxisAlignment: WrapCrossAlignment.center,
-                      children: [
-                        Text(
-                          l10n.authLegalIntro,
-                          style: Theme.of(context).textTheme.labelSmall,
-                        ),
-                        TextButton(
-                          onPressed: () =>
-                              context.push(RouteNames.legalTermsOfService),
-                          child: Text(l10n.authTermsOfService),
-                        ),
-                        Text(
-                          l10n.authLegalAnd,
-                          style: Theme.of(context).textTheme.labelSmall,
-                        ),
-                        TextButton(
-                          onPressed: () =>
-                              context.push(RouteNames.legalPrivacyPolicy),
-                          child: Text(l10n.authPrivacyPolicy),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 12),
+                    // Audit §5 finish (P2-1): compact Terms / Privacy
+                    // disclaimer — see LoginLegalFooter. No sign-up
+                    // affordance: users are onboarded by the business.
+                    const LoginLegalFooter(),
+                    const SizedBox(height: 6),
                   ],
                 ),
               ),

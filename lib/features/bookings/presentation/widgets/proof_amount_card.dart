@@ -5,6 +5,7 @@ import '../../../../core/utils/money_format.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/booking_entity.dart';
 import 'shop_payment_accounts.dart';
+import '../../../../core/theme/card_decoration.dart';
 
 /// §11: the proof-upload summary card — vehicle, booking id, the
 /// advance due (grouped rupees, C5), and the "Pay to:" line naming the
@@ -23,7 +24,7 @@ class ProofAmountCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Theme.of(context).dividerColor),
+        boxShadow: AppCardDecoration.shadow(context)
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

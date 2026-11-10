@@ -10,6 +10,7 @@ import '../../../../../core/widgets/app_feedback.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../blacklist/data/datasources/blacklist_remote_data_source.dart';
 import '../../../../trust/data/services/cnic_ocr_service.dart';
+import '../../../../trust/data/services/document_qr_service.dart';
 import '../../../../trust/utils/cnic_text_parser.dart';
 import 'kyc_draft.dart';
 import 'kyc_step.dart';
@@ -22,7 +23,10 @@ class Step1Cnic extends StatefulWidget {
   final KycDraft draft;
   final VoidCallback onChanged;
 
-  const Step1Cnic({super.key, required this.draft, required this.onChanged});
+  /// Test seam for the QR reader; defaults to the real service.
+  final DocumentQrService? qrService;
+
+  const Step1Cnic({super.key, required this.draft, required this.onChanged, this.qrService});
 
   @override
   State<Step1Cnic> createState() => _Step1CnicState();
@@ -46,10 +50,12 @@ class _Step1CnicState extends KycStepState<Step1Cnic> {
   bool _isVerifying = false;
   bool _scanningFront = false;
   bool _scanningBack = false;
+  late final DocumentQrService _qrService;
 
   @override
   void initState() {
     super.initState();
+    _qrService = widget.qrService ?? DocumentQrService();
     final d = widget.draft;
     _nameController = TextEditingController(text: d.name);
     _fatherController = TextEditingController(text: d.fatherName);
@@ -81,10 +87,8 @@ class _Step1CnicState extends KycStepState<Step1Cnic> {
   /// dd.mm.yyyy only; the label itself carries the format, so it
   /// doubles as the (localized) error text — no new .arb key needed.
   static String? _validateDate(String? value, String label) {
-    final t = value?.trim() ?? '';
-    if (t.isEmpty) return null;
-    final m = RegExp(r'^(\d{2})\.(\d{2})\.(\d{4})$').firstMatch(t);
-    if (m == null) return label;
+    final t = value?.trim() ?? ''; if (t.isEmpty) return null;
+    final m = RegExp(r'^(\d{2})\.(\d{2})\.(\d{4})$').firstMatch(t); if (m == null) return label;
     final day = int.parse(m[1]!); final month = int.parse(m[2]!); final year = int.parse(m[3]!);
     final parsed = DateTime.tryParse('$year-${month.toString().padLeft(2, '0')}-${day.toString().padLeft(2, '0')}');
     if (parsed == null || parsed.day != day || parsed.month != month || parsed.year != year) return label;
@@ -126,29 +130,43 @@ class _Step1CnicState extends KycStepState<Step1Cnic> {
   }
 
   void _applyScanResult(CnicScanResult result) {
-    if (result.name != null) _nameController.text = result.name!;
-    if (result.fatherName != null) _fatherController.text = result.fatherName!;
-    if (result.cnicNumber != null) _cnicController.text = result.cnicNumber!;
-    if (result.dateOfBirth != null) _dobController.text = result.dateOfBirth!;
-    if (result.dateOfExpiry != null) _expiryController.text = result.dateOfExpiry!;
-    if (result.address != null) _addressController.text = result.address!;
+    widget.draft.applyCnicScan(result);
+    _nameController.text = widget.draft.name;
+    _fatherController.text = widget.draft.fatherName;
+    _cnicController.text = widget.draft.cnic;
+    _dobController.text = widget.draft.dateOfBirth;
+    _expiryController.text = widget.draft.cnicExpiry;
+    _addressController.text = widget.draft.address;
   }
 
   Future<void> _scanCnic({required bool front}) async {
     final l10n = AppLocalizations.of(context)!;
-    final picked = await ImagePicker().pickImage(source: ImageSource.camera, imageQuality: 85);
+    final picked = await ImagePicker().pickImage(source: ImageSource.camera, preferredCameraDevice: CameraDevice.rear, imageQuality: 85);
     if (picked == null || !mounted) return;
     setState(() { if (front) { _scanningFront = true; } else { _scanningBack = true; } });
     try {
-      final result = front ? await CnicOcrService().scanFront(File(picked.path)) : await CnicOcrService().scanBack(File(picked.path));
-      if (!mounted) return;
-      if (!result.hasAnything) {
-        AppFeedback.showError(context, l10n.customersScanUnreadable);
-        return;
+      if (front) {
+        final result = await CnicOcrService().scanFront(File(picked.path));
+        if (!mounted) return;
+        if (!result.hasAnything) { AppFeedback.showError(context, l10n.customersScanUnreadable); return; }
+        setState(() { widget.draft.cnicFrontPhoto = picked; _applyScanResult(result); });
+      } else {
+        // Back: the QR NUMBER is stored on the draft for the restricted
+        // doc (super admin only — never shown here) and OCR reads the
+        // address. The reads are independent: a failed QR read never
+        // loses the OCR address, and vice versa.
+        final code = await _qrService.readQr(File(picked.path));
+        CnicScanResult? ocr;
+        try { ocr = await CnicOcrService().scanBack(File(picked.path)); } catch (_) { ocr = null; }
+        if (!mounted) return;
+        setState(() {
+          widget.draft.cnicBackPhoto = picked;
+          if (code != null && code.isNotEmpty) widget.draft.qrCode = code;
+          if (ocr != null) _applyScanResult(ocr);
+        });
+        if (code != null && code.isNotEmpty) AppFeedback.showSuccess(context, l10n.kyc2_qrRead);
+        if ((code == null || code.isEmpty) && (ocr == null || !ocr.hasAnything)) AppFeedback.showError(context, l10n.customersScanUnreadable);
       }
-      setState(() {
-        if (front) { widget.draft.cnicFrontPhoto = picked; _applyScanResult(result); } else { widget.draft.cnicBackPhoto = picked; if (result.address != null) _addressController.text = result.address!; }
-      });
       widget.onChanged();
     } catch (e) {
       if (mounted) AppFeedback.showError(context, l10n.customersScanFailed(e.toString()));
@@ -160,14 +178,7 @@ class _Step1CnicState extends KycStepState<Step1Cnic> {
   Widget _field(TextEditingController controller, String label, {TextInputType keyboard = TextInputType.text, String? hint, String? Function(String?)? validator, List<TextInputFormatter>? formatters, int maxLines = 1}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
-      child: TextFormField(
-        controller: controller,
-        keyboardType: keyboard,
-        maxLines: maxLines,
-        inputFormatters: formatters,
-        validator: validator,
-        decoration: InputDecoration(labelText: label, hintText: hint, border: const OutlineInputBorder(), filled: true, fillColor: Theme.of(context).colorScheme.surfaceContainerHighest),
-      ),
+      child: TextFormField(controller: controller, keyboardType: keyboard, maxLines: maxLines, inputFormatters: formatters, validator: validator, decoration: InputDecoration(labelText: label, hintText: hint, border: const OutlineInputBorder(), filled: true, fillColor: Theme.of(context).colorScheme.surfaceContainerHighest)),
     );
   }
 
@@ -189,28 +200,21 @@ class _Step1CnicState extends KycStepState<Step1Cnic> {
                   child: OutlinedButton.icon(
                     onPressed: _scanningFront ? null : () => _scanCnic(front: true),
                     icon: _scanningFront ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.credit_card_rounded),
-                    label: Text(l10n.kycWizardScanFront),
-                  ),
-                ),
+                    label: Text(l10n.kycWizardScanFront))),
                 const SizedBox(width: 12),
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: _scanningBack ? null : () => _scanCnic(front: false),
                     icon: _scanningBack ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.flip_to_back_rounded),
-                    label: Text(l10n.kycWizardScanBack),
-                  ),
-                ),
+                    label: Text(l10n.kycWizardScanBack))),
               ],
             ),
             if (widget.draft.cnicFrontPhoto != null || widget.draft.cnicBackPhoto != null) ...[
               const SizedBox(height: 10),
-              Wrap(
-                spacing: 8,
-                children: [
-                  if (widget.draft.cnicFrontPhoto != null) Chip(avatar: const Icon(Icons.check_rounded, size: 16), label: Text(l10n.kycWizardFrontScanned)),
-                  if (widget.draft.cnicBackPhoto != null) Chip(avatar: const Icon(Icons.check_rounded, size: 16), label: Text(l10n.kycWizardBackScanned)),
-                ],
-              ),
+              Wrap(spacing: 8, children: [
+                if (widget.draft.cnicFrontPhoto != null) Chip(avatar: const Icon(Icons.check_rounded, size: 16), label: Text(l10n.kycWizardFrontScanned)),
+                if (widget.draft.cnicBackPhoto != null) Chip(avatar: const Icon(Icons.check_rounded, size: 16), label: Text(l10n.kycWizardBackScanned)),
+              ]),
             ],
             const SizedBox(height: 16),
             Text(l10n.kycWizardManualEntry, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
@@ -223,17 +227,9 @@ class _Step1CnicState extends KycStepState<Step1Cnic> {
               child: OutlinedButton.icon(
                 onPressed: _isVerifying ? null : _runBlacklistCheck,
                 icon: _isVerifying ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.shield_rounded),
-                label: Text(l10n.cnicVerifyButton),
-              ),
-            ),
-            if (_isBlacklisted) ...[
-              const SizedBox(height: 8),
-              Text(l10n.kycWizardBlacklisted, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: errorColor, fontWeight: FontWeight.w700)),
-            ],
-            if (_showClean) ...[
-              const SizedBox(height: 8),
-              Text(l10n.blacklistCleanTitle, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: okColor, fontWeight: FontWeight.w700)),
-            ],
+                label: Text(l10n.cnicVerifyButton))),
+            if (_isBlacklisted) ...[const SizedBox(height: 8), Text(l10n.kycWizardBlacklisted, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: errorColor, fontWeight: FontWeight.w700))],
+            if (_showClean) ...[const SizedBox(height: 8), Text(l10n.blacklistCleanTitle, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: okColor, fontWeight: FontWeight.w700))],
             const SizedBox(height: 12),
             _field(_dobController, l10n.kycWizardDateOfBirth, keyboard: TextInputType.number, hint: '15.03.1990', validator: (v) => _validateDate(v, l10n.kycWizardDateOfBirth), formatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')), LengthLimitingTextInputFormatter(10)]),
             _field(_expiryController, l10n.kycWizardCnicExpiry, keyboard: TextInputType.number, hint: '01.01.2030', validator: (v) => _validateDate(v, l10n.kycWizardCnicExpiry), formatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')), LengthLimitingTextInputFormatter(10)]),

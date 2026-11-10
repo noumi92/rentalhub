@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../../l10n/app_localizations.dart';
 
 import  '../../../../finance/domain/entities/partner_share_entity.dart';
+import '../../../../../core/theme/card_decoration.dart';
 
 /// Phase B (H4): the shop's partners and their profit share. The
 /// share is a record — the money itself moves through the ledger
@@ -47,7 +48,7 @@ class FinancePartnersSection extends StatelessWidget {
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Theme.of(context).dividerColor),
+              boxShadow: AppCardDecoration.shadow(context)
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

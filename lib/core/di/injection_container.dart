@@ -29,6 +29,7 @@ import '../../features/admin/data/datasources/admin_shops_data_source.dart';
 import '../../features/admin/data/datasources/admin_people_data_source.dart';
 import '../../features/admin/data/datasources/admin_platform_data_source.dart';
 import '../../features/admin/data/datasources/admin_support_data_source.dart';
+import '../../features/admin/data/repositories/platform_settings_repository.dart';
 import '../../features/customer/data/datasources/review_remote_data_source.dart';
 import '../../features/customer/data/repositories/customer_repository_impl.dart';
 import '../../features/customer/domain/repositories/customer_repository.dart';
@@ -61,6 +62,7 @@ import '../../features/fleet/domain/usecases/update_vehicle_pricing_usecase.dart
 import '../../features/fleet/domain/usecases/update_vehicle_status_usecase.dart';
 import '../../features/fleet/presentation/cubit/fleet_cubit.dart';
 import '../../features/bookings/data/datasources/booking_remote_data_source.dart';
+import '../../features/bookings/utils/unverified_shop_gate.dart';
 import '../../features/bookings/data/repositories/booking_repository_impl.dart';
 import '../../features/bookings/domain/repositories/booking_repository.dart';
 import '../../features/bookings/domain/usecases/create_booking_request_usecase.dart';
@@ -225,6 +227,12 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton<AdminSupportDataSource>(
     () => AdminSupportDataSource(),
   );
+  // Customer rework (Worker E): the `platform_settings/global`
+  // toggles for unverified shops, read by the Shops view and the
+  // booking gate. Both default ON when the document is missing.
+  sl.registerLazySingleton<PlatformSettingsRepository>(
+    () => const PlatformSettingsRepository(),
+  );
   // H4: the real reviews store — one document per booking, rated
   // once by each side. No in-memory fallback: a rating that only
   // lives on the device would be a lie to the other side.
@@ -309,6 +317,8 @@ Future<void> initDependencies() async {
     () => BookingRemoteDataSource(
         notifications: sl<NotificationDataSource>(),
         blacklist: sl<BlacklistRemoteDataSource>(),
+        unverifiedShopGate: UnverifiedShopBookingGate(
+            settings: sl<PlatformSettingsRepository>()),
         syncQueue: sl<OfflineSyncQueue>()),
   );
   sl.registerLazySingleton<BookingRepository>(

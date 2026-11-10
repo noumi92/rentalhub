@@ -6,6 +6,7 @@ import '../../../../core/di/injection_container.dart';
 import '../../data/datasources/dispute_remote_data_source.dart';
 import 'dispute_category_chips.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../../core/theme/card_decoration.dart';
 
 /// G4: the customer's own disputes with their statuses, newest first.
 /// Extracted from [CustomerDisputeView] so the view stays under the
@@ -86,7 +87,7 @@ class _MyDisputesListState extends State<MyDisputesList> {
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Theme.of(context).dividerColor),
+              boxShadow: AppCardDecoration.shadow(context)
             ),
             child: Text(
               l10n.disputesEmpty,
@@ -100,7 +101,7 @@ class _MyDisputesListState extends State<MyDisputesList> {
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Theme.of(context).dividerColor),
+                  boxShadow: AppCardDecoration.shadow(context)
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

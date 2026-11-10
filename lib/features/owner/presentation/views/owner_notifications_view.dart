@@ -12,6 +12,7 @@ import '../../../../core/widgets/app_state_views.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../notifications/data/datasources/notification_data_source.dart';
 import '../../../notifications/domain/entities/notification_entity.dart';
+import '../../../../core/theme/card_decoration.dart';
 
 /// Phase B (G2): the owner's inbox — booking requests, payment
 /// proofs waiting for verification, and the rest. Tapping a
@@ -202,8 +203,10 @@ class _OwnerNotificationsViewState extends State<OwnerNotificationsView> {
               ? scheme.surface
               : AppColors.primary.withValues(alpha: 0.06),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-              color: n.read ? Theme.of(context).dividerColor : AppColors.primary),
+          border: n.read
+              ? null
+              : Border.all(color: AppColors.primary),
+          boxShadow: AppCardDecoration.shadow(context),
         ),
         child: Row(
           children: [

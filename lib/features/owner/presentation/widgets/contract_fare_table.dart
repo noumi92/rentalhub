@@ -3,6 +3,7 @@ import '../../../../l10n/app_localizations.dart';
 
 import '../../../../core/utils/money_format.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
+import '../../../../core/theme/card_decoration.dart';
 
 /// Finish build (O20): the fare-breakdown table on the agreement
 /// summary — Daily Rate × days = Total, Advance Paid, Remaining — all
@@ -30,7 +31,7 @@ class ContractFareTable extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Theme.of(context).dividerColor),
+        boxShadow: AppCardDecoration.shadow(context)
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

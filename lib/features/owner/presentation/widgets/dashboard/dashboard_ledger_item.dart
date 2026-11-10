@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/utils/money_format.dart';
 import '../../../../../l10n/app_localizations.dart';
+import '../../../../../core/theme/card_decoration.dart';
 
 /// Phase B (G1): one ledger row on the owner dashboard, extracted
 /// from [OwnerDashboardView]. The status chip is coloured by the
@@ -49,7 +50,7 @@ class DashboardLedgerItem extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         // Audit fix (§2): the hardcoded light border stayed pale grey
         // in dark mode — use the theme outline instead.
-        border: Border.all(color: scheme.outlineVariant),
+        boxShadow: AppCardDecoration.shadow(context)
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,

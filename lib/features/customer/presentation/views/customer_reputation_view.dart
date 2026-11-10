@@ -7,6 +7,7 @@ import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../data/datasources/review_remote_data_source.dart';
 import '../widgets/reputation_score_bar.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../../core/theme/card_decoration.dart';
 
 // H3: reputation from the real `reviews` collection — the ratings
 // showrooms gave this customer (H4's owner half) — plus the real
@@ -100,8 +101,6 @@ class _CustomerReputationViewState extends State<CustomerReputationView> {
                             decoration: BoxDecoration(
                               color: Theme.of(context).colorScheme.surface,
                               borderRadius: BorderRadius.circular(20),
-                              border: Border.all(
-                                  color: Theme.of(context).dividerColor),
                               boxShadow: [
                                 BoxShadow(
                                   color: Colors.black.withValues(alpha: 0.04),
@@ -168,8 +167,7 @@ class _CustomerReputationViewState extends State<CustomerReputationView> {
                               decoration: BoxDecoration(
                                 color: Theme.of(context).colorScheme.surface,
                                 borderRadius: BorderRadius.circular(16),
-                                border: Border.all(
-                                    color: Theme.of(context).dividerColor),
+                                boxShadow: AppCardDecoration.shadow(context),
                               ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,

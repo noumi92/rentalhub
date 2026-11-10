@@ -29,7 +29,7 @@ class PricingDriveModeCard extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Theme.of(context).dividerColor),
+          
         ),
         child: Column(
           children: [

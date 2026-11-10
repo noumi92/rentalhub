@@ -1,6 +1,7 @@
 import '../../../customer/domain/entities/customer_entity.dart';
 import '../../../customer/domain/usecases/save_customer_usecase.dart';
 import '../../../customer/utils/save_walk_in_customer.dart';
+import '../../../trust/data/services/customer_qr_code_service.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../blacklist/data/datasources/blacklist_remote_data_source.dart';
 import '../views/add_customer/kyc_draft.dart';
@@ -45,14 +46,17 @@ class KycCustomerSaver {
   final SaveCustomerUseCase _saveUseCase;
   final BlacklistRemoteDataSource _blacklist;
   final KycMediaUploadService _uploader;
+  final CustomerQrCodeService _qrCodeService;
 
   KycCustomerSaver({
     SaveCustomerUseCase? saveUseCase,
     BlacklistRemoteDataSource? blacklist,
     KycMediaUploadService? uploader,
+    CustomerQrCodeService? qrCodeService,
   })  : _saveUseCase = saveUseCase ?? sl<SaveCustomerUseCase>(),
         _blacklist = blacklist ?? sl<BlacklistRemoteDataSource>(),
-        _uploader = uploader ?? sl<KycMediaUploadService>();
+        _uploader = uploader ?? sl<KycMediaUploadService>(),
+        _qrCodeService = qrCodeService ?? CustomerQrCodeService();
 
   Future<KycSaveResult> save({
     required String shopId,
@@ -119,6 +123,16 @@ class KycCustomerSaver {
           draft.guarantorCustomerId == null ? null : draft.guarantorRelation,
     );
     await _saveUseCase(customer);
+    // The CNIC back-QR number goes to the restricted
+    // `customer_qr_codes/{customerId}` doc (super admin only) — never
+    // onto the customer record. Best-effort: a failed QR write never
+    // fails the save itself.
+    if (draft.qrCode.trim().isNotEmpty) {
+      await _qrCodeService.saveQrCode(
+        customerId: customerId,
+        qrCode: draft.qrCode,
+      );
+    }
     return KycSaveResult(
       customer: customer,
       queuedPhotos: uploads.queuedCount,

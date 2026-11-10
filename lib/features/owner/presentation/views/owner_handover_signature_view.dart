@@ -20,6 +20,7 @@ import '../widgets/operations/dual_signature_pad_widget.dart';
 import '../widgets/operations/exterior_photo_picker.dart';
 import '../widgets/operations/fuel_odometer_input_widget.dart';
 import '../widgets/operations/handover_checklist_section.dart';
+import '../../../../core/theme/card_decoration.dart';
 
 class OwnerHandoverSignatureView extends StatefulWidget {
   final BookingEntity booking;
@@ -212,7 +213,7 @@ class _OwnerHandoverSignatureViewState
   Widget _loadErrorBanner(BuildContext context, AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, borderRadius: BorderRadius.circular(12), border: Border.all(color: Theme.of(context).dividerColor)),
+      decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, borderRadius: BorderRadius.circular(12), boxShadow: AppCardDecoration.shadow(context)),
       child: Row(
         children: [
           Icon(Icons.error_outline_rounded, color: Theme.of(context).colorScheme.onSurfaceVariant),
@@ -228,7 +229,7 @@ class _OwnerHandoverSignatureViewState
   Widget _depositRow(BuildContext context, AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, borderRadius: BorderRadius.circular(12), border: Border.all(color: Theme.of(context).dividerColor)),
+      decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, borderRadius: BorderRadius.circular(12), boxShadow: AppCardDecoration.shadow(context)),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [

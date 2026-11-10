@@ -46,7 +46,7 @@ class BookingSummaryCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Theme.of(context).dividerColor),
+        
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),

@@ -21,7 +21,6 @@ import '../../features/bookings/presentation/views/review_booking_request_view.d
 import '../../features/customer/presentation/views/customer_booking_detail_view.dart';
 import '../../features/customer/presentation/views/customer_bookings_view.dart';
 import '../../features/customer/presentation/widgets/customer_route_loaders.dart';
-import '../../features/customer/presentation/widgets/customer_support_badge.dart';
 import '../../features/customer/presentation/views/customer_cancel_booking_view.dart';
 import '../../features/customer/presentation/views/customer_active_trip_view.dart';
 import '../../features/customer/presentation/views/customer_dispute_view.dart';
@@ -34,6 +33,7 @@ import '../../features/customer/presentation/views/customer_sos_view.dart';
 import '../../features/customer/presentation/views/customer_support_view.dart';
 import '../../features/customer/presentation/views/customer_wallet_view.dart';
 import '../../features/discovery/presentation/views/customer_location_prompt_view.dart';
+import '../../features/discovery/presentation/views/customer_shops_view.dart';
 import '../../features/discovery/presentation/views/customer_home_view.dart';
 import '../../features/discovery/presentation/views/customer_home_map_view.dart';
 import '../../features/discovery/presentation/views/shop_cars_view.dart';
@@ -134,13 +134,20 @@ class AppRouter {
       GlobalKey<NavigatorState>(debugLabel: 'rootNav');
 
 
-  /// Phase C (C1/C3): the five customer tabs. Support carries the live
-  /// replied-ticket badge; the other tabs have plain icons.
+  /// Customer rework (tabs: Home, Shops, Bookings, Wallet, Profile).
+  /// Support is no longer a tab: it lives as a top-level sub-screen
+  /// (see below the customer shell) reached from Profile and the home
+  /// bell, and its unread indicator moved to the Profile Support row
+  /// (`CustomerSupportBadge` there). The other tabs have plain icons.
   /// Phase F: each tab carries an l10nKey — the label renders in the
   /// current locale (the plain `label` stays the English fallback).
   static final customerTabs = <ShellNavItem>[
     const ShellNavItem(
         icon: Icon(Icons.home_rounded), label: 'Home', l10nKey: 'navHome'),
+    const ShellNavItem(
+        icon: Icon(Icons.store_rounded),
+        label: 'Shops',
+        l10nKey: 'tab2_navShops'),
     const ShellNavItem(
         icon: Icon(Icons.receipt_long_rounded),
         label: 'Bookings',
@@ -149,11 +156,6 @@ class AppRouter {
         icon: Icon(Icons.account_balance_wallet_rounded),
         label: 'Wallet',
         l10nKey: 'navWallet'),
-    ShellNavItem(
-        icon: CustomerSupportBadge(
-            icon: const Icon(Icons.support_agent_rounded)),
-        label: 'Support',
-        l10nKey: 'navSupport'),
     const ShellNavItem(
         icon: Icon(Icons.person_rounded),
         label: 'Profile',
@@ -384,6 +386,28 @@ class AppRouter {
               ),
             ],
           ),
+          // Customer rework: Shops tab (index 1) — the map/list
+          // discovery screen (Worker B: CustomerShopsView). Its own
+          // branch so tab switches keep its scroll/filter state.
+          StatefulShellBranch(
+            routes: [
+              // Shops: customerShops
+              GoRoute(
+                path: RouteNames.customerShops,
+                builder: (context, state) => const CustomerShopsView(),
+              ),
+              // Shops: customerShopsMap — the full-screen Nearby
+              // showrooms map (CustomerHomeMapView, reused as-is;
+              // Worker B owns its fix-ups). A branch-internal
+              // sub-screen, like /customer/home/map in the Home
+              // branch: NOT a tab root, so the tab bar hides and
+              // back returns to the Shops listing.
+              GoRoute(
+                path: RouteNames.customerShopsMap,
+                builder: (context, state) => const CustomerHomeMapView(),
+              ),
+            ],
+          ),
           StatefulShellBranch(
             routes: [
               // Bookings: customerBookings
@@ -527,33 +551,6 @@ class AppRouter {
           ),
           StatefulShellBranch(
             routes: [
-              // Support: customerSupport
-              GoRoute(
-                path: RouteNames.customerSupport,
-                builder: (context, state) => CustomerSupportView(
-                  onFileDispute: () => context.push(RouteNames.customerDisputes),
-                  onOpenSos: () => context.push(RouteNames.customerSos),
-                ),
-              ),
-              // Support: customerSos
-              GoRoute(
-                path: RouteNames.customerSos,
-                builder: (context, state) =>
-                    CustomerSosView(onBack: () => context.pop()),
-              ),
-              // Support: customerDisputes
-              GoRoute(
-                path: RouteNames.customerDisputes,
-                builder: (context, state) => CustomerDisputeView(
-                  initialBookingId: state.uri.queryParameters['bookingId'],
-                  onDisputeSubmitted: () => context.pop(),
-                  onBack: () => context.pop(),
-                ),
-              ),
-            ],
-          ),
-          StatefulShellBranch(
-            routes: [
               // Profile: customerProfile
               GoRoute(
                 path: RouteNames.customerProfile,
@@ -562,6 +559,9 @@ class AppRouter {
                   onOpenSavedShops: () => context.push(RouteNames.customerSavedShops),
                   onOpenSettings: () => context.push(RouteNames.customerSettings),
                   onOpenReputation: () => context.push(RouteNames.customerReputation),
+                  // Customer rework: Support moved into Profile — the
+                  // row pushes the top-level support sub-screen.
+                  onOpenSupport: () => context.push(RouteNames.customerSupport),
                   onSignOut: () => signOutToAuth(context),
                 ),
               ),
@@ -621,6 +621,37 @@ class AppRouter {
             ],
           ),
         ],
+      ),
+
+      // Customer rework: Support is NO LONGER a shell branch — it is
+      // a top-level sub-screen (same pattern as syncDetails / the
+      // legal texts): no tab bar, back arrow returns to wherever it
+      // was opened from. Path and name are UNCHANGED
+      // (RouteNames.customerSupport = '/customer/support'), so the
+      // home bell and every existing push keep working — the bell now
+      // pushes (was go) so the back arrow exists. SOS and Disputes
+      // move with it: they are pushed from Support, from the home
+      // quick actions, and from booking details, all of which push
+      // onto the root navigator from inside a shell branch.
+      GoRoute(
+        path: RouteNames.customerSupport,
+        builder: (context, state) => CustomerSupportView(
+          onFileDispute: () => context.push(RouteNames.customerDisputes),
+          onOpenSos: () => context.push(RouteNames.customerSos),
+        ),
+      ),
+      GoRoute(
+        path: RouteNames.customerSos,
+        builder: (context, state) =>
+            CustomerSosView(onBack: () => context.pop()),
+      ),
+      GoRoute(
+        path: RouteNames.customerDisputes,
+        builder: (context, state) => CustomerDisputeView(
+          initialBookingId: state.uri.queryParameters['bookingId'],
+          onDisputeSubmitted: () => context.pop(),
+          onBack: () => context.pop(),
+        ),
       ),
 
       // Phase C (C1): owner shell — five branches, one per tab.

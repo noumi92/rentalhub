@@ -7,10 +7,16 @@ class MediaPickerHelper {
   static final ImagePicker _picker = ImagePicker();
 
   /// Shows camera/gallery/remove options or opens front camera directly for selfies.
+  ///
+  /// [cameraOnly] is the KYC document rule (CNIC + driving license):
+  /// the rear camera opens directly and no gallery option is offered
+  /// — a gallery photo is never accepted for these uploads. Other
+  /// pickers (vehicle photos, bills, extra docs) keep the sheet.
   static Future<void> showMediaSourceSheet({
     required BuildContext context,
     required ValueChanged<XFile?> onImageSelected,
     bool frontCameraOnly = false,
+    bool cameraOnly = false,
     bool hasExistingFile = false,
   }) async {
     // If front-camera only (e.g. live selfie verification), immediately launch front camera
@@ -26,6 +32,23 @@ class MediaPickerHelper {
         }
       } catch (e) {
         debugPrint('Front camera pick error: $e');
+      }
+      return;
+    }
+
+    // KYC documents: rear camera directly, no sheet, no gallery.
+    if (cameraOnly) {
+      try {
+        final photo = await _picker.pickImage(
+          source: ImageSource.camera,
+          preferredCameraDevice: CameraDevice.rear,
+          imageQuality: 85,
+        );
+        if (photo != null) {
+          onImageSelected(photo);
+        }
+      } catch (e) {
+        debugPrint('Rear camera pick error: $e');
       }
       return;
     }

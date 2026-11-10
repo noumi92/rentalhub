@@ -8,6 +8,7 @@ import '../../../../core/routing/route_names.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../data/datasources/customer_location_store.dart';
 import 'widgets/city_selector_bar.dart';
+import 'widgets/location_center_pin.dart';
 import 'widgets/location_confirm_card.dart';
 import '../../../../l10n/app_localizations.dart';
 
@@ -118,6 +119,24 @@ class _CustomerLocationPromptViewState extends State<CustomerLocationPromptView>
     _mapController.move(target, 13.5);
   }
 
+  /// The centre pin is draggable, like the "you are here" pin on
+  /// the Nearby map: dragging it pans the map under the pin (the pin
+  /// stays centred) and the chosen point follows the finger. Panning
+  /// the map itself still works the same way.
+  void _onPinDrag(DragUpdateDetails details) {
+    final camera = _mapController.camera;
+    final next = camera.screenOffsetToLatLng(
+      camera.latLngToScreenOffset(_currentCenter) + details.delta,
+    );
+    setState(() {
+      _currentCenter = next;
+      _addressLabel =
+          '${next.latitude.toStringAsFixed(4)}°N, ${next.longitude.toStringAsFixed(4)}°E';
+      _fromGps = false;
+    });
+    _mapController.move(next, camera.zoom);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -180,22 +199,9 @@ class _CustomerLocationPromptViewState extends State<CustomerLocationPromptView>
                       ),
                     ),
                   ),
-                  Center(
-                    child: FractionalTranslation(
-                      translation: const Offset(0.0, -0.5),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                            decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(12)),
-                            child: Text(l10n.locationCenterPin, style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700, color: Colors.white)),
-                          ),
-                          const SizedBox(height: 2),
-                          const Icon(Icons.location_on_rounded, size: 46, color: AppColors.secondary),
-                        ],
-                      ),
-                    ),
+                  LocationCenterPin(
+                    label: l10n.locationCenterPin,
+                    onDrag: _onPinDrag,
                   ),
                   Positioned(
                     top: 14,

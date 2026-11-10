@@ -7,12 +7,18 @@ import '../../../../core/utils/money_format.dart';
 import '../../../blacklist/data/datasources/blacklist_remote_data_source.dart';
 import '../../../notifications/data/datasources/notification_data_source.dart';
 import '../../domain/entities/booking_entity.dart';
+import '../../utils/unverified_shop_gate.dart';
 import '../models/booking_model.dart';
 
 class BookingRemoteDataSource {
   final FirebaseFirestore? _firestore;
   final NotificationDataSource? _notifications;
   final BlacklistRemoteDataSource? _blacklist;
+
+  /// Customer rework (Worker E): the unverified-shop gate. Null in
+  /// tests and legacy callers — the review screen is the primary
+  /// gate and this is the backstop for callers that bypass it.
+  final UnverifiedShopBookingGate? unverifiedShopGate;
 
   /// Phase B (B1/B3): the persisted pending-write store. When set,
   /// a Firestore write that fails (offline) is queued here instead
@@ -28,6 +34,7 @@ class BookingRemoteDataSource {
       {FirebaseFirestore? firestore,
       NotificationDataSource? notifications,
       BlacklistRemoteDataSource? blacklist,
+      this.unverifiedShopGate,
       this.syncQueue})
       : _firestore = firestore,
         _notifications = notifications,
@@ -270,6 +277,20 @@ class BookingRemoteDataSource {
             );
           }
         }
+      }
+    }
+    // Customer rework (Worker E): backstop for callers that bypass
+    // the review screen's gate. Walk-in bookings (the owner at the
+    // counter) are exempt — the setting governs customer bookings.
+    // A missing gate or a failed lookup fails open, like the
+    // blacklist check above.
+    final gate = unverifiedShopGate;
+    if (gate != null && !customerId.startsWith('walkin-')) {
+      if (!await gate.isBookingAllowed(shopId: shopId)) {
+        throw const ServerException(
+          message:
+              'Bookings from unverified shops are currently disabled by the platform.',
+        );
       }
     }
     // Millisecond ids can collide when two bookings are created back

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/theme/card_decoration.dart';
 
 
 /// H2: one settings section card (title + content). Extracted from
@@ -29,7 +30,7 @@ class SettingsSectionCard extends StatelessWidget {
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Theme.of(context).dividerColor),
+              boxShadow: AppCardDecoration.shadow(context)
             ),
             child: child,
           ),

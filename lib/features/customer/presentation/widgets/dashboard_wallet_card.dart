@@ -4,6 +4,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../data/services/customer_wallet_service.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../core/utils/money_format.dart';
+import '../../../../core/theme/card_decoration.dart';
 
 /// E1/F1: the dashboard's wallet summary — the customer's real advances
 /// paid and security escrow held (from the same wallet service the
@@ -29,7 +30,7 @@ class DashboardWalletCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Theme.of(context).dividerColor),
+          boxShadow: AppCardDecoration.shadow(context)
         ),
         child: Row(
           children: [

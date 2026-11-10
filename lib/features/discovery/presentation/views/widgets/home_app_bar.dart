@@ -9,16 +9,20 @@ import '../../../../../l10n/app_localizations.dart';
 /// the map, bell and avatar actions, each wired to a real destination.
 /// Extracted from [CustomerHomeView] so that view stays under the
 /// 250-line cap.
+///
+/// The subtitle is nullable: Home shows the greeting when the
+/// signed-in user's name is known, and no subtitle when it is not
+/// (a signed-out visitor has no name to greet).
 class CustomerHomeAppBar extends StatelessWidget {
   const CustomerHomeAppBar({
     super.key,
     required this.title,
-    required this.subtitle,
+    this.subtitle,
     required this.userInitial,
   });
 
   final String title;
-  final String subtitle;
+  final String? subtitle;
   final String userInitial;
 
   @override
@@ -41,7 +45,10 @@ class CustomerHomeAppBar extends StatelessWidget {
           tooltip: l10n.notifications,
           background: Colors.white.withValues(alpha: 0.15),
           iconColor: Colors.white,
-          onPressed: () => context.go(RouteNames.customerSupport),
+          // Customer rework: Support is a top-level sub-screen now,
+          // not a tab — push (not go) so the back arrow exists and
+          // returns to Home. Destination unchanged: the support inbox.
+          onPressed: () => context.push(RouteNames.customerSupport),
         ),
         const SizedBox(width: 8),
         AppInitialChip(

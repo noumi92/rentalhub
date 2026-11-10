@@ -37,10 +37,9 @@ class PackageTierCard extends StatelessWidget {
                   : AppColors.primaryContainer)
               : Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: isSelected ? AppColors.primary : Theme.of(context).dividerColor,
-            width: isSelected ? 2 : 1,
-          ),
+          border: isSelected
+              ? Border.all(color: AppColors.primary, width: 2)
+              : null,
           boxShadow: [
             BoxShadow(
               color: isSelected

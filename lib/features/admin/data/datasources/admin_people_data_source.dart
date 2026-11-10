@@ -7,6 +7,7 @@ import '../../../bookings/domain/entities/booking_entity.dart';
 import '../../../customer/data/datasources/review_remote_data_source.dart';
 import '../../../customer/data/models/customer_model.dart';
 import '../../../customer/domain/entities/customer_entity.dart';
+import '../../../trust/data/models/customer_qr_code_model.dart';
 import '../services/admin_audit_service.dart';
 import '../../domain/trust_score_calculator.dart';
 
@@ -164,6 +165,28 @@ class AdminPeopleDataSource {
         blacklistRecord: blacklistRecord,
         notes: notes,
       );
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// The CNIC back-QR number for a customer, from the restricted
+  /// `customer_qr_codes/{customerId}` doc. The caller must already
+  /// have checked the role is super_admin — the Firestore rules deny
+  /// the read for anyone else, and a denied or missing doc reads as
+  /// null here, never an exception.
+  Future<String?> getCustomerQrCode(String customerId) async {
+    final firestore = _resolvedFirestore;
+    if (firestore == null) return null;
+    try {
+      final doc = await firestore
+          .collection(CustomerQrCodeModel.collection)
+          .doc(customerId)
+          .get();
+      final data = doc.data();
+      if (data == null) return null;
+      final code = CustomerQrCodeModel.fromMap(data, doc.id).qrCode;
+      return code.isEmpty ? null : code;
     } catch (_) {
       return null;
     }

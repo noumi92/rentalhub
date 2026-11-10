@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/constants/app_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../customer/domain/entities/customer_entity.dart';
+import '../../../../core/theme/card_decoration.dart';
 
 /// Owner-deck finish (#35): the documents/photo section of the
 /// customer profile. One tile per captured file; a missing file shows
@@ -34,7 +34,7 @@ class CustomerDetailDocs extends StatelessWidget {
       width: 150,
       margin: const EdgeInsets.only(right: 8, bottom: 8),
       padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(border: Border.all(color: AppColors.borderSubtle), borderRadius: BorderRadius.circular(12)),
+      decoration: AppCardDecoration.of(context, radius: 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

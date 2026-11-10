@@ -3,6 +3,7 @@ import '../../../../../l10n/app_localizations.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/utils/money_format.dart';
 import '../../../../finance/utils/settlement_calculator.dart';
+import '../../../../../core/theme/card_decoration.dart';
 
 class SettlementSummaryReceiptWidget extends StatelessWidget {
   final int totalKm;
@@ -50,7 +51,7 @@ class SettlementSummaryReceiptWidget extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Theme.of(context).dividerColor),
+        boxShadow: AppCardDecoration.shadow(context)
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

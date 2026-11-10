@@ -3,6 +3,7 @@ import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/widgets/verified_badge.dart';
 import '../../../domain/entities/shop_entity.dart';
 import '../../../../../l10n/app_localizations.dart';
+import 'shops_filter_logic.dart';
 
 class MapShopPreviewCard extends StatelessWidget {
   final ShopEntity shop;
@@ -73,7 +74,15 @@ class MapShopPreviewCard extends StatelessWidget {
               const SizedBox(height: 10),
               Row(
                 children: [
-                  VerifiedBadge(isVerified: shop.isVerified),
+                  // Shops tab: every shop states its verification
+                  // plainly — "Verified" for verified shops, an
+                  // explicit "Unverified" label for the rest.
+                  VerifiedBadge(
+                    isVerified: isShopVerified(shop),
+                    label: isShopVerified(shop)
+                        ? null
+                        : l10n.shops_unverified,
+                  ),
                   const SizedBox(width: 8),
                   Text(
                     l10n.shopRatingLabel(shop.rating),

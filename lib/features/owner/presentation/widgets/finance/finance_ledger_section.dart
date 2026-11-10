@@ -6,6 +6,7 @@ import  '../../../../bookings/domain/entities/booking_entity.dart';
 import  '../../../../finance/domain/entities/finance_account_entity.dart';
 import  '../../../../finance/domain/entities/finance_transfer_entity.dart';
 import '../../../../../core/utils/money_format.dart';
+import '../../../../../core/theme/card_decoration.dart';
 
 /// Phase B (H1/H2): the ledger — every income and expense, newest
 /// first, with the account and category it was posted to.
@@ -121,7 +122,7 @@ class _FinanceLedgerSectionState extends State<FinanceLedgerSection> {
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Theme.of(context).dividerColor),
+              boxShadow: AppCardDecoration.shadow(context)
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

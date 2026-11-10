@@ -9,6 +9,7 @@ import '../../../../core/widgets/debounced_button.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../services/subscription_data_source.dart';
+import '../../../../core/theme/card_decoration.dart';
 
 /// S4 — active subscription (deck p.17 screen 4). Everything shown
 /// comes from stored data: `shops.subscriptionTier`, the optional
@@ -84,8 +85,7 @@ class _OwnerSubscriptionActiveViewState
                                 color:
                                     Theme.of(context).colorScheme.surface,
                                 borderRadius: BorderRadius.circular(16),
-                                border: Border.all(
-                                    color: Theme.of(context).dividerColor),
+                                boxShadow: AppCardDecoration.shadow(context),
                               ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,

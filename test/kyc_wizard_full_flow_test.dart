@@ -51,15 +51,18 @@ void main() {
     MockImagePickerPlatform.tearDown();
   });
 
-  /// Rear-camera picks go through the media source sheet.
+  /// Rear-camera picks go through the media source sheet — except
+  /// the license tiles, which open the rear camera directly
+  /// (camera-only KYC rule, no sheet, no gallery).
   Future<void> tapRearCamera(WidgetTester tester, Key buttonKey) async {
     await tester.ensureVisible(find.byKey(buttonKey));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(buttonKey));
     await tester.pumpAndSettle();
-    expect(find.text('Take Photo (Back Camera)'), findsOneWidget);
-    await tester.tap(find.text('Take Photo (Back Camera)'));
-    await tester.pumpAndSettle();
+    if (find.text('Take Photo (Back Camera)').evaluate().isNotEmpty) {
+      await tester.tap(find.text('Take Photo (Back Camera)'));
+      await tester.pumpAndSettle();
+    }
   }
 
   testWidgets('full wizard flow saves the customer and lands on the success screen',

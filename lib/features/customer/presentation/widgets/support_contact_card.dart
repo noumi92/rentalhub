@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/theme/card_decoration.dart';
 
 
 /// G1: one of the support screen's contact tiles (call / WhatsApp the
@@ -30,7 +31,7 @@ class SupportContactCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: Theme.of(context).dividerColor),
+          boxShadow: AppCardDecoration.shadow(context)
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

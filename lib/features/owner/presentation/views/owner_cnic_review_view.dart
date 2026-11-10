@@ -15,6 +15,8 @@ import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../customer/domain/entities/customer_entity.dart';
 import '../../../customer/domain/usecases/save_customer_usecase.dart';
 import '../../../trust/data/services/cnic_ocr_service.dart';
+import '../../../trust/data/services/customer_qr_code_service.dart';
+import '../../../trust/data/services/document_qr_service.dart';
 import '../../../trust/utils/cnic_text_parser.dart';
 
 /// Phase B (C2): the owner reviews what OCR read off the CNIC and
@@ -33,12 +35,16 @@ class OwnerCnicReviewView extends StatefulWidget {
   /// a thumbnail so OCR can be checked against the card.
   final String? frontImagePath;
 
+  /// Test seam for the QR reader; defaults to the real service.
+  final DocumentQrService? qrService;
+
   const OwnerCnicReviewView({
     super.key,
     required this.initial,
     this.shopId,
     this.onSaved,
     this.frontImagePath,
+    this.qrService,
   });
 
   @override
@@ -58,11 +64,17 @@ class _OwnerCnicReviewViewState extends State<OwnerCnicReviewView> {
   bool _scanningBack = false;
   bool _saving = false;
 
+  /// The CNIC back-QR number, held only until save writes it to the
+  /// restricted doc. Never rendered in this view (super admin only).
+  String _qrCode = '';
+  late final DocumentQrService _qrService;
+
   String get _shopId => widget.shopId ?? currentShopId();
 
   @override
   void initState() {
     super.initState();
+    _qrService = widget.qrService ?? DocumentQrService();
     final r = widget.initial;
     _nameController = TextEditingController(text: r.name ?? '');
     _fatherController = TextEditingController(text: r.fatherName ?? '');
@@ -75,23 +87,16 @@ class _OwnerCnicReviewViewState extends State<OwnerCnicReviewView> {
 
   @override
   void dispose() {
-    _nameController.dispose();
-    _fatherController.dispose();
-    _cnicController.dispose();
-    _dobController.dispose();
-    _expiryController.dispose();
-    _phoneController.dispose();
-    _addressController.dispose();
+    _nameController.dispose(); _fatherController.dispose(); _cnicController.dispose(); _dobController.dispose();
+    _expiryController.dispose(); _phoneController.dispose(); _addressController.dispose();
     super.dispose();
   }
 
   /// dd.mm.yyyy only; the label itself carries the format, so it
   /// doubles as the (localized) error text — no new .arb key needed.
   static String? _validateDate(String? value, String label) {
-    final t = value?.trim() ?? '';
-    if (t.isEmpty) return null;
-    final m = RegExp(r'^(\d{2})\.(\d{2})\.(\d{4})$').firstMatch(t);
-    if (m == null) return label;
+    final t = value?.trim() ?? ''; if (t.isEmpty) return null;
+    final m = RegExp(r'^(\d{2})\.(\d{2})\.(\d{4})$').firstMatch(t); if (m == null) return label;
     final day = int.parse(m[1]!); final month = int.parse(m[2]!); final year = int.parse(m[3]!);
     final parsed = DateTime.tryParse('$year-${month.toString().padLeft(2, '0')}-${day.toString().padLeft(2, '0')}');
     if (parsed == null || parsed.day != day || parsed.month != month || parsed.year != year) return label;
@@ -100,16 +105,20 @@ class _OwnerCnicReviewViewState extends State<OwnerCnicReviewView> {
 
   Future<void> _scanBack() async {
   final l10n = AppLocalizations.of(context)!;
-    final picked = await ImagePicker().pickImage(source: ImageSource.camera, imageQuality: 85);
+    final picked = await ImagePicker().pickImage(source: ImageSource.camera, preferredCameraDevice: CameraDevice.rear, imageQuality: 85);
     if (picked == null) return;
     setState(() => _scanningBack = true);
     try {
-      final result = await CnicOcrService().scanBack(File(picked.path));
+      // The QR NUMBER is stored for the restricted doc (super admin only — never shown here); OCR reads the address. The reads are independent, so one failing never loses the other.
+      final code = await _qrService.readQr(File(picked.path));
+      CnicScanResult? result;
+      try { result = await CnicOcrService().scanBack(File(picked.path)); } catch (_) { result = null; }
       if (!mounted) return;
       setState(() => _backImagePath = picked.path);
-      if (result.address != null) {
-        setState(() => _addressController.text = result.address!);
-      } else {
+      if (code != null && code.isNotEmpty) { _qrCode = code; AppFeedback.showSuccess(context, l10n.kyc2_qrRead); }
+      if (result?.address != null) {
+        setState(() => _addressController.text = result!.address!);
+      } else if (code == null || code.isEmpty) {
         AppFeedback.showInfo(context, l10n.customersCnicNoAddress);
       }
     } catch (e) {
@@ -128,8 +137,9 @@ class _OwnerCnicReviewViewState extends State<OwnerCnicReviewView> {
     setState(() => _saving = true);
     try {
       final digits = cnic.replaceAll(RegExp(r'\D'), '');
+      final customerId = digits.isNotEmpty ? 'cust-$digits' : 'cust-${DateTime.now().millisecondsSinceEpoch}';
       await sl<SaveCustomerUseCase>()(CustomerEntity(
-        customerId: digits.isNotEmpty ? 'cust-$digits' : 'cust-${DateTime.now().millisecondsSinceEpoch}',
+        customerId: customerId,
         shopId: _shopId,
         name: name,
         phone: phone,
@@ -142,6 +152,10 @@ class _OwnerCnicReviewViewState extends State<OwnerCnicReviewView> {
         fatherName: _fatherController.text.trim().isEmpty ? null : _fatherController.text.trim(),
         address: _addressController.text.trim().isEmpty ? null : _addressController.text.trim(),
       ));
+      // The CNIC back-QR number goes to the restricted doc (super admin only) — never onto the customer record. Best-effort: a failed QR write never fails the save itself.
+      if (_qrCode.trim().isNotEmpty) {
+        await CustomerQrCodeService().saveQrCode(customerId: customerId, qrCode: _qrCode);
+      }
       if (!mounted) return;
       widget.onSaved?.call(cnic);
       context.pop();
@@ -156,13 +170,7 @@ class _OwnerCnicReviewViewState extends State<OwnerCnicReviewView> {
       {TextInputType keyboard = TextInputType.text, String? hint, String? Function(String?)? validator, List<TextInputFormatter>? formatters}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
-      child: TextFormField(
-        controller: controller,
-        keyboardType: keyboard,
-        inputFormatters: formatters,
-        validator: validator,
-        decoration: InputDecoration(labelText: label, hintText: hint, border: const OutlineInputBorder(), filled: true, fillColor: Theme.of(context).colorScheme.surfaceContainerHighest),
-      ),
+      child: TextFormField(controller: controller, keyboardType: keyboard, inputFormatters: formatters, validator: validator, decoration: InputDecoration(labelText: label, hintText: hint, border: const OutlineInputBorder(), filled: true, fillColor: Theme.of(context).colorScheme.surfaceContainerHighest)),
     );
   }
 
@@ -195,13 +203,11 @@ class _OwnerCnicReviewViewState extends State<OwnerCnicReviewView> {
                       // Audit §20: preview the scanned card so OCR can
                       // be checked against it, not corrected blind.
                       if (widget.frontImagePath != null || _backImagePath != null) ...[
-                        Row(
-                          children: [
-                            if (widget.frontImagePath != null) _photoThumb(widget.frontImagePath!),
-                            if (widget.frontImagePath != null && _backImagePath != null) const SizedBox(width: 12),
-                            if (_backImagePath != null) _photoThumb(_backImagePath!),
-                          ],
-                        ),
+                        Row(children: [
+                          if (widget.frontImagePath != null) _photoThumb(widget.frontImagePath!),
+                          if (widget.frontImagePath != null && _backImagePath != null) const SizedBox(width: 12),
+                          if (_backImagePath != null) _photoThumb(_backImagePath!),
+                        ]),
                         const SizedBox(height: 16),
                       ],
                       // No dedicated Identity/Contact/Address .arb keys
@@ -223,9 +229,7 @@ class _OwnerCnicReviewViewState extends State<OwnerCnicReviewView> {
                         child: OutlinedButton.icon(
                           onPressed: _scanningBack ? null : _scanBack,
                           icon: _scanningBack ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.flip_to_back_rounded),
-                          label: Text(l10n.customersCnicScanBack),
-                        ),
-                      ),
+                          label: Text(l10n.customersCnicScanBack))),
                       const SizedBox(height: 12),
                       // Audit §20/C7: 54dp DebouncedButton (was ~40dp).
                       DebouncedButton(text: l10n.customersCnicSave, icon: Icons.check_rounded, isLoading: _saving, onPressed: _save),

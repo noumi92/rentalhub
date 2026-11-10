@@ -9,8 +9,10 @@ import '../../../../../core/widgets/app_feedback.dart';
 import '../../../../../core/widgets/debounced_button.dart';
 import '../../cubit/kyc_cubit.dart';
 import '../../../data/services/cnic_ocr_service.dart';
+import '../../../data/services/document_qr_service.dart';
 import '../../../domain/entities/kyc_document_entity.dart';
 import 'document_slot_tile.dart';
+import 'kyc_license_section.dart';
 import 'pick_image_source.dart';
 import '../../../../../l10n/app_localizations.dart';
 
@@ -19,6 +21,10 @@ import '../../../../../l10n/app_localizations.dart';
 /// slots holding photos the customer actually picks, and the real
 /// submit through KycCubit. Extracted from [CustomerDocumentsView] so
 /// the view stays under the 250-line cap.
+///
+/// Camera rule (2026-11-10): every capture opens the BACK camera, no
+/// gallery photo is accepted; the CNIC back-QR number is stored in the
+/// restricted `customer_qr_codes` doc and never shown here.
 class KycSubmissionForm extends StatefulWidget {
   const KycSubmissionForm({
     super.key,
@@ -26,6 +32,7 @@ class KycSubmissionForm extends StatefulWidget {
     required this.existing,
     required this.userUid,
     required this.onSubmitted,
+    this.qrService,
   });
 
   final String initialCnic;
@@ -33,21 +40,31 @@ class KycSubmissionForm extends StatefulWidget {
   final String userUid;
   final void Function(String cnic) onSubmitted;
 
+  /// Test seam: the QR reader. Defaults to the real
+  /// [DocumentQrService] (mobile_scanner, on-device).
+  final DocumentQrService? qrService;
+
   @override
   State<KycSubmissionForm> createState() => _KycSubmissionFormState();
 }
 
 class _KycSubmissionFormState extends State<KycSubmissionForm> {
   late final TextEditingController _cnicController;
+  late final DocumentQrService _qrService;
   File? _cnicFront;
   File? _cnicBack;
-  File? _license;
+  final _licenseData = KycLicenseData();
+
+  /// The CNIC back-QR number, held only until submit writes it to
+  /// the restricted doc. Never rendered anywhere in this app.
+  String _qrCode = '';
   bool _scanning = false;
 
   @override
   void initState() {
     super.initState();
     _cnicController = TextEditingController(text: widget.initialCnic);
+    _qrService = widget.qrService ?? DocumentQrService();
   }
 
   @override
@@ -71,20 +88,28 @@ class _KycSubmissionFormState extends State<KycSubmissionForm> {
     setState(() {
       if (slot == 'front') {
         _cnicFront = file;
-      } else if (slot == 'back') {
-        _cnicBack = file;
       } else {
-        _license = file;
+        _cnicBack = file;
       }
     });
+    // CNIC back: read the QR number off the captured photo and hold
+    // it for the restricted doc at submit. The number is never shown
+    // here; the back image itself is saved either way.
+    if (slot == 'back') {
+      final code = await _qrService.readQr(file);
+      if (!mounted || code == null || code.isEmpty) return;
+      setState(() => _qrCode = code);
+      AppFeedback.showSuccess(context, AppLocalizations.of(context)!.kyc2_qrRead);
+    }
   }
 
   // Scans the CNIC front with on-device OCR and fills the number; the
-  // scanned photo becomes the front-side file.
+  // scanned photo becomes the front-side file. Rear camera only.
   Future<void> _scanCnic() async {
     final l10n = AppLocalizations.of(context)!;
     final picked = await ImagePicker().pickImage(
       source: ImageSource.camera,
+      preferredCameraDevice: CameraDevice.rear,
       imageQuality: 85,
     );
     if (picked == null || !mounted) return;
@@ -99,10 +124,7 @@ class _KycSubmissionFormState extends State<KycSubmissionForm> {
         });
         AppFeedback.showSuccess(context, l10n.kycCnicRead);
       } else {
-        AppFeedback.showWarning(
-          context,
-          l10n.kycScanUnreadable,
-        );
+        AppFeedback.showWarning(context, l10n.kycScanUnreadable);
       }
     } catch (e) {
       if (mounted) {
@@ -121,10 +143,7 @@ class _KycSubmissionFormState extends State<KycSubmissionForm> {
       return;
     }
     if (_cnicFront == null || _cnicBack == null) {
-      AppFeedback.showWarning(
-        context,
-        l10n.kycAttachBoth,
-      );
+      AppFeedback.showWarning(context, l10n.kycAttachBoth);
       return;
     }
     await cubit.submitKyc(
@@ -132,7 +151,13 @@ class _KycSubmissionFormState extends State<KycSubmissionForm> {
       cnicNumber: _cnicController.text.trim(),
       cnicFront: _cnicFront,
       cnicBack: _cnicBack,
-      license: _license,
+      license: _licenseData.front,
+      licenseBack: _licenseData.back,
+      licenseNumber:
+          _licenseData.number.trim().isEmpty ? null : _licenseData.number.trim(),
+      licenseExpiry:
+          _licenseData.expiry.trim().isEmpty ? null : _licenseData.expiry.trim(),
+      qrCode: _qrCode.isEmpty ? null : _qrCode,
     );
   }
 
@@ -199,13 +224,9 @@ class _KycSubmissionFormState extends State<KycSubmissionForm> {
             onTap: () => _pickSlot('back'),
           ),
           const SizedBox(height: 10),
-          DocumentSlotTile(
-            title: l10n.kycLicense,
-            subtitle: _license != null
-                ? l10n.kycSelectedFile(_fileName(_license))
-                : l10n.kycSelfDriveNote,
-            isUploaded: _license != null || widget.existing != null,
-            onTap: () => _pickSlot('license'),
+          KycLicenseSection(
+            data: _licenseData,
+            onChanged: () => setState(() {}),
           ),
           const SizedBox(height: 18),
           BlocBuilder<KycCubit, KycState>(

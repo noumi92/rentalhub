@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../../core/utils/money_format.dart';
 import '../../../../../l10n/app_localizations.dart';
+import '../../../../../core/theme/card_decoration.dart';
 
 /// Audit impl (O34): the accounts summary as three separate cards
 /// — earnings, expenses, net — instead of one combined net figure.
@@ -47,7 +48,7 @@ class FinanceSummaryCards extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Theme.of(context).dividerColor),
+        boxShadow: AppCardDecoration.shadow(context)
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

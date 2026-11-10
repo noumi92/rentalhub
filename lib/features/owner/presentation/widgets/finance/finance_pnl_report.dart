@@ -10,6 +10,7 @@ import  '../../../../finance/utils/finance_summary.dart';
 import 'finance_pnl_breakdown.dart';
 import  '../../../../finance/utils/pnl_csv.dart';
 import '../../../../../core/utils/money_format.dart';
+import '../../../../../core/theme/card_decoration.dart';
 
 /// Phase B (H5): the P&L statement for a period, with a CSV export
 /// that opens in Excel. The booking revenue comes from the
@@ -147,7 +148,7 @@ class _FinancePnLReportState extends State<FinancePnLReport> {
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Theme.of(context).dividerColor),
+            boxShadow: AppCardDecoration.shadow(context)
           ),
           child: Column(
             children: [

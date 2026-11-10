@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../../core/constants/app_colors.dart';
+import '../../../../../core/theme/card_decoration.dart';
 
 class WhatsAppLogTile extends StatelessWidget {
   final String recipientName;
@@ -44,7 +45,7 @@ class WhatsAppLogTile extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Theme.of(context).dividerColor),
+        boxShadow: AppCardDecoration.shadow(context)
       ),
       child: Row(
         children: [

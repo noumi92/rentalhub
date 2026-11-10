@@ -6,6 +6,7 @@ import '../../../../../core/utils/money_format.dart';
 import '../../../../../core/widgets/debounced_button.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../bookings/domain/entities/booking_entity.dart';
+import '../../../../../core/theme/card_decoration.dart';
 
 /// Audit item 5/18 (O25): the return landing — booking summary with
 /// the return-due line and the "Start Return Inspection" entry.
@@ -34,7 +35,7 @@ class ReturnLandingSection extends StatelessWidget {
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Theme.of(context).dividerColor),
+            boxShadow: AppCardDecoration.shadow(context)
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -127,7 +128,7 @@ class ReturnConditionSelector extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Theme.of(context).dividerColor),
+        boxShadow: AppCardDecoration.shadow(context)
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

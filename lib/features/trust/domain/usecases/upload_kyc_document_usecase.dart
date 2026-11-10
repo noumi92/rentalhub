@@ -12,6 +12,10 @@ class UploadKycDocumentUseCase {
     File? cnicFront,
     File? cnicBack,
     File? license,
+    File? licenseBack,
+    String? licenseNumber,
+    String? licenseExpiry,
+    String? qrCode,
   }) =>
       repository.uploadKycDocuments(
         userUid: userUid,
@@ -19,6 +23,10 @@ class UploadKycDocumentUseCase {
         cnicFront: cnicFront,
         cnicBack: cnicBack,
         license: license,
+        licenseBack: licenseBack,
+        licenseNumber: licenseNumber,
+        licenseExpiry: licenseExpiry,
+        qrCode: qrCode,
       );
 }
 

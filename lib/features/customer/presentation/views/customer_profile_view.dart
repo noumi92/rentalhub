@@ -10,6 +10,7 @@ import '../../data/datasources/customer_remote_data_source.dart';
 import '../../domain/entities/customer_entity.dart';
 import '../../../trust/data/datasources/kyc_remote_data_source.dart';
 import '../widgets/edit_profile_sheet.dart';
+import '../widgets/customer_support_badge.dart';
 import '../widgets/profile_cnic_row.dart';
 import '../widgets/profile_menu_card.dart';
 import '../widgets/profile_sign_out_tile.dart';
@@ -26,6 +27,7 @@ class CustomerProfileView extends StatefulWidget {
   final VoidCallback? onOpenSavedShops;
   final VoidCallback? onOpenSettings;
   final VoidCallback? onOpenReputation;
+  final VoidCallback? onOpenSupport;
   final VoidCallback? onSignOut;
 
   const CustomerProfileView({
@@ -34,6 +36,7 @@ class CustomerProfileView extends StatefulWidget {
     this.onOpenSavedShops,
     this.onOpenSettings,
     this.onOpenReputation,
+    this.onOpenSupport,
     this.onSignOut,
   });
 
@@ -173,15 +176,10 @@ class _CustomerProfileViewState extends State<CustomerProfileView> {
           children: [
             MinimalAppBar(
               title: _name == 'Guest' ? l10n.profileGuest : _name,
-              subtitle: _email.isNotEmpty
-                  ? _email
-                  : (_phone.isNotEmpty
-                      ? _phone
-                      : l10n.profileNotSignedInShort),
+              subtitle: _email.isNotEmpty ? _email : (_phone.isNotEmpty ? _phone : l10n.profileNotSignedInShort),
               actions: [
                 IconButton(
-                  icon: const Icon(Icons.edit_rounded,
-                      color: Colors.white, size: 20),
+                  icon: const Icon(Icons.edit_rounded, color: Colors.white, size: 20),
                   tooltip: l10n.profileEditProfile,
                   onPressed: _openEdit,
                 ),
@@ -189,22 +187,14 @@ class _CustomerProfileViewState extends State<CustomerProfileView> {
             ),
             Expanded(
               child: SingleChildScrollView(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 child: Column(
                   children: [
                     if (_loading)
                       // E2: shared loading state.
-                       AppLoadingState(
-                        message: l10n.profileLoading,
-                      )
+                      AppLoadingState(message: l10n.profileLoading)
                     else ...[
-                      ProfileTrustCard(
-                        trustScore: _trustScore,
-                        kycVerified: _kycVerified,
-                        isBlacklisted: _isBlacklisted,
-                        onTap: widget.onOpenReputation,
-                      ),
+                      ProfileTrustCard(trustScore: _trustScore, kycVerified: _kycVerified, isBlacklisted: _isBlacklisted, onTap: widget.onOpenReputation),
                       const SizedBox(height: 16),
                       // E1: the customer's own CNIC, masked by
                       // default. There was no read-only CNIC display
@@ -233,6 +223,16 @@ class _CustomerProfileViewState extends State<CustomerProfileView> {
                           title: l10n.profileSettingsLanguage,
                           subtitle: l10n.profileSettingsSubtitle,
                           onTap: widget.onOpenSettings,
+                        ),
+                        // Customer rework: Support moved off the tab bar
+                        // into Profile; the live CustomerSupportBadge
+                        // (unread replied-ticket count) moved with it.
+                        ProfileMenuItem(
+                          icon: Icons.support_agent_rounded,
+                          leading: CustomerSupportBadge(icon: const Icon(Icons.support_agent_rounded)),
+                          title: l10n.navSupport,
+                          subtitle: l10n.supportTitle,
+                          onTap: widget.onOpenSupport,
                         ),
                       ]),
                       const SizedBox(height: 16),

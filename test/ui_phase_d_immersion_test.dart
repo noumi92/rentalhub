@@ -95,6 +95,18 @@ GoRouter _e1Router({required String initialLocation}) => GoRouter(
           builder: (_, __) => _stubPage('stub-sos'),
         ),
         GoRoute(
+          path: RouteNames.customerShops,
+          builder: (_, __) => _stubPage('stub-shops'),
+        ),
+        GoRoute(
+          path: RouteNames.customerWallet,
+          builder: (_, __) => _stubPage('stub-wallet'),
+        ),
+        GoRoute(
+          path: RouteNames.customerSupport,
+          builder: (_, __) => _stubPage('stub-support'),
+        ),
+        GoRoute(
           path: RouteNames.ownerDashboard,
           builder: (_, __) => const OwnerDashboardView(),
         ),
@@ -372,25 +384,27 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      // Tiles render in every discovery state, including the empty
-      // state the test env lands in (no Firebase backend here).
-      expect(find.text('Book a Car'), findsOneWidget);
+      // The reworked Home keeps one 'Book a Car' tile; a second
+      // 'Book a Car' action lives in the recent-bookings empty state,
+      // so the tile is asserted by its key, not its text.
+      expect(find.byKey(const ValueKey('quick-action-Book a Car')),
+          findsOneWidget);
     }
 
-    testWidgets('Book a Car opens the map', (tester) async {
+    testWidgets('Book a Car opens the Shops tab', (tester) async {
       await pumpHome(tester);
-      await tester.tap(find.text('Book a Car'));
+      await tester.tap(
+          find.byKey(const ValueKey('quick-action-Book a Car')));
       await tester.pumpAndSettle();
-      expect(find.text('stub-map'), findsOneWidget);
+      expect(find.text('stub-shops'), findsOneWidget);
     });
 
-    testWidgets('My Reservations opens the bookings list', (tester) async {
+    testWidgets('Wallet opens the wallet', (tester) async {
       await pumpHome(tester);
-      // #7 renamed the tile: "Scan Pass" -> "My Reservations";
-      // the destination (bookings list) is unchanged.
-      await tester.tap(find.text('My Reservations'));
+      await tester
+          .tap(find.byKey(const ValueKey('quick-action-Wallet')));
       await tester.pumpAndSettle();
-      expect(find.text('stub-bookings'), findsOneWidget);
+      expect(find.text('stub-wallet'), findsOneWidget);
     });
 
     testWidgets('SOS opens the SOS screen', (tester) async {
@@ -400,13 +414,22 @@ void main() {
       expect(find.text('stub-sos'), findsOneWidget);
     });
 
-    testWidgets('Nearby Shops stays on Home (in-place map toggle)',
+    testWidgets('Support opens the support inbox', (tester) async {
+      await pumpHome(tester);
+      await tester
+          .tap(find.byKey(const ValueKey('quick-action-Support')));
+      await tester.pumpAndSettle();
+      expect(find.text('stub-support'), findsOneWidget);
+    });
+
+    testWidgets('Recent bookings View all opens the bookings list',
         (tester) async {
       await pumpHome(tester);
-      await tester.tap(find.text('Nearby Shops'));
+      await tester.ensureVisible(find.text('View all'));
       await tester.pumpAndSettle();
-      expect(find.text('Find Verified Rental Shops'), findsOneWidget);
-      expect(find.text('stub-map'), findsNothing);
+      await tester.tap(find.text('View all'));
+      await tester.pumpAndSettle();
+      expect(find.text('stub-bookings'), findsOneWidget);
     });
   });
 
@@ -947,8 +970,8 @@ void main() {
       await tester.pumpWidget(MaterialApp(localizationsDelegates: AppLocalizations.localizationsDelegates, supportedLocales: AppLocalizations.supportedLocales, home: screen));
     }
 
-    testWidgets('customer Home: loading state, then the domain empty '
-        'radar stays', (tester) async {
+    testWidgets('customer Home: loading state, then the dashboard '
+        'empty states', (tester) async {
       await tester.pumpWidget(
         MaterialApp.router(
           localizationsDelegates: AppLocalizations.localizationsDelegates, supportedLocales: AppLocalizations.supportedLocales,
@@ -959,10 +982,12 @@ void main() {
       expect(find.byType(AppLoadingState), findsOneWidget);
       await tester.pumpAndSettle();
       expect(find.byType(AppLoadingState), findsNothing);
-      // The empty state is the domain-specific EmptyRadarState (it
-      // carries the expand-radius action) — E2 deliberately keeps it.
-      expect(find.byType(EmptyRadarState), findsOneWidget);
-      expect(find.text('No Verified Shops Within 3 km'), findsOneWidget);
+      // The reworked Home is a dashboard (KPIs, KYC, quick actions,
+      // recent + upcoming) with honest empty states — the discovery
+      // radar and its EmptyRadarState moved to the Shops tab.
+      expect(find.byType(EmptyRadarState), findsNothing);
+      expect(find.text('No bookings yet'), findsOneWidget);
+      expect(find.text('Nothing coming up'), findsOneWidget);
     });
 
     testWidgets('customer Bookings: loading, then shared empty state',

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 
 import '../../utils/cnic_text_parser.dart';
+import '../../utils/license_document_parser.dart';
 
 /// Phase B (C2): on-device CNIC OCR with ML Kit (Latin script). The
 /// card never leaves the phone — recognition runs on-device. The
@@ -18,6 +19,13 @@ class CnicOcrService {
   Future<CnicScanResult> scanBack(File image) async {
     final text = await _recognise(image);
     return CnicTextParser.parseBack(text);
+  }
+
+  /// Driving license (front or back): the same on-device recognizer
+  /// reads the license number and expiry into the form's fields.
+  Future<LicenseScanResult> scanLicense(File image) async {
+    final text = await _recognise(image);
+    return LicenseTextParser.parseLicenseText(text);
   }
 
   Future<String> _recognise(File image) async {

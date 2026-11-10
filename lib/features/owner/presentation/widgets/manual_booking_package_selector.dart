@@ -8,6 +8,7 @@ import '../../../fleet/domain/entities/fixed_route_entity.dart';
 import '../../../fleet/domain/entities/vehicle_entity.dart';
 import '../../../fleet/domain/usecases/get_shop_fixed_routes_usecase.dart';
 import 'operations/booking_fare_breakdown.dart';
+import '../../../../core/theme/card_decoration.dart';
 
 /// The vehicle dropdown of the walk-in booking wizard. Extracted from
 /// [OwnerManualBookingView] so the view stays under the 250-line cap.
@@ -552,7 +553,7 @@ class ManualBookingLoadErrorCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Theme.of(context).dividerColor),
+        boxShadow: AppCardDecoration.shadow(context)
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

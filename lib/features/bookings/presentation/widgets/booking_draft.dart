@@ -5,6 +5,10 @@ import 'package_tier_list.dart';
 /// Phase B (B3): builds the booking draft the picker hands to the
 /// review screen. Extracted from [RentPackagePickerView] so the view
 /// stays under the 250-line cap.
+///
+/// [shopIsVerified] is carried through when the caller knows it
+/// (null = unknown; the review screen then looks the shop up and
+/// fails open, so an unknown shop is never blocked).
 Map<String, dynamic> buildBookingDraft({
   required String carId,
   required String carName,
@@ -26,6 +30,7 @@ Map<String, dynamic> buildBookingDraft({
   required int durationDays,
   required int totalAmount,
   required int advanceRequired,
+  bool? shopIsVerified,
 }) {
   final pickupDateTime = DateTime(
     pickupDate.year,
@@ -61,5 +66,6 @@ Map<String, dynamic> buildBookingDraft({
     'returnTime': returnDateTime,
     'totalAmount': totalAmount,
     'advanceRequired': advanceRequired,
+    if (shopIsVerified != null) 'shopIsVerified': shopIsVerified,
   };
 }

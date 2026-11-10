@@ -11,6 +11,7 @@ import '../../../blacklist/data/datasources/blacklist_remote_data_source.dart';
 import '../../../customer/data/datasources/review_remote_data_source.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
 import '../../../customer/presentation/widgets/star_rating_bar.dart';
+import '../../../../core/theme/card_decoration.dart';
 
 class OwnerCustomerRatingView extends StatefulWidget {
   final BookingEntity booking;
@@ -147,7 +148,7 @@ class _OwnerCustomerRatingViewState extends State<OwnerCustomerRatingView> {
         // container with theme text was unreadable in dark mode.
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Theme.of(context).dividerColor),
+        boxShadow: AppCardDecoration.shadow(context)
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

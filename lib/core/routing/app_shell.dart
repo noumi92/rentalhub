@@ -7,7 +7,7 @@ import 'route_names.dart';
 
 /// Phase C (C1): the shell scaffold shared by the customer and owner
 /// `StatefulShellRoute`s. One shell per module, five branches each —
-/// customer (Home, Bookings, Wallet, Support, Profile), owner
+/// customer (Home, Shops, Bookings, Wallet, Profile), owner
 /// (Dashboard, Fleet, Requests, Customers, Settings). Each branch
 /// keeps its own navigation stack and scroll state, so switching tabs
 /// no longer rebuilds the destination or loses state.
@@ -41,11 +41,15 @@ import 'route_names.dart';
 class AppShell extends StatelessWidget {
   /// The 10 tab-root paths (rulebook §4.4). Any other path inside a
   /// shell branch is a sub-screen and hides the tab bar.
+  /// Customer rework: the Shops tab root is /customer/shops; Support
+  /// (/customer/support) is no longer a tab — it is a top-level
+  /// sub-screen reached from Profile and the home bell, so it is
+  /// deliberately NOT in this set.
   static const Set<String> tabRootPaths = {
     RouteNames.customerHome,
+    RouteNames.customerShops,
     RouteNames.customerBookings,
     RouteNames.customerWallet,
-    RouteNames.customerSupport,
     RouteNames.customerProfile,
     RouteNames.ownerDashboard,
     RouteNames.ownerFleet,

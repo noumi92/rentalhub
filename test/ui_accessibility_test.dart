@@ -160,9 +160,12 @@ void main() {
           }
         }
       }
-      // The tree this was written against has 9 GestureDetectors
-      // (was 8 — the proof-image viewer joined in the audit batch).
-      expect(total, 9);
+      // The tree this was written against has 12 GestureDetectors
+      // (was 9 — the Shops map work added three, all Semantics-labelled:
+      // the draggable user pin's RawGestureDetector and the shop-pin
+      // GestureDetector in shops_map_canvas.dart, and the set-location
+      // centre pin's GestureDetector in location_center_pin.dart).
+      expect(total, 12);
       expect(violations, isEmpty,
           reason: 'Wrap the GestureDetector in Semantics(button: true, '
               'label: ...) or convert it to an IconButton with a '

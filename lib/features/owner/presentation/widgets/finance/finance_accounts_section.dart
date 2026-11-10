@@ -5,6 +5,7 @@ import  '../../../../finance/domain/entities/finance_account_entity.dart';
 import  '../../../../finance/domain/entities/finance_transfer_entity.dart';
 import  '../../../../finance/utils/finance_summary.dart';
 import '../../../../../core/utils/money_format.dart';
+import '../../../../../core/theme/card_decoration.dart';
 
 /// Phase B (H1): the shop's accounts with their live balances —
 /// opening balance plus every transfer posted to the account.
@@ -55,7 +56,7 @@ class FinanceAccountsSection extends StatelessWidget {
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Theme.of(context).dividerColor),
+              boxShadow: AppCardDecoration.shadow(context)
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
