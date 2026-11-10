@@ -110,21 +110,34 @@ class ReviewRemoteDataSource {
   }
 
   /// The review document for a booking, if either side has rated it.
+  /// Null when the admin hid the review (`moderation_status:
+  /// 'hidden'`) — a hidden review is not shown back to the customer.
   Future<Map<String, dynamic>?> getReview(String bookingId) async {
     final firestore = _resolvedFirestore;
     if (firestore != null) {
       try {
         final doc =
             await firestore.collection('reviews').doc(bookingId).get();
-        if (doc.data() != null) return doc.data();
+        final data = doc.data();
+        if (data != null && _isNotHidden(data)) return data;
+        if (data != null) return null;
       } catch (_) {}
     }
-    return _inMemory[bookingId];
+    final stored = _inMemory[bookingId];
+    if (stored != null && _isNotHidden(stored)) return stored;
+    return null;
   }
 
   /// Reviews for a customer, newest first. [onlyOwnerRated] keeps
   /// the ones the showroom has rated — the customer's reputation
   /// (H3) is built from those, not from their own ratings.
+  ///
+  /// Admin-integration audit (2026-11-10): a review the admin hid
+  /// (`moderation_status: 'hidden'`) is excluded here — on both the
+  /// live and the in-memory paths — so a hidden review stops
+  /// counting toward the customer's reputation and trust score.
+  /// Before this, the admin moderation decision had no reader: the
+  /// status was written and never honoured anywhere in the app.
   Future<List<Map<String, dynamic>>> getCustomerReviews(
     String customerId, {
     bool onlyOwnerRated = false,
@@ -136,15 +149,29 @@ class ReviewRemoteDataSource {
             .collection('reviews')
             .where('customerId', isEqualTo: customerId)
             .get();
-        final reviews = snapshot.docs.map((d) => d.data()).toList();
+        final reviews = snapshot.docs
+            .map((d) => d.data())
+            .where(_isNotHidden)
+            .toList();
         return _filteredSorted(reviews, onlyOwnerRated: onlyOwnerRated);
       } catch (_) {}
     }
     final reviews = _inMemory.values
         .where((r) => r['customerId'] == customerId)
+        .where(_isNotHidden)
         .toList();
     return _filteredSorted(reviews, onlyOwnerRated: onlyOwnerRated);
   }
+
+  /// A review counts unless the admin explicitly hid it
+  /// (`moderation_status: 'hidden'`). Public so the moderation
+  /// contract is unit-testable without Firestore.
+  static bool isHiddenReview(Map<String, dynamic> review) =>
+      review['moderation_status'] == 'hidden';
+
+  /// A review counts unless the admin explicitly hid it.
+  static bool _isNotHidden(Map<String, dynamic> review) =>
+      !isHiddenReview(review);
 
   List<Map<String, dynamic>> _filteredSorted(
     List<Map<String, dynamic>> reviews, {

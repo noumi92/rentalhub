@@ -61,7 +61,12 @@ class MapShopPreviewCard extends StatelessWidget {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          l10n.mapShopDistance(shop.address, shop.distanceKm),
+                          // Admin-integration audit (2026-11-10):
+                          // the distance is shown only when real —
+                          // the 1.2 km fallback is never displayed.
+                          shop.hasRealDistance
+                              ? l10n.mapShopDistance(shop.address, shop.distanceKm)
+                              : shop.address,
                           style: Theme.of(context).textTheme.bodySmall,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -84,15 +89,21 @@ class MapShopPreviewCard extends StatelessWidget {
                         : l10n.shops_unverified,
                   ),
                   const SizedBox(width: 8),
-                  Text(
-                    l10n.shopRatingLabel(shop.rating),
-                    style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700),
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    l10n.shopCarsReady(shop.availableCount),
-                    style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.successTextFor(Theme.of(context).brightness)),
-                  ),
+                  // Admin-integration audit (2026-11-10): numbers the
+                  // shop document never stored are hidden, never shown
+                  // with the display-only fallback (4.9 / 8 cars).
+                  if (shop.hasRealRating)
+                    Text(
+                      l10n.shopRatingLabel(shop.rating),
+                      style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700),
+                    ),
+                  if (shop.hasRealRating && shop.hasRealAvailableCount)
+                    const SizedBox(width: 8),
+                  if (shop.hasRealAvailableCount)
+                    Text(
+                      l10n.shopCarsReady(shop.availableCount),
+                      style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.successTextFor(Theme.of(context).brightness)),
+                    ),
                 ],
               ),
               const SizedBox(height: 14),

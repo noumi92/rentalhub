@@ -39,19 +39,28 @@ class CustomerTrustBreakdown extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('Trust score',
-                    style: TextStyle(
-                        fontSize: 15,
+                // Mobile-first: the title flexes so the score never
+                // overflows at 2.0x text scale — at 40sp the score
+                // alone is ~180dp wide on a 360dp phone.
+                const Expanded(
+                  child: Text('Trust score',
+                      style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w900,
+                          )),
+                ),
+                // The score flexes too: at 2.0x it is ~180dp wide and
+                // wraps to two lines rather than overflowing the row.
+                Flexible(
+                  child: Text(
+                    '${breakdown.total.toStringAsFixed(1)} / 5.0',
+                    textAlign: TextAlign.right,
+                    style: const TextStyle(
+                        fontSize: 20,
                         fontWeight: FontWeight.w900,
-                        )),
-                Text(
-                  '${breakdown.total.toStringAsFixed(1)} / 5.0',
-                  style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w900,
-                      ),
+                        ),
+                  ),
                 ),
               ],
             ),
@@ -100,13 +109,13 @@ class CustomerTrustBreakdown extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          SizedBox(
-            width: 44,
-            child: Text('$sign${value.abs().toStringAsFixed(1)}',
-                textAlign: TextAlign.right,
-                style: const TextStyle(
-                    fontSize: 12, fontWeight: FontWeight.w700)),
-          ),
+          // No fixed width: at 2.0x text scale "+1.0" is wider than
+          // 44dp and the old fixed box clipped it. The bar flexes,
+          // so the value takes what it needs.
+          Text('$sign${value.abs().toStringAsFixed(1)}',
+              textAlign: TextAlign.right,
+              style: const TextStyle(
+                  fontSize: 12, fontWeight: FontWeight.w700)),
         ],
       ),
     );

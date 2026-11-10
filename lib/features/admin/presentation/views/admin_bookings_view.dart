@@ -5,6 +5,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/money_format.dart';
+import '../../../../core/utils/responsive.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../bookings/data/models/booking_model.dart';
 import '../../data/datasources/admin_platform_data_source.dart';
@@ -74,13 +75,15 @@ class _AdminBookingsViewState extends State<AdminBookingsView> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final compact =
+        windowSizeClassOf(context) == WindowSizeClass.compact;
     return AdminShell(
       activeRoute: RouteNames.adminBookings,
       title: 'Bookings',
       subtitle: 'Every booking on the platform',
       onRefresh: _load,
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(compact ? 16 : 24),
         child: Column(
           children: [
             TextField(
@@ -141,6 +144,10 @@ class _AdminBookingsViewState extends State<AdminBookingsView> {
                               const SizedBox(height: 10),
                           itemBuilder: (context, i) {
                             final b = _visible[i];
+                            // Compact: the status chip moves into the
+                            // subtitle — as a trailing widget beside a
+                            // long vehicle • booking title it overflows
+                            // at 360px.
                             return Card(
                               margin: EdgeInsets.zero,
                               elevation: 0,
@@ -158,17 +165,38 @@ class _AdminBookingsViewState extends State<AdminBookingsView> {
                                 ),
                                 title: Text(
                                     '${b.vehicleName ?? b.vehicleId} • ${b.bookingId}',
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
                                     style: const TextStyle(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w800,
                                         )),
-                                subtitle: Text(
-                                  '${b.customerName ?? 'Customer'} • ${b.shopName ?? ''} • ${l10n.amountRs(formatRs(b.totalAmount))} • ${b.tripType}',
-                                  style: TextStyle(
-                                      fontSize: 12,
-                                      color: Theme.of(context).colorScheme.onSurfaceVariant),
-                                ),
-                                trailing: _statusChip(context, b.status),
+                                subtitle: compact
+                                    ? Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text(
+                                            '${b.customerName ?? 'Customer'} • ${b.shopName ?? ''} • ${l10n.amountRs(formatRs(b.totalAmount))} • ${b.tripType}',
+                                            style: TextStyle(
+                                                fontSize: 12,
+                                                color: Theme.of(context).colorScheme.onSurfaceVariant),
+                                          ),
+                                          const SizedBox(height: 6),
+                                          _statusChip(context, b.status),
+                                        ],
+                                      )
+                                    : Text(
+                                        '${b.customerName ?? 'Customer'} • ${b.shopName ?? ''} • ${l10n.amountRs(formatRs(b.totalAmount))} • ${b.tripType}',
+                                        style: TextStyle(
+                                            fontSize: 12,
+                                            color: Theme.of(context).colorScheme.onSurfaceVariant),
+                                      ),
+                                isThreeLine: compact,
+                                trailing: compact
+                                    ? null
+                                    : _statusChip(context, b.status),
                                 onTap: () => context.go(
                                   RouteNames.adminBookingDetail
                                       .replaceFirst(':bookingId', b.bookingId),

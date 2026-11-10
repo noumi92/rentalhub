@@ -6,6 +6,7 @@ import 'package:share_plus/share_plus.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
+import '../../../../core/utils/responsive.dart';
 import '../../data/datasources/admin_remote_data_source.dart';
 import '../widgets/admin_shell.dart';
 
@@ -73,6 +74,33 @@ class _AdminActivityLogViewState extends State<AdminActivityLogView> {
     );
   }
 
+  Widget _searchField() {
+    return TextField(
+      controller: _searchController,
+      onChanged: (_) => setState(() {}),
+      decoration: InputDecoration(
+        hintText: 'Search by action, admin, or target…',
+        prefixIcon: const Icon(Icons.search_rounded),
+        filled: true,
+        fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Theme.of(context).dividerColor),
+        ),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      ),
+    );
+  }
+
+  Widget _exportButton() {
+    return OutlinedButton.icon(
+      onPressed: _visible.isEmpty ? null : _exportCsv,
+      icon: const Icon(Icons.download_rounded, size: 18),
+      label: const Text('Export CSV'),
+    );
+  }
+
   String _formatDate(DateTime? date) {
     if (date == null) return '';
     const months = [
@@ -86,46 +114,35 @@ class _AdminActivityLogViewState extends State<AdminActivityLogView> {
 
   @override
   Widget build(BuildContext context) {
+    final compact =
+        windowSizeClassOf(context) == WindowSizeClass.compact;
     return AdminShell(
       activeRoute: RouteNames.adminActivity,
       title: 'Activity Log',
       subtitle: 'Every admin action, newest first — immutable',
       onRefresh: _load,
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(compact ? 16 : 24),
         child: Column(
           children: [
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _searchController,
-                    onChanged: (_) => setState(() {}),
-                    decoration: InputDecoration(
-                      hintText: 'Search by action, admin, or target…',
-                      prefixIcon: const Icon(Icons.search_rounded),
-                      filled: true,
-                      fillColor: Theme.of(context)
-                          .colorScheme
-                          .surfaceContainerHighest,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide:
-                            BorderSide(color: Theme.of(context).dividerColor),
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 14, vertical: 12),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                OutlinedButton.icon(
-                  onPressed: _visible.isEmpty ? null : _exportCsv,
-                  icon: const Icon(Icons.download_rounded, size: 18),
-                  label: const Text('Export CSV'),
-                ),
-              ],
-            ),
+            // Compact: search + Export CSV stacked — side by side
+            // they leave the search ~160px at 360px and overflow
+            // at larger text scales.
+            if (compact) ...[
+              _searchField(),
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                child: _exportButton(),
+              ),
+            ] else
+              Row(
+                children: [
+                  Expanded(child: _searchField()),
+                  const SizedBox(width: 12),
+                  _exportButton(),
+                ],
+              ),
             SizedBox(height: 16),
             Expanded(
               child: _isLoading
@@ -146,6 +163,10 @@ class _AdminActivityLogViewState extends State<AdminActivityLogView> {
                               const SizedBox(height: 10),
                           itemBuilder: (context, i) {
                             final e = _visible[i];
+                            final subtitle =
+                                '${e.actorEmail} • ${e.targetType} ${e.targetId}'
+                                '${e.detail.isEmpty ? '' : '\n${e.detail}'}'
+                                '${e.decision == null ? '' : '\nDecision: ${e.decision}'}';
                             return Card(
                               margin: EdgeInsets.zero,
                               elevation: 0,
@@ -154,6 +175,9 @@ class _AdminActivityLogViewState extends State<AdminActivityLogView> {
                                 side: BorderSide(
                                     color: Theme.of(context).dividerColor),
                               ),
+                              // Compact: the trailing date squeezes the
+                              // entry text at 360px (worse at 2.0x
+                              // scale), so the date joins the subtitle.
                               child: ListTile(
                                 leading: CircleAvatar(
                                   backgroundColor: AppColors.primary
@@ -169,20 +193,22 @@ class _AdminActivityLogViewState extends State<AdminActivityLogView> {
                                       ),
                                 ),
                                 subtitle: Text(
-                                  '${e.actorEmail} • ${e.targetType} ${e.targetId}'
-                                  '${e.detail.isEmpty ? '' : '\n${e.detail}'}'
-                                  '${e.decision == null ? '' : '\nDecision: ${e.decision}'}',
+                                  compact
+                                      ? '$subtitle\n${_formatDate(e.createdAt)}'
+                                      : subtitle,
                                   style: TextStyle(
                                       fontSize: 12,
                                       color: Theme.of(context).colorScheme.onSurfaceVariant),
                                 ),
                                 isThreeLine: true,
-                                trailing: Text(
-                                  _formatDate(e.createdAt),
-                                  style: TextStyle(
-                                      fontSize: 11,
-                                      color: Theme.of(context).colorScheme.onSurfaceVariant),
-                                ),
+                                trailing: compact
+                                    ? null
+                                    : Text(
+                                        _formatDate(e.createdAt),
+                                        style: TextStyle(
+                                            fontSize: 11,
+                                            color: Theme.of(context).colorScheme.onSurfaceVariant),
+                                      ),
                               ),
                             );
                           },

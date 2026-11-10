@@ -5,27 +5,40 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/shop_model.dart';
 
 /// B1: real discovery. Reads the `shops` collection from Firestore and
-/// returns the verified shops within [radiusKm] of the customer's
-/// location, nearest first, with the distance computed (haversine) from
-/// the shop's stored coordinates — never from a stored `distance_km`
+/// returns the shops within [radiusKm] of the customer's location,
+/// nearest first, with the distance computed (haversine) from the
+/// shop's stored coordinates — never from a stored `distance_km`
 /// value, which an owner would have no reason to keep accurate.
 ///
 /// The old version returned 4 hardcoded shops (with invented bank
 /// accounts) and filtered on their invented distances. That seeded list
 /// is deleted; an empty or unreachable `shops` collection now honestly
 /// returns an empty list and the home screen shows its empty state.
+///
+/// Admin-integration audit (2026-11-10): two platform decisions are
+/// honoured here, not just in the Shops tab —
+/// - a suspended shop (`suspended: true`, set by the admin panel)
+///   never appears, in either path;
+/// - unverified shops are included when [includeUnverified] is true.
+///   The repository resolves that flag from
+///   `platform_settings/global` `displayUnverifiedShops` (default ON),
+///   so the admin toggle governs the nearby radar exactly as it
+///   governs the Shops tab. Before this fix the radar hard-filtered
+///   `!isVerified` and ignored the toggle entirely.
 class DiscoveryRemoteDataSource {
   Future<List<ShopModel>> fetchNearbyShops({
     required double radiusKm,
     required double latitude,
     required double longitude,
+    bool includeUnverified = true,
   }) async {
     final snapshot =
         await FirebaseFirestore.instance.collection('shops').get();
     final shops = <ShopModel>[];
     for (final doc in snapshot.docs) {
       final shop = ShopModel.fromMap(doc.data(), id: doc.id);
-      if (!shop.isVerified) continue;
+      if (shop.suspended) continue;
+      if (!shop.isVerified && !includeUnverified) continue;
       final distanceKm = _haversineKm(
         latitude,
         longitude,
@@ -48,12 +61,15 @@ class DiscoveryRemoteDataSource {
   /// within a GPS radius — the tab's own city + verified filters do
   /// the narrowing, so unverified shops must be in the list too.
   /// Sorted by city, then name. An empty or unreachable `shops`
-  /// collection honestly returns an empty list.
+  /// collection honestly returns an empty list. Suspended shops are
+  /// excluded here (admin-integration audit 2026-11-10): a shop the
+  /// admin suspended must not be discoverable in either view.
   Future<List<ShopModel>> fetchAllShops() async {
     final snapshot =
         await FirebaseFirestore.instance.collection('shops').get();
     final shops = snapshot.docs
         .map((doc) => ShopModel.fromMap(doc.data(), id: doc.id))
+        .where((shop) => !shop.suspended)
         .toList();
     shops.sort((a, b) {
       final byCity =

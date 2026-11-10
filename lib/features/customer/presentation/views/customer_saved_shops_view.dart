@@ -170,41 +170,56 @@ class _CustomerSavedShopsViewState extends State<CustomerSavedShopsView> {
                                                             FontWeight.w800)),
                                             const SizedBox(height: 2),
                                             Text(
-                                                '${shop.address}, ${shop.city}',
+                                                shop.city.isEmpty
+                                                    ? shop.address
+                                                    : '${shop.address}, ${shop.city}',
                                                 style: Theme.of(context)
                                                     .textTheme
                                                     .labelSmall
                                                     ?.copyWith(
                                                         color: AppColors
                                                             .textSecondary)),
-                                            const SizedBox(height: 4),
-                                            Row(
-                                              children: [
-                                                const Icon(Icons.star_rounded,
-                                                    size: 14,
-                                                    color: AppColors.warning),
-                                                const SizedBox(width: 3),
-                                                Text('${shop.rating}',
-                                                    style: Theme.of(context)
-                                                        .textTheme
-                                                        .labelSmall
-                                                        ?.copyWith(
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w700)),
-                                                const SizedBox(width: 8),
-                                                Text(
-                                                    l10n.shopCarsReady(shop.availableCount),
-                                                    style: Theme.of(context)
-                                                        .textTheme
-                                                        .labelSmall
-                                                        ?.copyWith(
-                                                            fontWeight:
-                                                                FontWeight.w600,
-                                                            color: AppColors
-                                                                .accentSuccess)),
-                                              ],
-                                            ),
+                                            // Numbers the shop document never stored are hidden, never shown with the display-only fallback (4.9 / 8 cars).
+                                            if (shop.hasRealRating ||
+                                                shop.hasRealAvailableCount)
+                                              const SizedBox(height: 4),
+                                            if (shop.hasRealRating ||
+                                                shop.hasRealAvailableCount)
+                                              Row(
+                                                children: [
+                                                  if (shop.hasRealRating) ...[
+                                                    const Icon(
+                                                        Icons.star_rounded,
+                                                        size: 14,
+                                                        color: AppColors
+                                                            .warning),
+                                                    const SizedBox(width: 3),
+                                                    Text('${shop.rating}',
+                                                        style: Theme.of(context)
+                                                            .textTheme
+                                                            .labelSmall
+                                                            ?.copyWith(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w700)),
+                                                    const SizedBox(width: 8),
+                                                  ],
+                                                  if (shop
+                                                      .hasRealAvailableCount)
+                                                    Text(
+                                                        l10n.shopCarsReady(shop
+                                                            .availableCount),
+                                                        style: Theme.of(context)
+                                                            .textTheme
+                                                            .labelSmall
+                                                            ?.copyWith(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w600,
+                                                                color: AppColors
+                                                                    .accentSuccess)),
+                                                ],
+                                              ),
                                           ],
                                         ),
                                       ),

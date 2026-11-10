@@ -53,29 +53,30 @@ class ShopListCard extends StatelessWidget {
                     child: const Center(child: Icon(Icons.storefront_rounded, size: 48)),
                   ),
                 ),
-                // Distance badge on top-right
-                Positioned(
-                  top: 10,
-                  right: 10,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
-                    decoration: BoxDecoration(
-                      color: Colors.black.withValues(alpha: 0.65),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(Icons.location_on_rounded, size: 13, color: AppColors.secondary),
-                        const SizedBox(width: 3),
-                        Text(
-                          '${shop.distanceKm.toStringAsFixed(1)} km',
-                          style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800, color: Colors.white),
-                        ),
-                      ],
+                // Distance badge — only when the distance is real (never the 1.2 km fallback).
+                if (shop.hasRealDistance)
+                  Positioned(
+                    top: 10,
+                    right: 10,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: 0.65),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.location_on_rounded, size: 13, color: AppColors.secondary),
+                          const SizedBox(width: 3),
+                          Text(
+                            '${shop.distanceKm.toStringAsFixed(1)} km',
+                            style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800, color: Colors.white),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
               ],
             ),
 
@@ -113,34 +114,38 @@ class ShopListCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 5),
 
-                  // Rating, Location, and Available Cars Info
+                  // Rating / cars: a number the shop document never stored is hidden, never shown with the display-only fallback (4.9 / 8 cars).
                   Wrap(
                     spacing: 8,
                     runSpacing: 4,
                     crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
                       // Star Rating
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(Icons.star_rounded, size: 16, color: AppColors.warning),
-                          const SizedBox(width: 3),
-                          Text(
-                            shop.rating.toStringAsFixed(1),
-                            style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800),
-                          ),
-                        ],
-                      ),
-                      Text('•', style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
+                      if (shop.hasRealRating)
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.star_rounded, size: 16, color: AppColors.warning),
+                            const SizedBox(width: 3),
+                            Text(
+                              shop.rating.toStringAsFixed(1),
+                              style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800),
+                            ),
+                          ],
+                        ),
+                      if (shop.hasRealRating)
+                        Text('•', style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
                       Text(
-                        '${shop.address}, ${shop.city}',
+                        shop.city.isEmpty ? shop.address : '${shop.address}, ${shop.city}',
                         style: Theme.of(context).textTheme.labelMedium,
                       ),
-                      Text('•', style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
-                      Text(
-                        l10n.shopCarsAvailable(shop.availableCount),
-                        style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.successOnContainerFor(Theme.of(context).brightness)),
-                      ),
+                      if (shop.hasRealAvailableCount)
+                        Text('•', style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
+                      if (shop.hasRealAvailableCount)
+                        Text(
+                          l10n.shopCarsAvailable(shop.availableCount),
+                          style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.successOnContainerFor(Theme.of(context).brightness)),
+                        ),
                     ],
                   ),
                   const SizedBox(height: 12),

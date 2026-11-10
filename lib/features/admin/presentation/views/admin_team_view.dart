@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
+import '../../../../core/utils/responsive.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../data/datasources/admin_remote_data_source.dart';
 import '../../data/services/admin_audit_service.dart';
@@ -127,6 +128,8 @@ class _AdminTeamViewState extends State<AdminTeamView> {
 
   @override
   Widget build(BuildContext context) {
+    final compact =
+        windowSizeClassOf(context) == WindowSizeClass.compact;
     return AdminShell(
       activeRoute: RouteNames.adminTeam,
       title: 'Admin Team',
@@ -135,7 +138,7 @@ class _AdminTeamViewState extends State<AdminTeamView> {
       child: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : ListView(
-              padding: const EdgeInsets.all(24),
+              padding: EdgeInsets.all(compact ? 16 : 24),
               children: [
                 if (!_canManage)
                   Padding(

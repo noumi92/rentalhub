@@ -285,6 +285,16 @@ class BookingRemoteDataSource {
     // A missing gate or a failed lookup fails open, like the
     // blacklist check above.
     final gate = unverifiedShopGate;
+    // Admin-integration audit (2026-11-10): a suspended shop takes
+    // no bookings at all — online or walk-in. Suspension is a
+    // platform sanction, not the unverified-booking setting, so the
+    // walk-in exemption does not apply here.
+    if (gate != null && await gate.isShopSuspended(shopId: shopId)) {
+      throw const ServerException(
+        message:
+            'This shop is currently suspended by the platform. Bookings are disabled.',
+      );
+    }
     if (gate != null && !customerId.startsWith('walkin-')) {
       if (!await gate.isBookingAllowed(shopId: shopId)) {
         throw const ServerException(

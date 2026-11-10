@@ -2,24 +2,22 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../../blacklist/data/datasources/blacklist_remote_data_source.dart';
 import '../../../blacklist/domain/entities/blacklist_entity.dart';
-import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
-import '../../../customer/data/datasources/review_remote_data_source.dart';
 import '../../../customer/data/models/customer_model.dart';
 import '../../../customer/domain/entities/customer_entity.dart';
 import '../../../trust/data/models/customer_qr_code_model.dart';
-import '../services/admin_audit_service.dart';
+import '../../../trust/data/services/trust_score_service.dart';
 import '../../domain/trust_score_calculator.dart';
+import '../services/admin_audit_service.dart';
 
 /// Phase C — the people side of the admin panel: customers, the
 /// platform blacklist, and the trust score.
 ///
-/// The trust score shown here is the C3 formula (see
-/// trust_score_calculator.dart), computed live from the customer's
-/// KYC state, completed trips, owner ratings, deposit release times
-/// (on-time proxy) and adverse events. It is computed, not stored —
-/// the `trust_score` field on the users doc is the older stored value
-/// and is shown alongside for comparison, not as the source of truth.
+/// The trust score shown here is the C3 formula, computed live by the
+/// shared [TrustScoreService] (the same service the customer app
+/// reads) — it is computed, not stored. The `trust_score` field on
+/// the users doc is the older stored value and is shown alongside
+/// for comparison, not as the source of truth.
 class AdminPeopleDataSource {
   final FirebaseFirestore? _firestore;
 
@@ -69,70 +67,17 @@ class AdminPeopleDataSource {
           (userData?['trust_score'] as num?)?.toDouble();
       final isBlacklisted = userData?['is_blacklisted'] as bool? ?? false;
 
-      final kycDoc = await firestore
-          .collection('kyc_documents')
-          .doc(customerId)
-          .get();
-      final kycData = kycDoc.data();
-      final kycStatus = kycData?['status'] as String? ?? 'missing';
-      final kycCnic = kycData?['cnicNumber'] as String?;
-
-      final bookings = await BookingRemoteDataSource(firestore: firestore)
-          .getCustomerBookings(customerId);
-      final completed =
-          bookings.where((b) => b.status == 'completed').toList();
-
-      final reviews = await ReviewRemoteDataSource(firestore: firestore)
-          .getCustomerReviews(customerId, onlyOwnerRated: true);
-      final meanRating = _meanOwnerRating(reviews);
-
-      int onTime = 0;
-      int late = 0;
-      int deducted = 0;
-      for (final booking in completed.take(20)) {
-        final depositDoc = await firestore
-            .collection('security_deposits')
-            .doc(booking.bookingId)
-            .get();
-        final deposit = depositDoc.data();
-        if (deposit == null) continue;
-        if (deposit['status'] == 'deducted') deducted++;
-        final released = deposit['releasedAt'];
-        DateTime? releasedAt;
-        if (released is Timestamp) {
-          releasedAt = released.toDate();
-        } else if (released is String) {
-          releasedAt = DateTime.tryParse(released);
-        }
-        if (releasedAt == null) continue;
-        if (!releasedAt.isAfter(booking.returnTime)) {
-          onTime++;
-        } else {
-          late++;
-        }
-      }
-
-      final disputesSnap = await firestore
-          .collection('disputes')
-          .where('customerId', isEqualTo: customerId)
-          .where('status', isEqualTo: 'resolved')
-          .get();
-      var adverseDisputes = 0;
-      for (final d in disputesSnap.docs) {
-        final decision = d.data()['decision'] as String?;
-        if (decision == 'full_to_owner' || decision == 'partial') {
-          adverseDisputes++;
-        }
-      }
-
-      final breakdown = TrustScoreCalculator.calculate(
-        kycStatus: kycStatus,
-        completedTrips: completed.length,
-        meanOwnerRating: meanRating,
-        onTimeReturns: onTime,
-        lateReturns: late,
-        adverseEvents: deducted + adverseDisputes,
-      );
+      // The live score — one shared computation (TrustScoreService),
+      // the same one the customer app reads.
+      final trust = await TrustScoreService(firestore: firestore)
+          .compute(customerId);
+      if (trust == null) return null;
+      final bookings = trust.bookings;
+      final kycStatus = trust.kycStatus;
+      final kycCnic = trust.kycCnic;
+      final completedTrips = trust.completedTrips;
+      final meanRating = trust.meanOwnerRating;
+      final breakdown = trust.breakdown;
 
       BlacklistEntity? blacklistRecord;
       final cnic = customer.cnic ?? kycCnic;
@@ -159,7 +104,7 @@ class AdminPeopleDataSource {
         isBlacklisted: isBlacklisted,
         kycStatus: kycStatus,
         bookings: bookings,
-        completedTrips: completed.length,
+        completedTrips: completedTrips,
         meanOwnerRating: meanRating,
         trustBreakdown: breakdown,
         blacklistRecord: blacklistRecord,
@@ -190,23 +135,6 @@ class AdminPeopleDataSource {
     } catch (_) {
       return null;
     }
-  }
-
-  double? _meanOwnerRating(List<Map<String, dynamic>> reviews) {
-    if (reviews.isEmpty) return null;
-    var sum = 0.0;
-    var count = 0;
-    for (final r in reviews) {
-      for (final key in ['punctualityRating', 'careRating', 'behaviorRating']) {
-        final v = (r[key] as num?)?.toDouble();
-        if (v != null) {
-          sum += v;
-          count++;
-        }
-      }
-    }
-    if (count == 0) return null;
-    return sum / count;
   }
 
   /// A watchlist flag on the customer record (admin eyes only).

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
+import '../../../../core/utils/responsive.dart';
 import '../../../customer/data/models/customer_model.dart';
 import '../../data/datasources/admin_people_data_source.dart';
 import '../widgets/admin_shell.dart';
@@ -63,7 +64,11 @@ class _AdminCustomersViewState extends State<AdminCustomersView> {
       subtitle: 'Every customer on the platform',
       onRefresh: _load,
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        // Mobile-first: 16dp on a phone, 24dp on desktop.
+        padding: EdgeInsets.all(
+            windowSizeClassOf(context) == WindowSizeClass.compact
+                ? 16
+                : 24),
         child: Column(
           children: [
             TextField(

@@ -6,6 +6,7 @@ import 'package:share_plus/share_plus.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/money_format.dart';
+import '../../../../core/utils/responsive.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/datasources/admin_support_data_source.dart';
 import '../widgets/admin_shell.dart';
@@ -70,55 +71,44 @@ class _AdminReportsViewState extends State<AdminReportsView> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final r = _report;
+    final compact =
+        windowSizeClassOf(context) == WindowSizeClass.compact;
     return AdminShell(
       activeRoute: RouteNames.adminReports,
       title: 'Reports',
       subtitle: 'KPIs for a date range, with CSV export',
       onRefresh: _load,
       child: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(compact ? 16 : 24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton.icon(
-                    icon: const Icon(Icons.calendar_today_rounded, size: 18),
-                    label: Text('From ${_from.toString().substring(0, 10)}'),
-                    onPressed: () => _pickDate(isFrom: true),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: OutlinedButton.icon(
-                    icon: const Icon(Icons.calendar_today_rounded, size: 18),
-                    label: Text('To ${_to.toString().substring(0, 10)}'),
-                    onPressed: () => _pickDate(isFrom: false),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                FilledButton.icon(
-                  onPressed: r == null
-                      ? null
-                      : () async {
-                          final csv =
-                              AdminSupportDataSource.reportCsv(r);
-                          await SharePlus.instance.share(ShareParams(
-                            files: [
-                              XFile.fromData(
-                                utf8.encode(csv),
-                                name: 'rentalhub-report.csv',
-                                mimeType: 'text/csv',
-                              ),
-                            ],
-                          ));
-                        },
-                  icon: const Icon(Icons.download_rounded, size: 18),
-                  label: const Text('Export CSV'),
-                ),
-              ],
-            ),
+            // Compact: From + To share one row and Export CSV takes
+            // its own full-width row — all three side by side
+            // overflow at 360px (and worse at 1.35x text scale).
+            if (compact) ...[
+              Row(
+                children: [
+                  Expanded(child: _dateButton(isFrom: true)),
+                  const SizedBox(width: 12),
+                  Expanded(child: _dateButton(isFrom: false)),
+                ],
+              ),
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                child: _exportButton(r),
+              ),
+            ] else
+              Row(
+                children: [
+                  Expanded(child: _dateButton(isFrom: true)),
+                  const SizedBox(width: 12),
+                  Expanded(child: _dateButton(isFrom: false)),
+                  const SizedBox(width: 12),
+                  _exportButton(r),
+                ],
+              ),
             const SizedBox(height: 20),
             if (_isLoading)
               const Center(child: CircularProgressIndicator())
@@ -133,17 +123,17 @@ class _AdminReportsViewState extends State<AdminReportsView> {
                 spacing: 12,
                 runSpacing: 12,
                 children: [
-                  _kpi('Bookings', '${r.totalBookings}'),
-                  _kpi('Completed', '${r.completedBookings}'),
+                  _kpi('Bookings', '${r.totalBookings}', compact),
+                  _kpi('Completed', '${r.completedBookings}', compact),
                   _kpi('Booking revenue',
-                      l10n.amountRs(formatRs(r.bookingRevenue))),
+                      l10n.amountRs(formatRs(r.bookingRevenue)), compact),
                   _kpi('Finance income',
-                      l10n.amountRs(formatRs(r.financeIncome))),
+                      l10n.amountRs(formatRs(r.financeIncome)), compact),
                   _kpi('Finance expense',
-                      l10n.amountRs(formatRs(r.financeExpense))),
-                  _kpi('New customers', '${r.newCustomers}'),
-                  _kpi('Disputes open', '${r.disputesOpen}'),
-                  _kpi('Disputes resolved', '${r.disputesResolved}'),
+                      l10n.amountRs(formatRs(r.financeExpense)), compact),
+                  _kpi('New customers', '${r.newCustomers}', compact),
+                  _kpi('Disputes open', '${r.disputesOpen}', compact),
+                  _kpi('Disputes resolved', '${r.disputesResolved}', compact),
                 ],
               ),
               const SizedBox(height: 20),
@@ -164,8 +154,44 @@ class _AdminReportsViewState extends State<AdminReportsView> {
     );
   }
 
-  Widget _kpi(String label, String value) {
-    return Container(
+  Widget _dateButton({required bool isFrom}) {
+    final date = isFrom ? _from : _to;
+    return OutlinedButton.icon(
+      icon: const Icon(Icons.calendar_today_rounded, size: 18),
+      label: Text(
+        '${isFrom ? 'From' : 'To'} ${date.toString().substring(0, 10)}',
+        overflow: TextOverflow.ellipsis,
+      ),
+      onPressed: () => _pickDate(isFrom: isFrom),
+    );
+  }
+
+  Widget _exportButton(AdminReport? r) {
+    return FilledButton.icon(
+      onPressed: r == null
+          ? null
+          : () async {
+              final csv = AdminSupportDataSource.reportCsv(r);
+              await SharePlus.instance.share(ShareParams(
+                files: [
+                  XFile.fromData(
+                    utf8.encode(csv),
+                    name: 'rentalhub-report.csv',
+                    mimeType: 'text/csv',
+                  ),
+                ],
+              ));
+            },
+      icon: const Icon(Icons.download_rounded, size: 18),
+      label: const Text('Export CSV'),
+    );
+  }
+
+  Widget _kpi(String label, String value, bool compact) {
+    // Compact: two tiles per row with a bounded width — an
+    // intrinsic-width tile ('Booking revenue Rs. 1,234,567') can
+    // exceed 360px on its own. Desktop keeps intrinsic widths.
+    final tile = Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
@@ -180,6 +206,7 @@ class _AdminReportsViewState extends State<AdminReportsView> {
                   TextStyle(fontSize: 11, color: Theme.of(context).colorScheme.onSurfaceVariant)),
           const SizedBox(height: 2),
           Text(value,
+              overflow: TextOverflow.ellipsis,
               style: const TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w800,
@@ -187,6 +214,9 @@ class _AdminReportsViewState extends State<AdminReportsView> {
         ],
       ),
     );
+    if (!compact) return tile;
+    final width = MediaQuery.sizeOf(context).width;
+    return SizedBox(width: (width - 32 - 12) / 2, child: tile);
   }
 
   Widget _section(String title, Iterable<String> lines) {

@@ -56,6 +56,8 @@ class AdminLoginForm extends StatelessWidget {
         const SizedBox(height: 20),
         FilledButton(
           onPressed: isWorking ? null : onSignIn,
+          style: FilledButton.styleFrom(
+              minimumSize: const Size(double.infinity, 48)),
           child: Text(isWorking ? 'Signing in…' : 'Sign in'),
         ),
       ],
@@ -105,6 +107,8 @@ class AdminNotAdminCard extends StatelessWidget {
         const SizedBox(height: 20),
         OutlinedButton(
           onPressed: onUseDifferentAccount,
+          style: OutlinedButton.styleFrom(
+              minimumSize: const Size(double.infinity, 48)),
           child: const Text('Use a different account'),
         ),
       ],

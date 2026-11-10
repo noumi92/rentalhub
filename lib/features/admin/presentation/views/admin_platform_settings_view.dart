@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
+import '../../../../core/utils/responsive.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/datasources/admin_support_data_source.dart';
@@ -130,6 +131,8 @@ class _AdminPlatformSettingsViewState
     // The admin panel pumps without localizations delegates in
     // tests, so every toggle label falls back to English.
     final l10n = AppLocalizations.of(context);
+    final compact =
+        windowSizeClassOf(context) == WindowSizeClass.compact;
     return AdminShell(
       activeRoute: RouteNames.adminSettings,
       title: 'Cities & settings',
@@ -138,7 +141,7 @@ class _AdminPlatformSettingsViewState
       child: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
+              padding: EdgeInsets.all(compact ? 16 : 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

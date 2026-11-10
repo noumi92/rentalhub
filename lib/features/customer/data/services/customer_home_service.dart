@@ -4,6 +4,7 @@ import '../../../../core/di/injection_container.dart';
 import '../../../../core/network/firestore_service.dart';
 import '../../../finance/data/datasources/security_deposit_data_source.dart';
 import '../../../trust/data/datasources/kyc_remote_data_source.dart';
+import '../../../trust/data/services/trust_score_service.dart';
 import '../../../trust/domain/entities/kyc_document_entity.dart';
 import 'customer_wallet_service.dart';
 
@@ -35,8 +36,11 @@ class CustomerHomeData {
   /// customer has not submitted anything yet.
   final KycDocumentEntity? kyc;
 
-  /// The `trust_score` on the customer's `users` doc. Null when the
-  /// doc has no score — shown as '—', never the model's 5.0 default.
+  /// The live trust score — the same [TrustScoreService] computation
+  /// the admin panel shows. The stored `trust_score` on the `users`
+  /// doc is only the fallback when the live computation cannot run
+  /// (no Firestore); a missing stored value stays null and shows
+  /// as '—', never the model's 5.0 default.
   final double? trustScore;
 
   final bool bookingsFailed;
@@ -161,12 +165,13 @@ class CustomerHomeService {
     } catch (_) {}
     double? trustScore;
     try {
-      // The raw doc, not UserModel: its fromMap defaults a missing
-      // trust_score to 5.0, which would invent a perfect score for
-      // a customer who has none yet.
-      final doc = await users.getDocument('users', uid);
-      trustScore = (doc?['trust_score'] as num?)?.toDouble();
+      // Live first (admin-integration audit 2026-11-10): the shared
+      // TrustScoreService, so Home shows the same score the admin
+      // panel shows. Stored `trust_score` is only the fallback.
+      trustScore =
+          (await const TrustScoreService().compute(uid))?.breakdown.total;
     } catch (_) {}
+    trustScore ??= await _storedTrustScore(uid);
     return CustomerHomeData(
       bookings: bookings,
       walletTotal: walletTotal,
@@ -174,5 +179,17 @@ class CustomerHomeService {
       trustScore: trustScore,
       bookingsFailed: bookingsFailed,
     );
+  }
+
+  Future<double?> _storedTrustScore(String uid) async {
+    try {
+      // The raw doc, not UserModel: its fromMap defaults a missing
+      // trust_score to 5.0, which would invent a perfect score for
+      // a customer who has none yet.
+      final doc = await users.getDocument('users', uid);
+      return (doc?['trust_score'] as num?)?.toDouble();
+    } catch (_) {
+      return null;
+    }
   }
 }

@@ -14,12 +14,17 @@ class ProfileTrustCard extends StatelessWidget {
     required this.kycVerified,
     required this.isBlacklisted,
     this.onTap,
+    this.onAppeal,
   });
 
   final double? trustScore;
   final bool kycVerified;
   final bool isBlacklisted;
   final VoidCallback? onTap;
+
+  /// Shown only when the customer is blacklisted (the caller passes
+  /// it exactly then): opens the blacklist appeal form.
+  final VoidCallback? onAppeal;
 
   @override
   Widget build(BuildContext context) {
@@ -30,8 +35,11 @@ class ProfileTrustCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: AppCardDecoration.of(context, radius: 16),
-        child: Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Row(
+              children: [
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
@@ -63,6 +71,23 @@ class ProfileTrustCard extends StatelessWidget {
             ),
             Icon(Icons.arrow_forward_ios_rounded,
                 size: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
+              ],
+            ),
+            if (onAppeal != null) ...[
+              const SizedBox(height: 8),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: TextButton.icon(
+                  onPressed: onAppeal,
+                  icon: const Icon(Icons.gavel_rounded, size: 18),
+                  label: Text(l10n.appealButton),
+                  style: TextButton.styleFrom(
+                    minimumSize: const Size(0, 48),
+                    tapTargetSize: MaterialTapTargetSize.padded,
+                  ),
+                ),
+              ),
+            ],
           ],
         ),
       ),

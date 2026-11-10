@@ -5,6 +5,7 @@ import '../../../../core/di/injection_container.dart';
 import '../../../../core/network/firestore_service.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../data/datasources/review_remote_data_source.dart';
+import '../../../trust/data/services/trust_score_service.dart';
 import '../widgets/reputation_score_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../core/theme/card_decoration.dart';
@@ -47,11 +48,13 @@ class _CustomerReputationViewState extends State<CustomerReputationView> {
     List<Map<String, dynamic>> reviews = [];
     if (uid != null) {
       try {
-        trustScore = (await sl<FirestoreService>().getUser(uid))?.trustScore;
+        // Live first (shared TrustScoreService, same as the admin
+        // panel); the stored `trust_score` is only the fallback.
+        trustScore = (await const TrustScoreService().compute(uid))?.breakdown.total;
       } catch (_) {}
+      trustScore ??= await _storedTrustScore(uid);
       try {
-        reviews = await sl<ReviewRemoteDataSource>()
-            .getCustomerReviews(uid, onlyOwnerRated: true);
+        reviews = await sl<ReviewRemoteDataSource>().getCustomerReviews(uid, onlyOwnerRated: true);
       } catch (_) {}
     }
     if (mounted) {
@@ -60,6 +63,18 @@ class _CustomerReputationViewState extends State<CustomerReputationView> {
         _ownerReviews = reviews;
         _loading = false;
       });
+    }
+  }
+
+  /// Stored `trust_score` from the `users` doc, used only when the
+  /// live computation cannot run (reads the raw doc, so a missing
+  /// score stays null instead of defaulting to 5.0).
+  Future<double?> _storedTrustScore(String uid) async {
+    try {
+      if (!sl.isRegistered<FirestoreService>()) return null;
+      return (await sl<FirestoreService>().getUser(uid))?.trustScore;
+    } catch (_) {
+      return null;
     }
   }
 

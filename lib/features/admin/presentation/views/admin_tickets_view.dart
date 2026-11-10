@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
+import '../../../../core/utils/responsive.dart';
 import '../../data/datasources/admin_support_data_source.dart';
 import '../widgets/admin_shell.dart';
 import '../widgets/ticket_detail_sheet.dart';
@@ -42,13 +43,15 @@ class _AdminTicketsViewState extends State<AdminTicketsView> {
 
   @override
   Widget build(BuildContext context) {
+    final compact =
+        windowSizeClassOf(context) == WindowSizeClass.compact;
     return AdminShell(
       activeRoute: RouteNames.adminTickets,
       title: 'Support tickets',
       subtitle: 'The inbox the customer plan promised',
       onRefresh: _load,
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(compact ? 16 : 24),
         child: Column(
           children: [
             Align(

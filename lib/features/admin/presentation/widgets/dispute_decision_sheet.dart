@@ -123,6 +123,10 @@ class _DisputeDecisionSheetState extends State<DisputeDecisionSheet> {
                     )),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
+              // isExpanded: the button must fill the field width —
+              // at 2.0x text scale the intrinsic-width row of the
+              // selected item + arrow overflows the field.
+              isExpanded: true,
               dropdownColor: Theme.of(context).colorScheme.surface,
               initialValue: _decision,
               items: const [

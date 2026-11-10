@@ -40,6 +40,9 @@ class RouteNames {
   static const String customerSettings = '/customer/settings';
   static const String customerDisputes = '/customer/disputes';
   static const String customerReputation = '/customer/reputation';
+  // Admin final pass (2026-11-10): the announcement detail screen —
+  // the landing route for tapped admin announcement pushes.
+  static const String customerAnnouncement = '/customer/announcement/:id';
   static const String customerSavedShops = '/customer/saved-shops';
 
   // Owner Routes

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
+import '../../../../core/utils/responsive.dart';
 import '../../../discovery/data/models/shop_model.dart';
 import '../../data/datasources/admin_shops_data_source.dart';
 import '../widgets/admin_shell.dart';
@@ -74,7 +75,12 @@ class _AdminShopApprovalsViewState extends State<AdminShopApprovalsView> {
                   ),
                 )
               : ListView.separated(
-                  padding: const EdgeInsets.all(24),
+                  // Mobile-first: 16dp on a phone, 24dp on desktop.
+                  padding: EdgeInsets.all(
+                      windowSizeClassOf(context) ==
+                              WindowSizeClass.compact
+                          ? 16
+                          : 24),
                   itemCount: _pending.length,
                   separatorBuilder: (_, __) => const SizedBox(height: 10),
                   itemBuilder: (context, i) {

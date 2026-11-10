@@ -151,8 +151,11 @@ class FirestoreService {
             .get();
 
         if (query.docs.isNotEmpty) {
+          // Admin-integration audit (2026-11-10): a suspended shop
+          // must not be discoverable, even on this legacy city path.
           return query.docs
               .map((d) => ShopModel.fromMap(d.data(), id: d.id))
+              .where((shop) => !shop.suspended)
               .toList();
         }
       }
@@ -162,6 +165,7 @@ class FirestoreService {
 
     return _inMemoryShops.values
         .map((d) => ShopModel.fromMap(d, id: d['shop_id']))
+        .where((shop) => !shop.suspended)
         .toList();
   }
 

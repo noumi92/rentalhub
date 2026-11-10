@@ -6,6 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/money_format.dart';
+import '../../../../core/utils/responsive.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/datasources/admin_platform_data_source.dart';
@@ -73,6 +74,8 @@ Handover: ${d.handover == null ? 'none' : 'odometer ${d.handover!.initialOdomete
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final compact =
+        windowSizeClassOf(context) == WindowSizeClass.compact;
     return AdminShell(
       activeRoute: RouteNames.adminBookings,
       title: 'Booking detail',
@@ -91,27 +94,47 @@ Handover: ${d.handover == null ? 'none' : 'odometer ${d.handover!.initialOdomete
                   ),
                 )
               : SingleChildScrollView(
-                  padding: const EdgeInsets.all(24),
+                  padding: EdgeInsets.all(compact ? 16 : 24),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              '${_detail!.booking.vehicleName ?? _detail!.booking.vehicleId} • ${_detail!.booking.bookingId}',
-                              style: const TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w900),
-                            ),
-                          ),
-                          FilledButton.icon(
+                      // Compact: the Download button stacks under the
+                      // title — beside a long vehicle • booking title
+                      // it clips at 360px.
+                      if (compact) ...[
+                        Text(
+                          '${_detail!.booking.vehicleName ?? _detail!.booking.vehicleId} • ${_detail!.booking.bookingId}',
+                          style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w900),
+                        ),
+                        const SizedBox(height: 12),
+                        SizedBox(
+                          width: double.infinity,
+                          child: FilledButton.icon(
                             onPressed: _downloadAll,
                             icon: const Icon(Icons.download_rounded, size: 18),
                             label: const Text('Download all'),
                           ),
-                        ],
-                      ),
+                        ),
+                      ] else
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                '${_detail!.booking.vehicleName ?? _detail!.booking.vehicleId} • ${_detail!.booking.bookingId}',
+                                style: const TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w900),
+                              ),
+                            ),
+                            FilledButton.icon(
+                              onPressed: _downloadAll,
+                              icon: const Icon(Icons.download_rounded, size: 18),
+                              label: const Text('Download all'),
+                            ),
+                          ],
+                        ),
                       const SizedBox(height: 4),
                       Text(
                         'Status: ${_detail!.booking.status} • Trip: ${_detail!.booking.tripType} • Package: ${_detail!.booking.packageType} • ${(_detail!.booking.isWithDriver) ? 'with driver' : 'self drive'}',

@@ -126,7 +126,12 @@ class CustomerMapCanvas extends StatelessWidget {
                               ],
                             ),
                             child: Text(
-                              '${shop.shopName.split(' ').first} • ${shop.distanceKm.toStringAsFixed(1)}km',
+                              // Admin-integration audit (2026-11-10):
+                              // the distance is shown only when real —
+                              // never the 1.2 km display-only fallback.
+                              shop.hasRealDistance
+                                  ? '${shop.shopName.split(' ').first} • ${shop.distanceKm.toStringAsFixed(1)}km'
+                                  : shop.shopName.split(' ').first,
                               style: Theme.of(context)
                                   .textTheme
                                   .labelSmall

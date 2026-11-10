@@ -127,9 +127,11 @@ class _AnnouncementFormSheetState extends State<AnnouncementFormSheet> {
             if (_schedule)
               OutlinedButton.icon(
                 icon: const Icon(Icons.schedule_rounded, size: 18),
+                // Date only: the full DateTime string overflows the
+                // button at 360px.
                 label: Text(_scheduledAt == null
                     ? 'Pick a date and time'
-                    : 'Scheduled: $_scheduledAt'),
+                    : 'Scheduled: ${_scheduledAt!.toString().substring(0, 16)}'),
                 onPressed: () async {
                   final date = await showDatePicker(
                     context: context,
@@ -193,6 +195,11 @@ class _AnnouncementFormSheetState extends State<AnnouncementFormSheet> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: DropdownButtonFormField<String>(
+        // isExpanded: the button must fill the field width — at 2.0x
+        // text scale the intrinsic-width row of the selected item +
+        // arrow overflows the field (the WhatsApp channel label is
+        // the longest item).
+        isExpanded: true,
         dropdownColor: Theme.of(context).colorScheme.surface,
         initialValue: value,
         decoration: InputDecoration(

@@ -12,10 +12,15 @@ class AdminSidebarNav extends StatelessWidget {
   final String activeRoute;
   final ValueChanged<String> onNavigate;
 
+  /// Sidebar width: 260 on desktop; the mobile drawer passes 280 so
+  /// the panel fills the drawer exactly.
+  final double width;
+
   const AdminSidebarNav({
     super.key,
     required this.activeRoute,
     required this.onNavigate,
+    this.width = 260,
   });
 
   String get _adminEmail {
@@ -29,7 +34,7 @@ class AdminSidebarNav extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 260,
+      width: width,
       color: AppColors.primary,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

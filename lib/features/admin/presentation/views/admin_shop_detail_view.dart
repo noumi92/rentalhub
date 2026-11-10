@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
-import '../../../../core/utils/whatsapp.dart';
+import '../../../../core/utils/responsive.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../discovery/data/models/shop_model.dart';
 import '../../data/datasources/admin_shops_data_source.dart';
 import '../widgets/admin_shell.dart';
 import '../widgets/admin_suspend_dialog.dart';
+import '../widgets/shop_detail_actions.dart';
 
 /// Phase B (B2) — one shop: plan, cars, lifetime bookings, rating,
 /// KYC and bank summary, and the admin actions — suspend/unsuspend
@@ -98,7 +98,12 @@ class _AdminShopDetailViewState extends State<AdminShopDetailView> {
                   ),
                 )
               : SingleChildScrollView(
-                  padding: const EdgeInsets.all(24),
+                  // Mobile-first: 16dp on a phone, 24dp on desktop.
+                  padding: EdgeInsets.all(
+                      windowSizeClassOf(context) ==
+                              WindowSizeClass.compact
+                          ? 16
+                          : 24),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -122,8 +127,10 @@ class _AdminShopDetailViewState extends State<AdminShopDetailView> {
                               _shop!.suspended ? 'Suspended' : _shop!.verificationStatus),
                           _fact('Cars', '$_vehicleCount'),
                           _fact('Lifetime bookings', '$_bookingCount'),
+                          // Honesty flag (Worker 1): no stored rating
+                          // shows '—', never the display-only fallback.
                           _fact('Rating',
-                              _shop!.rating.toStringAsFixed(1)),
+                              _shop!.hasRealRating ? _shop!.rating.toStringAsFixed(1) : '—'),
                         ],
                       ),
                       if (_shop!.suspended &&
@@ -148,47 +155,11 @@ class _AdminShopDetailViewState extends State<AdminShopDetailView> {
                                       '${a['type'] ?? 'account'} — ${a['title'] ?? a['account'] ?? ''}')
                                   .toList()),
                       const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: OutlinedButton.icon(
-                              icon: const Icon(Icons.message_rounded,
-                                  size: 18),
-                              label: const Text('Message owner'),
-                              onPressed: () async {
-                                final uri = whatsappUri(
-                                  phone: _shop!.phoneNumber,
-                                  message:
-                                      'Hello from RentalHub admin regarding ${_shop!.shopName}.',
-                                );
-                                if (uri == null) {
-                                  AppFeedback.showError(context,
-                                      'No phone number on file for this shop.');
-                                  return;
-                                }
-                                await launchUrl(uri,
-                                    mode: LaunchMode.externalApplication);
-                              },
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: FilledButton(
-                              onPressed: _isWorking
-                                  ? null
-                                  : () => _toggleSuspend(!_shop!.suspended),
-                              style: _shop!.suspended
-                                  ? null
-                                  : FilledButton.styleFrom(
-                                      backgroundColor: Colors.red.shade700),
-                              child: Text(_isWorking
-                                  ? 'Saving…'
-                                  : _shop!.suspended
-                                      ? 'Lift suspension'
-                                      : 'Suspend shop'),
-                            ),
-                          ),
-                        ],
+                      ShopDetailActions(
+                        shop: _shop!,
+                        isWorking: _isWorking,
+                        onToggleSuspend: () =>
+                            _toggleSuspend(!_shop!.suspended),
                       ),
                     ],
                   ),

@@ -172,15 +172,21 @@ class _TicketDetailSheetState extends State<TicketDetailSheet> {
                     fontWeight: FontWeight.w800,
                     )),
             const SizedBox(height: 6),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
+            // Compact-safe: a Wrap of long quick-reply chips overflows
+            // at 360px (a chip takes its label's intrinsic width). A
+            // full-width column lets each label wrap instead.
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: _quickReplies
-                  .map((q) => ActionChip(
-                        label: Text(q,
-                            style: const TextStyle(fontSize: 12)),
-                        onPressed: () =>
-                            _replyController.text = q,
+                  .map((q) => Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: ActionChip(
+                          label: Text(q,
+                              softWrap: true,
+                              style: const TextStyle(fontSize: 12)),
+                          onPressed: () =>
+                              _replyController.text = q,
+                        ),
                       ))
                   .toList(),
             ),

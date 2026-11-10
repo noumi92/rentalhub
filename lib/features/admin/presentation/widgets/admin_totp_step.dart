@@ -105,6 +105,8 @@ class AdminTotpStep extends StatelessWidget {
         const SizedBox(height: 16),
         FilledButton(
           onPressed: isWorking ? null : onVerify,
+          style: FilledButton.styleFrom(
+              minimumSize: const Size(double.infinity, 48)),
           child: Text(isWorking
               ? 'Checking…'
               : enrolling

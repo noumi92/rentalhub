@@ -3888,5 +3888,19 @@
   "admin2_unverifiedBookingsDisabled": "Bookings from unverified shops are currently disabled by the platform.",
   "kyc2_qrCode": "QR Code",
   "kyc2_qrRead": "QR code saved.",
-  "kyc2_licenseUnreadable": "Could not read the license number from that photo — please type it."
+  "kyc2_licenseUnreadable": "Could not read the license number from that photo — please type it.",
+  "appealTitle": "Appeal blacklist listing",
+  "appealButton": "Appeal blacklist decision",
+  "appealIntro": "If you believe this listing is a mistake, you can ask the tribunal to review it.",
+  "appealReasonLabel": "Reason for appeal",
+  "appealReasonHint": "Explain why this listing should be reviewed…",
+  "appealReasonRequired": "Please write a reason for your appeal.",
+  "appealSubmit": "Submit appeal",
+  "appealSuccess": "Appeal submitted. The tribunal will review it.",
+  "appealError": "Could not submit the appeal. Please try again.",
+  "appealRecordNotFound": "No blacklist record was found for this CNIC.",
+  "anncTitle": "Announcement",
+  "anncLoading": "Loading announcement…",
+  "anncNotFound": "This announcement is no longer available.",
+  "anncLoadError": "Could not load the announcement. Please try again."
 }

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
+import '../../../../core/utils/responsive.dart';
 import '../../data/datasources/admin_remote_data_source.dart';
 import '../widgets/admin_kpi_card.dart';
 import '../widgets/admin_shell.dart';
@@ -48,14 +50,23 @@ class _AdminDashboardViewState extends State<AdminDashboardView> {
       child: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
+              // Mobile-first: 16dp side padding on a phone, 24dp on
+              // desktop — 24dp each side leaves 312dp of content on
+              // a 360dp screen.
+              padding: EdgeInsets.all(
+                  windowSizeClassOf(context) == WindowSizeClass.compact
+                      ? 16
+                      : 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   LayoutBuilder(
                     builder: (context, constraints) {
-                      final columns =
-                          constraints.maxWidth >= 900 ? 4 : 2;
+                      // Two columns on a phone (each ~156dp at 360dp);
+                      // four on desktop. The cards wrap their text,
+                      // so large text scales grow them, never clip.
+                      final columns = columnsFor<int>(context,
+                          compact: 2, medium: 2, expanded: 4);
                       final width = (constraints.maxWidth -
                               (columns - 1) * 16) /
                           columns;
@@ -74,14 +85,16 @@ class _AdminDashboardViewState extends State<AdminDashboardView> {
                     'Open disputes need a decision',
                     '${_stats?.openDisputeCount ?? 0} open',
                     Icons.report_problem_outlined,
-                    'The disputes centre arrives in Phase D.',
+                    'Open the disputes centre to decide them.',
+                    onTap: () => context.go(RouteNames.adminDisputes),
                   ),
                   const SizedBox(height: 12),
                   _infoCard(
                     'Support tickets waiting',
                     '${_stats?.openTicketCount ?? 0} open',
                     Icons.support_agent_rounded,
-                    'The tickets inbox arrives in Phase E.',
+                    'Open the tickets inbox to reply.',
+                    onTap: () => context.go(RouteNames.adminTickets),
                   ),
                 ],
               ),
@@ -128,11 +141,12 @@ class _AdminDashboardViewState extends State<AdminDashboardView> {
     ];
   }
 
-  /// An informational card, not a link: the disputes centre (Phase D)
-  /// and the tickets inbox (Phase E) are not built yet, so the counts
-  /// are shown with an honest note instead of a misleading destination.
+  /// A link card: the disputes centre (Phase D) and the tickets
+  /// inbox (Phase E) both exist, so the card opens its destination
+  /// instead of describing it as arriving later.
   Widget _infoCard(
-      String title, String value, IconData icon, String note) {
+      String title, String value, IconData icon, String note,
+      {VoidCallback? onTap}) {
     return Card(
       margin: EdgeInsets.zero,
       elevation: 0,
@@ -141,6 +155,7 @@ class _AdminDashboardViewState extends State<AdminDashboardView> {
         side: BorderSide(color: Theme.of(context).dividerColor),
       ),
       child: ListTile(
+        onTap: onTap,
         leading: Icon(icon),
         title: Text(title,
             style: const TextStyle(

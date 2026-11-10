@@ -128,6 +128,7 @@ import '../../features/admin/presentation/views/admin_coming_soon_view.dart';
 import '../../features/admin/presentation/views/admin_dashboard_view.dart';
 import '../../features/admin/presentation/views/admin_login_view.dart';
 import '../../features/admin/presentation/views/admin_team_view.dart';
+import '../../features/notifications/presentation/views/announcement_detail_view.dart';
 
 class AppRouter {
   static final GlobalKey<NavigatorState> rootNavigatorKey =
@@ -1463,6 +1464,17 @@ class AppRouter {
       GoRoute(
         path: RouteNames.adminActivity,
         builder: (context, state) => const AdminActivityLogView(),
+      ),
+      // Admin final pass (2026-11-10): the announcement detail
+      // screen — the landing route for tapped admin announcement
+      // pushes (see the AnnouncementPushHandler subscription in
+      // main.dart). Top-level, not a shell branch: a push can arrive
+      // on any tab, and the screen stands alone with its own bar.
+      GoRoute(
+        path: RouteNames.customerAnnouncement,
+        builder: (context, state) => AnnouncementDetailView(
+          announcementId: state.pathParameters['id']!,
+        ),
       ),
       GoRoute(
         path: RouteNames.adminSubscriptions,

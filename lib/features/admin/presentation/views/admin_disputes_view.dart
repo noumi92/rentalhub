@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
+import '../../../../core/utils/responsive.dart';
 import '../../../customer/data/datasources/dispute_remote_data_source.dart';
 import '../../data/datasources/admin_platform_data_source.dart';
 import '../widgets/admin_shell.dart';
@@ -51,13 +52,15 @@ class _AdminDisputesViewState extends State<AdminDisputesView> {
 
   @override
   Widget build(BuildContext context) {
+    final compact =
+        windowSizeClassOf(context) == WindowSizeClass.compact;
     return AdminShell(
       activeRoute: RouteNames.adminDisputes,
       title: 'Disputes centre',
       subtitle: 'Third side of every dispute — 72 h SLA',
       onRefresh: _load,
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(compact ? 16 : 24),
         child: Column(
           children: [
             Align(
@@ -122,6 +125,8 @@ class _AdminDisputesViewState extends State<AdminDisputesView> {
                                 ),
                                 title: Text(
                                     '${d.category} • ${d.bookingId}',
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
                                     style: const TextStyle(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w800,

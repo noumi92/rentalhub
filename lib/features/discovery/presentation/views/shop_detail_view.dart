@@ -134,8 +134,15 @@ class _ShopDetailViewState extends State<ShopDetailView> {
             children: [
               MinimalAppBar(
                 title: shop.shopName,
-                subtitle:
-                    '${shop.address}, ${shop.city} (${shop.distanceKm} km)',
+                subtitle: [
+                  shop.address,
+                  if (shop.city.isNotEmpty) shop.city,
+                  // Admin-integration audit (2026-11-10): the
+                  // distance is shown only when real — never the
+                  // 1.2 km display-only fallback.
+                  if (shop.hasRealDistance)
+                    '(${shop.distanceKm.toStringAsFixed(1)} km)',
+                ].join(', '),
                 onBack: widget.onBack,
                 actions: [
                   IconButton(

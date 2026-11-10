@@ -26,6 +26,9 @@ class ShopModel extends ShopEntity {
     super.suspended,
     super.suspensionReason,
     super.hasRealLocation,
+    super.hasRealRating,
+    super.hasRealAvailableCount,
+    super.hasRealDistance,
   });
 
   factory ShopModel.fromMap(Map<String, dynamic> d, {String? id}) {
@@ -34,6 +37,14 @@ class ShopModel extends ShopEntity {
     // the legacy non-nullable geoLocation; [hasRealLocation] records
     // whether the document actually stored coordinates — a Firestore
     // GeoPoint `location` field, or numeric `latitude`/`longitude`.
+    //
+    // Admin-integration audit (2026-11-10): the same rule for the
+    // other display numbers. The fallbacks below (rating 4.9, 8
+    // available cars, 1.2 km, city 'Lahore') are display-only
+    // placeholders for the non-nullable fields — the hasReal* flags
+    // record whether the document actually stored the value, and
+    // the views hide the number when its flag is false. A missing
+    // city is now '' (unknown), never an invented 'Lahore'.
     double? lat;
     double? lng;
     final storedPoint = d['location'];
@@ -55,17 +66,18 @@ class ShopModel extends ShopEntity {
     final hasRealLocation = lat != null && lng != null;
     lat ??= 31.5102;
     lng ??= 74.3441;
+    final city = (d['city'] as String?)?.trim() ?? '';
     return ShopModel(
       shopId: id ?? d['shop_id'] ?? '',
       ownerId: d['owner_id'] ?? '',
       shopName: d['shop_name'] ?? '',
       phoneNumber: d['phone_number'] ?? '',
       address: d['address'] ?? '',
-      city: d['city'] ?? 'Lahore',
+      city: city,
       geoLocation: GeoPointEntity(lat, lng),
-      distanceKm: (d['distance_km'] ?? 1.2).toDouble(),
-      rating: (d['rating'] ?? 4.9).toDouble(),
-      availableCount: d['available_count'] ?? 8,
+      distanceKm: (d['distance_km'] as num?)?.toDouble() ?? 1.2,
+      rating: (d['rating'] as num?)?.toDouble() ?? 4.9,
+      availableCount: (d['available_count'] as num?)?.toInt() ?? 8,
       isVerified: d['is_verified'] ?? true,
       bankAccounts: List<Map<String, dynamic>>.from(d['bank_accounts'] ?? []),
       logoUrl: d['logo_url'],
@@ -80,6 +92,9 @@ class ShopModel extends ShopEntity {
       suspended: d['suspended'] as bool? ?? false,
       suspensionReason: d['suspension_reason'] as String?,
       hasRealLocation: hasRealLocation,
+      hasRealRating: d['rating'] is num,
+      hasRealAvailableCount: d['available_count'] is num,
+      hasRealDistance: d['distance_km'] is num,
     );
   }
 
@@ -93,9 +108,12 @@ class ShopModel extends ShopEntity {
       'city': city,
       'latitude': geoLocation.latitude,
       'longitude': geoLocation.longitude,
-      'distance_km': distanceKm,
-      'rating': rating,
-      'available_count': availableCount,
+      // The display-only fallbacks (4.9 / 8 / 1.2) are never written
+      // back: persisting them would turn an invented number into a
+      // stored fact. Only values the document actually had are kept.
+      if (hasRealDistance) 'distance_km': distanceKm,
+      if (hasRealRating) 'rating': rating,
+      if (hasRealAvailableCount) 'available_count': availableCount,
       'is_verified': isVerified,
       'bank_accounts': bankAccounts,
       if (logoUrl != null) 'logo_url': logoUrl,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/utils/responsive.dart';
 
 class AdminKpiCard extends StatelessWidget {
   final String title;
@@ -19,8 +20,12 @@ class AdminKpiCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Mobile-first: tighter card padding on a phone so the 2-column
+    // grid keeps usable card widths at 360dp.
+    final compact =
+        windowSizeClassOf(context) == WindowSizeClass.compact;
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(compact ? 16 : 20),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(14),

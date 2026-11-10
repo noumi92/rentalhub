@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
+import '../../../../core/utils/responsive.dart';
 import '../../../discovery/data/models/shop_model.dart';
 import '../../data/datasources/admin_shops_data_source.dart';
 import '../widgets/admin_shell.dart';
@@ -72,7 +73,11 @@ class _AdminShopsViewState extends State<AdminShopsView> {
       subtitle: 'Every showroom on the platform',
       onRefresh: _load,
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        // Mobile-first: 16dp on a phone, 24dp on desktop.
+        padding: EdgeInsets.all(
+            windowSizeClassOf(context) == WindowSizeClass.compact
+                ? 16
+                : 24),
         child: Column(
           children: [
             Row(
@@ -104,6 +109,10 @@ class _AdminShopsViewState extends State<AdminShopsView> {
                       context.go(RouteNames.adminApprovals),
                   icon: const Icon(Icons.verified_user_rounded, size: 18),
                   label: const Text('Approvals'),
+                  // 48dp touch target; the search field flexes, so a
+                  // large text scale narrows the field, never overflows.
+                  style: OutlinedButton.styleFrom(
+                      minimumSize: const Size(0, 48)),
                 ),
               ],
             ),
@@ -169,7 +178,11 @@ class _AdminShopsViewState extends State<AdminShopsView> {
                                         fontWeight: FontWeight.w800,
                                         )),
                                 subtitle: Text(
-                                  '${shop.city} • Plan ${shop.plan} • Rating ${shop.rating.toStringAsFixed(1)}',
+                                  // Honesty flag (Worker 1): a number the
+                                  // shop document never stored is hidden,
+                                  // never shown with the display-only
+                                  // fallback — same as shop_list_card.dart.
+                                  '${shop.city} • Plan ${shop.plan}${shop.hasRealRating ? ' • Rating ${shop.rating.toStringAsFixed(1)}' : ''}',
                                   style: TextStyle(
                                       fontSize: 12,
                                       color: Theme.of(context).colorScheme.onSurfaceVariant),

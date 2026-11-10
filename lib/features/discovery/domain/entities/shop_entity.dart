@@ -38,6 +38,16 @@ class ShopEntity extends Equatable {
   // Directly constructed entities (owner onboarding always pins the
   // shop on the map) default to true.
   final bool hasRealLocation;
+  // Admin-integration audit (2026-11-10): the same honesty rule for
+  // the other display numbers. ShopModel.fromMap still fills
+  // display-only fallbacks (rating 4.9, 8 cars, 1.2 km) so existing
+  // non-nullable call sites keep working, but a shop document that
+  // never stored the value must never be SHOWN with the fallback —
+  // the views hide the number when its flag is false. Directly
+  // constructed entities default to true, as with hasRealLocation.
+  final bool hasRealRating;
+  final bool hasRealAvailableCount;
+  final bool hasRealDistance;
   // Phase B (B2): the shop's subscription plan ('free' until Phase F
   // sets real plans) and the suspension state, set by an admin.
   final String plan;
@@ -69,11 +79,15 @@ class ShopEntity extends Equatable {
     this.suspended = false,
     this.suspensionReason,
     this.hasRealLocation = true,
+    this.hasRealRating = true,
+    this.hasRealAvailableCount = true,
+    this.hasRealDistance = true,
   });
 
   /// Copy with a recomputed distance — the Shops map re-sorts by
   /// distance from the draggable "you are here" pin without
-  /// mutating the stored entity.
+  /// mutating the stored entity. A recomputed distance is real, so
+  /// [hasRealDistance] becomes true.
   ShopEntity withDistance(double distanceKm) => ShopEntity(
         shopId: shopId,
         ownerId: ownerId,
@@ -99,6 +113,9 @@ class ShopEntity extends Equatable {
         suspended: suspended,
         suspensionReason: suspensionReason,
         hasRealLocation: hasRealLocation,
+        hasRealRating: hasRealRating,
+        hasRealAvailableCount: hasRealAvailableCount,
+        hasRealDistance: true,
       );
 
   @override
@@ -127,6 +144,9 @@ class ShopEntity extends Equatable {
         suspended,
         suspensionReason,
         hasRealLocation,
+        hasRealRating,
+        hasRealAvailableCount,
+        hasRealDistance,
       ];
 }
 

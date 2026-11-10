@@ -71,6 +71,10 @@ class _BlacklistAppealDialogState extends State<BlacklistAppealDialog> {
   Widget build(BuildContext context) {
     final item = widget.record.entity;
     return AlertDialog(
+      // scrollable: at 1.35x/2.0x text scale the content column is
+      // taller than a 360px phone viewport — without this the dialog
+      // overflows vertically instead of scrolling.
+      scrollable: true,
       title: const Text('Tribunal Blacklist Appeal',
           style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16)),
       content: Column(

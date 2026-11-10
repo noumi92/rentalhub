@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
+import '../../../../core/utils/responsive.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../data/datasources/admin_support_data_source.dart';
 import '../widgets/admin_shell.dart';
@@ -59,13 +60,15 @@ class _AdminAnnouncementsViewState extends State<AdminAnnouncementsView> {
 
   @override
   Widget build(BuildContext context) {
+    final compact =
+        windowSizeClassOf(context) == WindowSizeClass.compact;
     return AdminShell(
       activeRoute: RouteNames.adminAnnouncements,
       title: 'Announcements',
       subtitle: 'Broadcasts to owners and customers',
       onRefresh: _load,
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(compact ? 16 : 24),
         child: Column(
           children: [
             Align(

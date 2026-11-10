@@ -8,20 +8,20 @@ import '../../../../core/widgets/app_state_views.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../data/datasources/customer_remote_data_source.dart';
 import '../../domain/entities/customer_entity.dart';
+import '../../../blacklist/data/datasources/blacklist_remote_data_source.dart';
 import '../../../trust/data/datasources/kyc_remote_data_source.dart';
+import '../../../trust/data/services/trust_score_service.dart';
+import '../widgets/blacklist_appeal_sheet.dart';
 import '../widgets/edit_profile_sheet.dart';
-import '../widgets/customer_support_badge.dart';
 import '../widgets/profile_cnic_row.dart';
-import '../widgets/profile_menu_card.dart';
+import '../widgets/profile_menu_section.dart';
 import '../widgets/profile_sign_out_tile.dart';
 import '../widgets/profile_trust_card.dart';
 import '../../../../l10n/app_localizations.dart';
 
-// H1: the profile is the customer's real record — name/phone/CNIC from
-// their `customers` record (the same record the owner sees in triage),
-// the trust score and blacklist state from their `users` record, and
-// the KYC state from their KYC submission. No invented identity: a
-// signed-out visitor sees 'Guest', never 'Ahmed Khan'.
+// H1: the profile is the customer's real record — name/phone/CNIC
+// from `customers`, trust + blacklist from `users`, KYC from their
+// submission. No invented identity: a signed-out visitor sees 'Guest'.
 class CustomerProfileView extends StatefulWidget {
   final VoidCallback? onOpenDocuments;
   final VoidCallback? onOpenSavedShops;
@@ -82,14 +82,16 @@ class _CustomerProfileViewState extends State<CustomerProfileView> {
         name = user.displayName ?? 'Guest';
         email = user.email ?? '';
         phone = user.phoneNumber ?? '';
+        double? storedTrustScore;
         if (sl.isRegistered<FirestoreService>()) {
           final record = await sl<FirestoreService>().getUser(user.uid);
-          trustScore = record?.trustScore;
+          storedTrustScore = record?.trustScore;
           isBlacklisted = record?.isBlacklisted ?? false;
         }
+        // Live score first (shared TrustScoreService, same as the admin panel); stored trust_score is the fallback.
+        trustScore = (await const TrustScoreService().compute(user.uid))?.breakdown.total ?? storedTrustScore;
         if (sl.isRegistered<CustomerRemoteDataSource>()) {
-          final customer =
-              await sl<CustomerRemoteDataSource>().getCustomerById(user.uid);
+          final customer = await sl<CustomerRemoteDataSource>().getCustomerById(user.uid);
           if (customer != null) {
             name = customer.name;
             phone = customer.phone;
@@ -154,6 +156,28 @@ class _CustomerProfileViewState extends State<CustomerProfileView> {
     }
   }
 
+  /// Admin final pass (2026-11-10): appeal entry point — the record is
+  /// resolved from the customer's own CNIC first; no record is reported honestly.
+  Future<void> _openAppeal() async {
+    final l10n = AppLocalizations.of(context)!;
+    if (!sl.isRegistered<BlacklistRemoteDataSource>() ||
+        _cnic.isEmpty) {
+      AppFeedback.showError(context, l10n.appealRecordNotFound);
+      return;
+    }
+    final record = await sl<BlacklistRemoteDataSource>()
+        .getBlacklistRecordByCnic(_cnic);
+    if (!mounted) return;
+    if (record == null) {
+      AppFeedback.showError(context, l10n.appealRecordNotFound);
+      return;
+    }
+    await showBlacklistAppealSheet(
+      context,
+      blacklistId: record.blacklistId,
+    );
+  }
+
   void _openEdit() {
     showModalBottomSheet<void>(
       context: context,
@@ -194,47 +218,19 @@ class _CustomerProfileViewState extends State<CustomerProfileView> {
                       // E2: shared loading state.
                       AppLoadingState(message: l10n.profileLoading)
                     else ...[
-                      ProfileTrustCard(trustScore: _trustScore, kycVerified: _kycVerified, isBlacklisted: _isBlacklisted, onTap: widget.onOpenReputation),
+                      ProfileTrustCard(trustScore: _trustScore, kycVerified: _kycVerified, isBlacklisted: _isBlacklisted, onTap: widget.onOpenReputation, onAppeal: (_isBlacklisted && _cnic.isNotEmpty) ? _openAppeal : null),
                       const SizedBox(height: 16),
-                      // E1: the customer's own CNIC, masked by
-                      // default. There was no read-only CNIC display
-                      // on this screen before — only the edit sheet's
-                      // raw input field, which stays unmasked so the
-                      // value can be edited.
+                      // E1: the customer's own CNIC, masked by default.
                       if (_cnic.isNotEmpty) ...[
                         ProfileCnicRow(cnic: _cnic),
                         const SizedBox(height: 16),
                       ],
-                      ProfileMenuCard(items: [
-                        ProfileMenuItem(
-                          icon: Icons.badge_outlined,
-                          title: l10n.profileMyDocuments,
-                          subtitle: l10n.profileKycSubtitle,
-                          onTap: widget.onOpenDocuments,
-                        ),
-                        ProfileMenuItem(
-                          icon: Icons.favorite_border_rounded,
-                          title: l10n.profileSavedShops,
-                          subtitle: l10n.profileSavedShopsSubtitle,
-                          onTap: widget.onOpenSavedShops,
-                        ),
-                        ProfileMenuItem(
-                          icon: Icons.settings_outlined,
-                          title: l10n.profileSettingsLanguage,
-                          subtitle: l10n.profileSettingsSubtitle,
-                          onTap: widget.onOpenSettings,
-                        ),
-                        // Customer rework: Support moved off the tab bar
-                        // into Profile; the live CustomerSupportBadge
-                        // (unread replied-ticket count) moved with it.
-                        ProfileMenuItem(
-                          icon: Icons.support_agent_rounded,
-                          leading: CustomerSupportBadge(icon: const Icon(Icons.support_agent_rounded)),
-                          title: l10n.navSupport,
-                          subtitle: l10n.supportTitle,
-                          onTap: widget.onOpenSupport,
-                        ),
-                      ]),
+                      ProfileMenuSection(
+                        onOpenDocuments: widget.onOpenDocuments,
+                        onOpenSavedShops: widget.onOpenSavedShops,
+                        onOpenSettings: widget.onOpenSettings,
+                        onOpenSupport: widget.onOpenSupport,
+                      ),
                       const SizedBox(height: 16),
                       ProfileSignOutTile(onTap: widget.onSignOut),
                     ],

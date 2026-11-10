@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/di/injection_container.dart';
+import '../../../../core/utils/responsive.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import 'shop_fleet_photos.dart';
 import '../../../discovery/data/models/shop_model.dart';
@@ -155,36 +156,31 @@ class _ShopApplicationDetailSheetState
               ),
             ),
             const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: FilledButton(
-                    onPressed:
-                        _isWorking ? null : () => _decide('approved'),
-                    child: const Text('Approve'),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: _isWorking
-                        ? null
-                        : () => _decide('info_requested'),
-                    child: const Text('Ask for more info'),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed:
-                        _isWorking ? null : () => _decide('rejected'),
-                    style: OutlinedButton.styleFrom(
-                        foregroundColor: Colors.red.shade700),
-                    child: const Text('Reject'),
-                  ),
-                ),
-              ],
-            ),
+            // Mobile-first: the three decisions stack full-width on
+            // a phone — side by side each is ~100dp and "Ask for
+            // more info" wraps to 4 lines. 48dp touch targets.
+            if (windowSizeClassOf(context) ==
+                WindowSizeClass.compact)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _approveButton(),
+                  const SizedBox(height: 8),
+                  _infoButton(),
+                  const SizedBox(height: 8),
+                  _rejectButton(),
+                ],
+              )
+            else
+              Row(
+                children: [
+                  Expanded(child: _approveButton()),
+                  const SizedBox(width: 8),
+                  Expanded(child: _infoButton()),
+                  const SizedBox(width: 8),
+                  Expanded(child: _rejectButton()),
+                ],
+              ),
             const SizedBox(height: 8),
             SizedBox(
               width: double.infinity,
@@ -202,6 +198,27 @@ class _ShopApplicationDetailSheetState
       ),
     );
   }
+
+  Widget _approveButton() => FilledButton(
+        onPressed: _isWorking ? null : () => _decide('approved'),
+        style: FilledButton.styleFrom(minimumSize: const Size(0, 48)),
+        child: const Text('Approve'),
+      );
+
+  Widget _infoButton() => OutlinedButton(
+        onPressed:
+            _isWorking ? null : () => _decide('info_requested'),
+        style: OutlinedButton.styleFrom(minimumSize: const Size(0, 48)),
+        child: const Text('Ask for more info'),
+      );
+
+  Widget _rejectButton() => OutlinedButton(
+        onPressed: _isWorking ? null : () => _decide('rejected'),
+        style: OutlinedButton.styleFrom(
+            foregroundColor: Colors.red.shade700,
+            minimumSize: const Size(0, 48)),
+        child: const Text('Reject'),
+      );
 
   Widget _section(String title, List<String> lines) {
     return Padding(

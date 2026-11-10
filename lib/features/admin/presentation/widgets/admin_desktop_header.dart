@@ -15,7 +15,7 @@ class AdminDesktopHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 70,
+      constraints: const BoxConstraints(minHeight: 70),
       padding: const EdgeInsets.symmetric(horizontal: 24),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
@@ -29,7 +29,16 @@ class AdminDesktopHeader extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900)),
+                // Admin final pass (2026-11-10): the title is one
+                // line with an ellipsis — the 41-character tribunal
+                // title wrapped to two lines in this fixed 70dp
+                // header and overflowed at 2.0x text scale. At
+                // normal scales nothing changes; per-view title
+                // shortening is no longer the fix.
+                Text(title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900)),
                 Text(subtitle,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant)),

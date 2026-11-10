@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
+import '../../../../core/utils/responsive.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../data/datasources/admin_platform_data_source.dart';
+import '../widgets/admin_review_card.dart';
 import '../widgets/admin_shell.dart';
 
 /// Phase D (D3) — reviews moderation: the Abusive / Fake / Revenge
@@ -53,6 +55,9 @@ class _AdminReviewsViewState extends State<AdminReviewsView> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
+        // scrollable: the reason field + actions must not overflow
+        // vertically on a phone at large text scales.
+        scrollable: true,
         title: Text('Mark as $status?'),
         content: TextField(
           controller: reasonController,
@@ -99,13 +104,15 @@ class _AdminReviewsViewState extends State<AdminReviewsView> {
   @override
   Widget build(BuildContext context) {
     final visible = _reviews.where(_inQueue).toList();
+    final compact =
+        windowSizeClassOf(context) == WindowSizeClass.compact;
     return AdminShell(
       activeRoute: RouteNames.adminReviews,
       title: 'Reviews moderation',
       subtitle: 'Abusive, fake and revenge queues',
       onRefresh: _load,
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(compact ? 16 : 24),
         child: Column(
           children: [
             Align(
@@ -148,93 +155,9 @@ class _AdminReviewsViewState extends State<AdminReviewsView> {
                           separatorBuilder: (_, __) =>
                               const SizedBox(height: 10),
                           itemBuilder: (context, i) {
-                            final r = visible[i];
-                            return Card(
-                              margin: EdgeInsets.zero,
-                              elevation: 0,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                side: BorderSide(
-                                    color: Theme.of(context).dividerColor),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(14),
-                                child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      '${r.customerName ?? r.customerId} • ${r.vehicleName ?? r.bookingId}',
-                                      style: const TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w800,
-                                          ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      'Shop ${r.shopRating ?? '—'}/5 • Car ${r.vehicleRating ?? '—'}/5 • Owner: punctuality ${r.ownerPunctuality ?? '—'}, care ${r.ownerCare ?? '—'}, behaviour ${r.ownerBehavior ?? '—'}',
-                                      style: TextStyle(
-                                          fontSize: 12,
-                                          color: Theme.of(context).colorScheme.onSurfaceVariant),
-                                    ),
-                                    if (r.customerComment.isNotEmpty) ...[
-                                      const SizedBox(height: 4),
-                                      Text('"${r.customerComment}"',
-                                          style: const TextStyle(
-                                              fontSize: 13,
-                                              fontStyle: FontStyle.italic)),
-                                    ],
-                                    if (r.signals.isNotEmpty) ...[
-                                      const SizedBox(height: 6),
-                                      Wrap(
-                                        spacing: 6,
-                                        children: r.signals
-                                            .map((s) => Chip(
-                                                  label: Text(s,
-                                                      style: const TextStyle(
-                                                          fontSize: 11)),
-                                                  visualDensity:
-                                                      VisualDensity.compact,
-                                                ))
-                                            .toList(),
-                                      ),
-                                    ],
-                                    const SizedBox(height: 6),
-                                    Text(
-                                      'Moderation: ${r.moderationStatus}${r.moderationReason.isNotEmpty ? ' — ${r.moderationReason}' : ''}',
-                                      style: TextStyle(
-                                          fontSize: 12,
-                                          color: Theme.of(context).colorScheme.onSurfaceVariant),
-                                    ),
-                                    const SizedBox(height: 10),
-                                    Wrap(
-                                      spacing: 8,
-                                      children: [
-                                        OutlinedButton(
-                                          onPressed: () =>
-                                              _moderate(r, 'visible'),
-                                          child: const Text('Keep'),
-                                        ),
-                                        OutlinedButton(
-                                          onPressed: () =>
-                                              _moderate(r, 'hidden'),
-                                          child: const Text('Hide'),
-                                        ),
-                                        OutlinedButton(
-                                          onPressed: () => _moderate(
-                                              r, 'edit_requested'),
-                                          child: const Text('Ask to edit'),
-                                        ),
-                                        OutlinedButton(
-                                          onPressed: () =>
-                                              _moderate(r, 'warned'),
-                                          child: const Text('Warn'),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
+                            return AdminReviewCard(
+                              review: visible[i],
+                              onModerate: _moderate,
                             );
                           },
                         ),

@@ -156,6 +156,36 @@ class BlacklistRemoteDataSource {
 
   Future<List<BlacklistEntity>> getAllRecords() async => _readAll();
 
+  /// Admin-integration audit (2026-11-10): file an appeal against a
+  /// blacklist record. Before this, `appeal_status` was only ever
+  /// written by the admin tribunal decision ('kept' / 'removed') —
+  /// nothing in the app could file an appeal, so the tribunal could
+  /// only decide appeals that could never exist. This writes
+  /// `appeal_status: 'pending'` + the reason on the `blacklist`
+  /// document the tribunal reads; the record stays active until the
+  /// tribunal decides. Returns false when the write failed (the
+  /// caller must not claim an appeal was filed). The in-memory copy
+  /// carries no appeal fields — the appeal state lives on the
+  /// document, read by AdminPeopleDataSource.getBlacklistRecords.
+  Future<bool> submitAppeal({
+    required String blacklistId,
+    required String reason,
+  }) async {
+    if (blacklistId.isEmpty || reason.trim().isEmpty) return false;
+    final fs = _resolvedFirestore;
+    if (fs == null) return false;
+    try {
+      await fs.collection('blacklist').doc(blacklistId).update({
+        'appeal_status': 'pending',
+        'appeal_reason': reason.trim(),
+        'appeal_filed_at': FieldValue.serverTimestamp(),
+      });
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
   /// Phase B (C4): the reports this shop filed, newest first.
   Future<List<BlacklistEntity>> getShopReports(String shopId) async {
     final all = await _readAll();
