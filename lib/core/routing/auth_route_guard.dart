@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import '../di/injection_container.dart';
+import '../platform/app_platform.dart';
 import '../../features/admin/data/services/admin_session.dart';
 import '../../features/auth/data/datasources/auth_remote_data_source.dart';
 import 'route_names.dart';
@@ -64,7 +65,16 @@ class AuthRouteGuard {
   /// 1. If not logged in -> RouteNames.auth
   /// 2. If logged in and onboarding completed -> Relevant dashboard
   /// 3. If logged in but onboarding incomplete -> Pending onboarding step
+  ///
+  /// Web is the admin panel (mobile is customer + owner): a signed-out
+  /// web visitor belongs on the admin login, and a signed-in user
+  /// belongs on the admin dashboard. The router guard enforces the
+  /// admin role + TOTP on /admin routes, so a non-admin is bounced
+  /// back to the admin login from there.
   static String resolveAuthDestination() {
+    if (AppPlatform.isWeb) {
+      return isLoggedIn ? RouteNames.adminDashboard : RouteNames.adminLogin;
+    }
     if (!isLoggedIn) return RouteNames.auth;
     if (isOnboardingCompleted) {
       return resolveDashboardRoute();
@@ -82,6 +92,16 @@ class AuthRouteGuard {
     // 1. Splash screen is allowed to run its animation freely
     if (location == RouteNames.splash) {
       return null;
+    }
+
+    // 1a. Web build is the admin panel only (mobile is customer +
+    // owner): every non-/admin location on web belongs on the admin
+    // login. An already-signed-in admin is auto-continued from there
+    // (AdminLoginView resolves their profile); anyone else sees the
+    // not-an-admin card. Splash is exempt above — it navigates via
+    // resolveAuthDestination, which has its own web branch.
+    if (AppPlatform.isWeb && !location.startsWith('/admin')) {
+      return RouteNames.adminLogin;
     }
 
     // 1b. Admin panel (Phase A, A3): the login screen is always
