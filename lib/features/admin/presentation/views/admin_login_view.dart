@@ -76,7 +76,9 @@ class _AdminLoginViewState extends State<AdminLoginView> {
         _totpStep = true;
         _otpauthUrl = profile.totpEnabled ? null : _otpauthUrl;
       });
-      if (!profile.totpEnabled) await _startEnrolment();
+      if (!profile.totpEnabled && !await _startEnrolment() && mounted) {
+        context.go(RouteNames.adminDashboard);
+      }
     }
   }
 
@@ -112,7 +114,10 @@ class _AdminLoginViewState extends State<AdminLoginView> {
         return;
       }
       setState(() => _totpStep = true);
-      if (!profile.totpEnabled) await _startEnrolment();
+      if (!profile.totpEnabled && !await _startEnrolment()) {
+        if (mounted) context.go(RouteNames.adminDashboard);
+        return;
+      }
     } catch (e) {
       if (mounted) {
         setState(() => _error = _friendlyError(e));
@@ -122,12 +127,17 @@ class _AdminLoginViewState extends State<AdminLoginView> {
     }
   }
 
-  Future<void> _startEnrolment() async {
+  /// Returns false only when the Functions backend is missing, so the
+  /// caller can fall back to password-only login (temporary).
+  Future<bool> _startEnrolment() async {
     try {
       final url = await sl<AdminRemoteDataSource>().enrollTotp();
       if (mounted) setState(() => _otpauthUrl = url);
+      return true;
     } catch (e) {
+      if (AdminSession.isFunctionsUnavailable(e)) return false;
       if (mounted) setState(() => _error = _friendlyError(e));
+      return true;
     }
   }
 

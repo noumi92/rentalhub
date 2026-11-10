@@ -94,4 +94,17 @@ abstract final class AdminSession {
       return false;
     }
   }
+
+  /// TEMPORARY (2026-11-10): the TOTP Cloud Functions are not deployed
+  /// yet (billing postponed), so enrolment cannot run. True when the
+  /// failure means the Functions backend is missing or unreachable —
+  /// the admin login then falls back to password-only instead of
+  /// stranding the admin on the TOTP step. REMOVE this once Functions
+  /// are live: first login must enrol TOTP again.
+  static bool isFunctionsUnavailable(Object e) {
+    if (e is FirebaseException) {
+      return e.code == 'not-found' || e.code == 'unavailable';
+    }
+    return e.toString().contains('Admin functions are unavailable');
+  }
 }
