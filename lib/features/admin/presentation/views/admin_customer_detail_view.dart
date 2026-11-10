@@ -70,7 +70,7 @@ class _AdminCustomerDetailViewState extends State<AdminCustomerDetailView> {
     try {
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) return null;
-      return AdminSession.resolveAdminRole(user);
+      return await AdminSession.resolveAdminRole(user);
     } catch (_) {
       return null;
     }
