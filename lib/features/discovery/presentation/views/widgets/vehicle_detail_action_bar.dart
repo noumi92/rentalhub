@@ -22,6 +22,7 @@ class VehicleDetailActionBar extends StatelessWidget {
     required this.vehicle,
     required this.shopName,
     required this.shopPhone,
+    this.shopOwnerId = '',
     required this.selectedRate,
     required this.withDriver,
     this.onBookNow,
@@ -30,6 +31,13 @@ class VehicleDetailActionBar extends StatelessWidget {
   final VehicleEntity vehicle;
   final String shopName;
   final String shopPhone;
+
+  /// The shop document's `owner_id` ('' when unknown). New cars carry
+  /// the shop DOCUMENT id as `shopId`, so the owner's UID no longer
+  /// matches it — the owner is recognised by the shop's owner id
+  /// instead (the direct `shopId` match is kept for legacy cars, whose
+  /// shop has no `owner_id`).
+  final String shopOwnerId;
   final int selectedRate;
   final bool withDriver;
   final VoidCallback? onBookNow;
@@ -42,10 +50,13 @@ class VehicleDetailActionBar extends StatelessWidget {
     // customer detail screen from the fleet tab. An owner looking at
     // their own car gets "Manage rates" (→ the owner rate matrix)
     // instead of "Book Now"; everyone else keeps the booking CTA.
-    // Default deny: locked role must be 'owner' AND the signed-in
-    // uid must be the vehicle's shop id.
+    // Default deny: locked role must be 'owner' AND the signed-in uid
+    // must own the shop — either the vehicle's shop id (legacy cars,
+    // written under the UID) or the shop's `owner_id` (new cars carry
+    // the shop DOCUMENT id as `shopId`).
     final isOwnVehicle = AuthRouteGuard.lockedRole == 'owner' &&
-        currentShopId() == v.shopId;
+        (currentShopId() == v.shopId ||
+            (shopOwnerId.isNotEmpty && currentShopId() == shopOwnerId));
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(

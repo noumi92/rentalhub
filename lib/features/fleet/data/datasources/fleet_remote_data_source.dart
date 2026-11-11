@@ -113,18 +113,83 @@ class FleetRemoteDataSource {
     }
   }
 
+  /// Shop-id resolution caches. The owner app and the customer app
+  /// disagree about what a shop's id is (see below); the lookups are
+  /// small but they run on every fleet load, so the mapping is cached
+  /// for the life of this data source (a lazy singleton).
+  final Map<String, List<String>> _candidateShopIdsCache = {};
+  final Map<String, String> _canonicalShopIdCache = {};
+
+  /// Shop-id mismatch (2026-11-11): the owner app writes vehicles with
+  /// `shopId` = the signed-in owner's UID (`currentShopId()`), while the
+  /// customer app reads vehicles by shop DOCUMENT id. They only match
+  /// for the legacy shop whose doc id IS the bare UID. A shop's vehicles
+  /// can therefore carry either id, so reads must match both: the
+  /// argument itself, the `owner_id` of the shop doc with that id (cars
+  /// written under the UID by old app versions), and the doc id of the
+  /// shop whose `owner_id` is the argument (owner-side callers pass the
+  /// UID). Every lookup fails soft to the argument alone, so an
+  /// unreachable Firestore behaves exactly as before.
+  Future<List<String>> _candidateShopIds(String shopId) async {
+    final cached = _candidateShopIdsCache[shopId];
+    if (cached != null) return cached;
+    final ids = <String>{shopId};
+    final fs = _resolvedFirestore;
+    if (fs != null) {
+      try {
+        final doc = await fs.collection('shops').doc(shopId).get();
+        final ownerId = doc.data()?['owner_id'] as String?;
+        if (ownerId != null && ownerId.isNotEmpty) ids.add(ownerId);
+      } catch (_) {}
+      try {
+        final owned = await fs
+            .collection('shops')
+            .where('owner_id', isEqualTo: shopId)
+            .limit(1)
+            .get();
+        if (owned.docs.isNotEmpty) ids.add(owned.docs.first.id);
+      } catch (_) {}
+    }
+    final result = ids.toList();
+    _candidateShopIdsCache[shopId] = result;
+    return result;
+  }
+
+  /// The shop DOCUMENT id a new vehicle for this shop must carry: the
+  /// doc id of the shop owned by this UID, or the argument itself when
+  /// no such shop exists (the legacy shop, whose doc id IS the UID).
+  Future<String> _canonicalShopId(String shopId) async {
+    final cached = _canonicalShopIdCache[shopId];
+    if (cached != null) return cached;
+    var result = shopId;
+    final fs = _resolvedFirestore;
+    if (fs != null) {
+      try {
+        final owned = await fs
+            .collection('shops')
+            .where('owner_id', isEqualTo: shopId)
+            .limit(1)
+            .get();
+        if (owned.docs.isNotEmpty) result = owned.docs.first.id;
+      } catch (_) {}
+    }
+    _canonicalShopIdCache[shopId] = result;
+    return result;
+  }
+
   Future<int> getActiveVehicleCount(String shopId) async {
+    final ids = await _candidateShopIds(shopId);
     final fs = _resolvedFirestore;
     if (fs != null) {
       try {
         final snap = await fs
             .collection('vehicles')
-            .where('shopId', isEqualTo: shopId)
+            .where('shopId', whereIn: ids)
             .get();
         if (snap.docs.isNotEmpty) return snap.docs.length;
       } catch (_) {}
     }
-    return _inMemoryVehicles.where((v) => v.shopId == shopId).length;
+    return _inMemoryVehicles.where((v) => ids.contains(v.shopId)).length;
   }
 
   Future<String> getShopSubscriptionTier(String shopId) async {
@@ -141,12 +206,13 @@ class FleetRemoteDataSource {
   }
 
   Future<List<VehicleEntity>> getShopVehicles(String shopId) async {
+    final ids = await _candidateShopIds(shopId);
     final fs = _resolvedFirestore;
     if (fs != null) {
       try {
         final snap = await fs
             .collection('vehicles')
-            .where('shopId', isEqualTo: shopId)
+            .where('shopId', whereIn: ids)
             .get();
         if (snap.docs.isNotEmpty) {
           return snap.docs
@@ -155,7 +221,7 @@ class FleetRemoteDataSource {
         }
       } catch (_) {}
     }
-    return _inMemoryVehicles.where((v) => v.shopId == shopId).toList();
+    return _inMemoryVehicles.where((v) => ids.contains(v.shopId)).toList();
   }
 
   /// Phase A (A1): fetch one vehicle by id from the top-level `vehicles`
@@ -184,7 +250,16 @@ class FleetRemoteDataSource {
     required String shopId,
     required VehicleEntity vehicle,
   }) async {
-    final model = VehicleModel.fromEntity(vehicle);
+    // Shop-id mismatch (2026-11-11): the caller passes the owner's UID,
+    // but the vehicle must be stored under the shop DOCUMENT id or the
+    // customer shop page never finds it. The stored model — Firestore
+    // write, in-memory add and queued offline write alike — carries the
+    // canonical id; writing `vehicle.shopId` verbatim would silently
+    // undo the fix (this method's `shopId` parameter used to be
+    // ignored entirely: `toMap()` carries the entity's own id).
+    final canonicalShopId = await _canonicalShopId(shopId);
+    final model =
+        VehicleModel.fromEntity(vehicle).copyWith(shopId: canonicalShopId);
     _inMemoryVehicles.add(model);
 
     final written = await _writeVehicleDoc(

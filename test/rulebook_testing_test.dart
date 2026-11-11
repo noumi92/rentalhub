@@ -56,10 +56,16 @@ void main() {
 
   group('Rulebook §7.4 — data integration tests', () {
     test('repository tests use fake_cloud_firestore', () {
-      fail('not implemented yet');
-    },
-        skip:
-            'D12: fake_cloud_firestore is not a dev dependency and no test uses it; Firestore tests run against the in-memory fallback — see rulebook §13. Un-skip when the dependency and FakeFirebaseFirestore repository tests land.');
+      // D12 RESOLVED 2026-11-11: fake_cloud_firestore is a dev
+      // dependency and test/shop_id_resolution_test.dart runs
+      // FleetRemoteDataSource tests against FakeFirebaseFirestore
+      // (shop-id resolution: doc-id + UID reads, canonical writes).
+      final pubspec = File('pubspec.yaml').readAsStringSync();
+      expect(pubspec, contains('fake_cloud_firestore'));
+      final testFile = File('test/shop_id_resolution_test.dart');
+      expect(testFile.existsSync(), isTrue);
+      expect(testFile.readAsStringSync(), contains('FakeFirebaseFirestore'));
+    });
 
     test('cPanel upload errors (401/413/500) and retry backoff are tested',
         () {

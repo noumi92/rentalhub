@@ -17,6 +17,12 @@ class VehicleDetailView extends StatefulWidget {
   final VehicleEntity vehicle;
   final String shopName;
   final String shopPhone;
+
+  /// The shop document's `owner_id` ('' when unknown). The action bar
+  /// uses it to recognise the owner's own car: new cars carry the shop
+  /// DOCUMENT id, not the owner UID, so the vehicle's `shopId` alone no
+  /// longer identifies its owner.
+  final String shopOwnerId;
   final VoidCallback? onBookNow;
   final VoidCallback? onBack;
 
@@ -25,6 +31,7 @@ class VehicleDetailView extends StatefulWidget {
     required this.vehicle,
     required this.shopName,
     required this.shopPhone,
+    this.shopOwnerId = '',
     this.onBookNow,
     this.onBack,
   });
@@ -157,6 +164,7 @@ class _VehicleDetailViewState extends State<VehicleDetailView> {
               vehicle: v,
               shopName: widget.shopName,
               shopPhone: widget.shopPhone,
+              shopOwnerId: widget.shopOwnerId,
               selectedRate: selectedRate,
               withDriver: _withDriver,
               onBookNow: widget.onBookNow,

@@ -303,11 +303,13 @@ class AppRouter {
                 path: RouteNames.customerVehicleDetail,
                 builder: (context, state) => CustomerVehicleRouteLoader(
                   vehicleId: state.pathParameters['id']!,
-                  builder: (context, vehicle, shopName, shopPhone) =>
+                  builder: (context, vehicle, shopName, shopPhone,
+                          shopOwnerId) =>
                       VehicleDetailView(
                     vehicle: vehicle,
                     shopName: shopName,
                     shopPhone: shopPhone,
+                    shopOwnerId: shopOwnerId,
                     onBookNow: () => context.push(
                       RouteNames.customerPackagePicker
                           .replaceFirst(':vehicleId', vehicle.vehicleId),
@@ -321,7 +323,7 @@ class AppRouter {
                 path: RouteNames.customerPackagePicker,
                 builder: (context, state) => CustomerVehicleRouteLoader(
                   vehicleId: state.pathParameters['vehicleId']!,
-                  builder: (context, vehicle, shopName, shopPhone) =>
+                  builder: (context, vehicle, shopName, shopPhone, _) =>
                       RentPackagePickerView(
                     carId: vehicle.vehicleId,
                     carName: vehicle.displayName,

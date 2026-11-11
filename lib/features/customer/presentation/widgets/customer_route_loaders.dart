@@ -27,6 +27,7 @@ class CustomerVehicleRouteLoader extends StatelessWidget {
     VehicleEntity vehicle,
     String shopName,
     String shopPhone,
+    String shopOwnerId,
   ) builder;
 
   @override
@@ -51,6 +52,7 @@ class CustomerVehicleRouteLoader extends StatelessWidget {
           loaded.vehicle,
           loaded.shopName,
           loaded.shopPhone,
+          loaded.shopOwnerId,
         );
       },
     );
@@ -62,6 +64,7 @@ class CustomerVehicleRouteLoader extends StatelessWidget {
     if (vehicle == null) return null;
     var shopName = l10n.rentalShowroom;
     var shopPhone = '';
+    var shopOwnerId = '';
     try {
       final doc = await FirebaseFirestore.instance
           .collection('shops')
@@ -71,12 +74,14 @@ class CustomerVehicleRouteLoader extends StatelessWidget {
         final shop = ShopModel.fromMap(doc.data()!, id: doc.id);
         shopName = shop.shopName;
         shopPhone = shop.phoneNumber;
+        shopOwnerId = shop.ownerId;
       }
     } catch (_) {}
     return VehicleWithShop(
       vehicle: vehicle,
       shopName: shopName,
       shopPhone: shopPhone,
+      shopOwnerId: shopOwnerId,
     );
   }
 }
@@ -88,11 +93,17 @@ class VehicleWithShop {
     required this.vehicle,
     required this.shopName,
     required this.shopPhone,
+    required this.shopOwnerId,
   });
 
   final VehicleEntity vehicle;
   final String shopName;
   final String shopPhone;
+
+  /// The shop document's `owner_id` ('' when the shop has none, e.g. the
+  /// legacy record). The detail screen uses it to recognise the owner's
+  /// own car: new cars carry the shop DOCUMENT id, not the owner UID.
+  final String shopOwnerId;
 }
 
 /// Phase A (A1): the customer shop route. Loads the shop document from

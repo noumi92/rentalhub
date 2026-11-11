@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../../fleet/data/datasources/fleet_remote_data_source.dart';
 import 'subscription_plans.dart';
 
 export 'subscription_plans.dart';
@@ -69,7 +70,13 @@ class SubscriptionRequestRecord {
 }
 
 class SubscriptionDataSource {
+  final FirebaseFirestore? _firestore;
+
+  SubscriptionDataSource({FirebaseFirestore? firestore})
+      : _firestore = firestore;
+
   FirebaseFirestore? get _resolvedFirestore {
+    if (_firestore != null) return _firestore;
     try {
       return FirebaseFirestore.instance;
     } catch (_) {
@@ -155,15 +162,16 @@ class SubscriptionDataSource {
     });
   }
 
+  /// Shop-id mismatch (2026-11-11): vehicles are stored under the shop
+  /// DOCUMENT id, but callers pass the owner's UID — a plain
+  /// `shopId == shopId` count misses every new car. Delegates to the
+  /// fleet data source, whose count matches both id forms.
   Future<int> getFleetCount(String shopId) async {
     final fs = _resolvedFirestore;
     if (fs == null) return 0;
     try {
-      final snap = await fs
-          .collection('vehicles')
-          .where('shopId', isEqualTo: shopId)
-          .get();
-      return snap.docs.length;
+      return await FleetRemoteDataSource(firestore: fs)
+          .getActiveVehicleCount(shopId);
     } catch (_) {
       return 0;
     }
