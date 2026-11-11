@@ -14,6 +14,7 @@ import 'core/data/sync_engine.dart';
 import 'core/data/sync_status_cubit.dart';
 import 'core/di/injection_container.dart';
 import 'core/network/connectivity_service.dart';
+import 'core/platform/app_platform.dart';
 import 'core/routing/app_router.dart';
 import 'core/routing/route_names.dart';
 import 'core/settings/app_settings_cubit.dart';
@@ -76,6 +77,14 @@ void main() async {
     }
   });
   runApp(const RentalHubApp());
+  // Web admin panel: there is no SplashView to dismiss the native
+  // splash, so remove it once the first frame renders. Mobile keeps
+  // SplashView, which removes it itself.
+  if (AppPlatform.isWeb) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      FlutterNativeSplash.remove();
+    });
+  }
 }
 
 class RentalHubApp extends StatelessWidget {

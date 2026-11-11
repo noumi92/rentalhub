@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'app_shell.dart';
 import '../widgets/app_shell_nav.dart';
 import '../../l10n/app_localizations.dart';
+import '../platform/app_platform.dart';
 import 'auth_route_guard.dart';
 import 'route_names.dart';
 import '../../core/utils/current_shop.dart';
@@ -192,9 +193,18 @@ class AppRouter {
         l10nKey: 'navSettings'),
   ];
 
+  /// Web is the admin panel: it starts on the admin login with no
+  /// in-app splash (a signed-in admin is auto-continued to the
+  /// dashboard by AdminLoginView). Mobile keeps the splash.
+  /// A getter, not a const, so tests can flip
+  /// AppPlatform.isWebOverride — the GoRouter below is a static
+  /// final built once.
+  static String get initialLocation =>
+      AppPlatform.isWeb ? RouteNames.adminLogin : RouteNames.splash;
+
   static final GoRouter router = GoRouter(
     navigatorKey: rootNavigatorKey,
-    initialLocation: RouteNames.splash,
+    initialLocation: initialLocation,
     redirect: AuthRouteGuard.guardRoute,
     routes: [
       GoRoute(

@@ -155,6 +155,38 @@ void main() {
     });
   });
 
+  group('Web starts on the admin login, with no splash', () {
+    test('initial location is the admin login on web, not the splash', () {
+      expect(AppRouter.initialLocation, RouteNames.adminLogin);
+      expect(AppRouter.initialLocation, isNot(RouteNames.splash));
+    });
+
+    test('a signed-in admin still reaches the dashboard', () async {
+      await authDataSource.setLoggedIn(true);
+      await authDataSource.saveProfileInfo(
+          fullName: 'Admin User', phone: '03001234567');
+      await authDataSource.assignPermanentRole(
+          role: 'customer',
+          fullName: 'Admin User',
+          phone: '03001234567');
+      await authDataSource.setOnboardingCompleted(true);
+
+      // The web entry point stays the login route; the login view
+      // auto-continues a signed-in admin, and the guard resolves the
+      // dashboard as the post-auth destination.
+      expect(AppRouter.initialLocation, RouteNames.adminLogin);
+      expect(
+        AuthRouteGuard.resolveAuthDestination(),
+        RouteNames.adminDashboard,
+      );
+    });
+
+    test('initial location is still the splash on mobile', () {
+      AppPlatform.isWebOverride = false;
+      expect(AppRouter.initialLocation, RouteNames.splash);
+    });
+  });
+
   group('Mobile behaviour is unchanged', () {
     test('signed-out visitor still lands on the mobile login', () {
       AppPlatform.isWebOverride = false;
