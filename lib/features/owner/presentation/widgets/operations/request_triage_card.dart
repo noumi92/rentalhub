@@ -148,7 +148,11 @@ class RequestTriageCard extends StatelessWidget {
                     l10n.amountRs(formatRs(booking.totalAmount)),
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.w900,
-                        color: AppColors.secondary),
+                        // OW-m34: the amount is orange text, not the
+                        // secondary teal — same token as the status
+                        // label above it.
+                        color: AppColors.orangeTextFor(
+                            Theme.of(context).brightness)),
                   ),
                 ),
               ),

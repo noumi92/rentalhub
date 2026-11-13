@@ -59,7 +59,10 @@ class _RentPackagePickerViewState extends State<RentPackagePickerView> {
   bool _isWithDriver = false;
   String _selectedPackage = '24h';
   DateTime _pickupDate = DateTime.now().add(const Duration(hours: 2));
-  TimeOfDay _pickupTime = TimeOfDay.now();
+  // CU-m18: the time matches the date (now + 2h) — TimeOfDay.now()
+  // made the default pickup "today at the current time", already
+  // past by the time the user looks at it.
+  TimeOfDay _pickupTime = TimeOfDay.fromDateTime(DateTime.now().add(const Duration(hours: 2)));
   int _durationDays = 1;
 
   /// Phase B (B3): trip type, the car's booked days and the shop's
@@ -78,10 +81,7 @@ class _RentPackagePickerViewState extends State<RentPackagePickerView> {
       _selectedPackage = PackageTierList.defaultSelection(vehicle);
       if (sl.isRegistered<BookingRemoteDataSource>() ||
           sl.isRegistered<GetShopFixedRoutesUseCase>()) {
-        loadPickerAvailability(
-          vehicleId: vehicle.vehicleId,
-          shopId: widget.shopId,
-        ).then((data) {
+        loadPickerAvailability(vehicleId: vehicle.vehicleId, shopId: widget.shopId).then((data) {
           if (!mounted) return;
           setState(() {
             _blockedDates = data.blockedDays;
@@ -92,8 +92,7 @@ class _RentPackagePickerViewState extends State<RentPackagePickerView> {
     }
   }
 
-  List<PackageTierOption> get _tiers =>
-      PackageTierList.optionsFor(
+  List<PackageTierOption> get _tiers => PackageTierList.optionsFor(
         vehicle: widget.vehicle,
         isWithDriver: _isWithDriver,
         dailySelfDriveRate: widget.dailySelfDriveRate,
@@ -105,9 +104,7 @@ class _RentPackagePickerViewState extends State<RentPackagePickerView> {
         fixedRoute: _selectedRoute,
       );
 
-  PackageTierOption get _selectedTier =>
-      _tiers.firstWhere((t) => t.label == _selectedPackage,
-          orElse: () => _tiers.first);
+  PackageTierOption get _selectedTier => _tiers.firstWhere((t) => t.label == _selectedPackage, orElse: () => _tiers.first);
 
   int get _calculatedRate {
     // A fixed route is one fixed trip price; a chauffeur is added on
@@ -126,15 +123,9 @@ class _RentPackagePickerViewState extends State<RentPackagePickerView> {
     );
   }
 
-  int get _kmLimit => PackagePricing.kmLimitFor(
-        tier: _selectedTier,
-        durationDays: _durationDays,
-      );
+  int get _kmLimit => PackagePricing.kmLimitFor(tier: _selectedTier, durationDays: _durationDays);
 
-  int get _advanceRequired => PackagePricing.advanceFor(
-        vehicle: widget.vehicle,
-        total: _calculatedRate,
-      );
+  int get _advanceRequired => PackagePricing.advanceFor(vehicle: widget.vehicle, total: _calculatedRate);
 
   void _continue() {
     widget.onProceedToReview?.call(buildBookingDraft(
@@ -200,6 +191,12 @@ class _RentPackagePickerViewState extends State<RentPackagePickerView> {
                         selectedRoute: _selectedRoute,
                         onRouteSelected: (r) =>
                             setState(() => _selectedRoute = r),
+                        // CU-m17: the section states the out-of-city
+                        // price basis from the vehicle's own fields.
+                        outCityMode: vehicle.outCityMode,
+                        outCityPerKmPkr: vehicle.outCityPerKmPkr,
+                        outCityDailyPkr: vehicle.rates.outOfCityDaily ??
+                            vehicle.rates.daily24,
                       ),
                     ],
                     const SizedBox(height: 16),

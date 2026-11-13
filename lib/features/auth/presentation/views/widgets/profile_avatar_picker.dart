@@ -17,7 +17,7 @@ class ProfileAvatarPicker extends StatelessWidget {
   });
 
   Future<void> _pick(BuildContext context, ImageSource source) async {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final picker = ImagePicker();
     try {
       final picked = await picker.pickImage(
@@ -33,7 +33,7 @@ class ProfileAvatarPicker extends StatelessWidget {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(l10n.avatarPickerError(e.toString())),
+            content: Text(l10n?.avatarPickerError(e.toString()) ?? 'Could not open image picker: $e'),
             backgroundColor: AppColors.accentDanger,
           ),
         );
@@ -42,7 +42,7 @@ class ProfileAvatarPicker extends StatelessWidget {
   }
 
   void _showSheet(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -55,7 +55,7 @@ class ProfileAvatarPicker extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                l10n.avatarSelectPhoto,
+                l10n?.avatarSelectPhoto ?? 'Select Profile Photo',
                 style: Theme.of(ctx).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w700,
                     ),
@@ -67,7 +67,7 @@ class ProfileAvatarPicker extends StatelessWidget {
                   color: AppColors.secondary,
                 ),
                 title:  Text(
-                  l10n.avatarTakePhoto,
+                  l10n?.avatarTakePhoto ?? 'Take Photo',
                   style: TextStyle(fontWeight: FontWeight.w600),
                 ),
                 onTap: () {
@@ -80,7 +80,7 @@ class ProfileAvatarPicker extends StatelessWidget {
                   Icons.photo_library_rounded,
                 ),
                 title:  Text(
-                  l10n.avatarFromGallery,
+                  l10n?.avatarFromGallery ?? 'Choose from Gallery',
                   style: TextStyle(fontWeight: FontWeight.w600),
                 ),
                 onTap: () {
@@ -97,14 +97,14 @@ class ProfileAvatarPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final diameter = radius * 2;
     return Column(
       children: [
         // E3: the avatar is a labelled button for screen readers.
         Semantics(
           button: true,
-          label: l10n.avatarChangePhoto,
+          label: l10n?.avatarChangePhoto ?? 'Change profile photo',
           child: GestureDetector(
             onTap: () => _showSheet(context),
             child: Stack(
@@ -162,7 +162,7 @@ class ProfileAvatarPicker extends StatelessWidget {
         TextButton(
           onPressed: () => _showSheet(context),
           child: Text(
-            l10n.avatarSetPicture,
+            l10n?.avatarSetPicture ?? 'Set Profile Picture',
             style: Theme.of(context).textTheme.labelMedium?.copyWith(
                   fontWeight: FontWeight.w400,
                   color: AppColors.secondary,

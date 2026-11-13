@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/constants/app_colors.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/current_shop.dart';
 import '../../../../core/widgets/app_state_views.dart';
@@ -30,6 +31,9 @@ class _OwnerSubscriptionActiveViewState
   final _dataSource = SubscriptionDataSource();
   ShopSubscriptionState? _state;
   bool _loaded = false;
+  // OW-M8: no try/catch here either — same infinite spinner as the
+  // My-subscription screen.
+  bool _hasError = false;
 
   @override
   void initState() {
@@ -38,12 +42,17 @@ class _OwnerSubscriptionActiveViewState
   }
 
   Future<void> _load() async {
-    final state = await _dataSource.getShopSubscription(currentShopId());
-    if (mounted) {
-      setState(() {
-        _state = state;
-        _loaded = true;
-      });
+    if (mounted) setState(() => _hasError = false);
+    try {
+      final state = await _dataSource.getShopSubscription(currentShopId());
+      if (mounted) {
+        setState(() {
+          _state = state;
+          _loaded = true;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() => _hasError = true);
     }
   }
 
@@ -53,7 +62,11 @@ class _OwnerSubscriptionActiveViewState
         _ => l10n.subscriptionPlanFree,
       };
 
-  String _date(DateTime date) => DateFormat('d MMM yyyy', 'en').format(date);
+  // OW-m30: the current locale, not hardcoded 'en' (Urdu users saw
+  // English month names).
+  String _date(BuildContext context, DateTime date) =>
+      DateFormat('d MMM yyyy', Localizations.localeOf(context).languageCode)
+          .format(date);
 
   @override
   Widget build(BuildContext context) {
@@ -68,13 +81,20 @@ class _OwnerSubscriptionActiveViewState
               title: l10n.subscriptionMySubscription,
             ),
             Expanded(
-              child: !_loaded
-                  ? const AppLoadingState()
-                  : state == null
-                      ? AppErrorState(
-                          message: l10n.shopSaveError,
-                          onRetry: _load,
-                        )
+              child: _hasError
+                  ? AppErrorState(
+                      // OW-m30: the old message was shopSaveError — a
+                      // save error for a *load* failure.
+                      message: l10n.subscriptionLoadError,
+                      onRetry: _load,
+                    )
+                  : !_loaded
+                      ? const AppLoadingState()
+                      : state == null
+                          ? AppErrorState(
+                              message: l10n.subscriptionLoadError,
+                              onRetry: _load,
+                            )
                       : ListView(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 16, vertical: 14),
@@ -94,7 +114,7 @@ class _OwnerSubscriptionActiveViewState
                                     children: [
                                       const Icon(
                                           Icons.check_circle_rounded,
-                                          color: Colors.green, size: 28),
+                                          color: AppColors.accentSuccessStrong, size: 28),
                                       const SizedBox(width: 8),
                                       Expanded(
                                         child: Text(
@@ -122,7 +142,7 @@ class _OwnerSubscriptionActiveViewState
                                   if (state.trialEndsAt != null) ...[
                                     const SizedBox(height: 8),
                                     Text(
-                                        '${l10n.subscriptionTrialEnds}: ${_date(state.trialEndsAt!)}',
+                                        '${l10n.subscriptionTrialEnds}: ${_date(context, state.trialEndsAt!)}',
                                         style: Theme.of(context)
                                             .textTheme
                                             .bodyMedium),
@@ -130,7 +150,7 @@ class _OwnerSubscriptionActiveViewState
                                   if (state.nextBillingAt != null) ...[
                                     const SizedBox(height: 8),
                                     Text(
-                                        '${l10n.subscriptionNextBilling}: ${_date(state.nextBillingAt!)}',
+                                        '${l10n.subscriptionNextBilling}: ${_date(context, state.nextBillingAt!)}',
                                         style: Theme.of(context)
                                             .textTheme
                                             .bodyMedium),

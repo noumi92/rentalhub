@@ -1,5 +1,8 @@
+import 'dart:convert';
 import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:rentalhub/core/di/injection_container.dart';
@@ -27,6 +30,7 @@ import 'package:rentalhub/features/auth/presentation/views/onboarding_role_view.
 import 'package:rentalhub/features/owner/presentation/views/owner_onboarding_view.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_add_vehicle_view.dart';
 import 'package:rentalhub/main.dart';
+import 'package:rentalhub/core/auth/signed_in_user.dart';
 import 'package:rentalhub/l10n/app_localizations.dart';
 
 void main() {
@@ -34,20 +38,49 @@ void main() {
 
   setUp(() async {
     await sl.reset();
-    SharedPreferences.setMockInitialValues({});
+    // Audit SH-C1: assignPermanentRole fails closed with no signed-in
+    // user and no cached uid — seed the cached uid the data source
+    // explicitly falls back to, so the role test exercises the lock.
+    // Audit CU-m3: the Home/Documents screens show a signed-out error
+    // state with nobody signed in — stand in as 'cust-101' via the
+    // SignedInUser test override so they render their real content.
+    SharedPreferences.setMockInitialValues(
+        {'rentalhub_user_uid': 'usr_pk_001'});
+    SignedInUser.override = const SignedInUserData(
+      uid: 'cust-101',
+      displayName: 'Ahmed Raza',
+      phoneNumber: '03001234567',
+    );
     await initDependencies();
   });
 
   tearDown(() async {
+    SignedInUser.override = null;
     await sl.reset();
   });
 
   testWidgets('Phase 0: RentalHub app launches and renders discovery baseline',
       (WidgetTester tester) async {
-    await tester.pumpWidget(const RentalHubApp());
+    // The splash logo asset is a 0-byte placeholder in the repo (the
+    // known corrupt-PNG stubs) — serve a valid 1x1 PNG for image loads
+    // so the launch itself is what is tested, not the stub. Same
+    // pattern as _E2TestAssetBundle in ui_phase_d_immersion_test.
+    await tester.pumpWidget(DefaultAssetBundle(
+      bundle: _ValidPngAssetBundle(),
+      child: const RentalHubApp(),
+    ));
     await tester.pumpAndSettle();
 
-    expect(find.text('RentalHub'), findsWidgets);
+    // Audit SH-N12: the brand text is a Semantics label on the splash
+    // logo now, not a rendered Text node (the old fontSize: 0 hack hid
+    // it from sighted users while announcing nothing useful).
+    // Asserted on the widget tree (no semantics tree is built in
+    // widget tests without ensureSemantics).
+    expect(
+      find.byWidgetPredicate((w) =>
+          w is Semantics && w.properties.label == 'RentalHub'),
+      findsWidgets,
+    );
   });
 
   test(
@@ -438,10 +471,13 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    // Verify Step 1: Specs, Capacity, AC & Extra Features
+    // Verify Step 1: Specs, Capacity & Extra Features. Audit OW-M4:
+    // the AC switch is gone — no AC flag exists on VehicleEntity, so
+    // the toggle was a dead control (always on, never persisted). It
+    // returns only with a real `hasAc` field.
     expect(find.text('Vehicle Seating Capacity'), findsOneWidget);
     expect(find.text('5 Seats'), findsOneWidget);
-    expect(find.text('Air Conditioning (Full AC)'), findsOneWidget);
+    expect(find.text('Air Conditioning (Full AC)'), findsNothing);
     expect(find.text('Extra Features (Shown on Car Detail)'), findsOneWidget);
     expect(find.text('ABS Brakes'), findsOneWidget);
     expect(find.text('GPS Tracking'), findsOneWidget);
@@ -489,6 +525,20 @@ void main() {
     expect(find.text('WhatsApp Number'), findsOneWidget);
     expect(find.text('Continue to Role Selection'), findsOneWidget);
 
+    // Audit §5: the profile form has a required-field validator now —
+    // a blank name/phone blocks Continue instead of filing a blank
+    // profile under a demo identity. Enter real values first.
+    // The label is a separate Text above the field (AuthTextField),
+    // so find the name field by its hint; the phone field is a plain
+    // TextField inside PakistanPhoneField.
+    await tester.enterText(
+        find.widgetWithText(TextFormField, 'Your full name'), 'Ahmed Raza');
+    // Two TextFields render (the name TextFormField builds one
+    // internally); the phone field is the last. The validator wants
+    // 10 digits starting with 3 — '03001234567' is 11 digits.
+    await tester.enterText(find.byType(TextField).last, '3001234567');
+    await tester.pumpAndSettle();
+
     await tester.tap(find.text('Continue to Role Selection'));
     await tester.pumpAndSettle();
     expect(profileDone, isTrue);
@@ -527,4 +577,32 @@ void main() {
     }
     expect(lockedRole, 'owner');
   });
+}
+
+/// Serves a valid 1x1 PNG for any image-asset load, so tests that pump
+/// the splash screen are not failed by the repo's 0-byte PNG stubs.
+/// Same pattern as _E2TestAssetBundle in ui_phase_d_immersion_test.
+class _ValidPngAssetBundle extends AssetBundle {
+  static final Uint8List _png = base64Decode(
+    'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
+  );
+
+  @override
+  Future<ByteData> load(String key) async {
+    if (key.endsWith('.png')) {
+      return ByteData.view(_png.buffer);
+    }
+    return rootBundle.load(key);
+  }
+
+  @override
+  Future<String> loadString(String key, {bool cache = true}) =>
+      rootBundle.loadString(key, cache: cache);
+
+  @override
+  Future<T> loadStructuredData<T>(
+    String key,
+    Future<T> Function(String value) parser,
+  ) =>
+      rootBundle.loadStructuredData(key, parser);
 }

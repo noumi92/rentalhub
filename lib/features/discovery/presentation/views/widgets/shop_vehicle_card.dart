@@ -6,6 +6,7 @@ import '../../../../fleet/domain/entities/vehicle_entity.dart';
 import 'vehicle_hero_card.dart' show vehicleHeroTag;
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../../core/utils/money_format.dart';
+import 'vehicle_image_asset.dart';
 
 /// Phase A (A1): one car card on the shop detail screen, extracted so the
 /// view stays under the 250-line cap. Shows the owner's uploaded photo
@@ -19,18 +20,6 @@ class ShopVehicleCard extends StatelessWidget {
 
   final VehicleEntity vehicle;
   final VoidCallback? onTap;
-
-  String _assetFor(VehicleEntity v) {
-    final nameLower = '${v.make} ${v.model}'.toLowerCase();
-    if (nameLower.contains('civic')) {
-      return 'assets/images/honda_civic_hero.png';
-    } else if (nameLower.contains('corolla') || nameLower.contains('yaris')) {
-      return 'assets/images/toyota_corolla.png';
-    } else if (nameLower.contains('sportage') || nameLower.contains('br-v')) {
-      return 'assets/images/red_civic.png';
-    }
-    return 'assets/images/white_sedan_hero.png';
-  }
 
   Widget _carImage(VehicleEntity v) {
     final url = v.imageUrl;
@@ -46,8 +35,10 @@ class ShopVehicleCard extends StatelessWidget {
   }
 
   Widget _assetImage(VehicleEntity v) {
+    // CU-M9: the make/model → asset mapping lives in one shared
+    // helper now — Sportage/BR-V no longer render as a red Civic.
     return Image.asset(
-      _assetFor(v),
+      vehicleImageAsset(v.make, v.model),
       height: 120,
       fit: BoxFit.contain,
       errorBuilder: (_, __, ___) => Image.asset(
@@ -72,13 +63,34 @@ class ShopVehicleCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final v = vehicle;
+    final brightness = Theme.of(context).brightness;
+    // CU-M8: the pill colour follows the status — green when
+    // available, neutral when rented, amber in maintenance — instead
+    // of always wearing the green "available" look.
+    final Color pillBg;
+    final Color pillBorder;
+    final Color pillFg;
+    switch (v.status) {
+      case 'rented':
+        pillBg = Theme.of(context).colorScheme.surfaceContainerHighest;
+        pillBorder = Theme.of(context).colorScheme.outlineVariant;
+        pillFg = Theme.of(context).colorScheme.onSurfaceVariant;
+      case 'maintenance':
+        pillBg = AppColors.warningContainerFor(brightness);
+        pillBorder = AppColors.warning.withValues(alpha: 0.35);
+        pillFg = AppColors.warningOnContainerFor(brightness);
+      default:
+        pillBg = AppColors.successContainerFor(brightness);
+        pillBorder = AppColors.successBorderFor(brightness);
+        pillFg = AppColors.successOnContainerFor(brightness);
+    }
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       elevation: 2,
       clipBehavior: Clip.antiAlias,
+      // CU-M2: cards carry no dark border.
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: Theme.of(context).dividerColor),
       ),
       child: InkWell(
         onTap: onTap,
@@ -101,7 +113,7 @@ class ShopVehicleCard extends StatelessWidget {
                     tag: vehicleHeroTag(v.vehicleId),
                     child: _carImage(v),
                   ),
-                  // Availability Pill
+                  // Availability Pill (CU-M8: colour by status)
                   Positioned(
                     top: 10,
                     right: 10,
@@ -109,19 +121,14 @@ class ShopVehicleCard extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: AppColors.successContainerFor(
-                            Theme.of(context).brightness),
+                        color: pillBg,
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                            color: AppColors.successBorderFor(
-                                Theme.of(context).brightness)),
+                        border: Border.all(color: pillBorder),
                       ),
                       child: Text(
                         _statusLabel(AppLocalizations.of(context)!, v.status),
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.successOnContainerFor(
-                                Theme.of(context).brightness)),
+                            fontWeight: FontWeight.w700, color: pillFg),
                       ),
                     ),
                   ),
@@ -184,7 +191,9 @@ class ShopVehicleCard extends StatelessWidget {
                             .labelMedium
                             ?.copyWith(
                                 fontWeight: FontWeight.w800,
-                                color: AppColors.secondary),
+                                // CU-M1: white-on-orange small text
+                                // was 3.29:1 — orangeTextFor is AA.
+                                color: AppColors.orangeTextFor(brightness)),
                       ),
                     ],
                   ),
@@ -206,8 +215,9 @@ class ShopVehicleCard extends StatelessWidget {
         const SizedBox(width: 4),
         Text(
           text,
-          style: TextStyle(
-              fontSize: 11.5,
+          // CU-m1: the hardcoded 11.5px drifted from the type scale —
+          // labelSmall is the token for this size.
+          style: Theme.of(context).textTheme.labelSmall?.copyWith(
               color: Theme.of(context).colorScheme.onSurfaceVariant),
         ),
       ],

@@ -184,9 +184,9 @@ void main() {
     ('Customer Wallet', const CustomerWalletView()),
     ('Customer Support', const CustomerSupportView()),
     ('Customer Profile', const CustomerProfileView()),
-    ('Owner Dashboard', const OwnerDashboardView()),
+    ('Owner Dashboard', const OwnerDashboardView(shopId: 'shop-1')),
     ('Owner Fleet', const OwnerFleetView()),
-    ('Owner Requests', const OwnerBookingRequestsView()),
+    ('Owner Requests', const OwnerBookingRequestsView(shopId: 'shop-1')),
     ('Owner Customers', const OwnerCustomersListView()),
     ('Owner Settings', const OwnerSettingsView()),
   ];

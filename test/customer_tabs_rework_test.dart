@@ -47,7 +47,9 @@ void main() {
         'Wallet',
         'Profile',
       ]);
-      expect(AppRouter.customerTabs[1].l10nKey, 'tab2_navShops');
+      // Audit SH-N15: the leftover numbering artefact 'tab2_navShops'
+      // was normalised to 'navShops' like every other tab key.
+      expect(AppRouter.customerTabs[1].l10nKey, 'navShops');
       expect(
         AppRouter.customerTabs.map((t) => t.label),
         isNot(contains('Support')),

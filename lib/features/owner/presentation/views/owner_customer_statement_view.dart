@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -31,7 +32,7 @@ class OwnerCustomerStatementView extends StatefulWidget {
 
   const OwnerCustomerStatementView({
     super.key,
-    this.shopId = 'shop-1',
+    required this.shopId,
     required this.customerId,
   });
 
@@ -76,19 +77,27 @@ class _OwnerCustomerStatementViewState
     }
   }
 
+  // OW-m7: the name never falls back to the raw customerId — an
+  // unknown customer shows "—".
   String get _customerName =>
-      _bookings.firstOrNull?.customerName ?? widget.customerId;
+      _bookings.firstOrNull?.customerName ?? '—';
   String get _customerPhone => _bookings.firstOrNull?.customerPhone ?? '';
-  int get _totalDue =>
-      _bookings.fold(0, (total, b) => total + b.remainingBalance);
+  // OW-m7: dues count only due statuses (same set as customer
+  // detail) — cancelled bookings no longer inflate the total.
+  static const _dueStatuses = {'approved', 'paid', 'active', 'completed'};
+  int get _totalDue => _bookings
+      .where((b) => _dueStatuses.contains(b.status) && b.remainingBalance > 0)
+      .fold(0, (total, b) => total + b.remainingBalance);
 
-  String _statementText(AppLocalizations l10n) {
+  String _statementText(BuildContext context, AppLocalizations l10n) {
+    // OW-m7: locale-aware dates, not raw d/m/y.
+    final locale = Localizations.localeOf(context).languageCode;
     final lines = <String>[
       l10n.financeStatementMessageTitle(_customerName),
       for (final b in _bookings)
         l10n.financeStatementMessageRow(
           b.bookingId,
-          '${b.pickupTime.day}/${b.pickupTime.month}/${b.pickupTime.year}',
+          DateFormat.yMd(locale).format(b.pickupTime),
           formatRs(b.totalAmount),
           formatRs(b.advancePaid),
           formatRs(b.remainingBalance),
@@ -100,7 +109,7 @@ class _OwnerCustomerStatementViewState
 
   Future<void> _sendWhatsApp() async {
     final l10n = AppLocalizations.of(context)!;
-    final uri = whatsappUri(phone: _customerPhone, message: _statementText(l10n));
+    final uri = whatsappUri(phone: _customerPhone, message: _statementText(context, l10n));
     if (uri == null) {
       AppFeedback.showError(context, l10n.financeDuesNoPhoneError);
       return;
@@ -116,7 +125,7 @@ class _OwnerCustomerStatementViewState
     setState(() => _isBusy = true);
     try {
       final bytes = await StatementPdfGenerator.generateCustomerStatement(
-        shopName: _bookings.firstOrNull?.shopName ?? widget.shopId,
+        shopName: _bookings.firstOrNull?.shopName ?? '—',
         customerName: _customerName,
         customerPhone: _customerPhone,
         bookings: _bookings,
@@ -140,7 +149,7 @@ class _OwnerCustomerStatementViewState
     setState(() => _isBusy = true);
     try {
       final bytes = await StatementPdfGenerator.generateCustomerStatement(
-        shopName: _bookings.firstOrNull?.shopName ?? widget.shopId,
+        shopName: _bookings.firstOrNull?.shopName ?? '—',
         customerName: _customerName,
         customerPhone: _customerPhone,
         bookings: _bookings,

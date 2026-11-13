@@ -6,6 +6,7 @@ import '../../../../features/fleet/domain/entities/vehicle_entity.dart';
 import 'widgets/vehicle_detail_action_bar.dart';
 import 'widgets/vehicle_detail_packages.dart';
 import 'widgets/vehicle_hero_card.dart';
+import 'widgets/vehicle_image_asset.dart';
 import 'widgets/vehicle_spec_box.dart';
 import '../../../../l10n/app_localizations.dart';
 
@@ -43,17 +44,11 @@ class VehicleDetailView extends StatefulWidget {
 class _VehicleDetailViewState extends State<VehicleDetailView> {
   bool _withDriver = false;
 
-  String _getCarImage(VehicleEntity v) {
-    final nameLower = '${v.make} ${v.model}'.toLowerCase();
-    if (nameLower.contains('civic')) {
-      return 'assets/images/honda_civic_hero.png';
-    } else if (nameLower.contains('corolla') || nameLower.contains('yaris')) {
-      return 'assets/images/toyota_corolla.png';
-    } else if (nameLower.contains('sportage') || nameLower.contains('br-v')) {
-      return 'assets/images/red_civic.png';
-    }
-    return 'assets/images/white_sedan_hero.png';
-  }
+  // CU-M9: the make/model → asset mapping is the shared
+  // [vehicleImageAsset] helper — this view used to carry its own
+  // copy that showed a Sportage as a red Civic.
+  String _getCarImage(VehicleEntity v) =>
+      vehicleImageAsset(v.make, v.model);
 
   String _statusLabel(String status) {
     final l10n = AppLocalizations.of(context)!;

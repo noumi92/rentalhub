@@ -35,9 +35,6 @@ class VehicleSpecsStepWidget extends StatelessWidget {
   final int seats;
   final ValueChanged<int> onSeatsChanged;
 
-  final bool hasAc;
-  final ValueChanged<bool> onAcChanged;
-
   final Set<String> selectedFeatures;
   final ValueChanged<String> onFeatureToggled;
 
@@ -63,8 +60,6 @@ class VehicleSpecsStepWidget extends StatelessWidget {
     required this.onFuelTypeChanged,
     required this.seats,
     required this.onSeatsChanged,
-    required this.hasAc,
-    required this.onAcChanged,
     required this.selectedFeatures,
     required this.onFeatureToggled,
   });
@@ -410,8 +405,6 @@ class VehicleSpecsStepWidget extends StatelessWidget {
         VehicleCapacityStepWidget(
           seats: seats,
           onSeatsChanged: onSeatsChanged,
-          hasAc: hasAc,
-          onAcChanged: onAcChanged,
           selectedFeatures: selectedFeatures,
           onFeatureToggled: onFeatureToggled,
         ),

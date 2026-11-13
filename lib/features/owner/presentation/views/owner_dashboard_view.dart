@@ -24,7 +24,7 @@ class OwnerDashboardView extends StatefulWidget {
 
   const OwnerDashboardView({
     super.key,
-    this.shopId = 'shop-1',
+    required this.shopId,
   });
 
   @override

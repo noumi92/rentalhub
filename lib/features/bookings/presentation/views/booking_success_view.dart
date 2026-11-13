@@ -59,13 +59,15 @@ class BookingSuccessView extends StatelessWidget {
                     const SizedBox(height: 6),
                     Text(
                       l10n.successReference(booking.bookingId),
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.secondary),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.orangeTextFor(Theme.of(context).brightness)),
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      l10n.successBody(booking.vehicleName ?? l10n.summaryVehicle, booking.shopName ?? 'the showroom'),
+                      // CU-M12: a missing field renders '—', never a
+                      // fake shop name ('the showroom').
+                      l10n.successBody(booking.vehicleName ?? '—', booking.shopName ?? '—'),
                       textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary, height: 1.45),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant, height: 1.45),
                     ),
                     const SizedBox(height: 24),
                     Container(
@@ -92,7 +94,7 @@ class BookingSuccessView extends StatelessWidget {
                               Text(l10n.successAdvanceDue,
                                   style: Theme.of(context).textTheme.bodyMedium),
                               Text(l10n.amountRs(formatRs(booking.advanceRequired)),
-                                  style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900, color: AppColors.secondary)),
+                                  style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900, color: AppColors.orangeTextFor(Theme.of(context).brightness))),
                             ],
                           ),
                         ],
@@ -104,7 +106,7 @@ class BookingSuccessView extends StatelessWidget {
                         final uri = whatsappUri(
                           phone: booking.shopPhone ?? '',
                           message:
-                              l10n.successWhatsapp(booking.shopName ?? 'there', booking.bookingId, booking.vehicleName ?? 'vehicle'),
+                              l10n.successWhatsapp(booking.shopName ?? '—', booking.bookingId, booking.vehicleName ?? '—'),
                         );
                         if (uri == null) {
                           AppFeedback.showInfo(

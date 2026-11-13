@@ -40,10 +40,14 @@ class _CustomerSosViewState extends State<CustomerSosView> {
   // showroom, the same lookup the support screen uses.
   Future<void> _loadShopContact() async {
     try {
-      String uid = 'cust-101';
+      // CU-m3: signed out — there is no booking to look the shop
+      // up from, and the old 'cust-101' fallback read another
+      // user's bookings. The contact cards simply stay empty.
+      String? uid;
       try {
-        uid = FirebaseAuth.instance.currentUser?.uid ?? uid;
+        uid = FirebaseAuth.instance.currentUser?.uid;
       } catch (_) {}
+      if (uid == null) return;
       final bookings =
           await sl<BookingRemoteDataSource>().getCustomerBookings(uid);
       if (bookings.isEmpty) return;

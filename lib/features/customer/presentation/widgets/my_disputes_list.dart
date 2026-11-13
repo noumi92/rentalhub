@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
+import '../../../owner/presentation/widgets/dispute_list_tile.dart';
 import '../../data/datasources/dispute_remote_data_source.dart';
 import 'dispute_category_chips.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -30,11 +31,15 @@ class _MyDisputesListState extends State<MyDisputesList> {
   Future<void> _load() async {
     List<DisputeRecord> list = [];
     try {
-      String uid = 'cust-101';
+      // CU-m3: signed out — the old 'cust-101' fallback read
+      // another user's disputes. The list simply stays empty.
+      String? uid;
       try {
-        uid = FirebaseAuth.instance.currentUser?.uid ?? uid;
+        uid = FirebaseAuth.instance.currentUser?.uid;
       } catch (_) {}
-      list = await sl<DisputeRemoteDataSource>().getCustomerDisputes(uid);
+      if (uid != null) {
+        list = await sl<DisputeRemoteDataSource>().getCustomerDisputes(uid);
+      }
     } catch (_) {}
     if (mounted) setState(() => _disputes = list);
   }
@@ -47,7 +52,10 @@ class _MyDisputesListState extends State<MyDisputesList> {
       case 'in_review':
         return AppColors.warningTextFor(brightness);
       default:
-        return AppColors.secondary;
+        // CU-M1: the old default was AppColors.secondary (white-on-
+        // orange 3.29:1 as small text) — open disputes read as the
+        // same pending amber as in-review.
+        return AppColors.warningTextFor(brightness);
     }
   }
 
@@ -95,7 +103,15 @@ class _MyDisputesListState extends State<MyDisputesList> {
             ),
           )
         else
-          ...disputes.map((d) => Container(
+          ...disputes.map((d) {
+            // CU-m13: no customer dispute-detail view exists (only
+            // the owner inbox has one), so rows stay inert — but each
+            // row now shows when it was filed and how much of the
+            // 72h SLA is left, reusing the owner's line. The record
+            // carries no updatedAt, so the filed time is the only
+            // honest timestamp available.
+            final sla = DisputeListTile.slaLine(l10n, d.createdAt);
+            return Container(
                 margin: const EdgeInsets.only(bottom: 8),
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
@@ -135,6 +151,13 @@ class _MyDisputesListState extends State<MyDisputesList> {
                       l10n.bookingDetailTitle(d.bookingId),
                       style: Theme.of(context).textTheme.labelSmall,
                     ),
+                    if (sla != null) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        sla,
+                        style: Theme.of(context).textTheme.labelSmall,
+                      ),
+                    ],
                     const SizedBox(height: 4),
                     Text(
                       d.description,
@@ -142,7 +165,8 @@ class _MyDisputesListState extends State<MyDisputesList> {
                     ),
                   ],
                 ),
-              )),
+              );
+          }),
       ],
     );
   }

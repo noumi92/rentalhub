@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/current_shop.dart';
 import '../../../../core/utils/money_format.dart';
+import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/debounced_button.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
@@ -40,8 +41,14 @@ class _OwnerWhatsappBuyCreditsViewState
   }
 
   Future<void> _loadTier() async {
-    final state = await _subs.getShopSubscription(currentShopId());
-    if (mounted) setState(() => _tier = state.tier);
+    // OW-m32: a failed tier load keeps the 'free' tier (and its
+    // free-credits line) instead of throwing into the void.
+    try {
+      final state = await _subs.getShopSubscription(currentShopId());
+      if (mounted) setState(() => _tier = state.tier);
+    } catch (_) {
+      // Keep the 'free' default; the buy flow still works.
+    }
   }
 
   void _buy(WhatsappCreditPack pack) {
@@ -123,7 +130,8 @@ class _OwnerWhatsappBuyCreditsViewState
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 8, vertical: 3),
                                       decoration: BoxDecoration(
-                                          color: Colors.green,
+                                          // OW-m32: theme token, not raw Colors.green.
+                                          color: AppColors.accentSuccessStrong,
                                           borderRadius:
                                               BorderRadius.circular(6)),
                                       child: Text(l10n.creditsPackBestValue,

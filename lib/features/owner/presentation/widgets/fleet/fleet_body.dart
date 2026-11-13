@@ -23,6 +23,7 @@ class FleetBody extends StatelessWidget {
     required this.onOutCityRules,
     required this.onTapVehicle,
     this.onEditDetails,
+    this.rentedUntilFor,
   });
 
   final FleetState state;
@@ -37,6 +38,10 @@ class FleetBody extends StatelessWidget {
   /// Opens the edit-details route for the vehicle; null hides the
   /// card's Edit icon button. The fleet view wires this.
   final void Function(VehicleEntity vehicle)? onEditDetails;
+
+  /// RQ-F10: the active booking's return date per vehicle (the fleet
+  /// view loads it from the shop bookings); null renders no line.
+  final DateTime? Function(VehicleEntity vehicle)? rentedUntilFor;
 
   @override
   Widget build(BuildContext context) {
@@ -82,6 +87,7 @@ class FleetBody extends StatelessWidget {
           onOutCityRules: () => onOutCityRules(v),
           onEditDetails: onEditDetails == null ? null : () => onEditDetails!(v),
           onTap: () => onTapVehicle(v),
+          rentedUntil: rentedUntilFor?.call(v),
         );
       },
     );

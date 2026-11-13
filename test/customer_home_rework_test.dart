@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:rentalhub/core/auth/signed_in_user.dart';
 import 'package:rentalhub/core/network/cpanel_storage_client.dart';
 import 'package:rentalhub/core/network/firestore_service.dart';
 import 'package:rentalhub/core/theme/app_theme.dart';
@@ -171,6 +172,22 @@ Future<void> _tapVisible(WidgetTester tester, Finder finder) async {
 }
 
 void main() {
+  // CU-m3: Home loads the signed-in user's own data and shows a
+  // signed-out error state otherwise. Widget tests cannot sign a
+  // Firebase user in, so stand in as 'cust-101' (the id the seeded
+  // data is filed under) via the SignedInUser test override.
+  setUp(() {
+    SignedInUser.override = const SignedInUserData(
+      uid: 'cust-101',
+      displayName: 'Ahmed Raza',
+      phoneNumber: '03001234567',
+    );
+  });
+
+  tearDown(() {
+    SignedInUser.override = null;
+  });
+
   group('customer home rework: KPIs', () {
     testWidgets('KPIs render from real data', (tester) async {
       final bookingsDs = BookingRemoteDataSource();

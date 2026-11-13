@@ -43,11 +43,19 @@ class _SupportTicketFormState extends State<SupportTicketForm> {
     }
     setState(() => _isSubmitting = true);
     try {
-      String customerId = 'cust-101';
+      // CU-m3: a signed-out caller cannot send a ticket — the old
+      // 'cust-101' fallback filed it under a shared fake identity.
+      String? customerId;
       try {
-        customerId =
-            FirebaseAuth.instance.currentUser?.uid ?? customerId;
+        customerId = FirebaseAuth.instance.currentUser?.uid;
       } catch (_) {}
+      if (customerId == null) {
+        if (mounted) {
+          setState(() => _isSubmitting = false);
+          AppFeedback.showError(context, l10n.signInRequiredGeneric);
+        }
+        return;
+      }
       await FirebaseFirestore.instance.collection('support_tickets').add({
         'customerId': customerId,
         'message': message,

@@ -5,6 +5,11 @@ import 'package:flutter/material.dart';
 /// these constants and nothing else. Values are the rulebook values, light
 /// and dark; where the old file disagreed with the rulebook, the rulebook
 /// wins (see the notes on `primaryLight`, `secondaryLight`, `borderDark`).
+/// Audit SH-N3 (2026-11-13) deleted the zero-use aliases
+/// (`primaryLight`, `secondaryLight`, `background`, `surface`,
+/// `textMutedDark`); `textPrimary` / `textSecondary` / `textMuted`
+/// remain only as @Deprecated legacy aliases because other modules
+/// still reference them — new code must use the `onSurface*` names.
 class AppColors {
   // Header gradient (rulebook §4.3): the curved header's base gradient
   // is #16194F → #242875 in light mode and #0B0D26 → #16194F in dark
@@ -23,6 +28,24 @@ class AppColors {
   static const Color headerArc2Dark = Color(0xFF3B46B6);
   static const Color headerGlowLight = Color(0xFF2E3896);
 
+  // Splash gradient (audit SH-N1, 2026-11-13): the splash screen's
+  // navy gradient lived as four hardcoded hex literals in
+  // `splash_view.dart`. It now lives here. `splashGradientTop`
+  // #0F1336 is also the `flutter_native_splash` colour in
+  // pubspec.yaml — the native splash and the in-app splash share it
+  // deliberately so there is no colour jump at handover.
+  static const Color splashBackground = Color(0xFF131842);
+  static const Color splashGradientTop = Color(0xFF0F1336);
+  static const Color splashGradientMiddle = Color(0xFF161B4A);
+  static const Color splashGradientBottom = Color(0xFF12163F);
+
+  // Pakistani number-plate strip colours (audit SH-N1): real plate
+  // colours, not theme colours — Islamabad plates carry a blue
+  // strip, other provinces a green one. Named tokens so the widget
+  // never hardcodes hex.
+  static const Color plateStripIslamabad = Color(0xFF1E3A8A);
+  static const Color plateStripDefault = Color(0xFF15803D);
+
   // Primary palette (Deep Midnight Navy)
   static const Color primaryDark = Color(0xFF16194F);
   static const Color primary = Color(0xFF1B1E5C);
@@ -32,14 +55,16 @@ class AppColors {
   static const Color primaryDarkOnDark = Color(0xFF0B0D26);
   // Rulebook §4.2: primaryLight is the light container tint #EEF0FF (the
   // old #242875 was a second navy with no rulebook meaning and no usages).
-  static const Color primaryLight = Color(0xFFEEF0FF);
+  // Audit SH-N3 (2026-11-13): `primaryLight` was a duplicate name for
+  // this value — it is deleted; `primaryContainer` is the one name.
   static const Color primaryContainer = Color(0xFFEEF0FF);
 
   // Accent palette (Vibrant Sunset Orange)
   static const Color secondary = Color(0xFFF95700);
   // Rulebook §4.2: secondaryLight (light) is the pale tint #FFF3EB; the
   // old #FF6D24 is the *dark* secondary — it now lives in `secondaryDark`.
-  static const Color secondaryLight = Color(0xFFFFF3EB);
+  // Audit SH-N3 (2026-11-13): `secondaryLight` was a duplicate name for
+  // this value — it is deleted; `secondaryContainer` is the one name.
   static const Color secondaryContainer = Color(0xFFFFF3EB);
   static const Color secondaryDark = Color(0xFFFF6D24);
   static const Color secondaryLightDark = Color(0xFF3D1B08);
@@ -90,6 +115,12 @@ class AppColors {
   static const Color warningContainer = Color(0xFFFFFBEB);
   static const Color warningContainerDark = Color(0xFF3A2A05);
   static const Color warningOnContainerDark = Color(0xFFFCD34D);
+  // Audit SH-N14 (2026-11-13): text on the light warning container.
+  // The old light value was `warning` #F59E0B itself — 2.07:1 on
+  // #FFFBEB, failing WCAG AA for the offline banner and every other
+  // warning-container text. Amber-800 #92400E measures 6.84:1 on
+  // #FFFBEB (>= 4.5:1), so this is the light on-container text.
+  static const Color warningOnContainer = Color(0xFF92400E);
 
   // Dark-mode focused input border. primaryOnDark #252B7A is invisible
   // against the dark field fill #1E2138 / border #23274D, so focused
@@ -107,7 +138,9 @@ class AppColors {
   static Color successBorderFor(Brightness brightness) =>
       brightness == Brightness.dark
           ? accentSuccessDark
-          : const Color(0xFF86EFAC);
+          // Audit SH-N3: was an inlined `const Color(0xFF86EFAC)` —
+          // the same value as `successOnContainerDark`. One name.
+          : successOnContainerDark;
   static Color errorContainerFor(Brightness brightness) =>
       brightness == Brightness.dark ? errorContainerDark : errorContainer;
   static Color errorOnContainerFor(Brightness brightness) =>
@@ -126,7 +159,7 @@ class AppColors {
   static Color warningContainerFor(Brightness brightness) =>
       brightness == Brightness.dark ? warningContainerDark : warningContainer;
   static Color warningOnContainerFor(Brightness brightness) =>
-      brightness == Brightness.dark ? warningOnContainerDark : warning;
+      brightness == Brightness.dark ? warningOnContainerDark : warningOnContainer;
 
   /// Brightness-aware ORANGE text / container colours (audit C3).
   /// Light mode uses the dark orange #C2410C (5.18:1 on white, 4.75:1 on
@@ -142,10 +175,12 @@ class AppColors {
   // Background & surfaces
   static const Color backgroundLight = Color(0xFFF8FAFC);
   static const Color backgroundDark = Color(0xFF0A0B1A);
-  static const Color background = backgroundLight;
+  // Audit SH-N3 (2026-11-13): `background` and `surface` were
+  // duplicate names for `backgroundLight` / `surfaceLight` — both
+  // deleted (zero / one use; the one `background` use now reads
+  // `backgroundLight`). One name per value.
   static const Color surfaceLight = Color(0xFFFFFFFF);
   static const Color surfaceDark = Color(0xFF13152C);
-  static const Color surface = surfaceLight;
   // Rulebook §4.2 surfaceElevated (was `surfaceMuted`, light only).
   static const Color surfaceElevated = Color(0xFFF1F5F9);
   static const Color surfaceElevatedDark = Color(0xFF1C1F3D);
@@ -161,15 +196,26 @@ class AppColors {
   static const Color onSurfaceDark = Color(0xFFF8FAFC);
   static const Color onSurfaceVariantLight = Color(0xFF64748B);
   static const Color onSurfaceVariantDark = Color(0xFF94A3B8);
+  // Audit SH-N3 (2026-11-13): `textPrimary` / `textSecondary` /
+  // `textMuted` duplicate `onSurfaceLight` / `onSurfaceVariantLight`
+  // and are still referenced by customer, owner and bookings widgets
+  // plus two test files outside this change's scope, so they stay as
+  // deprecated legacy aliases instead of being deleted (deleting them
+  // would break those files). New code must use the `onSurface*`
+  // names; the alias scan test fails on any NEW alias.
+  @Deprecated('Use onSurfaceLight instead')
   static const Color textPrimary = onSurfaceLight;
+  @Deprecated('Use onSurfaceVariantLight instead')
   static const Color textSecondary = onSurfaceVariantLight;
   // textMuted is the muted grey for text on LIGHT surfaces ONLY.
   // 0xFF64748B reads at ~4.6:1 on white (WCAG AA) but only ~3.8:1 on
   // dark surfaces, failing AA — never use it on a dark surface; use
-  // textMutedDark (onSurfaceVariantDark, ~7:1 on dark) instead.
+  // onSurfaceVariantDark (~7:1 on dark) instead.
   // (Was 0xFF94A3B8 — ~2.2:1, unreadable.)
+  // Audit SH-N3: `textMutedDark` (a duplicate of
+  // `onSurfaceVariantDark` with zero uses) is deleted.
+  @Deprecated('Use onSurfaceVariantLight instead')
   static const Color textMuted = onSurfaceVariantLight;
-  static const Color textMutedDark = onSurfaceVariantDark;
 
   // Borders — canonical name is borderSubtle (rulebook §4.2).
   static const Color borderSubtle = Color(0xFFE2E8F0);

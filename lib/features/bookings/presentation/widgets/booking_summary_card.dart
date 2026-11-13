@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/pakistani_plate_widget.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -41,6 +42,7 @@ class BookingSummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final locale = Localizations.localeOf(context).languageCode;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -105,14 +107,15 @@ class BookingSummaryCard extends StatelessWidget {
             ),
           ],
           const SizedBox(height: 8),
-          _buildRow(context, 
+          _buildRow(context,
             l10n.summaryPickupTime,
-            '${pickupTime.day}/${pickupTime.month}/${pickupTime.year} at ${pickupTime.hour.toString().padLeft(2, '0')}:${pickupTime.minute.toString().padLeft(2, '0')}',
+            // CU-m4: locale-aware date + time, not ambiguous d/M/yyyy.
+            '${DateFormat.yMMMd(locale).format(pickupTime)} • ${DateFormat.jm(locale).format(pickupTime)}',
           ),
           const SizedBox(height: 8),
-          _buildRow(context, 
+          _buildRow(context,
             l10n.summaryReturnDue,
-            '${returnTime.day}/${returnTime.month}/${returnTime.year} at ${returnTime.hour.toString().padLeft(2, '0')}:${returnTime.minute.toString().padLeft(2, '0')}',
+            '${DateFormat.yMMMd(locale).format(returnTime)} • ${DateFormat.jm(locale).format(returnTime)}',
           ),
           const Divider(height: 24),
           _buildRow(context, l10n.summaryTotalFare, l10n.amountRs(formatRs(totalAmount)), isBold: true),
@@ -120,7 +123,7 @@ class BookingSummaryCard extends StatelessWidget {
           _buildRow(context, 
             l10n.summaryAdvancePayable,
             l10n.amountRs(formatRs(advanceRequired)),
-            color: AppColors.secondary,
+            color: AppColors.orangeTextFor(Theme.of(context).brightness),
             isBold: true,
           ),
           const SizedBox(height: 8),
@@ -139,20 +142,28 @@ class BookingSummaryCard extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 13,
-            color: isBold ? Theme.of(context).colorScheme.onSurface : Theme.of(context).colorScheme.onSurfaceVariant,
-            fontWeight: isBold ? FontWeight.w800 : FontWeight.w500,
+        // CU-m5: the value wraps instead of overflowing at large
+        // text scale.
+        Flexible(
+          child: Text(
+            label,
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+              color: isBold ? Theme.of(context).colorScheme.onSurface : Theme.of(context).colorScheme.onSurfaceVariant,
+              fontWeight: isBold ? FontWeight.w800 : FontWeight.w500,
+            ),
           ),
         ),
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: 13,
-            color: color ?? Theme.of(context).colorScheme.onSurface,
-            fontWeight: isBold ? FontWeight.w900 : FontWeight.w700,
+        const SizedBox(width: 8),
+        Flexible(
+          child: Text(
+            value,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.end,
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+              color: color ?? Theme.of(context).colorScheme.onSurface,
+              fontWeight: isBold ? FontWeight.w900 : FontWeight.w700,
+            ),
           ),
         ),
       ],

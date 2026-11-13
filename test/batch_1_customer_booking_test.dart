@@ -12,6 +12,7 @@ import 'package:rentalhub/features/customer/presentation/views/customer_active_t
 import 'package:rentalhub/features/bookings/presentation/views/rent_package_picker_view.dart';
 import 'package:rentalhub/features/bookings/presentation/views/review_booking_request_view.dart';
 import 'package:rentalhub/features/discovery/presentation/views/shop_cars_view.dart';
+import 'package:rentalhub/core/auth/signed_in_user.dart';
 import 'package:rentalhub/features/fleet/domain/entities/vehicle_entity.dart';
 import 'package:rentalhub/l10n/app_localizations.dart';
 
@@ -20,6 +21,19 @@ void main() {
     TestWidgetsFlutterBinding.ensureInitialized();
     SharedPreferences.setMockInitialValues({});
     await di.initDependencies();
+    // CU-M12 / CU-m3: the review submit files the request under the
+    // signed-in user and refuses a signed-out caller. Widget tests
+    // cannot sign a Firebase user in, so stand in as 'cust-101' via
+    // the SignedInUser test override.
+    SignedInUser.override = const SignedInUserData(
+      uid: 'cust-101',
+      displayName: 'Ahmed Raza',
+      phoneNumber: '03001234567',
+    );
+  });
+
+  tearDownAll(() {
+    SignedInUser.override = null;
   });
 
   group('Batch 1: Customer Booking Flow CRUD Operations', () {

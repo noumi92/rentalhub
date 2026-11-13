@@ -41,18 +41,22 @@ class RadiusFilterPills extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20),
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 180),
+                  // CU-M3: 48dp minimum tap target.
+                  constraints: const BoxConstraints(minHeight: 48),
                   padding: const EdgeInsets.symmetric(
                     horizontal: 14,
                     vertical: 7,
                   ),
                   decoration: BoxDecoration(
+                    // CU-M1: white on AppColors.secondary is 3.29:1
+                    // — orangeFill is 5.18:1.
                     color: isSelected
-                        ? AppColors.secondary
+                        ? AppColors.orangeFill
                         : Theme.of(context).colorScheme.surface,
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
                       color: isSelected
-                          ? AppColors.secondary
+                          ? AppColors.orangeFill
                           : Theme.of(context).dividerColor,
                     ),
                   ),

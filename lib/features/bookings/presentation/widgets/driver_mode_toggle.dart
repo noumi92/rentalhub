@@ -62,7 +62,13 @@ class DriverModeToggle extends StatelessWidget {
         duration: const Duration(milliseconds: 180),
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.white : Colors.transparent,
+          // CU-M4: the selected option used a hardcoded light
+          // surface — it now follows the theme (the container is
+          // surfaceContainerHighest, so the selected option lifts
+          // on plain surface).
+          color: isSelected
+              ? Theme.of(context).colorScheme.surface
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(10),
           boxShadow: isSelected
               ? [
@@ -89,11 +95,12 @@ class DriverModeToggle extends StatelessWidget {
                 const SizedBox(width: 6),
                 Text(
                   label,
-                  style: TextStyle(
-                    fontSize: 13,
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
                     fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                    // CU-m1: the old AppColors.primary (navy) is
+                    // unreadable on a dark surface — theme text now.
                     color: isSelected
-                        ? AppColors.primary
+                        ? Theme.of(context).colorScheme.onSurface
                         : Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
@@ -102,10 +109,9 @@ class DriverModeToggle extends StatelessWidget {
             const SizedBox(height: 2),
             Text(
               sublabel,
-              style: TextStyle(
-                fontSize: 10,
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
                 color: isSelected
-                    ? AppColors.textPrimary
+                    ? Theme.of(context).colorScheme.onSurface
                     : Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
               ),
               maxLines: 1,

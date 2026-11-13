@@ -177,7 +177,11 @@ class _CustomerSettingsViewState extends State<CustomerSettingsView> {
                                     l10n.settingsPushSubtitle,
                                     style:
                                         Theme.of(context).textTheme.labelSmall),
-                                value: customer?.pushNotifications ?? true,
+                                // CU-m7: while no customer record has
+                                // loaded the switch defaults to OFF, not
+                                // ON — a disabled switch must not claim
+                                // the preference is enabled.
+                                value: customer?.pushNotifications ?? false,
                                 onChanged: customer == null
                                     ? null
                                     : (val) => _setNotifications(push: val),
@@ -195,7 +199,7 @@ class _CustomerSettingsViewState extends State<CustomerSettingsView> {
                                     l10n.settingsWhatsappSubtitle,
                                     style:
                                         Theme.of(context).textTheme.labelSmall),
-                                value: customer?.whatsappNotifications ?? true,
+                                value: customer?.whatsappNotifications ?? false,
                                 onChanged: customer == null
                                     ? null
                                     : (val) => _setNotifications(whatsapp: val),

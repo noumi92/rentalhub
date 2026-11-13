@@ -9,6 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'firebase_options.dart';
+import 'core/constants/app_colors.dart';
 import 'core/data/firestore_persistence.dart';
 import 'core/data/sync_engine.dart';
 import 'core/data/sync_status_cubit.dart';
@@ -36,7 +37,16 @@ void main() async {
       options: DefaultFirebaseOptions.currentPlatform,
     );
   } catch (e) {
-    debugPrint('Firebase initialization notice: $e');
+    // Audit SH-C1 (Critical): a failed Firebase init used to be
+    // logged and boot continued — and with no FirebaseAuth the app
+    // silently degraded to demo auth (any credentials signed in as
+    // a fake user). Fail visibly instead: dismiss the native splash
+    // and show a boot-failure screen; the app never boots into a
+    // state where auth can be faked.
+    debugPrint('Firebase initialization failed: $e');
+    FlutterNativeSplash.remove();
+    runApp(const _FirebaseInitFailedApp());
+    return;
   }
   // Phase B (B1): pin the Firestore offline baseline before anything
   // touches Firestore — persistence on, 100 MB cache.
@@ -87,9 +97,62 @@ void main() async {
   }
 }
 
+/// Audit SH-C1: the visible boot failure when Firebase cannot
+/// initialise. A minimal app (own delegates, so the message is
+/// localised) with no DI, no router and no auth — the user sees that
+/// the app could not start instead of a silently degraded app.
+class _FirebaseInitFailedApp extends StatelessWidget {
+  const _FirebaseInitFailedApp();
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'RentalHub Pakistan',
+      debugShowCheckedModeBanner: false,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: Builder(
+        builder: (context) {
+          final l10n = AppLocalizations.of(context);
+          return Scaffold(
+            body: SafeArea(
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                        Icons.cloud_off_rounded,
+                        size: 56,
+                        color: AppColors.accentDanger,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        l10n?.appStartFailed ??
+                            'RentalHub couldn\'t start. Please restart the app and try again.',
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
 class RentalHubApp extends StatelessWidget {
   const RentalHubApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     // Phase B (G3): the locale and theme come from the settings

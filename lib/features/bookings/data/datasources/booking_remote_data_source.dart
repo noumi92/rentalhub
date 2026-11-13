@@ -590,6 +590,27 @@ class BookingRemoteDataSource {
         .toList());
   }
 
+  /// CU-M11: the live bookings of one customer, for the Bookings tab
+  /// badge — same pattern as [streamShopBookings]: Firestore
+  /// snapshots when available; the in-memory fallback list when
+  /// offline or in tests (no Firebase app), so the badge hides
+  /// instead of throwing.
+  Stream<List<BookingEntity>> streamCustomerBookings(String customerId) {
+    final fs = _resolvedFirestore;
+    if (fs != null) {
+      return fs
+          .collection('bookings')
+          .where('customerId', isEqualTo: customerId)
+          .snapshots()
+          .map((snap) => snap.docs
+              .map((d) => BookingModel.fromMap(d.data(), d.id))
+              .toList());
+    }
+    return Stream.value(_inMemoryFallback.values
+        .where((b) => b.customerId == customerId)
+        .toList());
+  }
+
   Future<List<BookingEntity>> getCustomerBookings(String customerId) async {
     final fs = _resolvedFirestore;
     if (fs != null) {

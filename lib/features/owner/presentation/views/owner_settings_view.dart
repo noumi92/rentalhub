@@ -183,7 +183,7 @@ class _OwnerSettingsViewState extends State<OwnerSettingsView> {
                                 if (!context.mounted) return;
                                 AppFeedback.showError(
                                   context,
-                                  'Could not sign out. Please try again.',
+                                  l10n.ownerSignOutError,
                                 );
                                 return;
                               }

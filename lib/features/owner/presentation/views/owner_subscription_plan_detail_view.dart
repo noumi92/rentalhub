@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/utils/current_shop.dart';
 import '../../../../core/utils/money_format.dart';
+import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/debounced_button.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
@@ -135,7 +136,7 @@ class _OwnerSubscriptionPlanDetailViewState
                         child: Row(
                           children: [
                             const Icon(Icons.check_circle_rounded,
-                                size: 18, color: Colors.green),
+                                size: 18, color: AppColors.accentSuccessStrong),
                             const SizedBox(width: 8),
                             Expanded(
                                 child: Text(f,

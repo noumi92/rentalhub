@@ -35,7 +35,7 @@ import '../widgets/finance/finance_summary_cards.dart';
 class OwnerFinanceView extends StatefulWidget {
   final String shopId;
 
-  const OwnerFinanceView({super.key, this.shopId = 'shop-1'});
+  const OwnerFinanceView({super.key, required this.shopId});
 
   @override
   State<OwnerFinanceView> createState() => _OwnerFinanceViewState();

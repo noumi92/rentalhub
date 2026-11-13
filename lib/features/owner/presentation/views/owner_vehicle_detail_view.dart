@@ -10,6 +10,8 @@ import '../../../../core/utils/money_format.dart';
 import '../../../../core/widgets/app_state_views.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../core/widgets/pakistani_plate_widget.dart';
+import '../../../discovery/presentation/views/widgets/vehicle_hero_card.dart'
+    show vehicleHeroTag;
 import '../../../../l10n/app_localizations.dart';
 import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
@@ -89,30 +91,25 @@ class _OwnerVehicleDetailViewState extends State<OwnerVehicleDetailView> {
     final l10n = AppLocalizations.of(context)!;
     final v = widget.vehicle;
     final bookings = _bookings ?? const <BookingEntity>[];
-    final isAvailable = v.status == 'available';
+    // OW-M7: the status is mapped explicitly (available / on-rent /
+    // maintenance) with the fleet card's label map — the old boolean
+    // labelled a maintenance car "On Rent". Maintenance sits on the
+    // amber-800 fill (white text ~7.5:1), not the on-rent orange.
+    final (statusLabel, statusColor) = v.status == 'available' ? (l10n.available, AppColors.accentSuccessStrong) : v.status == 'maintenance' ? (l10n.fleetFilterMaintenance, AppColors.warningOnContainer) : (l10n.fleetOnRent, AppColors.orangeFill);
     return Scaffold(
       body: SafeArea(
         top: false,
         child: Column(
           children: [
-            MinimalAppBar(
-              title: v.displayName,
-              subtitle: v.plateNumber,
-              onBack: widget.onBack ?? () => context.pop(),
-              actions: [Padding(padding: const EdgeInsets.only(right: 12), child: PakistaniPlateWidget(plateNumber: v.plateNumber, isCompact: true))],
-            ),
+            MinimalAppBar(title: v.displayName, subtitle: v.plateNumber, onBack: widget.onBack ?? () => context.pop(), actions: [Padding(padding: const EdgeInsets.only(right: 12), child: PakistaniPlateWidget(plateNumber: v.plateNumber, isCompact: true))]),
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // Header rework (2026-11-09): the same pattern as
-                    // the fleet card — the rate, the self-drive badge
-                    // and the status chip sit ON the photo over the
-                    // bottom gradient scrim. Name/plate stay in the
-                    // app bar above (the screen title) and are not
-                    // repeated on the photo. Nothing but content
-                    // sections sits below the image.
+                    // Header rework (2026-11-09): the rate, the
+                    // self-drive badge and the status chip sit ON the
+                    // photo over the bottom gradient scrim.
                     ClipRRect(
                       borderRadius: const BorderRadius.vertical(bottom: Radius.circular(20)),
                       child: SizedBox(
@@ -121,7 +118,10 @@ class _OwnerVehicleDetailViewState extends State<OwnerVehicleDetailView> {
                         child: Stack(
                           fit: StackFit.expand,
                           children: [
-                            _photo(v),
+                            // OW-m15: the photo carries the fleet
+                            // card's hero tag, so the shared-element
+                            // transition actually runs.
+                            Hero(tag: vehicleHeroTag(v.vehicleId), child: _photo(v)),
                             Positioned.fill(child: DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.transparent, Colors.black.withValues(alpha: 0.10), Colors.black.withValues(alpha: 0.45), Colors.black.withValues(alpha: 0.78)], stops: const [0.30, 0.55, 0.80, 1.0])))),
                             Positioned(
                               left: 16,
@@ -134,7 +134,7 @@ class _OwnerVehicleDetailViewState extends State<OwnerVehicleDetailView> {
                                   const SizedBox(height: 6),
                                   Row(
                                     children: [
-                                      Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4), decoration: BoxDecoration(color: isAvailable ? AppColors.accentSuccessStrong : AppColors.orangeFill, borderRadius: BorderRadius.circular(10)), child: Text(isAvailable ? l10n.available : l10n.fleetOnRent, style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800, color: Colors.white))),
+                                      Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4), decoration: BoxDecoration(color: statusColor, borderRadius: BorderRadius.circular(10)), child: Text(statusLabel, style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800, color: Colors.white))),
                                       const SizedBox(width: 8),
                                       Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3), decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.22), borderRadius: BorderRadius.circular(10), border: Border.all(color: Colors.white.withValues(alpha: 0.65))), child: Text(v.isSelfDriveAvailable ? l10n.selfDriveHyphen : l10n.withDriver, style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700, color: Colors.white))),
                                     ],
@@ -154,13 +154,7 @@ class _OwnerVehicleDetailViewState extends State<OwnerVehicleDetailView> {
                           Wrap(
                             spacing: 8,
                             runSpacing: 8,
-                            children: [
-                              _specChip(context, v.color ?? '—'),
-                              _specChip(context, l10n.vehicleDetailSeats(v.seats)),
-                              _specChip(context, v.fuelType),
-                              _specChip(context, v.transmission),
-                              _specChip(context, v.category),
-                            ],
+                            children: [_specChip(context, v.color ?? '—'), _specChip(context, l10n.vehicleDetailSeats(v.seats)), _specChip(context, v.fuelType), _specChip(context, v.transmission), _specChip(context, v.category)],
                           ),
                           const SizedBox(height: 18),
                           Text(l10n.vehicleDetailRatesTitle, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
@@ -170,9 +164,9 @@ class _OwnerVehicleDetailViewState extends State<OwnerVehicleDetailView> {
                           const SizedBox(height: 8),
                           Row(
                             children: [
-                              Expanded(child: OutlinedButton.icon(icon: const Icon(Icons.table_rows_rounded, size: 18), label: Text(l10n.vehicleDetailFareTable), onPressed: () => context.push(RouteNames.ownerFareTable.replaceFirst(':vehicleId', v.vehicleId)))),
+                              Expanded(child: OutlinedButton.icon(style: OutlinedButton.styleFrom(minimumSize: const Size(0, 48)), icon: const Icon(Icons.table_rows_rounded, size: 18), label: Text(l10n.vehicleDetailFareTable), onPressed: () => context.push(RouteNames.ownerFareTable.replaceFirst(':vehicleId', v.vehicleId)))),
                               const SizedBox(width: 8),
-                              Expanded(child: OutlinedButton.icon(icon: const Icon(Icons.calculate_outlined, size: 18), label: Text(l10n.ratesViewEstimate), onPressed: () => context.push(RouteNames.ownerPriceEstimate.replaceFirst(':vehicleId', v.vehicleId)))),
+                              Expanded(child: OutlinedButton.icon(style: OutlinedButton.styleFrom(minimumSize: const Size(0, 48)), icon: const Icon(Icons.calculate_outlined, size: 18), label: Text(l10n.ratesViewEstimate), onPressed: () => context.push(RouteNames.ownerPriceEstimate.replaceFirst(':vehicleId', v.vehicleId)))),
                             ],
                           ),
                           const SizedBox(height: 18),
@@ -188,7 +182,10 @@ class _OwnerVehicleDetailViewState extends State<OwnerVehicleDetailView> {
                                   child: ListTile(
                                     title: Text(b.customerName ?? b.customerId, style: const TextStyle(fontWeight: FontWeight.w700)),
                                     subtitle: Text('${b.packageType} • ${DateFormat('d MMM, h:mm a').format(b.pickupTime)} → ${DateFormat('d MMM, h:mm a').format(b.returnTime)}'),
-                                    trailing: Chip(label: Text(b.status, style: Theme.of(context).textTheme.labelSmall)),
+                                    // OW-m15: the booking chip is
+                                    // coloured by status (was raw text
+                                    // on the default chip).
+                                    trailing: Chip(label: Text(b.status, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.white)), backgroundColor: _bookingStatusColor(b.status)),
                                   ),
                                 )),
                         ],
@@ -203,11 +200,11 @@ class _OwnerVehicleDetailViewState extends State<OwnerVehicleDetailView> {
               decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, border: Border(top: BorderSide(color: Theme.of(context).dividerColor))),
               child: Row(
                 children: [
-                  Expanded(child: OutlinedButton.icon(icon: const Icon(Icons.tune_rounded, size: 18), label: Text(l10n.vehicleDetailManageRates), onPressed: () => context.push(RouteNames.ownerRatesVehicle.replaceFirst(':vehicleId', v.vehicleId)))),
+                  Expanded(child: OutlinedButton.icon(style: OutlinedButton.styleFrom(minimumSize: const Size(0, 48)), icon: const Icon(Icons.tune_rounded, size: 18), label: Text(l10n.vehicleDetailManageRates), onPressed: () => context.push(RouteNames.ownerRatesVehicle.replaceFirst(':vehicleId', v.vehicleId)))),
                   const SizedBox(width: 8),
-                  Expanded(child: OutlinedButton.icon(icon: const Icon(Icons.calendar_month_rounded, size: 18), label: Text(l10n.vehicleDetailCalendar), onPressed: () => context.push(RouteNames.ownerCalendar.replaceFirst(':vehicleId', v.vehicleId)))),
+                  Expanded(child: OutlinedButton.icon(style: OutlinedButton.styleFrom(minimumSize: const Size(0, 48)), icon: const Icon(Icons.calendar_month_rounded, size: 18), label: Text(l10n.vehicleDetailCalendar), onPressed: () => context.push(RouteNames.ownerCalendar.replaceFirst(':vehicleId', v.vehicleId)))),
                   const SizedBox(width: 8),
-                  Expanded(child: FilledButton.icon(icon: const Icon(Icons.edit_rounded, size: 18), label: Text(l10n.vehicleDetailEdit), onPressed: () => context.push(RouteNames.ownerEditVehicle.replaceFirst(':id', v.vehicleId)))),
+                  Expanded(child: FilledButton.icon(style: FilledButton.styleFrom(minimumSize: const Size(0, 48)), icon: const Icon(Icons.edit_rounded, size: 18), label: Text(l10n.vehicleDetailEdit), onPressed: () => context.push(RouteNames.ownerEditVehicle.replaceFirst(':id', v.vehicleId)))),
                 ],
               ),
             ),
@@ -235,3 +232,8 @@ class _OwnerVehicleDetailViewState extends State<OwnerVehicleDetailView> {
     );
   }
 }
+
+/// Booking-chip fill by status (OW-m15): settled/approved/active
+/// green, rejected/cancelled red, everything else (requested, proof
+/// submitted) orange. White label text — all three fills are >= 4.5:1.
+Color _bookingStatusColor(String status) => switch (status) { 'completed' || 'paid' || 'approved' || 'active' => AppColors.accentSuccessStrong, 'rejected' || 'cancelled' => AppColors.errorDark, _ => AppColors.orangeFill };

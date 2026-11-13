@@ -1,3 +1,4 @@
+import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -18,7 +19,15 @@ void main() {
 
   setUp(() async {
     await sl.reset();
-    SharedPreferences.setMockInitialValues({});
+    // Audit SH-C1: saveProfileInfo/assignPermanentRole fail closed with
+    // no signed-in user and no cached uid (the hardcoded demo identity
+    // is gone). These tests simulate a signed-in user through the
+    // cached-uid path the data source explicitly supports
+    // (`auth?.currentUser?.uid ?? prefs.getString('rentalhub_user_uid')`)
+    // — the uid is a test key in mock prefs, not a fallback in
+    // production code.
+    SharedPreferences.setMockInitialValues(
+        {'rentalhub_user_uid': 'usr_pk_001'});
     prefs = await SharedPreferences.getInstance();
     sl.registerLazySingleton<SharedPreferences>(() => prefs);
 
@@ -242,8 +251,14 @@ void main() {
       ));
       await sl.reset();
       sl.registerLazySingleton<SharedPreferences>(() => prefs);
+      // SH-C1: signInWithEmail fails closed with no FirebaseAuth, so
+      // the restore is exercised through a MockFirebaseAuth whose mock
+      // user carries the same uid as the seeded Firestore doc.
       final restoringSource = AuthRemoteDataSource(
         prefs: prefs,
+        auth: MockFirebaseAuth(
+            mockUser:
+                MockUser(uid: 'usr_pk_001', email: 'ahmed@rentalhub.pk')),
         firestoreService: firestoreService,
       );
       sl.registerLazySingleton<AuthRemoteDataSource>(
@@ -268,6 +283,8 @@ void main() {
       sl.registerLazySingleton<SharedPreferences>(() => prefs);
       final source = AuthRemoteDataSource(
         prefs: prefs,
+        auth: MockFirebaseAuth(
+            mockUser: MockUser(email: 'new@rentalhub.pk')),
         firestoreService: firestoreService,
       );
       sl.registerLazySingleton<AuthRemoteDataSource>(() => source);
@@ -286,7 +303,10 @@ void main() {
         () async {
       // No FirestoreService at all: getUser is never attempted and
       // the sign-in proceeds exactly as before the restore.
-      final source = AuthRemoteDataSource(prefs: prefs);
+      // SH-C1: a FirebaseAuth is still required — a mock stands in
+      // for it here; the no-service behaviour is what is under test.
+      final source = AuthRemoteDataSource(
+          prefs: prefs, auth: MockFirebaseAuth());
       await source.signInWithEmail(
         email: 'offline@rentalhub.pk',
         password: 'secret123',

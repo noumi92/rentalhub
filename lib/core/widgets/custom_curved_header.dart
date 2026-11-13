@@ -81,7 +81,7 @@ class CustomCurvedHeader extends StatelessWidget {
         ? l10n?.headerGreeting(userName) ?? 'Hi, $userName'
         : l10n?.headerGreetingFallback ?? 'Hi there';
     final urduGreetingText =
-        urduGreeting ?? l10n?.headerUrduGreeting ?? 'اسلام علیکم';
+        urduGreeting ?? l10n?.headerUrduGreeting ?? 'Assalam-o-Alaikum';
     final topPadding = MediaQuery.of(context).padding.top;
     // D1: the height comes from the variant, never from the caller.
     final double height = variant == CustomCurvedHeaderVariant.hero

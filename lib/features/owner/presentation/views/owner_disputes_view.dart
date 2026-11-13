@@ -19,7 +19,7 @@ import '../widgets/dispute_list_tile.dart';
 class OwnerDisputesView extends StatefulWidget {
   final String shopId;
 
-  const OwnerDisputesView({super.key, this.shopId = 'shop-1'});
+  const OwnerDisputesView({super.key, required this.shopId});
 
   @override
   State<OwnerDisputesView> createState() => _OwnerDisputesViewState();

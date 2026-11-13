@@ -23,11 +23,13 @@ class OwnerPriceEstimateView extends StatelessWidget {
     this.onBack,
   });
 
-  int _priceOf(String label) {
+  /// OW-m17: null when the package is missing — the UI renders "—"
+  /// instead of a confident "Rs. 0" for a price that is unknown.
+  int? _priceOf(String label) {
     for (final p in vehicle.effectivePackages) {
       if (p.label == label) return p.pricePkr;
     }
-    return 0;
+    return null;
   }
 
   @override
@@ -35,7 +37,7 @@ class OwnerPriceEstimateView extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final v = vehicle;
     final outCity = v.rates.outOfCityDaily ?? (v.rates.daily24 * 1.3).round();
-    final rows = <(String, int)>[
+    final rows = <(String, int?)>[
       (l10n.estimateInCityDay, v.rates.daily24),
       (l10n.estimateOutCityDay, outCity),
       (l10n.estimateWeekly, _priceOf('Weekly')),
@@ -73,7 +75,7 @@ class OwnerPriceEstimateView extends StatelessWidget {
                                     children: [
                                       Expanded(child: Text(row.$1, style: Theme.of(context).textTheme.bodyMedium)),
                                       const SizedBox(width: 8),
-                                      Text(l10n.amountRs(formatRs(row.$2)), style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900)),
+                                      Text(row.$2 == null ? '—' : l10n.amountRs(formatRs(row.$2!)), style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900)),
                                     ],
                                   ),
                                 )),

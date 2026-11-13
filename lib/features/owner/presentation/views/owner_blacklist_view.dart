@@ -45,7 +45,6 @@ class _OwnerBlacklistViewState extends State<OwnerBlacklistView> {
   // Audit §22/C4: a load failure used to spin forever — now an error
   // state with retry. Audit §22: All/Active/Reverted filter.
   bool _hasError = false;
-  String? _loadError;
   String _filter = 'all';
 
   String get _shopId => widget.shopId ?? currentShopId();
@@ -67,13 +66,16 @@ class _OwnerBlacklistViewState extends State<OwnerBlacklistView> {
   }
 
   Future<void> _load() async {
-    if (mounted) setState(() { _hasError = false; _loadError = null; });
+    if (mounted) setState(() { _hasError = false; });
     try {
       final reports = await sl<BlacklistRemoteDataSource>().getShopReports(_shopId);
       if (!mounted) return;
       setState(() { _reports = reports; _loading = false; });
     } catch (e) {
-      if (mounted) setState(() { _hasError = true; _loadError = e.toString(); _loading = false; });
+      // OW-m37: the raw exception goes to the log only — the owner
+      // sees a localized message, never "Exception: ...".
+      debugPrint('Blacklist load failed: $e');
+      if (mounted) setState(() { _hasError = true; _loading = false; });
     }
   }
 
@@ -151,7 +153,7 @@ class _OwnerBlacklistViewState extends State<OwnerBlacklistView> {
               child: _loading
                   ? const AppLoadingState()
                   : _hasError
-                      ? AppErrorState(message: l10n.blacklistReportFailed(_loadError ?? ''), onRetry: _load)
+                      ? AppErrorState(message: l10n.blacklistLoadError, onRetry: _load)
                       : RefreshIndicator(
                           onRefresh: _load,
                           child: ListView(

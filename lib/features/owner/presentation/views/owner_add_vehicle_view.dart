@@ -11,6 +11,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../fleet/domain/entities/vehicle_entity.dart';
 import '../../../fleet/domain/usecases/add_vehicle_usecase.dart';
 import '../services/vehicle_photo_upload_service.dart';
+import '../widgets/add_vehicle/add_vehicle_doc_names.dart';
 import '../widgets/add_vehicle/add_vehicle_step_content.dart';
 import '../widgets/add_vehicle/add_vehicle_stepper_bar.dart';
 
@@ -33,7 +34,7 @@ class _OwnerAddVehicleViewState extends State<OwnerAddVehicleView> {
   String _selectedMake = 'Toyota', _selectedModel = 'Corolla Altis Grande', _color = 'Super White', _category = 'Sedan', _fuelType = 'Petrol';
   int _selectedYear = 2023, _seats = 5;
   final _plateController = TextEditingController();
-  bool _isAutomatic = true, _hasAc = true;
+  bool _isAutomatic = true;
   final Set<String> _selectedFeatures = {'ABS Brakes', 'Dual Airbags', 'Bluetooth Audio', 'Power Windows', 'GPS Tracking'};
 
   // Step 2: Photos (Camera + Gallery + Remove)
@@ -110,16 +111,6 @@ class _OwnerAddVehicleViewState extends State<OwnerAddVehicleView> {
       return;
     }
     await _saveVehicle();
-  }
-
-  /// "Label: filename" for every picked photo/document, shown on the review step.
-  List<String> _pickedDocNames() {
-    final l10n = AppLocalizations.of(context)!;
-    final names = <String>[];
-    void add(String label, XFile? f) { if (f != null) names.add('$label: ${f.name}'); }
-    add(l10n.addVehiclePhotoRear, _photoBackFile); add(l10n.addVehiclePhotoSide, _photoSideFile); add(l10n.addVehiclePhotoInterior, _photoInteriorFile);
-    add(l10n.addVehicleDocRegBook, _regBookFile); add(l10n.addVehicleDocTokenTax, _tokenTaxFile); add(l10n.addVehicleDocInsurance, _insuranceFile);
-    return names;
   }
 
   Future<void> _saveVehicle() async {
@@ -202,7 +193,6 @@ class _OwnerAddVehicleViewState extends State<OwnerAddVehicleView> {
           isAutomatic: _isAutomatic, onTransmissionChanged: (a) => setState(() => _isAutomatic = a),
           fuelType: _fuelType, onFuelTypeChanged: (f) => setState(() => _fuelType = f),
           seats: _seats, onSeatsChanged: (s) => setState(() => _seats = s),
-          hasAc: _hasAc, onAcChanged: (a) => setState(() => _hasAc = a),
           selectedFeatures: _selectedFeatures,
           onFeatureToggled: (f) => setState(() => _selectedFeatures.contains(f) ? _selectedFeatures.remove(f) : _selectedFeatures.add(f)),
         );
@@ -250,7 +240,7 @@ class _OwnerAddVehicleViewState extends State<OwnerAddVehicleView> {
           supportSelfDrive: _supportSelfDrive, supportWithDriver: _supportWithDriver,
           deposit: _getInt(_securityDepositController, 0), advance: _getInt(_advanceDepositController, 0),
           extraHour: _getInt(_extraHourChargeController, 0), fuelPolicy: _fuelPolicy,
-          hasAc: _hasAc, documentNames: _pickedDocNames(),
+          documentNames: pickedVehicleDocNames(AppLocalizations.of(context)!, photoBackFile: _photoBackFile, photoSideFile: _photoSideFile, photoInteriorFile: _photoInteriorFile, regBookFile: _regBookFile, tokenTaxFile: _tokenTaxFile, insuranceFile: _insuranceFile),
         );
     }
   }

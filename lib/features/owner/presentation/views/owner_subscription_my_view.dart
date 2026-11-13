@@ -33,6 +33,8 @@ class _OwnerSubscriptionMyViewState extends State<OwnerSubscriptionMyView> {
   int _fleetCount = 0;
   int _staffCount = 0;
   bool _loaded = false;
+  // OW-M8: the load used to have no try/catch — any throw left _loaded false forever and the screen spun indefinitely.
+  bool _hasError = false;
 
   @override
   void initState() {
@@ -41,22 +43,20 @@ class _OwnerSubscriptionMyViewState extends State<OwnerSubscriptionMyView> {
   }
 
   Future<void> _load() async {
-    final shopId = currentShopId();
-    final results = await Future.wait([
-      _dataSource.getShopSubscription(shopId),
-      _dataSource.getSubscriptionHistory(shopId),
-      _dataSource.getFleetCount(shopId),
-      _dataSource.getStaffCount(shopId),
-    ]);
-    if (mounted) {
-      setState(() {
-        _state = results[0] as ShopSubscriptionState;
-        _history = results[1] as List<SubscriptionRequestRecord>;
-        _fleetCount = results[2] as int;
-        _staffCount = results[3] as int;
-        _loaded = true;
-      });
-    }
+    if (mounted) setState(() => _hasError = false);
+    try {
+      final shopId = currentShopId();
+      final results = await Future.wait([_dataSource.getShopSubscription(shopId), _dataSource.getSubscriptionHistory(shopId), _dataSource.getFleetCount(shopId), _dataSource.getStaffCount(shopId)]);
+      if (mounted) {
+        setState(() {
+          _state = results[0] as ShopSubscriptionState;
+          _history = results[1] as List<SubscriptionRequestRecord>;
+          _fleetCount = results[2] as int;
+          _staffCount = results[3] as int;
+          _loaded = true;
+        });
+      }
+    } catch (_) { if (mounted) setState(() => _hasError = true); }
   }
 
   String _planName(AppLocalizations l10n, String id) => switch (id) {
@@ -85,9 +85,11 @@ class _OwnerSubscriptionMyViewState extends State<OwnerSubscriptionMyView> {
               title: l10n.subscriptionMySubscription,
             ),
             Expanded(
-              child: !_loaded
-                  ? const AppLoadingState()
-                  : ListView(
+              child: _hasError
+                  ? AppErrorState(message: l10n.subscriptionLoadError, onRetry: _load)
+                  : !_loaded
+                      ? const AppLoadingState()
+                      : ListView(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16, vertical: 14),
                       children: [
@@ -108,7 +110,7 @@ class _OwnerSubscriptionMyViewState extends State<OwnerSubscriptionMyView> {
                         if (state?.nextBillingAt != null) ...[
                           const SizedBox(height: 4),
                           Text(
-                              '${l10n.subscriptionNextBilling}: ${DateFormat('d MMM yyyy', 'en').format(state!.nextBillingAt!)}',
+                              '${l10n.subscriptionNextBilling}: ${DateFormat('d MMM yyyy', Localizations.localeOf(context).languageCode).format(state!.nextBillingAt!)}',
                               style: Theme.of(context).textTheme.bodyMedium),
                         ],
                         // S4 entry point: the active-subscription detail
@@ -158,7 +160,7 @@ class _OwnerSubscriptionMyViewState extends State<OwnerSubscriptionMyView> {
                                       '${_planName(l10n, row.tier)} · ${row.billingPeriod}'),
                                   subtitle: Text(row.createdAt == null
                                       ? _statusLabel(l10n, row.status)
-                                      : '${_statusLabel(l10n, row.status)} · ${DateFormat('d MMM yyyy', 'en').format(row.createdAt!)}'),
+                                      : '${_statusLabel(l10n, row.status)} · ${DateFormat('d MMM yyyy', Localizations.localeOf(context).languageCode).format(row.createdAt!)}'),
                                   trailing: Text(
                                       l10n.amountRs(formatRs(row.price)),
                                       style: Theme.of(context)

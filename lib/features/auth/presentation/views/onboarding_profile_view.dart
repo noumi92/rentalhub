@@ -24,8 +24,12 @@ class OnboardingProfileView extends StatefulWidget {
 
 class _OnboardingProfileViewState extends State<OnboardingProfileView> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController(text: 'Ahmed Khan');
-  final _phoneController = TextEditingController(text: '300 4129811');
+  // CU-C3: no pre-filled identity — a stranger's name/phone used to
+  // sit here ('Ahmed Khan' / '300 4129811'). The controllers start
+  // empty; initState below only fills them from the signed-in user's
+  // own stored profile, never from a demo value.
+  final _nameController = TextEditingController();
+  final _phoneController = TextEditingController();
 
   File? _profileImageFile;
   String? _phoneErrorMessage;
@@ -53,7 +57,7 @@ class _OnboardingProfileViewState extends State<OnboardingProfileView> {
   }
 
   bool _validateForm() {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     setState(() => _phoneErrorMessage = null);
     final isNameValid = _formKey.currentState?.validate() ?? false;
 
@@ -62,11 +66,11 @@ class _OnboardingProfileViewState extends State<OnboardingProfileView> {
     bool isPhoneValid = true;
 
     if (rawPhone.isEmpty) {
-      setState(() => _phoneErrorMessage = l10n.onboardingPhoneRequired);
+      setState(() => _phoneErrorMessage = l10n?.onboardingPhoneRequired ?? 'WhatsApp number is required');
       isPhoneValid = false;
     } else if (rawPhone.length != 10 || !rawPhone.startsWith('3')) {
       setState(() {
-        _phoneErrorMessage = l10n.onboardingValidPhone;
+        _phoneErrorMessage = l10n?.onboardingValidPhone ?? 'Enter a valid 10-digit number starting with 3 (e.g. 300 1234567)';
       });
       isPhoneValid = false;
     }
@@ -75,25 +79,32 @@ class _OnboardingProfileViewState extends State<OnboardingProfileView> {
   }
 
   void _handleContinue() async {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     if (!_validateForm()) {
-      AppFeedback.showError(context, l10n.onboardingValidNamePhone);
+      AppFeedback.showError(context, l10n?.onboardingValidNamePhone ?? 'Please enter a valid full name and Pakistani WhatsApp number (+92 3XX or 03XX).');
+      return;
+    }
+
+    // Audit SH-C1: an unregistered data source is an error, never a
+    // success — the old code showed "Profile details verified" and
+    // navigated to role selection even when nothing was saved.
+    if (!sl.isRegistered<AuthRemoteDataSource>()) {
+      AppFeedback.showError(context,
+          l10n?.authUnavailable ?? 'Authentication unavailable. Please try again later.');
       return;
     }
 
     setState(() => _isSaving = true);
 
     try {
-      if (sl.isRegistered<AuthRemoteDataSource>()) {
-        await sl<AuthRemoteDataSource>().saveProfileInfo(
-          fullName: _nameController.text.trim(),
-          phone: _phoneController.text.trim(),
-          profilePhotoFile: _profileImageFile,
-        );
-      }
+      await sl<AuthRemoteDataSource>().saveProfileInfo(
+        fullName: _nameController.text.trim(),
+        phone: _phoneController.text.trim(),
+        profilePhotoFile: _profileImageFile,
+      );
 
       if (!mounted) return;
-      AppFeedback.showSuccess(context, l10n.onboardingProfileVerified);
+      AppFeedback.showSuccess(context, l10n?.onboardingProfileVerified ?? 'Profile details verified.');
       if (widget.onProfileCompleted != null) {
         widget.onProfileCompleted!();
       } else {
@@ -101,7 +112,7 @@ class _OnboardingProfileViewState extends State<OnboardingProfileView> {
       }
     } catch (e) {
       if (!mounted) return;
-      AppFeedback.showError(context, l10n.onboardingSaveError(e.toString()));
+      AppFeedback.showError(context, l10n?.onboardingSaveError(e.toString()) ?? 'Error saving profile: $e');
     } finally {
       if (mounted) setState(() => _isSaving = false);
     }
@@ -109,7 +120,7 @@ class _OnboardingProfileViewState extends State<OnboardingProfileView> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -121,8 +132,8 @@ class _OnboardingProfileViewState extends State<OnboardingProfileView> {
                   children: [
                     // Header rolls up with scroll
                     MinimalAppBar(
-                      title: l10n.onboardingStep1,
-                      subtitle: l10n.onboardingEnterContact,
+                      title: l10n?.onboardingStep1 ?? 'Step 1: Your Profile',
+                      subtitle: l10n?.onboardingEnterContact ?? 'Enter your contact information',
                       onBack: () {
                         if (context.canPop()) {
                           context.pop();
@@ -162,15 +173,15 @@ class _OnboardingProfileViewState extends State<OnboardingProfileView> {
                                 const SizedBox(height: 18),
                                 AuthTextField(
                                   controller: _nameController,
-                                  label: l10n.onboardingFullName,
-                                  hint: 'Ahmed Khan',
+                                  label: l10n?.onboardingFullName ?? 'Full Name',
+                                  hint: l10n?.onboardingNameHint ?? 'Your full name',
                                   prefixIcon: Icons.person_outline_rounded,
                                   validator: (val) {
                                     if (val == null || val.trim().isEmpty) {
-                                      return l10n.onboardingNameRequired;
+                                      return l10n?.onboardingNameRequired ?? 'Full name is required';
                                     }
                                     if (val.trim().length < 3) {
-                                      return l10n.onboardingNameLength;
+                                      return l10n?.onboardingNameLength ?? 'Name must be at least 3 characters';
                                     }
                                     return null;
                                   },
@@ -207,7 +218,7 @@ class _OnboardingProfileViewState extends State<OnboardingProfileView> {
                 ],
               ),
               child: DebouncedButton(
-                text: l10n.onboardingContinueRole,
+                text: l10n?.onboardingContinueRole ?? 'Continue to Role Selection',
                 icon: Icons.arrow_forward_rounded,
                 isLoading: _isSaving,
                 onPressed: () async => _handleContinue(),

@@ -36,31 +36,39 @@ class _LoginViewState extends State<LoginView> {
   }
 
   void _handleEmailSignIn() async {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final email = _emailController.text.trim();
     final password = _passwordController.text;
 
     if (email.isEmpty || !RegExp(r'^[^@]+@[^@]+\.[^@]+$').hasMatch(email)) {
-      AppFeedback.showError(context, l10n.authValidEmail);
+      AppFeedback.showError(context,
+          l10n?.authValidEmail ?? 'Please enter a valid email address.');
       return;
     }
     if (password.isEmpty || password.length < 6) {
-      AppFeedback.showError(context, l10n.authPasswordLength);
+      AppFeedback.showError(context,
+          l10n?.authPasswordLength ?? 'Password must be at least 6 characters.');
+      return;
+    }
+
+    // Audit SH-C1: an unregistered data source is a sign-in error,
+    // never a success — the old code showed "Signed in" and
+    // navigated anyway when the data source was not registered.
+    if (!sl.isRegistered<AuthRemoteDataSource>()) {
+      AppFeedback.showError(context, l10n?.authUnavailable ?? 'Authentication unavailable. Please try again later.');
       return;
     }
 
     setState(() => _isLoading = true);
 
     try {
-      if (sl.isRegistered<AuthRemoteDataSource>()) {
-        await sl<AuthRemoteDataSource>().signInWithEmail(
-          email: email,
-          password: password,
-        );
-      }
+      await sl<AuthRemoteDataSource>().signInWithEmail(
+        email: email,
+        password: password,
+      );
 
       if (!mounted) return;
-      AppFeedback.showSuccess(context, l10n.authSignedIn);
+      AppFeedback.showSuccess(context, l10n?.authSignedIn ?? 'Signed in successfully!');
       if (widget.onSignedIn != null) {
         widget.onSignedIn!();
       } else {
@@ -78,16 +86,22 @@ class _LoginViewState extends State<LoginView> {
   }
 
   void _handleGoogleSignIn() async {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
+
+    // Audit SH-C1: see _handleEmailSignIn — an unregistered data
+    // source is an error, never a success.
+    if (!sl.isRegistered<AuthRemoteDataSource>()) {
+      AppFeedback.showError(context, l10n?.authUnavailable ?? 'Authentication unavailable. Please try again later.');
+      return;
+    }
+
     setState(() => _isLoading = true);
 
     try {
-      if (sl.isRegistered<AuthRemoteDataSource>()) {
-        await sl<AuthRemoteDataSource>().signInWithGoogle();
-      }
+      await sl<AuthRemoteDataSource>().signInWithGoogle();
 
       if (!mounted) return;
-      AppFeedback.showSuccess(context, l10n.authSignedInGoogle);
+      AppFeedback.showSuccess(context, l10n?.authSignedInGoogle ?? 'Signed in with Google!');
       if (widget.onSignedIn != null) {
         widget.onSignedIn!();
       } else {
@@ -106,10 +120,16 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final scheme = Theme.of(context).colorScheme;
     return Scaffold(
+      // Audit SH-M3: the old bare SafeArea added the status-bar inset
+      // and the hero header added it again (CustomCurvedHeader owns
+      // MediaQuery.padding.top itself) — the header owns the top
+      // inset; this SafeArea keeps only the bottom one.
       body: SafeArea(
+        top: false,
+        bottom: true,
         child: SingleChildScrollView(
         child: Column(
           children: [
@@ -128,7 +148,7 @@ class _LoginViewState extends State<LoginView> {
                   ),
                   SizedBox(height: 4),
                   Text(
-                    l10n.authTagline,
+                    l10n?.authTagline ?? 'Pakistan Premier Car Rental & Fleet Ecosystem',
                     style: Theme.of(context).textTheme.labelMedium?.copyWith(
                       color: AppColors.primaryContainer,
                     ),
@@ -155,7 +175,7 @@ class _LoginViewState extends State<LoginView> {
                             // duplicated the hero slider above.
                             Center(
                               child: Text(
-                                l10n.authWelcome,
+                                l10n?.authWelcome ?? 'Welcome to RentalHub',
                                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                   fontWeight: FontWeight.w800,
                                 ),
@@ -164,7 +184,8 @@ class _LoginViewState extends State<LoginView> {
                             const SizedBox(height: 4),
                             Center(
                               child: Text(
-                                l10n.authSignInSubtitle,
+                                l10n?.authSignInSubtitle ??
+                                    'Sign in to rent a car near you',
                                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                   color: scheme.onSurfaceVariant,
                                   fontWeight: FontWeight.w500,
@@ -174,7 +195,7 @@ class _LoginViewState extends State<LoginView> {
                             const SizedBox(height: 18),
                             AuthTextField(
                               controller: _emailController,
-                              label: l10n.authEmail,
+                              label: l10n?.authEmail ?? 'Email Address',
                               hint: 'you@example.com',
                               prefixIcon: Icons.email_outlined,
                               keyboardType: TextInputType.emailAddress,
@@ -182,14 +203,14 @@ class _LoginViewState extends State<LoginView> {
                             const SizedBox(height: 14),
                             AuthTextField(
                               controller: _passwordController,
-                              label: l10n.authPassword,
+                              label: l10n?.authPassword ?? 'Password',
                               hint: '••••••••',
                               prefixIcon: Icons.lock_outline_rounded,
                               obscureText: true,
                             ),
                             const SizedBox(height: 20),
                             DebouncedButton(
-                              text: l10n.authSignInEmail,
+                              text: l10n?.authSignInEmail ?? 'Sign In with Email',
                               icon: Icons.login_rounded,
                               isLoading: _isLoading,
                               onPressed: () async => _handleEmailSignIn(),

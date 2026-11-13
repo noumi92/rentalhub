@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../../../core/di/injection_container.dart';
+import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/app_state_views.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -29,7 +30,7 @@ import '../widgets/finance/report_tables.dart';
 class OwnerReportsView extends StatefulWidget {
   final String shopId;
 
-  const OwnerReportsView({super.key, this.shopId = 'shop-1'});
+  const OwnerReportsView({super.key, required this.shopId});
 
   @override
   State<OwnerReportsView> createState() => _OwnerReportsViewState();
@@ -148,25 +149,23 @@ class _OwnerReportsViewState extends State<OwnerReportsView> {
   }
 
   Future<void> _shareReport() async {
+    final l10n = AppLocalizations.of(context)!;
+    // OW-m8: the CSV header carried the raw shopId; the shop name comes from the bookings (same source as the statement view). Customer rows already resolve names that way (_customerRows).
+    final shopName = _bookings.firstOrNull?.shopName ?? '—';
     final rows = <List<String>>[
-      ['RentalHub Report', widget.shopId, _period],
+      ['RentalHub Report', shopName, _period],
       [],
       ['Car', 'Bookings', 'Earnings (Rs)'],
       for (final row in _carRows)
         [row.$1, '${row.$2}', '${row.$3}'],
     ];
     final csv = rows.map((r) => r.join(',')).join('\n');
-    await SharePlus.instance.share(
-      ShareParams(
-        files: [
-          XFile.fromData(
-            utf8.encode(csv),
-            name: 'rentalhub-report-$_period.csv',
-            mimeType: 'text/csv',
-          ),
-        ],
-      ),
-    );
+    try {
+      // OW-m8: a share failure used to be silent.
+      await SharePlus.instance.share(ShareParams(files: [XFile.fromData(utf8.encode(csv), name: 'rentalhub-report-$_period.csv', mimeType: 'text/csv')]));
+    } catch (_) {
+      if (mounted) AppFeedback.showError(context, l10n.reportShareFailed);
+    }
   }
 
   @override

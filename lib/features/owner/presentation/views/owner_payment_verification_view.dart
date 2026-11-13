@@ -86,7 +86,9 @@ class _OwnerPaymentVerificationViewState
               decoration: InputDecoration(
                 labelText: l10n.paymentVerificationReasonLabel,
                 hintText: l10n.paymentVerificationReasonHint,
-                border: OutlineInputBorder(),
+                // OW-m29: 16 dp, same as every other dialog field.
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16)),
               ),
             ),
           ],

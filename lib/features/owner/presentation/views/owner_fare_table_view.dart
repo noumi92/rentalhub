@@ -5,6 +5,7 @@ import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/money_format.dart';
 import '../../../../core/widgets/debounced_button.dart';
+import '../widgets/fare_table_out_city_header.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../fleet/domain/entities/fixed_route_entity.dart';
@@ -38,6 +39,9 @@ class _OwnerFareTableViewState extends State<OwnerFareTableView> {
   /// so the Out-City tab can show the route and its flat price.
   FixedRouteEntity? _fixedRoute;
   bool _loadingRoute = false;
+  // OW-m16: a failed route load used to clear the spinner with no
+  // error state at all.
+  bool _routeFailed = false;
 
   @override
   void initState() {
@@ -50,7 +54,10 @@ class _OwnerFareTableViewState extends State<OwnerFareTableView> {
 
   Future<void> _loadFixedRoute(VehicleEntity v) async {
     if (!sl.isRegistered<GetShopFixedRoutesUseCase>()) return;
-    setState(() => _loadingRoute = true);
+    setState(() {
+      _loadingRoute = true;
+      _routeFailed = false;
+    });
     try {
       final routes = await sl<GetShopFixedRoutesUseCase>()(v.shopId);
       if (!mounted) return;
@@ -60,7 +67,10 @@ class _OwnerFareTableViewState extends State<OwnerFareTableView> {
       }
       setState(() { _fixedRoute = match; _loadingRoute = false; });
     } catch (_) {
-      if (mounted) setState(() => _loadingRoute = false);
+      if (mounted) setState(() {
+        _loadingRoute = false;
+        _routeFailed = true;
+      });
     }
   }
 
@@ -149,7 +159,7 @@ class _OwnerFareTableViewState extends State<OwnerFareTableView> {
                       ],
                     ),
                     const SizedBox(height: 14),
-                    if (_tab == 1) _OutCityModeHeader(vehicle: v, fixedRoute: _fixedRoute, loadingRoute: _loadingRoute),
+                    if (_tab == 1) FareTableOutCityHeader(vehicle: v, fixedRoute: _fixedRoute, loadingRoute: _loadingRoute, routeFailed: _routeFailed, onRetryRoute: () => _loadFixedRoute(v)),
                     if (rows.isEmpty)
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 24),
@@ -186,63 +196,6 @@ class _OwnerFareTableViewState extends State<OwnerFareTableView> {
           ],
         ),
       ),
-    );
-  }
-}
-
-/// The Out-City tab header (09b §2): the active mode instead of only
-/// the daily rate — the per-day rate, the per-km rate with its
-/// estimate note, or the fixed route with its flat price. A
-/// fixed-route vehicle whose route cannot be resolved says so and
-/// the rows below fall back to the per-day ratio scaling.
-class _OutCityModeHeader extends StatelessWidget {
-  const _OutCityModeHeader({required this.vehicle, required this.fixedRoute, required this.loadingRoute});
-
-  final VehicleEntity vehicle;
-  final FixedRouteEntity? fixedRoute;
-  final bool loadingRoute;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final v = vehicle;
-    final bold = Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700);
-    if (v.outCityMode == 'perKm' && (v.outCityPerKmPkr ?? 0) > 0) {
-      final rate = v.outCityPerKmPkr!;
-      final kmPerDay = v.outOfCityKmPerDay ?? kDefaultOutCityKmPerDay;
-      return Padding(
-        padding: const EdgeInsets.only(bottom: 8),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(l10n.farePerKmUnit(l10n.amountRs(formatRs(rate))), style: bold),
-            Text(l10n.farePerKmEstimate(kmPerDay), style: Theme.of(context).textTheme.labelSmall),
-          ],
-        ),
-      );
-    }
-    if (v.outCityMode == 'fixedRoute') {
-      if (loadingRoute) {
-        return const Padding(padding: EdgeInsets.only(bottom: 8), child: CircularProgressIndicator());
-      }
-      final route = fixedRoute;
-      if (route == null) {
-        return Padding(padding: const EdgeInsets.only(bottom: 8), child: Text(l10n.outCityFixedRouteNone, style: bold));
-      }
-      return Padding(
-        padding: const EdgeInsets.only(bottom: 8),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(l10n.fareFixedRoute(route.displayName), style: bold),
-            Text(l10n.fixedRouteSummary(route.distanceKm, formatRs(route.fixedPricePkr)), style: Theme.of(context).textTheme.labelSmall),
-          ],
-        ),
-      );
-    }
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Text(l10n.fareOutCityDaily(l10n.amountRs(formatRs(v.rates.outOfCityDaily ?? (v.rates.daily24 * 1.3).round()))), style: bold),
     );
   }
 }

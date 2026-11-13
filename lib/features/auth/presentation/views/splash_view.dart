@@ -68,9 +68,10 @@ class _SplashViewState extends State<SplashView>
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
+    final year = DateTime.now().year;
     return Scaffold(
-      backgroundColor: const Color(0xFF131842),
+      backgroundColor: AppColors.splashBackground,
       body: Container(
         width: double.infinity,
         height: double.infinity,
@@ -78,10 +79,12 @@ class _SplashViewState extends State<SplashView>
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
+            // Audit SH-N1: the gradient lived as hardcoded hex here;
+            // it now lives in AppColors (splashGradient* tokens).
             colors: [
-              Color(0xFF0F1336),
-              Color(0xFF161B4A),
-              Color(0xFF12163F),
+              AppColors.splashGradientTop,
+              AppColors.splashGradientMiddle,
+              AppColors.splashGradientBottom,
             ],
           ),
         ),
@@ -104,11 +107,12 @@ class _SplashViewState extends State<SplashView>
                         width: 320,
                         fit: BoxFit.contain,
                       ),
-                      const SizedBox(
-                        width: 0,
-                        height: 0,
-                        child: Text('RentalHub', style: TextStyle(fontSize: 0, color: Colors.transparent)),
-                      ),
+                      // Audit SH-N12: the brand text used to hide as
+                      // a zero-size transparent Text node (a fontSize:0
+                      // hack). It is a semantics label now: screen
+                      // readers announce "RentalHub" for the logo
+                      // image, with nothing rendered.
+                      Semantics(label: 'RentalHub'),
                     ],
                   ),
                 ),
@@ -131,7 +135,8 @@ class _SplashViewState extends State<SplashView>
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      l10n.authCopyright(DateTime.now().year),
+                      l10n?.authCopyright(year) ??
+                          '© $year RentalHub. All rights reserved.',
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
                         color: Colors.white.withValues(alpha: 0.5),
                         fontWeight: FontWeight.w400,

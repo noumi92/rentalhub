@@ -1,6 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/auth/signed_in_user.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/data/sync_status_cubit.dart';
 import '../../../../core/di/injection_container.dart';
@@ -35,6 +35,9 @@ class _CustomerBookingsViewState extends State<CustomerBookingsView> {
   // E2: a load failure used to clear the spinner silently; it now
   // renders an error state with retry.
   bool _hasError = false;
+  // CU-m3: nobody signed in — the list must not load under the
+  // shared 'cust-101' id.
+  bool _signedOut = false;
 
   @override
   void initState() {
@@ -43,14 +46,15 @@ class _CustomerBookingsViewState extends State<CustomerBookingsView> {
   }
 
   Future<void> _fetchBookings() async {
-    if (mounted) setState(() => _hasError = false);
+    if (mounted) setState(() { _hasError = false; _signedOut = false; });
+    // CU-m3: a signed-out caller has no bookings to load — the old
+    // 'cust-101' fallback read another user's data.
+    final uid = SignedInUser.uid();
+    if (uid.isEmpty) {
+      if (mounted) setState(() { _signedOut = true; _hasError = true; _isLoading = false; });
+      return;
+    }
     try {
-      String uid = 'cust-101';
-      try {
-        final u = FirebaseAuth.instance.currentUser;
-        if (u != null) uid = u.uid;
-      } catch (_) {}
-
       final ds = sl<BookingRemoteDataSource>();
       final list = await ds.getCustomerBookings(uid);
       if (mounted) {
@@ -150,8 +154,9 @@ class _CustomerBookingsViewState extends State<CustomerBookingsView> {
                     )
                   : _hasError
                       ? AppErrorState(
-                          message:
-                              l10n.bookingsLoadError,
+                          message: _signedOut
+                              ? l10n.signInRequiredGeneric
+                              : l10n.bookingsLoadError,
                           onRetry: _fetchBookings,
                         )
                       : RefreshIndicator(

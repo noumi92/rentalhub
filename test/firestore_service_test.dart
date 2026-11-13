@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:rentalhub/core/auth/signed_in_user.dart';
 import 'package:rentalhub/core/di/injection_container.dart' as di;
 import 'package:rentalhub/core/error/exceptions.dart';
 import 'package:rentalhub/core/network/firestore_service.dart';
@@ -20,6 +21,19 @@ void main() {
     TestWidgetsFlutterBinding.ensureInitialized();
     SharedPreferences.setMockInitialValues({});
     await di.initDependencies();
+    // CU-m3: CustomerDocumentsView shows a signed-out error state
+    // with nobody signed in. Widget tests cannot sign a Firebase
+    // user in, so stand in as 'cust-101' via the SignedInUser test
+    // override — the KYC form then renders for the CNIC test.
+    SignedInUser.override = const SignedInUserData(
+      uid: 'cust-101',
+      displayName: 'Ahmed Raza',
+      phoneNumber: '03001234567',
+    );
+  });
+
+  tearDownAll(() {
+    SignedInUser.override = null;
   });
 
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -316,13 +330,17 @@ void main() {
       ScaffoldMessenger.of(tester.element(find.byType(LoginView))).clearSnackBars();
       await tester.pumpAndSettle();
 
-      // Enter valid password and sign in successfully
+      // A valid email + password still cannot sign in here: audit
+      // SH-C1 removed the demo fallback (any email + any >=6-char
+      // password used to sign in as the demo user), and there is no
+      // FirebaseAuth in widget tests. Sign-in now fails closed with
+      // an honest error instead of a fake success.
       await tester.enterText(passField, 'secret123');
       await tester.tap(find.text('Sign In with Email'));
       await tester.pumpAndSettle();
 
-      expect(signedIn, isTrue);
-      expect(find.text('Signed in successfully!'), findsOneWidget);
+      expect(signedIn, isFalse);
+      expect(find.text('Authentication unavailable'), findsOneWidget);
     });
 
     testWidgets('CustomerDocumentsView: blocks submission when CNIC format is invalid', (tester) async {

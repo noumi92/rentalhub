@@ -39,21 +39,21 @@ class _LoginLegalFooterState extends State<LoginLegalFooter> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final scheme = Theme.of(context).colorScheme;
     return Text.rich(
       TextSpan(
         children: [
-          TextSpan(text: l10n.authLegalIntro),
+          TextSpan(text: l10n?.authLegalIntro ?? 'By continuing, you agree to our'),
           const TextSpan(text: ' '),
           TextSpan(
-            text: l10n.authTermsOfService,
+            text: l10n?.authTermsOfService ?? 'Terms of Service',
             style: TextStyle(color: scheme.primary),
             recognizer: _termsRecognizer,
           ),
-          TextSpan(text: ' ${l10n.authLegalAnd} '),
+          TextSpan(text: ' ${l10n?.authLegalAnd ?? 'and'} '),
           TextSpan(
-            text: l10n.authPrivacyPolicy,
+            text: l10n?.authPrivacyPolicy ?? 'Privacy Policy',
             style: TextStyle(color: scheme.primary),
             recognizer: _privacyRecognizer,
           ),

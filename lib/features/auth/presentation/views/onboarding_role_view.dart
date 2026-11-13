@@ -24,35 +24,43 @@ class _OnboardingRoleViewState extends State<OnboardingRoleView> {
   String _selectedRole = 'customer';
 
   void _handleContinue() async {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final isCustomer = _selectedRole == 'customer';
     final roleTitle =
-        isCustomer ? l10n.roleCustomerTitle : l10n.roleOwner;
+        isCustomer ? l10n?.roleCustomerTitle ?? 'Customer (Rent a Vehicle)' : l10n?.roleOwner ?? 'Fleet Owner (Showroom)';
 
     final confirmed = await AppFeedback.showConfirmDialog(
       context: context,
-      title: l10n.roleConfirm,
+      title: l10n?.roleConfirm ?? 'Confirm Permanent Role',
       message:
-          l10n.roleSelectingNote(roleTitle),
-      confirmLabel: l10n.roleLockProceed,
-      cancelLabel: l10n.roleReview,
+          l10n?.roleSelectingNote(roleTitle) ?? 'You are selecting "$roleTitle". In accordance with National NADRA KYC policies, this role is locked permanently and cannot be changed later.',
+      confirmLabel: l10n?.roleLockProceed ?? 'Lock My Role & Proceed',
+      cancelLabel: l10n?.roleReview ?? 'Review Selection',
       icon: Icons.verified_user_rounded,
     );
 
     if (!confirmed || !mounted) return;
 
-    AppFeedback.showSuccess(context, l10n.roleConfirmed(roleTitle));
+    // Audit SH-C1: the role lock IS the write — without a registered
+    // data source there is nothing to lock. Fail here, before the
+    // "confirmed" toast and the navigation, instead of proceeding
+    // with no role saved.
+    if (!sl.isRegistered<AuthRemoteDataSource>()) {
+      AppFeedback.showError(context,
+          l10n?.authUnavailable ?? 'Authentication unavailable. Please try again later.');
+      return;
+    }
 
-    if (sl.isRegistered<AuthRemoteDataSource>()) {
-      final auth = sl<AuthRemoteDataSource>();
-      await auth.assignPermanentRole(
-        role: _selectedRole,
-        fullName: auth.fullName,
-        phone: auth.phoneNumber,
-      );
-      if (isCustomer) {
-        await auth.setOnboardingCompleted(true);
-      }
+    AppFeedback.showSuccess(context, l10n?.roleConfirmed(roleTitle) ?? 'Account role "$roleTitle" confirmed.');
+
+    final auth = sl<AuthRemoteDataSource>();
+    await auth.assignPermanentRole(
+      role: _selectedRole,
+      fullName: auth.fullName,
+      phone: auth.phoneNumber,
+    );
+    if (isCustomer) {
+      await auth.setOnboardingCompleted(true);
     }
 
     if (!mounted) return;
@@ -70,7 +78,7 @@ class _OnboardingRoleViewState extends State<OnboardingRoleView> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -82,8 +90,8 @@ class _OnboardingRoleViewState extends State<OnboardingRoleView> {
                   children: [
                     // Header rolls up with scroll
                     MinimalAppBar(
-                      title: l10n.onboardingStep2,
-                      subtitle: l10n.roleSelectSubtitle,
+                      title: l10n?.onboardingStep2 ?? 'Step 2: Account Role',
+                      subtitle: l10n?.roleSelectSubtitle ?? 'Choose how you want to use RentalHub',
                       onBack: () {
                         if (context.canPop()) {
                           context.pop();
@@ -104,11 +112,11 @@ class _OnboardingRoleViewState extends State<OnboardingRoleView> {
                         children: [
                            SecurityPolicyBanner(
                             message:
-                                l10n.roleSecurityPolicy,
+                                l10n?.roleSecurityPolicy ?? 'Security Policy: Role selection is strictly one-way and immutable once confirmed.',
                           ),
                           const SizedBox(height: 16),
                           Text(
-                            l10n.roleSelectTitle,
+                            l10n?.roleSelectTitle ?? 'Select Permanent Account Role',
                             style: Theme.of(context)
                                 .textTheme
                                 .bodyMedium
@@ -119,10 +127,10 @@ class _OnboardingRoleViewState extends State<OnboardingRoleView> {
                           const SizedBox(height: 10),
                           RoleSelectorCard(
                             roleKey: 'customer',
-                            title: l10n.roleCustomer,
-                            urduSubtitle: l10n.roleCustomerUrdu,
+                            title: l10n?.roleCustomer ?? 'Rent a Vehicle (Customer)',
+                            urduSubtitle: l10n?.roleCustomerUrdu ?? 'Rent a vehicle',
                             description:
-                                l10n.roleCustomerDesc,
+                                l10n?.roleCustomerDesc ?? 'Discover verified rental shops within 1–5 km, book Self-Drive or With-Driver packages.',
                             icon: Icons.person_pin_circle_rounded,
                             isSelected: _selectedRole == 'customer',
                             onTap: () =>
@@ -131,10 +139,10 @@ class _OnboardingRoleViewState extends State<OnboardingRoleView> {
                           const SizedBox(height: 12),
                           RoleSelectorCard(
                             roleKey: 'owner',
-                            title: l10n.roleOwnerTitle,
-                            urduSubtitle: l10n.roleOwnerUrdu,
+                            title: l10n?.roleOwnerTitle ?? 'List My Fleet (Shop Owner)',
+                            urduSubtitle: l10n?.roleOwnerUrdu ?? 'Register a showroom',
                             description:
-                                l10n.roleOwnerDesc,
+                                l10n?.roleOwnerDesc ?? 'Register your showroom, manage fleet rates, digital handovers, and RentalHub\'s shared blacklist.',
                             icon: Icons.storefront_rounded,
                             isSelected: _selectedRole == 'owner',
                             onTap: () =>
@@ -165,8 +173,8 @@ class _OnboardingRoleViewState extends State<OnboardingRoleView> {
               ),
               child: DebouncedButton(
                 text: _selectedRole == 'customer'
-                    ? l10n.roleContinueCustomer
-                    : l10n.roleContinueOwner,
+                    ? l10n?.roleContinueCustomer ?? 'Continue as Customer'
+                    : l10n?.roleContinueOwner ?? 'Continue as Fleet Owner',
                 icon: Icons.verified_user_rounded,
                 onPressed: () async => _handleContinue(),
               ),

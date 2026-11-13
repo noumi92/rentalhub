@@ -63,6 +63,10 @@ import '../../features/owner/presentation/views/owner_dashboard_view.dart';
 import '../../features/owner/presentation/views/owner_fixed_routes_view.dart';
 import '../../features/owner/presentation/views/owner_handover_signature_view.dart';
 import '../../features/owner/presentation/views/owner_manual_booking_view.dart';
+import '../../features/owner/presentation/views/owner_manual_booking_confirm_view.dart';
+import '../../features/fleet/domain/entities/vehicle_entity.dart';
+import '../../features/fleet/domain/entities/fixed_route_entity.dart';
+import '../../features/owner/presentation/widgets/guarantor_picker.dart';
 import '../../features/owner/presentation/views/owner_onboarding_view.dart';
 import '../../features/owner/presentation/views/owner_rate_matrix_view.dart';
 import '../../features/owner/presentation/views/owner_out_city_rules_view.dart';
@@ -104,10 +108,11 @@ import '../../features/owner/presentation/views/owner_finance_categories_view.da
 import '../../features/owner/presentation/views/owner_reset_options_view.dart';
 import '../../features/owner/presentation/views/owner_staff_roles_view.dart';
 import '../../features/owner/presentation/views/owner_signed_out_view.dart';
-import '../../features/owner/presentation/views/owner_whatsapp_logs_view.dart';
 import '../../features/owner/presentation/views/owner_fleet_view.dart';
 import '../../features/owner/presentation/widgets/owner_route_loaders.dart';
 import '../../features/owner/presentation/widgets/owner_requests_badge.dart';
+import '../../features/customer/presentation/widgets/customer_bookings_badge.dart';
+import '../../features/customer/presentation/widgets/customer_support_badge.dart';
 import '../../features/settings/presentation/views/sync_details_view.dart';
 import '../../features/admin/presentation/views/admin_activity_log_view.dart';
 import '../../features/admin/presentation/views/admin_cars_view.dart';
@@ -140,7 +145,11 @@ class AppRouter {
   /// Support is no longer a tab: it lives as a top-level sub-screen
   /// (see below the customer shell) reached from Profile and the home
   /// bell, and its unread indicator moved to the Profile Support row
-  /// (`CustomerSupportBadge` there). The other tabs have plain icons.
+  /// (`CustomerSupportBadge` there). CU-M11: the tabs themselves now
+  /// carry badges too — Bookings counts bookings needing action
+  /// (approved-awaiting-payment, proof-rejected) and Profile surfaces
+  /// the support-reply badge — the same `Badge` pattern as the owner
+  /// Requests tab. The other tabs have plain icons.
   /// Phase F: each tab carries an l10nKey — the label renders in the
   /// current locale (the plain `label` stays the English fallback).
   static final customerTabs = <ShellNavItem>[
@@ -149,17 +158,19 @@ class AppRouter {
     const ShellNavItem(
         icon: Icon(Icons.store_rounded),
         label: 'Shops',
-        l10nKey: 'tab2_navShops'),
-    const ShellNavItem(
-        icon: Icon(Icons.receipt_long_rounded),
+        l10nKey: 'navShops'),
+    ShellNavItem(
+        icon: CustomerBookingsBadge(
+            icon: const Icon(Icons.receipt_long_rounded)),
         label: 'Bookings',
         l10nKey: 'navBookings'),
     const ShellNavItem(
         icon: Icon(Icons.account_balance_wallet_rounded),
         label: 'Wallet',
         l10nKey: 'navWallet'),
-    const ShellNavItem(
-        icon: Icon(Icons.person_rounded),
+    ShellNavItem(
+        icon: CustomerSupportBadge(
+            icon: const Icon(Icons.person_rounded)),
         label: 'Profile',
         l10nKey: 'navProfile'),
   ];
@@ -968,6 +979,49 @@ class AppRouter {
                       state.uri.queryParameters['tripType'],
                 ),
               ),
+              // Requests: ownerManualBookingConfirm (RQ-F8, 2026-11-13
+              // — was pushed with Navigator from the manual form, no
+              // route/deep link). The form passes its validated draft
+              // via extra, same pattern as the CNIC-review route;
+              // without extra the manual form is shown instead of
+              // crashing on a deep link.
+              GoRoute(
+                path: RouteNames.ownerManualBookingConfirm,
+                builder: (context, state) {
+                  final extra = state.extra as Map<String, dynamic>?;
+                  final vehicle = extra?['vehicle'] as VehicleEntity?;
+                  final package =
+                      extra?['package'] as VehiclePackageEntity?;
+                  final pickup = extra?['pickupTime'] as DateTime?;
+                  final returnTime = extra?['returnTime'] as DateTime?;
+                  final customerName = extra?['customerName'] as String?;
+                  final customerPhone = extra?['customerPhone'] as String?;
+                  final customerCnic = extra?['customerCnic'] as String?;
+                  if (vehicle == null ||
+                      package == null ||
+                      pickup == null ||
+                      returnTime == null ||
+                      customerName == null ||
+                      customerPhone == null ||
+                      customerCnic == null) {
+                    return const OwnerManualBookingView();
+                  }
+                  return OwnerManualBookingConfirmView(
+                    customerName: customerName,
+                    customerPhone: customerPhone,
+                    customerCnic: customerCnic,
+                    guarantor:
+                        extra?['guarantor'] as GuarantorSelection?,
+                    vehicle: vehicle,
+                    package: package,
+                    isWithDriver: extra?['isWithDriver'] as bool? ?? false,
+                    isOutOfCity: extra?['isOutOfCity'] as bool? ?? false,
+                    pickupTime: pickup,
+                    returnTime: returnTime,
+                    fixedRoute: extra?['fixedRoute'] as FixedRouteEntity?,
+                  );
+                },
+              ),
               // Requests: ownerBookingConfirmed (audit impl, worker A)
               GoRoute(
                 path: RouteNames.ownerBookingConfirmed,
@@ -1116,7 +1170,7 @@ class AppRouter {
               // + onSaved callback via extra; without extra the scan
               // view is shown instead of crashing on a deep link.
               GoRoute(
-                path: '/owner/customers/cnic-review',
+                path: RouteNames.ownerCnicReview,
                 builder: (context, state) {
                   final extra = state.extra as Map<String, dynamic>?;
                   final result = extra?['result'] as CnicScanResult?;
@@ -1202,10 +1256,17 @@ class AppRouter {
                 path: RouteNames.ownerSubscription,
                 builder: (context, state) => const OwnerSubscriptionView(),
               ),
-              // Settings: ownerWhatsappLogs
+              // Settings: ownerWhatsappLogs — RQ-F16 (2026-11-13):
+              // `/owner/whatsapp` now serves the history view, which
+              // reads the real `whatsapp_dispatch_logs` collection.
+              // The legacy logs view (honest empty state, no
+              // collection) is unrouted; delete it via the GitHub
+              // web UI with `WhatsAppLogTile` (see the rulebook
+              // v1.0.5 entry). `/owner/whatsapp/history` serves the
+              // same view.
               GoRoute(
                 path: RouteNames.ownerWhatsappLogs,
-                builder: (context, state) => const OwnerWhatsAppLogsView(),
+                builder: (context, state) => const OwnerWhatsappHistoryView(),
               ),
               // Settings: ownerDisputes
               GoRoute(
@@ -1515,7 +1576,7 @@ class _CustomerNoDraftScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     // Phase F: the no-draft screen is user-facing copy, not a debug
     // message — it renders through AppLocalizations.
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       body: SafeArea(
         child: Center(
@@ -1531,19 +1592,20 @@ class _CustomerNoDraftScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  l10n.noDraftTitle,
+                  l10n?.noDraftTitle ?? 'No booking in progress.',
                   textAlign: TextAlign.center,
                   style: const TextStyle(fontWeight: FontWeight.w700),
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  l10n.noDraftMessage,
+                  l10n?.noDraftMessage ??
+                      'Pick a car and a package first — the review screen needs the booking details from there.',
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 16),
                 FilledButton(
                   onPressed: onBrowseShops,
-                  child: Text(l10n.noDraftBrowse),
+                  child: Text(l10n?.noDraftBrowse ?? 'Browse shops'),
                 ),
               ],
             ),

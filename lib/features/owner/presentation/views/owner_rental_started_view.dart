@@ -6,6 +6,7 @@ import '../../../../core/routing/route_names.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/debounced_button.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
+import '../../../../core/widgets/success_banner.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
 
@@ -70,51 +71,21 @@ class OwnerRentalStartedView extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Container(
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: Colors.green.shade50,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: Colors.green.shade200),
-                      ),
-                      child: Column(
-                        children: [
-                          Icon(Icons.check_circle_rounded,
-                              size: 56, color: Colors.green.shade700),
-                          const SizedBox(height: 12),
-                          Text(
-                            l10n.rentalStartedBanner,
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleLarge
-                                ?.copyWith(
-                                  fontWeight: FontWeight.w900,
-                                  color: Colors.green.shade800,
-                                ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            l10n.rentalStartedBooking(booking.bookingId),
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            l10n.rentalStartedReturnDue(
-                              MaterialLocalizations.of(context)
-                                  .formatShortDate(booking.returnTime),
-                              MaterialLocalizations.of(context).formatTimeOfDay(
-                                  TimeOfDay.fromDateTime(booking.returnTime)),
-                            ),
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.copyWith(fontWeight: FontWeight.w700),
-                          ),
-                        ],
-                      ),
+                    // OW-M6: the shared brightness-aware banner (was a
+                    // fixed-light green slab with theme subtitles,
+                    // invisible in dark mode).
+                    SuccessBanner(
+                      title: l10n.rentalStartedBanner,
+                      lines: [
+                        l10n.rentalStartedBooking(booking.bookingId),
+                        l10n.rentalStartedReturnDue(
+                          MaterialLocalizations.of(context)
+                              .formatShortDate(booking.returnTime),
+                          MaterialLocalizations.of(context).formatTimeOfDay(
+                              TimeOfDay.fromDateTime(booking.returnTime)),
+                        ),
+                      ],
+                      lastLineBold: true,
                     ),
                     const SizedBox(height: 20),
                     DebouncedButton(

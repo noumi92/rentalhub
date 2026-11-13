@@ -35,7 +35,12 @@ void main() {
 
   setUp(() async {
     await sl.reset();
-    SharedPreferences.setMockInitialValues({});
+    // Audit SH-C1: saveProfileInfo fails closed with no signed-in user
+    // and no cached uid. The test simulates a signed-in user through
+    // the cached-uid path the data source explicitly supports — the uid
+    // is a test key in mock prefs, not a fallback in production code.
+    SharedPreferences.setMockInitialValues(
+        {'rentalhub_user_uid': 'usr_pk_001'});
     prefs = await SharedPreferences.getInstance();
     sl.registerLazySingleton<SharedPreferences>(() => prefs);
 
@@ -92,7 +97,10 @@ void main() {
 
     // Strict assertions against hardcoded fake data
     expect(user.totalTrips, 0, reason: 'New users must have 0 total trips, not fake 7');
-    expect(user.trustScore, 5.0, reason: 'New users must have baseline 5.0 trust score, not fake 4.9');
+    // Audit SH-M5: the stored score is only the offline fallback for
+    // the live computation — a verified new customer is 3.5, never
+    // 5.0 (the top of the scale before the customer has done anything).
+    expect(user.trustScore, 3.5, reason: 'New users must have baseline 3.5 trust score, not fake 4.9 or perfect 5.0');
     expect(user.isVerified, isFalse, reason: 'New users must be unverified until NADRA/document verification');
   });
 }

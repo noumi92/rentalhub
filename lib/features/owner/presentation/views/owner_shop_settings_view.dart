@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../core/utils/current_shop.dart';
+import '../../../../core/utils/pakistani_validators.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/app_state_views.dart';
 import '../../../../core/widgets/debounced_button.dart';
@@ -30,6 +31,13 @@ class _OwnerShopSettingsViewState extends State<OwnerShopSettingsView> {
   bool _loading = true;
   bool _hasError = false;
   bool _isSaving = false;
+  // OW-m12: dirty guard — edits used to be lost silently on back.
+  String _initialSnapshot = '';
+  bool _discardConfirmed = false;
+
+  String _snapshot() => [_shopNameController.text, _ownerNameController.text, _phoneController.text, _addressController.text, _cityController.text, _openingHoursController.text].join('|');
+
+  bool get _isDirty => !_loading && !_hasError && _snapshot() != _initialSnapshot;
 
   @override
   void initState() {
@@ -62,6 +70,7 @@ class _OwnerShopSettingsViewState extends State<OwnerShopSettingsView> {
         _cityController.text = (data['city'] ?? '') as String;
         _openingHoursController.text = (data['openingHours'] ?? '') as String;
         _loading = false;
+        _initialSnapshot = _snapshot();
       });
     } catch (_) {
       if (mounted) setState(() => _loading = false);
@@ -75,6 +84,21 @@ class _OwnerShopSettingsViewState extends State<OwnerShopSettingsView> {
       AppFeedback.showError(context, l10n.shopSettingsNameShort);
       return;
     }
+    // OW-m12: the phone field had no validation at all.
+    final phone = _phoneController.text.trim();
+    if (phone.isNotEmpty &&
+        PakistaniValidators.validatePakistaniPhone(phone) != null) {
+      AppFeedback.showError(context, l10n.shopSettingsPhoneInvalid);
+      return;
+    }
+    // OW-m12: opening hours are free text with a format hint; a
+    // value with no time in it is rejected (a structured picker
+    // would be the fuller fix).
+    final hours = _openingHoursController.text.trim();
+    if (hours.isNotEmpty && !_looksLikeHours(hours)) {
+      AppFeedback.showError(context, l10n.shopSettingsHoursInvalid);
+      return;
+    }
     setState(() => _isSaving = true);
     try {
       await FirebaseFirestore.instance.collection('shops').doc(currentShopId()).set({
@@ -85,7 +109,10 @@ class _OwnerShopSettingsViewState extends State<OwnerShopSettingsView> {
         'city': _cityController.text.trim(),
         'openingHours': _openingHoursController.text.trim(),
       }, SetOptions(merge: true));
-      if (mounted) AppFeedback.showSuccess(context, l10n.shopSettingsSaved);
+      if (mounted) {
+        _initialSnapshot = _snapshot();
+        AppFeedback.showSuccess(context, l10n.shopSettingsSaved);
+      }
     } catch (e) {
       if (mounted) AppFeedback.showError(context, l10n.shopSettingsSaveFailed(e.toString()));
     } finally {
@@ -93,10 +120,46 @@ class _OwnerShopSettingsViewState extends State<OwnerShopSettingsView> {
     }
   }
 
+  /// Accepts "9:00 AM – 9:00 PM" shapes and "24 hours" / "24/7";
+  /// anything without a time in it is not opening hours.
+  static bool _looksLikeHours(String value) {
+    final v = value.trim().toLowerCase();
+    if (v.contains('24')) return true;
+    return RegExp(r'^\d{1,2}(:\d{2})?\s*(am|pm)?\s*[-–]\s*\d{1,2}(:\d{2})?\s*(am|pm)?$')
+        .hasMatch(v);
+  }
+
+  /// OW-m12: back with unsaved edits asks first (same dialog shape
+  /// as the rate matrix, generic wording).
+  Future<void> _handleBack() async {
+    if (!_isDirty) {
+      if (mounted) Navigator.of(context).maybePop();
+      return;
+    }
+    final l10n = AppLocalizations.of(context)!;
+    final discard = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.unsavedChangesTitle),
+        content: Text(l10n.unsavedChangesBody),
+        actions: [TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: Text(l10n.cancel)), FilledButton(onPressed: () => Navigator.of(ctx).pop(true), child: Text(l10n.syncDiscard))],
+      ),
+    );
+    if (discard == true && mounted) {
+      setState(() => _discardConfirmed = true);
+      Navigator.of(context).pop();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
+    return PopScope(
+      canPop: !_isDirty || _discardConfirmed,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) _handleBack();
+      },
+      child: Scaffold(
       body: SafeArea(
         top: false,
         child: Column(
@@ -125,7 +188,7 @@ class _OwnerShopSettingsViewState extends State<OwnerShopSettingsView> {
                               const SizedBox(height: 12),
                               _field(l10n.shopSettingsCity, _cityController),
                               const SizedBox(height: 12),
-                              _field(l10n.shopSettingsOpeningHours, _openingHoursController),
+                              _field(l10n.shopSettingsOpeningHours, _openingHoursController, hint: l10n.shopSettingsHoursHint),
                             ],
                           ),
                         ),
@@ -144,16 +207,18 @@ class _OwnerShopSettingsViewState extends State<OwnerShopSettingsView> {
           ],
         ),
       ),
+      ),
     );
   }
 
-  Widget _field(String label, TextEditingController controller, {TextInputType? keyboardType, int maxLines = 1}) {
+  Widget _field(String label, TextEditingController controller, {TextInputType? keyboardType, int maxLines = 1, String? hint}) {
     return TextField(
       controller: controller,
       keyboardType: keyboardType,
       maxLines: maxLines,
       decoration: InputDecoration(
         labelText: label,
+        hintText: hint,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       ),

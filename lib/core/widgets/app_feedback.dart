@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../constants/app_colors.dart';
+import '../constants/app_dimensions.dart';
 import '../../l10n/app_localizations.dart';
 
 /// Unified alert, notification, and dialog feedback system for RentalHub.
@@ -15,8 +16,11 @@ class AppFeedback {
       // Dark-mode snackbars use the dark container tones: the light
       // status colour with white text is ~2.9:1, and the lighter dark
       // accent token as a background would drop it to ~2.2:1.
+      // Audit SH-M2: light mode was white on `accentSuccess` #10B981
+      // (2.54:1 — fails AA for the 13 sp w700 text). Light now uses
+      // `accentSuccessStrong` #047857 (5.48:1 with white).
       backgroundColor:
-          dark ? AppColors.successContainerDark : AppColors.accentSuccess,
+          dark ? AppColors.successContainerDark : AppColors.accentSuccessStrong,
       foregroundColor:
           dark ? AppColors.successOnContainerDark : Colors.white,
       icon: Icons.check_circle_rounded,
@@ -29,8 +33,11 @@ class AppFeedback {
     _showSnackBar(
       context: context,
       message: message,
+      // Audit SH-M2: light mode was white on `accentDanger` #EF4444
+      // (3.76:1 — fails AA). Light now uses `errorDark` #DC2626
+      // (4.83:1 with white).
       backgroundColor:
-          dark ? AppColors.errorContainerDark : AppColors.accentDanger,
+          dark ? AppColors.errorContainerDark : AppColors.errorDark,
       foregroundColor: dark ? AppColors.errorOnContainerDark : Colors.white,
       icon: Icons.error_outline_rounded,
     );
@@ -42,8 +49,11 @@ class AppFeedback {
     _showSnackBar(
       context: context,
       message: message,
+      // Audit SH-M2: light mode was white on `secondary` #F95700
+      // (3.29:1 — fails AA). Light now uses `orangeFill` #C2410C
+      // (5.18:1 with white).
       backgroundColor:
-          dark ? AppColors.warningContainerDark : AppColors.secondary,
+          dark ? AppColors.warningContainerDark : AppColors.orangeFill,
       foregroundColor:
           dark ? AppColors.warningOnContainerDark : Colors.white,
       icon: Icons.warning_amber_rounded,
@@ -171,12 +181,20 @@ class AppFeedback {
           ElevatedButton(
             onPressed: () => Navigator.of(ctx).pop(true),
             style: ElevatedButton.styleFrom(
+              // Audit SH-M2: the destructive confirm was white on
+              // `accentDanger` #EF4444 (3.76:1 — fails AA). It now
+              // uses `errorDark` #DC2626 (4.83:1 with white), the
+              // same fill as the error snackbar.
+              // Audit SH-N9: radius 16 (AppDimensions.buttonRadius);
+              // no custom padding — the theme owns it.
               backgroundColor: isDestructive
-                  ? AppColors.accentDanger
+                  ? AppColors.errorDark
                   : Theme.of(ctx).colorScheme.primary,
               foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+              shape: RoundedRectangleBorder(
+                borderRadius:
+                    BorderRadius.circular(AppDimensions.buttonRadius),
+              ),
             ),
             child: Text(
               effectiveConfirmLabel,

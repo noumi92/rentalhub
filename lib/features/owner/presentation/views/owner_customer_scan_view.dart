@@ -85,7 +85,7 @@ class _OwnerCustomerScanViewState extends State<OwnerCustomerScanView> {
         return;
       }
       await context.push(
-        '/owner/customers/cnic-review',
+        RouteNames.ownerCnicReview,
         extra: <String, dynamic>{
           'result': result,
           'frontImagePath': picked.path,

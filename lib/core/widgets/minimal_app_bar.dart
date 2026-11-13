@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../constants/app_colors.dart';
+import '../theme/app_theme.dart';
 
 /// Minimal app bar (design direction #16): flat solid navy, 56 dp title
 /// bar (+ status-bar padding), bold white title 18 sp / w900 +
@@ -41,6 +42,11 @@ class MinimalAppBar extends StatelessWidget implements PreferredSizeWidget {
     final topPadding = MediaQuery.of(context).padding.top;
     final canPop = Navigator.maybeOf(context)?.canPop() ?? false;
     final showBack = onBack != null || canPop;
+    // Audit SH-N8: the title/subtitle pair lived as hardcoded 18 sp
+    // w900 / 12 sp styles here. It now comes from the theme's
+    // HeaderTextTheme (the header spec: 18/12, white on navy, Urdu
+    // title capped at w700).
+    final headerText = HeaderTextTheme.of(context);
     return Container(
       color: AppColors.primaryDark,
       padding: EdgeInsets.only(top: topPadding),
@@ -67,21 +73,14 @@ class MinimalAppBar extends StatelessWidget implements PreferredSizeWidget {
                     title,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w900,
-                      color: Colors.white,
-                    ),
+                    style: headerText.headerTitle,
                   ),
                   if (subtitle != null)
                     Text(
                       subtitle!,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.white70,
-                      ),
+                      style: headerText.headerSubtitle,
                     ),
                 ],
               ),

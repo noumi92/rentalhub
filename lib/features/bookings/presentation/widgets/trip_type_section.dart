@@ -17,6 +17,9 @@ class TripTypeSection extends StatelessWidget {
     required this.fixedRoutes,
     required this.selectedRoute,
     required this.onRouteSelected,
+    this.outCityMode,
+    this.outCityPerKmPkr,
+    this.outCityDailyPkr,
   });
 
   final bool isOutOfCity;
@@ -24,6 +27,34 @@ class TripTypeSection extends StatelessWidget {
   final List<FixedRouteEntity> fixedRoutes;
   final FixedRouteEntity? selectedRoute;
   final ValueChanged<FixedRouteEntity?> onRouteSelected;
+
+  /// CU-m17: the active out-of-city price basis, from the vehicle
+  /// fields the picker already has — the section must state it
+  /// instead of leaving the customer to discover it in the summary
+  /// bar. `outCityDailyPkr` is the resolved daily rate
+  /// (`rates.outOfCityDaily ?? rates.daily24`).
+  final String? outCityMode;
+  final int? outCityPerKmPkr;
+  final int? outCityDailyPkr;
+
+  /// CU-m17: the out-of-city price basis line for the current mode,
+  /// or null when no vehicle field states one.
+  String? _outCityPricingLine(AppLocalizations l10n) {
+    if (outCityMode == 'perKm' &&
+        outCityPerKmPkr != null &&
+        outCityPerKmPkr! > 0) {
+      return l10n.tripOutCityPerKmLine(
+          l10n.amountRs(formatRs(outCityPerKmPkr!)));
+    }
+    if (outCityMode == 'fixedRoute') {
+      return l10n.tripOutCityFixedRouteLine;
+    }
+    if (outCityDailyPkr != null && outCityDailyPkr! > 0) {
+      return l10n.tripOutCityPerDayLine(
+          l10n.amountRs(formatRs(outCityDailyPkr!)));
+    }
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,8 +100,21 @@ class TripTypeSection extends StatelessWidget {
           Text(
             l10n.tripTrackerNote,
             style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                fontWeight: FontWeight.w600, color: AppColors.secondary),
+                fontWeight: FontWeight.w600, color: AppColors.orangeTextFor(Theme.of(context).brightness)),
           ),
+          // CU-m17: the active out-of-city price basis, in the
+          // section itself — never invent a rate: each branch only
+          // renders when its vehicle field is present.
+          if (_outCityPricingLine(l10n) != null) ...[
+            const SizedBox(height: 6),
+            Text(
+              _outCityPricingLine(l10n)!,
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(fontWeight: FontWeight.w700),
+            ),
+          ],
           if (fixedRoutes.isNotEmpty) ...[
             const SizedBox(height: 10),
             Text(l10n.tripFixedRoutes,
@@ -89,7 +133,9 @@ class TripTypeSection extends StatelessWidget {
                   label: Text(l10n.fixedRouteChip(
                       r.destinationCity, formatRs(r.fixedPricePkr))),
                   selected: selected,
-                  selectedColor: AppColors.secondary,
+                  // CU-M1: white on #F95700 fails AA — the selected
+                  // chip uses the darker orangeFill (5.18:1).
+                  selectedColor: AppColors.orangeFill,
                   labelStyle: TextStyle(
                       fontWeight: FontWeight.w700,
                       color: selected

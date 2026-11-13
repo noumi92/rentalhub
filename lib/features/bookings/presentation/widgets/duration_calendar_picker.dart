@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../core/theme/card_decoration.dart';
 
-class DurationCalendarPicker extends StatelessWidget {
+class DurationCalendarPicker extends StatefulWidget {
   final DateTime pickupDate;
   final TimeOfDay pickupTime;
   final int durationDays;
@@ -27,8 +28,96 @@ class DurationCalendarPicker extends StatelessWidget {
   });
 
   @override
+  State<DurationCalendarPicker> createState() =>
+      _DurationCalendarPickerState();
+}
+
+class _DurationCalendarPickerState extends State<DurationCalendarPicker> {
+  // CU-m18: the message shown when the user picks a pickup time that
+  // is already past — the pick is rejected, not applied. Cleared by
+  // the next valid pick.
+  String? _rejectedMessage;
+
+  DateTime _combined(DateTime date, TimeOfDay time) =>
+      DateTime(date.year, date.month, date.day, time.hour, time.minute);
+
+  bool _isToday(DateTime date) {
+    final now = DateTime.now();
+    return date.year == now.year &&
+        date.month == now.month &&
+        date.day == now.day;
+  }
+
+  /// Now + 1h as a TimeOfDay — the earliest time the time picker
+  /// offers when the pickup date is today (CU-m18).
+  TimeOfDay _minTimeToday() {
+    final min = DateTime.now().add(const Duration(hours: 1));
+    return TimeOfDay(hour: min.hour, minute: min.minute);
+  }
+
+  int _minutes(TimeOfDay t) => t.hour * 60 + t.minute;
+
+  /// The inline error for the CURRENT props — a combination that has
+  /// already slipped into the past (e.g. the clock moved past it).
+  String? _currentError(AppLocalizations l10n) {
+    if (_combined(widget.pickupDate, widget.pickupTime)
+        .isBefore(DateTime.now())) {
+      return l10n.pickerPastTime;
+    }
+    return null;
+  }
+
+  Future<void> _pickDate(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: widget.pickupDate,
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(const Duration(days: 90)),
+      selectableDayPredicate: (day) {
+        final d = DateTime(day.year, day.month, day.day);
+        return !widget.blockedDates.contains(d);
+      },
+    );
+    if (picked == null || !mounted) return;
+    // CU-m18: a past pickup time is rejected with an inline error,
+    // not applied and left for the submit to catch.
+    if (_combined(picked, widget.pickupTime).isBefore(DateTime.now())) {
+      setState(() => _rejectedMessage = l10n.pickerPastTime);
+      return;
+    }
+    setState(() => _rejectedMessage = null);
+    widget.onDateChanged(picked);
+  }
+
+  Future<void> _pickTime(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
+    // CU-m18: when the date is today the time picker opens at now +
+    // 1h (or the current time, whichever is later) — never at a time
+    // that is already gone.
+    final initialTime = _isToday(widget.pickupDate) &&
+            _minutes(widget.pickupTime) < _minutes(_minTimeToday())
+        ? _minTimeToday()
+        : widget.pickupTime;
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: initialTime,
+    );
+    if (picked == null || !mounted) return;
+    if (_combined(widget.pickupDate, picked).isBefore(DateTime.now())) {
+      setState(() => _rejectedMessage = l10n.pickerPastTime);
+      return;
+    }
+    setState(() => _rejectedMessage = null);
+    widget.onTimeChanged(picked);
+  }
+
+  @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    // CU-m18: the rejected-pick message, or the live error when the
+    // current combination has slipped into the past.
+    final error = _rejectedMessage ?? _currentError(l10n);
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -54,21 +143,11 @@ class DurationCalendarPicker extends StatelessWidget {
                   context,
                   icon: Icons.calendar_today_rounded,
                   label: l10n.pickerPickupDate,
-                  value:
-                      '${pickupDate.day}/${pickupDate.month}/${pickupDate.year}',
-                  onTap: () async {
-                    final picked = await showDatePicker(
-                      context: context,
-                      initialDate: pickupDate,
-                      firstDate: DateTime.now(),
-                      lastDate: DateTime.now().add(const Duration(days: 90)),
-                      selectableDayPredicate: (day) {
-                        final d = DateTime(day.year, day.month, day.day);
-                        return !blockedDates.contains(d);
-                      },
-                    );
-                    if (picked != null) onDateChanged(picked);
-                  },
+                  // CU-m4: locale date, not day/month/year digits.
+                  value: DateFormat.yMMMd(
+                          Localizations.localeOf(context).languageCode)
+                      .format(widget.pickupDate),
+                  onTap: () => _pickDate(context),
                 ),
               ),
               const SizedBox(width: 10),
@@ -77,18 +156,33 @@ class DurationCalendarPicker extends StatelessWidget {
                   context,
                   icon: Icons.access_time_rounded,
                   label: l10n.summaryPickupTime,
-                  value: pickupTime.format(context),
-                  onTap: () async {
-                    final picked = await showTimePicker(
-                      context: context,
-                      initialTime: pickupTime,
-                    );
-                    if (picked != null) onTimeChanged(picked);
-                  },
+                  value: widget.pickupTime.format(context),
+                  onTap: () => _pickTime(context),
                 ),
               ),
             ],
           ),
+          if (error != null) ...[
+            const SizedBox(height: 8),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(Icons.error_outline_rounded,
+                    size: 16,
+                    color: AppColors.dangerTextFor(
+                        Theme.of(context).brightness)),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    error,
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        color: AppColors.dangerTextFor(
+                            Theme.of(context).brightness)),
+                  ),
+                ),
+              ],
+            ),
+          ],
           const SizedBox(height: 12),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -104,13 +198,14 @@ class DurationCalendarPicker extends StatelessWidget {
                 children: [
                   IconButton(
                     tooltip: l10n.pickerDecreaseDays,
-                    onPressed: durationDays > 1
-                        ? () => onDurationChanged(durationDays - 1)
+                    onPressed: widget.durationDays > 1
+                        ? () =>
+                            widget.onDurationChanged(widget.durationDays - 1)
                         : null,
                     icon: const Icon(Icons.remove_circle_outline_rounded),
                   ),
                   Text(
-                    l10n.pickerDays(durationDays),
+                    l10n.pickerDays(widget.durationDays),
                     style: Theme.of(context)
                         .textTheme
                         .titleSmall
@@ -118,8 +213,9 @@ class DurationCalendarPicker extends StatelessWidget {
                   ),
                   IconButton(
                     tooltip: l10n.pickerIncreaseDays,
-                    onPressed: durationDays < 30
-                        ? () => onDurationChanged(durationDays + 1)
+                    onPressed: widget.durationDays < 30
+                        ? () =>
+                            widget.onDurationChanged(widget.durationDays + 1)
                         : null,
                     icon: const Icon(Icons.add_circle_outline_rounded),
                     color: AppColors.secondary,

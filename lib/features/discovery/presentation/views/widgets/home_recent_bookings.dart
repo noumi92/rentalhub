@@ -91,9 +91,9 @@ class HomeRecentBookings extends StatelessWidget {
               onPressed: () => context.go(RouteNames.customerBookings),
               style: TextButton.styleFrom(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                minimumSize: Size.zero,
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+                // CU-M3: 48dp minimum tap target.
+                minimumSize: const Size(0, 48),
               ),
               child: Text(l10n.home2_viewAll),
             ),

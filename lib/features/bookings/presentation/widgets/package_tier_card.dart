@@ -55,8 +55,10 @@ class PackageTierCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
+                // CU-M1: white check on #F95700 fails AA — the
+                // selected icon fill uses orangeFill (5.18:1).
                 color: isSelected
-                    ? AppColors.secondary
+                    ? AppColors.orangeFill
                     : Theme.of(context).colorScheme.surfaceContainerHighest,
                 shape: BoxShape.circle,
               ),
@@ -109,7 +111,7 @@ class PackageTierCard extends StatelessWidget {
                 ),
                 Text(
                   l10n.tierAdvance(formatRs((price * 0.2).round().clamp(1000, 5000))),
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600, color: AppColors.secondary),
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600, color: AppColors.orangeTextFor(Theme.of(context).brightness)),
                 ),
               ],
             ),

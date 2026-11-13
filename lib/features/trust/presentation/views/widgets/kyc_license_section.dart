@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../../../../../core/widgets/app_feedback.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../data/services/cnic_ocr_service.dart';
+import '../../../domain/entities/kyc_document_entity.dart';
 import 'document_slot_tile.dart';
 import 'pick_image_source.dart';
 
@@ -28,10 +29,16 @@ class KycLicenseSection extends StatefulWidget {
     super.key,
     required this.data,
     required this.onChanged,
+    this.existing,
   });
 
   final KycLicenseData data;
   final VoidCallback onChanged;
+
+  /// CU-M7: the stored submission, so each licence slot can report
+  /// its own stored document (like the CNIC slots) instead of only
+  /// ever showing newly picked files.
+  final KycDocumentEntity? existing;
 
   @override
   State<KycLicenseSection> createState() => _KycLicenseSectionState();
@@ -129,7 +136,8 @@ class _KycLicenseSectionState extends State<KycLicenseSection> {
           subtitle: widget.data.front != null
               ? l10n.kycSelectedFile(_fileName(widget.data.front))
               : l10n.kycSelfDriveNote,
-          isUploaded: widget.data.front != null,
+          isUploaded: widget.data.front != null ||
+              (widget.existing?.licenseKey.isNotEmpty ?? false),
           onTap: _scanningFront ? () {} : () => _pickSlot('front'),
         ),
         const SizedBox(height: 10),
@@ -138,7 +146,8 @@ class _KycLicenseSectionState extends State<KycLicenseSection> {
           subtitle: widget.data.back != null
               ? l10n.kycSelectedFile(_fileName(widget.data.back))
               : l10n.kycSelfDriveNote,
-          isUploaded: widget.data.back != null,
+          isUploaded: widget.data.back != null ||
+              (widget.existing?.licenseBackKey.isNotEmpty ?? false),
           onTap: _scanningBack ? () {} : () => _pickSlot('back'),
         ),
         const SizedBox(height: 10),

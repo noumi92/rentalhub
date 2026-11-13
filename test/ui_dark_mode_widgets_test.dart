@@ -7,8 +7,8 @@
 // These tests pump the fixed widgets and the tab screens in the real dark
 // theme and assert:
 //   - no pure-white surface is painted anywhere (except the deliberate
-//     near-white keeps: the QR pass card and the Pakistani plate, skipped
-//     by ancestor and asserted separately), and
+//     keeps: the white QR tile inside the pass and the Pakistani plate,
+//     skipped by ancestor and asserted separately), and
 //   - text that used to carry a hardcoded light token now resolves to a
 //     readable colour — asserted as WCAG contrast against the surface it
 //     sits on (AA 4.5:1), not as an exact token, because the theme
@@ -17,6 +17,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:rentalhub/core/di/injection_container.dart';
 import 'package:rentalhub/core/theme/app_theme.dart';
@@ -221,9 +222,12 @@ void main() {
       );
       expect(_whiteSurfaces(tester), isEmpty);
       expect(_textColor(tester, 'Toyota Corolla Grande 1.8'), darkOnSurface);
-      // The amount is the brand orange by design (readable on dark at
-      // ~5.5:1); it was never navy, so it stays orange.
-      expect(_textColor(tester, 'Rs. 125,000'), AppColors.secondary);
+      // The amount is the brightness-aware orange TEXT token by design:
+      // #F95700 (AppColors.secondary) is only 3.29:1 as small text, so
+      // dark mode uses orangeTextFor(dark) #FB923C (7.92:1 on the dark
+      // surface). The brand fill token itself is unchanged.
+      expect(_textColor(tester, 'Rs. 125,000'),
+          AppColors.orangeTextFor(Brightness.dark));
       expect(
           _textColor(tester, 'Muhammad Ahmed Khan Butt'), darkOnSurface);
     });
@@ -242,13 +246,14 @@ void main() {
       expect(_whiteSurfaces(tester), isEmpty);
       expect(_textColor(tester, 'Toyota Corolla Grande 1.8'), darkOnSurface);
       expect(_textColor(tester, 'Total: Rs. 125,000'), darkOnSurface);
-      // 'requested' maps to the warning branch — the light amber in dark
-      // mode — not the default (navy) branch.
-      expect(_textColor(tester, 'REQUESTED'),
+      // CU-M5: the pill is the human label from BookingStatusChip, never
+      // the raw status code — 'requested' renders 'Pending Review' in
+      // the warning branch (light amber in dark mode), not navy.
+      expect(_textColor(tester, 'Pending Review'),
           AppColors.warningTextFor(Brightness.dark));
     });
 
-    testWidgets('BookingTicketCard: unknown status falls back to light navy',
+    testWidgets('BookingTicketCard: active status pill shows On trip',
         (tester) async {
       await TestHarness.pumpScreenWithOverflowCheck(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -260,9 +265,11 @@ void main() {
         theme: AppTheme.darkTheme,
       );
       expect(_whiteSurfaces(tester), isEmpty);
-      // 'active' hits the default branch: the light navy in dark mode,
-      // never the brand navy.
-      expect(_textColor(tester, 'ACTIVE'), AppColors.primaryOnDark);
+      // 'active' renders 'On trip' via BookingStatusChip and hits its
+      // default (warning) colour branch — never the brand navy, and
+      // never the uppercased raw status code.
+      expect(_textColor(tester, 'On trip'),
+          AppColors.warningTextFor(Brightness.dark));
     });
 
     testWidgets('BookingTicketCard: paid status pill uses the light green',
@@ -276,12 +283,13 @@ void main() {
         ),
         theme: AppTheme.darkTheme,
       );
-      expect(_textColor(tester, 'PAID'),
+      // CU-M5: 'paid' renders the human label 'Paid', not 'PAID'.
+      expect(_textColor(tester, 'Paid'),
           AppColors.successTextFor(Brightness.dark));
     });
 
     testWidgets(
-        'DigitalQrPassWidget: the white card is a keep, but its text is dark ink',
+        'DigitalQrPassWidget: dark surface with readable text, white QR tile',
         (tester) async {
       await TestHarness.pumpScreenWithOverflowCheck(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -295,40 +303,33 @@ void main() {
         ),
         theme: AppTheme.darkTheme,
       );
-      // The pass itself stays white on purpose (scannable, printable).
+      // Only the QR tile itself stays white in dark mode (a scannable
+      // QR needs a light quiet zone); the pass card follows the theme
+      // surface (#13152C in dark mode — the audit counts 0
+      // forced-light Scaffolds/surfaces). So the text on the card is
+      // the near-white theme text, which is correct and readable on
+      // the dark surface — not dark ink, which would be invisible.
       expect(
         find.byWidgetPredicate((w) =>
             w is Container &&
             (w.decoration as BoxDecoration?)?.color == Colors.white),
         findsWidgets,
       );
-      // ...but every line of text on it must be dark ink, not theme text
-      // (which is near-white in dark mode and invisible on the pass).
-      final texts = find
-          .descendant(
-            of: find.byType(DigitalQrPassWidget),
-            matching: find.byType(Text),
-          )
-          .evaluate()
-          .toList();
-      expect(texts, isNotEmpty);
-      for (final el in texts) {
-        if (el.findAncestorWidgetOfExactType<PakistaniPlateWidget>() !=
-            null) {
-          continue; // the plate is its own deliberate keep.
-        }
-        final color = (el.widget as Text).style?.color;
-        expect(
-          color,
-          anyOf(AppColors.textPrimary, AppColors.textMuted),
-          reason: 'QR pass text "${(el.widget as Text).data}" has colour '
-              '$color in dark mode — invisible on the white pass.',
-        );
-      }
-      expect(
-        tester.widget<Icon>(find.byIcon(Icons.qr_code_2_rounded)).color,
-        AppColors.textPrimary,
-      );
+      final darkSurface = AppTheme.darkTheme.colorScheme.surface;
+      final darkOnSurface = AppTheme.darkTheme.colorScheme.onSurface;
+      final darkOnSurfaceVariant =
+          AppTheme.darkTheme.colorScheme.onSurfaceVariant;
+      expect(_contrastRatio(darkOnSurface, darkSurface),
+          greaterThanOrEqualTo(4.5));
+      expect(_textColor(tester, 'Toyota Corolla Grande 1.8'),
+          darkOnSurface);
+      expect(_textColor(tester, 'Al-Madina Rent a Car'),
+          darkOnSurfaceVariant);
+      // The booking id sits ON the white QR tile, so it stays dark ink.
+      expect(_textColor(tester, 'RH-1762574400123-0042'), Colors.black87);
+      // CU-C2: the QR is a real QrImageView, not a decorative icon —
+      // there is no Icons.qr_code_2_rounded in this widget to assert on.
+      expect(find.byType(QrImageView), findsOneWidget);
     });
   });
 
@@ -374,7 +375,7 @@ void main() {
       await TestHarness.pumpScreenWithOverflowCheck(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         tester: tester,
-        screen: const OwnerDashboardView(),
+        screen: const OwnerDashboardView(shopId: 'shop-1'),
         theme: AppTheme.darkTheme,
       );
       expect(_whiteSurfaces(tester), isEmpty);

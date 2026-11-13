@@ -19,7 +19,7 @@ class LegalTextView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final isTerms = document == LegalDocument.terms;
     return Scaffold(
       body: SafeArea(
@@ -28,15 +28,15 @@ class LegalTextView extends StatelessWidget {
           children: [
             MinimalAppBar(
               title: isTerms
-                  ? l10n.authTermsOfService
-                  : l10n.authPrivacyPolicy,
+                  ? l10n?.authTermsOfService ?? 'Terms of Service'
+                  : l10n?.authPrivacyPolicy ?? 'Privacy Policy',
               onBack: onBack ?? () => context.pop(),
             ),
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(20),
                 child: Text(
-                  isTerms ? l10n.legalTermsBody : l10n.legalPrivacyBody,
+                  isTerms ? l10n?.legalTermsBody ?? '' : l10n?.legalPrivacyBody ?? '',
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ),

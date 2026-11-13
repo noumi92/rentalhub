@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/widgets/app_feedback.dart';
+import '../../../../core/widgets/app_state_views.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../customer/data/datasources/customer_remote_data_source.dart';
 import '../../../customer/domain/entities/customer_entity.dart';
@@ -101,29 +102,15 @@ class _CustomerSavedShopsViewState extends State<CustomerSavedShopsView> {
               onBack: widget.onBack,
             ),
             Expanded(
+              // CU-m2: the shared loading / empty states, not a bare
+              // spinner and a hand-rolled empty column.
               child: _loading
-                  ? const Center(child: CircularProgressIndicator())
+                  ? const AppLoadingState()
                   : _shops.isEmpty
-                      ? Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.favorite_border_rounded,
-                                  size: 46, color: AppColors.textSecondary),
-                              SizedBox(height: 8),
-                              Text(l10n.savedShopsEmpty,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyMedium
-                                      ?.copyWith(
-                                          color: AppColors.textSecondary)),
-                              SizedBox(height: 4),
-                              Text(
-                                  l10n.savedShopsEmptyHint,
-                                  style:
-                                      Theme.of(context).textTheme.labelSmall),
-                            ],
-                          ),
+                      ? AppEmptyState(
+                          title: l10n.savedShopsEmpty,
+                          message: l10n.savedShopsEmptyHint,
+                          icon: Icons.favorite_border_rounded,
                         )
                       : ListView.builder(
                           padding: const EdgeInsets.symmetric(
@@ -147,7 +134,7 @@ class _CustomerSavedShopsViewState extends State<CustomerSavedShopsView> {
                                         width: 48,
                                         height: 48,
                                         decoration: BoxDecoration(
-                                          color: AppColors.primaryContainer,
+                                          color: Theme.of(context).colorScheme.surfaceContainerHighest,
                                           borderRadius:
                                               BorderRadius.circular(12),
                                         ),
@@ -177,8 +164,9 @@ class _CustomerSavedShopsViewState extends State<CustomerSavedShopsView> {
                                                     .textTheme
                                                     .labelSmall
                                                     ?.copyWith(
-                                                        color: AppColors
-                                                            .textSecondary)),
+                                                        color: Theme.of(context)
+                                                            .colorScheme
+                                                            .onSurfaceVariant)),
                                             // Numbers the shop document never stored are hidden, never shown with the display-only fallback (4.9 / 8 cars).
                                             if (shop.hasRealRating ||
                                                 shop.hasRealAvailableCount)
@@ -217,7 +205,7 @@ class _CustomerSavedShopsViewState extends State<CustomerSavedShopsView> {
                                                                     FontWeight
                                                                         .w600,
                                                                 color: AppColors
-                                                                    .accentSuccess)),
+                                                                    .successTextFor(Theme.of(context).brightness))),
                                                 ],
                                               ),
                                           ],

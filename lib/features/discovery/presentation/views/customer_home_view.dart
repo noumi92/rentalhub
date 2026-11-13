@@ -1,6 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/auth/signed_in_user.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/widgets/app_state_views.dart';
 import '../../../customer/data/services/customer_home_service.dart';
@@ -33,6 +33,9 @@ class CustomerHomeView extends StatefulWidget {
 class _CustomerHomeViewState extends State<CustomerHomeView> {
   CustomerHomeData? _data;
   bool _loading = true;
+  // CU-m3: signed out — the old 'cust-101' fallback loaded another
+  // user's bookings and KPIs. The home shows a sign-in error instead.
+  bool _signedOut = false;
 
   @override
   void initState() {
@@ -41,14 +44,27 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
   }
 
   Future<void> _load() async {
+    final uid = _uid();
+    // An injected test service loads its own in-memory data without
+    // auth; the real app path requires a signed-in user.
+    if (uid.isEmpty && widget.homeService == null) {
+      if (mounted) {
+        setState(() {
+          _signedOut = true;
+          _loading = false;
+        });
+      }
+      return;
+    }
     final service = widget.homeService ?? CustomerHomeService.resolve();
     final data = service == null
         ? const CustomerHomeData(bookings: [])
-        : await service.load(_uid());
+        : await service.load(uid);
     if (mounted) {
       setState(() {
         _data = data;
         _loading = false;
+        _signedOut = false;
       });
     }
   }
@@ -58,38 +74,25 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
     await _load();
   }
 
-  /// The signed-in uid, or the 'cust-101' fallback the bookings
-  /// view and wallet service use when nobody is signed in.
-  String _uid() {
-    try {
-      return FirebaseAuth.instance.currentUser?.uid ?? 'cust-101';
-    } catch (_) {
-      return 'cust-101';
-    }
-  }
+  /// The signed-in uid, or '' when nobody is signed in — never a
+  /// demo fallback (CU-m3: 'cust-101' used to load a stranger's data).
+  String _uid() => SignedInUser.uid();
 
   /// The signed-in user's initial for the header avatar.
-  /// Firebase is best-effort here — 'U' when there is no
-  /// signed-in user yet.
+  /// 'U' when there is no signed-in user yet.
   String _userInitial() {
-    try {
-      final user = FirebaseAuth.instance.currentUser;
-      final name = user?.displayName ?? user?.email ?? '';
-      if (name.isNotEmpty) return name[0];
-    } catch (_) {}
+    final user = SignedInUser.current();
+    final name = user?.displayName ?? user?.email ?? '';
+    if (name.isNotEmpty) return name[0];
     return 'U';
   }
 
   /// First name for the greeting subtitle, or null when unknown
   /// (no signed-in user) — the app bar then shows the title only.
   String? _greetingName() {
-    try {
-      final name = FirebaseAuth.instance.currentUser?.displayName ?? '';
-      if (name.isEmpty) return null;
-      return name.split(' ').first;
-    } catch (_) {
-      return null;
-    }
+    final name = SignedInUser.current()?.displayName ?? '';
+    if (name.isEmpty) return null;
+    return name.split(' ').first;
   }
 
   @override
@@ -120,6 +123,11 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
                       const SizedBox(height: 12),
                       if (_loading)
                         const AppLoadingState()
+                      else if (_signedOut)
+                        AppErrorState(
+                          message: l10n.signInRequiredGeneric,
+                          onRetry: _reload,
+                        )
                       else if (data != null) ...[
                         HomeKpiGrid(
                           activeBookings: data.activeBookings,
@@ -128,6 +136,12 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
                           trustScore: data.trustScore,
                           onTrustTap: () => context
                               .push(RouteNames.customerReputation),
+                          // CU-m14: every KPI tile opens where its
+                          // number lives — bookings, wallet, bookings.
+                          onBookingsTap: () =>
+                              context.go(RouteNames.customerBookings),
+                          onWalletTap: () =>
+                              context.go(RouteNames.customerWallet),
                         ),
                         const SizedBox(height: 12),
                         HomeKycCard(kyc: data.kyc),

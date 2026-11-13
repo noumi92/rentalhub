@@ -16,13 +16,13 @@ class PakistanPhoneField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final scheme = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          l10n.onboardingWhatsappNumber,
+          l10n?.onboardingWhatsappNumber ?? 'WhatsApp Number',
           style: Theme.of(context).textTheme.labelMedium?.copyWith(
             fontWeight: FontWeight.w700,
             color: scheme.onSurface,

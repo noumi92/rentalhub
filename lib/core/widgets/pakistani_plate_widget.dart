@@ -17,8 +17,11 @@ class PakistaniPlateWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool isIslamabad =
         plateNumber.toUpperCase().startsWith('ICT') || provinceCode == 'ICT';
-    final Color stripColor =
-        isIslamabad ? const Color(0xFF1E3A8A) : const Color(0xFF15803D);
+    // Audit SH-N1: the strip colours lived as hardcoded hex here;
+    // they are real plate colours, named in AppColors.
+    final Color stripColor = isIslamabad
+        ? AppColors.plateStripIslamabad
+        : AppColors.plateStripDefault;
     final String stripLabel = isIslamabad ? 'ICT' : 'PK';
 
     return Container(

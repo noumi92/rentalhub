@@ -64,7 +64,7 @@ class _OwnerNotificationsViewState extends State<OwnerNotificationsView> {
             _items = _items.map((i) => i.copyWith(read: true)).toList());
       }
     } catch (_) {
-      if (mounted) AppFeedback.showError(context, l10n.requestsLoadError);
+      if (mounted) AppFeedback.showError(context, l10n.notificationsMarkReadError);
     }
   }
 
@@ -75,7 +75,7 @@ class _OwnerNotificationsViewState extends State<OwnerNotificationsView> {
     } catch (_) {
       // Marking read is best-effort: the booking still opens, but
       // the owner is told the read state may not have stuck.
-      if (mounted) AppFeedback.showError(context, l10n.requestsLoadError);
+      if (mounted) AppFeedback.showError(context, l10n.notificationsMarkReadError);
     }
     if (mounted) {
       setState(() => _items = _items
@@ -166,7 +166,7 @@ class _OwnerNotificationsViewState extends State<OwnerNotificationsView> {
                   ? const AppLoadingState()
                   : _hasError
                       ? AppErrorState(
-                          message: l10n.requestsLoadError,
+                          message: l10n.notificationsLoadError,
                           onRetry: _load,
                         )
                       : _items.isEmpty

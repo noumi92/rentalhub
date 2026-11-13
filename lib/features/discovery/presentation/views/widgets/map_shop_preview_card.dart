@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../../core/constants/app_colors.dart';
+import '../../../../../core/utils/whatsapp.dart';
+import '../../../../../core/widgets/app_feedback.dart';
 import '../../../../../core/widgets/verified_badge.dart';
 import '../../../domain/entities/shop_entity.dart';
 import '../../../../../l10n/app_localizations.dart';
@@ -18,15 +21,19 @@ class MapShopPreviewCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    // CU-C1: same real dial/WhatsApp handlers as the shop list card
+    // — the old SnackBars never opened anything. Disabled with a
+    // tooltip when the shop has no phone number.
+    final hasPhone = shop.phoneNumber.trim().isNotEmpty;
     return Positioned(
       bottom: 16,
       left: 16,
       right: 16,
       child: Card(
         elevation: 6,
+        // CU-M2: cards carry no dark border.
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(18),
-          side: BorderSide(color: Theme.of(context).dividerColor),
         ),
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -40,7 +47,7 @@ class MapShopPreviewCard extends StatelessWidget {
                     width: 44,
                     height: 44,
                     decoration: BoxDecoration(
-                      color: AppColors.primaryContainer,
+                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: const Icon(
@@ -113,51 +120,73 @@ class MapShopPreviewCard extends StatelessWidget {
                 crossAxisAlignment: WrapCrossAlignment.center,
                 alignment: WrapAlignment.spaceBetween,
                 children: [
-                  OutlinedButton.icon(
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(l10n.callingShop(shop.shopName)),
-                          backgroundColor: AppColors.primary,
-                          duration: const Duration(seconds: 2),
-                        ),
-                      );
+                  // CU-C1: dials the shop's real number; disabled
+                  // with a tooltip when there is none.
+                  _MapPreviewButton(
+                    enabled: hasPhone,
+                    noPhoneMessage: l10n.shopNoPhoneNumber,
+                    onPressed: () async {
+                      final digits = shop.phoneNumber
+                          .replaceAll(RegExp(r'[^0-9+]'), '');
+                      final uri = Uri(scheme: 'tel', path: digits);
+                      if (!await launchUrl(uri)) {
+                        if (context.mounted) {
+                          AppFeedback.showError(
+                            context,
+                            l10n.couldNotOpenDialer,
+                          );
+                        }
+                      }
                     },
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: Theme.of(context).colorScheme.onSurface,
-                      side: BorderSide(color: Theme.of(context).dividerColor),
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                    ),
-                    icon: const Icon(Icons.call_rounded, size: 14),
-                    label: Text(l10n.call),
+                    isWhatsApp: false,
+                    icon: const Icon(Icons.call_rounded, size: 16),
+                    label: l10n.call,
                   ),
-                  OutlinedButton.icon(
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(l10n.openingWhatsappShop(shop.shopName)),
-                          backgroundColor: AppColors.successContainerFor(Theme.of(context).brightness),
-                          duration: const Duration(seconds: 2),
-                        ),
+                  // CU-C1: opens a real wa.me chat; disabled when
+                  // there is no number.
+                  _MapPreviewButton(
+                    enabled: hasPhone,
+                    noPhoneMessage: l10n.shopNoPhoneNumber,
+                    onPressed: () async {
+                      final uri = whatsappUri(
+                        phone: shop.phoneNumber,
+                        message: l10n.shopWhatsappHello(shop.shopName),
                       );
+                      if (uri == null) {
+                        AppFeedback.showInfo(
+                          context,
+                          l10n.shopNoPhoneNumber,
+                        );
+                        return;
+                      }
+                      if (!await launchUrl(
+                        uri,
+                        mode: LaunchMode.externalApplication,
+                      )) {
+                        if (context.mounted) {
+                          AppFeedback.showError(
+                            context,
+                            l10n.couldNotOpenWhatsapp,
+                          );
+                        }
+                      }
                     },
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: AppColors.successOnContainerFor(Theme.of(context).brightness),
-                      side: BorderSide(color: AppColors.successBorderFor(Theme.of(context).brightness)),
-                      backgroundColor: AppColors.successContainerFor(Theme.of(context).brightness),
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                    ),
-                    icon: Icon(Icons.chat_bubble_outline_rounded, size: 14, color: AppColors.successOnContainerFor(Theme.of(context).brightness)),
-                    label: Text(l10n.whatsapp),
+                    isWhatsApp: true,
+                    icon: Icon(Icons.chat_bubble_outline_rounded,
+                        size: 16,
+                        color: AppColors.successOnContainerFor(
+                            Theme.of(context).brightness)),
+                    label: l10n.whatsapp,
                   ),
                   ElevatedButton.icon(
                     onPressed: onViewShowroom,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.secondary,
+                      // CU-M1: white on AppColors.secondary is 3.29:1
+                      // — orangeFill is 5.18:1.
+                      backgroundColor: AppColors.orangeFill,
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                      minimumSize: const Size(0, 48),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     ),
                     icon: const Icon(Icons.directions_car_rounded, size: 14),
@@ -170,5 +199,51 @@ class MapShopPreviewCard extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+/// CU-C1 / CU-M3: a 48dp-minimum call/WhatsApp button for the map
+/// preview. Disabled + tooltip when the shop has no phone number.
+class _MapPreviewButton extends StatelessWidget {
+  const _MapPreviewButton({
+    required this.enabled,
+    required this.noPhoneMessage,
+    required this.onPressed,
+    required this.isWhatsApp,
+    required this.icon,
+    required this.label,
+  });
+
+  final bool enabled;
+  final String noPhoneMessage;
+  final VoidCallback onPressed;
+  final bool isWhatsApp;
+  final Widget icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final brightness = Theme.of(context).brightness;
+    final button = OutlinedButton.icon(
+      onPressed: enabled ? onPressed : null,
+      style: OutlinedButton.styleFrom(
+        foregroundColor: isWhatsApp
+            ? AppColors.successOnContainerFor(brightness)
+            : Theme.of(context).colorScheme.onSurface,
+        side: BorderSide(
+            color: isWhatsApp
+                ? AppColors.successBorderFor(brightness)
+                : Theme.of(context).dividerColor),
+        backgroundColor:
+            isWhatsApp ? AppColors.successContainerFor(brightness) : null,
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+        minimumSize: const Size(0, 48),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      ),
+      icon: icon,
+      label: Text(label),
+    );
+    if (enabled) return button;
+    return Tooltip(message: noPhoneMessage, child: button);
   }
 }

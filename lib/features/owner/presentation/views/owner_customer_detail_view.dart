@@ -5,6 +5,7 @@ import '../../../../core/di/injection_container.dart';
 import '../../../../core/utils/current_shop.dart';
 import '../../../../core/utils/money_format.dart';
 import '../../../../core/widgets/app_state_views.dart';
+import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/debounced_button.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -87,7 +88,11 @@ class _OwnerCustomerDetailViewState extends State<OwnerCustomerDetailView> {
         _loading = false;
       });
     } catch (_) {
-      if (mounted) setState(() => _hasError = true);
+      // OW-M1: the catch used to set only _hasError — build checks _loading first, so a load failure spun forever and the error state below was unreachable.
+      if (mounted) setState(() {
+        _hasError = true;
+        _loading = false;
+      });
     }
   }
 
@@ -95,12 +100,16 @@ class _OwnerCustomerDetailViewState extends State<OwnerCustomerDetailView> {
   int get _totalDues => _bookings.where((b) => _dueStatuses.contains(b.status) && b.remainingBalance > 0).fold(0, (s, b) => s + b.remainingBalance);
 
   Future<void> _setApproval(String status, {String? reason}) async {
+    final l10n = AppLocalizations.of(context)!;
     final customer = _customer;
     if (customer == null) return;
     setState(() => _acting = true);
     try {
       await sl<CustomerRemoteDataSource>().updateApprovalStatus(customerId: customer.customerId, status: status, rejectionReason: reason);
       await _load();
+    } catch (_) {
+      // OW-M2: the old try/finally swallowed the failure — the owner saw nothing and the chip still showed the old state. The record is left unchanged; _load is only called on success.
+      if (mounted) AppFeedback.showError(context, l10n.customerDetailApprovalFailed);
     } finally {
       if (mounted) setState(() => _acting = false);
     }
@@ -221,11 +230,12 @@ class _OwnerCustomerDetailViewState extends State<OwnerCustomerDetailView> {
                   trailing: Text(l10n.amountRs(formatRs(b.totalAmount)), style: const TextStyle(fontWeight: FontWeight.w800)),
                 )),
           const SizedBox(height: 16),
+          // OW-m14: the button matching the current status is disabled (DebouncedButton has no disabled slot, so the decided action is dimmed + input-blocked); the opposite action stays available.
           Row(
             children: [
-              Expanded(child: DebouncedButton(text: l10n.customerDetailApprove, icon: Icons.check_rounded, backgroundColor: AppColors.accentSuccessStrong, isLoading: _acting, onPressed: () => _setApproval('approved'))),
+              Expanded(child: Opacity(opacity: approval == 'approved' ? 0.5 : 1, child: AbsorbPointer(absorbing: approval == 'approved', child: DebouncedButton(text: l10n.customerDetailApprove, icon: Icons.check_rounded, backgroundColor: AppColors.accentSuccessStrong, isLoading: _acting, onPressed: () => _setApproval('approved'))))),
               const SizedBox(width: 12),
-              Expanded(child: DebouncedButton(text: l10n.customerDetailReject, icon: Icons.close_rounded, backgroundColor: AppColors.errorDark, isLoading: _acting, onPressed: _reject)),
+              Expanded(child: Opacity(opacity: approval == 'rejected' ? 0.5 : 1, child: AbsorbPointer(absorbing: approval == 'rejected', child: DebouncedButton(text: l10n.customerDetailReject, icon: Icons.close_rounded, backgroundColor: AppColors.errorDark, isLoading: _acting, onPressed: _reject)))),
             ],
           ),
         ],

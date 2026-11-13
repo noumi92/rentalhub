@@ -71,7 +71,9 @@ class _OwnerFleetCalendarViewState extends State<OwnerFleetCalendarView> {
     final d = DateTime(day.year, day.month, day.day);
     return _bookings.any((b) {
       if (b.vehicleId != vehicleId) return false;
-      if (b.status == 'rejected' || b.status == 'cancelled') return false;
+      // OW-m33: 'requested' is a pending ask, not a booking —
+      // it used to paint the car red before anyone approved it.
+      if (b.status == 'rejected' || b.status == 'cancelled' || b.status == 'requested') return false;
       final from = DateTime(b.pickupTime.year, b.pickupTime.month, b.pickupTime.day);
       final to = DateTime(b.returnTime.year, b.returnTime.month, b.returnTime.day);
       return !d.isBefore(from) && !d.isAfter(to);
@@ -80,6 +82,11 @@ class _OwnerFleetCalendarViewState extends State<OwnerFleetCalendarView> {
 
   void _shiftMonth(int delta) {
     setState(() => _month = DateTime(_month.year, _month.month + delta));
+  }
+
+  bool _isToday(int day) {
+    final now = DateTime.now();
+    return _month.year == now.year && _month.month == now.month && day == now.day;
   }
 
   @override
@@ -97,6 +104,8 @@ class _OwnerFleetCalendarViewState extends State<OwnerFleetCalendarView> {
               subtitle: monthLabel,
               onBack: widget.onBack ?? () => context.pop(),
               actions: [
+                // OW-m33: jump back to the current month.
+                TextButton(onPressed: () => setState(() => _month = DateTime(DateTime.now().year, DateTime.now().month)), child: Text(l10n.dashboardToday, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700))),
                 IconButton(icon: const Icon(Icons.chevron_left_rounded, color: Colors.white), tooltip: l10n.fleetCalendarPrevMonth, onPressed: () => _shiftMonth(-1)),
                 IconButton(icon: const Icon(Icons.chevron_right_rounded, color: Colors.white), tooltip: l10n.fleetCalendarNextMonth, onPressed: () => _shiftMonth(1)),
               ],
@@ -150,6 +159,9 @@ class _OwnerFleetCalendarViewState extends State<OwnerFleetCalendarView> {
                                                         decoration: BoxDecoration(
                                                           color: _isBooked(v.vehicleId, DateTime(_month.year, _month.month, day)) ? AppColors.errorContainerFor(Theme.of(context).brightness) : AppColors.successContainerFor(Theme.of(context).brightness),
                                                           borderRadius: BorderRadius.circular(2),
+                                                          // OW-m33: a ring on today so the owner can
+                                                          // find the current day at a glance.
+                                                          border: _isToday(day) ? Border.all(color: Theme.of(context).colorScheme.primary, width: 1.5) : null,
                                                         ),
                                                       ),
                                                     ),
@@ -170,12 +182,18 @@ class _OwnerFleetCalendarViewState extends State<OwnerFleetCalendarView> {
   }
 
   Widget _legend(BuildContext context, Color color, String label) {
+    final brightness = Theme.of(context).brightness;
+    // OW-m33: the pale swatches were indistinguishable at a
+    // glance — a matching border + a bold label tell them apart.
+    final border = color == AppColors.errorContainerFor(brightness)
+        ? AppColors.errorOnContainerFor(brightness)
+        : AppColors.successBorderFor(brightness);
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Container(width: 14, height: 14, decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(4))),
+        Container(width: 14, height: 14, decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(4), border: Border.all(color: border, width: 1.5))),
         const SizedBox(width: 4),
-        Text(label, style: Theme.of(context).textTheme.labelSmall),
+        Text(label, style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700)),
       ],
     );
   }

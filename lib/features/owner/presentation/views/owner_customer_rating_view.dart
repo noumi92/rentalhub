@@ -80,7 +80,9 @@ class _OwnerCustomerRatingViewState extends State<OwnerCustomerRatingView> {
             reasonCategory: _selectedReason,
             description: _commentController.text.trim().isNotEmpty
                 ? _commentController.text.trim()
-                : 'Customer flagged during return settlement for $_selectedReason.',
+                // OW-m28: localized, parameterised — was a hardcoded
+                // English sentence inside the flag record.
+                : l10n.customersRatingFlagDescription(_selectedReason),
           );
           blacklisted = true;
         }

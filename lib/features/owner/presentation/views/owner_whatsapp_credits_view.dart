@@ -32,6 +32,9 @@ class _OwnerWhatsappCreditsViewState
   final _dataSource = WhatsappCreditsDataSource();
   int? _balance;
   WhatsappAutoSettings _settings = const WhatsappAutoSettings();
+  // OW-M9: _load had no try/catch — a failed balance/settings read
+  // left _balance null forever and the screen spun indefinitely.
+  bool _hasError = false;
 
   @override
   void initState() {
@@ -40,14 +43,19 @@ class _OwnerWhatsappCreditsViewState
   }
 
   Future<void> _load() async {
-    final shopId = currentShopId();
-    final balance = await _dataSource.getBalance(shopId);
-    final settings = await _dataSource.getAutoSettings(shopId);
-    if (mounted) {
-      setState(() {
-        _balance = balance;
-        _settings = settings;
-      });
+    if (mounted) setState(() => _hasError = false);
+    try {
+      final shopId = currentShopId();
+      final balance = await _dataSource.getBalance(shopId);
+      final settings = await _dataSource.getAutoSettings(shopId);
+      if (mounted) {
+        setState(() {
+          _balance = balance;
+          _settings = settings;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() => _hasError = true);
     }
   }
 
@@ -138,9 +146,12 @@ class _OwnerWhatsappCreditsViewState
               ],
             ),
             Expanded(
-              child: _balance == null
-                  ? const AppLoadingState()
-                  : ListView(
+              child: _hasError
+                  ? AppErrorState(
+                      message: l10n.dashboardLoadError, onRetry: _load)
+                  : _balance == null
+                      ? const AppLoadingState()
+                      : ListView(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16, vertical: 14),
                       children: [

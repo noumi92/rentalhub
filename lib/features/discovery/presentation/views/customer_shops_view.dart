@@ -142,33 +142,12 @@ class _CustomerShopsViewState extends State<CustomerShopsView> {
                   child: _loading
                       ? AppLoadingState(message: l10n.homeFindingShops)
                       : shops.isEmpty
-                          ? Center(
-                              child: Padding(
-                                padding: const EdgeInsets.all(32),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    const Icon(Icons.storefront_rounded,
-                                        size: 48),
-                                    const SizedBox(height: 12),
-                                    Text(
-                                      l10n.shops_emptyTitle,
-                                      textAlign: TextAlign.center,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleMedium,
-                                    ),
-                                    const SizedBox(height: 6),
-                                    Text(
-                                      l10n.shops_emptySubtitle,
-                                      textAlign: TextAlign.center,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium,
-                                    ),
-                                  ],
-                                ),
-                              ),
+                          // CU-m2: the shared empty state, not a
+                          // hand-rolled icon + two Texts.
+                          ? AppEmptyState(
+                              title: l10n.shops_emptyTitle,
+                              message: l10n.shops_emptySubtitle,
+                              icon: Icons.storefront_rounded,
                             )
                           : SingleChildScrollView(
                               padding:

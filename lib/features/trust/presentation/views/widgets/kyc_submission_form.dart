@@ -210,8 +210,11 @@ class _KycSubmissionFormState extends State<KycSubmissionForm> {
             subtitle: _cnicFront != null
                 ? l10n.kycSelectedFile(_fileName(_cnicFront))
                 : l10n.kycHighResHint,
-            isUploaded:
-                _cnicFront != null || widget.existing != null,
+            // CU-M7: each slot reports its OWN stored document — the
+            // old `widget.existing != null` marked BOTH slots uploaded
+            // as soon as any submission existed, even a partial one.
+            isUploaded: _cnicFront != null ||
+                (widget.existing?.cnicFrontKey.isNotEmpty ?? false),
             onTap: () => _pickSlot('front'),
           ),
           const SizedBox(height: 10),
@@ -220,12 +223,14 @@ class _KycSubmissionFormState extends State<KycSubmissionForm> {
             subtitle: _cnicBack != null
                 ? l10n.kycSelectedFile(_fileName(_cnicBack))
                 : l10n.kycQrHint,
-            isUploaded: _cnicBack != null || widget.existing != null,
+            isUploaded: _cnicBack != null ||
+                (widget.existing?.cnicBackKey.isNotEmpty ?? false),
             onTap: () => _pickSlot('back'),
           ),
           const SizedBox(height: 10),
           KycLicenseSection(
             data: _licenseData,
+            existing: widget.existing,
             onChanged: () => setState(() {}),
           ),
           const SizedBox(height: 18),

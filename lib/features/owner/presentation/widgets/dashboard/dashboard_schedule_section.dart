@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../bookings/domain/entities/booking_entity.dart';
@@ -19,13 +20,11 @@ class DashboardScheduleSection extends StatelessWidget {
     return t.year == now.year && t.month == now.month && t.day == now.day;
   }
 
-  String _time(DateTime t) {
-    final hour = t.hour % 12 == 0 ? 12 : t.hour % 12;
-    final amPm = t.hour < 12 ? 'AM' : 'PM';
-    return '$hour:${t.minute.toString().padLeft(2, '0')} $amPm';
-  }
+  // OW-m35: intl with the current locale — the hand-rolled "3:05 PM"
+  // and d/m/y never localised (Urdu digits, 24-hour preference).
+  String _time(DateTime t, String locale) => DateFormat.jm(locale).format(t);
 
-  String _date(DateTime t) => '${t.day}/${t.month}/${t.year}';
+  String _date(DateTime t, String locale) => DateFormat.yMd(locale).format(t);
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +51,7 @@ class DashboardScheduleSection extends StatelessWidget {
               style: TextStyle(
                   color: Theme.of(context).colorScheme.onSurfaceVariant)),
         for (final b in today)
-          _row(context, _scheduleLabel(l10n, b), b),
+          _row(context, _scheduleLabel(l10n, b, Localizations.localeOf(context).languageCode), b),
         const SizedBox(height: 20),
         _sectionTitle(context, l10n.dashboardUpcomingReturns),
         const SizedBox(height: 8),
@@ -61,19 +60,19 @@ class DashboardScheduleSection extends StatelessWidget {
               style: TextStyle(
                   color: Theme.of(context).colorScheme.onSurfaceVariant)),
         for (final b in upcoming)
-          _row(context, _date(b.returnTime), b),
+          _row(context, _date(b.returnTime, Localizations.localeOf(context).languageCode), b),
       ],
     );
   }
 
-  String _scheduleLabel(AppLocalizations l10n, BookingEntity b) {
+  String _scheduleLabel(AppLocalizations l10n, BookingEntity b, String locale) {
     if (_isToday(b.pickupTime) && b.status != 'active') {
-      return '${_time(b.pickupTime)} · ${l10n.dashboardScheduleHandover}';
+      return '${_time(b.pickupTime, locale)} · ${l10n.dashboardScheduleHandover}';
     }
     if (_isToday(b.returnTime)) {
-      return '${_time(b.returnTime)} · ${l10n.dashboardScheduleReturn}';
+      return '${_time(b.returnTime, locale)} · ${l10n.dashboardScheduleReturn}';
     }
-    return '${_time(b.pickupTime)} · ${l10n.dashboardScheduleBooking}';
+    return '${_time(b.pickupTime, locale)} · ${l10n.dashboardScheduleBooking}';
   }
 
   Widget _sectionTitle(BuildContext context, String title) {

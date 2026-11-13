@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/widgets/app_feedback.dart';
+import '../../../../core/widgets/app_state_views.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../core/widgets/debounced_button.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
@@ -32,8 +33,11 @@ class CustomerRateTripView extends StatefulWidget {
 }
 
 class _CustomerRateTripViewState extends State<CustomerRateTripView> {
-  int _shopRating = 5;
-  int _vehicleRating = 5;
+  // CU-m12: both ratings start UNSET (0) — the old 5-star pre-fill
+  // filed a 5/5 review when the customer submitted without touching
+  // anything. Pre-filled only from an existing review (see below).
+  int _shopRating = 0;
+  int _vehicleRating = 0;
   final _commentController = TextEditingController();
   bool _isSubmitting = false;
   bool _loading = true;
@@ -53,8 +57,10 @@ class _CustomerRateTripViewState extends State<CustomerRateTripView> {
         if (mounted) {
           setState(() {
             _alreadyRated = true;
-            _shopRating = (review['shopRating'] as num?)?.toInt() ?? 5;
-            _vehicleRating = (review['vehicleRating'] as num?)?.toInt() ?? 5;
+            // Pre-fill only from the existing review — a missing
+            // value stays unset (0), never a silent 5.
+            _shopRating = (review['shopRating'] as num?)?.toInt() ?? 0;
+            _vehicleRating = (review['vehicleRating'] as num?)?.toInt() ?? 0;
             _commentController.text =
                 (review['customerComment'] as String?) ?? '';
           });
@@ -76,6 +82,12 @@ class _CustomerRateTripViewState extends State<CustomerRateTripView> {
 
   Future<void> _submitFeedback() async {
     final l10n = AppLocalizations.of(context)!;
+    // CU-m12: a rating counts only when the customer tapped it — an
+    // untouched (0) rating blocks submit instead of filing a 5.
+    if (_shopRating <= 0 || _vehicleRating <= 0) {
+      AppFeedback.showError(context, l10n.rateSelectBoth);
+      return;
+    }
     setState(() => _isSubmitting = true);
     try {
       final synced = await sl<ReviewRemoteDataSource>().submitCustomerReview(
@@ -119,7 +131,7 @@ class _CustomerRateTripViewState extends State<CustomerRateTripView> {
             ),
             Expanded(
               child: _loading
-                  ? const Center(child: CircularProgressIndicator())
+                  ? const AppLoadingState()
                   : SingleChildScrollView(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16, vertical: 12),
@@ -132,7 +144,7 @@ class _CustomerRateTripViewState extends State<CustomerRateTripView> {
                                 .labelMedium
                                 ?.copyWith(
                                     fontWeight: FontWeight.w700,
-                                    color: AppColors.secondary),
+                                    color: AppColors.orangeTextFor(Theme.of(context).brightness)),
                           ),
                           const SizedBox(height: 12),
                           if (_alreadyRated)

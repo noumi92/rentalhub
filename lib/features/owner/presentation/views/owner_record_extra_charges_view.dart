@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/utils/money_format.dart';
 import '../../../../core/widgets/app_feedback.dart';
+import '../../../../core/widgets/app_state_views.dart';
 import '../../../../core/widgets/debounced_button.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -44,6 +45,9 @@ class _OwnerRecordExtraChargesViewState
   bool _isAdding = false;
   bool _isLoading = true;
   List<Map<String, dynamic>> _saved = const [];
+  // OW-M10: the load had no try/catch — a failure left _isLoading
+  // true forever.
+  bool _loadFailed = false;
 
   @override
   void initState() {
@@ -52,13 +56,23 @@ class _OwnerRecordExtraChargesViewState
   }
 
   Future<void> _loadSaved() async {
-    final saved = await ReturnRecordsService()
-        .loadExtraCharges(widget.booking.bookingId);
-    if (mounted) {
-      setState(() {
-        _saved = saved;
-        _isLoading = false;
-      });
+    if (mounted) setState(() => _loadFailed = false);
+    try {
+      final saved = await ReturnRecordsService()
+          .loadExtraCharges(widget.booking.bookingId);
+      if (mounted) {
+        setState(() {
+          _saved = saved;
+          _isLoading = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() {
+          _loadFailed = true;
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -95,6 +109,12 @@ class _OwnerRecordExtraChargesViewState
       _amountController.clear();
       _remarksController.clear();
       await _loadSaved();
+    } catch (_) {
+      // OW-M10: the old try/finally had no catch — an unexpected
+      // throw from saveExtraCharge propagated as an unhandled async
+      // error. (The id == null branch above covers only the expected
+      // failure.)
+      if (mounted) AppFeedback.showError(context, l10n.extraChargeSaveFailed);
     } finally {
       if (mounted) setState(() => _isAdding = false);
     }
@@ -169,6 +189,11 @@ class _OwnerRecordExtraChargesViewState
                     if (_isLoading) ...[
                       const SizedBox(height: 24),
                       const Center(child: CircularProgressIndicator()),
+                    ] else if (_loadFailed) ...[
+                      const SizedBox(height: 24),
+                      AppErrorState(
+                          message: l10n.extraChargeLoadError,
+                          onRetry: _loadSaved),
                     ] else if (_saved.isNotEmpty) ...[
                       const SizedBox(height: 24),
                       Text(l10n.extraChargeSavedTitle,

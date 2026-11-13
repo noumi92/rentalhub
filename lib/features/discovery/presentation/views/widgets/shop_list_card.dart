@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../../core/constants/app_colors.dart';
+import '../../../../../core/utils/whatsapp.dart';
+import '../../../../../core/widgets/app_feedback.dart';
 import '../../../../../core/widgets/verified_badge.dart';
 import '../../../domain/entities/shop_entity.dart';
 import '../../../../../l10n/app_localizations.dart';
@@ -22,6 +25,10 @@ class ShopListCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    // CU-C1: the call/WhatsApp buttons dial for real — the old code
+    // only showed a SnackBar. Without a phone number both buttons
+    // are disabled with a tooltip explaining why.
+    final hasPhone = shop.phoneNumber.trim().isNotEmpty;
     // Alternate banner images between showrooms
     final bannerAsset = shop.shopId.hashCode % 2 == 0
         ? 'assets/images/showroom_banner_1.jpg'
@@ -31,9 +38,9 @@ class ShopListCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 16),
       elevation: 2.5,
       clipBehavior: Clip.antiAlias,
+      // CU-M2: cards carry no dark border — the shadow does the work.
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: Theme.of(context).dividerColor),
       ),
       child: InkWell(
         onTap: onTap,
@@ -49,7 +56,7 @@ class ShopListCard extends StatelessWidget {
                   width: double.infinity,
                   fit: BoxFit.cover,
                   errorBuilder: (_, __, ___) => Container(
-                    height: 135, color: AppColors.primaryContainer,
+                    height: 135, color: Theme.of(context).colorScheme.surfaceContainerHighest,
                     child: const Center(child: Icon(Icons.storefront_rounded, size: 48)),
                   ),
                 ),
@@ -157,75 +164,94 @@ class ShopListCard extends StatelessWidget {
                     crossAxisAlignment: WrapCrossAlignment.center,
                     alignment: WrapAlignment.spaceBetween,
                     children: [
-                      // Direct Phone Call Button
-                      OutlinedButton.icon(
+                      // Direct Phone Call Button — dials the shop's
+                      // real number (CU-C1); disabled when there is
+                      // none, with a tooltip saying so.
+                      _CallButton(
+                        enabled: hasPhone,
+                        noPhoneMessage: l10n.shopNoPhoneNumber,
                         onPressed: onCall ??
-                            () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                      l10n.callingShopNumber(shop.shopName, shop.phoneNumber)),
-                                  backgroundColor: AppColors.primary,
-                                  duration: const Duration(seconds: 2),
-                                ),
-                              );
+                            () async {
+                              final digits = shop.phoneNumber
+                                  .replaceAll(RegExp(r'[^0-9+]'), '');
+                              final uri =
+                                  Uri(scheme: 'tel', path: digits);
+                              if (!await launchUrl(uri)) {
+                                if (context.mounted) {
+                                  AppFeedback.showError(
+                                    context,
+                                    l10n.couldNotOpenDialer,
+                                  );
+                                }
+                              }
                             },
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: Theme.of(context).colorScheme.onSurface,
-                          side: BorderSide(color: Theme.of(context).dividerColor),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 7),
-                          minimumSize: Size.zero,
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.call_rounded, size: 16),
+                            const SizedBox(width: 6),
+                            Text(l10n.call),
+                          ],
                         ),
-                        icon: const Icon(Icons.call_rounded,
-                            size: 14),
-                        label: Text(l10n.call),
                       ),
 
-                      // Direct WhatsApp Chat Button
-                      OutlinedButton.icon(
+                      // Direct WhatsApp Chat Button — opens a real
+                      // wa.me chat (CU-C1); disabled when there is
+                      // no number.
+                      _CallButton(
+                        enabled: hasPhone,
+                        noPhoneMessage: l10n.shopNoPhoneNumber,
                         onPressed: onWhatsApp ??
-                            () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                      l10n.openingWhatsappShop(shop.shopName)),
-                                  backgroundColor: AppColors.successContainerFor(Theme.of(context).brightness),
-                                  duration: const Duration(seconds: 2),
-                                ),
+                            () async {
+                              final uri = whatsappUri(
+                                phone: shop.phoneNumber,
+                                message: l10n
+                                    .shopWhatsappHello(shop.shopName),
                               );
+                              if (uri == null) {
+                                AppFeedback.showInfo(
+                                  context,
+                                  l10n.shopNoPhoneNumber,
+                                );
+                                return;
+                              }
+                              if (!await launchUrl(
+                                uri,
+                                mode: LaunchMode.externalApplication,
+                              )) {
+                                if (context.mounted) {
+                                  AppFeedback.showError(
+                                    context,
+                                    l10n.couldNotOpenWhatsapp,
+                                  );
+                                }
+                              }
                             },
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: AppColors.successOnContainerFor(Theme.of(context).brightness),
-                          side: BorderSide(color: AppColors.successBorderFor(Theme.of(context).brightness)),
-                          backgroundColor: AppColors.successContainerFor(Theme.of(context).brightness),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 7),
-                          minimumSize: Size.zero,
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
+                        isWhatsApp: true,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.chat_bubble_outline_rounded,
+                                size: 16,
+                                color: AppColors.successOnContainerFor(
+                                    Theme.of(context).brightness)),
+                            const SizedBox(width: 6),
+                            Text(l10n.whatsapp),
+                          ],
                         ),
-                        icon: Icon(Icons.chat_bubble_outline_rounded,
-                            size: 14, color: AppColors.successOnContainerFor(Theme.of(context).brightness)),
-                        label: Text(l10n.whatsapp),
                       ),
 
                       // View Showroom Fleet CTA
                       ElevatedButton(
                         onPressed: onTap,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.secondary,
+                          // CU-M1: white on AppColors.secondary is
+                          // 3.29:1 — orangeFill is 5.18:1.
+                          backgroundColor: AppColors.orangeFill,
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 13, vertical: 7),
-                          minimumSize: Size.zero,
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              horizontal: 13, vertical: 12),
+                          minimumSize: const Size(0, 48),
                           elevation: 0,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
@@ -249,5 +275,52 @@ class ShopListCard extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+/// CU-C1 / CU-M3: a call/WhatsApp button with a 48dp minimum tap
+/// target. When [enabled] is false (the shop has no phone number)
+/// the button is disabled and wrapped in a tooltip explaining why —
+/// it never pretends to work.
+class _CallButton extends StatelessWidget {
+  const _CallButton({
+    required this.enabled,
+    required this.noPhoneMessage,
+    required this.onPressed,
+    required this.child,
+    this.isWhatsApp = false,
+  });
+
+  final bool enabled;
+  final String noPhoneMessage;
+  final VoidCallback? onPressed;
+  final Widget child;
+  final bool isWhatsApp;
+
+  @override
+  Widget build(BuildContext context) {
+    final brightness = Theme.of(context).brightness;
+    final button = OutlinedButton(
+      onPressed: enabled ? onPressed : null,
+      style: OutlinedButton.styleFrom(
+        foregroundColor: isWhatsApp
+            ? AppColors.successOnContainerFor(brightness)
+            : Theme.of(context).colorScheme.onSurface,
+        side: BorderSide(
+            color: isWhatsApp
+                ? AppColors.successBorderFor(brightness)
+                : Theme.of(context).dividerColor),
+        backgroundColor:
+            isWhatsApp ? AppColors.successContainerFor(brightness) : null,
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+        minimumSize: const Size(0, 48),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
+      child: child,
+    );
+    if (enabled) return button;
+    return Tooltip(message: noPhoneMessage, child: button);
   }
 }

@@ -1,5 +1,5 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import '../../../../core/auth/signed_in_user.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
@@ -70,11 +70,16 @@ class _CustomerDisputeViewState extends State<CustomerDisputeView> {
 
     setState(() => _isSubmitting = true);
     try {
-      String uid = 'cust-101';
-      try {
-        final u = FirebaseAuth.instance.currentUser;
-        if (u != null) uid = u.uid;
-      } catch (_) {}
+      // CU-m3: a signed-out caller cannot file a dispute — the old
+      // 'cust-101' fallback filed it under a shared fake identity.
+      final uid = SignedInUser.uid();
+      if (uid.isEmpty) {
+        if (mounted) {
+          setState(() => _isSubmitting = false);
+          AppFeedback.showError(context, l10n.signInRequiredGeneric);
+        }
+        return;
+      }
 
       // The booking is resolved so the dispute carries the showroom
       // it belongs to — the owner's disputes inbox reads it straight

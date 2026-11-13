@@ -4,20 +4,20 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/current_shop.dart';
-import '../../../../core/utils/responsive.dart';
 import '../../../../core/widgets/app_icon_chip.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../fleet/domain/entities/vehicle_entity.dart';
 import '../../../fleet/presentation/cubit/fleet_cubit.dart';
 import '../../../fleet/presentation/cubit/fleet_state.dart';
-import '../widgets/fleet/fleet_body.dart';
+import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../widgets/fleet/fleet_helpers.dart';
+import '../widgets/fleet/fleet_list_section.dart';
+import '../widgets/fleet/fleet_rented_until.dart';
 import '../widgets/fleet/fleet_filter_chips.dart';
 import '../widgets/fleet/fleet_metrics_row.dart';
 import '../widgets/fleet/fleet_quick_actions.dart';
 import '../widgets/fleet/fleet_search_field.dart';
-import '../widgets/fleet/fleet_vehicle_card.dart';
 import '../services/subscription_data_source.dart';
 import 'owner_subscription_limit_sheet.dart';
 
@@ -42,6 +42,11 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
   String _searchQuery = '';
   late final FleetCubit _cubit;
 
+  /// RQ-F10: the active booking's return date per vehicle (same
+  /// shop bookings the fleet calendar reads). Best-effort: a failed
+  /// load leaves the map empty and the cards show no return line.
+  Map<String, DateTime> _rentedUntil = {};
+
   String get _shopId => widget.shopId ?? currentShopId();
 
   // Phone bug: double-tap duplicate pushes are guarded by
@@ -55,6 +60,17 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
   void initState() {
     super.initState();
     _cubit = sl<FleetCubit>()..loadVehicles(_shopId);
+    _loadRentedUntil();
+  }
+
+  Future<void> _loadRentedUntil() async {
+    try {
+      final map = await loadRentedUntilByVehicle(
+          sl<BookingRemoteDataSource>(), _shopId);
+      if (mounted) setState(() => _rentedUntil = map);
+    } catch (_) {
+      // Best-effort (see the field doc): no return lines.
+    }
   }
 
   @override
@@ -116,26 +132,9 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
       return;
     }
     _pushOnce(RouteNames.ownerAddVehicle).then((_) {
-      if (mounted) { _cubit.loadVehicles(_shopId); }
+      if (mounted) { _cubit.loadVehicles(_shopId); _loadRentedUntil(); }
     });
   }
-
-  /// D3: one fleet card for both the compact list and the two-column grid.
-  /// Simplified card (2026-11-09): only Rates (09b) and Out-of-city
-  /// rules (010b) — no availability toggle, calendar, rent-edit or
-  /// price-edit actions on the card.
-  Widget _vehicleCard(VehicleEntity v) => FleetVehicleCard(
-        vehicle: v,
-        onTap: () => _openVehicleDetail(v),
-        onEditRates: () => _pushOnce(RouteNames.ownerRatesVehicle.replaceFirst(':vehicleId', v.vehicleId)),
-        onOutCityRules: () => _pushOnce(RouteNames.ownerOutCityRules.replaceFirst(':vehicleId', v.vehicleId)),
-        // Phone-test round 4 (Worker 3 owns the card): the Edit icon
-        // opens the car-details editor, same route as the detail view.
-        onEditDetails: () => _pushOnce(RouteNames.ownerEditVehicle.replaceFirst(':id', v.vehicleId)),
-      );
-
-  /// D3: medium+ shows the fleet in two columns.
-  Widget _twoColumnFleet(List<VehicleEntity> vehicles) => twoColumnLayout(key: const Key('fleet-two-columns'), items: vehicles, padding: const EdgeInsets.all(16), itemBuilder: _vehicleCard);
 
   @override
   Widget build(BuildContext context) {
@@ -216,24 +215,21 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
                     ),
                     const Divider(height: 1),
 
-                    // D3: medium+ shows two columns; compact keeps FleetBody.
-                    if (isMediumOrLarger(context) && filtered.isNotEmpty)
-                      _twoColumnFleet(filtered)
-                    else
-                      FleetBody(
-                        state: state,
-                        fleet: fleet,
-                        filtered: filtered,
-                        onAddVehicle: _openAddVehicle,
-                        onRetry: () => _cubit.loadVehicles(_shopId),
-                        onEditRates: (v) => _pushOnce(RouteNames.ownerRatesVehicle.replaceFirst(':vehicleId', v.vehicleId)),
-                        onOutCityRules: (v) => _pushOnce(RouteNames.ownerOutCityRules.replaceFirst(':vehicleId', v.vehicleId)),
-                        // Phone-test round 4 (Worker 3 owns FleetBody):
-                        // the card's Edit icon opens the car-details
-                        // editor, same route as the detail view.
-                        onEditDetails: (v) => _pushOnce(RouteNames.ownerEditVehicle.replaceFirst(':id', v.vehicleId)),
-                        onTapVehicle: _openVehicleDetail,
-                      ),
+                    // D3: medium+ shows two columns; compact keeps
+                    // FleetBody (see FleetListSection).
+                    FleetListSection(
+                      state: state,
+                      fleet: fleet,
+                      filtered: filtered,
+                      onAddVehicle: _openAddVehicle,
+                      onRetry: () { _cubit.loadVehicles(_shopId); _loadRentedUntil(); },
+                      onEditRates: (v) => _pushOnce(RouteNames.ownerRatesVehicle.replaceFirst(':vehicleId', v.vehicleId)),
+                      onOutCityRules: (v) => _pushOnce(RouteNames.ownerOutCityRules.replaceFirst(':vehicleId', v.vehicleId)),
+                      onEditDetails: (v) => _pushOnce(RouteNames.ownerEditVehicle.replaceFirst(':id', v.vehicleId)),
+                      onTapVehicle: _openVehicleDetail,
+                      // RQ-F10: the active booking's return date.
+                      rentedUntilFor: (v) => _rentedUntil[v.vehicleId],
+                    ),
                   ],
                 ),
               );

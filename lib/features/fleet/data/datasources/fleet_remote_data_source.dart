@@ -237,7 +237,19 @@ class FleetRemoteDataSource {
         if (doc.exists && doc.data() != null) {
           return VehicleModel.fromMap(doc.data()!, doc.id);
         }
-      } catch (_) {}
+      } catch (e) {
+        // CU-M6: a failed read is not "not found" — the in-memory
+        // copy still answers when offline, but when there is none
+        // the error is rethrown so the caller can show an error
+        // state with retry instead of a not-found screen. The two
+        // owner callers already wrap this in try/catch, so their
+        // behaviour is unchanged (a failure still reads as null).
+        try {
+          return _inMemoryVehicles.firstWhere((v) => v.vehicleId == vehicleId);
+        } catch (_) {
+          rethrow;
+        }
+      }
     }
     try {
       return _inMemoryVehicles.firstWhere((v) => v.vehicleId == vehicleId);

@@ -73,7 +73,7 @@ class _OwnerFinanceCategoriesViewState
           autofocus: true,
           decoration: InputDecoration(
               labelText: l10n.financeCategoriesNameLabel,
-              border: const OutlineInputBorder()),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(16))),
         ),
         actions: [
           TextButton(
@@ -89,6 +89,9 @@ class _OwnerFinanceCategoriesViewState
     );
     controller.dispose();
     if (name == null || name.isEmpty) return;
+    // OW-m10: duplicate names (case-insensitive) are rejected.
+    final existing = kind == 'income' ? _income : _expense;
+    if (existing.any((c) => c.name.trim().toLowerCase() == name.toLowerCase())) { if (mounted) AppFeedback.showError(context, l10n.financeCategoriesDuplicate); return; }
     try {
       await _categoryDs.addCategory(
           shopId: widget.shopId, kind: kind, name: name);
@@ -110,7 +113,7 @@ class _OwnerFinanceCategoriesViewState
           autofocus: true,
           decoration: InputDecoration(
               labelText: l10n.financeCategoriesNameLabel,
-              border: const OutlineInputBorder()),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(16))),
         ),
         actions: [
           TextButton(
@@ -126,6 +129,9 @@ class _OwnerFinanceCategoriesViewState
     );
     controller.dispose();
     if (name == null || name.isEmpty || name == category.name) return;
+    // OW-m10: duplicate names (case-insensitive, same kind) are rejected — the add flow checks the same way.
+    final siblings = category.kind == 'income' ? _income : _expense;
+    if (siblings.any((c) => c.categoryId != category.categoryId && c.name.trim().toLowerCase() == name.toLowerCase())) { if (mounted) AppFeedback.showError(context, l10n.financeCategoriesDuplicate); return; }
     try {
       await _categoryDs.renameCategory(category.categoryId, name);
       _load();

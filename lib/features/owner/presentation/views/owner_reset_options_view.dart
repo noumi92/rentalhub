@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/widgets/app_feedback.dart';
-import '../../../../core/widgets/debounced_button.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../finance/data/datasources/shop_reset_data_source.dart';
@@ -157,13 +156,21 @@ class _OwnerResetOptionsViewState extends State<OwnerResetOptionsView> {
                   fontWeight: FontWeight.w800,
                 )),
         subtitle: Text(subtitle),
-        trailing: SizedBox(
-          width: 96,
-          child: DebouncedButton(
-            text: l10n.resetAction,
-            isLoading: busy,
-            onPressed: _isBusy ? () {} : () => _confirmAndReset(option),
-          ),
+        // OW-m11: the button sizes to its label (min 96 wide, 48
+        // tall) instead of a fixed 96 dp that truncates Urdu, and
+        // every reset button is disabled while any reset runs — the
+        // old ones looked enabled but no-op'd.
+        trailing: FilledButton(
+          onPressed: _isBusy ? null : () => _confirmAndReset(option),
+          style: FilledButton.styleFrom(
+              minimumSize: const Size(96, 48)),
+          child: busy
+              ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                      strokeWidth: 2.5, color: Colors.white))
+              : Text(l10n.resetAction),
         ),
       ),
     );

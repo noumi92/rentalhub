@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/utils/money_format.dart';
 import '../../../../core/widgets/debounced_button.dart';
+import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 
@@ -58,7 +59,8 @@ class OwnerWhatsappCreditsAddedView extends StatelessWidget {
                           ? Icons.hourglass_top_rounded
                           : Icons.check_circle_rounded,
                       size: 64,
-                      color: submitted ? Colors.orange : Colors.green,
+                      // OW-m30: theme tokens, not raw Colors.
+                      color: submitted ? AppColors.orangeFill : AppColors.accentSuccessStrong,
                     ),
                   ),
                   const SizedBox(height: 12),

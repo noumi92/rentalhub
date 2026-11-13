@@ -32,7 +32,7 @@ class OwnerEditVehicleView extends StatefulWidget {
 class _OwnerEditVehicleViewState extends State<OwnerEditVehicleView> {
   late String _selectedMake, _selectedModel, _color, _category, _fuelType, _status;
   late int _selectedYear, _seats;
-  late bool _isAutomatic, _hasAc;
+  late bool _isAutomatic;
   late Set<String> _selectedFeatures;
   late final TextEditingController _plateController;
   XFile? _newFrontFile;
@@ -51,16 +51,13 @@ class _OwnerEditVehicleViewState extends State<OwnerEditVehicleView> {
     // first option so the dropdowns never crash on a missing value.
     _selectedMake = OwnerVehicleConstants.makes.contains(v.make) ? v.make : OwnerVehicleConstants.makes.first;
     _selectedModel = v.model;
-    _selectedYear = v.year.clamp(2011, 2025);
+    _selectedYear = v.year.clamp(2011, DateTime.now().year);
     _color = v.color ?? '';
     _category = OwnerVehicleConstants.categories.contains(v.category) ? v.category : OwnerVehicleConstants.categories.first;
     _plateController = TextEditingController(text: v.plateNumber);
     _isAutomatic = v.transmission != 'Manual';
     _fuelType = const ['Petrol', 'Diesel', 'Hybrid', 'Electric'].contains(v.fuelType) ? v.fuelType : 'Petrol';
     _seats = v.seats;
-    // VehicleEntity stores no AC flag (the add wizard drops it too),
-    // so AC starts on and is not persisted by this edit.
-    _hasAc = true;
     _selectedFeatures = Set.of(v.features);
     _status = v.status;
     _initialSnapshot = _snapshot();
@@ -72,7 +69,7 @@ class _OwnerEditVehicleViewState extends State<OwnerEditVehicleView> {
     super.dispose();
   }
 
-  String _snapshot() => [_selectedMake, _selectedModel, '$_selectedYear', _color, _category, _plateController.text, '$_isAutomatic', _fuelType, '$_seats', '$_hasAc', ..._selectedFeatures, _status, _newFrontFile?.path ?? '', '$_photoRemoved'].join('|');
+  String _snapshot() => [_selectedMake, _selectedModel, '$_selectedYear', _color, _category, _plateController.text, '$_isAutomatic', _fuelType, '$_seats', ..._selectedFeatures, _status, _newFrontFile?.path ?? '', '$_photoRemoved'].join('|');
   bool get _isDirty => _snapshot() != _initialSnapshot;
 
   void _pop() {
@@ -196,7 +193,6 @@ class _OwnerEditVehicleViewState extends State<OwnerEditVehicleView> {
                         isAutomatic: _isAutomatic, onTransmissionChanged: (a) => setState(() => _isAutomatic = a),
                         fuelType: _fuelType, onFuelTypeChanged: (f) => setState(() => _fuelType = f),
                         seats: _seats, onSeatsChanged: (s) => setState(() => _seats = s),
-                        hasAc: _hasAc, onAcChanged: (a) => setState(() => _hasAc = a),
                         selectedFeatures: _selectedFeatures,
                         onFeatureToggled: (f) => setState(() => _selectedFeatures.contains(f) ? _selectedFeatures.remove(f) : _selectedFeatures.add(f)),
                       ),

@@ -24,7 +24,12 @@ class UserModel extends UserEntity {
       profilePhotoUrl: data['profile_photo_url'],
       role: data['role'],
       isVerified: data['is_verified'] ?? false,
-      trustScore: (data['trust_score'] ?? 5.0).toDouble(),
+      // Audit SH-M5: a doc without a stored score used to read back
+      // as 5.0 — a perfect record for a customer who has done
+      // nothing. The live computation owns the score (a verified new
+      // customer is 3.5); the stored value is only the offline
+      // fallback, so a missing value defaults to 3.5, never 5.0.
+      trustScore: (data['trust_score'] ?? 3.5).toDouble(),
       totalTrips: data['total_trips'] ?? 0,
       isBlacklisted: data['is_blacklisted'] ?? false,
       isOnboardingCompleted: data['is_onboarding_completed'] ?? false,

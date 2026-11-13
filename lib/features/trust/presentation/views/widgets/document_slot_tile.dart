@@ -43,7 +43,7 @@ class DocumentSlotTile extends StatelessWidget {
               decoration: BoxDecoration(
                 color: isUploaded
                     ? AppColors.accentSuccess
-                    : AppColors.primaryContainer,
+                    : Theme.of(context).colorScheme.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Icon(
@@ -83,7 +83,7 @@ class DocumentSlotTile extends StatelessWidget {
                 isUploaded ? l10n.kycEncrypted : l10n.kycUpload,
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800, color: isUploaded
                       ? AppColors.successTextFor(Theme.of(context).brightness)
-                      : AppColors.secondary),
+                      : AppColors.orangeTextFor(Theme.of(context).brightness)),
               ),
             ),
           ],

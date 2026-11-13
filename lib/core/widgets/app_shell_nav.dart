@@ -71,17 +71,23 @@ class AppShellNav extends StatelessWidget {
 
   /// Phase F: the tab label in the current locale when the item
   /// carries an [ShellNavItem.l10nKey], else its plain [ShellNavItem.label].
+  /// Audit SH-N15: every key is now a `nav*` key with a 1:1 getter —
+  /// the old `tab2_navShops` numbering artefact is gone, and
+  /// `navFleet` / `navWallet` / `navCustomers` no longer borrow the
+  /// `dashboardFleet` / `walletLabel` / `customersTitle` getters.
+  /// A key with no case here falls back to the English `label` — the
+  /// nav-labels test fails if any shipped key is unmapped.
   static String labelFor(AppLocalizations? l10n, ShellNavItem item) {
     if (l10n == null || item.l10nKey == null) return item.label;
     switch (item.l10nKey!) {
       case 'navHome':
         return l10n.navHome;
-      case 'tab2_navShops':
-        return l10n.tab2_navShops;
+      case 'navShops':
+        return l10n.navShops;
       case 'navBookings':
         return l10n.navBookings;
       case 'navWallet':
-        return l10n.walletLabel;
+        return l10n.navWallet;
       case 'navSupport':
         return l10n.navSupport;
       case 'navProfile':
@@ -89,11 +95,11 @@ class AppShellNav extends StatelessWidget {
       case 'navDashboard':
         return l10n.navDashboard;
       case 'navFleet':
-        return l10n.dashboardFleet;
+        return l10n.navFleet;
       case 'navRequests':
         return l10n.navRequests;
       case 'navCustomers':
-        return l10n.customersTitle;
+        return l10n.navCustomers;
       case 'navSettings':
         return l10n.navSettings;
       default:
@@ -198,7 +204,18 @@ class _TabDestination extends StatelessWidget {
             child: item.icon,
           )
         : item.icon;
-    return Material(
+    // Audit SH-N5: the bar is a hand-rolled Row, not Material 3
+    // NavigationBar (phone bug, run #50: NavigationBar forced to
+    // 56 px clipped icons/labels), so M3's selected-state semantics
+    // do not come for free. Each destination carries an explicit
+    // Semantics node — button, localised label, selected state — so
+    // screen readers announce the tabs the way NavigationBar would.
+    // (Rulebook §4.4 deviation, recorded in the SH-N5 rulebook note.)
+    return Semantics(
+      button: true,
+      label: label,
+      selected: selected,
+      child: Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
@@ -216,6 +233,7 @@ class _TabDestination extends StatelessWidget {
             ),
           ],
         ),
+      ),
       ),
     );
   }

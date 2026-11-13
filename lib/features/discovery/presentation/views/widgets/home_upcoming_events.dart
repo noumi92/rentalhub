@@ -207,9 +207,9 @@ class _EventRow extends StatelessWidget {
                       onPressed: onAction,
                       style: TextButton.styleFrom(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 4),
-                        minimumSize: Size.zero,
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            horizontal: 10, vertical: 12),
+                        // CU-M3: 48dp minimum tap target.
+                        minimumSize: const Size(0, 48),
                       ),
                       child: Text(
                         actionLabel!,

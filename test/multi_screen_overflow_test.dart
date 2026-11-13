@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:rentalhub/core/auth/signed_in_user.dart';
 import 'package:rentalhub/core/di/injection_container.dart';
 import 'package:rentalhub/core/theme/app_theme.dart';
 import 'package:rentalhub/features/bookings/domain/entities/booking_entity.dart';
@@ -29,9 +30,20 @@ void main() {
     await sl.reset();
     SharedPreferences.setMockInitialValues({});
     await initDependencies();
+    // CU-m3: CustomerDocumentsView shows a signed-out error state
+    // with nobody signed in. Widget tests cannot sign a Firebase
+    // user in, so stand in as 'cust-101' via the SignedInUser
+    // test override — the KYC form then renders for the overflow
+    // check.
+    SignedInUser.override = const SignedInUserData(
+      uid: 'cust-101',
+      displayName: 'Ahmed Raza',
+      phoneNumber: '03001234567',
+    );
   });
 
   tearDown(() async {
+    SignedInUser.override = null;
     await sl.reset();
   });
 
@@ -371,7 +383,7 @@ void main() {
       await TestHarness.pumpScreenWithOverflowCheck(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         tester: tester,
-        screen: const OwnerDashboardView(),
+        screen: const OwnerDashboardView(shopId: 'shop-1'),
         width: 360.0,
         height: 640.0,
         textScale: 2.0,

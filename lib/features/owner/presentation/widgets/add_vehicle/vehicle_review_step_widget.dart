@@ -18,10 +18,6 @@ class VehicleReviewStepWidget extends StatelessWidget {
   final String fuelType;
   final int seats;
 
-  /// Audit §5: AC is rendered honestly from the step-1 switch —
-  /// never a hardcoded "Full AC".
-  final bool hasAc;
-
   /// Audit §5: names of the picked documents (reg book / token tax /
   /// insurance) and extra photos, so the owner sees what was picked
   /// before publishing. Entries are "Label: filename".
@@ -73,7 +69,6 @@ class VehicleReviewStepWidget extends StatelessWidget {
     required this.advance,
     required this.extraHour,
     required this.fuelPolicy,
-    required this.hasAc,
     this.documentNames = const [],
   });
 
@@ -135,7 +130,6 @@ class VehicleReviewStepWidget extends StatelessWidget {
                     _reviewSpec(context, l10n.addVehicleReviewGear, isAutomatic ? l10n.addVehicleReviewAuto : l10n.addVehicleManual),
                     _reviewSpec(context, l10n.addVehicleReviewFuel, fuelType),
                     _reviewSpec(context, l10n.addVehicleReviewSeats, '$seats'),
-                    _reviewSpec(context, l10n.addVehicleReviewAc, hasAc ? l10n.addVehicleReviewFullAc : l10n.addVehicleReviewNotOffered),
                   ],
                 ),
                 const Divider(height: 24),

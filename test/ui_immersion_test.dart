@@ -295,7 +295,7 @@ void main() {
         (tester) async {
       await _pumpAtWidth(
         tester: tester,
-        screen: const OwnerDashboardView(),
+        screen: const OwnerDashboardView(shopId: 'shop-1'),
         width: 390,
       );
       expect(find.byKey(const Key('dashboard-two-columns')), findsNothing);
@@ -303,14 +303,14 @@ void main() {
 
       await _pumpAtWidth(
         tester: tester,
-        screen: const OwnerDashboardView(),
+        screen: const OwnerDashboardView(shopId: 'shop-1'),
         width: 700,
       );
       expect(find.byKey(const Key('dashboard-two-columns')), findsOneWidget);
 
       await _pumpAtWidth(
         tester: tester,
-        screen: const OwnerDashboardView(),
+        screen: const OwnerDashboardView(shopId: 'shop-1'),
         width: 1100,
       );
       expect(find.byKey(const Key('dashboard-two-columns')), findsOneWidget);

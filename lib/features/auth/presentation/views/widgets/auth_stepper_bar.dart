@@ -9,7 +9,7 @@ class AuthStepperBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       color: Theme.of(context).colorScheme.surface,
@@ -19,7 +19,7 @@ class AuthStepperBar extends StatelessWidget {
             child: _stepPill(
               context,
               step: 1,
-              title: l10n.stepperProfile,
+              title: l10n?.stepperProfile ?? '1. Profile Info',
               isDone: currentStep > 1,
               isCurrent: currentStep == 1,
               icon: Icons.person_rounded,
@@ -35,7 +35,7 @@ class AuthStepperBar extends StatelessWidget {
             child: _stepPill(
               context,
               step: 2,
-              title: l10n.stepperRole,
+              title: l10n?.stepperRole ?? '2. Select Role',
               isDone: false,
               isCurrent: currentStep == 2,
               icon: Icons.verified_user_rounded,

@@ -39,9 +39,9 @@ class BookingApprovedView extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [AppColors.primary, AppColors.primary],
-                        ),
+                        // CU-m15: was a degenerate gradient (primary
+                        // twice) — a plain fill is the same look.
+                        color: AppColors.primary,
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: Row(
@@ -79,7 +79,7 @@ class BookingApprovedView extends StatelessWidget {
                                       .textTheme
                                       .labelSmall
                                       ?.copyWith(
-                                          color: AppColors.primaryContainer),
+                                          color: Colors.white.withValues(alpha: 0.85)),
                                 ),
                               ],
                             ),
@@ -89,9 +89,11 @@ class BookingApprovedView extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
                     BookingSummaryCard(
-                      carName: booking.vehicleName ?? l10n.summaryVehicle,
-                      plateNumber: booking.vehiclePlate ?? 'PAK-786',
-                      shopName: booking.shopName ?? l10n.showroomLabel,
+                      // CU-M12: a missing field renders '—', never a
+                      // fake plate ('PAK-786') or shop name.
+                      carName: booking.vehicleName ?? '—',
+                      plateNumber: booking.vehiclePlate ?? '—',
+                      shopName: booking.shopName ?? '—',
                       isWithDriver: booking.isWithDriver,
                       packageType: booking.packageType,
                       pickupTime: booking.pickupTime,

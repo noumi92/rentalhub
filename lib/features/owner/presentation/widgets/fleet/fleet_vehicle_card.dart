@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/widgets/pakistani_plate_widget.dart';
 import '../../../../../features/discovery/presentation/views/widgets/vehicle_hero_card.dart'
@@ -35,6 +36,13 @@ class FleetVehicleCard extends StatelessWidget {
   /// the fleet view via [FleetBody]; Worker 4 owns that wiring.
   final VoidCallback? onEditDetails;
 
+  /// RQ-F10 (O05/O30): the active booking's return date/time for an
+  /// On-Rent car, loaded by the fleet view from the same shop
+  /// bookings the fleet calendar reads. Null (no active booking
+  /// found, or the car is not on rent) renders no line — never an
+  /// invented date.
+  final DateTime? rentedUntil;
+
   /// Tapping the photo opens the vehicle-detail route (the hero tag
   /// only works when the image is actually tappable). Null in tests
   /// or embeds that render the card without navigation.
@@ -47,6 +55,7 @@ class FleetVehicleCard extends StatelessWidget {
     required this.onOutCityRules,
     this.onEditDetails,
     this.onTap,
+    this.rentedUntil,
   });
 
   Widget _carImage(VehicleEntity v) {
@@ -181,6 +190,18 @@ class FleetVehicleCard extends StatelessWidget {
                             Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3), decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.22), borderRadius: BorderRadius.circular(10), border: Border.all(color: Colors.white.withValues(alpha: 0.65))), child: Text(vehicle.isSelfDriveAvailable ? l10n.selfDriveHyphen : l10n.withDriver, style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700, color: Colors.white))),
                           ],
                         ),
+                        // RQ-F10: the active booking's return date on
+                        // On-Rent cards (same data source as the fleet
+                        // calendar). No active booking → no line.
+                        if (vehicle.status == 'rented' && rentedUntil != null) ...[
+                          const SizedBox(height: 4),
+                          Text(
+                            l10n.fleetOnRentUntil(DateFormat.yMMMd().format(rentedUntil!)),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700, color: Colors.white),
+                          ),
+                        ],
                       ],
                     ),
                   ),

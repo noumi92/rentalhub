@@ -14,6 +14,71 @@ import '../constants/app_dimensions.dart';
 ///   `fontSize:`. Every text style sets size + weight + height + colour.
 /// - No `Color(0xFF…)` literals anywhere in this file: every colour comes
 ///   from `AppColors` (light and dark).
+/// Header text slots (audit SH-N8, 2026-11-13): the 18 sp / w900 title
+/// + 12 sp subtitle pair that [MinimalAppBar] (and the login hero
+/// brand) use. It lives in the theme — not hardcoded in the widgets —
+/// so the pair is one spec: the "header spec" (rulebook §4.3,
+/// white-on-navy header). Urdu (Noto Nastaliq Urdu) has no w900
+/// instance — its variable font spans wght 400–700 — so the Urdu
+/// title caps at w700 (see SH-N13); Inter (wght 100–900) keeps w900.
+class HeaderTextTheme extends ThemeExtension<HeaderTextTheme> {
+  const HeaderTextTheme({
+    required this.headerTitle,
+    required this.headerSubtitle,
+  });
+
+  final TextStyle headerTitle;
+  final TextStyle headerSubtitle;
+
+  /// The header pair for [fontFamily]: w900 title for Inter, w700 for
+  /// Noto Nastaliq Urdu (its variable font tops out at 700).
+  factory HeaderTextTheme.forFont(String fontFamily) {
+    final titleWeight = fontFamily == AppTheme.fontFamilyUrdu
+        ? FontWeight.w700
+        : FontWeight.w900;
+    return HeaderTextTheme(
+      headerTitle: TextStyle(
+        fontFamily: fontFamily,
+        fontSize: 18,
+        fontWeight: titleWeight,
+        color: Colors.white,
+      ),
+      headerSubtitle: TextStyle(
+        fontFamily: fontFamily,
+        fontSize: 12,
+        color: Colors.white70,
+      ),
+    );
+  }
+
+  /// The header pair for the current theme, falling back to the
+  /// documented 18/12 pair when no extension is installed (e.g. a
+  /// bare ThemeData in a test pump).
+  static HeaderTextTheme of(BuildContext context) =>
+      Theme.of(context).extension<HeaderTextTheme>() ??
+      HeaderTextTheme.forFont(AppTheme.fontFamilyLatin);
+
+  @override
+  HeaderTextTheme copyWith({
+    TextStyle? headerTitle,
+    TextStyle? headerSubtitle,
+  }) =>
+      HeaderTextTheme(
+        headerTitle: headerTitle ?? this.headerTitle,
+        headerSubtitle: headerSubtitle ?? this.headerSubtitle,
+      );
+
+  @override
+  HeaderTextTheme lerp(ThemeExtension<HeaderTextTheme>? other, double t) {
+    if (other is! HeaderTextTheme) return this;
+    return HeaderTextTheme(
+      headerTitle: TextStyle.lerp(headerTitle, other.headerTitle, t)!,
+      headerSubtitle:
+          TextStyle.lerp(headerSubtitle, other.headerSubtitle, t)!,
+    );
+  }
+}
+
 class AppTheme {
   static const String fontFamilyLatin = 'Inter';
   static const String fontFamilyUrdu = 'Noto Nastaliq Urdu';
@@ -159,7 +224,9 @@ class AppTheme {
       foregroundColor: WidgetStateProperty.resolveWith(
         (states) => dim(foregroundColor, states),
       ),
-      minimumSize: WidgetStateProperty.all(const Size(64, 48)),
+      minimumSize: WidgetStateProperty.all(
+        const Size(64, AppDimensions.buttonHeight),
+      ),
       padding: WidgetStateProperty.all(
         const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       ),
@@ -185,6 +252,10 @@ class AppTheme {
       useMaterial3: true,
       brightness: Brightness.light,
       fontFamily: fontFamily,
+      // Audit SH-N8: the header 18/12 pair lives in the theme.
+      extensions: <ThemeExtension<dynamic>>[
+        HeaderTextTheme.forFont(fontFamily),
+      ],
       primaryColor: AppColors.primary,
       scaffoldBackgroundColor: AppColors.backgroundLight,
       // Dropdown menus fall back to canvasColor; keep it the surface so
@@ -227,13 +298,17 @@ class AppTheme {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: _buttonStyle(
-          backgroundColor: AppColors.secondary,
+          // Audit SH-M1: white on `secondary` #F95700 is 3.29:1 — it
+          // fails WCAG AA for the 14 sp label. `orangeFill` #C2410C
+          // is 5.18:1 with white in BOTH modes, so primary buttons
+          // use it; #F95700 stays the brand / large-fill token only.
+          backgroundColor: AppColors.orangeFill,
           foregroundColor: Colors.white,
         ),
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: _buttonStyle(
-          backgroundColor: AppColors.secondary,
+          backgroundColor: AppColors.orangeFill,
           foregroundColor: Colors.white,
         ),
       ),
@@ -376,6 +451,56 @@ class AppTheme {
           ),
         ),
       ),
+      // Audit SH-N10: booking flows use date/time pickers and owner
+      // flows use switches/checkboxes/radios — these rendered with
+      // unthemed M3 defaults. They now follow the theme in both modes.
+      datePickerTheme: DatePickerThemeData(
+        backgroundColor: AppColors.surfaceLight,
+        headerBackgroundColor: AppColors.primary,
+        headerForegroundColor: Colors.white,
+        dayBackgroundColor: WidgetStateProperty.resolveWith((states) =>
+            states.contains(WidgetState.selected) ? AppColors.primary : null),
+        dayForegroundColor: WidgetStateProperty.resolveWith((states) =>
+            states.contains(WidgetState.selected)
+                ? Colors.white
+                : AppColors.onSurfaceLight),
+        todayForegroundColor:
+            WidgetStateProperty.all(AppColors.primary),
+        todayBackgroundColor:
+            WidgetStateProperty.all(Colors.transparent),
+      ),
+      timePickerTheme: TimePickerThemeData(
+        backgroundColor: AppColors.surfaceLight,
+        hourMinuteColor: AppColors.primaryContainer,
+        hourMinuteTextColor: AppColors.primary,
+        dayPeriodColor: AppColors.primaryContainer,
+        dayPeriodTextColor: AppColors.primary,
+        dialHandColor: AppColors.primary,
+        dialBackgroundColor: AppColors.surfaceElevated,
+        entryModeIconColor: AppColors.primary,
+      ),
+      switchTheme: SwitchThemeData(
+        thumbColor: WidgetStateProperty.resolveWith((states) =>
+            states.contains(WidgetState.selected) ? Colors.white : null),
+        trackColor: WidgetStateProperty.resolveWith((states) =>
+            states.contains(WidgetState.selected)
+                ? AppColors.primary
+                : AppColors.borderSubtle),
+      ),
+      checkboxTheme: CheckboxThemeData(
+        fillColor: WidgetStateProperty.resolveWith((states) =>
+            states.contains(WidgetState.selected)
+                ? AppColors.primary
+                : Colors.transparent),
+        checkColor: WidgetStateProperty.all(Colors.white),
+        side: const BorderSide(color: AppColors.borderSubtle, width: 1.5),
+      ),
+      radioTheme: RadioThemeData(
+        fillColor: WidgetStateProperty.resolveWith((states) =>
+            states.contains(WidgetState.selected)
+                ? AppColors.primary
+                : AppColors.onSurfaceVariantLight),
+      ),
     );
   }
 
@@ -385,6 +510,10 @@ class AppTheme {
       useMaterial3: true,
       brightness: Brightness.dark,
       fontFamily: fontFamily,
+      // Audit SH-N8: the header 18/12 pair lives in the theme.
+      extensions: <ThemeExtension<dynamic>>[
+        HeaderTextTheme.forFont(fontFamily),
+      ],
       primaryColor: AppColors.primaryOnDark,
       scaffoldBackgroundColor: AppColors.backgroundDark,
       // Dropdown menus fall back to canvasColor; keep it the surface so
@@ -428,13 +557,16 @@ class AppTheme {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: _buttonStyle(
-          backgroundColor: AppColors.secondaryDark,
+          // Audit SH-M1: dark `secondaryDark` #FF6D24 is 2.81:1 with
+          // white — worse than light. Same `orangeFill` #C2410C
+          // (5.18:1) in both modes.
+          backgroundColor: AppColors.orangeFill,
           foregroundColor: Colors.white,
         ),
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: _buttonStyle(
-          backgroundColor: AppColors.secondaryDark,
+          backgroundColor: AppColors.orangeFill,
           foregroundColor: Colors.white,
         ),
       ),
@@ -575,6 +707,57 @@ class AppTheme {
             ),
           ),
         ),
+      ),
+      // Audit SH-N10: same picker/switch/checkbox/radio theming as
+      // light, with the dark tokens (see the light theme above).
+      datePickerTheme: DatePickerThemeData(
+        backgroundColor: AppColors.surfaceDark,
+        headerBackgroundColor: AppColors.primaryDarkOnDark,
+        headerForegroundColor: Colors.white,
+        dayBackgroundColor: WidgetStateProperty.resolveWith((states) =>
+            states.contains(WidgetState.selected)
+                ? AppColors.primaryOnDark
+                : null),
+        dayForegroundColor: WidgetStateProperty.resolveWith((states) =>
+            states.contains(WidgetState.selected)
+                ? Colors.white
+                : AppColors.onSurfaceDark),
+        todayForegroundColor:
+            WidgetStateProperty.all(AppColors.primaryFocusedOnDark),
+        todayBackgroundColor:
+            WidgetStateProperty.all(Colors.transparent),
+      ),
+      timePickerTheme: TimePickerThemeData(
+        backgroundColor: AppColors.surfaceDark,
+        hourMinuteColor: AppColors.primaryContainerOnDark,
+        hourMinuteTextColor: Colors.white,
+        dayPeriodColor: AppColors.primaryContainerOnDark,
+        dayPeriodTextColor: Colors.white,
+        dialHandColor: AppColors.primaryFocusedOnDark,
+        dialBackgroundColor: AppColors.surfaceContainerDark,
+        entryModeIconColor: AppColors.primaryFocusedOnDark,
+      ),
+      switchTheme: SwitchThemeData(
+        thumbColor: WidgetStateProperty.resolveWith((states) =>
+            states.contains(WidgetState.selected) ? Colors.white : null),
+        trackColor: WidgetStateProperty.resolveWith((states) =>
+            states.contains(WidgetState.selected)
+                ? AppColors.primaryOnDark
+                : AppColors.borderDark),
+      ),
+      checkboxTheme: CheckboxThemeData(
+        fillColor: WidgetStateProperty.resolveWith((states) =>
+            states.contains(WidgetState.selected)
+                ? AppColors.primaryOnDark
+                : Colors.transparent),
+        checkColor: WidgetStateProperty.all(Colors.white),
+        side: const BorderSide(color: AppColors.borderDark, width: 1.5),
+      ),
+      radioTheme: RadioThemeData(
+        fillColor: WidgetStateProperty.resolveWith((states) =>
+            states.contains(WidgetState.selected)
+                ? AppColors.primaryFocusedOnDark
+                : AppColors.onSurfaceVariantDark),
       ),
     );
   }

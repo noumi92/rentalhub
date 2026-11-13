@@ -30,7 +30,9 @@ class VehiclePackageCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.secondary.withValues(alpha: 0.08) : Colors.white,
+          // CU-M4: the unselected card was hardcoded white — a
+          // theme surface follows light/dark.
+          color: isSelected ? AppColors.secondary.withValues(alpha: 0.08) : Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: isSelected ? AppColors.secondary : Theme.of(context).dividerColor,
@@ -57,17 +59,20 @@ class VehiclePackageCard extends StatelessWidget {
                   color: isSelected ? AppColors.secondary : Theme.of(context).colorScheme.onSurface,
                 ),
                 if (isSelected)
-                  const Icon(
+                  Icon(
                     Icons.check_circle_rounded,
                     size: 18,
-                    color: AppColors.secondary,
+                    // CU-M1: the small check in AppColors.secondary
+                    // read as small orange text — orangeTextFor is AA.
+                    color: AppColors.orangeTextFor(
+                        Theme.of(context).brightness),
                   ),
               ],
             ),
             const SizedBox(height: 10),
             Text(
               title,
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900, color: isSelected ? AppColors.secondary : Theme.of(context).colorScheme.onSurface),
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900, color: isSelected ? AppColors.orangeTextFor(Theme.of(context).brightness) : Theme.of(context).colorScheme.onSurface),
             ),
             Text(
               urdu,

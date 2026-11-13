@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/routing/route_names.dart';
+import '../../../../core/constants/app_colors.dart';
 import '../../../../core/utils/whatsapp.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/debounced_button.dart';
@@ -44,7 +45,9 @@ class WhatsappZeroBalanceBanner extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.amber.shade100,
+        // OW-m39: brightness-aware warning tokens — the amber
+        // shade was unreadable in dark mode.
+        color: AppColors.warningContainerFor(Theme.of(context).brightness),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Column(
@@ -52,7 +55,7 @@ class WhatsappZeroBalanceBanner extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(Icons.warning_amber_rounded, color: Colors.black87),
+              Icon(Icons.warning_amber_rounded, color: AppColors.warningOnContainerFor(Theme.of(context).brightness)),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(l10n.creditsZeroBanner,
@@ -61,7 +64,7 @@ class WhatsappZeroBalanceBanner extends StatelessWidget {
                         .titleSmall
                         ?.copyWith(
                             fontWeight: FontWeight.w800,
-                            color: Colors.black87)),
+                            color: AppColors.warningOnContainerFor(Theme.of(context).brightness))),
               ),
             ],
           ),
@@ -71,7 +74,7 @@ class WhatsappZeroBalanceBanner extends StatelessWidget {
               style: Theme.of(context)
                   .textTheme
                   .bodySmall
-                  ?.copyWith(color: Colors.black87)),
+                  ?.copyWith(color: AppColors.warningOnContainerFor(Theme.of(context).brightness))),
         ],
       ),
     );

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/routing/route_names.dart';
 import '../../../../../core/widgets/quick_action_tiles.dart';
 import '../../../../../l10n/app_localizations.dart';
@@ -24,7 +23,7 @@ class DashboardQuickActions extends StatelessWidget {
             QuickActionTile(
               icon: Icons.add_circle_outline_rounded,
               label: l10n.dashboardQuickAddCar,
-              color: AppColors.secondary,
+              color: Theme.of(context).colorScheme.primary,
               onTap: () => context.push(RouteNames.ownerAddVehicle),
             ),
             QuickActionTile(
@@ -36,7 +35,7 @@ class DashboardQuickActions extends StatelessWidget {
             QuickActionTile(
               icon: Icons.note_add_rounded,
               label: l10n.dashboardQuickNewBooking,
-              color: AppColors.accentSuccess,
+              color: Theme.of(context).colorScheme.primary,
               onTap: () => context.push(RouteNames.ownerManualBooking),
             ),
           ],
@@ -47,13 +46,13 @@ class DashboardQuickActions extends StatelessWidget {
             QuickActionTile(
               icon: Icons.account_balance_wallet_rounded,
               label: l10n.dashboardQuickFinance,
-              color: AppColors.warning,
+              color: Theme.of(context).colorScheme.primary,
               onTap: () => context.push(RouteNames.ownerFinance),
             ),
             QuickActionTile(
               icon: Icons.person_add_rounded,
               label: l10n.dashboardQuickAddCustomer,
-              color: AppColors.secondary,
+              color: Theme.of(context).colorScheme.primary,
               onTap: () => context.push(RouteNames.ownerAddCustomer),
             ),
             QuickActionTile(

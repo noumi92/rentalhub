@@ -65,6 +65,7 @@ dev_dependencies:
   flutter_lints: ^6.0.0
   image_picker_platform_interface: ^2.10.1
   fake_cloud_firestore: ^3.1.0
+  firebase_auth_mocks: ^0.14.2
 
 flutter_native_splash:
   color: "#0F1336"
@@ -101,9 +102,21 @@ flutter:
           weight: 700
         - asset: assets/fonts/Inter.ttf
           weight: 800
+        # Audit SH-N8: w900 is requested (login brand, MinimalAppBar
+        # title). Inter is a variable font with a wght axis of
+        # 100–900, so the 900 instance is declared here instead of
+        # falling back to 800.
+        - asset: assets/fonts/Inter.ttf
+          weight: 900
     - family: Noto Nastaliq Urdu
       fonts:
         - asset: assets/fonts/NotoNastaliqUrdu.ttf
           weight: 400
+        # Audit SH-N13: the Noto variable font's wght axis spans
+        # 400–700 only — 800/900 instances cannot be declared (the
+        # file has no such axis stops). 600 is declared; Urdu heading
+        # weights cap at 700 in the theme (HeaderTextTheme).
+        - asset: assets/fonts/NotoNastaliqUrdu.ttf
+          weight: 600
         - asset: assets/fonts/NotoNastaliqUrdu.ttf
           weight: 700

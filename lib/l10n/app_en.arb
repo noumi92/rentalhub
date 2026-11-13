@@ -1,6 +1,7 @@
 {
   "@@locale": "en",
   "appTitle": "RentalHub Pakistan",
+  "appStartFailed": "RentalHub couldn't start. Please restart the app and try again.",
   "blacklist": "Blacklist Reports",
   "fixedRoutes": "Fixed Routes",
   "language": "Language",
@@ -13,6 +14,7 @@
   "shop": "Your showroom",
   "shopNotSet": "Shop name not set yet",
   "signOut": "Sign Out",
+  "ownerSignOutError": "Could not sign out. Please try again.",
   "subscription": "Subscription",
   "theme": "Theme",
   "themeDark": "Dark",
@@ -427,6 +429,7 @@
   "authSignInEmail": "Sign In with Email",
   "authSignedIn": "Signed in successfully!",
   "authSignedInGoogle": "Signed in with Google!",
+  "authUnavailable": "Authentication unavailable. Please try again later.",
   "authValidEmail": "Please enter a valid email address.",
   "authPasswordLength": "Password must be at least 6 characters.",
   "authTagline": "Pakistan Premier Car Rental & Fleet Ecosystem • خوش آمدید",
@@ -1590,6 +1593,8 @@
   "pricingSave": "Save Pricing Matrix",
   "pricingUnsavedTitle": "Discard unsaved prices?",
   "pricingUnsavedBody": "Your edited prices have not been saved.",
+  "unsavedChangesTitle": "Discard unsaved changes?",
+  "unsavedChangesBody": "Your changes have not been saved.",
   "pricingSelfDriveAllowed": "Self-Drive Allowed",
   "pricingSelfDriveHint": "Requires original NADRA CNIC + security deposit",
   "pricingChauffeurAllowed": "Chauffeur Service Allowed",
@@ -1627,6 +1632,9 @@
   "fixedRoutesSubtitle": "One fixed price per destination",
   "fixedRoutesDeleteTooltip": "Delete fixed route",
   "fixedRoutesPriceRequired": "Enter a fixed price above zero.",
+  "fixedRoutesSaveFailed": "Could not save the fixed route. Please try again.",
+  "fixedRoutesDeleteFailed": "Could not delete the fixed route. Please try again.",
+  "fixedRoutesDistanceRequired": "Enter the distance in km.",
   "fixedRoutesLoadError": "Could not load your fixed routes. Check your connection and try again.",
   "fixedRoutesEmpty": "No fixed routes yet — add your first destination below.",
   "fixedRouteDuplicate": "This route already exists",
@@ -1742,6 +1750,14 @@
   "rateCustomerSelectStars": "Select at least one star rating",
   "customersRatingCommentHint": "Add optional feedback notes for community showroom records...",
   "customersRatingFlagTitle": "Flag Customer to Shared Blacklist",
+  "customersRatingFlagDescription": "Customer flagged during return settlement for {reason}.",
+  "@customersRatingFlagDescription": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
   "customersRatingFlagNoCnic": "Needs the customer CNIC on this booking — none is recorded, so a report cannot be filed from here.",
   "customersRatingFlagVisible": "Other showrooms using RentalHub can see this report",
   "customersRatingReasonLabel": "Reason Category for Tribunal:",
@@ -1767,6 +1783,7 @@
   "customersCnicFatherName": "Father's Name",
   "customersCnicNumber": "CNIC Number",
   "customersCnicDob": "Date of Birth (dd.mm.yyyy)",
+  "cnicReviewDateInvalid": "Enter the date as DD.MM.YYYY.",
   "customersCnicExpiry": "CNIC Expiry (dd.mm.yyyy)",
   "customersCnicPhone": "Phone Number",
   "customersCnicAddress": "Address (from back of card)",
@@ -1815,6 +1832,7 @@
   "blacklistEnterCnic": "Enter the full 13-digit CNIC of the customer.",
   "blacklistDescribe": "Describe what happened — the tribunal reads this.",
   "blacklistReported": "Reported. The CNIC is now flagged for every shop.",
+  "blacklistLoadError": "Could not load blacklist reports. Please try again.",
   "blacklistReportFailed": "Report failed: {error}",
   "@blacklistReportFailed": {
     "placeholders": {
@@ -2063,6 +2081,7 @@
   "handoverOdometerInvalid": "Please enter a valid odometer reading.",
   "handoverSignRequired": "Both customer and host must sign on the pads before vehicle departure.",
   "handoverCertified": "Handover certified! Digital A4 rental contract generated.",
+  "handoverShopNameRequired": "The shop name could not be loaded. Retry the load before certifying the handover.",
   "handoverCompleteFailed": "Handover completion failed: {error}",
   "@handoverCompleteFailed": {
     "placeholders": {
@@ -2108,6 +2127,7 @@
       }
     }
   },
+  "returnOdometerInvalid": "Enter the return odometer reading.",
   "returnOdometerBelow": "The return reading cannot be below the handover reading ({odometer} KM).",
   "@returnOdometerBelow": {
     "placeholders": {
@@ -2312,6 +2332,7 @@
       }
     }
   },
+  "manualBookingAdvanceInvalid": "Enter a valid advance amount.",
   "manualBookingCreateFailed": "Booking creation failed: {error}",
   "@manualBookingCreateFailed": {
     "placeholders": {
@@ -2578,6 +2599,8 @@
   "disputesMonthDec": "Dec",
   "notificationsSubtitle": "What needs your attention",
   "notificationsMarkAllRead": "Mark all read",
+  "notificationsMarkReadError": "Could not mark notifications as read. Please try again.",
+  "notificationsLoadError": "Could not load notifications. Check your connection and try again.",
   "notificationsEmpty": "No notifications yet.",
   "subscriptionUpgradeTo": "Upgrade to {tier}",
   "@subscriptionUpgradeTo": {
@@ -2634,11 +2657,15 @@
   "disputesOwnerEmpty": "No disputes yet — customer disputes for your showroom will appear here.",
   "manualBookingGuarantorPhone": "Phone number",
   "navHome": "Home",
+  "navShops": "Shops",
   "navBookings": "Bookings",
+  "navWallet": "Wallet",
   "navSupport": "Support",
   "navProfile": "Profile",
   "navDashboard": "Dashboard",
+  "navFleet": "Fleet",
   "navRequests": "Requests",
+  "navCustomers": "Customers",
   "navSettings": "Settings",
   "syncOfflineWithPending": "{count, plural, =1{You're offline — 1 change will sync when you're back online} other{You're offline — {count} changes will sync when you're back online}}",
   "@syncOfflineWithPending": {
@@ -3049,6 +3076,7 @@
   "extraChargeAdd": "Add Charge",
   "extraChargeAdded": "Charge added.",
   "extraChargeSaveFailed": "Could not save the charge. Please try again.",
+  "extraChargeLoadError": "Could not load saved extra charges. Please try again.",
   "extraChargeAmountRequired": "Please enter an amount greater than zero.",
   "extraChargeSavedTitle": "Saved Charges",
   "rentalStartedTitle": "On the Road",
@@ -3141,6 +3169,7 @@
   "financePnlIncomeBreakdown": "Income Breakdown",
   "financePnlExpenseBreakdown": "Expense Breakdown",
   "financeCategoriesAdd": "Add Category",
+  "financeCategoriesDuplicate": "A category with this name already exists.",
   "financeCategoriesAddTitle": "Add Category",
   "financeCategoriesDelete": "Delete",
   "financeCategoriesDeleteMessage": "Delete the “{name}” category? Old ledger entries keep this category.",
@@ -3164,6 +3193,7 @@
   "financeSettingsCurrencyNote": "The app only trades in Pakistani Rupees (PKR).",
   "financeSettingsEmpty": "Finance settings are not available right now.",
   "financeSettingsInvalidPercent": "Enter a valid percentage number.",
+  "financeSettingsPercentRange": "Enter a percentage between 0 and 100.",
   "financeSettingsPaymentMethods": "Payment Methods",
   "financeSettingsReceipts": "Receipt Settings",
   "financeSettingsSave": "Save Settings",
@@ -3248,6 +3278,7 @@
   "reportNoCustomers": "No customer bookings in this period.",
   "reportPeriod": "Period",
   "reportShare": "Share Report",
+  "reportShareFailed": "Could not share the report. Please try again.",
   "reportSubtitle": "Earnings, cars and customers",
   "reportTitle": "Reports",
   "resetAction": "Reset",
@@ -3290,6 +3321,7 @@
   "staffAdd": "Add Staff",
   "staffAddTitle": "Add Staff Member",
   "staffDelete": "Remove staff member",
+  "staffDeleteFailed": "Could not remove this staff member. Please try again.",
   "staffEmpty": "No staff yet — add your first team member.",
   "staffNameLabel": "Name",
   "staffPermissionAddCars": "Add Cars",
@@ -3499,6 +3531,9 @@
     }
   },
   "shopSettingsLoadError": "Could not load shop settings.",
+  "shopSettingsPhoneInvalid": "Enter a valid Pakistani mobile number (03XX-XXXXXXX or +92 3XX XXXXXXX).",
+  "shopSettingsHoursHint": "e.g. 9:00 AM – 9:00 PM",
+  "shopSettingsHoursInvalid": "Enter opening hours like 9:00 AM – 9:00 PM.",
   "fleetCalendarTitle": "Fleet Schedule",
   "fleetCalendarPrevMonth": "Previous month",
   "fleetCalendarNextMonth": "Next month",
@@ -3538,6 +3573,7 @@
   "subscriptionExamplePrices": "Example prices — final pricing to be decided",
   "subscriptionViewDetails": "View details",
   "subscriptionMySubscription": "My subscription",
+  "subscriptionLoadError": "Could not load your subscription. Please try again.",
   "subscriptionPlayNotConnected": "Google Play billing is not connected yet",
   "subscriptionPlayNotConnectedNote": "Play Console setup is still pending. You can subscribe by bank transfer below — nothing is charged through Google Play.",
   "subscriptionPayByBank": "Pay by bank transfer — Google Play billing arrives once the Play Console setup is done",
@@ -3669,6 +3705,7 @@
   "customerDetailRejectReasonHint": "Write the reason…",
   "customerDetailRejectReasonRequired": "A reason is required to reject a profile",
   "customerDetailRejectConfirm": "Reject",
+  "customerDetailApprovalFailed": "Could not update this customer's approval. Please try again.",
   "customerAddedTitle": "Customer added",
   "customerAddedReady": "{name}'s profile is ready — you can now start a booking.",
   "@customerAddedReady": {
@@ -3846,7 +3883,6 @@
       }
     }
   },
-  "tab2_navShops": "Shops",
   "shops_title": "Shops",
   "shops_showMap": "Map view",
   "shops_showList": "List view",
@@ -3902,5 +3938,54 @@
   "anncTitle": "Announcement",
   "anncLoading": "Loading announcement…",
   "anncNotFound": "This announcement is no longer available.",
-  "anncLoadError": "Could not load the announcement. Please try again."
+  "anncLoadError": "Could not load the announcement. Please try again.",
+  "couldNotOpenDialer": "Could not open the dialer.",
+  "countdownPickupReached": "Pickup time reached",
+  "countdownReturnReached": "Return time reached",
+  "countdownTimeReached": "Time reached",
+  "kycRejectionReason": "Reason: {reason}",
+  "@kycRejectionReason": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "onboardingNameHint": "Your full name",
+  "pickerPastTime": "That time has already passed. Please pick a later time.",
+  "rateSelectBoth": "Please rate both the shop and the vehicle.",
+  "reviewDraftMissing": "Booking details are missing. Please start again.",
+  "reviewSignInRequired": "Please sign in to submit this booking.",
+  "reviewSubmitFailed": "Could not submit the booking. Please try again.",
+  "shopLoadFailed": "Could not load this showroom.",
+  "shopNoPhoneNumber": "No phone number for this shop.",
+  "shopWhatsappHello": "Hello {shopName}, I found your listing on RentalHub.",
+  "@shopWhatsappHello": {
+    "placeholders": {
+      "shopName": {
+        "type": "String"
+      }
+    }
+  },
+  "signInRequiredGeneric": "Please sign in to continue.",
+  "statusProofRejected": "Proof rejected",
+  "tripOutCityFixedRouteLine": "Out-of-city: fixed route price",
+  "tripOutCityPerDayLine": "Out-of-city: {rate} / day",
+  "@tripOutCityPerDayLine": {
+    "placeholders": {
+      "rate": {
+        "type": "String"
+      }
+    }
+  },
+  "tripOutCityPerKmLine": "Out-of-city: {rate} / km",
+  "@tripOutCityPerKmLine": {
+    "placeholders": {
+      "rate": {
+        "type": "String"
+      }
+    }
+  },
+  "vehicleLoadFailed": "Could not load this vehicle.",
+  "manualBookingWhatsappToggle": "Send WhatsApp confirmation"
 }

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../core/di/injection_container.dart';
+import '../../../../core/widgets/app_state_views.dart';
 import '../../../discovery/data/models/shop_model.dart';
 import '../../../discovery/domain/entities/shop_entity.dart';
 import '../../../fleet/data/datasources/fleet_remote_data_source.dart';
@@ -14,7 +15,13 @@ import '../../../../l10n/app_localizations.dart';
 /// [FleetRemoteDataSource.getVehicleById]) and the shop's name + phone are
 /// read from the `shops` document, so the detail screen can show the
 /// showroom and offer a real WhatsApp chat.
-class CustomerVehicleRouteLoader extends StatelessWidget {
+///
+/// CU-M6: a load failure is NOT "not found". While waiting the shared
+/// [AppLoadingState] shows; a failed load shows [AppErrorState] with
+/// retry; only a confirmed absent document lands on
+/// [RouteNotFoundScreen]. (An offline user tapping a shop used to be
+/// told the shop does not exist, with no way back.)
+class CustomerVehicleRouteLoader extends StatefulWidget {
   const CustomerVehicleRouteLoader({
     super.key,
     required this.vehicleId,
@@ -31,38 +38,14 @@ class CustomerVehicleRouteLoader extends StatelessWidget {
   ) builder;
 
   @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    return FutureBuilder<VehicleWithShop?>(
-      future: _load(vehicleId, l10n),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
-        }
-        final loaded = snapshot.data;
-        if (loaded == null) {
-          return RouteNotFoundScreen(
-            message: l10n.vehicleNotFound(vehicleId),
-          );
-        }
-        return builder(
-          context,
-          loaded.vehicle,
-          loaded.shopName,
-          loaded.shopPhone,
-          loaded.shopOwnerId,
-        );
-      },
-    );
-  }
+  State<CustomerVehicleRouteLoader> createState() =>
+      _CustomerVehicleRouteLoaderState();
 
-  static Future<VehicleWithShop?> _load(String vehicleId, AppLocalizations l10n) async {
+  static Future<VehicleWithShop?> _load(String vehicleId, AppLocalizations? l10n) async {
     final vehicle =
         await sl<FleetRemoteDataSource>().getVehicleById(vehicleId);
     if (vehicle == null) return null;
-    var shopName = l10n.rentalShowroom;
+    var shopName = l10n?.rentalShowroom ?? 'Rental Showroom';
     var shopPhone = '';
     var shopOwnerId = '';
     try {
@@ -82,6 +65,69 @@ class CustomerVehicleRouteLoader extends StatelessWidget {
       shopName: shopName,
       shopPhone: shopPhone,
       shopOwnerId: shopOwnerId,
+    );
+  }
+}
+
+class _CustomerVehicleRouteLoaderState
+    extends State<CustomerVehicleRouteLoader> {
+  late Future<VehicleWithShop?> _future;
+
+  @override
+  void initState() {
+    super.initState();
+    _future = _loadFuture();
+  }
+
+  Future<VehicleWithShop?> _loadFuture() =>
+      CustomerVehicleRouteLoader._load(
+        widget.vehicleId,
+        AppLocalizations.of(context),
+      );
+
+  void _retry() {
+    setState(() {
+      _future = _loadFuture();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return FutureBuilder<VehicleWithShop?>(
+      future: _future,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Scaffold(
+            body: AppLoadingState(
+              message: l10n?.requestsLoading ?? 'Loading vehicle…',
+            ),
+          );
+        }
+        if (snapshot.hasError) {
+          return Scaffold(
+            body: AppErrorState(
+              message:
+                  l10n?.vehicleLoadFailed ?? 'Could not load this vehicle.',
+              onRetry: _retry,
+            ),
+          );
+        }
+        final loaded = snapshot.data;
+        if (loaded == null) {
+          return RouteNotFoundScreen(
+            message: l10n?.vehicleNotFound(widget.vehicleId) ??
+                'Vehicle ${widget.vehicleId} was not found.',
+          );
+        }
+        return widget.builder(
+          context,
+          loaded.vehicle,
+          loaded.shopName,
+          loaded.shopPhone,
+          loaded.shopOwnerId,
+        );
+      },
     );
   }
 }
@@ -107,8 +153,10 @@ class VehicleWithShop {
 }
 
 /// Phase A (A1): the customer shop route. Loads the shop document from
-/// `shops` by id.
-class ShopRouteLoader extends StatelessWidget {
+/// `shops` by id. CU-M6: same failure contract as the vehicle loader —
+/// error state with retry on a failed load, not-found only for a
+/// confirmed absent document.
+class ShopRouteLoader extends StatefulWidget {
   const ShopRouteLoader({
     super.key,
     required this.shopId,
@@ -119,38 +167,70 @@ class ShopRouteLoader extends StatelessWidget {
   final Widget Function(BuildContext context, ShopEntity shop) builder;
 
   @override
+  State<ShopRouteLoader> createState() => _ShopRouteLoaderState();
+
+  static Future<ShopEntity?> _loadShop(String shopId) async {
+    FirebaseFirestore? fs;
+    try {
+      fs = FirebaseFirestore.instance;
+    } catch (_) {
+      // No Firebase app (widget tests): behave as before — no data
+      // source, so the document is treated as absent.
+      return null;
+    }
+    final doc = await fs.collection('shops').doc(shopId).get();
+    if (doc.exists && doc.data() != null) {
+      return ShopModel.fromMap(doc.data()!, id: doc.id);
+    }
+    return null;
+  }
+}
+
+class _ShopRouteLoaderState extends State<ShopRouteLoader> {
+  late Future<ShopEntity?> _future;
+
+  @override
+  void initState() {
+    super.initState();
+    _future = ShopRouteLoader._loadShop(widget.shopId);
+  }
+
+  void _retry() {
+    setState(() {
+      _future = ShopRouteLoader._loadShop(widget.shopId);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return FutureBuilder<ShopEntity?>(
-      future: _loadShop(shopId),
+      future: _future,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
+          return Scaffold(
+            body: AppLoadingState(
+              message: l10n?.requestsLoading ?? 'Loading showroom…',
+            ),
+          );
+        }
+        if (snapshot.hasError) {
+          return Scaffold(
+            body: AppErrorState(
+              message: l10n?.shopLoadFailed ?? 'Could not load this showroom.',
+              onRetry: _retry,
+            ),
           );
         }
         final shop = snapshot.data;
         if (shop == null) {
           return RouteNotFoundScreen(
-            message: l10n.shopNotFound(shopId),
+            message: l10n?.shopNotFound(widget.shopId) ??
+                'Showroom ${widget.shopId} was not found.',
           );
         }
-        return builder(context, shop);
+        return widget.builder(context, shop);
       },
     );
   }
-
-  static Future<ShopEntity?> _loadShop(String shopId) async {
-    try {
-      final doc = await FirebaseFirestore.instance
-          .collection('shops')
-          .doc(shopId)
-          .get();
-      if (doc.exists && doc.data() != null) {
-        return ShopModel.fromMap(doc.data()!, id: doc.id);
-      }
-    } catch (_) {}
-    return null;
-  }
 }
-

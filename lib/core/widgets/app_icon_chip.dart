@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../constants/app_colors.dart';
+
 /// Eye-catching icon chip (#12): a circular ~40dp chip with a tinted
 /// background behind the icon, so header actions and quick-action tiles
 /// read as tappable instead of bare glyphs. The background defaults to
@@ -51,23 +53,30 @@ class AppIconChip extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 5, vertical: 2),
                       decoration: const BoxDecoration(
-                        color: Colors.red,
+                        // Audit SH-N2: was raw Colors.red — the token
+                        // is accentDanger.
+                        color: AppColors.accentDanger,
                         borderRadius: BorderRadius.all(Radius.circular(10)),
                       ),
                       child: Text(
                         '$badgeCount',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 10,
-                          fontWeight: FontWeight.w900,
-                        ),
+                        // Audit SH-N2: the count was a hardcoded
+                        // fontSize: 10, below the 11 sp labelSmall
+                        // floor. It now uses the labelSmall slot.
+                        style: Theme.of(context)
+                            .textTheme
+                            .labelSmall
+                            ?.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w900,
+                            ),
                       ),
                     )
                   : Container(
                       width: 8,
                       height: 8,
                       decoration: const BoxDecoration(
-                        color: Colors.red,
+                        color: AppColors.accentDanger,
                         shape: BoxShape.circle,
                       ),
                     ),

@@ -5,6 +5,7 @@ import '../../../../l10n/app_localizations.dart';
 import 'package:signature/signature.dart';
 
 import '../../../../core/di/injection_container.dart';
+import '../../../../core/network/connectivity_service.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/money_format.dart';
 import '../../../../core/widgets/app_feedback.dart';
@@ -131,6 +132,9 @@ class _OwnerHandoverSignatureViewState
       return;
     }
 
+    // OW-m25: certifying with no shop name would print "RentalHub" on the agreement — block and let the owner retry the load (the banner above offers the retry).
+    if (_shopName.isEmpty) { AppFeedback.showError(context, l10n.handoverShopNameRequired); return; }
+
     setState(() => _isSaving = true);
     try {
       final customerPng = await _customerSig.toPngBytes();
@@ -146,7 +150,9 @@ class _OwnerHandoverSignatureViewState
         photoFrontUrl: _photos['front'], photoBackUrl: _photos['back'], photoLeftUrl: _photos['left'], photoRightUrl: _photos['right'],
         documentsGiven: _documentsGiven.toList(), accessories: _accessories.toList(), keysHandedOver: _keysHandedOver,
         vehiclePlate: _vehiclePlate, vehicleColour: _vehicleColour, vehicleFuel: _vehicleFuel,
-        customerSignaturePng: customerPng, ownerSignaturePng: ownerPng, isOnline: true,
+        customerSignaturePng: customerPng, ownerSignaturePng: ownerPng,
+        // OW-m25: was hardcoded true — the offline queue would never have queued. Real connectivity now.
+        isOnline: sl.isRegistered<ConnectivityService>() ? sl<ConnectivityService>().isOnline : true,
       );
 
       final ds = sl<BookingRemoteDataSource>();

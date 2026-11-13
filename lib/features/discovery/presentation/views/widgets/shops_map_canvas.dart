@@ -39,6 +39,9 @@ class ShopsMapCanvas extends StatefulWidget {
     this.userPoint,
     this.onUserPointChanged,
     this.onUserPointChangeEnd,
+    // CU-m11: the "nearby" radius, in km — the canvas draws the
+    // matching circle around the user pin. Null = no circle.
+    this.radiusKm,
   });
 
   /// Whole-Pakistan viewport: bounds roughly lat 23.5–37.5,
@@ -64,6 +67,10 @@ class ShopsMapCanvas extends StatefulWidget {
 
   /// Once, when the user pin drag ends.
   final ValueChanged<ll.LatLng>? onUserPointChangeEnd;
+
+  /// CU-m11: the "nearby" radius in km, drawn as a circle around the
+  /// user pin. Null draws no circle.
+  final double? radiusKm;
 
   @override
   State<ShopsMapCanvas> createState() => _ShopsMapCanvasState();
@@ -137,6 +144,21 @@ class _ShopsMapCanvasState extends State<ShopsMapCanvas> {
           urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
           userAgentPackageName: 'pk.rentalhub.rentalhub',
         ),
+        // CU-m11: the radius circle around the user pin, so "nearby"
+        // means something visible on the map.
+        if (widget.radiusKm != null && userPoint != null)
+          CircleLayer(
+            circles: [
+              CircleMarker(
+                point: userPoint,
+                radius: widget.radiusKm! * 1000,
+                useRadiusInMeter: true,
+                color: AppColors.secondary.withValues(alpha: 0.10),
+                borderColor: AppColors.secondary,
+                borderStrokeWidth: 1.5,
+              ),
+            ],
+          ),
         MarkerLayer(
           markers: [
             if (userPoint != null)
@@ -220,9 +242,13 @@ class _ShopsMapCanvasState extends State<ShopsMapCanvas> {
                               vertical: 4,
                             ),
                             decoration: BoxDecoration(
+                              // CU-M1: white small text on #F95700 /
+                              // #F59E0B fails AA — verified uses the
+                              // darker orangeFill (5.18:1), unverified
+                              // the dark amber (white on it ~6.8:1).
                               color: verified
-                                  ? AppColors.secondary
-                                  : AppColors.warning,
+                                  ? AppColors.orangeFill
+                                  : AppColors.warningOnContainer,
                               borderRadius: BorderRadius.circular(10),
                               boxShadow: [
                                 BoxShadow(

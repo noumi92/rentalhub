@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class RateMatrixFieldWidget extends StatelessWidget {
   final TextEditingController controller;
@@ -63,6 +64,11 @@ class RateMatrixFieldWidget extends StatelessWidget {
               controller: controller,
               enabled: enabled,
               keyboardType: TextInputType.number,
+              // OW-m5: digits only — typing "7,500" or "12.5" used to
+              // fail int.tryParse with only the generic "invalid
+              // field" error. The formatter strips separators on
+              // paste too.
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               textAlign: TextAlign.end,
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
                 fontWeight: FontWeight.w800,

@@ -89,6 +89,11 @@ class _CustomerActiveTripViewState extends State<CustomerActiveTripView> {
                       label: isActive
                           ? l10n.timeUntilReturn
                           : l10n.countdownToPickup,
+                      // CU-m8: once the time passes the digits count
+                      // up the overdue time under this label.
+                      overdueLabel: isActive
+                          ? l10n.countdownReturnReached
+                          : l10n.countdownPickupReached,
                     ),
                     const SizedBox(height: 16),
                     Container(

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/network/firestore_service.dart';
+import '../../../../core/widgets/app_state_views.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../data/datasources/review_remote_data_source.dart';
 import '../../../trust/data/services/trust_score_service.dart';
@@ -105,7 +106,7 @@ class _CustomerReputationViewState extends State<CustomerReputationView> {
             ),
             Expanded(
               child: _loading
-                  ? const Center(child: CircularProgressIndicator())
+                  ? const AppLoadingState()
                   : SingleChildScrollView(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16, vertical: 14),

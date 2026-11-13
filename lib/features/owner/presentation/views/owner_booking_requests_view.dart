@@ -16,7 +16,7 @@ class OwnerBookingRequestsView extends StatefulWidget {
 
   const OwnerBookingRequestsView({
     super.key,
-    this.shopId = 'shop-1',
+    required this.shopId,
   });
 
   @override

@@ -15,6 +15,7 @@ import 'package:rentalhub/features/customer/presentation/views/customer_settings
 import 'package:rentalhub/features/customer/presentation/views/customer_sos_view.dart';
 import 'package:rentalhub/features/customer/presentation/views/customer_support_view.dart';
 import 'package:rentalhub/features/customer/presentation/views/customer_wallet_view.dart';
+import 'package:rentalhub/core/auth/signed_in_user.dart';
 import 'package:rentalhub/l10n/app_localizations.dart';
 import 'package:rentalhub/core/settings/app_settings_cubit.dart';
 import 'package:rentalhub/features/finance/data/datasources/security_deposit_data_source.dart';
@@ -24,6 +25,18 @@ void main() {
     TestWidgetsFlutterBinding.ensureInitialized();
     SharedPreferences.setMockInitialValues({});
     await di.initDependencies();
+    // CU-m3: the dispute form refuses to file with nobody signed in.
+    // Widget tests cannot sign a Firebase user in, so stand in as
+    // 'cust-101' via the SignedInUser test override.
+    SignedInUser.override = const SignedInUserData(
+      uid: 'cust-101',
+      displayName: 'Ahmed Raza',
+      phoneNumber: '03001234567',
+    );
+  });
+
+  tearDownAll(() {
+    SignedInUser.override = null;
   });
 
   group('Batch 2: Customer Post-Trip & Dashboard Tests', () {
@@ -91,23 +104,21 @@ supportedLocales: AppLocalizations.supportedLocales,
       );
       await tester.pumpAndSettle();
 
-      // Phase E (E1): the balance and escrow amounts are masked by
-      // default — reveal them via the eye toggles before asserting
-      // the seeded amounts. A pump is needed between taps: without
-      // it both taps land on the same pill (reveal then hide again)
-      // because the tree has not rebuilt yet.
+      // Phase E (E1): the balance is masked by default — reveal it
+      // via the eye toggle before asserting the seeded amounts.
+      // CU-m6: the escrow pills carry no eye of their own any more;
+      // the header has ONE visibility toggle. The pill amounts stay
+      // masked; the advance/deposit figures below are the ledger
+      // rows, which are never masked and carry their debit sign
+      // ('- Rs. 2,500', not the plain pill text 'Rs. 2,500').
       await tester.tap(find.byTooltip('Show balance'));
-      await tester.pump();
-      await tester.tap(find.byTooltip('Show amount').first);
-      await tester.pump();
-      await tester.tap(find.byTooltip('Show amount').first);
       await tester.pump();
 
       expect(find.text('Wallet & Security Escrow'), findsOneWidget);
       expect(find.text('Active Escrow & Advances'), findsOneWidget);
       expect(find.text('Rs. 12,500'), findsOneWidget);
-      expect(find.text('Rs. 2,500'), findsOneWidget);
-      expect(find.text('Rs. 10,000'), findsOneWidget);
+      expect(find.text('- Rs. 2,500'), findsOneWidget);
+      expect(find.text('- Rs. 10,000'), findsOneWidget);
       expect(find.text('Transaction Ledger'), findsOneWidget);
       expect(find.textContaining('Advance paid — Honda Civic'), findsOneWidget);
       expect(find.textContaining('Security deposit held — Honda Civic'),
@@ -214,6 +225,14 @@ supportedLocales: AppLocalizations.supportedLocales,
       expect(find.text('Rate Your Experience'), findsOneWidget);
       expect(find.text('Showroom Service Quality'), findsOneWidget);
       expect(find.text('Vehicle Condition & Cleanliness'), findsOneWidget);
+
+      // CU-m12: both ratings start UNSET (0) and an untouched rating
+      // blocks submit instead of filing a 5 — tap a star on each bar
+      // first (the test is named "sets dual stars" for a reason).
+      await tester.tap(find.byTooltip('Rate 5 out of 5').first);
+      await tester.pumpAndSettle();
+      await tester.tap(find.byTooltip('Rate 5 out of 5').at(1));
+      await tester.pumpAndSettle();
 
       await tester.tap(find.text('Submit Trip Review'));
       await tester.pumpAndSettle();

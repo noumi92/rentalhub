@@ -4,12 +4,14 @@ import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart' as ll;
 
 import '../../../../core/routing/route_names.dart';
+import '../../../../core/widgets/app_state_views.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../data/datasources/customer_location_store.dart';
 import '../../domain/entities/shop_entity.dart';
 import '../cubit/shops_filter_state.dart';
 import 'widgets/city_selector_bar.dart';
 import 'widgets/map_shop_preview_card.dart';
+import 'widgets/radius_filter_pills.dart';
 import 'widgets/shops_empty_banner.dart';
 import 'widgets/shops_filter_bar.dart';
 import 'widgets/shops_filter_logic.dart';
@@ -65,6 +67,9 @@ class _CustomerHomeMapViewState extends State<CustomerHomeMapView> {
   bool _online = true;
   bool? _locationAvailable;
   String? _lastCity;
+  // CU-m11: the "nearby" radius, wired to the pills below and the
+  // circle on the canvas. 3 km is the middle of the 1/2/3/5 set.
+  double _radiusKm = 3.0;
 
   @override
   void initState() {
@@ -111,7 +116,8 @@ class _CustomerHomeMapViewState extends State<CustomerHomeMapView> {
     setState(() {
       _shops = shops;
       _loading = false;
-      if (_selectedShop == null) _selectNearest();
+      // CU-m19: no auto-select — the preview opens only when the
+      // customer taps a pin.
     });
   }
 
@@ -134,19 +140,6 @@ class _CustomerHomeMapViewState extends State<CustomerHomeMapView> {
   List<ShopEntity> _sortedShops() =>
       sortShopsByDistance(_filters.apply(_shops), _userPoint);
 
-  void _selectNearest() {
-    final sorted = _sortedShops();
-    if (sorted.isNotEmpty) _selectedShop = sorted.first;
-  }
-
-  void _onUserPointDragEnd(ll.LatLng point) {
-    final sorted = _sortedShops();
-    if (sorted.isEmpty) return;
-    if (_selectedShop?.shopId != sorted.first.shopId) {
-      setState(() => _selectedShop = sorted.first);
-    }
-  }
-
   Future<void> _checkLocation() async {
     final available = await ShopsTabData.locationAvailable();
     if (!mounted) return;
@@ -154,15 +147,13 @@ class _CustomerHomeMapViewState extends State<CustomerHomeMapView> {
   }
 
   Future<void> _checkOnline() async {
-    final online =
-        await ShopsTabData.onlineStatus(override: widget.isOnlineOverride);
+    final online = await ShopsTabData.onlineStatus(override: widget.isOnlineOverride);
     if (!mounted) return;
     setState(() => _online = online);
   }
 
   void _selectCity(Map<String, dynamic> city) {
-    _filters.setCity(
-        city['all'] == true ? null : city['name'] as String);
+    _filters.setCity(city['all'] == true ? null : city['name'] as String);
   }
 
   void _openShop(ShopEntity shop) {
@@ -206,6 +197,16 @@ class _CustomerHomeMapViewState extends State<CustomerHomeMapView> {
                 ),
                 if (_locationAvailable == false)
                   ShopsLocationNote(text: l10n.shops_chooseCity),
+                // CU-m11: the radius control — the pills and the
+                // circle on the canvas say what "nearby" means.
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                  child: RadiusFilterPills(
+                    selectedRadiusKm: _radiusKm,
+                    onRadiusSelected: (km) =>
+                        setState(() => _radiusKm = km),
+                  ),
+                ),
                 Expanded(
                   child: Stack(
                     children: [
@@ -219,10 +220,10 @@ class _CustomerHomeMapViewState extends State<CustomerHomeMapView> {
                         initialZoom: _filters.mapZoom,
                         userPoint: _userPoint,
                         onUserPointChanged: _filters.setUserPoint,
-                        onUserPointChangeEnd: _onUserPointDragEnd,
+                        radiusKm: _radiusKm,
                       ),
                       if (_loading)
-                        const Center(child: CircularProgressIndicator()),
+                        const AppLoadingState(),
                       if (!_loading && shops.isEmpty)
                         Positioned(
                           left: 16,

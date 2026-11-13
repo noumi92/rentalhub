@@ -21,7 +21,10 @@ class UserEntity extends Equatable {
     this.profilePhotoUrl,
     this.role,
     this.isVerified = false,
-    this.trustScore = 5.0,
+    // Audit SH-M5: was 5.0 — a perfect record by default. The live
+    // trust computation owns the score (verified new customer: 3.5);
+    // the stored value is only the offline fallback.
+    this.trustScore = 3.5,
     this.totalTrips = 0,
     this.isBlacklisted = false,
     this.isOnboardingCompleted = false,

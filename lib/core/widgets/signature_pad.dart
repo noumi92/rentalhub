@@ -101,7 +101,8 @@ class _SignaturePadWidgetState extends State<SignaturePadWidget> {
             height: 90,
             width: double.infinity,
             decoration: BoxDecoration(
-              color: AppColors.background,
+              // Audit SH-N3: was AppColors.background (deleted alias).
+              color: AppColors.backgroundLight,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
                   color: AppColors.borderSubtle.withValues(alpha: 0.6),

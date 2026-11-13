@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/di/injection_container.dart';
+import '../../../../core/utils/money_format.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../fleet/domain/entities/vehicle_entity.dart';
@@ -133,7 +134,7 @@ class _OwnerRateMatrixViewState extends State<OwnerRateMatrixView> {
     }
 
     for (final p in _packages) {
-      if (bad(_packageTitle(l10n, p.label), _priceControllers[p.label]?.text)) return false;
+      if (bad(_packageTitle(l10n, p.label), _priceControllers[p.label]?.text, allowZero: true)) return false; // OW-m3: Rs. 0 is a real (free) package price, not an error.
     }
     // 09b §2 modes: only the active mode's fields are validated — in Per-km mode the daily rate, km allowance and extra-km charge do not apply (the base price IS per km); in Fixed-route mode the flat route price replaces them, so a route must be selected. Audit §5 (P4-O07): no extra-km charge to validate when Per KM pricing is off — the field is disabled and keeps its last value.
     if (_outCityMode == 'perKm') { if (bad(l10n.outCityPerKmRate, _perKmController.text)) return false; }
@@ -223,7 +224,7 @@ class _OwnerRateMatrixViewState extends State<OwnerRateMatrixView> {
                         child: Row(children: _packages.map((p) => Padding(padding: const EdgeInsets.only(right: 8), child: ChoiceChip(key: _chipKeys[p.label], label: Text(_packageTitle(l10n, p.label)), selected: p.label == _selectedLabel, onSelected: (_) => _selectPackage(p.label)))).toList()),
                       ),
                       const SizedBox(height: 12),
-                      RateMatrixFieldWidget(controller: _priceControllers[selected.label]!, label: _packageTitle(l10n, selected.label), hint: 'Rs. ${selected.pricePkr}', kmCap: l10n.pricingKmIncluded(selected.kmIncluded)),
+                      RateMatrixFieldWidget(controller: _priceControllers[selected.label]!, label: _packageTitle(l10n, selected.label), hint: l10n.amountRs(formatRs(selected.pricePkr)), kmCap: l10n.pricingKmIncluded(selected.kmIncluded)),
                       const SizedBox(height: 10),
                       RateMatrixFieldWidget(controller: _extraHourController, label: l10n.pricingExtraHourCharge, hint: 'Rs. 600 / hour', kmCap: l10n.pricingExtraHourCap),
                       const SizedBox(height: 18),

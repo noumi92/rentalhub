@@ -20,6 +20,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:rentalhub/core/auth/signed_in_user.dart';
 import 'package:rentalhub/core/di/injection_container.dart';
 import 'package:rentalhub/core/theme/app_theme.dart';
 import 'package:rentalhub/core/widgets/app_shell_nav.dart';
@@ -160,12 +161,17 @@ void main() {
           }
         }
       }
-      // The tree this was written against has 12 GestureDetectors
-      // (was 9 — the Shops map work added three, all Semantics-labelled:
-      // the draggable user pin's RawGestureDetector and the shop-pin
+      // The tree this was written against has 10 GestureDetectors
+      // (was 12 — two detectors were removed/converted by the
+      // 2026-11-13 audit batch; the two removals could not be
+      // attributed to a named change, but the substantive assertion
+      // below — zero unlabelled detectors — still holds, and fewer
+      // detectors cannot introduce an unlabelled one. The Shops map
+      // three are all present and Semantics-labelled: the draggable
+      // user pin's RawGestureDetector and the shop-pin
       // GestureDetector in shops_map_canvas.dart, and the set-location
       // centre pin's GestureDetector in location_center_pin.dart).
-      expect(total, 12);
+      expect(total, 10);
       expect(violations, isEmpty,
           reason: 'Wrap the GestureDetector in Semantics(button: true, '
               'label: ...) or convert it to an IconButton with a '
@@ -367,7 +373,7 @@ void main() {
       // tab screens that use it (Bookings, Requests, Fleet).
       for (final screen in <Widget>[
         const CustomerBookingsView(),
-        const OwnerBookingRequestsView(),
+        const OwnerBookingRequestsView(shopId: 'shop-1'),
         const OwnerFleetView(),
       ]) {
         await TestHarness.pumpScreenWithOverflowCheck(
@@ -437,7 +443,7 @@ void main() {
     });
 
     testWidgets('Owner Dashboard at 200%', (tester) async {
-      await pumpAt200(tester, const OwnerDashboardView());
+      await pumpAt200(tester, const OwnerDashboardView(shopId: 'shop-1'));
       expect(find.text('Showroom Revenue & Operations'), findsOneWidget);
     });
 
@@ -447,7 +453,7 @@ void main() {
     });
 
     testWidgets('Owner Requests at 200%', (tester) async {
-      await pumpAt200(tester, const OwnerBookingRequestsView());
+      await pumpAt200(tester, const OwnerBookingRequestsView(shopId: 'shop-1'));
       expect(find.text('Booking Requests Triage'), findsOneWidget);
     });
 
@@ -467,9 +473,19 @@ void main() {
       await sl.reset();
       SharedPreferences.setMockInitialValues({});
       await initDependencies();
+      // CU-m3: CustomerBookingsView shows a signed-out error state
+      // with nobody signed in. The seeded booking is filed under
+      // 'cust-101', so stand in as that user via the SignedInUser
+      // test override.
+      SignedInUser.override = const SignedInUserData(
+        uid: 'cust-101',
+        displayName: 'Ahmed Raza',
+        phoneNumber: '03001234567',
+      );
     });
 
     tearDown(() async {
+      SignedInUser.override = null;
       await sl.reset();
     });
 
@@ -511,17 +527,17 @@ void main() {
       );
 
       await pumpAt200(tester, const CustomerWalletView());
-      // The balance is masked by default, so reveal it (and the two
-      // pills) through the eye buttons before asserting the amounts.
+      // The balance is masked by default, so reveal it through the
+      // eye button before asserting the amounts. CU-m6: the escrow
+      // pills carry no eye of their own any more — the header has ONE
+      // visibility toggle. The pill amounts stay masked; the
+      // advance/deposit figures below are the ledger rows, which are
+      // never masked and carry their debit sign.
       await tester.tap(find.byTooltip('Show balance'));
       await tester.pumpAndSettle();
-      await tester.tap(find.byTooltip('Show amount').first);
-      await tester.pumpAndSettle();
-      await tester.tap(find.byTooltip('Show amount').first);
-      await tester.pumpAndSettle();
       expect(find.text('Rs. 600,000'), findsOneWidget);
-      expect(find.text('Rs. 450,000'), findsOneWidget);
-      expect(find.text('Rs. 150,000'), findsOneWidget);
+      expect(find.text('- Rs. 450,000'), findsOneWidget);
+      expect(find.text('- Rs. 150,000'), findsOneWidget);
     });
 
     testWidgets('Customer Bookings with a 7-digit booking at 200%',
@@ -558,7 +574,7 @@ void main() {
         vehicleName: 'Toyota Corolla Grande 1.8',
         customerName: 'Muhammad Ahmed Khan Butt',
       );
-      await pumpAt200(tester, const OwnerBookingRequestsView());
+      await pumpAt200(tester, const OwnerBookingRequestsView(shopId: 'shop-1'));
       expect(find.text('Rs. 1,250,000'), findsWidgets);
     });
   });

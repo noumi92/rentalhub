@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../constants/app_colors.dart';
 import '../constants/app_dimensions.dart';
 import '../../l10n/app_localizations.dart';
 
@@ -71,10 +72,12 @@ class _DebouncedButtonState extends State<DebouncedButton> {
     return ElevatedButton(
       onPressed: (widget.isLoading || _isLocked) ? null : _handleTap,
       style: ElevatedButton.styleFrom(
-        // Theme secondary in both modes (light orange / dark orange);
-        // the old hardcoded light secondary was wrong in dark mode.
-        backgroundColor:
-            widget.backgroundColor ?? Theme.of(context).colorScheme.secondary,
+        // Audit SH-M1: white on `colorScheme.secondary` (#F95700
+        // light / #FF6D24 dark) is 3.29:1 / 2.81:1 — it fails WCAG AA
+        // for the 14 sp label. The default is `orangeFill` #C2410C
+        // (5.18:1 with white in both modes); callers that pass an
+        // explicit backgroundColor keep it.
+        backgroundColor: widget.backgroundColor ?? AppColors.orangeFill,
         foregroundColor: widget.textColor ?? Colors.white,
         minimumSize: const Size(double.infinity, AppDimensions.buttonHeight),
         shape: RoundedRectangleBorder(

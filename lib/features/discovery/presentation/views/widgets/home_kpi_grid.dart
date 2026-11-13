@@ -18,6 +18,8 @@ class HomeKpiGrid extends StatelessWidget {
     required this.walletTotal,
     required this.trustScore,
     this.onTrustTap,
+    this.onBookingsTap,
+    this.onWalletTap,
   });
 
   final int activeBookings;
@@ -32,6 +34,12 @@ class HomeKpiGrid extends StatelessWidget {
   /// The trust tile opens the reputation screen.
   final VoidCallback? onTrustTap;
 
+  /// CU-m14: the bookings tiles open the Bookings tab, the wallet
+  /// tile the Wallet tab — no tile looks tappable without going
+  /// anywhere.
+  final VoidCallback? onBookingsTap;
+  final VoidCallback? onWalletTap;
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -44,6 +52,8 @@ class HomeKpiGrid extends StatelessWidget {
                 icon: Icons.directions_car_rounded,
                 label: l10n.home2_kpiActive,
                 value: '$activeBookings',
+                onTap: onBookingsTap,
+                tileKey: const ValueKey('home-kpi-active'),
               ),
             ),
             const SizedBox(width: 10),
@@ -52,6 +62,8 @@ class HomeKpiGrid extends StatelessWidget {
                 icon: Icons.history_rounded,
                 label: l10n.profileTotalTrips,
                 value: '$totalTrips',
+                onTap: onBookingsTap,
+                tileKey: const ValueKey('home-kpi-trips'),
               ),
             ),
           ],
@@ -66,6 +78,8 @@ class HomeKpiGrid extends StatelessWidget {
                 value: walletTotal == null
                     ? '—'
                     : l10n.amountRs(formatRs(walletTotal!)),
+                onTap: onWalletTap,
+                tileKey: const ValueKey('home-kpi-wallet'),
               ),
             ),
             const SizedBox(width: 10),
@@ -77,6 +91,7 @@ class HomeKpiGrid extends StatelessWidget {
                     ? '—'
                     : '${trustScore!.toStringAsFixed(1)} ★',
                 onTap: onTrustTap,
+                tileKey: const ValueKey('home-kpi-trust'),
               ),
             ),
           ],
@@ -92,12 +107,14 @@ class _KpiTile extends StatelessWidget {
     required this.label,
     required this.value,
     this.onTap,
+    this.tileKey,
   });
 
   final IconData icon;
   final String label;
   final String value;
   final VoidCallback? onTap;
+  final ValueKey<String>? tileKey;
 
   @override
   Widget build(BuildContext context) {
@@ -135,7 +152,7 @@ class _KpiTile extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        key: const ValueKey('home-kpi-trust'),
+        key: tileKey ?? const ValueKey('home-kpi-trust'),
         onTap: onTap,
         borderRadius: BorderRadius.circular(14),
         child: tile,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../../core/di/injection_container.dart';
 import '../../../../../core/utils/money_format.dart';
+import '../../../../../core/widgets/app_state_views.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../fleet/domain/entities/fixed_route_entity.dart';
 import '../../../../fleet/domain/entities/vehicle_entity.dart';
@@ -76,7 +77,11 @@ class _PricingOutCityModesState extends State<PricingOutCityModes> {
       if (mounted) setState(() => _routesFailed = true);
       return;
     }
-    setState(() => _loadingRoutes = true);
+    // OW-m6: retry must clear the failure flag first.
+    setState(() {
+      _loadingRoutes = true;
+      _routesFailed = false;
+    });
     try {
       final routes = await sl<GetShopFixedRoutesUseCase>()(widget.shopId);
       if (!mounted) return;
@@ -125,7 +130,9 @@ class _PricingOutCityModesState extends State<PricingOutCityModes> {
           if (_loadingRoutes)
             const Center(child: Padding(padding: EdgeInsets.all(12), child: CircularProgressIndicator()))
           else if (_routesFailed)
-            Text(l10n.fixedRoutesLoadError, style: Theme.of(context).textTheme.bodyMedium)
+            // OW-m6: the old bare text had no recovery — the shared
+            // error state with retry.
+            AppErrorState(message: l10n.fixedRoutesLoadError, onRetry: _loadRoutes)
           else if (_routes.isEmpty)
             Text(l10n.outCityFixedRouteNone, style: Theme.of(context).textTheme.bodyMedium)
           else ...[

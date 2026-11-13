@@ -120,8 +120,6 @@ class AddVehicleSpecsStep extends StatelessWidget {
     required this.onFuelTypeChanged,
     required this.seats,
     required this.onSeatsChanged,
-    required this.hasAc,
-    required this.onAcChanged,
     required this.selectedFeatures,
     required this.onFeatureToggled,
   });
@@ -144,8 +142,6 @@ class AddVehicleSpecsStep extends StatelessWidget {
   final ValueChanged<String> onFuelTypeChanged;
   final int seats;
   final ValueChanged<int> onSeatsChanged;
-  final bool hasAc;
-  final ValueChanged<bool> onAcChanged;
   final Set<String> selectedFeatures;
   final ValueChanged<String> onFeatureToggled;
 
@@ -172,8 +168,6 @@ class AddVehicleSpecsStep extends StatelessWidget {
       onFuelTypeChanged: onFuelTypeChanged,
       seats: seats,
       onSeatsChanged: onSeatsChanged,
-      hasAc: hasAc,
-      onAcChanged: onAcChanged,
       selectedFeatures: selectedFeatures,
       onFeatureToggled: onFeatureToggled,
     );
@@ -382,7 +376,6 @@ class AddVehicleReviewStep extends StatelessWidget {
     required this.advance,
     required this.extraHour,
     required this.fuelPolicy,
-    required this.hasAc,
     this.documentNames = const [],
   });
 
@@ -405,7 +398,6 @@ class AddVehicleReviewStep extends StatelessWidget {
   final int advance;
   final int extraHour;
   final String fuelPolicy;
-  final bool hasAc;
   final List<String> documentNames;
 
   @override
@@ -430,7 +422,6 @@ class AddVehicleReviewStep extends StatelessWidget {
       advance: advance,
       extraHour: extraHour,
       fuelPolicy: fuelPolicy,
-      hasAc: hasAc,
       documentNames: documentNames,
     );
   }

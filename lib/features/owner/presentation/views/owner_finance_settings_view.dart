@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/app_state_views.dart';
 import '../../../../core/widgets/debounced_button.dart';
+import '../widgets/finance_settings_switch.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../finance/data/datasources/finance_settings_data_source.dart';
@@ -33,6 +34,17 @@ class _OwnerFinanceSettingsViewState extends State<OwnerFinanceSettingsView> {
   bool _isLoading = true;
   bool _isSaving = false;
   bool _hasError = false;
+  // OW-m9: dirty guard — the toggles + fields snapshot taken at load
+  // (and refreshed on save); back with edits asks first.
+  String _initialSnapshot = '';
+  bool _discardConfirmed = false;
+
+  String _snapshot() {
+    final s = _settings;
+    return '${_taxController.text}|${_serviceController.text}|${s?.paymentCash}|${s?.paymentBankTransfer}|${s?.paymentJazzCash}|${s?.paymentEasyPaisa}|${s?.autoSendReceipt}';
+  }
+
+  bool get _isDirty => _settings != null && _snapshot() != _initialSnapshot;
 
   @override
   void initState() {
@@ -55,6 +67,7 @@ class _OwnerFinanceSettingsViewState extends State<OwnerFinanceSettingsView> {
           _serviceController.text = settings.serviceChargePercent == 0
               ? ''
               : '${settings.serviceChargePercent}';
+          _initialSnapshot = _snapshot();
         });
       }
     } catch (_) {
@@ -75,6 +88,13 @@ class _OwnerFinanceSettingsViewState extends State<OwnerFinanceSettingsView> {
       AppFeedback.showError(context, l10n.financeSettingsInvalidPercent);
       return;
     }
+    // OW-m9: −5% or 250% used to save happily — percentages are
+    // clamped to 0–100 with a localized error.
+    if ((tax != null && (tax < 0 || tax > 100)) ||
+        (service != null && (service < 0 || service > 100))) {
+      AppFeedback.showError(context, l10n.financeSettingsPercentRange);
+      return;
+    }
     setState(() => _isSaving = true);
     try {
       await _settingsDs.saveSettings(current.copyWith(
@@ -82,12 +102,35 @@ class _OwnerFinanceSettingsViewState extends State<OwnerFinanceSettingsView> {
         serviceChargePercent: service ?? 0,
       ));
       if (mounted) {
+        _initialSnapshot = _snapshot();
         AppFeedback.showSuccess(context, l10n.financeSettingsSaved);
       }
     } catch (_) {
       if (mounted) AppFeedback.showError(context, l10n.shopSaveError);
     } finally {
       if (mounted) setState(() => _isSaving = false);
+    }
+  }
+
+  /// OW-m9: back with unsaved edits asks first (same dialog shape
+  /// as the rate matrix, generic wording).
+  Future<void> _handleBack() async {
+    if (!_isDirty) {
+      if (mounted) context.pop();
+      return;
+    }
+    final l10n = AppLocalizations.of(context)!;
+    final discard = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.unsavedChangesTitle),
+        content: Text(l10n.unsavedChangesBody),
+        actions: [TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: Text(l10n.cancel)), FilledButton(onPressed: () => Navigator.of(ctx).pop(true), child: Text(l10n.syncDiscard))],
+      ),
+    );
+    if (discard == true && mounted) {
+      setState(() => _discardConfirmed = true);
+      context.pop();
     }
   }
 
@@ -102,7 +145,12 @@ class _OwnerFinanceSettingsViewState extends State<OwnerFinanceSettingsView> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final settings = _settings;
-    return Scaffold(
+    return PopScope(
+      canPop: !_isDirty || _discardConfirmed,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) _handleBack();
+      },
+      child: Scaffold(
       body: SafeArea(
         top: false,
         child: Column(
@@ -152,7 +200,7 @@ class _OwnerFinanceSettingsViewState extends State<OwnerFinanceSettingsView> {
                                         labelText:
                                             l10n.financeSettingsTax,
                                         suffixText: '%',
-                                        border: const OutlineInputBorder()),
+                                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(16))),
                                   ),
                                   const SizedBox(height: 12),
                                   TextField(
@@ -164,53 +212,17 @@ class _OwnerFinanceSettingsViewState extends State<OwnerFinanceSettingsView> {
                                         labelText:
                                             l10n.financeSettingsServiceCharge,
                                         suffixText: '%',
-                                        border: const OutlineInputBorder()),
+                                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(16))),
                                   ),
                                   const SizedBox(height: 20),
                                   _sectionTitle(l10n.financeSettingsPaymentMethods),
-                                  SwitchListTile(
-                                    title: Text(l10n.financePaymentCash),
-                                    value: settings.paymentCash,
-                                    onChanged: (v) => setState(() =>
-                                        _settings = settings.copyWith(
-                                            paymentCash: v)),
-                                  ),
-                                  SwitchListTile(
-                                    title:
-                                        Text(l10n.financePaymentBank),
-                                    value: settings.paymentBankTransfer,
-                                    onChanged: (v) => setState(() =>
-                                        _settings = settings.copyWith(
-                                            paymentBankTransfer: v)),
-                                  ),
-                                  SwitchListTile(
-                                    title:
-                                        Text(l10n.financePaymentJazzCash),
-                                    value: settings.paymentJazzCash,
-                                    onChanged: (v) => setState(() =>
-                                        _settings = settings.copyWith(
-                                            paymentJazzCash: v)),
-                                  ),
-                                  SwitchListTile(
-                                    title:
-                                        Text(l10n.financePaymentEasyPaisa),
-                                    value: settings.paymentEasyPaisa,
-                                    onChanged: (v) => setState(() =>
-                                        _settings = settings.copyWith(
-                                            paymentEasyPaisa: v)),
-                                  ),
+                                  FinanceSettingsSwitch(title: l10n.financePaymentCash, value: settings.paymentCash, onChanged: (v) => setState(() => _settings = settings.copyWith(paymentCash: v))),
+                                  FinanceSettingsSwitch(title: l10n.financePaymentBank, value: settings.paymentBankTransfer, onChanged: (v) => setState(() => _settings = settings.copyWith(paymentBankTransfer: v))),
+                                  FinanceSettingsSwitch(title: l10n.financePaymentJazzCash, value: settings.paymentJazzCash, onChanged: (v) => setState(() => _settings = settings.copyWith(paymentJazzCash: v))),
+                                  FinanceSettingsSwitch(title: l10n.financePaymentEasyPaisa, value: settings.paymentEasyPaisa, onChanged: (v) => setState(() => _settings = settings.copyWith(paymentEasyPaisa: v))),
                                   const SizedBox(height: 20),
                                   _sectionTitle(l10n.financeSettingsReceipts),
-                                  SwitchListTile(
-                                    title: Text(
-                                        l10n.financeSettingsAutoReceipt),
-                                    subtitle: Text(
-                                        l10n.financeSettingsAutoReceiptNote),
-                                    value: settings.autoSendReceipt,
-                                    onChanged: (v) => setState(() =>
-                                        _settings = settings.copyWith(
-                                            autoSendReceipt: v)),
-                                  ),
+                                  FinanceSettingsSwitch(title: l10n.financeSettingsAutoReceipt, subtitle: l10n.financeSettingsAutoReceiptNote, value: settings.autoSendReceipt, onChanged: (v) => setState(() => _settings = settings.copyWith(autoSendReceipt: v))),
                                   const SizedBox(height: 20),
                                   DebouncedButton(
                                     text: l10n.financeSettingsSave,
@@ -223,6 +235,7 @@ class _OwnerFinanceSettingsViewState extends State<OwnerFinanceSettingsView> {
             ),
           ],
         ),
+      ),
       ),
     );
   }

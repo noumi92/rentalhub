@@ -237,15 +237,13 @@ void main() {
         screen: const CustomerWalletView(),
         theme: AppTheme.lightTheme,
       );
-      // E1: the balance and both escrow pills are masked by default —
-      // reveal all three so the 'Rs. 0' values are visible.
+      // E1: the balance is masked by default — reveal it through the
+      // one eye toggle so the 'Rs. 0' value is visible. CU-m6: the
+      // escrow pills carry no eye of their own any more and stay
+      // masked ('Rs. •'), so only the balance reads 'Rs. 0'.
       await tester.tap(find.byTooltip('Show balance'));
       await tester.pump();
-      await tester.tap(find.byTooltip('Show amount').first);
-      await tester.pump();
-      await tester.tap(find.byTooltip('Show amount').first);
-      await tester.pump();
-      expect(find.text('Rs. 0'), findsNWidgets(3)); // balance + 2 pills
+      expect(find.text('Rs. 0'), findsOneWidget); // balance only
     });
 
     testWidgets('Customer Support', (tester) async {
@@ -272,7 +270,7 @@ void main() {
       await TestHarness.pumpScreenMultiViewport(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         tester: tester,
-        screen: const OwnerDashboardView(),
+        screen: const OwnerDashboardView(shopId: 'shop-1'),
         theme: AppTheme.lightTheme,
       );
       expect(find.text('Showroom Revenue & Operations'), findsOneWidget);
@@ -292,7 +290,7 @@ void main() {
       await TestHarness.pumpScreenMultiViewport(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         tester: tester,
-        screen: const OwnerBookingRequestsView(),
+        screen: const OwnerBookingRequestsView(shopId: 'shop-1'),
         theme: AppTheme.lightTheme,
       );
       expect(find.text('Booking Requests Triage'), findsOneWidget);

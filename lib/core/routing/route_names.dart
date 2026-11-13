@@ -67,6 +67,8 @@ class RouteNames {
   static const String ownerRequests = '/owner/requests';
   static const String ownerRequestsDetail = '/owner/requests/:id';
   static const String ownerManualBooking = '/owner/manual-booking';
+  static const String ownerManualBookingConfirm =
+      '/owner/manual-booking/confirm';
   static const String ownerBookingConfirmed = '/owner/booking-confirmed/:id';
   static const String ownerPaymentProof = '/owner/payment/:id';
   static const String ownerHandover = '/owner/handover/:id';
@@ -81,6 +83,8 @@ class RouteNames {
   static const String ownerContract = '/owner/contract/:id';
   static const String ownerRateCustomer = '/owner/rate-customer/:id';
   static const String ownerCustomerScan = '/owner/customers/scan';
+  // OW-m22: the scan view pushed this path as a string literal.
+  static const String ownerCnicReview = '/owner/customers/cnic-review';
   static const String ownerAddCustomer = '/owner/customers/add';
   static const String ownerCustomers = '/owner/customers';
   // Audit impl finish (worker A): customer detail is LAST in the

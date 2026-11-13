@@ -66,14 +66,13 @@ class ActiveTripHandoverCard extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(label,
-            style: TextStyle(
-                fontSize: 13, color: Theme.of(context).colorScheme.onSurfaceVariant)),
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant)),
         Flexible(
           child: Text(value,
               textAlign: TextAlign.right,
-              style: const TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w700,
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
                   )),
         ),
       ],

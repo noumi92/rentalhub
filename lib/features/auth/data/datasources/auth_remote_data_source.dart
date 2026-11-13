@@ -33,6 +33,13 @@ class AuthRemoteDataSource {
   static const String _uidKey = 'rentalhub_user_uid';
   static const String _profilePhotoKey = 'rentalhub_user_profile_photo';
 
+  // Audit SH-N11: the Google OAuth client ID lived inline at the
+  // sign-in call. It is a PUBLIC client ID (not a secret — it ships
+  // in every OAuth redirect), but it is environment config, so it
+  // lives here as one named constant instead of a string literal.
+  static const String googleServerClientId =
+      '139498327816-k5sjvum2hpuo30oiooh7u6ap8nsu71m7.apps.googleusercontent.com';
+
   bool get isLoggedIn => prefs.getBool(_isLoggedInKey) ?? (auth?.currentUser != null);
   bool get isOnboardingCompleted => prefs.getBool(_onboardingCompletedKey) ?? false;
   String? get lockedRole => prefs.getString(_roleKey);
@@ -86,11 +93,13 @@ class AuthRemoteDataSource {
     await prefs.setString(_fullNameKey, fullName.trim());
     await prefs.setString(_phoneKey, phone.trim());
 
-    String uid = 'usr_pk_001';
-    if (auth?.currentUser != null) {
-      uid = auth!.currentUser!.uid;
-    } else if (prefs.getString(_uidKey) != null) {
-      uid = prefs.getString(_uidKey)!;
+    // Audit SH-C1: there is no demo fallback uid any more. Saving a
+    // profile with no signed-in user and no cached uid used to file
+    // the record under a hardcoded demo identity. That path now
+    // fails closed instead.
+    final uid = auth?.currentUser?.uid ?? prefs.getString(_uidKey);
+    if (uid == null || uid.isEmpty) {
+      throw const ServerException(message: 'Authentication unavailable');
     }
 
     String? photoUrl = prefs.getString(_profilePhotoKey);
@@ -137,7 +146,10 @@ class AuthRemoteDataSource {
       profilePhotoUrl: photoUrl ?? existingUser?.profilePhotoUrl,
       role: prefs.getString(_roleKey) ?? existingUser?.role,
       isVerified: existingUser?.isVerified ?? false,
-      trustScore: existingUser?.trustScore ?? 5.0,
+      // Audit SH-M5: the stored score is only the offline fallback
+      // for the live computation — it defaults to 3.5 (a verified
+      // new customer), never 5.0 (a perfect record).
+      trustScore: existingUser?.trustScore ?? 3.5,
       totalTrips: existingUser?.totalTrips ?? 0,
       isOnboardingCompleted: isOnboardingCompleted || (existingUser?.isOnboardingCompleted ?? false),
     );
@@ -159,58 +171,73 @@ class AuthRemoteDataSource {
   });
 
   Future<UserModel> signInWithGoogle() async {
-    String uid = prefs.getString(_uidKey) ?? 'usr_pk_001';
-    String email = prefs.getString(_emailKey) ?? 'ahmed.raza@rentalhub.pk';
-    String fullName = prefs.getString(_fullNameKey) ?? 'Ahmed Raza';
+    // Audit SH-C1 (Critical): this method used to start from hardcoded
+    // demo fallbacks (a demo uid, a demo email, a demo name) and run
+    // the real Google flow only `if (auth != null)` — with no
+    // FirebaseAuth it skipped the flow entirely and still persisted
+    // `_isLoggedInKey = true` and returned a UserModel for the fake
+    // identity. Any credentials signed in as the demo user. The method
+    // now fails closed: no FirebaseAuth, no sign-in.
+    final firebaseAuth = auth;
+    if (firebaseAuth == null) {
+      throw const ServerException(message: 'Authentication unavailable');
+    }
 
-    if (auth != null) {
-      try {
-        final GoogleSignIn googleSignIn = GoogleSignIn(
-          serverClientId: '139498327816-k5sjvum2hpuo30oiooh7u6ap8nsu71m7.apps.googleusercontent.com',
-        );
-        final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
-        if (googleUser == null) {
-          throw const ServerException(message: 'Google Sign-In was cancelled.');
-        }
-
-        final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-        final fb.AuthCredential credential = fb.GoogleAuthProvider.credential(
-          accessToken: googleAuth.accessToken,
-          idToken: googleAuth.idToken,
-        );
-
-        final userCredential = await auth!.signInWithCredential(credential);
-        if (userCredential.user != null) {
-          final fbUser = userCredential.user!;
-          uid = fbUser.uid;
-          email = fbUser.email ?? email;
-          fullName = fbUser.displayName ?? (fullName.isNotEmpty ? fullName : 'RentalHub User');
-        }
-      } on fb.FirebaseAuthException catch (e) {
-        throw ServerException(message: e.message ?? 'Google Sign-In failed via Firebase.');
-      } on PlatformException catch (e) {
-        debugPrint('Google Sign-In PlatformException: code=${e.code}, message=${e.message}, details=${e.details}');
-        final msg = e.message ?? '';
-        if (e.code == 'sign_in_canceled' || msg.contains('12501')) {
-          throw const ServerException(message: 'Google Sign-In was cancelled.');
-        } else if (msg.contains('10')) {
-          throw const ServerException(
-            message: 'Google Sign-In configuration error (ApiException: 10). Ensure the app with package com.primedigit.renthub.rent_hub is running and clean installed.',
-          );
-        } else if (msg.contains('12500')) {
-          throw const ServerException(
-            message: 'Google Sign-In failed (ApiException: 12500). Please ensure Support Email is set in Firebase Console Settings.',
-          );
-        } else if (msg.contains('7')) {
-          throw const ServerException(
-            message: 'Network error during Google Sign-In. Please check your internet connection.',
-          );
-        }
-        throw ServerException(message: 'Google Sign-In failed: ${e.message ?? e.code}');
-      } catch (e) {
-        if (e is ServerException) rethrow;
-        throw ServerException(message: 'Google Sign-In failed: $e');
+    late final String uid;
+    late final String email;
+    late final String fullName;
+    try {
+      final GoogleSignIn googleSignIn = GoogleSignIn(
+        serverClientId: googleServerClientId,
+      );
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+      if (googleUser == null) {
+        throw const ServerException(message: 'Google Sign-In was cancelled.');
       }
+
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+      final fb.AuthCredential credential = fb.GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      final userCredential =
+          await firebaseAuth.signInWithCredential(credential);
+      final fbUser = userCredential.user;
+      if (fbUser == null) {
+        throw const ServerException(message: 'Google Sign-In failed.');
+      }
+      uid = fbUser.uid;
+      email = fbUser.email ?? '';
+      fullName = fbUser.displayName ?? 'RentalHub User';
+    } on fb.FirebaseAuthException catch (e) {
+      throw ServerException(message: e.message ?? 'Google Sign-In failed via Firebase.');
+    } on PlatformException catch (e) {
+      debugPrint('Google Sign-In PlatformException: code=${e.code}, message=${e.message}, details=${e.details}');
+      final msg = e.message ?? '';
+      if (e.code == 'sign_in_canceled' || msg.contains('12501')) {
+        throw const ServerException(message: 'Google Sign-In was cancelled.');
+      } else if (msg.contains('10')) {
+        throw const ServerException(
+          // Audit SH-N11: the package in this message was the OLD app
+          // (com.primedigit.renthub.rent_hub); the current package is
+          // pk.rentalhub.rentalhub, so the advice was wrong.
+          message: 'Google Sign-In configuration error (ApiException: 10). Ensure the app with package pk.rentalhub.rentalhub is running and clean installed.',
+        );
+      } else if (msg.contains('12500')) {
+        throw const ServerException(
+          message: 'Google Sign-In failed (ApiException: 12500). Please ensure Support Email is set in Firebase Console Settings.',
+        );
+      } else if (msg.contains('7')) {
+        throw const ServerException(
+          message: 'Network error during Google Sign-In. Please check your internet connection.',
+        );
+      }
+      throw ServerException(message: 'Google Sign-In failed: ${e.message ?? e.code}');
+    } catch (e) {
+      if (e is ServerException) rethrow;
+      throw ServerException(message: 'Google Sign-In failed: $e');
     }
 
     await prefs.setString(_emailKey, email);
@@ -236,7 +263,12 @@ class AuthRemoteDataSource {
       profilePhotoUrl: prefs.getString(_profilePhotoKey) ?? existingUser?.profilePhotoUrl,
       role: existingRole ?? existingUser?.role,
       isVerified: existingUser?.isVerified ?? false,
-      trustScore: existingUser?.trustScore ?? 5.0,
+      // Audit SH-M5: a first-time Google sign-in used to persist
+      // trustScore 5.0 — the top of the scale — before the customer
+      // had done anything. The live computation owns the score (a
+      // verified new customer is 3.5); the stored value is only the
+      // offline fallback, so it defaults to 3.5, never 5.0.
+      trustScore: existingUser?.trustScore ?? 3.5,
       totalTrips: existingUser?.totalTrips ?? 0,
       isOnboardingCompleted: isOnboardingCompleted || (existingUser?.isOnboardingCompleted ?? false),
     );
@@ -254,6 +286,15 @@ class AuthRemoteDataSource {
     required String email,
     required String password,
   }) async {
+    // Audit SH-C1 (Critical): this method used to default the uid to
+    // a hardcoded demo identity and check Firebase only `if
+    // (auth != null)` — with no FirebaseAuth, ANY email + any
+    // ≥6-character password signed in as the demo user. No
+    // FirebaseAuth, no sign-in.
+    if (auth == null) {
+      throw const ServerException(message: 'Authentication unavailable');
+    }
+
     final trimmedEmail = email.trim();
     if (trimmedEmail.isEmpty || password.length < 6) {
       throw const ServerException(
@@ -261,48 +302,47 @@ class AuthRemoteDataSource {
       );
     }
 
-    String uid = 'usr_pk_001';
-
-    // If live FirebaseAuth is available, authenticate strictly against registered Firebase accounts
-    if (auth != null) {
-      try {
-        final credential = await auth!.signInWithEmailAndPassword(
-          email: trimmedEmail,
-          password: password,
-        );
-        if (credential.user != null) {
-          uid = credential.user!.uid;
-        }
-      } on fb.FirebaseAuthException catch (e) {
-        if (e.code == 'user-not-found') {
-          throw const ServerException(
-            message: 'No registered account found with this email. Please check your email or contact support.',
-          );
-        } else if (e.code == 'wrong-password') {
-          throw const ServerException(
-            message: 'Incorrect password. Please try again.',
-          );
-        } else if (e.code == 'invalid-credential') {
-          throw const ServerException(
-            message: 'Invalid email or password. Please verify your credentials.',
-          );
-        } else if (e.code == 'invalid-email') {
-          throw const ServerException(
-            message: 'Invalid email address format.',
-          );
-        } else if (e.code == 'user-disabled') {
-          throw const ServerException(
-            message: 'This user account has been disabled.',
-          );
-        } else {
-          throw ServerException(
-            message: e.message ?? 'Firebase authentication failed.',
-          );
-        }
-      } catch (e) {
-        if (e is ServerException) rethrow;
-        throw ServerException(message: 'Authentication error: $e');
+    // Authenticate strictly against registered Firebase accounts.
+    late final String uid;
+    try {
+      final credential = await auth!.signInWithEmailAndPassword(
+        email: trimmedEmail,
+        password: password,
+      );
+      final signedInUser = credential.user;
+      if (signedInUser == null) {
+        throw const ServerException(message: 'Authentication failed.');
       }
+      uid = signedInUser.uid;
+    } on fb.FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        throw const ServerException(
+          message: 'No registered account found with this email. Please check your email or contact support.',
+        );
+      } else if (e.code == 'wrong-password') {
+        throw const ServerException(
+          message: 'Incorrect password. Please try again.',
+        );
+      } else if (e.code == 'invalid-credential') {
+        throw const ServerException(
+          message: 'Invalid email or password. Please verify your credentials.',
+        );
+      } else if (e.code == 'invalid-email') {
+        throw const ServerException(
+          message: 'Invalid email address format.',
+        );
+      } else if (e.code == 'user-disabled') {
+        throw const ServerException(
+          message: 'This user account has been disabled.',
+        );
+      } else {
+        throw ServerException(
+          message: e.message ?? 'Firebase authentication failed.',
+        );
+      }
+    } catch (e) {
+      if (e is ServerException) rethrow;
+      throw ServerException(message: 'Authentication error: $e');
     }
 
     await prefs.setString(_emailKey, trimmedEmail);
@@ -323,7 +363,9 @@ class AuthRemoteDataSource {
       profilePhotoUrl: prefs.getString(_profilePhotoKey) ?? existingUser?.profilePhotoUrl,
       role: existingRole ?? existingUser?.role,
       isVerified: existingUser?.isVerified ?? false,
-      trustScore: existingUser?.trustScore ?? 5.0,
+      // Audit SH-M5: see signInWithGoogle — the stored score is only
+      // the offline fallback; it defaults to 3.5, never 5.0.
+      trustScore: existingUser?.trustScore ?? 3.5,
       totalTrips: existingUser?.totalTrips ?? 0,
       isOnboardingCompleted: isOnboardingCompleted || (existingUser?.isOnboardingCompleted ?? false),
     );
@@ -362,7 +404,13 @@ class AuthRemoteDataSource {
       await prefs.setBool(_onboardingCompletedKey, true);
     }
 
-    final uid = prefs.getString(_uidKey) ?? 'usr_pk_001';
+    // Audit SH-C1: locking a role with no signed-in user and no
+    // cached uid used to file the record under a hardcoded demo
+    // identity. That path now fails closed instead.
+    final uid = auth?.currentUser?.uid ?? prefs.getString(_uidKey);
+    if (uid == null || uid.isEmpty) {
+      throw const ServerException(message: 'Authentication unavailable');
+    }
     final existingUser = firestoreService != null ? await firestoreService!.getUser(uid) : null;
     final user = UserModel(
       uid: uid,
@@ -372,7 +420,8 @@ class AuthRemoteDataSource {
       profilePhotoUrl: prefs.getString(_profilePhotoKey) ?? existingUser?.profilePhotoUrl,
       role: role,
       isVerified: existingUser?.isVerified ?? false,
-      trustScore: existingUser?.trustScore ?? 5.0,
+      // Audit SH-M5: see signInWithGoogle — 3.5, never 5.0.
+      trustScore: existingUser?.trustScore ?? 3.5,
       totalTrips: existingUser?.totalTrips ?? 0,
       isOnboardingCompleted: isOnboardingCompleted,
     );
@@ -390,7 +439,10 @@ class AuthRemoteDataSource {
   Future<UserModel?> getCurrentUser() async {
     if (!isLoggedIn) return null;
     final role = prefs.getString(_roleKey);
-    final uid = prefs.getString(_uidKey) ?? (auth?.currentUser?.uid ?? 'usr_pk_001');
+    // Audit SH-C1: no demo fallback uid — with no cached uid and no
+    // signed-in Firebase user there is no current user to return.
+    final uid = prefs.getString(_uidKey) ?? auth?.currentUser?.uid;
+    if (uid == null || uid.isEmpty) return null;
 
     if (firestoreService != null) {
       final remoteUser = await firestoreService!.getUser(uid);
@@ -405,7 +457,8 @@ class AuthRemoteDataSource {
       profilePhotoUrl: prefs.getString(_profilePhotoKey),
       role: role,
       isVerified: false,
-      trustScore: 5.0,
+      // Audit SH-M5: the offline fallback score is 3.5, never 5.0.
+      trustScore: 3.5,
       totalTrips: 0,
       isOnboardingCompleted: isOnboardingCompleted,
     );

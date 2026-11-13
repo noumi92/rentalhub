@@ -22,10 +22,10 @@ import 'package:flutter_test/flutter_test.dart';
 // Phase C/D shrank the other two D19 files to the cap or below:
 // `owner_onboarding_view.dart` is now 250 and
 // `customer_dispute_view.dart` is now 192, so they leave this map.
-// Only `owner_add_vehicle_view.dart` (259) is still over the cap.
-const Map<String, int> kOverLimitViews = {
-  'lib/features/owner/presentation/views/owner_add_vehicle_view.dart': 259,
-};
+// RQ-F17 (2026-11-13) split the last one — `owner_add_vehicle_view.dart`
+// went 259 -> 257 -> 248 (doc-names helper extracted) — so the map is
+// empty: no view is over the cap any more (D19 RESOLVED).
+const Map<String, int> kOverLimitViews = {};
 
 // Rulebook §2.2 / D1–D3: the mock flow views, with line counts at
 // `af8c73c`. They must be replaced and deleted, one item at a time.

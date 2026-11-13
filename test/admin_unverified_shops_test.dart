@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:rentalhub/core/auth/signed_in_user.dart';
 import 'package:rentalhub/core/di/injection_container.dart' as di;
 import 'package:rentalhub/core/error/exceptions.dart';
 import 'package:rentalhub/features/admin/data/datasources/admin_support_data_source.dart';
@@ -75,6 +76,19 @@ void main() {
     TestWidgetsFlutterBinding.ensureInitialized();
     SharedPreferences.setMockInitialValues({});
     await di.initDependencies();
+    // CU-M12 / CU-m3: the review submit files the request under the
+    // signed-in user and refuses a signed-out caller. Widget tests
+    // cannot sign a Firebase user in, so stand in as 'cust-101' via
+    // the SignedInUser test override.
+    SignedInUser.override = const SignedInUserData(
+      uid: 'cust-101',
+      displayName: 'Ahmed Raza',
+      phoneNumber: '03001234567',
+    );
+  });
+
+  tearDownAll(() {
+    SignedInUser.override = null;
   });
 
   group('PlatformSettings — unverified-shop toggles', () {

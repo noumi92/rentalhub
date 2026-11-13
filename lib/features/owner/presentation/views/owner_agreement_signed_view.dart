@@ -9,8 +9,10 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/widgets/app_feedback.dart';
+import '../../../../core/widgets/app_state_views.dart';
 import '../../../../core/widgets/debounced_button.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
+import '../../../../core/widgets/success_banner.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
 import '../../../handover/data/datasources/handover_local_data_source.dart';
@@ -42,6 +44,10 @@ class OwnerAgreementSignedView extends StatefulWidget {
 class _OwnerAgreementSignedViewState extends State<OwnerAgreementSignedView> {
   Uint8List? _pdfBytes;
   bool _loadingPdf = true;
+  // OW-m26: a failed PDF load used to fail silently (empty catch) and
+  // the Download button only failed later with the generic
+  // "unavailable" message. The failure is now surfaced with a retry.
+  bool _pdfFailed = false;
 
   @override
   void initState() {
@@ -50,12 +56,15 @@ class _OwnerAgreementSignedViewState extends State<OwnerAgreementSignedView> {
   }
 
   Future<void> _loadPdf() async {
+    if (mounted) setState(() => _pdfFailed = false);
     try {
       final handover = await sl<HandoverLocalDataSource>()
           .getHandover(widget.booking.bookingId);
       final b64 = handover?.agreementPdfB64;
       if (mounted && b64 != null) setState(() => _pdfBytes = base64Decode(b64));
-    } catch (_) {}
+    } catch (_) {
+      if (mounted) setState(() => _pdfFailed = true);
+    }
     if (mounted) setState(() => _loadingPdf = false);
   }
 
@@ -140,38 +149,22 @@ class _OwnerAgreementSignedViewState extends State<OwnerAgreementSignedView> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Container(
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: Colors.green.shade50,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: Colors.green.shade200),
-                      ),
-                      child: Column(
-                        children: [
-                          Icon(Icons.check_circle_rounded,
-                              size: 56, color: Colors.green.shade700),
-                          const SizedBox(height: 12),
-                          Text(
-                            l10n.agreementSignedBanner,
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleLarge
-                                ?.copyWith(
-                                  fontWeight: FontWeight.w900,
-                                  color: Colors.green.shade800,
-                                ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            l10n.agreementSignedSubtitle,
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                        ],
-                      ),
+                    // OW-M5: the shared brightness-aware banner (was a
+                    // fixed-light green slab with a theme subtitle,
+                    // invisible in dark mode).
+                    SuccessBanner(
+                      title: l10n.agreementSignedBanner,
+                      lines: [l10n.agreementSignedSubtitle],
                     ),
+                    // OW-m26: the PDF never loaded — say so with a
+                    // retry instead of letting Download fail later.
+                    if (_pdfFailed) ...[
+                      const SizedBox(height: 12),
+                      AppErrorState(
+                        message: l10n.contractPdfUnavailable,
+                        onRetry: _loadPdf,
+                      ),
+                    ],
                     const SizedBox(height: 20),
                     DebouncedButton(
                       text: l10n.agreementSignedDownloadPdf,

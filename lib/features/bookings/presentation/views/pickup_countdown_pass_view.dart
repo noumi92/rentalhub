@@ -38,12 +38,15 @@ class PickupCountdownPassView extends StatelessWidget {
                   children: [
                     PickupCountdownTimer(
                       targetPickupTime: booking.pickupTime,
+                      overdueLabel: l10n.countdownPickupReached,
                     ),
                     const SizedBox(height: 16),
                     DigitalQrPassWidget(
                       bookingId: booking.bookingId,
                       vehicleName: booking.vehicleName ?? l10n.passRentalVehicle,
-                      plateNumber: booking.vehiclePlate ?? 'PAK-786',
+                      // CU-M12: a missing plate renders '—', never a
+                      // fake 'PAK-786'.
+                      plateNumber: booking.vehiclePlate ?? '—',
                       shopName: booking.shopName ?? l10n.rentalShowroom,
                       pickupTime: booking.pickupTime,
                     ),
@@ -61,9 +64,9 @@ class PickupCountdownPassView extends StatelessWidget {
             ),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                boxShadow: [
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surface,
+                boxShadow: const [
                   BoxShadow(
                       color: Color(0x14000000),
                       blurRadius: 10,

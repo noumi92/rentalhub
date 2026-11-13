@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/utils/money_format.dart';
+import '../../../../core/routing/route_names.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/debounced_button.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
@@ -9,10 +9,13 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../bookings/utils/package_pricing.dart';
 import '../../../fleet/domain/entities/fixed_route_entity.dart';
 import '../../../fleet/domain/entities/vehicle_entity.dart';
+import '../services/manual_booking_whatsapp.dart';
 import '../services/walk_in_booking_service.dart';
 import '../widgets/guarantor_picker.dart';
 import '../widgets/manual_booking_fare_summary.dart';
+import '../widgets/manual_booking_out_city_extras.dart';
 import '../widgets/manual_booking_package_selector.dart';
+import '../widgets/manual_booking_whatsapp_toggle.dart';
 import '../widgets/operations/booking_fare_breakdown.dart';
 
 /// Audit §5 item 1 (O17 p.7): the confirm step the manual flow was
@@ -57,34 +60,18 @@ class OwnerManualBookingConfirmView extends StatefulWidget {
   final VoidCallback? onBack;
 
   /// Opens the confirm step for a validated manual booking draft.
+  /// RQ-F8: routed through go_router (the draft travels via `state.extra`, same pattern as the CNIC-review route) instead of a bare `Navigator.push`, so the step is deep-linkable and appears in the route table.
   static void open(
     BuildContext context, {
-    required String customerName,
-    required String customerPhone,
-    required String customerCnic,
-    GuarantorSelection? guarantor,
-    required VehicleEntity vehicle,
-    required VehiclePackageEntity package,
-    required bool isWithDriver,
-    required bool isOutOfCity,
-    required DateTime pickupTime,
-    required DateTime returnTime,
-    FixedRouteEntity? fixedRoute,
+    required String customerName, required String customerPhone, required String customerCnic, GuarantorSelection? guarantor,
+    required VehicleEntity vehicle, required VehiclePackageEntity package, required bool isWithDriver, required bool isOutOfCity,
+    required DateTime pickupTime, required DateTime returnTime, FixedRouteEntity? fixedRoute,
   }) {
-    Navigator.of(context).push(MaterialPageRoute(
-        builder: (_) => OwnerManualBookingConfirmView(
-              customerName: customerName,
-              customerPhone: customerPhone,
-              customerCnic: customerCnic,
-              guarantor: guarantor,
-              vehicle: vehicle,
-              package: package,
-              isWithDriver: isWithDriver,
-              isOutOfCity: isOutOfCity,
-              pickupTime: pickupTime,
-              returnTime: returnTime,
-              fixedRoute: fixedRoute,
-            )));
+    context.push(RouteNames.ownerManualBookingConfirm, extra: <String, dynamic>{
+      'customerName': customerName, 'customerPhone': customerPhone, 'customerCnic': customerCnic, 'guarantor': guarantor,
+      'vehicle': vehicle, 'package': package, 'isWithDriver': isWithDriver, 'isOutOfCity': isOutOfCity,
+      'pickupTime': pickupTime, 'returnTime': returnTime, 'fixedRoute': fixedRoute,
+    });
   }
 
   @override
@@ -96,6 +83,16 @@ class _OwnerManualBookingConfirmViewState
     extends State<OwnerManualBookingConfirmView> {
   late final TextEditingController _advanceController;
   bool _isCreating = false;
+
+  /// RQ-F9 (O17 p.7): "Send WhatsApp confirmation" — OFF by
+  /// default. When ON, confirming opens the owner's WhatsApp with
+  /// the confirmation pre-written (the booking-confirmed wa.me
+  /// pattern); nothing is sent automatically — the owner taps send,
+  /// and WhatsApp sending stays gated on D2.
+  bool _sendWhatsapp = false;
+
+  // OW-m23: inline advance validation — garbage in the advance field used to be silently clamped to Rs. 0 on confirm.
+  String? _advanceError;
 
   /// Nights away from the home city: days − 1 (a 1-day trip has
   /// 0 nights). Only out-of-city WITH-DRIVER trips stay over.
@@ -111,17 +108,13 @@ class _OwnerManualBookingConfirmViewState
 
   int get _advanceRequired => PackagePricing.advanceFor(vehicle: widget.vehicle, total: _total);
 
-  int get _advanceReceived {
-    final parsed = int.tryParse(_advanceController.text.trim());
-    return parsed == null ? 0 : parsed.clamp(0, _total);
-  }
+  int get _advanceReceived => (int.tryParse(_advanceController.text.trim()) ?? 0).clamp(0, _total);
 
   @override
   void initState() {
     super.initState();
     _advanceController = TextEditingController();
-    // Prefilled with the package advance; 0 is allowed (the booking
-    // is then approved, not paid, with the full balance still due).
+    // Prefilled with the package advance; 0 is allowed (the booking is then approved, not paid, with the full balance still due).
     _advanceController.text = _advanceRequired.toString();
     _advanceController.addListener(() { if (mounted) setState(() {}); });
   }
@@ -134,26 +127,25 @@ class _OwnerManualBookingConfirmViewState
 
   Future<void> _confirm() async {
     final l10n = AppLocalizations.of(context)!;
-    setState(() => _isCreating = true);
+    // OW-m23: a non-empty unparseable or negative advance blocks the confirm instead of silently becoming Rs. 0.
+    final advanceText = _advanceController.text.trim();
+    final advanceParsed = int.tryParse(advanceText);
+    if ((advanceText.isNotEmpty && advanceParsed == null) || (advanceParsed != null && advanceParsed < 0)) { setState(() => _advanceError = l10n.manualBookingAdvanceInvalid); return; }
+    setState(() { _advanceError = null; _isCreating = true; });
     try {
       final booking = await WalkInBookingService.createWalkInBooking(
-        name: widget.customerName,
-        phone: widget.customerPhone,
-        cnic: widget.customerCnic,
-        guarantor: widget.guarantor,
-        vehicle: widget.vehicle,
-        package: widget.package,
-        isWithDriver: widget.isWithDriver,
-        rentAmount: _total,
-        advanceRequired: _advanceRequired,
-        pickupTime: widget.pickupTime,
-        returnTime: widget.returnTime,
-        tripType: widget.isOutOfCity ? 'out_of_city' : 'in_city',
-        fixedRoute: widget.fixedRoute,
-        advanceReceived: _advanceReceived,
+        name: widget.customerName, phone: widget.customerPhone, cnic: widget.customerCnic, guarantor: widget.guarantor,
+        vehicle: widget.vehicle, package: widget.package, isWithDriver: widget.isWithDriver, rentAmount: _total,
+        advanceRequired: _advanceRequired, pickupTime: widget.pickupTime, returnTime: widget.returnTime,
+        tripType: widget.isOutOfCity ? 'out_of_city' : 'in_city', fixedRoute: widget.fixedRoute, advanceReceived: _advanceReceived,
       );
+      if (!mounted) return;
+      AppFeedback.showSuccess(context, l10n.manualBookingRegistered(booking.bookingId));
+      // RQ-F9: when the toggle is ON, open the owner's WhatsApp with the confirmation pre-written (best-effort — the booking is already created; the confirmed screen also offers it).
+      if (_sendWhatsapp) {
+        await sendManualBookingWhatsappConfirmation(context, customerName: widget.customerName, customerPhone: widget.customerPhone, vehicleName: widget.vehicle.displayName, pickupTime: widget.pickupTime, total: _total);
+      }
       if (mounted) {
-        AppFeedback.showSuccess(context, l10n.manualBookingRegistered(booking.bookingId));
         context.pushReplacement('/owner/booking-confirmed/${booking.bookingId}');
       }
     } catch (e) {
@@ -179,34 +171,14 @@ class _OwnerManualBookingConfirmViewState
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     ManualBookingFareSummary(
-                      vehicle: widget.vehicle,
-                      package: widget.package,
-                      isWithDriver: widget.isWithDriver,
-                      isOutOfCity: widget.isOutOfCity,
-                      pickupTime: widget.pickupTime,
-                      returnTime: widget.returnTime,
-                      customerName: widget.customerName,
-                      advanceReceived: _advanceReceived,
-                      fixedRoute: widget.fixedRoute,
+                      vehicle: widget.vehicle, package: widget.package, isWithDriver: widget.isWithDriver, isOutOfCity: widget.isOutOfCity,
+                      pickupTime: widget.pickupTime, returnTime: widget.returnTime, customerName: widget.customerName,
+                      advanceReceived: _advanceReceived, fixedRoute: widget.fixedRoute,
                     ),
-                    // Out-of-city extras: the night-stay component
-                    // of the total above (totalFor folds it in),
-                    // plus the tolls note.
+                    // Out-of-city extras: the night-stay component of the total above (totalFor folds it in), plus the tolls note.
                     if (widget.isOutOfCity) ...[
                       const SizedBox(height: 12),
-                      Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(14),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              if (_nightStay > 0)
-                                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Flexible(child: Text(l10n.bookingFareNightStay(_nights))), Text(l10n.amountRs(formatRs(_nightStay)), style: const TextStyle(fontWeight: FontWeight.w800))]),
-                              Text(widget.vehicle.tollsPaidBy == 'included' ? l10n.bookingFareTollsIncluded : l10n.bookingFareTollsCustomer, style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
-                            ],
-                          ),
-                        ),
-                      ),
+                      ManualBookingOutCityExtras(nights: _nights, nightStay: _nightStay, tollsIncluded: widget.vehicle.tollsPaidBy == 'included'),
                     ],
                     const SizedBox(height: 16),
                     TextField(
@@ -220,9 +192,13 @@ class _OwnerManualBookingConfirmViewState
                         fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Theme.of(context).dividerColor)),
                         contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                        errorText: _advanceError,
                       ),
                     ),
                     const SizedBox(height: 20),
+                    // RQ-F9: manual WhatsApp confirmation toggle.
+                    ManualBookingWhatsappToggle(value: _sendWhatsapp, onChanged: (v) => setState(() => _sendWhatsapp = v)),
+                    const SizedBox(height: 8),
                     DebouncedButton(
                       text: _isCreating ? l10n.manualBookingCreating : l10n.manualBookingConfirmBooking,
                       icon: Icons.check_circle_rounded,

@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
-import 'package:share_plus/share_plus.dart';
 
 import '../../../../core/utils/money_format.dart';
-import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/debounced_button.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -14,9 +11,12 @@ import 'owner_vehicle_published_view.dart';
 /// Audit §5 finish (P4-O06): share one vehicle with customers.
 /// Step 1 of 2 — pick the price to share (Daily / Weekly / Monthly,
 /// all read from the vehicle's real packages and rates). Step 2 —
-/// review the link and share it or copy it. The link is the agreed
-/// public listing address; the web landing page behind it does not
-/// exist yet, and the screen says so honestly instead of faking it.
+/// review the link and share it or copy it. RQ-F1 (2026-11-13): the
+/// step-2 Share / Copy Link actions are DISABLED until the web
+/// landing page behind the link exists — the link is the agreed
+/// public listing address, not a live page, and the screen says so
+/// honestly instead of faking it. (The copy/share helpers live in
+/// git history; restore them once the landing page is live.)
 class OwnerShareWithCustomersView extends StatefulWidget {
   final VehicleEntity vehicle;
   final VoidCallback? onBack;
@@ -37,14 +37,16 @@ class _OwnerShareWithCustomersViewState
   int _step = 1;
   String _period = 'Daily';
 
-  int _priceOf(String label) {
+  /// OW-m17: null when the package is missing — the UI renders "—"
+  /// instead of a confident "Rs. 0" for a price that is unknown.
+  int? _priceOf(String label) {
     for (final p in widget.vehicle.effectivePackages) {
       if (p.label == label) return p.pricePkr;
     }
-    return 0;
+    return null;
   }
 
-  int get _selectedPrice => switch (_period) {
+  int? get _selectedPrice => switch (_period) {
         'Weekly' => _priceOf('Weekly'),
         'Monthly' => _priceOf('Monthly'),
         _ => widget.vehicle.rates.daily24,
@@ -68,24 +70,12 @@ class _OwnerShareWithCustomersViewState
     }
   }
 
-  Future<void> _copyLink(BuildContext context) async {
-    final l10n = AppLocalizations.of(context)!;
-    await Clipboard.setData(ClipboardData(text: OwnerVehiclePublishedView.listingLink(widget.vehicle.vehicleId)));
-    if (context.mounted) AppFeedback.showSuccess(context, l10n.vehiclePublishedLinkCopied);
-  }
-
-  Future<void> _shareListing(BuildContext context) async {
-    final l10n = AppLocalizations.of(context)!;
-    final link = OwnerVehiclePublishedView.listingLink(widget.vehicle.vehicleId);
-    await SharePlus.instance.share(ShareParams(text: l10n.shareWithCustomersText(widget.vehicle.displayName, l10n.amountRs(formatRs(_selectedPrice)), _periodLabel(l10n), link)));
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final v = widget.vehicle;
     final link = OwnerVehiclePublishedView.listingLink(v.vehicleId);
-    final periods = <(String, String, int)>[
+    final periods = <(String, String, int?)>[
       ('Daily', l10n.ratesCustomPeriodDaily, v.rates.daily24),
       ('Weekly', l10n.ratesCustomPeriodWeekly, _priceOf('Weekly')),
       ('Monthly', l10n.ratesCustomPeriodMonthly, _priceOf('Monthly')),
@@ -131,7 +121,7 @@ class _OwnerShareWithCustomersViewState
                                     child: RadioListTile<String>(
                                       value: key,
                                       title: Text(row.$2, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800)),
-                                      subtitle: Text(l10n.amountRs(formatRs(row.$3)), style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900)),
+                                      subtitle: Text(row.$3 == null ? '—' : l10n.amountRs(formatRs(row.$3!)), style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900)),
                                     ),
                                   );
                                 }),
@@ -163,7 +153,7 @@ class _OwnerShareWithCustomersViewState
                                               fontWeight: FontWeight.w900)),
                                   const SizedBox(height: 6),
                                   Text(
-                                      '${_periodLabel(l10n)}: ${l10n.amountRs(formatRs(_selectedPrice))}',
+                                      '${_periodLabel(l10n)}: ${_selectedPrice == null ? '—' : l10n.amountRs(formatRs(_selectedPrice!))}',
                                       style: Theme.of(context)
                                           .textTheme
                                           .titleMedium
@@ -210,16 +200,22 @@ class _OwnerShareWithCustomersViewState
                     )
                   : Column(
                       children: [
-                        DebouncedButton(
-                          text: l10n.vehiclePublishedShareListing,
-                          icon: Icons.share_rounded,
-                          onPressed: () => _shareListing(context),
+                        // RQ-F1: disabled until the public listing
+                        // landing page exists — the link above leads
+                        // nowhere yet (see the note on step 2).
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton.icon(
+                            onPressed: null,
+                            icon: const Icon(Icons.share_rounded, size: 18),
+                            label: Text(l10n.vehiclePublishedShareListing),
+                          ),
                         ),
                         const SizedBox(height: 12),
                         SizedBox(
                           width: double.infinity,
                           child: OutlinedButton.icon(
-                            onPressed: () => _copyLink(context),
+                            onPressed: null,
                             icon: const Icon(Icons.copy_rounded, size: 18),
                             label: Text(l10n.vehiclePublishedCopyLink),
                           ),

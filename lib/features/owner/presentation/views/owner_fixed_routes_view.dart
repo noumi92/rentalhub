@@ -22,8 +22,10 @@ import '../../../../core/utils/money_format.dart';
 /// list), the origin is not hardcoded (it starts empty; a shop-city
 /// default needs a shop-profile read that is not wired here), deletes
 /// confirm first, and load failures render a shared error state.
-/// The O10b city-boundary / radius rules screen is deliberately NOT
-/// built here — it is the tracked spec gap F-OWN-8.
+/// The O10b city-boundary / radius rules screen lives separately
+/// (`owner_out_city_rules_view.dart`, route `/owner/out-city-rules/:vehicleId`;
+/// spec gap F-OWN-8 closed 2026-11-09) — this screen owns the fixed
+/// routes list only.
 class OwnerFixedRoutesView extends StatefulWidget {
   final String? shopId;
   final VoidCallback? onBack;
@@ -38,7 +40,9 @@ class _OwnerFixedRoutesViewState extends State<OwnerFixedRoutesView> {
   List<FixedRouteEntity> _routes = [];
   bool _loading = true;
   String? _error;
-  final _distanceController = TextEditingController(text: '300');
+  // OW-m19: no prefilled '300' — an invented default the owner
+  // could save without noticing. Empty until the owner types it.
+  final _distanceController = TextEditingController();
   final _priceController = TextEditingController();
   final _originController = TextEditingController();
   final _destinationController = TextEditingController();
@@ -85,9 +89,10 @@ class _OwnerFixedRoutesViewState extends State<OwnerFixedRoutesView> {
     try {
       await sl<SaveFixedRouteUseCase>()(route);
       await _load();
-    } catch (e) {
+    } catch (_) {
+      // OW-m19: localized message — never the raw exception text.
       if (!mounted) return;
-      AppFeedback.showError(context, e.toString());
+      AppFeedback.showError(context, AppLocalizations.of(context)!.fixedRoutesSaveFailed);
     }
   }
 
@@ -116,7 +121,11 @@ class _OwnerFixedRoutesViewState extends State<OwnerFixedRoutesView> {
       AppFeedback.showError(context, l10n.fixedRoutesPriceRequired);
       return;
     }
-    final distance = int.tryParse(_distanceController.text.trim()) ?? 0;
+    final distance = int.tryParse(_distanceController.text.trim());
+    if (distance == null || distance <= 0) {
+      AppFeedback.showError(context, l10n.fixedRoutesDistanceRequired);
+      return;
+    }
     await _save(FixedRouteEntity(
       routeId: 'route-${DateTime.now().millisecondsSinceEpoch}',
       shopId: _shopId,
@@ -147,9 +156,10 @@ class _OwnerFixedRoutesViewState extends State<OwnerFixedRoutesView> {
     try {
       await sl<DeleteFixedRouteUseCase>()(route.routeId);
       await _load();
-    } catch (e) {
+    } catch (_) {
+      // OW-m19: localized message — never the raw exception text.
       if (!mounted) return;
-      AppFeedback.showError(context, e.toString());
+      AppFeedback.showError(context, l10n.fixedRoutesDeleteFailed);
     }
   }
 

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:intl/intl.dart';
+
 import '../../../../../core/utils/money_format.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../bookings/domain/entities/booking_entity.dart';
@@ -77,7 +79,7 @@ class StatementTable extends StatelessWidget {
             DataRow(cells: [
               DataCell(cell('#${b.bookingId}')),
               DataCell(cell(
-                  '${b.pickupTime.day}/${b.pickupTime.month}/${b.pickupTime.year}')),
+                  DateFormat.yMd(Localizations.localeOf(context).languageCode).format(b.pickupTime))),
               DataCell(cell(l10n.amountRs(formatRs(b.totalAmount)))),
               DataCell(cell(l10n.amountRs(formatRs(b.advancePaid)))),
               DataCell(

@@ -15,7 +15,7 @@ class GoogleSignInButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return SizedBox(
       width: double.infinity,
       height: 54,
@@ -24,7 +24,9 @@ class GoogleSignInButton extends StatelessWidget {
         style: OutlinedButton.styleFrom(
           backgroundColor: Colors.white,
           foregroundColor: AppColors.primary,
-          side: const BorderSide(color: Color(0xFFE2E8F0), width: 1.5),
+          // Audit SH-N1: was a hardcoded #E2E8F0 — exactly
+          // borderSubtle's value. One name.
+          side: const BorderSide(color: AppColors.borderSubtle, width: 1.5),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
@@ -43,7 +45,7 @@ class GoogleSignInButton extends StatelessWidget {
             ),
             const SizedBox(width: 12),
             Text(
-              l10n.authGoogle,
+              l10n?.authGoogle ?? 'Continue with Google',
               style: Theme.of(context).textTheme.labelMedium?.copyWith(
                 fontWeight: FontWeight.w400,
                 color: AppColors.primary,

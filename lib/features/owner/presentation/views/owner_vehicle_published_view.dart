@@ -1,22 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
-import 'package:share_plus/share_plus.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/money_format.dart';
-import '../../../../core/widgets/app_feedback.dart';
-import '../../../../core/widgets/debounced_button.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../fleet/domain/entities/vehicle_entity.dart';
 
 /// Audit §5 (O10/P4-O06): the published-confirmation screen shown
-/// after a car is saved. "View in App" opens the owner vehicle
-/// detail; "Copy Link" copies the public listing link; "Share Listing"
-/// shares it via the OS sheet. NOTE: no web landing page exists for
-/// the link yet — it is the agreed public URL shape, not a live page.
+/// after a car is saved. RQ-F1 (2026-11-13): the "View in App" /
+/// "Copy Link" / "Share Listing" actions are HIDDEN until the public
+/// listing landing page exists — the link below is the agreed public
+/// URL shape, not a live page, so no dead link is handed to the owner.
+/// Restore the three actions (copy/share helpers live in git history)
+/// once the landing page is live.
 class OwnerVehiclePublishedView extends StatelessWidget {
   final VehicleEntity vehicle;
   final VoidCallback? onBack;
@@ -31,24 +29,6 @@ class OwnerVehiclePublishedView extends StatelessWidget {
   /// yet — see the class doc.
   static String listingLink(String vehicleId) =>
       'https://rentalhub.62onlinestore.com/vehicle/$vehicleId';
-
-  Future<void> _copyLink(BuildContext context) async {
-    final l10n = AppLocalizations.of(context)!;
-    await Clipboard.setData(ClipboardData(text: listingLink(vehicle.vehicleId)));
-    if (context.mounted) {
-      AppFeedback.showSuccess(context, l10n.vehiclePublishedLinkCopied);
-    }
-  }
-
-  Future<void> _shareListing(BuildContext context) async {
-    final l10n = AppLocalizations.of(context)!;
-    final link = listingLink(vehicle.vehicleId);
-    await SharePlus.instance.share(
-      ShareParams(
-        text: l10n.vehiclePublishedShareText(vehicle.displayName, l10n.amountRs(formatRs(vehicle.rates.daily24)), link),
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -117,32 +97,20 @@ class OwnerVehiclePublishedView extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    DebouncedButton(
-                      text: l10n.vehiclePublishedViewInApp,
-                      icon: Icons.visibility_rounded,
-                      onPressed: () async => context.push(RouteNames.ownerVehicleDetail.replaceFirst(':id', vehicle.vehicleId)),
-                    ),
-                    const SizedBox(height: 12),
-                    SizedBox(
-                      width: double.infinity,
-                      child: OutlinedButton.icon(
-                        onPressed: () => _copyLink(context),
-                        icon: const Icon(Icons.copy_rounded, size: 18),
-                        label: Text(l10n.vehiclePublishedCopyLink),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    SizedBox(
-                      width: double.infinity,
-                      child: OutlinedButton.icon(
-                        onPressed: () => _shareListing(context),
-                        icon: const Icon(Icons.share_rounded, size: 18),
-                        label: Text(l10n.vehiclePublishedShareListing),
-                      ),
+                    // RQ-F1: the listing actions (View in App / Copy
+                    // Link / Share Listing) are hidden until the
+                    // public landing page exists. The note below says
+                    // so honestly instead of offering a dead link.
+                    Text(
+                      l10n.shareLinkNote,
+                      style: Theme.of(context).textTheme.labelSmall,
+                      textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 12),
                     // Audit §5 finish (P4-O06): open the full share
-                    // screen (pick a price, then share or copy).
+                    // screen (pick a price, then share or copy) — its
+                    // own share/copy actions are likewise disabled
+                    // until the landing page exists (RQ-F1).
                     SizedBox(
                       width: double.infinity,
                       child: OutlinedButton.icon(

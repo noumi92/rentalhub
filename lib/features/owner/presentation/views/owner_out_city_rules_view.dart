@@ -4,6 +4,7 @@ import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/money_format.dart';
 import '../../../../core/widgets/app_feedback.dart';
+import '../../../../core/widgets/app_state_views.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../fleet/domain/entities/fixed_route_entity.dart';
@@ -77,6 +78,11 @@ class _OwnerOutCityRulesViewState extends State<OwnerOutCityRulesView> {
   }
 
   Future<void> _loadRoutes() async {
+    // OW-m6: retry must clear the failure flag first.
+    if (mounted) setState(() {
+      _loadingRoutes = true;
+      _routesFailed = false;
+    });
     try {
       final routes = await sl<GetShopFixedRoutesUseCase>()(widget.vehicle.shopId);
       if (!mounted) return;
@@ -208,7 +214,8 @@ class _OwnerOutCityRulesViewState extends State<OwnerOutCityRulesView> {
                       if (_loadingRoutes)
                         const Center(child: Padding(padding: EdgeInsets.all(12), child: CircularProgressIndicator()))
                       else if (_routesFailed)
-                        Text(l10n.fixedRoutesLoadError, style: theme.textTheme.bodyMedium)
+                        // OW-m6: the old bare text had no recovery.
+                        AppErrorState(message: l10n.fixedRoutesLoadError, onRetry: _loadRoutes)
                       else if (_routes.isEmpty)
                         Text(l10n.fixedRoutesEmpty, style: theme.textTheme.bodyMedium)
                       else

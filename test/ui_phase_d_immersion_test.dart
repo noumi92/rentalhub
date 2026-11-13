@@ -12,6 +12,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:rentalhub/core/auth/signed_in_user.dart';
 import 'package:rentalhub/core/di/injection_container.dart';
 import 'package:rentalhub/core/routing/route_names.dart';
 import 'package:rentalhub/core/widgets/app_shell_nav.dart';
@@ -108,7 +109,7 @@ GoRouter _e1Router({required String initialLocation}) => GoRouter(
         ),
         GoRoute(
           path: RouteNames.ownerDashboard,
-          builder: (_, __) => const OwnerDashboardView(),
+          builder: (_, __) => const OwnerDashboardView(shopId: 'shop-1'),
         ),
         GoRoute(
           path: RouteNames.ownerAddVehicle,
@@ -162,8 +163,21 @@ class _E2TestAssetBundle extends AssetBundle {
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
+  // CU-m3: the Home/Bookings screens load the signed-in user's own
+  // data and show a signed-out error state otherwise. Widget tests
+  // cannot sign a Firebase user in, so stand in as 'cust-101' via
+  // the SignedInUser test override.
   setUp(() {
     SharedPreferences.setMockInitialValues({});
+    SignedInUser.override = const SignedInUserData(
+      uid: 'cust-101',
+      displayName: 'Ahmed Raza',
+      phoneNumber: '03001234567',
+    );
+  });
+
+  tearDown(() {
+    SignedInUser.override = null;
   });
 
   group('QuickActionTiles widget', () {
@@ -1053,7 +1067,7 @@ void main() {
 
     testWidgets('owner Dashboard: loading, then honest empty ledger',
         (tester) async {
-      await pumpScreen(tester, const OwnerDashboardView());
+      await pumpScreen(tester, const OwnerDashboardView(shopId: 'shop-1'));
       expect(find.byType(AppLoadingState), findsOneWidget);
       await tester.pumpAndSettle();
       expect(find.byType(AppLoadingState), findsNothing);
@@ -1066,7 +1080,7 @@ void main() {
     testWidgets('owner Dashboard: missing data source renders the shared '
         'error state with retry', (tester) async {
       await sl.unregister<BookingRemoteDataSource>();
-      await pumpScreen(tester, const OwnerDashboardView());
+      await pumpScreen(tester, const OwnerDashboardView(shopId: 'shop-1'));
       await tester.pumpAndSettle();
       expect(find.byType(AppErrorState), findsOneWidget);
       expect(find.textContaining('Could not load your dashboard.'), findsOneWidget);
@@ -1084,7 +1098,7 @@ void main() {
 
     testWidgets('owner Requests: loading, then shared empty state',
         (tester) async {
-      await pumpScreen(tester, const OwnerBookingRequestsView());
+      await pumpScreen(tester, const OwnerBookingRequestsView(shopId: 'shop-1'));
       expect(find.byType(AppLoadingState), findsOneWidget);
       await tester.pumpAndSettle();
       expect(find.byType(AppEmptyState), findsOneWidget);
@@ -1094,7 +1108,7 @@ void main() {
     testWidgets('owner Requests: missing data source renders the shared '
         'error state', (tester) async {
       await sl.unregister<BookingRemoteDataSource>();
-      await pumpScreen(tester, const OwnerBookingRequestsView());
+      await pumpScreen(tester, const OwnerBookingRequestsView(shopId: 'shop-1'));
       await tester.pumpAndSettle();
       expect(find.byType(AppErrorState), findsOneWidget);
       expect(

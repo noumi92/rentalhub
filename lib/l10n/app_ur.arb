@@ -1,6 +1,7 @@
 {
   "@@locale": "ur",
   "appTitle": "رینٹل ہب پاکستان",
+  "appStartFailed": "رینٹل ہب شروع نہیں ہو سکا۔ براہ کرم ایپ دوبارہ شروع کریں اور دوبارہ کوشش کریں۔",
   "blacklist": "بلیک لسٹ رپورٹس",
   "fixedRoutes": "مقررہ روٹس",
   "language": "زبان",
@@ -13,6 +14,7 @@
   "shop": "آپ کا شوروم",
   "shopNotSet": "دکان کا نام ابھی نہیں دیا گیا",
   "signOut": "سائن آؤٹ",
+  "ownerSignOutError": "سائن آؤٹ نہیں ہو سکا۔ دوبارہ کوشش کریں۔",
   "subscription": "سبسکرپشن",
   "theme": "تھیم",
   "themeDark": "تاریک",
@@ -427,6 +429,7 @@
   "authSignInEmail": "ای میل سے سائن ان کریں",
   "authSignedIn": "کامیابی سے سائن ان ہو گئے!",
   "authSignedInGoogle": "گوگل سے سائن ان ہو گئے!",
+  "authUnavailable": "تصدیق دستیاب نہیں ہے۔ براہ کرم بعد میں دوبارہ کوشش کریں۔",
   "authValidEmail": "براہ کرم درست ای میل پتہ درج کریں۔",
   "authPasswordLength": "پاس ورڈ کم از کم 6 حروف کا ہونا چاہیے۔",
   "authTagline": "پاکستان کا بہترین کار رینٹل اور فلیٹ نظام • خوش آمدید",
@@ -1590,6 +1593,8 @@
   "pricingSave": "قیمتوں کا میٹرکس محفوظ کریں",
   "pricingUnsavedTitle": "غیر محفوظ شدہ قیمتیں حذف کر دیں؟",
   "pricingUnsavedBody": "آپ کی ترمیم شدہ قیمتیں محفوظ نہیں ہوئیں۔",
+  "unsavedChangesTitle": "غیر محفوظ شدہ تبدیلیاں ضائع کر دیں؟",
+  "unsavedChangesBody": "آپ کی تبدیلیاں محفوظ نہیں ہوئیں۔",
   "pricingSelfDriveAllowed": "سیلف ڈرائیو کی اجازت ہے",
   "pricingSelfDriveHint": "اصل نادرا شناختی کارڈ + ضمانت درکار ہے",
   "pricingChauffeurAllowed": "ڈرائیور سروس کی اجازت ہے",
@@ -1627,6 +1632,9 @@
   "fixedRoutesSubtitle": "ہر منزل کے لیے ایک مقررہ قیمت",
   "fixedRoutesDeleteTooltip": "مقررہ راستہ حذف کریں",
   "fixedRoutesPriceRequired": "صفر سے زیادہ مقررہ قیمت درج کریں۔",
+  "fixedRoutesSaveFailed": "فکسڈ روٹ محفوظ نہیں ہو سکا۔ دوبارہ کوشش کریں۔",
+  "fixedRoutesDeleteFailed": "فکسڈ روٹ حذف نہیں ہو سکا۔ دوبارہ کوشش کریں۔",
+  "fixedRoutesDistanceRequired": "کلومیٹر میں فاصلہ درج کریں۔",
   "fixedRoutesLoadError": "مقررہ راستے لوڈ نہیں ہو سکے۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔",
   "fixedRoutesEmpty": "ابھی کوئی مقررہ راستہ نہیں — نیچے اپنی پہلی منزل شامل کریں۔",
   "fixedRouteDuplicate": "یہ راستہ پہلے سے موجود ہے",
@@ -1742,6 +1750,14 @@
   "rateCustomerSelectStars": "کم از کم ایک ستارہ منتخب کریں",
   "customersRatingCommentHint": "کمیونٹی شوروم ریکارڈ کے لیے اختیاری رائے شامل کریں...",
   "customersRatingFlagTitle": "گاہک کو مشترکہ بلیک لسٹ میں فلیگ کریں",
+  "customersRatingFlagDescription": "گاہک کو واپسی کے تصفیے کے دوران {reason} کی وجہ سے فلیگ کیا گیا۔",
+  "@customersRatingFlagDescription": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
   "customersRatingFlagNoCnic": "اس بکنگ کے لیے گاہک کا شناختی کارڈ درکار ہے — کوئی ریکارڈ نہیں، اس لیے یہاں سے رپورٹ درج نہیں ہو سکتی۔",
   "customersRatingFlagVisible": "رینٹل ہب استعمال کرنے والے دیگر شوروم یہ رپورٹ دیکھ سکتے ہیں",
   "customersRatingReasonLabel": "ٹرائیبیونل کے لیے وجہ کی قسم:",
@@ -1767,6 +1783,7 @@
   "customersCnicFatherName": "والد کا نام",
   "customersCnicNumber": "شناختی کارڈ نمبر",
   "customersCnicDob": "تاریخ پیدائش (dd.mm.yyyy)",
+  "cnicReviewDateInvalid": "تاریخ DD.MM.YYYY کی شکل میں درج کریں۔",
   "customersCnicExpiry": "شناختی کارڈ کی میعاد (dd.mm.yyyy)",
   "customersCnicPhone": "فون نمبر",
   "customersCnicAddress": "پتہ (کارڈ کے پچھلے حصے سے)",
@@ -1815,6 +1832,7 @@
   "blacklistEnterCnic": "گاہک کا مکمل 13 ہندسوں والا شناختی کارڈ درج کریں۔",
   "blacklistDescribe": "بیان کریں کیا ہوا — ٹرائیبیونل یہ پڑھتا ہے۔",
   "blacklistReported": "رپورٹ ہو گئی۔ شناختی کارڈ اب ہر شوروم کے لیے فلیگ شدہ ہے۔",
+  "blacklistLoadError": "بلیک لسٹ رپورٹس لوڈ نہیں ہو سکیں۔ دوبارہ کوشش کریں۔",
   "blacklistReportFailed": "رپورٹ ناکام ہوئی: {error}",
   "@blacklistReportFailed": {
     "placeholders": {
@@ -2063,6 +2081,7 @@
   "handoverOdometerInvalid": "براہ کرم درست اوڈومیٹر ریڈنگ درج کریں۔",
   "handoverSignRequired": "گاڑی روانگی سے پہلے گاہک اور میزبان دونوں کو پیڈ پر دستخط کرنا ہوں گے۔",
   "handoverCertified": "حوالگی تصدیق شدہ! ڈیجیٹل A4 رینٹل معاہدہ تیار ہو گیا۔",
+  "handoverShopNameRequired": "دکان کا نام لوڈ نہیں ہو سکا۔ ہینڈ اوور کی تصدیق سے پہلے دوبارہ لوڈ کریں۔",
   "handoverCompleteFailed": "حوالگی مکمل کرنا ناکام ہوا: {error}",
   "@handoverCompleteFailed": {
     "placeholders": {
@@ -2108,6 +2127,7 @@
       }
     }
   },
+  "returnOdometerInvalid": "واپسی کی اوڈومیٹر ریڈنگ درج کریں۔",
   "returnOdometerBelow": "واپسی کی ریڈنگ حوالگی کی ریڈنگ ({odometer} کلومیٹر) سے کم نہیں ہو سکتی۔",
   "@returnOdometerBelow": {
     "placeholders": {
@@ -2312,6 +2332,7 @@
       }
     }
   },
+  "manualBookingAdvanceInvalid": "درست ایڈوانس رقم درج کریں۔",
   "manualBookingCreateFailed": "بکنگ بنانا ناکام ہوا: {error}",
   "@manualBookingCreateFailed": {
     "placeholders": {
@@ -2578,6 +2599,8 @@
   "disputesMonthDec": "دسمبر",
   "notificationsSubtitle": "کس چیز پر آپ کی توجہ درکار ہے",
   "notificationsMarkAllRead": "سب پڑھا ہوا قرار دیں",
+  "notificationsMarkReadError": "اطلاعات کو پڑھا ہوا قرار نہیں دیا جا سکا۔ دوبارہ کوشش کریں۔",
+  "notificationsLoadError": "اطلاعات لوڈ نہیں ہو سکیں۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔",
   "notificationsEmpty": "ابھی کوئی اطلاعات نہیں۔",
   "subscriptionUpgradeTo": "{tier} پر اپ گریڈ کریں",
   "@subscriptionUpgradeTo": {
@@ -2634,11 +2657,15 @@
   "disputesOwnerEmpty": "ابھی کوئی تنازع نہیں — آپ کے شوروم کے گاہکوں کے تنازعات یہاں ظاہر ہوں گے۔",
   "manualBookingGuarantorPhone": "فون نمبر",
   "navHome": "ہوم",
+  "navShops": "شاپس",
   "navBookings": "بکنگز",
+  "navWallet": "والیٹ",
   "navSupport": "مدد",
   "navProfile": "پروفائل",
   "navDashboard": "ڈیش بورڈ",
+  "navFleet": "فلیٹ",
   "navRequests": "درخواستیں",
+  "navCustomers": "گاہک",
   "navSettings": "ترتیبات",
   "syncOfflineWithPending": "{count, plural, =1{آپ آف لائن ہیں — 1 تبدیلی دوبارہ آن لائن ہونے پر ہم آہنگ ہو جائے گی} other{آپ آف لائن ہیں — {count} تبدیلیاں دوبارہ آن لائن ہونے پر ہم آہنگ ہو جائیں گی}}",
   "@syncOfflineWithPending": {
@@ -3049,6 +3076,7 @@
   "extraChargeAdd": "چارج شامل کریں",
   "extraChargeAdded": "چارج شامل کر دیا گیا۔",
   "extraChargeSaveFailed": "چارج محفوظ نہ ہو سکا۔ دوبارہ کوشش کریں۔",
+  "extraChargeLoadError": "محفوظ شدہ اضافی چارجز لوڈ نہیں ہو سکے۔ دوبارہ کوشش کریں۔",
   "extraChargeAmountRequired": "براہ کرم صفر سے زیادہ رقم درج کریں۔",
   "extraChargeSavedTitle": "محفوظ شدہ چارجز",
   "rentalStartedTitle": "سفر پر",
@@ -3141,6 +3169,7 @@
   "financePnlIncomeBreakdown": "آمدنی کی تفصیل",
   "financePnlExpenseBreakdown": "اخراجات کی تفصیل",
   "financeCategoriesAdd": "زمرہ شامل کریں",
+  "financeCategoriesDuplicate": "اس نام کی کیٹگری پہلے سے موجود ہے۔",
   "financeCategoriesAddTitle": "زمرہ شامل کریں",
   "financeCategoriesDelete": "حذف کریں",
   "financeCategoriesDeleteMessage": "زمرہ ”{name}“ حذف کر دیں؟ پرانے لیجر اندراجات میں یہ زمرہ رہے گا۔",
@@ -3164,6 +3193,7 @@
   "financeSettingsCurrencyNote": "ایپ صرف پاکستانی روپے (PKR) میں لین دین کرتی ہے۔",
   "financeSettingsEmpty": "مالیاتی ترتیبات ابھی دستیاب نہیں ہیں۔",
   "financeSettingsInvalidPercent": "درست فیصد درج کریں۔",
+  "financeSettingsPercentRange": "0 اور 100 کے درمیان فیصد درج کریں۔",
   "financeSettingsPaymentMethods": "ادائیگی کے طریقے",
   "financeSettingsReceipts": "رسید کی ترتیبات",
   "financeSettingsSave": "ترتیبات محفوظ کریں",
@@ -3248,6 +3278,7 @@
   "reportNoCustomers": "اس مدت میں گاہکوں کی کوئی بکنگ نہیں ہے۔",
   "reportPeriod": "مدت",
   "reportShare": "رپورٹ شیئر کریں",
+  "reportShareFailed": "رپورٹ شیئر نہیں ہو سکی۔ دوبارہ کوشش کریں۔",
   "reportSubtitle": "آمدنی، گاڑیاں اور گاہک",
   "reportTitle": "رپورٹس",
   "resetAction": "ری سیٹ کریں",
@@ -3290,6 +3321,7 @@
   "staffAdd": "عملہ شامل کریں",
   "staffAddTitle": "عملے کا رکن شامل کریں",
   "staffDelete": "عملے کا رکن ہٹائیں",
+  "staffDeleteFailed": "اس عملے کے رکن کو ہٹایا نہیں جا سکا۔ دوبارہ کوشش کریں۔",
   "staffEmpty": "ابھی کوئی عملہ نہیں ہے — اپنا پہلا ٹیم ممبر شامل کریں۔",
   "staffNameLabel": "نام",
   "staffPermissionAddCars": "گاڑیاں شامل کریں",
@@ -3499,6 +3531,9 @@
     }
   },
   "shopSettingsLoadError": "دکان کی ترتیبات لوڈ نہیں ہو سکیں۔",
+  "shopSettingsPhoneInvalid": "درست پاکستانی موبائل نمبر درج کریں (03XX-XXXXXXX یا +92 3XX XXXXXXX)۔",
+  "shopSettingsHoursHint": "مثال: 9:00 AM – 9:00 PM",
+  "shopSettingsHoursInvalid": "اوقات کار اس طرح درج کریں: 9:00 AM – 9:00 PM۔",
   "fleetCalendarTitle": "فلیٹ شیڈول",
   "fleetCalendarPrevMonth": "پچھلا مہینہ",
   "fleetCalendarNextMonth": "اگلا مہینہ",
@@ -3538,6 +3573,7 @@
   "subscriptionExamplePrices": "مثالی قیمتیں — حتمی قیمتوں کا فیصلہ ہونا باقی ہے",
   "subscriptionViewDetails": "تفصیلات دیکھیں",
   "subscriptionMySubscription": "میری سبسکرپشن",
+  "subscriptionLoadError": "آپ کی سبسکرپشن لوڈ نہیں ہو سکی۔ دوبارہ کوشش کریں۔",
   "subscriptionPlayNotConnected": "گوگل پلے بلنگ ابھی منسلک نہیں ہوئی",
   "subscriptionPlayNotConnectedNote": "پلے کنسول سیٹ اپ ابھی باقی ہے۔ آپ نیچے بینک ٹرانسفر سے سبسکرائب کر سکتے ہیں — گوگل پلے سے کوئی رقم نہیں کاٹی جائے گی۔",
   "subscriptionPayByBank": "بینک ٹرانسفر سے ادائیگی کریں — پلے کنسول سیٹ اپ مکمل ہونے پر گوگل پلے بلنگ آئے گی",
@@ -3669,6 +3705,7 @@
   "customerDetailRejectReasonHint": "وجہ لکھیں…",
   "customerDetailRejectReasonRequired": "پروفائل مسترد کرنے کے لیے وجہ ضروری ہے",
   "customerDetailRejectConfirm": "مسترد کریں",
+  "customerDetailApprovalFailed": "اس گاہک کی منظوری اپ ڈیٹ نہیں ہو سکی۔ دوبارہ کوشش کریں۔",
   "customerAddedTitle": "گاہک شامل کر دیا گیا",
   "customerAddedReady": "{name} کی پروفائل تیار ہے — اب آپ بکنگ شروع کر سکتے ہیں۔",
   "@customerAddedReady": {
@@ -3846,7 +3883,6 @@
       }
     }
   },
-  "tab2_navShops": "شاپس",
   "shops_title": "شاپس",
   "shops_showMap": "نقشہ",
   "shops_showList": "فہرست",
@@ -3902,5 +3938,54 @@
   "anncTitle": "اعلان",
   "anncLoading": "اعلان لوڈ ہو رہا ہے…",
   "anncNotFound": "یہ اعلان اب دستیاب نہیں ہے۔",
-  "anncLoadError": "اعلان لوڈ نہیں ہو سکا۔ براہ کرم دوبارہ کوشش کریں۔"
+  "anncLoadError": "اعلان لوڈ نہیں ہو سکا۔ براہ کرم دوبارہ کوشش کریں۔",
+  "couldNotOpenDialer": "ڈائلر نہیں کھل سکا۔",
+  "countdownPickupReached": "پک اپ کا وقت ہو گیا ہے",
+  "countdownReturnReached": "واپسی کا وقت ہو گیا ہے",
+  "countdownTimeReached": "وقت ہو گیا ہے",
+  "kycRejectionReason": "وجہ: {reason}",
+  "@kycRejectionReason": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "onboardingNameHint": "آپ کا مکمل نام",
+  "pickerPastTime": "یہ وقت گزر چکا ہے۔ براہ کرم بعد کا وقت منتخب کریں۔",
+  "rateSelectBoth": "براہ کرم شوروم اور گاڑی دونوں کی درجہ بندی کریں۔",
+  "reviewDraftMissing": "بکنگ کی تفصیلات موجود نہیں ہیں۔ براہ کرم دوبارہ شروع کریں۔",
+  "reviewSignInRequired": "یہ بکنگ جمع کروانے کے لیے براہ کرم سائن ان کریں۔",
+  "reviewSubmitFailed": "بکنگ جمع نہیں ہو سکی۔ براہ کرم دوبارہ کوشش کریں۔",
+  "shopLoadFailed": "یہ شوروم لوڈ نہیں ہو سکا۔",
+  "shopNoPhoneNumber": "اس شوروم کا فون نمبر موجود نہیں ہے۔",
+  "shopWhatsappHello": "السلام علیکم {shopName}، میں نے آپ کی لسٹنگ رینٹل ہب پر دیکھی ہے۔",
+  "@shopWhatsappHello": {
+    "placeholders": {
+      "shopName": {
+        "type": "String"
+      }
+    }
+  },
+  "signInRequiredGeneric": "جاری رکھنے کے لیے براہ کرم سائن ان کریں۔",
+  "statusProofRejected": "ثبوت مسترد کر دیا گیا",
+  "tripOutCityFixedRouteLine": "شہر سے باہر: مقررہ راستے کی قیمت",
+  "tripOutCityPerDayLine": "شہر سے باہر: {rate} / دن",
+  "@tripOutCityPerDayLine": {
+    "placeholders": {
+      "rate": {
+        "type": "String"
+      }
+    }
+  },
+  "tripOutCityPerKmLine": "شہر سے باہر: {rate} / کلومیٹر",
+  "@tripOutCityPerKmLine": {
+    "placeholders": {
+      "rate": {
+        "type": "String"
+      }
+    }
+  },
+  "vehicleLoadFailed": "یہ گاڑی لوڈ نہیں ہو سکی۔",
+  "manualBookingWhatsappToggle": "واٹس ایپ پر تصدیق بھیجیں"
 }

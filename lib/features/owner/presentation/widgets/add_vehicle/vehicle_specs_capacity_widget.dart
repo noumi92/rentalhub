@@ -2,16 +2,17 @@ import 'package:flutter/material.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../constants/owner_vehicle_constants.dart';
-import '../../../../../core/theme/card_decoration.dart';
 
-/// Seating capacity, AC switch and extra-features chips of the
-/// add-vehicle specs step. Extracted from [VehicleSpecsStepWidget]
+/// Seating capacity and extra-features chips of the add-vehicle
+/// specs step. Extracted from [VehicleSpecsStepWidget]
 /// (audit §5: that file was 513 lines — extract, do not grow it).
+/// OW-M4 (2026-11-13 audit): the AC switch is gone — no AC flag
+/// exists on [VehicleEntity]/[VehicleModel], so the toggle was a dead
+/// control (always on, never persisted) in both the add and edit
+/// flows. It returns only with a real `hasAc` field.
 class VehicleCapacityStepWidget extends StatelessWidget {
   final int seats;
   final ValueChanged<int> onSeatsChanged;
-  final bool hasAc;
-  final ValueChanged<bool> onAcChanged;
   final Set<String> selectedFeatures;
   final ValueChanged<String> onFeatureToggled;
 
@@ -19,8 +20,6 @@ class VehicleCapacityStepWidget extends StatelessWidget {
     super.key,
     required this.seats,
     required this.onSeatsChanged,
-    required this.hasAc,
-    required this.onAcChanged,
     required this.selectedFeatures,
     required this.onFeatureToggled,
   });
@@ -60,43 +59,6 @@ SingleChildScrollView(
         ),
       );
     }).toList(),
-  ),
-),
-const SizedBox(height: 16),
-
-// Requirement 3: Air Conditioning (AC) Switch
-Container(
-  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-  decoration: BoxDecoration(
-    color: Theme.of(context).colorScheme.surface,
-    borderRadius: BorderRadius.circular(12),
-    boxShadow: AppCardDecoration.shadow(context)
-  ),
-  child: Row(
-    children: [
-      const Icon(Icons.ac_unit_rounded, size: 22),
-      const SizedBox(width: 10),
-      Expanded(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(l10n.addVehicleAcTitle,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyMedium
-                    ?.copyWith(fontWeight: FontWeight.w800)),
-            Text(l10n.addVehicleAcSubtitle,
-                style: Theme.of(context).textTheme.labelSmall),
-          ],
-        ),
-      ),
-      const SizedBox(width: 8),
-      Switch(
-        value: hasAc,
-        activeThumbColor: AppColors.secondary,
-        onChanged: onAcChanged,
-      ),
-    ],
   ),
 ),
 const SizedBox(height: 16),

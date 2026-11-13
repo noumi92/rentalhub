@@ -70,6 +70,26 @@ class _OwnerStaffRolesViewState extends State<OwnerStaffRolesView> {
     }
   }
 
+  Future<void> _deleteStaff(StaffEntity member) async {
+    final l10n = AppLocalizations.of(context)!;
+    // OW-M11: one tap used to delete irreversibly with no confirm and no error handling — same confirm-first pattern as the fixed-routes delete.
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.staffDelete),
+        content: Text(member.name),
+        actions: [TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: Text(l10n.cancel)), FilledButton(onPressed: () => Navigator.of(ctx).pop(true), child: Text(l10n.commonConfirm))],
+      ),
+    );
+    if (confirm != true || !mounted) return;
+    try {
+      await _staffDs.deleteStaff(member.staffId);
+      _load();
+    } catch (_) {
+      if (mounted) AppFeedback.showError(context, l10n.staffDeleteFailed);
+    }
+  }
+
   Future<void> _togglePermission(
       StaffEntity member, String permission, bool value) async {
     try {
@@ -180,11 +200,8 @@ class _OwnerStaffRolesViewState extends State<OwnerStaffRolesView> {
                                                   l10n.staffDelete,
                                               icon: const Icon(
                                                   Icons.delete_rounded),
-                                              onPressed: () async {
-                                                await _staffDs.deleteStaff(
-                                                    member.staffId);
-                                                _load();
-                                              },
+                                              onPressed: () =>
+                                                  _deleteStaff(member),
                                             ),
                                           ],
                                         ),

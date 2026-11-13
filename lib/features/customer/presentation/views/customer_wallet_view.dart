@@ -79,9 +79,9 @@ class _CustomerWalletViewState extends State<CustomerWalletView> {
                     Container(
                       padding: const EdgeInsets.all(18),
                       decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [AppColors.primary, AppColors.primary],
-                        ),
+                        // CU-m15: was a degenerate gradient (primary
+                        // twice) — a plain fill is the same look.
+                        color: AppColors.primary,
                         borderRadius: BorderRadius.circular(18),
                         boxShadow: [
                           BoxShadow(
@@ -177,7 +177,6 @@ class _EscrowPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
@@ -194,17 +193,17 @@ class _EscrowPill extends StatelessWidget {
                   .textTheme
                   .labelSmall
                   ?.copyWith(color: AppColors.primaryContainer)),
-          // E1: pill amounts are masked like the main balance.
-          MaskedValue(
-            value: value,
+          // CU-m6: the pill amounts stay masked but carry no eye of
+          // their own — the wallet header has ONE visibility toggle
+          // (on the main balance above), not three independent ones.
+          Text(
+            MaskedValue.maskDigits(value),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: Theme.of(context)
                 .textTheme
                 .labelMedium
                 ?.copyWith(fontWeight: FontWeight.w800, color: Colors.white),
-            iconColor: AppColors.primaryContainer,
-            iconSize: 18,
-            showTooltip: l10n.walletShowAmount,
-            hideTooltip: l10n.walletHideAmount,
           ),
         ],
       ),

@@ -20,6 +20,8 @@ class BookingStatusChip extends StatelessWidget {
         return l10n.statusRejected;
       case 'payment_submitted':
         return l10n.statusProofSubmitted;
+      case 'payment_rejected':
+        return l10n.statusProofRejected;
       case 'paid':
         return l10n.statusPaid;
       case 'active':
@@ -41,6 +43,7 @@ class BookingStatusChip extends StatelessWidget {
       case 'paid':
         return AppColors.successTextFor(brightness);
       case 'rejected':
+      case 'payment_rejected':
       case 'cancelled':
         return AppColors.dangerTextFor(brightness);
       default:

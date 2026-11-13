@@ -65,7 +65,9 @@ class VehicleHeroCard extends StatelessWidget {
 
   /// The owner's uploaded photo when there is one, otherwise the asset
   /// illustration for this make/model, with the generic sedan as the last
-  /// fallback when even the asset fails to load.
+  /// fallback when even the asset fails to load. CU-m16: the images
+  /// fill the 200px container — the old 190px left a 5px band top
+  /// and bottom.
   Widget _buildImage() {
     final url = imageUrl;
     if (url != null && url.startsWith('http')) {
@@ -73,7 +75,7 @@ class VehicleHeroCard extends StatelessWidget {
         url,
         fit: BoxFit.cover,
         width: double.infinity,
-        height: 190,
+        height: 200,
         errorBuilder: (_, __, ___) => _assetImage(),
       );
     }
@@ -85,10 +87,12 @@ class VehicleHeroCard extends StatelessWidget {
       carAsset,
       fit: BoxFit.contain,
       width: double.infinity,
-      height: 190,
+      height: 200,
       errorBuilder: (_, __, ___) => Image.asset(
         'assets/images/white_sedan_hero.png',
         fit: BoxFit.contain,
+        width: double.infinity,
+        height: 200,
       ),
     );
   }

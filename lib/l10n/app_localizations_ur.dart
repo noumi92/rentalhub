@@ -1,0 +1,7312 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
+import 'app_localizations.dart';
+
+// ignore_for_file: type=lint
+
+/// The translations for Urdu (`ur`).
+class AppLocalizationsUr extends AppLocalizations {
+  AppLocalizationsUr([String locale = 'ur']) : super(locale);
+
+  @override
+  String get appTitle => 'رینٹل ہب پاکستان';
+
+  @override
+  String get appStartFailed =>
+      'رینٹل ہب شروع نہیں ہو سکا۔ براہ کرم ایپ دوبارہ شروع کریں اور دوبارہ کوشش کریں۔';
+
+  @override
+  String get blacklist => 'بلیک لسٹ رپورٹس';
+
+  @override
+  String get fixedRoutes => 'مقررہ روٹس';
+
+  @override
+  String get language => 'زبان';
+
+  @override
+  String get languageEnglish => 'انگریزی';
+
+  @override
+  String get languageUrdu => 'اردو';
+
+  @override
+  String get notifications => 'اطلاعات';
+
+  @override
+  String get quickLinks => 'فوری لنکس';
+
+  @override
+  String get settings => 'دکان کی ترتیبات';
+
+  @override
+  String get settingsSubtitle => 'زبان، تھیم اور آپ کا شوروم';
+
+  @override
+  String get shop => 'آپ کا شوروم';
+
+  @override
+  String get shopNotSet => 'دکان کا نام ابھی نہیں دیا گیا';
+
+  @override
+  String get signOut => 'سائن آؤٹ';
+
+  @override
+  String get ownerSignOutError => 'سائن آؤٹ نہیں ہو سکا۔ دوبارہ کوشش کریں۔';
+
+  @override
+  String get subscription => 'سبسکرپشن';
+
+  @override
+  String get theme => 'تھیم';
+
+  @override
+  String get themeDark => 'تاریک';
+
+  @override
+  String get themeLight => 'روشن';
+
+  @override
+  String get themeSystem => 'سسٹم';
+
+  @override
+  String get whatsappLogs => 'واٹس ایپ لاگز';
+
+  @override
+  String get finance => 'مالیات';
+
+  @override
+  String get customerSettings => 'ترتیبات اور ترجیحات';
+
+  @override
+  String get pushNotifications => 'پش اطلاعات';
+
+  @override
+  String get whatsappNotifications => 'واٹس ایپ اطلاعات';
+
+  @override
+  String get appVersion => 'ایپ ورژن';
+
+  @override
+  String get disputes => 'تنازعات';
+
+  @override
+  String get back => 'واپس';
+
+  @override
+  String get cancel => 'منسوخ کریں';
+
+  @override
+  String get sos => 'ایس او ایس';
+
+  @override
+  String get active => 'فعال';
+
+  @override
+  String get filterAll => 'سب';
+
+  @override
+  String get pending => 'زیر التواء';
+
+  @override
+  String get statusApproved => 'منظور شدہ';
+
+  @override
+  String get done => 'مکمل';
+
+  @override
+  String get statusCompleted => 'مکمل';
+
+  @override
+  String get statusCancelled => 'منسوخ';
+
+  @override
+  String get statusRejected => 'مسترد';
+
+  @override
+  String get statusPaid => 'ادا شدہ';
+
+  @override
+  String get statusOnTrip => 'سفر جاری';
+
+  @override
+  String get statusProofSubmitted => 'ثبوت جمع کرایا گیا';
+
+  @override
+  String get statusRequestSent => 'درخواست بھیجی گئی';
+
+  @override
+  String get statusPendingReview => 'جائزہ زیر التواء';
+
+  @override
+  String get inReview => 'جائزے میں';
+
+  @override
+  String get disputeOpen => 'کھلا';
+
+  @override
+  String get disputeResolved => 'حل شدہ';
+
+  @override
+  String get verified => 'تصدیق شدہ';
+
+  @override
+  String get available => 'دستیاب';
+
+  @override
+  String get rentedOut => 'کرایہ پر دیا گیا';
+
+  @override
+  String get inMaintenance => 'مرمت میں';
+
+  @override
+  String get availableNow => 'ابھی دستیاب';
+
+  @override
+  String get selfDrive => 'سیلف ڈرائیو';
+
+  @override
+  String get withDriver => 'ڈرائیور کے ساتھ';
+
+  @override
+  String get withChauffeur => 'ڈرائیور کے ساتھ';
+
+  @override
+  String get selfDriveHyphen => 'سیلف ڈرائیو';
+
+  @override
+  String get inCity => 'شہر کے اندر';
+
+  @override
+  String get outOfCity => 'شہر سے باہر';
+
+  @override
+  String get inCityHyphen => 'شہر کے اندر';
+
+  @override
+  String get outOfCityHyphen => 'شہر سے باہر';
+
+  @override
+  String get supportUrgencyLow => 'کم';
+
+  @override
+  String get supportUrgencyMedium => 'درمیانہ';
+
+  @override
+  String get supportUrgencyHigh => 'زیادہ — فوری';
+
+  @override
+  String get call => 'کال کریں';
+
+  @override
+  String get whatsapp => 'واٹس ایپ';
+
+  @override
+  String get viewFleet => 'گاڑیاں دیکھیں';
+
+  @override
+  String get showroomLabel => 'شوروم';
+
+  @override
+  String get rentalCar => 'کرایہ کی گاڑی';
+
+  @override
+  String get rentalShowroom => 'کرایہ شوروم';
+
+  @override
+  String get summaryVehicle => 'گاڑی';
+
+  @override
+  String get packageLabel => 'پیکج';
+
+  @override
+  String get pickupLabel => 'پک اپ';
+
+  @override
+  String get summaryReturn => 'واپسی';
+
+  @override
+  String get summaryTotal => 'کل';
+
+  @override
+  String get summaryTrip => 'سفر';
+
+  @override
+  String get summaryMode => 'موڈ';
+
+  @override
+  String get summaryPlate => 'نمبر پلیٹ';
+
+  @override
+  String get summaryRemaining => 'باقی رقم';
+
+  @override
+  String get packageContinue => 'جاری رکھیں';
+
+  @override
+  String get kycUpload => 'اپ لوڈ کریں';
+
+  @override
+  String get kycEncrypted => 'خفیہ شدہ';
+
+  @override
+  String get kycCustomer => 'گاہک';
+
+  @override
+  String get walletLabel => 'والیٹ';
+
+  @override
+  String get profileGuest => 'مہمان';
+
+  @override
+  String get homeTitle => 'تصدیق شدہ کرایہ شوروم تلاش کریں';
+
+  @override
+  String get homeSwitchToMap => 'انٹرایکٹو نقشہ دیکھیں';
+
+  @override
+  String get homeFindingShops => 'قریبی شوروم تلاش کیے جا رہے ہیں…';
+
+  @override
+  String get homeNearbyShowrooms => 'قریبی شورومز';
+
+  @override
+  String get homeMyLiveLocation => 'میری موجودہ جگہ';
+
+  @override
+  String get homeSwitchToList => 'فہرست دیکھیں';
+
+  @override
+  String get locationSetTitle => 'کرایہ کی جگہ مقرر کریں';
+
+  @override
+  String get locationCenterPin => 'جگہ کا پن مرکز میں رکھیں';
+
+  @override
+  String get locationPermissionDenied =>
+      'جگہ کی اجازت نہیں ملی۔ دریافت کے لیے شہر منتخب کریں۔';
+
+  @override
+  String get locationEnableGps =>
+      'براہ کرم اپنے آلے پر GPS / لوکیشن سروس آن کریں۔';
+
+  @override
+  String get locationSelectCityManually => 'شہر دستی طور پر منتخب کریں (لاہور)';
+
+  @override
+  String get locationAllowWhileUsing => 'ایپ استعمال کرتے ہوئے اجازت دیں';
+
+  @override
+  String get locationEnablePrecise => 'درست جگہ فعال کریں';
+
+  @override
+  String get locationPermissionExplainer =>
+      'رینٹل ہب آپ کے GPS کوآرڈینیٹس استعمال کر کے پاکستان میں آپ کے آس پاس 1 تا 5 کلومیٹر کے اندر تصدیق شدہ شورومز تلاش کرتا ہے۔';
+
+  @override
+  String get emptyRadarExpandHint =>
+      'قریبی منظور شدہ شورومز دیکھنے کے لیے اپنی GPS تلاش کا دائرہ 5 کلومیٹر تک بڑھائیں۔';
+
+  @override
+  String emptyRadarExpandToKm(int radius) {
+    return '$radius کلومیٹر تک پھیلائیں';
+  }
+
+  @override
+  String get emptyRadarNoShopsTitle => 'آپ کے قریب ابھی کوئی رینٹل شاپ نہیں ہے';
+
+  @override
+  String get emptyRadarNoShopsSubtitle =>
+      'کوئی اور علاقہ آزمائیں یا تمام شاپس دیکھیں۔';
+
+  @override
+  String get emptyRadarBrowseAll => 'تمام شاپس دیکھیں';
+
+  @override
+  String get noShopsBanner =>
+      'اس دائرے میں ابھی کوئی تصدیق شدہ شوروم نہیں۔ وسیع دائرہ آزمائیں۔';
+
+  @override
+  String get radiusLabel => 'دائرہ:';
+
+  @override
+  String get quickBookCar => 'گاڑی بک کریں';
+
+  @override
+  String get quickMyReservations => 'میری بکنگز';
+
+  @override
+  String get quickNearbyShops => 'قریبی شورومز';
+
+  @override
+  String get shopCarsTitle => 'دستیاب گاڑیاں';
+
+  @override
+  String get shopCarsLoading => 'دستیاب گاڑیاں لوڈ ہو رہی ہیں…';
+
+  @override
+  String get shopCarsLoadError =>
+      'اس شوروم کی گاڑیاں لوڈ نہیں ہو سکیں۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔';
+
+  @override
+  String get shopCarsTryOther =>
+      'کوئی اور زمرہ آزمائیں، یا بعد میں دوبارہ دیکھیں۔';
+
+  @override
+  String get shopSave => 'شوروم محفوظ کریں';
+
+  @override
+  String get shopSaved => 'محفوظ شدہ';
+
+  @override
+  String get shopSaveError => 'یہ شوروم محفوظ نہیں ہو سکا۔';
+
+  @override
+  String get shopSaveSignIn => 'شوروم محفوظ کرنے کے لیے سائن ان کریں۔';
+
+  @override
+  String get shopNoCars => 'اس شوروم کی کوئی گاڑی ابھی درج نہیں۔';
+
+  @override
+  String get shopCheckLater => 'بعد میں دوبارہ دیکھیں، یا دوسرے شورومز دیکھیں۔';
+
+  @override
+  String get shopLoadingCars => 'اس شوروم کی گاڑیاں لوڈ ہو رہی ہیں…';
+
+  @override
+  String get shopViewAllCars => 'تمام گاڑیاں فلٹر کے ساتھ دیکھیں';
+
+  @override
+  String get vehicleCapacity => 'گنجائش';
+
+  @override
+  String get vehicleFuelType => 'ایندھن کی قسم';
+
+  @override
+  String get vehicleMileage => 'مائلیج';
+
+  @override
+  String get vehicleTransmission => 'ٹرانسمیشن';
+
+  @override
+  String get vehicleChoosePackage => 'کرایہ پیکج منتخب کریں';
+
+  @override
+  String get couldNotOpenWhatsapp => 'واٹس ایپ نہیں کھولا جا سکا۔';
+
+  @override
+  String get couldNotCall => 'کال نہیں کی جا سکی۔';
+
+  @override
+  String get shopNoWhatsapp => 'اس شوروم کا واٹس ایپ نمبر درج نہیں۔';
+
+  @override
+  String get shopNoWhatsappShowroom => 'اس شوروم کا واٹس ایپ نمبر درج نہیں۔';
+
+  @override
+  String get bookingsTitle => 'میری بکنگز';
+
+  @override
+  String get bookingsLoading => 'آپ کی بکنگز لوڈ ہو رہی ہیں…';
+
+  @override
+  String get bookingsLoadError =>
+      'آپ کی بکنگز لوڈ نہیں ہو سکیں۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔';
+
+  @override
+  String get bookingsEmptyHint => 'آپ کی بکنگز یہاں ظاہر ہوں گی۔';
+
+  @override
+  String get bookingsPayAdvance => 'ایڈوانس ادا کریں';
+
+  @override
+  String get bookingsViewPass => 'پاس دیکھیں';
+
+  @override
+  String get bookingsRateTrip => 'سفر کی درجہ بندی کریں';
+
+  @override
+  String get activeTripTitle => 'فعال سفر';
+
+  @override
+  String get countdownToPickup => 'پک اپ تک باقی وقت';
+
+  @override
+  String get timeUntilReturn => 'واپسی تک باقی وقت';
+
+  @override
+  String get kmIncluded => 'کلومیٹر شامل';
+
+  @override
+  String get returnDue => 'واپسی کی تاریخ';
+
+  @override
+  String get totalFare => 'کل کرایہ';
+
+  @override
+  String get viewPickupPassQr => 'پک اپ پاس (QR) دیکھیں';
+
+  @override
+  String get viewPassQr => 'پاس / QR دیکھیں';
+
+  @override
+  String get activeRentalCar => 'فعال کرایہ گاڑی';
+
+  @override
+  String get handoverAtPickup => 'پک اپ پر حوالگی';
+
+  @override
+  String get odometerAtPickup => 'پک اپ پر اوڈومیٹر';
+
+  @override
+  String get fuelAtPickup => 'پک اپ پر ایندھن';
+
+  @override
+  String get damageNoted => 'نقصان درج ہے';
+
+  @override
+  String get handoverPendingNote =>
+      'شوروم حوالگی کے وقت اوڈومیٹر اور ایندھن کی سطح درج کرتا ہے — گاڑی ملنے کے بعد یہ یہاں ظاہر ہوں گے۔';
+
+  @override
+  String get browseOtherShops => 'دوسرے شورومز دیکھیں';
+
+  @override
+  String get cancelBooking => 'بکنگ منسوخ کریں';
+
+  @override
+  String get fileDispute => 'تنازع درج کریں';
+
+  @override
+  String get rateThisTrip => 'اس سفر کی درجہ بندی کریں';
+
+  @override
+  String get viewPickupPass => 'پک اپ پاس دیکھیں';
+
+  @override
+  String get summaryAdvancePaid => 'ایڈوانس ادا شدہ';
+
+  @override
+  String get summaryAdvanceRequired => 'ایڈوانس درکار';
+
+  @override
+  String get summaryDriveMode => 'ڈرائیونگ موڈ';
+
+  @override
+  String get summaryPickupTime => 'پک اپ کا وقت';
+
+  @override
+  String get summaryReturnDue => 'واپسی کی تاریخ';
+
+  @override
+  String get summaryPackageTier => 'پیکج کی قسم';
+
+  @override
+  String get summaryKmIncluded => 'کلومیٹر شامل';
+
+  @override
+  String get summarySecurityDeposit => 'سیکیورٹی ڈپازٹ';
+
+  @override
+  String get summaryTotalFare => 'کل کرایہ';
+
+  @override
+  String get summaryAdvancePayable => 'قابل ادا ایڈوانس';
+
+  @override
+  String get summaryBalanceAtHandover => 'حوالگی پر باقی رقم';
+
+  @override
+  String get walletTitle => 'والیٹ اور سیکیورٹی ایسکرو';
+
+  @override
+  String get walletActiveEscrow => 'فعال ایسکرو اور ایڈوانس';
+
+  @override
+  String get walletAdvancesPaid => 'ادا شدہ ایڈوانس';
+
+  @override
+  String get walletSecurityEscrow => 'سیکیورٹی ایسکرو';
+
+  @override
+  String get walletLedger => 'لین دین کی فہرست';
+
+  @override
+  String get walletHideAmount => 'رقم چھپائیں';
+
+  @override
+  String get walletShowAmount => 'رقم دکھائیں';
+
+  @override
+  String get walletHideBalance => 'بیلنس چھپائیں';
+
+  @override
+  String get walletShowBalance => 'بیلنس دکھائیں';
+
+  @override
+  String get walletEmptyHint => 'ایڈوانس اور ڈپازٹ یہاں ظاہر ہوں گے۔';
+
+  @override
+  String get walletLedgerEmptyHint =>
+      'آپ کے ادا کردہ ایڈوانس اور ڈپازٹ یہاں ظاہر ہوں گے۔';
+
+  @override
+  String get walletLoadError =>
+      'آپ کا والیٹ لوڈ نہیں ہو سکا۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔';
+
+  @override
+  String get walletLoading => 'آپ کا والیٹ لوڈ ہو رہا ہے…';
+
+  @override
+  String get walletNoActivity => 'ابھی کوئی والیٹ سرگرمی نہیں۔';
+
+  @override
+  String get profileTotalTrips => 'کل سفر';
+
+  @override
+  String get profileTrustScore => 'اعتماد اسکور';
+
+  @override
+  String get profileLoading => 'آپ کا پروفائل لوڈ ہو رہا ہے…';
+
+  @override
+  String get profileNotSignedIn => 'سائن ان نہیں ہیں۔';
+
+  @override
+  String get profileNotSignedInShort => 'سائن ان نہیں ہیں';
+
+  @override
+  String get profileSavedShops => 'محفوظ شدہ شورومز';
+
+  @override
+  String get profileSavedShopsSubtitle => 'محفوظ شدہ کرایہ ایجنسیاں';
+
+  @override
+  String get profileMyDocuments => 'میرے دستاویزات (KYC)';
+
+  @override
+  String get profileKycSubtitle =>
+      'شناختی کارڈ (آگے/پیچھے) اور ڈرائیونگ لائسنس';
+
+  @override
+  String get profileSettingsLanguage => 'ترتیبات اور زبان';
+
+  @override
+  String get profileSettingsSubtitle => 'انگریزی / اردو، اطلاعات';
+
+  @override
+  String get profileSaved => 'پروفائل محفوظ ہو گیا۔';
+
+  @override
+  String get editProfile => 'پروفائل میں ترمیم کریں';
+
+  @override
+  String get editFullName => 'پورا نام';
+
+  @override
+  String get editPhone => 'فون';
+
+  @override
+  String get editCnicOptional => 'شناختی کارڈ (اختیاری)';
+
+  @override
+  String get editEnterName => 'براہ کرم اپنا نام درج کریں۔';
+
+  @override
+  String get editSaveProfile => 'پروفائل محفوظ کریں';
+
+  @override
+  String get editSaving => 'محفوظ کیا جا رہا ہے…';
+
+  @override
+  String get cnicLabel => 'شناختی کارڈ';
+
+  @override
+  String get cnicHide => 'شناختی کارڈ چھپائیں';
+
+  @override
+  String get cnicShow => 'شناختی کارڈ دکھائیں';
+
+  @override
+  String get profileEditProfile => 'پروفائل میں ترمیم کریں';
+
+  @override
+  String get reputationTitle => 'میرا اعتماد اور ساکھ';
+
+  @override
+  String get reputationShopRatings => 'شورومز کی آپ کے بارے میں درجہ بندی';
+
+  @override
+  String get reputationEmpty =>
+      'ابھی کسی شوروم نے آپ کی درجہ بندی نہیں کی۔ آپ کی ساکھ پہلے مکمل سفر کے بعد یہاں ظاہر ہوگی۔';
+
+  @override
+  String get reputationVisibleNote =>
+      'شورومز آپ کی بکنگ درخواستوں کا جائزہ لیتے وقت یہ درجہ بندی دیکھتے ہیں۔';
+
+  @override
+  String get reputationPunctuality => 'وقت پر حوالگی کی پابندی';
+
+  @override
+  String get reputationVehicleCare => 'گاڑی کی دیکھ بھال اور صفائی';
+
+  @override
+  String get reputationStaffBehavior => 'عملے سے برتاؤ';
+
+  @override
+  String get reputationTrustScoreDash => 'اعتماد اسکور: —';
+
+  @override
+  String get disputesMyTitle => 'میرے تنازعات';
+
+  @override
+  String get disputesEmpty => 'ابھی کوئی تنازع درج نہیں کیا گیا۔';
+
+  @override
+  String get savedShopsEmpty => 'ابھی کوئی محفوظ شدہ شوروم نہیں۔';
+
+  @override
+  String get savedShopsEmptyHint =>
+      'کسی بھی شوروم پر دل والے نشان پر ٹیپ کر کے اسے یہاں محفوظ کریں۔';
+
+  @override
+  String get savedShopsRemove => 'محفوظ شدہ سے ہٹائیں';
+
+  @override
+  String get savedShopsRemoveError => 'یہ شوروم ہٹایا نہیں جا سکا۔';
+
+  @override
+  String get supportTitle => 'مدد اور سپورٹ سینٹر';
+
+  @override
+  String get supportSearchHint => 'مدد تلاش کریں';
+
+  @override
+  String get supportCallShop => 'اپنے شوروم کو کال کریں';
+
+  @override
+  String get supportWhatsappShop => 'اپنے شوروم کو واٹس ایپ کریں';
+
+  @override
+  String get supportNoBooking => 'ابھی کوئی بکنگ نہیں';
+
+  @override
+  String get supportNoBookingHint =>
+      'ابھی کوئی بکنگ نہیں — بکنگ ہونے کے بعد شوروم کا رابطہ یہاں ظاہر ہوگا۔';
+
+  @override
+  String get supportFileDispute => 'باقاعدہ شکایت / تنازع درج کریں';
+
+  @override
+  String get supportDisputeHint =>
+      'زیادہ چارج یا ڈپازٹ روکا گیا؟ ثالثی کا دعویٰ درج کریں۔';
+
+  @override
+  String get supportFaqTitle => 'اکثر پوچھے جانے والے سوالات';
+
+  @override
+  String get supportFaqEmpty => 'آپ کی تلاش سے کوئی مدد کا موضوع نہیں ملا۔';
+
+  @override
+  String get supportFaqEmptyHint =>
+      'کوئی اور لفظ آزمائیں، یا اپنے شوروم سے براہ راست پوچھیں۔';
+
+  @override
+  String get supportSosTitle => 'ایمرجنسی SOS';
+
+  @override
+  String get supportSosSubtitle =>
+      'پولیس 15 · ریسکیو 1122 — ایک ٹیپ میں ایمرجنسی مدد۔';
+
+  @override
+  String get supportFaqQ1 => 'ایڈوانس ادائیگی میری بکنگ کی حفاظت کیسے کرتی ہے؟';
+
+  @override
+  String get supportFaqA1 =>
+      'آپ کی ایڈوانس ادائیگی گاڑی کو آپ کے مقررہ وقت کے لیے خصوصی طور پر محفوظ کرتی ہے اور شوروم کی بکنگ کی ضمانت دیتی ہے۔ یہ محفوظ طریقے سے درج کی جاتی ہے اور آپ کے حتمی بل سے منہا کر دی جاتی ہے۔';
+
+  @override
+  String get supportFaqQ2 => 'میرا سیکیورٹی ڈپازٹ کب واپس ملتا ہے؟';
+
+  @override
+  String get supportFaqA2 =>
+      'ڈپازٹ واپسی کی حوالگی پر طے کیا جاتا ہے۔ اضافی کلومیٹر، ایندھن یا نقصان کی کوئی بھی کٹوتی تصفیے میں دکھائی جاتی ہے، اور باقی رقم آپ کو واپس کر دی جاتی ہے۔';
+
+  @override
+  String get supportFaqQ3 => 'اگر گاڑی خراب ہو جائے تو کیا ہوتا ہے؟';
+
+  @override
+  String get supportFaqA3 =>
+      'سڑک پر مدد شوروم پر منحصر ہے — گاڑی لیتے وقت اپنے شوروم سے پوچھیں۔ ایمرجنسی کے لیے ایمرجنسی SOS اسکرین استعمال کریں۔';
+
+  @override
+  String get supportFaqQ4 =>
+      'کیا میں کرایہ کی گاڑی شہر سے باہر لے جا سکتا ہوں؟';
+
+  @override
+  String get supportFaqA4 =>
+      'جی ہاں، شہر سے باہر کے پیکج دستیاب ہیں۔ \"Out of City\" درجہ منتخب کریں یا ٹریکر کلیئرنس کے لیے شوروم کو پہلے سے مطلع کریں۔';
+
+  @override
+  String get supportMessageTitle => 'سپورٹ کو پیغام بھیجیں';
+
+  @override
+  String get supportMessageLabel => 'کیا مسئلہ ہوا؟';
+
+  @override
+  String get supportMessageHint =>
+      'بتائیں کیا مسئلہ ہوا۔ ہماری ٹیم واٹس ایپ پر رابطہ کرے گی — جوابات ابھی ایپ میں ظاہر نہیں ہوتے۔';
+
+  @override
+  String get supportUrgencyLabel => 'یہ کتنا ضروری ہے؟';
+
+  @override
+  String get supportSendMessage => 'پیغام بھیجیں';
+
+  @override
+  String get supportSending => 'بھیجا جا رہا ہے…';
+
+  @override
+  String get supportWriteFirst => 'براہ کرم پہلے اپنا پیغام لکھیں۔';
+
+  @override
+  String get supportMessageSent =>
+      'پیغام بھیج دیا گیا۔ ہماری ٹیم واٹس ایپ پر رابطہ کرے گی۔';
+
+  @override
+  String get sosTitle => 'ایمرجنسی SOS مدد';
+
+  @override
+  String get sosPress => 'ایمرجنسی میں SOS دبائیں';
+
+  @override
+  String get sosExplainer =>
+      'SOS بٹن پولیس 15 کو کال کرتا ہے۔ آپ ریسکیو 1122 کو بھی کال کر سکتے ہیں یا اپنی موجودہ جگہ شوروم کے ساتھ شیئر کر سکتے ہیں۔';
+
+  @override
+  String get sosCallPolice => 'پولیس 15 کو کال کریں';
+
+  @override
+  String get sosCallRescue => 'ریسکیو 1122 کو کال کریں';
+
+  @override
+  String get sosCallPoliceEmergency => 'پولیس ایمرجنسی 15 کو کال کریں';
+
+  @override
+  String get sosCallPoliceConfirm => 'پولیس 15 کو کال کریں؟';
+
+  @override
+  String get sosCallPoliceConfirmHint =>
+      'اس سے پولیس ایمرجنسی نمبر (15) ڈائل ہوتا ہے۔ صرف حقیقی ایمرجنسی میں استعمال کریں۔';
+
+  @override
+  String get sosPoliceSubtitle =>
+      'پنجاب اور وفاقی پولیس کی براہ راست ہیلپ لائن';
+
+  @override
+  String get sosRescueSubtitle => 'ایمبولینس، فائر اور ریسکیو سروسز';
+
+  @override
+  String get sosPolice => 'پولیس 15';
+
+  @override
+  String get sosRescue => 'ریسکیو 1122';
+
+  @override
+  String get sosShareLocation => 'واٹس ایپ کے ذریعے موجودہ جگہ شیئر کریں';
+
+  @override
+  String get sosSendToShop => 'اپنی موجودہ جگہ اپنے شوروم کو بھیجیں';
+
+  @override
+  String get sosNoBookingHint =>
+      'ابھی کوئی بکنگ نہیں — بکنگ ہونے کے بعد آپ کی موجودہ جگہ آپ کے شوروم کے ساتھ شیئر کی جائے گی۔';
+
+  @override
+  String get sosLocationPermission =>
+      'اپنی موجودہ جگہ شیئر کرنے کے لیے جگہ کی اجازت درکار ہے۔';
+
+  @override
+  String get disputeTitle => 'شکایت / تنازع درج کریں';
+
+  @override
+  String get disputeDepositWithheld => 'ڈپازٹ روکا گیا';
+
+  @override
+  String get disputeOvercharge => 'شوروم کی زیادہ چارجنگ';
+
+  @override
+  String get disputeBreakdown => 'گاڑی خراب ہونے سے تاخیر';
+
+  @override
+  String get disputeDamagePenalty => 'ناانصافی پر مبنی نقصان کا جرمانہ';
+
+  @override
+  String get disputeRudeStaff => 'بدتمیز / غیر پیشہ ور عملہ';
+
+  @override
+  String get disputeSelectCategory => 'تنازع کی قسم منتخب کریں';
+
+  @override
+  String get disputeBookingId => 'بکنگ ID / حوالہ';
+
+  @override
+  String get disputeBookingIdHint => 'مثلاً RH-849201';
+
+  @override
+  String get disputeDetailsLabel => 'تفصیلی وضاحت';
+
+  @override
+  String get disputeDetailsHint =>
+      'بتائیں کیا ہوا — تاریخوں، رقموں اور شوروم عملے کے ناموں کے ساتھ…';
+
+  @override
+  String get disputeRecordedNote =>
+      'آپ کا تنازع درج کر کے جائزے کے لیے شوروم کے ساتھ شیئر کیا جاتا ہے۔ حل کا کوئی مقررہ وقت ابھی نہیں۔';
+
+  @override
+  String get disputeEnterBookingId => 'براہ کرم اپنی بکنگ ID درج کریں۔';
+
+  @override
+  String get disputeExplainIssue => 'براہ کرم پیش آنے والا مسئلہ بیان کریں۔';
+
+  @override
+  String get disputeSubmit => 'دعویٰ جمع کریں';
+
+  @override
+  String get disputeSubmitting => 'تنازع جمع کیا جا رہا ہے…';
+
+  @override
+  String get disputeFiled =>
+      'تنازع درج ہو گیا۔ شوروم اسے اپنے تنازعات کے ان باکس میں دیکھ سکتا ہے۔';
+
+  @override
+  String disputeFiledAgo(String time) {
+    return '$time قبل درج کیا گیا';
+  }
+
+  @override
+  String disputeSlaLeft(String time) {
+    return '$time باقی';
+  }
+
+  @override
+  String get disputeSavedOffline =>
+      'تنازع اس آلے پر محفوظ ہو گیا — آن لائن ہونے پر شوروم تک پہنچ جائے گا۔';
+
+  @override
+  String get cancelReasonLabel => 'منسوخی کی وجہ';
+
+  @override
+  String get cancelTitle => 'بکنگ منسوخ کریں';
+
+  @override
+  String get cancelConfirm => 'منسوخی کی تصدیق کریں';
+
+  @override
+  String get cancelCancelling => 'منسوخ کیا جا رہا ہے…';
+
+  @override
+  String get cancelWhatHappens => 'منسوخ کرنے پر کیا ہوتا ہے';
+
+  @override
+  String get cancelNoAdvanceNote =>
+      'ابھی کوئی ایڈوانس ادا نہیں ہوا، اس لیے واپسی کے لیے کچھ نہیں۔ کوئی سیکیورٹی ڈپازٹ نہیں لیا گیا: ڈپازٹ صرف حوالگی پر لیا جاتا ہے۔';
+
+  @override
+  String get cancelDone => 'بکنگ منسوخ کر دی گئی۔';
+
+  @override
+  String get cancelReasonPlans => 'سفر کے منصوبے بدل گئے';
+
+  @override
+  String get cancelReasonOtherVehicle => 'دوسری گاڑی مل گئی';
+
+  @override
+  String get cancelReasonShopDelay => 'شوروم کی منظوری میں تاخیر';
+
+  @override
+  String get cancelReasonEmergency => 'اچانک ایمرجنسی';
+
+  @override
+  String get cancelReasonOther => 'دوسری وجہ';
+
+  @override
+  String get rateTitle => 'اپنے تجربے کی درجہ بندی کریں';
+
+  @override
+  String get rateVehicleCondition => 'گاڑی کی حالت اور صفائی';
+
+  @override
+  String get rateVehicleHint => 'AC کولنگ، ٹائر، اندرونی حالت، مکینکی حالت';
+
+  @override
+  String get rateShopService => 'شوروم سروس کا معیار';
+
+  @override
+  String get rateShopHint => 'حوالگی کی رفتار، عملے کا برتاؤ، شفافیت';
+
+  @override
+  String get rateFeedbackLabel => 'اضافی رائے (اختیاری)';
+
+  @override
+  String get rateFeedbackHint =>
+      'مستقبل کے کرایہ داروں کے لیے کوئی خاص بات یا تجویز شیئر کریں…';
+
+  @override
+  String get rateSubmit => 'سفر کا جائزہ جمع کریں';
+
+  @override
+  String get rateSubmitting => 'جمع کیا جا رہا ہے…';
+
+  @override
+  String get rateSaved => 'شکریہ! آپ کا جائزہ اس سفر کے لیے محفوظ ہو گیا۔';
+
+  @override
+  String get rateAlreadyRated =>
+      'آپ اس سفر کی درجہ بندی کر چکے ہیں — آپ کا جائزہ نیچے دکھایا گیا ہے۔';
+
+  @override
+  String get rateSavedOffline =>
+      'اس آلے پر محفوظ ہو گیا — آن لائن ہونے پر سنک ہو جائے گا۔';
+
+  @override
+  String get reviewTitle => 'بکنگ کا جائزہ لیں';
+
+  @override
+  String get reviewSpecialInstructions => 'شوروم کے لیے خصوصی ہدایات';
+
+  @override
+  String get reviewInstructionsHint =>
+      'مثلاً صاف گاڑی چاہیے، ایئرپورٹ ٹرمینل سے پک اپ…';
+
+  @override
+  String get reviewSendRequest => 'مالک کو درخواست بھیجیں';
+
+  @override
+  String get reviewSending => 'درخواست بھیجی جا رہی ہے…';
+
+  @override
+  String get reviewSent => 'بکنگ کی درخواست شوروم کو بھیج دی گئی!';
+
+  @override
+  String get approvedTitle => 'بکنگ منظور ہو گئی!';
+
+  @override
+  String get approvedReadyAdvance => 'ایڈوانس ادائیگی کے لیے تیار';
+
+  @override
+  String get successTitle => 'درخواست کامیابی سے بھیج دی گئی!';
+
+  @override
+  String get successTransmitted => 'درخواست منتقل ہو گئی';
+
+  @override
+  String get successAdvanceDue => 'منظوری پر قابل ادا ایڈوانس:';
+
+  @override
+  String get successShopStatus => 'شوروم کی حالت:';
+
+  @override
+  String get successMessageShop => 'شوروم کو واٹس ایپ پر پیغام بھیجیں';
+
+  @override
+  String get successViewPayment => 'ادائیگی کی تفصیل / حالت دیکھیں';
+
+  @override
+  String get successBackToBookings => 'میری بکنگز پر واپس جائیں';
+
+  @override
+  String get paymentAccountsTitle => 'شوروم کے ادائیگی اکاؤنٹس';
+
+  @override
+  String get paymentAccountsDirect => 'براہ راست منتقلی کے ذرائع';
+
+  @override
+  String get paymentBankTransfer => 'بینک ٹرانسفر';
+
+  @override
+  String get paymentJazzcash => 'جیز کیش';
+
+  @override
+  String get paymentEasypaisa => 'ایزی پیسہ';
+
+  @override
+  String get paymentVerified => 'رینٹل ہب تصدیق شدہ';
+
+  @override
+  String get paymentApprovedTitle => 'بکنگ کی درخواست منظور ہو گئی!';
+
+  @override
+  String get paymentPayHint =>
+      'نیچے دیے گئے تصدیق شدہ شوروم اکاؤنٹس پر ادائیگی کریں اور اپنی منتقلی کا اسکرین شاٹ لیں۔';
+
+  @override
+  String get paymentNoAccounts =>
+      'اس شوروم کے لیے ابھی کوئی ادائیگی اکاؤنٹ مقرر نہیں۔';
+
+  @override
+  String get paymentAddAccountsNote =>
+      'شوروم کی ترتیبات میں جیز کیش، ایزی پیسہ یا بینک اکاؤنٹس شامل کریں تاکہ گاہکوں کو معلوم ہو کہاں ادائیگی کرنی ہے۔';
+
+  @override
+  String get paymentLoading => 'ادائیگی اکاؤنٹس لوڈ ہو رہے ہیں…';
+
+  @override
+  String get paymentUploadProof => 'ادائیگی کا ثبوت اور رسید اپ لوڈ کریں';
+
+  @override
+  String get proofSelectedCar => 'منتخب شدہ گاڑی';
+
+  @override
+  String get proofScreenshot => 'ثبوت کا اسکرین شاٹ';
+
+  @override
+  String get proofTidLabel => 'لین دین کا حوالہ / TID';
+
+  @override
+  String get proofTidHint => 'جیز کیش / بینک TID درج کریں (مثلاً 892019281)';
+
+  @override
+  String get proofAttachFirst =>
+      'براہ کرم اپنی ادائیگی کا اسکرین شاٹ یا رسید منسلک کریں۔';
+
+  @override
+  String get proofEnterTid => 'براہ کرم لین دین کا حوالہ / TID درج کریں۔';
+
+  @override
+  String get proofSubmit => 'ادائیگی کا ثبوت جمع کریں';
+
+  @override
+  String get proofUploading => 'ثبوت اپ لوڈ ہو رہا ہے…';
+
+  @override
+  String get proofSubmitted => 'ثبوت جمع ہو گیا! شوروم کی تصدیق کا انتظار ہے۔';
+
+  @override
+  String get proofSubmittedOffline =>
+      'ثبوت جمع ہو گیا! آن لائن ہونے پر رسید سنک ہو جائے گی۔';
+
+  @override
+  String get proofPrivateNote =>
+      'ثبوت نجی اسٹوریج پر اپ لوڈ ہوتا ہے۔ شوروم اسے چیک کر کے آپ کی بکنگ کی تصدیق کرتا ہے — انتظار کا کوئی مقررہ وقت نہیں۔';
+
+  @override
+  String get passTitle => 'پک اپ کاؤنٹ ڈاؤن پاس';
+
+  @override
+  String get passDoneHome => 'مکمل • ہوم پر واپس جائیں';
+
+  @override
+  String get passRentalVehicle => 'کرایہ کی گاڑی';
+
+  @override
+  String get passPickupTarget => 'پک اپ کا ہدف:';
+
+  @override
+  String get passShowQr => 'حوالگی کے وقت یہ QR کوڈ شوروم عملے کو دکھائیں';
+
+  @override
+  String get countdownHours => 'گھنٹے';
+
+  @override
+  String get countdownMinutes => 'منٹ';
+
+  @override
+  String get countdownSeconds => 'سیکنڈ';
+
+  @override
+  String get packageSelectTitle => 'کرایہ پیکج منتخب کریں';
+
+  @override
+  String get packageTiersTitle => 'دستیاب دورانیے کی اقسام';
+
+  @override
+  String get pkg1h => '1 گھنٹہ شہر کا سفر';
+
+  @override
+  String get pkg3h => '3 گھنٹہ فوری سفر';
+
+  @override
+  String get pkg6h => '6 گھنٹہ ایکسپریس';
+
+  @override
+  String get pkg12h => '12 گھنٹہ آدھا دن';
+
+  @override
+  String get pkgDaily => 'روزانہ 24 گھنٹے';
+
+  @override
+  String get pkgWeeklyPackage => 'ہفتہ وار پیکج';
+
+  @override
+  String get pkg1hDesc => 'شہر میں فوری سفر';
+
+  @override
+  String get pkg3hDesc => 'ایئرپورٹ ڈراپ/پک اپ اور مختصر سفر';
+
+  @override
+  String get pkg12hDesc => 'شہر کے کاموں، شادیوں اور ملاقاتوں کے لیے بہترین';
+
+  @override
+  String get pkg6hDesc => 'آدھے دن کی سیر و تقریبات';
+
+  @override
+  String get pkgDailyDesc => 'پورے دن کی سہولت معہ مہلت واپسی';
+
+  @override
+  String get pkgWeeklyDesc => 'سات دن، ایک قیمت';
+
+  @override
+  String get tripFixedRoutes => 'اس شوروم کے مقررہ روٹس';
+
+  @override
+  String get tripTrackerNote =>
+      'ٹریکر کلیئرنس درکار ہے — شوروم پک اپ سے پہلے اس کی تصدیق کرتا ہے۔';
+
+  @override
+  String get advanceNoticeTitle => 'ایڈوانس اور تصدیق کی اطلاع';
+
+  @override
+  String get pickerPickupDate => 'پک اپ کی تاریخ';
+
+  @override
+  String get pickerPickupSchedule => 'پک اپ کا شیڈول';
+
+  @override
+  String get pickerDuration => 'کرایہ کی مدت';
+
+  @override
+  String get pickerIncreaseDays => 'کرایہ کے دن بڑھائیں';
+
+  @override
+  String get pickerDecreaseDays => 'کرایہ کے دن کم کریں';
+
+  @override
+  String get proofCaptureCamera => 'کیمرے سے تصویر لیں';
+
+  @override
+  String get proofFromGallery => 'گیلری سے';
+
+  @override
+  String get proofScreenshotReady => 'اسکرین شاٹ تیار ہے';
+
+  @override
+  String get proofScreenshotSupport => 'بینکنگ ایپ کی JPG، PNG رسید معاون ہے';
+
+  @override
+  String get proofUploadScreenshot => 'منتقلی کا اسکرین شاٹ اپ لوڈ کریں';
+
+  @override
+  String paymentProofPayTo(String account) {
+    return 'ادائیگی برائے: $account';
+  }
+
+  @override
+  String get paymentAccountMobile => 'اکاؤنٹ / موبائل';
+
+  @override
+  String get paymentAccountTitle => 'اکاؤنٹ کا عنوان';
+
+  @override
+  String get paymentCopyNumber => 'نمبر کاپی کریں';
+
+  @override
+  String get paymentIban => 'IBAN نمبر';
+
+  @override
+  String get passCallShop => 'شوروم کو کال کریں';
+
+  @override
+  String get passDirections => 'راستہ';
+
+  @override
+  String get passHandoverPoint => 'شوروم حوالگی کی جگہ';
+
+  @override
+  String get passViewAgreement => 'کرایہ معاہدہ (PDF) دیکھیں';
+
+  @override
+  String get passAgreementHint =>
+      'حوالگی کے بعد آپ کا دستخط شدہ کرایہ معاہدہ یہاں ظاہر ہوگا۔';
+
+  @override
+  String get passNoLocation => 'اس شوروم کی جگہ ابھی درج نہیں۔';
+
+  @override
+  String get passNoPhone => 'اس شوروم کا فون نمبر ابھی درج نہیں۔';
+
+  @override
+  String get passOpenMapsError => 'نقشہ نہیں کھولا جا سکا۔';
+
+  @override
+  String get passOpenAgreementError => 'معاہدہ نہیں کھولا جا سکا۔';
+
+  @override
+  String get driverRequiresCnic => 'شناختی کارڈ + ڈپازٹ درکار ہے';
+
+  @override
+  String get driverVerifiedIncluded => 'تصدیق شدہ ڈرائیور شامل ہے';
+
+  @override
+  String get authWelcome => 'رینٹل ہب میں خوش آمدید';
+
+  @override
+  String get authSignInSubtitle =>
+      'اپنے قریب گاڑی کرایہ پر لینے کے لیے سائن ان کریں';
+
+  @override
+  String get authEmail => 'ای میل پتہ';
+
+  @override
+  String get authPassword => 'پاس ورڈ';
+
+  @override
+  String get authSignInEmail => 'ای میل سے سائن ان کریں';
+
+  @override
+  String get authSignedIn => 'کامیابی سے سائن ان ہو گئے!';
+
+  @override
+  String get authSignedInGoogle => 'گوگل سے سائن ان ہو گئے!';
+
+  @override
+  String get authUnavailable =>
+      'تصدیق دستیاب نہیں ہے۔ براہ کرم بعد میں دوبارہ کوشش کریں۔';
+
+  @override
+  String get authValidEmail => 'براہ کرم درست ای میل پتہ درج کریں۔';
+
+  @override
+  String get authPasswordLength => 'پاس ورڈ کم از کم 6 حروف کا ہونا چاہیے۔';
+
+  @override
+  String get authTagline =>
+      'پاکستان کا بہترین کار رینٹل اور فلیٹ نظام • خوش آمدید';
+
+  @override
+  String get authGoogle => 'گوگل سے جاری رکھیں';
+
+  @override
+  String get onboardingStep1 => 'مرحلہ 1: آپ کا پروفائل';
+
+  @override
+  String get onboardingEnterContact => 'اپنی رابطے کی معلومات درج کریں';
+
+  @override
+  String get onboardingFullName => 'پورا نام';
+
+  @override
+  String get onboardingWhatsappNumber => 'واٹس ایپ نمبر';
+
+  @override
+  String get onboardingValidPhone =>
+      '3 سے شروع ہونے والا درست 10 ہندسوں کا نمبر درج کریں (مثلاً 300 1234567)';
+
+  @override
+  String get onboardingValidNamePhone =>
+      'براہ کرم درست پورا نام اور پاکستانی واٹس ایپ نمبر (+92 3XX یا 03XX) درج کریں۔';
+
+  @override
+  String get onboardingNameRequired => 'پورا نام درکار ہے';
+
+  @override
+  String get onboardingNameLength => 'نام کم از کم 3 حروف کا ہونا چاہیے';
+
+  @override
+  String get onboardingPhoneRequired => 'واٹس ایپ نمبر درکار ہے';
+
+  @override
+  String get onboardingContinueRole => 'کردار کے انتخاب پر جائیں';
+
+  @override
+  String get onboardingProfileVerified => 'پروفائل کی تفصیل کی تصدیق ہو گئی۔';
+
+  @override
+  String get onboardingStep2 => 'مرحلہ 2: اکاؤنٹ کا کردار';
+
+  @override
+  String get roleSelectTitle => 'مستقل اکاؤنٹ کردار منتخب کریں';
+
+  @override
+  String get roleSelectSubtitle =>
+      'منتخب کریں کہ آپ رینٹل ہب کیسے استعمال کرنا چاہتے ہیں';
+
+  @override
+  String get roleCustomer => 'گاڑی کرایہ پر لیں (گاہک)';
+
+  @override
+  String get roleCustomerTitle => 'گاہک (گاڑی کرایہ پر لیں)';
+
+  @override
+  String get roleCustomerDesc =>
+      '1 تا 5 کلومیٹر کے اندر تصدیق شدہ شورومز تلاش کریں، سیلف ڈرائیو یا ڈرائیور والے پیکج بک کریں۔';
+
+  @override
+  String get roleOwner => 'فلیٹ مالک (شوروم)';
+
+  @override
+  String get roleOwnerTitle => 'میری گاڑیاں درج کریں (شوروم مالک)';
+
+  @override
+  String get roleOwnerDesc =>
+      'اپنا شوروم رجسٹر کریں، فلیٹ کے نرخ، ڈیجیٹل حوالگی اور رینٹل ہب کی مشترکہ بلیک لسٹ کا انتظام کریں۔';
+
+  @override
+  String get roleContinueCustomer => 'گاہک کے طور پر جاری رکھیں';
+
+  @override
+  String get roleContinueOwner => 'فلیٹ مالک کے طور پر جاری رکھیں';
+
+  @override
+  String get roleReview => 'انتخاب کا جائزہ لیں';
+
+  @override
+  String get roleSecurityPolicy =>
+      'سیکیورٹی پالیسی: کردار کا انتخاب ایک طرفہ ہے اور تصدیق کے بعد تبدیل نہیں ہو سکتا۔';
+
+  @override
+  String get roleLockProceed => 'میرا کردار مقفل کریں اور آگے بڑھیں';
+
+  @override
+  String get roleConfirm => 'مستقل کردار کی تصدیق کریں';
+
+  @override
+  String get stepperProfile => '1۔ پروفائل کی معلومات';
+
+  @override
+  String get stepperRole => '2۔ کردار منتخب کریں';
+
+  @override
+  String get avatarSelectPhoto => 'پروفائل تصویر منتخب کریں';
+
+  @override
+  String get avatarSetPicture => 'پروفائل تصویر لگائیں';
+
+  @override
+  String get avatarChangePhoto => 'پروفائل تصویر تبدیل کریں';
+
+  @override
+  String get avatarTakePhoto => 'تصویر لیں';
+
+  @override
+  String get avatarFromGallery => 'گیلری سے منتخب کریں';
+
+  @override
+  String get kycTitle => 'نادرا شناختی کارڈ اور ڈرائیونگ لائسنس KYC';
+
+  @override
+  String get kycSubmittedNote =>
+      'KYC دستاویزات جمع کرا دی گئیں — تصدیق زیر التواء ہے۔';
+
+  @override
+  String get kycVaultNote => 'نجی cPanel والٹ • شناختی کارڈ تصدیق';
+
+  @override
+  String get kycStatusSubmitted => 'جمع کرایا گیا — تصدیق زیر التواء ہے';
+
+  @override
+  String get kycStatusRejected => 'مسترد — براہ کرم دوبارہ جمع کریں';
+
+  @override
+  String get kycCnicNumber => '13 ہندسوں کا نادرا شناختی کارڈ نمبر';
+
+  @override
+  String get kycCnicRead => 'شناختی کارڈ نمبر کارڈ سے پڑھ لیا گیا۔';
+
+  @override
+  String get kycHighResHint => 'صاف تصویر کے ساتھ ہائی ریزولوشن اسکین';
+
+  @override
+  String get kycCnicBack => 'نادرا شناختی کارڈ — پچھلی جانب';
+
+  @override
+  String get kycCnicFront => 'نادرا شناختی کارڈ — اگلی جانب';
+
+  @override
+  String get kycAttachBoth =>
+      'براہ کرم اپنے نادرا شناختی کارڈ کی اگلی اور پچھلی دونوں تصویریں منسلک کریں۔';
+
+  @override
+  String get kycQrHint => 'QR کوڈ اور پتہ صاف نظر آئے';
+
+  @override
+  String get kycSelfDriveNote => 'سیلف ڈرائیو کرایہ پیکجوں کے لیے درکار ہے';
+
+  @override
+  String get kycScanCard => 'شناختی کارڈ اسکین کریں';
+
+  @override
+  String get kycScanning => 'کارڈ اسکین ہو رہا ہے…';
+
+  @override
+  String get kycSubmit => 'KYC دستاویزات جمع کریں';
+
+  @override
+  String get kycUploading => 'اپ لوڈ ہو رہا ہے…';
+
+  @override
+  String get kycLicense => 'درست پاکستانی ڈرائیونگ لائسنس (LTV/HTV)';
+
+  @override
+  String get kycFromGallery => 'گیلری سے منتخب کریں';
+
+  @override
+  String get kycTakePhoto => 'تصویر لیں';
+
+  @override
+  String get settingsPushSubtitle => 'بکنگ کی منظوری اور ادائیگی کی اطلاعات';
+
+  @override
+  String get settingsWhatsappSubtitle => 'معاہدہ اور حوالگی کی رسیدیں';
+
+  @override
+  String get settingsNotifNote =>
+      'اطلاعات کی ترجیحات آپ کے پروفائل پر محفوظ ہوتی ہیں جب آپ کا گاہک ریکارڈ بن جائے۔';
+
+  @override
+  String get shopCategorySedan => 'سیڈان';
+
+  @override
+  String get shopCategorySuv => 'ایس یو وی';
+
+  @override
+  String get shopCategoryHiace => 'ہائی ایس';
+
+  @override
+  String get shopCategoryLuxury => 'لگژری';
+
+  @override
+  String get summaryWithDriver => 'ڈرائیور کے ساتھ';
+
+  @override
+  String get summarySelfDrive => 'سیلف ڈرائیو';
+
+  @override
+  String get summaryDeclinedPrefix => 'شوروم نے یہ درخواست مسترد کر دی: ';
+
+  @override
+  String get proofRejectedPrefix =>
+      'آپ کی ادائیگی کا ثبوت مسترد کر دیا گیا — براہ کرم نیا ثبوت اپ لوڈ کریں: ';
+
+  @override
+  String get cancellationReasonPrefix => 'منسوخی کی وجہ: ';
+
+  @override
+  String get proofWithShop =>
+      'آپ کی ادائیگی کا ثبوت شوروم کے پاس ہے۔ تصدیق کے بعد آپ کا پک اپ پاس یہاں نظر آئے گا۔';
+
+  @override
+  String get kycScanUnreadable =>
+      'اس تصویر سے شناختی کارڈ نمبر نہیں پڑھا جا سکا — براہ کرم خود لکھیں۔';
+
+  @override
+  String get trustKycVerified => 'KYC تصدیق شدہ';
+
+  @override
+  String get trustKycPending => 'KYC زیر التواء';
+
+  @override
+  String get trustBlacklisted => 'بلیک لسٹ میں شامل';
+
+  @override
+  String get trustNoBlacklist => 'بلیک لسٹ کا کوئی ریکارڈ نہیں';
+
+  @override
+  String get vehicleSelfDriveUrdu => 'سیلف ڈرائیو';
+
+  @override
+  String get vehicleWithDriverUrdu => 'ڈرائیور کے ساتھ';
+
+  @override
+  String get roleCustomerUrdu => 'گاڑی کرایہ پر لیں';
+
+  @override
+  String get roleOwnerUrdu => 'شوروم رجسٹر کریں';
+
+  @override
+  String get advanceNoticeWithDriver =>
+      '• ڈرائیور شوروم / پک اپ پوائنٹ پر 15 منٹ پہلے پہنچتا ہے۔\n• ایڈوانس ادائیگی گاڑی کی بکنگ اور ایندھن کی ریزرویشن کی تصدیق کرتی ہے۔\n• آؤٹ اسٹیشن قیام: ڈرائیور کے کھانے اور رہائش کے لیے 1,500 روپے فی رات۔';
+
+  @override
+  String get advanceNoticeSelfDrive =>
+      '• حوالگی پر اصل نادرا شناختی کارڈ اور درست ڈرائیونگ لائسنس درکار ہے۔\n• ایڈوانس شوروم کے ساتھ گاڑی کی بکنگ کی تصدیق کرتا ہے۔\n• قابل واپسی سیکیورٹی ڈپازٹ حوالگی پر ڈیجیٹل یا نقد وصول کیا جاتا ہے۔';
+
+  @override
+  String get ticketShowCode =>
+      'حوالگی کے لیے یہ کوڈ کاؤنٹر پر دکھائیں — اس سے آپ کی بکنگ اور معاہدہ کھلتا ہے۔';
+
+  @override
+  String bookingsEmptyForTab(String tab) {
+    return '$tab کی کوئی بکنگ نہیں ملی۔';
+  }
+
+  @override
+  String shopCarsNoneInCategory(String category) {
+    return 'اس وقت $category کی کوئی گاڑی دستیاب نہیں۔';
+  }
+
+  @override
+  String homeGpsActive(String area) {
+    return '$area • GPS فعال';
+  }
+
+  @override
+  String mapTapMarker(String area) {
+    return '$area • پیش نظارہ کے لیے مارکر پر ٹیپ کریں';
+  }
+
+  @override
+  String mapGpsRadar(int km, int count) {
+    return 'GPS ریڈار: $km کلومیٹر ($count تصدیق شدہ شورومز)';
+  }
+
+  @override
+  String mapShopDistance(String address, Object km) {
+    return '$address • $km کلومیٹر دور';
+  }
+
+  @override
+  String mapShowShop(String name) {
+    return '$name دکھائیں';
+  }
+
+  @override
+  String shopRatingLabel(Object rating) {
+    return '★ $rating درجہ بندی';
+  }
+
+  @override
+  String shopCarsReady(int count) {
+    return '• $count گاڑیاں تیار';
+  }
+
+  @override
+  String shopCarsAvailable(int count) {
+    return '$count گاڑیاں دستیاب';
+  }
+
+  @override
+  String callingShop(String name) {
+    return '$name کو کال کی جا رہی ہے…';
+  }
+
+  @override
+  String callingShopNumber(String name, String phone) {
+    return '$name ($phone) کو کال کی جا رہی ہے…';
+  }
+
+  @override
+  String openingWhatsappShop(String name) {
+    return '$name کے ساتھ واٹس ایپ کھولا جا رہا ہے…';
+  }
+
+  @override
+  String vehicleSelfRate(String rate) {
+    return 'سیلف: $rate روپے/دن';
+  }
+
+  @override
+  String vehicleDriverRate(String rate) {
+    return 'ڈرائیور کے ساتھ: $rate روپے/دن';
+  }
+
+  @override
+  String vehicleSeats(int count) {
+    return '$count نشستیں';
+  }
+
+  @override
+  String vehicleShowroom(String name) {
+    return 'شوروم: $name';
+  }
+
+  @override
+  String vehicleDepositCnic(String amount) {
+    return 'سیکیورٹی ڈپازٹ: $amount روپے + پک اپ پر اصل نادرا شناختی کارڈ ضمانت کے طور پر درکار ہے';
+  }
+
+  @override
+  String vehicleDriverPackageDetail(String overtime, String outstation) {
+    return 'تصدیق شدہ ڈرائیور شامل • اوور ٹائم: $overtime روپے/گھنٹہ • آؤٹ اسٹیشن: +$outstation روپے/دن';
+  }
+
+  @override
+  String vehicleSelectedMode(String mode) {
+    return 'منتخب: $mode۔ ایڈوانس ڈپازٹ درکار ہے۔';
+  }
+
+  @override
+  String vehicleWhatsappInterest(String shop, String vehicle, String plate) {
+    return 'السلام علیکم $shop، مجھے رینٹل ہب پر $vehicle ($plate) میں دلچسپی ہے۔';
+  }
+
+  @override
+  String bookNowWithRate(String rate) {
+    return 'ابھی بک کریں ($rate روپے)';
+  }
+
+  @override
+  String get vehicleManageRates => 'نرخوں کا انتظام کریں';
+
+  @override
+  String bookingDetailTitle(String id) {
+    return 'بکنگ $id';
+  }
+
+  @override
+  String bookingShopLine(String shop, String id) {
+    return '$shop • $id';
+  }
+
+  @override
+  String activeTripShopLine(String shop, String plate) {
+    return '$shop • $plate';
+  }
+
+  @override
+  String activeTripPackageRental(String type) {
+    return '$type کرایہ';
+  }
+
+  @override
+  String bookingIdLabel(String id) {
+    return 'ID: $id';
+  }
+
+  @override
+  String summaryPackageRental(String type) {
+    return '$type کرایہ';
+  }
+
+  @override
+  String summaryShowroom(String shop) {
+    return 'شوروم: $shop';
+  }
+
+  @override
+  String summaryOutOfCityTo(String city) {
+    return 'شہر سے باہر → $city';
+  }
+
+  @override
+  String summaryDepositAtHandover(String amount) {
+    return '$amount روپے (حوالگی پر)';
+  }
+
+  @override
+  String payAdvanceAmount(String amount) {
+    return 'ایڈوانس ادا کریں ($amount روپے)';
+  }
+
+  @override
+  String shopNotFound(String id) {
+    return 'شوروم $id نہیں ملا۔';
+  }
+
+  @override
+  String vehicleNotFound(String id) {
+    return 'گاڑی $id نہیں ملی۔';
+  }
+
+  @override
+  String locationFindCarsInCity(String city) {
+    return '$city میں قریبی گاڑیاں تلاش کریں';
+  }
+
+  @override
+  String sosCallError(String label) {
+    return '$label کو کال نہیں کی جا سکی۔';
+  }
+
+  @override
+  String sosLocationError(String error) {
+    return 'آپ کی جگہ حاصل نہیں ہو سکی: $error';
+  }
+
+  @override
+  String sosEmergencyMessage(String url) {
+    return 'ایمرجنسی — مجھے مدد چاہیے۔ میری موجودہ جگہ: $url';
+  }
+
+  @override
+  String sosSendToShopNamed(String shop) {
+    return 'اپنی موجودہ جگہ $shop کو بھیجیں';
+  }
+
+  @override
+  String supportWhatsappMessage(String shop) {
+    return 'السلام علیکم $shop، مجھے اپنی رینٹل ہب بکنگ میں مدد چاہیے۔';
+  }
+
+  @override
+  String disputeFileError(String error) {
+    return 'تنازع درج نہیں ہو سکا: $error';
+  }
+
+  @override
+  String cancelFailed(String error) {
+    return 'منسوخی ناکام رہی: $error';
+  }
+
+  @override
+  String cancelAdvancePaid(String amount) {
+    return 'آپ نے شوروم کے اکاؤنٹ میں براہ راست $amount روپے ایڈوانس ادا کیا — رقم واپسی کا فیصلہ شوروم کرتا ہے، اس لیے اس بارے میں ان سے رابطہ کریں۔ کوئی سیکیورٹی ڈپازٹ نہیں لیا گیا: ڈپازٹ صرف حوالگی پر لیا جاتا ہے۔';
+  }
+
+  @override
+  String rateSaveError(String error) {
+    return 'درجہ بندی محفوظ نہیں ہو سکی: $error';
+  }
+
+  @override
+  String rateTripRef(String id) {
+    return 'سفر کا حوالہ: $id';
+  }
+
+  @override
+  String rateStarLabel(int star) {
+    return '$star میں سے 5 کی درجہ بندی کریں';
+  }
+
+  @override
+  String editSaveError(String error) {
+    return 'پروفائل محفوظ نہیں ہو سکا: $error';
+  }
+
+  @override
+  String supportSendError(String error) {
+    return 'آپ کا پیغام نہیں بھیجا جا سکا: $error';
+  }
+
+  @override
+  String proofSubmitError(String error) {
+    return 'ادائیگی کا ثبوت جمع نہیں ہو سکا: $error';
+  }
+
+  @override
+  String proofBookingId(String id) {
+    return 'بکنگ ID: $id';
+  }
+
+  @override
+  String reviewSubmitError(String error) {
+    return 'بکنگ جمع نہیں ہو سکی: $error';
+  }
+
+  @override
+  String successBody(String vehicle, String shop) {
+    return 'آپ کی بکنگ کی درخواست $vehicle کے لیے $shop کو پہنچا دی گئی ہے۔ منظوری کے بعد آپ کو ایڈوانس ڈپازٹ جمع کرنے کی اطلاع دی جائے گی۔';
+  }
+
+  @override
+  String successReference(String id) {
+    return 'حوالہ: $id';
+  }
+
+  @override
+  String successWhatsapp(String shop, String id, String vehicle) {
+    return 'السلام علیکم $shop، یہ میری رینٹل ہب بکنگ $id ($vehicle) کے بارے میں ہے۔';
+  }
+
+  @override
+  String paymentTransferToLock(String amount) {
+    return 'اپنی گاڑی محفوظ کرنے کے لیے $amount روپے منتقل کریں۔';
+  }
+
+  @override
+  String approvedPayToGuarantee(String amount) {
+    return 'پک اپ یقینی بنانے کے لیے $amount روپے ادا کریں۔';
+  }
+
+  @override
+  String packageAdvanceDue(String amount) {
+    return 'قابل ادا ایڈوانس: $amount روپے';
+  }
+
+  @override
+  String packageSecurityDeposit(String amount) {
+    return 'سیکیورٹی ڈپازٹ: $amount روپے';
+  }
+
+  @override
+  String packageTotal(String amount) {
+    return 'کل: $amount روپے';
+  }
+
+  @override
+  String tierAdvance(String amount) {
+    return 'ایڈوانس: $amount روپے';
+  }
+
+  @override
+  String paymentCopied(String method) {
+    return '$method اکاؤنٹ کلپ بورڈ پر کاپی ہو گیا';
+  }
+
+  @override
+  String passShopNoAddress(String shop) {
+    return '$shop — پتہ ابھی درج نہیں۔';
+  }
+
+  @override
+  String kycSelectedFile(String name) {
+    return 'منتخب: $name';
+  }
+
+  @override
+  String kycScanError(String error) {
+    return 'شناختی کارڈ اسکین ناکام رہا: $error';
+  }
+
+  @override
+  String kycStatus(String label) {
+    return 'KYC حالت: $label';
+  }
+
+  @override
+  String avatarPickerError(String error) {
+    return 'تصویر منتخب کرنے والا نہیں کھولا جا سکا: $error';
+  }
+
+  @override
+  String onboardingSaveError(String error) {
+    return 'پروفائل محفوظ کرنے میں خرابی: $error';
+  }
+
+  @override
+  String roleSelectingNote(String role) {
+    return 'آپ \"$role\" منتخب کر رہے ہیں۔ قومی نادرا KYC پالیسیوں کے مطابق، یہ کردار مستقل طور پر مقفل ہو جاتا ہے اور بعد میں تبدیل نہیں کیا جا سکتا۔';
+  }
+
+  @override
+  String roleConfirmed(String role) {
+    return 'اکاؤنٹ کا کردار \"$role\" کی تصدیق ہو گئی۔';
+  }
+
+  @override
+  String authCopyright(int year) {
+    return '© $year رینٹل ہب۔ جملہ حقوق محفوظ ہیں۔';
+  }
+
+  @override
+  String reputationBasedOnReviews(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'آپ کے مکمل شدہ سفر سے $count شوروم جائزوں کی بنیاد پر۔',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String reputationTrustScoreValue(String score) {
+    return 'اعتماد اسکور: $score / 5.0';
+  }
+
+  @override
+  String profileTrustScoreValue(String score) {
+    return 'اعتماد اسکور: $score / 5.0';
+  }
+
+  @override
+  String pickerDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count دن',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String walletAdvancesEscrow(String adv, String esc) {
+    return 'ایڈوانس $adv روپے • ایسکرو $esc روپے';
+  }
+
+  @override
+  String ticketPickupDate(int day, int month, int year) {
+    return 'پک اپ: $day/$month/$year';
+  }
+
+  @override
+  String get profileSignOut => 'سائن آؤٹ';
+
+  @override
+  String get activeTripTotalFare => 'کل کرایہ';
+
+  @override
+  String emptyRadarNoShops(int radiusKm) {
+    return '$radiusKm کلومیٹر کے اندر کوئی تصدیق شدہ شوروم نہیں ہے';
+  }
+
+  @override
+  String get vehiclePerDay => 'فی دن';
+
+  @override
+  String bookingTotalAmount(String amount) {
+    return 'کل: $amount روپے';
+  }
+
+  @override
+  String get fleetTitle => 'فلیٹ مینجمنٹ';
+
+  @override
+  String get fleetSubtitle => 'لائیو شوروم';
+
+  @override
+  String get fleetSearchHint => 'نام یا نمبر پلیٹ سے تلاش کریں';
+
+  @override
+  String get fleetTotalFleet => 'کل گاڑیاں';
+
+  @override
+  String fleetTotalCars(int count) {
+    return '$count گاڑیاں';
+  }
+
+  @override
+  String fleetAvailableReady(int count) {
+    return '$count تیار';
+  }
+
+  @override
+  String get fleetOnRent => 'کرائے پر';
+
+  @override
+  String fleetOnRentActive(int count) {
+    return '$count کرائے پر';
+  }
+
+  @override
+  String get fleetFilterAll => 'تمام';
+
+  @override
+  String get fleetFilterMaintenance => 'مرمت';
+
+  @override
+  String fleetFilterChip(String label, int count) {
+    return '$label ($count)';
+  }
+
+  @override
+  String get fleetLoading => 'آپ کی گاڑیاں لوڈ ہو رہی ہیں…';
+
+  @override
+  String fleetLoadError(String error) {
+    return 'آپ کی گاڑیاں لوڈ نہیں ہو سکیں: $error';
+  }
+
+  @override
+  String get fleetEmptyTitle =>
+      'ابھی کوئی گاڑی نہیں — اپنی پہلی گاڑی شامل کریں';
+
+  @override
+  String get fleetEmptyFilterTitle => 'اس فلٹر میں کوئی گاڑی نہیں ملی';
+
+  @override
+  String get fleetEmptyMessage => 'بکنگ شروع کرنے کے لیے گاڑی شامل کریں۔';
+
+  @override
+  String get fleetEmptyFilterMessage => 'کوئی دوسرا فلٹر آزمائیں۔';
+
+  @override
+  String get fleetAddVehicleNow => 'ابھی گاڑی شامل کریں';
+
+  @override
+  String get fleetDailySelfDriveRate => 'روزانہ سیلف ڈرائیو کرایہ';
+
+  @override
+  String fleetDailyRate(String amount) {
+    return '$amount روپے/دن';
+  }
+
+  @override
+  String get fleetEditRatesTooltip => 'کرایے تبدیل کریں';
+
+  @override
+  String get fleetCalendarTooltip => 'بکنگ کیلنڈر';
+
+  @override
+  String fleetVehicleSpecs(String transmission, String fuelType, int seats) {
+    return '$transmission • $fuelType • $seats نشستیں';
+  }
+
+  @override
+  String get dashboardTitle => 'شوروم کی آمدنی اور معاملات';
+
+  @override
+  String get dashboardMyShowroom => 'میرا شوروم';
+
+  @override
+  String get dashboardNotificationsTooltip => 'اطلاعات';
+
+  @override
+  String get dashboardSettingsTooltip => 'دکان کی ترتیبات';
+
+  @override
+  String get dashboardRefreshTooltip => 'تازہ کریں';
+
+  @override
+  String get dashboardLoading => 'آپ کا شوروم لوڈ ہو رہا ہے…';
+
+  @override
+  String get dashboardLoadError =>
+      'آپ کا ڈیش بورڈ لوڈ نہیں ہو سکا۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔';
+
+  @override
+  String get dashboardNoRevenueLastMonth => 'پچھلے مہینے کوئی آمدنی نہیں';
+
+  @override
+  String dashboardGrowthLabel(String value) {
+    return 'پچھلے مہینے کے مقابلے میں $value٪';
+  }
+
+  @override
+  String get dashboardNoCompletedTrips => 'ابھی کوئی مکمل سفر نہیں';
+
+  @override
+  String dashboardSettleRate(int percent) {
+    return '$percent٪ ضمانتیں طے شدہ';
+  }
+
+  @override
+  String get dashboardGrossRevenue => 'کل آمدنی (اس مہینے)';
+
+  @override
+  String get dashboardActiveOnRent => 'کرائے پر فعال';
+
+  @override
+  String get dashboardCompletedTrips => 'مکمل سفر';
+
+  @override
+  String get dashboardRequestsWaiting => 'منتظر درخواستیں';
+
+  @override
+  String get dashboardFleet => 'فلیٹ';
+
+  @override
+  String get dashboardOnTheRoad => 'سڑک پر';
+
+  @override
+  String get dashboardNeedsReview => 'آپ کے جائزے کی منتظر';
+
+  @override
+  String get dashboardAvailableTotal => 'دستیاب / کل گاڑیاں';
+
+  @override
+  String dashboardCarsCount(int count) {
+    return '$count گاڑیاں';
+  }
+
+  @override
+  String dashboardFinishedCount(int count) {
+    return '$count مکمل';
+  }
+
+  @override
+  String get dashboardLedgerTitle => 'مکمل سفروں کا کھاتہ اور تصفیے';
+
+  @override
+  String get dashboardLedgerEmpty =>
+      'ابھی کوئی سفر نہیں — بکنگ یہاں نظر آئے گی۔';
+
+  @override
+  String get dashboardViewAllRequests => 'تمام درخواستیں دیکھیں';
+
+  @override
+  String get dashboardLedgerVehicle => 'گاڑی';
+
+  @override
+  String get dashboardLedgerCustomer => 'گاہک';
+
+  @override
+  String get dashboardQuickAddCar => 'گاڑی شامل کریں';
+
+  @override
+  String get dashboardQuickScanQr => 'QR اسکین کریں';
+
+  @override
+  String get dashboardQuickNewBooking => 'نئی بکنگ';
+
+  @override
+  String get dashboardQuickFinance => 'مالیات';
+
+  @override
+  String get requestsTitle => 'بکنگ درخواستوں کی جانچ';
+
+  @override
+  String requestsAwaitingReview(int count) {
+    return '$count درخواستیں جائزے کی منتظر';
+  }
+
+  @override
+  String get requestsScanQrTooltip => 'بکنگ QR اسکین کریں';
+
+  @override
+  String get requestsRefreshTooltip => 'تازہ کریں';
+
+  @override
+  String get requestsLoading => 'بکنگ درخواستیں لوڈ ہو رہی ہیں…';
+
+  @override
+  String get requestsLoadError =>
+      'بکنگ درخواستیں لوڈ نہیں ہو سکیں۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔';
+
+  @override
+  String get requestsFilterNew => 'نئی';
+
+  @override
+  String get requestsFilterProof => 'ثبوت';
+
+  @override
+  String requestsFilterChip(String label, int count) {
+    return '$label ($count)';
+  }
+
+  @override
+  String get requestsEmptyProof => 'تصدیق کے منتظر کوئی ادائیگی ثبوت نہیں';
+
+  @override
+  String get requestsEmptyApproved =>
+      'ادائیگی کے منتظر کوئی منظور شدہ بکنگ نہیں';
+
+  @override
+  String get requestsEmptyNew => 'کوئی زیر التواء بکنگ درخواست نہیں';
+
+  @override
+  String get requestsEmptyMessage =>
+      'نئی درخواستیں جائزے کے لیے یہاں نظر آئیں گی۔';
+
+  @override
+  String get requestsRejectTitle => 'کیا یہ درخواست مسترد کرنی ہے؟';
+
+  @override
+  String get requestsRejectReasonLabel => 'وجہ (لازمی)';
+
+  @override
+  String get requestsRejectReasonHint =>
+      'مثلاً ان تاریخوں میں گاڑی دستیاب نہیں';
+
+  @override
+  String get requestsRejectButton => 'درخواست مسترد کریں';
+
+  @override
+  String requestsApproved(String id) {
+    return 'بکنگ #$id منظور! ادائیگی کی ہدایات گاہک کو بھیج دی گئیں۔';
+  }
+
+  @override
+  String requestsApprovalFailed(String error) {
+    return 'منظوری ناکام: $error';
+  }
+
+  @override
+  String requestsRejected(String id) {
+    return 'بکنگ #$id مسترد کر دی گئی۔';
+  }
+
+  @override
+  String requestsDeclineFailed(String error) {
+    return 'مسترد کرنا ناکام: $error';
+  }
+
+  @override
+  String get requestsCustomerFallback => 'گاہک';
+
+  @override
+  String get requestsRequestedCar => 'مطلوبہ گاڑی';
+
+  @override
+  String get requestsWithChauffeur => 'ڈرائیور کے ساتھ';
+
+  @override
+  String get requestsVerifyProof => 'ادائیگی ثبوت کی تصدیق کریں';
+
+  @override
+  String get requestsDecline => 'مسترد کریں';
+
+  @override
+  String get requestsApprovePay => 'منظور کریں';
+
+  @override
+  String get requestsStatusRequested => 'درخواست شدہ';
+
+  @override
+  String get calendarTitle => 'بکنگ کیلنڈر';
+
+  @override
+  String get calendarFree => 'خالی';
+
+  @override
+  String get calendarRequested => 'درخواست شدہ';
+
+  @override
+  String get calendarConfirmed => 'تصدیق شدہ';
+
+  @override
+  String get calendarPast => 'گزشتہ';
+
+  @override
+  String get calendarTapDayHint =>
+      'اس دن کی بکنگ دیکھنے کے لیے کسی دن پر ٹیپ کریں۔';
+
+  @override
+  String calendarBookingsOn(int day, int month, int year) {
+    return '$day/$month/$year کی بکنگ';
+  }
+
+  @override
+  String get calendarNoBookingsDay => 'اس دن کوئی بکنگ نہیں۔';
+
+  @override
+  String get calendarMonthJanuary => 'جنوری';
+
+  @override
+  String get calendarMonthFebruary => 'فروری';
+
+  @override
+  String get calendarMonthMarch => 'مارچ';
+
+  @override
+  String get calendarMonthApril => 'اپریل';
+
+  @override
+  String get calendarMonthMay => 'مئی';
+
+  @override
+  String get calendarMonthJune => 'جون';
+
+  @override
+  String get calendarMonthJuly => 'جولائی';
+
+  @override
+  String get calendarMonthAugust => 'اگست';
+
+  @override
+  String get calendarMonthSeptember => 'ستمبر';
+
+  @override
+  String get calendarMonthOctober => 'اکتوبر';
+
+  @override
+  String get calendarMonthNovember => 'نومبر';
+
+  @override
+  String get calendarMonthDecember => 'دسمبر';
+
+  @override
+  String get calendarWeekdayMon => 'پیر';
+
+  @override
+  String get calendarWeekdayTue => 'منگل';
+
+  @override
+  String get calendarWeekdayWed => 'بدھ';
+
+  @override
+  String get calendarWeekdayThu => 'جمعرات';
+
+  @override
+  String get calendarWeekdayFri => 'جمعہ';
+
+  @override
+  String get calendarWeekdaySat => 'ہفتہ';
+
+  @override
+  String get calendarWeekdaySun => 'اتوار';
+
+  @override
+  String get calendarPreviousMonth => 'پچھلا مہینہ';
+
+  @override
+  String get calendarNextMonth => 'اگلا مہینہ';
+
+  @override
+  String calendarSelectDay(int day) {
+    return 'دن $day منتخب کریں';
+  }
+
+  @override
+  String get addVehicleModelRequired => 'براہ کرم گاڑی کا ماڈل بتائیں۔';
+
+  @override
+  String get addVehiclePlateRequired => 'رجسٹریشن پلیٹ نمبر ضروری ہے۔';
+
+  @override
+  String addVehicleAdded(String name) {
+    return '$name شوروم کی فلیٹ میں شامل کر دی گئی!';
+  }
+
+  @override
+  String get addVehicleStep1Title => 'گاڑی شامل کریں - خصوصیات';
+
+  @override
+  String get addVehicleStep2Title => 'گاڑی کی تصاویر اور دستاویزات';
+
+  @override
+  String get addVehicleStep3Title => 'کرایے اور پالیسی';
+
+  @override
+  String get addVehicleStep4Title => 'جائزہ اور اشاعت';
+
+  @override
+  String get addVehicleStep1Subtitle => 'گنجائش، AC، خصوصیات اور تفصیلات';
+
+  @override
+  String get addVehicleStep2Subtitle =>
+      'چار زاویوں کی تصاویر، بک اور ایکسائز ٹیکس';
+
+  @override
+  String get addVehicleStep3Subtitle =>
+      'گھنٹہ وار کرایے، ضمانت اور ایندھن پالیسی';
+
+  @override
+  String get addVehicleStep4Subtitle =>
+      'لسٹ کرنے سے پہلے گاڑی کی تفصیلات چیک کریں';
+
+  @override
+  String addVehicleStepCounter(int step) {
+    return 'مرحلہ $step از 4';
+  }
+
+  @override
+  String get addVehicleConfirmPublish => 'تصدیق کریں اور گاڑی شائع کریں';
+
+  @override
+  String get addVehicleNextStep => 'اگلا مرحلہ';
+
+  @override
+  String get addVehicleStepperSpecs => 'گاڑی کی خصوصیات';
+
+  @override
+  String get addVehicleStepperPhotos => 'تصاویر اور دستاویزات';
+
+  @override
+  String get addVehicleStepperRates => 'کرایے اور پالیسی';
+
+  @override
+  String get addVehicleStepperReview => 'جائزہ';
+
+  @override
+  String get addVehicleMakeBrand => 'کمپنی / برانڈ';
+
+  @override
+  String get addVehicleModelVariant => 'ماڈل';
+
+  @override
+  String get addVehicleModelHint => 'مثلاً Corolla Altis 1.8 Grande';
+
+  @override
+  String get addVehicleManufacturingYear => 'تیاری کا سال';
+
+  @override
+  String get addVehicleExteriorColor => 'بیرونی رنگ';
+
+  @override
+  String get addVehicleBodyCategory => 'باڈی کی قسم';
+
+  @override
+  String get addVehicleRegistrationNumber => 'گاڑی کا رجسٹریشن نمبر';
+
+  @override
+  String get addVehicleTransmission => 'گیئر';
+
+  @override
+  String get addVehicleAutomatic => 'آٹومیٹک';
+
+  @override
+  String get addVehicleManual => 'مینوئل';
+
+  @override
+  String get addVehicleFuelType => 'ایندھن کی قسم';
+
+  @override
+  String get addVehicleSeatingCapacity => 'گاڑی میں بیٹھنے کی گنجائش';
+
+  @override
+  String addVehicleSeatsCount(int count) {
+    return '$count نشستیں';
+  }
+
+  @override
+  String get addVehicleAcTitle => 'ایئر کنڈیشننگ (مکمل AC)';
+
+  @override
+  String get addVehicleAcSubtitle => 'گاڑی میں کام کرنے والا ٹھنڈا AC موجود ہے';
+
+  @override
+  String get addVehicleExtraFeatures =>
+      'اضافی خصوصیات (گاڑی کی تفصیل میں دکھائی جائیں گی)';
+
+  @override
+  String get addVehicleExtraFeaturesHint =>
+      'اس گاڑی کے ساتھ شامل سہولتیں منتخب کریں تاکہ زیادہ کرایہ دار متوجہ ہوں۔';
+
+  @override
+  String get addVehiclePhotosTitle => 'گاڑی کی چار زاویوں کی تصاویر';
+
+  @override
+  String get addVehiclePhotosHint =>
+      'کیمرہ یا گیلری سے تصاویر اپ لوڈ کریں۔ تبدیل یا ہٹانے کے لیے ٹیپ کریں۔';
+
+  @override
+  String get addVehicleFrontPhotoRequired =>
+      'اس گاڑی کو شائع کرنے سے پہلے سامنے والی تصویر ضروری ہے۔';
+
+  @override
+  String get addVehiclePhotoFront => 'سامنے کا منظر';
+
+  @override
+  String get addVehiclePhotoRear => 'پیچھے کا منظر';
+
+  @override
+  String get addVehiclePhotoSide => 'سائیڈ پروفائل';
+
+  @override
+  String get addVehiclePhotoInterior => 'اندرونی اور ڈیش';
+
+  @override
+  String get addVehicleLegalDocs => 'قانونی دستاویزات';
+
+  @override
+  String get addVehicleDocRegBook => 'گاڑی کی رجسٹریشن بک / اسمارٹ کارڈ';
+
+  @override
+  String get addVehicleDocRegBookHint => 'اصل ملکیتی دستاویز درکار ہے';
+
+  @override
+  String get addVehicleDocTokenTax => 'ایکسائز ٹوکن ٹیکس ادا شدہ رسید';
+
+  @override
+  String get addVehicleDocTokenTaxHint =>
+      'موجودہ مالی سال کے لیے درست ہونا ضروری ہے';
+
+  @override
+  String get addVehicleDocInsurance => 'انشورنس / ٹریکر سرٹیفکیٹ (اختیاری)';
+
+  @override
+  String get addVehicleDocInsuranceHint => 'تلاش میں تصدیق شدہ VIP بیج دیتا ہے';
+
+  @override
+  String get addVehicleDurationPackages => 'مدت پیکجز (گھنٹہ وار اور روزانہ)';
+
+  @override
+  String get addVehicleDurationPackagesHint =>
+      'پیکجز فعال کریں اور ہر بکنگ درجے کے لیے PKR میں کرایے تبدیل کریں۔';
+
+  @override
+  String get addVehicleRate1Hour => 'ایک گھنٹے کا کرایہ';
+
+  @override
+  String get addVehicleRate3Hours => 'تین گھنٹوں کا کرایہ';
+
+  @override
+  String get addVehicleRate6Hours => 'چھ گھنٹوں کا کرایہ';
+
+  @override
+  String get addVehicleRateFullDay => 'پورے دن (24 گھنٹے) کا کرایہ';
+
+  @override
+  String get addVehicleRateWeekly => 'ہفتہ وار (7 دن) کا کرایہ';
+
+  @override
+  String get addVehicleServiceType => 'سروس کی قسم اور ڈرائیور کے اختیارات';
+
+  @override
+  String get addVehicleSelfDriveService => 'سیلف ڈرائیو سروس';
+
+  @override
+  String get addVehicleSelfDriveHint => 'گاہک خود گاڑی چلاتا ہے';
+
+  @override
+  String get addVehicleWithDriverService => 'ڈرائیور کے ساتھ سروس';
+
+  @override
+  String get addVehicleWithDriverHint => 'دکان تجربہ کار ڈرائیور فراہم کرتی ہے';
+
+  @override
+  String get addVehicleDriverAllowance => 'ڈرائیور کا یومیہ الاؤنس:';
+
+  @override
+  String get addVehiclePerDaySuffix => 'فی دن';
+
+  @override
+  String get addVehicleDepositPolicies => 'ضمانت اور کرایے کی پالیسیاں';
+
+  @override
+  String get addVehicleSecurityDepositSelfDrive => 'ضمانت (سیلف ڈرائیو)';
+
+  @override
+  String get addVehicleSecurityDepositHint =>
+      'گاڑی صاف حالت میں واپس کرنے پر واپس کی جائے گی';
+
+  @override
+  String get addVehicleAdvanceFee => 'ایڈوانس بکنگ فیس';
+
+  @override
+  String get addVehicleAdvanceHint => 'سلاٹ محفوظ کرنے کے لیے پیشگی درکار ہے';
+
+  @override
+  String get addVehicleExtraHourCharge => 'اضافی گھنٹے کا چارج';
+
+  @override
+  String get addVehicleExtraHourHint => 'مقررہ واپسی کے بعد ہر گھنٹے کا بل';
+
+  @override
+  String get addVehiclePerHourSuffix => 'فی گھنٹہ';
+
+  @override
+  String get addVehicleFuelPolicy => 'ایندھن پالیسی';
+
+  @override
+  String get addVehicleFuelPolicyHint => 'واپسی پر متوقع حالت';
+
+  @override
+  String get addVehicleReviewGear => 'گیئر';
+
+  @override
+  String get addVehicleReviewAuto => 'آٹو';
+
+  @override
+  String get addVehicleReviewFuel => 'ایندھن';
+
+  @override
+  String get addVehicleReviewSeats => 'نشستیں';
+
+  @override
+  String get addVehicleReviewAc => 'AC';
+
+  @override
+  String get addVehicleReviewFullAc => 'مکمل AC';
+
+  @override
+  String get addVehicleReviewSelfDriveRate => 'سیلف ڈرائیو کرایہ';
+
+  @override
+  String get addVehicleReviewWithDriverRate => 'ڈرائیور کے ساتھ کرایہ';
+
+  @override
+  String get addVehicleReviewNotOffered => 'دستیاب نہیں';
+
+  @override
+  String addVehicleReviewDailyRate(String amount) {
+    return '$amount روپے/دن';
+  }
+
+  @override
+  String addVehicleReviewOverstayRate(String amount) {
+    return '$amount روپے/گھنٹہ';
+  }
+
+  @override
+  String get addVehicleReviewDeposit => 'ضمانت';
+
+  @override
+  String get addVehicleReviewAdvance => 'ایڈوانس';
+
+  @override
+  String get addVehicleReviewOverstay => 'اضافی وقت';
+
+  @override
+  String get addVehicleReviewBanner =>
+      'یہ گاڑی منظوری کے بعد فوری طور پر آپ کی فلیٹ کیٹلاگ میں دستیاب ہوگی اور قریبی گاہکوں کو نظر آئے گی۔';
+
+  @override
+  String get pricingDriveModeAvailability => 'ڈرائیو موڈ کی دستیابی';
+
+  @override
+  String get pricingRentalPackages => 'کرایے کے پیکجز';
+
+  @override
+  String get pricingPackagesHint =>
+      'کسی پیکج کو بند کریں تاکہ گاہکوں سے چھپ جائے۔';
+
+  @override
+  String get pricingPolicyTitle => 'قیمتوں کی پالیسی';
+
+  @override
+  String get pricingSavedSuccess =>
+      'قیمتوں کا میٹرکس شوروم میں اپ ڈیٹ کر دیا گیا!';
+
+  @override
+  String pricingSaveFailed(String error) {
+    return 'کرایے اپ ڈیٹ کرنے میں ناکامی: $error';
+  }
+
+  @override
+  String get pricingTitle => 'گاڑی کی قیمتوں کا میٹرکس';
+
+  @override
+  String rateMatrixInvalidField(String field) {
+    return '$field کے لیے درست عدد درج کریں';
+  }
+
+  @override
+  String get pricingSaving => 'میٹرکس محفوظ ہو رہا ہے…';
+
+  @override
+  String get pricingSave => 'قیمتوں کا میٹرکس محفوظ کریں';
+
+  @override
+  String get pricingUnsavedTitle => 'غیر محفوظ شدہ قیمتیں حذف کر دیں؟';
+
+  @override
+  String get pricingUnsavedBody => 'آپ کی ترمیم شدہ قیمتیں محفوظ نہیں ہوئیں۔';
+
+  @override
+  String get unsavedChangesTitle => 'غیر محفوظ شدہ تبدیلیاں ضائع کر دیں؟';
+
+  @override
+  String get unsavedChangesBody => 'آپ کی تبدیلیاں محفوظ نہیں ہوئیں۔';
+
+  @override
+  String get pricingSelfDriveAllowed => 'سیلف ڈرائیو کی اجازت ہے';
+
+  @override
+  String get pricingSelfDriveHint => 'اصل نادرا شناختی کارڈ + ضمانت درکار ہے';
+
+  @override
+  String get pricingChauffeurAllowed => 'ڈرائیور سروس کی اجازت ہے';
+
+  @override
+  String get pricingChauffeurHint =>
+      'شوروم کا ڈرائیور بکنگ کے لیے مختص کیا جاتا ہے';
+
+  @override
+  String get pricingPackage1h => 'ایک گھنٹے کا شہر کا سفر';
+
+  @override
+  String get pricingPackage3h => 'تین گھنٹے کا ایئرپورٹ / فوری سفر';
+
+  @override
+  String get pricingPackage6h => 'چھ گھنٹے کا ایکسپریس کرایہ';
+
+  @override
+  String get pricingPackage12h => 'بارہ گھنٹے کا نصف دن';
+
+  @override
+  String get pricingPackage24h => 'شہر کے اندر روزانہ (24 گھنٹے)';
+
+  @override
+  String get pricingPackageWeekly => 'ہفتہ وار پیکج (7 دن)';
+
+  @override
+  String pricingKmIncluded(int km) {
+    return '$km کلومیٹر شامل';
+  }
+
+  @override
+  String get pricingOutOfCityDaily => 'شہر سے باہر روزانہ (24 گھنٹے)';
+
+  @override
+  String get pricingOutOfCityDailyCap => '300 کلومیٹر شامل + ٹریکر کلیئر';
+
+  @override
+  String get pricingWithDriverSurcharge => 'ڈرائیور کے ساتھ اضافی چارج (فی دن)';
+
+  @override
+  String get pricingWithDriverSurchargeCap =>
+      'پیکج کی قیمت کے علاوہ شامل کیا جاتا ہے';
+
+  @override
+  String get pricingSecurityDeposit => 'ضمانت';
+
+  @override
+  String get pricingSecurityDepositCap =>
+      'واپسی کی جانچ کے بعد واپس کی جائے گی';
+
+  @override
+  String get pricingAdvanceRequired => 'ایڈوانس درکار ہے';
+
+  @override
+  String get pricingAdvanceCap => 'بکنگ کی تصدیق سے پہلے واجب الادا';
+
+  @override
+  String get pricingExtraHourCharge => 'اضافی گھنٹے کا چارج';
+
+  @override
+  String get pricingExtraHourCap => 'دیر سے واپسی پر چارج کیا جاتا ہے';
+
+  @override
+  String get pricingExtraKmCharge => 'اضافی کلومیٹر کا چارج';
+
+  @override
+  String get pricingExtraKmCap => 'شامل کلومیٹر سے زیادہ پر چارج کیا جاتا ہے';
+
+  @override
+  String get pricingOutOfCityKmAllowance => 'شہر سے باہر کلومیٹر کی حد (فی دن)';
+
+  @override
+  String get pricingOutOfCityKmCap => 'شہر سے باہر ٹریکر کلیئرنس درکار ہے';
+
+  @override
+  String get pricingFuelPolicy => 'ایندھن پالیسی';
+
+  @override
+  String get fixedRoutesTitle => 'شہر سے باہر کے مقررہ راستے';
+
+  @override
+  String get fixedRoutesSubtitle => 'ہر منزل کے لیے ایک مقررہ قیمت';
+
+  @override
+  String get fixedRoutesDeleteTooltip => 'مقررہ راستہ حذف کریں';
+
+  @override
+  String get fixedRoutesPriceRequired => 'صفر سے زیادہ مقررہ قیمت درج کریں۔';
+
+  @override
+  String get fixedRoutesSaveFailed =>
+      'فکسڈ روٹ محفوظ نہیں ہو سکا۔ دوبارہ کوشش کریں۔';
+
+  @override
+  String get fixedRoutesDeleteFailed =>
+      'فکسڈ روٹ حذف نہیں ہو سکا۔ دوبارہ کوشش کریں۔';
+
+  @override
+  String get fixedRoutesDistanceRequired => 'کلومیٹر میں فاصلہ درج کریں۔';
+
+  @override
+  String get fixedRoutesLoadError =>
+      'مقررہ راستے لوڈ نہیں ہو سکے۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔';
+
+  @override
+  String get fixedRoutesEmpty =>
+      'ابھی کوئی مقررہ راستہ نہیں — نیچے اپنی پہلی منزل شامل کریں۔';
+
+  @override
+  String get fixedRouteDuplicate => 'یہ راستہ پہلے سے موجود ہے';
+
+  @override
+  String fixedRouteSummary(int km, String price) {
+    return '$km کلومیٹر • $price روپے مقررہ';
+  }
+
+  @override
+  String fixedRouteChip(String city, String price) {
+    return '$city • $price روپے';
+  }
+
+  @override
+  String get fixedRouteAddTitle => 'راستہ شامل کریں';
+
+  @override
+  String get fixedRouteFromCity => 'سے (شہر)';
+
+  @override
+  String get fixedRouteToCity => 'تک (شہر)';
+
+  @override
+  String get fixedRouteDistance => 'فاصلہ (کلومیٹر)';
+
+  @override
+  String get fixedRoutePrice => 'مقررہ قیمت (Rs.)';
+
+  @override
+  String get fixedRouteAddButton => 'مقررہ راستہ شامل کریں';
+
+  @override
+  String get fleetAddVehicle => 'گاڑی شامل کریں';
+
+  @override
+  String amountRs(String amount) {
+    return '$amount روپے';
+  }
+
+  @override
+  String get customersTitle => 'گاہک';
+
+  @override
+  String customersCount(int count) {
+    return '$count گاہک';
+  }
+
+  @override
+  String get customersLoading => 'لوڈ ہو رہا ہے…';
+
+  @override
+  String get customersLoadingMessage => 'آپ کے گاہک لوڈ ہو رہے ہیں…';
+
+  @override
+  String get customersSearchHint => 'نام، فون یا شناختی کارڈ تلاش کریں';
+
+  @override
+  String get customersLoadError =>
+      'آپ کے گاہک لوڈ نہیں ہو سکے۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔';
+
+  @override
+  String get customersEmptyTitle => 'ابھی کوئی گاہک نہیں';
+
+  @override
+  String get customersEmptyMessage =>
+      'شناختی کارڈ اسکین کریں یا واک اِن بکنگ لیں۔';
+
+  @override
+  String get customersScanCnic => 'شناختی کارڈ اسکین کریں';
+
+  @override
+  String get customersBlacklisted => 'بلیک لسٹڈ';
+
+  @override
+  String customersBookingsLine(int count, String amount) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count بکنگز',
+    );
+    return '$_temp0 • $amount روپے';
+  }
+
+  @override
+  String get customersNoBookings =>
+      'ابھی کوئی بکنگ نہیں — شناختی کارڈ اسکین یا ضامن کے طور پر محفوظ کیا گیا۔';
+
+  @override
+  String get customersScanTitle => 'کے وائی سی اور بلیک لسٹ ریڈار';
+
+  @override
+  String get addCustomerTitle => 'گاہک شامل کریں';
+
+  @override
+  String get addCustomerName => 'پورا نام';
+
+  @override
+  String get addCustomerCnic => 'شناختی کارڈ نمبر';
+
+  @override
+  String get addCustomerPhone => 'فون نمبر';
+
+  @override
+  String get addCustomerSaved => 'گاہک محفوظ ہو گیا';
+
+  @override
+  String get addCustomerSave => 'گاہک محفوظ کریں';
+
+  @override
+  String get addCustomerFullNameRequired => 'پورا نام ضروری ہے';
+
+  @override
+  String get addCustomerHelper =>
+      'ضامن بعد میں بکنگ کے مرحلے سے شامل کیا جا سکتا ہے';
+
+  @override
+  String get customersScanSubtitle => 'رینٹل ہب کی مشترکہ بلیک لسٹ • ریئل ٹائم';
+
+  @override
+  String get customersScanTribunalPolicy => 'ٹرائیبیونل پالیسی';
+
+  @override
+  String get customersScanTribunalInfo =>
+      'ہر رینٹل ہب شوروم فراڈ کی رپورٹس ایک مشترکہ بلیک لسٹ میں شیئر کرتا ہے۔';
+
+  @override
+  String get customersScanViewAll => 'تمام گاہک دیکھیں';
+
+  @override
+  String get customersScanInvalidCnic =>
+      'براہ کرم درست 13 ہندسوں والا پاکستانی شناختی کارڈ درج کریں';
+
+  @override
+  String customersScanLookupFailed(String error) {
+    return 'تصدیقی تلاش ناکام ہوئی: $error';
+  }
+
+  @override
+  String customersScanFailed(String error) {
+    return 'شناختی کارڈ اسکین ناکام ہوا: $error';
+  }
+
+  @override
+  String get customersScanUnreadable =>
+      'کارڈ پڑھا نہیں جا سکا — شناختی کارڈ دستی طور پر لکھیں۔';
+
+  @override
+  String get customersScanDeclined =>
+      'گاہک کو فلیگ کر کے شوروم میں داخلے سے منع کر دیا گیا۔';
+
+  @override
+  String get customersScanFallbackReason =>
+      'رینٹل ہب کی مشترکہ بلیک لسٹ میں رپورٹ شدہ';
+
+  @override
+  String get customersScanFallbackDescription =>
+      'سنگین فراڈ / عدم ادائیگی کا واقعہ فلیگ شدہ۔';
+
+  @override
+  String get customersRatingTitle => 'گاہک کی ساکھ اور جائزہ';
+
+  @override
+  String get customersRatingFallback => 'گاہک کا جائزہ';
+
+  @override
+  String get customersRatingFeedbackTitle => 'گاہک کی کارکردگی پر رائے';
+
+  @override
+  String get customersRatingPunctuality => 'واپسی کی پابندی اور وقت کی پابندی';
+
+  @override
+  String get customersRatingPunctualityHint =>
+      'گاڑی معاہدے کے طے شدہ شیڈول کے مطابق واپس کی گئی';
+
+  @override
+  String get customersRatingCare => 'گاڑی کی دیکھ بھال اور صفائی';
+
+  @override
+  String get customersRatingCareHint => 'اندرونی صفائی اور بغیر خراش کے واپسی';
+
+  @override
+  String get customersRatingBehavior => 'مجموعی رویہ اور شائستگی';
+
+  @override
+  String get customersRatingBehaviorHint =>
+      'پیشہ ورانہ رویہ اور شوروم کی پالیسیوں کی پابندی';
+
+  @override
+  String get rateCustomerSelectStars => 'کم از کم ایک ستارہ منتخب کریں';
+
+  @override
+  String get customersRatingCommentHint =>
+      'کمیونٹی شوروم ریکارڈ کے لیے اختیاری رائے شامل کریں...';
+
+  @override
+  String get customersRatingFlagTitle =>
+      'گاہک کو مشترکہ بلیک لسٹ میں فلیگ کریں';
+
+  @override
+  String customersRatingFlagDescription(String reason) {
+    return 'گاہک کو واپسی کے تصفیے کے دوران $reason کی وجہ سے فلیگ کیا گیا۔';
+  }
+
+  @override
+  String get customersRatingFlagNoCnic =>
+      'اس بکنگ کے لیے گاہک کا شناختی کارڈ درکار ہے — کوئی ریکارڈ نہیں، اس لیے یہاں سے رپورٹ درج نہیں ہو سکتی۔';
+
+  @override
+  String get customersRatingFlagVisible =>
+      'رینٹل ہب استعمال کرنے والے دیگر شوروم یہ رپورٹ دیکھ سکتے ہیں';
+
+  @override
+  String get customersRatingReasonLabel => 'ٹرائیبیونل کے لیے وجہ کی قسم:';
+
+  @override
+  String get customersRatingReasonPayment =>
+      'ادائیگی میں ناکامی / تصفیے سے انکار';
+
+  @override
+  String get customersRatingReasonBorder => 'غیر مجاز سرحد عبور کرنا';
+
+  @override
+  String get customersRatingReasonAbuse => 'گاڑی کا غلط استعمال / چھوڑ دینا';
+
+  @override
+  String get customersRatingReasonFake => 'جعلی شناخت / روپ دھارنا';
+
+  @override
+  String get customersRatingSubmitting => 'جائزہ ریکارڈ ہو رہا ہے...';
+
+  @override
+  String get customersRatingSubmit => 'جائزہ جمع کریں اور سفر بند کریں';
+
+  @override
+  String get customersRatingSavedOffline =>
+      'جائزہ اس ڈیوائس پر محفوظ ہو گیا — آن لائن آتے ہی سنک ہو جائے گا۔';
+
+  @override
+  String get customersRatingSavedBlacklisted =>
+      'جائزہ محفوظ ہو گیا اور گاہک کو مشترکہ بلیک لسٹ میں رپورٹ کر دیا گیا۔';
+
+  @override
+  String get customersRatingSaved =>
+      'گاہک کے بارے میں آپ کا جائزہ محفوظ ہو گیا۔';
+
+  @override
+  String customersRatingSubmitFailed(String error) {
+    return 'جمع کرانا ناکام ہوا: $error';
+  }
+
+  @override
+  String get customersCnicReviewTitle => 'اسکین شدہ شناختی کارڈ کا جائزہ لیں';
+
+  @override
+  String get customersCnicReviewSubtitle => 'او سی آر کی غلط پڑھت درست کریں';
+
+  @override
+  String get customersCnicFatherName => 'والد کا نام';
+
+  @override
+  String get customersCnicNumber => 'شناختی کارڈ نمبر';
+
+  @override
+  String get customersCnicDob => 'تاریخ پیدائش (dd.mm.yyyy)';
+
+  @override
+  String get cnicReviewDateInvalid => 'تاریخ DD.MM.YYYY کی شکل میں درج کریں۔';
+
+  @override
+  String get customersCnicExpiry => 'شناختی کارڈ کی میعاد (dd.mm.yyyy)';
+
+  @override
+  String get customersCnicPhone => 'فون نمبر';
+
+  @override
+  String get customersCnicAddress => 'پتہ (کارڈ کے پچھلے حصے سے)';
+
+  @override
+  String get customersCnicScanBack =>
+      'شناختی کارڈ کا پچھلا حصہ اسکین کریں (پتہ)';
+
+  @override
+  String get customersCnicSave => 'گاہک محفوظ کریں اور بلیک لسٹ چیک کریں';
+
+  @override
+  String get customersCnicNoAddress =>
+      'کارڈ کے پچھلے حصے سے کوئی پتہ نہیں پڑھا گیا۔';
+
+  @override
+  String customersCnicBackScanFailed(String error) {
+    return 'پچھلے حصے کا اسکین ناکام ہوا: $error';
+  }
+
+  @override
+  String get customersCnicNamePhoneRequired =>
+      'گاہک محفوظ کرنے کے لیے نام اور فون درکار ہیں۔';
+
+  @override
+  String customersCnicSaveFailed(String error) {
+    return 'محفوظ نہیں ہو سکا: $error';
+  }
+
+  @override
+  String get blacklistSubtitle =>
+      'ہر شوروم کے ساتھ شیئر شدہ • ٹرائیبیونل سے جائزہ شدہ';
+
+  @override
+  String get blacklistReportTitle => 'گاہک کی رپورٹ کریں';
+
+  @override
+  String get blacklistCustomerCnic => 'گاہک کا شناختی کارڈ';
+
+  @override
+  String get blacklistCustomerPhone => 'گاہک کا فون';
+
+  @override
+  String get blacklistReasonLabel => 'وجہ';
+
+  @override
+  String get blacklistReasonNonPayment => 'عدم ادائیگی';
+
+  @override
+  String get blacklistReasonCarDamage => 'گاڑی کو نقصان';
+
+  @override
+  String get blacklistReasonLateReturn => 'دیر سے واپسی';
+
+  @override
+  String get blacklistReasonFraud => 'فراڈ / جعلی دستاویزات';
+
+  @override
+  String get blacklistReasonImpoundment => 'ناکامی اور گاڑی کی ضبطی';
+
+  @override
+  String get blacklistReasonOther => 'دیگر';
+
+  @override
+  String get blacklistWhatHappened => 'کیا ہوا؟ (تاریخیں، گاڑی، رقم)';
+
+  @override
+  String get blacklistReportButton => 'بلیک لسٹ میں رپورٹ کریں';
+
+  @override
+  String blacklistMyReports(int count) {
+    return 'میری رپورٹس ($count)';
+  }
+
+  @override
+  String get blacklistNoReports =>
+      'اس شوروم کی ابھی کوئی رپورٹ نہیں۔ رپورٹس شوروم واپس نہیں لے سکتا — صرف ٹرائیبیونل ایڈمن ہی واپس لے سکتا ہے۔';
+
+  @override
+  String get blacklistEnterCnic =>
+      'گاہک کا مکمل 13 ہندسوں والا شناختی کارڈ درج کریں۔';
+
+  @override
+  String get blacklistDescribe => 'بیان کریں کیا ہوا — ٹرائیبیونل یہ پڑھتا ہے۔';
+
+  @override
+  String get blacklistReported =>
+      'رپورٹ ہو گئی۔ شناختی کارڈ اب ہر شوروم کے لیے فلیگ شدہ ہے۔';
+
+  @override
+  String get blacklistLoadError =>
+      'بلیک لسٹ رپورٹس لوڈ نہیں ہو سکیں۔ دوبارہ کوشش کریں۔';
+
+  @override
+  String blacklistReportFailed(String error) {
+    return 'رپورٹ ناکام ہوئی: $error';
+  }
+
+  @override
+  String get blacklistReverted => 'واپس لی گئی';
+
+  @override
+  String get financeSubtitle => 'اکاؤنٹس، لیجر اور منافع';
+
+  @override
+  String get financeThisMonth => 'اس مہینے';
+
+  @override
+  String get financeLastMonth => 'پچھلا مہینہ';
+
+  @override
+  String get financeAllTime => 'اب تک';
+
+  @override
+  String financeNetAmount(String amount) {
+    return 'خالص $amount روپے';
+  }
+
+  @override
+  String financeMonthBreakdown(
+      String bookings, String income, String expenses) {
+    return 'بکنگز $bookings روپے • دیگر آمدنی $income روپے • اخراجات $expenses روپے';
+  }
+
+  @override
+  String get financeCustomerDues => 'گاہکوں کے واجبات';
+
+  @override
+  String get financeCashClosing => 'کیش بندش';
+
+  @override
+  String get financeCarPnl => 'گاڑی کا نفع نقصان';
+
+  @override
+  String get financeIncome => 'آمدنی';
+
+  @override
+  String get financeExpense => 'خرچ';
+
+  @override
+  String get financeCategoryRent => 'کرایہ';
+
+  @override
+  String get financeCategoryFuel => 'ایندھن';
+
+  @override
+  String get financeCategorySalary => 'تنخواہ';
+
+  @override
+  String get financeCategoryPartnerShare => 'پارٹنر کا حصہ';
+
+  @override
+  String get financeCategoryDepositRefund => 'ڈپازٹ واپسی';
+
+  @override
+  String get financeCategoryLabel => 'قسم';
+
+  @override
+  String get financeNoteOptional => 'نوٹ (اختیاری)';
+
+  @override
+  String financeLedgerAmount(String sign, String amount) {
+    return '$sign $amount روپے';
+  }
+
+  @override
+  String get financeAccountTypeCash => 'نقد';
+
+  @override
+  String get financeAccountTypeBank => 'بینک';
+
+  @override
+  String get financeAccountTypeJazzCash => 'جیز کیش';
+
+  @override
+  String get financeAccountTypeEasyPaisa => 'ایزی پیسہ';
+
+  @override
+  String get financeAccountTypeLabel => 'قسم';
+
+  @override
+  String get financeAccountsTitle => 'اکاؤنٹس';
+
+  @override
+  String get financeAccountsEmpty => 'ابھی کوئی اکاؤنٹ نہیں';
+
+  @override
+  String get financeAddAccount => 'اکاؤنٹ شامل کریں';
+
+  @override
+  String get financeLedgerTitle => 'لیجر';
+
+  @override
+  String get financeAddEntry => 'اندراج شامل کریں';
+
+  @override
+  String get financeLedgerEmpty =>
+      'ابھی کوئی اندراج نہیں — اپنی پہلی آمدنی یا خرچ ریکارڈ کریں۔';
+
+  @override
+  String get financeAccountFallback => 'اکاؤنٹ';
+
+  @override
+  String get financeSecurityDeposits => 'سیکیورٹی ڈپازٹس';
+
+  @override
+  String get financeDepositsHeld => 'ابھی محفوظ';
+
+  @override
+  String get financeDepositsRefunded => 'مکمل واپس';
+
+  @override
+  String get financeDepositsDeducted => 'واپسی پر کاٹا گیا';
+
+  @override
+  String financeDepositsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ڈپازٹس',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get financePartners => 'پارٹنرز';
+
+  @override
+  String get financeAddPartner => 'پارٹنر شامل کریں';
+
+  @override
+  String get financePartnersEmpty =>
+      'ابھی کوئی پارٹنر نہیں — حصہ ریکارڈ کرنے کے لیے ایک شامل کریں۔';
+
+  @override
+  String financePartnerShareLine(int percent) {
+    return 'منافع کا $percent٪';
+  }
+
+  @override
+  String get financeSaveAccount => 'اکاؤنٹ محفوظ کریں';
+
+  @override
+  String get financeAccountName => 'اکاؤنٹ کا نام';
+
+  @override
+  String get financeSavePartner => 'پارٹنر محفوظ کریں';
+
+  @override
+  String get financePartnerName => 'پارٹنر کا نام';
+
+  @override
+  String get financePartnerShare => 'حصہ (٪)';
+
+  @override
+  String get financeAddTransfer => 'لیجر اندراج شامل کریں';
+
+  @override
+  String get financeAmountRs => 'رقم (روپے)';
+
+  @override
+  String get financeVehicleOptional =>
+      'گاڑی (اختیاری — کار کے نفع نقصان کے لیے)';
+
+  @override
+  String get financeNoVehicle => 'کوئی گاڑی نہیں';
+
+  @override
+  String get financeNoteHint => 'مثلاً ڈرائیور کی تنخواہ — احمد';
+
+  @override
+  String get financeSaveEntry => 'اندراج محفوظ کریں';
+
+  @override
+  String get financeClosingExpected => 'آج تجوری میں متوقع';
+
+  @override
+  String financeClosingOpening(String opening, String difference) {
+    return 'اوپننگ $opening روپے • فرق $difference روپے';
+  }
+
+  @override
+  String financeClosingCounted(String counted, String difference) {
+    return 'گن کر $counted روپے • فرق $difference روپے';
+  }
+
+  @override
+  String get financePnlTitle => 'نفع نقصان کا بیان';
+
+  @override
+  String get financePnlBookingRevenue => 'بکنگ کی آمدنی';
+
+  @override
+  String get financePnlOtherIncome => 'دیگر آمدنی';
+
+  @override
+  String get financePnlExpenses => 'اخراجات';
+
+  @override
+  String get financePnlNetProfit => 'خالص منافع';
+
+  @override
+  String get pnlLoss => 'نقصان';
+
+  @override
+  String get financePnlExport =>
+      'نفع نقصان CSV کے طور پر ایکسپورٹ کریں (ایکسل میں کھلتا ہے)';
+
+  @override
+  String get financeCarPnlSubtitle => 'ایک گاڑی، اس کا تمام حساب';
+
+  @override
+  String get financeCarPnlNoCars => 'فلیٹ میں ابھی کوئی گاڑی نہیں۔';
+
+  @override
+  String get financeCarPnlTagged => 'ٹیگ شدہ اندراجات';
+
+  @override
+  String get financeCarPnlNoTagged =>
+      'اس گاڑی سے ابھی کچھ ٹیگ نہیں — لیجر میں اندراج ٹیگ کریں۔';
+
+  @override
+  String financeCarPnlBreakdown(
+      String revenue, String income, String expenses) {
+    return 'بکنگ کی آمدنی $revenue روپے • دیگر آمدنی $income روپے • اخراجات $expenses روپے';
+  }
+
+  @override
+  String get financeClosingSubtitle => 'تجوری گنیں، دن بند کریں';
+
+  @override
+  String get financeClosingCountedLabel => 'گنی ہوئی نقدی (روپے)';
+
+  @override
+  String get financeClosingSaving => 'بند ہو رہا ہے...';
+
+  @override
+  String get financeClosingButton => 'دن بند کریں';
+
+  @override
+  String get financeClosingPast => 'گزشتہ بندشیں';
+
+  @override
+  String get financeClosingEmpty => 'ابھی کوئی بندش نہیں۔';
+
+  @override
+  String get financeClosingEnterCounted => 'پہلے گنی ہوئی نقدی درج کریں۔';
+
+  @override
+  String financeClosingClosed(String difference) {
+    return 'دن بند ہو گیا — فرق $difference روپے۔';
+  }
+
+  @override
+  String cashClosingShortBy(String amount) {
+    return '$amount روپے کم ہیں';
+  }
+
+  @override
+  String cashClosingOverBy(String amount) {
+    return '$amount روپے زیادہ ہیں';
+  }
+
+  @override
+  String get financeDuesTitle => 'گاہکوں کے واجبات';
+
+  @override
+  String financeDuesOutstanding(String amount) {
+    return '$amount روپے واجب الادا';
+  }
+
+  @override
+  String get financeDuesEmpty => 'کوئی واجب الادا رقم نہیں۔ سب صاف ہے۔';
+
+  @override
+  String financeDuesBookingsLine(int count, String phone) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count بکنگز',
+    );
+    return '$_temp0 • $phone';
+  }
+
+  @override
+  String get financeDuesNoPhone => 'فون نہیں';
+
+  @override
+  String financeDuesLastReminded(int day, int month, int year) {
+    return 'آخری یاد دہانی $day/$month/$year';
+  }
+
+  @override
+  String financeDuesLastRemindedDate(String date) {
+    return 'آخری یاد دہانی $date';
+  }
+
+  @override
+  String get financeDuesRemind => 'واٹس ایپ پر یاد دہانی کرائیں';
+
+  @override
+  String get financeDuesRemindAgain => 'واٹس ایپ پر دوبارہ یاد دہانی کرائیں';
+
+  @override
+  String get financeDuesNoPhoneError => 'اس گاہک کا کوئی فون نمبر نہیں۔';
+
+  @override
+  String financeDuesReminderMessage(String name, String due) {
+    return 'السلام علیکم $name، آپ کا رینٹل ہب بیلنس $due روپے واجب الادا ہے۔ براہ کرم جلد از جلد ادا کر دیں۔ شکریہ!';
+  }
+
+  @override
+  String get financeDuesWhatsappFailed => 'واٹس ایپ نہیں کھل سکا۔';
+
+  @override
+  String get financeDuesReminderSent =>
+      'واٹس ایپ کھل گیا — یاد دہانی چیٹ سے بھیجیں۔';
+
+  @override
+  String get financeDuesAutoNote =>
+      'خودکار واٹس ایپ یاد دہانیوں (ہر 3 دن بعد) کے لیے واٹس ایپ بزنس سیٹ اپ درکار ہے — فیز I۔';
+
+  @override
+  String get handoverTitle => 'گاڑی کی حوالگی اور معائنہ';
+
+  @override
+  String get handoverOdometerInvalid =>
+      'براہ کرم درست اوڈومیٹر ریڈنگ درج کریں۔';
+
+  @override
+  String get handoverSignRequired =>
+      'گاڑی روانگی سے پہلے گاہک اور میزبان دونوں کو پیڈ پر دستخط کرنا ہوں گے۔';
+
+  @override
+  String get handoverCertified =>
+      'حوالگی تصدیق شدہ! ڈیجیٹل A4 رینٹل معاہدہ تیار ہو گیا۔';
+
+  @override
+  String get handoverShopNameRequired =>
+      'دکان کا نام لوڈ نہیں ہو سکا۔ ہینڈ اوور کی تصدیق سے پہلے دوبارہ لوڈ کریں۔';
+
+  @override
+  String handoverCompleteFailed(String error) {
+    return 'حوالگی مکمل کرنا ناکام ہوا: $error';
+  }
+
+  @override
+  String get handoverIssuing => 'ڈیجیٹل معاہدہ جاری ہو رہا ہے...';
+
+  @override
+  String get handoverCertify => 'حوالگی تصدیق کریں اور معاہدہ تیار کریں';
+
+  @override
+  String get handoverTelemetryTitle => 'گاڑی کا ٹیلی میٹری معائنہ';
+
+  @override
+  String get handoverOdometerLabel => 'اوڈومیٹر ریڈنگ (کلومیٹر):';
+
+  @override
+  String get handoverOdometerHint => 'مثلاً 45200';
+
+  @override
+  String get handoverFuelLabel => 'ایندھن کی سطح:';
+
+  @override
+  String get handoverFuelQuarter => '1/4 (25٪)';
+
+  @override
+  String get handoverFuelHalf => '2/4 (50٪)';
+
+  @override
+  String get handoverFuelThreeQuarter => '3/4 (75٪)';
+
+  @override
+  String get handoverFuelFull => '4/4 (مکمل)';
+
+  @override
+  String get handoverSignaturesTitle => 'دوہری قانونی توثیق اور دستخط';
+
+  @override
+  String get handoverCustomerSignature => 'گاہک / کرایہ دار کے ڈیجیٹل دستخط';
+
+  @override
+  String get handoverCustomerSignatureHint =>
+      'گاڑی اور دستاویزات کی جسمانی وصولی کی تصدیق';
+
+  @override
+  String get handoverHostSignature => 'شوروم میزبان / مینیجر کے دستخط';
+
+  @override
+  String get handoverHostSignatureHint => 'شوروم کے نمائندے کی مجاز رہائی';
+
+  @override
+  String get handoverClear => 'صاف کریں';
+
+  @override
+  String get handoverDamageTitle => 'نقصان اور حالت کے نوٹس';
+
+  @override
+  String get handoverDamageSubtitle =>
+      'ہر خراش، دباؤ یا گم شدہ چیز ابھی نوٹ کریں — واپسی کا معائنہ اسی سے موازنہ کرتا ہے۔';
+
+  @override
+  String get handoverDamageHint => 'مثلاً دائیں دروازے پر خراش';
+
+  @override
+  String get handoverAdd => 'شامل کریں';
+
+  @override
+  String handoverNotedAt(String notes) {
+    return 'حوالگی پر نوٹ کیا گیا: $notes';
+  }
+
+  @override
+  String get returnTitle => 'گاڑی کی واپسی اور تصفیہ';
+
+  @override
+  String returnTripAudit(String id) {
+    return 'سفر کا آڈٹ #$id';
+  }
+
+  @override
+  String get returnOdometerInvalid => 'واپسی کی اوڈومیٹر ریڈنگ درج کریں۔';
+
+  @override
+  String returnOdometerBelow(int odometer) {
+    return 'واپسی کی ریڈنگ حوالگی کی ریڈنگ ($odometer کلومیٹر) سے کم نہیں ہو سکتی۔';
+  }
+
+  @override
+  String returnSettled(String refund) {
+    return 'گاڑی واپس ہو گئی! ڈپازٹ طے ہو گیا — $refund روپے واپس کیے گئے۔';
+  }
+
+  @override
+  String returnCustomerOwes(String amount) {
+    return 'گاہک پر $amount روپے واجب الادا ہیں';
+  }
+
+  @override
+  String returnFinalizeFailed(String error) {
+    return 'واپسی مکمل کرنا ناکام ہوا: $error';
+  }
+
+  @override
+  String get returnTelemetryTitle => 'واپسی کا ٹیلی میٹری معائنہ';
+
+  @override
+  String get returnNewDamageTitle => 'واپسی پر نیا نقصان ملا';
+
+  @override
+  String get returnNewDamageSubtitle =>
+      'صرف وہ نقصان جو حوالگی پر نوٹ نہیں ہوا تھا — نیچے کا چارج اسی کا ہے۔';
+
+  @override
+  String get returnDamageChargeLabel => 'نقصان کا چارج (روپے)';
+
+  @override
+  String get returnDamageChargeHint => '0 اگر کچھ نیا نہیں ملا';
+
+  @override
+  String get returnFinalizing => 'تصفیہ مکمل ہو رہا ہے...';
+
+  @override
+  String get returnFinalize => 'واپسی مکمل کریں اور ڈپازٹ طے کریں';
+
+  @override
+  String get returnReceiptTitle => 'ڈپازٹ اور واپسی کے بیلنس کا تصفیہ';
+
+  @override
+  String get returnReceiptTotalKm => 'کل چلائے گئے کلومیٹر';
+
+  @override
+  String get returnReceiptAllowance => 'مجاز کلومیٹر کی حد';
+
+  @override
+  String returnReceiptExcessPenalty(int excess, String rate) {
+    return 'اضافی کلومیٹر جرمانہ ($excess کلومیٹر × $rate روپے)';
+  }
+
+  @override
+  String get returnReceiptFuelDeficit => 'ایندھن کی کمی';
+
+  @override
+  String get returnReceiptOvertime => 'دیر سے واپسی کی فیس';
+
+  @override
+  String get returnReceiptDamage => 'واپسی پر نقصان ملا';
+
+  @override
+  String get returnReceiptDepositHeld => 'ابتدائی سیکیورٹی ڈپازٹ محفوظ';
+
+  @override
+  String get returnReceiptTotalDeductions => 'کل واقعہ / جرمانہ کٹوتیاں';
+
+  @override
+  String returnReceiptDeductionsAmount(String amount) {
+    return '- $amount روپے';
+  }
+
+  @override
+  String get returnReceiptNetRefund => 'گاہک کو خالص واپسی';
+
+  @override
+  String get returnPerKmActualFare => 'فی کلومیٹر کرایہ (اصل کلومیٹر)';
+
+  @override
+  String get returnPerKmExtraDue => 'اضافی کرایہ واجب الادا';
+
+  @override
+  String get returnPerKmRefundDue => 'کرایہ کی واپسی واجب الادا';
+
+  @override
+  String get contractTitle => 'ڈیجیٹل رینٹل معاہدہ';
+
+  @override
+  String contractLegalRef(String id) {
+    return 'قانونی معاہدہ حوالہ: #$id';
+  }
+
+  @override
+  String get contractSharePdf => 'پی ڈی ایف شیئر کریں';
+
+  @override
+  String get contractPrintPdf => 'پی ڈی ایف پرنٹ کریں';
+
+  @override
+  String get contractPdfUnavailable => 'معاہدے کی پی ڈی ایف ابھی دستیاب نہیں۔';
+
+  @override
+  String get contractNotAvailable => 'معاہدہ ابھی دستیاب نہیں';
+
+  @override
+  String contractShareText(String id) {
+    return 'رینٹل معاہدہ #$id';
+  }
+
+  @override
+  String get contractScanVerify =>
+      'اس معاہدے کی تصدیق کے لیے اسکین کریں — صفحہ بکنگ، شوروم اور دستخط شدہ پی ڈی ایف دکھاتا ہے۔';
+
+  @override
+  String get contractProceedReturn => 'واپسی اور تصفیے کی طرف بڑھیں';
+
+  @override
+  String get contractAgencyLine =>
+      'حکومت سے رجسٹرڈ کمرشل موٹر کار رینٹل ایجنسی';
+
+  @override
+  String get contractCertifiedTitle => 'رینٹل معاہدہ';
+
+  @override
+  String get contractFieldAgreementNo => 'معاہدہ نمبر:';
+
+  @override
+  String get contractFieldHirer => 'کرایہ دار / گاہک:';
+
+  @override
+  String get contractFieldContact => 'گاہک کا رابطہ:';
+
+  @override
+  String get contractFieldCnic => 'شناختی کارڈ:';
+
+  @override
+  String get contractFieldVehicle => 'کرائے کی گاڑی:';
+
+  @override
+  String get contractFieldPackage => 'پیکیج کی قسم:';
+
+  @override
+  String get contractFieldOdometer => 'روانگی اوڈومیٹر:';
+
+  @override
+  String get contractFieldFuel => 'حوالگی ایندھن گیج:';
+
+  @override
+  String get contractFieldTotalPaid => 'کل کرایہ ادا شدہ:';
+
+  @override
+  String get contractFieldDeposit => 'سیکیورٹی ڈپازٹ:';
+
+  @override
+  String get contractWalkInCustomer => 'واک اِن گاہک';
+
+  @override
+  String get contractNotProvided => 'فراہم نہیں کیا گیا';
+
+  @override
+  String get contractChauffeur => 'ڈرائیور کے ساتھ';
+
+  @override
+  String contractDepositRefundable(String amount) {
+    return '$amount روپے (قابل واپسی)';
+  }
+
+  @override
+  String get contractTermsTitle =>
+      'قانونی شرائط و ضوابط (پاکستان کا دائرہ اختیار):';
+
+  @override
+  String get contractTerm1 =>
+      '1۔ گاڑی شہر کی حدود میں استعمال کی جائے گی جب تک کہ شہر سے باہر کا کرایہ طے نہ ہو۔';
+
+  @override
+  String get contractTerm2 =>
+      '2۔ ٹریفک چالان، ای چالان اور استعمال شدہ ایندھن کی ذمہ داری صرف کرایہ دار پر ہے۔';
+
+  @override
+  String get contractTerm3 =>
+      '3۔ کسی بھی ناکامی پر فوری ناقابل ضمانت ایف آئی آر اور نیشنل ٹرائیبیونل بلیک لسٹ میں شمولیت ہوگی۔';
+
+  @override
+  String get contractHirerSignature => 'کرایہ دار کے دستخط';
+
+  @override
+  String get contractSignedOnPad => 'پیڈ پر دستخط شدہ';
+
+  @override
+  String get contractHostSignature => 'میزبان کی مہر اور دستخط';
+
+  @override
+  String get contractAuthorizedManager => 'مجاز ایجنسی مینیجر';
+
+  @override
+  String get paymentVerificationTitle => 'ادائیگی کے ثبوت کی تصدیق کریں';
+
+  @override
+  String paymentVerificationBooking(String id) {
+    return 'بکنگ #$id';
+  }
+
+  @override
+  String paymentVerificationConfirmed(String id) {
+    return 'ادائیگی تصدیق شدہ — بکنگ #$id ادا ہو گئی۔';
+  }
+
+  @override
+  String paymentVerificationConfirmFailed(String error) {
+    return 'تصدیق ناکام ہوئی: $error';
+  }
+
+  @override
+  String get paymentVerificationRejectTitle => 'یہ ثبوت مسترد کریں؟';
+
+  @override
+  String get paymentVerificationRejectNote =>
+      'گاہک یہ وجہ دیکھتا ہے اور نیا ثبوت اپ لوڈ کر سکتا ہے۔';
+
+  @override
+  String get paymentVerificationReasonLabel => 'وجہ (لازمی)';
+
+  @override
+  String get paymentVerificationReasonHint =>
+      'مثلاً اسکرین شاٹ پڑھا نہیں جا سکتا';
+
+  @override
+  String get paymentVerificationRejectButton => 'ثبوت مسترد کریں';
+
+  @override
+  String get paymentVerificationRejected =>
+      'ثبوت مسترد ہو گیا — گاہک نیا ثبوت اپ لوڈ کر سکتا ہے۔';
+
+  @override
+  String paymentVerificationRejectFailed(String error) {
+    return 'مسترد کرنا ناکام ہوا: $error';
+  }
+
+  @override
+  String get paymentVerificationTotalRent => 'کل کرایہ';
+
+  @override
+  String get paymentVerificationAdvanceDue => 'ایڈوانس واجب';
+
+  @override
+  String get paymentVerificationAdvancePaid => 'ایڈوانس ادا شدہ';
+
+  @override
+  String get paymentVerificationTransactionId => 'لین دین کی شناخت';
+
+  @override
+  String get paymentVerificationScreenshotTitle => 'ادائیگی کا اسکرین شاٹ';
+
+  @override
+  String get paymentVerificationProofUnavailable =>
+      'ثبوت کی تصویر دستیاب نہیں — گاہک سے دوبارہ بھیجنے کو کہیں۔';
+
+  @override
+  String get proofImageOpenFullscreen => 'ثبوت کی تصویر پوری سکرین پر کھولیں';
+
+  @override
+  String get paymentVerificationNoScreenshot => 'کوئی اسکرین شاٹ منسلک نہیں۔';
+
+  @override
+  String paymentVerificationPreviouslyRejected(String reason) {
+    return 'پہلے مسترد کیا گیا: $reason';
+  }
+
+  @override
+  String get paymentVerificationConfirming => 'تصدیق ہو رہی ہے…';
+
+  @override
+  String paymentVerificationConfirmButton(String amount) {
+    return 'ادائیگی تصدیق کریں — $amount روپے';
+  }
+
+  @override
+  String get manualBookingTitle => 'واک اِن بکنگ وزرڈ';
+
+  @override
+  String get manualBookingSubtitle => 'شوروم کاؤنٹر سے براہ راست اجراء';
+
+  @override
+  String get manualBookingCustomerSection => 'گاہک کی کے وائی سی تفصیلات';
+
+  @override
+  String get manualBookingGuarantorSection => 'ضامن (اختیاری)';
+
+  @override
+  String get manualBookingVehicleSection => 'گاڑی اور پیکیج کا انتخاب';
+
+  @override
+  String get manualBookingCompleteDetails =>
+      'براہ کرم گاہک کی تمام تفصیلات مکمل کریں۔';
+
+  @override
+  String get manualBookingSelectVehicle =>
+      'براہ کرم گاڑی اور پیکیج منتخب کریں۔';
+
+  @override
+  String get manualBookingBlacklisted =>
+      'یہ شناختی کارڈ بلیک لسٹڈ ہے — واک اِن بکنگ مسترد۔';
+
+  @override
+  String manualBookingRegistered(String id) {
+    return 'واک اِن بکنگ #$id رجسٹر ہو گئی!';
+  }
+
+  @override
+  String get manualBookingAdvanceInvalid => 'درست ایڈوانس رقم درج کریں۔';
+
+  @override
+  String manualBookingCreateFailed(String error) {
+    return 'بکنگ بنانا ناکام ہوا: $error';
+  }
+
+  @override
+  String get manualBookingCreating => 'واک اِن ریکارڈ بن رہا ہے...';
+
+  @override
+  String get manualBookingConfirm => 'تصدیق کریں اور حوالگی کی طرف بڑھیں';
+
+  @override
+  String get manualBookingCustomerName => 'گاہک کا پورا نام';
+
+  @override
+  String get manualBookingNadraCnic => 'نادرا شناختی کارڈ';
+
+  @override
+  String get manualBookingSelectVehicleHint => 'شوروم کی گاڑی منتخب کریں';
+
+  @override
+  String get manualBookingSelectVehicleFirst =>
+      'پیکیجز دیکھنے کے لیے پہلے گاڑی منتخب کریں۔';
+
+  @override
+  String get manualBookingNoPackages => 'اس گاڑی کے لیے کوئی پیکیج فعال نہیں۔';
+
+  @override
+  String manualBookingPackageChip(String label, String price) {
+    return '$label • $price روپے';
+  }
+
+  @override
+  String manualBookingTotal(String total) {
+    return 'کل: $total روپے';
+  }
+
+  @override
+  String get manualBookingDepositLabel => 'سیکیورٹی ڈپازٹ (روپے)';
+
+  @override
+  String get manualBookingGuarantorNotFound =>
+      'اس شناختی کارڈ کا کوئی محفوظ گاہک نہیں — نیچے شامل کریں۔';
+
+  @override
+  String get manualBookingGuarantorBlacklisted =>
+      'یہ شناختی کارڈ بلیک لسٹڈ ہے اور ضامن نہیں بن سکتا۔';
+
+  @override
+  String get manualBookingGuarantorRequired =>
+      'ضامن کے لیے نام، فون اور شناختی کارڈ درکار ہیں۔';
+
+  @override
+  String get manualBookingGuarantorRemove => 'ضامن ہٹائیں';
+
+  @override
+  String get manualBookingGuarantorSearch => 'شناختی کارڈ سے ضامن تلاش کریں';
+
+  @override
+  String get manualBookingGuarantorFind => 'تلاش کریں';
+
+  @override
+  String get manualBookingGuarantorEmpty => 'ابھی کوئی محفوظ گاہک نہیں۔';
+
+  @override
+  String get manualBookingGuarantorHide => 'نیا ضامن چھپائیں';
+
+  @override
+  String get manualBookingGuarantorAdd => 'نیا ضامن شامل کریں';
+
+  @override
+  String get manualBookingGuarantorName => 'ضامن کا پورا نام';
+
+  @override
+  String get manualBookingGuarantorCnic => 'شناختی کارڈ نمبر';
+
+  @override
+  String get manualBookingGuarantorRelationship =>
+      'رشتہ (مثلاً والد، بھائی، دوست)';
+
+  @override
+  String get manualBookingGuarantorSave => 'ضامن محفوظ کریں اور منتخب کریں';
+
+  @override
+  String get qrScanTitle => 'بکنگ کا کیو آر اسکین کریں';
+
+  @override
+  String get qrScanSubtitle => 'کیمرہ گاہک کے بکنگ کوڈ کی طرف کریں';
+
+  @override
+  String get qrOpen => 'کھولیں';
+
+  @override
+  String get qrScanOpenSettings => 'سیٹنگز کھولیں';
+
+  @override
+  String get qrCameraDenied =>
+      'کیمیرے کی اجازت بند ہے — رینٹل ہب QR کوڈ اسکین نہیں کر سکتا۔';
+
+  @override
+  String get qrCameraDeniedHint =>
+      'ایپ کی ترتیبات میں کیمیرے کی اجازت دیں، یا نیچے بکنگ آئی ڈی لکھیں۔';
+
+  @override
+  String qrCameraUnavailable(String detail) {
+    return 'کیمرہ دستیاب نہیں ہے — $detail';
+  }
+
+  @override
+  String get qrCameraUnavailableHint => 'اس کے بجائے نیچے بکنگ آئی ڈی لکھیں۔';
+
+  @override
+  String get qrCameraSettingsError =>
+      'ترتیبات نہیں کھل سکیں — ایپ کی ترتیبات کھولیں اور کیمیرے کی اجازت دیں، پھر دوبارہ کوشش کریں۔';
+
+  @override
+  String get qrTorchOn => 'ٹارچ آن';
+
+  @override
+  String get qrTorchOff => 'ٹارچ آف';
+
+  @override
+  String get proofPickerPermissionDenied =>
+      'فوٹو پکر نہیں کھل سکا — کیمرہ / فوٹو کی اجازت چیک کریں اور دوبارہ کوشش کریں۔';
+
+  @override
+  String qrNoBooking(String id) {
+    return '#$id کے لیے کوئی بکنگ نہیں ملی۔';
+  }
+
+  @override
+  String qrOpenFailed(String error) {
+    return 'بکنگ نہیں کھل سکی: $error';
+  }
+
+  @override
+  String get qrNotBookingCode => 'یہ رینٹل ہب کا بکنگ کوڈ نہیں ہے۔';
+
+  @override
+  String get qrTypeHint => 'یا بکنگ آئی ڈی لکھیں، مثلاً RH-…';
+
+  @override
+  String onboardingCurrentGps(String lat, String lng) {
+    return 'موجودہ GPS ($lat, $lng)';
+  }
+
+  @override
+  String get onboardingShopNameShort =>
+      'شوروم کا نام کم از کم 3 حروف کا ہونا چاہیے۔';
+
+  @override
+  String get onboardingAddressInvalid => 'براہ کرم درست شوروم کا پتہ درج کریں۔';
+
+  @override
+  String get onboardingPayoutRequired =>
+      'براہ کرم کم از کم ایک ادائیگی کا طریقہ فعال کریں۔';
+
+  @override
+  String get onboardingSubmitted => 'شوروم پروفائل تصدیق کے لیے جمع کر دی گئی!';
+
+  @override
+  String onboardingStepOf(int step) {
+    return 'مرحلہ $step از 4';
+  }
+
+  @override
+  String get onboardingSubmit => 'تصدیق کے لیے شوروم جمع کرائیں';
+
+  @override
+  String get onboardingNextStep => 'اگلا مرحلہ';
+
+  @override
+  String get onboardingHeaderShop => 'شوروم رجسٹریشن';
+
+  @override
+  String get onboardingHeaderLocation => 'مقام اور نقشے کا پن';
+
+  @override
+  String get onboardingHeaderPayout => 'ادائیگی اکاؤنٹس';
+
+  @override
+  String get onboardingHeaderKyc => 'کے وائی سی اور تصدیق';
+
+  @override
+  String get onboardingHeaderSubmitted => 'درخواست جمع کر دی گئی';
+
+  @override
+  String get onboardingSubtitleShop => 'کاروباری شناخت اور رابطے کی تفصیلات';
+
+  @override
+  String get onboardingSubtitleLocation =>
+      'جسمانی پتہ اور جغرافیائی کوآرڈینیٹس';
+
+  @override
+  String get onboardingSubtitlePayout => 'جیز کیش، ایزی پیسہ یا پاکستانی بینک';
+
+  @override
+  String get onboardingSubtitleKyc =>
+      'شوروم بینر، 3 فلیٹ تصاویر اور شناختی کارڈ';
+
+  @override
+  String get onboardingSubtitleSubmitted => 'جائزے کی حالت اور فلیٹ مینجمنٹ';
+
+  @override
+  String get onboardingChangeLogo => 'شوروم کا لوگو تبدیل کریں';
+
+  @override
+  String get onboardingUploadLogo => 'شوروم کا لوگو / اسٹور فرنٹ اپ لوڈ کریں';
+
+  @override
+  String get onboardingShopLegalName => 'شوروم کا رجسٹرڈ قانونی نام';
+
+  @override
+  String get onboardingShopNameHint => 'مثلاً الفلاح رینٹ اے کار';
+
+  @override
+  String get onboardingOwnerName => 'مالک کا پورا نام (شناختی کارڈ کے مطابق)';
+
+  @override
+  String get onboardingOwnerNameHint => 'مثلاً احمد رضا';
+
+  @override
+  String get onboardingOwnerCnic => 'مالک کا شناختی کارڈ نمبر';
+
+  @override
+  String get onboardingShopPhone => 'شوروم لینڈ لائن / متبادل فون';
+
+  @override
+  String get onboardingOperatingHours => 'کام کے اوقات';
+
+  @override
+  String get onboardingHours9to10 => 'صبح 9:00 - رات 10:00';
+
+  @override
+  String get onboardingHours8toMidnight => 'صبح 8:00 - آدھی رات';
+
+  @override
+  String get onboardingHours24x7 => '24 گھنٹے / 7 دن';
+
+  @override
+  String get onboardingHours10to8 => 'صبح 10:00 - شام 8:00';
+
+  @override
+  String get onboardingSelectCity => 'اپنا شہر منتخب کریں';
+
+  @override
+  String get onboardingPinOnMap => 'شوروم نقشے پر پن کریں';
+
+  @override
+  String get onboardingLocating => 'مقام تلاش ہو رہا ہے...';
+
+  @override
+  String get onboardingUseGps => 'موجودہ GPS استعمال کریں';
+
+  @override
+  String onboardingTapToPin(String lat, String lng) {
+    return 'شوروم پن کرنے کے لیے نقشے پر کہیں بھی ٹیپ کریں ($lat, $lng)';
+  }
+
+  @override
+  String get onboardingShopAddress => 'شوروم کا جسمانی پتہ';
+
+  @override
+  String get onboardingAddressHint =>
+      'دکان نمبر، پلازہ، گلی، سیکٹر / کمرشل ایریا';
+
+  @override
+  String get onboardingPayoutTitle => 'ادائیگی اکاؤنٹس اور تصفیہ';
+
+  @override
+  String get onboardingPayoutSubtitle =>
+      'رینٹل بکنگز اور گاہکوں کے ایڈوانس ڈپازٹس وصول کرنے کے لیے کم از کم ایک ادائیگی چینل منتخب کریں۔';
+
+  @override
+  String get onboardingJazzCashTitle => 'جیز کیش موبائل اکاؤنٹ';
+
+  @override
+  String get onboardingJazzCashSubtitle => 'فوری موبائل والیٹ ادائیگی';
+
+  @override
+  String get onboardingEasyPaisaTitle => 'ایزی پیسہ والیٹ اکاؤنٹ';
+
+  @override
+  String get onboardingEasyPaisaSubtitle => 'فوری ڈیجیٹل والیٹ ادائیگی';
+
+  @override
+  String get onboardingJazzCashNumber => 'جیز کیش موبائل نمبر';
+
+  @override
+  String get onboardingEasyPaisaNumber => 'ایزی پیسہ موبائل نمبر';
+
+  @override
+  String get onboardingBankTitle => 'براہ راست کمرشل بینک';
+
+  @override
+  String get onboardingBankSubtitle => '1-لنک / IBAN براہ راست بینک تصفیہ';
+
+  @override
+  String get onboardingSelectBank => 'بینک کا نام منتخب کریں';
+
+  @override
+  String get onboardingAccountNumber => 'اکاؤنٹ نمبر / IBAN';
+
+  @override
+  String get onboardingIbanHint => 'مثلاً PK36MEZN0001234567890123';
+
+  @override
+  String get onboardingAccountTitleBusiness => 'اکاؤنٹ ٹائٹل (کاروبار / مالک)';
+
+  @override
+  String get onboardingAccountTitle => 'اکاؤنٹ ٹائٹل';
+
+  @override
+  String get onboardingTitleHint => 'احمد رضا';
+
+  @override
+  String get onboardingStepShopDetails => 'شوروم کی تفصیلات';
+
+  @override
+  String get onboardingStepLocation => 'مقام';
+
+  @override
+  String get onboardingStepPayouts => 'ادائیگیاں';
+
+  @override
+  String get onboardingStepKyc => 'کے وائی سی دستاویزات';
+
+  @override
+  String get onboardingApprovalTitle => 'شوروم کی درخواست جمع ہو گئی!';
+
+  @override
+  String get onboardingApprovalMessage =>
+      'آپ کا شوروم پروفائل اور کے وائی سی دستاویزات سپر ایڈمن ڈیسک کو بھیج دی گئی ہیں۔ آپ کو 2 سے 4 کاروباری گھنٹوں میں ایس ایم ایس اور واٹس ایپ تصدیق ملے گی۔';
+
+  @override
+  String get onboardingFleetReady => 'فلیٹ کیٹلاگ تیار ہے';
+
+  @override
+  String get onboardingFleetReadyHint =>
+      'آپ ابھی اپنی گاڑیاں شامل کرنا، 1h/3h/6h/24h ریٹس اور تصاویر سیٹ کرنا شروع کر سکتے ہیں۔';
+
+  @override
+  String get onboardingManageFleet => 'فلیٹ مینج کریں اور گاڑیاں شامل کریں';
+
+  @override
+  String get onboardingHeaderBannerTitle => 'شوروم ہیڈر شوکیس بینر';
+
+  @override
+  String get onboardingHeaderBannerHint =>
+      'کیمرہ یا گیلری سے تصویر اپ لوڈ کریں۔ آپ کے عوامی پروفائل کے اوپر ظاہر ہوتی ہے۔';
+
+  @override
+  String get onboardingHeaderBannerPhoto => 'شوروم ہیڈر بینر تصویر';
+
+  @override
+  String get onboardingFleetPhotosTitle => 'شوروم فلیٹ تصاویر (3 درکار)';
+
+  @override
+  String get onboardingFleetPhotosHint =>
+      'اپنے شوروم پر کھڑی گاڑیوں کی اصلی تصاویر اپ لوڈ کریں۔';
+
+  @override
+  String get onboardingFleetCar1 => 'فلیٹ کار 1';
+
+  @override
+  String get onboardingFleetCar2 => 'فلیٹ کار 2';
+
+  @override
+  String get onboardingFleetCar3 => 'فلیٹ کار 3';
+
+  @override
+  String get onboardingIdentityTitle => 'مالک کی شناخت اور ٹیکس تصدیق';
+
+  @override
+  String get onboardingIdentityHint => 'شوروم تصدیق کے لیے لازمی تعمیل۔';
+
+  @override
+  String get onboardingCnicFront => 'شناختی کارڈ کی سامنے کی تصویر';
+
+  @override
+  String get onboardingCnicFrontHint =>
+      'مالک کے شناختی کارڈ کے سامنے کی دن کی روشنی میں تصویر';
+
+  @override
+  String get onboardingCnicBack => 'شناختی کارڈ کی پچھلی تصویر';
+
+  @override
+  String get onboardingCnicBackHint =>
+      'مستقل پتہ دکھانے والی دن کی روشنی میں تصویر';
+
+  @override
+  String get onboardingNtn =>
+      'ایف بی آر این ٹی این سرٹیفکیٹ / کاروباری رجسٹریشن';
+
+  @override
+  String get onboardingNtnHint => 'تصدیق شدہ فائلر سرٹیفکیٹ یا شوروم دستاویز';
+
+  @override
+  String get onboardingSelfie =>
+      'مالک کی لائیو سیلفی شناختی کارڈ کے ساتھ (صرف سامنے والا کیمرہ)';
+
+  @override
+  String get onboardingSelfieHint => 'فوری لائیو بائیومیٹرک سیلفی';
+
+  @override
+  String get onboardingDocReady => 'تیار ✓';
+
+  @override
+  String get onboardingDocUpload => 'اپ لوڈ کریں';
+
+  @override
+  String get onboardingDocRemove => 'ہٹائیں';
+
+  @override
+  String get onboardingTapToUpload => 'اپ لوڈ کرنے کے لیے ٹیپ کریں';
+
+  @override
+  String get onboardingOptional => 'اختیاری';
+
+  @override
+  String get disputesOwnerSubtitle => 'آپ کے گاہکوں کی شکایات';
+
+  @override
+  String disputesFilterAll(int count) {
+    return 'سب ($count)';
+  }
+
+  @override
+  String disputesFilterOpen(int count) {
+    return 'کھلا ($count)';
+  }
+
+  @override
+  String disputesFilterInReview(int count) {
+    return 'جائزے میں ($count)';
+  }
+
+  @override
+  String disputesFilterResolved(int count) {
+    return 'حل شدہ ($count)';
+  }
+
+  @override
+  String get disputesNoneOpen => 'کوئی کھلا تنازع نہیں۔';
+
+  @override
+  String get disputesNoneInReview => 'کوئی جائزے میں تنازع نہیں۔';
+
+  @override
+  String get disputesNoneResolved => 'کوئی حل شدہ تنازع نہیں۔';
+
+  @override
+  String get disputesFallbackTitle => 'تنازع';
+
+  @override
+  String disputesBookingLine(String id, String name) {
+    return 'بکنگ $id • $name';
+  }
+
+  @override
+  String get disputesNoDescription => 'کوئی تفصیل نہیں دی گئی۔';
+
+  @override
+  String get disputesSaving => 'محفوظ ہو رہا ہے…';
+
+  @override
+  String get disputesUpdateError =>
+      'اس تنازعے کو اپ ڈیٹ نہیں کیا جا سکا۔ دوبارہ کوشش کریں۔';
+
+  @override
+  String get disputesMarkInReview => 'جائزے میں قرار دیں';
+
+  @override
+  String get disputesMarkResolved => 'حل شدہ قرار دیں';
+
+  @override
+  String get disputesResolvedNote => 'حل شدہ — مزید کارروائی کی ضرورت نہیں۔';
+
+  @override
+  String get disputesMonthJan => 'جنوری';
+
+  @override
+  String get disputesMonthFeb => 'فروری';
+
+  @override
+  String get disputesMonthMar => 'مارچ';
+
+  @override
+  String get disputesMonthApr => 'اپریل';
+
+  @override
+  String get disputesMonthMay => 'مئی';
+
+  @override
+  String get disputesMonthJun => 'جون';
+
+  @override
+  String get disputesMonthJul => 'جولائی';
+
+  @override
+  String get disputesMonthAug => 'اگست';
+
+  @override
+  String get disputesMonthSep => 'ستمبر';
+
+  @override
+  String get disputesMonthOct => 'اکتوبر';
+
+  @override
+  String get disputesMonthNov => 'نومبر';
+
+  @override
+  String get disputesMonthDec => 'دسمبر';
+
+  @override
+  String get notificationsSubtitle => 'کس چیز پر آپ کی توجہ درکار ہے';
+
+  @override
+  String get notificationsMarkAllRead => 'سب پڑھا ہوا قرار دیں';
+
+  @override
+  String get notificationsMarkReadError =>
+      'اطلاعات کو پڑھا ہوا قرار نہیں دیا جا سکا۔ دوبارہ کوشش کریں۔';
+
+  @override
+  String get notificationsLoadError =>
+      'اطلاعات لوڈ نہیں ہو سکیں۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔';
+
+  @override
+  String get notificationsEmpty => 'ابھی کوئی اطلاعات نہیں۔';
+
+  @override
+  String subscriptionUpgradeTo(String tier) {
+    return '$tier پر اپ گریڈ کریں';
+  }
+
+  @override
+  String get subscriptionClose => 'بند کریں';
+
+  @override
+  String subscriptionTransfer(String price) {
+    return 'فوری شوروم منظوری فعال کرنے کے لیے راست / IBAN کے ذریعے $price روپے منتقل کریں۔';
+  }
+
+  @override
+  String get subscriptionTrxLabel => 'بینک ٹرانسفر لین دین آئی ڈی / حوالہ';
+
+  @override
+  String get subscriptionTrxHint => 'مثلاً TRX-998822';
+
+  @override
+  String get subscriptionSubmit => 'اپ گریڈ تصدیق جمع کرائیں';
+
+  @override
+  String get subscriptionEnterTrx => 'براہ کرم لین دین آئی ڈی درج کریں';
+
+  @override
+  String get subscriptionRequested =>
+      'اپ گریڈ کی درخواست ہو گئی! سپر ایڈمن کا جائزہ جاری ہے۔';
+
+  @override
+  String get subscriptionTitle => 'شوروم ممبرشپ پلانز';
+
+  @override
+  String get subscriptionSubtitle =>
+      'رینٹل ہب کے ساتھ اپنے شوروم کا فلیٹ بڑھائیں';
+
+  @override
+  String get subscriptionTierStarter => 'اسٹارٹر فریمیم';
+
+  @override
+  String get subscriptionTierPro => 'پرو شوروم';
+
+  @override
+  String get subscriptionTierEnterprise => 'انٹرپرائز فلیٹ';
+
+  @override
+  String get subscriptionPerMonth => '/ ماہ';
+
+  @override
+  String get subscriptionForeverFree => 'ہمیشہ مفت';
+
+  @override
+  String get subscriptionFeatureMax3 => 'زیادہ سے زیادہ 3 شوروم گاڑیاں';
+
+  @override
+  String get subscriptionFeatureAgreements => 'معیاری ڈیجیٹل معاہدے';
+
+  @override
+  String get subscriptionFeatureVerification => 'گاہک کی تصدیق کی جانچ';
+
+  @override
+  String get subscriptionFeatureUnlimited => 'لامحدود فلیٹ گاڑیاں';
+
+  @override
+  String get subscriptionFeatureRadar => 'ریئل ٹائم مشترکہ بلیک لسٹ ریڈار';
+
+  @override
+  String get subscriptionFeatureWhatsappInvoicing =>
+      'واٹس ایپ خودکار انوائسنگ اور پاس';
+
+  @override
+  String get subscriptionFeaturePricingMatrix =>
+      'اپنی مرضی کی ملٹی ٹیئر پرائسنگ میٹرکس';
+
+  @override
+  String get subscriptionFeatureMultiBranch => 'ملٹی برانچ فلیٹ سنکرونائزیشن';
+
+  @override
+  String get subscriptionFeatureManager => 'مخصوص اکاؤنٹ مینیجر';
+
+  @override
+  String get subscriptionFeatureGps => 'GPS ٹیلی میٹکس API انضمام';
+
+  @override
+  String get subscriptionFeatureTribunal => 'ترجیحی تنازع ٹرائیبیونل سماعتیں';
+
+  @override
+  String get subscriptionMostPopular => 'سب سے مقبول';
+
+  @override
+  String get subscriptionCurrentPlan => 'موجودہ پلان';
+
+  @override
+  String get subscriptionActivePlan => 'فعال پلان';
+
+  @override
+  String get whatsappLogsTitle => 'واٹس ایپ الرٹ ترسیلات';
+
+  @override
+  String get whatsappLogsSubtitle => 'لین دین میسجنگ گیٹ وے • لائیو';
+
+  @override
+  String get whatsappLogsDelivered => 'پہنچا دیا گیا';
+
+  @override
+  String get whatsappLogsRead => 'پڑھا گیا';
+
+  @override
+  String get whatsappLogsFailed => 'ناکام';
+
+  @override
+  String get whatsappLogsEmpty => 'ابھی کوئی واٹس ایپ پیغام نہیں بھیجا گیا';
+
+  @override
+  String get whatsappLogsResent =>
+      'واٹس ایپ اطلاع میٹا کلاؤڈ API کے ذریعے دوبارہ بھیج دی گئی!';
+
+  @override
+  String get whatsappLogsResend => 'دوبارہ بھیجیں';
+
+  @override
+  String get onboardingWhatsappBusinessNumber => 'واٹس ایپ بزنس نمبر';
+
+  @override
+  String get disputesOwnerEmpty =>
+      'ابھی کوئی تنازع نہیں — آپ کے شوروم کے گاہکوں کے تنازعات یہاں ظاہر ہوں گے۔';
+
+  @override
+  String get manualBookingGuarantorPhone => 'فون نمبر';
+
+  @override
+  String get navHome => 'ہوم';
+
+  @override
+  String get navShops => 'شاپس';
+
+  @override
+  String get navBookings => 'بکنگز';
+
+  @override
+  String get navWallet => 'والیٹ';
+
+  @override
+  String get navSupport => 'مدد';
+
+  @override
+  String get navProfile => 'پروفائل';
+
+  @override
+  String get navDashboard => 'ڈیش بورڈ';
+
+  @override
+  String get navFleet => 'فلیٹ';
+
+  @override
+  String get navRequests => 'درخواستیں';
+
+  @override
+  String get navCustomers => 'گاہک';
+
+  @override
+  String get navSettings => 'ترتیبات';
+
+  @override
+  String syncOfflineWithPending(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          'آپ آف لائن ہیں — $count تبدیلیاں دوبارہ آن لائن ہونے پر ہم آہنگ ہو جائیں گی',
+      one:
+          'آپ آف لائن ہیں — 1 تبدیلی دوبارہ آن لائن ہونے پر ہم آہنگ ہو جائے گی',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get syncOffline =>
+      'آپ آف لائن ہیں — تبدیلیاں دوبارہ آن لائن ہونے پر ہم آہنگ ہو جائیں گی';
+
+  @override
+  String syncPending(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count تبدیلیاں ہم آہنگی کے منتظر',
+      one: '1 تبدیلی ہم آہنگی کے منتظر',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String syncFailed(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count تبدیلیاں ہم آہنگ نہ ہو سکیں — دوبارہ کوشش کی جائے گی',
+      one: '1 تبدیلی ہم آہنگ نہ ہو سکی — دوبارہ کوشش کی جائے گی',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get syncFailedShort => 'ہم آہنگی ناکام — دوبارہ کوشش کی جائے گی';
+
+  @override
+  String get syncFailedBanner => 'سنک ناکام ہوئی — دیکھنے کے لیے تھپتھپائیں';
+
+  @override
+  String get syncDetailsTitle => 'سنک کی تفصیلات';
+
+  @override
+  String get syncDetailsFailed => 'ناکام';
+
+  @override
+  String syncDetailsAttempts(int count) {
+    return 'کوششیں: $count';
+  }
+
+  @override
+  String get syncRetryNow => 'ابھی دوبارہ کوشش کریں';
+
+  @override
+  String get syncDiscard => 'خارج کریں';
+
+  @override
+  String get syncDiscardTitle => 'کیا یہ تبدیلی حذف کر دی جائے؟';
+
+  @override
+  String syncDiscardBody(String kind, String entity) {
+    return '$kind • $entity\nیہ ہم آہنگ نہیں ہوگی۔';
+  }
+
+  @override
+  String get syncKindSavedChange => 'محفوظ شدہ تبدیلی';
+
+  @override
+  String get syncKindFileUpload => 'فائل اپ لوڈ';
+
+  @override
+  String get syncKindHandover => 'حوالگی';
+
+  @override
+  String get syncNoPending => 'کچھ زیر التوا نہیں ہے';
+
+  @override
+  String get syncPendingShort => 'ہم آہنگی کے منتظر';
+
+  @override
+  String get syncAllSynced => 'تمام تبدیلیاں ہم آہنگ ہو گئیں';
+
+  @override
+  String get syncTitle => 'ہم آہنگی';
+
+  @override
+  String get commonRetry => 'دوبارہ کوشش کریں';
+
+  @override
+  String get commonSubmit => 'جمع کرائیں';
+
+  @override
+  String get commonConfirm => 'تصدیق کریں';
+
+  @override
+  String get commonShowValue => 'قدر دکھائیں';
+
+  @override
+  String get commonHideValue => 'قدر چھپائیں';
+
+  @override
+  String get commonGoBack => 'واپس جائیں';
+
+  @override
+  String headerGreeting(String name) {
+    return 'ہیلو، $name';
+  }
+
+  @override
+  String get headerGreetingFallback => 'ہیلو';
+
+  @override
+  String get headerUrduGreeting => 'اسلام علیکم';
+
+  @override
+  String get mediaSelectSource => 'میڈیا کا ذریعہ منتخب کریں';
+
+  @override
+  String get mediaTakePhoto => 'تصویر لیں (پچھلا کیمرہ)';
+
+  @override
+  String get mediaTakePhotoHint => 'ڈیوائس کا کیمرہ استعمال کریں';
+
+  @override
+  String get mediaChooseGalleryHint => 'موجودہ تصویر یا اسکرین شاٹ منتخب کریں';
+
+  @override
+  String get mediaRemovePhoto => 'تصویر ہٹائیں';
+
+  @override
+  String get mediaRemovePhotoHint => 'یہ اپ لوڈ شدہ تصویر صاف کریں';
+
+  @override
+  String get signatureAutoSign => 'خودکار دستخط';
+
+  @override
+  String get signatureDrawArea => 'دستخط کرنے کی جگہ';
+
+  @override
+  String get signatureDrawHint => 'اپنی انگلی سے دستخط کریں';
+
+  @override
+  String signatureSignHere(String name) {
+    return 'یہاں اسکرین پر دستخط کریں ($name)';
+  }
+
+  @override
+  String signatureSignedBy(String name) {
+    return 'دستخط کنندہ: $name';
+  }
+
+  @override
+  String get signatureNadraValidated => 'دستخط محفوظ ہو گئے';
+
+  @override
+  String get badgeNadraVerified => 'تصدیق شدہ';
+
+  @override
+  String get fuelGaugeLabel => 'ایندھن کی سطح (8 درجے)';
+
+  @override
+  String fuelGaugeSetLevel(int n) {
+    return 'ایندھن کی سطح $n از 8 مقرر کریں';
+  }
+
+  @override
+  String get damageSchematicTitle => 'بیرونی معائنہ خاکہ (4 حصے)';
+
+  @override
+  String damageMarksLogged(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count نشانات درج',
+      one: '1 نشان درج',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get damageTapHint =>
+      'پہلے سے موجود خراشوں یا دھنسوں کو نشان زد کرنے کے لیے نیچے گاڑی کے کسی بھی حصے پر ٹیپ کریں:';
+
+  @override
+  String get blacklistScanPrompt =>
+      'رینٹل ہب کی مشترکہ بلیک لسٹ کے خلاف فوری اسکین کے لیے اوپر شناختی کارڈ درج کریں۔';
+
+  @override
+  String get blacklistCriticalAlert => 'اہم انتباہ: بلیک لسٹ شدہ شہری';
+
+  @override
+  String blacklistIncidentRef(String id) {
+    return 'واقعہ نمبر: $id';
+  }
+
+  @override
+  String blacklistReason(String reason) {
+    return 'وجہ: $reason';
+  }
+
+  @override
+  String blacklistReportedBy(String shop) {
+    return 'رپورٹ کنندہ: $shop';
+  }
+
+  @override
+  String get blacklistDecline => 'انکار کریں / سروس سے انکار';
+
+  @override
+  String get blacklistCleanTitle => 'بلیک لسٹ میں کوئی ریکارڈ نہیں ملا';
+
+  @override
+  String get blacklistCleanSubtitle =>
+      'کوئی فعال نادہندگی یا ٹریبونل شکایت درج نہیں۔';
+
+  @override
+  String get blacklistDetailsUnavailable =>
+      'بلیک لسٹ — تفصیلات دستیاب نہیں، ٹریبونل سے رجوع کریں';
+
+  @override
+  String get blacklistProceed => 'گاہک شامل کریں';
+
+  @override
+  String get cnicVerifyTitle => 'شناختی کارڈ چیک';
+
+  @override
+  String get cnicScanTooltip => 'شناختی کارڈ / بارکوڈ اسکین کریں';
+
+  @override
+  String get cnicVerifyButton => 'شناختی کارڈ اور بلیک لسٹ کی تصدیق کریں';
+
+  @override
+  String get cnicChecking => 'رینٹل ہب بلیک لسٹ سے جانچ ہو رہی ہے...';
+
+  @override
+  String get noDraftTitle => 'کوئی بکنگ جاری نہیں ہے۔';
+
+  @override
+  String get noDraftMessage =>
+      'پہلے گاڑی اور پیکج منتخب کریں — جائزہ اسکرین کو وہاں سے بکنگ کی تفصیلات درکار ہیں۔';
+
+  @override
+  String get noDraftBrowse => 'شورومز دیکھیں';
+
+  @override
+  String routeBookingNotFound(String id) {
+    return 'بکنگ $id نہیں ملی۔';
+  }
+
+  @override
+  String routeVehicleNotFound(String id) {
+    return 'گاڑی $id نہیں ملی۔';
+  }
+
+  @override
+  String fuelGaugeBars(int active, int percent) {
+    return '$active / 8 بار ($percent٪)';
+  }
+
+  @override
+  String get kycWizardStepCnic => 'شناختی کارڈ';
+
+  @override
+  String get kycWizardStepPhoto => 'تصویر';
+
+  @override
+  String get kycWizardStepDocs => 'دستاویزات اور دستخط';
+
+  @override
+  String get kycWizardStepGuarantor => 'ضامن';
+
+  @override
+  String get kycWizardNext => 'آگے';
+
+  @override
+  String get kycWizardScanFront => 'شناختی کارڈ کا سامنے والا حصہ اسکین کریں';
+
+  @override
+  String get kycWizardScanBack => 'شناختی کارڈ کا پچھلا حصہ اسکین کریں';
+
+  @override
+  String get kycWizardFrontScanned => 'سامنے والا حصہ اسکین ہو گیا';
+
+  @override
+  String get kycWizardBackScanned => 'پچھلا حصہ اسکین ہو گیا';
+
+  @override
+  String get kycWizardFatherName => 'والد کا نام';
+
+  @override
+  String get kycWizardDateOfBirth => 'تاریخ پیدائش';
+
+  @override
+  String get kycWizardCnicExpiry => 'شناختی کارڈ کی میعاد';
+
+  @override
+  String get kycWizardAddress => 'پتہ';
+
+  @override
+  String get kycWizardWhatsappNumber => 'واٹس ایپ نمبر';
+
+  @override
+  String get kycWizardManualEntry => 'یا نیچے تفصیلات دستی طور پر درج کریں';
+
+  @override
+  String get kycWizardBlacklisted =>
+      'یہ شناختی کارڈ بلیک لسٹ میں ہے اور شامل نہیں کیا جا سکتا۔';
+
+  @override
+  String get kycWizardLivePhoto => 'براہ راست تصویر';
+
+  @override
+  String get kycWizardFaceHint => 'گاہک کے چہرے کی واضح تصویر لیں';
+
+  @override
+  String get kycWizardRetake => 'دوبارہ لیں';
+
+  @override
+  String get kycWizardThumbprint => 'انگوٹھے کا نشان';
+
+  @override
+  String get kycWizardThumbHint => 'دائیں انگوٹھے کی تصویر لیں';
+
+  @override
+  String get kycWizardPhotoRequired => 'جاری رکھنے کے لیے تصویر ضروری ہے';
+
+  @override
+  String get kycWizardLicense => 'ڈرائیونگ لائسنس';
+
+  @override
+  String get kycWizardLicenseFront => 'لائسنس کا سامنے والا حصہ';
+
+  @override
+  String get kycWizardLicenseBack => 'لائسنس کا پچھلا حصہ';
+
+  @override
+  String get kycWizardLicenseNumber => 'لائسنس نمبر';
+
+  @override
+  String get kycWizardLicenseExpiry => 'لائسنس کی میعاد';
+
+  @override
+  String get kycWizardUtilityBill => 'یوٹیلیٹی بل (پتے کا ثبوت)';
+
+  @override
+  String get kycWizardExtraDocs => 'اضافی دستاویزات (اختیاری)';
+
+  @override
+  String get kycWizardAddPhoto => 'تصویر شامل کریں';
+
+  @override
+  String get kycWizardSignature => 'گاہک کے دستخط';
+
+  @override
+  String get kycWizardSignatureClear => 'صاف کریں';
+
+  @override
+  String get kycWizardAgreeTerms => 'میں کرایے کی شرائط سے متفق ہوں';
+
+  @override
+  String get kycWizardViewTerms => 'شرائط دیکھیں';
+
+  @override
+  String get kycWizardSearchGuarantor => 'موجودہ گاہک تلاش کریں';
+
+  @override
+  String get kycWizardRelation => 'گاہک سے رشتہ';
+
+  @override
+  String get kycWizardRelationFriend => 'دوست';
+
+  @override
+  String get kycWizardRelationFamily => 'خاندان';
+
+  @override
+  String get kycWizardRelationColleague => 'ساتھی';
+
+  @override
+  String get kycWizardRelationOther => 'دیگر';
+
+  @override
+  String get kycWizardGuarantorOnFile =>
+      'دستخط اور انگوٹھے کا نشان محفوظ ہے — خود بخود حاصل کر لیا گیا';
+
+  @override
+  String get kycWizardKycComplete =>
+      'KYC مکمل: شناختی کارڈ، تصویر، انگوٹھا، لائسنس، دستخط';
+
+  @override
+  String get kycWizardStepIncomplete =>
+      'براہ کرم اس مرحلے کی تمام ضروری چیزیں مکمل کریں';
+
+  @override
+  String get kycWizardPhotosPending =>
+      'محفوظ ہو گیا — کچھ تصاویر آن لائن ہونے پر اپ لوڈ ہو جائیں گی';
+
+  @override
+  String get kycWizardUploadFailed => 'تصویر اپ لوڈ ناکام ہو گئی';
+
+  @override
+  String get kycWizardGuarantorOptional =>
+      'ضامن اختیاری ہے — آپ اس کے بغیر بھی محفوظ کر سکتے ہیں';
+
+  @override
+  String get kycWizardExtraSkipped =>
+      'محفوظ ہو گیا — کچھ اضافی دستاویزات آف لائن اپ لوڈ نہیں ہو سکیں';
+
+  @override
+  String get bookingSearchHint => 'نام، فون، گاڑی یا بکنگ نمبر تلاش کریں';
+
+  @override
+  String get bookingEmptyRejected => 'کوئی مسترد شدہ درخواست نہیں ہے';
+
+  @override
+  String bookingDaysCount(int count) {
+    return '$count دن';
+  }
+
+  @override
+  String get bookingFareTitle => 'کرایہ کی تفصیل';
+
+  @override
+  String get bookingFarePickup => 'پک اپ';
+
+  @override
+  String get bookingFareReturn => 'واپسی';
+
+  @override
+  String get bookingFareDailyRate => 'یومیہ کرایہ';
+
+  @override
+  String bookingFareDailyRateTimes(int count) {
+    return 'یومیہ کرایہ × $count دن';
+  }
+
+  @override
+  String get bookingFarePackagePrice => 'پیکیج کی قیمت';
+
+  @override
+  String get bookingFareTotal => 'کل رقم';
+
+  @override
+  String get bookingFareAdvanceRequired => 'مطلوبہ پیشگی رقم';
+
+  @override
+  String get bookingFareAdvancePaid => 'ادا شدہ پیشگی رقم';
+
+  @override
+  String get bookingFareRemaining => 'باقی رقم';
+
+  @override
+  String get bookingChecklistTitle => 'قبول کرنے سے پہلے';
+
+  @override
+  String get bookingCheckKyc => 'گاہک کی KYC دستاویزات موجود ہیں';
+
+  @override
+  String get bookingCheckCar => 'گاڑی دستیاب ہے';
+
+  @override
+  String get bookingCheckAdvance => 'پیشگی رقم موصول ہو گئی';
+
+  @override
+  String get bookingConfirmTermsTitle => 'شرائط کی تصدیق کریں';
+
+  @override
+  String get bookingTermCondition => 'گاڑی کی حالت';
+
+  @override
+  String get bookingTermFuel => 'ایندھن کی سطح';
+
+  @override
+  String get bookingTermMileage => 'مائلیج';
+
+  @override
+  String get bookingTermDocuments => 'دستاویزات';
+
+  @override
+  String get bookingTermsIncomplete =>
+      'بکنگ کی تصدیق کے لیے چاروں نکات پر نشان لگائیں۔';
+
+  @override
+  String get bookingConvertToManual => 'دستی اندراج میں تبدیل کریں';
+
+  @override
+  String get bookingConfirmedTitle => 'بکنگ کی تصدیق ہو گئی';
+
+  @override
+  String bookingConfirmedHandoverScheduled(String date) {
+    return 'حوالگی مقرر ہے $date';
+  }
+
+  @override
+  String get bookingConfirmedStartHandover => 'حوالگی شروع کریں';
+
+  @override
+  String get bookingConfirmedViewBooking => 'بکنگ دیکھیں';
+
+  @override
+  String get bookingConfirmedMessageCustomer => 'گاہک کو پیغام بھیجیں';
+
+  @override
+  String bookingConfirmedWhatsappMessage(
+      String name, String vehicle, String date, String total) {
+    return 'السلام علیکم $name، آپ کی بکنگ $vehicle کے لیے منظور ہو گئی ہے۔ پک اپ: $date۔ کل رقم: $total روپے۔ شکریہ!';
+  }
+
+  @override
+  String get bookingConfirmedWhatsappFailed => 'واٹس ایپ نہیں کھولا جا سکا۔';
+
+  @override
+  String get manualBookingNext => 'اگلا';
+
+  @override
+  String get manualBookingReturnAfterPickup =>
+      'واپسی کا وقت پک اپ کے بعد ہونا چاہیے۔';
+
+  @override
+  String get manualBookingConfirmTitle => 'کرایہ کا جائزہ';
+
+  @override
+  String get manualBookingConfirmBooking => 'بکنگ کی تصدیق کریں';
+
+  @override
+  String get contractTerm4 =>
+      '4۔ ایندھن اسی سطح پر واپس کیا جائے گا جس سطح پر حوالگی کے وقت تھا۔';
+
+  @override
+  String get contractTerm5 =>
+      '5۔ دیر سے واپسی پر طے شدہ پیکج کے مطابق فی گھنٹہ یا فی دن چارج ہوگا۔';
+
+  @override
+  String get contractTerm6 => '6۔ نقصان کا چارج واپسی پر معائنے کے مطابق ہوگا۔';
+
+  @override
+  String get contractTerm7 =>
+      '7۔ گاڑی میں رہ جانے والے ذاتی سامان کا مالک ذمہ دار نہیں ہے۔';
+
+  @override
+  String get contractTerm8 => '8۔ یہ معاہدہ پاکستان کے قوانین کے تحت ہے۔';
+
+  @override
+  String get contractTerm9 =>
+      '9۔ سیکیورٹی ڈپازٹ واپسی پر معائنے کے بعد واپس کیا جائے گا، نقصان یا اضافی کلومیٹر کے چارجز منہا کر کے۔';
+
+  @override
+  String get contractTerm10 =>
+      '10۔ دونوں فریقین مندرجہ بالا شرائط سے متفق ہیں۔';
+
+  @override
+  String get contractFieldAdvance => 'ایڈوانس:';
+
+  @override
+  String get contractFieldRemaining => 'بقایا:';
+
+  @override
+  String get contractFieldPlate => 'نمبر پلیٹ:';
+
+  @override
+  String get contractGuarantorSignature => 'ضامن کے دستخط';
+
+  @override
+  String get contractGuarantorPending => 'زیر التواء';
+
+  @override
+  String get contractDownloadPdf => 'پی ڈی ایف ڈاؤن لوڈ کریں';
+
+  @override
+  String contractPdfDownloaded(String file) {
+    return 'معاہدے کی پی ڈی ایف محفوظ ہو گئی: $file';
+  }
+
+  @override
+  String contractPdfDownloadFailed(String error) {
+    return 'معاہدے کی پی ڈی ایف محفوظ نہ ہو سکی: $error';
+  }
+
+  @override
+  String get handoverPhotosTitle => 'گاڑی کی بیرونی تصاویر';
+
+  @override
+  String get handoverPhotoFront => 'سامنے';
+
+  @override
+  String get handoverPhotoBack => 'پیچھے';
+
+  @override
+  String get handoverPhotoLeft => 'بائیں';
+
+  @override
+  String get handoverPhotoRight => 'دائیں';
+
+  @override
+  String get handoverPhotoUploading => 'اپ لوڈ ہو رہی ہے…';
+
+  @override
+  String get handoverDocumentsTitle => 'دیے گئے دستاویزات';
+
+  @override
+  String get handoverDocumentRegistration => 'رجسٹریشن';
+
+  @override
+  String get handoverDocumentInsurance => 'انشورنس';
+
+  @override
+  String get handoverAccessoriesTitle => 'لوازمات';
+
+  @override
+  String get handoverAccessorySpareTyre => 'اسپیئر ٹائر';
+
+  @override
+  String get handoverAccessoryJack => 'جیک';
+
+  @override
+  String get handoverAccessoryToolKit => 'ٹول کٹ';
+
+  @override
+  String get handoverKeysTitle => 'چابیاں حوالے کر دی گئیں';
+
+  @override
+  String get returnLandingTitle => 'واپسی اور حساب';
+
+  @override
+  String returnLandingSummary(String id, String customer, String vehicle) {
+    return 'بکنگ #$id • $customer — $vehicle';
+  }
+
+  @override
+  String get returnLandingDueBack => 'واپسی کی تاریخ';
+
+  @override
+  String get returnLandingStart => 'واپسی کا معائنہ شروع کریں';
+
+  @override
+  String get returnConditionTitle => 'گاڑی کی حالت';
+
+  @override
+  String get returnConditionGood => 'اچھی';
+
+  @override
+  String get returnConditionMinorDamage => 'معمولی نقصان';
+
+  @override
+  String get returnConditionRecordDamage => 'نقصان درج کریں';
+
+  @override
+  String get returnFareTitle => 'کرایے کی تفصیل';
+
+  @override
+  String get returnFareRent => 'کرایہ';
+
+  @override
+  String get returnFareAdvancePaid => 'ایڈوانس ادا شدہ';
+
+  @override
+  String get returnFareRemaining => 'بقایا';
+
+  @override
+  String get returnFareTotalDue => 'کل واجب الادا';
+
+  @override
+  String get returnPaymentTitle => 'موصول شدہ ادائیگی';
+
+  @override
+  String get returnPaymentCash => 'نقد';
+
+  @override
+  String get returnPaymentBankTransfer => 'بینک ٹرانسفر';
+
+  @override
+  String get returnPaymentJazzCash => 'جیز کیش';
+
+  @override
+  String get returnPaymentEasyPaisa => 'ایزی پیسہ';
+
+  @override
+  String get returnPaymentAmountLabel => 'موصول شدہ رقم';
+
+  @override
+  String get returnPaymentAmountHint => 'مثلاً 16000';
+
+  @override
+  String get returnPaymentMarkReceived => 'ادائیگی موصول نشان زد کریں';
+
+  @override
+  String get returnPaymentReceived => 'ادائیگی موصول ہو گئی';
+
+  @override
+  String get returnPaymentUndo => 'واپس لیں';
+
+  @override
+  String get returnPaymentRecordExtraCharges => 'اضافی چارجز درج کریں';
+
+  @override
+  String get returnReceiptExtraCharges => 'اضافی چارجز';
+
+  @override
+  String get damageTitle => 'نقصان درج کریں';
+
+  @override
+  String get damageAddPhoto => 'تصویر شامل کریں';
+
+  @override
+  String get damageDescriptionLabel => 'تفصیل';
+
+  @override
+  String get damageDescriptionHint => 'مثلاً پچھلے بمپر پر خراش';
+
+  @override
+  String get damageDescriptionRequired => 'براہ کرم نقصان کی تفصیل لکھیں۔';
+
+  @override
+  String get damageRepairCostLabel => 'مرمت کی لاگت';
+
+  @override
+  String get damageRepairCostHint => 'مثلاً 5000';
+
+  @override
+  String get damageDeductFromDeposit => 'ڈپازٹ سے کاٹیں';
+
+  @override
+  String get damageSave => 'محفوظ کریں';
+
+  @override
+  String get damageSaved => 'نقصان کی رپورٹ محفوظ ہو گئی۔';
+
+  @override
+  String get damageSaveFailed =>
+      'نقصان کی رپورٹ محفوظ نہ ہو سکی۔ دوبارہ کوشش کریں۔';
+
+  @override
+  String get extraChargeTitle => 'اضافی چارجز درج کریں';
+
+  @override
+  String get extraChargeTypeLabel => 'چارج کی قسم';
+
+  @override
+  String get extraChargeTypeLateReturn => 'دیر سے واپسی';
+
+  @override
+  String get extraChargeTypeExtraKm => 'اضافی کلومیٹر';
+
+  @override
+  String get extraChargeTypeDamage => 'نقصان';
+
+  @override
+  String get extraChargeTypeCleaning => 'صفائی';
+
+  @override
+  String get extraChargeAmountLabel => 'رقم';
+
+  @override
+  String get extraChargeAmountHint => 'مثلاً 2000';
+
+  @override
+  String get extraChargeRemarksLabel => 'تبصرہ';
+
+  @override
+  String get extraChargeRemarksHint => 'مثلاً 3 گھنٹے دیر سے واپس';
+
+  @override
+  String get extraChargeAdd => 'چارج شامل کریں';
+
+  @override
+  String get extraChargeAdded => 'چارج شامل کر دیا گیا۔';
+
+  @override
+  String get extraChargeSaveFailed => 'چارج محفوظ نہ ہو سکا۔ دوبارہ کوشش کریں۔';
+
+  @override
+  String get extraChargeLoadError =>
+      'محفوظ شدہ اضافی چارجز لوڈ نہیں ہو سکے۔ دوبارہ کوشش کریں۔';
+
+  @override
+  String get extraChargeAmountRequired => 'براہ کرم صفر سے زیادہ رقم درج کریں۔';
+
+  @override
+  String get extraChargeSavedTitle => 'محفوظ شدہ چارجز';
+
+  @override
+  String get rentalStartedTitle => 'سفر پر';
+
+  @override
+  String get rentalStartedBanner => 'کرایہ شروع ہو گیا';
+
+  @override
+  String rentalStartedBooking(String id) {
+    return 'بکنگ #$id';
+  }
+
+  @override
+  String rentalStartedReturnDue(String date, String time) {
+    return 'واپسی $date، $time';
+  }
+
+  @override
+  String get rentalStartedViewAgreement => 'معاہدہ دیکھیں';
+
+  @override
+  String get rentalStartedMessageCustomer => 'کسٹمر کو پیغام بھیجیں';
+
+  @override
+  String rentalStartedMessage(String name, String vehicle) {
+    return 'السلام علیکم $name، آپ کی $vehicle کا کرایہ شروع ہو گیا ہے۔ براہ کرم وقت پر واپس کریں۔ — رینٹل ہب';
+  }
+
+  @override
+  String get rentalStartedNoPhone => 'اس کسٹمر کا فون نمبر محفوظ نہیں ہے۔';
+
+  @override
+  String get rentalStartedWhatsappFailed => 'واٹس ایپ نہیں کھل سکا۔';
+
+  @override
+  String get agreementSignedTitle => 'معاہدہ دستخط شدہ';
+
+  @override
+  String get agreementSignedBanner => 'معاہدہ کامیابی سے دستخط ہو گیا';
+
+  @override
+  String get agreementSignedSubtitle =>
+      'کرایے کے معاہدے پر تمام فریقوں نے دستخط کر دیے ہیں۔';
+
+  @override
+  String get agreementSignedDownloadPdf => 'پی ڈی ایف ڈاؤن لوڈ کریں';
+
+  @override
+  String get agreementSignedShare => 'شیئر کریں';
+
+  @override
+  String get agreementSignedSendCustomer => 'کسٹمر کو بھیجیں';
+
+  @override
+  String get agreementSignedContinue => 'جاری رکھیں';
+
+  @override
+  String agreementSignedSendMessage(String name, String url) {
+    return 'السلام علیکم $name، آپ کا کرایے کا معاہدہ تیار ہے: $url';
+  }
+
+  @override
+  String dashboardGreeting(String name) {
+    return 'السلام علیکم، $name';
+  }
+
+  @override
+  String get dashboardQuickAddCustomer => 'گاہک شامل کریں';
+
+  @override
+  String get dashboardQuickViewReports => 'رپورٹس دیکھیں';
+
+  @override
+  String get dashboardReturnsEmpty => 'اگلے 7 دنوں میں کوئی واپسی نہیں ہے۔';
+
+  @override
+  String get dashboardScheduleBooking => 'بکنگ';
+
+  @override
+  String get dashboardScheduleEmpty => 'آج کے لیے کچھ طے نہیں ہے۔';
+
+  @override
+  String get dashboardScheduleHandover => 'حوالگی';
+
+  @override
+  String get dashboardScheduleReturn => 'واپسی';
+
+  @override
+  String get dashboardToday => 'آج';
+
+  @override
+  String get dashboardTodayEarnings => 'آج کی آمدنی';
+
+  @override
+  String get dashboardTodaySchedule => 'آج کا شیڈول';
+
+  @override
+  String get dashboardUpcomingReturns => 'آنے والی واپسیاں';
+
+  @override
+  String get financeBookingNumberHint => 'مثلاً BK-1234';
+
+  @override
+  String get financeBookingNumberLabel => 'بکنگ نمبر';
+
+  @override
+  String get financeDateLabel => 'تاریخ';
+
+  @override
+  String get financeFilterAll => 'سب';
+
+  @override
+  String get financePaymentBank => 'بینک ٹرانسفر';
+
+  @override
+  String get financePaymentCash => 'نقد';
+
+  @override
+  String get financePaymentEasyPaisa => 'ایزی پیسہ';
+
+  @override
+  String get financePaymentJazzCash => 'جاز کیش';
+
+  @override
+  String get financePaymentMethodLabel => 'ادائیگی کا طریقہ';
+
+  @override
+  String get financeCategoryAdvance => 'ایڈوانس';
+
+  @override
+  String get financeCategoryWash => 'دھلائی';
+
+  @override
+  String get financePnlDaily => 'روزانہ';
+
+  @override
+  String get financePnlWeekly => 'ہفتہ وار';
+
+  @override
+  String get financePnlMonthly => 'ماہانہ';
+
+  @override
+  String get financePnlIncomeBreakdown => 'آمدنی کی تفصیل';
+
+  @override
+  String get financePnlExpenseBreakdown => 'اخراجات کی تفصیل';
+
+  @override
+  String get financeCategoriesAdd => 'زمرہ شامل کریں';
+
+  @override
+  String get financeCategoriesDuplicate => 'اس نام کی کیٹگری پہلے سے موجود ہے۔';
+
+  @override
+  String get financeCategoriesAddTitle => 'زمرہ شامل کریں';
+
+  @override
+  String get financeCategoriesDelete => 'حذف کریں';
+
+  @override
+  String financeCategoriesDeleteMessage(String name) {
+    return 'زمرہ ”$name“ حذف کر دیں؟ پرانے لیجر اندراجات میں یہ زمرہ رہے گا۔';
+  }
+
+  @override
+  String get financeCategoriesDeleteTitle => 'زمرہ حذف کریں';
+
+  @override
+  String get financeCategoriesEdit => 'ترمیم کریں';
+
+  @override
+  String get financeCategoriesEditTitle => 'زمرہ میں ترمیم کریں';
+
+  @override
+  String get financeCategoriesEmpty => 'ابھی کوئی زمرہ نہیں ہے۔';
+
+  @override
+  String get financeCategoriesNameLabel => 'زمرے کا نام';
+
+  @override
+  String get financeCategoriesSubtitle =>
+      'لیجر کے لیے آمدنی اور اخراجات کے زمرے';
+
+  @override
+  String get financeCategoriesTitle => 'آمدنی اور اخراجات کے زمرے';
+
+  @override
+  String get financeSettingsAutoReceipt => 'واٹس ایپ رسید خودکار بھیجیں';
+
+  @override
+  String get financeSettingsAutoReceiptNote =>
+      'رسیدیں صرف واٹس ایپ بزنس سیٹ اپ (فیز I) کے بعد بھیجی جائیں گی۔ تب تک یہ صرف آپ کی ترجیح محفوظ کرتا ہے۔';
+
+  @override
+  String get financeSettingsCurrency => 'طے شدہ کرنسی';
+
+  @override
+  String get financeSettingsCurrencyNote =>
+      'ایپ صرف پاکستانی روپے (PKR) میں لین دین کرتی ہے۔';
+
+  @override
+  String get financeSettingsEmpty => 'مالیاتی ترتیبات ابھی دستیاب نہیں ہیں۔';
+
+  @override
+  String get financeSettingsInvalidPercent => 'درست فیصد درج کریں۔';
+
+  @override
+  String get financeSettingsPercentRange =>
+      '0 اور 100 کے درمیان فیصد درج کریں۔';
+
+  @override
+  String get financeSettingsPaymentMethods => 'ادائیگی کے طریقے';
+
+  @override
+  String get financeSettingsReceipts => 'رسید کی ترتیبات';
+
+  @override
+  String get financeSettingsSave => 'ترتیبات محفوظ کریں';
+
+  @override
+  String get financeSettingsSaved => 'مالیاتی ترتیبات محفوظ ہو گئیں۔';
+
+  @override
+  String get financeSettingsServiceCharge => 'سروس چارجز (٪)';
+
+  @override
+  String get financeSettingsSubtitle =>
+      'کرنسی، چارجز، ادائیگی کے طریقے اور رسیدیں';
+
+  @override
+  String get financeSettingsTax => 'ٹیکس (٪)';
+
+  @override
+  String get financeSettingsTitle => 'مالیاتی ترتیبات';
+
+  @override
+  String get financeStatementColBooking => 'بکنگ';
+
+  @override
+  String get financeStatementColDate => 'تاریخ';
+
+  @override
+  String get financeStatementColDue => 'واجب';
+
+  @override
+  String get financeStatementColPaid => 'ادا شدہ';
+
+  @override
+  String get financeStatementColRent => 'کرایہ';
+
+  @override
+  String get financeStatementDownload => 'پی ڈی ایف ڈاؤن لوڈ کریں';
+
+  @override
+  String get financeStatementDownloaded =>
+      'بیان کی پی ڈی ایف آپ کے آلے میں محفوظ ہو گئی۔';
+
+  @override
+  String get financeStatementEmpty => 'اس گاہک کی ابھی کوئی بکنگ نہیں ہے۔';
+
+  @override
+  String financeStatementMessageRow(
+      String booking, String date, String rent, String paid, String due) {
+    return '#$booking • $date • کرایہ $rent روپے • ادا شدہ $paid روپے • واجب $due روپے';
+  }
+
+  @override
+  String financeStatementMessageTitle(String name) {
+    return '$name کے لیے رینٹل ہب کا بیان:';
+  }
+
+  @override
+  String financeStatementMessageTotal(String amount) {
+    return 'کل واجب: $amount روپے';
+  }
+
+  @override
+  String get financeStatementSend => 'بیان بھیجیں (واٹس ایپ)';
+
+  @override
+  String get financeStatementShare => 'شیئر کریں';
+
+  @override
+  String get financeStatementTitle => 'گاہک کا بیان';
+
+  @override
+  String get financeStatementTotalDue => 'کل واجب';
+
+  @override
+  String get financeSummaryEarnings => 'آمدنی';
+
+  @override
+  String get financeSummaryExpenses => 'اخراجات';
+
+  @override
+  String get financeSummaryNet => 'خالص';
+
+  @override
+  String get financeTabOverview => 'جائزہ';
+
+  @override
+  String get financeTabReports => 'رپورٹس';
+
+  @override
+  String get financeTabTransactions => 'لین دین';
+
+  @override
+  String get financeViewReports => 'رپورٹس دیکھیں';
+
+  @override
+  String reportCarBookings(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count بکنگیں',
+      one: '$count بکنگ',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get reportCarTableTitle => 'گاڑی — بکنگیں — آمدنی';
+
+  @override
+  String get reportCarWise => 'گاڑی کے حساب سے آمدنی';
+
+  @override
+  String get reportCarWiseHint => 'فلیٹ کی ہر گاڑی کی آمدنی';
+
+  @override
+  String get reportCustomerHistory => 'گاہک کی تاریخ';
+
+  @override
+  String get reportCustomerHistoryHint => 'ہر گاہک کی بکنگیں اور خرچ';
+
+  @override
+  String get reportCustomerTableTitle => 'گاہک — بکنگیں — خرچ';
+
+  @override
+  String get reportEarningsLast6Months => 'آمدنی — پچھلے 6 مہینے';
+
+  @override
+  String get reportMonthlyEarnings => 'ماہانہ آمدنی کی رپورٹ';
+
+  @override
+  String get reportMonthlyEarningsHint =>
+      'مہینے کے حساب سے آمدنی، بار چارٹ میں';
+
+  @override
+  String get reportNoCars => 'فلیٹ میں ابھی کوئی گاڑی نہیں ہے۔';
+
+  @override
+  String get reportNoCustomers => 'اس مدت میں گاہکوں کی کوئی بکنگ نہیں ہے۔';
+
+  @override
+  String get reportPeriod => 'مدت';
+
+  @override
+  String get reportShare => 'رپورٹ شیئر کریں';
+
+  @override
+  String get reportShareFailed => 'رپورٹ شیئر نہیں ہو سکی۔ دوبارہ کوشش کریں۔';
+
+  @override
+  String get reportSubtitle => 'آمدنی، گاڑیاں اور گاہک';
+
+  @override
+  String get reportTitle => 'رپورٹس';
+
+  @override
+  String get resetAction => 'ری سیٹ کریں';
+
+  @override
+  String get resetAllData => 'تمام ڈیٹا ری سیٹ کریں';
+
+  @override
+  String get resetAllHint =>
+      'اس شوروم کی بکنگیں، گاہک، گاڑیاں، مالیاتی ریکارڈ اور عملہ۔';
+
+  @override
+  String get resetBookings => 'بکنگیں ری سیٹ کریں';
+
+  @override
+  String get resetBookingsHint => 'اس شوروم کی تمام بکنگیں حذف کر دیتا ہے۔';
+
+  @override
+  String get resetCars => 'گاڑیاں ری سیٹ کریں';
+
+  @override
+  String get resetCarsHint => 'اس شوروم کی تمام گاڑیاں حذف کر دیتا ہے۔';
+
+  @override
+  String resetConfirmMessage(String what) {
+    return 'کیا آپ یقین رکھتے ہیں؟ یہ اس شوروم کے لیے $what مستقل طور پر حذف کر دے گا۔ یہ واپس نہیں ہو سکتا۔';
+  }
+
+  @override
+  String get resetConfirmTitle => 'ڈیٹا ری سیٹ کریں؟';
+
+  @override
+  String get resetCustomers => 'گاہک ری سیٹ کریں';
+
+  @override
+  String get resetCustomersHint => 'اس شوروم کے تمام گاہک حذف کر دیتا ہے۔';
+
+  @override
+  String resetDone(String count) {
+    return '$count ریکارڈ حذف کر دیے گئے۔';
+  }
+
+  @override
+  String get resetFailed =>
+      'ری سیٹ ناکام ہوا۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔';
+
+  @override
+  String get resetSubtitle => 'اس شوروم کا ڈیٹا حذف کریں — احتیاط سے';
+
+  @override
+  String get resetTitle => 'ری سیٹ کے اختیارات';
+
+  @override
+  String get resetWarning =>
+      'خبردار: ری سیٹ کرنے سے ڈیٹا مستقل طور پر حذف ہو جاتا ہے۔ صرف وہی ری سیٹ کریں جو آپ کھونا چاہتے ہیں۔ شوروم اور اس کی مالیاتی ترتیبات محفوظ رہتی ہیں۔';
+
+  @override
+  String get resetYesReset => 'جی ہاں، ری سیٹ کریں';
+
+  @override
+  String get signOutConfirmBody => 'کیا آپ واقعی سائن آؤٹ کرنا چاہتے ہیں؟';
+
+  @override
+  String get signOutConfirmTitle => 'سائن آؤٹ کریں؟';
+
+  @override
+  String get signOutConfirmYes => 'جی ہاں، سائن آؤٹ کریں';
+
+  @override
+  String get signOutSignInAgain => 'دوبارہ سائن ان کریں';
+
+  @override
+  String get signOutSignedOutBody =>
+      'آپ سائن آؤٹ ہو چکے ہیں۔ اپنا شوروم جاری رکھنے کے لیے دوبارہ سائن ان کریں۔';
+
+  @override
+  String get signOutSignedOutTitle => 'آپ سائن آؤٹ ہو چکے ہیں';
+
+  @override
+  String get staffAdd => 'عملہ شامل کریں';
+
+  @override
+  String get staffAddTitle => 'عملے کا رکن شامل کریں';
+
+  @override
+  String get staffDelete => 'عملے کا رکن ہٹائیں';
+
+  @override
+  String get staffDeleteFailed =>
+      'اس عملے کے رکن کو ہٹایا نہیں جا سکا۔ دوبارہ کوشش کریں۔';
+
+  @override
+  String get staffEmpty =>
+      'ابھی کوئی عملہ نہیں ہے — اپنا پہلا ٹیم ممبر شامل کریں۔';
+
+  @override
+  String get staffNameLabel => 'نام';
+
+  @override
+  String get staffPermissionAddCars => 'گاڑیاں شامل کریں';
+
+  @override
+  String get staffPermissionManageFinance => 'مالیات سنبھالیں';
+
+  @override
+  String get staffPermissionViewBookings => 'بکنگیں دیکھیں';
+
+  @override
+  String get staffPhoneLabel => 'فون';
+
+  @override
+  String get staffRoleLabel => 'کردار';
+
+  @override
+  String get staffSubtitle => 'ٹیم ممبر اور ان کی اجازتیں';
+
+  @override
+  String get staffTitle => 'عملہ اور کردار';
+
+  @override
+  String onboardingStepOfFive(int step) {
+    return 'مرحلہ $step از 5';
+  }
+
+  @override
+  String get onboardingHeaderReview => 'درخواست کا جائزہ';
+
+  @override
+  String get onboardingSubtitleReview => 'جمع کرانے سے پہلے سب کچھ چیک کریں';
+
+  @override
+  String get onboardingStepReview => 'جائزہ';
+
+  @override
+  String get onboardingReviewTitle => 'اپنی درخواست کا جائزہ لیں';
+
+  @override
+  String get onboardingReviewHint =>
+      'نیچے دی گئی تفصیلات چیک کریں۔ جمع کرانے سے پہلے کچھ بھی بدلنے کے لیے واپس جا سکتے ہیں۔';
+
+  @override
+  String get onboardingReviewShopName => 'دکان کا نام';
+
+  @override
+  String get onboardingReviewOwnerName => 'مالک کا نام';
+
+  @override
+  String get onboardingReviewCnic => 'مالک کا شناختی کارڈ';
+
+  @override
+  String get onboardingReviewWhatsapp => 'واٹس ایپ نمبر';
+
+  @override
+  String get onboardingReviewPhone => 'فون نمبر';
+
+  @override
+  String get onboardingReviewOpeningHours => 'کھلنے کے اوقات';
+
+  @override
+  String get onboardingReviewShopLogo => 'دکان کا لوگو';
+
+  @override
+  String get onboardingReviewAddress => 'پتہ';
+
+  @override
+  String get onboardingReviewCity => 'شہر';
+
+  @override
+  String get onboardingReviewNoDocuments => 'ابھی کوئی دستاویز منسلک نہیں';
+
+  @override
+  String get onboardingReviewCnicFront => 'شناختی کارڈ سامنے';
+
+  @override
+  String get onboardingReviewCnicBack => 'شناختی کارڈ پیچھے';
+
+  @override
+  String get onboardingReviewSelfie => 'شناختی کارڈ کے ساتھ سیلفی';
+
+  @override
+  String get onboardingReviewNtn => 'NTN دستاویز';
+
+  @override
+  String get onboardingReviewShopPhoto => 'دکان کی تصویر';
+
+  @override
+  String get onboardingReviewFleetPhoto1 => 'گاڑی کی تصویر 1';
+
+  @override
+  String get onboardingReviewFleetPhoto2 => 'گاڑی کی تصویر 2';
+
+  @override
+  String get onboardingReviewFleetPhoto3 => 'گاڑی کی تصویر 3';
+
+  @override
+  String get onboardingApprovalWithin24h =>
+      'عام طور پر 24 گھنٹوں میں منظور ہو جاتی ہے';
+
+  @override
+  String get onboardingTimelineSubmitted => 'جمع کر دی گئی';
+
+  @override
+  String get onboardingTimelineSubmittedHint => 'آپ کی درخواست موصول ہو گئی';
+
+  @override
+  String get onboardingTimelineUnderReview => 'جائزے میں ہے';
+
+  @override
+  String get onboardingTimelineUnderReviewHint =>
+      'ہماری ٹیم آپ کی تفصیلات چیک کر رہی ہے';
+
+  @override
+  String get onboardingTimelineApproved => 'منظور شدہ';
+
+  @override
+  String get onboardingTimelineApprovedHint =>
+      'منظوری کے بعد آپ کی دکان لائیو ہو جائے گی';
+
+  @override
+  String get onboardingContactAdminWhatsapp =>
+      'واٹس ایپ پر ایڈمن سے رابطہ کریں';
+
+  @override
+  String get onboardingAdminWhatsappMissing =>
+      'ایڈمن کا واٹس ایپ ابھی سیٹ نہیں ہوا۔ براہ کرم بعد میں دوبارہ کوشش کریں۔';
+
+  @override
+  String get onboardingAdminWhatsappFailed => 'واٹس ایپ نہیں کھل سکا۔';
+
+  @override
+  String get pricingPackageMonthly => 'ماہانہ پیکج (30 دن)';
+
+  @override
+  String get addVehicleRateMonthly => 'ماہانہ پیکج (30 دن)';
+
+  @override
+  String get ratesViewEstimate => 'تخمینی نرخ دیکھیں';
+
+  @override
+  String get pricingPerKmQuestion => 'فی کلومیٹر قیمت؟';
+
+  @override
+  String get pricingPerKmQuestionHint => 'پیکج کی حد سے زیادہ کلومیٹر کا چارج';
+
+  @override
+  String get ratesCustomTitle => 'اپنی مرضی کے نرخ';
+
+  @override
+  String get ratesCustomAdd => 'نرخ شامل کریں';
+
+  @override
+  String get ratesCustomEmpty =>
+      'ابھی کوئی اپنی مرضی کا نرخ نہیں۔ اس مدت کے لیے ایک شامل کریں جو معیاری پیکجز میں نہیں ہے۔';
+
+  @override
+  String get ratesCustomAddTitle => 'اپنی مرضی کا نرخ شامل کریں';
+
+  @override
+  String get ratesCustomNameLabel => 'نرخ کا نام';
+
+  @override
+  String get ratesCustomNameHint => 'مثلاً ایئرپورٹ ٹرانسفر';
+
+  @override
+  String get ratesCustomPriceLabel => 'قیمت';
+
+  @override
+  String get ratesCustomPeriodLabel => 'مدت';
+
+  @override
+  String get ratesCustomPeriodHourly => 'فی گھنٹہ';
+
+  @override
+  String get ratesCustomPeriodDaily => 'روزانہ';
+
+  @override
+  String get ratesCustomPeriodWeekly => 'ہفتہ وار';
+
+  @override
+  String get ratesCustomPeriodMonthly => 'ماہانہ';
+
+  @override
+  String get ratesCustomDelete => 'نرخ حذف کریں';
+
+  @override
+  String get ratesCustomInvalid => 'نام اور صفر سے زیادہ قیمت درج کریں۔';
+
+  @override
+  String get pkgMonthlyPackage => 'ماہانہ پیکج';
+
+  @override
+  String get pkgMonthlyDesc => 'تیس دن، ایک قیمت';
+
+  @override
+  String fleetOnRentUntil(String date) {
+    return '$date تک کرائے پر';
+  }
+
+  @override
+  String fleetActiveRentals(int count) {
+    return '$count جاری کرائے';
+  }
+
+  @override
+  String get fleetSchedule => 'شیڈول';
+
+  @override
+  String get fleetEditRent => 'کرایہ تبدیل کریں';
+
+  @override
+  String get fleetUpdatePrice => 'قیمت اپ ڈیٹ کریں';
+
+  @override
+  String get fleetShopSettings => 'دکان کی ترتیبات';
+
+  @override
+  String get shopProfileOwnerUnknown => 'مالک';
+
+  @override
+  String get fleetAddBlockedTitle => 'دکان کی منظوری زیر التوا ہے';
+
+  @override
+  String get fleetAddBlockedBody =>
+      'آپ کی دکان ابھی جائزے میں ہے۔ منظوری کے بعد آپ گاڑیاں شامل کر سکیں گے — عام طور پر 24 گھنٹوں میں۔';
+
+  @override
+  String get fleetAddBlockedViewStatus => 'حیثیت دیکھیں';
+
+  @override
+  String get fareTableTitle => 'کرایہ جدول';
+
+  @override
+  String get fareTabInCity => 'شہر کے اندر';
+
+  @override
+  String get fareTabOutCity => 'شہر سے باہر';
+
+  @override
+  String get fareTabHourly => 'فی گھنٹہ';
+
+  @override
+  String get fareTabMonthly => 'ماہانہ';
+
+  @override
+  String get fareFreeDelivery => 'پہلے سے طے شدہ مفت ڈیلیوری';
+
+  @override
+  String fareKmIncluded(int km) {
+    return '$km کلومیٹر شامل';
+  }
+
+  @override
+  String fareOutCityDaily(String rate) {
+    return 'شہر سے باہر یومیہ نرخ: $rate';
+  }
+
+  @override
+  String get fareNoRows => 'اس ٹیب کے لیے ابھی کوئی کرایہ نہیں۔';
+
+  @override
+  String get fareProceed => 'آگے بڑھیں';
+
+  @override
+  String get estimateTitle => 'تخمینی نرخ';
+
+  @override
+  String get estimateCardTitle => 'تخمینی نرخ';
+
+  @override
+  String get estimateInCityDay => 'شہر کے اندر / دن';
+
+  @override
+  String get estimateOutCityDay => 'شہر سے باہر / دن';
+
+  @override
+  String get estimateWeekly => 'ہفتہ وار';
+
+  @override
+  String get estimateMonthly => 'ماہانہ';
+
+  @override
+  String get estimateWithDriverSurcharge => 'ڈرائیور کے ساتھ اضافی چارج';
+
+  @override
+  String estimatePerDay(String amount) {
+    return '$amount / دن';
+  }
+
+  @override
+  String get estimateDeposit => 'سیکیورٹی ڈپازٹ';
+
+  @override
+  String get estimateHint =>
+      'تخمینے آپ کے موجودہ نرخوں پر مبنی ہیں۔ انہیں ریٹ میٹرکس میں تبدیل کریں۔';
+
+  @override
+  String get estimateGoToMyCars => 'میری گاڑیوں پر جائیں';
+
+  @override
+  String get vehiclePublishedTitle => 'گاڑی شائع ہو گئی';
+
+  @override
+  String vehiclePublishedHeading(String vehicle) {
+    return 'آپ کی $vehicle کامیابی سے شائع ہو گئی ہے';
+  }
+
+  @override
+  String get vehiclePublishedLinkCopied => 'لسٹنگ کا لنک کاپی ہو گیا';
+
+  @override
+  String vehiclePublishedShareText(String vehicle, String rate, String link) {
+    return 'رینٹل ہب پر $vehicle کرائے پر لیں، $rate / دن: $link';
+  }
+
+  @override
+  String get vehiclePublishedViewInApp => 'ایپ میں دیکھیں';
+
+  @override
+  String get vehiclePublishedCopyLink => 'لنک کاپی کریں';
+
+  @override
+  String get vehiclePublishedShareListing => 'لسٹنگ شیئر کریں';
+
+  @override
+  String get vehiclePublishedAddAnother => 'ایک اور گاڑی شائع کریں';
+
+  @override
+  String vehicleDetailDailyRate(String amount) {
+    return '$amount / دن';
+  }
+
+  @override
+  String vehicleDetailSeats(int count) {
+    return '$count سیٹیں';
+  }
+
+  @override
+  String get vehicleDetailRatesTitle => 'نرخ';
+
+  @override
+  String get vehicleDetailDeposit => 'سیکیورٹی ڈپازٹ';
+
+  @override
+  String get vehicleDetailFareTable => 'کرایہ جدول';
+
+  @override
+  String get vehicleDetailBookingsTitle => 'بکنگز';
+
+  @override
+  String get vehicleDetailNoBookings => 'اس گاڑی کی ابھی کوئی بکنگ نہیں۔';
+
+  @override
+  String get vehicleDetailManageRates => 'نرخ مینیج کریں';
+
+  @override
+  String get vehicleDetailCalendar => 'بکنگ کیلنڈر';
+
+  @override
+  String get vehicleDetailEdit => 'تبدیل کریں';
+
+  @override
+  String get shopSettingsTitle => 'دکان کی ترتیبات';
+
+  @override
+  String get shopSettingsSubtitle => 'آپ کی دکان کا نام اور تفصیلات';
+
+  @override
+  String get shopSettingsShopName => 'دکان کا نام';
+
+  @override
+  String get shopSettingsOwnerName => 'مالک کا نام';
+
+  @override
+  String get shopSettingsPhone => 'فون نمبر';
+
+  @override
+  String get shopSettingsAddress => 'پتہ';
+
+  @override
+  String get shopSettingsCity => 'شہر';
+
+  @override
+  String get shopSettingsOpeningHours => 'کھلنے کے اوقات';
+
+  @override
+  String get shopSettingsSave => 'دکان کی ترتیبات محفوظ کریں';
+
+  @override
+  String get shopSettingsSaved => 'دکان کی ترتیبات محفوظ ہو گئیں';
+
+  @override
+  String get shopSettingsNameShort =>
+      'کم از کم 3 حروف کا دکان کا نام درج کریں۔';
+
+  @override
+  String shopSettingsSaveFailed(String error) {
+    return 'دکان کی ترتیبات محفوظ نہیں ہو سکیں: $error';
+  }
+
+  @override
+  String get shopSettingsLoadError => 'دکان کی ترتیبات لوڈ نہیں ہو سکیں۔';
+
+  @override
+  String get shopSettingsPhoneInvalid =>
+      'درست پاکستانی موبائل نمبر درج کریں (03XX-XXXXXXX یا +92 3XX XXXXXXX)۔';
+
+  @override
+  String get shopSettingsHoursHint => 'مثال: 9:00 AM – 9:00 PM';
+
+  @override
+  String get shopSettingsHoursInvalid =>
+      'اوقات کار اس طرح درج کریں: 9:00 AM – 9:00 PM۔';
+
+  @override
+  String get fleetCalendarTitle => 'فلیٹ شیڈول';
+
+  @override
+  String get fleetCalendarPrevMonth => 'پچھلا مہینہ';
+
+  @override
+  String get fleetCalendarNextMonth => 'اگلا مہینہ';
+
+  @override
+  String get fleetCalendarLoadError => 'فلیٹ کیلنڈر لوڈ نہیں ہو سکا۔';
+
+  @override
+  String get fleetCalendarEmptyTitle => 'آپ کے فلیٹ میں ابھی کوئی گاڑی نہیں';
+
+  @override
+  String get fleetCalendarEmptyMessage =>
+      'اس کا شیڈول یہاں دیکھنے کے لیے گاڑی شامل کریں۔';
+
+  @override
+  String get fleetCalendarBooked => 'بک شدہ';
+
+  @override
+  String get fleetCalendarAvailable => 'دستیاب';
+
+  @override
+  String get vehicleReviewDelivery => 'ڈیلیوری اور وصولی';
+
+  @override
+  String get vehicleReviewDiscounts => 'رعایتیں';
+
+  @override
+  String get vehicleReviewInsurance => 'انشورنس اور تحفظ';
+
+  @override
+  String get vehicleReviewYourEarning => 'آپ کی کمائی';
+
+  @override
+  String get subscriptionChoosePlanTitle => 'منصوبہ منتخب کریں';
+
+  @override
+  String get subscriptionChoosePlanSubtitle => 'اپنا رینٹل کاروبار بڑھائیں';
+
+  @override
+  String get subscriptionBillingMonthly => 'ماہانہ';
+
+  @override
+  String get subscriptionBillingYearly => 'سالانہ';
+
+  @override
+  String get subscriptionYearlySave => '17٪ بچائیں';
+
+  @override
+  String get subscriptionPlanFree => 'مفت';
+
+  @override
+  String get subscriptionPlanPro => 'پرو';
+
+  @override
+  String get subscriptionPlanBusiness => 'بزنس';
+
+  @override
+  String get subscriptionFreeCars => '3 گاڑیوں تک';
+
+  @override
+  String get subscriptionFreeBookings => 'بنیادی بکنگز';
+
+  @override
+  String get subscriptionFreeBranding => 'گاڑی برانڈنگ';
+
+  @override
+  String get subscriptionFreeLogins => '1 لاگ ان';
+
+  @override
+  String get subscriptionProCars => '10 گاڑیوں تک';
+
+  @override
+  String get subscriptionProKyc => 'کسٹمر KYC';
+
+  @override
+  String get subscriptionProStamp => 'اپنی دکان کی مہر';
+
+  @override
+  String get subscriptionProAccounts => 'اکاؤنٹس اور رپورٹس';
+
+  @override
+  String get subscriptionProListing => 'ترجیحی لسٹنگ';
+
+  @override
+  String get subscriptionProTrial => '14 دن کا ٹرائل';
+
+  @override
+  String get subscriptionBusinessCars => 'لامحدود گاڑیاں';
+
+  @override
+  String get subscriptionBusinessStaff => '5 اسٹاف لاگ ان';
+
+  @override
+  String get subscriptionBusinessReports => 'جدید رپورٹس';
+
+  @override
+  String get subscriptionBusinessExport => 'PDF اور Excel ایکسپورٹ';
+
+  @override
+  String get subscriptionBusinessBadge => 'نمایاں بیج';
+
+  @override
+  String get subscriptionBusinessSupport => 'ترجیحی سپورٹ';
+
+  @override
+  String get subscriptionExamplePrices =>
+      'مثالی قیمتیں — حتمی قیمتوں کا فیصلہ ہونا باقی ہے';
+
+  @override
+  String get subscriptionViewDetails => 'تفصیلات دیکھیں';
+
+  @override
+  String get subscriptionMySubscription => 'میری سبسکرپشن';
+
+  @override
+  String get subscriptionLoadError =>
+      'آپ کی سبسکرپشن لوڈ نہیں ہو سکی۔ دوبارہ کوشش کریں۔';
+
+  @override
+  String get subscriptionPlayNotConnected =>
+      'گوگل پلے بلنگ ابھی منسلک نہیں ہوئی';
+
+  @override
+  String get subscriptionPlayNotConnectedNote =>
+      'پلے کنسول سیٹ اپ ابھی باقی ہے۔ آپ نیچے بینک ٹرانسفر سے سبسکرائب کر سکتے ہیں — گوگل پلے سے کوئی رقم نہیں کاٹی جائے گی۔';
+
+  @override
+  String get subscriptionPayByBank =>
+      'بینک ٹرانسفر سے ادائیگی کریں — پلے کنسول سیٹ اپ مکمل ہونے پر گوگل پلے بلنگ آئے گی';
+
+  @override
+  String get subscriptionTrialNote =>
+      'آپ کا 14 دن کا مفت ٹرائل ایڈمن کی جانب سے بینک ٹرانسفر کی منظوری کے بعد شروع ہوگا۔';
+
+  @override
+  String get subscriptionStartTrial => '14 دن کا مفت ٹرائل شروع کریں';
+
+  @override
+  String get subscriptionManageInPlay => 'گوگل پلے میں انتظام کریں';
+
+  @override
+  String get subscriptionManageInPlayNote =>
+      'گوگل پلے بلنگ منسلک ہونے کے بعد دستیاب ہوگا۔';
+
+  @override
+  String get subscriptionCarsUsed => 'استعمال شدہ گاڑیاں';
+
+  @override
+  String get subscriptionStaffLogins => 'اسٹاف لاگ ان';
+
+  @override
+  String get subscriptionBillingHistory => 'بلنگ کی تاریخ';
+
+  @override
+  String get subscriptionBillingEmpty => 'ابھی تک کوئی سبسکرپشن ادائیگی نہیں';
+
+  @override
+  String get subscriptionPendingReview => 'ایڈمن کے جائزے کا انتظار ہے';
+
+  @override
+  String get subscriptionStatusApproved => 'منظور شدہ';
+
+  @override
+  String get subscriptionStatusRejected => 'مسترد شدہ';
+
+  @override
+  String get subscriptionStatusPending => 'زیر التواء';
+
+  @override
+  String get subscriptionTrialActive => 'مفت ٹرائل فعال ہے';
+
+  @override
+  String get subscriptionActive => 'فعال';
+
+  @override
+  String get subscriptionTrialEnds => 'ٹرائل ختم ہوتا ہے';
+
+  @override
+  String get subscriptionNextBilling => 'اگلی بلنگ کی تاریخ';
+
+  @override
+  String get subscriptionPaymentMethod => 'ادائیگی کا طریقہ';
+
+  @override
+  String get subscriptionNoPaymentMethod => 'کوئی ادائیگی کا طریقہ محفوظ نہیں';
+
+  @override
+  String get subscriptionReceiptNote =>
+      'گوگل پلے بلنگ منسلک ہونے کے بعد رسیدیں آپ کے گوگل اکاؤنٹ ای میل پر بھیجی جائیں گی۔';
+
+  @override
+  String get subscriptionGoToDashboard => 'ڈیش بورڈ پر جائیں';
+
+  @override
+  String get subscriptionChangePlan => 'منصوبہ تبدیل کریں';
+
+  @override
+  String get subscriptionCarLimitTitle => 'گاڑیوں کی حد پوری ہو گئی';
+
+  @override
+  String subscriptionCarLimitBody(String plan, String limit) {
+    return 'آپ کا $plan منصوبہ $limit گاڑیوں کی اجازت دیتا ہے۔ لامحدود گاڑیاں اور اسٹاف کے لیے بزنس میں اپ گریڈ کریں۔';
+  }
+
+  @override
+  String get subscriptionUpgradeToBusiness => 'بزنس میں اپ گریڈ کریں';
+
+  @override
+  String get subscriptionNotNow => 'ابھی نہیں';
+
+  @override
+  String get subscriptionPaymentIssue => 'ادائیگی کا مسئلہ · اکاؤنٹ معطل ہے';
+
+  @override
+  String get subscriptionPaymentIssueBody =>
+      'اپنا ادائیگی کا طریقہ اپ ڈیٹ کریں یا بینک ٹرانسفر سے ادائیگی کریں۔ آپ کا ڈیٹا محفوظ رہے گا۔';
+
+  @override
+  String get subscriptionDowngradeNote =>
+      'اگر مسئلہ حل نہ ہوا تو آپ مفت منصوبے پر منتقل ہو جائیں گے۔ آپ کا ڈیٹا محفوظ رہے گا؛ اضافی گاڑیاں لسٹنگ سے چھپ جائیں گی۔';
+
+  @override
+  String get subscriptionTrialTerms =>
+      '14 دن مفت، پھر گوگل پلے کے ذریعے ماہانہ بلنگ۔ منسوخی تک خودکار تجدید؛ ٹرائل ختم ہونے سے کم از کم 24 گھنٹے پہلے گوگل پلے > سبسکرپشنز میں منسوخ کریں۔';
+
+  @override
+  String get subscriptionBilledMonthly => 'ہر ماہ بل کیا جاتا ہے';
+
+  @override
+  String get subscriptionPerYear => '/ سال';
+
+  @override
+  String get subscriptionPlaySheetTitle => 'گوگل پلے خریداری';
+
+  @override
+  String get subscriptionPlayTodayFree => 'آج: 14 دن مفت';
+
+  @override
+  String get subscriptionPlayThen => 'پھر ماہانہ بلنگ';
+
+  @override
+  String get subscriptionFreePlanNote => 'آپ مفت منصوبے پر ہیں';
+
+  @override
+  String get subscriptionCurrentTier => 'موجودہ منصوبہ';
+
+  @override
+  String get creditsTitle => 'واٹس ایپ کریڈٹس';
+
+  @override
+  String get creditsBalance => 'کریڈٹ بیلنس';
+
+  @override
+  String get creditsEmpty => 'ابھی کوئی کریڈٹ نہیں';
+
+  @override
+  String get creditsOneMessage =>
+      '1 پیغام = 1 کریڈٹ · کریڈٹس کبھی ختم نہیں ہوتے';
+
+  @override
+  String get creditsAutoMessages => 'خودکار پیغامات';
+
+  @override
+  String get creditsAutoNote =>
+      'پیغامات خودکار طور پر صرف واٹس ایپ منسلک ہونے کے بعد بھیجے جائیں گے۔';
+
+  @override
+  String get creditsToggleBooking => 'بکنگ کی درخواست اور منظوری';
+
+  @override
+  String get creditsToggleAdvance => 'ایڈوانس ادائیگی کی رسید';
+
+  @override
+  String get creditsTogglePickup => 'پک اپ یاد دہانی';
+
+  @override
+  String get creditsTogglePickupNote => 'پک اپ سے 2 گھنٹے پہلے';
+
+  @override
+  String get creditsToggleAgreement => 'حوالگی پر معاہدے کی PDF';
+
+  @override
+  String get creditsToggleReturn => 'واپسی کی یاد دہانی اور تاخیر کی تنبیہ';
+
+  @override
+  String get creditsToggleDeposit => 'ڈپازٹ واپس کر دیا گیا';
+
+  @override
+  String get creditsToggleDues => 'بقایا جات کی یاد دہانی';
+
+  @override
+  String get creditsToggleDuesNote => 'ادائیگی تک ہر 3 دن بعد';
+
+  @override
+  String get creditsBuy => 'کریڈٹس خریدیں';
+
+  @override
+  String get creditsBuyTitle => 'کریڈٹس خریدیں';
+
+  @override
+  String get creditsPackBestValue => 'بہترین قیمت';
+
+  @override
+  String get creditsPerMessage => 'فی پیغام';
+
+  @override
+  String get creditsFreeMonthly => 'ہر ماہ مفت کریڈٹس';
+
+  @override
+  String get creditsFreePlanFree => 'مفت منصوبہ — 10 پیغامات';
+
+  @override
+  String get creditsFreePlanPro => 'پرو منصوبہ — 30 کریڈٹس';
+
+  @override
+  String get creditsFreePlanBusiness => 'بزنس منصوبہ — 100 کریڈٹس';
+
+  @override
+  String get creditsBuyPack => 'یہ پیک خریدیں';
+
+  @override
+  String get creditsPayByBank =>
+      'بینک ٹرانسفر سے ادائیگی کریں — پلے کنسول سیٹ اپ مکمل ہونے پر گوگل پلے بلنگ آئے گی';
+
+  @override
+  String get creditsRequestSubmittedTitle => 'درخواست جمع کر دی گئی';
+
+  @override
+  String get creditsRequestSubmittedBody =>
+      'ادائیگی کی تصدیق کے بعد کریڈٹس شامل کر دیے جائیں گے۔';
+
+  @override
+  String get creditsAddedTitle => 'کریڈٹس شامل کر دیے گئے';
+
+  @override
+  String get creditsAddedBody =>
+      'آپ کی ادائیگی کی تصدیق ہو گئی اور کریڈٹس آپ کے بیلنس میں شامل کر دیے گئے۔';
+
+  @override
+  String get creditsPreviousBalance => 'پچھلا بیلنس';
+
+  @override
+  String get creditsNewBalance => 'نیا بیلنس';
+
+  @override
+  String get creditsPack => 'پیک';
+
+  @override
+  String get creditsPrice => 'قیمت';
+
+  @override
+  String get creditsDone => 'ہو گیا';
+
+  @override
+  String get creditsHistoryTitle => 'پیغامات کی تاریخ';
+
+  @override
+  String get creditsSent => 'بھیجے گئے';
+
+  @override
+  String get creditsDelivered => 'موصول ہوئے';
+
+  @override
+  String get creditsRead => 'پڑھے گئے';
+
+  @override
+  String get creditsHistoryEmpty =>
+      'ابھی تک کوئی واٹس ایپ پیغام نہیں بھیجا گیا';
+
+  @override
+  String get creditsFilterAll => 'سب';
+
+  @override
+  String get creditsFilterBookings => 'بکنگز';
+
+  @override
+  String get creditsFilterReminders => 'یاد دہانیاں';
+
+  @override
+  String get creditsFilterReceipts => 'رسیدیں';
+
+  @override
+  String get creditsUsedLabel => 'استعمال شدہ پیغامات';
+
+  @override
+  String get creditsFreeLabel => 'اس ماہ مفت کریڈٹس';
+
+  @override
+  String get creditsTemplateTitle => 'ٹیمپلیٹ کا پیش نظارہ — بکنگ کی تصدیق';
+
+  @override
+  String get creditsTemplateNote =>
+      'ٹیمپلیٹس واٹس ایپ سے منظور شدہ ہیں۔ کسٹمر کا نام، گاڑی، وقت اور رقم خودکار طور پر بھر دی جاتی ہے۔';
+
+  @override
+  String get creditsSendTest => 'میرے نمبر پر ٹیسٹ بھیجیں';
+
+  @override
+  String get creditsSendTestDisabled =>
+      'واٹس ایپ منسلک ہونے کے بعد دستیاب ہوگا۔';
+
+  @override
+  String get creditsZeroTitle => 'کوئی کریڈٹ باقی نہیں';
+
+  @override
+  String get creditsZeroBody =>
+      'پک اپ کی یاد دہانی خودکار طور پر نہیں بھیجی گئی۔ کریڈٹس خریدیں یا اپنی واٹس ایپ سے خود بھیجیں۔';
+
+  @override
+  String get creditsZeroBanner => 'واٹس ایپ کریڈٹس: 0 باقی';
+
+  @override
+  String get creditsZeroBannerNote => 'آپ کو 10 کریڈٹس پر مطلع کیا گیا تھا';
+
+  @override
+  String get creditsSendViaWhatsapp => 'میری واٹس ایپ سے بھیجیں';
+
+  @override
+  String get creditsViaWhatsappNote =>
+      'آپ کی واٹس ایپ کھل جائے گی جس میں پیغام پہلے سے لکھا ہوگا۔ آپ کو صرف بھیجنا ہے۔';
+
+  @override
+  String get creditsViewHistory => 'پیغامات کی تاریخ دیکھیں';
+
+  @override
+  String get creditsViewTemplates => 'ٹیمپلیٹس دیکھیں';
+
+  @override
+  String get customerDetailTitle => 'پروفائل';
+
+  @override
+  String get customerDetailNotFound => 'گاہک نہیں ملا';
+
+  @override
+  String get customerDetailNotFoundMessage => 'یہ گاہک نہیں مل سکا۔';
+
+  @override
+  String get customerDetailKycTitle => 'کے وائی سی حیثیت';
+
+  @override
+  String get customerDetailKycOnFile =>
+      'اس گاہک کی کے وائی سی دستاویزات موجود ہیں۔';
+
+  @override
+  String get customerDetailKycNotOnFile =>
+      'کوئی کے وائی سی ریکارڈ موجود نہیں — یہ گاہک صرف بکنگ سے جانا جاتا ہے۔';
+
+  @override
+  String get customerDetailDocuments => 'دستاویزات اور تصویر';
+
+  @override
+  String get customerDetailNoDocument => 'فراہم نہیں کی گئی';
+
+  @override
+  String get customerDetailProfilePhoto => 'پروفائل تصویر';
+
+  @override
+  String get customerDetailCnicFront => 'شناختی کارڈ سامنے';
+
+  @override
+  String get customerDetailCnicBack => 'شناختی کارڈ پیچھے';
+
+  @override
+  String get customerDetailLicenseFront => 'لائسنس سامنے';
+
+  @override
+  String get customerDetailLicenseBack => 'لائسنس پیچھے';
+
+  @override
+  String get customerDetailSignature => 'دستخط';
+
+  @override
+  String get customerDetailRentalHistory => 'کرایہ کی تاریخ';
+
+  @override
+  String get customerDetailTotalSpent => 'کل خرچ';
+
+  @override
+  String get customerDetailTotalDues => 'بقایا رقم';
+
+  @override
+  String get customerDetailNotBlacklisted => 'بلیک لسٹ میں نہیں';
+
+  @override
+  String get customerDetailApprovalPending => 'جائزہ زیر التواء';
+
+  @override
+  String get customerDetailApprove => 'پروفائل منظور کریں';
+
+  @override
+  String get customerDetailReject => 'پروفائل مسترد کریں';
+
+  @override
+  String get customerDetailRejectReasonTitle => 'مسترد کرنے کی وجہ';
+
+  @override
+  String get customerDetailRejectReasonHint => 'وجہ لکھیں…';
+
+  @override
+  String get customerDetailRejectReasonRequired =>
+      'پروفائل مسترد کرنے کے لیے وجہ ضروری ہے';
+
+  @override
+  String get customerDetailRejectConfirm => 'مسترد کریں';
+
+  @override
+  String get customerDetailApprovalFailed =>
+      'اس گاہک کی منظوری اپ ڈیٹ نہیں ہو سکی۔ دوبارہ کوشش کریں۔';
+
+  @override
+  String get customerAddedTitle => 'گاہک شامل کر دیا گیا';
+
+  @override
+  String customerAddedReady(String name) {
+    return '$name کی پروفائل تیار ہے — اب آپ بکنگ شروع کر سکتے ہیں۔';
+  }
+
+  @override
+  String get customerAddedStartBooking => 'بکنگ شروع کریں';
+
+  @override
+  String get customerAddedViewProfile => 'پروفائل دیکھیں';
+
+  @override
+  String get customersFilterAll => 'تمام';
+
+  @override
+  String get customersFilterRegular => 'مستقل';
+
+  @override
+  String get customersFilterNew => 'نیا';
+
+  @override
+  String get customersFilterFlagged => 'نشاندہ';
+
+  @override
+  String get customersBadgeRegular => 'مستقل';
+
+  @override
+  String get customersBadgeNew => 'نیا';
+
+  @override
+  String get customersViewProfile => 'پروفائل دیکھیں';
+
+  @override
+  String get returnRefundDeposit => 'ڈپازٹ واپس کریں';
+
+  @override
+  String returnRefundRecorded(String amount) {
+    return 'ڈپازٹ کی واپسی درج کر دی گئی: $amount روپے۔';
+  }
+
+  @override
+  String get returnRefundFailed =>
+      'ڈپازٹ کی واپسی درج نہ ہو سکی۔ دوبارہ کوشش کریں۔';
+
+  @override
+  String get returnRecordingRefund => 'واپسی درج ہو رہی ہے…';
+
+  @override
+  String get returnCloseBooking => 'بکنگ مکمل کر کے بند کریں';
+
+  @override
+  String get contractFareTitle => 'کرایے کی تفصیل';
+
+  @override
+  String get contractFareDailyRate => 'یومیہ کرایہ';
+
+  @override
+  String get contractFareRentalDays => 'کرایے کے دن';
+
+  @override
+  String contractFareDays(int days) {
+    return '$days دن';
+  }
+
+  @override
+  String get contractFareTotal => 'کل کرایہ';
+
+  @override
+  String get contractAgreeTerms => 'میں مندرجہ بالا شرائط سے متفق ہوں';
+
+  @override
+  String get contractAgreeSaveFailed =>
+      'آپ کی رضامندی محفوظ نہ ہو سکی۔ دوبارہ کوشش کریں۔';
+
+  @override
+  String get contractGuarantorTitle => 'ضامن / گواہ کے دستخط';
+
+  @override
+  String get contractGuarantorHint =>
+      'ضامن سے نیچے والے خانے میں دستخط کروائیں۔';
+
+  @override
+  String get contractSignAgreement => 'معاہدے پر دستخط کریں';
+
+  @override
+  String get contractSigning => 'دستخط ہو رہے ہیں…';
+
+  @override
+  String get contractAgreementSigned => 'معاہدہ مکمل دستخط شدہ';
+
+  @override
+  String get contractSignFailed => 'دستخط محفوظ نہ ہو سکے۔ دوبارہ کوشش کریں۔';
+
+  @override
+  String get contractShareTitle => 'معاہدہ شیئر کریں';
+
+  @override
+  String get contractShareWhatsapp => 'واٹس ایپ';
+
+  @override
+  String get contractShareEmail => 'ای میل';
+
+  @override
+  String get contractSharePrint => 'پرنٹ کریں';
+
+  @override
+  String get contractShareNote =>
+      'معاہدے کی فائل آپ کی منتخب کردہ ایپ کو بھیجی جائے گی۔ کچھ بھی خود بخود نہیں بھیجا جاتا۔';
+
+  @override
+  String get authTermsOfService => 'شرائطِ خدمت';
+
+  @override
+  String get authPrivacyPolicy => 'رازداری کی پالیسی';
+
+  @override
+  String get authLegalIntro => 'جاری رکھ کر آپ ہماری';
+
+  @override
+  String get authLegalAnd => 'اور';
+
+  @override
+  String get legalTermsBody =>
+      'رینٹل ہب کی شرائطِ خدمت\n\n1. رینٹل ہب کیا ہے\nرینٹل ہب پاکستان میں گاڑیاں کرائے پر دینے کا ایک بازار ہے جو گاڑیوں کے مالکان (دکانوں) کو گاہکوں سے جوڑتا ہے۔ مالکان اپنی گاڑیاں لسٹ کرتے ہیں اور اپنے نرخ خود مقرر کرتے ہیں؛ گاہک ایپ کے ذریعے بکنگ کرتے ہیں۔\n\n2. آپ کا اکاؤنٹ\nآپ اپنے سائن ان کی تفصیلات محفوظ رکھنے اور اپنے اکاؤنٹ سے ہونے والے ہر کام کے ذمہ دار ہیں۔ اپنے، اپنی دکان اور اپنی گاڑیوں کے بارے میں درست معلومات دیں۔\n\n3. بکنگ اور ادائیگیاں\nبکنگ کی قیمتیں گاڑی کے مالک مقرر کرتے ہیں۔ ادائیگیاں، ایڈوانس اور سیکیورٹی ڈپازٹ بکنگ کے وقت دکھائی گئی شرائط کے مطابق ہوں گے۔ بکنگ اس بکنگ کے لیے دکھائی گئی منسوخی کی شرائط کے تحت منسوخ کی جا سکتی ہے۔\n\n4. آپ کی ذمہ داریاں\nمالکان کو اپنی گاڑیاں سڑک کے قابل، بیمہ شدہ اور قانونی طور پر رجسٹرڈ رکھنا چاہیے اور تصدیق شدہ بکنگوں کی پاسداری کرنی چاہیے۔ گاہکوں کو گاڑیاں وقت پر، موصول شدہ حالت میں واپس کرنی چاہییں اور نقصان، دیر سے واپسی یا اضافی کلومیٹر کے طے شدہ اضافی چارجز ادا کرنے چاہییں۔\n\n5. ممنوعہ استعمال\nرینٹل ہب کو کسی غیر قانونی کام کے لیے استعمال نہ کریں، ایسی گاڑی لسٹ نہ کریں جسے کرائے پر دینے کا حق آپ کو حاصل نہ ہو، اور کسی دوسرے شخص کی ذاتی معلومات ان کی اجازت کے بغیر شیئر نہ کریں۔\n\n6. ذمہ داری\nرینٹل ہب بازار اور بکنگ کے اوزار فراہم کرتا ہے۔ مالکان اور گاہک اپنی گاڑیوں، ڈرائیونگ اور ایک دوسرے کے ساتھ اپنے معاہدوں کے خود ذمہ دار ہیں۔ قانون کی اجازت کی حد تک، رینٹل ہب مالک اور گاہک کے درمیان کرائے سے ہونے والے نقصان یا خرابی کا ذمہ دار نہیں ہے۔\n\n7. تبدیلیاں اور رابطہ\nہم ان شرائط کو اپ ڈیٹ کر سکتے ہیں اور موجودہ نسخہ ایپ میں دکھایا جائے گا۔ سوالات کے لیے ایپ کے مدد کے حصے سے رینٹل ہب سپورٹ سے رابطہ کریں۔';
+
+  @override
+  String get legalPrivacyBody =>
+      'رینٹل ہب کی رازداری کی پالیسی\n\n1. ہم کیا جمع کرتے ہیں\nہم وہ معلومات جمع کرتے ہیں جو آپ ہمیں دیتے ہیں: آپ کا نام، فون نمبر، ای میل پتہ، شناختی کارڈ کی تفصیلات اور دستاویزات، دکان کی تفصیلات، گاڑیوں کی تفصیلات اور تصاویر، بکنگ اور ادائیگی کا ریکارڈ، اور ایپ کے ذریعے بھیجے گئے پیغامات۔ ہم بنیادی تکنیکی معلومات بھی جمع کرتے ہیں جیسے ڈیوائس کی قسم اور ایپ کا استعمال جو سروس چلانے کے لیے ضروری ہے۔\n\n2. ہم اسے کیسے استعمال کرتے ہیں\nہم آپ کی معلومات رینٹل ہب چلانے کے لیے استعمال کرتے ہیں: اکاؤنٹ بنانے اور تصدیق کرنے، گاڑیاں لسٹ کرنے، بکنگ اور ادائیگیاں مکمل کرنے، دھوکہ دہی اور بلیک لسٹ شدہ کرایوں کو روکنے، اور آپ کی بکنگوں اور آپ کی دکان کے بارے میں آپ سے رابطہ کرنے کے لیے۔\n\n3. ہم اسے کیسے شیئر کرتے ہیں\nہم آپ کی معلومات صرف سروس چلانے کے لیے ضرورت کے مطابق شیئر کرتے ہیں: آپ کی بکنگ کے دوسرے فریق (مالک یا گاہک) کے ساتھ، ادائیگیاں مکمل کرنے کے لیے ادائیگی فراہم کرنے والوں کے ساتھ، اور جب قانون کا تقاضا ہو تو حکام کے ساتھ۔ ہم آپ کی ذاتی معلومات فروخت نہیں کرتے۔\n\n4. تصاویر اور دستاویزات\nشناختی کارڈ کی تصاویر، سیلفیز، لائسنس اور دکان کی تصاویر صرف تصدیق اور کرائے کے ریکارڈ کے لیے استعمال ہوتی ہیں۔ وہ چہرے کی شناخت کے لیے استعمال نہیں ہوتیں اور عوامی طور پر شیئر نہیں کی جاتیں۔\n\n5. ہم اسے کب تک رکھتے ہیں\nہم آپ کی معلومات اس وقت تک رکھتے ہیں جب تک آپ کا اکاؤنٹ فعال ہے اور جب تک بکنگ، ادائیگیوں، تنازعات اور قانونی ریکارڈ کے لیے ضرورت ہو۔ آپ مدد کے حصے سے اپنے اکاؤنٹ اور اس کی ذاتی معلومات حذف کرنے کے لیے کہہ سکتے ہیں، سوائے ان ریکارڈوں کے جو قانون کے مطابق رکھنا ضروری ہیں۔\n\n6. آپ کے انتخاب\nآپ ایپ میں اپنی پروفائل اور دکان کی تفصیلات اپ ڈیٹ کر سکتے ہیں، اور سیٹنگز میں ایپ کی اطلاعات آن یا آف کر سکتے ہیں۔\n\n7. رابطہ\nاپنے ڈیٹا کے بارے میں سوالات کے لیے ایپ کے مدد کے حصے سے رینٹل ہب سپورٹ سے رابطہ کریں۔';
+
+  @override
+  String get onboardingSubmitForReview => 'جائزے کے لیے جمع کرائیں';
+
+  @override
+  String onboardingDocRequired(String document) {
+    return '$document جمع کرانے سے پہلے ضروری ہے۔';
+  }
+
+  @override
+  String get addVehicleCityRatesTitle => 'شہر کے اندر / باہر یومیہ نرخ';
+
+  @override
+  String get addVehicleCityRatesHint =>
+      'آپ کے پورے دن کے نرخ سے پہلے سے بھرا ہوا ہے۔ اگر شہر سے باہر کے سفر زیادہ مہنگے ہوں تو کوئی بھی نرخ تبدیل کریں۔';
+
+  @override
+  String get addVehicleInCityDayRate => 'شہر کے اندر یومیہ نرخ';
+
+  @override
+  String get addVehicleInCityDayRateHint => 'ایک ہی شہر کی بکنگ، فی دن';
+
+  @override
+  String get addVehicleOutCityDayRate => 'شہر سے باہر یومیہ نرخ';
+
+  @override
+  String get addVehicleOutCityDayRateHint => 'شہر سے باہر کے سفر، فی دن';
+
+  @override
+  String get shareTitle => 'گاہکوں کے ساتھ شیئر کریں';
+
+  @override
+  String shareStepOfTwo(int step) {
+    return 'مرحلہ $step از 2';
+  }
+
+  @override
+  String get shareChoosePrice => 'شیئر کرنے کے لیے قیمت منتخب کریں';
+
+  @override
+  String shareWithCustomersText(
+      String vehicle, String rate, String period, String link) {
+    return 'رینٹل ہب پر $vehicle کرائے پر لیں، $rate ($period): $link';
+  }
+
+  @override
+  String get shareLinkNote =>
+      'اس لنک کے پیچھے والا ویب لسٹنگ صفحہ ابھی لائیو نہیں ہے۔';
+
+  @override
+  String get rateMatrixInCityTitle => 'شہر کے اندر کرایہ کے نرخ';
+
+  @override
+  String get rateMatrixOutCityTitle => 'شہر سے باہر کرایہ کے نرخ';
+
+  @override
+  String get settingsNotifyBookingRequests => 'بکنگ کی درخواستیں';
+
+  @override
+  String get settingsNotifyPaymentProofs => 'ادائیگی کے ثبوت';
+
+  @override
+  String get settingsNotifyHandover => 'حوالگی';
+
+  @override
+  String get settingsNotifyReturns => 'واپسیاں';
+
+  @override
+  String get settingsNotifyMaintenance => 'دیکھ بھال کی یاد دہانیاں';
+
+  @override
+  String get reportDownloadPdf => 'پی ڈی ایف ڈاؤن لوڈ کریں';
+
+  @override
+  String get reportDownloadPdfSaved =>
+      'رپورٹ کی پی ڈی ایف آپ کے آلے میں محفوظ ہو گئی۔';
+
+  @override
+  String get carEditorTitle => 'پیکج کے کرایے';
+
+  @override
+  String get carEditorSave => 'پیکج محفوظ کریں';
+
+  @override
+  String get carEditorSaved => 'کرایے محفوظ ہو گئے';
+
+  @override
+  String get outCityRulesTitle => 'شہر سے باہر کے قواعد';
+
+  @override
+  String get outCityRulesSave => 'قواعد محفوظ کریں';
+
+  @override
+  String get outCityRulesSaved => 'قواعد محفوظ ہو گئے';
+
+  @override
+  String get outCityTripCharges => 'سفر کے چارجز';
+
+  @override
+  String get outCityRulesAppliesAll => 'تمام پیکجز پر لاگو';
+
+  @override
+  String get outCityBoundaryTitle => 'ہوم سٹی کی حد';
+
+  @override
+  String get outCityBoundaryCity => 'شہر';
+
+  @override
+  String get outCityBoundaryRadius => 'رداس (کلومیٹر)';
+
+  @override
+  String get editVehicleTitle => 'گاڑی کی تفصیلات بدلیں';
+
+  @override
+  String get editVehicleSave => 'تفصیلات محفوظ کریں';
+
+  @override
+  String get editVehicleSaved => 'گاڑی کی تفصیلات محفوظ ہو گئیں';
+
+  @override
+  String get editVehicleStatus => 'حالت';
+
+  @override
+  String get outCityModePerDay => 'فی دن';
+
+  @override
+  String get outCityModePerKm => 'فی کلومیٹر';
+
+  @override
+  String get outCityModeFixedRoute => 'مقررہ راستہ';
+
+  @override
+  String get outCityPricingMode => 'قیمت کا طریقہ';
+
+  @override
+  String get outCityPerKmRate => 'فی کلومیٹر نرخ (روپے/کلومیٹر)';
+
+  @override
+  String get outCityFixedRouteLabel => 'مقررہ راستہ';
+
+  @override
+  String get outCityFixedRouteNone => 'کوئی مقررہ راستہ منتخب نہیں';
+
+  @override
+  String get outCityFixedRouteChoose => 'مقررہ راستہ منتخب کریں';
+
+  @override
+  String farePerKmUnit(String rate) {
+    return '$rate / کلومیٹر';
+  }
+
+  @override
+  String fareFixedRoute(String route) {
+    return 'مقررہ راستہ: $route';
+  }
+
+  @override
+  String farePerKmEstimate(int km) {
+    return 'تخمینہ $km کلومیٹر پر — حتمی رقم واپسی پر اصل کلومیٹر کے مطابق';
+  }
+
+  @override
+  String get outCityNightStay => 'ڈرائیور کا رات کا قیام (فی رات)';
+
+  @override
+  String get outCityNightStayCap => 'ہوم سٹی سے باہر ہر رات پر چارج';
+
+  @override
+  String get outCityTolls => 'ٹول اور پارکنگ';
+
+  @override
+  String get outCityTollsCustomer => 'گاہک ادا کرے گا';
+
+  @override
+  String get outCityTollsIncluded => 'کرائے میں شامل';
+
+  @override
+  String bookingFareNightStay(int nights) {
+    return 'ڈرائیور کا رات کا قیام ($nights راتیں)';
+  }
+
+  @override
+  String get bookingFareTollsCustomer => 'ٹول اور پارکنگ — گاہک ادا کرے گا';
+
+  @override
+  String get bookingFareTollsIncluded => 'ٹول اور پارکنگ — کرائے میں شامل ہے';
+
+  @override
+  String get outCityMapOffline => 'آف لائن نقشہ دستیاب نہیں';
+
+  @override
+  String get outCityMapNoLocation =>
+      'شوروم کا مقام مقرر نہیں — حد بطور متن دکھائی گئی ہے';
+
+  @override
+  String get shops_title => 'شاپس';
+
+  @override
+  String get shops_showMap => 'نقشہ';
+
+  @override
+  String get shops_showList => 'فہرست';
+
+  @override
+  String get shops_allCities => 'تمام شہر';
+
+  @override
+  String get shops_unverified => 'غیر تصدیق شدہ';
+
+  @override
+  String get shops_emptyTitle => 'ان فلٹرز کے مطابق کوئی شاپ نہیں ملی';
+
+  @override
+  String get shops_emptySubtitle => 'کوئی اور شہر یا فلٹر آزمائیں۔';
+
+  @override
+  String get shops_mapOffline =>
+      'آف لائن نقشہ دستیاب نہیں ۔ فہرست اب بھی کام کر رہی ہے';
+
+  @override
+  String get shops_chooseCity => 'شاپس دیکھنے کے لیے شہر منتخب کریں';
+
+  @override
+  String get shops_noPinNote =>
+      'جن شاپس کا مقام محفوظ نہیں وہ صرف فہرست میں نظر آتی ہیں';
+
+  @override
+  String get home2_kpiActive => 'فعال بکنگز';
+
+  @override
+  String get home2_kpiWallet => 'والیٹ بیلنس';
+
+  @override
+  String get home2_support => 'سپورٹ';
+
+  @override
+  String get home2_kycNotStarted => 'شروع نہیں ہوا';
+
+  @override
+  String home2_kycProgress(Object done, Object total) {
+    return '$done از $total دستاویزات تیار ہیں';
+  }
+
+  @override
+  String get home2_kycView => 'دستاویزات دیکھیں';
+
+  @override
+  String get home2_recentBookings => 'حالیہ بکنگز';
+
+  @override
+  String get home2_upcoming => 'آنے والے';
+
+  @override
+  String get home2_viewAll => 'سب دیکھیں';
+
+  @override
+  String get home2_noBookings => 'ابھی کوئی بکنگ نہیں';
+
+  @override
+  String get home2_noUpcoming => 'فی الحال کچھ نہیں';
+
+  @override
+  String get home2_paymentOverdue => 'ادائیگی زائد المیعاد ہے';
+
+  @override
+  String get home2_paymentDue => 'ادائیگی باقی ہے';
+
+  @override
+  String get admin2_displayUnverifiedShops => 'غیر تصدیق شدہ دکانیں دکھائیں';
+
+  @override
+  String get admin2_displayUnverifiedShopsHint =>
+      'بند ہونے پر غیر تصدیق شدہ دکانیں شاپس ٹیب سے چھپ جائیں گی۔';
+
+  @override
+  String get admin2_allowBookingsFromUnverifiedShops =>
+      'غیر تصدیق شدہ دکانوں سے بکنگ کی اجازت دیں';
+
+  @override
+  String get admin2_allowBookingsFromUnverifiedShopsHint =>
+      'بند ہونے پر صارفین غیر تصدیق شدہ دکانوں سے بکنگ نہیں کر سکیں گے۔';
+
+  @override
+  String get admin2_unverifiedBookingsDisabled =>
+      'پلیٹ فارم کی جانب سے غیر تصدیق شدہ دکانوں سے بکنگ فی الحال بند ہے۔';
+
+  @override
+  String get kyc2_qrCode => 'کیو آر کوڈ';
+
+  @override
+  String get kyc2_qrRead => 'کیو آر کوڈ محفوظ کر لیا گیا۔';
+
+  @override
+  String get kyc2_licenseUnreadable =>
+      'اس تصویر سے لائسنس نمبر نہیں پڑھا جا سکا — براہ کرم خود لکھیں۔';
+
+  @override
+  String get appealTitle => 'بلیک لسٹ اندراج کے خلاف اپیل';
+
+  @override
+  String get appealButton => 'بلیک لسٹ فیصلے کے خلاف اپیل کریں';
+
+  @override
+  String get appealIntro =>
+      'اگر آپ سمجھتے ہیں کہ یہ اندراج غلط ہے تو آپ ٹریبونل سے نظرثانی کی درخواست کر سکتے ہیں۔';
+
+  @override
+  String get appealReasonLabel => 'اپیل کی وجہ';
+
+  @override
+  String get appealReasonHint =>
+      'بتائیں کہ اس اندراج پر نظرثانی کیوں ہونی چاہیے…';
+
+  @override
+  String get appealReasonRequired => 'براہ کرم اپیل کی وجہ لکھیں۔';
+
+  @override
+  String get appealSubmit => 'اپیل جمع کرائیں';
+
+  @override
+  String get appealSuccess => 'اپیل جمع ہو گئی ہے۔ ٹریبونل اس کا جائزہ لے گا۔';
+
+  @override
+  String get appealError => 'اپیل جمع نہیں ہو سکی۔ براہ کرم دوبارہ کوشش کریں۔';
+
+  @override
+  String get appealRecordNotFound =>
+      'اس شناختی کارڈ کے لیے کوئی بلیک لسٹ ریکارڈ نہیں ملا۔';
+
+  @override
+  String get anncTitle => 'اعلان';
+
+  @override
+  String get anncLoading => 'اعلان لوڈ ہو رہا ہے…';
+
+  @override
+  String get anncNotFound => 'یہ اعلان اب دستیاب نہیں ہے۔';
+
+  @override
+  String get anncLoadError =>
+      'اعلان لوڈ نہیں ہو سکا۔ براہ کرم دوبارہ کوشش کریں۔';
+
+  @override
+  String get couldNotOpenDialer => 'ڈائلر نہیں کھل سکا۔';
+
+  @override
+  String get countdownPickupReached => 'پک اپ کا وقت ہو گیا ہے';
+
+  @override
+  String get countdownReturnReached => 'واپسی کا وقت ہو گیا ہے';
+
+  @override
+  String get countdownTimeReached => 'وقت ہو گیا ہے';
+
+  @override
+  String kycRejectionReason(String reason) {
+    return 'وجہ: $reason';
+  }
+
+  @override
+  String get onboardingNameHint => 'آپ کا مکمل نام';
+
+  @override
+  String get pickerPastTime =>
+      'یہ وقت گزر چکا ہے۔ براہ کرم بعد کا وقت منتخب کریں۔';
+
+  @override
+  String get rateSelectBoth =>
+      'براہ کرم شوروم اور گاڑی دونوں کی درجہ بندی کریں۔';
+
+  @override
+  String get reviewDraftMissing =>
+      'بکنگ کی تفصیلات موجود نہیں ہیں۔ براہ کرم دوبارہ شروع کریں۔';
+
+  @override
+  String get reviewSignInRequired =>
+      'یہ بکنگ جمع کروانے کے لیے براہ کرم سائن ان کریں۔';
+
+  @override
+  String get reviewSubmitFailed =>
+      'بکنگ جمع نہیں ہو سکی۔ براہ کرم دوبارہ کوشش کریں۔';
+
+  @override
+  String get shopLoadFailed => 'یہ شوروم لوڈ نہیں ہو سکا۔';
+
+  @override
+  String get shopNoPhoneNumber => 'اس شوروم کا فون نمبر موجود نہیں ہے۔';
+
+  @override
+  String shopWhatsappHello(String shopName) {
+    return 'السلام علیکم $shopName، میں نے آپ کی لسٹنگ رینٹل ہب پر دیکھی ہے۔';
+  }
+
+  @override
+  String get signInRequiredGeneric =>
+      'جاری رکھنے کے لیے براہ کرم سائن ان کریں۔';
+
+  @override
+  String get statusProofRejected => 'ثبوت مسترد کر دیا گیا';
+
+  @override
+  String get tripOutCityFixedRouteLine => 'شہر سے باہر: مقررہ راستے کی قیمت';
+
+  @override
+  String tripOutCityPerDayLine(String rate) {
+    return 'شہر سے باہر: $rate / دن';
+  }
+
+  @override
+  String tripOutCityPerKmLine(String rate) {
+    return 'شہر سے باہر: $rate / کلومیٹر';
+  }
+
+  @override
+  String get vehicleLoadFailed => 'یہ گاڑی لوڈ نہیں ہو سکی۔';
+
+  @override
+  String get manualBookingWhatsappToggle => 'واٹس ایپ پر تصدیق بھیجیں';
+}

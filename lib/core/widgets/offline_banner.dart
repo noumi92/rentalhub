@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../l10n/app_localizations.dart';
+import '../constants/app_colors.dart';
 import '../data/sync_status_cubit.dart';
 import '../di/injection_container.dart';
 import '../routing/route_names.dart';
@@ -72,13 +73,19 @@ class OfflineBanner extends StatelessWidget {
         // without localization delegates (unit tests); the app always
         // provides delegates, so users see the localized copy.
         final l10n = AppLocalizations.of(context);
+        final brightness = theme.brightness;
+        // Audit SH-N14: offline used to render in error-red, the same
+        // as the failed-sync state — users learn to ignore the red
+        // banner. Offline is a warning ("changes will sync when
+        // you're back online"), so it now uses the warning container
+        // pair; errorContainer is reserved for the failed state.
         final background = isOffline
-            ? theme.colorScheme.errorContainer
+            ? AppColors.warningContainerFor(brightness)
             : isFailed
                 ? theme.colorScheme.errorContainer
                 : theme.colorScheme.surfaceContainerHighest;
         final foreground = isOffline
-            ? theme.colorScheme.onErrorContainer
+            ? AppColors.warningOnContainerFor(brightness)
             : isFailed
                 ? theme.colorScheme.onErrorContainer
                 : theme.colorScheme.onSurface;

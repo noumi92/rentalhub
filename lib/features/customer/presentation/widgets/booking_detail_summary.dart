@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/utils/money_format.dart';
@@ -13,11 +14,11 @@ class BookingDetailSummary extends StatelessWidget {
 
   final BookingEntity booking;
 
-  String _formatDateTime(DateTime d) {
-    final hour = d.hour % 12 == 0 ? 12 : d.hour % 12;
-    final amPm = d.hour < 12 ? 'AM' : 'PM';
-    final minute = d.minute.toString().padLeft(2, '0');
-    return '${d.day}/${d.month}/${d.year}  $hour:$minute $amPm';
+  // CU-m4: locale dates — the old hand-rolled day/month/year + AM/PM
+  // ignored the Urdu locale.
+  String _formatDateTime(BuildContext context, DateTime d) {
+    final locale = Localizations.localeOf(context).languageCode;
+    return '${DateFormat.yMMMd(locale).format(d)}  ${DateFormat.jm(locale).format(d)}';
   }
 
   @override
@@ -40,8 +41,8 @@ class BookingDetailSummary extends StatelessWidget {
           _row(context, l10n.summaryTrip, b.tripType == 'out_city' ? l10n.outOfCity : l10n.inCity),
           if (b.fixedRouteSummary != null && b.fixedRouteSummary!.isNotEmpty)
             _row(context, l10n.outCityFixedRouteLabel, b.fixedRouteSummary!),
-          _row(context, l10n.pickupLabel, _formatDateTime(b.pickupTime)),
-          _row(context, l10n.summaryReturn, _formatDateTime(b.returnTime)),
+          _row(context, l10n.pickupLabel, _formatDateTime(context, b.pickupTime)),
+          _row(context, l10n.summaryReturn, _formatDateTime(context, b.returnTime)),
           const Divider(height: 18),
           _row(context, l10n.summaryTotal, l10n.amountRs(formatRs(b.totalAmount)), bold: true),
           _row(context, l10n.summaryAdvanceRequired, l10n.amountRs(formatRs(b.advanceRequired))),
@@ -58,18 +59,29 @@ class BookingDetailSummary extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 13,
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
+          // CU-m5: Flexible + ellipsis — a long label or value wraps
+          // instead of overflowing at large text scale.
+          Flexible(
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              // CU-m1: the hardcoded 13px drifted from the type scale.
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
             ),
           ),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: bold ? FontWeight.w800 : FontWeight.w600,
+          const SizedBox(width: 8),
+          Flexible(
+            child: Text(
+              value,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.end,
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    fontWeight: bold ? FontWeight.w800 : FontWeight.w600,
+                  ),
             ),
           ),
         ],

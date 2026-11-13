@@ -8,11 +8,17 @@ class PickupCountdownTimer extends StatefulWidget {
   // E3: the label above the digits — the pickup pass counts down to
   // pickup; the active-trip view reuses this for the return.
   final String? label;
+  // CU-m8: the label once the target time has passed (the pickup
+  // pass passes its "pickup time reached" text, the active-trip view
+  // its "return time reached" text). Falls back to a generic
+  // "time reached" label when unset.
+  final String? overdueLabel;
 
   const PickupCountdownTimer({
     super.key,
     required this.targetPickupTime,
     this.label,
+    this.overdueLabel,
   });
 
   @override
@@ -22,6 +28,10 @@ class PickupCountdownTimer extends StatefulWidget {
 class _PickupCountdownTimerState extends State<PickupCountdownTimer> {
   late Timer _timer;
   Duration _remaining = Duration.zero;
+  // CU-m8: how long ago the target passed — the digits count UP
+  // this once the countdown hits zero, instead of freezing at
+  // 00:00:00 forever.
+  Duration _overdue = Duration.zero;
 
   @override
   void initState() {
@@ -35,7 +45,13 @@ class _PickupCountdownTimerState extends State<PickupCountdownTimer> {
   void _calculateRemaining() {
     final diff = widget.targetPickupTime.difference(DateTime.now());
     setState(() {
-      _remaining = diff.isNegative ? Duration.zero : diff;
+      if (diff.isNegative) {
+        _remaining = Duration.zero;
+        _overdue = -diff;
+      } else {
+        _remaining = diff;
+        _overdue = Duration.zero;
+      }
     });
   }
 
@@ -48,9 +64,13 @@ class _PickupCountdownTimerState extends State<PickupCountdownTimer> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final hours = _remaining.inHours.toString().padLeft(2, '0');
-    final minutes = (_remaining.inMinutes % 60).toString().padLeft(2, '0');
-    final seconds = (_remaining.inSeconds % 60).toString().padLeft(2, '0');
+    // CU-m8: past the target the digits count UP the overdue time
+    // under a "time reached" label — never a frozen 00:00:00.
+    final isOverdue = _overdue > Duration.zero;
+    final shown = isOverdue ? _overdue : _remaining;
+    final hours = shown.inHours.toString().padLeft(2, '0');
+    final minutes = (shown.inMinutes % 60).toString().padLeft(2, '0');
+    final seconds = (shown.inSeconds % 60).toString().padLeft(2, '0');
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
@@ -68,7 +88,9 @@ class _PickupCountdownTimerState extends State<PickupCountdownTimer> {
       child: Column(
         children: [
           Text(
-            (widget.label ?? l10n.countdownToPickup),
+            isOverdue
+                ? (widget.overdueLabel ?? l10n.countdownTimeReached)
+                : (widget.label ?? l10n.countdownToPickup),
             style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primaryContainer, letterSpacing: 1.2),
           ),
           const SizedBox(height: 8),

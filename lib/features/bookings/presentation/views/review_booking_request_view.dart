@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/di/injection_container.dart';
+import '../../../../core/widgets/app_state_views.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../core/widgets/debounced_button.dart';
 import '../../../../core/widgets/verified_badge.dart';
@@ -69,10 +70,13 @@ class _ReviewBookingRequestViewState extends State<ReviewBookingRequestView> {
   }
 
   Future<void> _resolveShopVerification() async {
+    // CU-M12: no shop id, no lookup — the old 'shop-default'
+    // fallback read a shop that does not exist. An incomplete draft
+    // already shows the error state and hides the submit button.
+    final shopId = widget.bookingDraft['shopId'] as String?;
+    if (shopId == null || shopId.isEmpty) return;
     final gate = widget.bookingGate ?? _defaultGate();
-    final verified = await gate.isShopVerified(
-      shopId: widget.bookingDraft['shopId'] as String? ?? 'shop-default',
-    );
+    final verified = await gate.isShopVerified(shopId: shopId);
     if (!mounted) return;
     setState(() => _shopIsVerified = verified);
   }
@@ -84,6 +88,9 @@ class _ReviewBookingRequestViewState extends State<ReviewBookingRequestView> {
   }
 
   Future<void> _submitRequest() async {
+    // CU-M12: refuse to submit a malformed draft — the submitter
+    // also rejects it, but the button never fires in the first place.
+    if (!_isDraftComplete) return;
     setState(() => _isSubmitting = true);
     try {
       final booking = await ReviewBookingSubmitter(
@@ -102,6 +109,12 @@ class _ReviewBookingRequestViewState extends State<ReviewBookingRequestView> {
     }
   }
 
+  /// CU-M12: the draft is only submittable when every field the
+  /// booking needs is present — a missing draft is an error screen,
+  /// never a booking with invented money, plate or shop.
+  bool get _isDraftComplete =>
+      ReviewBookingSubmitter.isDraftComplete(widget.bookingDraft);
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -114,6 +127,13 @@ class _ReviewBookingRequestViewState extends State<ReviewBookingRequestView> {
               title: l10n.reviewTitle,
               onBack: widget.onBack,
             ),
+            // CU-M12: a missing draft shows an error and refuses to
+            // submit — the summary card below needs real values.
+            if (!_isDraftComplete)
+              Expanded(
+                child: AppErrorState(message: l10n.reviewDraftMissing),
+              )
+            else
             Expanded(
               child: SingleChildScrollView(
                 padding:
@@ -122,17 +142,17 @@ class _ReviewBookingRequestViewState extends State<ReviewBookingRequestView> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     BookingSummaryCard(
-                      carName: d['carName'] as String? ?? l10n.summaryVehicle,
-                      plateNumber: d['plateNumber'] as String? ?? 'PAK-1234',
-                      shopName: d['shopName'] as String? ?? l10n.rentalShowroom,
+                      carName: d['carName'] as String? ?? '—',
+                      plateNumber: d['plateNumber'] as String? ?? '—',
+                      shopName: d['shopName'] as String? ?? '—',
                       isWithDriver: d['isWithDriver'] as bool? ?? false,
                       packageType: d['packageType'] as String? ?? '24h',
-                      pickupTime:
-                          d['pickupTime'] as DateTime? ?? DateTime.now(),
-                      returnTime: d['returnTime'] as DateTime? ??
-                          DateTime.now().add(const Duration(days: 1)),
-                      totalAmount: d['totalAmount'] as int? ?? 5000,
-                      advanceRequired: d['advanceRequired'] as int? ?? 1000,
+                      // CU-M12: no invented fallbacks — _isDraftComplete
+                      // guarantees these are present (see above).
+                      pickupTime: d['pickupTime'] as DateTime,
+                      returnTime: d['returnTime'] as DateTime,
+                      totalAmount: d['totalAmount'] as int,
+                      advanceRequired: d['advanceRequired'] as int,
                       tripType: d['tripType'] as String? ?? 'in_city',
                       kmLimit: d['kmLimit'] as int?,
                       securityDepositPkr: d['securityDepositPkr'] as int?,
@@ -199,26 +219,29 @@ class _ReviewBookingRequestViewState extends State<ReviewBookingRequestView> {
                 ),
               ),
             ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface,
-                boxShadow: [
-                  BoxShadow(
-                      color: Color(0x14000000),
-                      blurRadius: 10,
-                      offset: Offset(0, -3))
-                ],
+            // CU-M12: no submit button for a missing draft — the
+            // error state above is the whole screen.
+            if (_isDraftComplete)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surface,
+                  boxShadow: [
+                    BoxShadow(
+                        color: Color(0x14000000),
+                        blurRadius: 10,
+                        offset: Offset(0, -3))
+                  ],
+                ),
+                child: DebouncedButton(
+                  text: _isSubmitting
+                      ? l10n.reviewSending
+                      : l10n.reviewSendRequest,
+                  icon: Icons.send_rounded,
+                  isLoading: _isSubmitting,
+                  onPressed: _submitRequest,
+                ),
               ),
-              child: DebouncedButton(
-                text: _isSubmitting
-                    ? l10n.reviewSending
-                    : l10n.reviewSendRequest,
-                icon: Icons.send_rounded,
-                isLoading: _isSubmitting,
-                onPressed: _submitRequest,
-              ),
-            ),
           ],
         ),
       ),

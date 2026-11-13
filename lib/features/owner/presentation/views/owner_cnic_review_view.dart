@@ -92,14 +92,14 @@ class _OwnerCnicReviewViewState extends State<OwnerCnicReviewView> {
     super.dispose();
   }
 
-  /// dd.mm.yyyy only; the label itself carries the format, so it
-  /// doubles as the (localized) error text — no new .arb key needed.
-  static String? _validateDate(String? value, String label) {
+  /// dd.mm.yyyy only. OW-m21: the error used to be the field label
+  /// itself ("Date of Birth") — now a localized explanation.
+  static String? _validateDate(String? value, String message) {
     final t = value?.trim() ?? ''; if (t.isEmpty) return null;
-    final m = RegExp(r'^(\d{2})\.(\d{2})\.(\d{4})$').firstMatch(t); if (m == null) return label;
+    final m = RegExp(r'^(\d{2})\.(\d{2})\.(\d{4})$').firstMatch(t); if (m == null) return message;
     final day = int.parse(m[1]!); final month = int.parse(m[2]!); final year = int.parse(m[3]!);
     final parsed = DateTime.tryParse('$year-${month.toString().padLeft(2, '0')}-${day.toString().padLeft(2, '0')}');
-    if (parsed == null || parsed.day != day || parsed.month != month || parsed.year != year) return label;
+    if (parsed == null || parsed.day != day || parsed.month != month || parsed.year != year) return message;
     return null;
   }
 
@@ -217,8 +217,8 @@ class _OwnerCnicReviewViewState extends State<OwnerCnicReviewView> {
                       _field(_nameController, l10n.onboardingFullName, hint: l10n.onboardingOwnerNameHint, validator: (v) => (v == null || v.trim().isEmpty) ? l10n.addCustomerFullNameRequired : null),
                       _field(_fatherController, l10n.customersCnicFatherName, hint: l10n.onboardingOwnerNameHint),
                       _field(_cnicController, l10n.customersCnicNumber, keyboard: TextInputType.number, hint: '35201-1234567-1', validator: PakistaniValidators.validateCnic, formatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9\-]')), LengthLimitingTextInputFormatter(15)]),
-                      _field(_dobController, l10n.customersCnicDob, keyboard: TextInputType.number, hint: '15.03.1990', validator: (v) => _validateDate(v, l10n.customersCnicDob), formatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')), LengthLimitingTextInputFormatter(10)]),
-                      _field(_expiryController, l10n.customersCnicExpiry, keyboard: TextInputType.number, hint: '01.01.2030', validator: (v) => _validateDate(v, l10n.customersCnicExpiry), formatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')), LengthLimitingTextInputFormatter(10)]),
+                      _field(_dobController, l10n.customersCnicDob, keyboard: TextInputType.number, hint: '15.03.1990', validator: (v) => _validateDate(v, l10n.cnicReviewDateInvalid), formatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')), LengthLimitingTextInputFormatter(10)]),
+                      _field(_expiryController, l10n.customersCnicExpiry, keyboard: TextInputType.number, hint: '01.01.2030', validator: (v) => _validateDate(v, l10n.cnicReviewDateInvalid), formatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')), LengthLimitingTextInputFormatter(10)]),
                       _section(l10n.contractFieldContact),
                       _field(_phoneController, l10n.customersCnicPhone, keyboard: TextInputType.phone, hint: '0300-1234567', validator: PakistaniValidators.validatePakistaniPhone, formatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9+\- ]')), LengthLimitingTextInputFormatter(15)]),
                       _section(l10n.customersCnicAddress),

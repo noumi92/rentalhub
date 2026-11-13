@@ -5,11 +5,14 @@
 // work that does not exist yet are `skip:`ped with their debt ID
 // (rulebook §7.7) — they show as pending, never as silent passes.
 import 'dart:io';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:rentalhub/core/settings/app_settings_cubit.dart';
 import 'package:rentalhub/core/theme/app_theme.dart';
+import 'package:rentalhub/core/widgets/app_feedback.dart';
+import 'package:rentalhub/core/widgets/debounced_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // Rulebook §4.2: tokens that exist in `AppColors` today, with the exact
@@ -18,15 +21,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 const Map<String, String> kLightTokens = {
   'primary': '0xFF1B1E5C',
   'primaryDark': '0xFF16194F',
-  'primaryLight': '0xFFEEF0FF',
   'primaryContainer': '0xFFEEF0FF',
   'primaryOnDark': '0xFF252B7A',
   'primaryContainerOnDark': '0xFF1A1D42',
   'primaryDarkOnDark': '0xFF0B0D26',
   'secondary': '0xFFF95700',
-  // Rulebook §4.2: secondaryLight is the pale tint; the bright orange is
-  // the *dark* secondary (secondaryDark).
-  'secondaryLight': '0xFFFFF3EB',
+  // Rulebook §4.2: the bright orange is the *dark* secondary
+  // (secondaryDark); the pale tint lives under secondaryContainer.
+  // Audit SH-N3 deleted the duplicate names primaryLight and
+  // secondaryLight — they are gone from AppColors and from here.
   'secondaryDark': '0xFFFF6D24',
   'secondaryLightDark': '0xFF3D1B08',
   'backgroundLight': '0xFFF8FAFC',
@@ -73,19 +76,18 @@ const Map<String, String> kDarkContainerTokens = {
 
 // Rulebook §4.2: every canonical token NAME must bind to its rulebook
 // VALUE in `AppColors` — a hex-presence check alone would pass if the
-// value lived under the wrong name. Aliases (`background`,
-// `textPrimary`, `textSecondary`, `textMuted`) are excluded: they
-// reference another constant instead of a literal.
+// value lived under the wrong name. The surviving legacy aliases
+// (`textPrimary`, `textSecondary`, `textMuted` — @Deprecated, see the
+// SH-N3 test below) are excluded: they reference another constant
+// instead of a literal.
 const Map<String, String> kTokenBindings = {
   'primary': '0xFF1B1E5C',
   'primaryDark': '0xFF16194F',
   'primaryOnDark': '0xFF252B7A',
   'primaryContainerOnDark': '0xFF1A1D42',
   'primaryDarkOnDark': '0xFF0B0D26',
-  'primaryLight': '0xFFEEF0FF',
   'primaryContainer': '0xFFEEF0FF',
   'secondary': '0xFFF95700',
-  'secondaryLight': '0xFFFFF3EB',
   'secondaryDark': '0xFFFF6D24',
   'secondaryLightDark': '0xFF3D1B08',
   'secondaryContainer': '0xFFFFF3EB',
@@ -120,6 +122,15 @@ const Map<String, String> kTokenBindings = {
   'surfaceContainerHighestDark': '0xFF1E2138',
   'headerGradientEnd': '0xFF242875',
   'errorDark': '0xFFDC2626',
+  // Audit SH-N1/SH-N14: tokens added for the splash gradient, the
+  // plate strips and the light warning on-container text.
+  'splashBackground': '0xFF131842',
+  'splashGradientTop': '0xFF0F1336',
+  'splashGradientMiddle': '0xFF161B4A',
+  'splashGradientBottom': '0xFF12163F',
+  'plateStripIslamabad': '0xFF1E3A8A',
+  'plateStripDefault': '0xFF15803D',
+  'warningOnContainer': '0xFF92400E',
 };
 
 void main() {
@@ -303,4 +314,285 @@ void main() {
       expect(literals, 0);
     });
   });
+
+  group('Audit 2026-11-13 (shared) — contrast and token hygiene', () {
+    test('primary buttons: white on orangeFill passes WCAG AA, both modes (SH-M1)', () {
+      for (final theme in [AppTheme.lightTheme, AppTheme.darkTheme]) {
+        for (final style in [
+          theme.elevatedButtonTheme.style,
+          theme.filledButtonTheme.style,
+        ]) {
+          final bg =
+              style?.backgroundColor?.resolve(<WidgetState>{});
+          final fg =
+              style?.foregroundColor?.resolve(<WidgetState>{});
+          // White on secondary #F95700 was 3.29:1 (light) and on
+          // secondaryDark #FF6D24 2.81:1 (dark) — both fail AA for
+          // the 14 sp label. orangeFill #C2410C is 5.18:1.
+          expect(bg, const Color(0xFFC2410C));
+          expect(fg, Colors.white);
+          expect(_contrastRatio(fg!, bg!), greaterThanOrEqualTo(4.5));
+        }
+        // SH-N7: the themed minimum height is the 54 dp CTA standard.
+        final minSize = theme.elevatedButtonTheme.style?.minimumSize
+            ?.resolve(<WidgetState>{});
+        expect(minSize, const Size(64, 54));
+      }
+    });
+
+    testWidgets('DebouncedButton defaults to orangeFill with white text (SH-M1)',
+        (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.lightTheme,
+          home: Scaffold(
+            body: DebouncedButton(text: 'Save', onPressed: () {}),
+          ),
+        ),
+      );
+      final style =
+          tester.widget<ElevatedButton>(find.byType(ElevatedButton)).style;
+      final bg = style?.backgroundColor?.resolve(<WidgetState>{});
+      final fg = style?.foregroundColor?.resolve(<WidgetState>{});
+      expect(bg, const Color(0xFFC2410C));
+      expect(fg, Colors.white);
+      expect(_contrastRatio(fg!, bg!), greaterThanOrEqualTo(4.5));
+    });
+
+    testWidgets('light snackbars: white text on strong fills passes WCAG AA (SH-M2)',
+        (tester) async {
+      // White on accentSuccess #10B981 was 2.54:1, on accentDanger
+      // #EF4444 3.76:1, on secondary #F95700 3.29:1 — all fail AA
+      // for the 13 sp w700 text. The strong fills measure 5.48:1,
+      // 4.83:1 and 5.18:1.
+      final cases = <(void Function(BuildContext, String), Color)>[
+        (AppFeedback.showSuccess, const Color(0xFF047857)),
+        (AppFeedback.showError, const Color(0xFFDC2626)),
+        (AppFeedback.showWarning, const Color(0xFFC2410C)),
+      ];
+      for (final (show, expectedBg) in cases) {
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: AppTheme.lightTheme,
+            home: Scaffold(
+              body: Builder(
+                builder: (context) {
+                  WidgetsBinding.instance.addPostFrameCallback(
+                    (_) => show(context, 'Test message'),
+                  );
+                  return const SizedBox();
+                },
+              ),
+            ),
+          ),
+        );
+        await tester.pump();
+        await tester.pump();
+        final bar = tester.widget<SnackBar>(find.byType(SnackBar));
+        final text = tester.widget<Text>(find.text('Test message'));
+        expect(bar.backgroundColor, expectedBg);
+        expect(text.style?.color, Colors.white);
+        expect(
+          _contrastRatio(Colors.white, bar.backgroundColor!),
+          greaterThanOrEqualTo(4.5),
+        );
+      }
+    });
+
+    testWidgets('dark snackbars keep the container pairs readable (SH-M2)',
+        (tester) async {
+      // Dark mode was already fine (dark containers + light
+      // on-container text); pin the pairs so a later change cannot
+      // silently reintroduce white-on-bright fills there.
+      final cases = <(void Function(BuildContext, String), Color, Color)>[
+        (
+          AppFeedback.showSuccess,
+          const Color(0xFF123524),
+          const Color(0xFF86EFAC),
+        ),
+        (
+          AppFeedback.showError,
+          const Color(0xFF3B1215),
+          const Color(0xFFFCA5A5),
+        ),
+        (
+          AppFeedback.showWarning,
+          const Color(0xFF3A2A05),
+          const Color(0xFFFCD34D),
+        ),
+      ];
+      for (final (show, expectedBg, expectedFg) in cases) {
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: AppTheme.darkTheme,
+            home: Scaffold(
+              body: Builder(
+                builder: (context) {
+                  WidgetsBinding.instance.addPostFrameCallback(
+                    (_) => show(context, 'Test message'),
+                  );
+                  return const SizedBox();
+                },
+              ),
+            ),
+          ),
+        );
+        await tester.pump();
+        await tester.pump();
+        final bar = tester.widget<SnackBar>(find.byType(SnackBar));
+        final text = tester.widget<Text>(find.text('Test message'));
+        expect(bar.backgroundColor, expectedBg);
+        expect(text.style?.color, expectedFg);
+        expect(
+          _contrastRatio(expectedFg, expectedBg),
+          greaterThanOrEqualTo(4.5),
+        );
+      }
+    });
+
+    testWidgets('destructive confirm: white on errorDark, radius 16, no custom padding (SH-M2/SH-N9)',
+        (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.lightTheme,
+          home: Scaffold(
+            body: Builder(
+              builder: (context) {
+                WidgetsBinding.instance.addPostFrameCallback(
+                  (_) => AppFeedback.showConfirmDialog(
+                    context: context,
+                    title: 'Delete?',
+                    message: 'Sure?',
+                    isDestructive: true,
+                  ),
+                );
+                return const SizedBox();
+              },
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+      await tester.pump();
+      final style = tester
+          .widget<ElevatedButton>(find.widgetWithText(ElevatedButton, 'Confirm'))
+          .style;
+      final bg = style?.backgroundColor?.resolve(<WidgetState>{});
+      final fg = style?.foregroundColor?.resolve(<WidgetState>{});
+      expect(bg, const Color(0xFFDC2626));
+      expect(fg, Colors.white);
+      expect(_contrastRatio(fg!, bg!), greaterThanOrEqualTo(4.5));
+      final shape =
+          style?.shape?.resolve(<WidgetState>{}) as RoundedRectangleBorder?;
+      expect(shape?.borderRadius, BorderRadius.circular(16));
+      expect(style?.padding, isNull,
+          reason: 'The theme owns the confirm padding — no custom padding.');
+    });
+
+    test('no hardcoded colour literals in the shared files (SH-N1)', () {
+      // The six audit-cited files, minus the two owner files
+      // (whatsapp_log_tile.dart, owner_whatsapp_template_preview_view.dart)
+      // — those are the owner worker's files, not this change's.
+      const files = [
+        'lib/features/auth/presentation/views/splash_view.dart',
+        'lib/features/auth/presentation/views/widgets/google_sign_in_button.dart',
+        'lib/core/widgets/pakistani_plate_widget.dart',
+        'lib/core/widgets/vehicle_damage_schematic_widget.dart',
+      ];
+      final offenders = <String>[];
+      for (final path in files) {
+        final content = File(path).readAsStringSync();
+        final literals =
+            RegExp(r'Color\(0x[0-9A-Fa-f]{6,8}\)').allMatches(content).length;
+        if (literals > 0) offenders.add('$path ($literals)');
+      }
+      expect(offenders, isEmpty,
+          reason:
+              'Hardcoded colour literals survive — use AppColors:\n${offenders.join('\n')}');
+    });
+
+    test('no new token aliases in AppColors; legacy aliases stay deprecated (SH-N3)', () {
+      final content =
+          File('lib/core/constants/app_colors.dart').readAsStringSync();
+      // Deleted aliases must not come back. (The ' =' suffix matters:
+      // `secondaryLightDark` is a legitimate, different token.)
+      for (final name in ['primaryLight', 'secondaryLight', 'textMutedDark']) {
+        expect(content, isNot(contains('static const Color $name =')),
+            reason: 'Deleted alias $name is back in AppColors.');
+      }
+      expect(content, isNot(contains('static const Color background =')),
+          reason: 'Deleted alias background is back in AppColors.');
+      expect(content, isNot(contains('static const Color surface =')),
+          reason: 'Deleted alias surface is back in AppColors.');
+      // The three surviving legacy aliases are explicitly deprecated
+      // and point at their canonical name — new code must use it.
+      const legacy = {
+        'textPrimary': 'onSurfaceLight',
+        'textSecondary': 'onSurfaceVariantLight',
+        'textMuted': 'onSurfaceVariantLight',
+      };
+      for (final entry in legacy.entries) {
+        expect(
+          RegExp("@Deprecated\\('Use ${entry.value} instead'\\)\\s*\n\\s*static const Color ${entry.key} =")
+              .hasMatch(content),
+          isTrue,
+          reason:
+              'Legacy alias ${entry.key} must stay @Deprecated and point at ${entry.value}.',
+        );
+      }
+    });
+
+    test('header text theme carries the 18/12 pair in both modes (SH-N8)', () {
+      for (final theme in [AppTheme.lightTheme, AppTheme.darkTheme]) {
+        final header = theme.extension<HeaderTextTheme>();
+        expect(header, isNotNull);
+        expect(header!.headerTitle.fontSize, 18);
+        expect(header.headerTitle.fontWeight, FontWeight.w900);
+        expect(header.headerTitle.color, Colors.white);
+        expect(header.headerSubtitle.fontSize, 12);
+        expect(header.headerSubtitle.color, Colors.white70);
+      }
+      // Urdu caps at w700 (Noto Nastaliq Urdu spans wght 400–700).
+      final urdu = HeaderTextTheme.forFont(AppTheme.fontFamilyUrdu);
+      expect(urdu.headerTitle.fontWeight, FontWeight.w700);
+      // Inter keeps w900 (wght 100–900).
+      expect(HeaderTextTheme.forFont(AppTheme.fontFamilyLatin)
+          .headerTitle
+          .fontWeight, FontWeight.w900);
+    });
+
+    test('picker and switch/checkbox/radio themes exist in both modes (SH-N10)', () {
+      for (final theme in [AppTheme.lightTheme, AppTheme.darkTheme]) {
+        expect(theme.datePickerTheme.backgroundColor, isNotNull);
+        expect(theme.datePickerTheme.headerBackgroundColor, isNotNull);
+        expect(theme.timePickerTheme.backgroundColor, isNotNull);
+        expect(theme.timePickerTheme.dialHandColor, isNotNull);
+        expect(theme.switchTheme.trackColor, isNotNull);
+        expect(theme.checkboxTheme.fillColor, isNotNull);
+        expect(theme.radioTheme.fillColor, isNotNull);
+      }
+    });
+  });
+}
+
+/// WCAG 2.x relative luminance / contrast ratio, for the SH-M1/SH-M2
+/// assertions. (Measured values: white on orangeFill #C2410C 5.18:1,
+/// on accentSuccessStrong #047857 5.48:1, on errorDark #DC2626 4.83:1.)
+double _luminance(Color color) {
+  double channel(int value) {
+    final c = value / 255;
+    return c <= 0.04045 ? c / 12.92 : math.pow((c + 0.055) / 1.055, 2.4).toDouble();
+  }
+
+  return 0.2126 * channel(color.red) +
+      0.7152 * channel(color.green) +
+      0.0722 * channel(color.blue);
+}
+
+double _contrastRatio(Color a, Color b) {
+  final l1 = _luminance(a);
+  final l2 = _luminance(b);
+  final hi = l1 > l2 ? l1 : l2;
+  final lo = l1 > l2 ? l2 : l1;
+  return (hi + 0.05) / (lo + 0.05);
 }

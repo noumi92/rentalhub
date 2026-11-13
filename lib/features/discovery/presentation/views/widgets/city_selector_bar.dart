@@ -33,12 +33,14 @@ class CitySelectorBar extends StatelessWidget {
             materialTapTargetSize: MaterialTapTargetSize.padded,
             label: Text(city['name'] as String),
             selected: isSelected,
-            selectedColor: AppColors.secondary,
+            // CU-M1: white on #F95700 fails AA — the selected chip
+            // uses the darker orangeFill (5.18:1).
+            selectedColor: AppColors.orangeFill,
             backgroundColor:
                 Theme.of(context).colorScheme.surfaceContainerHighest,
             side: BorderSide(
               color: isSelected
-                  ? AppColors.secondary
+                  ? AppColors.orangeFill
                   : Theme.of(context).dividerColor,
             ),
             labelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(

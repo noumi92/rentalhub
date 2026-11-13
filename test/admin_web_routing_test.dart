@@ -25,7 +25,11 @@ void main() {
 
   setUp(() async {
     await sl.reset();
-    SharedPreferences.setMockInitialValues({});
+    // Audit SH-C1: saveProfileInfo fails closed with no signed-in user
+    // and no cached uid. The signed-in tests simulate a signed-in user
+    // through the cached-uid path the data source explicitly supports.
+    SharedPreferences.setMockInitialValues(
+        {'rentalhub_user_uid': 'usr_pk_001'});
     prefs = await SharedPreferences.getInstance();
     sl.registerLazySingleton<SharedPreferences>(() => prefs);
 

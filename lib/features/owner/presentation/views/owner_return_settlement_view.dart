@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../../core/routing/route_names.dart';
 
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/app_state_views.dart';
@@ -15,7 +17,6 @@ import '../widgets/operations/return_fare_payment_section.dart';
 import '../widgets/operations/return_inspection_sections.dart';
 import '../widgets/operations/return_payment_steps.dart';
 import '../widgets/operations/settlement_summary_receipt_widget.dart';
-import 'owner_customer_rating_view.dart';
 import '../../../../core/utils/money_format.dart';
 
 /// Phase B (F1/F2): the return inspection settles against real numbers — the booking's km limit, the vehicle's per-km and per-hour rates, the deposit actually held — and writes the settlement into `security_deposits`.
@@ -125,10 +126,9 @@ class _OwnerReturnSettlementViewState extends State<OwnerReturnSettlementView> {
     super.dispose();
   }
 
-  int get _returnOdometer =>
-      int.tryParse(_returnOdometerController.text.trim()) ??
-      _initialOdometer;
-  int get _totalKmDriven => (_returnOdometer - _initialOdometer).clamp(0, 99999);
+  // OW-m24: nullable — an empty/unparseable reading is missing data, not "no kilometres driven"; Finalize blocks on it. The receipt breakdown keeps the initial-reading fallback so the summary still renders while the field is empty.
+  int? get _returnOdometer => int.tryParse(_returnOdometerController.text.trim());
+  int get _totalKmDriven => ((_returnOdometer ?? _initialOdometer) - _initialOdometer).clamp(0, 99999);
   // Damage charge is clamped to >= 0: a negative charge must never increase the refund.
   int get _damageCharge => (int.tryParse(_damageChargeController.text.trim()) ?? 0).clamp(0, 999999999);
   int get _overtimeHours {
@@ -159,14 +159,12 @@ class _OwnerReturnSettlementViewState extends State<OwnerReturnSettlementView> {
   final l10n = AppLocalizations.of(context)!;
     // Belt-and-braces: the button is only rendered once loaded, but a stray call must never settle against unloaded values.
     if (!_valuesLoaded || _isFinalizing) return;
-    if (_returnOdometer < _initialOdometer) {
-      AppFeedback.showError(context, l10n.returnOdometerBelow(_initialOdometer));
-      return;
-    }
+    if (_returnOdometer == null) { AppFeedback.showError(context, l10n.returnOdometerInvalid); return; }
+    if (_returnOdometer! < _initialOdometer) { AppFeedback.showError(context, l10n.returnOdometerBelow(_initialOdometer)); return; }
     setState(() => _isFinalizing = true);
     try {
       final breakdown = await ReturnSettlementService.finalizeReturn(
-        booking: widget.booking, returnOdometer: _returnOdometer, initialOdometer: _initialOdometer, kmAllowance: _kmAllowance,
+        booking: widget.booking, returnOdometer: _returnOdometer!, initialOdometer: _initialOdometer, kmAllowance: _kmAllowance,
         extraKmPkr: _extraKmPkr, extraHourPkr: _extraHourPkr, deposit: _deposit, fuelLevel: _returnFuel,
         returnDamageNotes: _returnDamageNotes, damageCharge: _damageCharge,
         condition: _condition, returnPhotoUrls: _returnPhotos, deductibleDamage: _deductibleDamage, extraCharges: _extraCharges,
@@ -174,7 +172,8 @@ class _OwnerReturnSettlementViewState extends State<OwnerReturnSettlementView> {
       );
       if (mounted) {
         AppFeedback.showSuccess(context, l10n.returnSettled(formatRs(breakdown.netRefund)));
-        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => OwnerCustomerRatingView(booking: widget.booking.copyWith(status: 'completed'))));
+        // OW-m24: routed through go_router — the rate-customer route loads the booking itself (BookingRouteLoader), so the completed status is picked up from the settled record.
+        context.pushReplacement(RouteNames.ownerRateCustomer.replaceFirst(':id', widget.booking.bookingId));
       }
     } catch (e) {
       if (mounted) AppFeedback.showError(context, l10n.returnFinalizeFailed(e.toString()));
@@ -222,7 +221,7 @@ class _OwnerReturnSettlementViewState extends State<OwnerReturnSettlementView> {
                         controller: _damageChargeController,
                         keyboardType: TextInputType.number,
                         onChanged: _onDamageChargeChanged,
-                        decoration: InputDecoration(labelText: l10n.returnDamageChargeLabel, hintText: l10n.returnDamageChargeHint, border: OutlineInputBorder(), filled: true, fillColor: Theme.of(context).colorScheme.surfaceContainerHighest),
+                        decoration: InputDecoration(labelText: l10n.returnDamageChargeLabel, hintText: l10n.returnDamageChargeHint, border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)), filled: true, fillColor: Theme.of(context).colorScheme.surfaceContainerHighest),
                       ),
                       const SizedBox(height: 16),
                       ReturnFarePaymentSection(booking: widget.booking, onCollected: (amount, method) => setState(() => _collected = (amount: amount, method: method))),

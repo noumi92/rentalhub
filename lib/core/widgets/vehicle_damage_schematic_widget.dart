@@ -141,7 +141,9 @@ class _VehicleDamageSchematicWidgetState
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: const Color(0xFFF1F5F9),
+              // Audit SH-N1: was a hardcoded #F1F5F9 — exactly
+              // surfaceElevated's value. One name.
+              color: AppColors.surfaceElevated,
               borderRadius: BorderRadius.circular(14),
               border: Border.all(color: Theme.of(context).dividerColor),
             ),
