@@ -41,18 +41,6 @@ jobs:
     needs: lint_and_test
     runs-on: ubuntu-latest
     steps:
-      - name: Free disk space
-        run: |
-          echo "Disk space before:"
-          df -h
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
-          sudo rm -rf /opt/hostedtoolcache/CodeQL
-          sudo docker image prune --all --force || true
-          echo "Disk space after:"
-          df -h
-    
       - name: Checkout Code
         uses: actions/checkout@v4
 
@@ -71,14 +59,54 @@ jobs:
       - name: Install Dependencies
         run: flutter pub get
 
-      - name: Build Debug APK
-        run: flutter build apk --debug
+      - name: Build Release APK (debug key)
+        run: flutter build apk --release
 
-      - name: Upload Debug APK Artifact
-        uses: actions/upload-artifact@v4
+      - name: Check cPanel Secrets
+        id: check_secrets
+        run: |
+          if [ -n "${{ secrets.CPANEL_FTP_SERVER }}" ]; then
+            echo "has_cpanel=true" >> $GITHUB_OUTPUT
+            echo "cPanel server configured: ${{ secrets.CPANEL_FTP_SERVER }}"
+          else
+            echo "has_cpanel=false" >> $GITHUB_OUTPUT
+            echo "CPANEL_FTP_SERVER secret not configured. Skipping APK upload to cPanel."
+          fi
+
+      - name: Prepare APK distribution files
+        if: steps.check_secrets.outputs.has_cpanel == 'true' && github.ref == 'refs/heads/master' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+        run: |
+          mkdir -p apk-dist
+          cp build/app/outputs/flutter-apk/app-release.apk apk-dist/app-release.apk
+          version=$(grep '^version:' pubspec.yaml | sed 's/version: //;s/ //g')
+          version_name=${version%%+*}
+          version_code=${version##*+}
+          cat > apk-dist/version.json <<EOF
+          {
+            "app": "rentalhub",
+            "versionName": "$version_name",
+            "versionCode": $version_code,
+            "build": ${{ github.run_number }},
+            "commit": "${{ github.sha }}",
+            "apk": "app-release.apk",
+            "updatedAt": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          }
+          EOF
+
+      - name: Upload APK to cPanel via FTP
+        if: steps.check_secrets.outputs.has_cpanel == 'true' && github.ref == 'refs/heads/master' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          name: app-debug-apk
-          path: build/app/outputs/flutter-apk/app-debug.apk
+          server: ${{ secrets.CPANEL_FTP_SERVER }}
+          username: ${{ secrets.CPANEL_FTP_USERNAME }}
+          password: ${{ secrets.CPANEL_FTP_PASSWORD }}
+          server-dir: ${{ secrets.CPANEL_DEV_ADMIN_PATH }}/apk/
+          local-dir: apk-dist/
+          protocol: ${{ secrets.CPANEL_FTP_PROTOCOL || 'ftps' }}
+          port: ${{ secrets.CPANEL_FTP_PORT || 21 }}
+          timeout: 60000
+          security: 'loose'
+          dangerous-clean-slate: false
 
   build_web_admin:
     name: Build Flutter Web Admin Panel
@@ -103,21 +131,6 @@ jobs:
       - name: Copy Admin SPA .htaccess
         run: cp web/.htaccess build/web/.htaccess || true
 
-      - name: Upload Web Admin Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: admin-web-bundle
-          path: build/web/
-
-  deploy_cpanel_web_admin:
-    name: Deploy Web Admin Panel to cPanel
-    needs: build_web_admin
-    if: github.ref == 'refs/heads/master' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
       - name: Check cPanel Secrets
         id: check_secrets
         run: |
@@ -129,15 +142,8 @@ jobs:
             echo "CPANEL_FTP_SERVER secret not configured. Skipping automated cPanel deployment."
           fi
 
-      - name: Download Web Admin Artifact
-        if: steps.check_secrets.outputs.has_cpanel == 'true'
-        uses: actions/download-artifact@v4
-        with:
-          name: admin-web-bundle
-          path: dist_web/
-
-      - name: Deploy Web Admin via lftp
-        if: steps.check_secrets.outputs.has_cpanel == 'true'
+      - name: Deploy Web Admin to cPanel via lftp
+        if: steps.check_secrets.outputs.has_cpanel == 'true' && github.ref == 'refs/heads/master' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
         env:
           CPANEL_SERVER: ${{ secrets.CPANEL_FTP_SERVER }}
           CPANEL_USER: ${{ secrets.CPANEL_FTP_USERNAME }}
@@ -146,18 +152,18 @@ jobs:
           CPANEL_PROTO: ${{ secrets.CPANEL_FTP_PROTOCOL }}
         run: |
           sudo apt-get update -qq && sudo apt-get install -y -qq lftp
-          
+
           PROTO="${CPANEL_PROTO:-ftp}"
           PORT="${CPANEL_PORT:-21}"
-          
+
           echo "Deploying Web Admin to cPanel root via $PROTO:$PORT..."
-          
+
           if [ "$PROTO" = "sftp" ]; then
             lftp -u "$CPANEL_USER","$CPANEL_PASS" -p "$PORT" "sftp://$CPANEL_SERVER" <<EOF
           set sftp:auto-confirm yes
           set net:timeout 30
           set net:max-retries 3
-          mirror -R --verbose -x '^storage/' -x '^cgi-bin/' -x '^\.well-known/' dist_web/ ./
+          mirror -R --verbose -x '^storage/' -x '^cgi-bin/' -x '^\.well-known/' build/web/ ./
           quit
           EOF
           else
@@ -167,7 +173,7 @@ jobs:
           set ftp:passive-mode true
           set net:timeout 30
           set net:max-retries 3
-          mirror -R --verbose -x '^storage/' -x '^cgi-bin/' -x '^\.well-known/' dist_web/ ./
+          mirror -R --verbose -x '^storage/' -x '^cgi-bin/' -x '^\.well-known/' build/web/ ./
           quit
           EOF
           fi
@@ -202,7 +208,7 @@ jobs:
           CPANEL_PROTO: ${{ secrets.CPANEL_FTP_PROTOCOL }}
         run: |
           sudo apt-get update -qq && sudo apt-get install -y -qq lftp
-          
+
           PROTO="${CPANEL_PROTO:-ftp}"
           if [ -z "$CPANEL_PORT" ]; then
             if [ "$PROTO" = "sftp" ]; then
@@ -213,9 +219,9 @@ jobs:
           else
             PORT="$CPANEL_PORT"
           fi
-          
+
           echo "Initiating deployment via protocol: $PROTO on port: $PORT"
-          
+
           if [ "$PROTO" = "sftp" ]; then
             lftp -u "$CPANEL_USER","$CPANEL_PASS" -p "$PORT" "sftp://$CPANEL_SERVER" <<EOF
           set sftp:auto-confirm yes
