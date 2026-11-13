@@ -36,6 +36,15 @@ android {
     buildTypes {
         release {
             signingConfig = signingConfigs.getByName("debug")
+            // Release builds run R8 minification (Flutter default). Keep the
+            // ML Kit text-recognition classes used by CNIC OCR (see
+            // proguard-rules.pro) — without these rules the release build
+            // fails on the unbundled Chinese/Japanese/Korean script models.
+            isMinifyEnabled = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
 }
