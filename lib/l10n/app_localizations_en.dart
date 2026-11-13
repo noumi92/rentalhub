@@ -7184,6 +7184,44 @@ class AppLocalizationsEn extends AppLocalizations {
       'Bookings from unverified shops are currently disabled by the platform.';
 
   @override
+  String get admin2_apkDownloadTitle => 'Android app (APK)';
+
+  @override
+  String get admin2_apkDownloadSubtitle =>
+      'Latest release build published by CI.';
+
+  @override
+  String get admin2_apkVersion => 'Version';
+
+  @override
+  String get admin2_apkBuild => 'Build';
+
+  @override
+  String get admin2_apkUpdated => 'Updated';
+
+  @override
+  String get admin2_apkDownloadButton => 'Download APK';
+
+  @override
+  String get admin2_apkDownloadLink => 'Download link';
+
+  @override
+  String get admin2_apkNoBuild => 'No build published yet';
+
+  @override
+  String get admin2_apkNoBuildHint =>
+      'The APK appears here after CI publishes a release build.';
+
+  @override
+  String get admin2_apkLoadFailed => 'Could not load the latest build.';
+
+  @override
+  String get admin2_apkLoading => 'Checking for the latest build…';
+
+  @override
+  String get admin2_apkDownloadFailed => 'Could not open the download link.';
+
+  @override
   String get kyc2_qrCode => 'QR Code';
 
   @override

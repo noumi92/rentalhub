@@ -12845,6 +12845,78 @@ abstract class AppLocalizations {
   /// **'Bookings from unverified shops are currently disabled by the platform.'**
   String get admin2_unverifiedBookingsDisabled;
 
+  /// No description provided for @admin2_apkDownloadTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Android app (APK)'**
+  String get admin2_apkDownloadTitle;
+
+  /// No description provided for @admin2_apkDownloadSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest release build published by CI.'**
+  String get admin2_apkDownloadSubtitle;
+
+  /// No description provided for @admin2_apkVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Version'**
+  String get admin2_apkVersion;
+
+  /// No description provided for @admin2_apkBuild.
+  ///
+  /// In en, this message translates to:
+  /// **'Build'**
+  String get admin2_apkBuild;
+
+  /// No description provided for @admin2_apkUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Updated'**
+  String get admin2_apkUpdated;
+
+  /// No description provided for @admin2_apkDownloadButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Download APK'**
+  String get admin2_apkDownloadButton;
+
+  /// No description provided for @admin2_apkDownloadLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Download link'**
+  String get admin2_apkDownloadLink;
+
+  /// No description provided for @admin2_apkNoBuild.
+  ///
+  /// In en, this message translates to:
+  /// **'No build published yet'**
+  String get admin2_apkNoBuild;
+
+  /// No description provided for @admin2_apkNoBuildHint.
+  ///
+  /// In en, this message translates to:
+  /// **'The APK appears here after CI publishes a release build.'**
+  String get admin2_apkNoBuildHint;
+
+  /// No description provided for @admin2_apkLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load the latest build.'**
+  String get admin2_apkLoadFailed;
+
+  /// No description provided for @admin2_apkLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking for the latest build…'**
+  String get admin2_apkLoading;
+
+  /// No description provided for @admin2_apkDownloadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open the download link.'**
+  String get admin2_apkDownloadFailed;
+
   /// No description provided for @kyc2_qrCode.
   ///
   /// In en, this message translates to:

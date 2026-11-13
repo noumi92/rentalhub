@@ -6,6 +6,8 @@ import '../../../../core/utils/responsive.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/datasources/admin_support_data_source.dart';
+import '../../data/services/admin_apk_release_service.dart';
+import '../widgets/admin_apk_download_card.dart';
 import '../widgets/admin_shell.dart';
 
 /// Phase E (E2) — cities & settings: the single
@@ -22,7 +24,18 @@ import '../widgets/admin_shell.dart';
 class AdminPlatformSettingsView extends StatefulWidget {
   final AdminSupportDataSource? dataSource;
 
-  const AdminPlatformSettingsView({super.key, this.dataSource});
+  /// The signed-in admin's role, forwarded to the APK download card.
+  /// The router leaves it null and the card resolves it from the
+  /// signed-in user; tests pass it directly.
+  final String? adminRole;
+
+  /// Role resolver override for tests.
+  final Future<String?> Function()? resolveAdminRole;
+
+  /// APK release service override for tests.
+  final AdminApkReleaseService? apkReleaseService;
+
+  const AdminPlatformSettingsView({super.key, this.dataSource, this.adminRole, this.resolveAdminRole, this.apkReleaseService});
 
   @override
   State<AdminPlatformSettingsView> createState() =>
@@ -195,6 +208,13 @@ class _AdminPlatformSettingsViewState
                       child: Text(
                           _isSaving ? 'Saving…' : 'Save settings'),
                     ),
+                  ),
+                  // Super admin only: the card hides itself for any
+                  // other role (and while the role is resolving).
+                  AdminApkDownloadCard(
+                    adminRole: widget.adminRole,
+                    resolveAdminRole: widget.resolveAdminRole,
+                    service: widget.apkReleaseService,
                   ),
                 ],
               ),

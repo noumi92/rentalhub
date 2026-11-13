@@ -33,6 +33,9 @@ enum AdminPermission {
   resolveTicket,
   // Platform settings: cities list and announcements.
   managePlatform,
+  // APK download: the latest release APK published by CI. Super admin
+  // only — no other role may even see the download card.
+  downloadApk,
 }
 
 abstract final class AdminPermissions {
@@ -55,6 +58,7 @@ abstract final class AdminPermissions {
     AdminPermission.triageTicket: [superAdmin, operations, support],
     AdminPermission.resolveTicket: [superAdmin, operations],
     AdminPermission.managePlatform: [superAdmin, operations],
+    AdminPermission.downloadApk: [superAdmin],
   };
 
   static bool can(String? adminRole, AdminPermission permission) {

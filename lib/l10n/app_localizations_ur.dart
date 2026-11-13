@@ -7178,6 +7178,44 @@ class AppLocalizationsUr extends AppLocalizations {
       'پلیٹ فارم کی جانب سے غیر تصدیق شدہ دکانوں سے بکنگ فی الحال بند ہے۔';
 
   @override
+  String get admin2_apkDownloadTitle => 'اینڈرائیڈ ایپ (APK)';
+
+  @override
+  String get admin2_apkDownloadSubtitle =>
+      'سی آئی کی جانب سے شائع شدہ تازہ ترین ریلیز بلڈ۔';
+
+  @override
+  String get admin2_apkVersion => 'ورژن';
+
+  @override
+  String get admin2_apkBuild => 'بلڈ';
+
+  @override
+  String get admin2_apkUpdated => 'اپ ڈیٹ شدہ';
+
+  @override
+  String get admin2_apkDownloadButton => 'APK ڈاؤن لوڈ کریں';
+
+  @override
+  String get admin2_apkDownloadLink => 'ڈاؤن لوڈ لنک';
+
+  @override
+  String get admin2_apkNoBuild => 'ابھی تک کوئی بلڈ شائع نہیں ہوئی';
+
+  @override
+  String get admin2_apkNoBuildHint =>
+      'سی آئی کے ریلیز بلڈ شائع کرنے کے بعد APK یہاں نظر آئے گی۔';
+
+  @override
+  String get admin2_apkLoadFailed => 'تازہ ترین بلڈ لوڈ نہیں ہو سکی۔';
+
+  @override
+  String get admin2_apkLoading => 'تازہ ترین بلڈ چیک کی جا رہی ہے…';
+
+  @override
+  String get admin2_apkDownloadFailed => 'ڈاؤن لوڈ لنک نہیں کھولا جا سکا۔';
+
+  @override
   String get kyc2_qrCode => 'کیو آر کوڈ';
 
   @override
