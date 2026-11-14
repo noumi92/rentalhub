@@ -146,6 +146,7 @@ class RouteNames {
   static const String adminReviews = '/admin/reviews';
   static const String adminTickets = '/admin/tickets';
   static const String adminSettings = '/admin/settings';
+  static const String adminApkDownload = '/admin/apk-download';
   static const String adminAnnouncements = '/admin/announcements';
   static const String adminReports = '/admin/reports';
   static const String adminActivity = '/admin/activity';

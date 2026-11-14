@@ -137,8 +137,8 @@ class _OwnerAddCustomerWizardState extends State<OwnerAddCustomerWizard> {
         const SizedBox(height: 4),
         Text(
           label,
-          // Urdu labels (e.g. "دستاویزات اور دستخط") need two lines
-          // at 360px — one line truncated them with an ellipsis.
+          // Urdu step labels need two lines at 360px — one line
+          // truncated them with an ellipsis.
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
           textAlign: TextAlign.center,

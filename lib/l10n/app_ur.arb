@@ -3954,6 +3954,8 @@
   "admin2_apkLoadFailed": "تازہ ترین بلڈ لوڈ نہیں ہو سکی۔",
   "admin2_apkLoading": "تازہ ترین بلڈ چیک کی جا رہی ہے…",
   "admin2_apkDownloadFailed": "ڈاؤن لوڈ لنک نہیں کھولا جا سکا۔",
+  "admin2_apkSuperAdminOnly": "صرف سپر ایڈمن APK ڈاؤن لوڈ کر سکتے ہیں",
+  "admin2_apkSuperAdminOnlyHint": "تازہ ترین بلڈ کے لیے کسی سپر ایڈمن سے رابطہ کریں۔",
   "kyc2_qrCode": "کیو آر کوڈ",
   "kyc2_qrRead": "کیو آر کوڈ محفوظ کر لیا گیا۔",
   "kyc2_licenseUnreadable": "اس تصویر سے لائسنس نمبر نہیں پڑھا جا سکا — براہ کرم خود لکھیں۔",

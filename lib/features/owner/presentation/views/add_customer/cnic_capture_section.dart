@@ -71,6 +71,9 @@ class CnicCaptureSection extends StatelessWidget {
                   child: IconButton(
                     key: removeKey,
                     padding: EdgeInsets.zero,
+                    tooltip: AppLocalizations.of(context)
+                            ?.kycWizardRemoveImage ??
+                        'Remove image',
                     icon: const Icon(Icons.cancel_rounded, size: 24),
                     onPressed: onRemove,
                   ),

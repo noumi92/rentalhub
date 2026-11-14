@@ -186,7 +186,7 @@ class Step3DocsState extends KycStepState<Step3Docs> {
                   ClipRRect(borderRadius: BorderRadius.circular(8), child: Image.file(File(draft.extraPhotos[i].path), width: 72, height: 72, fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image_rounded))),
                   // 48dp hit area (was a 20px icon) with the icon
                   // centred in the top-right corner of the thumb.
-                  Positioned(right: 0, top: 0, child: SizedBox(width: 48, height: 48, child: IconButton(key: ValueKey('step3_extra_remove_$i'), padding: EdgeInsets.zero, icon: const Icon(Icons.cancel_rounded, size: 24), onPressed: () { setState(() => draft.extraPhotos.removeAt(i)); widget.onChanged(); }))),
+                  Positioned(right: 0, top: 0, child: SizedBox(width: 48, height: 48, child: IconButton(key: ValueKey('step3_extra_remove_$i'), padding: EdgeInsets.zero, tooltip: l10n.kycWizardRemoveImage, icon: const Icon(Icons.cancel_rounded, size: 24), onPressed: () { setState(() => draft.extraPhotos.removeAt(i)); widget.onChanged(); }))),
                 ],
               ),
             OutlinedButton.icon(key: const ValueKey('step3_extra_add'), onPressed: () => _pick((f) => draft.extraPhotos.add(f)), icon: const Icon(Icons.add_a_photo_rounded), label: Text(l10n.kycWizardAddPhoto)),

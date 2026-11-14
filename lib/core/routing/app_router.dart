@@ -115,6 +115,7 @@ import '../../features/customer/presentation/widgets/customer_bookings_badge.dar
 import '../../features/customer/presentation/widgets/customer_support_badge.dart';
 import '../../features/settings/presentation/views/sync_details_view.dart';
 import '../../features/admin/presentation/views/admin_activity_log_view.dart';
+import '../../features/admin/presentation/views/admin_apk_download_view.dart';
 import '../../features/admin/presentation/views/admin_cars_view.dart';
 import '../../features/admin/presentation/views/admin_customer_detail_view.dart';
 import '../../features/admin/presentation/views/admin_customers_view.dart';
@@ -1517,6 +1518,10 @@ class AppRouter {
       GoRoute(
         path: RouteNames.adminSettings,
         builder: (context, state) => const AdminPlatformSettingsView(),
+      ),
+      GoRoute(
+        path: RouteNames.adminApkDownload,
+        builder: (context, state) => const AdminApkDownloadView(),
       ),
       GoRoute(
         path: RouteNames.adminAnnouncements,

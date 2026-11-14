@@ -13037,6 +13037,18 @@ abstract class AppLocalizations {
   /// **'Could not open the download link.'**
   String get admin2_apkDownloadFailed;
 
+  /// No description provided for @admin2_apkSuperAdminOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Only super admins can download the APK'**
+  String get admin2_apkSuperAdminOnly;
+
+  /// No description provided for @admin2_apkSuperAdminOnlyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask a super admin for the latest build.'**
+  String get admin2_apkSuperAdminOnlyHint;
+
   /// No description provided for @kyc2_qrCode.
   ///
   /// In en, this message translates to:

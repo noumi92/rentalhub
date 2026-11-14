@@ -3,12 +3,19 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/routing/route_names.dart';
+import '../../data/services/admin_session.dart';
+import '../../domain/admin_permissions.dart';
 
 /// Phase A (A6) — the admin panel's sidebar, now wired to the real
 /// routes. The mock-era items (accreditation, settings) are replaced by
 /// the real sections; the footer shows the signed-in admin's email
 /// instead of the hardcoded superadmin@rentalhub.pk.
-class AdminSidebarNav extends StatelessWidget {
+///
+/// Stateful only so the super-admin-only "APK Download" item can
+/// resolve the signed-in admin's role once: no other role may even see
+/// the download, so the item stays hidden for them (and while the role
+/// is resolving). Every other section is visible to all admin roles.
+class AdminSidebarNav extends StatefulWidget {
   final String activeRoute;
   final ValueChanged<String> onNavigate;
 
@@ -16,12 +23,48 @@ class AdminSidebarNav extends StatelessWidget {
   /// the panel fills the drawer exactly.
   final double width;
 
+  /// Test seam: when non-null, forces the APK Download item visible
+  /// (true) or hidden (false) without resolving the signed-in role.
+  final bool? showApkDownload;
+
   const AdminSidebarNav({
     super.key,
     required this.activeRoute,
     required this.onNavigate,
     this.width = 260,
+    this.showApkDownload,
   });
+
+  @override
+  State<AdminSidebarNav> createState() => _AdminSidebarNavState();
+}
+
+class _AdminSidebarNavState extends State<AdminSidebarNav> {
+  bool _showApkDownload = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.showApkDownload != null) {
+      _showApkDownload = widget.showApkDownload!;
+    } else {
+      _resolveRole();
+    }
+  }
+
+  Future<void> _resolveRole() async {
+    User? user;
+    try {
+      user = FirebaseAuth.instance.currentUser;
+    } catch (_) {}
+    if (user == null) return;
+    final role = await AdminSession.resolveAdminRole(user);
+    if (!mounted) return;
+    setState(
+      () => _showApkDownload =
+          AdminPermissions.can(role, AdminPermission.downloadApk),
+    );
+  }
 
   String get _adminEmail {
     try {
@@ -34,7 +77,7 @@ class AdminSidebarNav extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: width,
+      width: widget.width,
       color: AppColors.primary,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -69,8 +112,9 @@ class AdminSidebarNav extends StatelessWidget {
           ),
           const Divider(color: Colors.white12, height: 1),
           const SizedBox(height: 12),
-          // 16 items now — the list scrolls on short windows instead
-          // of overflowing the sidebar.
+          // 16 items now (17 for a super admin, with APK Download) —
+          // the list scrolls on short windows instead of overflowing
+          // the sidebar.
           Expanded(
             child: SingleChildScrollView(
               child: Column(
@@ -88,6 +132,8 @@ class AdminSidebarNav extends StatelessWidget {
                   _navItem(RouteNames.adminAnnouncements, 'Announcements', Icons.campaign_rounded),
                   _navItem(RouteNames.adminReports, 'Reports', Icons.bar_chart_rounded),
                   _navItem(RouteNames.adminSettings, 'Settings', Icons.settings_rounded),
+                  if (_showApkDownload)
+                    _navItem(RouteNames.adminApkDownload, 'APK Download', Icons.android_rounded),
                   _navItem(RouteNames.adminBlacklist, 'Blacklist', Icons.gavel_rounded),
                   _navItem(RouteNames.adminTeam, 'Admin Team', Icons.group_rounded),
                   _navItem(RouteNames.adminActivity, 'Activity Log', Icons.history_rounded),
@@ -121,9 +167,9 @@ class AdminSidebarNav extends StatelessWidget {
   }
 
   Widget _navItem(String route, String label, IconData icon) {
-    final isSelected = activeRoute == route;
+    final isSelected = widget.activeRoute == route;
     return InkWell(
-      onTap: () => onNavigate(route),
+      onTap: () => widget.onNavigate(route),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(

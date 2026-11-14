@@ -3954,6 +3954,8 @@
   "admin2_apkLoadFailed": "Could not load the latest build.",
   "admin2_apkLoading": "Checking for the latest build…",
   "admin2_apkDownloadFailed": "Could not open the download link.",
+  "admin2_apkSuperAdminOnly": "Only super admins can download the APK",
+  "admin2_apkSuperAdminOnlyHint": "Ask a super admin for the latest build.",
   "kyc2_qrCode": "QR Code",
   "kyc2_qrRead": "QR code saved.",
   "kyc2_licenseUnreadable": "Could not read the license number from that photo — please type it.",

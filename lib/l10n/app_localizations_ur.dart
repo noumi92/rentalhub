@@ -7284,6 +7284,14 @@ class AppLocalizationsUr extends AppLocalizations {
   String get admin2_apkDownloadFailed => 'ڈاؤن لوڈ لنک نہیں کھولا جا سکا۔';
 
   @override
+  String get admin2_apkSuperAdminOnly =>
+      'صرف سپر ایڈمن APK ڈاؤن لوڈ کر سکتے ہیں';
+
+  @override
+  String get admin2_apkSuperAdminOnlyHint =>
+      'تازہ ترین بلڈ کے لیے کسی سپر ایڈمن سے رابطہ کریں۔';
+
+  @override
   String get kyc2_qrCode => 'کیو آر کوڈ';
 
   @override

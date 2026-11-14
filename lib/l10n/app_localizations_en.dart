@@ -7289,6 +7289,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get admin2_apkDownloadFailed => 'Could not open the download link.';
 
   @override
+  String get admin2_apkSuperAdminOnly =>
+      'Only super admins can download the APK';
+
+  @override
+  String get admin2_apkSuperAdminOnlyHint =>
+      'Ask a super admin for the latest build.';
+
+  @override
   String get kyc2_qrCode => 'QR Code';
 
   @override
