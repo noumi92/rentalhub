@@ -83,7 +83,7 @@ class CustomerBookingDetailView extends StatelessWidget {
                   child: Text(
                     _statusLabel(l10n, b.status),
                     style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                        fontWeight: FontWeight.w800, color: Colors.white),
+                        fontWeight: FontWeight.w500, color: Colors.white),
                   ),
                 ),
               ],

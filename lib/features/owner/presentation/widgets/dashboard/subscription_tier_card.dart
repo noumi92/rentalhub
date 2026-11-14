@@ -50,18 +50,22 @@ class SubscriptionTierCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(title, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900)),
+              Text(title, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
               if (isPopular)
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                  decoration: BoxDecoration(color: AppColors.secondary, borderRadius: BorderRadius.circular(6)),
-                  child: Text(l10n.subscriptionMostPopular, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.white, fontWeight: FontWeight.w900)),
+                  // Item 4: white on AppColors.secondary is 3.29:1 —
+                  // orangeFill is 5.18:1.
+                  decoration: BoxDecoration(color: AppColors.orangeFill, borderRadius: BorderRadius.circular(6)),
+                  child: Text(l10n.subscriptionMostPopular, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.white, fontWeight: FontWeight.w500)),
                 )
               else if (isCurrent)
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                  decoration: BoxDecoration(color: AppColors.accentSuccess, borderRadius: BorderRadius.circular(6)),
-                  child: Text(l10n.subscriptionCurrentPlan, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.white, fontWeight: FontWeight.w900)),
+                  // Item 4: white on AppColors.accentSuccess is 2.54:1 —
+                  // accentSuccessStrong is 5.48:1.
+                  decoration: BoxDecoration(color: AppColors.accentSuccessStrong, borderRadius: BorderRadius.circular(6)),
+                  child: Text(l10n.subscriptionCurrentPlan, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.white, fontWeight: FontWeight.w500)),
                 ),
             ],
           ),
@@ -72,7 +76,7 @@ class SubscriptionTierCard extends StatelessWidget {
             children: [
               // Audit §28: prices were hardcoded 'Rs. 4,999' strings —
               // now grouped with formatRs (same display in English).
-              Text(l10n.amountRs(formatRs(pricePkr)), style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900)),
+              Text(l10n.amountRs(formatRs(pricePkr)), style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600)),
               const SizedBox(width: 4),
               Text(billingPeriod, style: Theme.of(context).textTheme.bodySmall),
             ],

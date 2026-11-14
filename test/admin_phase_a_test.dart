@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:rentalhub/core/di/injection_container.dart' as di;
 import 'package:rentalhub/core/di/injection_container.dart';
@@ -16,6 +17,9 @@ import 'package:rentalhub/features/admin/presentation/views/admin_team_view.dart
 void main() {
   setUpAll(() async {
     SharedPreferences.setMockInitialValues({});
+    // The invite tile formats expiry dates with DateFormat, which
+    // needs locale data initialized in the test environment.
+    await initializeDateFormatting('en');
     await di.initDependencies();
   });
 
@@ -62,6 +66,7 @@ void main() {
       final invite = await ds.createInvite(
         email: 'ops-test@rentalhub.pk',
         adminRole: 'operations',
+        callerRole: 'super_admin',
       );
       expect(invite.email, 'ops-test@rentalhub.pk');
       expect(invite.adminRole, 'operations');
@@ -73,7 +78,7 @@ void main() {
       );
       final list = await ds.getInvites();
       expect(list.any((i) => i.id == invite.id), isTrue);
-      await ds.revokeInvite(invite.id);
+      await ds.revokeInvite(invite.id, callerRole: 'super_admin');
       final after = await ds.getInvites();
       expect(after.any((i) => i.id == invite.id), isFalse);
     });
@@ -134,6 +139,7 @@ void main() {
       await ds.createInvite(
         email: 'team-view-test@rentalhub.pk',
         adminRole: 'support',
+        callerRole: 'super_admin',
       );
       await tester.pumpWidget(const MaterialApp(
           home: AdminTeamView(adminRole: 'super_admin')));
@@ -142,7 +148,7 @@ void main() {
       expect(find.text('Pending invites'), findsOneWidget);
       expect(find.text('Invite an admin'), findsOneWidget);
       expect(find.text('team-view-test@rentalhub.pk'), findsOneWidget);
-      expect(find.text('Send invite'), findsOneWidget);
+      expect(find.text('Save invite'), findsOneWidget);
     });
 
     testWidgets('team view hides management for non-super admins',

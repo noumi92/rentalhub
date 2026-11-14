@@ -27,7 +27,7 @@ class ManualBookingCustomerFields extends StatelessWidget {
     return TextField(
       controller: controller,
       keyboardType: keyboard,
-      style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+      style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
       decoration: InputDecoration(
         labelText: label,
         prefixIcon: Icon(icon, color: Theme.of(context).colorScheme.onSurfaceVariant, size: 20),

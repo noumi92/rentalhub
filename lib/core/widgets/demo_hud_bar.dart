@@ -190,7 +190,7 @@ class DemoHudBar extends StatelessWidget {
               label,
               style: TextStyle(
                 fontSize: 11,
-                fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
+                fontWeight: FontWeight.w500,
                 color: isActive
                     ? Colors.white
                     : AppColors.primaryContainer.withValues(alpha: 0.75),
@@ -222,7 +222,7 @@ class DemoHudBar extends StatelessWidget {
                     Text(
                       'Jump to 20 Core Anchor Screens',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w800,
+                            fontWeight: FontWeight.w600,
                           ),
                     ),
                     IconButton(
@@ -293,8 +293,8 @@ class DemoHudBar extends StatelessWidget {
           child: Text(
             title,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.secondary,
+                  color: AppColors.orangeTextFor(
+                      Theme.of(context).brightness),
                 ),
           ),
         ),

@@ -107,7 +107,7 @@ class VehicleReviewStepWidget extends StatelessWidget {
                         children: [
                           Text(
                             '$selectedMake $selectedModel',
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
                           ),
                           Text('$category • $selectedYear • $color', style: Theme.of(context).textTheme.bodySmall),
                         ],
@@ -116,7 +116,7 @@ class VehicleReviewStepWidget extends StatelessWidget {
                     // Audit §5: no sample plate as a fallback — an
                     // empty plate shows a dash until one is entered.
                     if (plateNumber.isEmpty)
-                      Text('—', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900))
+                      Text('—', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w500))
                     else
                       PakistaniPlateWidget(
                         plateNumber: plateNumber,
@@ -142,7 +142,7 @@ class VehicleReviewStepWidget extends StatelessWidget {
                         Text(l10n.addVehicleReviewSelfDriveRate, style: Theme.of(context).textTheme.labelSmall),
                         Text(
                           supportSelfDrive ? l10n.addVehicleReviewDailyRate(formatRs(dailyRate)) : l10n.addVehicleReviewNotOffered,
-                          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900, color: supportSelfDrive ? Theme.of(context).colorScheme.onSurface : Theme.of(context).colorScheme.onSurfaceVariant),
+                          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w500, color: supportSelfDrive ? Theme.of(context).colorScheme.onSurface : Theme.of(context).colorScheme.onSurfaceVariant),
                         ),
                       ],
                     ),
@@ -152,7 +152,7 @@ class VehicleReviewStepWidget extends StatelessWidget {
                         Text(l10n.addVehicleReviewWithDriverRate, style: Theme.of(context).textTheme.labelSmall),
                         Text(
                           supportWithDriver ? l10n.addVehicleReviewDailyRate(formatRs(dailyRate + driverAllowance)) : l10n.addVehicleReviewNotOffered,
-                          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900, color: supportWithDriver ? Theme.of(context).colorScheme.onSurface : Theme.of(context).colorScheme.onSurfaceVariant),
+                          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w500, color: supportWithDriver ? Theme.of(context).colorScheme.onSurface : Theme.of(context).colorScheme.onSurfaceVariant),
                         ),
                       ],
                     ),
@@ -188,7 +188,7 @@ class VehicleReviewStepWidget extends StatelessWidget {
                 // so the review shows what will actually be uploaded.
                 if (documentNames.isNotEmpty) ...[
                   const Divider(height: 20),
-                  Text(l10n.addVehicleLegalDocs, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800)),
+                  Text(l10n.addVehicleLegalDocs, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500)),
                   const SizedBox(height: 6),
                   ...documentNames.map((name) => Padding(
                         padding: const EdgeInsets.only(bottom: 4),
@@ -222,7 +222,7 @@ class VehicleReviewStepWidget extends StatelessWidget {
               Expanded(
                 child: Text(
                   l10n.addVehicleReviewBanner,
-                  style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w600, height: 1.3),
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500, height: 1.3),
                 ),
               ),
             ],
@@ -239,7 +239,7 @@ class VehicleReviewStepWidget extends StatelessWidget {
     return Expanded(
       child: Column(
         children: [
-          Text(val, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800)),
+          Text(val, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500)),
           Text(title, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
         ],
       ),
@@ -252,7 +252,7 @@ class VehicleReviewStepWidget extends StatelessWidget {
       children: [
         Expanded(child: Text(title, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant))),
         const SizedBox(width: 8),
-        Text(val, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800)),
+        Text(val, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500)),
       ],
     );
   }
@@ -263,7 +263,7 @@ class VehicleReviewStepWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(title, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
-          Text(val, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800)),
+          Text(val, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500)),
         ],
       ),
     );

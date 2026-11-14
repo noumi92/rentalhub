@@ -44,7 +44,7 @@ class CitySelectorBar extends StatelessWidget {
                   : Theme.of(context).dividerColor,
             ),
             labelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
-                fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                fontWeight: FontWeight.w500,
                 color: isSelected
                     ? Colors.white
                     : Theme.of(context).colorScheme.onSurface),

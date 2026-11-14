@@ -20,11 +20,19 @@ import '../../../../l10n/app_localizations.dart';
 /// Firestore); production callers leave it null and the view reads
 /// Firestore directly. Foreground in-app banners are out of scope
 /// (they need `flutter_local_notifications`, deliberately not added).
+///
+/// F-m16 (admin audit 2026-11-14): opening this screen reports the
+/// open — `stats_opened` on `announcements/{id}` is incremented
+/// once per open (the default reporter; override with [onOpened] in
+/// tests). Delivered is still not tracked: FCM delivery receipts
+/// are not reported, and the admin history labels the column
+/// honestly instead of estimating it.
 class AnnouncementDetailView extends StatefulWidget {
   const AnnouncementDetailView({
     super.key,
     required this.announcementId,
     this.loader,
+    this.onOpened,
   });
 
   final String announcementId;
@@ -32,6 +40,11 @@ class AnnouncementDetailView extends StatefulWidget {
   /// Reads one announcement document. Returns null when the document
   /// does not exist; throws when the read fails.
   final Future<Map<String, dynamic>?> Function(String id)? loader;
+
+  /// Reports that this announcement was opened. Defaults to a
+  /// Firestore `stats_opened` increment; a failure to report never
+  /// fails the screen.
+  final Future<void> Function(String id)? onOpened;
 
   @override
   State<AnnouncementDetailView> createState() =>
@@ -42,6 +55,7 @@ class _AnnouncementDetailViewState extends State<AnnouncementDetailView> {
   Map<String, dynamic>? _data;
   bool _isLoading = true;
   bool _failed = false;
+  bool _openReported = false;
 
   @override
   void initState() {
@@ -57,6 +71,13 @@ class _AnnouncementDetailViewState extends State<AnnouncementDetailView> {
     return snap.exists ? snap.data() : null;
   }
 
+  Future<void> _defaultReportOpen(String id) async {
+    await FirebaseFirestore.instance
+        .collection('announcements')
+        .doc(id)
+        .update({'stats_opened': FieldValue.increment(1)});
+  }
+
   Future<void> _load() async {
     try {
       final data =
@@ -66,6 +87,16 @@ class _AnnouncementDetailViewState extends State<AnnouncementDetailView> {
           _data = data;
           _isLoading = false;
         });
+      }
+      // F-m16: report the open once, only for a real document.
+      if (data != null && !_openReported) {
+        _openReported = true;
+        try {
+          await (widget.onOpened ?? _defaultReportOpen)(
+              widget.announcementId);
+        } catch (_) {
+          // Reporting must never fail the screen.
+        }
       }
     } catch (_) {
       if (mounted) {
@@ -127,7 +158,7 @@ class _AnnouncementDetailViewState extends State<AnnouncementDetailView> {
                               style: Theme.of(context)
                                   .textTheme
                                   .titleLarge
-                                  ?.copyWith(fontWeight: FontWeight.w800),
+                                  ?.copyWith(fontWeight: FontWeight.w600),
                             ),
                             if (date != null) ...[
                               const SizedBox(height: 6),

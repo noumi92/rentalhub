@@ -65,7 +65,11 @@ void main() {
       await _pump(tester, const AdminTeamView(adminRole: 'super_admin'),
           textScale: 2.0);
       expect(find.text('Admin Team'), findsWidgets);
-      expect(find.text('Send invite'), findsOneWidget);
+      expect(find.text('Save invite'), findsOneWidget);
+      // AD-m8: the Send invite button keeps its 48dp target at 2.0x.
+      final saveSize =
+          tester.getSize(find.widgetWithText(FilledButton, 'Save invite'));
+      expect(saveSize.height, greaterThanOrEqualTo(48));
     });
 
     testWidgets('team member tile stacks actions at 360px',
@@ -93,6 +97,13 @@ void main() {
       expect(find.text('2FA off'), findsOneWidget);
       expect(find.text('Reset 2FA'), findsOneWidget);
       expect(find.text('Revoke role'), findsOneWidget);
+      // AD-m8: both tile actions keep their 48dp targets at 360px.
+      final resetSize = tester
+          .getSize(find.widgetWithText(OutlinedButton, 'Reset 2FA'));
+      expect(resetSize.height, greaterThanOrEqualTo(48));
+      final revokeSize = tester
+          .getSize(find.widgetWithText(OutlinedButton, 'Revoke role'));
+      expect(revokeSize.height, greaterThanOrEqualTo(48));
     });
 
     testWidgets('team member tile at desktop width', (tester) async {

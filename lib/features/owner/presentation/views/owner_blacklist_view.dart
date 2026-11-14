@@ -167,7 +167,7 @@ class _OwnerBlacklistViewState extends State<OwnerBlacklistView> {
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Text(l10n.blacklistReportTitle, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
+                                      Text(l10n.blacklistReportTitle, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
                                       const SizedBox(height: 10),
                                       _field(_cnicController, l10n.blacklistCustomerCnic, keyboard: TextInputType.number),
                                       _field(_phoneController, l10n.blacklistCustomerPhone, keyboard: TextInputType.phone),
@@ -187,7 +187,7 @@ class _OwnerBlacklistViewState extends State<OwnerBlacklistView> {
                                 ),
                               ),
                               const SizedBox(height: 20),
-                              Text(l10n.blacklistMyReports(_reports.length), style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
+                              Text(l10n.blacklistMyReports(_reports.length), style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
                               const SizedBox(height: 10),
                               // Audit §22: All/Active/Reverted filter.
                               Wrap(
@@ -206,7 +206,7 @@ class _OwnerBlacklistViewState extends State<OwnerBlacklistView> {
                                       margin: const EdgeInsets.only(bottom: 10),
                                       child: ListTile(
                                         leading: Icon(Icons.flag_rounded, color: r.isActive ? AppColors.errorDark : Theme.of(context).colorScheme.onSurfaceVariant),
-                                        title: Text(r.cnicNumber, style: const TextStyle(fontWeight: FontWeight.w800)),
+                                        title: Text(r.cnicNumber, style: const TextStyle(fontWeight: FontWeight.w600)),
                                         subtitle: Text('${_reasonLabel(l10n, r.reasonCategory)}\n${r.description}'),
                                         isThreeLine: true,
                                         trailing: Chip(

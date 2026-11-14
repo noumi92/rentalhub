@@ -30,16 +30,14 @@ class ProfileCnicRow extends StatelessWidget {
                   Text(
                     l10n.cnicLabel,
                     style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w500,
                           color: colorScheme.onSurfaceVariant,
                         ),
                   ),
                   MaskedValue(
                     value: cnic,
                     maskedValue: MaskedValue.maskCnic(cnic),
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
+                    style: Theme.of(context).textTheme.bodyMedium,
                     showTooltip: l10n.cnicShow,
                     hideTooltip: l10n.cnicHide,
                   ),

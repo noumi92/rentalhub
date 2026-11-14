@@ -141,7 +141,7 @@ void main() {
         from: DateTime(2026, 10, 1),
         to: DateTime(2026, 10, 31),
       ), isNull);
-      expect((await ds.getPlatformSettings()).advancePercent, 30);
+      expect((await ds.getPlatformSettings())!.advancePercent, 30);
       expect(
         await ds.createAnnouncement(
           titleEn: 't',

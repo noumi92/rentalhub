@@ -96,7 +96,6 @@ class AppFeedback {
                 message,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: foregroundColor,
-                  fontWeight: FontWeight.w700,
                 ),
               ),
             ),
@@ -154,7 +153,7 @@ class AppFeedback {
               child: Text(
                 title,
                 style: Theme.of(ctx).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ),

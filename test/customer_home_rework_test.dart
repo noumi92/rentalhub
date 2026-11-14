@@ -36,6 +36,13 @@ class _ThrowingBookingsDataSource extends BookingRemoteDataSource {
   Future<List<BookingEntity>> getCustomerBookings(String customerId) async {
     throw Exception('offline');
   }
+
+  // Live updates (Item 2): Home now subscribes to the bookings
+  // stream, so the failure must come from the stream too — the
+  // one-time getter above is only the retry path's fallback.
+  @override
+  Stream<List<BookingEntity>> streamCustomerBookings(String customerId) =>
+      Stream<List<BookingEntity>>.error(Exception('offline'));
 }
 
 Future<BookingEntity> _makeBooking(

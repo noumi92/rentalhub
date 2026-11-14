@@ -41,12 +41,12 @@ class FleetMetricCard extends StatelessWidget {
                 children: [
                   Text(
                     value,
-                    style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w900, color: color),
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500, color: color),
                     overflow: TextOverflow.ellipsis,
                   ),
                   Text(
                     label,
-                    style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600),
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w500),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ],

@@ -66,7 +66,7 @@ class OwnerPriceEstimateView extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(l10n.estimateCardTitle, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900)),
+                            Text(l10n.estimateCardTitle, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
                             const SizedBox(height: 12),
                             ...rows.map((row) => Padding(
                                   padding: const EdgeInsets.only(bottom: 10),
@@ -75,7 +75,7 @@ class OwnerPriceEstimateView extends StatelessWidget {
                                     children: [
                                       Expanded(child: Text(row.$1, style: Theme.of(context).textTheme.bodyMedium)),
                                       const SizedBox(width: 8),
-                                      Text(row.$2 == null ? '—' : l10n.amountRs(formatRs(row.$2!)), style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900)),
+                                      Text(row.$2 == null ? '—' : l10n.amountRs(formatRs(row.$2!)), style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w500)),
                                     ],
                                   ),
                                 )),
@@ -86,7 +86,7 @@ class OwnerPriceEstimateView extends StatelessWidget {
                                 children: [
                                   Expanded(child: Text(l10n.estimateWithDriverSurcharge, style: Theme.of(context).textTheme.bodyMedium)),
                                   const SizedBox(width: 8),
-                                  Text(l10n.estimatePerDay(l10n.amountRs(formatRs(v.withDriverSurchargePkr!))), style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900)),
+                                  Text(l10n.estimatePerDay(l10n.amountRs(formatRs(v.withDriverSurchargePkr!))), style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w500)),
                                 ],
                               ),
                             ],
@@ -97,7 +97,7 @@ class OwnerPriceEstimateView extends StatelessWidget {
                                 children: [
                                   Expanded(child: Text(l10n.estimateDeposit, style: Theme.of(context).textTheme.bodyMedium)),
                                   const SizedBox(width: 8),
-                                  Text(l10n.amountRs(formatRs(v.securityDepositPkr!)), style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900)),
+                                  Text(l10n.amountRs(formatRs(v.securityDepositPkr!)), style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w500)),
                                 ],
                               ),
                             ],

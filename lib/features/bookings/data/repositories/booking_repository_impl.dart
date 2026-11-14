@@ -73,5 +73,21 @@ class BookingRepositoryImpl implements BookingRepository {
   @override
   Future<List<BookingEntity>> getCustomerBookings(String customerId) =>
       remoteDataSource.getCustomerBookings(customerId);
+
+  @override
+  Stream<List<BookingEntity>> streamCustomerBookings(String customerId) =>
+      remoteDataSource.streamCustomerBookings(customerId);
+
+  @override
+  Stream<List<BookingEntity>> streamShopBookings(String shopId) =>
+      remoteDataSource.streamShopBookings(shopId);
+
+  @override
+  Stream<List<BookingEntity>> streamVehicleBookings(String vehicleId) =>
+      remoteDataSource.streamVehicleBookings(vehicleId);
+
+  @override
+  Stream<BookingEntity?> streamBooking(String bookingId) =>
+      remoteDataSource.streamBooking(bookingId);
 }
 

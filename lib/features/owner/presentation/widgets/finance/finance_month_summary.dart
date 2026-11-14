@@ -49,7 +49,7 @@ class FinanceMonthSummary extends StatelessWidget {
               Text(l10n.financeNetAmount(formatRs(net)),
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     color: Colors.white,
-                    fontWeight: FontWeight.w900,
+                    fontWeight: FontWeight.w500,
                   )),
               const SizedBox(height: 8),
               Text(
@@ -113,7 +113,7 @@ class FinanceMonthSummary extends StatelessWidget {
                 style: Theme.of(context)
                     .textTheme
                     .labelMedium
-                    ?.copyWith(fontWeight: FontWeight.w700),
+                    ?.copyWith(fontWeight: FontWeight.w500),
               ),
             ],
           ),

@@ -72,14 +72,14 @@ class CustomerStatsRow extends StatelessWidget {
           Text(
             value,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w900,
+              fontWeight: FontWeight.w600,
             ),
           ),
           const SizedBox(height: 2),
           Text(
             label,
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w500,
               color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),

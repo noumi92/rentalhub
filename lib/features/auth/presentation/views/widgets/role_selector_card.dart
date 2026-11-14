@@ -74,13 +74,13 @@ class RoleSelectorCard extends StatelessWidget {
                       Text(
                         title,
                         style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w800,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                       Text(
                         urduSubtitle,
                         style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
+                          fontWeight: FontWeight.w500,
                           color: AppColors.orangeTextFor(brightness),
                         ),
                       ),

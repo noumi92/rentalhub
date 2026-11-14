@@ -1,3 +1,5 @@
+import '../../../../l10n/app_localizations.dart';
+
 /// Phase A (A2) — admin permission matrix, ported from the old repo
 /// (noumi92/renthub Batch 14) and adapted to this repo.
 ///
@@ -72,6 +74,17 @@ abstract final class AdminPermissions {
       operations => 'Operations',
       support => 'Support',
       _ => 'Admin',
+    };
+  }
+
+  /// Localised role label for admin UI; `label` stays for code-only
+  /// uses (audit-log detail text keeps the English role name).
+  static String labelL10n(AppLocalizations l10n, String? adminRole) {
+    return switch (adminRole) {
+      superAdmin => l10n.admin2_roleSuperAdmin,
+      operations => l10n.admin2_roleOperations,
+      support => l10n.admin2_roleSupport,
+      _ => l10n.admin2_roleAdmin,
     };
   }
 }

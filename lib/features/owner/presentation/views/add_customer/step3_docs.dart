@@ -144,7 +144,7 @@ class Step3DocsState extends KycStepState<Step3Docs> {
     );
   }
 
-  Widget _section(String title) => Padding(padding: const EdgeInsets.only(top: 4, bottom: 10), child: Text(title, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)));
+  Widget _section(String title) => Padding(padding: const EdgeInsets.only(top: 4, bottom: 10), child: Text(title, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)));
 
   Widget _field(TextEditingController controller, String label, {String? hint, TextInputType keyboard = TextInputType.text, List<TextInputFormatter>? formatters, required ValueChanged<String> onChanged}) {
     // Filled like step 1's fields (were unfilled here).

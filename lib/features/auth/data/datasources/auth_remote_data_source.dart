@@ -19,6 +19,13 @@ class AuthRemoteDataSource {
   final FirestoreService? firestoreService;
   final CPanelStorageClient? storageClient;
 
+  /// Injectable GoogleSignIn (tests pass a recording fake). When null,
+  /// one shared instance is created lazily with the server client id.
+  /// A single shared instance matters: the Google session cleared by
+  /// signOut() must be the same session signInWithGoogle() used, or
+  /// the next sign-in silently reuses the previous account.
+  final GoogleSignIn? googleSignIn;
+
   /// Phase B (B3): the persisted pending-write store. When set, a
   /// failed profile-photo upload is queued instead of filed as a
   /// made-up URL.
@@ -39,6 +46,37 @@ class AuthRemoteDataSource {
   // lives here as one named constant instead of a string literal.
   static const String googleServerClientId =
       '139498327816-k5sjvum2hpuo30oiooh7u6ap8nsu71m7.apps.googleusercontent.com';
+
+  GoogleSignIn? _sharedGoogleSignIn;
+
+  /// The one GoogleSignIn instance for this data source: the injected
+  /// fake in tests, otherwise a lazily created instance reused by
+  /// both sign-in and sign-out.
+  GoogleSignIn get _googleSignInInstance =>
+      googleSignIn ??
+      (_sharedGoogleSignIn ??= GoogleSignIn(
+        serverClientId: googleServerClientId,
+      ));
+
+  /// Whether a Google session may exist for this user. Cheap signals
+  /// first (no platform calls): a Google account signed in through
+  /// this data source, or a Firebase user linked with a Google
+  /// provider. Only an explicitly injected GoogleSignIn (the test
+  /// seam — production never injects one) is asked via isSignedIn(),
+  /// so production sign-out for email/password users never touches
+  /// the Google plugin at all.
+  Future<bool> _mayHaveGoogleSession() async {
+    final googleCurrentUser =
+        googleSignIn?.currentUser ?? _sharedGoogleSignIn?.currentUser;
+    if (googleCurrentUser != null) return true;
+    final hasGoogleProvider = auth?.currentUser?.providerData.any(
+          (info) => info.providerId == 'google.com',
+        ) ??
+        false;
+    if (hasGoogleProvider) return true;
+    if (googleSignIn != null) return googleSignIn!.isSignedIn();
+    return false;
+  }
 
   bool get isLoggedIn => prefs.getBool(_isLoggedInKey) ?? (auth?.currentUser != null);
   bool get isOnboardingCompleted => prefs.getBool(_onboardingCompletedKey) ?? false;
@@ -168,6 +206,7 @@ class AuthRemoteDataSource {
     this.firestoreService,
     this.storageClient,
     this.syncQueue,
+    this.googleSignIn,
   });
 
   Future<UserModel> signInWithGoogle() async {
@@ -187,9 +226,9 @@ class AuthRemoteDataSource {
     late final String email;
     late final String fullName;
     try {
-      final GoogleSignIn googleSignIn = GoogleSignIn(
-        serverClientId: googleServerClientId,
-      );
+      // Shared instance (see _googleSignInInstance): signOut() clears
+      // this same session, so the next signIn() shows the picker.
+      final GoogleSignIn googleSignIn = _googleSignInInstance;
       final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
       if (googleUser == null) {
         throw const ServerException(message: 'Google Sign-In was cancelled.');
@@ -471,6 +510,28 @@ class AuthRemoteDataSource {
       } catch (e) {
         debugPrint('FirebaseAuth signOut error: $e');
       }
+    }
+    // Google account picker: GoogleSignIn.signIn() returns the cached
+    // account without interaction while a Google session exists, so
+    // signing out of Firebase alone left the next Google sign-in
+    // silently reusing the previous account. Clearing the Google
+    // session here makes the next sign-in show the device account
+    // picker. This is the single sign-out path for customer and owner
+    // mobile sign-in (repository signOut, used by signOutToAuth and
+    // the owner settings screen); the admin web login is
+    // email/password only and never touches GoogleSignIn. signOut()
+    // is enough — unlike disconnect() it does not revoke the OAuth
+    // grant or force re-consent. Only attempted when a Google session
+    // may exist (see _mayHaveGoogleSession), so email/password
+    // sign-out never touches the Google plugin. Best-effort: a Google
+    // failure must never block Firebase sign-out or the local session
+    // clear.
+    try {
+      if (await _mayHaveGoogleSession()) {
+        await _googleSignInInstance.signOut();
+      }
+    } catch (e) {
+      debugPrint('GoogleSignIn signOut error: $e');
     }
     await prefs.setBool(_isLoggedInKey, false);
     await prefs.setBool(_onboardingCompletedKey, false);

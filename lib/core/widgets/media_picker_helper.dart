@@ -81,7 +81,7 @@ class MediaPickerHelper {
               Text(
                 l10n?.mediaSelectSource ?? 'Select Media Source',
                 style: Theme.of(ctx).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
               const SizedBox(height: 12),
@@ -96,7 +96,7 @@ class MediaPickerHelper {
                   ),
                   child: const Icon(Icons.camera_alt_rounded, color: AppColors.secondary, size: 22),
                 ),
-                title: Text(l10n?.mediaTakePhoto ?? 'Take Photo (Back Camera)', style: Theme.of(ctx).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
+                title: Text(l10n?.mediaTakePhoto ?? 'Take Photo (Back Camera)', style: Theme.of(ctx).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
                 subtitle: Text(l10n?.mediaTakePhotoHint ?? 'Use device camera', style: Theme.of(ctx).textTheme.labelSmall),
                 onTap: () async {
                   Navigator.of(ctx).pop();
@@ -119,7 +119,7 @@ class MediaPickerHelper {
                   ),
                   child: const Icon(Icons.photo_library_rounded, size: 22),
                 ),
-                title: Text(l10n?.avatarFromGallery ?? 'Choose from Gallery', style: Theme.of(ctx).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
+                title: Text(l10n?.avatarFromGallery ?? 'Choose from Gallery', style: Theme.of(ctx).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
                 subtitle: Text(l10n?.mediaChooseGalleryHint ?? 'Pick existing photo or screenshot', style: Theme.of(ctx).textTheme.labelSmall),
                 onTap: () async {
                   Navigator.of(ctx).pop();
@@ -143,7 +143,7 @@ class MediaPickerHelper {
                     ),
                     child: Icon(Icons.delete_outline_rounded, color: AppColors.dangerTextFor(Theme.of(context).brightness), size: 22),
                   ),
-                  title: Text(l10n?.mediaRemovePhoto ?? 'Remove Photo', style: Theme.of(ctx).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700, color: AppColors.dangerTextFor(Theme.of(context).brightness))),
+                  title: Text(l10n?.mediaRemovePhoto ?? 'Remove Photo', style: Theme.of(ctx).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600, color: AppColors.dangerTextFor(Theme.of(context).brightness))),
                   subtitle: Text(l10n?.mediaRemovePhotoHint ?? 'Clear this uploaded image', style: Theme.of(ctx).textTheme.labelSmall),
                   onTap: () {
                     Navigator.of(ctx).pop();

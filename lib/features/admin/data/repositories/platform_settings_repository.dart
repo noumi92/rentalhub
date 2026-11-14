@@ -37,6 +37,30 @@ class PlatformSettingsRepository {
     }
   }
 
+  /// True when the platform is in maintenance mode
+  /// (`platform_settings/global.maintenance_mode`). Defaults to
+  /// false when the document or the field is missing, or on any
+  /// error — a failed read never locks users out of the app; only
+  /// an explicit `true` shows the maintenance notice (splash gate).
+  /// Admin audit (2026-11-14, F-M13): the toggle used to flip a
+  /// flag nothing read. The splash screen reads this now.
+  Future<bool> maintenanceMode() async {
+    try {
+      return maintenanceModeFromData(await _readGlobal());
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// Pure default-false parsing of the `maintenance_mode` field, so
+  /// the behaviour is unit-testable without Firestore. Only an
+  /// explicit `true` puts the platform in maintenance mode.
+  static bool maintenanceModeFromData(Map<String, dynamic>? data) {
+    final value = data?['maintenance_mode'];
+    if (value is bool) return value;
+    return false;
+  }
+
   /// True when unverified shops may be shown in discovery. Defaults
   /// to true when the document or the `displayUnverifiedShops`
   /// field is missing, or on any error.

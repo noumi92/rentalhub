@@ -65,7 +65,7 @@ class Step2PhotoState extends KycStepState<Step2Photo> {
       title,
       style: Theme.of(
         context,
-      ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
+      ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
     ),
   );
 

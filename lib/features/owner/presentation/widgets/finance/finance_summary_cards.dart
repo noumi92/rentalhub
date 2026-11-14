@@ -62,7 +62,7 @@ class FinanceSummaryCards extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w900,
+                    fontWeight: FontWeight.w500,
                     color: color,
                   )),
         ],

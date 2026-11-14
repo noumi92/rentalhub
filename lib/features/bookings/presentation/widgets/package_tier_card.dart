@@ -77,7 +77,7 @@ class PackageTierCard extends StatelessWidget {
                     children: [
                       Text(
                         title,
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800, color: Theme.of(context).colorScheme.onSurface),
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.onSurface),
                       ),
                       const SizedBox(width: 8),
                       Container(
@@ -89,7 +89,7 @@ class PackageTierCard extends StatelessWidget {
                         ),
                         child: Text(
                           kmIncluded,
-                          style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700, color: AppColors.successTextFor(Theme.of(context).brightness)),
+                          style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w500, color: AppColors.successTextFor(Theme.of(context).brightness)),
                         ),
                       ),
                     ],
@@ -107,11 +107,11 @@ class PackageTierCard extends StatelessWidget {
               children: [
                 Text(
                   l10n.amountRs(formatRs(price)),
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w500),
                 ),
                 Text(
                   l10n.tierAdvance(formatRs((price * 0.2).round().clamp(1000, 5000))),
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600, color: AppColors.orangeTextFor(Theme.of(context).brightness)),
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w500, color: AppColors.orangeTextFor(Theme.of(context).brightness)),
                 ),
               ],
             ),

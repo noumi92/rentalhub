@@ -52,7 +52,7 @@ class AddVehicleHeader extends StatelessWidget {
           child: Text(l10n.addVehicleStepCounter(currentStep),
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
                     color: Colors.white,
-                    fontWeight: FontWeight.w700,
+                    fontWeight: FontWeight.w500,
                   )),
         ),
       ],

@@ -46,6 +46,32 @@
   "inReview": "In review",
   "disputeOpen": "Open",
   "disputeResolved": "Resolved",
+  "disputeDecisionChoose": "Choose a decision",
+  "disputeDecisionRequired": "Choose a decision before saving.",
+  "disputeDecisionFullToCustomer": "Full refund to customer",
+  "disputeDecisionPartial": "Partial — split",
+  "disputeDecisionFullToOwner": "Full to owner (claim upheld)",
+  "disputeDecisionAmount": "Decision amount",
+  "disputeDecisionNote": "Admin note",
+  "disputeMarkInReview": "Mark in review",
+  "disputeMarkedInReview": "Marked in review.",
+  "disputeMarkInReviewFailed": "Could not mark the dispute in review.",
+  "handoverPhotoFront": "Front",
+  "handoverPhotoBack": "Back",
+  "handoverPhotoLeft": "Left",
+  "handoverPhotoRight": "Right",
+  "handoverDocumentsGiven": "Documents given",
+  "handoverAccessories": "Accessories",
+  "handoverKeysHandedOver": "Keys handed over",
+  "handoverKeysNotHandedOver": "Keys not handed over",
+  "returnChecklistTitle": "Return checklist",
+  "returnChecklistEmpty": "No return record yet — the vehicle has not been returned through the settlement flow.",
+  "returnCondition": "Condition",
+  "returnOdometer": "Return odometer",
+  "returnDamageNotes": "Return damage notes",
+  "returnRemainingCollected": "Remaining rent collected",
+  "returnNetRefund": "Net refund",
+  "returnPaymentMethod": "Payment method",
   "verified": "Verified",
   "available": "Available",
   "rentedOut": "Rented Out",
@@ -325,6 +351,10 @@
   "rateSubmitting": "Submitting...",
   "rateSaved": "Thank you! Your review is saved for this trip.",
   "rateAlreadyRated": "You already rated this trip — your review is shown below.",
+  "rateEditRequestedTitle": "Admin asked you to edit this review",
+  "rateWarnedTitle": "Warning from the admin about this review",
+  "adminAnncDeliveredNotTracked": "Delivered: not tracked yet",
+  "adminAnncScheduleDateRequired": "Pick a date and time for the scheduled announcement.",
   "rateSavedOffline": "Saved on this device — it will sync when you are back online.",
   "reviewTitle": "Review Reservation",
   "reviewSpecialInstructions": "Special Instructions for Showroom",
@@ -3017,10 +3047,6 @@
     }
   },
   "handoverPhotosTitle": "Exterior Photos",
-  "handoverPhotoFront": "Front",
-  "handoverPhotoBack": "Back",
-  "handoverPhotoLeft": "Left",
-  "handoverPhotoRight": "Right",
   "handoverPhotoUploading": "Uploading…",
   "handoverDocumentsTitle": "Documents Given",
   "handoverDocumentRegistration": "Registration",
@@ -3956,6 +3982,25 @@
   "admin2_apkDownloadFailed": "Could not open the download link.",
   "admin2_apkSuperAdminOnly": "Only super admins can download the APK",
   "admin2_apkSuperAdminOnlyHint": "Ask a super admin for the latest build.",
+  "adminKycReviewTitle": "KYC Review",
+  "adminKycReviewSubtitle": "Customer identity documents waiting for a decision",
+  "adminKycReviewEmpty": "No pending KYC submissions",
+  "adminKycReviewEmptyHint": "Every customer submission has been decided.",
+  "adminKycReviewLoadFailed": "Could not load the KYC queue.",
+  "adminKycReviewNotFound": "Submission not found.",
+  "adminKycReviewNotPermitted": "Only super admins and operations can review KYC",
+  "adminKycReviewNotPermittedHint": "Ask a super admin or operations admin to review this submission.",
+  "adminNotPermitted": "Your admin role does not allow this action.",
+  "adminKycReviewApprove": "Approve",
+  "adminKycReviewReject": "Reject",
+  "adminKycReviewReasonLabel": "Reason (required to reject — the customer sees it)",
+  "adminKycReviewReasonRequired": "A reason is required to reject — the customer sees it.",
+  "adminKycReviewDecisionSaved": "Decision saved.",
+  "adminKycReviewDecisionFailed": "Could not reach the server — try again.",
+  "adminKycReviewLicenseNumber": "License number",
+  "adminKycReviewLicenseExpiry": "License expiry",
+  "adminKycReviewCnicNumber": "CNIC number",
+  "adminKycReviewSubmittedOn": "Submitted on",
   "kyc2_qrCode": "QR Code",
   "kyc2_qrRead": "QR code saved.",
   "kyc2_licenseUnreadable": "Could not read the license number from that photo — please type it.",
@@ -4021,5 +4066,1385 @@
     }
   },
   "vehicleLoadFailed": "Could not load this vehicle.",
-  "manualBookingWhatsappToggle": "Send WhatsApp confirmation"
+  "manualBookingWhatsappToggle": "Send WhatsApp confirmation",
+  "admin2_signInFailedGeneric": "Sign-in failed. Try again.",
+  "admin2_signInWrongCredentials": "The email or password is incorrect.",
+  "admin2_signInAccountDisabled": "This account is disabled. Ask a super admin for help.",
+  "admin2_signInTooManyAttempts": "Too many sign-in attempts. Try again later.",
+  "admin2_signInNoConnection": "Could not reach the server. Check your connection and try again.",
+  "admin2_signInInvalidEmail": "Enter a valid email address.",
+  "admin2_showPassword": "Show password",
+  "admin2_hidePassword": "Hide password",
+  "admin2_blacklistReportTitle": "Report to blacklist?",
+  "admin2_blacklistReportBody": "This blocks the customer platform-wide. Give the reason — the tribunal judges the case on it.",
+  "admin2_blacklistReasonLabel": "Reason (required)",
+  "admin2_blacklistReasonRequired": "A reason is required to report a customer.",
+  "admin2_blacklistReportConfirm": "Report",
+  "admin2_watchlistAdd": "Add to watchlist",
+  "admin2_watchlistRemove": "Remove from watchlist",
+  "admin2_ticketRepliesLoadFailed": "Could not load the replies.",
+  "admin2_suspendReasonLabel": "Reason (shown in the audit log)",
+  "admin2_callFailed": "Could not open the dialer.",
+  "admin2_whatsappOpenFailed": "Could not open WhatsApp.",
+  "admin2_menu": "Menu",
+  "admin2_confirm": "Confirm",
+  "admin2_approve": "Approve",
+  "admin2_reject": "Reject",
+  "admin2_yes": "Yes",
+  "admin2_no": "No",
+  "admin2_save": "Save",
+  "admin2_saving": "Saving…",
+  "admin2_serverUnreachable": "Could not reach the server.",
+  "admin2_serverUnreachableRetry": "Could not reach the server — try again.",
+  "admin2_reasonRequired": "A reason is required.",
+  "admin2_decisionSaved": "Decision saved.",
+  "admin2_none": "none",
+  "admin2_withDriver": "With driver",
+  "admin2_selfDrive": "Self drive",
+  "admin2_suspended": "Suspended",
+  "admin2_hidden": "Hidden",
+  "admin2_open": "Open",
+  "admin2_closed": "Closed",
+  "admin2_resolved": "Resolved",
+  "admin2_inProgress": "In progress",
+  "admin2_escalated": "Escalated",
+  "admin2_requested": "Requested",
+  "admin2_paymentSubmitted": "Payment submitted",
+  "admin2_paid": "Paid",
+  "admin2_completed": "Completed",
+  "admin2_cancelled": "Cancelled",
+  "admin2_inReview": "In review",
+  "admin2_roleSuperAdmin": "Super Admin",
+  "admin2_roleOperations": "Operations",
+  "admin2_roleSupport": "Support",
+  "admin2_roleAdmin": "Admin",
+  "admin2_navDashboard": "Dashboard",
+  "admin2_navShops": "Shops",
+  "admin2_navApprovals": "Approvals",
+  "admin2_navCars": "Cars",
+  "admin2_navCustomers": "Customers",
+  "admin2_navBookings": "Bookings",
+  "admin2_navDisputes": "Disputes",
+  "admin2_navReviews": "Reviews",
+  "admin2_navSupport": "Support",
+  "admin2_navAnnouncements": "Announcements",
+  "admin2_navReports": "Reports",
+  "admin2_navSettings": "Settings",
+  "admin2_navApkDownload": "APK Download",
+  "admin2_navBlacklist": "Blacklist",
+  "admin2_navAdminTeam": "Admin Team",
+  "admin2_navActivityLog": "Activity Log",
+  "admin2_navSubscriptions": "Subscriptions",
+  "admin2_sidebarSignedInAs": "SIGNED IN AS ADMIN",
+  "admin2_loginEmailPassword": "Enter your email and password.",
+  "admin2_loginEnterCode": "Enter the 6-digit code.",
+  "admin2_loginSignedIn": "Signed in.",
+  "admin2_loginFormTitle": "RentalHub Admin",
+  "admin2_loginFormSubtitle": "Sign in with your admin account.",
+  "admin2_loginFormEmail": "Email",
+  "admin2_loginFormPassword": "Password",
+  "admin2_loginFormSigningIn": "Signing in…",
+  "admin2_loginFormSignIn": "Sign in",
+  "admin2_loginNotAdmin": "Not an admin account",
+  "admin2_loginNoRole": "This account has no admin role. Sign out and sign in with an admin account, or ask a super admin to grant you one.",
+  "admin2_loginUseDifferent": "Use a different account",
+  "admin2_totpSetupTitle": "Set up two-factor authentication",
+  "admin2_totpVerifyTitle": "Enter your authenticator code",
+  "admin2_totpSetupHint": "Scan this code with your authenticator app, then enter the 6-digit code it shows to confirm.",
+  "admin2_totpEnabledHint": "Two-factor authentication is on for this account. Enter the 6-digit code from your authenticator app.",
+  "admin2_totpManualKey": "Manual setup key: {key}",
+  "@admin2_totpManualKey": {
+    "placeholders": {
+      "key": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_totpCodeLabel": "6-digit code",
+  "admin2_totpChecking": "Checking…",
+  "admin2_totpConfirmSetup": "Confirm and finish setup",
+  "admin2_totpVerifySignIn": "Verify and sign in",
+  "admin2_subscriptionsSubtitle": "Plans, trials and platform revenue",
+  "admin2_subscriptionsBody": "Subscriptions arrive in Phase F, gated on the Play Console setup (plan D1).",
+  "admin2_dashboardSubtitle": "The platform at a glance, counted live",
+  "admin2_dashboardLoadFailed": "Could not load the dashboard.",
+  "admin2_dashboardDisputesTitle": "Open disputes need a decision",
+  "admin2_dashboardOpenCount": "{count} open",
+  "@admin2_dashboardOpenCount": {
+    "placeholders": {
+      "count": {
+        "type": "Object"
+      }
+    }
+  },
+  "admin2_dashboardDisputesHint": "Open the disputes centre to decide them.",
+  "admin2_dashboardTicketsTitle": "Support tickets waiting",
+  "admin2_dashboardTicketsHint": "Open the tickets inbox to reply.",
+  "admin2_dashboardKpiShops": "Registered shops",
+  "admin2_dashboardKpiLiveCount": "Live count",
+  "admin2_dashboardKpiBookings": "Active bookings",
+  "admin2_dashboardKpiBookingsNote": "Approved, paid or active",
+  "admin2_dashboardKpiDisputes": "Open disputes",
+  "admin2_dashboardKpiDisputesNote": "Awaiting a decision",
+  "admin2_dashboardKpiTickets": "Open support tickets",
+  "admin2_dashboardKpiTicketsNote": "Awaiting a reply",
+  "admin2_shopsSubtitle": "Every showroom on the platform",
+  "admin2_shopsSearchHint": "Search by shop, city, or owner…",
+  "admin2_shopsLoadFailed": "Could not load the shops.",
+  "admin2_shopsEmptyTitle": "No shops match",
+  "admin2_shopsEmptyHint": "The list reads the shops collection.",
+  "admin2_shopsPlanLine": "Plan {plan}",
+  "@admin2_shopsPlanLine": {
+    "placeholders": {
+      "plan": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_approvalsTitle": "Shop Approvals",
+  "admin2_approvalsSubtitle": "Applications waiting for a decision",
+  "admin2_approvalsLoadFailed": "Could not load the shop approvals.",
+  "admin2_approvalsEmptyTitle": "No pending applications",
+  "admin2_approvalsEmptyHint": "Every shop has been decided.",
+  "admin2_approvalsChecklist": "Checklist {done}/6",
+  "@admin2_approvalsChecklist": {
+    "placeholders": {
+      "done": {
+        "type": "Object"
+      }
+    }
+  },
+  "admin2_shopDetailTitle": "Shop detail",
+  "admin2_shopDetailSubtitle": "Plan, fleet, bookings and admin actions",
+  "admin2_shopDetailLoadFailed": "Could not load this shop.",
+  "admin2_shopDetailNotFound": "Shop not found.",
+  "admin2_shopDetailSuspended": "Shop suspended.",
+  "admin2_shopDetailSuspensionLifted": "Suspension lifted.",
+  "admin2_shopDetailPlan": "Plan",
+  "admin2_shopDetailStatus": "Status",
+  "admin2_shopDetailLifetimeBookings": "Lifetime bookings",
+  "admin2_shopDetailRating": "Rating",
+  "admin2_shopDetailSuspensionReason": "Suspension reason: {reason}",
+  "@admin2_shopDetailSuspensionReason": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_shopDetailKycDocs": "KYC documents",
+  "admin2_shopDetailNoneUploaded": "None uploaded yet.",
+  "admin2_shopDetailBankAccounts": "Bank / wallet accounts",
+  "admin2_shopDetailNoneOnFile": "None on file.",
+  "admin2_shopDetailContact": "{city} • {address}\nOwner: {owner} • {phone}",
+  "@admin2_shopDetailContact": {
+    "placeholders": {
+      "city": {
+        "type": "String"
+      },
+      "address": {
+        "type": "String"
+      },
+      "owner": {
+        "type": "String"
+      },
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_suspendTitle": "Suspend this shop?",
+  "admin2_suspendLiftTitle": "Lift the suspension?",
+  "admin2_customersSubtitle": "Every customer on the platform",
+  "admin2_customersSearchHint": "Search by name, phone, or CNIC…",
+  "admin2_customersLoadFailed": "Could not load the customers.",
+  "admin2_customersEmptyTitle": "No customers match",
+  "admin2_customersEmptyHint": "The list reads the customers collection.",
+  "admin2_customerDetailTitle": "Customer detail",
+  "admin2_customerDetailSubtitle": "Trust score, KYC, trips and admin actions",
+  "admin2_customerDetailLoadFailed": "Could not load this customer.",
+  "admin2_customerDetailNotFound": "Customer not found.",
+  "admin2_customerDetailNoCnic": "No CNIC on file — a blacklist entry needs one.",
+  "admin2_customerDetailAdminReport": "Admin report",
+  "admin2_customerDetailAdminReportNote": "Reported by an admin from the customer detail screen.",
+  "admin2_customerDetailReported": "Customer reported to the blacklist.",
+  "admin2_customerDetailBlacklisted": "Blacklisted",
+  "admin2_customerDetailBookingHistory": "Booking history",
+  "admin2_customerDetailNoBookings": "No bookings yet.",
+  "admin2_customerDetailGuarantors": "Guarantors",
+  "admin2_customerDetailAdminNotes": "Admin notes",
+  "admin2_customerDetailNoNotes": "No notes yet.",
+  "admin2_customerDetailWatchlistAdded": "Customer added to the watchlist.",
+  "admin2_customerDetailContact": "{phone} • CNIC {cnic} • Source: {source}",
+  "@admin2_customerDetailContact": {
+    "placeholders": {
+      "phone": {
+        "type": "String"
+      },
+      "cnic": {
+        "type": "String"
+      },
+      "source": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_tribunalTitle": "Blacklist tribunal",
+  "admin2_tribunalSubtitle": "National Rental Fraud & Blacklist Tribunal",
+  "admin2_tribunalSubtitle2": "Central arbitration bench for inter-showroom disputes",
+  "admin2_tribunalLoadFailed": "Could not load the blacklist cases.",
+  "admin2_tribunalEmptyTitle": "No blacklist cases",
+  "admin2_tribunalEmptyHint": "Tribunal records will appear here.",
+  "admin2_tribunalActive": "ACTIVE BLACKLIST",
+  "admin2_tribunalReversed": "REVERSED / CLEARED",
+  "admin2_tribunalCaseLine": "{id} • CNIC: {cnic}",
+  "@admin2_tribunalCaseLine": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      },
+      "cnic": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_tribunalReason": "Reason: {reason}",
+  "@admin2_tribunalReason": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_tribunalReportedBy": "Reported by Showroom: {shop}",
+  "@admin2_tribunalReportedBy": {
+    "placeholders": {
+      "shop": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_tribunalReversal": "Reversal Justification: {reason}",
+  "@admin2_tribunalReversal": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_tribunalDecideAppeal": "Decide appeal — Keep or Remove",
+  "admin2_tribunalAppealLine": "Appeal: {status} — {reason}",
+  "@admin2_tribunalAppealLine": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      },
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_disputesTitle": "Disputes centre",
+  "admin2_disputesSubtitle": "Third side of every dispute — 72 h SLA",
+  "admin2_disputesSlaUnknown": "SLA unknown",
+  "admin2_disputesSlaOverdue": "SLA overdue by {hours}h",
+  "@admin2_disputesSlaOverdue": {
+    "placeholders": {
+      "hours": {
+        "type": "Object"
+      }
+    }
+  },
+  "admin2_disputesSlaLeft": "{hours}h of SLA left",
+  "@admin2_disputesSlaLeft": {
+    "placeholders": {
+      "hours": {
+        "type": "Object"
+      }
+    }
+  },
+  "admin2_disputesLoadFailed": "Could not load the disputes.",
+  "admin2_disputesEmptyTitle": "No disputes",
+  "admin2_disputesEmptyHint": "The centre reads the disputes collection.",
+  "admin2_reviewsTitle": "Reviews moderation",
+  "admin2_reviewsSubtitle": "Abusive, fake and revenge queues",
+  "admin2_reviewsFilterAbusive": "Abusive",
+  "admin2_reviewsFilterFake": "Fake",
+  "admin2_reviewsReasonFake": "Fake review",
+  "admin2_reviewsFilterRevenge": "Revenge",
+  "admin2_reviewsFilterClear": "Clear",
+  "admin2_reviewsMarkAs": "Mark as {status}?",
+  "@admin2_reviewsMarkAs": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_reviewsReasonLabel": "Reason (stored with the decision)",
+  "admin2_reviewsMarked": "Review marked as {status}.",
+  "@admin2_reviewsMarked": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_reviewsLoadFailed": "Could not load the reviews.",
+  "admin2_reviewsEmpty": "No reviews in this queue.",
+  "admin2_reviewKeep": "Keep",
+  "admin2_reviewHide": "Hide",
+  "admin2_reviewAskToEdit": "Ask to edit",
+  "admin2_reviewWarn": "Warn",
+  "admin2_reviewModeration": "Moderation: {status}",
+  "@admin2_reviewModeration": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_reviewCardRatings": "Shop {shop}/5 • Car {car}/5 • Owner: punctuality {punctuality}, care {care}, behaviour {behaviour}",
+  "@admin2_reviewCardRatings": {
+    "placeholders": {
+      "shop": {
+        "type": "String"
+      },
+      "car": {
+        "type": "String"
+      },
+      "punctuality": {
+        "type": "String"
+      },
+      "care": {
+        "type": "String"
+      },
+      "behaviour": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_ticketsTitle": "Support tickets",
+  "admin2_ticketsSubtitle": "The inbox the customer plan promised",
+  "admin2_ticketsLoadFailed": "Could not load the tickets.",
+  "admin2_ticketsEmptyTitle": "No tickets",
+  "admin2_ticketsEmptyHint": "The inbox reads the support_tickets collection.",
+  "admin2_slaUnknownDate": "SLA: filed date unknown",
+  "admin2_slaBreached": "SLA breached by {hours}h",
+  "@admin2_slaBreached": {
+    "placeholders": {
+      "hours": {
+        "type": "Object"
+      }
+    }
+  },
+  "admin2_slaLeft": "{hours}h of {total}h SLA left",
+  "@admin2_slaLeft": {
+    "placeholders": {
+      "hours": {
+        "type": "Object"
+      },
+      "total": {
+        "type": "Object"
+      }
+    }
+  },
+  "admin2_ticketQuickReply1": "Thanks for reaching out — we are looking into this and will update you here.",
+  "admin2_ticketQuickReply2": "Could you share the booking ID and a photo of the issue?",
+  "admin2_ticketQuickReply3": "This has been resolved. Please let us know if it comes back.",
+  "admin2_ticketStatusDone": "Ticket {status}.",
+  "@admin2_ticketStatusDone": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_ticketTitle": "Ticket {id}",
+  "@admin2_ticketTitle": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_ticketOpenCustomer": "Open the customer",
+  "admin2_ticketReplies": "Replies",
+  "admin2_ticketNoReplies": "No replies yet.",
+  "admin2_ticketQuickReplies": "Quick replies",
+  "admin2_ticketReplyHint": "Reply to the customer…",
+  "admin2_ticketSendReply": "Send reply",
+  "admin2_ticketInternalNotes": "Internal notes (the customer never sees these)",
+  "admin2_ticketAddNoteHint": "Add an internal note…",
+  "admin2_ticketAdd": "Add",
+  "admin2_ticketEscalate": "Escalate",
+  "admin2_ticketClose": "Close ticket",
+  "admin2_anncSubtitle": "Broadcasts to owners and customers",
+  "admin2_anncNew": "New announcement",
+  "admin2_anncLoadFailed": "Could not load the announcements.",
+  "admin2_anncEmptyTitle": "No announcements yet",
+  "admin2_anncEmptyHint": "Create the first one above.",
+  "admin2_anncSent": "Sent.",
+  "admin2_anncSendFailed": "Could not reach the Functions server — try again.",
+  "admin2_anncSendTest": "Send test",
+  "admin2_anncSendNow": "Send now",
+  "admin2_anncStats": "Sent {sent} • Delivered {delivered} • Opened {opened}",
+  "@admin2_anncStats": {
+    "placeholders": {
+      "sent": {
+        "type": "Object"
+      },
+      "delivered": {
+        "type": "Object"
+      },
+      "opened": {
+        "type": "Object"
+      }
+    }
+  },
+  "admin2_anncFormEnRequired": "The English title and body are required.",
+  "admin2_anncFormUrRequired": "The Urdu title and body are required too (rulebook §5.5).",
+  "admin2_anncFormSaved": "Announcement saved.",
+  "admin2_anncFormTitleEn": "Title (English)",
+  "admin2_anncFormTitleUr": "Title (Urdu)",
+  "admin2_anncFormBodyEn": "Body (English)",
+  "admin2_anncFormBodyUr": "Body (Urdu)",
+  "admin2_anncFormAudienceRole": "Audience — role",
+  "admin2_anncFormEveryone": "Everyone",
+  "admin2_anncFormOwners": "Owners",
+  "admin2_anncFormCustomers": "Customers",
+  "admin2_anncFormAudienceCity": "Audience — city",
+  "admin2_anncFormAllCities": "All cities",
+  "admin2_anncFormAudiencePlan": "Audience — plan",
+  "admin2_anncFormAllPlans": "All plans",
+  "admin2_anncFormFree": "Free",
+  "admin2_anncFormPro": "Pro",
+  "admin2_anncFormBusiness": "Business",
+  "admin2_anncFormChannel": "Channel",
+  "admin2_anncFormPush": "Push",
+  "admin2_anncFormWhatsapp": "WhatsApp (waits for the Meta token, D2)",
+  "admin2_anncFormBoth": "Push + WhatsApp",
+  "admin2_anncFormSchedule": "Schedule for later",
+  "admin2_anncFormPickDate": "Pick a date and time",
+  "admin2_anncFormScheduled": "Scheduled: {when}",
+  "@admin2_anncFormScheduled": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_anncFormSave": "Save announcement",
+  "admin2_activitySubtitle": "Every admin action, newest first — immutable",
+  "admin2_activityLoadFailed": "Could not load the activity log.",
+  "admin2_activityEmptyTitle": "No audit entries yet",
+  "admin2_activityEmptyHint": "Admin actions will appear here as they happen.",
+  "admin2_activitySearchHint": "Search by action, admin, or target…",
+  "admin2_activityExportCsv": "Export CSV",
+  "admin2_activityCsvFailed": "Could not share the CSV file.",
+  "admin2_teamSubtitle": "Who can run the platform, and with what role",
+  "admin2_teamLoadFailed": "Could not load the admin team.",
+  "admin2_teamViewOnly": "Only a super admin can invite, reset two-factor authentication, or revoke a role. You can view the team.",
+  "admin2_teamEmailInvalid": "Enter a valid email address.",
+  "admin2_teamInviteLog": "Invited {email} as {role} (48 h expiry).",
+  "@admin2_teamInviteLog": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      },
+      "role": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_teamInviteSent": "Invite sent to {email}.",
+  "@admin2_teamInviteSent": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_teamInviteFailed": "Could not save the invite.",
+  "admin2_teamActionFailed": "Could not complete that action.",
+  "admin2_teamResetTotpTitle": "Reset two-factor authentication?",
+  "admin2_teamResetTotpBody": "{email} will have to enrol TOTP again on their next login.",
+  "@admin2_teamResetTotpBody": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_teamTotpResetLog": "TOTP reset for {email}.",
+  "@admin2_teamTotpResetLog": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_teamRevokeTitle": "Revoke this admin role?",
+  "admin2_teamRevokeBody": "{email} will lose admin access and become a customer account.",
+  "@admin2_teamRevokeBody": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_teamWithdrawTitle": "Withdraw this invite?",
+  "admin2_teamWithdrawBody": "{email} will no longer be able to accept it.",
+  "@admin2_teamWithdrawBody": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_teamInviteWithdrawnLog": "Invite withdrawn for {email}.",
+  "@admin2_teamInviteWithdrawnLog": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_teamInviteButton": "Invite an admin",
+  "admin2_teamInvitesTitle": "Pending invites",
+  "admin2_teamInvitesEmpty": "No pending invites.",
+  "admin2_teamMembersTitle": "Team members",
+  "admin2_teamMembersEmpty": "No admins found — the team list reads the users who hold an admin role.",
+  "admin2_teamInviteEmail": "Email address",
+  "admin2_teamInviteHint": "Invites expire after 48 hours. The invitee creates their account first, then a super admin grants the role.",
+  "admin2_teamInviteSending": "Sending…",
+  "admin2_teamInviteSend": "Send invite",
+  "admin2_teamInviteWithdraw": "Withdraw",
+  "admin2_team2faOn": "2FA on",
+  "admin2_team2faOff": "2FA off",
+  "admin2_teamReset2fa": "Reset 2FA",
+  "admin2_teamRevokeRole": "Revoke role",
+  "admin2_teamResetTotpMenu": "Reset two-factor authentication",
+  "admin2_teamRevokeMenu": "Revoke admin role",
+  "admin2_settingsTitle": "Cities & settings",
+  "admin2_settingsSubtitle": "The platform defaults, in one document",
+  "admin2_settingsLoadFailed": "Could not load the platform settings.",
+  "admin2_settingsNumbersInvalid": "Advance %, deposit and late grace must be numbers.",
+  "admin2_settingsSaved": "Platform settings saved.",
+  "admin2_settingsCities": "Live cities (comma-separated)",
+  "admin2_settingsCategories": "Car categories (comma-separated)",
+  "admin2_settingsAdvance": "Advance %",
+  "admin2_settingsDeposit": "Default deposit (Rs.)",
+  "admin2_settingsGrace": "Late grace (minutes)",
+  "admin2_settingsSupportHours": "Support hours",
+  "admin2_settingsAgreementTerms": "Default agreement terms",
+  "admin2_settingsMaintenance": "Maintenance mode",
+  "admin2_settingsMaintenanceHint": "When on, the app shows a maintenance notice at startup.",
+  "admin2_settingsSave": "Save settings",
+  "admin2_shopAppReasonRequired": "A reason is required — the owner sees it.",
+  "admin2_shopAppChecklist": "Checklist — {done} of 6 complete",
+  "@admin2_shopAppChecklist": {
+    "placeholders": {
+      "done": {
+        "type": "Object"
+      }
+    }
+  },
+  "admin2_shopAppKycDocs": "KYC documents on file",
+  "admin2_shopAppFleetPhotos": "Fleet photos",
+  "admin2_shopAppReasonLabel": "Reason (required to ask for more info or reject — the owner sees it)",
+  "admin2_shopAppCallOwner": "Call owner",
+  "admin2_shopAppAskInfo": "Ask for more info",
+  "admin2_shopAppOwner": "Owner: {owner} • {phone} • CNIC {cnic}",
+  "@admin2_shopAppOwner": {
+    "placeholders": {
+      "owner": {
+        "type": "String"
+      },
+      "phone": {
+        "type": "String"
+      },
+      "cnic": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_shopActionMessageOwner": "Message owner",
+  "admin2_shopActionHello": "Hello from RentalHub admin regarding {shop}.",
+  "@admin2_shopActionHello": {
+    "placeholders": {
+      "shop": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_shopActionNoPhone": "No phone number on file for this shop.",
+  "admin2_shopActionLift": "Lift suspension",
+  "admin2_shopActionSuspend": "Suspend shop",
+  "admin2_custActionAddNoteHint": "Add an admin note…",
+  "admin2_custActionAddNote": "Add note",
+  "admin2_custActionBlacklist": "Report to blacklist",
+  "admin2_trustTitle": "Trust score",
+  "admin2_trustKycLine": "KYC: {status} • {trips} completed trip(s) • ",
+  "@admin2_trustKycLine": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      },
+      "trips": {
+        "type": "Object"
+      }
+    }
+  },
+  "admin2_trustOwnerRating": "Owner rating: {rating}",
+  "@admin2_trustOwnerRating": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_trustBase": "Base",
+  "admin2_trustTrips": "Trips",
+  "admin2_trustRatings": "Ratings",
+  "admin2_trustPunctuality": "Punctuality",
+  "admin2_trustConduct": "Conduct",
+  "admin2_fleetPhotoTooltip": "View photo full screen",
+  "admin2_fleetPhotoFailed": "Photo could not be loaded.",
+  "admin2_disputeSlaBreached": "SLA breached by {hours}h — decide now",
+  "@admin2_disputeSlaBreached": {
+    "placeholders": {
+      "hours": {
+        "type": "Object"
+      }
+    }
+  },
+  "admin2_disputeSlaLeft": "SLA: {hours}h left of 72h",
+  "@admin2_disputeSlaLeft": {
+    "placeholders": {
+      "hours": {
+        "type": "Object"
+      }
+    }
+  },
+  "admin2_disputeAmountHint": "Enter the decision amount in rupees (0 is allowed).",
+  "admin2_disputeNoteRequired": "An admin note is required with the decision.",
+  "admin2_disputeDecided": "Dispute decided.",
+  "admin2_disputeTitle": "Dispute {id}",
+  "@admin2_disputeTitle": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_disputeBookingLine": "Booking {booking} • {status} • {sla}",
+  "@admin2_disputeBookingLine": {
+    "placeholders": {
+      "booking": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      },
+      "sla": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_disputeCustomerStatement": "Customer statement",
+  "admin2_disputeCategory": "Category: {category}",
+  "@admin2_disputeCategory": {
+    "placeholders": {
+      "category": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_disputeCustomer": "Customer: {name}",
+  "@admin2_disputeCustomer": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_disputeShopSide": "Shop side — the booking record",
+  "admin2_disputeBookingLabel": "Booking: {id}",
+  "@admin2_disputeBookingLabel": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_disputeShopLabel": "Shop: {id}",
+  "@admin2_disputeShopLabel": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_disputeNoShopStatement": "The shop has no written statement on file — the decision uses the booking, handover and deposit records.",
+  "admin2_disputeDecisionHeading": "Decision",
+  "admin2_disputeFullCustomer": "Full refund to customer",
+  "admin2_disputePartial": "Partial — split",
+  "admin2_disputeFullOwner": "Full to owner (claim upheld)",
+  "admin2_disputeAmountLabel": "Decision amount (Rs.)",
+  "admin2_disputeNoteLabel": "Admin note — why this decision (both sides see it)",
+  "admin2_appealReasonRequired": "A reason is required — it is stored with the decision.",
+  "admin2_appealKept": "Flag kept — appeal denied.",
+  "admin2_appealRemoved": "Flag removed.",
+  "admin2_appealDialogTitle": "Tribunal Blacklist Appeal",
+  "admin2_appealEvidence": "Evidence: {count} file(s) on record",
+  "@admin2_appealEvidence": {
+    "placeholders": {
+      "count": {
+        "type": "Object"
+      }
+    }
+  },
+  "admin2_appealDecisionLabel": "Decision reason (mandatory):",
+  "admin2_appealDecisionHint": "Why is the flag kept or removed?",
+  "admin2_appealKeep": "Keep flag",
+  "admin2_appealRemove": "Remove flag",
+  "admin2_bookingsSubtitle": "Every booking on the platform",
+  "admin2_bookingsSearchHint": "Search by booking, customer, car, or shop…",
+  "admin2_bookingsLoadFailed": "Could not load the bookings.",
+  "admin2_bookingsEmptyTitle": "No bookings match",
+  "admin2_bookingsEmptyHint": "The list reads the bookings collection.",
+  "admin2_bookingDetailTitle": "Booking detail",
+  "admin2_bookingDetailSubtitle": "Lifecycle, money, handover and messages",
+  "admin2_bookingDetailLoadFailed": "Could not load this booking.",
+  "admin2_bookingDetailNotFound": "Booking not found.",
+  "admin2_bookingDetailShareFailed": "Could not share the booking summary.",
+  "admin2_bookingDetailDownloadAll": "Download all",
+  "admin2_bookingDetailAmounts": "Amounts",
+  "admin2_bookingDetailAdvanceRequired": "Advance required: {amount}",
+  "@admin2_bookingDetailAdvanceRequired": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_bookingDetailAdvancePaid": "Advance paid: {amount}",
+  "@admin2_bookingDetailAdvancePaid": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_bookingDetailRemaining": "Remaining balance: {amount}",
+  "@admin2_bookingDetailRemaining": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_bookingDetailTransaction": "Transaction: {id}",
+  "@admin2_bookingDetailTransaction": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_bookingDetailPaymentDeposit": "Payment & deposit",
+  "admin2_bookingDetailPaymentProof": "Payment proof: {url}",
+  "@admin2_bookingDetailPaymentProof": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_bookingDetailNoDeposit": "No deposit record.",
+  "admin2_bookingDetailDeposit": "Deposit {amount} — {status}",
+  "@admin2_bookingDetailDeposit": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_bookingDetailAgreement": "Agreement",
+  "admin2_bookingDetailAgreementOnFile": "Agreement PDF on file — tap to open.",
+  "admin2_bookingDetailNoAgreement": "No agreement PDF on file.",
+  "admin2_bookingDetailOpenAgreement": "Open agreement PDF",
+  "admin2_bookingDetailPdfFailed": "Could not open the PDF link.",
+  "admin2_bookingDetailHandover": "Handover",
+  "admin2_bookingDetailNoHandover": "No handover record.",
+  "admin2_bookingDetailOdometer": "Odometer at pickup: {km} km",
+  "@admin2_bookingDetailOdometer": {
+    "placeholders": {
+      "km": {
+        "type": "Object"
+      }
+    }
+  },
+  "admin2_bookingDetailFuel": "Fuel: {level}",
+  "@admin2_bookingDetailFuel": {
+    "placeholders": {
+      "level": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_bookingDetailDamage": "Damage notes: {notes}",
+  "@admin2_bookingDetailDamage": {
+    "placeholders": {
+      "notes": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_bookingDetailDispute": "Dispute",
+  "admin2_bookingDetailStatusLine": "Status: {status}",
+  "@admin2_bookingDetailStatusLine": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_bookingDetailMeta": "Status: {status} • Trip: {trip} • Package: {package} • {drive}",
+  "@admin2_bookingDetailMeta": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      },
+      "trip": {
+        "type": "String"
+      },
+      "package": {
+        "type": "String"
+      },
+      "drive": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_bookingDetailHandoverSummary": "odometer {km} km, fuel {fuel}, damage: {damage}",
+  "@admin2_bookingDetailHandoverSummary": {
+    "placeholders": {
+      "km": {
+        "type": "Object"
+      },
+      "fuel": {
+        "type": "String"
+      },
+      "damage": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_bookingDetailMessages": "Messages log",
+  "admin2_bookingDetailNoMessages": "No notifications recorded for this booking.",
+  "admin2_carsSubtitle": "Every vehicle listing, with its review state",
+  "admin2_carsSearchHint": "Search by car or plate number…",
+  "admin2_carsLoadFailed": "Could not load the cars.",
+  "admin2_carsEmptyTitle": "No cars match",
+  "admin2_carsEmptyHint": "The list reads the vehicles collection.",
+  "admin2_carReviewReasonRequired": "A reason is required to hide or reject a listing.",
+  "admin2_carReviewDaily": "Daily (24 h)",
+  "admin2_carReviewOutCityDaily": "Out-of-city daily",
+  "admin2_carReviewNotSet": "Not set",
+  "admin2_carReviewWeekly": "Weekly rate",
+  "admin2_carReviewDeposit": "Security deposit",
+  "admin2_carReviewTracker": "Tracker",
+  "admin2_carReviewInsurance": "Insurance policy",
+  "admin2_carReviewChassis": "Chassis",
+  "admin2_carReviewEngine": "Engine",
+  "admin2_carReviewMileage": "Mileage",
+  "admin2_carReviewNotListed": "Not listed",
+  "admin2_carReviewReasonLabel": "Reason (required to hide or reject — stored with the decision)",
+  "admin2_carReviewSpecs": "Plate {plate} • {category} • {transmission} • {fuel} • {seats} seats\nStatus: {status} • Current review: {review}",
+  "@admin2_carReviewSpecs": {
+    "placeholders": {
+      "plate": {
+        "type": "String"
+      },
+      "category": {
+        "type": "String"
+      },
+      "transmission": {
+        "type": "String"
+      },
+      "fuel": {
+        "type": "String"
+      },
+      "seats": {
+        "type": "Object"
+      },
+      "status": {
+        "type": "String"
+      },
+      "review": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_carReviewLastDecision": "Last decision: {reason}",
+  "@admin2_carReviewLastDecision": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_reportsSubtitle": "KPIs for a date range, with CSV and PDF export",
+  "admin2_reportsFrom": "From",
+  "admin2_reportsTo": "To",
+  "admin2_reportsLoadFailed": "Could not load the report.",
+  "admin2_reportsEmptyTitle": "No data for this range",
+  "admin2_reportsEmptyHint": "The report reads the live collections.",
+  "admin2_reportsRevenue": "Booking revenue",
+  "admin2_reportsIncome": "Finance income",
+  "admin2_reportsExpense": "Finance expense",
+  "admin2_reportsNewCustomers": "New customers",
+  "admin2_reportsDisputesOpen": "Disputes open",
+  "admin2_reportsDisputesResolved": "Disputes resolved",
+  "admin2_reportsByCity": "Bookings by city",
+  "admin2_reportsNone": "None in this range.",
+  "admin2_reportsTopShops": "Top shops",
+  "admin2_reportsTopShopsLine": "{name}: {count} bookings",
+  "@admin2_reportsTopShopsLine": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "count": {
+        "type": "Object"
+      }
+    }
+  },
+  "admin2_reportsIncomeByCategory": "Income by category",
+  "admin2_reportsExpenseByCategory": "Expense by category",
+  "admin2_slaBreachedMinutes": "SLA breached by {minutes}m",
+  "@admin2_slaBreachedMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "Object"
+      }
+    }
+  },
+  "admin2_slaBreachedHoursMinutes": "SLA breached by {hours}h {minutes}m",
+  "@admin2_slaBreachedHoursMinutes": {
+    "placeholders": {
+      "hours": {
+        "type": "Object"
+      },
+      "minutes": {
+        "type": "Object"
+      }
+    }
+  },
+  "admin2_slaLeftMinutes": "{minutes}m of {total}h SLA left",
+  "@admin2_slaLeftMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "Object"
+      },
+      "total": {
+        "type": "Object"
+      }
+    }
+  },
+  "adminAuditLoadMore": "Load more",
+  "adminAuditShowing": "Showing {count}",
+  "@adminAuditShowing": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "adminAuditMatching": "{count} matching entries",
+  "@adminAuditMatching": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "adminAuditSearchTicketsHint": "Search by message or customer ID…",
+  "adminAuditCnicAll": "All",
+  "adminAuditCnicOnFile": "CNIC on file",
+  "adminAuditCnicMissing": "CNIC missing",
+  "adminAuditTrustStored": "Stored trust {score}",
+  "@adminAuditTrustStored": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "adminAuditBlacklisted": "Blacklisted",
+  "adminAuditWatchlisted": "Watchlisted",
+  "adminAuditFilterAction": "Action",
+  "adminAuditFilterActor": "Admin email",
+  "adminAuditFilterFrom": "From",
+  "adminAuditFilterTo": "To",
+  "adminAuditClearFilters": "Clear filters",
+  "adminAuditAllActions": "All actions",
+  "adminAuditInvalidRange": "The From date must be on or before the To date.",
+  "adminAuditExportPdf": "Export PDF",
+  "adminAuditPdfFailed": "Could not share the PDF file.",
+  "adminAuditPendingApprovals": "Shops waiting for approval",
+  "adminAuditPendingApprovalsHint": "Open the approvals queue to decide them.",
+  "adminAuditCredits": "WhatsApp credits",
+  "adminAuditCreditsNone": "No record yet",
+  "adminAuditLinkedShop": "Shop",
+  "adminAuditLinkedBooking": "Booking",
+  "adminAuditStoredScore": "Previously stored: {score} — the live score above is authoritative",
+  "@adminAuditStoredScore": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "adminAuditKycNotSubmitted": "KYC not submitted",
+  "adminAuditKycPending": "KYC pending review",
+  "adminAuditKycVerified": "KYC verified",
+  "adminAuditKycRejected": "KYC rejected",
+  "adminAuditFirstMatches": "First {count} matches",
+  "@adminAuditFirstMatches": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "admin2_ownerNotListed": "Owner not listed",
+  "admin2_shopRating": "Rating {rating}",
+  "@admin2_shopRating": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_shopDetailAccountType": "account",
+  "admin2_loading": "Loading…",
+  "admin2_notOnFile": "not on file",
+  "admin2_customerDetailWatchlistRemoved": "Customer removed from the watchlist.",
+  "admin2_disputesDecidedLine": "Decided: {decision}",
+  "@admin2_disputesDecidedLine": {
+    "placeholders": {
+      "decision": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_disputeSave": "Save decision",
+  "admin2_teamTotpOffBanner": "{count} team member(s) have two-factor authentication off.",
+  "@admin2_teamTotpOffBanner": {
+    "placeholders": {
+      "count": {
+        "type": "Object"
+      }
+    }
+  },
+  "admin2_teamTotpRemindAll": "Remind all",
+  "admin2_teamTotpReminderSent": "2FA reminders sent.",
+  "admin2_teamTotpReminderFailed": "Could not send the reminders.",
+  "admin2_teamInviteSave": "Save invite",
+  "admin2_teamInviteSaved": "Invite saved for {email}. No email is sent yet — share the accept link from the invite list.",
+  "@admin2_teamInviteSaved": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_teamInviteAccept": "Accept",
+  "admin2_teamInviteCopyLink": "Copy accept link",
+  "admin2_teamInviteLinkCopied": "Accept link copied.",
+  "admin2_teamInviteExpired": "Expired",
+  "admin2_teamInviteExpires": "Expires {date}",
+  "@admin2_teamInviteExpires": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_inviteAcceptTitle": "Accept invite",
+  "admin2_inviteAcceptSignIn": "Sign in as a super admin first.",
+  "admin2_inviteAcceptNotSuper": "Only a super admin can grant an admin role.",
+  "admin2_inviteAcceptNoInvite": "No pending invite matches this link — it may have expired or already been accepted.",
+  "admin2_inviteAcceptFailed": "Could not load the invite.",
+  "admin2_inviteAcceptGrantFailed": "Could not grant the role.",
+  "admin2_inviteAcceptGranted": "Role granted.",
+  "admin2_inviteAcceptBody": "Grant {role} to {email}?",
+  "@admin2_inviteAcceptBody": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      },
+      "role": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_inviteAcceptHint": "The invitee must already have an account. Granting gives them admin access immediately.",
+  "admin2_inviteAcceptGrant": "Grant role",
+  "admin2_inviteAcceptGranting": "Granting…",
+  "admin2_inviteAcceptBackToTeam": "Back to team",
+  "admin2_settingsAdvanceRange": "Advance must be between 0 and 100.",
+  "admin2_settingsDepositNegative": "Deposit cannot be negative.",
+  "admin2_settingsGraceNegative": "Late grace cannot be negative.",
+  "admin2_settingsNoDocument": "No platform settings saved yet — showing defaults. Save to create them.",
+  "admin2_settingsUnsavedTitle": "Leave without saving?",
+  "admin2_settingsUnsavedBody": "You have unsaved changes. They will be lost if you leave.",
+  "admin2_settingsNotLoaded": "Settings have not loaded yet — try again.",
+  "admin2_tribunalReviewFlag": "Review flag",
+  "admin2_ticketLinkedBooking": "Linked booking",
+  "admin2_anncSentCount": "Sent {count}",
+  "@admin2_anncSentCount": {
+    "placeholders": {
+      "count": {
+        "type": "Object"
+      }
+    }
+  },
+  "admin2_anncOpenedCount": "Opened {count}",
+  "@admin2_anncOpenedCount": {
+    "placeholders": {
+      "count": {
+        "type": "Object"
+      }
+    }
+  },
+  "admin2_activityDecision": "Decision: {decision}",
+  "@admin2_activityDecision": {
+    "placeholders": {
+      "decision": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_trustRatingNone": "none yet",
+  "admin2_trustKyc": "KYC",
+  "admin2_reportsBookings": "Bookings",
+  "admin2_reportsCompleted": "Completed",
+  "admin2_reportsExportCsv": "Export CSV",
+  "admin2_reportsCsvShareFailed": "Could not share the CSV file.",
+  "admin2_bookingsCustomer": "Customer",
+  "admin2_bookingDetailDepositDeducted": "Deposit {amount} — {status} (deducted {deducted})",
+  "@admin2_bookingDetailDepositDeducted": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      },
+      "deducted": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_bookingDetailDisputeStatus": "Status: {status}",
+  "@admin2_bookingDetailDisputeStatus": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_bookingDetailDisputeDecision": "Decision: {label}",
+  "@admin2_bookingDetailDisputeDecision": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_bookingDetailDisputeDecisionAmount": "Decision: {label} — {amount}",
+  "@admin2_bookingDetailDisputeDecisionAmount": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_carReviewHourly": "1 h / 3 h / 6 h",
+  "admin2_carReviewMileageKm": "{km} km",
+  "@admin2_carReviewMileageKm": {
+    "placeholders": {
+      "km": {
+        "type": "Object"
+      }
+    }
+  },
+  "admin2_carReviewMetaLine1": "Plate {plate} • {category} • {transmission} • {fuel} • {seats} seats",
+  "@admin2_carReviewMetaLine1": {
+    "placeholders": {
+      "plate": {
+        "type": "String"
+      },
+      "category": {
+        "type": "String"
+      },
+      "transmission": {
+        "type": "String"
+      },
+      "fuel": {
+        "type": "String"
+      },
+      "seats": {
+        "type": "Object"
+      }
+    }
+  },
+  "admin2_carReviewMetaLine2": "Status: {status} • Current review: {review}",
+  "@admin2_carReviewMetaLine2": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      },
+      "review": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_carReviewNotReviewed": "not reviewed yet",
+  "admin2_checklistShopName": "Shop name and address",
+  "admin2_checklistOwnerPhone": "Owner phone number",
+  "admin2_checklistOwnerCnic": "Owner CNIC on file",
+  "admin2_checklistKyc": "KYC documents uploaded",
+  "admin2_checklistBank": "Bank / wallet account on file",
+  "admin2_checklistFleet": "Fleet photos uploaded",
+  "admin2_disputed": "Disputed",
+  "admin2_inCity": "In city",
+  "admin2_outCity": "Out of city",
+  "admin2_bookingSummaryTitle": "Booking {id}",
+  "@admin2_bookingSummaryTitle": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_bookingSummaryStatusLine": "Status: {status} • Trip: {trip} ({kmLimit} km limit)",
+  "@admin2_bookingSummaryStatusLine": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      },
+      "trip": {
+        "type": "String"
+      },
+      "kmLimit": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_bookingSummaryVehicle": "Vehicle: {vehicle} ({plate})",
+  "@admin2_bookingSummaryVehicle": {
+    "placeholders": {
+      "vehicle": {
+        "type": "String"
+      },
+      "plate": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_bookingSummaryShop": "Shop: {shop} • Customer: {customer}",
+  "@admin2_bookingSummaryShop": {
+    "placeholders": {
+      "shop": {
+        "type": "String"
+      },
+      "customer": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_bookingSummaryPickup": "Pickup: {pickup} • Return: {returnTime}",
+  "@admin2_bookingSummaryPickup": {
+    "placeholders": {
+      "pickup": {
+        "type": "String"
+      },
+      "returnTime": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_bookingSummaryTotal": "Total: {total} • Advance required: {advanceRequired} • Paid: {paid} • Remaining: {remaining}",
+  "@admin2_bookingSummaryTotal": {
+    "placeholders": {
+      "total": {
+        "type": "String"
+      },
+      "advanceRequired": {
+        "type": "String"
+      },
+      "paid": {
+        "type": "String"
+      },
+      "remaining": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_bookingSummaryDepositNone": "Deposit: none",
+  "admin2_bookingSummaryDeposit": "Deposit: {amount} ({status})",
+  "@admin2_bookingSummaryDeposit": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_bookingSummaryAgreement": "Agreement PDF: {url}",
+  "@admin2_bookingSummaryAgreement": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_bookingSummaryHandoverNone": "Handover: none",
+  "admin2_bookingSummaryHandover": "Handover: odometer {odometer} km, fuel {fuel}, damage: {damage}",
+  "@admin2_bookingSummaryHandover": {
+    "placeholders": {
+      "odometer": {
+        "type": "Object"
+      },
+      "fuel": {
+        "type": "String"
+      },
+      "damage": {
+        "type": "String"
+      }
+    }
+  },
+  "admin2_bookingPhotoOpenFailed": "Could not open the photo link.",
+  "admin2_teamInviteSaving": "Saving…",
+  "maintenanceTitle": "Under maintenance",
+  "maintenanceBody": "Rentalhub is under maintenance right now. Please try again in a little while.",
+  "maintenanceRetry": "Try again",
+  "admin2_totpReminderLogin": "A super admin asked you to turn on two-factor authentication.",
+  "admin2_evidenceTitle": "Evidence",
+  "close": "Close",
+  "admin2_teamResetTotpTooltip": "Reset two-factor authentication",
+  "admin2_teamRevokeTooltip": "Revoke admin role"
 }

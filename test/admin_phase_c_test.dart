@@ -73,8 +73,18 @@ void main() {
 
   group('Phase C (C2) — the booking-time blacklist check', () {
     test('a blacklisted CNIC cannot book online', () async {
+      // F-M1: no seeded sample case any more — report the CNIC on
+      // the blacklist instance the booking source uses.
+      final blacklist = BlacklistRemoteDataSource();
+      await blacklist.reportCustomerToBlacklist(
+        reportedByShopId: 'shop-1',
+        cnicNumber: '35201-9999999-1',
+        phoneNumber: '03001234567',
+        reasonCategory: 'Default & Car Impoundment',
+        description: 'Test report.',
+      );
       final ds = BookingRemoteDataSource(
-        blacklist: BlacklistRemoteDataSource(),
+        blacklist: blacklist,
       );
       expect(
         () => ds.createBookingRequest(
@@ -113,8 +123,16 @@ void main() {
     });
 
     test('a blacklisted guarantor CNIC cannot book either', () async {
+      final blacklist = BlacklistRemoteDataSource();
+      await blacklist.reportCustomerToBlacklist(
+        reportedByShopId: 'shop-1',
+        cnicNumber: '35201-9999999-1',
+        phoneNumber: '03001234567',
+        reasonCategory: 'Default & Car Impoundment',
+        description: 'Test report.',
+      );
       final ds = BookingRemoteDataSource(
-        blacklist: BlacklistRemoteDataSource(),
+        blacklist: blacklist,
       );
       expect(
         () => ds.createBookingRequest(
@@ -140,11 +158,11 @@ void main() {
       final ds = AdminPeopleDataSource();
       expect(await ds.getCustomers(), isEmpty);
       expect(await ds.getCustomerDetail('customer-1'), isNull);
-      // The blacklist list reads the shared data source's in-memory
-      // fallback offline, so the seeded sample record is visible.
+      // F-M1: the blacklist list is empty offline now — the seeded
+      // sample record is gone, so nothing is listed until a real
+      // report lands.
       final records = await ds.getBlacklistRecords();
-      expect(records.length, 1);
-      expect(records.first.entity.blacklistId, 'BLK-1001');
+      expect(records, isEmpty);
       expect(
         await ds.setCustomerWatchlisted(
             customerId: 'customer-1', watchlisted: true),
@@ -180,8 +198,10 @@ void main() {
   group('Phase C — views render', () {
     testWidgets('customers list shows search and its empty state',
         (tester) async {
-      await tester.pumpWidget(
-          const MaterialApp(home: AdminCustomersView()));
+      await tester.pumpWidget(MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const AdminCustomersView()));
       await tester.pumpAndSettle();
       // Twice: the header title and the narrow nav strip's chip.
       expect(find.text('Customers'), findsWidgets);
@@ -199,12 +219,17 @@ void main() {
     });
 
     testWidgets('tribunal lists the blacklist cases', (tester) async {
-      await tester.pumpWidget(
-          const MaterialApp(home: AdminBlacklistTribunalView()));
+      await tester.pumpWidget(MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const AdminBlacklistTribunalView()));
       await tester.pumpAndSettle();
       expect(find.text('National Rental Fraud & Blacklist Tribunal'),
           findsOneWidget);
-      expect(find.textContaining('BLK-1001'), findsOneWidget);
+      // F-M1: no seeded sample case — the tribunal is empty until a
+      // real report lands.
+      expect(find.text('No blacklist cases'), findsOneWidget);
+      expect(find.textContaining('BLK-1001'), findsNothing);
     });
   });
 }

@@ -3,8 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/di/injection_container.dart';
+import '../../../../core/platform/app_platform.dart';
 import '../../../../core/routing/auth_route_guard.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../admin/data/repositories/platform_settings_repository.dart';
+import '../widgets/maintenance_notice.dart';
 
 class SplashView extends StatefulWidget {
   final Duration duration;
@@ -24,6 +28,14 @@ class _SplashViewState extends State<SplashView>
   late Animation<double> _fadeAnimation;
   late Animation<double> _scaleAnimation;
   Timer? _timer;
+
+  // F-M13: when the platform is in maintenance mode the customer /
+  // owner app stops here with a notice instead of routing onward.
+  // Admins are never gated — the web admin panel never shows this
+  // screen, and an admin must always be able to reach Settings to
+  // turn maintenance off.
+  bool _maintenanceMode = false;
+  bool _checkingMaintenance = false;
 
   @override
   void initState() {
@@ -52,11 +64,41 @@ class _SplashViewState extends State<SplashView>
     });
 
     // Auto-advance after splash duration based on session & onboarding status
-    _timer = Timer(widget.duration, () {
-      if (mounted) {
-        context.go(AuthRouteGuard.resolveAuthDestination());
+    _timer = Timer(widget.duration, _advance);
+  }
+
+  /// F-M13: the maintenance check. A failed read (offline, no
+  /// Firestore) is fail-open — the app proceeds normally; only an
+  /// explicit `maintenance_mode: true` on `platform_settings/global`
+  /// stops the app here with the notice.
+  Future<void> _advance() async {
+    if (!mounted) return;
+    if (!AppPlatform.isWeb) {
+      setState(() => _checkingMaintenance = true);
+      var maintenance = false;
+      try {
+        final settings = sl.isRegistered<PlatformSettingsRepository>()
+            ? sl<PlatformSettingsRepository>()
+            : const PlatformSettingsRepository();
+        maintenance = await settings.maintenanceMode();
+      } catch (_) {
+        maintenance = false;
       }
-    });
+      if (!mounted) return;
+      setState(() => _checkingMaintenance = false);
+      if (maintenance) {
+        setState(() => _maintenanceMode = true);
+        return;
+      }
+    }
+    if (mounted) {
+      context.go(AuthRouteGuard.resolveAuthDestination());
+    }
+  }
+
+  Future<void> _retryAfterMaintenance() async {
+    setState(() => _maintenanceMode = false);
+    await _advance();
   }
 
   @override
@@ -70,6 +112,15 @@ class _SplashViewState extends State<SplashView>
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final year = DateTime.now().year;
+    if (_maintenanceMode) {
+      // F-M13: the visible effect of the maintenance toggle — the
+      // customer / owner app shows this notice at startup while
+      // `maintenance_mode` is on, with a retry that re-checks.
+      return MaintenanceNotice(
+        onRetry: _retryAfterMaintenance,
+        isChecking: _checkingMaintenance,
+      );
+    }
     return Scaffold(
       backgroundColor: AppColors.splashBackground,
       body: Container(

@@ -41,7 +41,7 @@ class ShopReviewStepWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(l10n.onboardingReviewTitle, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900)),
+        Text(l10n.onboardingReviewTitle, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
         const SizedBox(height: 4),
         Text(l10n.onboardingReviewHint, style: Theme.of(context).textTheme.bodySmall),
         const SizedBox(height: 12),
@@ -91,7 +91,7 @@ class ShopReviewStepWidget extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
+            Text(title, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
             const SizedBox(height: 8),
             ...children,
           ],
@@ -108,7 +108,7 @@ class ShopReviewStepWidget extends StatelessWidget {
         children: [
           Expanded(flex: 2, child: Text(label, style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant))),
           const SizedBox(width: 8),
-          Expanded(flex: 3, child: Text(value.isEmpty ? '—' : value, textAlign: TextAlign.end, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700))),
+          Expanded(flex: 3, child: Text(value.isEmpty ? '—' : value, textAlign: TextAlign.end, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500))),
         ],
       ),
     );

@@ -59,7 +59,7 @@ class BookingTicketCard extends StatelessWidget {
                       children: [
                         Text(
                           booking.vehicleName ?? l10n.rentalCar,
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
                         ),
                         Text(
                           booking.shopName ?? l10n.showroomLabel,
@@ -85,7 +85,7 @@ class BookingTicketCard extends StatelessWidget {
                       l10n.ticketPickupDate(booking.pickupTime.day, booking.pickupTime.month, booking.pickupTime.year),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w600),
+                      style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500),
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -95,7 +95,7 @@ class BookingTicketCard extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.end,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800),
+                      style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ),
                 ],

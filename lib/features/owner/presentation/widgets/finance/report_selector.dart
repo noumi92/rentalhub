@@ -94,9 +94,7 @@ class ReportSelector extends StatelessWidget {
       child: ListTile(
         leading: Icon(icon, color: Theme.of(context).colorScheme.primary),
         title: Text(title,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w800,
-                )),
+            style: Theme.of(context).textTheme.bodyMedium),
         subtitle: Text(subtitle),
         trailing: isSelected
             ? Icon(Icons.check_circle_rounded,

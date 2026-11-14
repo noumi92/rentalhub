@@ -6,6 +6,9 @@ import '../../../../core/widgets/app_feedback.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../fleet/domain/entities/vehicle_entity.dart';
 import '../../data/datasources/admin_shops_data_source.dart';
+import '../../domain/admin_permissions.dart';
+import 'admin_permission_check.dart';
+import 'admin_status_chip.dart';
 
 /// The B3 review sheet for one car listing: the real rates (in-city
 /// and out-of-city), the documents the vehicle record actually holds
@@ -45,23 +48,31 @@ class _CarReviewDetailSheetState extends State<CarReviewDetailSheet> {
   Future<void> _decide(String status) async {
     final reason = _reasonController.text.trim();
     if (status != 'approved' && reason.isEmpty) {
-      AppFeedback.showError(
-          context, 'A reason is required to hide or reject a listing.');
+      AppFeedback.showError(context,
+          AppLocalizations.of(context)!.admin2_carReviewReasonRequired);
       return;
     }
+    // F-C1: super admin + operations only (decideVendor) — see the
+    // shop application sheet for the check's contract.
+    final check = await AdminPermissionCheck.check(
+        context, AdminPermission.decideVendor);
+    if (!check.proceed) return;
     setState(() => _isWorking = true);
     final synced = await sl<AdminShopsDataSource>().setCarReview(
       vehicleId: widget.vehicle.vehicleId,
       status: status,
       reason: reason,
+      adminRole: check.role,
     );
     if (!mounted) return;
     if (synced) {
-      AppFeedback.showSuccess(context, 'Decision saved.');
+      AppFeedback.showSuccess(
+          context, AppLocalizations.of(context)!.admin2_decisionSaved);
       widget.onDecided();
       Navigator.of(context).pop();
     } else {
-      AppFeedback.showError(context, 'Could not reach the server.');
+      AppFeedback.showError(
+          context, AppLocalizations.of(context)!.admin2_serverUnreachable);
       setState(() => _isWorking = false);
     }
   }
@@ -84,19 +95,18 @@ class _CarReviewDetailSheetState extends State<CarReviewDetailSheet> {
             Text('${v.make} ${v.model} (${v.year})',
                 style: const TextStyle(
                     fontSize: 18,
-                    fontWeight: FontWeight.w900,
+                    fontWeight: FontWeight.w600,
                     )),
             const SizedBox(height: 4),
             Text(
-                'Plate ${v.plateNumber} • ${v.category} • ${v.transmission} • ${v.fuelType} • ${v.seats} seats\nStatus: ${v.status} • Current review: ${widget.review?.status ?? 'not reviewed yet'}',
+                '${l10n.admin2_carReviewMetaLine1(v.plateNumber, v.category, v.transmission, v.fuelType, v.seats)}\n${l10n.admin2_carReviewMetaLine2(humanizeStatus(v.status, l10n), widget.review?.status == null ? l10n.admin2_carReviewNotReviewed : humanizeStatus(widget.review!.status, l10n))}',
                 style:
                     TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurfaceVariant)),
             if ((widget.review?.reason ?? '').isNotEmpty) ...[
               const SizedBox(height: 8),
-              Text('Last decision: ${widget.review!.reason}',
+              Text(l10n.admin2_carReviewLastDecision(widget.review!.reason),
                   style: TextStyle(
                       fontSize: 13,
-                      fontWeight: FontWeight.w700,
                       color: Theme.of(context).colorScheme.onSurfaceVariant)),
             ],
             const SizedBox(height: 16),
@@ -113,39 +123,44 @@ class _CarReviewDetailSheetState extends State<CarReviewDetailSheet> {
                             child: Icon(Icons.broken_image_rounded)))),
               ),
             const SizedBox(height: 16),
-            _row('Daily (24 h)',
+            _row(l10n.admin2_carReviewDaily,
                 l10n.addVehicleReviewDailyRate(formatRs(v.rates.daily24))),
-            _row('Out-of-city daily',
+            _row(l10n.admin2_carReviewOutCityDaily,
                 v.rates.outOfCityDaily == null
-                    ? 'Not set'
+                    ? l10n.admin2_carReviewNotSet
                     : l10n.amountRs(formatRs(v.rates.outOfCityDaily!))),
-            _row('1 h / 3 h / 6 h',
+            _row(l10n.admin2_carReviewHourly,
                 '${v.rates.hourly1 == null ? '—' : l10n.amountRs(formatRs(v.rates.hourly1!))} / ${v.rates.hourly3 == null ? '—' : l10n.amountRs(formatRs(v.rates.hourly3!))} / ${v.rates.hourly6 == null ? '—' : l10n.amountRs(formatRs(v.rates.hourly6!))}'),
-            _row('Weekly rate',
+            _row(l10n.admin2_carReviewWeekly,
                 v.weeklyRate == null
-                    ? 'Not set'
+                    ? l10n.admin2_carReviewNotSet
                     : l10n.amountRs(formatRs(v.weeklyRate!))),
-            _row('Security deposit',
+            _row(l10n.admin2_carReviewDeposit,
                 v.securityDepositPkr == null
-                    ? 'Not set'
+                    ? l10n.admin2_carReviewNotSet
                     : l10n.amountRs(formatRs(v.securityDepositPkr!))),
-            _row('Self drive',
-                v.isSelfDriveAvailable ? 'Yes' : 'No'),
-            _row('With driver',
-                v.isWithDriverAvailable ? 'Yes' : 'No'),
-            _row('Tracker', v.trackerProvider ?? 'Not listed'),
-            _row('Insurance policy', v.insurancePolicy ?? 'Not listed'),
-            _row('Chassis', v.chassisNumber ?? 'Not listed'),
-            _row('Engine', v.engineNumber ?? 'Not listed'),
-            _row('Mileage',
-                v.mileageKm == null ? 'Not listed' : '${v.mileageKm} km'),
+            _row(l10n.admin2_selfDrive,
+                v.isSelfDriveAvailable ? l10n.admin2_yes : l10n.admin2_no),
+            _row(l10n.admin2_withDriver,
+                v.isWithDriverAvailable ? l10n.admin2_yes : l10n.admin2_no),
+            _row(l10n.admin2_carReviewTracker,
+                v.trackerProvider ?? l10n.admin2_carReviewNotListed),
+            _row(l10n.admin2_carReviewInsurance,
+                v.insurancePolicy ?? l10n.admin2_carReviewNotListed),
+            _row(l10n.admin2_carReviewChassis,
+                v.chassisNumber ?? l10n.admin2_carReviewNotListed),
+            _row(l10n.admin2_carReviewEngine,
+                v.engineNumber ?? l10n.admin2_carReviewNotListed),
+            _row(l10n.admin2_carReviewMileage,
+                v.mileageKm == null
+                    ? l10n.admin2_carReviewNotListed
+                    : l10n.admin2_carReviewMileageKm(v.mileageKm!)),
             const SizedBox(height: 16),
             TextField(
               controller: _reasonController,
               maxLines: 2,
               decoration: InputDecoration(
-                hintText:
-                    'Reason (required to hide or reject — stored with the decision)',
+                hintText: l10n.admin2_carReviewReasonLabel,
                 filled: true,
                 fillColor:
                     Theme.of(context).colorScheme.surfaceContainerHighest,
@@ -158,32 +173,35 @@ class _CarReviewDetailSheetState extends State<CarReviewDetailSheet> {
               ),
             ),
             const SizedBox(height: 16),
-            Row(
+            // AD-m8: the trio stacks full-width (like the shop
+            // application sheet) with 48dp minimum targets — the old
+            // 3-in-a-row Row squeezed them below 48dp at 360px.
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Expanded(
-                  child: FilledButton(
-                    onPressed:
-                        _isWorking ? null : () => _decide('approved'),
-                    child: const Text('Approve'),
-                  ),
+                FilledButton(
+                  onPressed:
+                      _isWorking ? null : () => _decide('approved'),
+                  style: FilledButton.styleFrom(
+                      minimumSize: const Size(0, 48)),
+                  child: Text(l10n.admin2_approve),
                 ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed:
-                        _isWorking ? null : () => _decide('hidden'),
-                    child: const Text('Hide'),
-                  ),
+                const SizedBox(height: 8),
+                OutlinedButton(
+                  onPressed:
+                      _isWorking ? null : () => _decide('hidden'),
+                  style: OutlinedButton.styleFrom(
+                      minimumSize: const Size(0, 48)),
+                  child: Text(l10n.admin2_reviewHide),
                 ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed:
-                        _isWorking ? null : () => _decide('rejected'),
-                    style: OutlinedButton.styleFrom(
-                        foregroundColor: Colors.red.shade700),
-                    child: const Text('Reject'),
-                  ),
+                const SizedBox(height: 8),
+                OutlinedButton(
+                  onPressed:
+                      _isWorking ? null : () => _decide('rejected'),
+                  style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.red.shade700,
+                      minimumSize: const Size(0, 48)),
+                  child: Text(l10n.admin2_reject),
                 ),
               ],
             ),
@@ -205,7 +223,6 @@ class _CarReviewDetailSheetState extends State<CarReviewDetailSheet> {
           Text(value,
               style: const TextStyle(
                   fontSize: 13,
-                  fontWeight: FontWeight.w700,
                   )),
         ],
       ),

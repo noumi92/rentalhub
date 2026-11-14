@@ -64,7 +64,7 @@ class OwnerSubscriptionPlayPurchaseView extends StatelessWidget {
                             style: Theme.of(context)
                                 .textTheme
                                 .titleMedium
-                                ?.copyWith(fontWeight: FontWeight.w900)),
+                                ?.copyWith(fontWeight: FontWeight.w600)),
                         const SizedBox(height: 8),
                         Text(l10n.subscriptionPlayTodayFree,
                             style: Theme.of(context).textTheme.bodyMedium),
@@ -96,7 +96,7 @@ class OwnerSubscriptionPlayPurchaseView extends StatelessWidget {
                                       .textTheme
                                       .titleSmall
                                       ?.copyWith(
-                                          fontWeight: FontWeight.w800)),
+                                          fontWeight: FontWeight.w600)),
                             ),
                           ],
                         ),

@@ -87,7 +87,7 @@ class ManualBookingScheduleSection extends StatelessWidget {
                 selected: !isOutOfCity,
                 selectedColor: AppColors.primary,
                 labelStyle: TextStyle(
-                    fontWeight: FontWeight.w700,
+                    fontWeight: FontWeight.w500,
                     color: isOutOfCity
                         ? Theme.of(context).colorScheme.onSurface
                         : Colors.white),
@@ -102,7 +102,7 @@ class ManualBookingScheduleSection extends StatelessWidget {
                 selected: isOutOfCity,
                 selectedColor: AppColors.primary,
                 labelStyle: TextStyle(
-                    fontWeight: FontWeight.w700,
+                    fontWeight: FontWeight.w500,
                     color: isOutOfCity
                         ? Colors.white
                         : Theme.of(context).colorScheme.onSurface),
@@ -116,7 +116,7 @@ class ManualBookingScheduleSection extends StatelessWidget {
           Text(
             l10n.tripTrackerNote,
             style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                fontWeight: FontWeight.w600, color: AppColors.secondary),
+                fontWeight: FontWeight.w500, color: AppColors.secondary),
           ),
         ],
       ],
@@ -157,7 +157,7 @@ class ManualBookingScheduleSection extends StatelessWidget {
                     style: Theme.of(context)
                         .textTheme
                         .labelMedium
-                        ?.copyWith(fontWeight: FontWeight.w700),
+                        ?.copyWith(fontWeight: FontWeight.w500),
                   ),
                 ),
               ],
@@ -170,7 +170,7 @@ class ManualBookingScheduleSection extends StatelessWidget {
               style: Theme.of(context)
                   .textTheme
                   .bodyMedium
-                  ?.copyWith(fontWeight: FontWeight.w800),
+                  ,
             ),
           ],
         ),

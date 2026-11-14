@@ -184,7 +184,7 @@ class _OwnerManualBookingConfirmViewState
                     TextField(
                       controller: _advanceController,
                       keyboardType: TextInputType.number,
-                      style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
                       decoration: InputDecoration(
                         labelText: l10n.bookingCheckAdvance,
                         prefixIcon: const Icon(Icons.payments_rounded, size: 20),

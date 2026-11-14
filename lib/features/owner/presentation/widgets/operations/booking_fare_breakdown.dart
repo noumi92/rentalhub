@@ -120,7 +120,7 @@ class BookingFareBreakdown extends StatelessWidget {
                     style: Theme.of(context)
                         .textTheme
                         .titleSmall
-                        ?.copyWith(fontWeight: FontWeight.w800),
+                        ?.copyWith(fontWeight: FontWeight.w600),
                   ),
                 ),
                 Container(
@@ -139,7 +139,7 @@ class BookingFareBreakdown extends StatelessWidget {
                     style: Theme.of(context)
                         .textTheme
                         .labelSmall
-                        ?.copyWith(fontWeight: FontWeight.w800),
+                        ?.copyWith(fontWeight: FontWeight.w500),
                   ),
                 ),
               ],
@@ -212,7 +212,7 @@ class BookingFareBreakdown extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.end,
               style: TextStyle(
-                  fontWeight: bold ? FontWeight.w900 : FontWeight.w800),
+                  fontWeight: bold ? FontWeight.w500 : FontWeight.w400),
             ),
           ),
         ],

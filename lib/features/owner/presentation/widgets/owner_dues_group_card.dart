@@ -36,7 +36,7 @@ class DuesTotalCard extends StatelessWidget {
           const SizedBox(height: 4),
           Text(l10n.amountRs(formatRs(totalDue)),
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w900,
+                  fontWeight: FontWeight.w500,
                   color: AppColors.dangerTextFor(
                       Theme.of(context).brightness))),
         ],
@@ -88,11 +88,11 @@ class DuesGroupCard extends StatelessWidget {
                     style: Theme.of(context)
                         .textTheme
                         .titleSmall
-                        ?.copyWith(fontWeight: FontWeight.w800)),
+                        ?.copyWith(fontWeight: FontWeight.w600)),
               ),
               Text(l10n.amountRs(formatRs(due)),
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w900,
+                      fontWeight: FontWeight.w600,
                       color: AppColors.dangerTextFor(
                           Theme.of(context).brightness))),
             ],

@@ -23,6 +23,10 @@ class DisputeRecord {
     this.shopId,
     this.customerName,
     this.customerId,
+    this.decision,
+    this.decisionAmount,
+    this.adminNote,
+    this.resolvedAt,
   });
 
   final String id;
@@ -40,6 +44,23 @@ class DisputeRecord {
   /// Enriched from the booking when the inbox loads it.
   final String? customerName;
   final String? customerId;
+
+  /// The admin decision (F-M9): 'full_to_customer' | 'partial' |
+  /// 'full_to_owner', written by `decideDispute` and read back by the
+  /// admin centre and the customer's own dispute record. Null until
+  /// the dispute is decided.
+  final String? decision;
+  final int? decisionAmount;
+  final String? adminNote;
+  final DateTime? resolvedAt;
+}
+
+/// A Firestore Timestamp, an ISO string, or null — the two shapes a
+/// dispute date field arrives in.
+DateTime? _dateFrom(dynamic value) {
+  if (value is Timestamp) return value.toDate();
+  if (value is String) return DateTime.tryParse(value);
+  return null;
 }
 
 class DisputeRemoteDataSource {
@@ -71,6 +92,25 @@ class DisputeRemoteDataSource {
       });
       synced = true;
     } catch (_) {}
+    if (synced) {
+      // F-M11: the booking enters the `disputed` lifecycle state so
+      // the admin bookings list can surface it and the shop cannot
+      // settle it while the dispute is open. The previous status is
+      // kept on the booking so the decision can restore it. Best
+      // effort — a failure here never fails the filing itself.
+      try {
+        final bookingRef =
+            FirebaseFirestore.instance.collection('bookings').doc(bookingId);
+        final bookingDoc = await bookingRef.get();
+        final currentStatus = bookingDoc.data()?['status'] as String?;
+        if (currentStatus != null && currentStatus != 'disputed') {
+          await bookingRef.update({
+            'status': 'disputed',
+            'statusBeforeDispute': currentStatus,
+          });
+        }
+      } catch (_) {}
+    }
     return FiledDispute(id: id, synced: synced);
   }
 
@@ -97,6 +137,10 @@ class DisputeRemoteDataSource {
             description: data['description'] as String? ?? '',
             status: data['status'] as String? ?? 'open',
             createdAt: createdAt,
+            decision: data['decision'] as String?,
+            decisionAmount: (data['decision_amount'] as num?)?.toInt(),
+            adminNote: data['admin_note'] as String?,
+            resolvedAt: _dateFrom(data['resolved_at']),
           );
         }).toList();
         list.sort((a, b) => (b.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0))
@@ -114,6 +158,11 @@ class DisputeRemoteDataSource {
               status: e.value['status'] as String? ?? 'open',
               createdAt: DateTime.tryParse(
                   e.value['createdAt'] as String? ?? ''),
+              decision: e.value['decision'] as String?,
+              decisionAmount:
+                  (e.value['decision_amount'] as num?)?.toInt(),
+              adminNote: e.value['admin_note'] as String?,
+              resolvedAt: _dateFrom(e.value['resolved_at']),
             ))
         .toList();
     list.sort((a, b) => (b.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0))
@@ -222,6 +271,10 @@ class DisputeRemoteDataSource {
       shopId: data['shopId'] as String?,
       customerName: customerName,
       customerId: data['customerId'] as String?,
+      decision: data['decision'] as String?,
+      decisionAmount: (data['decision_amount'] as num?)?.toInt(),
+      adminNote: data['admin_note'] as String?,
+      resolvedAt: _dateFrom(data['resolved_at']),
     );
   }
 }

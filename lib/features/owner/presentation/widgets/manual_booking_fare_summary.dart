@@ -137,7 +137,7 @@ class ManualBookingFareSummary extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.end,
               style: TextStyle(
-                  fontWeight: bold ? FontWeight.w900 : FontWeight.w800),
+                  fontWeight: bold ? FontWeight.w500 : FontWeight.w400),
             ),
           ),
         ],

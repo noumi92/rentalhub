@@ -43,7 +43,7 @@ class SosButton extends StatelessWidget {
             child: Center(
               child: Text(
                 l10n.sos,
-                style: Theme.of(context).textTheme.displayLarge?.copyWith(fontWeight: FontWeight.w900, color: Colors.white, letterSpacing: 2),
+                style: Theme.of(context).textTheme.displayLarge?.copyWith(fontWeight: FontWeight.w700, color: Colors.white, letterSpacing: 2),
               ),
             ),
           ),

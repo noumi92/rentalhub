@@ -187,7 +187,7 @@ class _OwnerFinanceSettingsViewState extends State<OwnerFinanceSettingsView> {
                                           .textTheme
                                           .titleMedium
                                           ?.copyWith(
-                                              fontWeight: FontWeight.w900),
+                                              fontWeight: FontWeight.w600),
                                     ),
                                   ),
                                   const SizedBox(height: 8),
@@ -243,7 +243,7 @@ class _OwnerFinanceSettingsViewState extends State<OwnerFinanceSettingsView> {
   Widget _sectionTitle(String title) {
     return Text(title,
         style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w800,
+              fontWeight: FontWeight.w600,
             ));
   }
 }

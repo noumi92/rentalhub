@@ -24,7 +24,7 @@ class ProfileSignOutTile extends StatelessWidget {
         leading: Icon(Icons.logout_rounded,
             color: AppColors.dangerTextFor(Theme.of(context).brightness)),
         title: Text(l10n.profileSignOut,
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700, color: AppColors.dangerTextFor(Theme.of(context).brightness))),
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600, color: AppColors.dangerTextFor(Theme.of(context).brightness))),
         onTap: onTap,
       ),
     );

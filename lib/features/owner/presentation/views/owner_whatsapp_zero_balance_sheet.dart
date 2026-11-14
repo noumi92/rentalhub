@@ -63,7 +63,7 @@ class WhatsappZeroBalanceBanner extends StatelessWidget {
                         .textTheme
                         .titleSmall
                         ?.copyWith(
-                            fontWeight: FontWeight.w800,
+                            fontWeight: FontWeight.w600,
                             color: AppColors.warningOnContainerFor(Theme.of(context).brightness))),
               ),
             ],
@@ -109,7 +109,7 @@ class ZeroBalanceSheet {
                 style: Theme.of(context)
                     .textTheme
                     .titleMedium
-                    ?.copyWith(fontWeight: FontWeight.w900)),
+                    ?.copyWith(fontWeight: FontWeight.w600)),
             const SizedBox(height: 8),
             Text(l10n.creditsZeroBody,
                 style: Theme.of(context).textTheme.bodyMedium),

@@ -63,7 +63,7 @@ class PricingOutCityRates extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(l10n.pricingPerKmQuestion, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
+                    Text(l10n.pricingPerKmQuestion, style: Theme.of(context).textTheme.bodyMedium),
                     Text(l10n.pricingPerKmQuestionHint, style: Theme.of(context).textTheme.labelSmall),
                   ],
                 ),

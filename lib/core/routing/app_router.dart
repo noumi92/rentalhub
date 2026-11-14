@@ -119,6 +119,8 @@ import '../../features/admin/presentation/views/admin_apk_download_view.dart';
 import '../../features/admin/presentation/views/admin_cars_view.dart';
 import '../../features/admin/presentation/views/admin_customer_detail_view.dart';
 import '../../features/admin/presentation/views/admin_customers_view.dart';
+import '../../features/admin/presentation/views/admin_kyc_review_detail_view.dart';
+import '../../features/admin/presentation/views/admin_kyc_review_view.dart';
 import '../../features/admin/presentation/views/admin_booking_detail_view.dart';
 import '../../features/admin/presentation/views/admin_bookings_view.dart';
 import '../../features/admin/presentation/views/admin_disputes_view.dart';
@@ -131,6 +133,7 @@ import '../../features/admin/presentation/views/admin_shop_approvals_view.dart';
 import '../../features/admin/presentation/views/admin_shop_detail_view.dart';
 import '../../features/admin/presentation/views/admin_shops_view.dart';
 import '../../features/admin/presentation/views/admin_blacklist_tribunal_view.dart';
+import '../../features/admin/presentation/views/admin_invite_accept_view.dart';
 import '../../features/admin/presentation/views/admin_coming_soon_view.dart';
 import '../../features/admin/presentation/views/admin_dashboard_view.dart';
 import '../../features/admin/presentation/views/admin_login_view.dart';
@@ -1479,6 +1482,17 @@ class AppRouter {
         path: RouteNames.adminApprovals,
         builder: (context, state) => const AdminShopApprovalsView(),
       ),
+      // Item 6 — customer KYC review queue + one submission's detail.
+      GoRoute(
+        path: RouteNames.adminKycReview,
+        builder: (context, state) => const AdminKycReviewView(),
+      ),
+      GoRoute(
+        path: RouteNames.adminKycReviewDetail,
+        builder: (context, state) => AdminKycReviewDetailView(
+          customerId: state.pathParameters['customerId'] ?? '',
+        ),
+      ),
       GoRoute(
         path: RouteNames.adminCars,
         builder: (context, state) => const AdminCarsView(),
@@ -1539,6 +1553,15 @@ class AppRouter {
         path: RouteNames.adminTeam,
         builder: (context, state) => const AdminTeamView(),
       ),
+      // F-M5: invite accept — a super admin grants the role from a
+      // shared invite link (email + role as query parameters).
+      GoRoute(
+        path: RouteNames.adminInviteAccept,
+        builder: (context, state) => AdminInviteAcceptView(
+          email: state.uri.queryParameters['email'] ?? '',
+          role: state.uri.queryParameters['role'] ?? '',
+        ),
+      ),
       GoRoute(
         path: RouteNames.adminActivity,
         builder: (context, state) => const AdminActivityLogView(),
@@ -1556,13 +1579,17 @@ class AppRouter {
       ),
       GoRoute(
         path: RouteNames.adminSubscriptions,
-        builder: (context, state) => const AdminComingSoonView(
-          activeRoute: RouteNames.adminSubscriptions,
-          title: 'Subscriptions',
-          subtitle: 'Plans, trials and platform revenue',
-          body:
-              'Subscriptions arrive in Phase F, gated on the Play Console setup (plan D1).',
-        ),
+        builder: (context, state) {
+          final l10n = AppLocalizations.of(context);
+          return AdminComingSoonView(
+            activeRoute: RouteNames.adminSubscriptions,
+            title: l10n?.admin2_navSubscriptions ?? 'Subscriptions',
+            subtitle: l10n?.admin2_subscriptionsSubtitle ??
+                'Plans, trials and platform revenue',
+            body: l10n?.admin2_subscriptionsBody ??
+                'Subscriptions arrive in Phase F, gated on the Play Console setup (plan D1).',
+          );
+        },
       ),
     ],
   );
@@ -1590,16 +1617,19 @@ class _CustomerNoDraftScreen extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(
+                Icon(
                   Icons.receipt_long_rounded,
                   size: 52,
-                  color: Colors.grey,
+                  // Item 4: the old Colors.grey is ~2.9:1 on the light
+                  // scaffold (below the 3:1 non-text minimum) — the
+                  // theme variant is 4.76:1 in light, 6.99:1 in dark.
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
                 const SizedBox(height: 12),
                 Text(
                   l10n?.noDraftTitle ?? 'No booking in progress.',
                   textAlign: TextAlign.center,
-                  style: const TextStyle(fontWeight: FontWeight.w700),
+                  style: const TextStyle(fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 8),
                 Text(

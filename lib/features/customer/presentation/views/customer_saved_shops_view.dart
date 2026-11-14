@@ -153,8 +153,7 @@ class _CustomerSavedShopsViewState extends State<CustomerSavedShopsView> {
                                                     .textTheme
                                                     .titleSmall
                                                     ?.copyWith(
-                                                        fontWeight:
-                                                            FontWeight.w800)),
+                                                        fontWeight: FontWeight.w600)),
                                             const SizedBox(height: 2),
                                             Text(
                                                 shop.city.isEmpty

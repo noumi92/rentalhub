@@ -75,7 +75,7 @@ class VehicleSpecsStepWidget extends StatelessWidget {
             style: Theme.of(context)
                 .textTheme
                 .labelMedium
-                ?.copyWith(fontWeight: FontWeight.w800)),
+                ?.copyWith(fontWeight: FontWeight.w500)),
         const SizedBox(height: 6),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 14),
@@ -92,7 +92,7 @@ class VehicleSpecsStepWidget extends StatelessWidget {
                   .map((m) => DropdownMenuItem(
                       value: m,
                       child: Text(m,
-                          style: const TextStyle(fontWeight: FontWeight.w700))))
+                          style: const TextStyle(fontWeight: FontWeight.w600))))
                   .toList(),
               onChanged: (v) {
                 if (v != null) onMakeChanged(v);
@@ -107,7 +107,7 @@ class VehicleSpecsStepWidget extends StatelessWidget {
             style: Theme.of(context)
                 .textTheme
                 .labelMedium
-                ?.copyWith(fontWeight: FontWeight.w800)),
+                ?.copyWith(fontWeight: FontWeight.w500)),
         const SizedBox(height: 6),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 14),
@@ -120,7 +120,7 @@ class VehicleSpecsStepWidget extends StatelessWidget {
             style: Theme.of(context)
                 .textTheme
                 .titleSmall
-                ?.copyWith(fontWeight: FontWeight.w700),
+                ?.copyWith(fontWeight: FontWeight.w600),
             decoration: InputDecoration(
                 border: InputBorder.none,
                 hintText: l10n.addVehicleModelHint),
@@ -140,7 +140,7 @@ class VehicleSpecsStepWidget extends StatelessWidget {
                       style: Theme.of(context)
                           .textTheme
                           .labelMedium
-                          ?.copyWith(fontWeight: FontWeight.w800)),
+                          ?.copyWith(fontWeight: FontWeight.w500)),
                   const SizedBox(height: 6),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -159,7 +159,7 @@ class VehicleSpecsStepWidget extends StatelessWidget {
                                 value: y,
                                 child: Text('$y',
                                     style: const TextStyle(
-                                        fontWeight: FontWeight.w700))))
+                                        fontWeight: FontWeight.w600))))
                             .toList(),
                         onChanged: (v) {
                           if (v != null) onYearChanged(v);
@@ -179,7 +179,7 @@ class VehicleSpecsStepWidget extends StatelessWidget {
                       style: Theme.of(context)
                           .textTheme
                           .labelMedium
-                          ?.copyWith(fontWeight: FontWeight.w800)),
+                          ?.copyWith(fontWeight: FontWeight.w500)),
                   const SizedBox(height: 6),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -193,7 +193,7 @@ class VehicleSpecsStepWidget extends StatelessWidget {
                       style: Theme.of(context)
                           .textTheme
                           .bodyMedium
-                          ?.copyWith(fontWeight: FontWeight.w700),
+                          ,
                       decoration: const InputDecoration(
                           border: InputBorder.none,
                           isDense: true,
@@ -213,7 +213,7 @@ class VehicleSpecsStepWidget extends StatelessWidget {
             style: Theme.of(context)
                 .textTheme
                 .labelMedium
-                ?.copyWith(fontWeight: FontWeight.w800)),
+                ?.copyWith(fontWeight: FontWeight.w500)),
         const SizedBox(height: 6),
         Wrap(
           spacing: 8,
@@ -229,7 +229,7 @@ class VehicleSpecsStepWidget extends StatelessWidget {
                   color: isSelected
                       ? Colors.white
                       : Theme.of(context).colorScheme.onSurface,
-                  fontWeight: FontWeight.w700),
+                  fontWeight: FontWeight.w500),
               onSelected: (_) => onCategoryChanged(c),
             );
           }).toList(),
@@ -241,7 +241,7 @@ class VehicleSpecsStepWidget extends StatelessWidget {
             style: Theme.of(context)
                 .textTheme
                 .labelMedium
-                ?.copyWith(fontWeight: FontWeight.w800)),
+                ?.copyWith(fontWeight: FontWeight.w500)),
         const SizedBox(height: 6),
         Row(
           children: [
@@ -251,7 +251,7 @@ class VehicleSpecsStepWidget extends StatelessWidget {
                 style: Theme.of(context)
                     .textTheme
                     .titleSmall
-                    ?.copyWith(fontWeight: FontWeight.w800, letterSpacing: 1),
+                    ?.copyWith(fontWeight: FontWeight.w500, letterSpacing: 1),
                 decoration: InputDecoration(
                   hintText: 'e.g. LEA-23-4567',
                   filled: true,
@@ -290,7 +290,7 @@ class VehicleSpecsStepWidget extends StatelessWidget {
                       style: Theme.of(context)
                           .textTheme
                           .labelMedium
-                          ?.copyWith(fontWeight: FontWeight.w800)),
+                          ?.copyWith(fontWeight: FontWeight.w500)),
                   const SizedBox(height: 6),
                   Container(
                     padding: const EdgeInsets.all(4),
@@ -318,7 +318,7 @@ class VehicleSpecsStepWidget extends StatelessWidget {
                                       .textTheme
                                       .labelMedium
                                       ?.copyWith(
-                                          fontWeight: FontWeight.w800,
+                                          fontWeight: FontWeight.w500,
                                           color: isAutomatic
                                               ? Colors.white
                                               : Theme.of(context)
@@ -344,7 +344,7 @@ class VehicleSpecsStepWidget extends StatelessWidget {
                                       .textTheme
                                       .labelMedium
                                       ?.copyWith(
-                                          fontWeight: FontWeight.w800,
+                                          fontWeight: FontWeight.w500,
                                           color: !isAutomatic
                                               ? Colors.white
                                               : Theme.of(context)
@@ -368,7 +368,7 @@ class VehicleSpecsStepWidget extends StatelessWidget {
                       style: Theme.of(context)
                           .textTheme
                           .labelMedium
-                          ?.copyWith(fontWeight: FontWeight.w800)),
+                          ?.copyWith(fontWeight: FontWeight.w500)),
                   const SizedBox(height: 6),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -387,7 +387,7 @@ class VehicleSpecsStepWidget extends StatelessWidget {
                                 value: f,
                                 child: Text(f,
                                     style: const TextStyle(
-                                        fontWeight: FontWeight.w700))))
+                                        fontWeight: FontWeight.w600))))
                             .toList(),
                         onChanged: (v) {
                           if (v != null) onFuelTypeChanged(v);

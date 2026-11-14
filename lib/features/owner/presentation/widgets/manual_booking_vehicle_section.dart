@@ -77,7 +77,7 @@ class ManualBookingVehicleSection extends StatelessWidget {
         TextField(
           controller: depositController,
           keyboardType: TextInputType.number,
-          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
           decoration: InputDecoration(
             labelText: l10n.manualBookingDepositLabel,
             prefixIcon: const Icon(Icons.lock_clock_rounded,

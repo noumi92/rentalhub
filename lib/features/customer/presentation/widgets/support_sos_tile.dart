@@ -27,7 +27,6 @@ class SupportSosTile extends StatelessWidget {
           Icon(Icons.sos_rounded, color: AppColors.dangerTextFor(Theme.of(context).brightness)),
       title: Text(l10n.supportSosTitle,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w800,
               color: AppColors.dangerTextFor(Theme.of(context).brightness))),
       subtitle: Text(
           l10n.supportSosSubtitle,

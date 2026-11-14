@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../constants/app_colors.dart';
+
 /// E1: one quick-action tile — an icon above a short label, in the
 /// HBL banking reference pattern. The tile is pure data; the row widget
 /// below renders a list of them, so customer Home and owner Dashboard
@@ -34,6 +36,22 @@ class QuickActionTiles extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    final brightness = Theme.of(context).brightness;
+    // Item 4: the tile colour is the icon colour on a 15% tint of
+    // itself. The raw fills fail as icons in light mode (accentSuccess
+    // 2.54:1, warning 2.15:1, vs the 3:1 non-text minimum), so those
+    // icons use the readable text variants; secondary (3.29:1) and
+    // the other accents already pass, so they stay as-is.
+    Color iconColor(Color? color) {
+      final c = color ?? colorScheme.primary;
+      if (c == AppColors.accentSuccess) {
+        return AppColors.successTextFor(brightness);
+      }
+      if (c == AppColors.warning) {
+        return AppColors.warningTextFor(brightness);
+      }
+      return c;
+    }
     return Row(
       children: tiles
           .map(
@@ -68,8 +86,7 @@ class QuickActionTiles extends StatelessWidget {
                               shape: BoxShape.circle,
                             ),
                             child: Icon(tile.icon,
-                                size: 28,
-                                color: tile.color ?? colorScheme.primary),
+                                size: 28, color: iconColor(tile.color)),
                           ),
                           const SizedBox(height: 6),
                           Padding(
@@ -80,7 +97,7 @@ class QuickActionTiles extends StatelessWidget {
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: textTheme.labelMedium?.copyWith(
-                                fontWeight: FontWeight.w800,
+                                fontWeight: FontWeight.w500,
                                 color: colorScheme.onSurface,
                               ),
                             ),

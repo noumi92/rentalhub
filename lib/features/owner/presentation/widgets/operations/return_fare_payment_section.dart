@@ -90,7 +90,7 @@ class _ReturnFarePaymentSectionState extends State<ReturnFarePaymentSection> {
           Text(
             l10n.returnFareTitle,
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w600,
                 ),
           ),
           const SizedBox(height: 12),
@@ -107,7 +107,7 @@ class _ReturnFarePaymentSectionState extends State<ReturnFarePaymentSection> {
           Text(
             l10n.returnPaymentTitle,
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w600,
                 ),
           ),
           const SizedBox(height: 8),
@@ -202,14 +202,12 @@ class _ReturnFarePaymentSectionState extends State<ReturnFarePaymentSection> {
                 overflow: TextOverflow.ellipsis,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       fontWeight:
-                          bold ? FontWeight.w800 : FontWeight.w600,
+                          bold ? FontWeight.w500 : FontWeight.w400,
                     )),
           ),
           const SizedBox(width: 8),
           Text(value,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w800,
-                  )),
+              style: Theme.of(context).textTheme.bodyMedium),
         ],
       ),
     );

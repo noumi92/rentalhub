@@ -146,7 +146,7 @@ class ShopDetailsStepWidget extends StatelessWidget {
         const SizedBox(height: 14),
 
         // Opening Hours Dropdown
-        Text(l10n.onboardingOperatingHours, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800)),
+        Text(l10n.onboardingOperatingHours, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500)),
         const SizedBox(height: 6),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 14),
@@ -165,7 +165,7 @@ class ShopDetailsStepWidget extends StatelessWidget {
                 '8:00 AM - Midnight',
                 '24 Hours / 7 Days',
                 '10:00 AM - 8:00 PM',
-              ].map((h) => DropdownMenuItem(value: h, child: Text(_hoursLabel(l10n, h), style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)))).toList(),
+              ].map((h) => DropdownMenuItem(value: h, child: Text(_hoursLabel(l10n, h), style: Theme.of(context).textTheme.bodyMedium))).toList(),
               onChanged: (v) {
                 if (v != null) onOpeningHoursChanged(v);
               },
@@ -187,12 +187,12 @@ class ShopDetailsStepWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: Theme.of(context).colorScheme.onSurface)),
+        Text(label, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500, color: Theme.of(context).colorScheme.onSurface)),
         const SizedBox(height: 6),
         TextField(
           controller: controller,
           keyboardType: keyboardType,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
+          style: Theme.of(context).textTheme.bodyMedium,
           decoration: InputDecoration(
             hintText: hint,
             prefixIcon: Icon(icon, color: AppColors.secondary, size: 20),

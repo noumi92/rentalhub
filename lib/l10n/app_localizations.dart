@@ -374,6 +374,162 @@ abstract class AppLocalizations {
   /// **'Resolved'**
   String get disputeResolved;
 
+  /// No description provided for @disputeDecisionChoose.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a decision'**
+  String get disputeDecisionChoose;
+
+  /// No description provided for @disputeDecisionRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a decision before saving.'**
+  String get disputeDecisionRequired;
+
+  /// No description provided for @disputeDecisionFullToCustomer.
+  ///
+  /// In en, this message translates to:
+  /// **'Full refund to customer'**
+  String get disputeDecisionFullToCustomer;
+
+  /// No description provided for @disputeDecisionPartial.
+  ///
+  /// In en, this message translates to:
+  /// **'Partial — split'**
+  String get disputeDecisionPartial;
+
+  /// No description provided for @disputeDecisionFullToOwner.
+  ///
+  /// In en, this message translates to:
+  /// **'Full to owner (claim upheld)'**
+  String get disputeDecisionFullToOwner;
+
+  /// No description provided for @disputeDecisionAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Decision amount'**
+  String get disputeDecisionAmount;
+
+  /// No description provided for @disputeDecisionNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin note'**
+  String get disputeDecisionNote;
+
+  /// No description provided for @disputeMarkInReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark in review'**
+  String get disputeMarkInReview;
+
+  /// No description provided for @disputeMarkedInReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Marked in review.'**
+  String get disputeMarkedInReview;
+
+  /// No description provided for @disputeMarkInReviewFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not mark the dispute in review.'**
+  String get disputeMarkInReviewFailed;
+
+  /// No description provided for @handoverPhotoFront.
+  ///
+  /// In en, this message translates to:
+  /// **'Front'**
+  String get handoverPhotoFront;
+
+  /// No description provided for @handoverPhotoBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get handoverPhotoBack;
+
+  /// No description provided for @handoverPhotoLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'Left'**
+  String get handoverPhotoLeft;
+
+  /// No description provided for @handoverPhotoRight.
+  ///
+  /// In en, this message translates to:
+  /// **'Right'**
+  String get handoverPhotoRight;
+
+  /// No description provided for @handoverDocumentsGiven.
+  ///
+  /// In en, this message translates to:
+  /// **'Documents given'**
+  String get handoverDocumentsGiven;
+
+  /// No description provided for @handoverAccessories.
+  ///
+  /// In en, this message translates to:
+  /// **'Accessories'**
+  String get handoverAccessories;
+
+  /// No description provided for @handoverKeysHandedOver.
+  ///
+  /// In en, this message translates to:
+  /// **'Keys handed over'**
+  String get handoverKeysHandedOver;
+
+  /// No description provided for @handoverKeysNotHandedOver.
+  ///
+  /// In en, this message translates to:
+  /// **'Keys not handed over'**
+  String get handoverKeysNotHandedOver;
+
+  /// No description provided for @returnChecklistTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Return checklist'**
+  String get returnChecklistTitle;
+
+  /// No description provided for @returnChecklistEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No return record yet — the vehicle has not been returned through the settlement flow.'**
+  String get returnChecklistEmpty;
+
+  /// No description provided for @returnCondition.
+  ///
+  /// In en, this message translates to:
+  /// **'Condition'**
+  String get returnCondition;
+
+  /// No description provided for @returnOdometer.
+  ///
+  /// In en, this message translates to:
+  /// **'Return odometer'**
+  String get returnOdometer;
+
+  /// No description provided for @returnDamageNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Return damage notes'**
+  String get returnDamageNotes;
+
+  /// No description provided for @returnRemainingCollected.
+  ///
+  /// In en, this message translates to:
+  /// **'Remaining rent collected'**
+  String get returnRemainingCollected;
+
+  /// No description provided for @returnNetRefund.
+  ///
+  /// In en, this message translates to:
+  /// **'Net refund'**
+  String get returnNetRefund;
+
+  /// No description provided for @returnPaymentMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment method'**
+  String get returnPaymentMethod;
+
   /// No description provided for @verified.
   ///
   /// In en, this message translates to:
@@ -1921,6 +2077,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You already rated this trip — your review is shown below.'**
   String get rateAlreadyRated;
+
+  /// No description provided for @rateEditRequestedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin asked you to edit this review'**
+  String get rateEditRequestedTitle;
+
+  /// No description provided for @rateWarnedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Warning from the admin about this review'**
+  String get rateWarnedTitle;
+
+  /// No description provided for @adminAnncDeliveredNotTracked.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivered: not tracked yet'**
+  String get adminAnncDeliveredNotTracked;
+
+  /// No description provided for @adminAnncScheduleDateRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a date and time for the scheduled announcement.'**
+  String get adminAnncScheduleDateRequired;
 
   /// No description provided for @rateSavedOffline.
   ///
@@ -9219,30 +9399,6 @@ abstract class AppLocalizations {
   /// **'Exterior Photos'**
   String get handoverPhotosTitle;
 
-  /// No description provided for @handoverPhotoFront.
-  ///
-  /// In en, this message translates to:
-  /// **'Front'**
-  String get handoverPhotoFront;
-
-  /// No description provided for @handoverPhotoBack.
-  ///
-  /// In en, this message translates to:
-  /// **'Back'**
-  String get handoverPhotoBack;
-
-  /// No description provided for @handoverPhotoLeft.
-  ///
-  /// In en, this message translates to:
-  /// **'Left'**
-  String get handoverPhotoLeft;
-
-  /// No description provided for @handoverPhotoRight.
-  ///
-  /// In en, this message translates to:
-  /// **'Right'**
-  String get handoverPhotoRight;
-
   /// No description provided for @handoverPhotoUploading.
   ///
   /// In en, this message translates to:
@@ -13049,6 +13205,120 @@ abstract class AppLocalizations {
   /// **'Ask a super admin for the latest build.'**
   String get admin2_apkSuperAdminOnlyHint;
 
+  /// No description provided for @adminKycReviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'KYC Review'**
+  String get adminKycReviewTitle;
+
+  /// No description provided for @adminKycReviewSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer identity documents waiting for a decision'**
+  String get adminKycReviewSubtitle;
+
+  /// No description provided for @adminKycReviewEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No pending KYC submissions'**
+  String get adminKycReviewEmpty;
+
+  /// No description provided for @adminKycReviewEmptyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Every customer submission has been decided.'**
+  String get adminKycReviewEmptyHint;
+
+  /// No description provided for @adminKycReviewLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load the KYC queue.'**
+  String get adminKycReviewLoadFailed;
+
+  /// No description provided for @adminKycReviewNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Submission not found.'**
+  String get adminKycReviewNotFound;
+
+  /// No description provided for @adminKycReviewNotPermitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Only super admins and operations can review KYC'**
+  String get adminKycReviewNotPermitted;
+
+  /// No description provided for @adminKycReviewNotPermittedHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask a super admin or operations admin to review this submission.'**
+  String get adminKycReviewNotPermittedHint;
+
+  /// No description provided for @adminNotPermitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Your admin role does not allow this action.'**
+  String get adminNotPermitted;
+
+  /// No description provided for @adminKycReviewApprove.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve'**
+  String get adminKycReviewApprove;
+
+  /// No description provided for @adminKycReviewReject.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject'**
+  String get adminKycReviewReject;
+
+  /// No description provided for @adminKycReviewReasonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason (required to reject — the customer sees it)'**
+  String get adminKycReviewReasonLabel;
+
+  /// No description provided for @adminKycReviewReasonRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'A reason is required to reject — the customer sees it.'**
+  String get adminKycReviewReasonRequired;
+
+  /// No description provided for @adminKycReviewDecisionSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Decision saved.'**
+  String get adminKycReviewDecisionSaved;
+
+  /// No description provided for @adminKycReviewDecisionFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not reach the server — try again.'**
+  String get adminKycReviewDecisionFailed;
+
+  /// No description provided for @adminKycReviewLicenseNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'License number'**
+  String get adminKycReviewLicenseNumber;
+
+  /// No description provided for @adminKycReviewLicenseExpiry.
+  ///
+  /// In en, this message translates to:
+  /// **'License expiry'**
+  String get adminKycReviewLicenseExpiry;
+
+  /// No description provided for @adminKycReviewCnicNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'CNIC number'**
+  String get adminKycReviewCnicNumber;
+
+  /// No description provided for @adminKycReviewSubmittedOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitted on'**
+  String get adminKycReviewSubmittedOn;
+
   /// No description provided for @kyc2_qrCode.
   ///
   /// In en, this message translates to:
@@ -13276,6 +13546,3406 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Send WhatsApp confirmation'**
   String get manualBookingWhatsappToggle;
+
+  /// No description provided for @admin2_signInFailedGeneric.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign-in failed. Try again.'**
+  String get admin2_signInFailedGeneric;
+
+  /// No description provided for @admin2_signInWrongCredentials.
+  ///
+  /// In en, this message translates to:
+  /// **'The email or password is incorrect.'**
+  String get admin2_signInWrongCredentials;
+
+  /// No description provided for @admin2_signInAccountDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'This account is disabled. Ask a super admin for help.'**
+  String get admin2_signInAccountDisabled;
+
+  /// No description provided for @admin2_signInTooManyAttempts.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many sign-in attempts. Try again later.'**
+  String get admin2_signInTooManyAttempts;
+
+  /// No description provided for @admin2_signInNoConnection.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not reach the server. Check your connection and try again.'**
+  String get admin2_signInNoConnection;
+
+  /// No description provided for @admin2_signInInvalidEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid email address.'**
+  String get admin2_signInInvalidEmail;
+
+  /// No description provided for @admin2_showPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Show password'**
+  String get admin2_showPassword;
+
+  /// No description provided for @admin2_hidePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide password'**
+  String get admin2_hidePassword;
+
+  /// No description provided for @admin2_blacklistReportTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Report to blacklist?'**
+  String get admin2_blacklistReportTitle;
+
+  /// No description provided for @admin2_blacklistReportBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This blocks the customer platform-wide. Give the reason — the tribunal judges the case on it.'**
+  String get admin2_blacklistReportBody;
+
+  /// No description provided for @admin2_blacklistReasonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason (required)'**
+  String get admin2_blacklistReasonLabel;
+
+  /// No description provided for @admin2_blacklistReasonRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'A reason is required to report a customer.'**
+  String get admin2_blacklistReasonRequired;
+
+  /// No description provided for @admin2_blacklistReportConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Report'**
+  String get admin2_blacklistReportConfirm;
+
+  /// No description provided for @admin2_watchlistAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to watchlist'**
+  String get admin2_watchlistAdd;
+
+  /// No description provided for @admin2_watchlistRemove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from watchlist'**
+  String get admin2_watchlistRemove;
+
+  /// No description provided for @admin2_ticketRepliesLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load the replies.'**
+  String get admin2_ticketRepliesLoadFailed;
+
+  /// No description provided for @admin2_suspendReasonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason (shown in the audit log)'**
+  String get admin2_suspendReasonLabel;
+
+  /// No description provided for @admin2_callFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open the dialer.'**
+  String get admin2_callFailed;
+
+  /// No description provided for @admin2_whatsappOpenFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open WhatsApp.'**
+  String get admin2_whatsappOpenFailed;
+
+  /// No description provided for @admin2_menu.
+  ///
+  /// In en, this message translates to:
+  /// **'Menu'**
+  String get admin2_menu;
+
+  /// No description provided for @admin2_confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get admin2_confirm;
+
+  /// No description provided for @admin2_approve.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve'**
+  String get admin2_approve;
+
+  /// No description provided for @admin2_reject.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject'**
+  String get admin2_reject;
+
+  /// No description provided for @admin2_yes.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes'**
+  String get admin2_yes;
+
+  /// No description provided for @admin2_no.
+  ///
+  /// In en, this message translates to:
+  /// **'No'**
+  String get admin2_no;
+
+  /// No description provided for @admin2_save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get admin2_save;
+
+  /// No description provided for @admin2_saving.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving…'**
+  String get admin2_saving;
+
+  /// No description provided for @admin2_serverUnreachable.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not reach the server.'**
+  String get admin2_serverUnreachable;
+
+  /// No description provided for @admin2_serverUnreachableRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not reach the server — try again.'**
+  String get admin2_serverUnreachableRetry;
+
+  /// No description provided for @admin2_reasonRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'A reason is required.'**
+  String get admin2_reasonRequired;
+
+  /// No description provided for @admin2_decisionSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Decision saved.'**
+  String get admin2_decisionSaved;
+
+  /// No description provided for @admin2_none.
+  ///
+  /// In en, this message translates to:
+  /// **'none'**
+  String get admin2_none;
+
+  /// No description provided for @admin2_withDriver.
+  ///
+  /// In en, this message translates to:
+  /// **'With driver'**
+  String get admin2_withDriver;
+
+  /// No description provided for @admin2_selfDrive.
+  ///
+  /// In en, this message translates to:
+  /// **'Self drive'**
+  String get admin2_selfDrive;
+
+  /// No description provided for @admin2_suspended.
+  ///
+  /// In en, this message translates to:
+  /// **'Suspended'**
+  String get admin2_suspended;
+
+  /// No description provided for @admin2_hidden.
+  ///
+  /// In en, this message translates to:
+  /// **'Hidden'**
+  String get admin2_hidden;
+
+  /// No description provided for @admin2_open.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get admin2_open;
+
+  /// No description provided for @admin2_closed.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed'**
+  String get admin2_closed;
+
+  /// No description provided for @admin2_resolved.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolved'**
+  String get admin2_resolved;
+
+  /// No description provided for @admin2_inProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'In progress'**
+  String get admin2_inProgress;
+
+  /// No description provided for @admin2_escalated.
+  ///
+  /// In en, this message translates to:
+  /// **'Escalated'**
+  String get admin2_escalated;
+
+  /// No description provided for @admin2_requested.
+  ///
+  /// In en, this message translates to:
+  /// **'Requested'**
+  String get admin2_requested;
+
+  /// No description provided for @admin2_paymentSubmitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment submitted'**
+  String get admin2_paymentSubmitted;
+
+  /// No description provided for @admin2_paid.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid'**
+  String get admin2_paid;
+
+  /// No description provided for @admin2_completed.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get admin2_completed;
+
+  /// No description provided for @admin2_cancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get admin2_cancelled;
+
+  /// No description provided for @admin2_inReview.
+  ///
+  /// In en, this message translates to:
+  /// **'In review'**
+  String get admin2_inReview;
+
+  /// No description provided for @admin2_roleSuperAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Super Admin'**
+  String get admin2_roleSuperAdmin;
+
+  /// No description provided for @admin2_roleOperations.
+  ///
+  /// In en, this message translates to:
+  /// **'Operations'**
+  String get admin2_roleOperations;
+
+  /// No description provided for @admin2_roleSupport.
+  ///
+  /// In en, this message translates to:
+  /// **'Support'**
+  String get admin2_roleSupport;
+
+  /// No description provided for @admin2_roleAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin'**
+  String get admin2_roleAdmin;
+
+  /// No description provided for @admin2_navDashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Dashboard'**
+  String get admin2_navDashboard;
+
+  /// No description provided for @admin2_navShops.
+  ///
+  /// In en, this message translates to:
+  /// **'Shops'**
+  String get admin2_navShops;
+
+  /// No description provided for @admin2_navApprovals.
+  ///
+  /// In en, this message translates to:
+  /// **'Approvals'**
+  String get admin2_navApprovals;
+
+  /// No description provided for @admin2_navCars.
+  ///
+  /// In en, this message translates to:
+  /// **'Cars'**
+  String get admin2_navCars;
+
+  /// No description provided for @admin2_navCustomers.
+  ///
+  /// In en, this message translates to:
+  /// **'Customers'**
+  String get admin2_navCustomers;
+
+  /// No description provided for @admin2_navBookings.
+  ///
+  /// In en, this message translates to:
+  /// **'Bookings'**
+  String get admin2_navBookings;
+
+  /// No description provided for @admin2_navDisputes.
+  ///
+  /// In en, this message translates to:
+  /// **'Disputes'**
+  String get admin2_navDisputes;
+
+  /// No description provided for @admin2_navReviews.
+  ///
+  /// In en, this message translates to:
+  /// **'Reviews'**
+  String get admin2_navReviews;
+
+  /// No description provided for @admin2_navSupport.
+  ///
+  /// In en, this message translates to:
+  /// **'Support'**
+  String get admin2_navSupport;
+
+  /// No description provided for @admin2_navAnnouncements.
+  ///
+  /// In en, this message translates to:
+  /// **'Announcements'**
+  String get admin2_navAnnouncements;
+
+  /// No description provided for @admin2_navReports.
+  ///
+  /// In en, this message translates to:
+  /// **'Reports'**
+  String get admin2_navReports;
+
+  /// No description provided for @admin2_navSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get admin2_navSettings;
+
+  /// No description provided for @admin2_navApkDownload.
+  ///
+  /// In en, this message translates to:
+  /// **'APK Download'**
+  String get admin2_navApkDownload;
+
+  /// No description provided for @admin2_navBlacklist.
+  ///
+  /// In en, this message translates to:
+  /// **'Blacklist'**
+  String get admin2_navBlacklist;
+
+  /// No description provided for @admin2_navAdminTeam.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin Team'**
+  String get admin2_navAdminTeam;
+
+  /// No description provided for @admin2_navActivityLog.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity Log'**
+  String get admin2_navActivityLog;
+
+  /// No description provided for @admin2_navSubscriptions.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscriptions'**
+  String get admin2_navSubscriptions;
+
+  /// No description provided for @admin2_sidebarSignedInAs.
+  ///
+  /// In en, this message translates to:
+  /// **'SIGNED IN AS ADMIN'**
+  String get admin2_sidebarSignedInAs;
+
+  /// No description provided for @admin2_loginEmailPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your email and password.'**
+  String get admin2_loginEmailPassword;
+
+  /// No description provided for @admin2_loginEnterCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the 6-digit code.'**
+  String get admin2_loginEnterCode;
+
+  /// No description provided for @admin2_loginSignedIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Signed in.'**
+  String get admin2_loginSignedIn;
+
+  /// No description provided for @admin2_loginFormTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'RentalHub Admin'**
+  String get admin2_loginFormTitle;
+
+  /// No description provided for @admin2_loginFormSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in with your admin account.'**
+  String get admin2_loginFormSubtitle;
+
+  /// No description provided for @admin2_loginFormEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get admin2_loginFormEmail;
+
+  /// No description provided for @admin2_loginFormPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get admin2_loginFormPassword;
+
+  /// No description provided for @admin2_loginFormSigningIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Signing in…'**
+  String get admin2_loginFormSigningIn;
+
+  /// No description provided for @admin2_loginFormSignIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in'**
+  String get admin2_loginFormSignIn;
+
+  /// No description provided for @admin2_loginNotAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Not an admin account'**
+  String get admin2_loginNotAdmin;
+
+  /// No description provided for @admin2_loginNoRole.
+  ///
+  /// In en, this message translates to:
+  /// **'This account has no admin role. Sign out and sign in with an admin account, or ask a super admin to grant you one.'**
+  String get admin2_loginNoRole;
+
+  /// No description provided for @admin2_loginUseDifferent.
+  ///
+  /// In en, this message translates to:
+  /// **'Use a different account'**
+  String get admin2_loginUseDifferent;
+
+  /// No description provided for @admin2_totpSetupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Set up two-factor authentication'**
+  String get admin2_totpSetupTitle;
+
+  /// No description provided for @admin2_totpVerifyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your authenticator code'**
+  String get admin2_totpVerifyTitle;
+
+  /// No description provided for @admin2_totpSetupHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan this code with your authenticator app, then enter the 6-digit code it shows to confirm.'**
+  String get admin2_totpSetupHint;
+
+  /// No description provided for @admin2_totpEnabledHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Two-factor authentication is on for this account. Enter the 6-digit code from your authenticator app.'**
+  String get admin2_totpEnabledHint;
+
+  /// No description provided for @admin2_totpManualKey.
+  ///
+  /// In en, this message translates to:
+  /// **'Manual setup key: {key}'**
+  String admin2_totpManualKey(String key);
+
+  /// No description provided for @admin2_totpCodeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'6-digit code'**
+  String get admin2_totpCodeLabel;
+
+  /// No description provided for @admin2_totpChecking.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking…'**
+  String get admin2_totpChecking;
+
+  /// No description provided for @admin2_totpConfirmSetup.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm and finish setup'**
+  String get admin2_totpConfirmSetup;
+
+  /// No description provided for @admin2_totpVerifySignIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify and sign in'**
+  String get admin2_totpVerifySignIn;
+
+  /// No description provided for @admin2_subscriptionsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Plans, trials and platform revenue'**
+  String get admin2_subscriptionsSubtitle;
+
+  /// No description provided for @admin2_subscriptionsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscriptions arrive in Phase F, gated on the Play Console setup (plan D1).'**
+  String get admin2_subscriptionsBody;
+
+  /// No description provided for @admin2_dashboardSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'The platform at a glance, counted live'**
+  String get admin2_dashboardSubtitle;
+
+  /// No description provided for @admin2_dashboardLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load the dashboard.'**
+  String get admin2_dashboardLoadFailed;
+
+  /// No description provided for @admin2_dashboardDisputesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Open disputes need a decision'**
+  String get admin2_dashboardDisputesTitle;
+
+  /// No description provided for @admin2_dashboardOpenCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} open'**
+  String admin2_dashboardOpenCount(Object count);
+
+  /// No description provided for @admin2_dashboardDisputesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the disputes centre to decide them.'**
+  String get admin2_dashboardDisputesHint;
+
+  /// No description provided for @admin2_dashboardTicketsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Support tickets waiting'**
+  String get admin2_dashboardTicketsTitle;
+
+  /// No description provided for @admin2_dashboardTicketsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the tickets inbox to reply.'**
+  String get admin2_dashboardTicketsHint;
+
+  /// No description provided for @admin2_dashboardKpiShops.
+  ///
+  /// In en, this message translates to:
+  /// **'Registered shops'**
+  String get admin2_dashboardKpiShops;
+
+  /// No description provided for @admin2_dashboardKpiLiveCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Live count'**
+  String get admin2_dashboardKpiLiveCount;
+
+  /// No description provided for @admin2_dashboardKpiBookings.
+  ///
+  /// In en, this message translates to:
+  /// **'Active bookings'**
+  String get admin2_dashboardKpiBookings;
+
+  /// No description provided for @admin2_dashboardKpiBookingsNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved, paid or active'**
+  String get admin2_dashboardKpiBookingsNote;
+
+  /// No description provided for @admin2_dashboardKpiDisputes.
+  ///
+  /// In en, this message translates to:
+  /// **'Open disputes'**
+  String get admin2_dashboardKpiDisputes;
+
+  /// No description provided for @admin2_dashboardKpiDisputesNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Awaiting a decision'**
+  String get admin2_dashboardKpiDisputesNote;
+
+  /// No description provided for @admin2_dashboardKpiTickets.
+  ///
+  /// In en, this message translates to:
+  /// **'Open support tickets'**
+  String get admin2_dashboardKpiTickets;
+
+  /// No description provided for @admin2_dashboardKpiTicketsNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Awaiting a reply'**
+  String get admin2_dashboardKpiTicketsNote;
+
+  /// No description provided for @admin2_shopsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Every showroom on the platform'**
+  String get admin2_shopsSubtitle;
+
+  /// No description provided for @admin2_shopsSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by shop, city, or owner…'**
+  String get admin2_shopsSearchHint;
+
+  /// No description provided for @admin2_shopsLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load the shops.'**
+  String get admin2_shopsLoadFailed;
+
+  /// No description provided for @admin2_shopsEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No shops match'**
+  String get admin2_shopsEmptyTitle;
+
+  /// No description provided for @admin2_shopsEmptyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'The list reads the shops collection.'**
+  String get admin2_shopsEmptyHint;
+
+  /// No description provided for @admin2_shopsPlanLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan {plan}'**
+  String admin2_shopsPlanLine(String plan);
+
+  /// No description provided for @admin2_approvalsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop Approvals'**
+  String get admin2_approvalsTitle;
+
+  /// No description provided for @admin2_approvalsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Applications waiting for a decision'**
+  String get admin2_approvalsSubtitle;
+
+  /// No description provided for @admin2_approvalsLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load the shop approvals.'**
+  String get admin2_approvalsLoadFailed;
+
+  /// No description provided for @admin2_approvalsEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No pending applications'**
+  String get admin2_approvalsEmptyTitle;
+
+  /// No description provided for @admin2_approvalsEmptyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Every shop has been decided.'**
+  String get admin2_approvalsEmptyHint;
+
+  /// No description provided for @admin2_approvalsChecklist.
+  ///
+  /// In en, this message translates to:
+  /// **'Checklist {done}/6'**
+  String admin2_approvalsChecklist(Object done);
+
+  /// No description provided for @admin2_shopDetailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop detail'**
+  String get admin2_shopDetailTitle;
+
+  /// No description provided for @admin2_shopDetailSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan, fleet, bookings and admin actions'**
+  String get admin2_shopDetailSubtitle;
+
+  /// No description provided for @admin2_shopDetailLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load this shop.'**
+  String get admin2_shopDetailLoadFailed;
+
+  /// No description provided for @admin2_shopDetailNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop not found.'**
+  String get admin2_shopDetailNotFound;
+
+  /// No description provided for @admin2_shopDetailSuspended.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop suspended.'**
+  String get admin2_shopDetailSuspended;
+
+  /// No description provided for @admin2_shopDetailSuspensionLifted.
+  ///
+  /// In en, this message translates to:
+  /// **'Suspension lifted.'**
+  String get admin2_shopDetailSuspensionLifted;
+
+  /// No description provided for @admin2_shopDetailPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan'**
+  String get admin2_shopDetailPlan;
+
+  /// No description provided for @admin2_shopDetailStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get admin2_shopDetailStatus;
+
+  /// No description provided for @admin2_shopDetailLifetimeBookings.
+  ///
+  /// In en, this message translates to:
+  /// **'Lifetime bookings'**
+  String get admin2_shopDetailLifetimeBookings;
+
+  /// No description provided for @admin2_shopDetailRating.
+  ///
+  /// In en, this message translates to:
+  /// **'Rating'**
+  String get admin2_shopDetailRating;
+
+  /// No description provided for @admin2_shopDetailSuspensionReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Suspension reason: {reason}'**
+  String admin2_shopDetailSuspensionReason(String reason);
+
+  /// No description provided for @admin2_shopDetailKycDocs.
+  ///
+  /// In en, this message translates to:
+  /// **'KYC documents'**
+  String get admin2_shopDetailKycDocs;
+
+  /// No description provided for @admin2_shopDetailNoneUploaded.
+  ///
+  /// In en, this message translates to:
+  /// **'None uploaded yet.'**
+  String get admin2_shopDetailNoneUploaded;
+
+  /// No description provided for @admin2_shopDetailBankAccounts.
+  ///
+  /// In en, this message translates to:
+  /// **'Bank / wallet accounts'**
+  String get admin2_shopDetailBankAccounts;
+
+  /// No description provided for @admin2_shopDetailNoneOnFile.
+  ///
+  /// In en, this message translates to:
+  /// **'None on file.'**
+  String get admin2_shopDetailNoneOnFile;
+
+  /// No description provided for @admin2_shopDetailContact.
+  ///
+  /// In en, this message translates to:
+  /// **'{city} • {address}\nOwner: {owner} • {phone}'**
+  String admin2_shopDetailContact(
+      String city, String address, String owner, String phone);
+
+  /// No description provided for @admin2_suspendTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Suspend this shop?'**
+  String get admin2_suspendTitle;
+
+  /// No description provided for @admin2_suspendLiftTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Lift the suspension?'**
+  String get admin2_suspendLiftTitle;
+
+  /// No description provided for @admin2_customersSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Every customer on the platform'**
+  String get admin2_customersSubtitle;
+
+  /// No description provided for @admin2_customersSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by name, phone, or CNIC…'**
+  String get admin2_customersSearchHint;
+
+  /// No description provided for @admin2_customersLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load the customers.'**
+  String get admin2_customersLoadFailed;
+
+  /// No description provided for @admin2_customersEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No customers match'**
+  String get admin2_customersEmptyTitle;
+
+  /// No description provided for @admin2_customersEmptyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'The list reads the customers collection.'**
+  String get admin2_customersEmptyHint;
+
+  /// No description provided for @admin2_customerDetailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer detail'**
+  String get admin2_customerDetailTitle;
+
+  /// No description provided for @admin2_customerDetailSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Trust score, KYC, trips and admin actions'**
+  String get admin2_customerDetailSubtitle;
+
+  /// No description provided for @admin2_customerDetailLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load this customer.'**
+  String get admin2_customerDetailLoadFailed;
+
+  /// No description provided for @admin2_customerDetailNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer not found.'**
+  String get admin2_customerDetailNotFound;
+
+  /// No description provided for @admin2_customerDetailNoCnic.
+  ///
+  /// In en, this message translates to:
+  /// **'No CNIC on file — a blacklist entry needs one.'**
+  String get admin2_customerDetailNoCnic;
+
+  /// No description provided for @admin2_customerDetailAdminReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin report'**
+  String get admin2_customerDetailAdminReport;
+
+  /// No description provided for @admin2_customerDetailAdminReportNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Reported by an admin from the customer detail screen.'**
+  String get admin2_customerDetailAdminReportNote;
+
+  /// No description provided for @admin2_customerDetailReported.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer reported to the blacklist.'**
+  String get admin2_customerDetailReported;
+
+  /// No description provided for @admin2_customerDetailBlacklisted.
+  ///
+  /// In en, this message translates to:
+  /// **'Blacklisted'**
+  String get admin2_customerDetailBlacklisted;
+
+  /// No description provided for @admin2_customerDetailBookingHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking history'**
+  String get admin2_customerDetailBookingHistory;
+
+  /// No description provided for @admin2_customerDetailNoBookings.
+  ///
+  /// In en, this message translates to:
+  /// **'No bookings yet.'**
+  String get admin2_customerDetailNoBookings;
+
+  /// No description provided for @admin2_customerDetailGuarantors.
+  ///
+  /// In en, this message translates to:
+  /// **'Guarantors'**
+  String get admin2_customerDetailGuarantors;
+
+  /// No description provided for @admin2_customerDetailAdminNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin notes'**
+  String get admin2_customerDetailAdminNotes;
+
+  /// No description provided for @admin2_customerDetailNoNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'No notes yet.'**
+  String get admin2_customerDetailNoNotes;
+
+  /// No description provided for @admin2_customerDetailWatchlistAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer added to the watchlist.'**
+  String get admin2_customerDetailWatchlistAdded;
+
+  /// No description provided for @admin2_customerDetailContact.
+  ///
+  /// In en, this message translates to:
+  /// **'{phone} • CNIC {cnic} • Source: {source}'**
+  String admin2_customerDetailContact(String phone, String cnic, String source);
+
+  /// No description provided for @admin2_tribunalTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Blacklist tribunal'**
+  String get admin2_tribunalTitle;
+
+  /// No description provided for @admin2_tribunalSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'National Rental Fraud & Blacklist Tribunal'**
+  String get admin2_tribunalSubtitle;
+
+  /// No description provided for @admin2_tribunalSubtitle2.
+  ///
+  /// In en, this message translates to:
+  /// **'Central arbitration bench for inter-showroom disputes'**
+  String get admin2_tribunalSubtitle2;
+
+  /// No description provided for @admin2_tribunalLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load the blacklist cases.'**
+  String get admin2_tribunalLoadFailed;
+
+  /// No description provided for @admin2_tribunalEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No blacklist cases'**
+  String get admin2_tribunalEmptyTitle;
+
+  /// No description provided for @admin2_tribunalEmptyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tribunal records will appear here.'**
+  String get admin2_tribunalEmptyHint;
+
+  /// No description provided for @admin2_tribunalActive.
+  ///
+  /// In en, this message translates to:
+  /// **'ACTIVE BLACKLIST'**
+  String get admin2_tribunalActive;
+
+  /// No description provided for @admin2_tribunalReversed.
+  ///
+  /// In en, this message translates to:
+  /// **'REVERSED / CLEARED'**
+  String get admin2_tribunalReversed;
+
+  /// No description provided for @admin2_tribunalCaseLine.
+  ///
+  /// In en, this message translates to:
+  /// **'{id} • CNIC: {cnic}'**
+  String admin2_tribunalCaseLine(String id, String cnic);
+
+  /// No description provided for @admin2_tribunalReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason: {reason}'**
+  String admin2_tribunalReason(String reason);
+
+  /// No description provided for @admin2_tribunalReportedBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Reported by Showroom: {shop}'**
+  String admin2_tribunalReportedBy(String shop);
+
+  /// No description provided for @admin2_tribunalReversal.
+  ///
+  /// In en, this message translates to:
+  /// **'Reversal Justification: {reason}'**
+  String admin2_tribunalReversal(String reason);
+
+  /// No description provided for @admin2_tribunalDecideAppeal.
+  ///
+  /// In en, this message translates to:
+  /// **'Decide appeal — Keep or Remove'**
+  String get admin2_tribunalDecideAppeal;
+
+  /// No description provided for @admin2_tribunalAppealLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Appeal: {status} — {reason}'**
+  String admin2_tribunalAppealLine(String status, String reason);
+
+  /// No description provided for @admin2_disputesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Disputes centre'**
+  String get admin2_disputesTitle;
+
+  /// No description provided for @admin2_disputesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Third side of every dispute — 72 h SLA'**
+  String get admin2_disputesSubtitle;
+
+  /// No description provided for @admin2_disputesSlaUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'SLA unknown'**
+  String get admin2_disputesSlaUnknown;
+
+  /// No description provided for @admin2_disputesSlaOverdue.
+  ///
+  /// In en, this message translates to:
+  /// **'SLA overdue by {hours}h'**
+  String admin2_disputesSlaOverdue(Object hours);
+
+  /// No description provided for @admin2_disputesSlaLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours}h of SLA left'**
+  String admin2_disputesSlaLeft(Object hours);
+
+  /// No description provided for @admin2_disputesLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load the disputes.'**
+  String get admin2_disputesLoadFailed;
+
+  /// No description provided for @admin2_disputesEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No disputes'**
+  String get admin2_disputesEmptyTitle;
+
+  /// No description provided for @admin2_disputesEmptyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'The centre reads the disputes collection.'**
+  String get admin2_disputesEmptyHint;
+
+  /// No description provided for @admin2_reviewsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reviews moderation'**
+  String get admin2_reviewsTitle;
+
+  /// No description provided for @admin2_reviewsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Abusive, fake and revenge queues'**
+  String get admin2_reviewsSubtitle;
+
+  /// No description provided for @admin2_reviewsFilterAbusive.
+  ///
+  /// In en, this message translates to:
+  /// **'Abusive'**
+  String get admin2_reviewsFilterAbusive;
+
+  /// No description provided for @admin2_reviewsFilterFake.
+  ///
+  /// In en, this message translates to:
+  /// **'Fake'**
+  String get admin2_reviewsFilterFake;
+
+  /// No description provided for @admin2_reviewsReasonFake.
+  ///
+  /// In en, this message translates to:
+  /// **'Fake review'**
+  String get admin2_reviewsReasonFake;
+
+  /// No description provided for @admin2_reviewsFilterRevenge.
+  ///
+  /// In en, this message translates to:
+  /// **'Revenge'**
+  String get admin2_reviewsFilterRevenge;
+
+  /// No description provided for @admin2_reviewsFilterClear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get admin2_reviewsFilterClear;
+
+  /// No description provided for @admin2_reviewsMarkAs.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as {status}?'**
+  String admin2_reviewsMarkAs(String status);
+
+  /// No description provided for @admin2_reviewsReasonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason (stored with the decision)'**
+  String get admin2_reviewsReasonLabel;
+
+  /// No description provided for @admin2_reviewsMarked.
+  ///
+  /// In en, this message translates to:
+  /// **'Review marked as {status}.'**
+  String admin2_reviewsMarked(String status);
+
+  /// No description provided for @admin2_reviewsLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load the reviews.'**
+  String get admin2_reviewsLoadFailed;
+
+  /// No description provided for @admin2_reviewsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No reviews in this queue.'**
+  String get admin2_reviewsEmpty;
+
+  /// No description provided for @admin2_reviewKeep.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep'**
+  String get admin2_reviewKeep;
+
+  /// No description provided for @admin2_reviewHide.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide'**
+  String get admin2_reviewHide;
+
+  /// No description provided for @admin2_reviewAskToEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask to edit'**
+  String get admin2_reviewAskToEdit;
+
+  /// No description provided for @admin2_reviewWarn.
+  ///
+  /// In en, this message translates to:
+  /// **'Warn'**
+  String get admin2_reviewWarn;
+
+  /// No description provided for @admin2_reviewModeration.
+  ///
+  /// In en, this message translates to:
+  /// **'Moderation: {status}'**
+  String admin2_reviewModeration(String status);
+
+  /// No description provided for @admin2_reviewCardRatings.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop {shop}/5 • Car {car}/5 • Owner: punctuality {punctuality}, care {care}, behaviour {behaviour}'**
+  String admin2_reviewCardRatings(String shop, String car, String punctuality,
+      String care, String behaviour);
+
+  /// No description provided for @admin2_ticketsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Support tickets'**
+  String get admin2_ticketsTitle;
+
+  /// No description provided for @admin2_ticketsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'The inbox the customer plan promised'**
+  String get admin2_ticketsSubtitle;
+
+  /// No description provided for @admin2_ticketsLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load the tickets.'**
+  String get admin2_ticketsLoadFailed;
+
+  /// No description provided for @admin2_ticketsEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No tickets'**
+  String get admin2_ticketsEmptyTitle;
+
+  /// No description provided for @admin2_ticketsEmptyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'The inbox reads the support_tickets collection.'**
+  String get admin2_ticketsEmptyHint;
+
+  /// No description provided for @admin2_slaUnknownDate.
+  ///
+  /// In en, this message translates to:
+  /// **'SLA: filed date unknown'**
+  String get admin2_slaUnknownDate;
+
+  /// No description provided for @admin2_slaBreached.
+  ///
+  /// In en, this message translates to:
+  /// **'SLA breached by {hours}h'**
+  String admin2_slaBreached(Object hours);
+
+  /// No description provided for @admin2_slaLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours}h of {total}h SLA left'**
+  String admin2_slaLeft(Object hours, Object total);
+
+  /// No description provided for @admin2_ticketQuickReply1.
+  ///
+  /// In en, this message translates to:
+  /// **'Thanks for reaching out — we are looking into this and will update you here.'**
+  String get admin2_ticketQuickReply1;
+
+  /// No description provided for @admin2_ticketQuickReply2.
+  ///
+  /// In en, this message translates to:
+  /// **'Could you share the booking ID and a photo of the issue?'**
+  String get admin2_ticketQuickReply2;
+
+  /// No description provided for @admin2_ticketQuickReply3.
+  ///
+  /// In en, this message translates to:
+  /// **'This has been resolved. Please let us know if it comes back.'**
+  String get admin2_ticketQuickReply3;
+
+  /// No description provided for @admin2_ticketStatusDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Ticket {status}.'**
+  String admin2_ticketStatusDone(String status);
+
+  /// No description provided for @admin2_ticketTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Ticket {id}'**
+  String admin2_ticketTitle(String id);
+
+  /// No description provided for @admin2_ticketOpenCustomer.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the customer'**
+  String get admin2_ticketOpenCustomer;
+
+  /// No description provided for @admin2_ticketReplies.
+  ///
+  /// In en, this message translates to:
+  /// **'Replies'**
+  String get admin2_ticketReplies;
+
+  /// No description provided for @admin2_ticketNoReplies.
+  ///
+  /// In en, this message translates to:
+  /// **'No replies yet.'**
+  String get admin2_ticketNoReplies;
+
+  /// No description provided for @admin2_ticketQuickReplies.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick replies'**
+  String get admin2_ticketQuickReplies;
+
+  /// No description provided for @admin2_ticketReplyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Reply to the customer…'**
+  String get admin2_ticketReplyHint;
+
+  /// No description provided for @admin2_ticketSendReply.
+  ///
+  /// In en, this message translates to:
+  /// **'Send reply'**
+  String get admin2_ticketSendReply;
+
+  /// No description provided for @admin2_ticketInternalNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Internal notes (the customer never sees these)'**
+  String get admin2_ticketInternalNotes;
+
+  /// No description provided for @admin2_ticketAddNoteHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Add an internal note…'**
+  String get admin2_ticketAddNoteHint;
+
+  /// No description provided for @admin2_ticketAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get admin2_ticketAdd;
+
+  /// No description provided for @admin2_ticketEscalate.
+  ///
+  /// In en, this message translates to:
+  /// **'Escalate'**
+  String get admin2_ticketEscalate;
+
+  /// No description provided for @admin2_ticketClose.
+  ///
+  /// In en, this message translates to:
+  /// **'Close ticket'**
+  String get admin2_ticketClose;
+
+  /// No description provided for @admin2_anncSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Broadcasts to owners and customers'**
+  String get admin2_anncSubtitle;
+
+  /// No description provided for @admin2_anncNew.
+  ///
+  /// In en, this message translates to:
+  /// **'New announcement'**
+  String get admin2_anncNew;
+
+  /// No description provided for @admin2_anncLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load the announcements.'**
+  String get admin2_anncLoadFailed;
+
+  /// No description provided for @admin2_anncEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No announcements yet'**
+  String get admin2_anncEmptyTitle;
+
+  /// No description provided for @admin2_anncEmptyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Create the first one above.'**
+  String get admin2_anncEmptyHint;
+
+  /// No description provided for @admin2_anncSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent.'**
+  String get admin2_anncSent;
+
+  /// No description provided for @admin2_anncSendFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not reach the Functions server — try again.'**
+  String get admin2_anncSendFailed;
+
+  /// No description provided for @admin2_anncSendTest.
+  ///
+  /// In en, this message translates to:
+  /// **'Send test'**
+  String get admin2_anncSendTest;
+
+  /// No description provided for @admin2_anncSendNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Send now'**
+  String get admin2_anncSendNow;
+
+  /// No description provided for @admin2_anncStats.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent {sent} • Delivered {delivered} • Opened {opened}'**
+  String admin2_anncStats(Object sent, Object delivered, Object opened);
+
+  /// No description provided for @admin2_anncFormEnRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'The English title and body are required.'**
+  String get admin2_anncFormEnRequired;
+
+  /// No description provided for @admin2_anncFormUrRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'The Urdu title and body are required too (rulebook §5.5).'**
+  String get admin2_anncFormUrRequired;
+
+  /// No description provided for @admin2_anncFormSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Announcement saved.'**
+  String get admin2_anncFormSaved;
+
+  /// No description provided for @admin2_anncFormTitleEn.
+  ///
+  /// In en, this message translates to:
+  /// **'Title (English)'**
+  String get admin2_anncFormTitleEn;
+
+  /// No description provided for @admin2_anncFormTitleUr.
+  ///
+  /// In en, this message translates to:
+  /// **'Title (Urdu)'**
+  String get admin2_anncFormTitleUr;
+
+  /// No description provided for @admin2_anncFormBodyEn.
+  ///
+  /// In en, this message translates to:
+  /// **'Body (English)'**
+  String get admin2_anncFormBodyEn;
+
+  /// No description provided for @admin2_anncFormBodyUr.
+  ///
+  /// In en, this message translates to:
+  /// **'Body (Urdu)'**
+  String get admin2_anncFormBodyUr;
+
+  /// No description provided for @admin2_anncFormAudienceRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Audience — role'**
+  String get admin2_anncFormAudienceRole;
+
+  /// No description provided for @admin2_anncFormEveryone.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone'**
+  String get admin2_anncFormEveryone;
+
+  /// No description provided for @admin2_anncFormOwners.
+  ///
+  /// In en, this message translates to:
+  /// **'Owners'**
+  String get admin2_anncFormOwners;
+
+  /// No description provided for @admin2_anncFormCustomers.
+  ///
+  /// In en, this message translates to:
+  /// **'Customers'**
+  String get admin2_anncFormCustomers;
+
+  /// No description provided for @admin2_anncFormAudienceCity.
+  ///
+  /// In en, this message translates to:
+  /// **'Audience — city'**
+  String get admin2_anncFormAudienceCity;
+
+  /// No description provided for @admin2_anncFormAllCities.
+  ///
+  /// In en, this message translates to:
+  /// **'All cities'**
+  String get admin2_anncFormAllCities;
+
+  /// No description provided for @admin2_anncFormAudiencePlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Audience — plan'**
+  String get admin2_anncFormAudiencePlan;
+
+  /// No description provided for @admin2_anncFormAllPlans.
+  ///
+  /// In en, this message translates to:
+  /// **'All plans'**
+  String get admin2_anncFormAllPlans;
+
+  /// No description provided for @admin2_anncFormFree.
+  ///
+  /// In en, this message translates to:
+  /// **'Free'**
+  String get admin2_anncFormFree;
+
+  /// No description provided for @admin2_anncFormPro.
+  ///
+  /// In en, this message translates to:
+  /// **'Pro'**
+  String get admin2_anncFormPro;
+
+  /// No description provided for @admin2_anncFormBusiness.
+  ///
+  /// In en, this message translates to:
+  /// **'Business'**
+  String get admin2_anncFormBusiness;
+
+  /// No description provided for @admin2_anncFormChannel.
+  ///
+  /// In en, this message translates to:
+  /// **'Channel'**
+  String get admin2_anncFormChannel;
+
+  /// No description provided for @admin2_anncFormPush.
+  ///
+  /// In en, this message translates to:
+  /// **'Push'**
+  String get admin2_anncFormPush;
+
+  /// No description provided for @admin2_anncFormWhatsapp.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp (waits for the Meta token, D2)'**
+  String get admin2_anncFormWhatsapp;
+
+  /// No description provided for @admin2_anncFormBoth.
+  ///
+  /// In en, this message translates to:
+  /// **'Push + WhatsApp'**
+  String get admin2_anncFormBoth;
+
+  /// No description provided for @admin2_anncFormSchedule.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule for later'**
+  String get admin2_anncFormSchedule;
+
+  /// No description provided for @admin2_anncFormPickDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a date and time'**
+  String get admin2_anncFormPickDate;
+
+  /// No description provided for @admin2_anncFormScheduled.
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduled: {when}'**
+  String admin2_anncFormScheduled(String when);
+
+  /// No description provided for @admin2_anncFormSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save announcement'**
+  String get admin2_anncFormSave;
+
+  /// No description provided for @admin2_activitySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Every admin action, newest first — immutable'**
+  String get admin2_activitySubtitle;
+
+  /// No description provided for @admin2_activityLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load the activity log.'**
+  String get admin2_activityLoadFailed;
+
+  /// No description provided for @admin2_activityEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No audit entries yet'**
+  String get admin2_activityEmptyTitle;
+
+  /// No description provided for @admin2_activityEmptyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin actions will appear here as they happen.'**
+  String get admin2_activityEmptyHint;
+
+  /// No description provided for @admin2_activitySearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by action, admin, or target…'**
+  String get admin2_activitySearchHint;
+
+  /// No description provided for @admin2_activityExportCsv.
+  ///
+  /// In en, this message translates to:
+  /// **'Export CSV'**
+  String get admin2_activityExportCsv;
+
+  /// No description provided for @admin2_activityCsvFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not share the CSV file.'**
+  String get admin2_activityCsvFailed;
+
+  /// No description provided for @admin2_teamSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Who can run the platform, and with what role'**
+  String get admin2_teamSubtitle;
+
+  /// No description provided for @admin2_teamLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load the admin team.'**
+  String get admin2_teamLoadFailed;
+
+  /// No description provided for @admin2_teamViewOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Only a super admin can invite, reset two-factor authentication, or revoke a role. You can view the team.'**
+  String get admin2_teamViewOnly;
+
+  /// No description provided for @admin2_teamEmailInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid email address.'**
+  String get admin2_teamEmailInvalid;
+
+  /// No description provided for @admin2_teamInviteLog.
+  ///
+  /// In en, this message translates to:
+  /// **'Invited {email} as {role} (48 h expiry).'**
+  String admin2_teamInviteLog(String email, String role);
+
+  /// No description provided for @admin2_teamInviteSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite sent to {email}.'**
+  String admin2_teamInviteSent(String email);
+
+  /// No description provided for @admin2_teamInviteFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save the invite.'**
+  String get admin2_teamInviteFailed;
+
+  /// No description provided for @admin2_teamActionFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not complete that action.'**
+  String get admin2_teamActionFailed;
+
+  /// No description provided for @admin2_teamResetTotpTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset two-factor authentication?'**
+  String get admin2_teamResetTotpTitle;
+
+  /// No description provided for @admin2_teamResetTotpBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{email} will have to enrol TOTP again on their next login.'**
+  String admin2_teamResetTotpBody(String email);
+
+  /// No description provided for @admin2_teamTotpResetLog.
+  ///
+  /// In en, this message translates to:
+  /// **'TOTP reset for {email}.'**
+  String admin2_teamTotpResetLog(String email);
+
+  /// No description provided for @admin2_teamRevokeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Revoke this admin role?'**
+  String get admin2_teamRevokeTitle;
+
+  /// No description provided for @admin2_teamRevokeBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{email} will lose admin access and become a customer account.'**
+  String admin2_teamRevokeBody(String email);
+
+  /// No description provided for @admin2_teamWithdrawTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdraw this invite?'**
+  String get admin2_teamWithdrawTitle;
+
+  /// No description provided for @admin2_teamWithdrawBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{email} will no longer be able to accept it.'**
+  String admin2_teamWithdrawBody(String email);
+
+  /// No description provided for @admin2_teamInviteWithdrawnLog.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite withdrawn for {email}.'**
+  String admin2_teamInviteWithdrawnLog(String email);
+
+  /// No description provided for @admin2_teamInviteButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite an admin'**
+  String get admin2_teamInviteButton;
+
+  /// No description provided for @admin2_teamInvitesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending invites'**
+  String get admin2_teamInvitesTitle;
+
+  /// No description provided for @admin2_teamInvitesEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No pending invites.'**
+  String get admin2_teamInvitesEmpty;
+
+  /// No description provided for @admin2_teamMembersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Team members'**
+  String get admin2_teamMembersTitle;
+
+  /// No description provided for @admin2_teamMembersEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No admins found — the team list reads the users who hold an admin role.'**
+  String get admin2_teamMembersEmpty;
+
+  /// No description provided for @admin2_teamInviteEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Email address'**
+  String get admin2_teamInviteEmail;
+
+  /// No description provided for @admin2_teamInviteHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Invites expire after 48 hours. The invitee creates their account first, then a super admin grants the role.'**
+  String get admin2_teamInviteHint;
+
+  /// No description provided for @admin2_teamInviteSending.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending…'**
+  String get admin2_teamInviteSending;
+
+  /// No description provided for @admin2_teamInviteSend.
+  ///
+  /// In en, this message translates to:
+  /// **'Send invite'**
+  String get admin2_teamInviteSend;
+
+  /// No description provided for @admin2_teamInviteWithdraw.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdraw'**
+  String get admin2_teamInviteWithdraw;
+
+  /// No description provided for @admin2_team2faOn.
+  ///
+  /// In en, this message translates to:
+  /// **'2FA on'**
+  String get admin2_team2faOn;
+
+  /// No description provided for @admin2_team2faOff.
+  ///
+  /// In en, this message translates to:
+  /// **'2FA off'**
+  String get admin2_team2faOff;
+
+  /// No description provided for @admin2_teamReset2fa.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset 2FA'**
+  String get admin2_teamReset2fa;
+
+  /// No description provided for @admin2_teamRevokeRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Revoke role'**
+  String get admin2_teamRevokeRole;
+
+  /// No description provided for @admin2_teamResetTotpMenu.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset two-factor authentication'**
+  String get admin2_teamResetTotpMenu;
+
+  /// No description provided for @admin2_teamRevokeMenu.
+  ///
+  /// In en, this message translates to:
+  /// **'Revoke admin role'**
+  String get admin2_teamRevokeMenu;
+
+  /// No description provided for @admin2_settingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cities & settings'**
+  String get admin2_settingsTitle;
+
+  /// No description provided for @admin2_settingsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'The platform defaults, in one document'**
+  String get admin2_settingsSubtitle;
+
+  /// No description provided for @admin2_settingsLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load the platform settings.'**
+  String get admin2_settingsLoadFailed;
+
+  /// No description provided for @admin2_settingsNumbersInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Advance %, deposit and late grace must be numbers.'**
+  String get admin2_settingsNumbersInvalid;
+
+  /// No description provided for @admin2_settingsSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Platform settings saved.'**
+  String get admin2_settingsSaved;
+
+  /// No description provided for @admin2_settingsCities.
+  ///
+  /// In en, this message translates to:
+  /// **'Live cities (comma-separated)'**
+  String get admin2_settingsCities;
+
+  /// No description provided for @admin2_settingsCategories.
+  ///
+  /// In en, this message translates to:
+  /// **'Car categories (comma-separated)'**
+  String get admin2_settingsCategories;
+
+  /// No description provided for @admin2_settingsAdvance.
+  ///
+  /// In en, this message translates to:
+  /// **'Advance %'**
+  String get admin2_settingsAdvance;
+
+  /// No description provided for @admin2_settingsDeposit.
+  ///
+  /// In en, this message translates to:
+  /// **'Default deposit (Rs.)'**
+  String get admin2_settingsDeposit;
+
+  /// No description provided for @admin2_settingsGrace.
+  ///
+  /// In en, this message translates to:
+  /// **'Late grace (minutes)'**
+  String get admin2_settingsGrace;
+
+  /// No description provided for @admin2_settingsSupportHours.
+  ///
+  /// In en, this message translates to:
+  /// **'Support hours'**
+  String get admin2_settingsSupportHours;
+
+  /// No description provided for @admin2_settingsAgreementTerms.
+  ///
+  /// In en, this message translates to:
+  /// **'Default agreement terms'**
+  String get admin2_settingsAgreementTerms;
+
+  /// No description provided for @admin2_settingsMaintenance.
+  ///
+  /// In en, this message translates to:
+  /// **'Maintenance mode'**
+  String get admin2_settingsMaintenance;
+
+  /// No description provided for @admin2_settingsMaintenanceHint.
+  ///
+  /// In en, this message translates to:
+  /// **'When on, the app shows a maintenance notice at startup.'**
+  String get admin2_settingsMaintenanceHint;
+
+  /// No description provided for @admin2_settingsSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save settings'**
+  String get admin2_settingsSave;
+
+  /// No description provided for @admin2_shopAppReasonRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'A reason is required — the owner sees it.'**
+  String get admin2_shopAppReasonRequired;
+
+  /// No description provided for @admin2_shopAppChecklist.
+  ///
+  /// In en, this message translates to:
+  /// **'Checklist — {done} of 6 complete'**
+  String admin2_shopAppChecklist(Object done);
+
+  /// No description provided for @admin2_shopAppKycDocs.
+  ///
+  /// In en, this message translates to:
+  /// **'KYC documents on file'**
+  String get admin2_shopAppKycDocs;
+
+  /// No description provided for @admin2_shopAppFleetPhotos.
+  ///
+  /// In en, this message translates to:
+  /// **'Fleet photos'**
+  String get admin2_shopAppFleetPhotos;
+
+  /// No description provided for @admin2_shopAppReasonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason (required to ask for more info or reject — the owner sees it)'**
+  String get admin2_shopAppReasonLabel;
+
+  /// No description provided for @admin2_shopAppCallOwner.
+  ///
+  /// In en, this message translates to:
+  /// **'Call owner'**
+  String get admin2_shopAppCallOwner;
+
+  /// No description provided for @admin2_shopAppAskInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask for more info'**
+  String get admin2_shopAppAskInfo;
+
+  /// No description provided for @admin2_shopAppOwner.
+  ///
+  /// In en, this message translates to:
+  /// **'Owner: {owner} • {phone} • CNIC {cnic}'**
+  String admin2_shopAppOwner(String owner, String phone, String cnic);
+
+  /// No description provided for @admin2_shopActionMessageOwner.
+  ///
+  /// In en, this message translates to:
+  /// **'Message owner'**
+  String get admin2_shopActionMessageOwner;
+
+  /// No description provided for @admin2_shopActionHello.
+  ///
+  /// In en, this message translates to:
+  /// **'Hello from RentalHub admin regarding {shop}.'**
+  String admin2_shopActionHello(String shop);
+
+  /// No description provided for @admin2_shopActionNoPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'No phone number on file for this shop.'**
+  String get admin2_shopActionNoPhone;
+
+  /// No description provided for @admin2_shopActionLift.
+  ///
+  /// In en, this message translates to:
+  /// **'Lift suspension'**
+  String get admin2_shopActionLift;
+
+  /// No description provided for @admin2_shopActionSuspend.
+  ///
+  /// In en, this message translates to:
+  /// **'Suspend shop'**
+  String get admin2_shopActionSuspend;
+
+  /// No description provided for @admin2_custActionAddNoteHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Add an admin note…'**
+  String get admin2_custActionAddNoteHint;
+
+  /// No description provided for @admin2_custActionAddNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Add note'**
+  String get admin2_custActionAddNote;
+
+  /// No description provided for @admin2_custActionBlacklist.
+  ///
+  /// In en, this message translates to:
+  /// **'Report to blacklist'**
+  String get admin2_custActionBlacklist;
+
+  /// No description provided for @admin2_trustTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Trust score'**
+  String get admin2_trustTitle;
+
+  /// No description provided for @admin2_trustKycLine.
+  ///
+  /// In en, this message translates to:
+  /// **'KYC: {status} • {trips} completed trip(s) • '**
+  String admin2_trustKycLine(String status, Object trips);
+
+  /// No description provided for @admin2_trustOwnerRating.
+  ///
+  /// In en, this message translates to:
+  /// **'Owner rating: {rating}'**
+  String admin2_trustOwnerRating(String rating);
+
+  /// No description provided for @admin2_trustBase.
+  ///
+  /// In en, this message translates to:
+  /// **'Base'**
+  String get admin2_trustBase;
+
+  /// No description provided for @admin2_trustTrips.
+  ///
+  /// In en, this message translates to:
+  /// **'Trips'**
+  String get admin2_trustTrips;
+
+  /// No description provided for @admin2_trustRatings.
+  ///
+  /// In en, this message translates to:
+  /// **'Ratings'**
+  String get admin2_trustRatings;
+
+  /// No description provided for @admin2_trustPunctuality.
+  ///
+  /// In en, this message translates to:
+  /// **'Punctuality'**
+  String get admin2_trustPunctuality;
+
+  /// No description provided for @admin2_trustConduct.
+  ///
+  /// In en, this message translates to:
+  /// **'Conduct'**
+  String get admin2_trustConduct;
+
+  /// No description provided for @admin2_fleetPhotoTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'View photo full screen'**
+  String get admin2_fleetPhotoTooltip;
+
+  /// No description provided for @admin2_fleetPhotoFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo could not be loaded.'**
+  String get admin2_fleetPhotoFailed;
+
+  /// No description provided for @admin2_disputeSlaBreached.
+  ///
+  /// In en, this message translates to:
+  /// **'SLA breached by {hours}h — decide now'**
+  String admin2_disputeSlaBreached(Object hours);
+
+  /// No description provided for @admin2_disputeSlaLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'SLA: {hours}h left of 72h'**
+  String admin2_disputeSlaLeft(Object hours);
+
+  /// No description provided for @admin2_disputeAmountHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the decision amount in rupees (0 is allowed).'**
+  String get admin2_disputeAmountHint;
+
+  /// No description provided for @admin2_disputeNoteRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'An admin note is required with the decision.'**
+  String get admin2_disputeNoteRequired;
+
+  /// No description provided for @admin2_disputeDecided.
+  ///
+  /// In en, this message translates to:
+  /// **'Dispute decided.'**
+  String get admin2_disputeDecided;
+
+  /// No description provided for @admin2_disputeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Dispute {id}'**
+  String admin2_disputeTitle(String id);
+
+  /// No description provided for @admin2_disputeBookingLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking {booking} • {status} • {sla}'**
+  String admin2_disputeBookingLine(String booking, String status, String sla);
+
+  /// No description provided for @admin2_disputeCustomerStatement.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer statement'**
+  String get admin2_disputeCustomerStatement;
+
+  /// No description provided for @admin2_disputeCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Category: {category}'**
+  String admin2_disputeCategory(String category);
+
+  /// No description provided for @admin2_disputeCustomer.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer: {name}'**
+  String admin2_disputeCustomer(String name);
+
+  /// No description provided for @admin2_disputeShopSide.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop side — the booking record'**
+  String get admin2_disputeShopSide;
+
+  /// No description provided for @admin2_disputeBookingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking: {id}'**
+  String admin2_disputeBookingLabel(String id);
+
+  /// No description provided for @admin2_disputeShopLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop: {id}'**
+  String admin2_disputeShopLabel(String id);
+
+  /// No description provided for @admin2_disputeNoShopStatement.
+  ///
+  /// In en, this message translates to:
+  /// **'The shop has no written statement on file — the decision uses the booking, handover and deposit records.'**
+  String get admin2_disputeNoShopStatement;
+
+  /// No description provided for @admin2_disputeDecisionHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'Decision'**
+  String get admin2_disputeDecisionHeading;
+
+  /// No description provided for @admin2_disputeFullCustomer.
+  ///
+  /// In en, this message translates to:
+  /// **'Full refund to customer'**
+  String get admin2_disputeFullCustomer;
+
+  /// No description provided for @admin2_disputePartial.
+  ///
+  /// In en, this message translates to:
+  /// **'Partial — split'**
+  String get admin2_disputePartial;
+
+  /// No description provided for @admin2_disputeFullOwner.
+  ///
+  /// In en, this message translates to:
+  /// **'Full to owner (claim upheld)'**
+  String get admin2_disputeFullOwner;
+
+  /// No description provided for @admin2_disputeAmountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Decision amount (Rs.)'**
+  String get admin2_disputeAmountLabel;
+
+  /// No description provided for @admin2_disputeNoteLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin note — why this decision (both sides see it)'**
+  String get admin2_disputeNoteLabel;
+
+  /// No description provided for @admin2_appealReasonRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'A reason is required — it is stored with the decision.'**
+  String get admin2_appealReasonRequired;
+
+  /// No description provided for @admin2_appealKept.
+  ///
+  /// In en, this message translates to:
+  /// **'Flag kept — appeal denied.'**
+  String get admin2_appealKept;
+
+  /// No description provided for @admin2_appealRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'Flag removed.'**
+  String get admin2_appealRemoved;
+
+  /// No description provided for @admin2_appealDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tribunal Blacklist Appeal'**
+  String get admin2_appealDialogTitle;
+
+  /// No description provided for @admin2_appealEvidence.
+  ///
+  /// In en, this message translates to:
+  /// **'Evidence: {count} file(s) on record'**
+  String admin2_appealEvidence(Object count);
+
+  /// No description provided for @admin2_appealDecisionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Decision reason (mandatory):'**
+  String get admin2_appealDecisionLabel;
+
+  /// No description provided for @admin2_appealDecisionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Why is the flag kept or removed?'**
+  String get admin2_appealDecisionHint;
+
+  /// No description provided for @admin2_appealKeep.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep flag'**
+  String get admin2_appealKeep;
+
+  /// No description provided for @admin2_appealRemove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove flag'**
+  String get admin2_appealRemove;
+
+  /// No description provided for @admin2_bookingsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Every booking on the platform'**
+  String get admin2_bookingsSubtitle;
+
+  /// No description provided for @admin2_bookingsSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by booking, customer, car, or shop…'**
+  String get admin2_bookingsSearchHint;
+
+  /// No description provided for @admin2_bookingsLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load the bookings.'**
+  String get admin2_bookingsLoadFailed;
+
+  /// No description provided for @admin2_bookingsEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No bookings match'**
+  String get admin2_bookingsEmptyTitle;
+
+  /// No description provided for @admin2_bookingsEmptyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'The list reads the bookings collection.'**
+  String get admin2_bookingsEmptyHint;
+
+  /// No description provided for @admin2_bookingDetailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking detail'**
+  String get admin2_bookingDetailTitle;
+
+  /// No description provided for @admin2_bookingDetailSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Lifecycle, money, handover and messages'**
+  String get admin2_bookingDetailSubtitle;
+
+  /// No description provided for @admin2_bookingDetailLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load this booking.'**
+  String get admin2_bookingDetailLoadFailed;
+
+  /// No description provided for @admin2_bookingDetailNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking not found.'**
+  String get admin2_bookingDetailNotFound;
+
+  /// No description provided for @admin2_bookingDetailShareFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not share the booking summary.'**
+  String get admin2_bookingDetailShareFailed;
+
+  /// No description provided for @admin2_bookingDetailDownloadAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Download all'**
+  String get admin2_bookingDetailDownloadAll;
+
+  /// No description provided for @admin2_bookingDetailAmounts.
+  ///
+  /// In en, this message translates to:
+  /// **'Amounts'**
+  String get admin2_bookingDetailAmounts;
+
+  /// No description provided for @admin2_bookingDetailAdvanceRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Advance required: {amount}'**
+  String admin2_bookingDetailAdvanceRequired(String amount);
+
+  /// No description provided for @admin2_bookingDetailAdvancePaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Advance paid: {amount}'**
+  String admin2_bookingDetailAdvancePaid(String amount);
+
+  /// No description provided for @admin2_bookingDetailRemaining.
+  ///
+  /// In en, this message translates to:
+  /// **'Remaining balance: {amount}'**
+  String admin2_bookingDetailRemaining(String amount);
+
+  /// No description provided for @admin2_bookingDetailTransaction.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction: {id}'**
+  String admin2_bookingDetailTransaction(String id);
+
+  /// No description provided for @admin2_bookingDetailPaymentDeposit.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment & deposit'**
+  String get admin2_bookingDetailPaymentDeposit;
+
+  /// No description provided for @admin2_bookingDetailPaymentProof.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment proof: {url}'**
+  String admin2_bookingDetailPaymentProof(String url);
+
+  /// No description provided for @admin2_bookingDetailNoDeposit.
+  ///
+  /// In en, this message translates to:
+  /// **'No deposit record.'**
+  String get admin2_bookingDetailNoDeposit;
+
+  /// No description provided for @admin2_bookingDetailDeposit.
+  ///
+  /// In en, this message translates to:
+  /// **'Deposit {amount} — {status}'**
+  String admin2_bookingDetailDeposit(String amount, String status);
+
+  /// No description provided for @admin2_bookingDetailAgreement.
+  ///
+  /// In en, this message translates to:
+  /// **'Agreement'**
+  String get admin2_bookingDetailAgreement;
+
+  /// No description provided for @admin2_bookingDetailAgreementOnFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Agreement PDF on file — tap to open.'**
+  String get admin2_bookingDetailAgreementOnFile;
+
+  /// No description provided for @admin2_bookingDetailNoAgreement.
+  ///
+  /// In en, this message translates to:
+  /// **'No agreement PDF on file.'**
+  String get admin2_bookingDetailNoAgreement;
+
+  /// No description provided for @admin2_bookingDetailOpenAgreement.
+  ///
+  /// In en, this message translates to:
+  /// **'Open agreement PDF'**
+  String get admin2_bookingDetailOpenAgreement;
+
+  /// No description provided for @admin2_bookingDetailPdfFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open the PDF link.'**
+  String get admin2_bookingDetailPdfFailed;
+
+  /// No description provided for @admin2_bookingDetailHandover.
+  ///
+  /// In en, this message translates to:
+  /// **'Handover'**
+  String get admin2_bookingDetailHandover;
+
+  /// No description provided for @admin2_bookingDetailNoHandover.
+  ///
+  /// In en, this message translates to:
+  /// **'No handover record.'**
+  String get admin2_bookingDetailNoHandover;
+
+  /// No description provided for @admin2_bookingDetailOdometer.
+  ///
+  /// In en, this message translates to:
+  /// **'Odometer at pickup: {km} km'**
+  String admin2_bookingDetailOdometer(Object km);
+
+  /// No description provided for @admin2_bookingDetailFuel.
+  ///
+  /// In en, this message translates to:
+  /// **'Fuel: {level}'**
+  String admin2_bookingDetailFuel(String level);
+
+  /// No description provided for @admin2_bookingDetailDamage.
+  ///
+  /// In en, this message translates to:
+  /// **'Damage notes: {notes}'**
+  String admin2_bookingDetailDamage(String notes);
+
+  /// No description provided for @admin2_bookingDetailDispute.
+  ///
+  /// In en, this message translates to:
+  /// **'Dispute'**
+  String get admin2_bookingDetailDispute;
+
+  /// No description provided for @admin2_bookingDetailStatusLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Status: {status}'**
+  String admin2_bookingDetailStatusLine(String status);
+
+  /// No description provided for @admin2_bookingDetailMeta.
+  ///
+  /// In en, this message translates to:
+  /// **'Status: {status} • Trip: {trip} • Package: {package} • {drive}'**
+  String admin2_bookingDetailMeta(
+      String status, String trip, String package, String drive);
+
+  /// No description provided for @admin2_bookingDetailHandoverSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'odometer {km} km, fuel {fuel}, damage: {damage}'**
+  String admin2_bookingDetailHandoverSummary(
+      Object km, String fuel, String damage);
+
+  /// No description provided for @admin2_bookingDetailMessages.
+  ///
+  /// In en, this message translates to:
+  /// **'Messages log'**
+  String get admin2_bookingDetailMessages;
+
+  /// No description provided for @admin2_bookingDetailNoMessages.
+  ///
+  /// In en, this message translates to:
+  /// **'No notifications recorded for this booking.'**
+  String get admin2_bookingDetailNoMessages;
+
+  /// No description provided for @admin2_carsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Every vehicle listing, with its review state'**
+  String get admin2_carsSubtitle;
+
+  /// No description provided for @admin2_carsSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by car or plate number…'**
+  String get admin2_carsSearchHint;
+
+  /// No description provided for @admin2_carsLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load the cars.'**
+  String get admin2_carsLoadFailed;
+
+  /// No description provided for @admin2_carsEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No cars match'**
+  String get admin2_carsEmptyTitle;
+
+  /// No description provided for @admin2_carsEmptyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'The list reads the vehicles collection.'**
+  String get admin2_carsEmptyHint;
+
+  /// No description provided for @admin2_carReviewReasonRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'A reason is required to hide or reject a listing.'**
+  String get admin2_carReviewReasonRequired;
+
+  /// No description provided for @admin2_carReviewDaily.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily (24 h)'**
+  String get admin2_carReviewDaily;
+
+  /// No description provided for @admin2_carReviewOutCityDaily.
+  ///
+  /// In en, this message translates to:
+  /// **'Out-of-city daily'**
+  String get admin2_carReviewOutCityDaily;
+
+  /// No description provided for @admin2_carReviewNotSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not set'**
+  String get admin2_carReviewNotSet;
+
+  /// No description provided for @admin2_carReviewWeekly.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly rate'**
+  String get admin2_carReviewWeekly;
+
+  /// No description provided for @admin2_carReviewDeposit.
+  ///
+  /// In en, this message translates to:
+  /// **'Security deposit'**
+  String get admin2_carReviewDeposit;
+
+  /// No description provided for @admin2_carReviewTracker.
+  ///
+  /// In en, this message translates to:
+  /// **'Tracker'**
+  String get admin2_carReviewTracker;
+
+  /// No description provided for @admin2_carReviewInsurance.
+  ///
+  /// In en, this message translates to:
+  /// **'Insurance policy'**
+  String get admin2_carReviewInsurance;
+
+  /// No description provided for @admin2_carReviewChassis.
+  ///
+  /// In en, this message translates to:
+  /// **'Chassis'**
+  String get admin2_carReviewChassis;
+
+  /// No description provided for @admin2_carReviewEngine.
+  ///
+  /// In en, this message translates to:
+  /// **'Engine'**
+  String get admin2_carReviewEngine;
+
+  /// No description provided for @admin2_carReviewMileage.
+  ///
+  /// In en, this message translates to:
+  /// **'Mileage'**
+  String get admin2_carReviewMileage;
+
+  /// No description provided for @admin2_carReviewNotListed.
+  ///
+  /// In en, this message translates to:
+  /// **'Not listed'**
+  String get admin2_carReviewNotListed;
+
+  /// No description provided for @admin2_carReviewReasonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason (required to hide or reject — stored with the decision)'**
+  String get admin2_carReviewReasonLabel;
+
+  /// No description provided for @admin2_carReviewSpecs.
+  ///
+  /// In en, this message translates to:
+  /// **'Plate {plate} • {category} • {transmission} • {fuel} • {seats} seats\nStatus: {status} • Current review: {review}'**
+  String admin2_carReviewSpecs(
+      String plate,
+      String category,
+      String transmission,
+      String fuel,
+      Object seats,
+      String status,
+      String review);
+
+  /// No description provided for @admin2_carReviewLastDecision.
+  ///
+  /// In en, this message translates to:
+  /// **'Last decision: {reason}'**
+  String admin2_carReviewLastDecision(String reason);
+
+  /// No description provided for @admin2_reportsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'KPIs for a date range, with CSV and PDF export'**
+  String get admin2_reportsSubtitle;
+
+  /// No description provided for @admin2_reportsFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'From'**
+  String get admin2_reportsFrom;
+
+  /// No description provided for @admin2_reportsTo.
+  ///
+  /// In en, this message translates to:
+  /// **'To'**
+  String get admin2_reportsTo;
+
+  /// No description provided for @admin2_reportsLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load the report.'**
+  String get admin2_reportsLoadFailed;
+
+  /// No description provided for @admin2_reportsEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No data for this range'**
+  String get admin2_reportsEmptyTitle;
+
+  /// No description provided for @admin2_reportsEmptyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'The report reads the live collections.'**
+  String get admin2_reportsEmptyHint;
+
+  /// No description provided for @admin2_reportsRevenue.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking revenue'**
+  String get admin2_reportsRevenue;
+
+  /// No description provided for @admin2_reportsIncome.
+  ///
+  /// In en, this message translates to:
+  /// **'Finance income'**
+  String get admin2_reportsIncome;
+
+  /// No description provided for @admin2_reportsExpense.
+  ///
+  /// In en, this message translates to:
+  /// **'Finance expense'**
+  String get admin2_reportsExpense;
+
+  /// No description provided for @admin2_reportsNewCustomers.
+  ///
+  /// In en, this message translates to:
+  /// **'New customers'**
+  String get admin2_reportsNewCustomers;
+
+  /// No description provided for @admin2_reportsDisputesOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Disputes open'**
+  String get admin2_reportsDisputesOpen;
+
+  /// No description provided for @admin2_reportsDisputesResolved.
+  ///
+  /// In en, this message translates to:
+  /// **'Disputes resolved'**
+  String get admin2_reportsDisputesResolved;
+
+  /// No description provided for @admin2_reportsByCity.
+  ///
+  /// In en, this message translates to:
+  /// **'Bookings by city'**
+  String get admin2_reportsByCity;
+
+  /// No description provided for @admin2_reportsNone.
+  ///
+  /// In en, this message translates to:
+  /// **'None in this range.'**
+  String get admin2_reportsNone;
+
+  /// No description provided for @admin2_reportsTopShops.
+  ///
+  /// In en, this message translates to:
+  /// **'Top shops'**
+  String get admin2_reportsTopShops;
+
+  /// No description provided for @admin2_reportsTopShopsLine.
+  ///
+  /// In en, this message translates to:
+  /// **'{name}: {count} bookings'**
+  String admin2_reportsTopShopsLine(String name, Object count);
+
+  /// No description provided for @admin2_reportsIncomeByCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Income by category'**
+  String get admin2_reportsIncomeByCategory;
+
+  /// No description provided for @admin2_reportsExpenseByCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Expense by category'**
+  String get admin2_reportsExpenseByCategory;
+
+  /// No description provided for @admin2_slaBreachedMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'SLA breached by {minutes}m'**
+  String admin2_slaBreachedMinutes(Object minutes);
+
+  /// No description provided for @admin2_slaBreachedHoursMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'SLA breached by {hours}h {minutes}m'**
+  String admin2_slaBreachedHoursMinutes(Object hours, Object minutes);
+
+  /// No description provided for @admin2_slaLeftMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes}m of {total}h SLA left'**
+  String admin2_slaLeftMinutes(Object minutes, Object total);
+
+  /// No description provided for @adminAuditLoadMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Load more'**
+  String get adminAuditLoadMore;
+
+  /// No description provided for @adminAuditShowing.
+  ///
+  /// In en, this message translates to:
+  /// **'Showing {count}'**
+  String adminAuditShowing(int count);
+
+  /// No description provided for @adminAuditMatching.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} matching entries'**
+  String adminAuditMatching(int count);
+
+  /// No description provided for @adminAuditSearchTicketsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by message or customer ID…'**
+  String get adminAuditSearchTicketsHint;
+
+  /// No description provided for @adminAuditCnicAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get adminAuditCnicAll;
+
+  /// No description provided for @adminAuditCnicOnFile.
+  ///
+  /// In en, this message translates to:
+  /// **'CNIC on file'**
+  String get adminAuditCnicOnFile;
+
+  /// No description provided for @adminAuditCnicMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'CNIC missing'**
+  String get adminAuditCnicMissing;
+
+  /// No description provided for @adminAuditTrustStored.
+  ///
+  /// In en, this message translates to:
+  /// **'Stored trust {score}'**
+  String adminAuditTrustStored(String score);
+
+  /// No description provided for @adminAuditBlacklisted.
+  ///
+  /// In en, this message translates to:
+  /// **'Blacklisted'**
+  String get adminAuditBlacklisted;
+
+  /// No description provided for @adminAuditWatchlisted.
+  ///
+  /// In en, this message translates to:
+  /// **'Watchlisted'**
+  String get adminAuditWatchlisted;
+
+  /// No description provided for @adminAuditFilterAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Action'**
+  String get adminAuditFilterAction;
+
+  /// No description provided for @adminAuditFilterActor.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin email'**
+  String get adminAuditFilterActor;
+
+  /// No description provided for @adminAuditFilterFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'From'**
+  String get adminAuditFilterFrom;
+
+  /// No description provided for @adminAuditFilterTo.
+  ///
+  /// In en, this message translates to:
+  /// **'To'**
+  String get adminAuditFilterTo;
+
+  /// No description provided for @adminAuditClearFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear filters'**
+  String get adminAuditClearFilters;
+
+  /// No description provided for @adminAuditAllActions.
+  ///
+  /// In en, this message translates to:
+  /// **'All actions'**
+  String get adminAuditAllActions;
+
+  /// No description provided for @adminAuditInvalidRange.
+  ///
+  /// In en, this message translates to:
+  /// **'The From date must be on or before the To date.'**
+  String get adminAuditInvalidRange;
+
+  /// No description provided for @adminAuditExportPdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Export PDF'**
+  String get adminAuditExportPdf;
+
+  /// No description provided for @adminAuditPdfFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not share the PDF file.'**
+  String get adminAuditPdfFailed;
+
+  /// No description provided for @adminAuditPendingApprovals.
+  ///
+  /// In en, this message translates to:
+  /// **'Shops waiting for approval'**
+  String get adminAuditPendingApprovals;
+
+  /// No description provided for @adminAuditPendingApprovalsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the approvals queue to decide them.'**
+  String get adminAuditPendingApprovalsHint;
+
+  /// No description provided for @adminAuditCredits.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp credits'**
+  String get adminAuditCredits;
+
+  /// No description provided for @adminAuditCreditsNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No record yet'**
+  String get adminAuditCreditsNone;
+
+  /// No description provided for @adminAuditLinkedShop.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop'**
+  String get adminAuditLinkedShop;
+
+  /// No description provided for @adminAuditLinkedBooking.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking'**
+  String get adminAuditLinkedBooking;
+
+  /// No description provided for @adminAuditStoredScore.
+  ///
+  /// In en, this message translates to:
+  /// **'Previously stored: {score} — the live score above is authoritative'**
+  String adminAuditStoredScore(String score);
+
+  /// No description provided for @adminAuditKycNotSubmitted.
+  ///
+  /// In en, this message translates to:
+  /// **'KYC not submitted'**
+  String get adminAuditKycNotSubmitted;
+
+  /// No description provided for @adminAuditKycPending.
+  ///
+  /// In en, this message translates to:
+  /// **'KYC pending review'**
+  String get adminAuditKycPending;
+
+  /// No description provided for @adminAuditKycVerified.
+  ///
+  /// In en, this message translates to:
+  /// **'KYC verified'**
+  String get adminAuditKycVerified;
+
+  /// No description provided for @adminAuditKycRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'KYC rejected'**
+  String get adminAuditKycRejected;
+
+  /// No description provided for @adminAuditFirstMatches.
+  ///
+  /// In en, this message translates to:
+  /// **'First {count} matches'**
+  String adminAuditFirstMatches(int count);
+
+  /// No description provided for @admin2_ownerNotListed.
+  ///
+  /// In en, this message translates to:
+  /// **'Owner not listed'**
+  String get admin2_ownerNotListed;
+
+  /// No description provided for @admin2_shopRating.
+  ///
+  /// In en, this message translates to:
+  /// **'Rating {rating}'**
+  String admin2_shopRating(String rating);
+
+  /// No description provided for @admin2_shopDetailAccountType.
+  ///
+  /// In en, this message translates to:
+  /// **'account'**
+  String get admin2_shopDetailAccountType;
+
+  /// No description provided for @admin2_loading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading…'**
+  String get admin2_loading;
+
+  /// No description provided for @admin2_notOnFile.
+  ///
+  /// In en, this message translates to:
+  /// **'not on file'**
+  String get admin2_notOnFile;
+
+  /// No description provided for @admin2_customerDetailWatchlistRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer removed from the watchlist.'**
+  String get admin2_customerDetailWatchlistRemoved;
+
+  /// No description provided for @admin2_disputesDecidedLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Decided: {decision}'**
+  String admin2_disputesDecidedLine(String decision);
+
+  /// No description provided for @admin2_disputeSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save decision'**
+  String get admin2_disputeSave;
+
+  /// No description provided for @admin2_teamTotpOffBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} team member(s) have two-factor authentication off.'**
+  String admin2_teamTotpOffBanner(Object count);
+
+  /// No description provided for @admin2_teamTotpRemindAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Remind all'**
+  String get admin2_teamTotpRemindAll;
+
+  /// No description provided for @admin2_teamTotpReminderSent.
+  ///
+  /// In en, this message translates to:
+  /// **'2FA reminders sent.'**
+  String get admin2_teamTotpReminderSent;
+
+  /// No description provided for @admin2_teamTotpReminderFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not send the reminders.'**
+  String get admin2_teamTotpReminderFailed;
+
+  /// No description provided for @admin2_teamInviteSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save invite'**
+  String get admin2_teamInviteSave;
+
+  /// No description provided for @admin2_teamInviteSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite saved for {email}. No email is sent yet — share the accept link from the invite list.'**
+  String admin2_teamInviteSaved(String email);
+
+  /// No description provided for @admin2_teamInviteAccept.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept'**
+  String get admin2_teamInviteAccept;
+
+  /// No description provided for @admin2_teamInviteCopyLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy accept link'**
+  String get admin2_teamInviteCopyLink;
+
+  /// No description provided for @admin2_teamInviteLinkCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept link copied.'**
+  String get admin2_teamInviteLinkCopied;
+
+  /// No description provided for @admin2_teamInviteExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Expired'**
+  String get admin2_teamInviteExpired;
+
+  /// No description provided for @admin2_teamInviteExpires.
+  ///
+  /// In en, this message translates to:
+  /// **'Expires {date}'**
+  String admin2_teamInviteExpires(String date);
+
+  /// No description provided for @admin2_inviteAcceptTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept invite'**
+  String get admin2_inviteAcceptTitle;
+
+  /// No description provided for @admin2_inviteAcceptSignIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in as a super admin first.'**
+  String get admin2_inviteAcceptSignIn;
+
+  /// No description provided for @admin2_inviteAcceptNotSuper.
+  ///
+  /// In en, this message translates to:
+  /// **'Only a super admin can grant an admin role.'**
+  String get admin2_inviteAcceptNotSuper;
+
+  /// No description provided for @admin2_inviteAcceptNoInvite.
+  ///
+  /// In en, this message translates to:
+  /// **'No pending invite matches this link — it may have expired or already been accepted.'**
+  String get admin2_inviteAcceptNoInvite;
+
+  /// No description provided for @admin2_inviteAcceptFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load the invite.'**
+  String get admin2_inviteAcceptFailed;
+
+  /// No description provided for @admin2_inviteAcceptGrantFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not grant the role.'**
+  String get admin2_inviteAcceptGrantFailed;
+
+  /// No description provided for @admin2_inviteAcceptGranted.
+  ///
+  /// In en, this message translates to:
+  /// **'Role granted.'**
+  String get admin2_inviteAcceptGranted;
+
+  /// No description provided for @admin2_inviteAcceptBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Grant {role} to {email}?'**
+  String admin2_inviteAcceptBody(String email, String role);
+
+  /// No description provided for @admin2_inviteAcceptHint.
+  ///
+  /// In en, this message translates to:
+  /// **'The invitee must already have an account. Granting gives them admin access immediately.'**
+  String get admin2_inviteAcceptHint;
+
+  /// No description provided for @admin2_inviteAcceptGrant.
+  ///
+  /// In en, this message translates to:
+  /// **'Grant role'**
+  String get admin2_inviteAcceptGrant;
+
+  /// No description provided for @admin2_inviteAcceptGranting.
+  ///
+  /// In en, this message translates to:
+  /// **'Granting…'**
+  String get admin2_inviteAcceptGranting;
+
+  /// No description provided for @admin2_inviteAcceptBackToTeam.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to team'**
+  String get admin2_inviteAcceptBackToTeam;
+
+  /// No description provided for @admin2_settingsAdvanceRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Advance must be between 0 and 100.'**
+  String get admin2_settingsAdvanceRange;
+
+  /// No description provided for @admin2_settingsDepositNegative.
+  ///
+  /// In en, this message translates to:
+  /// **'Deposit cannot be negative.'**
+  String get admin2_settingsDepositNegative;
+
+  /// No description provided for @admin2_settingsGraceNegative.
+  ///
+  /// In en, this message translates to:
+  /// **'Late grace cannot be negative.'**
+  String get admin2_settingsGraceNegative;
+
+  /// No description provided for @admin2_settingsNoDocument.
+  ///
+  /// In en, this message translates to:
+  /// **'No platform settings saved yet — showing defaults. Save to create them.'**
+  String get admin2_settingsNoDocument;
+
+  /// No description provided for @admin2_settingsUnsavedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave without saving?'**
+  String get admin2_settingsUnsavedTitle;
+
+  /// No description provided for @admin2_settingsUnsavedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You have unsaved changes. They will be lost if you leave.'**
+  String get admin2_settingsUnsavedBody;
+
+  /// No description provided for @admin2_settingsNotLoaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings have not loaded yet — try again.'**
+  String get admin2_settingsNotLoaded;
+
+  /// No description provided for @admin2_tribunalReviewFlag.
+  ///
+  /// In en, this message translates to:
+  /// **'Review flag'**
+  String get admin2_tribunalReviewFlag;
+
+  /// No description provided for @admin2_ticketLinkedBooking.
+  ///
+  /// In en, this message translates to:
+  /// **'Linked booking'**
+  String get admin2_ticketLinkedBooking;
+
+  /// No description provided for @admin2_anncSentCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent {count}'**
+  String admin2_anncSentCount(Object count);
+
+  /// No description provided for @admin2_anncOpenedCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Opened {count}'**
+  String admin2_anncOpenedCount(Object count);
+
+  /// No description provided for @admin2_activityDecision.
+  ///
+  /// In en, this message translates to:
+  /// **'Decision: {decision}'**
+  String admin2_activityDecision(String decision);
+
+  /// No description provided for @admin2_trustRatingNone.
+  ///
+  /// In en, this message translates to:
+  /// **'none yet'**
+  String get admin2_trustRatingNone;
+
+  /// No description provided for @admin2_trustKyc.
+  ///
+  /// In en, this message translates to:
+  /// **'KYC'**
+  String get admin2_trustKyc;
+
+  /// No description provided for @admin2_reportsBookings.
+  ///
+  /// In en, this message translates to:
+  /// **'Bookings'**
+  String get admin2_reportsBookings;
+
+  /// No description provided for @admin2_reportsCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get admin2_reportsCompleted;
+
+  /// No description provided for @admin2_reportsExportCsv.
+  ///
+  /// In en, this message translates to:
+  /// **'Export CSV'**
+  String get admin2_reportsExportCsv;
+
+  /// No description provided for @admin2_reportsCsvShareFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not share the CSV file.'**
+  String get admin2_reportsCsvShareFailed;
+
+  /// No description provided for @admin2_bookingsCustomer.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer'**
+  String get admin2_bookingsCustomer;
+
+  /// No description provided for @admin2_bookingDetailDepositDeducted.
+  ///
+  /// In en, this message translates to:
+  /// **'Deposit {amount} — {status} (deducted {deducted})'**
+  String admin2_bookingDetailDepositDeducted(
+      String amount, String status, String deducted);
+
+  /// No description provided for @admin2_bookingDetailDisputeStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Status: {status}'**
+  String admin2_bookingDetailDisputeStatus(String status);
+
+  /// No description provided for @admin2_bookingDetailDisputeDecision.
+  ///
+  /// In en, this message translates to:
+  /// **'Decision: {label}'**
+  String admin2_bookingDetailDisputeDecision(String label);
+
+  /// No description provided for @admin2_bookingDetailDisputeDecisionAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Decision: {label} — {amount}'**
+  String admin2_bookingDetailDisputeDecisionAmount(String label, String amount);
+
+  /// No description provided for @admin2_carReviewHourly.
+  ///
+  /// In en, this message translates to:
+  /// **'1 h / 3 h / 6 h'**
+  String get admin2_carReviewHourly;
+
+  /// No description provided for @admin2_carReviewMileageKm.
+  ///
+  /// In en, this message translates to:
+  /// **'{km} km'**
+  String admin2_carReviewMileageKm(Object km);
+
+  /// No description provided for @admin2_carReviewMetaLine1.
+  ///
+  /// In en, this message translates to:
+  /// **'Plate {plate} • {category} • {transmission} • {fuel} • {seats} seats'**
+  String admin2_carReviewMetaLine1(String plate, String category,
+      String transmission, String fuel, Object seats);
+
+  /// No description provided for @admin2_carReviewMetaLine2.
+  ///
+  /// In en, this message translates to:
+  /// **'Status: {status} • Current review: {review}'**
+  String admin2_carReviewMetaLine2(String status, String review);
+
+  /// No description provided for @admin2_carReviewNotReviewed.
+  ///
+  /// In en, this message translates to:
+  /// **'not reviewed yet'**
+  String get admin2_carReviewNotReviewed;
+
+  /// No description provided for @admin2_checklistShopName.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop name and address'**
+  String get admin2_checklistShopName;
+
+  /// No description provided for @admin2_checklistOwnerPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Owner phone number'**
+  String get admin2_checklistOwnerPhone;
+
+  /// No description provided for @admin2_checklistOwnerCnic.
+  ///
+  /// In en, this message translates to:
+  /// **'Owner CNIC on file'**
+  String get admin2_checklistOwnerCnic;
+
+  /// No description provided for @admin2_checklistKyc.
+  ///
+  /// In en, this message translates to:
+  /// **'KYC documents uploaded'**
+  String get admin2_checklistKyc;
+
+  /// No description provided for @admin2_checklistBank.
+  ///
+  /// In en, this message translates to:
+  /// **'Bank / wallet account on file'**
+  String get admin2_checklistBank;
+
+  /// No description provided for @admin2_checklistFleet.
+  ///
+  /// In en, this message translates to:
+  /// **'Fleet photos uploaded'**
+  String get admin2_checklistFleet;
+
+  /// No description provided for @admin2_disputed.
+  ///
+  /// In en, this message translates to:
+  /// **'Disputed'**
+  String get admin2_disputed;
+
+  /// No description provided for @admin2_inCity.
+  ///
+  /// In en, this message translates to:
+  /// **'In city'**
+  String get admin2_inCity;
+
+  /// No description provided for @admin2_outCity.
+  ///
+  /// In en, this message translates to:
+  /// **'Out of city'**
+  String get admin2_outCity;
+
+  /// No description provided for @admin2_bookingSummaryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking {id}'**
+  String admin2_bookingSummaryTitle(String id);
+
+  /// No description provided for @admin2_bookingSummaryStatusLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Status: {status} • Trip: {trip} ({kmLimit} km limit)'**
+  String admin2_bookingSummaryStatusLine(
+      String status, String trip, String kmLimit);
+
+  /// No description provided for @admin2_bookingSummaryVehicle.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle: {vehicle} ({plate})'**
+  String admin2_bookingSummaryVehicle(String vehicle, String plate);
+
+  /// No description provided for @admin2_bookingSummaryShop.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop: {shop} • Customer: {customer}'**
+  String admin2_bookingSummaryShop(String shop, String customer);
+
+  /// No description provided for @admin2_bookingSummaryPickup.
+  ///
+  /// In en, this message translates to:
+  /// **'Pickup: {pickup} • Return: {returnTime}'**
+  String admin2_bookingSummaryPickup(String pickup, String returnTime);
+
+  /// No description provided for @admin2_bookingSummaryTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Total: {total} • Advance required: {advanceRequired} • Paid: {paid} • Remaining: {remaining}'**
+  String admin2_bookingSummaryTotal(
+      String total, String advanceRequired, String paid, String remaining);
+
+  /// No description provided for @admin2_bookingSummaryDepositNone.
+  ///
+  /// In en, this message translates to:
+  /// **'Deposit: none'**
+  String get admin2_bookingSummaryDepositNone;
+
+  /// No description provided for @admin2_bookingSummaryDeposit.
+  ///
+  /// In en, this message translates to:
+  /// **'Deposit: {amount} ({status})'**
+  String admin2_bookingSummaryDeposit(String amount, String status);
+
+  /// No description provided for @admin2_bookingSummaryAgreement.
+  ///
+  /// In en, this message translates to:
+  /// **'Agreement PDF: {url}'**
+  String admin2_bookingSummaryAgreement(String url);
+
+  /// No description provided for @admin2_bookingSummaryHandoverNone.
+  ///
+  /// In en, this message translates to:
+  /// **'Handover: none'**
+  String get admin2_bookingSummaryHandoverNone;
+
+  /// No description provided for @admin2_bookingSummaryHandover.
+  ///
+  /// In en, this message translates to:
+  /// **'Handover: odometer {odometer} km, fuel {fuel}, damage: {damage}'**
+  String admin2_bookingSummaryHandover(
+      Object odometer, String fuel, String damage);
+
+  /// No description provided for @admin2_bookingPhotoOpenFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open the photo link.'**
+  String get admin2_bookingPhotoOpenFailed;
+
+  /// No description provided for @admin2_teamInviteSaving.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving…'**
+  String get admin2_teamInviteSaving;
+
+  /// No description provided for @maintenanceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Under maintenance'**
+  String get maintenanceTitle;
+
+  /// No description provided for @maintenanceBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Rentalhub is under maintenance right now. Please try again in a little while.'**
+  String get maintenanceBody;
+
+  /// No description provided for @maintenanceRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get maintenanceRetry;
+
+  /// No description provided for @admin2_totpReminderLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'A super admin asked you to turn on two-factor authentication.'**
+  String get admin2_totpReminderLogin;
+
+  /// No description provided for @admin2_evidenceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Evidence'**
+  String get admin2_evidenceTitle;
+
+  /// No description provided for @close.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get close;
+
+  /// No description provided for @admin2_teamResetTotpTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset two-factor authentication'**
+  String get admin2_teamResetTotpTooltip;
+
+  /// No description provided for @admin2_teamRevokeTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Revoke admin role'**
+  String get admin2_teamRevokeTooltip;
 }
 
 class _AppLocalizationsDelegate

@@ -43,7 +43,7 @@ class ProofAmountCard extends StatelessWidget {
                       style: Theme.of(context)
                           .textTheme
                           .titleSmall
-                          ?.copyWith(fontWeight: FontWeight.w800),
+                          ?.copyWith(fontWeight: FontWeight.w600),
                     ),
                     Text(
                       l10n.proofBookingId(booking.bookingId),
@@ -63,7 +63,7 @@ class ProofAmountCard extends StatelessWidget {
                         .textTheme
                         .titleMedium
                         ?.copyWith(
-                            fontWeight: FontWeight.w900,
+                            fontWeight: FontWeight.w600,
                             color: AppColors.orangeTextFor(
                                 Theme.of(context).brightness)),
                   ),

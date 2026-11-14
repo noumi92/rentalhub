@@ -46,7 +46,7 @@ class PricingTripCharges extends StatelessWidget {
       children: [
         Text(l10n.outCityTripCharges,
             style: theme.textTheme.titleSmall
-                ?.copyWith(fontWeight: FontWeight.w800)),
+                ?.copyWith(fontWeight: FontWeight.w600)),
         const SizedBox(height: 8),
         RateMatrixFieldWidget(
             controller: depositController,
@@ -68,7 +68,7 @@ class PricingTripCharges extends StatelessWidget {
         const SizedBox(height: 14),
         Text(l10n.pricingFuelPolicy,
             style: theme.textTheme.bodyMedium
-                ?.copyWith(fontWeight: FontWeight.w700)),
+                ),
         const SizedBox(height: 6),
         _dropdown(
           context,
@@ -85,7 +85,7 @@ class PricingTripCharges extends StatelessWidget {
         const SizedBox(height: 14),
         Text(l10n.outCityTolls,
             style: theme.textTheme.bodyMedium
-                ?.copyWith(fontWeight: FontWeight.w700)),
+                ),
         const SizedBox(height: 6),
         _dropdown(
           context,

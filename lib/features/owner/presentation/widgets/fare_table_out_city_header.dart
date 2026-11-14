@@ -24,7 +24,7 @@ class FareTableOutCityHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final v = vehicle;
-    final bold = Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700);
+    final bold = Theme.of(context).textTheme.bodyMedium;
     if (v.outCityMode == 'perKm' && (v.outCityPerKmPkr ?? 0) > 0) {
       final rate = v.outCityPerKmPkr!;
       final kmPerDay = v.outOfCityKmPerDay ?? kDefaultOutCityKmPerDay;

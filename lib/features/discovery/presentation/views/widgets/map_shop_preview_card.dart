@@ -62,7 +62,7 @@ class MapShopPreviewCard extends StatelessWidget {
                       children: [
                         Text(
                           shop.shopName,
-                          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
+                          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -102,14 +102,14 @@ class MapShopPreviewCard extends StatelessWidget {
                   if (shop.hasRealRating)
                     Text(
                       l10n.shopRatingLabel(shop.rating),
-                      style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700),
+                      style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500),
                     ),
                   if (shop.hasRealRating && shop.hasRealAvailableCount)
                     const SizedBox(width: 8),
                   if (shop.hasRealAvailableCount)
                     Text(
                       l10n.shopCarsReady(shop.availableCount),
-                      style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.successTextFor(Theme.of(context).brightness)),
+                      style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500, color: AppColors.successTextFor(Theme.of(context).brightness)),
                     ),
                 ],
               ),

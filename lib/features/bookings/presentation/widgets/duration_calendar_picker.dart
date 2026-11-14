@@ -133,7 +133,7 @@ class _DurationCalendarPickerState extends State<DurationCalendarPicker> {
             style: Theme.of(context)
                 .textTheme
                 .titleSmall
-                ?.copyWith(fontWeight: FontWeight.w800),
+                ?.copyWith(fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 12),
           Row(
@@ -192,7 +192,7 @@ class _DurationCalendarPickerState extends State<DurationCalendarPicker> {
                 style: Theme.of(context)
                     .textTheme
                     .bodyMedium
-                    ?.copyWith(fontWeight: FontWeight.w600),
+                    ,
               ),
               Row(
                 children: [
@@ -209,7 +209,7 @@ class _DurationCalendarPickerState extends State<DurationCalendarPicker> {
                     style: Theme.of(context)
                         .textTheme
                         .titleSmall
-                        ?.copyWith(fontWeight: FontWeight.w800),
+                        ?.copyWith(fontWeight: FontWeight.w600),
                   ),
                   IconButton(
                     tooltip: l10n.pickerIncreaseDays,
@@ -263,7 +263,7 @@ class _DurationCalendarPickerState extends State<DurationCalendarPicker> {
                     style: Theme.of(context)
                         .textTheme
                         .labelMedium
-                        ?.copyWith(fontWeight: FontWeight.w700),
+                        ?.copyWith(fontWeight: FontWeight.w500),
                   ),
                 ],
               ),

@@ -49,7 +49,7 @@ class SosEmergencyOption extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(title,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800)),
+                      style: Theme.of(context).textTheme.bodyMedium),
                   Text(subtitle,
                       style: Theme.of(context).textTheme.labelSmall),
                 ],

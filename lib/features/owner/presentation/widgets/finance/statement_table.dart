@@ -33,7 +33,7 @@ class StatementTotalCard extends StatelessWidget {
           Text(l10n.amountRs(formatRs(totalDue)),
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     color: Colors.white,
-                    fontWeight: FontWeight.w900,
+                    fontWeight: FontWeight.w500,
                   )),
         ],
       ),
@@ -55,7 +55,7 @@ class StatementTable extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     Text header(String text) => Text(text,
         style: Theme.of(context).textTheme.labelMedium?.copyWith(
-              fontWeight: FontWeight.w800,
+              fontWeight: FontWeight.w500,
             ));
     Text cell(String text) => Text(text,
         maxLines: 1,

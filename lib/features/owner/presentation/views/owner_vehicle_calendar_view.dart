@@ -1,15 +1,16 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/constants/app_dimensions.dart';
-import '../../../../core/di/injection_container.dart';
 import '../../../../core/utils/responsive.dart';
 import '../../../../core/widgets/app_state_views.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
+import '../../../bookings/utils/live_booking_stream.dart';
 import '../../../fleet/domain/entities/vehicle_entity.dart';
 import '../widgets/availability_month_grid.dart';
 import '../widgets/calendar_status_chip.dart';
@@ -38,6 +39,8 @@ class _OwnerVehicleCalendarViewState extends State<OwnerVehicleCalendarView> {
   bool _hasError = false;
   DateTime _month = DateTime(DateTime.now().year, DateTime.now().month);
   DateTime? _selectedDay;
+  // Live updates (Item 2): the subscription behind the calendar.
+  StreamSubscription<List<BookingEntity>>? _bookingsSub;
 
   @override
   void initState() {
@@ -45,28 +48,25 @@ class _OwnerVehicleCalendarViewState extends State<OwnerVehicleCalendarView> {
     _load();
   }
 
+  @override
+  void dispose() {
+    _bookingsSub?.cancel();
+    super.dispose();
+  }
+
+  /// Live updates (Item 2): the calendar follows the vehicle's bookings stream — a submit or status change repaints the day colours while the calendar is open. The error-state retry re-runs this method, which re-subscribes.
   Future<void> _load() async {
-    if (mounted) {
-      setState(() {
-        _loading = true;
-        _hasError = false;
-      });
-    }
+    await _bookingsSub?.cancel();
+    _bookingsSub = null;
+    if (mounted) setState(() { _loading = true; _hasError = false; });
     // Audit §7 (C4): a failed load used to spin forever — catch it and render an error state with retry, as Fleet does.
-    try {
-      final bookings = await sl<BookingRemoteDataSource>().getVehicleBookings(widget.vehicle.vehicleId);
+    _bookingsSub = subscribeLiveBookings((ds) => ds.streamVehicleBookings(widget.vehicle.vehicleId), (bookings) {
       if (!mounted) return;
-      setState(() {
-        _bookings = bookings;
-        _loading = false;
-      });
-    } catch (_) {
-      if (!mounted) return;
-      setState(() {
-        _loading = false;
-        _hasError = true;
-      });
-    }
+      setState(() { _bookings = bookings; _loading = false; });
+    }, onError: () {
+      if (mounted) setState(() { _loading = false; _hasError = true; });
+    });
+    if (_bookingsSub == null && mounted) setState(() { _loading = false; _hasError = true; });
   }
 
   List<BookingEntity> _bookingsOn(DateTime day) {
@@ -130,7 +130,7 @@ class _OwnerVehicleCalendarViewState extends State<OwnerVehicleCalendarView> {
       children: [
         Text(
           l10n.calendarBookingsOn(day.day, day.month, day.year),
-          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 8),
         if (selectedBookings.isEmpty) Text(l10n.calendarNoBookingsDay),
@@ -139,7 +139,7 @@ class _OwnerVehicleCalendarViewState extends State<OwnerVehicleCalendarView> {
             margin: const EdgeInsets.only(bottom: 8),
             child: ListTile(
               title: Text(b.customerName ?? b.customerId,
-                  style: const TextStyle(fontWeight: FontWeight.w700)),
+                  style: const TextStyle(fontWeight: FontWeight.w600)),
               // Audit §7: unambiguous pickup → return date+time
               // (intl `h:mm a`), not "9:05 → 12/11".
               subtitle: Text(

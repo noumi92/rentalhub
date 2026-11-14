@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../di/injection_container.dart';
 import '../platform/app_platform.dart';
 import '../../features/admin/data/services/admin_session.dart';
+import '../../features/admin/domain/admin_permissions.dart';
 import '../../features/auth/data/datasources/auth_remote_data_source.dart';
 import 'route_names.dart';
 
@@ -130,6 +131,47 @@ class AuthRouteGuard {
       }
       if (await AdminSession.adminNeedsTotp(user)) {
         return RouteNames.adminLogin;
+      }
+      // F-C1 — per-route permission redirects, following the
+      // KYC-review pattern (item 6): a role that may not use a
+      // section never renders it, and a direct URL is bounced to
+      // the dashboard instead. The views and data sources check
+      // the same permissions again as the backstop.
+      //
+      // Routes not listed here stay open to every admin role:
+      // dashboard, customers, bookings, disputes and tickets are
+      // mixed read + triage sections — support holds
+      // manageDisputes / triageTicket, and the decision actions
+      // inside them (decideDispute, resolveTicket) are gated in
+      // the sheets and data sources. Activity log and reports are
+      // read-only for every admin role (viewActivityLog).
+      //
+      // Reviews moderation has no dedicated matrix permission, so
+      // it rides on managePlatform (a platform-level decision:
+      // super admin + operations only) — see
+      // AdminPermissionCheck for the same mapping in the views.
+      const routePermissions = <String, AdminPermission>{
+        RouteNames.adminTeam: AdminPermission.manageTeam,
+        RouteNames.adminInviteAccept: AdminPermission.manageTeam,
+        RouteNames.adminApprovals: AdminPermission.decideVendor,
+        RouteNames.adminShops: AdminPermission.decideVendor,
+        RouteNames.adminCars: AdminPermission.decideVendor,
+        RouteNames.adminKycReview: AdminPermission.decideKyc,
+        RouteNames.adminBlacklist: AdminPermission.manageBlacklist,
+        RouteNames.adminSettings: AdminPermission.managePlatform,
+        RouteNames.adminAnnouncements: AdminPermission.managePlatform,
+        RouteNames.adminReviews: AdminPermission.managePlatform,
+        RouteNames.adminSubscriptions:
+            AdminPermission.manageSubscriptions,
+        RouteNames.adminApkDownload: AdminPermission.downloadApk,
+      };
+      for (final entry in routePermissions.entries) {
+        final isRoute = location == entry.key ||
+            location.startsWith('${entry.key}/');
+        if (isRoute &&
+            !AdminPermissions.can(adminRole, entry.value)) {
+          return RouteNames.adminDashboard;
+        }
       }
       return null;
     }

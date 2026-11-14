@@ -53,6 +53,15 @@ class ShopEntity extends Equatable {
   final String plan;
   final bool suspended;
   final String? suspensionReason;
+  // F-M3 (admin audit 2026-11-14): the admin's decision reason on
+  // the shop application — `rejection_reason` for a rejection,
+  // `admin_note` for "ask for more info". Stored on the shops doc
+  // by decideShopApplication and delivered to the owner as an
+  // in-app notification; kept on the model so any owner-side view
+  // (e.g. the onboarding status step) can show the reason itself
+  // instead of only the bare status.
+  final String? rejectionReason;
+  final String? adminNote;
 
   const ShopEntity({
     required this.shopId,
@@ -78,6 +87,8 @@ class ShopEntity extends Equatable {
     this.plan = 'free',
     this.suspended = false,
     this.suspensionReason,
+    this.rejectionReason,
+    this.adminNote,
     this.hasRealLocation = true,
     this.hasRealRating = true,
     this.hasRealAvailableCount = true,
@@ -112,6 +123,8 @@ class ShopEntity extends Equatable {
         plan: plan,
         suspended: suspended,
         suspensionReason: suspensionReason,
+        rejectionReason: rejectionReason,
+        adminNote: adminNote,
         hasRealLocation: hasRealLocation,
         hasRealRating: hasRealRating,
         hasRealAvailableCount: hasRealAvailableCount,
@@ -143,6 +156,8 @@ class ShopEntity extends Equatable {
         plan,
         suspended,
         suspensionReason,
+        rejectionReason,
+        adminNote,
         hasRealLocation,
         hasRealRating,
         hasRealAvailableCount,

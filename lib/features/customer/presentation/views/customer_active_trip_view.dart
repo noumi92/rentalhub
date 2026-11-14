@@ -115,7 +115,7 @@ class _CustomerActiveTripViewState extends State<CustomerActiveTripView> {
                                   style: Theme.of(context)
                                       .textTheme
                                       .titleMedium
-                                      ?.copyWith(fontWeight: FontWeight.w900),
+                                      ?.copyWith(fontWeight: FontWeight.w600),
                                 ),
                               ),
                               BookingStatusChip(status: b.status),
@@ -196,7 +196,7 @@ class _CustomerActiveTripViewState extends State<CustomerActiveTripView> {
               style: Theme.of(context)
                   .textTheme
                   .bodyMedium
-                  ?.copyWith(fontWeight: FontWeight.w700)),
+                  ),
         ),
       ],
     );

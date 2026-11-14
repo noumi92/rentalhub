@@ -31,7 +31,7 @@ class DashboardLedgerSection extends StatelessWidget {
             style: Theme.of(context)
                 .textTheme
                 .titleSmall
-                ?.copyWith(fontWeight: FontWeight.w800)),
+                ?.copyWith(fontWeight: FontWeight.w600)),
         const SizedBox(height: 10),
         if (isEmpty)
           Center(
@@ -40,7 +40,7 @@ class DashboardLedgerSection extends StatelessWidget {
               child: Text(l10n.dashboardLedgerEmpty,
                   style: TextStyle(
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      fontWeight: FontWeight.w700)),
+                      fontWeight: FontWeight.w400)),
             ),
           )
         else
@@ -67,7 +67,7 @@ class DashboardLedgerSection extends StatelessWidget {
                   Text(
                     l10n.dashboardViewAllRequests,
                     style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                          fontWeight: FontWeight.w800,
+                          fontWeight: FontWeight.w500,
                           color: Theme.of(context).colorScheme.primary,
                         ),
                   ),

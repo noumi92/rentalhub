@@ -6,15 +6,14 @@ import '../../../../core/di/injection_container.dart';
 import '../../../../core/utils/responsive.dart';
 import '../../../../core/widgets/app_state_views.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
-import '../../../finance/data/datasources/security_deposit_data_source.dart';
 import '../../../fleet/data/datasources/fleet_remote_data_source.dart';
 import '../../../notifications/data/datasources/notification_data_source.dart';
 import '../widgets/dashboard/dashboard_app_bar.dart';
 import '../widgets/dashboard/dashboard_greeting_header.dart';
 import '../widgets/dashboard/dashboard_kpis.dart';
 import '../widgets/dashboard/dashboard_ledger_section.dart';
+import '../widgets/dashboard/dashboard_live_bookings.dart';
 import '../widgets/dashboard/dashboard_quick_actions.dart';
 import '../widgets/dashboard/dashboard_schedule_section.dart';
 import '../widgets/dashboard/revenue_kpi_card.dart';
@@ -41,11 +40,19 @@ class _OwnerDashboardViewState extends State<OwnerDashboardView> {
   int _fleetAvailable = 0;
   int _unreadNotifications = 0;
   double? _settleRate;
+  // Live updates (Item 2): the bookings subscription behind the KPIs, schedule and ledger. Fleet, notifications and shop names stay one-time loads (refreshed by the app-bar button).
+  final _liveBookings = DashboardLiveBookings();
 
   @override
   void initState() {
     super.initState();
     _loadDashboardData();
+  }
+
+  @override
+  void dispose() {
+    _liveBookings.dispose();
+    super.dispose();
   }
 
   Future<void> _loadDashboardData() async {
@@ -54,8 +61,6 @@ class _OwnerDashboardViewState extends State<OwnerDashboardView> {
       _hasError = false;
     });
     try {
-      final ds = sl<BookingRemoteDataSource>();
-      final list = await ds.getShopBookings(widget.shopId);
       final vehicles =
           await sl<FleetRemoteDataSource>().getShopVehicles(widget.shopId);
       final notifications = await sl<NotificationDataSource>()
@@ -71,28 +76,26 @@ class _OwnerDashboardViewState extends State<OwnerDashboardView> {
         shopName = (data['name'] ?? data['shopName'] ?? '') as String;
         ownerName = (data['owner_name'] ?? data['ownerName'] ?? '') as String;
       } catch (_) {}
-      final completed = list.where((b) => b.status == 'completed').toList();
-      double? settleRate;
-      if (completed.isNotEmpty) {
-        final depositDs = sl<SecurityDepositDataSource>();
-        var settled = 0;
-        for (final b in completed) {
-          final d = await depositDs.getByBookingId(b.bookingId);
-          if (d != null && d.status != 'collected') settled++;
-        }
-        settleRate = settled / completed.length;
-      }
       if (mounted) {
         setState(() {
-          _allBookings = list;
           _shopName = shopName;
           _ownerName = ownerName;
           _fleetTotal = vehicles.length;
           _fleetAvailable =
               vehicles.where((v) => v.status == 'available').length;
           _unreadNotifications = notifications.where((n) => !n.read).length;
-          _settleRate = settleRate;
         });
+      }
+      // Live updates (Item 2): bookings come from the stream, not the one-time get this method used to do — the first emission paints the KPIs, schedule and ledger.
+      // A false return means the bookings data source could not be
+      // resolved (missing DI) — a load failure, so the error state
+      // renders and its retry re-runs this method.
+      if (!_liveBookings.subscribe(
+        shopId: widget.shopId,
+        onBookings: (list) { if (!mounted) return; setState(() => _allBookings = list); },
+        onSettleRate: (rate) { if (!mounted) return; setState(() => _settleRate = rate); },
+      )) {
+        if (mounted) setState(() => _hasError = true);
       }
     } catch (_) {
       if (mounted) setState(() => _hasError = true);

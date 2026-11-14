@@ -239,9 +239,9 @@ class _OwnerHandoverSignatureViewState
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Flexible(child: Text(l10n.returnReceiptDepositHeld, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700))),
+          Flexible(child: Text(l10n.returnReceiptDepositHeld, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodyMedium)),
           const SizedBox(width: 8),
-          Text(l10n.amountRs(formatRs(_securityDeposit)), style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900)),
+          Text(l10n.amountRs(formatRs(_securityDeposit)), style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w500)),
         ],
       ),
     );

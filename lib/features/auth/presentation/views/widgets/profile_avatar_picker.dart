@@ -57,7 +57,7 @@ class ProfileAvatarPicker extends StatelessWidget {
               Text(
                 l10n?.avatarSelectPhoto ?? 'Select Profile Photo',
                 style: Theme.of(ctx).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.w600,
                     ),
               ),
               const SizedBox(height: 12),
@@ -165,7 +165,10 @@ class ProfileAvatarPicker extends StatelessWidget {
             l10n?.avatarSetPicture ?? 'Set Profile Picture',
             style: Theme.of(context).textTheme.labelMedium?.copyWith(
                   fontWeight: FontWeight.w400,
-                  color: AppColors.secondary,
+                  // Item 4: the raw #F95700 is 3.29:1 as text — the
+                  // orange text token is 5.18:1 in light, 7.92:1 dark.
+                  color: AppColors.orangeTextFor(
+                      Theme.of(context).brightness),
                 ),
           ),
         ),

@@ -109,8 +109,9 @@ void main() {
               home: AdminBookingsView()));
       await tester.pumpAndSettle();
       expect(find.text('Bookings'), findsWidgets);
-      expect(find.text('requested'), findsOneWidget);
-      expect(find.text('cancelled'), findsOneWidget);
+      expect(find.text('Requested'), findsOneWidget);
+      expect(find.text('Cancelled'), findsOneWidget);
+      expect(find.text('Disputed'), findsOneWidget);
       expect(find.textContaining('No bookings match'), findsOneWidget);
     });
 
@@ -126,7 +127,10 @@ void main() {
 
     testWidgets('disputes centre shows its empty state', (tester) async {
       await tester.pumpWidget(
-          const MaterialApp(home: AdminDisputesView()));
+          const MaterialApp(
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
+              home: AdminDisputesView()));
       await tester.pumpAndSettle();
       expect(find.text('Disputes centre'), findsWidgets);
       expect(find.textContaining('No disputes'), findsOneWidget);
@@ -134,7 +138,10 @@ void main() {
 
     testWidgets('reviews view shows the queues and empty state',
         (tester) async {
-      await tester.pumpWidget(const MaterialApp(home: AdminReviewsView()));
+      await tester.pumpWidget(const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: AdminReviewsView()));
       await tester.pumpAndSettle();
       expect(find.text('Reviews moderation'), findsWidgets);
       expect(find.text('Abusive'), findsOneWidget);
@@ -156,6 +163,8 @@ void main() {
         customerId: 'customer-1',
       );
       await tester.pumpWidget(MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(
           body: DisputeDecisionSheet(
             dispute: dispute,

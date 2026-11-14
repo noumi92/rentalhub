@@ -93,7 +93,6 @@ class _OwnerResetOptionsViewState extends State<OwnerResetOptionsView> {
                     Text(l10n.resetWarning,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               color: Theme.of(context).colorScheme.error,
-                              fontWeight: FontWeight.w700,
                             )),
                     const SizedBox(height: 16),
                     _option(
@@ -152,9 +151,7 @@ class _OwnerResetOptionsViewState extends State<OwnerResetOptionsView> {
                 ? Theme.of(context).colorScheme.error
                 : Theme.of(context).colorScheme.primary),
         title: Text(title,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w800,
-                )),
+            style: Theme.of(context).textTheme.bodyMedium),
         subtitle: Text(subtitle),
         // OW-m11: the button sizes to its label (min 96 wide, 48
         // tall) instead of a fixed 96 dp that truncates Urdu, and

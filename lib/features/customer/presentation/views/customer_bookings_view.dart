@@ -1,14 +1,15 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/auth/signed_in_user.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/data/sync_status_cubit.dart';
-import '../../../../core/di/injection_container.dart';
 import '../../../../core/widgets/app_state_views.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../core/widgets/offline_banner.dart';
-import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
+import '../../../bookings/utils/live_booking_stream.dart';
 import '../widgets/booking_ticket_card.dart';
 import '../../../../l10n/app_localizations.dart';
 
@@ -38,6 +39,8 @@ class _CustomerBookingsViewState extends State<CustomerBookingsView> {
   // CU-m3: nobody signed in — the list must not load under the
   // shared 'cust-101' id.
   bool _signedOut = false;
+  // Live updates (Item 2): the subscription behind the list.
+  StreamSubscription<List<BookingEntity>>? _bookingsSub;
 
   @override
   void initState() {
@@ -45,31 +48,34 @@ class _CustomerBookingsViewState extends State<CustomerBookingsView> {
     _fetchBookings();
   }
 
+  @override
+  void dispose() {
+    _bookingsSub?.cancel();
+    super.dispose();
+  }
+
+  /// Live updates (Item 2): the list follows the customer's bookings stream — a submit on the review screen, or an owner approve / reject, re-renders it without leaving the tab. Pull-to-refresh and the error-state retry re-run this method, which re-subscribes.
   Future<void> _fetchBookings() async {
+    await _bookingsSub?.cancel();
+    _bookingsSub = null;
     if (mounted) setState(() { _hasError = false; _signedOut = false; });
-    // CU-m3: a signed-out caller has no bookings to load — the old
-    // 'cust-101' fallback read another user's data.
+    // CU-m3: a signed-out caller has no bookings to load — the old 'cust-101' fallback read another user's data.
     final uid = SignedInUser.uid();
     if (uid.isEmpty) {
       if (mounted) setState(() { _signedOut = true; _hasError = true; _isLoading = false; });
       return;
     }
-    try {
-      final ds = sl<BookingRemoteDataSource>();
-      final list = await ds.getCustomerBookings(uid);
-      if (mounted) {
-        setState(() {
-          _allBookings = list;
-          _isLoading = false;
-        });
-      }
-    } catch (_) {
-      if (mounted) {
-        setState(() {
-          _hasError = true;
-          _isLoading = false;
-        });
-      }
+    _bookingsSub = subscribeLiveBookings((ds) => ds.streamCustomerBookings(uid), (list) {
+      if (!mounted) return;
+      setState(() { _allBookings = list; _isLoading = false; _hasError = false; });
+    }, onError: () {
+      if (mounted) setState(() { _hasError = true; _isLoading = false; });
+    });
+    // A null subscription means the data source could not be resolved
+    // (missing DI) — a load failure, not an empty list: the error
+    // state renders and its retry re-runs this method.
+    if (_bookingsSub == null && mounted) {
+      setState(() { _hasError = true; _isLoading = false; });
     }
   }
 
@@ -134,7 +140,7 @@ class _CustomerBookingsViewState extends State<CustomerBookingsView> {
                         .labelMedium
                         ?.copyWith(
                             fontWeight:
-                                isSelected ? FontWeight.w800 : FontWeight.w600),
+                                FontWeight.w500),
                     side: BorderSide(
                       color: isSelected
                           ? AppColors.primary

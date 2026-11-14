@@ -210,11 +210,11 @@ class _OwnerRateMatrixViewState extends State<OwnerRateMatrixView> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(l10n.pricingDriveModeAvailability, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
+                      Text(l10n.pricingDriveModeAvailability, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
                       const SizedBox(height: 8),
                       PricingDriveModeCard(isSelfDrive: _isSelfDrive, onSelfDriveChanged: (val) => setState(() => _isSelfDrive = val), isWithDriver: _isWithDriver, onWithDriverChanged: (val) => setState(() => _isWithDriver = val)),
                       const SizedBox(height: 18),
-                      Text(l10n.rateMatrixInCityTitle, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
+                      Text(l10n.rateMatrixInCityTitle, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
                       const SizedBox(height: 8),
                       // 09b: pick ONE package, edit its price — one
                       // horizontal row of chips. All seven controllers
@@ -228,7 +228,7 @@ class _OwnerRateMatrixViewState extends State<OwnerRateMatrixView> {
                       const SizedBox(height: 10),
                       RateMatrixFieldWidget(controller: _extraHourController, label: l10n.pricingExtraHourCharge, hint: 'Rs. 600 / hour', kmCap: l10n.pricingExtraHourCap),
                       const SizedBox(height: 18),
-                      Text(l10n.rateMatrixOutCityTitle, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
+                      Text(l10n.rateMatrixOutCityTitle, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
                       const SizedBox(height: 4),
                       Text(l10n.outCityRulesAppliesAll, style: Theme.of(context).textTheme.labelSmall),
                       const SizedBox(height: 8),

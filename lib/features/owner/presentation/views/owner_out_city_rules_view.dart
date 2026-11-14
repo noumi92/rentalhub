@@ -198,7 +198,7 @@ class _OwnerOutCityRulesViewState extends State<OwnerOutCityRulesView> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(l10n.outCityBoundaryTitle, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
+                      Text(l10n.outCityBoundaryTitle, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
                       const SizedBox(height: 8),
                       BoundaryMapCard(
                         shopId: widget.vehicle.shopId,
@@ -207,7 +207,7 @@ class _OwnerOutCityRulesViewState extends State<OwnerOutCityRulesView> {
                         onEdit: _editBoundary,
                       ),
                       const SizedBox(height: 18),
-                      Text(l10n.fixedRoutesTitle, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
+                      Text(l10n.fixedRoutesTitle, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
                       const SizedBox(height: 4),
                       Text(l10n.fixedRoutesSubtitle, style: theme.textTheme.labelSmall),
                       const SizedBox(height: 8),
@@ -219,7 +219,7 @@ class _OwnerOutCityRulesViewState extends State<OwnerOutCityRulesView> {
                       else if (_routes.isEmpty)
                         Text(l10n.fixedRoutesEmpty, style: theme.textTheme.bodyMedium)
                       else
-                        ..._routes.map((r) => Card(margin: const EdgeInsets.only(bottom: 8), child: ListTile(leading: const Icon(Icons.route_rounded), title: Text(r.displayName, style: const TextStyle(fontWeight: FontWeight.w800)), subtitle: Text(l10n.fixedRouteSummary(r.distanceKm, formatRs(r.fixedPricePkr)))))),
+                        ..._routes.map((r) => Card(margin: const EdgeInsets.only(bottom: 8), child: ListTile(leading: const Icon(Icons.route_rounded), title: Text(r.displayName, style: const TextStyle(fontWeight: FontWeight.w600)), subtitle: Text(l10n.fixedRouteSummary(r.distanceKm, formatRs(r.fixedPricePkr)))))),
                       const SizedBox(height: 8),
                       OutlinedButton.icon(icon: const Icon(Icons.add_rounded, size: 18), label: Text(l10n.fixedRouteAddButton), onPressed: () => context.push(RouteNames.ownerFixedRoutes)),
                       const SizedBox(height: 18),

@@ -1,13 +1,16 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/responsive.dart';
 import '../../../../core/widgets/app_state_views.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../data/datasources/admin_support_data_source.dart';
+import '../widgets/admin_load_more_button.dart';
 import '../widgets/admin_shell.dart';
-import '../widgets/admin_status_chip.dart';
+import '../widgets/admin_ticket_list_tile.dart';
 import '../widgets/ticket_detail_sheet.dart';
 
 /// Phase E (E1) — the support tickets inbox: every ticket the
@@ -22,10 +25,19 @@ class AdminTicketsView extends StatefulWidget {
 }
 
 class _AdminTicketsViewState extends State<AdminTicketsView> {
+  static const _pageSize = 50;
+
+  final _searchController = TextEditingController();
+  Timer? _searchTimer;
   List<SupportTicket> _tickets = [];
   bool _isLoading = true;
+  bool _isLoadingMore = false;
   bool _hasError = false;
+  bool _isSearching = false;
   String _filter = 'all';
+  String _searchQuery = '';
+  Object? _cursor;
+  bool _hasMore = false;
 
   @override
   void initState() {
@@ -33,48 +45,133 @@ class _AdminTicketsViewState extends State<AdminTicketsView> {
     _load();
   }
 
-  Future<void> _load() async {
-    if (!_isLoading) setState(() => _hasError = false);
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _searchTimer?.cancel();
+    super.dispose();
+  }
+
+  // F-m2: the inbox pages (50 at a time) instead of stopping at a
+  // silent 100-row cap, and search covers the whole inbox through
+  // the data source instead of only the loaded page.
+  Future<void> _load({bool reset = true}) async {
+    if (reset) {
+      setState(() {
+        _isLoading = true;
+        _hasError = false;
+        _tickets = [];
+        _cursor = null;
+        _hasMore = false;
+      });
+    } else {
+      setState(() => _isLoadingMore = true);
+    }
     try {
-      final tickets = await sl<AdminSupportDataSource>()
-          .getTickets(status: _filter);
+      final ds = sl<AdminSupportDataSource>();
+      if (_searchQuery.isNotEmpty) {
+        final found = await ds.searchTickets(
+          _searchQuery,
+          status: _filter,
+          limit: _pageSize,
+        );
+        _setLoaded(found, isSearching: true);
+        return;
+      }
+      final page = await ds.getTicketsPage(
+        status: _filter,
+        limit: _pageSize,
+        cursor: reset ? null : _cursor,
+      );
+      _setLoaded(
+        reset ? page.items : [..._tickets, ...page.items],
+        cursor: page.cursor,
+        hasMore: page.hasMore,
+      );
+    } catch (_) {
       if (mounted) {
         setState(() {
-          _tickets = tickets;
+          _hasError = true;
           _isLoading = false;
+          _isLoadingMore = false;
         });
       }
-    } catch (_) {
-      if (mounted) setState(() => _hasError = true);
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
     }
+  }
+
+  void _setLoaded(
+    List<SupportTicket> tickets, {
+    Object? cursor,
+    bool hasMore = false,
+    bool isSearching = false,
+  }) {
+    if (!mounted) return;
+    setState(() {
+      _tickets = tickets;
+      _isSearching = isSearching;
+      _cursor = cursor;
+      _hasMore = hasMore;
+      _isLoading = false;
+      _isLoadingMore = false;
+    });
+  }
+
+  void _onSearchChanged(String value) {
+    _searchTimer?.cancel();
+    _searchTimer = Timer(const Duration(milliseconds: 400), () {
+      final query = value.trim();
+      if (query == _searchQuery) return;
+      setState(() => _searchQuery = query);
+      _load();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final compact =
         windowSizeClassOf(context) == WindowSizeClass.compact;
+    final l10n = AppLocalizations.of(context);
     return AdminShell(
       activeRoute: RouteNames.adminTickets,
-      title: 'Support tickets',
-      subtitle: 'The inbox the customer plan promised',
+      title: l10n?.admin2_ticketsTitle ?? 'Support tickets',
+      subtitle: l10n?.admin2_ticketsSubtitle ?? 'The inbox the customer plan promised',
       onRefresh: _load,
       child: Padding(
         padding: EdgeInsets.all(compact ? 16 : 24),
         child: Column(
           children: [
+            TextField(
+              controller: _searchController,
+              onChanged: _onSearchChanged,
+              decoration: InputDecoration(
+                hintText: l10n?.adminAuditSearchTicketsHint ??
+                    'Search by message or customer ID…',
+                prefixIcon: const Icon(Icons.search_rounded),
+                filled: true,
+                fillColor: Theme.of(context)
+                    .colorScheme
+                    .surfaceContainerHighest,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide:
+                      BorderSide(color: Theme.of(context).dividerColor),
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 14, vertical: 12),
+              ),
+            ),
+            const SizedBox(height: 12),
             Align(
               alignment: Alignment.centerLeft,
               child: Wrap(
                 spacing: 8,
                 children: [
                   for (final entry in {
-                    'all': 'All',
-                    'open': 'Open',
-                    'in_progress': 'In progress',
-                    'escalated': 'Escalated',
-                    'closed': 'Closed',
+                    'all': l10n?.filterAll ?? 'All',
+                    'open': l10n?.admin2_open ?? 'Open',
+                    'in_progress': l10n?.admin2_inProgress ?? 'In progress',
+                    'escalated': l10n?.admin2_escalated ?? 'Escalated',
+                    'closed': l10n?.admin2_closed ?? 'Closed',
                   }.entries)
                     ChoiceChip(
                       label: Text(entry.value),
@@ -90,81 +187,55 @@ class _AdminTicketsViewState extends State<AdminTicketsView> {
                 ],
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
+            if (!_isLoading && !_hasError && _tickets.isNotEmpty)
+              AdminListCountLabel(
+                label: _isSearching
+                    ? (_tickets.length >= _pageSize
+                        ? (l10n?.adminAuditFirstMatches(_pageSize) ??
+                            'First $_pageSize matches')
+                        : (l10n?.adminAuditMatching(_tickets.length) ??
+                            '${_tickets.length} matching entries'))
+                    : (l10n?.adminAuditShowing(_tickets.length) ??
+                        'Showing ${_tickets.length}'),
+              ),
             Expanded(
               child: _isLoading
                   ? const AppLoadingState()
                   : _hasError
                       ? AppErrorState(
-                          message: 'Could not load the tickets.',
+                          message: l10n?.admin2_ticketsLoadFailed ??
+                              'Could not load the tickets.',
                           onRetry: _load,
                         )
                       : _tickets.isEmpty
-                          ? const AppEmptyState(
-                              title: 'No tickets',
-                              message:
+                          ? AppEmptyState(
+                              title: l10n?.admin2_ticketsEmptyTitle ??
+                                  'No tickets',
+                              message: l10n?.admin2_ticketsEmptyHint ??
                                   'The inbox reads the support_tickets collection.',
                             )
                           : ListView.separated(
-                          itemCount: _tickets.length,
+                          itemCount: _tickets.length +
+                              (_hasMore && !_isSearching ? 1 : 0),
                           separatorBuilder: (_, __) =>
                               const SizedBox(height: 10),
                           itemBuilder: (context, i) {
+                            if (i >= _tickets.length) {
+                              return AdminLoadMoreButton(
+                                isLoadingMore: _isLoadingMore,
+                                onPressed: () => _load(reset: false),
+                              );
+                            }
                             final t = _tickets[i];
-                            final breached = t.createdAt != null &&
-                                DateTime.now().isAfter(t.createdAt!
-                                    .add(Duration(hours: t.slaHours)));
-                            final danger = adminStatusColor(
-                                context, AdminStatusTone.danger);
-                            return Card(
-                              margin: EdgeInsets.zero,
-                              elevation: 0,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                side: BorderSide(
-                                    color: breached
-                                        ? danger.withValues(alpha: 0.4)
-                                        : Theme.of(context).dividerColor),
-                              ),
-                              child: ListTile(
-                                leading: CircleAvatar(
-                                  backgroundColor: AppColors.primary
-                                      .withValues(alpha: 0.12),
-                                  child: const Icon(
-                                      Icons.support_agent_rounded,
-                                      ),
-                                ),
-                                title: Text(
-                                    t.message.length > 80
-                                        ? '${t.message.substring(0, 80)}…'
-                                        : t.message,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w800,
-                                        )),
-                                subtitle: Text(
-                                  '${t.priority.toUpperCase()} • ${humanizeStatus(t.status)} • ${t.slaText()}',
-                                  style: TextStyle(
-                                      fontSize: 12,
-                                      color: breached
-                                          ? danger
-                                          : Theme.of(context).colorScheme.onSurfaceVariant,
-                                      fontWeight: breached
-                                          ? FontWeight.w700
-                                          : FontWeight.normal),
-                                ),
-                                trailing: const Icon(
-                                    Icons.arrow_forward_ios_rounded,
-                                    size: 16),
-                                onTap: () => showModalBottomSheet(
-                                  context: context,
-                                  isScrollControlled: true,
-                                  builder: (_) => TicketDetailSheet(
-                                    ticket: t,
-                                    onChanged: _load,
-                                  ),
+                            return AdminTicketListTile(
+                              ticket: t,
+                              onTap: () => showModalBottomSheet(
+                                context: context,
+                                isScrollControlled: true,
+                                builder: (_) => TicketDetailSheet(
+                                  ticket: t,
+                                  onChanged: _load,
                                 ),
                               ),
                             );

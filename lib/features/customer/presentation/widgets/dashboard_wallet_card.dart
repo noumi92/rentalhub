@@ -50,7 +50,7 @@ class DashboardWalletCard extends StatelessWidget {
                 children: [
                   Text(
                     l10n.walletLabel,
-                    style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 2),
                   Text(
@@ -64,7 +64,7 @@ class DashboardWalletCard extends StatelessWidget {
             ),
             Text(
               l10n.amountRs(formatRs(summary?.total ?? 0)),
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w500),
             ),
             const SizedBox(width: 4),
             Icon(Icons.arrow_forward_ios_rounded,

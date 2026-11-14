@@ -208,7 +208,7 @@ class _OwnerFinanceCategoriesViewState
           children: [
             Text(title,
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w800,
+                      fontWeight: FontWeight.w600,
                     )),
             TextButton.icon(
               icon: const Icon(Icons.add_rounded, size: 18),

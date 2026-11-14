@@ -72,7 +72,7 @@ class _FinanceLedgerSectionState extends State<FinanceLedgerSection> {
           children: [
             Text(l10n.financeLedgerTitle,
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w600,
                 )),
             TextButton.icon(
               icon: const Icon(Icons.add_rounded, size: 18),
@@ -132,9 +132,7 @@ class _FinanceLedgerSectionState extends State<FinanceLedgerSection> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(_categoryLabel(l10n, t.category),
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.w800,
-                          )),
+                          style: Theme.of(context).textTheme.bodyMedium),
                       Text(
                           '${_accountName(l10n, t.accountId)} • ${t.createdAt.day}/${t.createdAt.month}/${t.createdAt.year}${t.note != null ? ' • ${t.note}' : ''}',
                           style: Theme.of(context).textTheme.labelSmall),
@@ -149,7 +147,6 @@ class _FinanceLedgerSectionState extends State<FinanceLedgerSection> {
                 Text(
                   l10n.financeLedgerAmount(isIncome ? '+' : '−', formatRs(t.amountPkr)),
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w900,
                     color: isIncome
                           ? AppColors.successTextFor(Theme.of(context).brightness)
                           : AppColors.dangerTextFor(Theme.of(context).brightness),

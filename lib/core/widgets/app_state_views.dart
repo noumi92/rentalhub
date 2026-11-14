@@ -98,7 +98,7 @@ class AppEmptyState extends StatelessWidget {
                 title,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.w600,
                       color: colorScheme.onSurfaceVariant,
                     ),
               ),
@@ -166,7 +166,7 @@ class AppErrorState extends StatelessWidget {
                 message,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.w600,
                       color: colorScheme.onSurfaceVariant,
                     ),
               ),

@@ -48,18 +48,23 @@ class BookingSuccessView extends StatelessWidget {
                             color:
                                 AppColors.accentSuccess.withValues(alpha: 0.3)),
                       ),
-                      child: const Icon(Icons.check_circle_rounded,
-                          color: AppColors.accentSuccess, size: 54),
+                      // Item 4: the raw #10B981 icon is 2.54:1 on the
+                      // pale tint — the readable success text token is
+                      // 5.48:1 in light (dark leg unchanged).
+                      child: Icon(Icons.check_circle_rounded,
+                          color: AppColors.successTextFor(
+                              Theme.of(context).brightness),
+                          size: 54),
                     ),
                     const SizedBox(height: 18),
                     Text(
                       l10n.successTitle,
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
                     ),
                     const SizedBox(height: 6),
                     Text(
                       l10n.successReference(booking.bookingId),
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.orangeTextFor(Theme.of(context).brightness)),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.orangeTextFor(Theme.of(context).brightness)),
                     ),
                     const SizedBox(height: 12),
                     Text(
@@ -94,7 +99,7 @@ class BookingSuccessView extends StatelessWidget {
                               Text(l10n.successAdvanceDue,
                                   style: Theme.of(context).textTheme.bodyMedium),
                               Text(l10n.amountRs(formatRs(booking.advanceRequired)),
-                                  style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900, color: AppColors.orangeTextFor(Theme.of(context).brightness))),
+                                  style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w500, color: AppColors.orangeTextFor(Theme.of(context).brightness))),
                             ],
                           ),
                         ],
@@ -128,7 +133,8 @@ class BookingSuccessView extends StatelessWidget {
                         }
                       },
                       style: OutlinedButton.styleFrom(
-                        foregroundColor: AppColors.accentSuccess,
+                        foregroundColor: AppColors.successTextFor(
+                            Theme.of(context).brightness),
                         // Translucent success tint over the surface (same
                         // pattern as the success circle above): readable
                         // in both modes, no pale glare in dark mode.
@@ -141,8 +147,9 @@ class BookingSuccessView extends StatelessWidget {
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12)),
                       ),
-                      icon: const Icon(Icons.chat_bubble_outline_rounded,
-                          color: AppColors.accentSuccess),
+                      icon: Icon(Icons.chat_bubble_outline_rounded,
+                          color: AppColors.successTextFor(
+                              Theme.of(context).brightness)),
                       label:  Text(l10n.successMessageShop),
                     ),
                   ],

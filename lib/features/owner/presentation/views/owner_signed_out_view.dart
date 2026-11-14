@@ -42,7 +42,7 @@ class OwnerSignedOutView extends StatelessWidget {
                       l10n.signOutSignedOutTitle,
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.w900,
+                            fontWeight: FontWeight.w600,
                           ),
                     ),
                     const SizedBox(height: 8),

@@ -169,7 +169,7 @@ class _OwnerCustomersListViewState extends State<OwnerCustomersListView> {
                                       ListTile(
                                         leading: CircleAvatar(
                                           backgroundColor: AppColors.primary,
-                                          child: Text(c.name.isNotEmpty ? c.name[0].toUpperCase() : '?', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800)),
+                                          child: Text(c.name.isNotEmpty ? c.name[0].toUpperCase() : '?', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
                                         ),
                                         title: Wrap(
                                           spacing: 6,
@@ -177,7 +177,7 @@ class _OwnerCustomersListViewState extends State<OwnerCustomersListView> {
                                           crossAxisAlignment:
                                               WrapCrossAlignment.center,
                                           children: [
-                                            Text(c.name, style: const TextStyle(fontWeight: FontWeight.w800)),
+                                            Text(c.name, style: const TextStyle(fontWeight: FontWeight.w600)),
                                             if (c.bookingCount >= 2)
                                               Chip(label: Text(l10n.customersBadgeRegular, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.white)), backgroundColor: AppColors.accentSuccessStrong, padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
                                             if (c.bookingCount <= 1)
@@ -206,7 +206,7 @@ class _OwnerCustomersListViewState extends State<OwnerCustomersListView> {
                                               title: Text('${b.vehicleName ?? l10n.summaryVehicle} • ${b.packageType}', maxLines: 1, overflow: TextOverflow.ellipsis),
                                               subtitle: Text('${b.pickupTime.day}/${b.pickupTime.month}/${b.pickupTime.year} • ${_statusLabel(l10n, b.status)}', maxLines: 2, overflow: TextOverflow.ellipsis),
                                               // C5: grouped amount.
-                                              trailing: Text(l10n.amountRs(formatRs(b.totalAmount)), style: const TextStyle(fontWeight: FontWeight.w800)),
+                                              trailing: Text(l10n.amountRs(formatRs(b.totalAmount)), style: const TextStyle(fontWeight: FontWeight.w600)),
                                             )),
                                       if (expanded && c.bookings.isEmpty)
                                         Padding(

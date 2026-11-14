@@ -48,7 +48,7 @@ class SyncEntryCard extends StatelessWidget {
                   child: Text(
                     kindLabel,
                     style: theme.textTheme.titleSmall
-                        ?.copyWith(fontWeight: FontWeight.w800),
+                        ?.copyWith(fontWeight: FontWeight.w600),
                   ),
                 ),
                 if (entry.isExhausted)

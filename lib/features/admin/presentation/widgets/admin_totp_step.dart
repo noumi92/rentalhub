@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+
+import '../../../../l10n/app_localizations.dart';
 
 
 /// The TOTP step of the admin login: either verifying the 6-digit code
@@ -32,24 +35,25 @@ class AdminTotpStep extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final enrolling = otpauthUrl != null;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
           enrolling
-              ? 'Set up two-factor authentication'
-              : 'Enter your authenticator code',
+              ? l10n.admin2_totpSetupTitle
+              : l10n.admin2_totpVerifyTitle,
           style: const TextStyle(
               fontSize: 17,
-              fontWeight: FontWeight.w900,
+              fontWeight: FontWeight.w600,
               ),
         ),
         const SizedBox(height: 8),
         Text(
           enrolling
-              ? 'Scan this code with your authenticator app, then enter the 6-digit code it shows to confirm.'
-              : 'Two-factor authentication is on for this account. Enter the 6-digit code from your authenticator app.',
+              ? l10n.admin2_totpSetupHint
+              : l10n.admin2_totpEnabledHint,
           style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurfaceVariant),
         ),
         if (enrolling) ...[
@@ -58,17 +62,24 @@ class AdminTotpStep extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface,
+                // AD-M4: a forced white slab behind the QR in both
+                // modes — on a dark surface the black QR modules are
+                // unscannable. Same pattern as the customer QR pass.
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: Theme.of(context).dividerColor),
               ),
-              child: QrImageView(data: otpauthUrl!, size: 180),
+              child: QrImageView(
+                data: otpauthUrl!,
+                size: 180,
+                backgroundColor: Colors.white,
+              ),
             ),
           ),
           if (_manualKey != null) ...[
             const SizedBox(height: 12),
             SelectableText(
-              'Manual setup key: $_manualKey',
+              l10n.admin2_totpManualKey(_manualKey ?? ''),
               textAlign: TextAlign.center,
               style: TextStyle(
                   fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
@@ -79,9 +90,12 @@ class AdminTotpStep extends StatelessWidget {
         TextField(
           controller: codeController,
           keyboardType: TextInputType.number,
+          // AD-m6: non-digits are rejected at the keyboard, not by
+          // the length check after typing.
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
           maxLength: 6,
           decoration: InputDecoration(
-            hintText: '6-digit code',
+            hintText: l10n.admin2_totpCodeLabel,
             counterText: '',
             filled: true,
             fillColor:
@@ -99,7 +113,6 @@ class AdminTotpStep extends StatelessWidget {
           Text(error!,
               style: const TextStyle(
                   fontSize: 13,
-                  fontWeight: FontWeight.w700,
                   color: Colors.red)),
         ],
         const SizedBox(height: 16),
@@ -108,10 +121,10 @@ class AdminTotpStep extends StatelessWidget {
           style: FilledButton.styleFrom(
               minimumSize: const Size(double.infinity, 48)),
           child: Text(isWorking
-              ? 'Checking…'
+              ? l10n.admin2_totpChecking
               : enrolling
-                  ? 'Confirm and finish setup'
-                  : 'Verify and sign in'),
+                  ? l10n.admin2_totpConfirmSetup
+                  : l10n.admin2_totpVerifySignIn),
         ),
       ],
     );

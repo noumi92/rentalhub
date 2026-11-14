@@ -150,7 +150,7 @@ class _OwnerWhatsappHistoryViewState extends State<OwnerWhatsappHistoryView> {
                                           .textTheme
                                           .labelMedium
                                           ?.copyWith(
-                                              fontWeight: FontWeight.w800)),
+                                              fontWeight: FontWeight.w500)),
                                 ),
                               )),
                         const SizedBox(height: 12),
@@ -183,7 +183,7 @@ class _Stat extends StatelessWidget {
             style: Theme.of(context)
                 .textTheme
                 .titleLarge
-                ?.copyWith(fontWeight: FontWeight.w900)),
+                ?.copyWith(fontWeight: FontWeight.w600)),
         // Urdu labels wrap to two lines at 360px instead of
         // overflowing the row.
         Text(label,

@@ -27,6 +27,7 @@ import '../../features/customer/data/datasources/dispute_remote_data_source.dart
 import '../../features/admin/data/datasources/admin_remote_data_source.dart';
 import '../../features/admin/data/datasources/admin_shops_data_source.dart';
 import '../../features/admin/data/datasources/admin_people_data_source.dart';
+import '../../features/admin/data/datasources/admin_kyc_data_source.dart';
 import '../../features/admin/data/datasources/admin_platform_data_source.dart';
 import '../../features/admin/data/datasources/admin_support_data_source.dart';
 import '../../features/admin/data/repositories/platform_settings_repository.dart';
@@ -218,6 +219,10 @@ Future<void> initDependencies() async {
   // Phase C: customers, the blacklist and the trust score.
   sl.registerLazySingleton<AdminPeopleDataSource>(
     () => AdminPeopleDataSource(),
+  );
+  // Item 6: the customer KYC review queue + decisions.
+  sl.registerLazySingleton<AdminKycDataSource>(
+    () => AdminKycDataSource(),
   );
   // Phase D: bookings, disputes, reviews.
   sl.registerLazySingleton<AdminPlatformDataSource>(

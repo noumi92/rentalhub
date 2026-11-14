@@ -37,13 +37,26 @@ void main() {
     });
 
     test('Blacklist Verification: detects blacklisted CNIC and retrieves incident file', () async {
+      // F-M1: no seeded sample case any more — report the CNIC
+      // first, then verify the lookup finds that report.
+      final reported = await blacklistDs.reportCustomerToBlacklist(
+        reportedByShopId: 'shop-1',
+        cnicNumber: '35201-9999999-1',
+        phoneNumber: '03001234567',
+        reasonCategory: 'Default & Car Impoundment',
+        description: 'Test report: defaulted on payment.',
+      );
       final isBlacklisted = await blacklistDs.isCnicBlacklisted('35201-9999999-1');
       expect(isBlacklisted, isTrue);
 
       final record = await blacklistDs.getBlacklistRecordByCnic('35201-9999999-1');
       expect(record, isNotNull);
-      expect(record!.blacklistId, equals('BLK-1001'));
+      expect(record!.blacklistId, equals(reported.blacklistId));
       expect(record.reasonCategory, contains('Default'));
+
+      // A fresh data source has no records: the CNIC is not
+      // blacklisted by default any more (F-M1).
+      expect(await BlacklistRemoteDataSource().isCnicBlacklisted('35201-9999999-1'), isFalse);
 
       final cleanCheck = await blacklistDs.isCnicBlacklisted('35201-1111111-1');
       expect(cleanCheck, isFalse);
@@ -113,6 +126,15 @@ void main() {
 
   group('Batch 4: Screen UI Actions & Rendering Tests', () {
     testWidgets('OwnerCustomerScanView: scans CNIC and displays blacklist result', (tester) async {
+      // F-M1: no seeded sample case any more — report the CNIC on
+      // the shared data source before pumping, so the scan finds it.
+      await di.sl<BlacklistRemoteDataSource>().reportCustomerToBlacklist(
+        reportedByShopId: 'shop-1',
+        cnicNumber: '35201-9999999-1',
+        phoneNumber: '03001234567',
+        reasonCategory: 'Default & Car Impoundment',
+        description: 'Test report: defaulted on payment.',
+      );
       await tester.pumpWidget(
         MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,

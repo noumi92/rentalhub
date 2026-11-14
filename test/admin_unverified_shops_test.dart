@@ -48,7 +48,8 @@ class _FakeAdminSupportDataSource extends AdminSupportDataSource {
   Future<PlatformSettings> getPlatformSettings() async => initial;
 
   @override
-  Future<bool> savePlatformSettings(PlatformSettings settings) async {
+  Future<bool> savePlatformSettings(PlatformSettings settings,
+      {String? adminRole}) async {
     saved = settings;
     return true;
   }

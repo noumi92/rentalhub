@@ -38,7 +38,7 @@ class NotificationPreferencesSection extends StatelessWidget {
                   style: Theme.of(context)
                       .textTheme
                       .titleSmall
-                      ?.copyWith(fontWeight: FontWeight.w800)),
+                      ?.copyWith(fontWeight: FontWeight.w600)),
               const SizedBox(height: 4),
               _toggle(
                 context,
@@ -101,7 +101,7 @@ class NotificationPreferencesSection extends StatelessWidget {
       child: SwitchListTile(
         contentPadding: EdgeInsets.zero,
         title:
-            Text(label, style: const TextStyle(fontWeight: FontWeight.w700)),
+            Text(label, style: const TextStyle(fontWeight: FontWeight.w600)),
         value: value,
         onChanged: onChanged,
       ),

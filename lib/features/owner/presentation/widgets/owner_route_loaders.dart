@@ -138,7 +138,7 @@ class RouteNotFoundScreen extends StatelessWidget {
                 Text(
                   message,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(fontWeight: FontWeight.w700),
+                  style: const TextStyle(fontWeight: FontWeight.w400),
                 ),
                 const SizedBox(height: 16),
                 FilledButton(

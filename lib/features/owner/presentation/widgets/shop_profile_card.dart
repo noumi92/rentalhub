@@ -73,7 +73,7 @@ class _ShopProfileCardState extends State<ShopProfileCard> {
                         _ownerName.isNotEmpty ? _ownerName : l10n.shopProfileOwnerUnknown,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900),
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
                       ),
                       const SizedBox(height: 2),
                       Text(

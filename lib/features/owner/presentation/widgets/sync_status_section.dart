@@ -31,7 +31,7 @@ class SyncStatusSection extends StatelessWidget {
         children: [
           Text(l10n?.syncTitle ?? 'Sync',
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w800)),
+                  fontWeight: FontWeight.w600)),
           const SizedBox(height: 10),
           Builder(
             builder: (context) {

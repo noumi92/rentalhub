@@ -84,7 +84,7 @@ class HomeRecentBookings extends StatelessWidget {
                 style: Theme.of(context)
                     .textTheme
                     .titleSmall
-                    ?.copyWith(fontWeight: FontWeight.w800),
+                    ?.copyWith(fontWeight: FontWeight.w600),
               ),
             ),
             TextButton(
@@ -196,7 +196,7 @@ class _PaymentBanner extends StatelessWidget {
               child: Text(
                 '${overdue ? l10n.home2_paymentOverdue : l10n.home2_paymentDue} • ${l10n.amountRs(formatRs(booking.remainingBalance))}',
                 style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.w500,
                       color: color,
                     ),
               ),

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -35,11 +37,21 @@ class _OwnerFleetCalendarViewState extends State<OwnerFleetCalendarView> {
   bool _loading = true;
   bool _hasError = false;
   DateTime _month = DateTime(DateTime.now().year, DateTime.now().month);
+  // Live updates (Item 2): the subscription behind the booked-day
+  // bars. The fleet list itself stays a one-time load (re-run by
+  // the error-state retry).
+  StreamSubscription<List<BookingEntity>>? _bookingsSub;
 
   @override
   void initState() {
     super.initState();
     _load();
+  }
+
+  @override
+  void dispose() {
+    _bookingsSub?.cancel();
+    super.dispose();
   }
 
   Future<void> _load() async {
@@ -50,13 +62,14 @@ class _OwnerFleetCalendarViewState extends State<OwnerFleetCalendarView> {
     try {
       final shopId = currentShopId();
       final fleet = await sl<FleetRemoteDataSource>().getShopVehicles(shopId);
-      final bookings = await sl<BookingRemoteDataSource>().getShopBookings(shopId);
       if (!mounted) return;
       setState(() {
         _fleet = fleet;
-        _bookings = bookings;
         _loading = false;
       });
+      // Live updates (Item 2): a submit or status change repaints
+      // the booked days while the calendar is open.
+      _subscribeBookings(shopId);
     } catch (_) {
       if (mounted) {
         setState(() {
@@ -65,6 +78,22 @@ class _OwnerFleetCalendarViewState extends State<OwnerFleetCalendarView> {
         });
       }
     }
+  }
+
+  void _subscribeBookings(String shopId) {
+    if (_bookingsSub != null) return;
+    try {
+      _bookingsSub =
+          sl<BookingRemoteDataSource>().streamShopBookings(shopId).listen(
+        (list) {
+          if (mounted) setState(() => _bookings = list);
+        },
+        onError: (_) {
+          // Booked days keep their last good state; the fleet load
+          // above still owns the error state.
+        },
+      );
+    } catch (_) {}
   }
 
   bool _isBooked(String vehicleId, DateTime day) {
@@ -105,7 +134,7 @@ class _OwnerFleetCalendarViewState extends State<OwnerFleetCalendarView> {
               onBack: widget.onBack ?? () => context.pop(),
               actions: [
                 // OW-m33: jump back to the current month.
-                TextButton(onPressed: () => setState(() => _month = DateTime(DateTime.now().year, DateTime.now().month)), child: Text(l10n.dashboardToday, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700))),
+                TextButton(onPressed: () => setState(() => _month = DateTime(DateTime.now().year, DateTime.now().month)), child: Text(l10n.dashboardToday, style: const TextStyle(color: Colors.white))),
                 IconButton(icon: const Icon(Icons.chevron_left_rounded, color: Colors.white), tooltip: l10n.fleetCalendarPrevMonth, onPressed: () => _shiftMonth(-1)),
                 IconButton(icon: const Icon(Icons.chevron_right_rounded, color: Colors.white), tooltip: l10n.fleetCalendarNextMonth, onPressed: () => _shiftMonth(1)),
               ],
@@ -142,7 +171,7 @@ class _OwnerFleetCalendarViewState extends State<OwnerFleetCalendarView> {
                                             children: [
                                               Row(
                                                 children: [
-                                                  Expanded(child: Text(v.displayName, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800))),
+                                                  Expanded(child: Text(v.displayName, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600))),
                                                   Text(v.plateNumber, style: Theme.of(context).textTheme.labelMedium),
                                                 ],
                                               ),
@@ -193,7 +222,7 @@ class _OwnerFleetCalendarViewState extends State<OwnerFleetCalendarView> {
       children: [
         Container(width: 14, height: 14, decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(4), border: Border.all(color: border, width: 1.5))),
         const SizedBox(width: 4),
-        Text(label, style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700)),
+        Text(label, style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w500)),
       ],
     );
   }

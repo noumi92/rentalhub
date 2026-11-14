@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/money_format.dart';
@@ -13,6 +14,7 @@ import '../../data/datasources/admin_people_data_source.dart';
 import '../../data/services/admin_session.dart';
 import '../../domain/admin_permissions.dart';
 import '../widgets/admin_detail_section.dart';
+import '../widgets/admin_permission_check.dart';
 import '../widgets/admin_qr_code_row.dart';
 import '../widgets/admin_shell.dart';
 import '../widgets/admin_status_chip.dart';
@@ -29,13 +31,7 @@ import '../widgets/customer_trust_breakdown.dart';
 /// `customer_qr_codes/{customerId}` doc, the rules deny the read for
 /// anyone else, and this view never even requests it for other roles.
 class AdminCustomerDetailView extends StatefulWidget {
-  const AdminCustomerDetailView({
-    super.key,
-    required this.customerId,
-    this.loadDetail,
-    this.resolveAdminRole,
-    this.loadQrCode,
-  });
+  const AdminCustomerDetailView({super.key, required this.customerId, this.loadDetail, this.resolveAdminRole, this.loadQrCode});
 
   final String customerId;
 
@@ -110,10 +106,12 @@ class _AdminCustomerDetailViewState extends State<AdminCustomerDetailView> {
   Future<void> _addNote() async {
     final text = _noteController.text.trim();
     if (text.isEmpty) return;
+    final check = await AdminPermissionCheck.check(context, AdminPermission.manageBlacklist);
+    if (!check.proceed) return;
     setState(() => _isWorking = true);
-    final synced = await sl<AdminPeopleDataSource>().addCustomerNote(customerId: widget.customerId, text: text);
+    final synced = await sl<AdminPeopleDataSource>().addCustomerNote(customerId: widget.customerId, text: text, adminRole: check.role);
     if (!mounted) return;
-    if (synced) { _noteController.clear(); await _load(); } else { AppFeedback.showError(context, 'Could not reach the server.'); }
+    if (synced) { _noteController.clear(); await _load(); } else { AppFeedback.showError(context, AppLocalizations.of(context)!.admin2_serverUnreachable); }
     setState(() => _isWorking = false);
   }
 
@@ -122,13 +120,20 @@ class _AdminCustomerDetailViewState extends State<AdminCustomerDetailView> {
     if (d == null) return;
     final cnic = d.customer.cnic;
     if (cnic == null || cnic.isEmpty) {
-      AppFeedback.showError(context, 'No CNIC on file — a blacklist entry needs one.');
+      AppFeedback.showError(context, AppLocalizations.of(context)!.admin2_customerDetailNoCnic);
       return;
     }
+    // AD-M6: one tap used to file the report with hardcoded strings.
+    // The admin confirms and gives the reason — the tribunal judges
+    // the case on it — and it is passed through as the reason.
+    final reason = await showBlacklistReportDialog(context);
+    if (reason == null || reason.isEmpty || !mounted) return;
+    final check = await AdminPermissionCheck.check(context, AdminPermission.manageBlacklist);
+    if (!check.proceed) return;
     setState(() => _isWorking = true);
-    final synced = await sl<AdminPeopleDataSource>().reportCustomerToBlacklist(customerId: d.customer.customerId, cnic: cnic, phone: d.customer.phone, reasonCategory: 'Admin report', description: 'Reported by an admin from the customer detail screen.', reportedByShopId: 'admin');
+    final synced = await sl<AdminPeopleDataSource>().reportCustomerToBlacklist(customerId: d.customer.customerId, cnic: cnic, phone: d.customer.phone, reasonCategory: reason, description: reason, reportedByShopId: 'admin', adminRole: check.role);
     if (!mounted) return;
-    if (synced) { AppFeedback.showSuccess(context, 'Customer reported to the blacklist.'); await _load(); } else { AppFeedback.showError(context, 'Could not reach the server.'); }
+    if (synced) { AppFeedback.showSuccess(context, AppLocalizations.of(context)!.admin2_customerDetailReported); await _load(); } else { AppFeedback.showError(context, AppLocalizations.of(context)!.admin2_serverUnreachable); }
     setState(() => _isWorking = false);
   }
 
@@ -137,19 +142,19 @@ class _AdminCustomerDetailViewState extends State<AdminCustomerDetailView> {
     final l10n = AppLocalizations.of(context)!;
     return AdminShell(
       activeRoute: RouteNames.adminCustomers,
-      title: 'Customer detail',
-      subtitle: 'Trust score, KYC, trips and admin actions',
+      title: l10n.admin2_customerDetailTitle,
+      subtitle: l10n.admin2_customerDetailSubtitle,
       onRefresh: _load,
       onBack: () => context.go(RouteNames.adminCustomers),
       child: _isLoading
           ? const AppLoadingState()
           : _hasError
               ? AppErrorState(
-                  message: 'Could not load this customer.',
+                  message: l10n.admin2_customerDetailLoadFailed,
                   onRetry: _load,
                 )
               : _detail == null
-                  ? const AppEmptyState(title: 'Customer not found.')
+                  ? AppEmptyState(title: l10n.admin2_customerDetailNotFound)
                   : SingleChildScrollView(
                   // Mobile-first: 16dp on a phone, 24dp on desktop.
                   padding: EdgeInsets.all(
@@ -160,16 +165,19 @@ class _AdminCustomerDetailViewState extends State<AdminCustomerDetailView> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(_detail!.customer.name, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900)),
+                      Text(_detail!.customer.name, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
                       const SizedBox(height: 4),
-                      Text('${_detail!.customer.phone} • CNIC ${_detail!.customer.cnic ?? 'not on file'} • Source: ${_detail!.customer.source}', style: const TextStyle(fontSize: 13)),
+                      Text(l10n.admin2_customerDetailContact(_detail!.customer.phone, _detail!.customer.cnic ?? l10n.admin2_notOnFile, humanizeStatus(_detail!.customer.source, l10n)), style: const TextStyle(fontSize: 13)),
                       AdminQrCodeRow(isSuperAdmin: _isSuperAdmin, qrCode: _qrCode),
                       const SizedBox(height: 8),
                       if (_detail!.isBlacklisted)
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                           decoration: BoxDecoration(color: Theme.of(context).colorScheme.errorContainer, borderRadius: BorderRadius.circular(20)),
-                          child: Text('Blacklisted', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: Theme.of(context).colorScheme.error)),
+                          // Item 4: colorScheme.error (#EF4444) is
+                          // 3.44:1 on the error container — the readable
+                          // danger text token is ~6.1:1 on it.
+                          child: Text(l10n.admin2_customerDetailBlacklisted, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: AppColors.dangerTextFor(Theme.of(context).brightness))),
                         ),
                       const SizedBox(height: 16),
                       CustomerTrustBreakdown(
@@ -181,16 +189,16 @@ class _AdminCustomerDetailViewState extends State<AdminCustomerDetailView> {
                       ),
                       const SizedBox(height: 20),
                       AdminDetailSection(
-                          title: 'Booking history',
+                          title: l10n.admin2_customerDetailBookingHistory,
                           lines: _detail!.bookings.isEmpty
-                              ? ['No bookings yet.']
+                              ? [l10n.admin2_customerDetailNoBookings]
                               : _detail!.bookings
                                   .take(10)
                                   .map((b) =>
-                                      '${b.vehicleName ?? b.vehicleId} • ${humanizeStatus(b.status)} • ${l10n.amountRs(formatRs(b.totalAmount))}')
+                                      '${b.vehicleName ?? b.vehicleId} • ${humanizeStatus(b.status, l10n)} • ${l10n.amountRs(formatRs(b.totalAmount))}')
                                   .toList()),
                       AdminDetailSection(
-                          title: 'Guarantors',
+                          title: l10n.admin2_customerDetailGuarantors,
                           lines: _detail!.bookings
                               .where((b) =>
                                   (b.guarantorName ?? '').isNotEmpty)
@@ -199,30 +207,34 @@ class _AdminCustomerDetailViewState extends State<AdminCustomerDetailView> {
                               .toSet()
                               .toList()),
                       AdminDetailSection(
-                          title: 'Admin notes',
+                          title: l10n.admin2_customerDetailAdminNotes,
                           lines: _detail!.notes.isEmpty
-                              ? ['No notes yet.']
+                              ? [l10n.admin2_customerDetailNoNotes]
                               : _detail!.notes
                                   .map((n) => n.text)
                                   .toList()),
                       CustomerDetailActions(
                         noteController: _noteController,
                         isWorking: _isWorking,
+                        isWatchlisted: _detail!.isWatchlisted,
                         onAddNote: _addNote,
                         onWatchlist: () async {
-                          final synced =
-                              await sl<AdminPeopleDataSource>()
-                                  .setCustomerWatchlisted(
+                          // AD-M6: the watchlist action is a toggle.
+                          final target = !_detail!.isWatchlisted;
+                          final check = await AdminPermissionCheck.check(context, AdminPermission.manageBlacklist);
+                          if (!check.proceed) return;
+                          final synced = await sl<AdminPeopleDataSource>()
+                              .setCustomerWatchlisted(
                             customerId: widget.customerId,
-                            watchlisted: true,
+                            watchlisted: target,
+                            adminRole: check.role,
                           );
                           if (!context.mounted) return;
                           if (synced) {
-                            AppFeedback.showSuccess(context,
-                                'Customer added to the watchlist.');
+                            AppFeedback.showSuccess(context, target ? l10n.admin2_customerDetailWatchlistAdded : l10n.admin2_customerDetailWatchlistRemoved);
+                            await _load();
                           } else {
-                            AppFeedback.showError(
-                                context, 'Could not reach the server.');
+                            AppFeedback.showError(context, l10n.admin2_serverUnreachable);
                           }
                         },
                         onBlacklist: _blacklist,

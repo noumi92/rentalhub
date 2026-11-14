@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../../../core/widgets/app_feedback.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../data/datasources/admin_support_data_source.dart';
 
 /// One KPI tile on the reports screen.
@@ -44,7 +45,6 @@ class AdminReportKpi extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
                   fontSize: 15,
-                  fontWeight: FontWeight.w800,
                   )),
         ],
       ),
@@ -84,6 +84,58 @@ class AdminReportDateButton extends StatelessWidget {
   }
 }
 
+/// The From/To date range on the reports screen, with the range
+/// error underneath (AD-m10): picking From after To is rejected in
+/// the view, and the message renders here so the row stays one
+/// widget. Compact stacks the buttons; desktop keeps them in a row.
+class AdminReportDateRange extends StatelessWidget {
+  const AdminReportDateRange({
+    super.key,
+    required this.from,
+    required this.to,
+    required this.rangeError,
+    required this.onPickFrom,
+    required this.onPickTo,
+  });
+
+  final DateTime from;
+  final DateTime to;
+  final String? rangeError;
+  final VoidCallback onPickFrom;
+  final VoidCallback onPickTo;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(
+                child: AdminReportDateButton(
+                    label: AppLocalizations.of(context)!.admin2_reportsFrom,
+                    date: from,
+                    onPressed: onPickFrom)),
+            const SizedBox(width: 12),
+            Expanded(
+                child: AdminReportDateButton(
+                    label: AppLocalizations.of(context)!.admin2_reportsTo,
+                    date: to,
+                    onPressed: onPickTo)),
+          ],
+        ),
+        if (rangeError != null) ...[
+          const SizedBox(height: 8),
+          Text(rangeError!,
+              style: TextStyle(
+                  fontSize: 12,
+                  color: Theme.of(context).colorScheme.error)),
+        ],
+      ],
+    );
+  }
+}
+
 /// The reports CSV export button: disabled while there is no report
 /// (the empty state above explains why), and a share failure shows
 /// an error instead of failing silently.
@@ -113,13 +165,58 @@ class AdminReportExportButton extends StatelessWidget {
               } catch (_) {
                 if (context.mounted) {
                   AppFeedback.showError(
-                      context, 'Could not share the CSV file.');
+                      context,
+                      AppLocalizations.of(context)!
+                          .admin2_reportsCsvShareFailed);
                 }
               }
             },
       style: FilledButton.styleFrom(minimumSize: const Size(0, 48)),
       icon: const Icon(Icons.download_rounded, size: 18),
-      label: const Text('Export CSV'),
+      label: Text(AppLocalizations.of(context)!.admin2_reportsExportCsv),
+    );
+  }
+}
+
+/// The reports PDF summary button (F-m12, plan E4): the same KPIs
+/// and breakdowns as the screen, as a PDF file. Disabled while
+/// there is no report. Shares through the same path as the CSV, so
+/// on web it downloads (SharePlus falls back to a download when
+/// the browser cannot share files).
+class AdminReportPdfButton extends StatelessWidget {
+  const AdminReportPdfButton({super.key, required this.report});
+
+  final AdminReport? report;
+
+  @override
+  Widget build(BuildContext context) {
+    final r = report;
+    final l10n = AppLocalizations.of(context);
+    return OutlinedButton.icon(
+      onPressed: r == null
+          ? null
+          : () async {
+              try {
+                final pdf = await AdminSupportDataSource.reportPdf(r);
+                await SharePlus.instance.share(ShareParams(
+                  files: [
+                    XFile.fromData(
+                      pdf,
+                      name: 'rentalhub-report.pdf',
+                      mimeType: 'application/pdf',
+                    ),
+                  ],
+                ));
+              } catch (_) {
+                if (context.mounted) {
+                  AppFeedback.showError(context,
+                      l10n?.adminAuditPdfFailed ?? 'Could not share the PDF file.');
+                }
+              }
+            },
+      style: OutlinedButton.styleFrom(minimumSize: const Size(0, 48)),
+      icon: const Icon(Icons.picture_as_pdf_rounded, size: 18),
+      label: Text(l10n?.adminAuditExportPdf ?? 'Export PDF'),
     );
   }
 }

@@ -106,7 +106,7 @@ class _OwnerSubscriptionPlanDetailViewState
                     style: Theme.of(context)
                         .textTheme
                         .headlineMedium
-                        ?.copyWith(fontWeight: FontWeight.w900),
+                        ?.copyWith(fontWeight: FontWeight.w700),
                   ),
                   Text(
                     _yearly

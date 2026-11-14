@@ -104,7 +104,7 @@ class PricingCustomRates extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: Text(l10n.ratesCustomTitle, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
+              child: Text(l10n.ratesCustomTitle, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
             ),
             TextButton.icon(
               onPressed: () => _showAddDialog(context),
@@ -123,7 +123,7 @@ class PricingCustomRates extends StatelessWidget {
             return Card(
               margin: const EdgeInsets.only(bottom: 8),
               child: ListTile(
-                title: Text(rate.name, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w800)),
+                title: Text(rate.name, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w600)),
                 subtitle: Text('${_periodLabel(l10n, rate.period)} • ${l10n.amountRs(formatRs(rate.pricePkr))}'),
                 trailing: IconButton(
                   icon: const Icon(Icons.delete_outline_rounded),

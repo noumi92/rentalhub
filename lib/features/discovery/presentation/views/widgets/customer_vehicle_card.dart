@@ -97,7 +97,7 @@ class CustomerVehicleCard extends StatelessWidget {
                       Expanded(
                         child: Text(
                           '${v.displayName} (${v.year})',
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -130,7 +130,7 @@ class CustomerVehicleCard extends StatelessWidget {
                       Expanded(
                         child: Text(
                           l10n.vehicleSelfRate(formatRs(v.rates.daily24)),
-                          style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800),
+                          style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -139,7 +139,7 @@ class CustomerVehicleCard extends StatelessWidget {
                       Flexible(
                         child: Text(
                           l10n.vehicleDriverRate(formatRs(v.rates.daily24 + (v.withDriverSurchargePkr ?? 0))),
-                          style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.orangeTextFor(Theme.of(context).brightness)),
+                          style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500, color: AppColors.orangeTextFor(Theme.of(context).brightness)),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           textAlign: TextAlign.end,
@@ -170,7 +170,7 @@ class CustomerVehicleCard extends StatelessWidget {
           const SizedBox(width: 3),
           Text(
             label,
-            style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600),
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w500),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),

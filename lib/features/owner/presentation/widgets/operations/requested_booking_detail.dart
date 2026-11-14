@@ -123,7 +123,7 @@ class _RequestedBookingDetailState extends State<RequestedBookingDetail> {
                     style: Theme.of(context)
                         .textTheme
                         .labelMedium
-                        ?.copyWith(fontWeight: FontWeight.w700),
+                        ?.copyWith(fontWeight: FontWeight.w500),
                   ),
                 ),
               ],

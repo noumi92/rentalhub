@@ -45,7 +45,7 @@ class CnicCaptureSection extends StatelessWidget {
             label,
             style: Theme.of(
               context,
-            ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700),
+            ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 6),
           Stack(

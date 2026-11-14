@@ -205,7 +205,7 @@ class _OwnerFixedRoutesViewState extends State<OwnerFixedRoutesView> {
                                   child: ListTile(
                                     leading: const Icon(Icons.route_rounded),
                                     title: Text(r.displayName,
-                                        style: const TextStyle(fontWeight: FontWeight.w800)),
+                                        style: const TextStyle(fontWeight: FontWeight.w600)),
                                     subtitle: Text(l10n.fixedRouteSummary(r.distanceKm, formatRs(r.fixedPricePkr))),
                                     trailing: Row(
                                       mainAxisSize: MainAxisSize.min,

@@ -94,7 +94,7 @@ class _BookingRequestChecklistState extends State<BookingRequestChecklist> {
               style: Theme.of(context)
                   .textTheme
                   .titleSmall
-                  ?.copyWith(fontWeight: FontWeight.w800),
+                  ?.copyWith(fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 8),
             _row(context, l10n.bookingCheckKyc, _kycOnFile),
@@ -127,7 +127,7 @@ class _BookingRequestChecklistState extends State<BookingRequestChecklist> {
               label,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     fontWeight:
-                        isChecked ? FontWeight.w800 : FontWeight.w600,
+                        FontWeight.w500,
                   ),
             ),
           ),

@@ -57,7 +57,7 @@ class EmptyRadarState extends StatelessWidget {
                 ? l10n.emptyRadarNoShopsTitle
                 : l10n.emptyRadarNoShops(currentRadiusKm.toInt()),
             textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 6),
           Text(

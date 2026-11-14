@@ -31,7 +31,7 @@ class AdminDetailSection extends StatelessWidget {
         children: [
           Text(title,
               style: const TextStyle(
-                  fontSize: 14, fontWeight: FontWeight.w800)),
+                  fontSize: 14)),
           const SizedBox(height: 6),
           ...shown.map((l) => Padding(
                 padding: const EdgeInsets.only(bottom: 3),

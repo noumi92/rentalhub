@@ -39,7 +39,7 @@ class ContractFareTable extends StatelessWidget {
           Text(
             l10n.contractFareTitle,
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w600,
                 ),
           ),
           const SizedBox(height: 12),
@@ -72,14 +72,12 @@ class ContractFareTable extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: bold ? FontWeight.w800 : FontWeight.w600,
+                      fontWeight: bold ? FontWeight.w500 : FontWeight.w400,
                     )),
           ),
           const SizedBox(width: 8),
           Text(value,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w800,
-                  )),
+              style: Theme.of(context).textTheme.bodyMedium),
         ],
       ),
     );

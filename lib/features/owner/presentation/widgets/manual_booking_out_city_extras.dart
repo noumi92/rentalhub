@@ -30,7 +30,7 @@ class ManualBookingOutCityExtras extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (nightStay > 0)
-              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Flexible(child: Text(l10n.bookingFareNightStay(nights))), Text(l10n.amountRs(formatRs(nightStay)), style: const TextStyle(fontWeight: FontWeight.w800))]),
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Flexible(child: Text(l10n.bookingFareNightStay(nights))), Text(l10n.amountRs(formatRs(nightStay)), style: const TextStyle(fontWeight: FontWeight.w500))]),
             Text(tollsIncluded ? l10n.bookingFareTollsIncluded : l10n.bookingFareTollsCustomer, style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
           ],
         ),

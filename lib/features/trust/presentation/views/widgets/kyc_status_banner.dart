@@ -68,7 +68,7 @@ class KycStatusBanner extends StatelessWidget {
               Expanded(
                 child: Text(
                   l10n.kycStatus(_label(l10n)),
-                  style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700),
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500),
                 ),
               ),
             ],

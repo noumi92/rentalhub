@@ -38,7 +38,7 @@ class DualSignaturePadWidget extends StatelessWidget {
           Text(
             l10n.handoverSignaturesTitle,
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w800,
+              fontWeight: FontWeight.w600,
             ),
           ),
           const SizedBox(height: 12),
@@ -70,7 +70,7 @@ class DualSignaturePadWidget extends StatelessWidget {
             style: Theme.of(context)
                 .textTheme
                 .titleSmall
-                ?.copyWith(fontWeight: FontWeight.w800)),
+                ?.copyWith(fontWeight: FontWeight.w600)),
         Text(subtitle,
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
                 color: Theme.of(context).colorScheme.onSurfaceVariant)),

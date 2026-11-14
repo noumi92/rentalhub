@@ -86,7 +86,7 @@ class _DisputeDetailSheetState extends State<DisputeDetailSheet> {
                   child: Text(
                     d.category.isEmpty ? l10n.disputesFallbackTitle : d.category,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w900,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
@@ -100,7 +100,7 @@ class _DisputeDetailSheetState extends State<DisputeDetailSheet> {
                   child: Text(
                     DisputeListTile.statusLabel(l10n, d.status),
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      fontWeight: FontWeight.w800,
+                      fontWeight: FontWeight.w500,
                       color: color,
                     ),
                   ),
@@ -143,7 +143,7 @@ class _DisputeDetailSheetState extends State<DisputeDetailSheet> {
               Text(
                 l10n.disputesResolvedNote,
                 style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
           ],

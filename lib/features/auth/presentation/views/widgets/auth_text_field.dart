@@ -31,7 +31,7 @@ class AuthTextField extends StatelessWidget {
         Text(
           label,
           style: Theme.of(context).textTheme.labelMedium?.copyWith(
-            fontWeight: FontWeight.w700,
+            fontWeight: FontWeight.w500,
             color: scheme.onSurface,
           ),
         ),

@@ -76,7 +76,7 @@ class OnboardingDocumentTile extends StatelessWidget {
                   Text(
                     title,
                     style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                      fontWeight: FontWeight.w800,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                   Text(
@@ -96,8 +96,11 @@ class OnboardingDocumentTile extends StatelessWidget {
               Text(
                 hasFile ? l10n.onboardingDocReady : l10n.onboardingDocUpload,
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  fontWeight: FontWeight.w800,
-                  color: hasFile ? AppColors.successOnContainerFor(Theme.of(context).brightness) : AppColors.secondary,
+                  fontWeight: FontWeight.w500,
+                  // Item 4: the "Upload" state was AppColors.secondary
+                  // as text (3.29:1) — the orange text token is 5.18:1
+                  // in light, 7.92:1 in dark.
+                  color: hasFile ? AppColors.successOnContainerFor(Theme.of(context).brightness) : AppColors.orangeTextFor(Theme.of(context).brightness),
                 ),
               ),
           ],

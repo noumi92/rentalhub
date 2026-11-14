@@ -142,7 +142,7 @@ class _LoginViewState extends State<LoginView> {
                     'RentalHub',
                     style: Theme.of(context).textTheme.displayLarge?.copyWith(
                       color: Colors.white,
-                      fontWeight: FontWeight.w900,
+                      fontWeight: FontWeight.w700,
                       letterSpacing: -0.5,
                     ),
                   ),
@@ -177,7 +177,7 @@ class _LoginViewState extends State<LoginView> {
                               child: Text(
                                 l10n?.authWelcome ?? 'Welcome to RentalHub',
                                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                  fontWeight: FontWeight.w800,
+                                  fontWeight: FontWeight.w600,
                                 ),
                               ),
                             ),

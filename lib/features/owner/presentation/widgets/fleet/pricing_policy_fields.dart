@@ -63,9 +63,7 @@ class PricingPolicyFields extends StatelessWidget {
         ),
         const SizedBox(height: 14),
         Text(l10n.pricingFuelPolicy,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w700,
-            )),
+            style: Theme.of(context).textTheme.bodyMedium),
         const SizedBox(height: 6),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 14),

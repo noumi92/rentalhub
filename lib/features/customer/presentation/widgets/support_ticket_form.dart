@@ -13,8 +13,19 @@ import '../../../../core/theme/card_decoration.dart';
 /// not exist yet, so tickets are write-only — the UI says plainly that
 /// the team will reach the customer on WhatsApp, rather than faking a
 /// reply thread in the app.
+///
+/// F-M19: when the form is opened from a shop or booking context,
+/// the caller passes [shopId] / [bookingId] and the ticket is filed
+/// with the link, so the admin inbox can open the shop or purchase
+/// it is about. The plain support screen passes neither.
 class SupportTicketForm extends StatefulWidget {
-  const SupportTicketForm({super.key});
+  const SupportTicketForm({super.key, this.shopId, this.bookingId});
+
+  /// The shop this ticket is about, when filed from a shop context.
+  final String? shopId;
+
+  /// The booking this ticket is about, when filed from a trip.
+  final String? bookingId;
 
   @override
   State<SupportTicketForm> createState() => _SupportTicketFormState();
@@ -61,6 +72,8 @@ class _SupportTicketFormState extends State<SupportTicketForm> {
         'message': message,
         'status': 'open',
         'priority': _priority,
+        if (widget.shopId != null) 'shopId': widget.shopId,
+        if (widget.bookingId != null) 'bookingId': widget.bookingId,
         'createdAt': DateTime.now().toIso8601String(),
       });
       if (mounted) {
@@ -93,7 +106,7 @@ class _SupportTicketFormState extends State<SupportTicketForm> {
         children: [
           Text(
             l10n.supportMessageTitle,
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 4),
           Text(
@@ -158,7 +171,7 @@ class _SupportTicketFormState extends State<SupportTicketForm> {
                 Expanded(
                   child: Text(
                     l10n.supportMessageSent,
-                    style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w600, color: AppColors.successTextFor(Theme.of(context).brightness)),
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500, color: AppColors.successTextFor(Theme.of(context).brightness)),
                   ),
                 ),
               ],

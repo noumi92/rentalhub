@@ -4,9 +4,13 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/utils/responsive.dart';
 import '../../../../core/widgets/app_feedback.dart';
+import '../../../../l10n/app_localizations.dart';
+import '../../../../l10n/app_localizations_en.dart';
+import 'admin_permission_check.dart';
 import 'shop_fleet_photos.dart';
 import '../../../discovery/data/models/shop_model.dart';
 import '../../data/datasources/admin_shops_data_source.dart';
+import '../../domain/admin_permissions.dart';
 
 /// The B1 review sheet for one shop application: the 6-item checklist
 /// (computed from the shop document), the KYC documents and bank
@@ -41,24 +45,32 @@ class _ShopApplicationDetailSheetState
   Future<void> _decide(String decision) async {
     final reason = _reasonController.text.trim();
     if (decision != 'approved' && reason.isEmpty) {
-      AppFeedback.showError(
-          context, 'A reason is required — the owner sees it.');
+      AppFeedback.showError(context,
+          (AppLocalizations.of(context) ?? AppLocalizationsEn()).admin2_shopAppReasonRequired);
       return;
     }
+    // F-C1: super admin + operations only (decideVendor). A role
+    // that lacks it is blocked here; an unknown role proceeds and
+    // the data source decides (fail closed).
+    final check = await AdminPermissionCheck.check(
+        context, AdminPermission.decideVendor);
+    if (!check.proceed) return;
     setState(() => _isWorking = true);
     final synced = await sl<AdminShopsDataSource>().decideShopApplication(
       shopId: widget.shop.shopId,
       decision: decision,
       reason: reason,
+      adminRole: check.role,
     );
     if (!mounted) return;
     if (synced) {
-      AppFeedback.showSuccess(context, 'Decision saved.');
+      AppFeedback.showSuccess(
+          context, (AppLocalizations.of(context) ?? AppLocalizationsEn()).admin2_decisionSaved);
       widget.onDecided();
       Navigator.of(context).pop();
     } else {
-      AppFeedback.showError(
-          context, 'Could not reach the server — try again.');
+      AppFeedback.showError(context,
+          (AppLocalizations.of(context) ?? AppLocalizationsEn()).admin2_serverUnreachableRetry);
       setState(() => _isWorking = false);
     }
   }
@@ -66,7 +78,8 @@ class _ShopApplicationDetailSheetState
   @override
   Widget build(BuildContext context) {
     final shop = widget.shop;
-    final checklist = ShopApplicationChecklist.fromShop(shop);
+    final l10n = (AppLocalizations.of(context) ?? AppLocalizationsEn());
+    final checklist = ShopApplicationChecklist.fromShop(shop, l10n);
     return DraggableScrollableSheet(
       initialChildSize: 0.85,
       minChildSize: 0.5,
@@ -81,21 +94,21 @@ class _ShopApplicationDetailSheetState
             Text(shop.shopName,
                 style: const TextStyle(
                     fontSize: 18,
-                    fontWeight: FontWeight.w900,
+                    fontWeight: FontWeight.w600,
                     )),
             const SizedBox(height: 4),
             Text('${shop.city} • ${shop.address}',
                 style:
                     TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurfaceVariant)),
             Text(
-                'Owner: ${shop.ownerName ?? '—'} • ${shop.phoneNumber} • CNIC ${shop.cnicNumber ?? '—'}',
+                l10n.admin2_shopAppOwner(shop.ownerName ?? '—',
+                    shop.phoneNumber, shop.cnicNumber ?? '—'),
                 style:
                     TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurfaceVariant)),
             const SizedBox(height: 16),
-            Text('Checklist — ${checklist.doneCount} of 6 complete',
+            Text(l10n.admin2_shopAppChecklist(checklist.doneCount),
                 style: const TextStyle(
                     fontSize: 14,
-                    fontWeight: FontWeight.w800,
                     )),
             const SizedBox(height: 8),
             ...checklist.items.map((item) => Padding(
@@ -117,22 +130,21 @@ class _ShopApplicationDetailSheetState
                   ),
                 )),
             const SizedBox(height: 16),
-            _section('KYC documents on file',
+            _section(l10n.admin2_shopAppKycDocs,
                 shop.kycDocuments.isEmpty
-                    ? ['None uploaded yet.']
+                    ? [l10n.admin2_shopDetailNoneUploaded]
                     : shop.kycDocuments.keys.toList()),
-            _section('Bank / wallet accounts',
+            _section(l10n.admin2_shopDetailBankAccounts,
                 shop.bankAccounts.isEmpty
-                    ? ['None on file.']
+                    ? [l10n.admin2_shopDetailNoneOnFile]
                     : shop.bankAccounts
                         .map((a) =>
-                            '${a['type'] ?? 'account'} — ${a['title'] ?? a['account'] ?? ''}')
+                            '${a['type'] ?? l10n.admin2_shopDetailAccountType} — ${a['title'] ?? a['account'] ?? ''}')
                         .toList()),
             if (shop.fleetPhotos.isNotEmpty) ...[
-              const Text('Fleet photos',
+              Text(l10n.admin2_shopAppFleetPhotos,
                   style: TextStyle(
                       fontSize: 14,
-                      fontWeight: FontWeight.w800,
                       )),
               const SizedBox(height: 8),
               ShopFleetPhotos(photoUrls: shop.fleetPhotos),
@@ -142,8 +154,7 @@ class _ShopApplicationDetailSheetState
               controller: _reasonController,
               maxLines: 2,
               decoration: InputDecoration(
-                hintText:
-                    'Reason (required to ask for more info or reject — the owner sees it)',
+                hintText: l10n.admin2_shopAppReasonLabel,
                 filled: true,
                 fillColor:
                     Theme.of(context).colorScheme.surfaceContainerHighest,
@@ -186,11 +197,23 @@ class _ShopApplicationDetailSheetState
               width: double.infinity,
               child: TextButton.icon(
                 icon: const Icon(Icons.call_rounded, size: 18),
-                label: const Text('Call owner'),
+                label: Text(l10n.admin2_shopAppCallOwner),
                 onPressed: shop.phoneNumber.isEmpty
                     ? null
-                    : () =>
-                        launchUrl(Uri.parse('tel:${shop.phoneNumber}')),
+                    : () async {
+                        // AD-m16: check the launch result — a failed
+                        // tel: launch used to fail silently.
+                        final opened = await launchUrl(
+                            Uri.parse('tel:${shop.phoneNumber}'));
+                        if (!opened) {
+                          if (!context.mounted) return;
+                          AppFeedback.showError(
+                              context,
+                              AppLocalizations.of(context)
+                                      ?.admin2_callFailed ??
+                                  'Could not open the dialer.');
+                        }
+                      },
               ),
             ),
           ],
@@ -202,14 +225,14 @@ class _ShopApplicationDetailSheetState
   Widget _approveButton() => FilledButton(
         onPressed: _isWorking ? null : () => _decide('approved'),
         style: FilledButton.styleFrom(minimumSize: const Size(0, 48)),
-        child: const Text('Approve'),
+        child: Text((AppLocalizations.of(context) ?? AppLocalizationsEn()).admin2_approve),
       );
 
   Widget _infoButton() => OutlinedButton(
         onPressed:
             _isWorking ? null : () => _decide('info_requested'),
         style: OutlinedButton.styleFrom(minimumSize: const Size(0, 48)),
-        child: const Text('Ask for more info'),
+        child: Text((AppLocalizations.of(context) ?? AppLocalizationsEn()).admin2_shopAppAskInfo),
       );
 
   Widget _rejectButton() => OutlinedButton(
@@ -217,7 +240,7 @@ class _ShopApplicationDetailSheetState
         style: OutlinedButton.styleFrom(
             foregroundColor: Colors.red.shade700,
             minimumSize: const Size(0, 48)),
-        child: const Text('Reject'),
+        child: Text((AppLocalizations.of(context) ?? AppLocalizationsEn()).admin2_reject),
       );
 
   Widget _section(String title, List<String> lines) {
@@ -229,7 +252,6 @@ class _ShopApplicationDetailSheetState
           Text(title,
               style: const TextStyle(
                   fontSize: 14,
-                  fontWeight: FontWeight.w800,
                   )),
           const SizedBox(height: 6),
           ...lines.map((l) => Padding(

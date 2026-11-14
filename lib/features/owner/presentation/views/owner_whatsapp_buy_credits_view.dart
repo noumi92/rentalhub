@@ -124,7 +124,7 @@ class _OwnerWhatsappBuyCreditsViewState
                                           .textTheme
                                           .titleMedium
                                           ?.copyWith(
-                                              fontWeight: FontWeight.w900)),
+                                              fontWeight: FontWeight.w600)),
                                   if (pack.bestValue)
                                     Container(
                                       padding: const EdgeInsets.symmetric(
@@ -140,8 +140,7 @@ class _OwnerWhatsappBuyCreditsViewState
                                               .labelSmall
                                               ?.copyWith(
                                                   color: Colors.white,
-                                                  fontWeight:
-                                                      FontWeight.w900)),
+                                                  fontWeight: FontWeight.w500)),
                                     ),
                                 ],
                               ),
@@ -161,7 +160,7 @@ class _OwnerWhatsappBuyCreditsViewState
                       style: Theme.of(context)
                           .textTheme
                           .titleSmall
-                          ?.copyWith(fontWeight: FontWeight.w800)),
+                          ?.copyWith(fontWeight: FontWeight.w600)),
                   const SizedBox(height: 4),
                   Text(l10n.creditsFreePlanFree,
                       style: Theme.of(context).textTheme.bodyMedium),

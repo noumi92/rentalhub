@@ -55,26 +55,35 @@ class _AdminApkDownloadCardState extends State<AdminApkDownloadCard> {
   }
 
   Future<void> _resolveAndLoad() async {
-    var role = widget.adminRole;
-    if (role == null) {
-      if (widget.resolveAdminRole != null) {
-        role = await widget.resolveAdminRole!();
-      } else {
-        User? user;
-        try {
-          user = FirebaseAuth.instance.currentUser;
-        } catch (_) {}
-        if (user != null) {
-          role = await AdminSession.resolveAdminRole(user);
+    // AD-M5: a throw in the role resolution used to leave the card
+    // hidden with no feedback (and _loading stuck true). It is
+    // caught here; the card simply stays hidden for a non-super-admin
+    // or an unresolvable role.
+    try {
+      var role = widget.adminRole;
+      if (role == null) {
+        if (widget.resolveAdminRole != null) {
+          role = await widget.resolveAdminRole!();
+        } else {
+          User? user;
+          try {
+            user = FirebaseAuth.instance.currentUser;
+          } catch (_) {}
+          if (user != null) {
+            role = await AdminSession.resolveAdminRole(user);
+          }
         }
       }
+      if (!mounted) return;
+      if (!AdminPermissions.can(role, AdminPermission.downloadApk)) {
+        setState(() => _loading = false);
+        return;
+      }
+      setState(() => _visible = true);
+      await _load();
+    } catch (_) {
+      if (mounted) setState(() => _loading = false);
     }
-    if (!mounted) return;
-    if (!AdminPermissions.can(role, AdminPermission.downloadApk)) {
-      return;
-    }
-    setState(() => _visible = true);
-    await _load();
   }
 
   Future<void> _load() async {
@@ -90,6 +99,16 @@ class _AdminApkDownloadCardState extends State<AdminApkDownloadCard> {
         _loading = false;
       });
     } on FormatException {
+      if (!mounted) return;
+      setState(() {
+        _info = null;
+        _loading = false;
+        _failed = true;
+      });
+    } catch (_) {
+      // AD-M5: any other failure (network, timeout, …) used to
+      // escape uncaught and spin the loader forever. It now lands
+      // on the failed state, where the retry button already exists.
       if (!mounted) return;
       setState(() {
         _info = null;

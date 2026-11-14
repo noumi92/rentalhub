@@ -174,7 +174,7 @@ class _OwnerCnicReviewViewState extends State<OwnerCnicReviewView> {
     );
   }
 
-  Widget _section(String title) => Padding(padding: const EdgeInsets.only(top: 4, bottom: 10), child: Text(title, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)));
+  Widget _section(String title) => Padding(padding: const EdgeInsets.only(top: 4, bottom: 10), child: Text(title, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)));
 
   Widget _photoThumb(String path) => Expanded(child: ClipRRect(borderRadius: BorderRadius.circular(12), child: Image.file(File(path), height: 120, fit: BoxFit.cover)));
 

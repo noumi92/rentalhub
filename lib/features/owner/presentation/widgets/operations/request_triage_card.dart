@@ -58,7 +58,7 @@ class RequestTriageCard extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                        fontWeight: FontWeight.w800,
+                        fontWeight: FontWeight.w500,
                       ),
                 ),
               ),
@@ -79,7 +79,7 @@ class RequestTriageCard extends StatelessWidget {
                   // Urdu has no case, and the label reads as a word).
                   _statusLabel(l10n, booking.status),
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        fontWeight: FontWeight.w900,
+                        fontWeight: FontWeight.w500,
                         color: AppColors.orangeTextFor(
                             Theme.of(context).brightness),
                       ),
@@ -104,7 +104,7 @@ class RequestTriageCard extends StatelessWidget {
                     Text(
                       booking.customerName ?? l10n.requestsCustomerFallback,
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                            fontWeight: FontWeight.w800,
+                            fontWeight: FontWeight.w600,
                           ),
                     ),
                     Text(
@@ -130,7 +130,7 @@ class RequestTriageCard extends StatelessWidget {
                   style: Theme.of(context)
                       .textTheme
                       .bodyMedium
-                      ?.copyWith(fontWeight: FontWeight.w800),
+                      ,
                 ),
               ),
               const SizedBox(width: 8),
@@ -147,7 +147,7 @@ class RequestTriageCard extends StatelessWidget {
                     // C5: grouped rupees, via the localised wrapper.
                     l10n.amountRs(formatRs(booking.totalAmount)),
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w900,
+                        fontWeight: FontWeight.w600,
                         // OW-m34: the amount is orange text, not the
                         // secondary teal — same token as the status
                         // label above it.
@@ -173,7 +173,7 @@ class RequestTriageCard extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w500,
                 ),
           ),
           const SizedBox(height: 14),

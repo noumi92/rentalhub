@@ -31,6 +31,13 @@ class ReviewRemoteDataSource {
 
   /// The customer's rating of the showroom and vehicle for [bookingId].
   /// Returns true when the review reached Firestore.
+  ///
+  /// F-M15 (admin audit 2026-11-14): an `edit_requested` review is
+  /// editable again from the rate-trip screen, and submitting the
+  /// edit clears the request (`moderation_status` back to 'visible')
+  /// — the edit IS the compliance. A `warned` review needs no
+  /// action: the warning is shown to the customer on the same
+  /// screen, and re-submitting it is a no-op for moderation.
   Future<bool> submitCustomerReview({
     required String bookingId,
     required String shopId,
@@ -52,6 +59,23 @@ class ReviewRemoteDataSource {
       'customerComment': (comment ?? '').trim(),
       'customerRatedAt': DateTime.now().toIso8601String(),
     };
+    if (_inMemory[bookingId]?['moderation_status'] == 'edit_requested') {
+      data['moderation_status'] = 'visible';
+      data['moderation_reason'] = '';
+      data['edited_after_moderation_request'] = true;
+    }
+    final firestore = _resolvedFirestore;
+    if (firestore != null) {
+      try {
+        final doc =
+            await firestore.collection('reviews').doc(bookingId).get();
+        if (doc.data()?['moderation_status'] == 'edit_requested') {
+          data['moderation_status'] = 'visible';
+          data['moderation_reason'] = '';
+          data['edited_after_moderation_request'] = true;
+        }
+      } catch (_) {}
+    }
     return _save(bookingId, data, serverTimestamp: true);
   }
 
@@ -168,6 +192,23 @@ class ReviewRemoteDataSource {
   /// contract is unit-testable without Firestore.
   static bool isHiddenReview(Map<String, dynamic> review) =>
       review['moderation_status'] == 'hidden';
+
+  /// F-M15: the moderation states the admin sets actually mean
+  /// something to the customer now. `edit_requested` re-opens the
+  /// rate-trip screen for editing (see CustomerRateTripView);
+  /// `warned` shows a warning banner on the same screen. Both are
+  /// read from the raw review map the customer already loads.
+  static String moderationStatusOf(Map<String, dynamic> review) =>
+      (review['moderation_status'] as String?) ?? 'visible';
+
+  static bool isEditRequested(Map<String, dynamic> review) =>
+      moderationStatusOf(review) == 'edit_requested';
+
+  static bool isWarned(Map<String, dynamic> review) =>
+      moderationStatusOf(review) == 'warned';
+
+  static String moderationReasonOf(Map<String, dynamic> review) =>
+      (review['moderation_reason'] as String?) ?? '';
 
   /// A review counts unless the admin explicitly hid it.
   static bool _isNotHidden(Map<String, dynamic> review) =>

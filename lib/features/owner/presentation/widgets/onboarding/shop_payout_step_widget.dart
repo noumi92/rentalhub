@@ -48,7 +48,7 @@ class ShopPayoutStepWidget extends StatelessWidget {
       children: [
         Text(
           l10n.onboardingPayoutTitle,
-          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900),
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 4),
         Text(
@@ -124,7 +124,7 @@ class ShopPayoutStepWidget extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(l10n.onboardingBankTitle, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
+                          Text(l10n.onboardingBankTitle, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
                           Text(l10n.onboardingBankSubtitle, style: Theme.of(context).textTheme.labelSmall),
                         ],
                       ),
@@ -139,7 +139,7 @@ class ShopPayoutStepWidget extends StatelessWidget {
                 if (bankEnabled) ...[
                   const Divider(height: 20),
                   // Bank Name Dropdown
-                  Text(l10n.onboardingSelectBank, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800)),
+                  Text(l10n.onboardingSelectBank, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500)),
                   const SizedBox(height: 6),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 14),
@@ -153,7 +153,7 @@ class ShopPayoutStepWidget extends StatelessWidget {
                         dropdownColor: Theme.of(context).colorScheme.surface,
                         value: selectedBankName,
                         isExpanded: true,
-                        items: pakistaniBanks.map((b) => DropdownMenuItem(value: b, child: Text(b, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)))).toList(),
+                        items: pakistaniBanks.map((b) => DropdownMenuItem(value: b, child: Text(b, style: Theme.of(context).textTheme.bodyMedium))).toList(),
                         onChanged: (v) {
                           if (v != null) onBankNameChanged(v);
                         },
@@ -163,11 +163,11 @@ class ShopPayoutStepWidget extends StatelessWidget {
                   const SizedBox(height: 12),
 
                   // Account Number / IBAN
-                  Text(l10n.onboardingAccountNumber, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800)),
+                  Text(l10n.onboardingAccountNumber, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500)),
                   const SizedBox(height: 6),
                   TextField(
                     controller: bankAccountController,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800),
+                    style: Theme.of(context).textTheme.bodyMedium,
                     decoration: InputDecoration(
                       hintText: l10n.onboardingIbanHint,
                       filled: true,
@@ -180,11 +180,11 @@ class ShopPayoutStepWidget extends StatelessWidget {
                   const SizedBox(height: 12),
 
                   // Account Title
-                  Text(l10n.onboardingAccountTitleBusiness, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800)),
+                  Text(l10n.onboardingAccountTitleBusiness, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500)),
                   const SizedBox(height: 6),
                   TextField(
                     controller: bankAccountTitle,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800),
+                    style: Theme.of(context).textTheme.bodyMedium,
                     decoration: InputDecoration(
                       hintText: l10n.onboardingShopNameHint,
                       filled: true,
@@ -244,7 +244,7 @@ class ShopPayoutStepWidget extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(title, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
+                      Text(title, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
                       Text(subtitle, style: Theme.of(context).textTheme.labelSmall),
                     ],
                   ),
@@ -257,7 +257,7 @@ class ShopPayoutStepWidget extends StatelessWidget {
               TextField(
                 controller: accountController,
                 keyboardType: TextInputType.phone,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800),
+                style: Theme.of(context).textTheme.bodyMedium,
                 decoration: InputDecoration(
                   labelText: accountLabel,
                   hintText: hintAccount,
@@ -271,7 +271,7 @@ class ShopPayoutStepWidget extends StatelessWidget {
               const SizedBox(height: 10),
               TextField(
                 controller: titleController,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800),
+                style: Theme.of(context).textTheme.bodyMedium,
                 decoration: InputDecoration(
                   labelText: l10n.onboardingAccountTitle,
                   hintText: l10n.onboardingTitleHint,

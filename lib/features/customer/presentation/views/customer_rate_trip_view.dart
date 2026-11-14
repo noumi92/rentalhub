@@ -42,6 +42,13 @@ class _CustomerRateTripViewState extends State<CustomerRateTripView> {
   bool _isSubmitting = false;
   bool _loading = true;
   bool _alreadyRated = false;
+  // F-M15: the admin's "Ask to edit" / "Warn" states are read here.
+  // An edit-requested review re-opens for editing (submitting it
+  // clears the request); a warned review shows the warning above
+  // the read-only review.
+  bool _editRequested = false;
+  bool _warned = false;
+  String _moderationReason = '';
 
   @override
   void initState() {
@@ -63,6 +70,15 @@ class _CustomerRateTripViewState extends State<CustomerRateTripView> {
             _vehicleRating = (review['vehicleRating'] as num?)?.toInt() ?? 0;
             _commentController.text =
                 (review['customerComment'] as String?) ?? '';
+            _moderationReason =
+                ReviewRemoteDataSource.moderationReasonOf(review);
+            _warned = ReviewRemoteDataSource.isWarned(review);
+            // F-M15: an edit request re-opens the form — pre-filled,
+            // but the stars/comment are editable and submit shows.
+            if (ReviewRemoteDataSource.isEditRequested(review)) {
+              _editRequested = true;
+              _alreadyRated = false;
+            }
           });
         }
       }
@@ -143,10 +159,27 @@ class _CustomerRateTripViewState extends State<CustomerRateTripView> {
                                 .textTheme
                                 .labelMedium
                                 ?.copyWith(
-                                    fontWeight: FontWeight.w700,
+                                    fontWeight: FontWeight.w500,
                                     color: AppColors.orangeTextFor(Theme.of(context).brightness)),
                           ),
                           const SizedBox(height: 12),
+                          if (_editRequested || _warned)
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 12),
+                              child: Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Text(
+                                  (_editRequested ? l10n.rateEditRequestedTitle : l10n.rateWarnedTitle) +
+                                      (_moderationReason.isNotEmpty ? ': $_moderationReason' : ''),
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                ),
+                              ),
+                            ),
                           if (_alreadyRated)
                             Padding(
                               padding: EdgeInsets.only(bottom: 12),
@@ -155,7 +188,7 @@ class _CustomerRateTripViewState extends State<CustomerRateTripView> {
                                 style: Theme.of(context)
                                     .textTheme
                                     .labelMedium
-                                    ?.copyWith(fontWeight: FontWeight.w700),
+                                    ?.copyWith(fontWeight: FontWeight.w500),
                               ),
                             ),
                           StarRatingBar(

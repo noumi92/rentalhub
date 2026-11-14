@@ -54,8 +54,8 @@ class _ShopCarsViewState extends State<ShopCarsView> {
       _hasError = false;
     });
     try {
-      final vehicles =
-          await sl<FleetRemoteDataSource>().getShopVehicles(widget.shopId);
+      final vehicles = await sl<FleetRemoteDataSource>()
+          .getCustomerShopVehicles(widget.shopId);
       if (mounted) {
         setState(() {
           _loaded = vehicles;
@@ -133,7 +133,7 @@ class _ShopCarsViewState extends State<ShopCarsView> {
                         .labelMedium
                         ?.copyWith(
                             fontWeight:
-                                isSelected ? FontWeight.w800 : FontWeight.w600,
+                                FontWeight.w500,
                             color: isSelected
                                 ? AppColors.surfaceLight
                                 : Theme.of(context).colorScheme.onSurface),

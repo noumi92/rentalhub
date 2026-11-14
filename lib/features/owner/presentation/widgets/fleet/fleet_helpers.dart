@@ -6,6 +6,7 @@ import '../../../../../core/di/injection_container.dart';
 import '../../../../../core/routing/route_names.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../bookings/data/datasources/booking_remote_data_source.dart';
+import '../../../../bookings/domain/entities/booking_entity.dart';
 
 /// Audit §5 (P2-5): the approval gate for adding vehicles. The shop's
 /// `verificationStatus` is read from the `shops` doc; while it is
@@ -78,17 +79,39 @@ class FleetRentalLookup {
   static Future<Map<String, DateTime>> activeRentalsByVehicle(String shopId) async {
     try {
       final bookings = await sl<BookingRemoteDataSource>().getShopBookings(shopId);
-      final result = <String, DateTime>{};
-      for (final b in bookings) {
-        if (b.status != 'active') continue;
-        final existing = result[b.vehicleId];
-        if (existing == null || b.returnTime.isAfter(existing)) {
-          result[b.vehicleId] = b.returnTime;
-        }
-      }
-      return result;
+      return activeRentalsFromBookings(bookings);
     } catch (_) {
       return {};
+    }
+  }
+
+  /// The pure form of [activeRentalsByVehicle], over an
+  /// already-loaded list — for live subscribers that recompute on
+  /// every bookings emission instead of re-fetching.
+  static Map<String, DateTime> activeRentalsFromBookings(
+      List<BookingEntity> bookings) {
+    final result = <String, DateTime>{};
+    for (final b in bookings) {
+      if (b.status != 'active') continue;
+      final existing = result[b.vehicleId];
+      if (existing == null || b.returnTime.isAfter(existing)) {
+        result[b.vehicleId] = b.returnTime;
+      }
+    }
+    return result;
+  }
+
+  /// Live updates (Item 2): the same map as a stream — a booking
+  /// submit or status change re-emits it. Falls back to an empty
+  /// map when the data source is unavailable.
+  static Stream<Map<String, DateTime>> streamActiveRentalsByVehicle(
+      String shopId) {
+    try {
+      return sl<BookingRemoteDataSource>()
+          .streamShopBookings(shopId)
+          .map(activeRentalsFromBookings);
+    } catch (_) {
+      return Stream.value(const <String, DateTime>{});
     }
   }
 }

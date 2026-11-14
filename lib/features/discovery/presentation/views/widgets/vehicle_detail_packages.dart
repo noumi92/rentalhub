@@ -31,7 +31,7 @@ class VehicleDetailPackages extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(l10n.vehicleChoosePackage,
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900)),
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
         const SizedBox(height: 10),
         // Equal-height package cards: without IntrinsicHeight the
         // two cards differ in height when one label wraps at 360px /
@@ -98,7 +98,7 @@ class VehicleDetailPackages extends StatelessWidget {
                   withDriver
                       ? l10n.vehicleDriverPackageDetail(formatRs(v.extraHourPkr ?? 0), formatRs(v.rates.outOfCityDaily ?? 0))
                       : l10n.vehicleDepositCnic(formatRs(v.securityDepositPkr ?? 0)),
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600, height: 1.3),
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w500, height: 1.3),
                 ),
               ),
             ],

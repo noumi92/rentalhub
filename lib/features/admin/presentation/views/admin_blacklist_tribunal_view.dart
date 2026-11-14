@@ -6,6 +6,8 @@ import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/responsive.dart';
 import '../../../../core/widgets/app_state_views.dart';
 import '../../data/datasources/admin_people_data_source.dart';
+import '../../../../l10n/app_localizations.dart';
+import '../../../../l10n/app_localizations_en.dart';
 import '../widgets/admin_shell.dart';
 import '../widgets/admin_status_chip.dart';
 import '../widgets/blacklist_appeal_dialog.dart';
@@ -61,6 +63,7 @@ class _AdminBlacklistTribunalViewState extends State<AdminBlacklistTribunalView>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = (AppLocalizations.of(context) ?? AppLocalizationsEn());
     // Mobile-first: the shared AdminShell (not the 260dp desktop
     // sidebar this view used to build itself) so the tribunal fits a
     // 360px phone; the shell supplies the navigation drawer on
@@ -74,21 +77,21 @@ class _AdminBlacklistTribunalViewState extends State<AdminBlacklistTribunalView>
       // the 41-character title wraps to two lines in the fixed
       // 70dp shared header and overflows at 2.0x text scale.
       title: compact
-          ? 'Blacklist tribunal'
-          : 'National Rental Fraud & Blacklist Tribunal',
-      subtitle: 'Central arbitration bench for inter-showroom disputes',
+          ? l10n.admin2_tribunalTitle
+          : l10n.admin2_tribunalSubtitle,
+      subtitle: l10n.admin2_tribunalSubtitle2,
       onRefresh: _loadTribunalCases,
       child: _isLoading
           ? const AppLoadingState()
           : _hasError
               ? AppErrorState(
-                  message: 'Could not load the blacklist cases.',
+                  message: l10n.admin2_tribunalLoadFailed,
                   onRetry: _loadTribunalCases,
                 )
               : _cases.isEmpty
-                  ? const AppEmptyState(
-                      title: 'No blacklist cases',
-                      message: 'Tribunal records will appear here.',
+                  ? AppEmptyState(
+                      title: l10n.admin2_tribunalEmptyTitle,
+                      message: l10n.admin2_tribunalEmptyHint,
                     )
                   : SingleChildScrollView(
                       padding: EdgeInsets.all(compact ? 16 : 24),
@@ -103,6 +106,7 @@ class _AdminBlacklistTribunalViewState extends State<AdminBlacklistTribunalView>
   }
 
   Widget _caseCard(AdminBlacklistRecord record, bool compact) {
+    final l10n = (AppLocalizations.of(context) ?? AppLocalizationsEn());
     final item = record.entity;
     // Raw Colors.red / successTextFor (#10B981, 2.54:1) as 10px text
     // failed contrast; the shared tones are the dark, AA-passing ones.
@@ -115,15 +119,15 @@ class _AdminBlacklistTribunalViewState extends State<AdminBlacklistTribunalView>
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(
-        item.isActive ? 'ACTIVE BLACKLIST' : 'REVERSED / CLEARED',
-        style: TextStyle(fontWeight: FontWeight.w900, fontSize: 10, color: toneColor),
+        item.isActive ? l10n.admin2_tribunalActive : l10n.admin2_tribunalReversed,
+        style: TextStyle(fontWeight: FontWeight.w500, fontSize: 10, color: toneColor),
       ),
     );
     final idLine = Row(
       children: [
         Icon(item.isActive ? Icons.gavel_rounded : Icons.check_circle_rounded, color: toneColor, size: 22),
         const SizedBox(width: 8),
-        Expanded(child: Text('${item.blacklistId} • CNIC: ${item.cnicNumber}', overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14))),
+        Expanded(child: Text(l10n.admin2_tribunalCaseLine(item.blacklistId, item.cnicNumber), overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 14))),
       ],
     );
     return Container(
@@ -149,21 +153,26 @@ class _AdminBlacklistTribunalViewState extends State<AdminBlacklistTribunalView>
               children: [Expanded(child: idLine), badge],
             ),
           const SizedBox(height: 8),
-          Text('Reason: ${item.reasonCategory}', style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12.5)),
+          Text(l10n.admin2_tribunalReason(item.reasonCategory), style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12.5)),
           const SizedBox(height: 4),
           Text(item.description, style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant)),
           const SizedBox(height: 4),
-          Text('Reported by Showroom: ${item.reportedByShopId}', style: TextStyle(fontSize: 11, fontStyle: FontStyle.italic, color: Theme.of(context).colorScheme.onSurfaceVariant)),
+          Text(l10n.admin2_tribunalReportedBy(item.reportedByShopId), style: TextStyle(fontSize: 11, fontStyle: FontStyle.italic, color: Theme.of(context).colorScheme.onSurfaceVariant)),
           if (!item.isActive && item.revertedReason != null) ...[
             const SizedBox(height: 8),
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(color: Theme.of(context).colorScheme.surfaceContainerHighest, borderRadius: BorderRadius.circular(6)),
-              child: Text('Reversal Justification: ${item.revertedReason}', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600)),
+              child: Text(l10n.admin2_tribunalReversal(item.revertedReason ?? ''), style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500)),
             ),
           ],
           if (item.isActive) ...[
             const Divider(height: 20),
+            // F-m6: "Decide appeal" only when an appeal actually
+            // exists (appealStatus 'pending'). With no appeal the
+            // same dialog opens as "Review flag" — the revert path
+            // stays available, but nothing claims an appeal was
+            // filed when it was not.
             if (compact)
               SizedBox(
                 width: double.infinity,
@@ -172,7 +181,11 @@ class _AdminBlacklistTribunalViewState extends State<AdminBlacklistTribunalView>
                   style: OutlinedButton.styleFrom(
                       foregroundColor: AppColors.successTextFor(Theme.of(context).brightness),
                       minimumSize: const Size(0, 48)),
-                  child: const Text('Decide appeal — Keep or Remove', style: TextStyle(fontWeight: FontWeight.w400, fontSize: 12)),
+                  child: Text(
+                      record.appealStatus == 'pending'
+                          ? l10n.admin2_tribunalDecideAppeal
+                          : l10n.admin2_tribunalReviewFlag,
+                      style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 12)),
                 ),
               )
             else
@@ -184,15 +197,19 @@ class _AdminBlacklistTribunalViewState extends State<AdminBlacklistTribunalView>
                     style: OutlinedButton.styleFrom(
                         foregroundColor: AppColors.successTextFor(Theme.of(context).brightness),
                         minimumSize: const Size(0, 48)),
-                    child: const Text('Decide appeal — Keep or Remove', style: TextStyle(fontWeight: FontWeight.w400, fontSize: 12)),
+                    child: Text(
+                        record.appealStatus == 'pending'
+                            ? l10n.admin2_tribunalDecideAppeal
+                            : l10n.admin2_tribunalReviewFlag,
+                        style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 12)),
                   ),
                 ],
               ),
           ],
           if (record.appealStatus != 'none') ...[
             const SizedBox(height: 8),
-            Text('Appeal: ${record.appealStatus} — ${record.appealReason}',
-                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700)),
+            Text(l10n.admin2_tribunalAppealLine(record.appealStatus, record.appealReason),
+                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500)),
           ],
         ],
       ),

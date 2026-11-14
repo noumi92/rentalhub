@@ -103,8 +103,8 @@ class _ShopDetailViewState extends State<ShopDetailView> {
   Future<void> _loadVehicles() async {
     if (mounted) setState(() => _hasError = false);
     try {
-      final list =
-          await sl<FleetRemoteDataSource>().getShopVehicles(widget.shop.shopId);
+      final list = await sl<FleetRemoteDataSource>()
+          .getCustomerShopVehicles(widget.shop.shopId);
       if (mounted) {
         setState(() {
           _vehicles = list;

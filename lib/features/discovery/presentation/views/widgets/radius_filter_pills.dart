@@ -29,7 +29,7 @@ class RadiusFilterPills extends StatelessWidget {
           const SizedBox(width: 6),
           Text(
             l10n.radiusLabel,
-            style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800),
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500),
           ),
           const SizedBox(width: 8),
           ..._radii.map((km) {
@@ -62,7 +62,7 @@ class RadiusFilterPills extends StatelessWidget {
                   ),
                   child: Text(
                     '${km.toInt()} km',
-                    style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: isSelected ? Colors.white : Theme.of(context).colorScheme.onSurface),
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500, color: isSelected ? Colors.white : Theme.of(context).colorScheme.onSurface),
                   ),
                 ),
               ),

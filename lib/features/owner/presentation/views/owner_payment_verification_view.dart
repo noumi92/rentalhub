@@ -142,7 +142,7 @@ class _OwnerPaymentVerificationViewState
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.end,
-              style: const TextStyle(fontWeight: FontWeight.w800),
+              style: const TextStyle(fontWeight: FontWeight.w500),
             ),
           ),
         ],
@@ -202,7 +202,7 @@ class _OwnerPaymentVerificationViewState
                       title: l10n.paymentAccountsDirect,
                     ),
                     const SizedBox(height: 14),
-                    Text(l10n.paymentVerificationScreenshotTitle, style: Theme.of(context) .textTheme .titleSmall ?.copyWith(fontWeight: FontWeight.w800)),
+                    Text(l10n.paymentVerificationScreenshotTitle, style: Theme.of(context) .textTheme .titleSmall ?.copyWith(fontWeight: FontWeight.w600)),
                     const SizedBox(height: 8),
                     if (b.paymentProofUrl != null)
                       ProofImageViewer(imageUrl: b.paymentProofUrl!)

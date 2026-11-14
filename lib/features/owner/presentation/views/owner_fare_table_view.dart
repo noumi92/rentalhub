@@ -141,7 +141,7 @@ class _OwnerFareTableViewState extends State<OwnerFareTableView> {
                         children: [
                           const Icon(Icons.local_shipping_outlined, size: 20),
                           const SizedBox(width: 10),
-                          Expanded(child: Text(l10n.fareFreeDelivery, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700))),
+                          Expanded(child: Text(l10n.fareFreeDelivery, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500))),
                         ],
                       ),
                     ),
@@ -169,9 +169,9 @@ class _OwnerFareTableViewState extends State<OwnerFareTableView> {
                       ...rows.map((p) => Card(
                             margin: const EdgeInsets.only(bottom: 8),
                             child: ListTile(
-                              title: Text(_packageTitle(l10n, p.label), style: const TextStyle(fontWeight: FontWeight.w800)),
+                              title: Text(_packageTitle(l10n, p.label), style: const TextStyle(fontWeight: FontWeight.w600)),
                               subtitle: Text(l10n.fareKmIncluded(p.kmIncluded)),
-                              trailing: Text(l10n.amountRs(formatRs(p.pricePkr)), style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900)),
+                              trailing: Text(l10n.amountRs(formatRs(p.pricePkr)), style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
                             ),
                           )),
                     const SizedBox(height: 8),

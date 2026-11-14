@@ -13,7 +13,7 @@ class BookingEntity extends Equatable {
   final int advanceRequired;
   final int advancePaid;
   final int remainingBalance;
-  final String status; // 'requested' | 'approved' | 'payment_submitted' | 'paid' | 'active' | 'completed' | 'rejected' | 'cancelled'
+  final String status; // 'requested' | 'approved' | 'payment_submitted' | 'paid' | 'active' | 'disputed' | 'completed' | 'rejected' | 'cancelled'
   final String? paymentProofUrl;
   final String? transactionId;
   final String? vehicleName;

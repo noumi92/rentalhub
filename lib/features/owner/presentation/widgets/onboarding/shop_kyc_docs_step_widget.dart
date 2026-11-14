@@ -74,7 +74,7 @@ class ShopKycDocsStepWidget extends StatelessWidget {
         // 1 Picture as Shop Header (Back Camera / Gallery / Remove)
         Text(
           l10n.onboardingHeaderBannerTitle,
-          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900),
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 4),
         Text(
@@ -94,7 +94,7 @@ class ShopKycDocsStepWidget extends StatelessWidget {
         // 3 Fleet Photos (Back Camera / Gallery / Remove)
         Text(
           l10n.onboardingFleetPhotosTitle,
-          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900),
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 4),
         Text(
@@ -137,7 +137,7 @@ class ShopKycDocsStepWidget extends StatelessWidget {
         // Legal & KYC Docs
         Text(
           l10n.onboardingIdentityTitle,
-          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900),
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 4),
         Text(

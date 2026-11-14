@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
@@ -27,6 +29,9 @@ class _CustomerWalletViewState extends State<CustomerWalletView> {
   // E2: a load failure used to render an empty ledger silently; it
   // now renders an error state with retry.
   bool _hasError = false;
+  // Live updates (Item 2): the subscription behind the balance and
+  // the ledger.
+  StreamSubscription<CustomerWalletSummary>? _walletSub;
 
   @override
   void initState() {
@@ -34,20 +39,45 @@ class _CustomerWalletViewState extends State<CustomerWalletView> {
     _load();
   }
 
-  Future<void> _load() async {
+  @override
+  void dispose() {
+    _walletSub?.cancel();
+    super.dispose();
+  }
+
+  /// Live updates (Item 2): the wallet follows the wallet
+  /// service's [CustomerWalletService.watch] stream — a booking
+  /// submit, an owner payment verify, or a deposit change updates
+  /// the balance and ledger while the wallet is open. The
+  /// error-state retry re-runs this method, which re-subscribes.
+  void _load() {
+    _walletSub?.cancel();
     if (mounted) setState(() => _hasError = false);
     try {
       final service = CustomerWalletService(
         bookings: sl<BookingRemoteDataSource>(),
         deposits: sl<SecurityDepositDataSource>(),
       );
-      final summary = await service.load(CustomerWalletService.currentUid());
-      if (mounted) {
-        setState(() {
-          _summary = summary;
-          _isLoading = false;
-        });
-      }
+      _walletSub = service
+          .watch(CustomerWalletService.currentUid())
+          .listen(
+        (summary) {
+          if (mounted) {
+            setState(() {
+              _summary = summary;
+              _isLoading = false;
+            });
+          }
+        },
+        onError: (_) {
+          if (mounted) {
+            setState(() {
+              _hasError = true;
+              _isLoading = false;
+            });
+          }
+        },
+      );
     } catch (_) {
       if (mounted) {
         setState(() {
@@ -100,7 +130,7 @@ class _CustomerWalletViewState extends State<CustomerWalletView> {
                                 .textTheme
                                 .labelMedium
                                 ?.copyWith(
-                                    fontWeight: FontWeight.w600,
+                                    fontWeight: FontWeight.w500,
                                     color: AppColors.primaryContainer),
                           ),
                           const SizedBox(height: 6),
@@ -116,7 +146,7 @@ class _CustomerWalletViewState extends State<CustomerWalletView> {
                                   .textTheme
                                   .displayLarge
                                   ?.copyWith(
-                                      fontWeight: FontWeight.w900,
+                                      fontWeight: FontWeight.w700,
                                       color: Colors.white),
                               iconColor: AppColors.primaryContainer,
                               iconSize: 28,
@@ -149,7 +179,7 @@ class _CustomerWalletViewState extends State<CustomerWalletView> {
                       style: Theme.of(context)
                           .textTheme
                           .titleSmall
-                          ?.copyWith(fontWeight: FontWeight.w800),
+                          ?.copyWith(fontWeight: FontWeight.w600),
                     ),
                     const SizedBox(height: 10),
                     WalletLedger(
@@ -203,7 +233,7 @@ class _EscrowPill extends StatelessWidget {
             style: Theme.of(context)
                 .textTheme
                 .labelMedium
-                ?.copyWith(fontWeight: FontWeight.w800, color: Colors.white),
+                ?.copyWith(fontWeight: FontWeight.w500, color: Colors.white),
           ),
         ],
       ),

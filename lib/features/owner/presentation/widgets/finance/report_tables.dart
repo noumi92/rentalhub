@@ -58,7 +58,7 @@ class _ReportTable extends StatelessWidget {
       children: [
         Text(title,
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w600,
                 )),
         const SizedBox(height: 8),
         if (rows.isEmpty)
@@ -71,9 +71,7 @@ class _ReportTable extends StatelessWidget {
             title: Text(row.$1, maxLines: 1, overflow: TextOverflow.ellipsis),
             subtitle: Text(l10n.reportCarBookings(row.$2)),
             trailing: Text(l10n.amountRs(formatRs(row.$3)),
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w800,
-                    )),
+                style: Theme.of(context).textTheme.bodyMedium),
           ),
       ],
     );

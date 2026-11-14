@@ -48,9 +48,7 @@ class QrCameraErrorState extends StatelessWidget {
                 ? l10n.qrCameraDenied
                 : l10n.qrCameraUnavailable(error.errorCode.message),
             textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
+            style: Theme.of(context).textTheme.bodyMedium,
           ),
           const SizedBox(height: 6),
           Text(

@@ -63,13 +63,13 @@ class OwnerVehiclePublishedView extends StatelessWidget {
                     const SizedBox(height: 18),
                     Text(
                       l10n.vehiclePublishedHeading(vehicle.displayName),
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 8),
                     Text(
                       l10n.fleetDailyRate(formatRs(vehicle.rates.daily24)),
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 8),

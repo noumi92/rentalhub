@@ -25,6 +25,8 @@ class ShopModel extends ShopEntity {
     super.plan,
     super.suspended,
     super.suspensionReason,
+    super.rejectionReason,
+    super.adminNote,
     super.hasRealLocation,
     super.hasRealRating,
     super.hasRealAvailableCount,
@@ -91,6 +93,8 @@ class ShopModel extends ShopEntity {
       plan: d['plan'] as String? ?? 'free',
       suspended: d['suspended'] as bool? ?? false,
       suspensionReason: d['suspension_reason'] as String?,
+      rejectionReason: d['rejection_reason'] as String?,
+      adminNote: d['admin_note'] as String?,
       hasRealLocation: hasRealLocation,
       hasRealRating: d['rating'] is num,
       hasRealAvailableCount: d['available_count'] is num,
@@ -128,6 +132,8 @@ class ShopModel extends ShopEntity {
       'suspended': suspended,
       if (suspensionReason != null)
         'suspension_reason': suspensionReason,
+      if (rejectionReason != null) 'rejection_reason': rejectionReason,
+      if (adminNote != null) 'admin_note': adminNote,
     };
   }
 }

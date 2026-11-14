@@ -37,7 +37,7 @@ class CarPnlCard extends StatelessWidget {
                   ? '${l10n.pnlLoss} • ${l10n.financeNetAmount(formatRs(pnl.net))}'
                   : l10n.financeNetAmount(formatRs(pnl.net)),
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w900,
+                  fontWeight: FontWeight.w600,
                   color: isLoss
                       ? AppColors.dangerTextFor(Brightness.dark)
                       : Colors.white)),
@@ -90,7 +90,7 @@ class CarPnlTransferRow extends StatelessWidget {
                     style: Theme.of(context)
                         .textTheme
                         .bodyMedium
-                        ?.copyWith(fontWeight: FontWeight.w800)),
+                        ),
                 Text(
                     '${DateFormat.yMMMd(locale).format(t.createdAt)} • $accountName',
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
@@ -103,7 +103,6 @@ class CarPnlTransferRow extends StatelessWidget {
           Text(
             l10n.financeLedgerAmount(isIncome ? '+' : '−', formatRs(t.amountPkr)),
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w900,
                 color: isIncome
                     ? AppColors.successTextFor(Theme.of(context).brightness)
                     : AppColors.dangerTextFor(Theme.of(context).brightness)),

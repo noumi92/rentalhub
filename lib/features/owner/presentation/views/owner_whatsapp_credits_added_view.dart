@@ -72,7 +72,7 @@ class OwnerWhatsappCreditsAddedView extends StatelessWidget {
                     style: Theme.of(context)
                         .textTheme
                         .titleLarge
-                        ?.copyWith(fontWeight: FontWeight.w900),
+                        ?.copyWith(fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 8),
                   Text(
@@ -140,7 +140,7 @@ class _Row extends StatelessWidget {
               style: Theme.of(context)
                   .textTheme
                   .bodyMedium
-                  ?.copyWith(fontWeight: FontWeight.w800)),
+                  ),
         ],
       ),
     );

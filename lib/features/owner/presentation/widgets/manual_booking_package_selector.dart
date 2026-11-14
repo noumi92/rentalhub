@@ -44,9 +44,7 @@ class ManualBookingVehicleDropdown extends StatelessWidget {
             return DropdownMenuItem(
               value: v,
               child: Text('${v.make} ${v.model} (${v.year}) - ${v.plateNumber}',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      )),
+                  style: Theme.of(context).textTheme.bodyMedium),
             );
           }).toList(),
           onChanged: onChanged,
@@ -365,7 +363,7 @@ class _ManualBookingPackageSelectorState
                   backgroundColor:
                       Theme.of(context).colorScheme.surfaceContainerHighest,
                   labelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w500,
                         color: selected
                             ? Colors.white
                             : Theme.of(context).colorScheme.onSurface,
@@ -382,7 +380,7 @@ class _ManualBookingPackageSelectorState
               style: Theme.of(context)
                   .textTheme
                   .bodyMedium
-                  ?.copyWith(fontWeight: FontWeight.w700)),
+                  ),
           const SizedBox(height: 6),
           if (_loadingRoutes)
             const Center(child: CircularProgressIndicator())
@@ -422,7 +420,7 @@ class _ManualBookingPackageSelectorState
                 style: Theme.of(context)
                     .textTheme
                     .bodyMedium
-                    ?.copyWith(fontWeight: FontWeight.w800)),
+                    ),
             Text(
                 l10n.fixedRouteSummary(widget.selectedFixedRoute!.distanceKm,
                     formatRs(widget.selectedFixedRoute!.fixedPricePkr)),
@@ -433,9 +431,7 @@ class _ManualBookingPackageSelectorState
         Row(
           children: [
             Text(l10n.withDriver,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    )),
+                style: Theme.of(context).textTheme.bodyMedium),
             Switch(
               value: widget.isWithDriver,
               activeThumbColor: AppColors.secondary,
@@ -448,7 +444,7 @@ class _ManualBookingPackageSelectorState
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w900,
+                      fontWeight: FontWeight.w600,
                     ),
               ),
             ),
@@ -504,7 +500,7 @@ class ManualBookingStepIndicator extends StatelessWidget {
                               .textTheme
                               .labelSmall
                               ?.copyWith(
-                                fontWeight: FontWeight.w800,
+                                fontWeight: FontWeight.w500,
                                 color: i + 1 == currentStep
                                     ? Colors.white
                                     : colorScheme.onSurfaceVariant,
@@ -519,8 +515,8 @@ class ManualBookingStepIndicator extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
                         fontWeight: i + 1 == currentStep
-                            ? FontWeight.w800
-                            : FontWeight.w600,
+                            ? FontWeight.w500
+                            : FontWeight.w500,
                         color: i + 1 == currentStep
                             ? colorScheme.onSurface
                             : colorScheme.onSurfaceVariant,

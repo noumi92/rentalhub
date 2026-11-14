@@ -224,7 +224,7 @@ class _OwnerNotificationsViewState extends State<OwnerNotificationsView> {
                       style: Theme.of(context)
                           .textTheme
                           .bodyMedium
-                          ?.copyWith(fontWeight: FontWeight.w800)),
+                          ),
                   Text(n.body,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: scheme.onSurfaceVariant)),

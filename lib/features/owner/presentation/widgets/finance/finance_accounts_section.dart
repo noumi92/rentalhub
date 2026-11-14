@@ -32,7 +32,7 @@ class FinanceAccountsSection extends StatelessWidget {
           children: [
             Text(l10n.financeAccountsTitle,
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w600,
                 )),
             TextButton.icon(
               icon: const Icon(Icons.add_rounded, size: 18),
@@ -65,16 +65,14 @@ class FinanceAccountsSection extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(a.name,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.w800,
-                        )),
+                        style: Theme.of(context).textTheme.bodyMedium),
                     Text(_accountTypeLabel(l10n, a.type),
                         style: Theme.of(context).textTheme.labelSmall),
                   ],
                 ),
                 Text(l10n.amountRs(formatRs(balance)),
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w900,
+                      fontWeight: FontWeight.w500,
                     )),
               ],
             ),

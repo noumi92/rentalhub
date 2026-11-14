@@ -60,9 +60,7 @@ class FuelGaugeWidget extends StatelessWidget {
                         gaugeLabel,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              fontWeight: FontWeight.w700,
-                            ),
+                        style: Theme.of(context).textTheme.bodyMedium,
                       ),
                     ),
                   ],
@@ -80,7 +78,7 @@ class FuelGaugeWidget extends StatelessWidget {
                           activeSegments, (activeSegments / 8 * 100).round()) ??
                       '$activeSegments / 8 Bars (${(activeSegments / 8 * 100).round()}%)',
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        fontWeight: FontWeight.w800,
+                        fontWeight: FontWeight.w500,
                       ),
                 ),
               ),
@@ -146,7 +144,7 @@ class FuelGaugeWidget extends StatelessWidget {
               Text(
                 'E',
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      fontWeight: FontWeight.w900,
+                      fontWeight: FontWeight.w500,
                       color:
                           AppColors.dangerTextFor(Theme.of(context).brightness),
                     ),
@@ -154,25 +152,25 @@ class FuelGaugeWidget extends StatelessWidget {
               Text(
                 '1/4',
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w500,
                     ),
               ),
               Text(
                 '1/2',
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.w500,
                     ),
               ),
               Text(
                 '3/4',
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w500,
                     ),
               ),
               Text(
                 'F',
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      fontWeight: FontWeight.w900,
+                      fontWeight: FontWeight.w500,
                       color: AppColors.successTextFor(
                           Theme.of(context).brightness),
                     ),

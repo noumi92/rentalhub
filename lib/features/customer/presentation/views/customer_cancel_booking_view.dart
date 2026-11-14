@@ -121,7 +121,6 @@ class _CustomerCancelBookingViewState extends State<CustomerCancelBookingView> {
                                   .textTheme
                                   .bodyMedium
                                   ?.copyWith(
-                                      fontWeight: FontWeight.w800,
                                       color: AppColors.dangerTextFor(
                                           Theme.of(context).brightness))),
                           const SizedBox(height: 6),
@@ -148,7 +147,7 @@ class _CustomerCancelBookingViewState extends State<CustomerCancelBookingView> {
                         style: Theme.of(context)
                             .textTheme
                             .titleSmall
-                            ?.copyWith(fontWeight: FontWeight.w800)),
+                            ?.copyWith(fontWeight: FontWeight.w600)),
                     const SizedBox(height: 8),
                     Material(
                       color: Theme.of(context).colorScheme.surface,
@@ -174,8 +173,7 @@ class _CustomerCancelBookingViewState extends State<CustomerCancelBookingView> {
                                     style: Theme.of(context)
                                         .textTheme
                                         .bodyMedium
-                                        ?.copyWith(
-                                            fontWeight: FontWeight.w600)),
+                                        ),
                               );
                             }).toList(),
                           ),

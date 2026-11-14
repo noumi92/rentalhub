@@ -80,8 +80,8 @@ class _AdminCarsViewState extends State<AdminCarsView> {
     final l10n = AppLocalizations.of(context)!;
     return AdminShell(
       activeRoute: RouteNames.adminCars,
-      title: 'Cars',
-      subtitle: 'Every vehicle listing, with its review state',
+      title: l10n.admin2_navCars,
+      subtitle: l10n.admin2_carsSubtitle,
       onRefresh: _load,
       child: Padding(
         // Mobile-first: 16dp on a phone, 24dp on desktop (same rule
@@ -96,7 +96,7 @@ class _AdminCarsViewState extends State<AdminCarsView> {
               controller: _searchController,
               onChanged: (_) => setState(() {}),
               decoration: InputDecoration(
-                hintText: 'Search by car or plate number…',
+                hintText: l10n.admin2_carsSearchHint,
                 prefixIcon: const Icon(Icons.search_rounded),
                 filled: true,
                 fillColor:
@@ -117,11 +117,11 @@ class _AdminCarsViewState extends State<AdminCarsView> {
                 runSpacing: 8,
                 children: [
                   for (final entry in {
-                    'all': 'All',
-                    'pending': 'Pending',
-                    'approved': 'Approved',
-                    'hidden': 'Hidden',
-                    'rejected': 'Rejected',
+                    'all': l10n.filterAll,
+                    'pending': l10n.pending,
+                    'approved': l10n.statusApproved,
+                    'hidden': l10n.admin2_hidden,
+                    'rejected': l10n.statusRejected,
                   }.entries)
                     ChoiceChip(
                       label: Text(entry.value),
@@ -138,14 +138,13 @@ class _AdminCarsViewState extends State<AdminCarsView> {
                   ? const AppLoadingState()
                   : _hasError
                       ? AppErrorState(
-                          message: 'Could not load the cars.',
+                          message: l10n.admin2_carsLoadFailed,
                           onRetry: _load,
                         )
                       : _visible.isEmpty
-                          ? const AppEmptyState(
-                              title: 'No cars match',
-                              message:
-                                  'The list reads the vehicles collection.',
+                          ? AppEmptyState(
+                              title: l10n.admin2_carsEmptyTitle,
+                              message: l10n.admin2_carsEmptyHint,
                             )
                           : ListView.separated(
                           itemCount: _visible.length,
@@ -175,10 +174,9 @@ class _AdminCarsViewState extends State<AdminCarsView> {
                                     '${car.make} ${car.model} (${car.year})',
                                     style: const TextStyle(
                                         fontSize: 14,
-                                        fontWeight: FontWeight.w800,
                                         )),
                                 subtitle: Text(
-                                  '${car.plateNumber} • ${l10n.fleetDailyRate(formatRs(car.rates.daily24))} • ${car.status}',
+                                  '${car.plateNumber} • ${l10n.fleetDailyRate(formatRs(car.rates.daily24))} • ${humanizeStatus(car.status, l10n)}',
                                   style: TextStyle(
                                       fontSize: 12,
                                       color: Theme.of(context).colorScheme.onSurfaceVariant),
@@ -211,6 +209,8 @@ class _AdminCarsViewState extends State<AdminCarsView> {
       'rejected' => AdminStatusTone.danger,
       _ => AdminStatusTone.neutral,
     };
-    return AdminStatusChip(label: humanizeStatus(review), tone: tone);
+    return AdminStatusChip(
+        label: humanizeStatus(review, AppLocalizations.of(context)),
+        tone: tone);
   }
 }

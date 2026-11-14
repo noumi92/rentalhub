@@ -58,14 +58,14 @@ class ActiveTripFloatingCard extends StatelessWidget {
                     const SizedBox(width: 6),
                     Text(
                       booking.status.toUpperCase(),
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.successTextFor(Theme.of(context).brightness)),
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w500, color: AppColors.successTextFor(Theme.of(context).brightness)),
                     ),
                   ],
                 ),
               ),
               Text(
                 l10n.bookingIdLabel(booking.bookingId),
-                style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.secondary),
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500, color: AppColors.orangeTextFor(Theme.of(context).brightness)),
               ),
             ],
           ),
@@ -88,7 +88,7 @@ class ActiveTripFloatingCard extends StatelessWidget {
                   children: [
                     Text(
                       booking.vehicleName ?? l10n.activeRentalCar,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
                     ),
                     const SizedBox(height: 2),
                     Text(
@@ -111,7 +111,7 @@ class ActiveTripFloatingCard extends StatelessWidget {
                       style: Theme.of(context).textTheme.labelSmall),
                   Text(
                     l10n.amountRs(formatRs(booking.totalAmount)),
-                    style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900),
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w500),
                   ),
                 ],
               ),
@@ -122,7 +122,10 @@ class ActiveTripFloatingCard extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                   decoration: BoxDecoration(
-                    color: AppColors.secondary,
+                    // Item 4: white on AppColors.secondary is 3.29:1 —
+                    // orangeFill is 5.18:1 (same pattern as the radius
+                    // pills, CU-M1).
+                    color: AppColors.orangeFill,
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Row(
@@ -130,7 +133,7 @@ class ActiveTripFloatingCard extends StatelessWidget {
                     children: [
                       Text(
                         l10n.viewPassQr,
-                        style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: Colors.white),
+                        style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500, color: Colors.white),
                       ),
                       SizedBox(width: 4),
                       Icon(Icons.arrow_forward_rounded,

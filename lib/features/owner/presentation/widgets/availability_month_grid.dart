@@ -150,7 +150,7 @@ class AvailabilityMonthGrid extends StatelessWidget {
                   Text('$day',
                       style: TextStyle(
                           fontWeight:
-                              isSelected ? FontWeight.w900 : FontWeight.w600,
+                              isSelected ? FontWeight.w600 : FontWeight.w500,
                           color: numberColorFor(brightness, state,
                               isSelected: isSelected))),
                   if (isToday)
@@ -197,7 +197,7 @@ class AvailabilityMonthGrid extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w800,
+                        fontWeight: FontWeight.w600,
                       )),
             ),
             IconButton(

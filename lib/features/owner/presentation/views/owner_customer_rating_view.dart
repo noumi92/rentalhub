@@ -155,7 +155,7 @@ class _OwnerCustomerRatingViewState extends State<OwnerCustomerRatingView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(l10n.customersRatingFeedbackTitle, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
+          Text(l10n.customersRatingFeedbackTitle, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
           const SizedBox(height: 12),
           _starRow(l10n.customersRatingPunctuality, l10n.customersRatingPunctualityHint, _punctualityRating, (r) => setState(() => _punctualityRating = r)),
           const SizedBox(height: 10),
@@ -206,7 +206,7 @@ class _OwnerCustomerRatingViewState extends State<OwnerCustomerRatingView> {
             SwitchListTile(
               activeThumbColor: Theme.of(context).colorScheme.error,
               contentPadding: EdgeInsets.zero,
-              title: Text(l10n.customersRatingFlagTitle, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800, color: Theme.of(context).colorScheme.error)),
+              title: Text(l10n.customersRatingFlagTitle, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.error)),
               subtitle: Text( widget.booking.customerCnic == null || widget.booking.customerCnic!.isEmpty ? l10n.customersRatingFlagNoCnic : l10n.customersRatingFlagVisible, style: Theme.of(context).textTheme.labelSmall),
               value: _flagForBlacklist,
               onChanged: widget.booking.customerCnic == null ||
@@ -216,7 +216,7 @@ class _OwnerCustomerRatingViewState extends State<OwnerCustomerRatingView> {
             ),
             if (_flagForBlacklist) ...[
               const SizedBox(height: 10),
-              Text(l10n.customersRatingReasonLabel, style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700)),
+              Text(l10n.customersRatingReasonLabel, style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w500)),
               const SizedBox(height: 6),
               DropdownButtonFormField<String>(
                 initialValue: _selectedReason,

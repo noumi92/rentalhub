@@ -41,7 +41,7 @@ class ReportEarningsChart extends StatelessWidget {
       children: [
         Text(l10n.reportEarningsLast6Months,
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w600,
                 )),
         const SizedBox(height: 8),
         BarsChartWidget(

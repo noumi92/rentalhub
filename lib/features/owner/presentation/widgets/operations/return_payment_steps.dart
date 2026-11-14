@@ -113,9 +113,7 @@ class _ReturnPaymentStepsState extends State<ReturnPaymentSteps> {
                 Expanded(
                   child: Text(
                     l10n.returnRefundRecorded(formatRs(_refundAmount)),
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
+                    style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ),
               ],
@@ -181,9 +179,7 @@ class _ReturnPaymentStepsState extends State<ReturnPaymentSteps> {
           ),
           const SizedBox(width: 8),
           Text(value,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w800,
-                  )),
+              style: Theme.of(context).textTheme.bodyMedium),
         ],
       ),
     );

@@ -32,7 +32,7 @@ class ContractShareSheet {
               Text(
                 sheetL10n.contractShareTitle,
                 style: Theme.of(sheetContext).textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w800,
+                      fontWeight: FontWeight.w600,
                     ),
               ),
               const SizedBox(height: 8),

@@ -183,7 +183,7 @@ class _CustomerSosViewState extends State<CustomerSosView> {
                     Text(
                       l10n.sosPress,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w900,
+                          fontWeight: FontWeight.w600,
                           color: AppColors.dangerTextFor(
                               Theme.of(context).brightness)),
                     ),

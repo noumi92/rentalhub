@@ -189,7 +189,7 @@ class _ReviewBookingRequestViewState extends State<ReviewBookingRequestView> {
                             style: Theme.of(context)
                                 .textTheme
                                 .bodyMedium
-                                ?.copyWith(fontWeight: FontWeight.w700),
+                                ,
                           ),
                           const SizedBox(height: 8),
                           TextField(

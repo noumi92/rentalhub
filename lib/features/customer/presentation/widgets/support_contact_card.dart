@@ -39,7 +39,7 @@ class SupportContactCard extends StatelessWidget {
             Icon(icon, color: color, size: 22),
             const SizedBox(height: 8),
             Text(title,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800)),
+                style: Theme.of(context).textTheme.bodyMedium),
             Text(subtitle,
                 style: Theme.of(context).textTheme.labelSmall),
           ],

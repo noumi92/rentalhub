@@ -31,7 +31,7 @@ class RateTripFeedbackCard extends StatelessWidget {
         children: [
           Text(
             l10n.rateFeedbackLabel,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
+            style: Theme.of(context).textTheme.bodyMedium,
           ),
           const SizedBox(height: 8),
           TextField(

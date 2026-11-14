@@ -7,6 +7,8 @@ import '../../../../core/utils/responsive.dart';
 import '../../../../core/widgets/app_state_views.dart';
 import '../../../discovery/data/models/shop_model.dart';
 import '../../data/datasources/admin_shops_data_source.dart';
+import '../../../../l10n/app_localizations.dart';
+import '../../../../l10n/app_localizations_en.dart';
 import '../widgets/admin_shell.dart';
 import '../widgets/shop_application_detail_sheet.dart';
 
@@ -63,22 +65,23 @@ class _AdminShopApprovalsViewState extends State<AdminShopApprovalsView> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = (AppLocalizations.of(context) ?? AppLocalizationsEn());
     return AdminShell(
       activeRoute: RouteNames.adminApprovals,
-      title: 'Shop Approvals',
-      subtitle: 'Applications waiting for a decision',
+      title: l10n.admin2_approvalsTitle,
+      subtitle: l10n.admin2_approvalsSubtitle,
       onRefresh: _load,
       child: _isLoading
           ? const AppLoadingState()
           : _hasError
               ? AppErrorState(
-                  message: 'Could not load the shop approvals.',
+                  message: l10n.admin2_approvalsLoadFailed,
                   onRetry: _load,
                 )
               : _pending.isEmpty
-                  ? const AppEmptyState(
-                      title: 'No pending applications',
-                      message: 'Every shop has been decided.',
+                  ? AppEmptyState(
+                      title: l10n.admin2_approvalsEmptyTitle,
+                      message: l10n.admin2_approvalsEmptyHint,
                     )
                   : ListView.separated(
                   // Mobile-first: 16dp on a phone, 24dp on desktop.
@@ -92,7 +95,7 @@ class _AdminShopApprovalsViewState extends State<AdminShopApprovalsView> {
                   itemBuilder: (context, i) {
                     final shop = _pending[i];
                     final checklist =
-                        ShopApplicationChecklist.fromShop(shop);
+                        ShopApplicationChecklist.fromShop(shop, l10n);
                     return Card(
                       margin: EdgeInsets.zero,
                       elevation: 0,
@@ -110,10 +113,9 @@ class _AdminShopApprovalsViewState extends State<AdminShopApprovalsView> {
                         title: Text(shop.shopName,
                             style: const TextStyle(
                                 fontSize: 14,
-                                fontWeight: FontWeight.w800,
                                 )),
                         subtitle: Text(
-                          '${shop.city} • ${shop.ownerName ?? 'Owner not listed'} • Checklist ${checklist.doneCount}/6',
+                          '${shop.city} • ${shop.ownerName ?? l10n.admin2_ownerNotListed} • ${l10n.admin2_approvalsChecklist(checklist.doneCount)}',
                           style: TextStyle(
                               fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
                         ),

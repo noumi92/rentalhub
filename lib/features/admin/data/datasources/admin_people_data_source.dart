@@ -7,8 +7,11 @@ import '../../../customer/data/models/customer_model.dart';
 import '../../../customer/domain/entities/customer_entity.dart';
 import '../../../trust/data/models/customer_qr_code_model.dart';
 import '../../../trust/data/services/trust_score_service.dart';
+import '../../domain/admin_permissions.dart';
 import '../../domain/trust_score_calculator.dart';
 import '../services/admin_audit_service.dart';
+import 'admin_pagination.dart';
+import '../services/admin_session.dart';
 
 /// Phase C — the people side of the admin panel: customers, the
 /// platform blacklist, and the trust score.
@@ -34,85 +37,208 @@ class AdminPeopleDataSource {
   }
 
   Future<List<CustomerModel>> getCustomers() async {
+    final page = await getCustomersPage(limit: 200);
+    return page.items.map((r) => r.customer).toList();
+  }
+
+  /// One page of the customers list, with the row data the list
+  /// itself needs (F-m8): the stored trust score and the flags.
+  /// The stored score is a list hint only — the customer detail
+  /// computes the live score, which is authoritative. Flags come
+  /// from the documents that own them (`is_blacklisted` on the
+  /// users doc, `watchlisted` on the customers doc).
+  ///
+  /// Pagination replaces the old silent 200-row cap. `cnicFilter`
+  /// is 'all' | 'onFile' | 'missing' (CNIC on the customers doc);
+  /// the CNIC filter is applied while paging, scanning at most
+  /// 1000 customers to fill a page.
+  ///
+  /// F-M6: a failed read throws — the customers view shows its error
+  /// state instead of "No customers match" during an outage. An
+  /// empty page is returned only with no Firestore (tests).
+  Future<AdminPage<AdminCustomerRow>> getCustomersPage({
+    int limit = 20,
+    Object? cursor,
+    String cnicFilter = 'all',
+  }) async {
     final firestore = _resolvedFirestore;
-    if (firestore == null) return [];
-    try {
-      final snap = await firestore
+    if (firestore == null) {
+      return const AdminPage(items: [], hasMore: false);
+    }
+    final matched = <QueryDocumentSnapshot<Map<String, dynamic>>>[];
+    DocumentSnapshot? lastDoc =
+        cursor is DocumentSnapshot ? cursor : null;
+    var scanned = 0;
+    var exhausted = false;
+    while (matched.length < limit && scanned < 1000 && !exhausted) {
+      var query = firestore
           .collection('customers')
           .orderBy('name')
-          .limit(200)
-          .get();
-      return snap.docs
-          .map((d) => CustomerModel.fromMap(d.data(), d.id))
-          .toList();
+          .limit(50);
+      if (lastDoc != null) query = query.startAfterDocument(lastDoc);
+      final snap = await query.get();
+      if (snap.docs.isEmpty) {
+        exhausted = true;
+        break;
+      }
+      scanned += snap.docs.length;
+      lastDoc = snap.docs.last;
+      for (final d in snap.docs) {
+        final cnic = (d.data()['cnic'] as String?) ?? '';
+        if (cnicFilter == 'onFile' && cnic.isEmpty) continue;
+        if (cnicFilter == 'missing' && cnic.isNotEmpty) continue;
+        matched.add(d);
+        if (matched.length >= limit) break;
+      }
+      if (snap.docs.length < 50) exhausted = true;
+    }
+    final rows = await Future.wait(
+      matched.map((d) => _rowFromDoc(firestore, d)),
+    );
+    return AdminPage(
+      items: rows,
+      // More pages exist when the scan stopped on a full batch
+      // (or mid-batch with docs left) rather than running out.
+      hasMore: !exhausted && scanned < 1000,
+      cursor: !exhausted && scanned < 1000 ? lastDoc : null,
+    );
+  }
+
+  /// Server-side customer search: it covers the whole list, not
+  /// just the loaded page. Firestore has no substring search, so
+  /// the search scans the list in bounded pages (at most 500
+  /// customers) for a name/phone/CNIC match — the same
+  /// case-insensitive "contains" the old client-side search used,
+  /// now over the collection instead of the loaded page.
+  Future<List<AdminCustomerRow>> searchCustomers(
+    String query, {
+    int limit = 50,
+  }) async {
+    final firestore = _resolvedFirestore;
+    final needle = query.trim().toLowerCase();
+    if (firestore == null || needle.isEmpty) return [];
+    try {
+      final matched = <QueryDocumentSnapshot<Map<String, dynamic>>>[];
+      DocumentSnapshot? lastDoc;
+      var scanned = 0;
+      while (matched.length < limit && scanned < 500) {
+        var pageQuery = firestore
+            .collection('customers')
+            .orderBy('name')
+            .limit(100);
+        if (lastDoc != null) {
+          pageQuery = pageQuery.startAfterDocument(lastDoc);
+        }
+        final snap = await pageQuery.get();
+        if (snap.docs.isEmpty) break;
+        scanned += snap.docs.length;
+        lastDoc = snap.docs.last;
+        for (final d in snap.docs) {
+          final data = d.data();
+          final haystack =
+              '${data['name'] ?? ''} ${data['phone'] ?? ''} ${data['cnic'] ?? ''}'
+                  .toLowerCase();
+          if (haystack.contains(needle)) {
+            matched.add(d);
+            if (matched.length >= limit) break;
+          }
+        }
+        if (snap.docs.length < 100) break;
+      }
+      return Future.wait(matched.map((d) => _rowFromDoc(firestore, d)));
     } catch (_) {
       return [];
     }
   }
 
+  Future<AdminCustomerRow> _rowFromDoc(
+    FirebaseFirestore firestore,
+    QueryDocumentSnapshot<Map<String, dynamic>> doc,
+  ) async {
+    final customer = CustomerModel.fromMap(doc.data(), doc.id);
+    double? storedTrustScore;
+    var isBlacklisted = false;
+    try {
+      final userDoc =
+          await firestore.collection('users').doc(doc.id).get();
+      final userData = userDoc.data();
+      storedTrustScore = (userData?['trust_score'] as num?)?.toDouble();
+      isBlacklisted = userData?['is_blacklisted'] as bool? ?? false;
+    } catch (_) {}
+    return AdminCustomerRow(
+      customer: customer,
+      storedTrustScore: storedTrustScore,
+      isBlacklisted: isBlacklisted,
+      watchlisted: doc.data()['watchlisted'] as bool? ?? false,
+    );
+  }
+
+  /// F-M6: throws on a failed read; null only when the customer
+  /// doc is missing or the live trust score cannot be computed
+  /// (the detail view shows "not found" for null, its error state
+  /// for a throw).
   Future<CustomerDetail?> getCustomerDetail(String customerId) async {
     final firestore = _resolvedFirestore;
     if (firestore == null) return null;
-    try {
-      final customerDoc =
-          await firestore.collection('customers').doc(customerId).get();
-      final customerData = customerDoc.data();
-      if (customerData == null) return null;
-      final customer = CustomerModel.fromMap(customerData, customerDoc.id);
+    final customerDoc =
+        await firestore.collection('customers').doc(customerId).get();
+    final customerData = customerDoc.data();
+    if (customerData == null) return null;
+    final customer = CustomerModel.fromMap(customerData, customerDoc.id);
 
-      final userDoc =
-          await firestore.collection('users').doc(customerId).get();
-      final userData = userDoc.data();
-      final storedTrustScore =
-          (userData?['trust_score'] as num?)?.toDouble();
-      final isBlacklisted = userData?['is_blacklisted'] as bool? ?? false;
+    final userDoc =
+        await firestore.collection('users').doc(customerId).get();
+    final userData = userDoc.data();
+    final storedTrustScore =
+        (userData?['trust_score'] as num?)?.toDouble();
+    final isBlacklisted = userData?['is_blacklisted'] as bool? ?? false;
 
-      // The live score — one shared computation (TrustScoreService),
-      // the same one the customer app reads.
-      final trust = await TrustScoreService(firestore: firestore)
-          .compute(customerId);
-      if (trust == null) return null;
-      final bookings = trust.bookings;
-      final kycStatus = trust.kycStatus;
-      final kycCnic = trust.kycCnic;
-      final completedTrips = trust.completedTrips;
-      final meanRating = trust.meanOwnerRating;
-      final breakdown = trust.breakdown;
+    // The live score — one shared computation (TrustScoreService),
+    // the same one the customer app reads.
+    final trust = await TrustScoreService(firestore: firestore)
+        .compute(customerId);
+    if (trust == null) return null;
+    final bookings = trust.bookings;
+    final kycStatus = trust.kycStatus;
+    final kycCnic = trust.kycCnic;
+    final completedTrips = trust.completedTrips;
+    final meanRating = trust.meanOwnerRating;
+    final breakdown = trust.breakdown;
 
-      BlacklistEntity? blacklistRecord;
-      final cnic = customer.cnic ?? kycCnic;
-      if (cnic != null && cnic.isNotEmpty) {
-        blacklistRecord = await BlacklistRemoteDataSource(
-                firestore: firestore)
-            .getBlacklistRecordByCnic(cnic);
-      }
-
-      final notesSnap = await firestore
-          .collection('customers')
-          .doc(customerId)
-          .collection('admin_notes')
-          .orderBy('created_at', descending: true)
-          .limit(20)
-          .get();
-      final notes = notesSnap.docs
-          .map((d) => AdminNote.fromMap(d.id, d.data()))
-          .toList();
-
-      return CustomerDetail(
-        customer: customer,
-        storedTrustScore: storedTrustScore,
-        isBlacklisted: isBlacklisted,
-        kycStatus: kycStatus,
-        bookings: bookings,
-        completedTrips: completedTrips,
-        meanOwnerRating: meanRating,
-        trustBreakdown: breakdown,
-        blacklistRecord: blacklistRecord,
-        notes: notes,
-      );
-    } catch (_) {
-      return null;
+    BlacklistEntity? blacklistRecord;
+    final cnic = customer.cnic ?? kycCnic;
+    if (cnic != null && cnic.isNotEmpty) {
+      blacklistRecord = await BlacklistRemoteDataSource(
+              firestore: firestore)
+          .getBlacklistRecordByCnic(cnic);
     }
+
+    final notesSnap = await firestore
+        .collection('customers')
+        .doc(customerId)
+        .collection('admin_notes')
+        .orderBy('created_at', descending: true)
+        .limit(20)
+        .get();
+    final notes = notesSnap.docs
+        .map((d) => AdminNote.fromMap(d.id, d.data()))
+        .toList();
+
+    return CustomerDetail(
+      customer: customer,
+      storedTrustScore: storedTrustScore,
+      isBlacklisted: isBlacklisted,
+      // AD-M6: the watchlist flag lives on the customers doc, so
+      // the detail screen can offer remove-from-watchlist.
+      isWatchlisted: customerData['watchlisted'] as bool? ?? false,
+      kycStatus: kycStatus,
+      bookings: bookings,
+      completedTrips: completedTrips,
+      meanOwnerRating: meanRating,
+      trustBreakdown: breakdown,
+      blacklistRecord: blacklistRecord,
+      notes: notes,
+    );
   }
 
   /// The CNIC back-QR number for a customer, from the restricted
@@ -138,10 +264,21 @@ class AdminPeopleDataSource {
   }
 
   /// A watchlist flag on the customer record (admin eyes only).
+  ///
+  /// F-C1: super admin + operations only ([AdminPermission.
+  /// manageBlacklist]). The caller's role is passed by the view
+  /// when it already resolved it, otherwise resolved from the
+  /// session here; an unresolvable role refuses the write.
   Future<bool> setCustomerWatchlisted({
     required String customerId,
     required bool watchlisted,
+    String? adminRole,
   }) async {
+    if (!await AdminSession.currentAdminCan(
+        AdminPermission.manageBlacklist,
+        adminRole: adminRole)) {
+      return false;
+    }
     final firestore = _resolvedFirestore;
     if (firestore == null) return false;
     try {
@@ -167,6 +304,9 @@ class AdminPeopleDataSource {
   /// Report a customer to the shared blacklist (C2). The report goes
   /// through the shared blacklist data source so the booking-time
   /// check sees it immediately.
+  ///
+  /// F-C1: super admin + operations only ([AdminPermission.
+  /// manageBlacklist]) — see [setCustomerWatchlisted].
   Future<bool> reportCustomerToBlacklist({
     required String customerId,
     required String cnic,
@@ -174,7 +314,13 @@ class AdminPeopleDataSource {
     required String reasonCategory,
     required String description,
     required String reportedByShopId,
+    String? adminRole,
   }) async {
+    if (!await AdminSession.currentAdminCan(
+        AdminPermission.manageBlacklist,
+        adminRole: adminRole)) {
+      return false;
+    }
     final firestore = _resolvedFirestore;
     if (firestore == null) return false;
     try {
@@ -198,10 +344,19 @@ class AdminPeopleDataSource {
     }
   }
 
+  /// F-C1: an admin note is an admin-only write — super admin +
+  /// operations ([AdminPermission.manageBlacklist], the people-side
+  /// permission) — see [setCustomerWatchlisted].
   Future<bool> addCustomerNote({
     required String customerId,
     required String text,
+    String? adminRole,
   }) async {
+    if (!await AdminSession.currentAdminCan(
+        AdminPermission.manageBlacklist,
+        adminRole: adminRole)) {
+      return false;
+    }
     final firestore = _resolvedFirestore;
     if (firestore == null) return false;
     try {
@@ -220,50 +375,60 @@ class AdminPeopleDataSource {
   }
 
   /// Every blacklist record, active and reverted, newest first.
-  /// The shared blacklist data source falls back to its in-memory
-  /// records when Firestore is unreachable, so this does not bail
-  /// out on a null Firestore — only the appeal-state reads need one.
+  ///
+  /// F-M6: the list read is strict — a failed Firestore read throws
+  /// (the tribunal shows its error state) instead of rendering an
+  /// empty tribunal during an outage. With no Firestore, the
+  /// session's reported records are returned. The per-record
+  /// appeal-state read stays best-effort: a failed appeal read
+  /// leaves that record's appeal as 'none' rather than failing
+  /// the whole tribunal.
   Future<List<AdminBlacklistRecord>> getBlacklistRecords() async {
     final firestore = _resolvedFirestore;
-    try {
-      final records = await BlacklistRemoteDataSource(firestore: firestore)
-          .getAllRecords();
-      final out = <AdminBlacklistRecord>[];
-      for (final r in records) {
-        var appealStatus = 'none';
-        var appealReason = '';
-        if (firestore != null) {
-          try {
-            final doc = await firestore
-                .collection('blacklist')
-                .doc(r.blacklistId)
-                .get();
-            appealStatus =
-                doc.data()?['appeal_status'] as String? ?? 'none';
-            appealReason = doc.data()?['appeal_reason'] as String? ?? '';
-          } catch (_) {}
-        }
-        out.add(AdminBlacklistRecord(
-          entity: r,
-          appealStatus: appealStatus,
-          appealReason: appealReason,
-        ));
+    final records = await BlacklistRemoteDataSource(firestore: firestore)
+        .getAllRecordsStrict();
+    final out = <AdminBlacklistRecord>[];
+    for (final r in records) {
+      var appealStatus = 'none';
+      var appealReason = '';
+      if (firestore != null) {
+        try {
+          final doc = await firestore
+              .collection('blacklist')
+              .doc(r.blacklistId)
+              .get();
+          appealStatus =
+              doc.data()?['appeal_status'] as String? ?? 'none';
+          appealReason = doc.data()?['appeal_reason'] as String? ?? '';
+        } catch (_) {}
       }
-      return out;
-    } catch (_) {
-      return [];
+      out.add(AdminBlacklistRecord(
+        entity: r,
+        appealStatus: appealStatus,
+        appealReason: appealReason,
+      ));
     }
+    return out;
   }
 
   /// Decide an appeal: 'keep' leaves the flag in place (appeal
   /// denied), 'remove' lifts it via the tribunal revert (reason
   /// mandatory, logged). Returns false when the write failed.
+  ///
+  /// F-C1: super admin + operations only ([AdminPermission.
+  /// manageBlacklist]) — see [setCustomerWatchlisted].
   Future<bool> decideAppeal({
     required String blacklistId,
     required String decision,
     required String reason,
     required String adminUid,
+    String? adminRole,
   }) async {
+    if (!await AdminSession.currentAdminCan(
+        AdminPermission.manageBlacklist,
+        adminRole: adminRole)) {
+      return false;
+    }
     final firestore = _resolvedFirestore;
     if (firestore == null) return false;
     try {
@@ -295,6 +460,23 @@ class AdminPeopleDataSource {
   }
 }
 
+/// One row of the admin customers list (F-m8): the customer plus
+/// the trust hint and flags the list shows. The stored trust score
+/// is a hint only — the live score on the detail screen governs.
+class AdminCustomerRow {
+  const AdminCustomerRow({
+    required this.customer,
+    required this.storedTrustScore,
+    required this.isBlacklisted,
+    required this.watchlisted,
+  });
+
+  final CustomerModel customer;
+  final double? storedTrustScore;
+  final bool isBlacklisted;
+  final bool watchlisted;
+}
+
 /// Everything the customer detail screen shows, assembled from the
 /// collections that actually hold it.
 class CustomerDetail {
@@ -302,6 +484,7 @@ class CustomerDetail {
     required this.customer,
     required this.storedTrustScore,
     required this.isBlacklisted,
+    this.isWatchlisted = false,
     required this.kycStatus,
     required this.bookings,
     required this.completedTrips,
@@ -314,6 +497,7 @@ class CustomerDetail {
   final CustomerEntity customer;
   final double? storedTrustScore;
   final bool isBlacklisted;
+  final bool isWatchlisted;
   final String kycStatus;
   final List<BookingEntity> bookings;
   final int completedTrips;

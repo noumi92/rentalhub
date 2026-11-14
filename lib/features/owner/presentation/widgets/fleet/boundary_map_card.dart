@@ -186,7 +186,7 @@ class _BoundaryMapCardState extends State<BoundaryMapCard> {
                         Expanded(
                           child: Text(label,
                               style: theme.textTheme.titleSmall
-                                  ?.copyWith(fontWeight: FontWeight.w800)),
+                                  ?.copyWith(fontWeight: FontWeight.w600)),
                         ),
                         if (widget.onEdit != null)
                           TextButton.icon(

@@ -51,7 +51,7 @@ class AddVehicleStepperBar extends StatelessWidget {
                   : Text(
                       '$step',
                       style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                        fontWeight: FontWeight.w900,
+                        fontWeight: FontWeight.w500,
                         color: isCurrent ? Colors.white : Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),
@@ -62,7 +62,7 @@ class AddVehicleStepperBar extends StatelessWidget {
             label,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              fontWeight: isCurrent ? FontWeight.w800 : FontWeight.w600,
+              fontWeight: FontWeight.w500,
               // Audit §5 (Critical): theme-aware exactly like the
               // onboarding stepper fix — hardcoded AppColors.primary
               // navy was ~1.5:1 on a dark surface. Dark mode uses the

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -10,7 +12,8 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../fleet/domain/entities/vehicle_entity.dart';
 import '../../../fleet/presentation/cubit/fleet_cubit.dart';
 import '../../../fleet/presentation/cubit/fleet_state.dart';
-import '../../../bookings/data/datasources/booking_remote_data_source.dart';
+import '../../../bookings/domain/entities/booking_entity.dart';
+import '../../../bookings/utils/live_booking_stream.dart';
 import '../widgets/fleet/fleet_helpers.dart';
 import '../widgets/fleet/fleet_list_section.dart';
 import '../widgets/fleet/fleet_rented_until.dart';
@@ -46,6 +49,8 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
   /// shop bookings the fleet calendar reads). Best-effort: a failed
   /// load leaves the map empty and the cards show no return line.
   Map<String, DateTime> _rentedUntil = {};
+  // Live updates (Item 2): the subscription that keeps the return dates live — a new booking or a status change repaints the fleet cards without leaving the tab.
+  StreamSubscription<List<BookingEntity>>? _bookingsSub;
 
   String get _shopId => widget.shopId ?? currentShopId();
 
@@ -60,21 +65,15 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
   void initState() {
     super.initState();
     _cubit = sl<FleetCubit>()..loadVehicles(_shopId);
-    _loadRentedUntil();
-  }
-
-  Future<void> _loadRentedUntil() async {
-    try {
-      final map = await loadRentedUntilByVehicle(
-          sl<BookingRemoteDataSource>(), _shopId);
-      if (mounted) setState(() => _rentedUntil = map);
-    } catch (_) {
-      // Best-effort (see the field doc): no return lines.
-    }
+    // Live updates (Item 2): the fleet cards' "On Rent until" lines follow the shop's bookings stream — a new booking or a status change repaints them without leaving the tab. The stream's first emission is the first paint; there is no one-time load any more.
+    _bookingsSub = subscribeLiveBookings((ds) => ds.streamShopBookings(_shopId), (list) {
+      if (mounted) setState(() => _rentedUntil = rentedUntilByVehicle(list));
+    });
   }
 
   @override
   void dispose() {
+    _bookingsSub?.cancel();
     _cubit.close();
     super.dispose();
   }
@@ -132,7 +131,7 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
       return;
     }
     _pushOnce(RouteNames.ownerAddVehicle).then((_) {
-      if (mounted) { _cubit.loadVehicles(_shopId); _loadRentedUntil(); }
+      if (mounted) _cubit.loadVehicles(_shopId);
     });
   }
 
@@ -196,7 +195,7 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
                     if (onRentCount > 0)
                       Padding(
                         padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
-                        child: Text(l10n.fleetActiveRentals(onRentCount), style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
+                        child: Text(l10n.fleetActiveRentals(onRentCount), style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
                       ),
 
                     // Audit §4: search (name/plate) above the chips.
@@ -222,7 +221,7 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
                       fleet: fleet,
                       filtered: filtered,
                       onAddVehicle: _openAddVehicle,
-                      onRetry: () { _cubit.loadVehicles(_shopId); _loadRentedUntil(); },
+                      onRetry: () => _cubit.loadVehicles(_shopId),
                       onEditRates: (v) => _pushOnce(RouteNames.ownerRatesVehicle.replaceFirst(':vehicleId', v.vehicleId)),
                       onOutCityRules: (v) => _pushOnce(RouteNames.ownerOutCityRules.replaceFirst(':vehicleId', v.vehicleId)),
                       onEditDetails: (v) => _pushOnce(RouteNames.ownerEditVehicle.replaceFirst(':id', v.vehicleId)),

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/auth/signed_in_user.dart';
@@ -36,6 +38,9 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
   // CU-m3: signed out — the old 'cust-101' fallback loaded another
   // user's bookings and KPIs. The home shows a sign-in error instead.
   bool _signedOut = false;
+  // Live updates (Item 2): the subscription behind the KPIs,
+  // upcoming events and recent bookings.
+  StreamSubscription<CustomerHomeData>? _homeSub;
 
   @override
   void initState() {
@@ -43,7 +48,19 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
     _load();
   }
 
-  Future<void> _load() async {
+  @override
+  void dispose() {
+    _homeSub?.cancel();
+    super.dispose();
+  }
+
+  /// Live updates (Item 2): Home follows the home service's
+  /// [CustomerHomeService.watch] stream — a booking submitted on
+  /// the review screen, or an owner approve / reject, updates the
+  /// KPIs, upcoming events and recent bookings without leaving the
+  /// tab. The error-state retry re-runs this method, which
+  /// re-subscribes.
+  void _load() {
     final uid = _uid();
     // An injected test service loads its own in-memory data without
     // auth; the real app path requires a signed-in user.
@@ -57,21 +74,41 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
       return;
     }
     final service = widget.homeService ?? CustomerHomeService.resolve();
-    final data = service == null
-        ? const CustomerHomeData(bookings: [])
-        : await service.load(uid);
-    if (mounted) {
-      setState(() {
-        _data = data;
-        _loading = false;
-        _signedOut = false;
-      });
+    if (service == null) {
+      if (mounted) {
+        setState(() {
+          _data = const CustomerHomeData(bookings: []);
+          _loading = false;
+          _signedOut = false;
+        });
+      }
+      return;
     }
+    _homeSub?.cancel();
+    _homeSub = service.watch(uid).listen(
+      (data) {
+        if (mounted) {
+          setState(() {
+            _data = data;
+            _loading = false;
+            _signedOut = false;
+          });
+        }
+      },
+      onError: (_) {
+        if (mounted) {
+          setState(() {
+            _data = const CustomerHomeData(bookings: [], bookingsFailed: true);
+            _loading = false;
+          });
+        }
+      },
+    );
   }
 
   Future<void> _reload() async {
     if (mounted) setState(() => _loading = true);
-    await _load();
+    _load();
   }
 
   /// The signed-in uid, or '' when nobody is signed in — never a
@@ -152,7 +189,7 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
                         style: Theme.of(context)
                             .textTheme
                             .titleSmall
-                            ?.copyWith(fontWeight: FontWeight.w800),
+                            ?.copyWith(fontWeight: FontWeight.w600),
                       ),
                       const SizedBox(height: 8),
                       const CustomerHomeQuickActions(),

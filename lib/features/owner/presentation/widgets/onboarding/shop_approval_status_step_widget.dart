@@ -90,7 +90,7 @@ class _ShopApprovalStatusStepWidgetState
         const SizedBox(height: 18),
         Text(
           l10n.onboardingApprovalTitle,
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 8),
@@ -102,7 +102,7 @@ class _ShopApprovalStatusStepWidgetState
         const SizedBox(height: 8),
         Text(
           l10n.onboardingApprovalWithin24h,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800),
+          style: Theme.of(context).textTheme.bodyMedium,
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 24),
@@ -153,7 +153,7 @@ class _ShopApprovalStatusStepWidgetState
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(l10n.onboardingFleetReady, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
+                    Text(l10n.onboardingFleetReady, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
                     SizedBox(height: 2),
                     Text(
                       l10n.onboardingFleetReadyHint,
@@ -193,7 +193,7 @@ class _ShopApprovalStatusStepWidgetState
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(title, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, color: active ? Theme.of(context).colorScheme.onSurface : Theme.of(context).colorScheme.onSurfaceVariant)),
+              Text(title, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600, color: active ? Theme.of(context).colorScheme.onSurface : Theme.of(context).colorScheme.onSurfaceVariant)),
               Text(hint, style: Theme.of(context).textTheme.labelSmall),
             ],
           ),

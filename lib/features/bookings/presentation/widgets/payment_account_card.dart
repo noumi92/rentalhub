@@ -57,7 +57,7 @@ class PaymentAccountCard extends StatelessWidget {
                   const SizedBox(width: 10),
                   Text(
                     methodTitle,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
                   ),
                 ],
               ),
@@ -101,7 +101,6 @@ class PaymentAccountCard extends StatelessWidget {
           value,
           style: const TextStyle(
             fontSize: 13,
-            fontWeight: FontWeight.w700,
           ),
         ),
       ],

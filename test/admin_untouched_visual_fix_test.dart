@@ -77,8 +77,10 @@ void main() {
       expect(find.text('غیر تصدیق شدہ دکانوں سے بکنگ کی اجازت دیں'),
           findsOneWidget);
       // The Save button keeps its 48dp touch target at 1.35x text.
-      final saveSize =
-          tester.getSize(find.widgetWithText(FilledButton, 'Save settings'));
+      // The label is localised (admin2_settingsSave) and this test
+      // pumps Urdu, so the finder uses the Urdu label.
+      final saveSize = tester.getSize(
+          find.widgetWithText(FilledButton, 'ترتیبات محفوظ کریں'));
       expect(saveSize.height, greaterThanOrEqualTo(48));
     });
 

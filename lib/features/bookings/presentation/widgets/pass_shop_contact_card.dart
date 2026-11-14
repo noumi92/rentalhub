@@ -179,7 +179,7 @@ class _PassShopContactCardState extends State<PassShopContactCard> {
               SizedBox(width: 8),
               Text(
                 l10n.passHandoverPoint,
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
               ),
             ],
           ),

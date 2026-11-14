@@ -120,9 +120,7 @@ class _OnboardingRoleViewState extends State<OnboardingRoleView> {
                             style: Theme.of(context)
                                 .textTheme
                                 .bodyMedium
-                                ?.copyWith(
-                                  fontWeight: FontWeight.w800,
-                                ),
+                                ,
                           ),
                           const SizedBox(height: 10),
                           RoleSelectorCard(

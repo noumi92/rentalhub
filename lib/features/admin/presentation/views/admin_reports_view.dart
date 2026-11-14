@@ -13,9 +13,9 @@ import '../widgets/admin_shell.dart';
 
 /// Phase E (E4) — reports: a date range, live KPIs, bookings by
 /// city, top shops, the revenue split from the finance ledger,
-/// new customers, and dispute stats, with CSV export. The monthly
-/// email needs a Function and a sender decision (plan D8) — it is
-/// not in this screen.
+/// new customers, and dispute stats, with CSV and PDF export. The
+/// monthly email needs a Function and a sender decision (plan D8)
+/// — it is not in this screen.
 class AdminReportsView extends StatefulWidget {
   const AdminReportsView({super.key});
 
@@ -27,6 +27,7 @@ class _AdminReportsViewState extends State<AdminReportsView> {
   AdminReport? _report;
   bool _isLoading = false;
   bool _hasError = false;
+  bool _rangeError = false;
   DateTime _from = DateTime.now().subtract(const Duration(days: 30));
   DateTime _to = DateTime.now();
 
@@ -64,12 +65,20 @@ class _AdminReportsViewState extends State<AdminReportsView> {
       initialDate: isFrom ? _from : _to,
     );
     if (picked == null) return;
+    final from = isFrom ? picked : _from;
+    final to = isFrom ? _to : picked;
+    // AD-m10: From after To used to reload and show the empty
+    // state ("No data for this range"), misdescribing an invalid
+    // range as an empty one. Reject it with an inline error and
+    // keep the last valid range instead.
+    if (from.isAfter(to)) {
+      setState(() => _rangeError = true);
+      return;
+    }
     setState(() {
-      if (isFrom) {
-        _from = picked;
-      } else {
-        _to = picked;
-      }
+      _from = from;
+      _to = to;
+      _rangeError = false;
     });
     await _load();
   }
@@ -88,54 +97,41 @@ class _AdminReportsViewState extends State<AdminReportsView> {
         windowSizeClassOf(context) == WindowSizeClass.compact;
     return AdminShell(
       activeRoute: RouteNames.adminReports,
-      title: 'Reports',
-      subtitle: 'KPIs for a date range, with CSV export',
+      title: l10n.admin2_navReports,
+      subtitle: l10n.admin2_reportsSubtitle,
       onRefresh: _load,
       child: SingleChildScrollView(
         padding: EdgeInsets.all(compact ? 16 : 24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Compact: From + To share one row and Export CSV takes
-            // its own full-width row — all three side by side
-            // overflow at 360px (and worse at 1.35x text scale).
+            AdminReportDateRange(
+              from: _from,
+              to: _to,
+              rangeError:
+                  _rangeError ? l10n.adminAuditInvalidRange : null,
+              onPickFrom: () => _pickDate(isFrom: true),
+              onPickTo: () => _pickDate(isFrom: false),
+            ),
+            const SizedBox(height: 12),
+            // Compact: the two export buttons stack full-width —
+            // side by side they overflow at 360px.
             if (compact) ...[
-              Row(
-                children: [
-                  Expanded(
-                      child: AdminReportDateButton(
-                          label: 'From',
-                          date: _from,
-                          onPressed: () => _pickDate(isFrom: true))),
-                  const SizedBox(width: 12),
-                  Expanded(
-                      child: AdminReportDateButton(
-                          label: 'To',
-                          date: _to,
-                          onPressed: () => _pickDate(isFrom: false))),
-                ],
-              ),
-              const SizedBox(height: 12),
               SizedBox(
                 width: double.infinity,
                 child: AdminReportExportButton(report: r),
               ),
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                child: AdminReportPdfButton(report: r),
+              ),
             ] else
               Row(
                 children: [
-                  Expanded(
-                      child: AdminReportDateButton(
-                          label: 'From',
-                          date: _from,
-                          onPressed: () => _pickDate(isFrom: true))),
-                  const SizedBox(width: 12),
-                  Expanded(
-                      child: AdminReportDateButton(
-                          label: 'To',
-                          date: _to,
-                          onPressed: () => _pickDate(isFrom: false))),
-                  const SizedBox(width: 12),
                   AdminReportExportButton(report: r),
+                  const SizedBox(width: 12),
+                  AdminReportPdfButton(report: r),
                 ],
               ),
             const SizedBox(height: 20),
@@ -143,13 +139,13 @@ class _AdminReportsViewState extends State<AdminReportsView> {
               const AppLoadingState()
             else if (_hasError)
               AppErrorState(
-                message: 'Could not load the report.',
+                message: l10n.admin2_reportsLoadFailed,
                 onRetry: _load,
               )
             else if (r == null)
-              const AppEmptyState(
-                title: 'No data for this range',
-                message: 'The report reads the live collections.',
+              AppEmptyState(
+                title: l10n.admin2_reportsEmptyTitle,
+                message: l10n.admin2_reportsEmptyHint,
               )
             else ...[
               Wrap(
@@ -157,69 +153,69 @@ class _AdminReportsViewState extends State<AdminReportsView> {
                 runSpacing: 12,
                 children: [
                   AdminReportKpi(
-                      label: 'Bookings',
+                      label: l10n.admin2_reportsBookings,
                       value: '${r.totalBookings}',
                       compact: compact),
                   AdminReportKpi(
-                      label: 'Completed',
+                      label: l10n.admin2_reportsCompleted,
                       value: '${r.completedBookings}',
                       compact: compact),
                   AdminReportKpi(
-                      label: 'Booking revenue',
+                      label: l10n.admin2_reportsRevenue,
                       value: l10n.amountRs(formatRs(r.bookingRevenue)),
                       compact: compact),
                   AdminReportKpi(
-                      label: 'Finance income',
+                      label: l10n.admin2_reportsIncome,
                       value: l10n.amountRs(formatRs(r.financeIncome)),
                       compact: compact),
                   AdminReportKpi(
-                      label: 'Finance expense',
+                      label: l10n.admin2_reportsExpense,
                       value: l10n.amountRs(formatRs(r.financeExpense)),
                       compact: compact),
                   AdminReportKpi(
-                      label: 'New customers',
+                      label: l10n.admin2_reportsNewCustomers,
                       value: '${r.newCustomers}',
                       compact: compact),
                   AdminReportKpi(
-                      label: 'Disputes open',
+                      label: l10n.admin2_reportsDisputesOpen,
                       value: '${r.disputesOpen}',
                       compact: compact),
                   AdminReportKpi(
-                      label: 'Disputes resolved',
+                      label: l10n.admin2_reportsDisputesResolved,
                       value: '${r.disputesResolved}',
                       compact: compact),
                 ],
               ),
               const SizedBox(height: 20),
               AdminDetailSection(
-                  title: 'Bookings by city',
+                  title: l10n.admin2_reportsByCity,
                   lines: r.bookingsByCity.entries
                       .map((e) => '${e.key}: ${e.value}')
                       .toList(),
-                  emptyText: 'None in this range.',
+                  emptyText: l10n.admin2_reportsNone,
                   muted: true),
               AdminDetailSection(
-                  title: 'Top shops',
+                  title: l10n.admin2_reportsTopShops,
                   lines: r.topShops
-                      .map((e) => '${e.key}: ${e.value} bookings')
+                      .map((e) => l10n.admin2_reportsTopShopsLine(e.key, e.value))
                       .toList(),
-                  emptyText: 'None in this range.',
+                  emptyText: l10n.admin2_reportsNone,
                   muted: true),
               AdminDetailSection(
-                  title: 'Income by category',
+                  title: l10n.admin2_reportsIncomeByCategory,
                   lines: r.incomeByCategory.entries
                       .map((e) =>
                           '${e.key}: ${l10n.amountRs(formatRs(e.value))}')
                       .toList(),
-                  emptyText: 'None in this range.',
+                  emptyText: l10n.admin2_reportsNone,
                   muted: true),
               AdminDetailSection(
-                  title: 'Expense by category',
+                  title: l10n.admin2_reportsExpenseByCategory,
                   lines: r.expenseByCategory.entries
                       .map((e) =>
                           '${e.key}: ${l10n.amountRs(formatRs(e.value))}')
                       .toList(),
-                  emptyText: 'None in this range.',
+                  emptyText: l10n.admin2_reportsNone,
                   muted: true),
             ],
           ],

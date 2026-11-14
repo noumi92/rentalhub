@@ -3,35 +3,24 @@ import '../../domain/entities/blacklist_entity.dart';
 import '../models/blacklist_model.dart';
 
 /// Phase B (C4): the shared blacklist, from Firestore with an
-/// in-memory fallback. Before this phase the whole feature lived in
-/// memory with one hardcoded sample record — reports were lost on
-/// every restart and never reached other shops. The sample record
-/// now only seeds the offline fallback.
+/// in-memory fallback for records reported in this session.
+///
+/// Admin audit (2026-11-14, F-M1): there used to be a hardcoded
+/// sample record (BLK-1001, CNIC 35201-9999999-1) seeded into every
+/// instance, and `_readAll` fell back to it whenever the collection
+/// was empty or unreachable — so the tribunal showed a fake case on
+/// a fresh platform and the booking-time check refused that CNIC.
+/// The fixture is gone: it belongs in tests, not production code.
+/// `_readAll` returns `[]` when the collection is empty or the
+/// Firestore read fails; a CNIC is blacklisted only when a real
+/// record says so.
 class BlacklistRemoteDataSource {
   final FirebaseFirestore? _firestore;
   final Map<String, BlacklistEntity> _records = {};
-  final Set<String> _blacklistedCnics = {};
   static int _idSeq = 0;
 
   BlacklistRemoteDataSource({FirebaseFirestore? firestore})
-      : _firestore = firestore {
-    _initSampleData();
-  }
-
-  void _initSampleData() {
-    const defaultBlacklisted = BlacklistEntity(
-      blacklistId: 'BLK-1001',
-      reportedByShopId: 'shop-metro-lahore',
-      cnicNumber: '35201-9999999-1',
-      phoneNumber: '0300-9998888',
-      reasonCategory: 'Default & Car Impoundment',
-      description:
-          'Customer failed to return Corolla Altis after 14 days, vehicle tracked and recovered from police impound.',
-      isActive: true,
-    );
-    _records[defaultBlacklisted.blacklistId] = defaultBlacklisted;
-    _blacklistedCnics.add(defaultBlacklisted.cnicNumber);
-  }
+      : _firestore = firestore;
 
   FirebaseFirestore? get _resolvedFirestore {
     if (_firestore != null) return _firestore;
@@ -47,14 +36,30 @@ class BlacklistRemoteDataSource {
     if (fs != null) {
       try {
         final snap = await fs.collection('blacklist').get();
-        if (snap.docs.isNotEmpty) {
-          return snap.docs
-              .map((d) => BlacklistModel.fromMap(d.data(), d.id))
-              .toList();
-        }
-      } catch (_) {}
+        return snap.docs
+            .map((d) => BlacklistModel.fromMap(d.data(), d.id))
+            .toList();
+      } catch (_) {
+        return [];
+      }
     }
+    // No Firestore (unit tests / Firebase not initialised): only the
+    // records reported in this session exist — never a seeded sample.
     return _records.values.toList();
+  }
+
+  /// Strict read for the admin tribunal: throws when Firestore is
+  /// available but the read fails, so an outage shows the error
+  /// state instead of an empty tribunal (F-M6). Returns `[]` when
+  /// the collection is empty. With no Firestore, returns the
+  /// session's reported records.
+  Future<List<BlacklistEntity>> getAllRecordsStrict() async {
+    final fs = _resolvedFirestore;
+    if (fs == null) return _records.values.toList();
+    final snap = await fs.collection('blacklist').get();
+    return snap.docs
+        .map((d) => BlacklistModel.fromMap(d.data(), d.id))
+        .toList();
   }
 
   Future<BlacklistEntity> reportCustomerToBlacklist({
@@ -78,18 +83,18 @@ class BlacklistRemoteDataSource {
       isActive: true,
       reportedAt: DateTime.now(),
     );
-    _records[id] = entity;
-    _blacklistedCnics.add(cnicNumber);
 
+    // The Firestore write goes first: a failed write throws instead
+    // of leaving a record that only exists in this session's memory
+    // (F-M6 — the caller must not claim a report that never landed).
     final fs = _resolvedFirestore;
     if (fs != null) {
-      try {
-        await fs
-            .collection('blacklist')
-            .doc(id)
-            .set(BlacklistModel.fromEntity(entity).toMap());
-      } catch (_) {}
+      await fs
+          .collection('blacklist')
+          .doc(id)
+          .set(BlacklistModel.fromEntity(entity).toMap());
     }
+    _records[id] = entity;
     return entity;
   }
 
@@ -110,18 +115,18 @@ class BlacklistRemoteDataSource {
       revertedByAdmin: adminUid,
       revertedReason: justification.trim(),
     );
-    _records[blacklistId] = reverted;
-    _blacklistedCnics.remove(existing.cnicNumber);
 
+    // Same rule as the report path: the Firestore write goes first
+    // and a failed write throws — a revert that only lived in memory
+    // would leave the flag active everywhere else.
     final fs = _resolvedFirestore;
     if (fs != null) {
-      try {
-        await fs
-            .collection('blacklist')
-            .doc(blacklistId)
-            .set(BlacklistModel.fromEntity(reverted).toMap());
-      } catch (_) {}
+      await fs
+          .collection('blacklist')
+          .doc(blacklistId)
+          .set(BlacklistModel.fromEntity(reverted).toMap());
     }
+    _records[blacklistId] = reverted;
     return reverted;
   }
 

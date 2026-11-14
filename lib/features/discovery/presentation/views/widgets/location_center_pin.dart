@@ -45,7 +45,7 @@ class LocationCenterPin extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         softWrap: false,
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                            fontWeight: FontWeight.w700, color: AppColors.surfaceLight)),
+                            fontWeight: FontWeight.w500, color: AppColors.surfaceLight)),
                   ),
                 ),
                 const SizedBox(height: 2),

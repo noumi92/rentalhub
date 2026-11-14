@@ -33,11 +33,16 @@ class FleetMetricsRow extends StatelessWidget {
               icon: Icons.directions_car_rounded,
               color: Theme.of(context).colorScheme.primary),
           const SizedBox(width: 8),
+          // Item 4: the Available value is small text in the card
+          // colour, so it uses the readable success TEXT token (light
+          // #047857 5.48:1, dark #34D399) — never the #10B981 fill as
+          // text (2.54:1). Same precedent as the On-Rent card below.
           FleetMetricCard(
               label: l10n.available,
               value: l10n.fleetAvailableReady(availableCount),
               icon: Icons.check_circle_outline_rounded,
-              color: AppColors.accentSuccess),
+              color: AppColors.successTextFor(
+                  Theme.of(context).brightness)),
           const SizedBox(width: 8),
           // Audit §4: the On-Rent value is small text, so it uses the
           // brightness-aware orange TEXT token in both modes (light

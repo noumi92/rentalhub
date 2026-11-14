@@ -47,6 +47,16 @@ class RevenueKpiCard extends StatelessWidget {
     };
     final trendIcon = trendStyle.$1;
     final trendColor = trendStyle.$2;
+    // Item 4: the accent colour is also the icon colour, on a 10%
+    // tint of itself. The raw fills fail as icons in light mode
+    // (accentSuccess 2.54:1, warning 2.15:1, vs the 3:1 non-text
+    // minimum), so the icon uses the readable text variant; the tint
+    // background keeps the raw colour.
+    final iconColor = color == AppColors.accentSuccess
+        ? AppColors.successTextFor(brightness)
+        : color == AppColors.warning
+            ? AppColors.warningTextFor(brightness)
+            : color;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -67,13 +77,13 @@ class RevenueKpiCard extends StatelessWidget {
                 child: Text(title,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700)),
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500)),
               ),
               const SizedBox(width: 8),
               CircleAvatar(
                 radius: 16,
                 backgroundColor: color.withAlpha(25),
-                child: Icon(icon, size: 16, color: color),
+                child: Icon(icon, size: 16, color: iconColor),
               ),
             ],
           ),
@@ -81,7 +91,7 @@ class RevenueKpiCard extends StatelessWidget {
           FittedBox(
             fit: BoxFit.scaleDown,
             alignment: Alignment.centerLeft,
-            child: Text(amount, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900)),
+            child: Text(amount, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600)),
           ),
           const SizedBox(height: 4),
           Row(
@@ -94,7 +104,7 @@ class RevenueKpiCard extends StatelessWidget {
                 child: Text(changeLabel,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700, color: trendColor)),
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w500, color: trendColor)),
               ),
             ],
           ),

@@ -69,7 +69,7 @@ class BookingApprovedView extends StatelessWidget {
                                       .textTheme
                                       .titleSmall
                                       ?.copyWith(
-                                          fontWeight: FontWeight.w800,
+                                          fontWeight: FontWeight.w600,
                                           color: Colors.white),
                                 ),
                                 const SizedBox(height: 2),

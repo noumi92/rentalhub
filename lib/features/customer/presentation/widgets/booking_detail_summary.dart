@@ -80,7 +80,7 @@ class BookingDetailSummary extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.end,
               style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    fontWeight: bold ? FontWeight.w800 : FontWeight.w600,
+                    fontWeight: bold ? FontWeight.w500 : FontWeight.w400,
                   ),
             ),
           ),
@@ -116,7 +116,7 @@ class BookingDetailRejectionCard extends StatelessWidget {
       ),
       child: Text(
         '${prefix ?? l10n.summaryDeclinedPrefix}$reason',
-        style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+        style: Theme.of(context).textTheme.bodyMedium,
       ),
     );
   }
@@ -140,7 +140,7 @@ class BookingDetailInfoCard extends StatelessWidget {
       ),
       child: Text(
         text,
-        style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+        style: Theme.of(context).textTheme.bodyMedium,
       ),
     );
   }

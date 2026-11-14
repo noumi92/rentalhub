@@ -135,7 +135,14 @@ class RouteNames {
   static const String adminLogin = '/admin/login';
   static const String adminDashboard = '/admin/dashboard';
   static const String adminTeam = '/admin/team';
+  // F-M5: the invite accept screen — a super admin grants the role
+  // from a shared invite link.
+  static const String adminInviteAccept = '/admin/accept-invite';
   static const String adminApprovals = '/admin/approvals';
+  // Item 6 — customer KYC review: the queue of `kyc_documents`
+  // submissions waiting for a decision, and one submission's detail.
+  static const String adminKycReview = '/admin/kyc-review';
+  static const String adminKycReviewDetail = '/admin/kyc-review/:customerId';
   static const String adminCars = '/admin/cars';
   static const String adminShopDetail = '/admin/shops/:shopId';
   static const String adminCustomers = '/admin/customers';

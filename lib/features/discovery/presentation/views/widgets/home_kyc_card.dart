@@ -106,7 +106,7 @@ class HomeKycCard extends StatelessWidget {
                     style: Theme.of(context)
                         .textTheme
                         .titleMedium
-                        ?.copyWith(fontWeight: FontWeight.w800),
+                        ?.copyWith(fontWeight: FontWeight.w600),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -128,7 +128,7 @@ class HomeKycCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style:
                           Theme.of(context).textTheme.labelSmall?.copyWith(
-                                fontWeight: FontWeight.w800,
+                                fontWeight: FontWeight.w500,
                                 color: _statusColor(context),
                               ),
                     ),

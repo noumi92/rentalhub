@@ -20,7 +20,7 @@ class SuccessBanner extends StatelessWidget {
     super.key,
     required this.title,
     this.lines = const [],
-    this.lastLineBold = false,
+    this.lastLineMedium = false,
   });
 
   /// The banner headline (e.g. "Agreement Signed").
@@ -29,9 +29,9 @@ class SuccessBanner extends StatelessWidget {
   /// Body lines under the headline, in order.
   final List<String> lines;
 
-  /// When true, the last body line renders bold (e.g. the return-due
-  /// line on the Rental Started banner).
-  final bool lastLineBold;
+  /// When true, the last body line renders medium (e.g. the return-due
+  /// line on the Rental Started banner) instead of regular.
+  final bool lastLineMedium;
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +54,7 @@ class SuccessBanner extends StatelessWidget {
             title,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w900,
+                  fontWeight: FontWeight.w600,
                   color: onContainer,
                 ),
           ),
@@ -64,8 +64,8 @@ class SuccessBanner extends StatelessWidget {
               lines[i],
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontWeight: lastLineBold && i == lines.length - 1
-                        ? FontWeight.w700
+                    fontWeight: lastLineMedium && i == lines.length - 1
+                        ? FontWeight.w500
                         : null,
                     color: onContainer,
                   ),

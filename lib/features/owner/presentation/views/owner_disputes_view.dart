@@ -166,7 +166,7 @@ class _OwnerDisputesViewState extends State<OwnerDisputesView> {
       onSelected: (_) => setState(() => _filter = value),
       selectedColor: AppColors.primary,
       labelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
-          fontWeight: FontWeight.w700,
+          fontWeight: FontWeight.w500,
           color: selected
               ? Colors.white
               : Theme.of(context).colorScheme.onSurface),

@@ -63,7 +63,7 @@ class OnboardingPhotoUploadBox extends StatelessWidget {
                           Flexible(
                             child: Text(
                               label,
-                              style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.white, fontWeight: FontWeight.w800),
+                              style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.white, fontWeight: FontWeight.w500),
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
@@ -96,7 +96,7 @@ class OnboardingPhotoUploadBox extends StatelessWidget {
                   const SizedBox(height: 6),
                   Text(
                     label,
-                    style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800),
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500),
                     textAlign: TextAlign.center,
                   ),
                   Text(

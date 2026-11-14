@@ -62,7 +62,7 @@ class ApprovedAccountsBody extends StatelessWidget {
                               style: Theme.of(context)
                                   .textTheme
                                   .titleSmall
-                                  ?.copyWith(fontWeight: FontWeight.w800),
+                                  ?.copyWith(fontWeight: FontWeight.w600),
                             ),
                             const SizedBox(height: 2),
                             Text(
@@ -77,7 +77,7 @@ class ApprovedAccountsBody extends StatelessWidget {
                                   .textTheme
                                   .labelMedium
                                   ?.copyWith(
-                                      fontWeight: FontWeight.w600,
+                                      fontWeight: FontWeight.w500,
                                       color: AppColors.successTextFor(
                                           Theme.of(context).brightness)),
                             ),
@@ -97,7 +97,7 @@ class ApprovedAccountsBody extends StatelessWidget {
                   style: Theme.of(context)
                       .textTheme
                       .titleSmall
-                      ?.copyWith(fontWeight: FontWeight.w800),
+                      ?.copyWith(fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 4),
                 Text(

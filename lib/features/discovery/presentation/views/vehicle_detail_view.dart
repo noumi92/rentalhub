@@ -105,7 +105,7 @@ class _VehicleDetailViewState extends State<VehicleDetailView> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(v.displayName, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900)),
+                                    Text(v.displayName, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600)),
                                     const SizedBox(height: 4),
                                     Text(l10n.vehicleShowroom(widget.shopName), style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500, color: Theme.of(context).colorScheme.onSurfaceVariant)),
                                   ],
@@ -118,7 +118,7 @@ class _VehicleDetailViewState extends State<VehicleDetailView> {
                                   borderRadius: BorderRadius.circular(10),
                                   border: Border.all(color: AppColors.accentSuccess.withValues(alpha: 0.3)),
                                 ),
-                                child: Text(_statusLabel(v.status), style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.successTextFor(Theme.of(context).brightness))),
+                                child: Text(_statusLabel(v.status), style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500, color: AppColors.successTextFor(Theme.of(context).brightness))),
                               ),
                             ],
                           ),
@@ -179,7 +179,7 @@ class _VehicleDetailViewState extends State<VehicleDetailView> {
         children: [
           const Icon(Icons.check_rounded, size: 13, color: AppColors.secondary),
           const SizedBox(width: 4),
-          Text(label, style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600)),
+          Text(label, style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w500)),
         ],
       ),
     );

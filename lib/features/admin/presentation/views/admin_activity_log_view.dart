@@ -1,16 +1,14 @@
-import 'dart:convert';
+import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:share_plus/share_plus.dart';
 
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/responsive.dart';
-import '../../../../core/widgets/app_feedback.dart';
-import '../../../../core/widgets/app_state_views.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../data/datasources/admin_remote_data_source.dart';
+import '../widgets/admin_activity_log_filters.dart';
+import '../widgets/admin_audit_log_list.dart';
 import '../widgets/admin_shell.dart';
 
 /// Phase A (A5) — the activity log: every admin action, newest first,
@@ -25,10 +23,28 @@ class AdminActivityLogView extends StatefulWidget {
 }
 
 class _AdminActivityLogViewState extends State<AdminActivityLogView> {
+  static const _pageSize = 50;
+
   final _searchController = TextEditingController();
+  final _actorController = TextEditingController();
+  Timer? _actorTimer;
   List<AuditLogEntry> _entries = [];
   bool _isLoading = true;
+  bool _isLoadingMore = false;
   bool _hasError = false;
+  String? _actionPrefix;
+  String _actorQuery = '';
+  DateTime? _from;
+  DateTime? _to;
+  int _totalMatching = 0;
+  Object? _cursor;
+  bool _hasMore = false;
+
+  bool get _hasServerFilter =>
+      _actionPrefix != null ||
+      _actorQuery.isNotEmpty ||
+      _from != null ||
+      _to != null;
 
   @override
   void initState() {
@@ -39,24 +55,108 @@ class _AdminActivityLogViewState extends State<AdminActivityLogView> {
   @override
   void dispose() {
     _searchController.dispose();
+    _actorController.dispose();
+    _actorTimer?.cancel();
     super.dispose();
   }
 
-  Future<void> _load() async {
-    if (!_isLoading) setState(() => _hasError = false);
+  // F-m2 + F-m3: the log pages (50 at a time) instead of stopping
+  // at a silent 200-row cap, and the action/actor/date filters run
+  // server-side — the old text search only ever covered the loaded
+  // page, and now covers the loaded (filtered) entries.
+  Future<void> _load({bool reset = true}) async {
+    if (reset) {
+      setState(() {
+        _isLoading = true;
+        _hasError = false;
+        _entries = [];
+        _cursor = null;
+        _hasMore = false;
+        _totalMatching = 0;
+      });
+    } else {
+      setState(() => _isLoadingMore = true);
+    }
     try {
-      final entries = await sl<AdminRemoteDataSource>().getAuditLogs();
+      final ds = sl<AdminRemoteDataSource>();
+      if (_hasServerFilter) {
+        // The To bound is the end of the picked day, not midnight
+        // at its start — otherwise the whole To day is dropped
+        // from the filtered log (same class as F-M17).
+        final filterTo = _to == null
+            ? null
+            : DateTime(_to!.year, _to!.month, _to!.day, 23, 59, 59);
+        final entries = await ds.getAuditLogsFiltered(
+          actionPrefix: _actionPrefix,
+          actorEmail: _actorQuery.isEmpty ? null : _actorQuery,
+          from: _from,
+          to: filterTo,
+        );
+        final total = await ds.countAuditLogsFiltered(
+          actionPrefix: _actionPrefix,
+          actorEmail: _actorQuery.isEmpty ? null : _actorQuery,
+          from: _from,
+          to: filterTo,
+        );
+        _setLoaded(entries, total: total);
+        return;
+      }
+      final page = await ds.getAuditLogsPage(
+        limit: _pageSize,
+        cursor: reset ? null : _cursor,
+      );
+      _setLoaded(
+        reset ? page.items : [..._entries, ...page.items],
+        cursor: page.cursor,
+        hasMore: page.hasMore,
+      );
+    } catch (_) {
       if (mounted) {
         setState(() {
-          _entries = entries;
+          _hasError = true;
           _isLoading = false;
+          _isLoadingMore = false;
         });
       }
-    } catch (_) {
-      if (mounted) setState(() => _hasError = true);
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
     }
+  }
+
+  void _setLoaded(
+    List<AuditLogEntry> entries, {
+    int total = 0,
+    Object? cursor,
+    bool hasMore = false,
+  }) {
+    if (!mounted) return;
+    setState(() {
+      _entries = entries;
+      _totalMatching = total;
+      _cursor = cursor;
+      _hasMore = hasMore;
+      _isLoading = false;
+      _isLoadingMore = false;
+    });
+  }
+
+  void _onActorChanged(String value) {
+    _actorTimer?.cancel();
+    _actorTimer = Timer(const Duration(milliseconds: 400), () {
+      final query = value.trim();
+      if (query == _actorQuery) return;
+      setState(() => _actorQuery = query);
+      _load();
+    });
+  }
+
+  void _clearFilters() {
+    _actorController.clear();
+    setState(() {
+      _actionPrefix = null;
+      _actorQuery = '';
+      _from = null;
+      _to = null;
+    });
+    _load();
   }
 
   List<AuditLogEntry> get _visible {
@@ -70,164 +170,68 @@ class _AdminActivityLogViewState extends State<AdminActivityLogView> {
     }).toList();
   }
 
-  Future<void> _exportCsv() async {
-    final csv = AdminRemoteDataSource.auditLogsCsv(_visible);
-    try {
-      await SharePlus.instance.share(
-        ShareParams(
-          files: [
-            XFile.fromData(
-              utf8.encode(csv),
-              name: 'rentalhub-audit-log.csv',
-              mimeType: 'text/csv',
-            ),
-          ],
-        ),
-      );
-    } catch (_) {
-      if (mounted) {
-        AppFeedback.showError(context, 'Could not share the CSV file.');
-      }
-    }
-  }
-
-  Widget _searchField() {
-    return TextField(
-      controller: _searchController,
-      onChanged: (_) => setState(() {}),
-      decoration: InputDecoration(
-        hintText: 'Search by action, admin, or target…',
-        prefixIcon: const Icon(Icons.search_rounded),
-        filled: true,
-        fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Theme.of(context).dividerColor),
-        ),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      ),
-    );
-  }
-
-  Widget _exportButton() {
-    return OutlinedButton.icon(
-      onPressed: _visible.isEmpty ? null : _exportCsv,
-      icon: const Icon(Icons.download_rounded, size: 18),
-      label: const Text('Export CSV'),
-    );
-  }
-
-  // Locale-aware: the old hand-rolled English month list ignored the
-  // admin's locale (Urdu users saw English month names).
-  String _formatDate(BuildContext context, DateTime? date) {
-    if (date == null) return '';
-    final locale = Localizations.localeOf(context).languageCode;
-    return DateFormat('d MMM yyyy HH:mm', locale).format(date);
-  }
-
   @override
   Widget build(BuildContext context) {
     final compact =
         windowSizeClassOf(context) == WindowSizeClass.compact;
+    final l10n = AppLocalizations.of(context);
+    final searching = _searchController.text.trim().isNotEmpty;
+    final countLabel = _entries.isEmpty || _isLoading || _hasError
+        ? null
+        : searching
+            ? (l10n?.adminAuditShowing(_visible.length) ??
+                'Showing ${_visible.length}')
+            : _hasServerFilter
+                ? (l10n?.adminAuditMatching(_totalMatching) ??
+                    '$_totalMatching matching entries')
+                : (l10n?.adminAuditShowing(_entries.length) ??
+                    'Showing ${_entries.length}');
     return AdminShell(
       activeRoute: RouteNames.adminActivity,
-      title: 'Activity Log',
-      subtitle: 'Every admin action, newest first — immutable',
+      title: l10n?.admin2_navActivityLog ?? 'Activity Log',
+      subtitle: l10n?.admin2_activitySubtitle ??
+          'Every admin action, newest first — immutable',
       onRefresh: _load,
       child: Padding(
         padding: EdgeInsets.all(compact ? 16 : 24),
         child: Column(
           children: [
-            // Compact: search + Export CSV stacked — side by side
-            // they leave the search ~160px at 360px and overflow
-            // at larger text scales.
-            if (compact) ...[
-              _searchField(),
-              const SizedBox(height: 12),
-              SizedBox(
-                width: double.infinity,
-                child: _exportButton(),
-              ),
-            ] else
-              Row(
-                children: [
-                  Expanded(child: _searchField()),
-                  const SizedBox(width: 12),
-                  _exportButton(),
-                ],
-              ),
-            SizedBox(height: 16),
+            AdminActivityLogFilters(
+              searchController: _searchController,
+              onSearchChanged: (_) => setState(() {}),
+              actionPrefix: _actionPrefix,
+              onActionChanged: (value) {
+                setState(() => _actionPrefix = value);
+                _load();
+              },
+              actorController: _actorController,
+              onActorChanged: _onActorChanged,
+              from: _from,
+              to: _to,
+              onDatesChanged: (from, to) {
+                setState(() {
+                  _from = from;
+                  _to = to;
+                });
+                _load();
+              },
+              onClearFilters: _clearFilters,
+              exportEntries: _visible,
+              compact: compact,
+            ),
+            const SizedBox(height: 16),
             Expanded(
-              child: _isLoading
-                  ? const AppLoadingState()
-                  : _hasError
-                      ? AppErrorState(
-                          message: 'Could not load the activity log.',
-                          onRetry: _load,
-                        )
-                      : _visible.isEmpty
-                          ? const AppEmptyState(
-                              title: 'No audit entries yet',
-                              message:
-                                  'Admin actions will appear here as they happen.',
-                            )
-                          : ListView.separated(
-                          itemCount: _visible.length,
-                          separatorBuilder: (_, __) =>
-                              const SizedBox(height: 10),
-                          itemBuilder: (context, i) {
-                            final e = _visible[i];
-                            final subtitle =
-                                '${e.actorEmail} • ${e.targetType} ${e.targetId}'
-                                '${e.detail.isEmpty ? '' : '\n${e.detail}'}'
-                                '${e.decision == null ? '' : '\nDecision: ${e.decision}'}';
-                            return Card(
-                              margin: EdgeInsets.zero,
-                              elevation: 0,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                side: BorderSide(
-                                    color: Theme.of(context).dividerColor),
-                              ),
-                              // Compact: the trailing date squeezes the
-                              // entry text at 360px (worse at 2.0x
-                              // scale), so the date joins the subtitle.
-                              child: ListTile(
-                                leading: CircleAvatar(
-                                  backgroundColor: AppColors.primary
-                                      .withValues(alpha: 0.12),
-                                  child: const Icon(Icons.history_rounded,
-                                      size: 20),
-                                ),
-                                title: Text(
-                                  e.action,
-                                  style: const TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w800,
-                                      ),
-                                ),
-                                subtitle: Text(
-                                  compact
-                                      ? '$subtitle\n${_formatDate(context, e.createdAt)}'
-                                      : subtitle,
-                                  style: TextStyle(
-                                      fontSize: 12,
-                                      color: Theme.of(context).colorScheme.onSurfaceVariant),
-                                ),
-                                isThreeLine: true,
-                                trailing: compact
-                                    ? null
-                                    : Text(
-                                        _formatDate(context, e.createdAt),
-                                        style: TextStyle(
-                                            fontSize: 11,
-                                            color: Theme.of(context).colorScheme.onSurfaceVariant),
-                                      ),
-                              ),
-                            );
-                          },
-                        ),
+              child: AdminAuditLogList(
+                isLoading: _isLoading,
+                hasError: _hasError,
+                onRetry: _load,
+                entries: _visible,
+                countLabel: countLabel,
+                compact: compact,
+                hasMore: _hasMore && !_hasServerFilter,
+                isLoadingMore: _isLoadingMore,
+                onLoadMore: () => _load(reset: false),
+              ),
             ),
           ],
         ),

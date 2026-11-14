@@ -50,7 +50,7 @@ class SubscriptionPaymentIssueBanner extends StatelessWidget {
                         .textTheme
                         .titleSmall
                         ?.copyWith(
-                            fontWeight: FontWeight.w800,
+                            fontWeight: FontWeight.w600,
                             color: Theme.of(context)
                                 .colorScheme
                                 .onErrorContainer)),
@@ -102,7 +102,7 @@ class CarLimitSheet {
                 style: Theme.of(context)
                     .textTheme
                     .titleMedium
-                    ?.copyWith(fontWeight: FontWeight.w900)),
+                    ?.copyWith(fontWeight: FontWeight.w600)),
             const SizedBox(height: 8),
             Text(l10n.subscriptionCarLimitBody(planName, '$carLimit'),
                 style: Theme.of(context).textTheme.bodyMedium),
@@ -167,7 +167,7 @@ class _UsageBar extends StatelessWidget {
             style: Theme.of(context)
                 .textTheme
                 .labelMedium
-                ?.copyWith(fontWeight: FontWeight.w800)),
+                ?.copyWith(fontWeight: FontWeight.w500)),
         const SizedBox(height: 4),
         ClipRRect(
           borderRadius: BorderRadius.circular(6),

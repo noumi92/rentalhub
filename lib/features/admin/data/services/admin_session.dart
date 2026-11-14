@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../../domain/admin_permissions.dart';
+import 'admin_audit_service.dart';
 
 /// Phase A (A1) — in-session TOTP gate for the admin panel, ported from
 /// the old repo (noumi92/renthub Batch 14) and adapted to this repo.
@@ -30,6 +31,16 @@ abstract final class AdminSession {
   static String? _totpVerifiedUid;
   static String? _cachedRole;
   static String? _cachedRoleUid;
+
+  /// F-m9 — how long a resolved admin role is trusted before the
+  /// guard and the decision methods re-read the users doc. A role
+  /// revoked in the team view used to stay live until the admin
+  /// reloaded or signed out, because the role was cached for the
+  /// whole session. Five minutes bounds that window; a revocation
+  /// also clears the cache entry for the revoked uid immediately
+  /// (see [clearCachedRole]).
+  static const _roleCacheTtl = Duration(minutes: 5);
+  static DateTime? _cachedRoleAt;
 
   /// A Firestore read for the router guard must never hang the route:
   /// after a tab is backgrounded the connection can go stale and a
@@ -59,14 +70,36 @@ abstract final class AdminSession {
     _totpVerifiedUid = null;
     _cachedRole = null;
     _cachedRoleUid = null;
+    _cachedRoleAt = null;
+  }
+
+  /// F-m9 — drop the cached role for one uid, so a revocation made
+  /// in the team view takes effect without waiting for the TTL.
+  /// The cache lives in this browser tab only, so this clears the
+  /// revoker's copy; the revoked admin's own live session re-reads
+  /// the role once its TTL expires (see [_roleCacheTtl]).
+  static void clearCachedRole(String uid) {
+    if (_cachedRoleUid == uid) {
+      _cachedRole = null;
+      _cachedRoleUid = null;
+      _cachedRoleAt = null;
+    }
   }
 
   /// The signed-in user's admin role, from their users doc
   /// (`admin_role`) with the custom claim as a fallback. Cached per
-  /// uid for the session so the router redirect does not read Firestore
-  /// on every navigation; cleared on sign-out.
-  static Future<String?> resolveAdminRole(User user) async {
-    if (_cachedRoleUid == user.uid) return _cachedRole;
+  /// uid for [_roleCacheTtl] so the router redirect does not read
+  /// Firestore on every navigation; cleared on sign-out, on role
+  /// revocation ([clearCachedRole]), or with [forceRefresh].
+  static Future<String?> resolveAdminRole(User user,
+      {bool forceRefresh = false}) async {
+    if (!forceRefresh &&
+        _cachedRoleUid == user.uid &&
+        _cachedRole != null &&
+        _cachedRoleAt != null &&
+        DateTime.now().difference(_cachedRoleAt!) < _roleCacheTtl) {
+      return _cachedRole;
+    }
     try {
       final doc = await guardRead(() => FirebaseFirestore.instance
           .collection('users')
@@ -77,6 +110,7 @@ abstract final class AdminSession {
       if (docRole != null && AdminPermissions.allRoles.contains(docRole)) {
         _cachedRole = docRole;
         _cachedRoleUid = user.uid;
+        _cachedRoleAt = DateTime.now();
         return docRole;
       }
       final token = await user.getIdTokenResult();
@@ -85,12 +119,59 @@ abstract final class AdminSession {
           AdminPermissions.allRoles.contains(claimRole)) {
         _cachedRole = claimRole;
         _cachedRoleUid = user.uid;
+        _cachedRoleAt = DateTime.now();
         return claimRole;
       }
       return null;
     } catch (_) {
       return null;
     }
+  }
+
+  /// The signed-in admin's role, or null when there is no signed-in
+  /// user or the role cannot be read. Never throws. Views treat null
+  /// as "unknown" (they render as today); [currentAdminCan] treats
+  /// it as "no session to gate" when nobody is signed in, and as
+  /// "not permitted" when a signed-in user's role cannot be read.
+  static Future<String?> resolveCurrentAdminRole() async {
+    User? user;
+    try {
+      user = FirebaseAuth.instance.currentUser;
+    } catch (_) {
+      return null;
+    }
+    if (user == null) return null;
+    return resolveAdminRole(user);
+  }
+
+  /// F-C1 — the data-source backstop for the permission matrix:
+  /// true only when the caller's role holds [permission]. Pass the
+  /// role the view already resolved when one is known; otherwise the
+  /// current session's role is resolved (cached, TTL-bounded).
+  ///
+  /// An explicitly passed role is judged strictly. With no role
+  /// passed: a signed-in user whose role cannot be read is refused
+  /// (fail closed — an outage must not become a privilege), while
+  /// no signed-in user at all proceeds — there is no admin identity
+  /// to gate (the offline / test path, where the data sources fall
+  /// back to in-memory results), and the write attempt itself is
+  /// still judged by the Firestore rules, which require an
+  /// authenticated admin. A direct call by a signed-in support
+  /// admin is refused either way, because their role resolves.
+  static Future<bool> currentAdminCan(AdminPermission permission,
+      {String? adminRole}) async {
+    if (adminRole != null) {
+      return AdminPermissions.can(adminRole, permission);
+    }
+    User? user;
+    try {
+      user = FirebaseAuth.instance.currentUser;
+    } catch (_) {
+      return true;
+    }
+    if (user == null) return true;
+    final role = await resolveAdminRole(user);
+    return AdminPermissions.can(role, permission);
   }
 
   static bool get isTotpVerifiedForCurrentUser {
@@ -135,5 +216,30 @@ abstract final class AdminSession {
           e.code == 'internal';
     }
     return e.toString().contains('Admin functions are unavailable');
+  }
+
+  /// F-M4 — TEMPORARY (same posture as the enrolment fallback, same
+  /// REMOVE-once-live marker): when an enrolled admin's `verifyTotp`
+  /// call fails only because the Functions backend is missing, fall
+  /// back to password-only for this session instead of locking the
+  /// admin out. The in-memory verified flag is set so the router
+  /// guard does not bounce the admin straight back to the TOTP step,
+  /// and an audit entry records that the fallback was used. Returns
+  /// true when the fallback applied; any other failure returns false
+  /// and must still show its error. REMOVE once the TOTP Functions
+  /// are live: first login must verify TOTP again.
+  static Future<bool> tryPasswordOnlyFallback(Object e) async {
+    if (!isFunctionsUnavailable(e)) return false;
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return false;
+    markTotpVerified(user.uid);
+    await AdminAuditService.logAction(
+      action: 'admin_totp_verify_fallback',
+      targetType: 'admin',
+      targetId: user.uid,
+      detail:
+          'TEMPORARY password-only sign-in: verifyTotp unavailable (Functions not deployed).',
+    );
+    return true;
   }
 }

@@ -219,7 +219,7 @@ class _OwnerSettingsViewState extends State<OwnerSettingsView> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(title,
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
           const SizedBox(height: 10),
           child,
         ],
@@ -237,7 +237,7 @@ class _OwnerSettingsViewState extends State<OwnerSettingsView> {
       child: ListTile(
         contentPadding: EdgeInsets.zero,
         leading: Icon(icon),
-        title: Text(label, style: const TextStyle(fontWeight: FontWeight.w700)),
+        title: Text(label, style: const TextStyle(fontWeight: FontWeight.w600)),
         trailing: Icon(isRtl
             ? Icons.chevron_left_rounded
             : Icons.chevron_right_rounded),

@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../../../bookings/data/datasources/booking_remote_data_source.dart';
+import '../../../bookings/domain/entities/booking_entity.dart';
 import '../../../finance/data/datasources/security_deposit_data_source.dart';
 
 /// One line in the customer's wallet ledger.
@@ -63,6 +64,22 @@ class CustomerWalletService {
 
   Future<CustomerWalletSummary> load(String uid) async {
     final bookings = await _bookings.getCustomerBookings(uid);
+    return _build(bookings);
+  }
+
+  /// Live updates (Item 2): the same summary, re-computed on every
+  /// booking change — a submit, an owner approve / payment verify,
+  /// or a queued write landing all flow into the wallet without a
+  /// manual reload. Deposits are still read one-time per emission
+  /// (they have no booking-style live feed yet). Built on `asyncMap`
+  /// (not `await for`): cancelling the subscription must unwind,
+  /// and an `await for` over the change feed never completes its
+  /// cancel.
+  Stream<CustomerWalletSummary> watch(String uid) =>
+      _bookings.streamCustomerBookings(uid).asyncMap(_build);
+
+  Future<CustomerWalletSummary> _build(
+      List<BookingEntity> bookings) async {
     var advancesPaid = 0;
     var escrowHeld = 0;
     final entries = <WalletLedgerEntry>[];

@@ -144,7 +144,6 @@ class CustomCurvedHeader extends StatelessWidget {
                           style:
                               Theme.of(context).textTheme.bodyLarge?.copyWith(
                                     color: Colors.white,
-                                    fontWeight: FontWeight.w800,
                                   ),
                         ),
                       ),
@@ -164,7 +163,7 @@ class CustomCurvedHeader extends StatelessWidget {
                                       .titleSmall
                                       ?.copyWith(
                                         color: Colors.white,
-                                        fontWeight: FontWeight.w800,
+                                        fontWeight: FontWeight.w600,
                                       ),
                                 ),
                                 Text(
@@ -174,7 +173,7 @@ class CustomCurvedHeader extends StatelessWidget {
                                       .labelMedium
                                       ?.copyWith(
                                         color: AppColors.primaryContainer,
-                                        fontWeight: FontWeight.w600,
+                                        fontWeight: FontWeight.w500,
                                       ),
                                 ),
                               ],

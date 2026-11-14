@@ -101,7 +101,7 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
         children: [
           Text(
             l10n.editProfile,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 14),
           TextField(

@@ -212,7 +212,7 @@ class _OwnerReportsViewState extends State<OwnerReportsView> {
                                           .textTheme
                                           .titleSmall
                                           ?.copyWith(
-                                              fontWeight: FontWeight.w800)),
+                                              fontWeight: FontWeight.w600)),
                                   ReportPeriodDropdown(
                                     period: _period,
                                     onChanged: (v) => setState(

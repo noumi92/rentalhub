@@ -161,7 +161,7 @@ void main() {
           }
         }
       }
-      // The tree this was written against has 10 GestureDetectors
+      // The tree this was written against has 11 GestureDetectors
       // (was 12 — two detectors were removed/converted by the
       // 2026-11-13 audit batch; the two removals could not be
       // attributed to a named change, but the substantive assertion
@@ -171,7 +171,10 @@ void main() {
       // user pin's RawGestureDetector and the shop-pin
       // GestureDetector in shops_map_canvas.dart, and the set-location
       // centre pin's GestureDetector in location_center_pin.dart).
-      expect(total, 10);
+      // The 11th is the appeal-evidence photo detector in
+      // blacklist_appeal_dialog.dart (AD-m15), Semantics-labelled
+      // with the fleet-photo tooltip like shop_fleet_photos.dart.
+      expect(total, 11);
       expect(violations, isEmpty,
           reason: 'Wrap the GestureDetector in Semantics(button: true, '
               'label: ...) or convert it to an IconButton with a '

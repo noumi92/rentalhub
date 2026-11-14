@@ -147,7 +147,7 @@ class _CustomerReputationViewState extends State<CustomerReputationView> {
                                   style: Theme.of(context)
                                       .textTheme
                                       .displayLarge
-                                      ?.copyWith(fontWeight: FontWeight.w900),
+                                      ?.copyWith(fontWeight: FontWeight.w700),
                                 ),
                                 const SizedBox(height: 2),
                                 Text(
@@ -158,7 +158,6 @@ class _CustomerReputationViewState extends State<CustomerReputationView> {
                                       .textTheme
                                       .bodyMedium
                                       ?.copyWith(
-                                          fontWeight: FontWeight.w700,
                                           color: AppColors.successTextFor(
                                               Theme.of(context).brightness)),
                                 ),
@@ -193,7 +192,7 @@ class _CustomerReputationViewState extends State<CustomerReputationView> {
                                     style: Theme.of(context)
                                         .textTheme
                                         .titleSmall
-                                        ?.copyWith(fontWeight: FontWeight.w800),
+                                        ?.copyWith(fontWeight: FontWeight.w600),
                                   ),
                                   const SizedBox(height: 14),
                                   ReputationScoreBar(
@@ -230,7 +229,7 @@ class _CustomerReputationViewState extends State<CustomerReputationView> {
                                     style: Theme.of(context)
                                         .textTheme
                                         .labelSmall
-                                        ?.copyWith(fontWeight: FontWeight.w600),
+                                        ?.copyWith(fontWeight: FontWeight.w500),
                                   ),
                                 ),
                               ],

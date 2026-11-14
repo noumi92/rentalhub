@@ -69,7 +69,7 @@ class BookingSummaryCard extends StatelessWidget {
                   children: [
                     Text(
                       carName,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
                     ),
                     const SizedBox(height: 2),
                     Text(
@@ -149,7 +149,7 @@ class BookingSummaryCard extends StatelessWidget {
             label,
             style: Theme.of(context).textTheme.labelMedium?.copyWith(
               color: isBold ? Theme.of(context).colorScheme.onSurface : Theme.of(context).colorScheme.onSurfaceVariant,
-              fontWeight: isBold ? FontWeight.w800 : FontWeight.w500,
+              fontWeight: isBold ? FontWeight.w500 : FontWeight.w400,
             ),
           ),
         ),
@@ -162,7 +162,7 @@ class BookingSummaryCard extends StatelessWidget {
             textAlign: TextAlign.end,
             style: Theme.of(context).textTheme.labelMedium?.copyWith(
               color: color ?? Theme.of(context).colorScheme.onSurface,
-              fontWeight: isBold ? FontWeight.w900 : FontWeight.w700,
+              fontWeight: isBold ? FontWeight.w500 : FontWeight.w400,
             ),
           ),
         ),

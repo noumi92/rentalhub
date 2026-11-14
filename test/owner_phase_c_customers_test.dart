@@ -284,6 +284,15 @@ House 12, Street 4, Gulberg III, Lahore
 
     testWidgets('a blacklisted CNIC cannot be added as guarantor',
         (tester) async {
+      // F-M1: no seeded sample case any more — report the CNIC on
+      // the shared data source before pumping, so the picker finds it.
+      await di.sl<BlacklistRemoteDataSource>().reportCustomerToBlacklist(
+        reportedByShopId: 'shop-1',
+        cnicNumber: '35201-9999999-1',
+        phoneNumber: '0300-0000000',
+        reasonCategory: 'Default & Car Impoundment',
+        description: 'Test report.',
+      );
       await tester.pumpWidget(
         MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -315,10 +324,10 @@ House 12, Street 4, Gulberg III, Lahore
   group('Phase C (C4) — blacklist made real', () {
     test('report, lookup, my-reports and revert', () async {
       final ds = BlacklistRemoteDataSource();
-      // The offline sample is still there.
-      expect(await ds.isCnicBlacklisted('35201-9999999-1'), isTrue);
-      final record = await ds.getBlacklistRecordByCnic('35201-9999999-1');
-      expect(record?.blacklistId, 'BLK-1001');
+      // F-M1: no seeded sample — a fresh data source knows nothing
+      // until a report lands.
+      expect(await ds.isCnicBlacklisted('35201-9999999-1'), isFalse);
+      expect(await ds.getBlacklistRecordByCnic('35201-9999999-1'), isNull);
 
       final reported = await ds.reportCustomerToBlacklist(
         reportedByShopId: 'shop-c4',

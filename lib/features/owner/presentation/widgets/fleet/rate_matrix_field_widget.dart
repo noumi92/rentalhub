@@ -41,7 +41,6 @@ class RateMatrixFieldWidget extends StatelessWidget {
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
                     color: enabled ? Theme.of(context).colorScheme.onSurface : Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
@@ -71,16 +70,14 @@ class RateMatrixFieldWidget extends StatelessWidget {
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               textAlign: TextAlign.end,
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight.w600,
                 // Audit §6: prices are the most important content —
                 // onSurface, never small orange text (~3:1).
                 color: Theme.of(context).colorScheme.onSurface,
               ),
               decoration: InputDecoration(
                 prefixText: 'Rs. ',
-                prefixStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
+                prefixStyle: Theme.of(context).textTheme.bodyMedium,
                 isDense: true,
                 filled: true,
                 fillColor: enabled

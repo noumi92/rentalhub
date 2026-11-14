@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:rentalhub/core/di/injection_container.dart' as di;
 import 'package:rentalhub/core/di/injection_container.dart';
 import 'package:rentalhub/core/routing/route_names.dart';
+import 'package:rentalhub/features/admin/data/datasources/admin_pagination.dart';
 import 'package:rentalhub/features/admin/data/datasources/admin_people_data_source.dart';
 import 'package:rentalhub/features/admin/data/datasources/admin_shops_data_source.dart';
 import 'package:rentalhub/features/admin/domain/trust_score_calculator.dart';
@@ -458,6 +459,7 @@ class _FakeShopsDataSource extends AdminShopsDataSource {
     required String shopId,
     required String decision,
     String reason = '',
+    String? adminRole,
   }) async =>
       true;
 
@@ -466,6 +468,7 @@ class _FakeShopsDataSource extends AdminShopsDataSource {
     required String shopId,
     required bool suspended,
     required String reason,
+    String? adminRole,
   }) async =>
       true;
 }
@@ -477,4 +480,25 @@ class _FakePeopleDataSource extends AdminPeopleDataSource {
 
   @override
   Future<List<CustomerModel>> getCustomers() async => customers;
+
+  // The customers view pages through getCustomersPage now (F-m2) —
+  // the base implementation returns an empty page with no Firestore,
+  // so the fake answers with the seeded customers as rows.
+  @override
+  Future<AdminPage<AdminCustomerRow>> getCustomersPage({
+    int limit = 20,
+    Object? cursor,
+    String cnicFilter = 'all',
+  }) async =>
+      AdminPage(
+        items: customers
+            .map((c) => AdminCustomerRow(
+                  customer: c,
+                  storedTrustScore: null,
+                  isBlacklisted: false,
+                  watchlisted: false,
+                ))
+            .toList(),
+        hasMore: false,
+      );
 }

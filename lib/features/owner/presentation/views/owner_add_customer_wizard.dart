@@ -131,7 +131,7 @@ class _OwnerAddCustomerWizardState extends State<OwnerAddCustomerWizard> {
           child: Center(
             child: done
                 ? const Icon(Icons.check_rounded, size: 16, color: Colors.white)
-                : Text('${index + 1}', style: TextStyle(color: current ? Colors.white : color, fontWeight: FontWeight.w800, fontSize: 13)),
+                : Text('${index + 1}', style: TextStyle(color: current ? Colors.white : color, fontSize: 13)),
           ),
         ),
         const SizedBox(height: 4),
@@ -142,7 +142,7 @@ class _OwnerAddCustomerWizardState extends State<OwnerAddCustomerWizard> {
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
           textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 11, fontWeight: current ? FontWeight.w800 : FontWeight.w600, color: color),
+          style: TextStyle(fontSize: 11, fontWeight: FontWeight.w500, color: color),
         ),
       ],
     );

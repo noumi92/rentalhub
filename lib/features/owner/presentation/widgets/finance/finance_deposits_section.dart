@@ -29,7 +29,7 @@ class FinanceDepositsSection extends StatelessWidget {
       children: [
         Text(l10n.financeSecurityDeposits,
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w800,
+              fontWeight: FontWeight.w600,
             )),
         const SizedBox(height: 8),
         Container(
@@ -64,7 +64,7 @@ class FinanceDepositsSection extends StatelessWidget {
           children: [
             Text(label,
                 style: const TextStyle(
-                    fontSize: 13, fontWeight: FontWeight.w800)),
+                    fontSize: 13)),
             Text(count,
                 style: TextStyle(
                     fontSize: 11, color: Theme.of(context).colorScheme.onSurfaceVariant)),
@@ -73,7 +73,6 @@ class FinanceDepositsSection extends StatelessWidget {
         Text(l10n.amountRs(formatRs(amount)),
             style: const TextStyle(
                 fontSize: 13,
-                fontWeight: FontWeight.w900,
                 )),
       ],
     );

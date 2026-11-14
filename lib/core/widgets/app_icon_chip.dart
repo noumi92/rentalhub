@@ -68,7 +68,7 @@ class AppIconChip extends StatelessWidget {
                             .labelSmall
                             ?.copyWith(
                               color: Colors.white,
-                              fontWeight: FontWeight.w900,
+                              fontWeight: FontWeight.w500,
                             ),
                       ),
                     )
@@ -141,7 +141,6 @@ class AppInitialChip extends StatelessWidget {
         initial.isEmpty ? 'U' : initial[0].toUpperCase(),
         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
               color: foreground ?? Colors.white,
-              fontWeight: FontWeight.w800,
             ),
       ),
     );

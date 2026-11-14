@@ -180,7 +180,7 @@ class _KycSubmissionFormState extends State<KycSubmissionForm> {
         children: [
           Text(
             l10n.kycCnicNumber,
-            style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800),
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500),
           ),
           const SizedBox(height: 6),
           TextField(

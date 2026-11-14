@@ -53,7 +53,7 @@ class CashClosingSummaryCard extends StatelessWidget {
           Text(l10n.amountRs(formatRs(expectedCash)),
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                 color: Colors.white,
-                fontWeight: FontWeight.w900,
+                fontWeight: FontWeight.w500,
               )),
           const SizedBox(height: 4),
           // Audit §26: the expected figure was opaque — the
@@ -87,18 +87,18 @@ class CashClosingSummaryCard extends StatelessWidget {
     if (diff == 0) {
       return Text(l10n.financeClosingCounted(formatRs(counted ?? 0), formatRs(0)),
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Colors.white70, fontWeight: FontWeight.w700));
+              color: Colors.white70));
     }
     if (diff < 0) {
       return Text(l10n.cashClosingShortBy(formatRs(-diff)),
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
               color: AppColors.dangerTextFor(dark),
-              fontWeight: FontWeight.w800));
+              ));
     }
     return Text(l10n.cashClosingOverBy(formatRs(diff)),
         style: Theme.of(context).textTheme.bodySmall?.copyWith(
             color: AppColors.successTextFor(dark),
-            fontWeight: FontWeight.w800));
+            ));
   }
 }
 
@@ -122,14 +122,14 @@ class CashClosingRow extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text('${closing.date.day}/${closing.date.month}/${closing.date.year}',
-              style: const TextStyle(fontWeight: FontWeight.w800)),
+              style: const TextStyle(fontWeight: FontWeight.w600)),
           Text(
               l10n.financeClosingCounted(formatRs(closing.countedCash), formatRs(closing.difference)),
               style: Theme.of(context).textTheme.labelMedium?.copyWith(
                 color: closing.difference == 0
                       ? AppColors.successTextFor(Theme.of(context).brightness)
                       : AppColors.dangerTextFor(Theme.of(context).brightness),
-                fontWeight: FontWeight.w700,
+                fontWeight: FontWeight.w500,
               )),
         ],
       ),

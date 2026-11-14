@@ -5,6 +5,7 @@ import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/responsive.dart';
 import '../../../../core/widgets/app_state_views.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../data/datasources/admin_remote_data_source.dart';
 import '../widgets/admin_kpi_card.dart';
 import '../widgets/admin_shell.dart';
@@ -51,16 +52,21 @@ class _AdminDashboardViewState extends State<AdminDashboardView> {
 
   @override
   Widget build(BuildContext context) {
+    // Tests pump without localization delegates — fall back to
+    // English instead of crashing on a null check.
+    final l10n = AppLocalizations.of(context);
     return AdminShell(
       activeRoute: RouteNames.adminDashboard,
-      title: 'Dashboard',
-      subtitle: 'The platform at a glance, counted live',
+      title: l10n?.admin2_navDashboard ?? 'Dashboard',
+      subtitle: l10n?.admin2_dashboardSubtitle ??
+          'The platform at a glance, counted live',
       onRefresh: _load,
       child: _isLoading
           ? const AppLoadingState()
           : _hasError
               ? AppErrorState(
-                  message: 'Could not load the dashboard.',
+                  message: l10n?.admin2_dashboardLoadFailed ??
+                      'Could not load the dashboard.',
                   onRetry: _load,
                 )
               : SingleChildScrollView(
@@ -96,19 +102,43 @@ class _AdminDashboardViewState extends State<AdminDashboardView> {
                   ),
                   const SizedBox(height: 24),
                   _infoCard(
-                    'Open disputes need a decision',
-                    '${_stats?.openDisputeCount ?? 0} open',
+                    l10n?.admin2_dashboardDisputesTitle ??
+                        'Open disputes need a decision',
+                    l10n?.admin2_dashboardOpenCount(
+                            _stats?.openDisputeCount ?? 0) ??
+                        '${_stats?.openDisputeCount ?? 0} open',
                     Icons.report_problem_outlined,
-                    'Open the disputes centre to decide them.',
+                    l10n?.admin2_dashboardDisputesHint ??
+                        'Open the disputes centre to decide them.',
                     onTap: () => context.go(RouteNames.adminDisputes),
                   ),
                   const SizedBox(height: 12),
                   _infoCard(
-                    'Support tickets waiting',
-                    '${_stats?.openTicketCount ?? 0} open',
+                    l10n?.admin2_dashboardTicketsTitle ??
+                        'Support tickets waiting',
+                    l10n?.admin2_dashboardOpenCount(
+                            _stats?.openTicketCount ?? 0) ??
+                        '${_stats?.openTicketCount ?? 0} open',
                     Icons.support_agent_rounded,
-                    'Open the tickets inbox to reply.',
+                    l10n?.admin2_dashboardTicketsHint ??
+                        'Open the tickets inbox to reply.',
                     onTap: () => context.go(RouteNames.adminTickets),
+                  ),
+                  const SizedBox(height: 12),
+                  // F-m1: the approvals queue is the most actionable
+                  // queue on the platform, and it had no count on
+                  // the dashboard — an admin had to open Approvals
+                  // to learn a shop was waiting.
+                  _infoCard(
+                    AppLocalizations.of(context)
+                            ?.adminAuditPendingApprovals ??
+                        'Shops waiting for approval',
+                    '${_stats?.pendingShopCount ?? 0} pending',
+                    Icons.store_rounded,
+                    AppLocalizations.of(context)
+                            ?.adminAuditPendingApprovalsHint ??
+                        'Open the approvals queue to decide them.',
+                    onTap: () => context.go(RouteNames.adminApprovals),
                   ),
                 ],
               ),
@@ -117,40 +147,45 @@ class _AdminDashboardViewState extends State<AdminDashboardView> {
   }
 
   List<Widget> _cards() {
+    final l10n = AppLocalizations.of(context);
     final s = _stats ??
         const PlatformStats(
           shopCount: 0,
           activeBookingCount: 0,
           openDisputeCount: 0,
           openTicketCount: 0,
+          pendingShopCount: 0,
         );
     return [
       AdminKpiCard(
-        title: 'Registered shops',
+        title: l10n?.admin2_dashboardKpiShops ?? 'Registered shops',
         value: '${s.shopCount}',
-        changeLabel: 'Live count',
+        changeLabel: l10n?.admin2_dashboardKpiLiveCount ?? 'Live count',
         icon: Icons.store_rounded,
       ),
       AdminKpiCard(
-        title: 'Active bookings',
+        title: l10n?.admin2_dashboardKpiBookings ?? 'Active bookings',
         value: '${s.activeBookingCount}',
-        changeLabel: 'Approved, paid or active',
+        changeLabel: l10n?.admin2_dashboardKpiBookingsNote ??
+            'Approved, paid or active',
         icon: Icons.calendar_month_rounded,
         accentColor:
             adminStatusColor(context, AdminStatusTone.success),
       ),
       AdminKpiCard(
-        title: 'Open disputes',
+        title: l10n?.admin2_dashboardKpiDisputes ?? 'Open disputes',
         value: '${s.openDisputeCount}',
-        changeLabel: 'Awaiting a decision',
+        changeLabel: l10n?.admin2_dashboardKpiDisputesNote ??
+            'Awaiting a decision',
         icon: Icons.report_problem_outlined,
         accentColor:
             adminStatusColor(context, AdminStatusTone.warning),
       ),
       AdminKpiCard(
-        title: 'Open support tickets',
+        title: l10n?.admin2_dashboardKpiTickets ?? 'Open support tickets',
         value: '${s.openTicketCount}',
-        changeLabel: 'Awaiting a reply',
+        changeLabel: l10n?.admin2_dashboardKpiTicketsNote ??
+            'Awaiting a reply',
         icon: Icons.support_agent_rounded,
         accentColor: adminStatusColor(context, AdminStatusTone.info),
       ),
@@ -176,10 +211,11 @@ class _AdminDashboardViewState extends State<AdminDashboardView> {
         title: Text(title,
             style: const TextStyle(
                 fontSize: 14,
-                fontWeight: FontWeight.w800,
                 )),
         subtitle: Text('$value • $note',
             style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant)),
+        // AD-m19: the card navigates on tap — the chevron says so.
+        trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 16),
       ),
     );
   }

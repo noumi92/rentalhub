@@ -90,7 +90,7 @@ class ShopPaymentAccounts extends StatelessWidget {
                 style: Theme.of(context)
                     .textTheme
                     .titleSmall
-                    ?.copyWith(fontWeight: FontWeight.w800),
+                    ?.copyWith(fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 6),
             ],
@@ -100,7 +100,6 @@ class ShopPaymentAccounts extends StatelessWidget {
                 child: Text(
                   l10n.paymentProofPayTo(account),
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        fontWeight: FontWeight.w700,
                         color: AppColors.successTextFor(
                             Theme.of(context).brightness),
                       ),

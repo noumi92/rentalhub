@@ -88,7 +88,7 @@ class VehicleRatesStepWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(l10n.addVehicleDurationPackages, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900)),
+        Text(l10n.addVehicleDurationPackages, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
         const SizedBox(height: 4),
         Text(l10n.addVehicleDurationPackagesHint, style: Theme.of(context).textTheme.bodySmall),
         const SizedBox(height: 12),
@@ -101,7 +101,7 @@ class VehicleRatesStepWidget extends StatelessWidget {
         _packageRow(context, l10n.addVehicleRateMonthly, rateMonthlyController, enableMonthly, onToggleMonthly),
         const SizedBox(height: 16),
 
-        Text(l10n.addVehicleCityRatesTitle, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900)),
+        Text(l10n.addVehicleCityRatesTitle, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
         const SizedBox(height: 4),
         Text(l10n.addVehicleCityRatesHint, style: Theme.of(context).textTheme.bodySmall),
         const SizedBox(height: 12),
@@ -120,7 +120,7 @@ class VehicleRatesStepWidget extends StatelessWidget {
         ),
         const SizedBox(height: 16),
 
-        Text(l10n.addVehicleServiceType, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900)),
+        Text(l10n.addVehicleServiceType, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
         const SizedBox(height: 8),
 
         Card(
@@ -138,7 +138,7 @@ class VehicleRatesStepWidget extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(l10n.addVehicleSelfDriveService, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800)),
+                          Text(l10n.addVehicleSelfDriveService, style: Theme.of(context).textTheme.bodyMedium),
                           Text(l10n.addVehicleSelfDriveHint, style: Theme.of(context).textTheme.labelSmall),
                         ],
                       ),
@@ -154,7 +154,7 @@ class VehicleRatesStepWidget extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(l10n.addVehicleWithDriverService, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800)),
+                          Text(l10n.addVehicleWithDriverService, style: Theme.of(context).textTheme.bodyMedium),
                           Text(l10n.addVehicleWithDriverHint, style: Theme.of(context).textTheme.labelSmall),
                         ],
                       ),
@@ -168,7 +168,7 @@ class VehicleRatesStepWidget extends StatelessWidget {
                     children: [
                       Expanded(
                         flex: 3,
-                        child: Text(l10n.addVehicleDriverAllowance, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700)),
+                        child: Text(l10n.addVehicleDriverAllowance, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500)),
                       ),
                       Expanded(
                         flex: 2,
@@ -176,10 +176,10 @@ class VehicleRatesStepWidget extends StatelessWidget {
                           controller: driverAllowanceController,
                           keyboardType: TextInputType.number,
                           textAlign: TextAlign.end,
-                          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900, color: Theme.of(context).colorScheme.onSurface),
+                          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.onSurface),
                           decoration: InputDecoration(
                             prefixText: 'Rs. ',
-                            prefixStyle: const TextStyle(fontWeight: FontWeight.w800),
+                            prefixStyle: const TextStyle(fontWeight: FontWeight.w500),
                             suffixText: l10n.addVehiclePerDaySuffix,
                             suffixStyle: Theme.of(context).textTheme.labelSmall,
                             filled: true,
@@ -199,7 +199,7 @@ class VehicleRatesStepWidget extends StatelessWidget {
         ),
         const SizedBox(height: 16),
 
-        Text(l10n.addVehicleDepositPolicies, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900)),
+        Text(l10n.addVehicleDepositPolicies, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
         const SizedBox(height: 8),
 
         Card(
@@ -221,7 +221,7 @@ class VehicleRatesStepWidget extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(l10n.addVehicleFuelPolicy, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800)),
+                          Text(l10n.addVehicleFuelPolicy, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500)),
                           Text(l10n.addVehicleFuelPolicyHint, style: Theme.of(context).textTheme.labelSmall),
                         ],
                       ),
@@ -233,7 +233,7 @@ class VehicleRatesStepWidget extends StatelessWidget {
                         child: DropdownButton<String>(
                           dropdownColor: Theme.of(context).colorScheme.surface,
                           value: fuelPolicy,
-                          items: fuelPolicies.map((f) => DropdownMenuItem(value: f, child: Text(f, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700)))).toList(),
+                          items: fuelPolicies.map((f) => DropdownMenuItem(value: f, child: Text(f, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500)))).toList(),
                           onChanged: (v) {
                             if (v != null) onFuelPolicyChanged(v);
                           },
@@ -262,7 +262,7 @@ class VehicleRatesStepWidget extends StatelessWidget {
       child: Row(
         children: [
           Checkbox(value: isEnabled, activeColor: AppColors.secondary, onChanged: (v) => onToggle(v ?? false)),
-          Expanded(child: Text(label, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800, color: isEnabled ? Theme.of(context).colorScheme.onSurface : Theme.of(context).colorScheme.onSurfaceVariant))),
+          Expanded(child: Text(label, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: isEnabled ? Theme.of(context).colorScheme.onSurface : Theme.of(context).colorScheme.onSurfaceVariant))),
           SizedBox(
             width: 120,
             child: TextField(
@@ -271,10 +271,10 @@ class VehicleRatesStepWidget extends StatelessWidget {
               keyboardType: TextInputType.number,
               onChanged: onChanged,
               textAlign: TextAlign.end,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w900, color: isEnabled ? Theme.of(context).colorScheme.onSurface : Theme.of(context).colorScheme.onSurfaceVariant),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: isEnabled ? Theme.of(context).colorScheme.onSurface : Theme.of(context).colorScheme.onSurfaceVariant),
               decoration: InputDecoration(
                 prefixText: 'Rs. ',
-                prefixStyle: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: isEnabled ? Theme.of(context).colorScheme.onSurface : Theme.of(context).colorScheme.onSurfaceVariant),
+                prefixStyle: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500, color: isEnabled ? Theme.of(context).colorScheme.onSurface : Theme.of(context).colorScheme.onSurfaceVariant),
                 filled: true,
                 fillColor: isEnabled ? Theme.of(context).colorScheme.surfaceContainerHighest : Theme.of(context).colorScheme.surfaceContainer,
                 isDense: true,
@@ -296,7 +296,7 @@ class VehicleRatesStepWidget extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(label, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800)),
+              Text(label, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500)),
               Text(subtitle, style: Theme.of(context).textTheme.labelSmall),
             ],
           ),
@@ -309,10 +309,10 @@ class VehicleRatesStepWidget extends StatelessWidget {
             keyboardType: TextInputType.number,
             onChanged: onChanged,
             textAlign: TextAlign.end,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w900),
+            style: Theme.of(context).textTheme.bodyMedium,
             decoration: InputDecoration(
               prefixText: 'Rs. ',
-              prefixStyle: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: Theme.of(context).colorScheme.onSurface),
+              prefixStyle: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500, color: Theme.of(context).colorScheme.onSurface),
               suffixText: suffix,
               suffixStyle: Theme.of(context).textTheme.labelSmall,
               filled: true,

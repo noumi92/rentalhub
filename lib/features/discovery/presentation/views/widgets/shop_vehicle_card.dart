@@ -128,7 +128,7 @@ class ShopVehicleCard extends StatelessWidget {
                       child: Text(
                         _statusLabel(AppLocalizations.of(context)!, v.status),
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                            fontWeight: FontWeight.w700, color: pillFg),
+                            fontWeight: FontWeight.w500, color: pillFg),
                       ),
                     ),
                   ),
@@ -149,7 +149,7 @@ class ShopVehicleCard extends StatelessWidget {
                           style: Theme.of(context)
                               .textTheme
                               .titleMedium
-                              ?.copyWith(fontWeight: FontWeight.w800),
+                              ?.copyWith(fontWeight: FontWeight.w600),
                         ),
                       ),
                       PakistaniPlateWidget(
@@ -182,7 +182,7 @@ class ShopVehicleCard extends StatelessWidget {
                         style: Theme.of(context)
                             .textTheme
                             .labelMedium
-                            ?.copyWith(fontWeight: FontWeight.w800),
+                            ?.copyWith(fontWeight: FontWeight.w500),
                       ),
                       Text(
                         l10n.vehicleDriverRate(formatRs(v.rates.daily24 + (v.withDriverSurchargePkr ?? 0))),
@@ -190,7 +190,7 @@ class ShopVehicleCard extends StatelessWidget {
                             .textTheme
                             .labelMedium
                             ?.copyWith(
-                                fontWeight: FontWeight.w800,
+                                fontWeight: FontWeight.w500,
                                 // CU-M1: white-on-orange small text
                                 // was 3.29:1 — orangeTextFor is AA.
                                 color: AppColors.orangeTextFor(brightness)),

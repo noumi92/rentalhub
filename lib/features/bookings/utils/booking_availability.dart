@@ -5,13 +5,15 @@ import '../domain/entities/booking_entity.dart';
 /// not cancelled or rejected covers it. Paid and active bookings are
 /// confirmed; requested / payment-submitted / approved bookings are
 /// still pending but block the day too, so the car is never double
-/// booked while a request is in flight.
+/// booked while a request is in flight. A `disputed` booking still
+/// blocks the day — the car is not free while its dispute is open.
 const Set<String> kBlockingBookingStatuses = {
   'requested',
   'approved',
   'payment_submitted',
   'paid',
   'active',
+  'disputed',
 };
 
 bool isDayBlocked(List<BookingEntity> bookings, DateTime day) {

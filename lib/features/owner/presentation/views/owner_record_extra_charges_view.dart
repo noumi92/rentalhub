@@ -140,7 +140,7 @@ class _OwnerRecordExtraChargesViewState
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(l10n.extraChargeTypeLabel,
-                        style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700)),
+                        style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500)),
                     const SizedBox(height: 8),
                     Wrap(
                       spacing: 8,
@@ -197,7 +197,7 @@ class _OwnerRecordExtraChargesViewState
                     ] else if (_saved.isNotEmpty) ...[
                       const SizedBox(height: 24),
                       Text(l10n.extraChargeSavedTitle,
-                          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
+                          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
                       const SizedBox(height: 8),
                       ..._saved.map((charge) => Padding(
                             padding: const EdgeInsets.symmetric(vertical: 3),
@@ -215,7 +215,7 @@ class _OwnerRecordExtraChargesViewState
                                 const SizedBox(width: 8),
                                 Text(
                                   l10n.amountRs(formatRs((charge['amount'] as num?)?.toInt() ?? 0)),
-                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800),
+                                  style: Theme.of(context).textTheme.bodyMedium,
                                 ),
                               ],
                             ),

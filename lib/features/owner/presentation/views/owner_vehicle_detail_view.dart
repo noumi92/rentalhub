@@ -1,10 +1,10 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/constants/app_colors.dart';
-import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/money_format.dart';
 import '../../../../core/widgets/app_state_views.dart';
@@ -13,8 +13,8 @@ import '../../../../core/widgets/pakistani_plate_widget.dart';
 import '../../../discovery/presentation/views/widgets/vehicle_hero_card.dart'
     show vehicleHeroTag;
 import '../../../../l10n/app_localizations.dart';
-import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
+import '../../../bookings/utils/live_booking_stream.dart';
 import '../../../fleet/domain/entities/vehicle_entity.dart';
 
 /// Audit §5 (item 15): the OWNER vehicle-detail screen — the fleet
@@ -45,6 +45,10 @@ class OwnerVehicleDetailView extends StatefulWidget {
 class _OwnerVehicleDetailViewState extends State<OwnerVehicleDetailView> {
   List<BookingEntity>? _bookings;
   bool _loading = false;
+  // Live updates (Item 2): the subscription behind the bookings
+  // section. A view given explicit `bookings` (tests / embeds)
+  // never subscribes.
+  StreamSubscription<List<BookingEntity>>? _bookingsSub;
 
   @override
   void initState() {
@@ -56,16 +60,23 @@ class _OwnerVehicleDetailViewState extends State<OwnerVehicleDetailView> {
     }
   }
 
+  @override
+  void dispose() {
+    _bookingsSub?.cancel();
+    super.dispose();
+  }
+
+  /// Live updates (Item 2): the vehicle's bookings follow their stream — a submit or status change updates this screen while it is open, instead of the single load at open time.
   Future<void> _loadBookings() async {
+    await _bookingsSub?.cancel();
     setState(() => _loading = true);
-    try {
-      final list = await sl<BookingRemoteDataSource>().getVehicleBookings(widget.vehicle.vehicleId);
-      if (mounted) setState(() => _bookings = list);
-    } catch (_) {
+    _bookingsSub = subscribeLiveBookings((ds) => ds.streamVehicleBookings(widget.vehicle.vehicleId), (list) {
+      if (mounted) setState(() { _bookings = list; _loading = false; });
+    }, onError: () {
       if (mounted) setState(() => _bookings = const []);
-    } finally {
-      if (mounted) setState(() => _loading = false);
-    }
+    });
+    if (_bookingsSub == null && mounted) setState(() => _bookings = const []);
+    if (mounted) setState(() => _loading = false);
   }
 
   String _assetFor(VehicleEntity v) {
@@ -130,13 +141,13 @@ class _OwnerVehicleDetailViewState extends State<OwnerVehicleDetailView> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(l10n.fleetDailyRate(formatRs(v.rates.daily24)), maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
+                                  Text(l10n.fleetDailyRate(formatRs(v.rates.daily24)), maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600, color: Colors.white)),
                                   const SizedBox(height: 6),
                                   Row(
                                     children: [
-                                      Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4), decoration: BoxDecoration(color: statusColor, borderRadius: BorderRadius.circular(10)), child: Text(statusLabel, style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800, color: Colors.white))),
+                                      Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4), decoration: BoxDecoration(color: statusColor, borderRadius: BorderRadius.circular(10)), child: Text(statusLabel, style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w500, color: Colors.white))),
                                       const SizedBox(width: 8),
-                                      Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3), decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.22), borderRadius: BorderRadius.circular(10), border: Border.all(color: Colors.white.withValues(alpha: 0.65))), child: Text(v.isSelfDriveAvailable ? l10n.selfDriveHyphen : l10n.withDriver, style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700, color: Colors.white))),
+                                      Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3), decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.22), borderRadius: BorderRadius.circular(10), border: Border.all(color: Colors.white.withValues(alpha: 0.65))), child: Text(v.isSelfDriveAvailable ? l10n.selfDriveHyphen : l10n.withDriver, style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w500, color: Colors.white))),
                                     ],
                                   ),
                                 ],
@@ -157,7 +168,7 @@ class _OwnerVehicleDetailViewState extends State<OwnerVehicleDetailView> {
                             children: [_specChip(context, v.color ?? '—'), _specChip(context, l10n.vehicleDetailSeats(v.seats)), _specChip(context, v.fuelType), _specChip(context, v.transmission), _specChip(context, v.category)],
                           ),
                           const SizedBox(height: 18),
-                          Text(l10n.vehicleDetailRatesTitle, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
+                          Text(l10n.vehicleDetailRatesTitle, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
                           const SizedBox(height: 8),
                           ...v.effectivePackages.map((p) => _rateRow(context, p.label, l10n.amountRs(formatRs(p.pricePkr)))),
                           if (v.securityDepositPkr != null) _rateRow(context, l10n.vehicleDetailDeposit, l10n.amountRs(formatRs(v.securityDepositPkr!))),
@@ -170,7 +181,7 @@ class _OwnerVehicleDetailViewState extends State<OwnerVehicleDetailView> {
                             ],
                           ),
                           const SizedBox(height: 18),
-                          Text(l10n.vehicleDetailBookingsTitle, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
+                          Text(l10n.vehicleDetailBookingsTitle, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
                           const SizedBox(height: 8),
                           if (_loading)
                             AppLoadingState(message: l10n.vehicleDetailBookingsTitle)
@@ -180,7 +191,7 @@ class _OwnerVehicleDetailViewState extends State<OwnerVehicleDetailView> {
                             ...bookings.map((b) => Card(
                                   margin: const EdgeInsets.only(bottom: 8),
                                   child: ListTile(
-                                    title: Text(b.customerName ?? b.customerId, style: const TextStyle(fontWeight: FontWeight.w700)),
+                                    title: Text(b.customerName ?? b.customerId, style: const TextStyle(fontWeight: FontWeight.w600)),
                                     subtitle: Text('${b.packageType} • ${DateFormat('d MMM, h:mm a').format(b.pickupTime)} → ${DateFormat('d MMM, h:mm a').format(b.returnTime)}'),
                                     // OW-m15: the booking chip is
                                     // coloured by status (was raw text
@@ -215,7 +226,7 @@ class _OwnerVehicleDetailViewState extends State<OwnerVehicleDetailView> {
   }
 
   Widget _specChip(BuildContext context, String label) {
-    return Chip(label: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700)));
+    return Chip(label: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500)));
   }
 
   Widget _rateRow(BuildContext context, String label, String value) {
@@ -226,7 +237,7 @@ class _OwnerVehicleDetailViewState extends State<OwnerVehicleDetailView> {
         children: [
           Expanded(child: Text(label, style: Theme.of(context).textTheme.bodyMedium)),
           const SizedBox(width: 8),
-          Text(value, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800)),
+          Text(value, style: Theme.of(context).textTheme.bodyMedium),
         ],
       ),
     );

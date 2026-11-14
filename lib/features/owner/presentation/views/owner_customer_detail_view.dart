@@ -174,14 +174,14 @@ class _OwnerCustomerDetailViewState extends State<OwnerCustomerDetailView> {
               CircleAvatar(
                 backgroundColor: AppColors.primary,
                 radius: 28,
-                child: Text(customer.name.isNotEmpty ? customer.name[0].toUpperCase() : '?', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800)),
+                child: Text(customer.name.isNotEmpty ? customer.name[0].toUpperCase() : '?', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
               ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(customer.name, maxLines: 2, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800)),
+                    Text(customer.name, maxLines: 2, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600)),
                     if (customer.phone.isNotEmpty) Text(customer.phone),
                     if (customer.cnic != null) Text(customer.cnic!),
                   ],
@@ -200,23 +200,23 @@ class _OwnerCustomerDetailViewState extends State<OwnerCustomerDetailView> {
           if (!_blacklisted) ...[const SizedBox(height: 8), Text(l10n.customerDetailNotBlacklisted, style: Theme.of(context).textTheme.bodySmall)],
           if (approval == 'rejected' && customer.rejectionReason != null) ...[
             const SizedBox(height: 8),
-            Text(l10n.customerDetailRejectReasonTitle, style: const TextStyle(fontWeight: FontWeight.w800)),
+            Text(l10n.customerDetailRejectReasonTitle, style: const TextStyle(fontWeight: FontWeight.w600)),
             Text(customer.rejectionReason!),
           ],
           const SizedBox(height: 16),
-          Text(l10n.customerDetailKycTitle, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800)),
+          Text(l10n.customerDetailKycTitle, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
           const SizedBox(height: 4),
           Text(hasKyc ? l10n.customerDetailKycOnFile : l10n.customerDetailKycNotOnFile),
           const SizedBox(height: 12),
-          Text(l10n.customerDetailDocuments, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800)),
+          Text(l10n.customerDetailDocuments, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
           const SizedBox(height: 8),
           CustomerDetailDocs(customer: customer),
           const SizedBox(height: 8),
-          Row(children: [Expanded(child: Text(l10n.customerDetailTotalSpent, style: const TextStyle(fontWeight: FontWeight.w800))), Text(l10n.amountRs(formatRs(_totalSpent)), style: const TextStyle(fontWeight: FontWeight.w800))]),
+          Row(children: [Expanded(child: Text(l10n.customerDetailTotalSpent, style: const TextStyle(fontWeight: FontWeight.w500))), Text(l10n.amountRs(formatRs(_totalSpent)), style: const TextStyle(fontWeight: FontWeight.w500))]),
           const SizedBox(height: 4),
-          Row(children: [Expanded(child: Text(l10n.customerDetailTotalDues, style: const TextStyle(fontWeight: FontWeight.w800))), Text(l10n.amountRs(formatRs(_totalDues)), style: const TextStyle(fontWeight: FontWeight.w800))]),
+          Row(children: [Expanded(child: Text(l10n.customerDetailTotalDues, style: const TextStyle(fontWeight: FontWeight.w500))), Text(l10n.amountRs(formatRs(_totalDues)), style: const TextStyle(fontWeight: FontWeight.w500))]),
           const SizedBox(height: 16),
-          Text(l10n.customerDetailRentalHistory, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800)),
+          Text(l10n.customerDetailRentalHistory, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
           const SizedBox(height: 4),
           if (_bookings.isEmpty)
             Text(l10n.customersNoBookings, style: Theme.of(context).textTheme.bodySmall)
@@ -227,7 +227,7 @@ class _OwnerCustomerDetailViewState extends State<OwnerCustomerDetailView> {
                   leading: const Icon(Icons.receipt_long_rounded, size: 18),
                   title: Text('${b.vehicleName ?? l10n.summaryVehicle} • ${b.packageType}'),
                   subtitle: Text('${b.pickupTime.day}/${b.pickupTime.month}/${b.pickupTime.year} • ${_statusLabel(l10n, b.status)}'),
-                  trailing: Text(l10n.amountRs(formatRs(b.totalAmount)), style: const TextStyle(fontWeight: FontWeight.w800)),
+                  trailing: Text(l10n.amountRs(formatRs(b.totalAmount)), style: const TextStyle(fontWeight: FontWeight.w600)),
                 )),
           const SizedBox(height: 16),
           // OW-m14: the button matching the current status is disabled (DebouncedButton has no disabled slot, so the decided action is dimmed + input-blocked); the opposite action stays available.

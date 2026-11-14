@@ -7,6 +7,7 @@ export {
   setAdminRole,
   pruneAuditLogs,
   sendAnnouncement,
+  sendDueAnnouncements,
 } from './admin';
 
 admin.initializeApp();

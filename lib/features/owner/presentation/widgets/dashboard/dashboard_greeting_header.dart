@@ -28,7 +28,7 @@ class DashboardGreetingHeader extends StatelessWidget {
         Text(
           l10n.dashboardGreeting(name),
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w900,
+                fontWeight: FontWeight.w600,
               ),
         ),
         const SizedBox(height: 2),

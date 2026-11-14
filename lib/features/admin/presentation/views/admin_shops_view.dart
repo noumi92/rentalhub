@@ -8,6 +8,8 @@ import '../../../../core/utils/responsive.dart';
 import '../../../../core/widgets/app_state_views.dart';
 import '../../../discovery/data/models/shop_model.dart';
 import '../../data/datasources/admin_shops_data_source.dart';
+import '../../../../l10n/app_localizations.dart';
+import '../../../../l10n/app_localizations_en.dart';
 import '../widgets/admin_shell.dart';
 import '../widgets/admin_status_chip.dart';
 
@@ -77,10 +79,11 @@ class _AdminShopsViewState extends State<AdminShopsView> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = (AppLocalizations.of(context) ?? AppLocalizationsEn());
     return AdminShell(
       activeRoute: RouteNames.adminShops,
-      title: 'Shops',
-      subtitle: 'Every showroom on the platform',
+      title: l10n.admin2_navShops,
+      subtitle: l10n.admin2_shopsSubtitle,
       onRefresh: _load,
       child: Padding(
         // Mobile-first: 16dp on a phone, 24dp on desktop.
@@ -97,7 +100,7 @@ class _AdminShopsViewState extends State<AdminShopsView> {
                     controller: _searchController,
                     onChanged: (_) => setState(() {}),
                     decoration: InputDecoration(
-                      hintText: 'Search by shop, city, or owner…',
+                      hintText: l10n.admin2_shopsSearchHint,
                       prefixIcon: const Icon(Icons.search_rounded),
                       filled: true,
                       fillColor: Theme.of(context)
@@ -118,7 +121,7 @@ class _AdminShopsViewState extends State<AdminShopsView> {
                   onPressed: () =>
                       context.go(RouteNames.adminApprovals),
                   icon: const Icon(Icons.verified_user_rounded, size: 18),
-                  label: const Text('Approvals'),
+                  label: Text(l10n.admin2_navApprovals),
                   // 48dp touch target; the search field flexes, so a
                   // large text scale narrows the field, never overflows.
                   style: OutlinedButton.styleFrom(
@@ -133,10 +136,10 @@ class _AdminShopsViewState extends State<AdminShopsView> {
                 spacing: 8,
                 children: [
                   for (final entry in {
-                    'all': 'All',
-                    'approved': 'Approved',
-                    'pending': 'Pending',
-                    'suspended': 'Suspended',
+                    'all': l10n.filterAll,
+                    'approved': l10n.statusApproved,
+                    'pending': l10n.pending,
+                    'suspended': l10n.admin2_suspended,
                   }.entries)
                     ChoiceChip(
                       label: Text(entry.value),
@@ -153,14 +156,13 @@ class _AdminShopsViewState extends State<AdminShopsView> {
                   ? const AppLoadingState()
                   : _hasError
                       ? AppErrorState(
-                          message: 'Could not load the shops.',
+                          message: l10n.admin2_shopsLoadFailed,
                           onRetry: _load,
                         )
                       : _visible.isEmpty
-                          ? const AppEmptyState(
-                              title: 'No shops match',
-                              message:
-                                  'The list reads the shops collection.',
+                          ? AppEmptyState(
+                              title: l10n.admin2_shopsEmptyTitle,
+                              message: l10n.admin2_shopsEmptyHint,
                             )
                           : ListView.separated(
                           itemCount: _visible.length,
@@ -186,14 +188,13 @@ class _AdminShopsViewState extends State<AdminShopsView> {
                                 title: Text(shop.shopName,
                                     style: const TextStyle(
                                         fontSize: 14,
-                                        fontWeight: FontWeight.w800,
                                         )),
                                 subtitle: Text(
                                   // Honesty flag (Worker 1): a number the
                                   // shop document never stored is hidden,
                                   // never shown with the display-only
                                   // fallback — same as shop_list_card.dart.
-                                  '${shop.city} • Plan ${shop.plan}${shop.hasRealRating ? ' • Rating ${shop.rating.toStringAsFixed(1)}' : ''}',
+                                  '${shop.city} • ${l10n.admin2_shopsPlanLine(shop.plan)}${shop.hasRealRating ? ' • ${l10n.admin2_shopRating(shop.rating.toStringAsFixed(1))}' : ''}',
                                   style: TextStyle(
                                       fontSize: 12,
                                       color: Theme.of(context).colorScheme.onSurfaceVariant),
@@ -215,13 +216,14 @@ class _AdminShopsViewState extends State<AdminShopsView> {
   }
 
   Widget _statusChip(ShopModel shop) {
+    final l10n = (AppLocalizations.of(context) ?? AppLocalizationsEn());
     final label = shop.suspended
-        ? 'Suspended'
+        ? l10n.admin2_suspended
         : shop.verificationStatus == 'pending'
-            ? 'Pending'
+            ? l10n.pending
             : shop.verificationStatus == 'approved'
-                ? 'Approved'
-                : humanizeStatus(shop.verificationStatus);
+                ? l10n.statusApproved
+                : humanizeStatus(shop.verificationStatus, l10n);
     final tone = shop.suspended
         ? AdminStatusTone.danger
         : shop.verificationStatus == 'pending'

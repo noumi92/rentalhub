@@ -224,6 +224,59 @@ class FleetRemoteDataSource {
     return _inMemoryVehicles.where((v) => ids.contains(v.shopId)).toList();
   }
 
+  /// Customer discovery (F-M2, admin audit 2026-11-14): the shop's
+  /// fleet as a customer sees it. Cars the admin hid or rejected
+  /// (`car_reviews/{vehicleId}.status` == 'hidden' | 'rejected')
+  /// are excluded — the same decision
+  /// [AdminShopsDataSource.setCarReview] writes, mirrored onto the
+  /// vehicle doc as `listing_status`. The plain [getShopVehicles]
+  /// is deliberately NOT filtered: the owner still needs to see
+  /// their own hidden/rejected cars (and existing bookings behind
+  /// them) in the owner app.
+  Future<List<VehicleEntity>> getCustomerShopVehicles(
+      String shopId) async {
+    final vehicles = await getShopVehicles(shopId);
+    if (vehicles.isEmpty) return vehicles;
+    final hidden = await _hiddenVehicleIds();
+    if (hidden.isEmpty) return vehicles;
+    return vehicles
+        .where((v) => !hidden.contains(v.vehicleId))
+        .toList();
+  }
+
+  /// Customer discovery, single car (F-M2): null when the admin hid
+  /// or rejected this car, so a deep link / saved car cannot be
+  /// opened and booked after moderation. Owner callers keep using
+  /// [getVehicleById], which never hides.
+  Future<VehicleEntity?> getCustomerVehicleById(String vehicleId) async {
+    final hidden = await _hiddenVehicleIds();
+    if (hidden.contains(vehicleId)) return null;
+    return getVehicleById(vehicleId);
+  }
+
+  /// The ids of vehicles the admin hid or rejected, from the
+  /// `car_reviews` decisions (the source of truth — deleting a
+  /// review doc lifts the moderation). The `listing_status` mirror
+  /// on the vehicle doc is a denormalised copy for future
+  /// server-side queries, not read here. A failed read fails OPEN
+  /// (empty set) — discovery must not strand every car on an
+  /// outage; the admin panel still shows the review state.
+  Future<Set<String>> _hiddenVehicleIds() async {
+    final hidden = <String>{};
+    final fs = _resolvedFirestore;
+    if (fs == null) return hidden;
+    try {
+      final snap = await fs.collection('car_reviews').get();
+      for (final d in snap.docs) {
+        final status = d.data()['status'] as String?;
+        if (status == 'hidden' || status == 'rejected') {
+          hidden.add(d.id);
+        }
+      }
+    } catch (_) {}
+    return hidden;
+  }
+
   /// Phase A (A1): fetch one vehicle by id from the top-level `vehicles`
   /// collection. The customer vehicle route needs this — the customer does
   /// not know the shop up front, so the owner's per-shop list cannot be

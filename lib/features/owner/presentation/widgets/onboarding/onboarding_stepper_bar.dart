@@ -63,7 +63,7 @@ class OnboardingStepperBar extends StatelessWidget {
               // Audit §1: 10sp is below the §4.5 minimum (11sp) and
               // maxLines 1 truncated Urdu labels — allow 2 lines.
               fontSize: 11,
-              fontWeight: isCurrent ? FontWeight.w800 : FontWeight.w600,
+              fontWeight: FontWeight.w500,
               // #10: theme-aware — the hardcoded AppColors.primary navy
               // was ~1.2:1 on a dark surface (invisible). Light mode
               // keeps the theme primary; dark mode uses the pale

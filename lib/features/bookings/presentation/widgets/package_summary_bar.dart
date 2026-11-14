@@ -44,12 +44,12 @@ class PackageSummaryBar extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(l10n.packageTotal(formatRs(total)),
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900)),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
                 Text(l10n.packageAdvanceDue(formatRs(advance)),
-                    style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.orangeTextFor(Theme.of(context).brightness))),
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500, color: AppColors.orangeTextFor(Theme.of(context).brightness))),
                 if (deposit != null)
                   Text(l10n.packageSecurityDeposit(formatRs(deposit ?? 0)),
-                      style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700)),
+                      style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500)),
               ],
             ),
           ),

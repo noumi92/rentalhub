@@ -78,7 +78,7 @@ class ShopListCard extends StatelessWidget {
                           const SizedBox(width: 3),
                           Text(
                             '${shop.distanceKm.toStringAsFixed(1)} km',
-                            style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800, color: Colors.white),
+                            style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w500, color: Colors.white),
                           ),
                         ],
                       ),
@@ -100,7 +100,7 @@ class ShopListCard extends StatelessWidget {
                       Expanded(
                         child: Text(
                           shop.shopName,
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -136,7 +136,7 @@ class ShopListCard extends StatelessWidget {
                             const SizedBox(width: 3),
                             Text(
                               shop.rating.toStringAsFixed(1),
-                              style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800),
+                              style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500),
                             ),
                           ],
                         ),
@@ -151,7 +151,7 @@ class ShopListCard extends StatelessWidget {
                       if (shop.hasRealAvailableCount)
                         Text(
                           l10n.shopCarsAvailable(shop.availableCount),
-                          style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.successOnContainerFor(Theme.of(context).brightness)),
+                          style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500, color: AppColors.successOnContainerFor(Theme.of(context).brightness)),
                         ),
                     ],
                   ),

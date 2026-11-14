@@ -37,7 +37,7 @@ class PricingDriveModeCard extends StatelessWidget {
               activeThumbColor: Theme.of(context).colorScheme.secondary,
               title: Text(l10n.pricingSelfDriveAllowed,
                   style:
-                      Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
+                      Theme.of(context).textTheme.bodyMedium),
               subtitle: Text(
                   l10n.pricingSelfDriveHint,
                   style: Theme.of(context).textTheme.labelSmall),
@@ -49,7 +49,7 @@ class PricingDriveModeCard extends StatelessWidget {
               activeThumbColor: Theme.of(context).colorScheme.secondary,
               title: Text(l10n.pricingChauffeurAllowed,
                   style:
-                      Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
+                      Theme.of(context).textTheme.bodyMedium),
               subtitle:
                   Text(l10n.pricingChauffeurHint,
                       style: Theme.of(context).textTheme.labelSmall),

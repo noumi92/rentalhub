@@ -125,7 +125,7 @@ class _OwnerCustomerAddedViewState extends State<OwnerCustomerAddedView> {
                                 style: Theme.of(context)
                                     .textTheme
                                     .titleLarge
-                                    ?.copyWith(fontWeight: FontWeight.w800),
+                                    ?.copyWith(fontWeight: FontWeight.w600),
                               ),
                               const SizedBox(height: 8),
                               Text(

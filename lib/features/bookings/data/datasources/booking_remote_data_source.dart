@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../../core/data/offline_sync_queue.dart';
 import '../../../../core/data/sync_engine.dart';
@@ -29,6 +31,36 @@ class BookingRemoteDataSource {
 
   final Map<String, BookingModel> _inMemoryFallback = {};
   static int _idSeq = 0;
+
+  /// Live booking updates (Item 2): every create / status / payment
+  /// change notifies this broadcast feed, so the in-memory fallback
+  /// branches of the streams below re-emit instead of freezing at
+  /// their first value. The Firestore branches are already live via
+  /// snapshots; this feed is what makes submit-then-see-it work
+  /// offline and in tests, where there is no Firestore app. Writes
+  /// still go through the sync queue exactly as before — this only
+  /// announces that the local state changed.
+  final StreamController<void> _bookingChanges =
+      StreamController<void>.broadcast();
+
+  /// The change feed itself, for callers that want a refresh
+  /// trigger without a bookings payload.
+  Stream<void> get bookingChanges => _bookingChanges.stream;
+
+  void _notifyBookingChanged() {
+    if (!_bookingChanges.isClosed) _bookingChanges.add(null);
+  }
+
+  /// A fallback stream that yields the current local read now and
+  /// re-yields it on every [_notifyBookingChanged]. Built with
+  /// `yield*` (not `await for`): cancelling the subscription must
+  /// unwind the generator, and an `await for` over the broadcast
+  /// change feed never completes its cancel — a widget test that
+  /// cancels on dispose hangs on it.
+  Stream<T> _liveFallback<T>(T Function() read) async* {
+    yield read();
+    yield* _bookingChanges.stream.map((_) => read());
+  }
 
   BookingRemoteDataSource(
       {FirebaseFirestore? firestore,
@@ -124,6 +156,8 @@ class BookingRemoteDataSource {
         },
         SetOptions(merge: true),
       );
+      // The queued create just landed: live listeners re-read.
+      _notifyBookingChanged();
       return true;
     } catch (_) {
       return false;
@@ -146,6 +180,8 @@ class BookingRemoteDataSource {
         },
         SetOptions(merge: true),
       );
+      // The queued update just landed: live listeners re-read.
+      _notifyBookingChanged();
       return true;
     } catch (_) {
       return false;
@@ -371,6 +407,11 @@ class BookingRemoteDataSource {
       );
     }
 
+    // Live updates (Item 2): the booking is in the local store
+    // now, so every subscribed list re-reads — the customer sees
+    // it in Bookings / Home / Wallet and the owner in triage and
+    // on the dashboard without navigating away and back.
+    _notifyBookingChanged();
     return model;
   }
 
@@ -398,6 +439,9 @@ class BookingRemoteDataSource {
     if (!written) {
       await _queueWrite('booking_update', bookingId, {'fields': fields});
     }
+    // Live updates (Item 2): an owner approve / reject (or any
+    // status change) reaches the customer's lists immediately.
+    _notifyBookingChanged();
     return model;
   }
 
@@ -461,6 +505,7 @@ class BookingRemoteDataSource {
       type: 'payment_proof',
       bookingId: bookingId,
     );
+    _notifyBookingChanged();
     return model;
   }
 
@@ -488,6 +533,7 @@ class BookingRemoteDataSource {
     if (!written) {
       await _queueWrite('booking_update', bookingId, {'fields': fields});
     }
+    _notifyBookingChanged();
     return model;
   }
 
@@ -522,6 +568,7 @@ class BookingRemoteDataSource {
     if (!written) {
       await _queueWrite('booking_update', bookingId, {'fields': fields});
     }
+    _notifyBookingChanged();
     return model;
   }
 
@@ -565,7 +612,7 @@ class BookingRemoteDataSource {
         return _inMemoryFallback[bookingId];
       });
     }
-    return Stream.value(_inMemoryFallback[bookingId]);
+    return _liveFallback(() => _inMemoryFallback[bookingId]);
   }
 
   /// Phase C (C3): the live bookings of one shop, for the Requests
@@ -585,7 +632,7 @@ class BookingRemoteDataSource {
               .map((d) => BookingModel.fromMap(d.data(), d.id))
               .toList());
     }
-    return Stream.value(_inMemoryFallback.values
+    return _liveFallback(() => _inMemoryFallback.values
         .where((b) => b.shopId == shopId)
         .toList());
   }
@@ -606,8 +653,28 @@ class BookingRemoteDataSource {
               .map((d) => BookingModel.fromMap(d.data(), d.id))
               .toList());
     }
-    return Stream.value(_inMemoryFallback.values
+    return _liveFallback(() => _inMemoryFallback.values
         .where((b) => b.customerId == customerId)
+        .toList());
+  }
+
+  /// Live bookings of one vehicle, for the per-vehicle calendar and
+  /// the booking picker's blocked days — same pattern as
+  /// [streamShopBookings]: Firestore snapshots when available, the
+  /// live in-memory fallback otherwise.
+  Stream<List<BookingEntity>> streamVehicleBookings(String vehicleId) {
+    final fs = _resolvedFirestore;
+    if (fs != null) {
+      return fs
+          .collection('bookings')
+          .where('vehicleId', isEqualTo: vehicleId)
+          .snapshots()
+          .map((snap) => snap.docs
+              .map((d) => BookingModel.fromMap(d.data(), d.id))
+              .toList());
+    }
+    return _liveFallback(() => _inMemoryFallback.values
+        .where((b) => b.vehicleId == vehicleId)
         .toList());
   }
 

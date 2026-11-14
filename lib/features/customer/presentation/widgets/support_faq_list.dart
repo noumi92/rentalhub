@@ -22,7 +22,7 @@ class SupportFaqList extends StatelessWidget {
           style: Theme.of(context)
               .textTheme
               .titleSmall
-              ?.copyWith(fontWeight: FontWeight.w800),
+              ?.copyWith(fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 10),
         // E2: a search that matches nothing renders the shared empty
@@ -48,7 +48,7 @@ class SupportFaqList extends StatelessWidget {
                     style: Theme.of(context)
                         .textTheme
                         .bodyMedium
-                        ?.copyWith(fontWeight: FontWeight.w700),
+                        ,
                   ),
                   children: [
                     Padding(

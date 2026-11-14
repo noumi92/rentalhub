@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../core/utils/responsive.dart';
 import '../../data/datasources/admin_remote_data_source.dart';
 import '../../domain/admin_permissions.dart';
@@ -24,6 +25,7 @@ class AdminTeamMemberTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final compact =
         windowSizeClassOf(context) == WindowSizeClass.compact;
     final badge = Container(
@@ -36,10 +38,12 @@ class AdminTeamMemberTile extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(
-        member.totpEnabled ? '2FA on' : '2FA off',
+        member.totpEnabled
+            ? (l10n?.admin2_team2faOn ?? '2FA on')
+            : (l10n?.admin2_team2faOff ?? '2FA off'),
         style: TextStyle(
             fontSize: 11,
-            fontWeight: FontWeight.w800,
+            fontWeight: FontWeight.w500,
             color: member.totpEnabled
                 ? Colors.green.shade700
                 : Colors.amber.shade800),
@@ -78,10 +82,13 @@ class AdminTeamMemberTile extends StatelessWidget {
                               member.email.isEmpty ? member.uid : member.email,
                               style: const TextStyle(
                                   fontSize: 14,
-                                  fontWeight: FontWeight.w800),
+                                  ),
                             ),
                             Text(
-                              AdminPermissions.label(member.adminRole),
+                              l10n == null
+                                  ? AdminPermissions.label(member.adminRole)
+                                  : AdminPermissions.labelL10n(
+                                      l10n, member.adminRole),
                               style: TextStyle(
                                   fontSize: 12,
                                   color: Theme.of(context)
@@ -101,17 +108,23 @@ class AdminTeamMemberTile extends StatelessWidget {
                         Expanded(
                           child: OutlinedButton.icon(
                             onPressed: onResetTotp,
+                            // AD-m8: 48dp minimum touch target.
+                            style: OutlinedButton.styleFrom(
+                                minimumSize: const Size(0, 48)),
                             icon: const Icon(Icons.key_rounded, size: 18),
-                            label: const Text('Reset 2FA'),
+                            label: Text(l10n?.admin2_teamReset2fa ?? 'Reset 2FA'),
                           ),
                         ),
                         const SizedBox(width: 8),
                         Expanded(
                           child: OutlinedButton.icon(
                             onPressed: onRevoke,
+                            // AD-m8: 48dp minimum touch target.
+                            style: OutlinedButton.styleFrom(
+                                minimumSize: const Size(0, 48)),
                             icon: const Icon(Icons.person_remove_rounded,
                                 size: 18),
-                            label: const Text('Revoke role'),
+                            label: Text(l10n?.admin2_teamRevokeRole ?? 'Revoke role'),
                           ),
                         ),
                       ],
@@ -129,11 +142,12 @@ class AdminTeamMemberTile extends StatelessWidget {
                 member.email.isEmpty ? member.uid : member.email,
                 style: const TextStyle(
                     fontSize: 14,
-                    fontWeight: FontWeight.w800,
                     ),
               ),
               subtitle: Text(
-                AdminPermissions.label(member.adminRole),
+                l10n == null
+                    ? AdminPermissions.label(member.adminRole)
+                    : AdminPermissions.labelL10n(l10n, member.adminRole),
                 style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
               ),
               trailing: Row(
@@ -143,12 +157,14 @@ class AdminTeamMemberTile extends StatelessWidget {
                   if (canManage) ...[
                     IconButton(
                       icon: const Icon(Icons.key_rounded, size: 20),
-                      tooltip: 'Reset two-factor authentication',
+                      tooltip: l10n?.admin2_teamResetTotpTooltip ??
+                          'Reset two-factor authentication',
                       onPressed: onResetTotp,
                     ),
                     IconButton(
                       icon: const Icon(Icons.person_remove_rounded, size: 20),
-                      tooltip: 'Revoke admin role',
+                      tooltip: l10n?.admin2_teamRevokeTooltip ??
+                          'Revoke admin role',
                       onPressed: onRevoke,
                     ),
                   ],

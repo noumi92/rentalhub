@@ -107,6 +107,13 @@ class AppColors {
   static const Color accentDanger = Color(0xFFEF4444);
   static const Color accentDangerDark = Color(0xFFF87171);
   static const Color errorDark = Color(0xFFDC2626);
+  // Readable red TEXT token (label/colour audit, 2026-11-14).
+  // `accentDanger` #EF4444 is only 3.76:1 on white and 3.44:1 on the
+  // pale error container — both fail WCAG AA for small text — so small
+  // red text uses this instead: #B91C1C measures 6.47:1 on white and
+  // ~6.1:1 on #FEF2F2. `errorDark` #DC2626 (4.83:1 on white) stays the
+  // fill for destructive buttons with white text.
+  static const Color errorText = Color(0xFFB91C1C);
   static const Color errorContainer = Color(0xFFFEF2F2);
   static const Color errorContainerDark = Color(0xFF3B1215);
   static const Color errorOnContainerDark = Color(0xFFFCA5A5);
@@ -134,7 +141,13 @@ class AppColors {
   static Color successContainerFor(Brightness brightness) =>
       brightness == Brightness.dark ? successContainerDark : successContainer;
   static Color successOnContainerFor(Brightness brightness) =>
-      brightness == Brightness.dark ? successOnContainerDark : accentSuccess;
+      // Label/colour audit (2026-11-14): the old light value was
+      // `accentSuccess` #10B981 — 2.54:1 on white, 2.41:1 on the pale
+      // container, failing WCAG AA everywhere it labelled a slab.
+      // `accentSuccessStrong` #047857 is 5.48:1 on white, 5.21:1 on
+      // the light success container (see SuccessBanner, which already
+      // used it for exactly this reason).
+      brightness == Brightness.dark ? successOnContainerDark : accentSuccessStrong;
   static Color successBorderFor(Brightness brightness) =>
       brightness == Brightness.dark
           ? accentSuccessDark
@@ -144,18 +157,24 @@ class AppColors {
   static Color errorContainerFor(Brightness brightness) =>
       brightness == Brightness.dark ? errorContainerDark : errorContainer;
   static Color errorOnContainerFor(Brightness brightness) =>
-      brightness == Brightness.dark ? errorOnContainerDark : accentDanger;
+      // Label/colour audit (2026-11-14): the old light value was
+      // `accentDanger` #EF4444 — 3.44:1 on #FEF2F2, failing WCAG AA
+      // for the banner text that sits on it. `errorText` #B91C1C is
+      // ~6.1:1 on the container and 6.47:1 on white.
+      brightness == Brightness.dark ? errorOnContainerDark : errorText;
 
   /// Brightness-aware status TEXT colours (icons, labels, amounts on a
-  /// surface). The light tokens are too dark to read on dark surfaces
-  /// (accentDanger #EF4444 ≈ 3.9:1, accentSuccess #16A34A ≈ 3.0:1), so
-  /// dark mode uses the lighter variants; light mode is unchanged.
+  /// surface). The light legs are the readable text variants, not the
+  /// brand fills: `accentSuccess` #10B981 is 2.54:1 on white,
+  /// `accentDanger` #EF4444 is 3.76:1, and `warning` #F59E0B is
+  /// 2.15:1 — all fail WCAG AA for small text (label/colour audit,
+  /// 2026-11-14). Dark mode uses the lighter variants, unchanged.
   static Color dangerTextFor(Brightness brightness) =>
-      brightness == Brightness.dark ? accentDangerDark : accentDanger;
+      brightness == Brightness.dark ? accentDangerDark : errorText;
   static Color successTextFor(Brightness brightness) =>
-      brightness == Brightness.dark ? accentSuccessDark : accentSuccess;
+      brightness == Brightness.dark ? accentSuccessDark : accentSuccessStrong;
   static Color warningTextFor(Brightness brightness) =>
-      brightness == Brightness.dark ? warningOnContainerDark : warning;
+      brightness == Brightness.dark ? warningOnContainerDark : warningOnContainer;
   static Color warningContainerFor(Brightness brightness) =>
       brightness == Brightness.dark ? warningContainerDark : warningContainer;
   static Color warningOnContainerFor(Brightness brightness) =>

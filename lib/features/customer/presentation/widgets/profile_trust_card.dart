@@ -59,7 +59,7 @@ class ProfileTrustCard extends StatelessWidget {
                     trustScore == null
                         ? l10n.reputationTrustScoreDash
                         : l10n.profileTrustScoreValue(trustScore!.toStringAsFixed(1)),
-                    style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
                   ),
                   Text(
                     '${kycVerified ? l10n.trustKycVerified : l10n.trustKycPending} • '

@@ -35,7 +35,7 @@ Text(l10n.addVehicleSeatingCapacity,
     style: Theme.of(context)
         .textTheme
         .labelMedium
-        ?.copyWith(fontWeight: FontWeight.w800)),
+        ?.copyWith(fontWeight: FontWeight.w500)),
 const SizedBox(height: 6),
 SingleChildScrollView(
   scrollDirection: Axis.horizontal,
@@ -53,7 +53,7 @@ SingleChildScrollView(
                 color: isSelected
                     ? Colors.white
                     : Theme.of(context).colorScheme.onSurface,
-                fontWeight: FontWeight.w700,
+                fontWeight: FontWeight.w500,
               ),
           onSelected: (_) => onSeatsChanged(s),
         ),
@@ -68,7 +68,7 @@ Text(l10n.addVehicleExtraFeatures,
     style: Theme.of(context)
         .textTheme
         .labelMedium
-        ?.copyWith(fontWeight: FontWeight.w800)),
+        ?.copyWith(fontWeight: FontWeight.w500)),
 const SizedBox(height: 4),
 Text(
     l10n.addVehicleExtraFeaturesHint,
@@ -89,7 +89,7 @@ Wrap(
             color: isSelected
                 ? Colors.white
                 : Theme.of(context).colorScheme.onSurface,
-            fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+            fontWeight: FontWeight.w500,
           ),
       onSelected: (_) => onFeatureToggled(f),
     );

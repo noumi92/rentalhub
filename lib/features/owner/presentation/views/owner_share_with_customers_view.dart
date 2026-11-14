@@ -94,7 +94,7 @@ class _OwnerShareWithCustomersViewState
                   margin: const EdgeInsets.only(right: 12),
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.18), borderRadius: BorderRadius.circular(12)),
-                  child: Text(l10n.shareStepOfTwo(_step), style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.white, fontWeight: FontWeight.w700)),
+                  child: Text(l10n.shareStepOfTwo(_step), style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.white, fontWeight: FontWeight.w500)),
                 ),
               ],
             ),
@@ -105,7 +105,7 @@ class _OwnerShareWithCustomersViewState
                     ? Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(l10n.shareChoosePrice, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900)),
+                          Text(l10n.shareChoosePrice, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
                           const SizedBox(height: 12),
                           RadioGroup<String>(
                             groupValue: _period,
@@ -120,8 +120,8 @@ class _OwnerShareWithCustomersViewState
                                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14), side: selected ? BorderSide(color: Theme.of(context).colorScheme.primary) : BorderSide.none),
                                     child: RadioListTile<String>(
                                       value: key,
-                                      title: Text(row.$2, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800)),
-                                      subtitle: Text(row.$3 == null ? '—' : l10n.amountRs(formatRs(row.$3!)), style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900)),
+                                      title: Text(row.$2, style: Theme.of(context).textTheme.bodyMedium),
+                                      subtitle: Text(row.$3 == null ? '—' : l10n.amountRs(formatRs(row.$3!)), style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w500)),
                                     ),
                                   );
                                 }),
@@ -150,7 +150,7 @@ class _OwnerShareWithCustomersViewState
                                           .textTheme
                                           .titleSmall
                                           ?.copyWith(
-                                              fontWeight: FontWeight.w900)),
+                                              fontWeight: FontWeight.w600)),
                                   const SizedBox(height: 6),
                                   Text(
                                       '${_periodLabel(l10n)}: ${_selectedPrice == null ? '—' : l10n.amountRs(formatRs(_selectedPrice!))}',
@@ -158,7 +158,7 @@ class _OwnerShareWithCustomersViewState
                                           .textTheme
                                           .titleMedium
                                           ?.copyWith(
-                                              fontWeight: FontWeight.w800)),
+                                              fontWeight: FontWeight.w600)),
                                   const SizedBox(height: 12),
                                   Row(
                                     children: [

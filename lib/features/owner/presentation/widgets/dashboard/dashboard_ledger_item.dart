@@ -62,9 +62,7 @@ class DashboardLedgerItem extends StatelessWidget {
                 Text(vehicleName,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w800,
-                    )),
+                    style: Theme.of(context).textTheme.bodyMedium),
                 const SizedBox(height: 2),
                 Text('#$bookingId • $customerName',
                     maxLines: 1,
@@ -81,16 +79,14 @@ class DashboardLedgerItem extends StatelessWidget {
               // an int, so the formatted string goes inline — see
               // dashboard_kpis.dart.)
               Text(l10n.amountRs(formatRs(amount)),
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w900,
-                  )),
+                  style: Theme.of(context).textTheme.bodyMedium),
               const SizedBox(height: 2),
               // The stored status code stays as-is; only the
               // displayed label is localized (no upper-casing: Urdu
               // has no case, and the label reads as a word, not a code).
               Text(_statusLabel(l10n, status),
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    fontWeight: FontWeight.w900,
+                    fontWeight: FontWeight.w500,
                     color: statusColor,
                   )),
             ],

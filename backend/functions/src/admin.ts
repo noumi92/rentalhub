@@ -363,6 +363,31 @@ export const pruneAuditLogs = onSchedule("every day 02:00", async () => {
 });
 
 /**
+ * Admin audit (2026-11-14, F-m4): expired invites lingered forever
+ * in the team list. The client prunes on team load, and this
+ * scheduled function is the backstop — deletes unaccepted invites
+ * whose expires_at has passed (500 per run), daily at 02:30.
+ *
+ * Deploy note: like every Function in this file, this only runs
+ * once deployed (`firebase deploy --only functions`), which is
+ * blocked on the billing account (user postponed 2026-11-10).
+ * Until then the client-side prune is the only one running.
+ */
+export const pruneExpiredInvites = onSchedule("every day 02:30", async () => {
+  const old = await db
+    .collection("admin_invites")
+    .where("accepted", "==", false)
+    .where("expires_at", "<", admin.firestore.Timestamp.now())
+    .limit(500)
+    .get();
+  if (old.empty) return;
+  const batch = db.batch();
+  old.docs.forEach((doc) => batch.delete(doc.ref));
+  await batch.commit();
+  console.log(`Pruned ${old.size} expired admin invites.`);
+});
+
+/**
  * Phase E (E3): send an announcement.
  *
  * Callable, admin-only (doc role or claim, same gate as the other
@@ -379,7 +404,18 @@ export const pruneAuditLogs = onSchedule("every day 02:00", async () => {
  * - Both channels: push goes out now; WhatsApp stays pending.
  *
  * The announcement's stats_sent is the real FCM success count.
- * stats_delivered / stats_opened stay 0 until the app reports them.
+ * stats_delivered stays 0 — FCM delivery receipts are not reported
+ * by the app, and the count is never estimated. stats_opened is
+ * incremented by the app when the announcement detail screen is
+ * opened (see AnnouncementDetailView).
+ *
+ * F-M14 (admin audit 2026-11-14): the delivery core lives in
+ * [deliverAnnouncement] so the scheduled dispatcher below
+ * ([sendDueAnnouncements]) sends due announcements with the same
+ * code path. A non-test send is refused when the announcement is
+ * already `sent` or `pending_whatsapp` (push already delivered) —
+ * the client disables "Send now" for those states, and this guard
+ * is the backstop against a double push via a direct call.
  */
 export const sendAnnouncement = onCall(async (request) => {
   const callerUid = request.auth?.uid;
@@ -399,12 +435,102 @@ export const sendAnnouncement = onCall(async (request) => {
   if (!announcementId) {
     throw new HttpsError("invalid-argument", "announcementId is required.");
   }
+  return deliverAnnouncement({
+    announcementId,
+    test,
+    actorId: callerUid,
+    actorEmail: request.auth?.token.email ?? "",
+  });
+});
+
+/**
+ * Scheduled: send announcements whose time has come (F-M14).
+ * Every 15 minutes, picks up `status == 'scheduled'` announcements
+ * with `scheduled_at` at or before now and delivers each with the
+ * same [deliverAnnouncement] path the admin's "Send now" uses, then
+ * marks them `sent` / `pending_whatsapp`. Without this dispatcher
+ * a scheduled announcement sat forever — scheduling was a label.
+ * A due announcement that fails to send is left `scheduled` with
+ * the error logged, so the next run retries it instead of silently
+ * dropping it.
+ *
+ * DEPLOY DEPENDENCY: this is a Cloud Function — it only runs once
+ * the Functions are deployed (`firebase deploy --only functions`),
+ * which needs the billing account (Cloud Build + Artifact Registry).
+ * Until then, scheduled announcements still need a manual "Send
+ * now" from the admin panel. Never fake a send.
+ */
+export const sendDueAnnouncements = onSchedule(
+  "every 15 minutes",
+  async () => {
+    const now = Date.now();
+    const due = await db
+      .collection("announcements")
+      .where("status", "==", "scheduled")
+      .get();
+    for (const doc of due.docs) {
+      const data = doc.data();
+      const scheduledAt = data.scheduled_at;
+      let scheduledMillis: number | null = null;
+      if (typeof scheduledAt?.toMillis === "function") {
+        scheduledMillis = (scheduledAt as admin.firestore.Timestamp).toMillis();
+      } else if (typeof scheduledAt === "string") {
+        const parsed = Date.parse(scheduledAt);
+        scheduledMillis = Number.isNaN(parsed) ? null : parsed;
+      }
+      if (scheduledMillis === null || scheduledMillis > now) continue;
+      try {
+        await deliverAnnouncement({
+          announcementId: doc.id,
+          test: false,
+          actorId: "scheduled",
+          actorEmail: "scheduled@rentalhub",
+        });
+        console.log(`Scheduled announcement ${doc.id} sent.`);
+      } catch (e) {
+        console.error(
+          `Scheduled announcement ${doc.id} failed, will retry next run:`,
+          e
+        );
+      }
+    }
+  }
+);
+
+/** The shared delivery core for [sendAnnouncement] and
+ * [sendDueAnnouncements]. [actorId]/[actorEmail] are the caller for
+ * a manual send, or 'scheduled' for the dispatcher. */
+async function deliverAnnouncement(args: {
+  announcementId: string;
+  test: boolean;
+  actorId: string;
+  actorEmail: string;
+}): Promise<{
+  success: boolean;
+  sent: number;
+  whatsappPending: boolean;
+  message: string;
+}> {
+  const { announcementId, test, actorId, actorEmail } = args;
   const announcementRef = db.collection("announcements").doc(announcementId);
   const announcementSnap = await announcementRef.get();
   if (!announcementSnap.exists) {
     throw new HttpsError("not-found", "Announcement not found.");
   }
   const announcement = announcementSnap.data()!;
+
+  // F-M14 re-send guard: push already went out for these states.
+  // A test send (admin's own device only) is always allowed.
+  const status = announcement.status as string | undefined;
+  if (
+    !test &&
+    (status === "sent" || status === "pending_whatsapp")
+  ) {
+    throw new HttpsError(
+      "failed-precondition",
+      "This announcement was already sent."
+    );
+  }
 
   const channel = announcement.channel as string | undefined;
   const audienceRole = announcement.audience_role as string | undefined ?? "all";
@@ -418,7 +544,7 @@ export const sendAnnouncement = onCall(async (request) => {
     // Resolve the audience to FCM tokens.
     const tokens: string[] = [];
     if (test) {
-      const me = await db.collection("users").doc(callerUid).get();
+      const me = await db.collection("users").doc(actorId).get();
       const token = me.data()?.fcm_token as string | undefined;
       if (token) tokens.push(token);
     } else if (audienceRole === "customer") {
@@ -481,8 +607,8 @@ export const sendAnnouncement = onCall(async (request) => {
   });
   await writeAuditLog({
     action: "announcement_sent",
-    actorId: callerUid,
-    actorEmail: request.auth?.token.email ?? "",
+    actorId,
+    actorEmail,
     targetType: "announcement",
     targetId: announcementId,
     detail: `Channel ${channel}, audience ${audienceRole}/${audienceCity}/${audiencePlan}, FCM sent ${sent}${whatsappPending ? ", WhatsApp pending (D2 token)" : ""}.`,
@@ -495,4 +621,4 @@ export const sendAnnouncement = onCall(async (request) => {
       ? `Push sent to ${sent} device(s). WhatsApp delivery is pending the Meta token (plan D2).`
       : `Push sent to ${sent} device(s).`,
   };
-});
+}

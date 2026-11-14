@@ -91,7 +91,7 @@ class _PickupCountdownTimerState extends State<PickupCountdownTimer> {
             isOverdue
                 ? (widget.overdueLabel ?? l10n.countdownTimeReached)
                 : (widget.label ?? l10n.countdownToPickup),
-            style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.primaryContainer, letterSpacing: 1.2),
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w500, color: AppColors.primaryContainer, letterSpacing: 1.2),
           ),
           const SizedBox(height: 8),
           Row(
@@ -120,13 +120,13 @@ class _PickupCountdownTimerState extends State<PickupCountdownTimer> {
           ),
           child: Text(
             value,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900, color: Colors.white),
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600, color: Colors.white),
           ),
         ),
         const SizedBox(height: 4),
         Text(
           unit,
-          style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700, color: AppColors.primaryContainer),
+          style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w500, color: AppColors.primaryContainer),
         ),
       ],
     );
@@ -137,7 +137,7 @@ class _PickupCountdownTimerState extends State<PickupCountdownTimer> {
       padding: EdgeInsets.symmetric(horizontal: 6, vertical: 4),
       child: Text(
         ':',
-        style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900, color: Colors.white70),
+        style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600, color: Colors.white70),
       ),
     );
   }

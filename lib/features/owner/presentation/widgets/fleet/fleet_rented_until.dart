@@ -1,4 +1,5 @@
 import '../../../../bookings/data/datasources/booking_remote_data_source.dart';
+import '../../../../bookings/domain/entities/booking_entity.dart';
 
 /// RQ-F10 (O05/O30): the active booking's return date per vehicle.
 /// Extracted from `OwnerFleetView` so the view stays under the
@@ -16,6 +17,14 @@ Future<Map<String, DateTime>> loadRentedUntilByVehicle(
   String shopId,
 ) async {
   final bookings = await ds.getShopBookings(shopId);
+  return rentedUntilByVehicle(bookings);
+}
+
+/// The pure form of [loadRentedUntilByVehicle]: the same
+/// computation over an already-loaded list, so live subscribers
+/// (the fleet view's shop-bookings stream) can recompute the map on
+/// every emission instead of re-fetching.
+Map<String, DateTime> rentedUntilByVehicle(List<BookingEntity> bookings) {
   final now = DateTime.now();
   final map = <String, DateTime>{};
   for (final b in bookings) {

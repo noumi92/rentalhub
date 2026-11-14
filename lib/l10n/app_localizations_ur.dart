@@ -148,6 +148,86 @@ class AppLocalizationsUr extends AppLocalizations {
   String get disputeResolved => 'حل شدہ';
 
   @override
+  String get disputeDecisionChoose => 'فیصلہ منتخب کریں';
+
+  @override
+  String get disputeDecisionRequired => 'محفوظ کرنے سے پہلے فیصلہ منتخب کریں۔';
+
+  @override
+  String get disputeDecisionFullToCustomer => 'گاہک کو مکمل رقم واپس';
+
+  @override
+  String get disputeDecisionPartial => 'جزوی — تقسیم';
+
+  @override
+  String get disputeDecisionFullToOwner => 'مکمل رقم مالک کو (دعویٰ درست قرار)';
+
+  @override
+  String get disputeDecisionAmount => 'فیصلے کی رقم';
+
+  @override
+  String get disputeDecisionNote => 'ایڈمن کا نوٹ';
+
+  @override
+  String get disputeMarkInReview => 'جائزے میں ڈالیں';
+
+  @override
+  String get disputeMarkedInReview => 'جائزے میں ڈال دیا گیا۔';
+
+  @override
+  String get disputeMarkInReviewFailed =>
+      'تنازع کو جائزے میں نہیں ڈالا جا سکا۔';
+
+  @override
+  String get handoverPhotoFront => 'سامنے';
+
+  @override
+  String get handoverPhotoBack => 'پیچھے';
+
+  @override
+  String get handoverPhotoLeft => 'بائیں';
+
+  @override
+  String get handoverPhotoRight => 'دائیں';
+
+  @override
+  String get handoverDocumentsGiven => 'دی گئی دستاویزات';
+
+  @override
+  String get handoverAccessories => 'لوازمات';
+
+  @override
+  String get handoverKeysHandedOver => 'چابیاں حوالے کی گئیں';
+
+  @override
+  String get handoverKeysNotHandedOver => 'چابیاں حوالے نہیں کی گئیں';
+
+  @override
+  String get returnChecklistTitle => 'واپسی کی فہرست';
+
+  @override
+  String get returnChecklistEmpty =>
+      'ابھی تک واپسی کا کوئی ریکارڈ نہیں — گاڑی واپسی کے عمل سے نہیں گزری۔';
+
+  @override
+  String get returnCondition => 'حالت';
+
+  @override
+  String get returnOdometer => 'واپسی کا میٹر';
+
+  @override
+  String get returnDamageNotes => 'واپسی کے نقصان کی تفصیل';
+
+  @override
+  String get returnRemainingCollected => 'بقایا کرایہ وصول';
+
+  @override
+  String get returnNetRefund => 'خالص واپسی';
+
+  @override
+  String get returnPaymentMethod => 'ادائیگی کا طریقہ';
+
+  @override
   String get verified => 'تصدیق شدہ';
 
   @override
@@ -965,6 +1045,20 @@ class AppLocalizationsUr extends AppLocalizations {
   @override
   String get rateAlreadyRated =>
       'آپ اس سفر کی درجہ بندی کر چکے ہیں — آپ کا جائزہ نیچے دکھایا گیا ہے۔';
+
+  @override
+  String get rateEditRequestedTitle =>
+      'ایڈمن نے آپ سے اس جائزے میں ترمیم کرنے کو کہا ہے';
+
+  @override
+  String get rateWarnedTitle => 'اس جائزے کے بارے میں ایڈمن کی تنبیہ';
+
+  @override
+  String get adminAnncDeliveredNotTracked => 'ڈیلیوری: ابھی ٹریک نہیں ہو رہی';
+
+  @override
+  String get adminAnncScheduleDateRequired =>
+      'طے شدہ اعلان کے لیے تاریخ اور وقت منتخب کریں۔';
 
   @override
   String get rateSavedOffline =>
@@ -5223,18 +5317,6 @@ class AppLocalizationsUr extends AppLocalizations {
   String get handoverPhotosTitle => 'گاڑی کی بیرونی تصاویر';
 
   @override
-  String get handoverPhotoFront => 'سامنے';
-
-  @override
-  String get handoverPhotoBack => 'پیچھے';
-
-  @override
-  String get handoverPhotoLeft => 'بائیں';
-
-  @override
-  String get handoverPhotoRight => 'دائیں';
-
-  @override
   String get handoverPhotoUploading => 'اپ لوڈ ہو رہی ہے…';
 
   @override
@@ -7292,6 +7374,71 @@ class AppLocalizationsUr extends AppLocalizations {
       'تازہ ترین بلڈ کے لیے کسی سپر ایڈمن سے رابطہ کریں۔';
 
   @override
+  String get adminKycReviewTitle => 'کے وائی سی جائزہ';
+
+  @override
+  String get adminKycReviewSubtitle =>
+      'گاہکوں کی شناختی دستاویزات فیصلے کی منتظر ہیں';
+
+  @override
+  String get adminKycReviewEmpty => 'کوئی زیر التواء کے وائی سی درخواست نہیں';
+
+  @override
+  String get adminKycReviewEmptyHint =>
+      'گاہکوں کی ہر درخواست کا فیصلہ ہو چکا ہے۔';
+
+  @override
+  String get adminKycReviewLoadFailed => 'کے وائی سی فہرست لوڈ نہیں ہو سکی۔';
+
+  @override
+  String get adminKycReviewNotFound => 'درخواست نہیں ملی۔';
+
+  @override
+  String get adminKycReviewNotPermitted =>
+      'کے وائی سی کا جائزہ صرف سپر ایڈمن اور آپریشنز لے سکتے ہیں';
+
+  @override
+  String get adminKycReviewNotPermittedHint =>
+      'اس درخواست کے جائزے کے لیے کسی سپر ایڈمن یا آپریشنز ایڈمن سے رابطہ کریں۔';
+
+  @override
+  String get adminNotPermitted =>
+      'آپ کے ایڈمن کردار میں اس کارروائی کی اجازت نہیں ہے۔';
+
+  @override
+  String get adminKycReviewApprove => 'منظور کریں';
+
+  @override
+  String get adminKycReviewReject => 'مسترد کریں';
+
+  @override
+  String get adminKycReviewReasonLabel =>
+      'وجہ (مسترد کرنے کے لیے لازم — گاہک اسے دیکھے گا)';
+
+  @override
+  String get adminKycReviewReasonRequired =>
+      'مسترد کرنے کے لیے وجہ لازمی ہے — گاہک اسے دیکھے گا۔';
+
+  @override
+  String get adminKycReviewDecisionSaved => 'فیصلہ محفوظ ہو گیا۔';
+
+  @override
+  String get adminKycReviewDecisionFailed =>
+      'سرور سے رابطہ نہیں ہو سکا — دوبارہ کوشش کریں۔';
+
+  @override
+  String get adminKycReviewLicenseNumber => 'لائسنس نمبر';
+
+  @override
+  String get adminKycReviewLicenseExpiry => 'لائسنس کی میعاد';
+
+  @override
+  String get adminKycReviewCnicNumber => 'شناختی کارڈ نمبر';
+
+  @override
+  String get adminKycReviewSubmittedOn => 'جمع کرائی گئی';
+
+  @override
   String get kyc2_qrCode => 'کیو آر کوڈ';
 
   @override
@@ -7423,4 +7570,1985 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get manualBookingWhatsappToggle => 'واٹس ایپ پر تصدیق بھیجیں';
+
+  @override
+  String get admin2_signInFailedGeneric =>
+      'سائن ان ناکام ہوا۔ دوبارہ کوشش کریں۔';
+
+  @override
+  String get admin2_signInWrongCredentials => 'ای میل یا پاس ورڈ غلط ہے۔';
+
+  @override
+  String get admin2_signInAccountDisabled =>
+      'یہ اکاؤنٹ غیر فعال کر دیا گیا ہے۔ کسی سپر ایڈمن سے مدد لیں۔';
+
+  @override
+  String get admin2_signInTooManyAttempts =>
+      'سائن ان کی بہت زیادہ کوششیں ہو چکی ہیں۔ کچھ دیر بعد دوبارہ کوشش کریں۔';
+
+  @override
+  String get admin2_signInNoConnection =>
+      'سرور سے رابطہ نہیں ہو سکا۔ اپنا انٹرنیٹ چیک کریں اور دوبارہ کوشش کریں۔';
+
+  @override
+  String get admin2_signInInvalidEmail => 'درست ای میل درج کریں۔';
+
+  @override
+  String get admin2_showPassword => 'پاس ورڈ دکھائیں';
+
+  @override
+  String get admin2_hidePassword => 'پاس ورڈ چھپائیں';
+
+  @override
+  String get admin2_blacklistReportTitle => 'بلیک لسٹ میں رپورٹ کریں؟';
+
+  @override
+  String get admin2_blacklistReportBody =>
+      'اس سے گاہک پورے پلیٹ فارم پر بلاک ہو جائے گا۔ وجہ بتائیں — ٹریبونل اسی پر فیصلہ کرے گا۔';
+
+  @override
+  String get admin2_blacklistReasonLabel => 'وجہ (لازم)';
+
+  @override
+  String get admin2_blacklistReasonRequired =>
+      'گاہک کو رپورٹ کرنے کے لیے وجہ لازمی ہے۔';
+
+  @override
+  String get admin2_blacklistReportConfirm => 'رپورٹ کریں';
+
+  @override
+  String get admin2_watchlistAdd => 'واچ لسٹ میں شامل کریں';
+
+  @override
+  String get admin2_watchlistRemove => 'واچ لسٹ سے ہٹائیں';
+
+  @override
+  String get admin2_ticketRepliesLoadFailed => 'جوابات لوڈ نہیں ہو سکے۔';
+
+  @override
+  String get admin2_suspendReasonLabel => 'وجہ (آڈٹ لاگ میں دکھائی جائے گی)';
+
+  @override
+  String get admin2_callFailed => 'ڈائلر نہیں کھل سکا۔';
+
+  @override
+  String get admin2_whatsappOpenFailed => 'واٹس ایپ نہیں کھل سکا۔';
+
+  @override
+  String get admin2_menu => 'مینیو';
+
+  @override
+  String get admin2_confirm => 'تصدیق کریں';
+
+  @override
+  String get admin2_approve => 'منظور کریں';
+
+  @override
+  String get admin2_reject => 'مسترد کریں';
+
+  @override
+  String get admin2_yes => 'جی ہاں';
+
+  @override
+  String get admin2_no => 'نہیں';
+
+  @override
+  String get admin2_save => 'محفوظ کریں';
+
+  @override
+  String get admin2_saving => 'محفوظ کیا جا رہا ہے…';
+
+  @override
+  String get admin2_serverUnreachable => 'سرور سے رابطہ نہیں ہو سکا۔';
+
+  @override
+  String get admin2_serverUnreachableRetry =>
+      'سرور سے رابطہ نہیں ہو سکا — دوبارہ کوشش کریں۔';
+
+  @override
+  String get admin2_reasonRequired => 'وجہ لازمی ہے۔';
+
+  @override
+  String get admin2_decisionSaved => 'فیصلہ محفوظ ہو گیا۔';
+
+  @override
+  String get admin2_none => 'کوئی نہیں';
+
+  @override
+  String get admin2_withDriver => 'ڈرائیور کے ساتھ';
+
+  @override
+  String get admin2_selfDrive => 'خود چلائیں';
+
+  @override
+  String get admin2_suspended => 'معطل';
+
+  @override
+  String get admin2_hidden => 'چھپی ہوئی';
+
+  @override
+  String get admin2_open => 'کھلا';
+
+  @override
+  String get admin2_closed => 'بند';
+
+  @override
+  String get admin2_resolved => 'حل شدہ';
+
+  @override
+  String get admin2_inProgress => 'جاری ہے';
+
+  @override
+  String get admin2_escalated => 'بڑھایا گیا';
+
+  @override
+  String get admin2_requested => 'درخواست شدہ';
+
+  @override
+  String get admin2_paymentSubmitted => 'ادائیگی جمع کرائی گئی';
+
+  @override
+  String get admin2_paid => 'ادا شدہ';
+
+  @override
+  String get admin2_completed => 'مکمل شدہ';
+
+  @override
+  String get admin2_cancelled => 'منسوخ شدہ';
+
+  @override
+  String get admin2_inReview => 'جائزے میں';
+
+  @override
+  String get admin2_roleSuperAdmin => 'سپر ایڈمن';
+
+  @override
+  String get admin2_roleOperations => 'آپریشنز';
+
+  @override
+  String get admin2_roleSupport => 'سپورٹ';
+
+  @override
+  String get admin2_roleAdmin => 'ایڈمن';
+
+  @override
+  String get admin2_navDashboard => 'ڈیش بورڈ';
+
+  @override
+  String get admin2_navShops => 'دکانیں';
+
+  @override
+  String get admin2_navApprovals => 'منظوریاں';
+
+  @override
+  String get admin2_navCars => 'گاڑیاں';
+
+  @override
+  String get admin2_navCustomers => 'گاہک';
+
+  @override
+  String get admin2_navBookings => 'بکنگز';
+
+  @override
+  String get admin2_navDisputes => 'تنازعات';
+
+  @override
+  String get admin2_navReviews => 'جائزے';
+
+  @override
+  String get admin2_navSupport => 'سپورٹ';
+
+  @override
+  String get admin2_navAnnouncements => 'اعلانات';
+
+  @override
+  String get admin2_navReports => 'رپورٹس';
+
+  @override
+  String get admin2_navSettings => 'ترتیبات';
+
+  @override
+  String get admin2_navApkDownload => 'APK ڈاؤن لوڈ';
+
+  @override
+  String get admin2_navBlacklist => 'بلیک لسٹ';
+
+  @override
+  String get admin2_navAdminTeam => 'ایڈمن ٹیم';
+
+  @override
+  String get admin2_navActivityLog => 'سرگرمی لاگ';
+
+  @override
+  String get admin2_navSubscriptions => 'سبسکرپشنز';
+
+  @override
+  String get admin2_sidebarSignedInAs => 'ایڈمن کے طور پر سائن ان';
+
+  @override
+  String get admin2_loginEmailPassword => 'اپنا ای میل اور پاس ورڈ درج کریں۔';
+
+  @override
+  String get admin2_loginEnterCode => '6 ہندسوں کا کوڈ درج کریں۔';
+
+  @override
+  String get admin2_loginSignedIn => 'سائن ان ہو گئے۔';
+
+  @override
+  String get admin2_loginFormTitle => 'رینٹل ہب ایڈمن';
+
+  @override
+  String get admin2_loginFormSubtitle => 'اپنے ایڈمن اکاؤنٹ سے سائن ان کریں۔';
+
+  @override
+  String get admin2_loginFormEmail => 'ای میل';
+
+  @override
+  String get admin2_loginFormPassword => 'پاس ورڈ';
+
+  @override
+  String get admin2_loginFormSigningIn => 'سائن ان ہو رہا ہے…';
+
+  @override
+  String get admin2_loginFormSignIn => 'سائن ان کریں';
+
+  @override
+  String get admin2_loginNotAdmin => 'یہ ایڈمن اکاؤنٹ نہیں ہے';
+
+  @override
+  String get admin2_loginNoRole =>
+      'اس اکاؤنٹ کا کوئی ایڈمن کردار نہیں ہے۔ سائن آؤٹ کریں اور ایڈمن اکاؤنٹ سے سائن ان کریں، یا کسی سپر ایڈمن سے کردار مانگیں۔';
+
+  @override
+  String get admin2_loginUseDifferent => 'مختلف اکاؤنٹ استعمال کریں';
+
+  @override
+  String get admin2_totpSetupTitle => 'دو مرحلہ تصدیق سیٹ اپ کریں';
+
+  @override
+  String get admin2_totpVerifyTitle => 'اپنا آتھنٹیکیٹر کوڈ درج کریں';
+
+  @override
+  String get admin2_totpSetupHint =>
+      'اس کوڈ کو اپنی آتھنٹیکیٹر ایپ سے اسکین کریں، پھر تصدیق کے لیے وہ 6 ہندسوں کا کوڈ درج کریں جو یہ دکھاتی ہے۔';
+
+  @override
+  String get admin2_totpEnabledHint =>
+      'اس اکاؤنٹ کے لیے دو مرحلہ تصدیق آن ہے۔ اپنی آتھنٹیکیٹر ایپ سے 6 ہندسوں کا کوڈ درج کریں۔';
+
+  @override
+  String admin2_totpManualKey(String key) {
+    return 'دستی سیٹ اپ کی: $key';
+  }
+
+  @override
+  String get admin2_totpCodeLabel => '6 ہندسوں کا کوڈ';
+
+  @override
+  String get admin2_totpChecking => 'چیک کیا جا رہا ہے…';
+
+  @override
+  String get admin2_totpConfirmSetup => 'تصدیق کریں اور سیٹ اپ مکمل کریں';
+
+  @override
+  String get admin2_totpVerifySignIn => 'تصدیق کریں اور سائن ان کریں';
+
+  @override
+  String get admin2_subscriptionsSubtitle =>
+      'پلان، آزمائش اور پلیٹ فارم کی آمدنی';
+
+  @override
+  String get admin2_subscriptionsBody =>
+      'سبسکرپشنز فیز F میں آئیں گی، پلے کنسول سیٹ اپ (پلان D1) پر منحصر ہیں۔';
+
+  @override
+  String get admin2_dashboardSubtitle =>
+      'پلیٹ فارم کا جائزہ، براہ راست گنتی کے ساتھ';
+
+  @override
+  String get admin2_dashboardLoadFailed => 'ڈیش بورڈ لوڈ نہیں ہو سکا۔';
+
+  @override
+  String get admin2_dashboardDisputesTitle =>
+      'زیر التواء تنازعات کو فیصلے کی ضرورت ہے';
+
+  @override
+  String admin2_dashboardOpenCount(Object count) {
+    return '$count زیر التواء';
+  }
+
+  @override
+  String get admin2_dashboardDisputesHint =>
+      'ان کا فیصلہ کرنے کے لیے تنازعات کا مرکز کھولیں۔';
+
+  @override
+  String get admin2_dashboardTicketsTitle => 'سپورٹ ٹکٹس منتظر ہیں';
+
+  @override
+  String get admin2_dashboardTicketsHint =>
+      'جواب دینے کے لیے ٹکٹس ان باکس کھولیں۔';
+
+  @override
+  String get admin2_dashboardKpiShops => 'رجسٹرڈ دکانیں';
+
+  @override
+  String get admin2_dashboardKpiLiveCount => 'براہ راست گنتی';
+
+  @override
+  String get admin2_dashboardKpiBookings => 'فعال بکنگز';
+
+  @override
+  String get admin2_dashboardKpiBookingsNote => 'منظور شدہ، ادا شدہ یا فعال';
+
+  @override
+  String get admin2_dashboardKpiDisputes => 'زیر التواء تنازعات';
+
+  @override
+  String get admin2_dashboardKpiDisputesNote => 'فیصلے کے منتظر';
+
+  @override
+  String get admin2_dashboardKpiTickets => 'زیر التواء سپورٹ ٹکٹس';
+
+  @override
+  String get admin2_dashboardKpiTicketsNote => 'جواب کے منتظر';
+
+  @override
+  String get admin2_shopsSubtitle => 'پلیٹ فارم کی ہر شوروم';
+
+  @override
+  String get admin2_shopsSearchHint => 'دکان، شہر یا مالک کے نام سے تلاش کریں…';
+
+  @override
+  String get admin2_shopsLoadFailed => 'دکانیں لوڈ نہیں ہو سکیں۔';
+
+  @override
+  String get admin2_shopsEmptyTitle => 'کوئی دکان نہیں ملی';
+
+  @override
+  String get admin2_shopsEmptyHint => 'یہ فہرست شاپس کلیکشن سے پڑھی جاتی ہے۔';
+
+  @override
+  String admin2_shopsPlanLine(String plan) {
+    return 'پلان $plan';
+  }
+
+  @override
+  String get admin2_approvalsTitle => 'دکانوں کی منظوریاں';
+
+  @override
+  String get admin2_approvalsSubtitle => 'درخواستیں فیصلے کی منتظر ہیں';
+
+  @override
+  String get admin2_approvalsLoadFailed =>
+      'دکانوں کی منظوریاں لوڈ نہیں ہو سکیں۔';
+
+  @override
+  String get admin2_approvalsEmptyTitle => 'کوئی زیر التواء درخواست نہیں';
+
+  @override
+  String get admin2_approvalsEmptyHint => 'ہر دکان کا فیصلہ ہو چکا ہے۔';
+
+  @override
+  String admin2_approvalsChecklist(Object done) {
+    return 'چیک لسٹ $done/6';
+  }
+
+  @override
+  String get admin2_shopDetailTitle => 'دکان کی تفصیل';
+
+  @override
+  String get admin2_shopDetailSubtitle =>
+      'پلان، گاڑیاں، بکنگز اور ایڈمن اقدامات';
+
+  @override
+  String get admin2_shopDetailLoadFailed => 'یہ دکان لوڈ نہیں ہو سکی۔';
+
+  @override
+  String get admin2_shopDetailNotFound => 'دکان نہیں ملی۔';
+
+  @override
+  String get admin2_shopDetailSuspended => 'دکان معطل کر دی گئی۔';
+
+  @override
+  String get admin2_shopDetailSuspensionLifted => 'معطلی ختم کر دی گئی۔';
+
+  @override
+  String get admin2_shopDetailPlan => 'پلان';
+
+  @override
+  String get admin2_shopDetailStatus => 'حالت';
+
+  @override
+  String get admin2_shopDetailLifetimeBookings => 'کل بکنگز';
+
+  @override
+  String get admin2_shopDetailRating => 'درجہ بندی';
+
+  @override
+  String admin2_shopDetailSuspensionReason(String reason) {
+    return 'معطلی کی وجہ: $reason';
+  }
+
+  @override
+  String get admin2_shopDetailKycDocs => 'کے وائی سی دستاویزات';
+
+  @override
+  String get admin2_shopDetailNoneUploaded => 'ابھی تک کوئی اپ لوڈ نہیں ہوئی۔';
+
+  @override
+  String get admin2_shopDetailBankAccounts => 'بینک / والیٹ اکاؤنٹس';
+
+  @override
+  String get admin2_shopDetailNoneOnFile => 'ریکارڈ میں کوئی نہیں۔';
+
+  @override
+  String admin2_shopDetailContact(
+      String city, String address, String owner, String phone) {
+    return '$city • $address\nمالک: $owner • $phone';
+  }
+
+  @override
+  String get admin2_suspendTitle => 'یہ دکان معطل کریں؟';
+
+  @override
+  String get admin2_suspendLiftTitle => 'معطلی ختم کریں؟';
+
+  @override
+  String get admin2_customersSubtitle => 'پلیٹ فارم کا ہر گاہک';
+
+  @override
+  String get admin2_customersSearchHint =>
+      'نام، فون یا شناختی کارڈ سے تلاش کریں…';
+
+  @override
+  String get admin2_customersLoadFailed => 'گاہک لوڈ نہیں ہو سکے۔';
+
+  @override
+  String get admin2_customersEmptyTitle => 'کوئی گاہک نہیں ملا';
+
+  @override
+  String get admin2_customersEmptyHint =>
+      'یہ فہرست کسٹمرز کلیکشن سے پڑھی جاتی ہے۔';
+
+  @override
+  String get admin2_customerDetailTitle => 'گاہک کی تفصیل';
+
+  @override
+  String get admin2_customerDetailSubtitle =>
+      'اعتماد اسکور، کے وائی سی، سفر اور ایڈمن اقدامات';
+
+  @override
+  String get admin2_customerDetailLoadFailed => 'یہ گاہک لوڈ نہیں ہو سکا۔';
+
+  @override
+  String get admin2_customerDetailNotFound => 'گاہک نہیں ملا۔';
+
+  @override
+  String get admin2_customerDetailNoCnic =>
+      'ریکارڈ میں شناختی کارڈ نہیں ہے — بلیک لسٹ اندراج کے لیے یہ ضروری ہے۔';
+
+  @override
+  String get admin2_customerDetailAdminReport => 'ایڈمن رپورٹ';
+
+  @override
+  String get admin2_customerDetailAdminReportNote =>
+      'گاہک کی تفصیل اسکرین سے ایک ایڈمن نے رپورٹ کیا۔';
+
+  @override
+  String get admin2_customerDetailReported =>
+      'گاہک کو بلیک لسٹ میں شامل کر دیا گیا۔';
+
+  @override
+  String get admin2_customerDetailBlacklisted => 'بلیک لسٹ میں ہے';
+
+  @override
+  String get admin2_customerDetailBookingHistory => 'بکنگ کی تاریخ';
+
+  @override
+  String get admin2_customerDetailNoBookings => 'ابھی تک کوئی بکنگ نہیں۔';
+
+  @override
+  String get admin2_customerDetailGuarantors => 'ضامن';
+
+  @override
+  String get admin2_customerDetailAdminNotes => 'ایڈمن نوٹس';
+
+  @override
+  String get admin2_customerDetailNoNotes => 'ابھی تک کوئی نوٹ نہیں۔';
+
+  @override
+  String get admin2_customerDetailWatchlistAdded =>
+      'گاہک کو واچ لسٹ میں شامل کر دیا گیا۔';
+
+  @override
+  String admin2_customerDetailContact(
+      String phone, String cnic, String source) {
+    return '$phone • شناختی کارڈ $cnic • ماخذ: $source';
+  }
+
+  @override
+  String get admin2_tribunalTitle => 'بلیک لسٹ ٹریبونل';
+
+  @override
+  String get admin2_tribunalSubtitle => 'قومی رینٹل فراڈ اور بلیک لسٹ ٹریبونل';
+
+  @override
+  String get admin2_tribunalSubtitle2 =>
+      'شوروموں کے درمیان تنازعات کے لیے مرکزی ثالثی بینچ';
+
+  @override
+  String get admin2_tribunalLoadFailed => 'بلیک لسٹ کیسز لوڈ نہیں ہو سکے۔';
+
+  @override
+  String get admin2_tribunalEmptyTitle => 'کوئی بلیک لسٹ کیس نہیں';
+
+  @override
+  String get admin2_tribunalEmptyHint => 'ٹریبونل ریکارڈ یہاں نظر آئیں گے۔';
+
+  @override
+  String get admin2_tribunalActive => 'فعال بلیک لسٹ';
+
+  @override
+  String get admin2_tribunalReversed => 'واپس لیا گیا / ختم شدہ';
+
+  @override
+  String admin2_tribunalCaseLine(String id, String cnic) {
+    return '$id • شناختی کارڈ: $cnic';
+  }
+
+  @override
+  String admin2_tribunalReason(String reason) {
+    return 'وجہ: $reason';
+  }
+
+  @override
+  String admin2_tribunalReportedBy(String shop) {
+    return 'رپورٹ کرنے والی شوروم: $shop';
+  }
+
+  @override
+  String admin2_tribunalReversal(String reason) {
+    return 'واپسی کا جواز: $reason';
+  }
+
+  @override
+  String get admin2_tribunalDecideAppeal =>
+      'اپیل کا فیصلہ کریں — برقرار رکھیں یا ہٹائیں';
+
+  @override
+  String admin2_tribunalAppealLine(String status, String reason) {
+    return 'اپیل: $status — $reason';
+  }
+
+  @override
+  String get admin2_disputesTitle => 'تنازعات کا مرکز';
+
+  @override
+  String get admin2_disputesSubtitle =>
+      'ہر تنازع کا تیسرا فریق — 72 گھنٹے کی SLA';
+
+  @override
+  String get admin2_disputesSlaUnknown => 'SLA نامعلوم';
+
+  @override
+  String admin2_disputesSlaOverdue(Object hours) {
+    return 'SLA $hours گھنٹے سے زائد ہو چکی ہے';
+  }
+
+  @override
+  String admin2_disputesSlaLeft(Object hours) {
+    return 'SLA کے $hours گھنٹے باقی ہیں';
+  }
+
+  @override
+  String get admin2_disputesLoadFailed => 'تنازعات لوڈ نہیں ہو سکے۔';
+
+  @override
+  String get admin2_disputesEmptyTitle => 'کوئی تنازع نہیں';
+
+  @override
+  String get admin2_disputesEmptyHint =>
+      'یہ مرکز تنازعات کی کلیکشن سے پڑھتا ہے۔';
+
+  @override
+  String get admin2_reviewsTitle => 'جائزوں کی نگرانی';
+
+  @override
+  String get admin2_reviewsSubtitle =>
+      'گالی آمیز، جعلی اور انتقامی جائزوں کی قطاریں';
+
+  @override
+  String get admin2_reviewsFilterAbusive => 'گالی آمیز';
+
+  @override
+  String get admin2_reviewsFilterFake => 'جعلی';
+
+  @override
+  String get admin2_reviewsReasonFake => 'جعلی جائزہ';
+
+  @override
+  String get admin2_reviewsFilterRevenge => 'انتقام';
+
+  @override
+  String get admin2_reviewsFilterClear => 'صاف';
+
+  @override
+  String admin2_reviewsMarkAs(String status) {
+    return '$status کے طور پر نشان زد کریں؟';
+  }
+
+  @override
+  String get admin2_reviewsReasonLabel =>
+      'وجہ (فیصلے کے ساتھ محفوظ کی جاتی ہے)';
+
+  @override
+  String admin2_reviewsMarked(String status) {
+    return 'جائزہ $status کے طور پر نشان زد کر دیا گیا۔';
+  }
+
+  @override
+  String get admin2_reviewsLoadFailed => 'جائزے لوڈ نہیں ہو سکے۔';
+
+  @override
+  String get admin2_reviewsEmpty => 'اس قطار میں کوئی جائزہ نہیں۔';
+
+  @override
+  String get admin2_reviewKeep => 'رکھیں';
+
+  @override
+  String get admin2_reviewHide => 'چھپائیں';
+
+  @override
+  String get admin2_reviewAskToEdit => 'ترمیم کے لیے کہیں';
+
+  @override
+  String get admin2_reviewWarn => 'خبردار کریں';
+
+  @override
+  String admin2_reviewModeration(String status) {
+    return 'نگرانی: $status';
+  }
+
+  @override
+  String admin2_reviewCardRatings(String shop, String car, String punctuality,
+      String care, String behaviour) {
+    return 'دکان $shop/5 • گاڑی $car/5 • مالک: وقت کی پابندی $punctuality، دیکھ بھال $care، رویہ $behaviour';
+  }
+
+  @override
+  String get admin2_ticketsTitle => 'سپورٹ ٹکٹس';
+
+  @override
+  String get admin2_ticketsSubtitle =>
+      'وہ ان باکس جس کا وعدہ گاہک پلان میں کیا گیا تھا';
+
+  @override
+  String get admin2_ticketsLoadFailed => 'ٹکٹس لوڈ نہیں ہو سکے۔';
+
+  @override
+  String get admin2_ticketsEmptyTitle => 'کوئی ٹکٹ نہیں';
+
+  @override
+  String get admin2_ticketsEmptyHint =>
+      'یہ ان باکس سپورٹ ٹکٹس کلیکشن سے پڑھتا ہے۔';
+
+  @override
+  String get admin2_slaUnknownDate => 'SLA: دائر کرنے کی تاریخ نامعلوم';
+
+  @override
+  String admin2_slaBreached(Object hours) {
+    return 'SLA $hours گھنٹے سے زائد ہو چکی ہے';
+  }
+
+  @override
+  String admin2_slaLeft(Object hours, Object total) {
+    return 'SLA کے $total گھنٹوں میں سے $hours گھنٹے باقی ہیں';
+  }
+
+  @override
+  String get admin2_ticketQuickReply1 =>
+      'رابطہ کرنے کا شکریہ — ہم اس پر غور کر رہے ہیں اور یہیں آپ کو آگاہ کریں گے۔';
+
+  @override
+  String get admin2_ticketQuickReply2 =>
+      'کیا آپ بکنگ آئی ڈی اور مسئلے کی تصویر شیئر کر سکتے ہیں؟';
+
+  @override
+  String get admin2_ticketQuickReply3 =>
+      'یہ حل کر دیا گیا ہے۔ اگر مسئلہ دوبارہ ہو تو براہ کرم ہمیں بتائیں۔';
+
+  @override
+  String admin2_ticketStatusDone(String status) {
+    return 'ٹکٹ $status۔';
+  }
+
+  @override
+  String admin2_ticketTitle(String id) {
+    return 'ٹکٹ $id';
+  }
+
+  @override
+  String get admin2_ticketOpenCustomer => 'گاہک کھولیں';
+
+  @override
+  String get admin2_ticketReplies => 'جوابات';
+
+  @override
+  String get admin2_ticketNoReplies => 'ابھی تک کوئی جواب نہیں۔';
+
+  @override
+  String get admin2_ticketQuickReplies => 'فوری جوابات';
+
+  @override
+  String get admin2_ticketReplyHint => 'گاہک کو جواب دیں…';
+
+  @override
+  String get admin2_ticketSendReply => 'جواب بھیجیں';
+
+  @override
+  String get admin2_ticketInternalNotes =>
+      'اندرونی نوٹس (گاہک انہیں کبھی نہیں دیکھتا)';
+
+  @override
+  String get admin2_ticketAddNoteHint => 'اندرونی نوٹ شامل کریں…';
+
+  @override
+  String get admin2_ticketAdd => 'شامل کریں';
+
+  @override
+  String get admin2_ticketEscalate => 'بڑھائیں';
+
+  @override
+  String get admin2_ticketClose => 'ٹکٹ بند کریں';
+
+  @override
+  String get admin2_anncSubtitle => 'مالکان اور گاہکوں کو نشریات';
+
+  @override
+  String get admin2_anncNew => 'نیا اعلان';
+
+  @override
+  String get admin2_anncLoadFailed => 'اعلانات لوڈ نہیں ہو سکے۔';
+
+  @override
+  String get admin2_anncEmptyTitle => 'ابھی تک کوئی اعلان نہیں';
+
+  @override
+  String get admin2_anncEmptyHint => 'اوپر سے پہلا اعلان بنائیں۔';
+
+  @override
+  String get admin2_anncSent => 'بھیج دیا گیا۔';
+
+  @override
+  String get admin2_anncSendFailed =>
+      'فنکشنز سرور سے رابطہ نہیں ہو سکا — دوبارہ کوشش کریں۔';
+
+  @override
+  String get admin2_anncSendTest => 'ٹیسٹ بھیجیں';
+
+  @override
+  String get admin2_anncSendNow => 'ابھی بھیجیں';
+
+  @override
+  String admin2_anncStats(Object sent, Object delivered, Object opened) {
+    return 'بھیجے گئے $sent • موصول ہوئے $delivered • کھولے گئے $opened';
+  }
+
+  @override
+  String get admin2_anncFormEnRequired => 'انگریزی عنوان اور متن لازمی ہیں۔';
+
+  @override
+  String get admin2_anncFormUrRequired =>
+      'اردو عنوان اور متن بھی لازمی ہیں (رول بک §5.5)۔';
+
+  @override
+  String get admin2_anncFormSaved => 'اعلان محفوظ ہو گیا۔';
+
+  @override
+  String get admin2_anncFormTitleEn => 'عنوان (انگریزی)';
+
+  @override
+  String get admin2_anncFormTitleUr => 'عنوان (اردو)';
+
+  @override
+  String get admin2_anncFormBodyEn => 'متن (انگریزی)';
+
+  @override
+  String get admin2_anncFormBodyUr => 'متن (اردو)';
+
+  @override
+  String get admin2_anncFormAudienceRole => 'سامعین — کردار';
+
+  @override
+  String get admin2_anncFormEveryone => 'سب';
+
+  @override
+  String get admin2_anncFormOwners => 'مالکان';
+
+  @override
+  String get admin2_anncFormCustomers => 'گاہک';
+
+  @override
+  String get admin2_anncFormAudienceCity => 'سامعین — شہر';
+
+  @override
+  String get admin2_anncFormAllCities => 'تمام شہر';
+
+  @override
+  String get admin2_anncFormAudiencePlan => 'سامعین — پلان';
+
+  @override
+  String get admin2_anncFormAllPlans => 'تمام پلان';
+
+  @override
+  String get admin2_anncFormFree => 'مفت';
+
+  @override
+  String get admin2_anncFormPro => 'پرو';
+
+  @override
+  String get admin2_anncFormBusiness => 'بزنس';
+
+  @override
+  String get admin2_anncFormChannel => 'چینل';
+
+  @override
+  String get admin2_anncFormPush => 'پش';
+
+  @override
+  String get admin2_anncFormWhatsapp => 'واٹس ایپ (میٹا ٹوکن کا انتظار ہے، D2)';
+
+  @override
+  String get admin2_anncFormBoth => 'پش + واٹس ایپ';
+
+  @override
+  String get admin2_anncFormSchedule => 'بعد کے لیے شیڈول کریں';
+
+  @override
+  String get admin2_anncFormPickDate => 'تاریخ اور وقت منتخب کریں';
+
+  @override
+  String admin2_anncFormScheduled(String when) {
+    return 'شیڈول شدہ: $when';
+  }
+
+  @override
+  String get admin2_anncFormSave => 'اعلان محفوظ کریں';
+
+  @override
+  String get admin2_activitySubtitle =>
+      'ہر ایڈمن اقدام، تازہ ترین پہلے — ناقابل تبدیل';
+
+  @override
+  String get admin2_activityLoadFailed => 'سرگرمی لاگ لوڈ نہیں ہو سکا۔';
+
+  @override
+  String get admin2_activityEmptyTitle => 'ابھی تک کوئی آڈٹ اندراج نہیں';
+
+  @override
+  String get admin2_activityEmptyHint =>
+      'ایڈمن اقدامات ہوتے ہی یہاں نظر آئیں گے۔';
+
+  @override
+  String get admin2_activitySearchHint => 'عمل، ایڈمن یا ہدف سے تلاش کریں…';
+
+  @override
+  String get admin2_activityExportCsv => 'CSV ایکسپورٹ کریں';
+
+  @override
+  String get admin2_activityCsvFailed => 'CSV فائل شیئر نہیں ہو سکی۔';
+
+  @override
+  String get admin2_teamSubtitle =>
+      'پلیٹ فارم کون چلا سکتا ہے، اور کس کردار کے ساتھ';
+
+  @override
+  String get admin2_teamLoadFailed => 'ایڈمن ٹیم لوڈ نہیں ہو سکی۔';
+
+  @override
+  String get admin2_teamViewOnly =>
+      'صرف سپر ایڈمن دعوت دے سکتا ہے، دو مرحلہ تصدیق ری سیٹ کر سکتا ہے یا کردار واپس لے سکتا ہے۔ آپ ٹیم دیکھ سکتے ہیں۔';
+
+  @override
+  String get admin2_teamEmailInvalid => 'درست ای میل پتہ درج کریں۔';
+
+  @override
+  String admin2_teamInviteLog(String email, String role) {
+    return '$email کو $role کے طور پر مدعو کیا گیا (48 گھنٹے کی میعاد)۔';
+  }
+
+  @override
+  String admin2_teamInviteSent(String email) {
+    return '$email کو دعوت بھیج دی گئی۔';
+  }
+
+  @override
+  String get admin2_teamInviteFailed => 'دعوت محفوظ نہیں ہو سکی۔';
+
+  @override
+  String get admin2_teamActionFailed => 'یہ کارروائی مکمل نہیں ہو سکی۔';
+
+  @override
+  String get admin2_teamResetTotpTitle => 'دو مرحلہ تصدیق ری سیٹ کریں؟';
+
+  @override
+  String admin2_teamResetTotpBody(String email) {
+    return '$email کو اگلی بار سائن ان پر دوبارہ TOTP درج کرنا ہوگا۔';
+  }
+
+  @override
+  String admin2_teamTotpResetLog(String email) {
+    return '$email کے لیے TOTP ری سیٹ کر دیا گیا۔';
+  }
+
+  @override
+  String get admin2_teamRevokeTitle => 'یہ ایڈمن کردار واپس لیں؟';
+
+  @override
+  String admin2_teamRevokeBody(String email) {
+    return '$email کی ایڈمن رسائی ختم ہو جائے گی اور وہ گاہک اکاؤنٹ بن جائے گا۔';
+  }
+
+  @override
+  String get admin2_teamWithdrawTitle => 'یہ دعوت واپس لیں؟';
+
+  @override
+  String admin2_teamWithdrawBody(String email) {
+    return '$email اب اسے قبول نہیں کر سکے گا۔';
+  }
+
+  @override
+  String admin2_teamInviteWithdrawnLog(String email) {
+    return '$email کے لیے دعوت واپس لے لی گئی۔';
+  }
+
+  @override
+  String get admin2_teamInviteButton => 'ایڈمن کو مدعو کریں';
+
+  @override
+  String get admin2_teamInvitesTitle => 'زیر التواء دعوتیں';
+
+  @override
+  String get admin2_teamInvitesEmpty => 'کوئی زیر التواء دعوت نہیں۔';
+
+  @override
+  String get admin2_teamMembersTitle => 'ٹیم کے ارکان';
+
+  @override
+  String get admin2_teamMembersEmpty =>
+      'کوئی ایڈمن نہیں ملا — ٹیم فہرست ان صارفین کو پڑھتی ہے جن کے پاس ایڈمن کردار ہے۔';
+
+  @override
+  String get admin2_teamInviteEmail => 'ای میل پتہ';
+
+  @override
+  String get admin2_teamInviteHint =>
+      'دعوتیں 48 گھنٹے بعد ختم ہو جاتی ہیں۔ مدعو شخص پہلے اپنا اکاؤنٹ بناتا ہے، پھر سپر ایڈمن کردار دیتا ہے۔';
+
+  @override
+  String get admin2_teamInviteSending => 'بھیجا جا رہا ہے…';
+
+  @override
+  String get admin2_teamInviteSend => 'دعوت بھیجیں';
+
+  @override
+  String get admin2_teamInviteWithdraw => 'واپس لیں';
+
+  @override
+  String get admin2_team2faOn => '2FA آن';
+
+  @override
+  String get admin2_team2faOff => '2FA آف';
+
+  @override
+  String get admin2_teamReset2fa => '2FA ری سیٹ کریں';
+
+  @override
+  String get admin2_teamRevokeRole => 'کردار واپس لیں';
+
+  @override
+  String get admin2_teamResetTotpMenu => 'دو مرحلہ تصدیق ری سیٹ کریں';
+
+  @override
+  String get admin2_teamRevokeMenu => 'ایڈمن کردار واپس لیں';
+
+  @override
+  String get admin2_settingsTitle => 'شہر اور ترتیبات';
+
+  @override
+  String get admin2_settingsSubtitle =>
+      'پلیٹ فارم کی ڈیفالٹ ترتیبات، ایک دستاویز میں';
+
+  @override
+  String get admin2_settingsLoadFailed =>
+      'پلیٹ فارم کی ترتیبات لوڈ نہیں ہو سکیں۔';
+
+  @override
+  String get admin2_settingsNumbersInvalid =>
+      'ایڈوانس فیصد، ڈپازٹ اور تاخیر کی مہلت اعداد ہونے چاہئیں۔';
+
+  @override
+  String get admin2_settingsSaved => 'پلیٹ فارم کی ترتیبات محفوظ ہو گئیں۔';
+
+  @override
+  String get admin2_settingsCities => 'فعال شہر (کاما سے الگ کریں)';
+
+  @override
+  String get admin2_settingsCategories => 'گاڑیوں کی اقسام (کاما سے الگ کریں)';
+
+  @override
+  String get admin2_settingsAdvance => 'ایڈوانس فیصد';
+
+  @override
+  String get admin2_settingsDeposit => 'ڈیفالٹ ڈپازٹ (روپے)';
+
+  @override
+  String get admin2_settingsGrace => 'تاخیر کی مہلت (منٹ)';
+
+  @override
+  String get admin2_settingsSupportHours => 'سپورٹ کے اوقات';
+
+  @override
+  String get admin2_settingsAgreementTerms => 'ڈیفالٹ معاہدے کی شرائط';
+
+  @override
+  String get admin2_settingsMaintenance => 'مینٹیننس موڈ';
+
+  @override
+  String get admin2_settingsMaintenanceHint =>
+      'آن ہونے پر ایپ شروع ہوتے وقت مینٹیننس نوٹس دکھاتی ہے۔';
+
+  @override
+  String get admin2_settingsSave => 'ترتیبات محفوظ کریں';
+
+  @override
+  String get admin2_shopAppReasonRequired =>
+      'وجہ لازمی ہے — مالک اسے دیکھے گا۔';
+
+  @override
+  String admin2_shopAppChecklist(Object done) {
+    return 'چیک لسٹ — 6 میں سے $done مکمل';
+  }
+
+  @override
+  String get admin2_shopAppKycDocs => 'ریکارڈ میں کے وائی سی دستاویزات';
+
+  @override
+  String get admin2_shopAppFleetPhotos => 'گاڑیوں کی تصاویر';
+
+  @override
+  String get admin2_shopAppReasonLabel =>
+      'وجہ (مزید معلومات مانگنے یا مسترد کرنے کے لیے لازم — مالک اسے دیکھے گا)';
+
+  @override
+  String get admin2_shopAppCallOwner => 'مالک کو کال کریں';
+
+  @override
+  String get admin2_shopAppAskInfo => 'مزید معلومات مانگیں';
+
+  @override
+  String admin2_shopAppOwner(String owner, String phone, String cnic) {
+    return 'مالک: $owner • $phone • شناختی کارڈ $cnic';
+  }
+
+  @override
+  String get admin2_shopActionMessageOwner => 'مالک کو پیغام بھیجیں';
+
+  @override
+  String admin2_shopActionHello(String shop) {
+    return 'رینٹل ہب ایڈمن کی جانب سے $shop کے بارے میں سلام۔';
+  }
+
+  @override
+  String get admin2_shopActionNoPhone =>
+      'اس دکان کے لیے ریکارڈ میں کوئی فون نمبر نہیں ہے۔';
+
+  @override
+  String get admin2_shopActionLift => 'معطلی ختم کریں';
+
+  @override
+  String get admin2_shopActionSuspend => 'دکان معطل کریں';
+
+  @override
+  String get admin2_custActionAddNoteHint => 'ایڈمن نوٹ شامل کریں…';
+
+  @override
+  String get admin2_custActionAddNote => 'نوٹ شامل کریں';
+
+  @override
+  String get admin2_custActionBlacklist => 'بلیک لسٹ میں رپورٹ کریں';
+
+  @override
+  String get admin2_trustTitle => 'اعتماد اسکور';
+
+  @override
+  String admin2_trustKycLine(String status, Object trips) {
+    return 'کے وائی سی: $status • $trips مکمل سفر • ';
+  }
+
+  @override
+  String admin2_trustOwnerRating(String rating) {
+    return 'مالک کی درجہ بندی: $rating';
+  }
+
+  @override
+  String get admin2_trustBase => 'بنیاد';
+
+  @override
+  String get admin2_trustTrips => 'سفر';
+
+  @override
+  String get admin2_trustRatings => 'درجہ بندیاں';
+
+  @override
+  String get admin2_trustPunctuality => 'وقت کی پابندی';
+
+  @override
+  String get admin2_trustConduct => 'رویہ';
+
+  @override
+  String get admin2_fleetPhotoTooltip => 'تصویر مکمل اسکرین پر دیکھیں';
+
+  @override
+  String get admin2_fleetPhotoFailed => 'تصویر لوڈ نہیں ہو سکی۔';
+
+  @override
+  String admin2_disputeSlaBreached(Object hours) {
+    return 'SLA $hours گھنٹے سے زائد ہو چکی ہے — ابھی فیصلہ کریں';
+  }
+
+  @override
+  String admin2_disputeSlaLeft(Object hours) {
+    return 'SLA: 72 گھنٹوں میں سے $hours گھنٹے باقی ہیں';
+  }
+
+  @override
+  String get admin2_disputeAmountHint =>
+      'فیصلے کی رقم روپوں میں درج کریں (0 کی اجازت ہے)۔';
+
+  @override
+  String get admin2_disputeNoteRequired => 'فیصلے کے ساتھ ایڈمن نوٹ لازمی ہے۔';
+
+  @override
+  String get admin2_disputeDecided => 'تنازع کا فیصلہ ہو گیا۔';
+
+  @override
+  String admin2_disputeTitle(String id) {
+    return 'تنازع $id';
+  }
+
+  @override
+  String admin2_disputeBookingLine(String booking, String status, String sla) {
+    return 'بکنگ $booking • $status • $sla';
+  }
+
+  @override
+  String get admin2_disputeCustomerStatement => 'گاہک کا بیان';
+
+  @override
+  String admin2_disputeCategory(String category) {
+    return 'قسم: $category';
+  }
+
+  @override
+  String admin2_disputeCustomer(String name) {
+    return 'گاہک: $name';
+  }
+
+  @override
+  String get admin2_disputeShopSide => 'دکان کا پہلو — بکنگ ریکارڈ';
+
+  @override
+  String admin2_disputeBookingLabel(String id) {
+    return 'بکنگ: $id';
+  }
+
+  @override
+  String admin2_disputeShopLabel(String id) {
+    return 'دکان: $id';
+  }
+
+  @override
+  String get admin2_disputeNoShopStatement =>
+      'دکان کا کوئی تحریری بیان ریکارڈ میں نہیں ہے — فیصلہ بکنگ، حوالگی اور ڈپازٹ ریکارڈ کی بنیاد پر کیا جاتا ہے۔';
+
+  @override
+  String get admin2_disputeDecisionHeading => 'فیصلہ';
+
+  @override
+  String get admin2_disputeFullCustomer => 'گاہک کو مکمل رقم کی واپسی';
+
+  @override
+  String get admin2_disputePartial => 'جزوی — تقسیم';
+
+  @override
+  String get admin2_disputeFullOwner =>
+      'مکمل رقم مالک کو (دعویٰ درست قرار پایا)';
+
+  @override
+  String get admin2_disputeAmountLabel => 'فیصلے کی رقم (روپے)';
+
+  @override
+  String get admin2_disputeNoteLabel =>
+      'ایڈمن نوٹ — یہ فیصلہ کیوں (دونوں فریق اسے دیکھیں گے)';
+
+  @override
+  String get admin2_appealReasonRequired =>
+      'وجہ لازمی ہے — یہ فیصلے کے ساتھ محفوظ کی جاتی ہے۔';
+
+  @override
+  String get admin2_appealKept =>
+      'جھنڈا برقرار رکھا گیا — اپیل مسترد کر دی گئی۔';
+
+  @override
+  String get admin2_appealRemoved => 'جھنڈا ہٹا دیا گیا۔';
+
+  @override
+  String get admin2_appealDialogTitle => 'ٹریبونل بلیک لسٹ اپیل';
+
+  @override
+  String admin2_appealEvidence(Object count) {
+    return 'ثبوت: ریکارڈ میں $count فائل(یں)';
+  }
+
+  @override
+  String get admin2_appealDecisionLabel => 'فیصلے کی وجہ (لازمی):';
+
+  @override
+  String get admin2_appealDecisionHint =>
+      'جھنڈا کیوں برقرار رکھا جائے یا ہٹایا جائے؟';
+
+  @override
+  String get admin2_appealKeep => 'جھنڈا برقرار رکھیں';
+
+  @override
+  String get admin2_appealRemove => 'جھنڈا ہٹائیں';
+
+  @override
+  String get admin2_bookingsSubtitle => 'پلیٹ فارم کی ہر بکنگ';
+
+  @override
+  String get admin2_bookingsSearchHint =>
+      'بکنگ، گاہک، گاڑی یا دکان سے تلاش کریں…';
+
+  @override
+  String get admin2_bookingsLoadFailed => 'بکنگز لوڈ نہیں ہو سکیں۔';
+
+  @override
+  String get admin2_bookingsEmptyTitle => 'کوئی بکنگ نہیں ملی';
+
+  @override
+  String get admin2_bookingsEmptyHint =>
+      'یہ فہرست بکنگز کلیکشن سے پڑھی جاتی ہے۔';
+
+  @override
+  String get admin2_bookingDetailTitle => 'بکنگ کی تفصیل';
+
+  @override
+  String get admin2_bookingDetailSubtitle => 'مراحل، رقم، حوالگی اور پیغامات';
+
+  @override
+  String get admin2_bookingDetailLoadFailed => 'یہ بکنگ لوڈ نہیں ہو سکی۔';
+
+  @override
+  String get admin2_bookingDetailNotFound => 'بکنگ نہیں ملی۔';
+
+  @override
+  String get admin2_bookingDetailShareFailed =>
+      'بکنگ کا خلاصہ شیئر نہیں ہو سکا۔';
+
+  @override
+  String get admin2_bookingDetailDownloadAll => 'سب ڈاؤن لوڈ کریں';
+
+  @override
+  String get admin2_bookingDetailAmounts => 'رقوم';
+
+  @override
+  String admin2_bookingDetailAdvanceRequired(String amount) {
+    return 'ایڈوانس درکار: $amount';
+  }
+
+  @override
+  String admin2_bookingDetailAdvancePaid(String amount) {
+    return 'ایڈوانس ادا شدہ: $amount';
+  }
+
+  @override
+  String admin2_bookingDetailRemaining(String amount) {
+    return 'باقی رقم: $amount';
+  }
+
+  @override
+  String admin2_bookingDetailTransaction(String id) {
+    return 'لین دین: $id';
+  }
+
+  @override
+  String get admin2_bookingDetailPaymentDeposit => 'ادائیگی اور ڈپازٹ';
+
+  @override
+  String admin2_bookingDetailPaymentProof(String url) {
+    return 'ادائیگی کا ثبوت: $url';
+  }
+
+  @override
+  String get admin2_bookingDetailNoDeposit => 'ڈپازٹ کا کوئی ریکارڈ نہیں۔';
+
+  @override
+  String admin2_bookingDetailDeposit(String amount, String status) {
+    return 'ڈپازٹ $amount — $status';
+  }
+
+  @override
+  String get admin2_bookingDetailAgreement => 'معاہدہ';
+
+  @override
+  String get admin2_bookingDetailAgreementOnFile =>
+      'معاہدے کی PDF ریکارڈ میں ہے — کھولنے کے لیے تھپتھپائیں۔';
+
+  @override
+  String get admin2_bookingDetailNoAgreement =>
+      'ریکارڈ میں معاہدے کی کوئی PDF نہیں۔';
+
+  @override
+  String get admin2_bookingDetailOpenAgreement => 'معاہدے کی PDF کھولیں';
+
+  @override
+  String get admin2_bookingDetailPdfFailed => 'PDF لنک نہیں کھولا جا سکا۔';
+
+  @override
+  String get admin2_bookingDetailHandover => 'حوالگی';
+
+  @override
+  String get admin2_bookingDetailNoHandover => 'حوالگی کا کوئی ریکارڈ نہیں۔';
+
+  @override
+  String admin2_bookingDetailOdometer(Object km) {
+    return 'پک اپ پر اوڈومیٹر: $km کلومیٹر';
+  }
+
+  @override
+  String admin2_bookingDetailFuel(String level) {
+    return 'ایندھن: $level';
+  }
+
+  @override
+  String admin2_bookingDetailDamage(String notes) {
+    return 'نقصان کے نوٹس: $notes';
+  }
+
+  @override
+  String get admin2_bookingDetailDispute => 'تنازع';
+
+  @override
+  String admin2_bookingDetailStatusLine(String status) {
+    return 'حالت: $status';
+  }
+
+  @override
+  String admin2_bookingDetailMeta(
+      String status, String trip, String package, String drive) {
+    return 'حالت: $status • سفر: $trip • پیکج: $package • $drive';
+  }
+
+  @override
+  String admin2_bookingDetailHandoverSummary(
+      Object km, String fuel, String damage) {
+    return 'اوڈومیٹر $km کلومیٹر، ایندھن $fuel، نقصان: $damage';
+  }
+
+  @override
+  String get admin2_bookingDetailMessages => 'پیغامات کا لاگ';
+
+  @override
+  String get admin2_bookingDetailNoMessages =>
+      'اس بکنگ کے لیے کوئی نوٹیفکیشن ریکارڈ نہیں ہوا۔';
+
+  @override
+  String get admin2_carsSubtitle =>
+      'گاڑیوں کی ہر لسٹنگ، اس کی جائزہ حالت کے ساتھ';
+
+  @override
+  String get admin2_carsSearchHint => 'گاڑی یا نمبر پلیٹ سے تلاش کریں…';
+
+  @override
+  String get admin2_carsLoadFailed => 'گاڑیاں لوڈ نہیں ہو سکیں۔';
+
+  @override
+  String get admin2_carsEmptyTitle => 'کوئی گاڑی نہیں ملی';
+
+  @override
+  String get admin2_carsEmptyHint =>
+      'یہ فہرست گاڑیوں کی کلیکشن سے پڑھی جاتی ہے۔';
+
+  @override
+  String get admin2_carReviewReasonRequired =>
+      'لسٹنگ چھپانے یا مسترد کرنے کے لیے وجہ لازمی ہے۔';
+
+  @override
+  String get admin2_carReviewDaily => 'روزانہ (24 گھنٹے)';
+
+  @override
+  String get admin2_carReviewOutCityDaily => 'شہر سے باہر روزانہ';
+
+  @override
+  String get admin2_carReviewNotSet => 'طے نہیں ہوا';
+
+  @override
+  String get admin2_carReviewWeekly => 'ہفتہ وار قیمت';
+
+  @override
+  String get admin2_carReviewDeposit => 'سیکیورٹی ڈپازٹ';
+
+  @override
+  String get admin2_carReviewTracker => 'ٹریکر';
+
+  @override
+  String get admin2_carReviewInsurance => 'انشورنس پالیسی';
+
+  @override
+  String get admin2_carReviewChassis => 'چیسس';
+
+  @override
+  String get admin2_carReviewEngine => 'انجن';
+
+  @override
+  String get admin2_carReviewMileage => 'مائلیج';
+
+  @override
+  String get admin2_carReviewNotListed => 'درج نہیں ہے';
+
+  @override
+  String get admin2_carReviewReasonLabel =>
+      'وجہ (چھپانے یا مسترد کرنے کے لیے لازم — فیصلے کے ساتھ محفوظ کی جاتی ہے)';
+
+  @override
+  String admin2_carReviewSpecs(
+      String plate,
+      String category,
+      String transmission,
+      String fuel,
+      Object seats,
+      String status,
+      String review) {
+    return 'نمبر پلیٹ $plate • $category • $transmission • $fuel • $seats سیٹیں\nحالت: $status • موجودہ جائزہ: $review';
+  }
+
+  @override
+  String admin2_carReviewLastDecision(String reason) {
+    return 'آخری فیصلہ: $reason';
+  }
+
+  @override
+  String get admin2_reportsSubtitle =>
+      'تاریخ کی حد کے لیے KPIs، CSV اور PDF ایکسپورٹ کے ساتھ';
+
+  @override
+  String get admin2_reportsFrom => 'سے';
+
+  @override
+  String get admin2_reportsTo => 'تک';
+
+  @override
+  String get admin2_reportsLoadFailed => 'رپورٹ لوڈ نہیں ہو سکی۔';
+
+  @override
+  String get admin2_reportsEmptyTitle => 'اس حد کے لیے کوئی ڈیٹا نہیں';
+
+  @override
+  String get admin2_reportsEmptyHint => 'رپورٹ براہ راست کلیکشنز سے پڑھتی ہے۔';
+
+  @override
+  String get admin2_reportsRevenue => 'بکنگ کی آمدنی';
+
+  @override
+  String get admin2_reportsIncome => 'مالی آمدنی';
+
+  @override
+  String get admin2_reportsExpense => 'مالی اخراجات';
+
+  @override
+  String get admin2_reportsNewCustomers => 'نئے گاہک';
+
+  @override
+  String get admin2_reportsDisputesOpen => 'زیر التواء تنازعات';
+
+  @override
+  String get admin2_reportsDisputesResolved => 'حل شدہ تنازعات';
+
+  @override
+  String get admin2_reportsByCity => 'شہر کے لحاظ سے بکنگز';
+
+  @override
+  String get admin2_reportsNone => 'اس حد میں کوئی نہیں۔';
+
+  @override
+  String get admin2_reportsTopShops => 'بہترین دکانیں';
+
+  @override
+  String admin2_reportsTopShopsLine(String name, Object count) {
+    return '$name: $count بکنگز';
+  }
+
+  @override
+  String get admin2_reportsIncomeByCategory => 'قسم کے لحاظ سے آمدنی';
+
+  @override
+  String get admin2_reportsExpenseByCategory => 'قسم کے لحاظ سے اخراجات';
+
+  @override
+  String admin2_slaBreachedMinutes(Object minutes) {
+    return 'SLA $minutes منٹ سے زائد ہو چکی ہے';
+  }
+
+  @override
+  String admin2_slaBreachedHoursMinutes(Object hours, Object minutes) {
+    return 'SLA $hours گھنٹے $minutes منٹ سے زائد ہو چکی ہے';
+  }
+
+  @override
+  String admin2_slaLeftMinutes(Object minutes, Object total) {
+    return 'SLA کے $total گھنٹوں میں سے $minutes منٹ باقی ہیں';
+  }
+
+  @override
+  String get adminAuditLoadMore => 'مزید لوڈ کریں';
+
+  @override
+  String adminAuditShowing(int count) {
+    return '$count دکھائے جا رہے ہیں';
+  }
+
+  @override
+  String adminAuditMatching(int count) {
+    return '$count مماثل اندراجات';
+  }
+
+  @override
+  String get adminAuditSearchTicketsHint =>
+      'پیغام یا گاہک آئی ڈی سے تلاش کریں…';
+
+  @override
+  String get adminAuditCnicAll => 'سب';
+
+  @override
+  String get adminAuditCnicOnFile => 'شناختی کارڈ موجود ہے';
+
+  @override
+  String get adminAuditCnicMissing => 'شناختی کارڈ موجود نہیں';
+
+  @override
+  String adminAuditTrustStored(String score) {
+    return 'محفوظ اعتماد $score';
+  }
+
+  @override
+  String get adminAuditBlacklisted => 'بلیک لسٹڈ';
+
+  @override
+  String get adminAuditWatchlisted => 'واچ لسٹ میں ہے';
+
+  @override
+  String get adminAuditFilterAction => 'عمل';
+
+  @override
+  String get adminAuditFilterActor => 'ایڈمن ای میل';
+
+  @override
+  String get adminAuditFilterFrom => 'سے';
+
+  @override
+  String get adminAuditFilterTo => 'تک';
+
+  @override
+  String get adminAuditClearFilters => 'فلٹر صاف کریں';
+
+  @override
+  String get adminAuditAllActions => 'تمام اعمال';
+
+  @override
+  String get adminAuditInvalidRange =>
+      'ابتدائی تاریخ اختتامی تاریخ سے پہلے یا اسی دن ہونی چاہیے۔';
+
+  @override
+  String get adminAuditExportPdf => 'پی ڈی ایف ایکسپورٹ کریں';
+
+  @override
+  String get adminAuditPdfFailed => 'پی ڈی ایف فائل شیئر نہیں ہو سکی۔';
+
+  @override
+  String get adminAuditPendingApprovals => 'منظوری کی منتظر دکانیں';
+
+  @override
+  String get adminAuditPendingApprovalsHint =>
+      'فیصلہ کرنے کے لیے منظوری کی قطار کھولیں۔';
+
+  @override
+  String get adminAuditCredits => 'واٹس ایپ کریڈٹس';
+
+  @override
+  String get adminAuditCreditsNone => 'ابھی تک کوئی ریکارڈ نہیں';
+
+  @override
+  String get adminAuditLinkedShop => 'دکان';
+
+  @override
+  String get adminAuditLinkedBooking => 'بکنگ';
+
+  @override
+  String adminAuditStoredScore(String score) {
+    return 'پہلے محفوظ کردہ: $score — اوپر دیا گیا براہ راست اسکور ہی معتبر ہے';
+  }
+
+  @override
+  String get adminAuditKycNotSubmitted => 'کے وائی سی جمع نہیں کرایا گیا';
+
+  @override
+  String get adminAuditKycPending => 'کے وائی سی جائزے کی منتظر ہے';
+
+  @override
+  String get adminAuditKycVerified => 'کے وائی سی تصدیق شدہ ہے';
+
+  @override
+  String get adminAuditKycRejected => 'کے وائی سی مسترد کر دیا گیا';
+
+  @override
+  String adminAuditFirstMatches(int count) {
+    return 'پہلے $count نتائج';
+  }
+
+  @override
+  String get admin2_ownerNotListed => 'مالک درج نہیں ہے';
+
+  @override
+  String admin2_shopRating(String rating) {
+    return 'درجہ بندی $rating';
+  }
+
+  @override
+  String get admin2_shopDetailAccountType => 'اکاؤنٹ';
+
+  @override
+  String get admin2_loading => 'لوڈ ہو رہا ہے…';
+
+  @override
+  String get admin2_notOnFile => 'ریکارڈ میں نہیں ہے';
+
+  @override
+  String get admin2_customerDetailWatchlistRemoved =>
+      'گاہک کو واچ لسٹ سے ہٹا دیا گیا۔';
+
+  @override
+  String admin2_disputesDecidedLine(String decision) {
+    return 'فیصلہ: $decision';
+  }
+
+  @override
+  String get admin2_disputeSave => 'فیصلہ محفوظ کریں';
+
+  @override
+  String admin2_teamTotpOffBanner(Object count) {
+    return '$count ٹیم ممبر(ز) کی دو مرحلہ تصدیق بند ہے۔';
+  }
+
+  @override
+  String get admin2_teamTotpRemindAll => 'سب کو یاد دلائیں';
+
+  @override
+  String get admin2_teamTotpReminderSent =>
+      'دو مرحلہ تصدیق کی یاد دہانیاں بھیج دی گئیں۔';
+
+  @override
+  String get admin2_teamTotpReminderFailed => 'یاد دہانیاں نہیں بھیجی جا سکیں۔';
+
+  @override
+  String get admin2_teamInviteSave => 'دعوت محفوظ کریں';
+
+  @override
+  String admin2_teamInviteSaved(String email) {
+    return '$email کے لیے دعوت محفوظ ہو گئی۔ ابھی کوئی ای میل نہیں بھیجی گئی — دعوتوں کی فہرست سے قبول کرنے کا لنک شیئر کریں۔';
+  }
+
+  @override
+  String get admin2_teamInviteAccept => 'قبول کریں';
+
+  @override
+  String get admin2_teamInviteCopyLink => 'قبول کرنے کا لنک کاپی کریں';
+
+  @override
+  String get admin2_teamInviteLinkCopied => 'قبول کرنے کا لنک کاپی ہو گیا۔';
+
+  @override
+  String get admin2_teamInviteExpired => 'ختم ہو گئی';
+
+  @override
+  String admin2_teamInviteExpires(String date) {
+    return '$date کو ختم ہوگی';
+  }
+
+  @override
+  String get admin2_inviteAcceptTitle => 'دعوت قبول کریں';
+
+  @override
+  String get admin2_inviteAcceptSignIn =>
+      'پہلے سپر ایڈمن کے طور پر سائن ان کریں۔';
+
+  @override
+  String get admin2_inviteAcceptNotSuper =>
+      'صرف سپر ایڈمن ہی ایڈمن کردار دے سکتا ہے۔';
+
+  @override
+  String get admin2_inviteAcceptNoInvite =>
+      'اس لنک سے کوئی زیر التوا دعوت نہیں ملتی — شاید ختم ہو گئی ہو یا پہلے قبول ہو چکی ہو۔';
+
+  @override
+  String get admin2_inviteAcceptFailed => 'دعوت لوڈ نہیں ہو سکی۔';
+
+  @override
+  String get admin2_inviteAcceptGrantFailed => 'کردار نہیں دیا جا سکا۔';
+
+  @override
+  String get admin2_inviteAcceptGranted => 'کردار دے دیا گیا۔';
+
+  @override
+  String admin2_inviteAcceptBody(String email, String role) {
+    return '$email کو $role دیں؟';
+  }
+
+  @override
+  String get admin2_inviteAcceptHint =>
+      'مدعو شخص کا پہلے سے اکاؤنٹ ہونا ضروری ہے۔ منظوری دیتے ہی انہیں ایڈمن رسائی مل جائے گی۔';
+
+  @override
+  String get admin2_inviteAcceptGrant => 'کردار دیں';
+
+  @override
+  String get admin2_inviteAcceptGranting => 'دیا جا رہا ہے…';
+
+  @override
+  String get admin2_inviteAcceptBackToTeam => 'ٹیم پر واپس';
+
+  @override
+  String get admin2_settingsAdvanceRange =>
+      'ایڈوانس 0 اور 100 کے درمیان ہونا چاہیے۔';
+
+  @override
+  String get admin2_settingsDepositNegative => 'ڈپازٹ منفی نہیں ہو سکتا۔';
+
+  @override
+  String get admin2_settingsGraceNegative => 'تاخیر کی مہلت منفی نہیں ہو سکتی۔';
+
+  @override
+  String get admin2_settingsNoDocument =>
+      'ابھی پلیٹ فارم سیٹنگز محفوظ نہیں ہوئیں — ڈیفالٹ دکھائی جا رہی ہیں۔ بنانے کے لیے محفوظ کریں۔';
+
+  @override
+  String get admin2_settingsUnsavedTitle => 'محفوظ کیے بغیر جائیں؟';
+
+  @override
+  String get admin2_settingsUnsavedBody =>
+      'آپ کی غیر محفوظ شدہ تبدیلیاں ہیں۔ جانے پر وہ ضائع ہو جائیں گی۔';
+
+  @override
+  String get admin2_settingsNotLoaded =>
+      'سیٹنگز ابھی لوڈ نہیں ہوئیں — دوبارہ کوشش کریں۔';
+
+  @override
+  String get admin2_tribunalReviewFlag => 'جائزہ نشان';
+
+  @override
+  String get admin2_ticketLinkedBooking => 'منسلک بکنگ';
+
+  @override
+  String admin2_anncSentCount(Object count) {
+    return 'بھیجے گئے $count';
+  }
+
+  @override
+  String admin2_anncOpenedCount(Object count) {
+    return 'کھولے گئے $count';
+  }
+
+  @override
+  String admin2_activityDecision(String decision) {
+    return 'فیصلہ: $decision';
+  }
+
+  @override
+  String get admin2_trustRatingNone => 'ابھی تک کوئی نہیں';
+
+  @override
+  String get admin2_trustKyc => 'کے وائی سی';
+
+  @override
+  String get admin2_reportsBookings => 'بکنگز';
+
+  @override
+  String get admin2_reportsCompleted => 'مکمل شدہ';
+
+  @override
+  String get admin2_reportsExportCsv => 'CSV ایکسپورٹ کریں';
+
+  @override
+  String get admin2_reportsCsvShareFailed => 'CSV فائل شیئر نہیں ہو سکی۔';
+
+  @override
+  String get admin2_bookingsCustomer => 'کسٹمر';
+
+  @override
+  String admin2_bookingDetailDepositDeducted(
+      String amount, String status, String deducted) {
+    return 'ڈپازٹ $amount — $status (کٹوتی $deducted)';
+  }
+
+  @override
+  String admin2_bookingDetailDisputeStatus(String status) {
+    return 'حالت: $status';
+  }
+
+  @override
+  String admin2_bookingDetailDisputeDecision(String label) {
+    return 'فیصلہ: $label';
+  }
+
+  @override
+  String admin2_bookingDetailDisputeDecisionAmount(
+      String label, String amount) {
+    return 'فیصلہ: $label — $amount';
+  }
+
+  @override
+  String get admin2_carReviewHourly => '1 گھنٹہ / 3 گھنٹے / 6 گھنٹے';
+
+  @override
+  String admin2_carReviewMileageKm(Object km) {
+    return '$km کلومیٹر';
+  }
+
+  @override
+  String admin2_carReviewMetaLine1(String plate, String category,
+      String transmission, String fuel, Object seats) {
+    return 'پلیٹ $plate • $category • $transmission • $fuel • $seats نشستیں';
+  }
+
+  @override
+  String admin2_carReviewMetaLine2(String status, String review) {
+    return 'حالت: $status • موجودہ جائزہ: $review';
+  }
+
+  @override
+  String get admin2_carReviewNotReviewed => 'ابھی جائزہ نہیں لیا گیا';
+
+  @override
+  String get admin2_checklistShopName => 'دکان کا نام اور پتہ';
+
+  @override
+  String get admin2_checklistOwnerPhone => 'مالک کا فون نمبر';
+
+  @override
+  String get admin2_checklistOwnerCnic => 'مالک کا شناختی کارڈ ریکارڈ میں ہے';
+
+  @override
+  String get admin2_checklistKyc => 'کے وائی سی دستاویزات اپ لوڈ ہو گئیں';
+
+  @override
+  String get admin2_checklistBank => 'بینک / والیٹ اکاؤنٹ ریکارڈ میں ہے';
+
+  @override
+  String get admin2_checklistFleet => 'گاڑیوں کی تصاویر اپ لوڈ ہو گئیں';
+
+  @override
+  String get admin2_disputed => 'متنازعہ';
+
+  @override
+  String get admin2_inCity => 'شہر کے اندر';
+
+  @override
+  String get admin2_outCity => 'شہر سے باہر';
+
+  @override
+  String admin2_bookingSummaryTitle(String id) {
+    return 'بکنگ $id';
+  }
+
+  @override
+  String admin2_bookingSummaryStatusLine(
+      String status, String trip, String kmLimit) {
+    return 'حالت: $status • سفر: $trip ($kmLimit کلومیٹر حد)';
+  }
+
+  @override
+  String admin2_bookingSummaryVehicle(String vehicle, String plate) {
+    return 'گاڑی: $vehicle ($plate)';
+  }
+
+  @override
+  String admin2_bookingSummaryShop(String shop, String customer) {
+    return 'دکان: $shop • گاہک: $customer';
+  }
+
+  @override
+  String admin2_bookingSummaryPickup(String pickup, String returnTime) {
+    return 'وصولی: $pickup • واپسی: $returnTime';
+  }
+
+  @override
+  String admin2_bookingSummaryTotal(
+      String total, String advanceRequired, String paid, String remaining) {
+    return 'کل: $total • مطلوبہ ایڈوانس: $advanceRequired • ادا شدہ: $paid • باقی: $remaining';
+  }
+
+  @override
+  String get admin2_bookingSummaryDepositNone => 'ڈپازٹ: کوئی نہیں';
+
+  @override
+  String admin2_bookingSummaryDeposit(String amount, String status) {
+    return 'ڈپازٹ: $amount ($status)';
+  }
+
+  @override
+  String admin2_bookingSummaryAgreement(String url) {
+    return 'معاہدہ پی ڈی ایف: $url';
+  }
+
+  @override
+  String get admin2_bookingSummaryHandoverNone => 'حوالگی: کوئی نہیں';
+
+  @override
+  String admin2_bookingSummaryHandover(
+      Object odometer, String fuel, String damage) {
+    return 'حوالگی: اوڈومیٹر $odometer کلومیٹر، ایندھن $fuel، نقصان: $damage';
+  }
+
+  @override
+  String get admin2_bookingPhotoOpenFailed => 'تصویر کا لنک نہیں کھولا جا سکا۔';
+
+  @override
+  String get admin2_teamInviteSaving => 'محفوظ ہو رہا ہے…';
+
+  @override
+  String get maintenanceTitle => 'دیکھ بھال جاری ہے';
+
+  @override
+  String get maintenanceBody =>
+      'رینٹل ہب اس وقت دیکھ بھال کے تحت ہے۔ براہ کرم کچھ دیر بعد دوبارہ کوشش کریں۔';
+
+  @override
+  String get maintenanceRetry => 'دوبارہ کوشش کریں';
+
+  @override
+  String get admin2_totpReminderLogin =>
+      'ایک سپر ایڈمن نے آپ سے دو عنصری توثیق آن کرنے کو کہا ہے۔';
+
+  @override
+  String get admin2_evidenceTitle => 'ثبوت';
+
+  @override
+  String get close => 'بند کریں';
+
+  @override
+  String get admin2_teamResetTotpTooltip => 'دو مرحلہ تصدیق ری سیٹ کریں';
+
+  @override
+  String get admin2_teamRevokeTooltip => 'ایڈمن کردار واپس لیں';
 }

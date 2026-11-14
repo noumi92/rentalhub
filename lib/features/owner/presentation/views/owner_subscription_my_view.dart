@@ -98,7 +98,7 @@ class _OwnerSubscriptionMyViewState extends State<OwnerSubscriptionMyView> {
                           style: Theme.of(context)
                               .textTheme
                               .titleMedium
-                              ?.copyWith(fontWeight: FontWeight.w900),
+                              ?.copyWith(fontWeight: FontWeight.w600),
                         ),
                         const SizedBox(height: 4),
                         Text(
@@ -146,7 +146,7 @@ class _OwnerSubscriptionMyViewState extends State<OwnerSubscriptionMyView> {
                             style: Theme.of(context)
                                 .textTheme
                                 .titleSmall
-                                ?.copyWith(fontWeight: FontWeight.w800)),
+                                ?.copyWith(fontWeight: FontWeight.w600)),
                         const SizedBox(height: 8),
                         if (_history.isEmpty)
                           AppEmptyState(
@@ -166,8 +166,7 @@ class _OwnerSubscriptionMyViewState extends State<OwnerSubscriptionMyView> {
                                       style: Theme.of(context)
                                           .textTheme
                                           .bodyMedium
-                                          ?.copyWith(
-                                              fontWeight: FontWeight.w800)),
+                                          ),
                                 ),
                               )),
                         const SizedBox(height: 20),
@@ -224,12 +223,12 @@ class _UsageBar extends StatelessWidget {
                 style: Theme.of(context)
                     .textTheme
                     .bodyMedium
-                    ?.copyWith(fontWeight: FontWeight.w700)),
+                    ),
             Text(limit == null ? '$used / ∞' : '$used / $limit',
                 style: Theme.of(context)
                     .textTheme
                     .bodyMedium
-                    ?.copyWith(fontWeight: FontWeight.w800)),
+                    ),
           ],
         ),
         const SizedBox(height: 4),

@@ -71,7 +71,7 @@ class VehiclePhotosStepWidget extends StatelessWidget {
       children: [
         Text(
           l10n.addVehiclePhotosTitle,
-          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900),
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 4),
         Text(
@@ -102,7 +102,7 @@ class VehiclePhotosStepWidget extends StatelessWidget {
                     children: [
                       Text(
                         l10n.addVehiclePhotoFront,
-                        style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: Theme.of(context).colorScheme.error),
+                        style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500, color: Theme.of(context).colorScheme.error),
                       ),
                       Text(
                         l10n.addVehicleFrontPhotoRequired,
@@ -167,7 +167,7 @@ class VehiclePhotosStepWidget extends StatelessWidget {
 
         Text(
           l10n.addVehicleLegalDocs,
-          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900),
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 8),
 

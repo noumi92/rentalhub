@@ -101,7 +101,7 @@ class _FinancePnLReportState extends State<FinancePnLReport> {
           children: [
             Text(l10n.financePnlTitle,
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w600,
                 )),
             DropdownButton<String>(
               dropdownColor: Theme.of(context).colorScheme.surface,
@@ -203,11 +203,11 @@ class _FinancePnLReportState extends State<FinancePnLReport> {
         children: [
           Text(label,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontWeight: bold ? FontWeight.w900 : FontWeight.w700,
+                fontWeight: bold ? FontWeight.w500 : FontWeight.w400,
               )),
           Text(l10n.amountRs(formatRs(amount)),
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontWeight: bold ? FontWeight.w900 : FontWeight.w700,
+                fontWeight: bold ? FontWeight.w500 : FontWeight.w400,
               )),
         ],
       ),

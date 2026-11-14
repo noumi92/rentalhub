@@ -68,7 +68,7 @@ class LocationPermissionDialog extends StatelessWidget {
             Text(
               l10n.locationEnablePrecise,
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 8),
             Text(

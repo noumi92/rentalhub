@@ -70,7 +70,7 @@ class _SignaturePadWidgetState extends State<SignaturePadWidget> {
                   Text(
                     widget.signerLabel,
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w600,
                           // The pad stays near-white for ink in both modes,
                           // so the label stays a fixed dark colour.
                           color: AppColors.textPrimary,
@@ -164,8 +164,11 @@ class _SignaturePadWidgetState extends State<SignaturePadWidget> {
                   child: Text(
                     l10n?.signatureNadraValidated ?? 'Signature captured',
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.accentSuccess,
+                          fontWeight: FontWeight.w500,
+                          // Item 4: the raw #10B981 is 2.54:1 on the
+                          // (forced-light) pad — the strong green is
+                          // 5.48:1. The forced-light keep itself stands.
+                          color: AppColors.accentSuccessStrong,
                         ),
                   ),
                 ),

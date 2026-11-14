@@ -112,7 +112,7 @@ class DisputeListTile extends StatelessWidget {
         title: Text(
           dispute.category.isEmpty ? l10n.disputesFallbackTitle : dispute.category,
           style: Theme.of(context).textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.w800,
+            fontWeight: FontWeight.w600,
           ),
         ),
         subtitle: Text(
@@ -130,7 +130,7 @@ class DisputeListTile extends StatelessWidget {
           child: Text(
             statusLabel(l10n, dispute.status),
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              fontWeight: FontWeight.w800,
+              fontWeight: FontWeight.w500,
               color: onContainer,
             ),
           ),

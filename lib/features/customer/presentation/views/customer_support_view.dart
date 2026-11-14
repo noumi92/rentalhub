@@ -183,7 +183,8 @@ class _CustomerSupportViewState extends State<CustomerSupportView> {
                             icon: Icons.chat_rounded,
                             title: l10n.supportWhatsappShop,
                             subtitle: _shopName ?? l10n.supportNoBooking,
-                            color: AppColors.accentSuccess,
+                            color: AppColors.successTextFor(
+                                Theme.of(context).brightness),
                             onTap: _whatsAppShop,
                           ),
                         ),
@@ -198,15 +199,18 @@ class _CustomerSupportViewState extends State<CustomerSupportView> {
                             color:
                                 AppColors.secondary.withValues(alpha: 0.3)),
                       ),
-                      leading: const Icon(Icons.gavel_rounded,
-                          color: AppColors.secondary),
+                      leading: Icon(Icons.gavel_rounded,
+                          color: AppColors.orangeTextFor(
+                              Theme.of(context).brightness)),
                       title: Text(l10n.supportFileDispute,
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.secondary)),
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.orangeTextFor(Theme.of(context).brightness))),
                       subtitle: Text(
                           l10n.supportDisputeHint,
                           style: Theme.of(context).textTheme.labelSmall),
-                      trailing: const Icon(Icons.arrow_forward_ios_rounded,
-                          size: 14, color: AppColors.secondary),
+                      trailing: Icon(Icons.arrow_forward_ios_rounded,
+                          size: 14,
+                          color: AppColors.orangeTextFor(
+                              Theme.of(context).brightness)),
                       onTap: widget.onFileDispute,
                     ),
                     const SizedBox(height: 14),

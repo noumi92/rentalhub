@@ -52,7 +52,7 @@ class ManualBankTransferSheet {
                         style: Theme.of(context)
                             .textTheme
                             .titleMedium
-                            ?.copyWith(fontWeight: FontWeight.w900)),
+                            ?.copyWith(fontWeight: FontWeight.w600)),
                   ),
                   IconButton(
                       tooltip: AppLocalizations.of(ctx)?.subscriptionClose ??
@@ -67,7 +67,7 @@ class ManualBankTransferSheet {
                   style: Theme.of(context)
                       .textTheme
                       .titleLarge
-                      ?.copyWith(fontWeight: FontWeight.w900)),
+                      ?.copyWith(fontWeight: FontWeight.w600)),
               if (note != null) ...[
                 const SizedBox(height: 8),
                 Text(note, style: Theme.of(context).textTheme.bodySmall),
@@ -86,7 +86,7 @@ class ManualBankTransferSheet {
                         style: Theme.of(context)
                             .textTheme
                             .labelMedium
-                            ?.copyWith(fontWeight: FontWeight.w800)),
+                            ?.copyWith(fontWeight: FontWeight.w500)),
                     Text('Title: RentalHub Pakistan PVT Ltd.',
                         style: Theme.of(context).textTheme.bodySmall),
                     // Still hardcoded — no bank-details field exists
@@ -95,7 +95,7 @@ class ManualBankTransferSheet {
                         style: Theme.of(context)
                             .textTheme
                             .labelMedium
-                            ?.copyWith(fontWeight: FontWeight.w800)),
+                            ?.copyWith(fontWeight: FontWeight.w500)),
                   ],
                 ),
               ),

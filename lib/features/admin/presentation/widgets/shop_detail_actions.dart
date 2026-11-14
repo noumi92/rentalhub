@@ -4,6 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/utils/responsive.dart';
 import '../../../../core/utils/whatsapp.dart';
 import '../../../../core/widgets/app_feedback.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../discovery/data/models/shop_model.dart';
 
 /// The action buttons on the shop detail screen, extracted from
@@ -35,7 +36,7 @@ class ShopDetailActions extends StatelessWidget {
         children: [
           _messageOwnerButton(context),
           const SizedBox(height: 12),
-          _suspendButton(),
+          _suspendButton(context),
         ],
       );
     }
@@ -43,32 +44,44 @@ class ShopDetailActions extends StatelessWidget {
       children: [
         Expanded(child: _messageOwnerButton(context)),
         const SizedBox(width: 12),
-        Expanded(child: _suspendButton()),
+        Expanded(child: _suspendButton(context)),
       ],
     );
   }
 
   Widget _messageOwnerButton(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return OutlinedButton.icon(
       icon: const Icon(Icons.message_rounded, size: 18),
-      label: const Text('Message owner'),
+      label: Text(l10n.admin2_shopActionMessageOwner),
       style: OutlinedButton.styleFrom(minimumSize: const Size(0, 48)),
       onPressed: () async {
         final uri = whatsappUri(
           phone: shop.phoneNumber,
-          message: 'Hello from RentalHub admin regarding ${shop.shopName}.',
+          message: l10n.admin2_shopActionHello(shop.shopName),
         );
         if (uri == null) {
           AppFeedback.showError(
-              context, 'No phone number on file for this shop.');
+              context, l10n.admin2_shopActionNoPhone);
           return;
         }
-        await launchUrl(uri, mode: LaunchMode.externalApplication);
+        // AD-m16: check the launch result — on web a failed wa.me
+        // launch used to fail silently while the admin believed the
+        // owner had been contacted.
+        final opened =
+            await launchUrl(uri, mode: LaunchMode.externalApplication);
+        if (!opened && context.mounted) {
+          AppFeedback.showError(
+              context,
+              AppLocalizations.of(context)?.admin2_whatsappOpenFailed ??
+                  'Could not open WhatsApp.');
+        }
       },
     );
   }
 
-  Widget _suspendButton() {
+  Widget _suspendButton(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return FilledButton(
       onPressed: isWorking ? null : onToggleSuspend,
       style: shop.suspended
@@ -77,10 +90,10 @@ class ShopDetailActions extends StatelessWidget {
               backgroundColor: Colors.red.shade700,
               minimumSize: const Size(0, 48)),
       child: Text(isWorking
-          ? 'Saving…'
+          ? l10n.admin2_saving
           : shop.suspended
-              ? 'Lift suspension'
-              : 'Suspend shop'),
+              ? l10n.admin2_shopActionLift
+              : l10n.admin2_shopActionSuspend),
     );
   }
 }

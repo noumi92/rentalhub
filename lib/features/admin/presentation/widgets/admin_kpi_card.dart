@@ -43,7 +43,7 @@ class AdminKpiCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   title,
-                  style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                  style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w500, color: Theme.of(context).colorScheme.onSurfaceVariant),
                 ),
               ),
               const SizedBox(width: 8),
@@ -55,9 +55,9 @@ class AdminKpiCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
-          Text(value, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900)),
+          Text(value, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700)),
           const SizedBox(height: 6),
-          Text(changeLabel, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.successTextFor(Theme.of(context).brightness))),
+          Text(changeLabel, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w500, color: AppColors.successTextFor(Theme.of(context).brightness))),
         ],
       ),
     );

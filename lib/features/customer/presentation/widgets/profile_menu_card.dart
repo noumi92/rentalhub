@@ -55,7 +55,7 @@ class ProfileMenuCard extends StatelessWidget {
                 ListTile(
                   leading: item.leading ?? Icon(item.icon),
                   title: Text(item.title,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
+                      style: Theme.of(context).textTheme.bodyMedium),
                   subtitle: Text(item.subtitle,
                       style: Theme.of(context).textTheme.labelSmall),
                   trailing: Icon(Icons.arrow_forward_ios_rounded,

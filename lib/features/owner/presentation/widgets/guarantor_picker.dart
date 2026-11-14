@@ -179,7 +179,7 @@ class _GuarantorPickerState extends State<GuarantorPicker> {
           leading: Icon(Icons.verified_user_rounded,
               color: AppColors.successTextFor(Theme.of(context).brightness)),
           title: Text(s.name,
-              style: const TextStyle(fontWeight: FontWeight.w800)),
+              style: const TextStyle(fontWeight: FontWeight.w600)),
           subtitle: Text('${s.cnic} • ${s.phone}\n${s.relationship}'),
           trailing: IconButton(
             tooltip: l10n.manualBookingGuarantorRemove,

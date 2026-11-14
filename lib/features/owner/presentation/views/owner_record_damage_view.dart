@@ -142,7 +142,7 @@ class _OwnerRecordDamageViewState extends State<OwnerRecordDamageView> {
                                   const Icon(Icons.add_a_photo_rounded),
                                   const SizedBox(height: 6),
                                   Text(l10n.damageAddPhoto,
-                                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
+                                      style: Theme.of(context).textTheme.bodyMedium),
                                 ],
                               )
                             : Image.file(File(_photo!.path), fit: BoxFit.cover),
@@ -176,7 +176,7 @@ class _OwnerRecordDamageViewState extends State<OwnerRecordDamageView> {
                     SwitchListTile(
                       contentPadding: EdgeInsets.zero,
                       title: Text(l10n.damageDeductFromDeposit,
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
+                          style: Theme.of(context).textTheme.bodyMedium),
                       value: _deductFromDeposit,
                       onChanged: (v) => setState(() => _deductFromDeposit = v),
                     ),

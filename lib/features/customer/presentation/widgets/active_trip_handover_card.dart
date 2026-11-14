@@ -32,7 +32,7 @@ class ActiveTripHandoverCard extends StatelessWidget {
         children: [
           Text(
             l10n.handoverAtPickup,
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 8),
           if (!loaded)
@@ -72,7 +72,7 @@ class ActiveTripHandoverCard extends StatelessWidget {
           child: Text(value,
               textAlign: TextAlign.right,
               style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
+                    fontWeight: FontWeight.w500,
                   )),
         ),
       ],

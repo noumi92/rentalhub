@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../data/datasources/admin_remote_data_source.dart';
 import 'admin_invite_form.dart';
 
@@ -11,23 +12,26 @@ class AdminTeamInvitesSection extends StatelessWidget {
     required this.invites,
     required this.canManage,
     required this.onWithdraw,
+    required this.onAccept,
   });
 
   final List<AdminInvite> invites;
   final bool canManage;
   final void Function(AdminInvite invite) onWithdraw;
+  final void Function(AdminInvite invite) onAccept;
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final pending = invites.where((i) => !i.accepted).toList();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Pending invites',
-            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900)),
+        Text(l10n?.admin2_teamInvitesTitle ?? 'Pending invites',
+            style: const TextStyle(fontSize: 15)),
         const SizedBox(height: 10),
         if (pending.isEmpty)
-          Text('No pending invites.',
+          Text(l10n?.admin2_teamInvitesEmpty ?? 'No pending invites.',
               style: TextStyle(
                   color: Theme.of(context).colorScheme.onSurfaceVariant))
         else
@@ -37,6 +41,7 @@ class AdminTeamInvitesSection extends StatelessWidget {
                   invite: i,
                   canManage: canManage,
                   onWithdraw: () => onWithdraw(i),
+                  onAccept: () => onAccept(i),
                 ),
               )),
       ],

@@ -184,7 +184,7 @@ class _OwnerOnboardingViewState extends State<OwnerOnboardingView> {
                             margin: const EdgeInsets.only(right: 8),
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                             decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.18), borderRadius: BorderRadius.circular(12)),
-                            child: Text(l10n.onboardingStepOfFive(_currentStep), style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700, color: Colors.white)),
+                            child: Text(l10n.onboardingStepOfFive(_currentStep), style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w500, color: Colors.white)),
                           ),
                       ],
                     ),

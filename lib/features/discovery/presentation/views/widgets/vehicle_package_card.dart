@@ -72,16 +72,16 @@ class VehiclePackageCard extends StatelessWidget {
             const SizedBox(height: 10),
             Text(
               title,
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900, color: isSelected ? AppColors.orangeTextFor(Theme.of(context).brightness) : Theme.of(context).colorScheme.onSurface),
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600, color: isSelected ? AppColors.orangeTextFor(Theme.of(context).brightness) : Theme.of(context).colorScheme.onSurface),
             ),
             Text(
               urdu,
-              style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600),
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w500),
             ),
             const SizedBox(height: 8),
             Text(
               l10n.amountRs(formatRs(price)),
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w500),
             ),
             Text(
               l10n.vehiclePerDay,

@@ -80,13 +80,13 @@ class BlacklistStatusBanner extends StatelessWidget {
                       Text(
                         l10n?.blacklistCriticalAlert ??
                             'CRITICAL ALERT: BLACKLISTED CITIZEN',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w900, color: AppColors.errorOnContainerFor(Theme.of(context).brightness)),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.errorOnContainerFor(Theme.of(context).brightness)),
                       ),
                       if (blacklistedRecord != null)
                         Text(
                           l10n?.blacklistIncidentRef(blacklistedRecord!.blacklistId) ??
                               'Incident Ref: ${blacklistedRecord!.blacklistId}',
-                          style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600, color: Theme.of(context).brightness == Brightness.dark ? AppColors.errorOnContainerDark : AppColors.errorDark),
+                          style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w500, color: AppColors.errorOnContainerFor(Theme.of(context).brightness)),
                         ),
                     ],
                   ),
@@ -110,10 +110,10 @@ class BlacklistStatusBanner extends StatelessWidget {
                     Text(
                       l10n?.blacklistDetailsUnavailable ??
                           'Blacklisted — details unavailable, refer to tribunal',
-                      style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: Theme.of(context).colorScheme.onSurface),
+                      style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500, color: Theme.of(context).colorScheme.onSurface),
                     )
                   else ...[
-                    Text(l10n?.blacklistReason(blacklistedRecord!.reasonCategory) ?? 'Reason: ${blacklistedRecord!.reasonCategory}', style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: Theme.of(context).colorScheme.onSurface)),
+                    Text(l10n?.blacklistReason(blacklistedRecord!.reasonCategory) ?? 'Reason: ${blacklistedRecord!.reasonCategory}', style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500, color: Theme.of(context).colorScheme.onSurface)),
                     const SizedBox(height: 4),
                     Text(blacklistedRecord!.description, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
                     const SizedBox(height: 4),
@@ -157,7 +157,7 @@ class BlacklistStatusBanner extends StatelessWidget {
                     Text(
                       l10n?.blacklistCleanTitle ??
                           'No blacklist record found',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w900, color: AppColors.successOnContainerFor(Theme.of(context).brightness)),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.successOnContainerFor(Theme.of(context).brightness)),
                     ),
                     Text(
                       l10n?.blacklistCleanSubtitle ??

@@ -39,6 +39,33 @@ service cloud.firestore {
           .data.get('admin_role', '') == 'super_admin');
     }
 
+    // F-C1 (admin audit 2026-11-14) — the permission matrix needs a
+    // rules backstop, because the client-side checks alone cannot
+    // stop a direct Firestore write. These helpers mirror the
+    // matrix in lib/features/admin/domain/admin_permissions.dart:
+    // super admin + operations decide vendors, blacklist, disputes,
+    // platform settings, announcements and reviews; support triages
+    // disputes and tickets only, and may never close a ticket.
+    // Each match below only ADDS an admin allow to whatever the
+    // live rules already grant owners/customers (rules OR across
+    // match blocks), so merging this fragment never takes a
+    // permission away from the mobile app.
+    function isAdminOps() {
+      return request.auth != null && (
+        request.auth.token.get('admin_role', '') in
+          ['super_admin', 'operations'] ||
+        get(/databases/$(database)/documents/users/$(request.auth.uid))
+          .data.get('admin_role', '') in
+          ['super_admin', 'operations']);
+    }
+
+    function isAdminSupport() {
+      return request.auth != null && (
+        request.auth.token.get('admin_role', '') == 'support' ||
+        get(/databases/$(database)/documents/users/$(request.auth.uid))
+          .data.get('admin_role', '') == 'support');
+    }
+
     // Activity log (A5): immutable. Admins read; any signed-in user
     // may write (the app-side writer + Cloud Functions); nobody may
     // update or delete an entry.
@@ -75,6 +102,109 @@ service cloud.firestore {
     // server-side in setAdminRole (invite + 48 h expiry).
     match /admin_invites/{inviteId} {
       allow read, write: if isSuperAdmin();
+    }
+
+    // F-C1 — admin backstop for the collections the panel decides
+    // on. Reads are any admin role; writes are super admin +
+    // operations only, except where noted. The live rules keep
+    // governing owner/customer access (rules OR across match
+    // blocks); these matches only add the admin allows.
+    //
+    // Shops: the approvals queue decides verification_status and
+    // suspends shops. Admins never create shop docs (owners do).
+    match /shops/{shopId} {
+      allow read: if adminRole();
+      allow update: if isAdminOps();
+    }
+
+    // Vehicles: admins read the fleet; car decisions are written to
+    // car_reviews, never to the vehicle doc itself.
+    match /vehicles/{vehicleId} {
+      allow read: if adminRole();
+    }
+
+    // Car reviews: the approve / hide / reject decision.
+    match /car_reviews/{vehicleId} {
+      allow read: if adminRole();
+      allow create, update: if isAdminOps();
+    }
+
+    // Blacklist + tribunal: reports and appeal decisions.
+    // Customers file appeals through the shared data source under
+    // the live rules; this match only adds the admin allows.
+    match /blacklist/{recordId} {
+      allow read: if adminRole();
+      allow create, update: if isAdminOps();
+    }
+
+    // Customers: watchlist flags and admin notes live here. The
+    // restricted CNIC back-QR doc keeps its own super-admin-only
+    // rule above; this match must not be read as covering it.
+    match /customers/{customerId} {
+      allow read: if adminRole();
+      allow update: if isAdminOps();
+
+      match /admin_notes/{noteId} {
+        allow read, create: if adminRole();
+      }
+    }
+
+    // Disputes: decisions (super admin + operations) and triage
+    // (any admin role may move a dispute to in_review). Customers
+    // file disputes and owners update their status under the live
+    // rules; this match only adds the admin allows.
+    match /disputes/{disputeId} {
+      allow read: if adminRole();
+      allow update: if isAdminOps() ||
+        (adminRole() && request.resource.data.status == 'in_review');
+    }
+
+    // Reviews: Keep / Hide / Ask-to-edit / Warn.
+    match /reviews/{reviewId} {
+      allow read: if adminRole();
+      allow update: if isAdminOps();
+    }
+
+    // Support tickets: any admin may reply and triage, but only
+    // super admin + operations may close one. A support admin whose
+    // write leaves the status 'closed' is denied; any other status
+    // move is allowed for any admin role. Replies and internal
+    // notes live in subcollections (admin eyes only).
+    match /support_tickets/{ticketId} {
+      allow read: if adminRole();
+      allow update: if adminRole() &&
+        (request.resource.data.status != 'closed' || isAdminOps());
+
+      match /replies/{replyId} {
+        allow read, create: if adminRole();
+      }
+
+      match /internal_notes/{noteId} {
+        allow read, create: if adminRole();
+      }
+    }
+
+    // Platform settings: the single `platform_settings/global`
+    // document. The mobile app reads it under the live rules; this
+    // match only adds the admin allows.
+    match /platform_settings/{docId} {
+      allow read: if adminRole();
+      allow create, update: if isAdminOps();
+    }
+
+    // Announcements: drafted and sent by super admin + operations.
+    // The customer app reads them under the live rules.
+    match /announcements/{announcementId} {
+      allow read: if adminRole();
+      allow create, update: if isAdminOps();
+    }
+
+    // Customer KYC documents: the admin review queue reads them.
+    // Decisions are super admin + operations only; customers write
+    // their own submissions under the live rules.
+    match /kyc_documents/{customerId} {
+      allow read: if adminRole();
+      allow update: if isAdminOps();
     }
 
     // Users doc (A2/A3): the admin_role field must never be writable by

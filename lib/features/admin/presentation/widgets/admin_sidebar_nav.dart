@@ -1,8 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/routing/route_names.dart';
+import '../../../../l10n/app_localizations.dart';
+import '../../../../l10n/app_localizations_en.dart';
 import '../../data/services/admin_session.dart';
 import '../../domain/admin_permissions.dart';
 
@@ -11,10 +14,11 @@ import '../../domain/admin_permissions.dart';
 /// the real sections; the footer shows the signed-in admin's email
 /// instead of the hardcoded superadmin@rentalhub.pk.
 ///
-/// Stateful only so the super-admin-only "APK Download" item can
-/// resolve the signed-in admin's role once: no other role may even see
-/// the download, so the item stays hidden for them (and while the role
-/// is resolving). Every other section is visible to all admin roles.
+/// Stateful only so the role-gated items can resolve the signed-in
+/// admin's role once: the super-admin-only "APK Download" item and
+/// the super-admin + operations "KYC Review" item stay hidden for
+/// roles that may not use them (and while the role is resolving).
+/// Every other section is visible to all admin roles.
 class AdminSidebarNav extends StatefulWidget {
   final String activeRoute;
   final ValueChanged<String> onNavigate;
@@ -27,12 +31,17 @@ class AdminSidebarNav extends StatefulWidget {
   /// (true) or hidden (false) without resolving the signed-in role.
   final bool? showApkDownload;
 
+  /// Test seam: when non-null, forces the KYC Review item visible
+  /// (true) or hidden (false) without resolving the signed-in role.
+  final bool? showKycReview;
+
   const AdminSidebarNav({
     super.key,
     required this.activeRoute,
     required this.onNavigate,
     this.width = 260,
     this.showApkDownload,
+    this.showKycReview,
   });
 
   @override
@@ -41,14 +50,32 @@ class AdminSidebarNav extends StatefulWidget {
 
 class _AdminSidebarNavState extends State<AdminSidebarNav> {
   bool _showApkDownload = false;
+  bool _canReviewKyc = false;
 
   @override
   void initState() {
     super.initState();
     if (widget.showApkDownload != null) {
       _showApkDownload = widget.showApkDownload!;
-    } else {
+    }
+    if (widget.showKycReview != null) {
+      _canReviewKyc = widget.showKycReview!;
+    }
+    if (widget.showApkDownload == null || widget.showKycReview == null) {
       _resolveRole();
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant AdminSidebarNav oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // The test seams force visibility: a rebuild with a changed seam
+    // applies it (initState only runs once per element).
+    if (widget.showApkDownload != null) {
+      _showApkDownload = widget.showApkDownload!;
+    }
+    if (widget.showKycReview != null) {
+      _canReviewKyc = widget.showKycReview!;
     }
   }
 
@@ -60,10 +87,16 @@ class _AdminSidebarNavState extends State<AdminSidebarNav> {
     if (user == null) return;
     final role = await AdminSession.resolveAdminRole(user);
     if (!mounted) return;
-    setState(
-      () => _showApkDownload =
-          AdminPermissions.can(role, AdminPermission.downloadApk),
-    );
+    setState(() {
+      if (widget.showApkDownload == null) {
+        _showApkDownload =
+            AdminPermissions.can(role, AdminPermission.downloadApk);
+      }
+      if (widget.showKycReview == null) {
+        _canReviewKyc =
+            AdminPermissions.can(role, AdminPermission.decideKyc);
+      }
+    });
   }
 
   String get _adminEmail {
@@ -74,8 +107,19 @@ class _AdminSidebarNavState extends State<AdminSidebarNav> {
     }
   }
 
+  /// AD-M3: sign out of the panel — clears the in-memory TOTP flag
+  /// and role cache, then routes to the admin login.
+  Future<void> _signOut() async {
+    AdminSession.clear();
+    try {
+      await FirebaseAuth.instance.signOut();
+    } catch (_) {}
+    if (mounted) context.go(RouteNames.adminLogin);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final l10n = (AppLocalizations.of(context) ?? AppLocalizationsEn());
     return Container(
       width: widget.width,
       color: AppColors.primary,
@@ -102,8 +146,8 @@ class _AdminSidebarNavState extends State<AdminSidebarNav> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('RENTALHUB', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 15, letterSpacing: 1.0)),
-                      Text('ADMIN PANEL', style: TextStyle(color: AppColors.secondary, fontSize: 9.5, fontWeight: FontWeight.w800)),
+                      Text('RENTALHUB', style: TextStyle(color: Colors.white, fontSize: 15, letterSpacing: 1.0)),
+                      Text('ADMIN PANEL', style: TextStyle(color: AppColors.secondary, fontSize: 9.5, fontWeight: FontWeight.w500)),
                     ],
                   ),
                 ),
@@ -112,7 +156,8 @@ class _AdminSidebarNavState extends State<AdminSidebarNav> {
           ),
           const Divider(color: Colors.white12, height: 1),
           const SizedBox(height: 12),
-          // 16 items now (17 for a super admin, with APK Download) —
+          // 17 items now (18 for a super admin, with APK Download;
+          // KYC Review is hidden for support) —
           // the list scrolls on short windows instead of overflowing
           // the sidebar.
           Expanded(
@@ -120,24 +165,35 @@ class _AdminSidebarNavState extends State<AdminSidebarNav> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _navItem(RouteNames.adminDashboard, 'Dashboard', Icons.dashboard_rounded),
-                  _navItem(RouteNames.adminShops, 'Shops', Icons.store_rounded),
-                  _navItem(RouteNames.adminApprovals, 'Approvals', Icons.verified_user_rounded),
-                  _navItem(RouteNames.adminCars, 'Cars', Icons.directions_car_rounded),
-                  _navItem(RouteNames.adminCustomers, 'Customers', Icons.people_rounded),
-                  _navItem(RouteNames.adminBookings, 'Bookings', Icons.receipt_long_rounded),
-                  _navItem(RouteNames.adminDisputes, 'Disputes', Icons.gavel_rounded),
-                  _navItem(RouteNames.adminReviews, 'Reviews', Icons.star_rounded),
-                  _navItem(RouteNames.adminTickets, 'Support', Icons.support_agent_rounded),
-                  _navItem(RouteNames.adminAnnouncements, 'Announcements', Icons.campaign_rounded),
-                  _navItem(RouteNames.adminReports, 'Reports', Icons.bar_chart_rounded),
-                  _navItem(RouteNames.adminSettings, 'Settings', Icons.settings_rounded),
+                  _navItem(RouteNames.adminDashboard, l10n.admin2_navDashboard, Icons.dashboard_rounded),
+                  _navItem(RouteNames.adminShops, l10n.admin2_navShops, Icons.store_rounded),
+                  _navItem(RouteNames.adminApprovals, l10n.admin2_navApprovals, Icons.verified_user_rounded),
+                  // Item 6 — customer KYC review, next to the shop
+                  // Approvals queue it mirrors; super admin +
+                  // operations only (decideKyc), hidden for support.
+                  if (_canReviewKyc)
+                    _navItem(RouteNames.adminKycReview, l10n.adminKycReviewTitle, Icons.badge_rounded),
+                  _navItem(RouteNames.adminCars, l10n.admin2_navCars, Icons.directions_car_rounded),
+                  _navItem(RouteNames.adminCustomers, l10n.admin2_navCustomers, Icons.people_rounded),
+                  _navItem(RouteNames.adminBookings, l10n.admin2_navBookings, Icons.receipt_long_rounded),
+                  _navItem(RouteNames.adminDisputes, l10n.admin2_navDisputes, Icons.gavel_rounded),
+                  _navItem(RouteNames.adminReviews, l10n.admin2_navReviews, Icons.star_rounded),
+                  _navItem(RouteNames.adminTickets, l10n.admin2_navSupport, Icons.support_agent_rounded),
+                  _navItem(RouteNames.adminAnnouncements, l10n.admin2_navAnnouncements, Icons.campaign_rounded),
+                  _navItem(RouteNames.adminReports, l10n.admin2_navReports, Icons.bar_chart_rounded),
+                  _navItem(RouteNames.adminSettings, l10n.admin2_navSettings, Icons.settings_rounded),
+                  // AD-m2: grouped by function — Subscriptions follows
+                  // Settings, then the super-admin-only APK Download,
+                  // then the governance group (Blacklist, Admin Team,
+                  // Activity Log) last.
+                  _navItem(RouteNames.adminSubscriptions, l10n.admin2_navSubscriptions, Icons.monetization_on_rounded),
                   if (_showApkDownload)
-                    _navItem(RouteNames.adminApkDownload, 'APK Download', Icons.android_rounded),
-                  _navItem(RouteNames.adminBlacklist, 'Blacklist', Icons.gavel_rounded),
-                  _navItem(RouteNames.adminTeam, 'Admin Team', Icons.group_rounded),
-                  _navItem(RouteNames.adminActivity, 'Activity Log', Icons.history_rounded),
-                  _navItem(RouteNames.adminSubscriptions, 'Subscriptions', Icons.monetization_on_rounded),
+                    _navItem(RouteNames.adminApkDownload, l10n.admin2_navApkDownload, Icons.android_rounded),
+                  // AD-m1: Blacklist gets its own icon — it shared
+                  // the gavel with Disputes.
+                  _navItem(RouteNames.adminBlacklist, l10n.admin2_navBlacklist, Icons.block_rounded),
+                  _navItem(RouteNames.adminTeam, l10n.admin2_navAdminTeam, Icons.group_rounded),
+                  _navItem(RouteNames.adminActivity, l10n.admin2_navActivityLog, Icons.history_rounded),
                 ],
               ),
             ),
@@ -149,14 +205,28 @@ class _AdminSidebarNavState extends State<AdminSidebarNav> {
               color: Colors.white.withAlpha(15),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Row(
               children: [
-                const Text('SIGNED IN AS ADMIN', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: AppColors.secondary)),
-                const SizedBox(height: 4),
-                Text(
-                  _adminEmail.isEmpty ? 'Admin' : _adminEmail,
-                  style: const TextStyle(fontSize: 11, color: Colors.white70),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(l10n.admin2_sidebarSignedInAs, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w500, color: AppColors.secondary)),
+                      const SizedBox(height: 4),
+                      Text(
+                        _adminEmail.isEmpty ? l10n.admin2_roleAdmin : _adminEmail,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(fontSize: 11, color: Colors.white70),
+                      ),
+                    ],
+                  ),
+                ),
+                // AD-M3: the panel had no sign-out control anywhere.
+                IconButton(
+                  icon: const Icon(Icons.logout_rounded, size: 20, color: Colors.white70),
+                  tooltip: AppLocalizations.of(context)?.signOut ?? 'Sign out',
+                  onPressed: _signOut,
                 ),
               ],
             ),
@@ -185,7 +255,7 @@ class _AdminSidebarNavState extends State<AdminSidebarNav> {
                 label,
                 style: TextStyle(
                   fontSize: 13,
-                  fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                  fontWeight: FontWeight.w500,
                   color: isSelected ? Colors.white : Colors.white70,
                 ),
               ),

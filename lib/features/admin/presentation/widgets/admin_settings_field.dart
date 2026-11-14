@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 /// use for search. Number fields take [digitsOnly], so `7,500` can
 /// never reach the save-time `int.tryParse` as an unparseable value
 /// (the only feedback before was the generic "must be numbers" error).
+/// [errorText] shows an AD-M12 range-validation error inline.
 class AdminSettingsField extends StatelessWidget {
   const AdminSettingsField({
     super.key,
@@ -14,6 +15,7 @@ class AdminSettingsField extends StatelessWidget {
     this.keyboardType,
     this.maxLines = 1,
     this.digitsOnly = false,
+    this.errorText,
   });
 
   final String label;
@@ -21,6 +23,7 @@ class AdminSettingsField extends StatelessWidget {
   final TextInputType? keyboardType;
   final int maxLines;
   final bool digitsOnly;
+  final String? errorText;
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +37,7 @@ class AdminSettingsField extends StatelessWidget {
             digitsOnly ? [FilteringTextInputFormatter.digitsOnly] : null,
         decoration: InputDecoration(
           labelText: label,
+          errorText: errorText,
           filled: true,
           fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
           border: OutlineInputBorder(

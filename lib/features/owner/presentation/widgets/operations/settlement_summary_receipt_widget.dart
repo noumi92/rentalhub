@@ -58,7 +58,7 @@ class SettlementSummaryReceiptWidget extends StatelessWidget {
         children: [
           Text(
             l10n.returnReceiptTitle,
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 12),
           _itemRow(context, l10n.returnReceiptTotalKm, '$totalKm KM'),
@@ -96,14 +96,14 @@ class SettlementSummaryReceiptWidget extends StatelessWidget {
                   l10n.returnReceiptNetRefund,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w900),
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ),
               const SizedBox(width: 8),
               Text(
                 l10n.amountRs(formatRs(netRefund)),
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w900,
+                  fontWeight: FontWeight.w500,
                   color: netRefund >= 0 ? AppColors.successTextFor(Theme.of(context).brightness) : AppColors.dangerTextFor(Theme.of(context).brightness),
                 ),
               ),
@@ -114,7 +114,7 @@ class SettlementSummaryReceiptWidget extends StatelessWidget {
             Text(
               l10n.returnCustomerOwes(formatRs(-netRefund)),
               style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    fontWeight: FontWeight.w800,
+                    fontWeight: FontWeight.w500,
                     color: AppColors.dangerTextFor(Theme.of(context).brightness),
                   ),
             ),
@@ -142,7 +142,7 @@ class SettlementSummaryReceiptWidget extends StatelessWidget {
           Text(
             value,
             style: Theme.of(context).textTheme.labelMedium?.copyWith(
-              fontWeight: FontWeight.w700,
+              fontWeight: FontWeight.w500,
               color: isDeduction ? AppColors.dangerTextFor(Theme.of(context).brightness) : Theme.of(context).colorScheme.onSurface,
             ),
           ),

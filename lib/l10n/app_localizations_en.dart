@@ -148,6 +148,86 @@ class AppLocalizationsEn extends AppLocalizations {
   String get disputeResolved => 'Resolved';
 
   @override
+  String get disputeDecisionChoose => 'Choose a decision';
+
+  @override
+  String get disputeDecisionRequired => 'Choose a decision before saving.';
+
+  @override
+  String get disputeDecisionFullToCustomer => 'Full refund to customer';
+
+  @override
+  String get disputeDecisionPartial => 'Partial — split';
+
+  @override
+  String get disputeDecisionFullToOwner => 'Full to owner (claim upheld)';
+
+  @override
+  String get disputeDecisionAmount => 'Decision amount';
+
+  @override
+  String get disputeDecisionNote => 'Admin note';
+
+  @override
+  String get disputeMarkInReview => 'Mark in review';
+
+  @override
+  String get disputeMarkedInReview => 'Marked in review.';
+
+  @override
+  String get disputeMarkInReviewFailed =>
+      'Could not mark the dispute in review.';
+
+  @override
+  String get handoverPhotoFront => 'Front';
+
+  @override
+  String get handoverPhotoBack => 'Back';
+
+  @override
+  String get handoverPhotoLeft => 'Left';
+
+  @override
+  String get handoverPhotoRight => 'Right';
+
+  @override
+  String get handoverDocumentsGiven => 'Documents given';
+
+  @override
+  String get handoverAccessories => 'Accessories';
+
+  @override
+  String get handoverKeysHandedOver => 'Keys handed over';
+
+  @override
+  String get handoverKeysNotHandedOver => 'Keys not handed over';
+
+  @override
+  String get returnChecklistTitle => 'Return checklist';
+
+  @override
+  String get returnChecklistEmpty =>
+      'No return record yet — the vehicle has not been returned through the settlement flow.';
+
+  @override
+  String get returnCondition => 'Condition';
+
+  @override
+  String get returnOdometer => 'Return odometer';
+
+  @override
+  String get returnDamageNotes => 'Return damage notes';
+
+  @override
+  String get returnRemainingCollected => 'Remaining rent collected';
+
+  @override
+  String get returnNetRefund => 'Net refund';
+
+  @override
+  String get returnPaymentMethod => 'Payment method';
+
+  @override
   String get verified => 'Verified';
 
   @override
@@ -964,6 +1044,19 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get rateAlreadyRated =>
       'You already rated this trip — your review is shown below.';
+
+  @override
+  String get rateEditRequestedTitle => 'Admin asked you to edit this review';
+
+  @override
+  String get rateWarnedTitle => 'Warning from the admin about this review';
+
+  @override
+  String get adminAnncDeliveredNotTracked => 'Delivered: not tracked yet';
+
+  @override
+  String get adminAnncScheduleDateRequired =>
+      'Pick a date and time for the scheduled announcement.';
 
   @override
   String get rateSavedOffline =>
@@ -5227,18 +5320,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get handoverPhotosTitle => 'Exterior Photos';
 
   @override
-  String get handoverPhotoFront => 'Front';
-
-  @override
-  String get handoverPhotoBack => 'Back';
-
-  @override
-  String get handoverPhotoLeft => 'Left';
-
-  @override
-  String get handoverPhotoRight => 'Right';
-
-  @override
   String get handoverPhotoUploading => 'Uploading…';
 
   @override
@@ -7297,6 +7378,70 @@ class AppLocalizationsEn extends AppLocalizations {
       'Ask a super admin for the latest build.';
 
   @override
+  String get adminKycReviewTitle => 'KYC Review';
+
+  @override
+  String get adminKycReviewSubtitle =>
+      'Customer identity documents waiting for a decision';
+
+  @override
+  String get adminKycReviewEmpty => 'No pending KYC submissions';
+
+  @override
+  String get adminKycReviewEmptyHint =>
+      'Every customer submission has been decided.';
+
+  @override
+  String get adminKycReviewLoadFailed => 'Could not load the KYC queue.';
+
+  @override
+  String get adminKycReviewNotFound => 'Submission not found.';
+
+  @override
+  String get adminKycReviewNotPermitted =>
+      'Only super admins and operations can review KYC';
+
+  @override
+  String get adminKycReviewNotPermittedHint =>
+      'Ask a super admin or operations admin to review this submission.';
+
+  @override
+  String get adminNotPermitted => 'Your admin role does not allow this action.';
+
+  @override
+  String get adminKycReviewApprove => 'Approve';
+
+  @override
+  String get adminKycReviewReject => 'Reject';
+
+  @override
+  String get adminKycReviewReasonLabel =>
+      'Reason (required to reject — the customer sees it)';
+
+  @override
+  String get adminKycReviewReasonRequired =>
+      'A reason is required to reject — the customer sees it.';
+
+  @override
+  String get adminKycReviewDecisionSaved => 'Decision saved.';
+
+  @override
+  String get adminKycReviewDecisionFailed =>
+      'Could not reach the server — try again.';
+
+  @override
+  String get adminKycReviewLicenseNumber => 'License number';
+
+  @override
+  String get adminKycReviewLicenseExpiry => 'License expiry';
+
+  @override
+  String get adminKycReviewCnicNumber => 'CNIC number';
+
+  @override
+  String get adminKycReviewSubmittedOn => 'Submitted on';
+
+  @override
   String get kyc2_qrCode => 'QR Code';
 
   @override
@@ -7424,4 +7569,1975 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get manualBookingWhatsappToggle => 'Send WhatsApp confirmation';
+
+  @override
+  String get admin2_signInFailedGeneric => 'Sign-in failed. Try again.';
+
+  @override
+  String get admin2_signInWrongCredentials =>
+      'The email or password is incorrect.';
+
+  @override
+  String get admin2_signInAccountDisabled =>
+      'This account is disabled. Ask a super admin for help.';
+
+  @override
+  String get admin2_signInTooManyAttempts =>
+      'Too many sign-in attempts. Try again later.';
+
+  @override
+  String get admin2_signInNoConnection =>
+      'Could not reach the server. Check your connection and try again.';
+
+  @override
+  String get admin2_signInInvalidEmail => 'Enter a valid email address.';
+
+  @override
+  String get admin2_showPassword => 'Show password';
+
+  @override
+  String get admin2_hidePassword => 'Hide password';
+
+  @override
+  String get admin2_blacklistReportTitle => 'Report to blacklist?';
+
+  @override
+  String get admin2_blacklistReportBody =>
+      'This blocks the customer platform-wide. Give the reason — the tribunal judges the case on it.';
+
+  @override
+  String get admin2_blacklistReasonLabel => 'Reason (required)';
+
+  @override
+  String get admin2_blacklistReasonRequired =>
+      'A reason is required to report a customer.';
+
+  @override
+  String get admin2_blacklistReportConfirm => 'Report';
+
+  @override
+  String get admin2_watchlistAdd => 'Add to watchlist';
+
+  @override
+  String get admin2_watchlistRemove => 'Remove from watchlist';
+
+  @override
+  String get admin2_ticketRepliesLoadFailed => 'Could not load the replies.';
+
+  @override
+  String get admin2_suspendReasonLabel => 'Reason (shown in the audit log)';
+
+  @override
+  String get admin2_callFailed => 'Could not open the dialer.';
+
+  @override
+  String get admin2_whatsappOpenFailed => 'Could not open WhatsApp.';
+
+  @override
+  String get admin2_menu => 'Menu';
+
+  @override
+  String get admin2_confirm => 'Confirm';
+
+  @override
+  String get admin2_approve => 'Approve';
+
+  @override
+  String get admin2_reject => 'Reject';
+
+  @override
+  String get admin2_yes => 'Yes';
+
+  @override
+  String get admin2_no => 'No';
+
+  @override
+  String get admin2_save => 'Save';
+
+  @override
+  String get admin2_saving => 'Saving…';
+
+  @override
+  String get admin2_serverUnreachable => 'Could not reach the server.';
+
+  @override
+  String get admin2_serverUnreachableRetry =>
+      'Could not reach the server — try again.';
+
+  @override
+  String get admin2_reasonRequired => 'A reason is required.';
+
+  @override
+  String get admin2_decisionSaved => 'Decision saved.';
+
+  @override
+  String get admin2_none => 'none';
+
+  @override
+  String get admin2_withDriver => 'With driver';
+
+  @override
+  String get admin2_selfDrive => 'Self drive';
+
+  @override
+  String get admin2_suspended => 'Suspended';
+
+  @override
+  String get admin2_hidden => 'Hidden';
+
+  @override
+  String get admin2_open => 'Open';
+
+  @override
+  String get admin2_closed => 'Closed';
+
+  @override
+  String get admin2_resolved => 'Resolved';
+
+  @override
+  String get admin2_inProgress => 'In progress';
+
+  @override
+  String get admin2_escalated => 'Escalated';
+
+  @override
+  String get admin2_requested => 'Requested';
+
+  @override
+  String get admin2_paymentSubmitted => 'Payment submitted';
+
+  @override
+  String get admin2_paid => 'Paid';
+
+  @override
+  String get admin2_completed => 'Completed';
+
+  @override
+  String get admin2_cancelled => 'Cancelled';
+
+  @override
+  String get admin2_inReview => 'In review';
+
+  @override
+  String get admin2_roleSuperAdmin => 'Super Admin';
+
+  @override
+  String get admin2_roleOperations => 'Operations';
+
+  @override
+  String get admin2_roleSupport => 'Support';
+
+  @override
+  String get admin2_roleAdmin => 'Admin';
+
+  @override
+  String get admin2_navDashboard => 'Dashboard';
+
+  @override
+  String get admin2_navShops => 'Shops';
+
+  @override
+  String get admin2_navApprovals => 'Approvals';
+
+  @override
+  String get admin2_navCars => 'Cars';
+
+  @override
+  String get admin2_navCustomers => 'Customers';
+
+  @override
+  String get admin2_navBookings => 'Bookings';
+
+  @override
+  String get admin2_navDisputes => 'Disputes';
+
+  @override
+  String get admin2_navReviews => 'Reviews';
+
+  @override
+  String get admin2_navSupport => 'Support';
+
+  @override
+  String get admin2_navAnnouncements => 'Announcements';
+
+  @override
+  String get admin2_navReports => 'Reports';
+
+  @override
+  String get admin2_navSettings => 'Settings';
+
+  @override
+  String get admin2_navApkDownload => 'APK Download';
+
+  @override
+  String get admin2_navBlacklist => 'Blacklist';
+
+  @override
+  String get admin2_navAdminTeam => 'Admin Team';
+
+  @override
+  String get admin2_navActivityLog => 'Activity Log';
+
+  @override
+  String get admin2_navSubscriptions => 'Subscriptions';
+
+  @override
+  String get admin2_sidebarSignedInAs => 'SIGNED IN AS ADMIN';
+
+  @override
+  String get admin2_loginEmailPassword => 'Enter your email and password.';
+
+  @override
+  String get admin2_loginEnterCode => 'Enter the 6-digit code.';
+
+  @override
+  String get admin2_loginSignedIn => 'Signed in.';
+
+  @override
+  String get admin2_loginFormTitle => 'RentalHub Admin';
+
+  @override
+  String get admin2_loginFormSubtitle => 'Sign in with your admin account.';
+
+  @override
+  String get admin2_loginFormEmail => 'Email';
+
+  @override
+  String get admin2_loginFormPassword => 'Password';
+
+  @override
+  String get admin2_loginFormSigningIn => 'Signing in…';
+
+  @override
+  String get admin2_loginFormSignIn => 'Sign in';
+
+  @override
+  String get admin2_loginNotAdmin => 'Not an admin account';
+
+  @override
+  String get admin2_loginNoRole =>
+      'This account has no admin role. Sign out and sign in with an admin account, or ask a super admin to grant you one.';
+
+  @override
+  String get admin2_loginUseDifferent => 'Use a different account';
+
+  @override
+  String get admin2_totpSetupTitle => 'Set up two-factor authentication';
+
+  @override
+  String get admin2_totpVerifyTitle => 'Enter your authenticator code';
+
+  @override
+  String get admin2_totpSetupHint =>
+      'Scan this code with your authenticator app, then enter the 6-digit code it shows to confirm.';
+
+  @override
+  String get admin2_totpEnabledHint =>
+      'Two-factor authentication is on for this account. Enter the 6-digit code from your authenticator app.';
+
+  @override
+  String admin2_totpManualKey(String key) {
+    return 'Manual setup key: $key';
+  }
+
+  @override
+  String get admin2_totpCodeLabel => '6-digit code';
+
+  @override
+  String get admin2_totpChecking => 'Checking…';
+
+  @override
+  String get admin2_totpConfirmSetup => 'Confirm and finish setup';
+
+  @override
+  String get admin2_totpVerifySignIn => 'Verify and sign in';
+
+  @override
+  String get admin2_subscriptionsSubtitle =>
+      'Plans, trials and platform revenue';
+
+  @override
+  String get admin2_subscriptionsBody =>
+      'Subscriptions arrive in Phase F, gated on the Play Console setup (plan D1).';
+
+  @override
+  String get admin2_dashboardSubtitle =>
+      'The platform at a glance, counted live';
+
+  @override
+  String get admin2_dashboardLoadFailed => 'Could not load the dashboard.';
+
+  @override
+  String get admin2_dashboardDisputesTitle => 'Open disputes need a decision';
+
+  @override
+  String admin2_dashboardOpenCount(Object count) {
+    return '$count open';
+  }
+
+  @override
+  String get admin2_dashboardDisputesHint =>
+      'Open the disputes centre to decide them.';
+
+  @override
+  String get admin2_dashboardTicketsTitle => 'Support tickets waiting';
+
+  @override
+  String get admin2_dashboardTicketsHint => 'Open the tickets inbox to reply.';
+
+  @override
+  String get admin2_dashboardKpiShops => 'Registered shops';
+
+  @override
+  String get admin2_dashboardKpiLiveCount => 'Live count';
+
+  @override
+  String get admin2_dashboardKpiBookings => 'Active bookings';
+
+  @override
+  String get admin2_dashboardKpiBookingsNote => 'Approved, paid or active';
+
+  @override
+  String get admin2_dashboardKpiDisputes => 'Open disputes';
+
+  @override
+  String get admin2_dashboardKpiDisputesNote => 'Awaiting a decision';
+
+  @override
+  String get admin2_dashboardKpiTickets => 'Open support tickets';
+
+  @override
+  String get admin2_dashboardKpiTicketsNote => 'Awaiting a reply';
+
+  @override
+  String get admin2_shopsSubtitle => 'Every showroom on the platform';
+
+  @override
+  String get admin2_shopsSearchHint => 'Search by shop, city, or owner…';
+
+  @override
+  String get admin2_shopsLoadFailed => 'Could not load the shops.';
+
+  @override
+  String get admin2_shopsEmptyTitle => 'No shops match';
+
+  @override
+  String get admin2_shopsEmptyHint => 'The list reads the shops collection.';
+
+  @override
+  String admin2_shopsPlanLine(String plan) {
+    return 'Plan $plan';
+  }
+
+  @override
+  String get admin2_approvalsTitle => 'Shop Approvals';
+
+  @override
+  String get admin2_approvalsSubtitle => 'Applications waiting for a decision';
+
+  @override
+  String get admin2_approvalsLoadFailed => 'Could not load the shop approvals.';
+
+  @override
+  String get admin2_approvalsEmptyTitle => 'No pending applications';
+
+  @override
+  String get admin2_approvalsEmptyHint => 'Every shop has been decided.';
+
+  @override
+  String admin2_approvalsChecklist(Object done) {
+    return 'Checklist $done/6';
+  }
+
+  @override
+  String get admin2_shopDetailTitle => 'Shop detail';
+
+  @override
+  String get admin2_shopDetailSubtitle =>
+      'Plan, fleet, bookings and admin actions';
+
+  @override
+  String get admin2_shopDetailLoadFailed => 'Could not load this shop.';
+
+  @override
+  String get admin2_shopDetailNotFound => 'Shop not found.';
+
+  @override
+  String get admin2_shopDetailSuspended => 'Shop suspended.';
+
+  @override
+  String get admin2_shopDetailSuspensionLifted => 'Suspension lifted.';
+
+  @override
+  String get admin2_shopDetailPlan => 'Plan';
+
+  @override
+  String get admin2_shopDetailStatus => 'Status';
+
+  @override
+  String get admin2_shopDetailLifetimeBookings => 'Lifetime bookings';
+
+  @override
+  String get admin2_shopDetailRating => 'Rating';
+
+  @override
+  String admin2_shopDetailSuspensionReason(String reason) {
+    return 'Suspension reason: $reason';
+  }
+
+  @override
+  String get admin2_shopDetailKycDocs => 'KYC documents';
+
+  @override
+  String get admin2_shopDetailNoneUploaded => 'None uploaded yet.';
+
+  @override
+  String get admin2_shopDetailBankAccounts => 'Bank / wallet accounts';
+
+  @override
+  String get admin2_shopDetailNoneOnFile => 'None on file.';
+
+  @override
+  String admin2_shopDetailContact(
+      String city, String address, String owner, String phone) {
+    return '$city • $address\nOwner: $owner • $phone';
+  }
+
+  @override
+  String get admin2_suspendTitle => 'Suspend this shop?';
+
+  @override
+  String get admin2_suspendLiftTitle => 'Lift the suspension?';
+
+  @override
+  String get admin2_customersSubtitle => 'Every customer on the platform';
+
+  @override
+  String get admin2_customersSearchHint => 'Search by name, phone, or CNIC…';
+
+  @override
+  String get admin2_customersLoadFailed => 'Could not load the customers.';
+
+  @override
+  String get admin2_customersEmptyTitle => 'No customers match';
+
+  @override
+  String get admin2_customersEmptyHint =>
+      'The list reads the customers collection.';
+
+  @override
+  String get admin2_customerDetailTitle => 'Customer detail';
+
+  @override
+  String get admin2_customerDetailSubtitle =>
+      'Trust score, KYC, trips and admin actions';
+
+  @override
+  String get admin2_customerDetailLoadFailed => 'Could not load this customer.';
+
+  @override
+  String get admin2_customerDetailNotFound => 'Customer not found.';
+
+  @override
+  String get admin2_customerDetailNoCnic =>
+      'No CNIC on file — a blacklist entry needs one.';
+
+  @override
+  String get admin2_customerDetailAdminReport => 'Admin report';
+
+  @override
+  String get admin2_customerDetailAdminReportNote =>
+      'Reported by an admin from the customer detail screen.';
+
+  @override
+  String get admin2_customerDetailReported =>
+      'Customer reported to the blacklist.';
+
+  @override
+  String get admin2_customerDetailBlacklisted => 'Blacklisted';
+
+  @override
+  String get admin2_customerDetailBookingHistory => 'Booking history';
+
+  @override
+  String get admin2_customerDetailNoBookings => 'No bookings yet.';
+
+  @override
+  String get admin2_customerDetailGuarantors => 'Guarantors';
+
+  @override
+  String get admin2_customerDetailAdminNotes => 'Admin notes';
+
+  @override
+  String get admin2_customerDetailNoNotes => 'No notes yet.';
+
+  @override
+  String get admin2_customerDetailWatchlistAdded =>
+      'Customer added to the watchlist.';
+
+  @override
+  String admin2_customerDetailContact(
+      String phone, String cnic, String source) {
+    return '$phone • CNIC $cnic • Source: $source';
+  }
+
+  @override
+  String get admin2_tribunalTitle => 'Blacklist tribunal';
+
+  @override
+  String get admin2_tribunalSubtitle =>
+      'National Rental Fraud & Blacklist Tribunal';
+
+  @override
+  String get admin2_tribunalSubtitle2 =>
+      'Central arbitration bench for inter-showroom disputes';
+
+  @override
+  String get admin2_tribunalLoadFailed => 'Could not load the blacklist cases.';
+
+  @override
+  String get admin2_tribunalEmptyTitle => 'No blacklist cases';
+
+  @override
+  String get admin2_tribunalEmptyHint => 'Tribunal records will appear here.';
+
+  @override
+  String get admin2_tribunalActive => 'ACTIVE BLACKLIST';
+
+  @override
+  String get admin2_tribunalReversed => 'REVERSED / CLEARED';
+
+  @override
+  String admin2_tribunalCaseLine(String id, String cnic) {
+    return '$id • CNIC: $cnic';
+  }
+
+  @override
+  String admin2_tribunalReason(String reason) {
+    return 'Reason: $reason';
+  }
+
+  @override
+  String admin2_tribunalReportedBy(String shop) {
+    return 'Reported by Showroom: $shop';
+  }
+
+  @override
+  String admin2_tribunalReversal(String reason) {
+    return 'Reversal Justification: $reason';
+  }
+
+  @override
+  String get admin2_tribunalDecideAppeal => 'Decide appeal — Keep or Remove';
+
+  @override
+  String admin2_tribunalAppealLine(String status, String reason) {
+    return 'Appeal: $status — $reason';
+  }
+
+  @override
+  String get admin2_disputesTitle => 'Disputes centre';
+
+  @override
+  String get admin2_disputesSubtitle =>
+      'Third side of every dispute — 72 h SLA';
+
+  @override
+  String get admin2_disputesSlaUnknown => 'SLA unknown';
+
+  @override
+  String admin2_disputesSlaOverdue(Object hours) {
+    return 'SLA overdue by ${hours}h';
+  }
+
+  @override
+  String admin2_disputesSlaLeft(Object hours) {
+    return '${hours}h of SLA left';
+  }
+
+  @override
+  String get admin2_disputesLoadFailed => 'Could not load the disputes.';
+
+  @override
+  String get admin2_disputesEmptyTitle => 'No disputes';
+
+  @override
+  String get admin2_disputesEmptyHint =>
+      'The centre reads the disputes collection.';
+
+  @override
+  String get admin2_reviewsTitle => 'Reviews moderation';
+
+  @override
+  String get admin2_reviewsSubtitle => 'Abusive, fake and revenge queues';
+
+  @override
+  String get admin2_reviewsFilterAbusive => 'Abusive';
+
+  @override
+  String get admin2_reviewsFilterFake => 'Fake';
+
+  @override
+  String get admin2_reviewsReasonFake => 'Fake review';
+
+  @override
+  String get admin2_reviewsFilterRevenge => 'Revenge';
+
+  @override
+  String get admin2_reviewsFilterClear => 'Clear';
+
+  @override
+  String admin2_reviewsMarkAs(String status) {
+    return 'Mark as $status?';
+  }
+
+  @override
+  String get admin2_reviewsReasonLabel => 'Reason (stored with the decision)';
+
+  @override
+  String admin2_reviewsMarked(String status) {
+    return 'Review marked as $status.';
+  }
+
+  @override
+  String get admin2_reviewsLoadFailed => 'Could not load the reviews.';
+
+  @override
+  String get admin2_reviewsEmpty => 'No reviews in this queue.';
+
+  @override
+  String get admin2_reviewKeep => 'Keep';
+
+  @override
+  String get admin2_reviewHide => 'Hide';
+
+  @override
+  String get admin2_reviewAskToEdit => 'Ask to edit';
+
+  @override
+  String get admin2_reviewWarn => 'Warn';
+
+  @override
+  String admin2_reviewModeration(String status) {
+    return 'Moderation: $status';
+  }
+
+  @override
+  String admin2_reviewCardRatings(String shop, String car, String punctuality,
+      String care, String behaviour) {
+    return 'Shop $shop/5 • Car $car/5 • Owner: punctuality $punctuality, care $care, behaviour $behaviour';
+  }
+
+  @override
+  String get admin2_ticketsTitle => 'Support tickets';
+
+  @override
+  String get admin2_ticketsSubtitle => 'The inbox the customer plan promised';
+
+  @override
+  String get admin2_ticketsLoadFailed => 'Could not load the tickets.';
+
+  @override
+  String get admin2_ticketsEmptyTitle => 'No tickets';
+
+  @override
+  String get admin2_ticketsEmptyHint =>
+      'The inbox reads the support_tickets collection.';
+
+  @override
+  String get admin2_slaUnknownDate => 'SLA: filed date unknown';
+
+  @override
+  String admin2_slaBreached(Object hours) {
+    return 'SLA breached by ${hours}h';
+  }
+
+  @override
+  String admin2_slaLeft(Object hours, Object total) {
+    return '${hours}h of ${total}h SLA left';
+  }
+
+  @override
+  String get admin2_ticketQuickReply1 =>
+      'Thanks for reaching out — we are looking into this and will update you here.';
+
+  @override
+  String get admin2_ticketQuickReply2 =>
+      'Could you share the booking ID and a photo of the issue?';
+
+  @override
+  String get admin2_ticketQuickReply3 =>
+      'This has been resolved. Please let us know if it comes back.';
+
+  @override
+  String admin2_ticketStatusDone(String status) {
+    return 'Ticket $status.';
+  }
+
+  @override
+  String admin2_ticketTitle(String id) {
+    return 'Ticket $id';
+  }
+
+  @override
+  String get admin2_ticketOpenCustomer => 'Open the customer';
+
+  @override
+  String get admin2_ticketReplies => 'Replies';
+
+  @override
+  String get admin2_ticketNoReplies => 'No replies yet.';
+
+  @override
+  String get admin2_ticketQuickReplies => 'Quick replies';
+
+  @override
+  String get admin2_ticketReplyHint => 'Reply to the customer…';
+
+  @override
+  String get admin2_ticketSendReply => 'Send reply';
+
+  @override
+  String get admin2_ticketInternalNotes =>
+      'Internal notes (the customer never sees these)';
+
+  @override
+  String get admin2_ticketAddNoteHint => 'Add an internal note…';
+
+  @override
+  String get admin2_ticketAdd => 'Add';
+
+  @override
+  String get admin2_ticketEscalate => 'Escalate';
+
+  @override
+  String get admin2_ticketClose => 'Close ticket';
+
+  @override
+  String get admin2_anncSubtitle => 'Broadcasts to owners and customers';
+
+  @override
+  String get admin2_anncNew => 'New announcement';
+
+  @override
+  String get admin2_anncLoadFailed => 'Could not load the announcements.';
+
+  @override
+  String get admin2_anncEmptyTitle => 'No announcements yet';
+
+  @override
+  String get admin2_anncEmptyHint => 'Create the first one above.';
+
+  @override
+  String get admin2_anncSent => 'Sent.';
+
+  @override
+  String get admin2_anncSendFailed =>
+      'Could not reach the Functions server — try again.';
+
+  @override
+  String get admin2_anncSendTest => 'Send test';
+
+  @override
+  String get admin2_anncSendNow => 'Send now';
+
+  @override
+  String admin2_anncStats(Object sent, Object delivered, Object opened) {
+    return 'Sent $sent • Delivered $delivered • Opened $opened';
+  }
+
+  @override
+  String get admin2_anncFormEnRequired =>
+      'The English title and body are required.';
+
+  @override
+  String get admin2_anncFormUrRequired =>
+      'The Urdu title and body are required too (rulebook §5.5).';
+
+  @override
+  String get admin2_anncFormSaved => 'Announcement saved.';
+
+  @override
+  String get admin2_anncFormTitleEn => 'Title (English)';
+
+  @override
+  String get admin2_anncFormTitleUr => 'Title (Urdu)';
+
+  @override
+  String get admin2_anncFormBodyEn => 'Body (English)';
+
+  @override
+  String get admin2_anncFormBodyUr => 'Body (Urdu)';
+
+  @override
+  String get admin2_anncFormAudienceRole => 'Audience — role';
+
+  @override
+  String get admin2_anncFormEveryone => 'Everyone';
+
+  @override
+  String get admin2_anncFormOwners => 'Owners';
+
+  @override
+  String get admin2_anncFormCustomers => 'Customers';
+
+  @override
+  String get admin2_anncFormAudienceCity => 'Audience — city';
+
+  @override
+  String get admin2_anncFormAllCities => 'All cities';
+
+  @override
+  String get admin2_anncFormAudiencePlan => 'Audience — plan';
+
+  @override
+  String get admin2_anncFormAllPlans => 'All plans';
+
+  @override
+  String get admin2_anncFormFree => 'Free';
+
+  @override
+  String get admin2_anncFormPro => 'Pro';
+
+  @override
+  String get admin2_anncFormBusiness => 'Business';
+
+  @override
+  String get admin2_anncFormChannel => 'Channel';
+
+  @override
+  String get admin2_anncFormPush => 'Push';
+
+  @override
+  String get admin2_anncFormWhatsapp =>
+      'WhatsApp (waits for the Meta token, D2)';
+
+  @override
+  String get admin2_anncFormBoth => 'Push + WhatsApp';
+
+  @override
+  String get admin2_anncFormSchedule => 'Schedule for later';
+
+  @override
+  String get admin2_anncFormPickDate => 'Pick a date and time';
+
+  @override
+  String admin2_anncFormScheduled(String when) {
+    return 'Scheduled: $when';
+  }
+
+  @override
+  String get admin2_anncFormSave => 'Save announcement';
+
+  @override
+  String get admin2_activitySubtitle =>
+      'Every admin action, newest first — immutable';
+
+  @override
+  String get admin2_activityLoadFailed => 'Could not load the activity log.';
+
+  @override
+  String get admin2_activityEmptyTitle => 'No audit entries yet';
+
+  @override
+  String get admin2_activityEmptyHint =>
+      'Admin actions will appear here as they happen.';
+
+  @override
+  String get admin2_activitySearchHint => 'Search by action, admin, or target…';
+
+  @override
+  String get admin2_activityExportCsv => 'Export CSV';
+
+  @override
+  String get admin2_activityCsvFailed => 'Could not share the CSV file.';
+
+  @override
+  String get admin2_teamSubtitle =>
+      'Who can run the platform, and with what role';
+
+  @override
+  String get admin2_teamLoadFailed => 'Could not load the admin team.';
+
+  @override
+  String get admin2_teamViewOnly =>
+      'Only a super admin can invite, reset two-factor authentication, or revoke a role. You can view the team.';
+
+  @override
+  String get admin2_teamEmailInvalid => 'Enter a valid email address.';
+
+  @override
+  String admin2_teamInviteLog(String email, String role) {
+    return 'Invited $email as $role (48 h expiry).';
+  }
+
+  @override
+  String admin2_teamInviteSent(String email) {
+    return 'Invite sent to $email.';
+  }
+
+  @override
+  String get admin2_teamInviteFailed => 'Could not save the invite.';
+
+  @override
+  String get admin2_teamActionFailed => 'Could not complete that action.';
+
+  @override
+  String get admin2_teamResetTotpTitle => 'Reset two-factor authentication?';
+
+  @override
+  String admin2_teamResetTotpBody(String email) {
+    return '$email will have to enrol TOTP again on their next login.';
+  }
+
+  @override
+  String admin2_teamTotpResetLog(String email) {
+    return 'TOTP reset for $email.';
+  }
+
+  @override
+  String get admin2_teamRevokeTitle => 'Revoke this admin role?';
+
+  @override
+  String admin2_teamRevokeBody(String email) {
+    return '$email will lose admin access and become a customer account.';
+  }
+
+  @override
+  String get admin2_teamWithdrawTitle => 'Withdraw this invite?';
+
+  @override
+  String admin2_teamWithdrawBody(String email) {
+    return '$email will no longer be able to accept it.';
+  }
+
+  @override
+  String admin2_teamInviteWithdrawnLog(String email) {
+    return 'Invite withdrawn for $email.';
+  }
+
+  @override
+  String get admin2_teamInviteButton => 'Invite an admin';
+
+  @override
+  String get admin2_teamInvitesTitle => 'Pending invites';
+
+  @override
+  String get admin2_teamInvitesEmpty => 'No pending invites.';
+
+  @override
+  String get admin2_teamMembersTitle => 'Team members';
+
+  @override
+  String get admin2_teamMembersEmpty =>
+      'No admins found — the team list reads the users who hold an admin role.';
+
+  @override
+  String get admin2_teamInviteEmail => 'Email address';
+
+  @override
+  String get admin2_teamInviteHint =>
+      'Invites expire after 48 hours. The invitee creates their account first, then a super admin grants the role.';
+
+  @override
+  String get admin2_teamInviteSending => 'Sending…';
+
+  @override
+  String get admin2_teamInviteSend => 'Send invite';
+
+  @override
+  String get admin2_teamInviteWithdraw => 'Withdraw';
+
+  @override
+  String get admin2_team2faOn => '2FA on';
+
+  @override
+  String get admin2_team2faOff => '2FA off';
+
+  @override
+  String get admin2_teamReset2fa => 'Reset 2FA';
+
+  @override
+  String get admin2_teamRevokeRole => 'Revoke role';
+
+  @override
+  String get admin2_teamResetTotpMenu => 'Reset two-factor authentication';
+
+  @override
+  String get admin2_teamRevokeMenu => 'Revoke admin role';
+
+  @override
+  String get admin2_settingsTitle => 'Cities & settings';
+
+  @override
+  String get admin2_settingsSubtitle =>
+      'The platform defaults, in one document';
+
+  @override
+  String get admin2_settingsLoadFailed =>
+      'Could not load the platform settings.';
+
+  @override
+  String get admin2_settingsNumbersInvalid =>
+      'Advance %, deposit and late grace must be numbers.';
+
+  @override
+  String get admin2_settingsSaved => 'Platform settings saved.';
+
+  @override
+  String get admin2_settingsCities => 'Live cities (comma-separated)';
+
+  @override
+  String get admin2_settingsCategories => 'Car categories (comma-separated)';
+
+  @override
+  String get admin2_settingsAdvance => 'Advance %';
+
+  @override
+  String get admin2_settingsDeposit => 'Default deposit (Rs.)';
+
+  @override
+  String get admin2_settingsGrace => 'Late grace (minutes)';
+
+  @override
+  String get admin2_settingsSupportHours => 'Support hours';
+
+  @override
+  String get admin2_settingsAgreementTerms => 'Default agreement terms';
+
+  @override
+  String get admin2_settingsMaintenance => 'Maintenance mode';
+
+  @override
+  String get admin2_settingsMaintenanceHint =>
+      'When on, the app shows a maintenance notice at startup.';
+
+  @override
+  String get admin2_settingsSave => 'Save settings';
+
+  @override
+  String get admin2_shopAppReasonRequired =>
+      'A reason is required — the owner sees it.';
+
+  @override
+  String admin2_shopAppChecklist(Object done) {
+    return 'Checklist — $done of 6 complete';
+  }
+
+  @override
+  String get admin2_shopAppKycDocs => 'KYC documents on file';
+
+  @override
+  String get admin2_shopAppFleetPhotos => 'Fleet photos';
+
+  @override
+  String get admin2_shopAppReasonLabel =>
+      'Reason (required to ask for more info or reject — the owner sees it)';
+
+  @override
+  String get admin2_shopAppCallOwner => 'Call owner';
+
+  @override
+  String get admin2_shopAppAskInfo => 'Ask for more info';
+
+  @override
+  String admin2_shopAppOwner(String owner, String phone, String cnic) {
+    return 'Owner: $owner • $phone • CNIC $cnic';
+  }
+
+  @override
+  String get admin2_shopActionMessageOwner => 'Message owner';
+
+  @override
+  String admin2_shopActionHello(String shop) {
+    return 'Hello from RentalHub admin regarding $shop.';
+  }
+
+  @override
+  String get admin2_shopActionNoPhone =>
+      'No phone number on file for this shop.';
+
+  @override
+  String get admin2_shopActionLift => 'Lift suspension';
+
+  @override
+  String get admin2_shopActionSuspend => 'Suspend shop';
+
+  @override
+  String get admin2_custActionAddNoteHint => 'Add an admin note…';
+
+  @override
+  String get admin2_custActionAddNote => 'Add note';
+
+  @override
+  String get admin2_custActionBlacklist => 'Report to blacklist';
+
+  @override
+  String get admin2_trustTitle => 'Trust score';
+
+  @override
+  String admin2_trustKycLine(String status, Object trips) {
+    return 'KYC: $status • $trips completed trip(s) • ';
+  }
+
+  @override
+  String admin2_trustOwnerRating(String rating) {
+    return 'Owner rating: $rating';
+  }
+
+  @override
+  String get admin2_trustBase => 'Base';
+
+  @override
+  String get admin2_trustTrips => 'Trips';
+
+  @override
+  String get admin2_trustRatings => 'Ratings';
+
+  @override
+  String get admin2_trustPunctuality => 'Punctuality';
+
+  @override
+  String get admin2_trustConduct => 'Conduct';
+
+  @override
+  String get admin2_fleetPhotoTooltip => 'View photo full screen';
+
+  @override
+  String get admin2_fleetPhotoFailed => 'Photo could not be loaded.';
+
+  @override
+  String admin2_disputeSlaBreached(Object hours) {
+    return 'SLA breached by ${hours}h — decide now';
+  }
+
+  @override
+  String admin2_disputeSlaLeft(Object hours) {
+    return 'SLA: ${hours}h left of 72h';
+  }
+
+  @override
+  String get admin2_disputeAmountHint =>
+      'Enter the decision amount in rupees (0 is allowed).';
+
+  @override
+  String get admin2_disputeNoteRequired =>
+      'An admin note is required with the decision.';
+
+  @override
+  String get admin2_disputeDecided => 'Dispute decided.';
+
+  @override
+  String admin2_disputeTitle(String id) {
+    return 'Dispute $id';
+  }
+
+  @override
+  String admin2_disputeBookingLine(String booking, String status, String sla) {
+    return 'Booking $booking • $status • $sla';
+  }
+
+  @override
+  String get admin2_disputeCustomerStatement => 'Customer statement';
+
+  @override
+  String admin2_disputeCategory(String category) {
+    return 'Category: $category';
+  }
+
+  @override
+  String admin2_disputeCustomer(String name) {
+    return 'Customer: $name';
+  }
+
+  @override
+  String get admin2_disputeShopSide => 'Shop side — the booking record';
+
+  @override
+  String admin2_disputeBookingLabel(String id) {
+    return 'Booking: $id';
+  }
+
+  @override
+  String admin2_disputeShopLabel(String id) {
+    return 'Shop: $id';
+  }
+
+  @override
+  String get admin2_disputeNoShopStatement =>
+      'The shop has no written statement on file — the decision uses the booking, handover and deposit records.';
+
+  @override
+  String get admin2_disputeDecisionHeading => 'Decision';
+
+  @override
+  String get admin2_disputeFullCustomer => 'Full refund to customer';
+
+  @override
+  String get admin2_disputePartial => 'Partial — split';
+
+  @override
+  String get admin2_disputeFullOwner => 'Full to owner (claim upheld)';
+
+  @override
+  String get admin2_disputeAmountLabel => 'Decision amount (Rs.)';
+
+  @override
+  String get admin2_disputeNoteLabel =>
+      'Admin note — why this decision (both sides see it)';
+
+  @override
+  String get admin2_appealReasonRequired =>
+      'A reason is required — it is stored with the decision.';
+
+  @override
+  String get admin2_appealKept => 'Flag kept — appeal denied.';
+
+  @override
+  String get admin2_appealRemoved => 'Flag removed.';
+
+  @override
+  String get admin2_appealDialogTitle => 'Tribunal Blacklist Appeal';
+
+  @override
+  String admin2_appealEvidence(Object count) {
+    return 'Evidence: $count file(s) on record';
+  }
+
+  @override
+  String get admin2_appealDecisionLabel => 'Decision reason (mandatory):';
+
+  @override
+  String get admin2_appealDecisionHint => 'Why is the flag kept or removed?';
+
+  @override
+  String get admin2_appealKeep => 'Keep flag';
+
+  @override
+  String get admin2_appealRemove => 'Remove flag';
+
+  @override
+  String get admin2_bookingsSubtitle => 'Every booking on the platform';
+
+  @override
+  String get admin2_bookingsSearchHint =>
+      'Search by booking, customer, car, or shop…';
+
+  @override
+  String get admin2_bookingsLoadFailed => 'Could not load the bookings.';
+
+  @override
+  String get admin2_bookingsEmptyTitle => 'No bookings match';
+
+  @override
+  String get admin2_bookingsEmptyHint =>
+      'The list reads the bookings collection.';
+
+  @override
+  String get admin2_bookingDetailTitle => 'Booking detail';
+
+  @override
+  String get admin2_bookingDetailSubtitle =>
+      'Lifecycle, money, handover and messages';
+
+  @override
+  String get admin2_bookingDetailLoadFailed => 'Could not load this booking.';
+
+  @override
+  String get admin2_bookingDetailNotFound => 'Booking not found.';
+
+  @override
+  String get admin2_bookingDetailShareFailed =>
+      'Could not share the booking summary.';
+
+  @override
+  String get admin2_bookingDetailDownloadAll => 'Download all';
+
+  @override
+  String get admin2_bookingDetailAmounts => 'Amounts';
+
+  @override
+  String admin2_bookingDetailAdvanceRequired(String amount) {
+    return 'Advance required: $amount';
+  }
+
+  @override
+  String admin2_bookingDetailAdvancePaid(String amount) {
+    return 'Advance paid: $amount';
+  }
+
+  @override
+  String admin2_bookingDetailRemaining(String amount) {
+    return 'Remaining balance: $amount';
+  }
+
+  @override
+  String admin2_bookingDetailTransaction(String id) {
+    return 'Transaction: $id';
+  }
+
+  @override
+  String get admin2_bookingDetailPaymentDeposit => 'Payment & deposit';
+
+  @override
+  String admin2_bookingDetailPaymentProof(String url) {
+    return 'Payment proof: $url';
+  }
+
+  @override
+  String get admin2_bookingDetailNoDeposit => 'No deposit record.';
+
+  @override
+  String admin2_bookingDetailDeposit(String amount, String status) {
+    return 'Deposit $amount — $status';
+  }
+
+  @override
+  String get admin2_bookingDetailAgreement => 'Agreement';
+
+  @override
+  String get admin2_bookingDetailAgreementOnFile =>
+      'Agreement PDF on file — tap to open.';
+
+  @override
+  String get admin2_bookingDetailNoAgreement => 'No agreement PDF on file.';
+
+  @override
+  String get admin2_bookingDetailOpenAgreement => 'Open agreement PDF';
+
+  @override
+  String get admin2_bookingDetailPdfFailed => 'Could not open the PDF link.';
+
+  @override
+  String get admin2_bookingDetailHandover => 'Handover';
+
+  @override
+  String get admin2_bookingDetailNoHandover => 'No handover record.';
+
+  @override
+  String admin2_bookingDetailOdometer(Object km) {
+    return 'Odometer at pickup: $km km';
+  }
+
+  @override
+  String admin2_bookingDetailFuel(String level) {
+    return 'Fuel: $level';
+  }
+
+  @override
+  String admin2_bookingDetailDamage(String notes) {
+    return 'Damage notes: $notes';
+  }
+
+  @override
+  String get admin2_bookingDetailDispute => 'Dispute';
+
+  @override
+  String admin2_bookingDetailStatusLine(String status) {
+    return 'Status: $status';
+  }
+
+  @override
+  String admin2_bookingDetailMeta(
+      String status, String trip, String package, String drive) {
+    return 'Status: $status • Trip: $trip • Package: $package • $drive';
+  }
+
+  @override
+  String admin2_bookingDetailHandoverSummary(
+      Object km, String fuel, String damage) {
+    return 'odometer $km km, fuel $fuel, damage: $damage';
+  }
+
+  @override
+  String get admin2_bookingDetailMessages => 'Messages log';
+
+  @override
+  String get admin2_bookingDetailNoMessages =>
+      'No notifications recorded for this booking.';
+
+  @override
+  String get admin2_carsSubtitle =>
+      'Every vehicle listing, with its review state';
+
+  @override
+  String get admin2_carsSearchHint => 'Search by car or plate number…';
+
+  @override
+  String get admin2_carsLoadFailed => 'Could not load the cars.';
+
+  @override
+  String get admin2_carsEmptyTitle => 'No cars match';
+
+  @override
+  String get admin2_carsEmptyHint => 'The list reads the vehicles collection.';
+
+  @override
+  String get admin2_carReviewReasonRequired =>
+      'A reason is required to hide or reject a listing.';
+
+  @override
+  String get admin2_carReviewDaily => 'Daily (24 h)';
+
+  @override
+  String get admin2_carReviewOutCityDaily => 'Out-of-city daily';
+
+  @override
+  String get admin2_carReviewNotSet => 'Not set';
+
+  @override
+  String get admin2_carReviewWeekly => 'Weekly rate';
+
+  @override
+  String get admin2_carReviewDeposit => 'Security deposit';
+
+  @override
+  String get admin2_carReviewTracker => 'Tracker';
+
+  @override
+  String get admin2_carReviewInsurance => 'Insurance policy';
+
+  @override
+  String get admin2_carReviewChassis => 'Chassis';
+
+  @override
+  String get admin2_carReviewEngine => 'Engine';
+
+  @override
+  String get admin2_carReviewMileage => 'Mileage';
+
+  @override
+  String get admin2_carReviewNotListed => 'Not listed';
+
+  @override
+  String get admin2_carReviewReasonLabel =>
+      'Reason (required to hide or reject — stored with the decision)';
+
+  @override
+  String admin2_carReviewSpecs(
+      String plate,
+      String category,
+      String transmission,
+      String fuel,
+      Object seats,
+      String status,
+      String review) {
+    return 'Plate $plate • $category • $transmission • $fuel • $seats seats\nStatus: $status • Current review: $review';
+  }
+
+  @override
+  String admin2_carReviewLastDecision(String reason) {
+    return 'Last decision: $reason';
+  }
+
+  @override
+  String get admin2_reportsSubtitle =>
+      'KPIs for a date range, with CSV and PDF export';
+
+  @override
+  String get admin2_reportsFrom => 'From';
+
+  @override
+  String get admin2_reportsTo => 'To';
+
+  @override
+  String get admin2_reportsLoadFailed => 'Could not load the report.';
+
+  @override
+  String get admin2_reportsEmptyTitle => 'No data for this range';
+
+  @override
+  String get admin2_reportsEmptyHint =>
+      'The report reads the live collections.';
+
+  @override
+  String get admin2_reportsRevenue => 'Booking revenue';
+
+  @override
+  String get admin2_reportsIncome => 'Finance income';
+
+  @override
+  String get admin2_reportsExpense => 'Finance expense';
+
+  @override
+  String get admin2_reportsNewCustomers => 'New customers';
+
+  @override
+  String get admin2_reportsDisputesOpen => 'Disputes open';
+
+  @override
+  String get admin2_reportsDisputesResolved => 'Disputes resolved';
+
+  @override
+  String get admin2_reportsByCity => 'Bookings by city';
+
+  @override
+  String get admin2_reportsNone => 'None in this range.';
+
+  @override
+  String get admin2_reportsTopShops => 'Top shops';
+
+  @override
+  String admin2_reportsTopShopsLine(String name, Object count) {
+    return '$name: $count bookings';
+  }
+
+  @override
+  String get admin2_reportsIncomeByCategory => 'Income by category';
+
+  @override
+  String get admin2_reportsExpenseByCategory => 'Expense by category';
+
+  @override
+  String admin2_slaBreachedMinutes(Object minutes) {
+    return 'SLA breached by ${minutes}m';
+  }
+
+  @override
+  String admin2_slaBreachedHoursMinutes(Object hours, Object minutes) {
+    return 'SLA breached by ${hours}h ${minutes}m';
+  }
+
+  @override
+  String admin2_slaLeftMinutes(Object minutes, Object total) {
+    return '${minutes}m of ${total}h SLA left';
+  }
+
+  @override
+  String get adminAuditLoadMore => 'Load more';
+
+  @override
+  String adminAuditShowing(int count) {
+    return 'Showing $count';
+  }
+
+  @override
+  String adminAuditMatching(int count) {
+    return '$count matching entries';
+  }
+
+  @override
+  String get adminAuditSearchTicketsHint => 'Search by message or customer ID…';
+
+  @override
+  String get adminAuditCnicAll => 'All';
+
+  @override
+  String get adminAuditCnicOnFile => 'CNIC on file';
+
+  @override
+  String get adminAuditCnicMissing => 'CNIC missing';
+
+  @override
+  String adminAuditTrustStored(String score) {
+    return 'Stored trust $score';
+  }
+
+  @override
+  String get adminAuditBlacklisted => 'Blacklisted';
+
+  @override
+  String get adminAuditWatchlisted => 'Watchlisted';
+
+  @override
+  String get adminAuditFilterAction => 'Action';
+
+  @override
+  String get adminAuditFilterActor => 'Admin email';
+
+  @override
+  String get adminAuditFilterFrom => 'From';
+
+  @override
+  String get adminAuditFilterTo => 'To';
+
+  @override
+  String get adminAuditClearFilters => 'Clear filters';
+
+  @override
+  String get adminAuditAllActions => 'All actions';
+
+  @override
+  String get adminAuditInvalidRange =>
+      'The From date must be on or before the To date.';
+
+  @override
+  String get adminAuditExportPdf => 'Export PDF';
+
+  @override
+  String get adminAuditPdfFailed => 'Could not share the PDF file.';
+
+  @override
+  String get adminAuditPendingApprovals => 'Shops waiting for approval';
+
+  @override
+  String get adminAuditPendingApprovalsHint =>
+      'Open the approvals queue to decide them.';
+
+  @override
+  String get adminAuditCredits => 'WhatsApp credits';
+
+  @override
+  String get adminAuditCreditsNone => 'No record yet';
+
+  @override
+  String get adminAuditLinkedShop => 'Shop';
+
+  @override
+  String get adminAuditLinkedBooking => 'Booking';
+
+  @override
+  String adminAuditStoredScore(String score) {
+    return 'Previously stored: $score — the live score above is authoritative';
+  }
+
+  @override
+  String get adminAuditKycNotSubmitted => 'KYC not submitted';
+
+  @override
+  String get adminAuditKycPending => 'KYC pending review';
+
+  @override
+  String get adminAuditKycVerified => 'KYC verified';
+
+  @override
+  String get adminAuditKycRejected => 'KYC rejected';
+
+  @override
+  String adminAuditFirstMatches(int count) {
+    return 'First $count matches';
+  }
+
+  @override
+  String get admin2_ownerNotListed => 'Owner not listed';
+
+  @override
+  String admin2_shopRating(String rating) {
+    return 'Rating $rating';
+  }
+
+  @override
+  String get admin2_shopDetailAccountType => 'account';
+
+  @override
+  String get admin2_loading => 'Loading…';
+
+  @override
+  String get admin2_notOnFile => 'not on file';
+
+  @override
+  String get admin2_customerDetailWatchlistRemoved =>
+      'Customer removed from the watchlist.';
+
+  @override
+  String admin2_disputesDecidedLine(String decision) {
+    return 'Decided: $decision';
+  }
+
+  @override
+  String get admin2_disputeSave => 'Save decision';
+
+  @override
+  String admin2_teamTotpOffBanner(Object count) {
+    return '$count team member(s) have two-factor authentication off.';
+  }
+
+  @override
+  String get admin2_teamTotpRemindAll => 'Remind all';
+
+  @override
+  String get admin2_teamTotpReminderSent => '2FA reminders sent.';
+
+  @override
+  String get admin2_teamTotpReminderFailed => 'Could not send the reminders.';
+
+  @override
+  String get admin2_teamInviteSave => 'Save invite';
+
+  @override
+  String admin2_teamInviteSaved(String email) {
+    return 'Invite saved for $email. No email is sent yet — share the accept link from the invite list.';
+  }
+
+  @override
+  String get admin2_teamInviteAccept => 'Accept';
+
+  @override
+  String get admin2_teamInviteCopyLink => 'Copy accept link';
+
+  @override
+  String get admin2_teamInviteLinkCopied => 'Accept link copied.';
+
+  @override
+  String get admin2_teamInviteExpired => 'Expired';
+
+  @override
+  String admin2_teamInviteExpires(String date) {
+    return 'Expires $date';
+  }
+
+  @override
+  String get admin2_inviteAcceptTitle => 'Accept invite';
+
+  @override
+  String get admin2_inviteAcceptSignIn => 'Sign in as a super admin first.';
+
+  @override
+  String get admin2_inviteAcceptNotSuper =>
+      'Only a super admin can grant an admin role.';
+
+  @override
+  String get admin2_inviteAcceptNoInvite =>
+      'No pending invite matches this link — it may have expired or already been accepted.';
+
+  @override
+  String get admin2_inviteAcceptFailed => 'Could not load the invite.';
+
+  @override
+  String get admin2_inviteAcceptGrantFailed => 'Could not grant the role.';
+
+  @override
+  String get admin2_inviteAcceptGranted => 'Role granted.';
+
+  @override
+  String admin2_inviteAcceptBody(String email, String role) {
+    return 'Grant $role to $email?';
+  }
+
+  @override
+  String get admin2_inviteAcceptHint =>
+      'The invitee must already have an account. Granting gives them admin access immediately.';
+
+  @override
+  String get admin2_inviteAcceptGrant => 'Grant role';
+
+  @override
+  String get admin2_inviteAcceptGranting => 'Granting…';
+
+  @override
+  String get admin2_inviteAcceptBackToTeam => 'Back to team';
+
+  @override
+  String get admin2_settingsAdvanceRange =>
+      'Advance must be between 0 and 100.';
+
+  @override
+  String get admin2_settingsDepositNegative => 'Deposit cannot be negative.';
+
+  @override
+  String get admin2_settingsGraceNegative => 'Late grace cannot be negative.';
+
+  @override
+  String get admin2_settingsNoDocument =>
+      'No platform settings saved yet — showing defaults. Save to create them.';
+
+  @override
+  String get admin2_settingsUnsavedTitle => 'Leave without saving?';
+
+  @override
+  String get admin2_settingsUnsavedBody =>
+      'You have unsaved changes. They will be lost if you leave.';
+
+  @override
+  String get admin2_settingsNotLoaded =>
+      'Settings have not loaded yet — try again.';
+
+  @override
+  String get admin2_tribunalReviewFlag => 'Review flag';
+
+  @override
+  String get admin2_ticketLinkedBooking => 'Linked booking';
+
+  @override
+  String admin2_anncSentCount(Object count) {
+    return 'Sent $count';
+  }
+
+  @override
+  String admin2_anncOpenedCount(Object count) {
+    return 'Opened $count';
+  }
+
+  @override
+  String admin2_activityDecision(String decision) {
+    return 'Decision: $decision';
+  }
+
+  @override
+  String get admin2_trustRatingNone => 'none yet';
+
+  @override
+  String get admin2_trustKyc => 'KYC';
+
+  @override
+  String get admin2_reportsBookings => 'Bookings';
+
+  @override
+  String get admin2_reportsCompleted => 'Completed';
+
+  @override
+  String get admin2_reportsExportCsv => 'Export CSV';
+
+  @override
+  String get admin2_reportsCsvShareFailed => 'Could not share the CSV file.';
+
+  @override
+  String get admin2_bookingsCustomer => 'Customer';
+
+  @override
+  String admin2_bookingDetailDepositDeducted(
+      String amount, String status, String deducted) {
+    return 'Deposit $amount — $status (deducted $deducted)';
+  }
+
+  @override
+  String admin2_bookingDetailDisputeStatus(String status) {
+    return 'Status: $status';
+  }
+
+  @override
+  String admin2_bookingDetailDisputeDecision(String label) {
+    return 'Decision: $label';
+  }
+
+  @override
+  String admin2_bookingDetailDisputeDecisionAmount(
+      String label, String amount) {
+    return 'Decision: $label — $amount';
+  }
+
+  @override
+  String get admin2_carReviewHourly => '1 h / 3 h / 6 h';
+
+  @override
+  String admin2_carReviewMileageKm(Object km) {
+    return '$km km';
+  }
+
+  @override
+  String admin2_carReviewMetaLine1(String plate, String category,
+      String transmission, String fuel, Object seats) {
+    return 'Plate $plate • $category • $transmission • $fuel • $seats seats';
+  }
+
+  @override
+  String admin2_carReviewMetaLine2(String status, String review) {
+    return 'Status: $status • Current review: $review';
+  }
+
+  @override
+  String get admin2_carReviewNotReviewed => 'not reviewed yet';
+
+  @override
+  String get admin2_checklistShopName => 'Shop name and address';
+
+  @override
+  String get admin2_checklistOwnerPhone => 'Owner phone number';
+
+  @override
+  String get admin2_checklistOwnerCnic => 'Owner CNIC on file';
+
+  @override
+  String get admin2_checklistKyc => 'KYC documents uploaded';
+
+  @override
+  String get admin2_checklistBank => 'Bank / wallet account on file';
+
+  @override
+  String get admin2_checklistFleet => 'Fleet photos uploaded';
+
+  @override
+  String get admin2_disputed => 'Disputed';
+
+  @override
+  String get admin2_inCity => 'In city';
+
+  @override
+  String get admin2_outCity => 'Out of city';
+
+  @override
+  String admin2_bookingSummaryTitle(String id) {
+    return 'Booking $id';
+  }
+
+  @override
+  String admin2_bookingSummaryStatusLine(
+      String status, String trip, String kmLimit) {
+    return 'Status: $status • Trip: $trip ($kmLimit km limit)';
+  }
+
+  @override
+  String admin2_bookingSummaryVehicle(String vehicle, String plate) {
+    return 'Vehicle: $vehicle ($plate)';
+  }
+
+  @override
+  String admin2_bookingSummaryShop(String shop, String customer) {
+    return 'Shop: $shop • Customer: $customer';
+  }
+
+  @override
+  String admin2_bookingSummaryPickup(String pickup, String returnTime) {
+    return 'Pickup: $pickup • Return: $returnTime';
+  }
+
+  @override
+  String admin2_bookingSummaryTotal(
+      String total, String advanceRequired, String paid, String remaining) {
+    return 'Total: $total • Advance required: $advanceRequired • Paid: $paid • Remaining: $remaining';
+  }
+
+  @override
+  String get admin2_bookingSummaryDepositNone => 'Deposit: none';
+
+  @override
+  String admin2_bookingSummaryDeposit(String amount, String status) {
+    return 'Deposit: $amount ($status)';
+  }
+
+  @override
+  String admin2_bookingSummaryAgreement(String url) {
+    return 'Agreement PDF: $url';
+  }
+
+  @override
+  String get admin2_bookingSummaryHandoverNone => 'Handover: none';
+
+  @override
+  String admin2_bookingSummaryHandover(
+      Object odometer, String fuel, String damage) {
+    return 'Handover: odometer $odometer km, fuel $fuel, damage: $damage';
+  }
+
+  @override
+  String get admin2_bookingPhotoOpenFailed => 'Could not open the photo link.';
+
+  @override
+  String get admin2_teamInviteSaving => 'Saving…';
+
+  @override
+  String get maintenanceTitle => 'Under maintenance';
+
+  @override
+  String get maintenanceBody =>
+      'Rentalhub is under maintenance right now. Please try again in a little while.';
+
+  @override
+  String get maintenanceRetry => 'Try again';
+
+  @override
+  String get admin2_totpReminderLogin =>
+      'A super admin asked you to turn on two-factor authentication.';
+
+  @override
+  String get admin2_evidenceTitle => 'Evidence';
+
+  @override
+  String get close => 'Close';
+
+  @override
+  String get admin2_teamResetTotpTooltip => 'Reset two-factor authentication';
+
+  @override
+  String get admin2_teamRevokeTooltip => 'Revoke admin role';
 }

@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:rentalhub/core/di/injection_container.dart' as di;
+import 'package:rentalhub/core/di/injection_container.dart';
 import 'package:rentalhub/core/routing/admin_guard.dart';
+import 'package:rentalhub/features/admin/data/datasources/admin_people_data_source.dart';
 import 'package:rentalhub/features/admin/domain/admin_permissions.dart';
 import 'package:rentalhub/features/blacklist/data/datasources/blacklist_remote_data_source.dart';
+import 'package:rentalhub/features/blacklist/domain/entities/blacklist_entity.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_dashboard_view.dart';
 import 'package:rentalhub/l10n/app_localizations.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_subscription_view.dart';
@@ -195,6 +198,18 @@ void main() {
       tester.view.devicePixelRatio = 1.0;
       addTearDown(() => tester.view.resetPhysicalSize());
 
+      // The tribunal reads real records now (the hardcoded BLK-1001
+      // fake case was an audit finding) — seed one real record
+      // through a fake people data source for this test only.
+      final realDs = sl<AdminPeopleDataSource>();
+      sl.unregister<AdminPeopleDataSource>();
+      addTearDown(() {
+        sl.unregister<AdminPeopleDataSource>();
+        sl.registerSingleton<AdminPeopleDataSource>(realDs);
+      });
+      sl.registerSingleton<AdminPeopleDataSource>(
+          _FakeTribunalPeopleDataSource());
+
       await tester.pumpWidget(
         const MaterialApp(home: AdminBlacklistTribunalView()),
       );
@@ -245,4 +260,25 @@ void main() {
       expect(find.text('Maintenance mode'), findsOneWidget);
     });
   });
+}
+
+/// One seeded tribunal case for the tribunal view test: the view
+/// reads real records through AdminPeopleDataSource now, so the test
+/// supplies one instead of relying on the removed hardcoded case.
+class _FakeTribunalPeopleDataSource extends AdminPeopleDataSource {
+  @override
+  Future<List<AdminBlacklistRecord>> getBlacklistRecords() async => [
+        const AdminBlacklistRecord(
+          entity: BlacklistEntity(
+            blacklistId: 'BLK-1001',
+            reportedByShopId: 'shop-1',
+            cnicNumber: '35202-7654321-1',
+            phoneNumber: '03009876543',
+            reasonCategory: 'Fraud',
+            description: 'Test case for the tribunal view.',
+          ),
+          appealStatus: 'none',
+          appealReason: '',
+        ),
+      ];
 }

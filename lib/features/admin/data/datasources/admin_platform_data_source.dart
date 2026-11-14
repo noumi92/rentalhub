@@ -7,19 +7,24 @@ import '../../../customer/data/datasources/dispute_remote_data_source.dart';
 import '../../../finance/data/datasources/security_deposit_data_source.dart';
 import '../../../finance/domain/entities/security_deposit_entity.dart';
 import '../../../notifications/data/datasources/notification_data_source.dart';
+import '../../domain/admin_permissions.dart';
 import '../services/admin_audit_service.dart';
+import '../services/admin_session.dart';
 
 /// Phase D — the platform side of the admin panel: bookings, the
 /// disputes centre, and reviews moderation.
 ///
 /// D2 note: the dispute decision is stored on the dispute document
-/// (`decision`, `decision_amount`, `admin_note`). The shop is notified
-/// through an in-app notification record. The customer sees the
-/// decision on the dispute itself — there is no customer notifications
-/// feed to write to (the customer plan's D6 says no customer
-/// notifications screen), so no customer-side notification record is
-/// faked. The C3 trust score already counts a decision against the
-/// customer (deducted deposits + adverse dispute decisions), so a
+/// (`decision`, `decision_amount`, `admin_note`) and read back onto
+/// `DisputeRecord`, so the admin centre and the customer's own
+/// dispute record both show the outcome. The shop is notified
+/// through an in-app notification record, and the customer gets one
+/// too — a `notifications` record addressed by `customerId` (there
+/// is still no customer notifications feed UI to display it, so the
+/// decision on the dispute record itself is the channel the customer
+/// can read today). WhatsApp stays gated on D2 — no WhatsApp send is
+/// faked here. The C3 trust score already counts a decision against
+/// the customer (deducted deposits + adverse dispute decisions), so a
 /// confirmed-damage decision lowers the score automatically.
 class AdminPlatformDataSource {
   final FirebaseFirestore? _firestore;
@@ -36,37 +41,41 @@ class AdminPlatformDataSource {
     }
   }
 
+  /// F-M6: a failed read throws — the bookings view shows its error
+  /// state instead of "No bookings match" during an outage. `[]`
+  /// is returned only with no Firestore (tests).
   Future<List<BookingModel>> getBookings({String status = 'all'}) async {
     final firestore = _resolvedFirestore;
     if (firestore == null) return [];
-    try {
-      var query = firestore.collection('bookings').limit(200);
-      if (status != 'all') {
-        query = query.where('status', isEqualTo: status);
-      }
-      final snap = await query.get();
-      final list = snap.docs
-          .map((d) => BookingModel.fromMap(d.data(), d.id))
-          .toList();
-      list.sort((a, b) => b.pickupTime.compareTo(a.pickupTime));
-      return list;
-    } catch (_) {
-      return [];
+    var query = firestore.collection('bookings').limit(200);
+    if (status != 'all') {
+      query = query.where('status', isEqualTo: status);
     }
+    final snap = await query.get();
+    final list = snap.docs
+        .map((d) => BookingModel.fromMap(d.data(), d.id))
+        .toList();
+    list.sort((a, b) => b.pickupTime.compareTo(a.pickupTime));
+    return list;
   }
 
+  /// F-M6: throws when the booking document itself cannot be read
+  /// (the detail view shows its error state); null only when the
+  /// booking does not exist. The optional sections (agreement,
+  /// handover, dispute, return, messages) stay best-effort: a
+  /// failed sub-read leaves that section empty rather than failing
+  /// the whole detail.
   Future<BookingDetail?> getBookingDetail(String bookingId) async {
     final firestore = _resolvedFirestore;
     if (firestore == null) return null;
-    try {
-      final bookingDoc =
-          await firestore.collection('bookings').doc(bookingId).get();
-      final bookingData = bookingDoc.data();
-      if (bookingData == null) return null;
-      final booking = BookingModel.fromMap(bookingData, bookingDoc.id);
+    final bookingDoc =
+        await firestore.collection('bookings').doc(bookingId).get();
+    final bookingData = bookingDoc.data();
+    if (bookingData == null) return null;
+    final booking = BookingModel.fromMap(bookingData, bookingDoc.id);
 
-      final deposit = await SecurityDepositDataSource(firestore: firestore)
-          .getByBookingId(bookingId);
+    final deposit = await SecurityDepositDataSource(firestore: firestore)
+        .getByBookingId(bookingId);
 
       String? agreementPdfUrl;
       try {
@@ -103,6 +112,22 @@ class AdminPlatformDataSource {
         }
       } catch (_) {}
 
+      // F-M16: the return checklist lives on
+      // `return_settlements/{bookingId}` (condition, photos, payment,
+      // totals) — read it so the detail can show the return, not
+      // just the pickup handover.
+      ReturnSettlementSummary? returnSettlement;
+      try {
+        final returnDoc = await firestore
+            .collection('return_settlements')
+            .doc(bookingId)
+            .get();
+        final returnData = returnDoc.data();
+        if (returnData != null) {
+          returnSettlement = ReturnSettlementSummary.fromMap(returnData);
+        }
+      } catch (_) {}
+
       final messages = <AdminMessage>[];
       try {
         final messagesSnap = await firestore
@@ -123,30 +148,25 @@ class AdminPlatformDataSource {
         handover: handover,
         dispute: dispute,
         messages: messages,
+        returnSettlement: returnSettlement,
       );
-    } catch (_) {
-      return null;
-    }
   }
 
+  /// F-M6: a failed read throws (see [getBookings]).
   Future<List<DisputeRecord>> getDisputes({String status = 'all'}) async {
     final firestore = _resolvedFirestore;
     if (firestore == null) return [];
-    try {
-      var query = firestore.collection('disputes').limit(100);
-      if (status != 'all') {
-        query = query.where('status', isEqualTo: status);
-      }
-      final snap = await query.get();
-      final list = snap.docs
-          .map((d) => _disputeFromDoc(d.id, d.data()))
-          .toList();
-      list.sort((a, b) => (b.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0))
-          .compareTo(a.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0)));
-      return list;
-    } catch (_) {
-      return [];
+    var query = firestore.collection('disputes').limit(100);
+    if (status != 'all') {
+      query = query.where('status', isEqualTo: status);
     }
+    final snap = await query.get();
+    final list = snap.docs
+        .map((d) => _disputeFromDoc(d.id, d.data()))
+        .toList();
+    list.sort((a, b) => (b.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0))
+        .compareTo(a.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0)));
+    return list;
   }
 
   DisputeRecord _disputeFromDoc(
@@ -158,6 +178,13 @@ class AdminPlatformDataSource {
     } else if (created is String) {
       createdAt = DateTime.tryParse(created);
     }
+    final resolved = data['resolved_at'];
+    DateTime? resolvedAt;
+    if (resolved is Timestamp) {
+      resolvedAt = resolved.toDate();
+    } else if (resolved is String) {
+      resolvedAt = DateTime.tryParse(resolved);
+    }
     return DisputeRecord(
       id: id,
       bookingId: data['bookingId'] as String? ?? '',
@@ -168,18 +195,33 @@ class AdminPlatformDataSource {
       shopId: data['shopId'] as String?,
       customerName: data['customerName'] as String?,
       customerId: data['customerId'] as String?,
+      decision: data['decision'] as String?,
+      decisionAmount: (data['decision_amount'] as num?)?.toInt(),
+      adminNote: data['admin_note'] as String?,
+      resolvedAt: resolvedAt,
     );
   }
 
   /// Decide a dispute (D2). Decision values: 'full_to_customer' |
   /// 'partial' | 'full_to_owner'. The 72 h SLA is measured from the
   /// dispute's createdAt; the view shows how long is left.
+  ///
+  /// F-C1: super admin + operations only ([AdminPermission.
+  /// decideDispute]) — support may view and triage the queue but
+  /// never decide. The caller's role is passed by the sheet when it
+  /// already resolved it, otherwise resolved from the session here;
+  /// an unresolvable role refuses the write (fail closed).
   Future<bool> decideDispute({
     required String disputeId,
     required String decision,
     required int decisionAmount,
     required String adminNote,
+    String? adminRole,
   }) async {
+    if (!await AdminSession.currentAdminCan(AdminPermission.decideDispute,
+        adminRole: adminRole)) {
+      return false;
+    }
     final firestore = _resolvedFirestore;
     if (firestore == null) return false;
     try {
@@ -196,6 +238,7 @@ class AdminPlatformDataSource {
       });
       final shopId = data['shopId'] as String?;
       final bookingId = data['bookingId'] as String?;
+      final customerId = data['customerId'] as String?;
       if (shopId != null && shopId.isNotEmpty) {
         await NotificationDataSource(firestore: firestore)
             .createNotification(
@@ -206,6 +249,49 @@ class AdminPlatformDataSource {
           type: 'dispute_decided',
           bookingId: bookingId,
         );
+      }
+      // F-M10: the customer — the party who filed the dispute — gets
+      // an in-app notification record too, addressed by customerId
+      // so a customer notifications feed can read it. Best effort:
+      // a failure here never fails the decision itself.
+      if (customerId != null && customerId.isNotEmpty) {
+        try {
+          final id =
+              'NTF-${DateTime.now().millisecondsSinceEpoch}';
+          await firestore.collection('notifications').doc(id).set({
+            'notificationId': id,
+            'customerId': customerId,
+            'title': 'Dispute decided',
+            'body':
+                'Your dispute $disputeId was decided: $decision (Rs. ${formatRs(decisionAmount)}).',
+            'type': 'dispute_decided',
+            if (bookingId != null) 'bookingId': bookingId,
+            'createdAt': DateTime.now().toIso8601String(),
+            'read': false,
+          });
+        } catch (_) {}
+      }
+      // F-M11: the booking leaves the `disputed` state. Restore the
+      // status it had before the dispute was filed; when no previous
+      // status was recorded (older disputes), leave it `disputed`
+      // rather than inventing one.
+      if (bookingId != null && bookingId.isNotEmpty) {
+        try {
+          final bookingRef =
+              firestore.collection('bookings').doc(bookingId);
+          final bookingDoc = await bookingRef.get();
+          final bookingData = bookingDoc.data();
+          final previous =
+              bookingData?['statusBeforeDispute'] as String?;
+          if (bookingData?['status'] == 'disputed' &&
+              previous != null &&
+              previous.isNotEmpty) {
+            await bookingRef.update({
+              'status': previous,
+              'statusBeforeDispute': FieldValue.delete(),
+            });
+          }
+        } catch (_) {}
       }
       await AdminAuditService.logAction(
         action: 'dispute_decided_$decision',
@@ -219,33 +305,73 @@ class AdminPlatformDataSource {
     }
   }
 
+  /// F-m14: move a dispute from `open` to `in_review` — the triage
+  /// step the centre's filter already offers but no admin action
+  /// could perform. Returns false when the write fails.
+  ///
+  /// F-C1: triage, so every admin role holds it ([AdminPermission.
+  /// manageDisputes]) — see [decideDispute] for the deciding side.
+  Future<bool> markDisputeInReview({
+    required String disputeId,
+    String? adminRole,
+  }) async {
+    if (!await AdminSession.currentAdminCan(AdminPermission.manageDisputes,
+        adminRole: adminRole)) {
+      return false;
+    }
+    final firestore = _resolvedFirestore;
+    if (firestore == null) return false;
+    try {
+      await firestore.collection('disputes').doc(disputeId).update({
+        'status': 'in_review',
+      });
+      await AdminAuditService.logAction(
+        action: 'dispute_marked_in_review',
+        targetType: 'dispute',
+        targetId: disputeId,
+        detail: 'Dispute moved to in review.',
+      );
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
   /// All review documents with their moderation state and the
   /// auto-check signals (D3). A review enters a queue when it has a
   /// signal; the admin's decision is what makes it hidden, not the
   /// signal itself.
+  ///
+  /// F-M6: a failed read throws (see [getBookings]).
   Future<List<AdminReview>> getReviews() async {
     final firestore = _resolvedFirestore;
     if (firestore == null) return [];
-    try {
-      final snap = await firestore
-          .collection('reviews')
-          .limit(200)
-          .get();
-      return snap.docs
-          .map((d) => AdminReview.fromMap(d.id, d.data()))
-          .toList();
-    } catch (_) {
-      return [];
-    }
+    final snap = await firestore
+        .collection('reviews')
+        .limit(200)
+        .get();
+    return snap.docs
+        .map((d) => AdminReview.fromMap(d.id, d.data()))
+        .toList();
   }
 
   /// Keep / Hide / Ask-to-edit / Warn (D3). Status values: 'visible' |
   /// 'hidden' | 'edit_requested' | 'warned'.
+  ///
+  /// F-C1: super admin + operations only. The matrix has no
+  /// dedicated reviews permission, so moderation rides on
+  /// [AdminPermission.managePlatform] (a platform-level decision)
+  /// — see [decideDispute].
   Future<bool> setReviewModeration({
     required String reviewId,
     required String status,
     required String reason,
+    String? adminRole,
   }) async {
+    if (!await AdminSession.currentAdminCan(AdminPermission.managePlatform,
+        adminRole: adminRole)) {
+      return false;
+    }
     final firestore = _resolvedFirestore;
     if (firestore == null) return false;
     try {
@@ -278,6 +404,7 @@ class BookingDetail {
     required this.handover,
     required this.dispute,
     required this.messages,
+    this.returnSettlement,
   });
 
   final BookingEntity booking;
@@ -286,6 +413,11 @@ class BookingDetail {
   final HandoverSummary? handover;
   final DisputeRecord? dispute;
   final List<AdminMessage> messages;
+
+  /// The return checklist (`return_settlements/{bookingId}`), null
+  /// when the vehicle has not been returned through the settlement
+  /// flow yet.
+  final ReturnSettlementSummary? returnSettlement;
 }
 
 /// The handover record for a booking (pickup checklist + odometer).
@@ -295,12 +427,31 @@ class HandoverSummary {
     required this.fuelLevel,
     required this.damageNotes,
     required this.agreementPdfUrl,
+    this.photoFrontUrl,
+    this.photoBackUrl,
+    this.photoLeftUrl,
+    this.photoRightUrl,
+    this.documentsGiven = const [],
+    this.accessories = const [],
+    this.keysHandedOver = false,
   });
 
   final int initialOdometer;
   final String fuelLevel;
   final List<String> damageNotes;
   final String? agreementPdfUrl;
+
+  /// F-M16: the four exterior photos (cPanel signed URLs), the
+  /// documents handed to the customer, the accessories in the car,
+  /// and whether the keys were handed over — the evidence in a
+  /// damage dispute. Null/empty when not taken or not recorded.
+  final String? photoFrontUrl;
+  final String? photoBackUrl;
+  final String? photoLeftUrl;
+  final String? photoRightUrl;
+  final List<String> documentsGiven;
+  final List<String> accessories;
+  final bool keysHandedOver;
 
   factory HandoverSummary.fromMap(Map<String, dynamic> data) {
     return HandoverSummary(
@@ -309,6 +460,72 @@ class HandoverSummary {
       damageNotes:
           List<String>.from(data['damageNotes'] as List? ?? const []),
       agreementPdfUrl: data['agreementPdfUrl'] as String?,
+      photoFrontUrl: data['photoFrontUrl'] as String?,
+      photoBackUrl: data['photoBackUrl'] as String?,
+      photoLeftUrl: data['photoLeftUrl'] as String?,
+      photoRightUrl: data['photoRightUrl'] as String?,
+      documentsGiven:
+          List<String>.from(data['documentsGiven'] as List? ?? const []),
+      accessories:
+          List<String>.from(data['accessories'] as List? ?? const []),
+      keysHandedOver: data['keysHandedOver'] as bool? ?? false,
+    );
+  }
+}
+
+/// The return checklist for a booking, from
+/// `return_settlements/{bookingId}` (see
+/// `ReturnSettlementService.finalizeReturn`). The return odometer
+/// itself is not stored here — it is the handover odometer plus the
+/// deposit record's `totalKmDriven`.
+class ReturnSettlementSummary {
+  const ReturnSettlementSummary({
+    required this.condition,
+    required this.returnPhotoUrls,
+    required this.paymentMethod,
+    required this.remainingRentCollected,
+    required this.remainingRentDue,
+    required this.netRefund,
+    required this.totalDeductions,
+    this.completedAt,
+  });
+
+  final String condition;
+  final Map<String, String> returnPhotoUrls;
+  final String? paymentMethod;
+  final int remainingRentCollected;
+  final int remainingRentDue;
+  final int netRefund;
+  final int totalDeductions;
+  final DateTime? completedAt;
+
+  factory ReturnSettlementSummary.fromMap(Map<String, dynamic> data) {
+    final photos = <String, String>{};
+    final rawPhotos = data['returnPhotoUrls'];
+    if (rawPhotos is Map) {
+      for (final e in rawPhotos.entries) {
+        if (e.value is String && (e.value as String).isNotEmpty) {
+          photos[e.key.toString()] = e.value as String;
+        }
+      }
+    }
+    final completed = data['completedAt'];
+    DateTime? completedAt;
+    if (completed is Timestamp) {
+      completedAt = completed.toDate();
+    } else if (completed is String) {
+      completedAt = DateTime.tryParse(completed);
+    }
+    return ReturnSettlementSummary(
+      condition: data['condition'] as String? ?? '',
+      returnPhotoUrls: photos,
+      paymentMethod: data['paymentMethod'] as String?,
+      remainingRentCollected:
+          (data['remainingRentCollected'] as num?)?.toInt() ?? 0,
+      remainingRentDue: (data['remainingRentDue'] as num?)?.toInt() ?? 0,
+      netRefund: (data['netRefund'] as num?)?.toInt() ?? 0,
+      totalDeductions: (data['totalDeductions'] as num?)?.toInt() ?? 0,
+      completedAt: completedAt,
     );
   }
 }

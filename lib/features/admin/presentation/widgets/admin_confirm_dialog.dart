@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../l10n/app_localizations.dart';
+
 /// A confirmation dialog for destructive admin actions (revoke a role,
 /// reset TOTP, withdraw an invite). Returns true only when the admin
 /// confirms.
@@ -16,11 +18,11 @@ Future<bool> showAdminConfirmDialog(
       actions: [
         TextButton(
           onPressed: () => Navigator.of(ctx).pop(false),
-          child: const Text('Cancel'),
+          child: Text(AppLocalizations.of(ctx)!.cancel),
         ),
         FilledButton(
           onPressed: () => Navigator.of(ctx).pop(true),
-          child: const Text('Confirm'),
+          child: Text(AppLocalizations.of(ctx)!.admin2_confirm),
         ),
       ],
     ),

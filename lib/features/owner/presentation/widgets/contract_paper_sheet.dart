@@ -67,7 +67,7 @@ class ContractPaperSheet extends StatelessWidget {
                 Text(
                   (booking.shopName ?? 'RentalHub').toUpperCase(),
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w900,
+                    fontWeight: FontWeight.w600,
                     color: AppColors.primary,
                     letterSpacing: 0.5,
                   ),
@@ -92,7 +92,7 @@ class ContractPaperSheet extends StatelessWidget {
                   child: Text(l10n.contractCertifiedTitle,
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
                         color: Colors.white,
-                        fontWeight: FontWeight.w800,
+                        fontWeight: FontWeight.w500,
                       )),
                 ),
               ],
@@ -127,7 +127,7 @@ class ContractPaperSheet extends StatelessWidget {
           Text(
             l10n.contractTermsTitle,
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              fontWeight: FontWeight.w800,
+              fontWeight: FontWeight.w500,
               color: AppColors.primary,
             ),
           ),
@@ -178,7 +178,7 @@ class ContractPaperSheet extends StatelessWidget {
         const SizedBox(height: 2),
         Text(l10n.contractGuarantorSignature,
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w500,
                   color: AppColors.primary,
                 )),
         Text(
@@ -207,7 +207,7 @@ class ContractPaperSheet extends StatelessWidget {
         // (was hardcoded 11 / 9.5sp with no colour).
         Text(label,
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w500,
                   color: AppColors.primary,
                 )),
         Text(caption,
@@ -234,7 +234,6 @@ class ContractPaperSheet extends StatelessWidget {
             child: Text(value,
                 textAlign: TextAlign.end,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      fontWeight: FontWeight.w700,
                       color: AppColors.primary,
                     )),
           ),

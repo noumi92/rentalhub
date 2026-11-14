@@ -67,7 +67,7 @@ class _HandoverDamageNotesEditorState
         children: [
           Text(widget.title ?? l10n.handoverDamageTitle,
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight.w600,
               )),
           Text(widget.subtitle ?? l10n.handoverDamageSubtitle,
               style:

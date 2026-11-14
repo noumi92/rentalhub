@@ -28,7 +28,7 @@ class FinancePartnersSection extends StatelessWidget {
           children: [
             Text(l10n.financePartners,
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w600,
                 )),
             TextButton.icon(
               icon: const Icon(Icons.add_rounded, size: 18),
@@ -54,9 +54,7 @@ class FinancePartnersSection extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(p.partnerName,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w800,
-                    )),
+                    style: Theme.of(context).textTheme.bodyMedium),
                 Text(l10n.financePartnerShareLine(p.sharePercent),
                     style: Theme.of(context).textTheme.bodySmall),
               ],

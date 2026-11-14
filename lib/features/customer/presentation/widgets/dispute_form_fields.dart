@@ -31,7 +31,7 @@ class DisputeFormFields extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(l10n.disputeSelectCategory,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
+            style: Theme.of(context).textTheme.bodyMedium),
         const SizedBox(height: 8),
         DisputeCategoryChips(
           categories: categories,
@@ -40,7 +40,7 @@ class DisputeFormFields extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         Text(l10n.disputeBookingId,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
+            style: Theme.of(context).textTheme.bodyMedium),
         const SizedBox(height: 6),
         TextField(
           controller: bookingIdController,
@@ -59,7 +59,7 @@ class DisputeFormFields extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         Text(l10n.disputeDetailsLabel,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
+            style: Theme.of(context).textTheme.bodyMedium),
         const SizedBox(height: 6),
         TextField(
           controller: descriptionController,
@@ -92,7 +92,7 @@ class DisputeFormFields extends StatelessWidget {
               Expanded(
                 child: Text(
                   l10n.disputeRecordedNote,
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600),
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w500),
                 ),
               ),
             ],

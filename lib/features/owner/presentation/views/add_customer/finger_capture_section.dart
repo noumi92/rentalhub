@@ -62,7 +62,7 @@ class FingerCaptureSection extends StatelessWidget {
           child: Text(
             title,
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w800,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ),

@@ -85,7 +85,7 @@ class OwnerRentalStartedView extends StatelessWidget {
                               TimeOfDay.fromDateTime(booking.returnTime)),
                         ),
                       ],
-                      lastLineBold: true,
+                      lastLineMedium: true,
                     ),
                     const SizedBox(height: 20),
                     DebouncedButton(

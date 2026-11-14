@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../../../core/di/injection_container.dart';
-import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../bookings/utils/package_pricing.dart';
 import '../../../bookings/utils/picker_availability.dart';
 import '../../../fleet/domain/entities/fixed_route_entity.dart';
 import '../../../fleet/domain/entities/vehicle_entity.dart';
-import '../../../fleet/domain/usecases/get_shop_fixed_routes_usecase.dart';
 import '../widgets/booking_draft.dart';
 import '../widgets/driver_mode_toggle.dart';
 import '../widgets/duration_calendar_picker.dart';
@@ -69,9 +66,9 @@ class _RentPackagePickerViewState extends State<RentPackagePickerView> {
   /// fixed routes. Loaded only when a vehicle is supplied and DI is
   /// initialised (legacy callers and unit tests run without it).
   bool _isOutOfCity = false;
-  Set<DateTime> _blockedDates = {};
-  List<FixedRouteEntity> _fixedRoutes = [];
   FixedRouteEntity? _selectedRoute;
+  // Live updates (Item 2): the availability feed — blocked days + fixed routes, kept live while the picker is open.
+  PickerAvailabilityFeed? _availability;
 
   @override
   void initState() {
@@ -79,17 +76,18 @@ class _RentPackagePickerViewState extends State<RentPackagePickerView> {
     final vehicle = widget.vehicle;
     if (vehicle != null) {
       _selectedPackage = PackageTierList.defaultSelection(vehicle);
-      if (sl.isRegistered<BookingRemoteDataSource>() ||
-          sl.isRegistered<GetShopFixedRoutesUseCase>()) {
-        loadPickerAvailability(vehicleId: vehicle.vehicleId, shopId: widget.shopId).then((data) {
-          if (!mounted) return;
-          setState(() {
-            _blockedDates = data.blockedDays;
-            _fixedRoutes = data.routes;
-          });
-        });
-      }
+      _availability = PickerAvailabilityFeed(
+        vehicleId: vehicle.vehicleId,
+        shopId: widget.shopId,
+        onChanged: () { if (mounted) setState(() {}); },
+      )..load();
     }
+  }
+
+  @override
+  void dispose() {
+    _availability?.dispose();
+    super.dispose();
   }
 
   List<PackageTierOption> get _tiers => PackageTierList.optionsFor(
@@ -187,7 +185,7 @@ class _RentPackagePickerViewState extends State<RentPackagePickerView> {
                           _isOutOfCity = v;
                           _selectedRoute = null;
                         }),
-                        fixedRoutes: _fixedRoutes,
+                        fixedRoutes: _availability?.routes ?? const [],
                         selectedRoute: _selectedRoute,
                         onRouteSelected: (r) =>
                             setState(() => _selectedRoute = r),
@@ -201,7 +199,7 @@ class _RentPackagePickerViewState extends State<RentPackagePickerView> {
                     ],
                     const SizedBox(height: 16),
                     Text(l10n.packageTiersTitle,
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
                     const SizedBox(height: 10),
                     PackageTierList(
                       options: tiers,
@@ -222,7 +220,7 @@ class _RentPackagePickerViewState extends State<RentPackagePickerView> {
                       pickupDate: _pickupDate,
                       pickupTime: _pickupTime,
                       durationDays: _durationDays,
-                      blockedDates: _blockedDates,
+                      blockedDates: _availability?.blockedDays ?? const {},
                       onDateChanged: (d) => setState(() => _pickupDate = d),
                       onTimeChanged: (t) => setState(() => _pickupTime = t),
                       onDurationChanged: (days) =>

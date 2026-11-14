@@ -62,7 +62,7 @@ class WalletTransactionTile extends StatelessWidget {
                   style: Theme.of(context)
                       .textTheme
                       .bodyMedium
-                      ?.copyWith(fontWeight: FontWeight.w700),
+                      ,
                 ),
                 Text(
                   date,
@@ -86,7 +86,7 @@ class WalletTransactionTile extends StatelessWidget {
                   child: Text(
                     l10n.financeLedgerAmount(isDebit ? '-' : '+', formatRs(amount)),
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w800,
+                        fontWeight: FontWeight.w600,
                         color: isDebit
                             ? AppColors.dangerTextFor(
                                 Theme.of(context).brightness)
@@ -99,7 +99,7 @@ class WalletTransactionTile extends StatelessWidget {
                   style: Theme.of(context)
                       .textTheme
                       .labelSmall
-                      ?.copyWith(fontWeight: FontWeight.w600),
+                      ?.copyWith(fontWeight: FontWeight.w500),
                 ),
               ],
             ),

@@ -39,7 +39,7 @@ class ShopLocationStepWidget extends StatelessWidget {
           style: Theme.of(context)
               .textTheme
               .labelMedium
-              ?.copyWith(fontWeight: FontWeight.w800),
+              ?.copyWith(fontWeight: FontWeight.w500),
         ),
         const SizedBox(height: 6),
         // Audit §5 finish (P2-3): city is a dropdown, not chips.
@@ -77,7 +77,7 @@ class ShopLocationStepWidget extends StatelessWidget {
                         style: Theme.of(context)
                             .textTheme
                             .bodyMedium
-                            ?.copyWith(fontWeight: FontWeight.w700)),
+                            ),
                   ))
               .toList(),
           onChanged: (name) {
@@ -100,7 +100,7 @@ class ShopLocationStepWidget extends StatelessWidget {
               style: Theme.of(context)
                   .textTheme
                   .labelMedium
-                  ?.copyWith(fontWeight: FontWeight.w800),
+                  ?.copyWith(fontWeight: FontWeight.w500),
             ),
             TextButton.icon(
               onPressed: isLocating ? null : onFetchGps,
@@ -212,7 +212,7 @@ class ShopLocationStepWidget extends StatelessWidget {
                             style: Theme.of(context)
                                 .textTheme
                                 .labelSmall
-                                ?.copyWith(fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.onSurface),
+                                ?.copyWith(fontWeight: FontWeight.w500, color: Theme.of(context).colorScheme.onSurface),
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
@@ -232,7 +232,7 @@ class ShopLocationStepWidget extends StatelessWidget {
           style: Theme.of(context)
               .textTheme
               .labelMedium
-              ?.copyWith(fontWeight: FontWeight.w800),
+              ?.copyWith(fontWeight: FontWeight.w500),
         ),
         const SizedBox(height: 6),
         TextField(
@@ -241,7 +241,7 @@ class ShopLocationStepWidget extends StatelessWidget {
           style: Theme.of(context)
               .textTheme
               .bodyMedium
-              ?.copyWith(fontWeight: FontWeight.w700),
+              ?.copyWith(fontWeight: FontWeight.w500),
           decoration: InputDecoration(
             hintText: l10n.onboardingAddressHint,
             prefixIcon: const Padding(

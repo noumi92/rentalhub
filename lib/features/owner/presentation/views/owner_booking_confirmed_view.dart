@@ -111,7 +111,7 @@ class _OwnerBookingConfirmedViewState
                             style: Theme.of(context)
                                 .textTheme
                                 .titleMedium
-                                ?.copyWith(fontWeight: FontWeight.w900),
+                                ?.copyWith(fontWeight: FontWeight.w600),
                           ),
                           const SizedBox(height: 4),
                           Text(
@@ -125,7 +125,7 @@ class _OwnerBookingConfirmedViewState
                             style: Theme.of(context)
                                 .textTheme
                                 .bodyMedium
-                                ?.copyWith(fontWeight: FontWeight.w700),
+                                ,
                             textAlign: TextAlign.center,
                           ),
                         ],
@@ -220,7 +220,7 @@ class _OwnerBookingConfirmedViewState
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.end,
-              style: const TextStyle(fontWeight: FontWeight.w800),
+              style: const TextStyle(fontWeight: FontWeight.w500),
             ),
           ),
         ],

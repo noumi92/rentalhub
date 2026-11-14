@@ -21,7 +21,7 @@ class CashClosingHistory extends StatelessWidget {
             style: Theme.of(context)
                 .textTheme
                 .titleSmall
-                ?.copyWith(fontWeight: FontWeight.w800)),
+                ?.copyWith(fontWeight: FontWeight.w600)),
         const SizedBox(height: 8),
         if (closings.isEmpty)
           Text(l10n.financeClosingEmpty,

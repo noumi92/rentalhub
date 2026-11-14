@@ -61,7 +61,7 @@ class DocumentSlotTile extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 2),
                   Text(
@@ -81,7 +81,7 @@ class DocumentSlotTile extends StatelessWidget {
               ),
               child: Text(
                 isUploaded ? l10n.kycEncrypted : l10n.kycUpload,
-                style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800, color: isUploaded
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w500, color: isUploaded
                       ? AppColors.successTextFor(Theme.of(context).brightness)
                       : AppColors.orangeTextFor(Theme.of(context).brightness)),
               ),

@@ -78,7 +78,7 @@ class DashboardScheduleSection extends StatelessWidget {
   Widget _sectionTitle(BuildContext context, String title) {
     return Text(title,
         style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w800,
+              fontWeight: FontWeight.w600,
             ));
   }
 
@@ -103,9 +103,7 @@ class DashboardScheduleSection extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(label,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.w800,
-                        )),
+                    style: Theme.of(context).textTheme.bodyMedium),
                 Text(
                   [name, vehicle].where((s) => s.isNotEmpty).join(' — '),
                   maxLines: 1,

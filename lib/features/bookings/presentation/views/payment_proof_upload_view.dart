@@ -140,7 +140,7 @@ class _PaymentProofUploadViewState extends State<PaymentProofUploadView> {
                     ProofAmountCard(booking: widget.booking),
                     const SizedBox(height: 16),
                     Text(l10n.proofTidLabel,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
+                        style: Theme.of(context).textTheme.bodyMedium),
                     const SizedBox(height: 6),
                     TextField(
                       controller: _tidController,
@@ -166,7 +166,7 @@ class _PaymentProofUploadViewState extends State<PaymentProofUploadView> {
                     ),
                     const SizedBox(height: 16),
                     Text(l10n.proofScreenshot,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
+                        style: Theme.of(context).textTheme.bodyMedium),
                     const SizedBox(height: 6),
                     ProofScreenshotPicker(
                       selectedFile: _selectedFile,

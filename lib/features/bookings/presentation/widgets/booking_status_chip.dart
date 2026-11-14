@@ -62,7 +62,7 @@ class BookingStatusChip extends StatelessWidget {
       ),
       child: Text(
         labelFor(AppLocalizations.of(context)!, status),
-        style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800, color: color),
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w500, color: color),
       ),
     );
   }

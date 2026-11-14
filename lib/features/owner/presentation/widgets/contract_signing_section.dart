@@ -222,7 +222,7 @@ class _ContractSigningSectionState extends State<ContractSigningSection> {
           Text(
             l10n.contractGuarantorTitle,
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w600,
                 ),
           ),
           const SizedBox(height: 8),
@@ -250,9 +250,7 @@ class _ContractSigningSectionState extends State<ContractSigningSection> {
                 Expanded(
                   child: Text(
                     l10n.contractAgreementSigned,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
+                    style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ),
               ],

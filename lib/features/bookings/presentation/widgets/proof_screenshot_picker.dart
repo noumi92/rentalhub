@@ -81,7 +81,7 @@ class ProofScreenshotPicker extends StatelessWidget {
                 ),
                 child: Text(
                   l10n.proofScreenshotReady,
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600, color: Colors.white),
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w500, color: Colors.white),
                 ),
               ),
             ),
@@ -115,7 +115,7 @@ class ProofScreenshotPicker extends StatelessWidget {
           const SizedBox(height: 10),
           Text(
             l10n.proofUploadScreenshot,
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 4),
           Text(

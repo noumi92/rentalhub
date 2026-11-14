@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
+import '../../../../core/utils/money_format.dart';
 import '../../../owner/presentation/widgets/dispute_list_tile.dart';
 import '../../data/datasources/dispute_remote_data_source.dart';
 import 'dispute_category_chips.dart';
@@ -71,6 +72,18 @@ class _MyDisputesListState extends State<MyDisputesList> {
     }
   }
 
+  /// F-M9: the admin decision on a resolved dispute, as the customer
+  /// reads it — the label, the amount, and the admin note.
+  String _decisionLabel(String decision) {
+    final l10n = AppLocalizations.of(context)!;
+    return switch (decision) {
+      'full_to_customer' => l10n.disputeDecisionFullToCustomer,
+      'full_to_owner' => l10n.disputeDecisionFullToOwner,
+      'partial' => l10n.disputeDecisionPartial,
+      _ => decision,
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -80,7 +93,7 @@ class _MyDisputesListState extends State<MyDisputesList> {
       children: [
         Text(
           l10n.disputesMyTitle,
-          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 10),
         if (disputes == null)
@@ -128,7 +141,7 @@ class _MyDisputesListState extends State<MyDisputesList> {
                         Expanded(
                           child: Text(
                             disputeCategoryLabel(l10n, d.category),
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800),
+                            style: Theme.of(context).textTheme.bodyMedium,
                           ),
                         ),
                         Container(
@@ -141,7 +154,7 @@ class _MyDisputesListState extends State<MyDisputesList> {
                           ),
                           child: Text(
                             _statusLabel(d.status),
-                            style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800, color: _statusColor(context, d.status)),
+                            style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w500, color: _statusColor(context, d.status)),
                           ),
                         ),
                       ],
@@ -163,6 +176,20 @@ class _MyDisputesListState extends State<MyDisputesList> {
                       d.description,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(height: 1.4),
                     ),
+                    if (d.status == 'resolved' && d.decision != null) ...[
+                      const SizedBox(height: 8),
+                      Text(
+                        '${_decisionLabel(d.decision!)}${d.decisionAmount == null ? '' : ' • ${l10n.amountRs(formatRs(d.decisionAmount!))}'}',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600),
+                      ),
+                      if (d.adminNote != null && d.adminNote!.isNotEmpty) ...[
+                        const SizedBox(height: 2),
+                        Text(
+                          '${l10n.disputeDecisionNote}: ${d.adminNote}',
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(height: 1.4),
+                        ),
+                      ],
+                    ],
                   ],
                 ),
               );

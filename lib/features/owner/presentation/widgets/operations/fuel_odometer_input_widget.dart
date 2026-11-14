@@ -35,7 +35,7 @@ class FuelOdometerInputWidget extends StatelessWidget {
           Text(
             title ?? l10n.handoverTelemetryTitle,
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w600,
                 ),
           ),
           const SizedBox(height: 12),
@@ -43,7 +43,7 @@ class FuelOdometerInputWidget extends StatelessWidget {
               style: Theme.of(context)
                   .textTheme
                   .labelMedium
-                  ?.copyWith(fontWeight: FontWeight.w700)),
+                  ?.copyWith(fontWeight: FontWeight.w500)),
           const SizedBox(height: 6),
           TextField(
             controller: odometerController,
@@ -51,12 +51,12 @@ class FuelOdometerInputWidget extends StatelessWidget {
             style: Theme.of(context)
                 .textTheme
                 .titleSmall
-                ?.copyWith(fontWeight: FontWeight.w800),
+                ?.copyWith(fontWeight: FontWeight.w500),
             decoration: InputDecoration(
               hintText: l10n.handoverOdometerHint,
               suffixText: 'KM',
-              suffixStyle: const TextStyle(
-                  fontWeight: FontWeight.w800, color: AppColors.secondary),
+              suffixStyle: TextStyle(
+                  fontWeight: FontWeight.w500, color: AppColors.orangeTextFor(Theme.of(context).brightness)),
               prefixIcon: const Icon(Icons.speed_rounded),
               filled: true,
               fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
@@ -73,7 +73,7 @@ class FuelOdometerInputWidget extends StatelessWidget {
               style: Theme.of(context)
                   .textTheme
                   .labelMedium
-                  ?.copyWith(fontWeight: FontWeight.w700)),
+                  ?.copyWith(fontWeight: FontWeight.w500)),
           const SizedBox(height: 8),
           Wrap(
             spacing: 8,
@@ -88,7 +88,7 @@ class FuelOdometerInputWidget extends StatelessWidget {
                 backgroundColor:
                     Theme.of(context).colorScheme.surfaceContainerHighest,
                 labelStyle: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.w500,
                       color: isSelected
                           ? Colors.white
                           : Theme.of(context).colorScheme.onSurface,

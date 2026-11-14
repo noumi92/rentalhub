@@ -155,6 +155,32 @@ class CustomerHomeService {
     } catch (_) {
       bookingsFailed = true;
     }
+    return _build(uid, bookings, bookingsFailed: bookingsFailed);
+  }
+
+  /// Live updates (Item 2): the same data as [load], re-built on
+  /// every booking change — a submit, an owner approve / reject, or
+  /// a payment verify updates the Home KPIs, upcoming events and
+  /// recent bookings without leaving the tab. A build failure yields
+  /// one failed snapshot (with retry on the screen); a source-stream
+  /// error reaches the subscriber's onError. Built on `asyncMap`
+  /// (not `await for`): cancelling the subscription must unwind,
+  /// and an `await for` over the change feed never completes its
+  /// cancel.
+  Stream<CustomerHomeData> watch(String uid) =>
+      bookings.streamCustomerBookings(uid).asyncMap((list) async {
+        try {
+          return await _build(uid, list);
+        } catch (_) {
+          return const CustomerHomeData(bookings: [], bookingsFailed: true);
+        }
+      });
+
+  Future<CustomerHomeData> _build(
+    String uid,
+    List<BookingEntity> bookings, {
+    bool bookingsFailed = false,
+  }) async {
     int? walletTotal;
     try {
       walletTotal = (await wallet.load(uid)).total;

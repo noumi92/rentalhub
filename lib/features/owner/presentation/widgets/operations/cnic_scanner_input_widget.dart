@@ -48,7 +48,7 @@ class CnicScannerInputWidget extends StatelessWidget {
               Text(
                 l10n?.cnicVerifyTitle ?? 'CNIC Check',
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w800,
+                      fontWeight: FontWeight.w600,
                     ),
               ),
               IconButton(
@@ -69,7 +69,7 @@ class CnicScannerInputWidget extends StatelessWidget {
               LengthLimitingTextInputFormatter(15),
             ],
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w600,
                   letterSpacing: 1.5,
                 ),
             decoration: InputDecoration(

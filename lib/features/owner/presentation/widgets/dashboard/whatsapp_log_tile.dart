@@ -61,7 +61,7 @@ class WhatsAppLogTile extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Text(recipientName, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800)),
+                    Text(recipientName, style: Theme.of(context).textTheme.bodyMedium),
                     const SizedBox(width: 6),
                     Text(phone, style: Theme.of(context).textTheme.labelSmall),
                   ],
@@ -79,13 +79,13 @@ class WhatsAppLogTile extends StatelessWidget {
                 children: [
                   Icon(statusIcon, size: 14, color: statusColor),
                   const SizedBox(width: 4),
-                  Text(_statusLabel(l10n, status).toUpperCase(), style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w900, color: statusColor)),
+                  Text(_statusLabel(l10n, status).toUpperCase(), style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w500, color: statusColor)),
                 ],
               ),
               const SizedBox(height: 2),
               InkWell(
                 onTap: onResend,
-                child: Text(l10n.whatsappLogsResend, style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700, color: Theme.of(context).brightness == Brightness.dark ? AppColors.secondaryDark : AppColors.secondary)),
+                child: Text(l10n.whatsappLogsResend, style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w500, color: Theme.of(context).brightness == Brightness.dark ? AppColors.secondaryDark : AppColors.secondary)),
               ),
             ],
           ),

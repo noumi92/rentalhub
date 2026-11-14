@@ -123,8 +123,7 @@ class _OwnerSubscriptionActiveViewState
                                                 .textTheme
                                                 .titleMedium
                                                 ?.copyWith(
-                                                    fontWeight:
-                                                        FontWeight.w900)),
+                                                    fontWeight: FontWeight.w600)),
                                       ),
                                     ],
                                   ),

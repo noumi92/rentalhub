@@ -194,7 +194,7 @@ void main() {
   });
 
   group('QuickActionTiles (#7)', () {
-    testWidgets('per-tile colour, 28dp icon, bolder label', (tester) async {
+    testWidgets('per-tile colour, 28dp icon, medium label', (tester) async {
       await tester.pumpWidget(_withTestAssets(
         Scaffold(
           body: QuickActionTiles(
@@ -221,7 +221,9 @@ void main() {
       expect(carIcon.size, 28);
       expect(carIcon.color, AppColors.secondary);
       final label = tester.widget<Text>(find.text('Book a Car'));
-      expect(label.style?.fontWeight, FontWeight.w800);
+      // Rulebook §4.5: labelMedium is 500 — the old w800 expectation
+      // predates the label-weight audit (items 3/4/5, 2026-11-14).
+      expect(label.style?.fontWeight, FontWeight.w500);
     });
   });
 

@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
+import '../../../../core/utils/money_format.dart';
 import '../../../../core/utils/responsive.dart';
+import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/app_state_views.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../customer/data/datasources/dispute_remote_data_source.dart';
 import '../../data/datasources/admin_platform_data_source.dart';
 import '../widgets/admin_shell.dart';
@@ -52,22 +55,66 @@ class _AdminDisputesViewState extends State<AdminDisputesView> {
   }
 
   String _slaText(DisputeRecord d) {
+    final l10n = AppLocalizations.of(context)!;
     final created = d.createdAt;
-    if (created == null) return 'SLA unknown';
+    if (created == null) return l10n.admin2_disputesSlaUnknown;
     final left =
         created.add(const Duration(hours: 72)).difference(DateTime.now());
-    if (left.isNegative) return 'SLA overdue by ${-left.inHours}h';
-    return '${left.inHours}h of SLA left';
+    if (left.isNegative) return l10n.admin2_disputesSlaOverdue(-left.inHours);
+    return l10n.admin2_disputesSlaLeft(left.inHours);
+  }
+
+  /// F-m14: the triage step — moves an open dispute to `in_review`.
+  Future<void> _markInReview(DisputeRecord d) async {
+    final l10n = AppLocalizations.of(context);
+    final ok = await sl<AdminPlatformDataSource>()
+        .markDisputeInReview(disputeId: d.id);
+    if (!mounted) return;
+    if (ok) {
+      AppFeedback.showSuccess(
+          context, l10n?.disputeMarkedInReview ?? 'Marked in review.');
+      _load();
+    } else {
+      AppFeedback.showError(context,
+          l10n?.disputeMarkInReviewFailed ?? 'Could not mark the dispute in review.');
+    }
+  }
+
+  /// F-M9/AD-M10: what a resolved row says about its decision, so
+  /// the outcome is visible without opening the row.
+  String _decisionLine(DisputeRecord d) {
+    if (d.status != 'resolved' || d.decision == null) return '';
+    final l10n = AppLocalizations.of(context)!;
+    final amount = d.decisionAmount;
+    final amountText = amount == null
+        ? ''
+        : ' — ${l10n.amountRs(formatRs(amount))}';
+    return ' • ${l10n.admin2_disputesDecidedLine(disputeDecisionLabel(d.decision!, l10n))}$amountText';
+  }
+
+  void _openDispute(DisputeRecord d) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => DisputeDecisionSheet(
+        dispute: d,
+        onDecided: _load,
+        // AD-M10: resolved rows open read-only — the decision sheet
+        // is the way back into a decided dispute.
+        readOnly: d.status == 'resolved',
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final compact =
         windowSizeClassOf(context) == WindowSizeClass.compact;
     return AdminShell(
       activeRoute: RouteNames.adminDisputes,
-      title: 'Disputes centre',
-      subtitle: 'Third side of every dispute — 72 h SLA',
+      title: l10n.admin2_disputesTitle,
+      subtitle: l10n.admin2_disputesSubtitle,
       onRefresh: _load,
       child: Padding(
         padding: EdgeInsets.all(compact ? 16 : 24),
@@ -79,10 +126,10 @@ class _AdminDisputesViewState extends State<AdminDisputesView> {
                 spacing: 8,
                 children: [
                   for (final entry in {
-                    'all': 'All',
-                    'open': 'Open',
-                    'in_review': 'In review',
-                    'resolved': 'Resolved',
+                    'all': l10n.filterAll,
+                    'open': l10n.admin2_open,
+                    'in_review': l10n.inReview,
+                    'resolved': l10n.admin2_resolved,
                   }.entries)
                     ChoiceChip(
                       label: Text(entry.value),
@@ -104,14 +151,13 @@ class _AdminDisputesViewState extends State<AdminDisputesView> {
                   ? const AppLoadingState()
                   : _hasError
                       ? AppErrorState(
-                          message: 'Could not load the disputes.',
+                          message: l10n.admin2_disputesLoadFailed,
                           onRetry: _load,
                         )
                       : _disputes.isEmpty
-                          ? const AppEmptyState(
-                              title: 'No disputes',
-                              message:
-                                  'The centre reads the disputes collection.',
+                          ? AppEmptyState(
+                              title: l10n.admin2_disputesEmptyTitle,
+                              message: l10n.admin2_disputesEmptyHint,
                             )
                           : ListView.separated(
                           itemCount: _disputes.length,
@@ -140,30 +186,35 @@ class _AdminDisputesViewState extends State<AdminDisputesView> {
                                     overflow: TextOverflow.ellipsis,
                                     style: const TextStyle(
                                         fontSize: 14,
-                                        fontWeight: FontWeight.w800,
                                         )),
                                 subtitle: Text(
-                                  '${d.description} — ${humanizeStatus(d.status)} • ${_slaText(d)}',
+                                  '${d.description} — ${humanizeStatus(d.status, l10n)} • ${_slaText(d)}${_decisionLine(d)}',
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(
                                       fontSize: 12,
                                       color: Theme.of(context).colorScheme.onSurfaceVariant),
                                 ),
-                                trailing: const Icon(
-                                    Icons.arrow_forward_ios_rounded,
-                                    size: 16),
-                                onTap: d.status == 'resolved'
-                                    ? null
-                                    : () => showModalBottomSheet(
-                                          context: context,
-                                          isScrollControlled: true,
-                                          builder: (_) =>
-                                              DisputeDecisionSheet(
-                                            dispute: d,
-                                            onDecided: _load,
-                                          ),
-                                        ),
+                                trailing: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    if (d.status == 'open')
+                                      IconButton(
+                                        tooltip:
+                                            AppLocalizations.of(context)
+                                                    ?.disputeMarkInReview ??
+                                                'Mark in review',
+                                        icon: const Icon(
+                                            Icons.rate_review_rounded,
+                                            size: 20),
+                                        onPressed: () => _markInReview(d),
+                                      ),
+                                    const Icon(
+                                        Icons.arrow_forward_ios_rounded,
+                                        size: 16),
+                                  ],
+                                ),
+                                onTap: () => _openDispute(d),
                               ),
                             );
                           },

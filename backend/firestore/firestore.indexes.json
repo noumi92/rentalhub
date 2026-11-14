@@ -1,1 +1,1 @@
-{"indexes":[]}
+{"indexes":[{"collectionGroup":"notifications","fields":[{"fieldPath":"bookingId","order":"ASCENDING"},{"fieldPath":"createdAt","order":"DESCENDING"}],"queryScope":"COLLECTION"}]}

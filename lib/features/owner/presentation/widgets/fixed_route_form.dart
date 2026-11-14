@@ -42,7 +42,7 @@ class FixedRouteForm extends StatelessWidget {
       children: [
         Text(l10n.fixedRouteAddTitle,
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w600,
                 )),
         const SizedBox(height: 10),
         Row(

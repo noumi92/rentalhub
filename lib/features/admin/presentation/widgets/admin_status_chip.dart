@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../l10n/app_localizations.dart';
+
 import '../../../../core/constants/app_colors.dart';
 
 /// Contrast-safe status tones for the admin lists.
@@ -46,15 +48,44 @@ class AdminStatusChip extends StatelessWidget {
       ),
       child: Text(label,
           style: TextStyle(
-              fontSize: 11, fontWeight: FontWeight.w800, color: color)),
+              fontSize: 11, fontWeight: FontWeight.w500, color: color)),
     );
   }
 }
 
 /// `'payment_submitted'` → `'Payment submitted'`; single words are
 /// just capitalised. Never show a raw enum value to the admin.
-String humanizeStatus(String status) {
+/// With `l10n` the known status codes render localised; unknown codes
+/// and a null `l10n` fall back to the capitalised English form.
+String humanizeStatus(String status, [AppLocalizations? l10n]) {
   if (status.isEmpty) return status;
+  if (l10n != null) {
+    final localized = switch (status) {
+      'all' => l10n.filterAll,
+      'approved' => l10n.statusApproved,
+      'pending' => l10n.pending,
+      'rejected' => l10n.statusRejected,
+      'active' => l10n.active,
+      'suspended' => l10n.admin2_suspended,
+      'hidden' => l10n.admin2_hidden,
+      'open' => l10n.admin2_open,
+      'closed' => l10n.admin2_closed,
+      'resolved' => l10n.admin2_resolved,
+      'in_review' => l10n.inReview,
+      'in_progress' => l10n.admin2_inProgress,
+      'escalated' => l10n.admin2_escalated,
+      'requested' => l10n.admin2_requested,
+      'disputed' => l10n.admin2_disputed,
+      'in_city' => l10n.admin2_inCity,
+      'out_city' => l10n.admin2_outCity,
+      'payment_submitted' => l10n.admin2_paymentSubmitted,
+      'paid' => l10n.admin2_paid,
+      'completed' => l10n.admin2_completed,
+      'cancelled' => l10n.admin2_cancelled,
+      _ => null,
+    };
+    if (localized != null) return localized;
+  }
   final words = status.replaceAll('_', ' ');
   return words[0].toUpperCase() + words.substring(1);
 }

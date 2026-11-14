@@ -36,6 +36,7 @@ class _AdminBookingsViewState extends State<AdminBookingsView> {
     'payment_submitted',
     'paid',
     'active',
+    'disputed',
     'completed',
     'rejected',
     'cancelled',
@@ -89,8 +90,8 @@ class _AdminBookingsViewState extends State<AdminBookingsView> {
         windowSizeClassOf(context) == WindowSizeClass.compact;
     return AdminShell(
       activeRoute: RouteNames.adminBookings,
-      title: 'Bookings',
-      subtitle: 'Every booking on the platform',
+      title: l10n.admin2_navBookings,
+      subtitle: l10n.admin2_bookingsSubtitle,
       onRefresh: _load,
       child: Padding(
         padding: EdgeInsets.all(compact ? 16 : 24),
@@ -100,7 +101,7 @@ class _AdminBookingsViewState extends State<AdminBookingsView> {
               controller: _searchController,
               onChanged: (_) => setState(() {}),
               decoration: InputDecoration(
-                hintText: 'Search by booking, customer, car, or shop…',
+                hintText: l10n.admin2_bookingsSearchHint,
                 prefixIcon: const Icon(Icons.search_rounded),
                 filled: true,
                 fillColor:
@@ -121,7 +122,7 @@ class _AdminBookingsViewState extends State<AdminBookingsView> {
                 runSpacing: 8,
                 children: _statuses
                     .map((s) => ChoiceChip(
-                          label: Text(s),
+                          label: Text(humanizeStatus(s, l10n)),
                           selected: _filter == s,
                           onSelected: (_) {
                             setState(() {
@@ -140,14 +141,13 @@ class _AdminBookingsViewState extends State<AdminBookingsView> {
                   ? const AppLoadingState()
                   : _hasError
                       ? AppErrorState(
-                          message: 'Could not load the bookings.',
+                          message: l10n.admin2_bookingsLoadFailed,
                           onRetry: _load,
                         )
                       : _visible.isEmpty
-                          ? const AppEmptyState(
-                              title: 'No bookings match',
-                              message:
-                                  'The list reads the bookings collection.',
+                          ? AppEmptyState(
+                              title: l10n.admin2_bookingsEmptyTitle,
+                              message: l10n.admin2_bookingsEmptyHint,
                             )
                           : ListView.separated(
                           itemCount: _visible.length,
@@ -180,7 +180,6 @@ class _AdminBookingsViewState extends State<AdminBookingsView> {
                                     overflow: TextOverflow.ellipsis,
                                     style: const TextStyle(
                                         fontSize: 14,
-                                        fontWeight: FontWeight.w800,
                                         )),
                                 subtitle: compact
                                     ? Column(
@@ -189,7 +188,7 @@ class _AdminBookingsViewState extends State<AdminBookingsView> {
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
                                           Text(
-                                            '${b.customerName ?? 'Customer'} • ${b.shopName ?? ''} • ${l10n.amountRs(formatRs(b.totalAmount))} • ${b.tripType}',
+                                            '${b.customerName ?? l10n.admin2_bookingsCustomer} • ${b.shopName ?? ''} • ${l10n.amountRs(formatRs(b.totalAmount))} • ${humanizeStatus(b.tripType, l10n)}',
                                             style: TextStyle(
                                                 fontSize: 12,
                                                 color: Theme.of(context).colorScheme.onSurfaceVariant),
@@ -199,7 +198,7 @@ class _AdminBookingsViewState extends State<AdminBookingsView> {
                                         ],
                                       )
                                     : Text(
-                                        '${b.customerName ?? 'Customer'} • ${b.shopName ?? ''} • ${l10n.amountRs(formatRs(b.totalAmount))} • ${b.tripType}',
+                                        '${b.customerName ?? l10n.admin2_bookingsCustomer} • ${b.shopName ?? ''} • ${l10n.amountRs(formatRs(b.totalAmount))} • ${humanizeStatus(b.tripType, l10n)}',
                                         style: TextStyle(
                                             fontSize: 12,
                                             color: Theme.of(context).colorScheme.onSurfaceVariant),
@@ -227,10 +226,13 @@ class _AdminBookingsViewState extends State<AdminBookingsView> {
     final tone = switch (status) {
       'completed' => AdminStatusTone.success,
       'active' || 'paid' => AdminStatusTone.info,
+      'disputed' => AdminStatusTone.warning,
       'rejected' || 'cancelled' => AdminStatusTone.danger,
       _ => AdminStatusTone.neutral,
     };
     // Was the raw enum ('payment_submitted'); now a human label.
-    return AdminStatusChip(label: humanizeStatus(status), tone: tone);
+    return AdminStatusChip(
+        label: humanizeStatus(status, AppLocalizations.of(context)),
+        tone: tone);
   }
 }

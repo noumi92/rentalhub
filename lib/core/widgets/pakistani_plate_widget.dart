@@ -66,7 +66,7 @@ class PakistaniPlateWidget extends StatelessWidget {
                   stripLabel,
                   style: TextStyle(
                     fontSize: isCompact ? 7 : 8,
-                    fontWeight: FontWeight.w900,
+                    fontWeight: FontWeight.w500,
                     color: Colors.white,
                     height: 1.1,
                   ),
@@ -83,7 +83,7 @@ class PakistaniPlateWidget extends StatelessWidget {
                       : Theme.of(context).textTheme.bodyMedium)
                   ?.copyWith(
                 fontFamily: 'monospace',
-                fontWeight: FontWeight.w900,
+                fontWeight: FontWeight.w500,
                 letterSpacing: 1.2,
                 color: AppColors.primaryDark,
               ),

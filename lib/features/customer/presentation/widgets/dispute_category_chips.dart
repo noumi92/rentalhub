@@ -52,7 +52,7 @@ class DisputeCategoryChips extends StatelessWidget {
           onSelected: (_) => onSelected(cat),
           selectedColor: AppColors.primary,
           labelStyle: Theme.of(context).textTheme.labelSmall?.copyWith(
-              fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+              fontWeight: FontWeight.w500,
               color: isSelected
                   ? Colors.white
                   : Theme.of(context).colorScheme.onSurface),

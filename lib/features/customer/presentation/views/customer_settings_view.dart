@@ -172,7 +172,7 @@ class _CustomerSettingsViewState extends State<CustomerSettingsView> {
                                         .textTheme
                                         .titleSmall
                                         ?.copyWith(
-                                            fontWeight: FontWeight.w700)),
+                                            fontWeight: FontWeight.w600)),
                                 subtitle: Text(
                                     l10n.settingsPushSubtitle,
                                     style:
@@ -194,7 +194,7 @@ class _CustomerSettingsViewState extends State<CustomerSettingsView> {
                                         .textTheme
                                         .titleSmall
                                         ?.copyWith(
-                                            fontWeight: FontWeight.w700)),
+                                            fontWeight: FontWeight.w600)),
                                 subtitle: Text(
                                     l10n.settingsWhatsappSubtitle,
                                     style:
@@ -224,7 +224,7 @@ class _CustomerSettingsViewState extends State<CustomerSettingsView> {
                             style: Theme.of(context)
                                 .textTheme
                                 .bodyMedium
-                                ?.copyWith(fontWeight: FontWeight.w700),
+                                ,
                           ),
                         ),
                         const SizedBox(height: 16),

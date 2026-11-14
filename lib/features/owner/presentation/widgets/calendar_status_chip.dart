@@ -90,7 +90,7 @@ class CalendarStatusChip extends StatelessWidget {
           style: Theme.of(context)
               .textTheme
               .labelSmall
-              ?.copyWith(color: c.label, fontWeight: FontWeight.w700)),
+              ?.copyWith(color: c.label, fontWeight: FontWeight.w500)),
     );
   }
 }

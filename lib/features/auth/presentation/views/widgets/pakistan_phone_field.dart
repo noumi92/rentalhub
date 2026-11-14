@@ -24,7 +24,7 @@ class PakistanPhoneField extends StatelessWidget {
         Text(
           l10n?.onboardingWhatsappNumber ?? 'WhatsApp Number',
           style: Theme.of(context).textTheme.labelMedium?.copyWith(
-            fontWeight: FontWeight.w700,
+            fontWeight: FontWeight.w500,
             color: scheme.onSurface,
           ),
         ),
@@ -48,9 +48,7 @@ class PakistanPhoneField extends StatelessWidget {
                 children: [
                   Text(
                     '🇵🇰 +92',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium,
                   ),
                   const SizedBox(width: 8),
                   Container(

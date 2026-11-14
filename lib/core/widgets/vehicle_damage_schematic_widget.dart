@@ -101,9 +101,7 @@ class _VehicleDamageSchematicWidgetState
                             '4-Quadrant Exterior Inspection Schematic',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              fontWeight: FontWeight.w800,
-                            ),
+                        style: Theme.of(context).textTheme.bodyMedium,
                       ),
                     ),
                   ],
@@ -121,7 +119,7 @@ class _VehicleDamageSchematicWidgetState
                   l10n?.damageMarksLogged(_pins.length) ??
                       '${_pins.length} Mark${_pins.length == 1 ? '' : 's'} Logged',
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    fontWeight: FontWeight.w800,
+                    fontWeight: FontWeight.w500,
                     color: _pins.isEmpty
                         ? AppColors.accentSuccess
                         : AppColors.warning,
@@ -209,7 +207,7 @@ class _VehicleDamageSchematicWidgetState
                   label: Text(
                     '${pin.zone}: ${pin.type}',
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.w500,
                       color: AppColors.dangerTextFor(Theme.of(context).brightness),
                     ),
                   ),
@@ -257,9 +255,16 @@ class _VehicleDamageSchematicWidgetState
                 zone,
                 overflow: TextOverflow.ellipsis,
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  fontWeight: flagged ? FontWeight.w800 : FontWeight.w600,
-                  color:
-                      flagged ? AppColors.accentDanger : AppColors.primary,
+                  fontWeight: FontWeight.w500,
+                  // Item 4: the flagged zone name is small text — the
+                  // raw #EF4444 is 3.76:1 on white, so it uses the
+                  // readable danger text token (6.47:1). The icon
+                  // keeps the raw colour (3.76:1 passes the 3:1
+                  // non-text minimum).
+                  color: flagged
+                      ? AppColors.dangerTextFor(
+                          Theme.of(context).brightness)
+                      : AppColors.primary,
                 ),
               ),
             ),

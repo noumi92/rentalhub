@@ -53,7 +53,7 @@ class VehicleHeroCard extends StatelessWidget {
                 child: Text(
                   vehicle.category,
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      fontWeight: FontWeight.w700, color: Colors.white),
+                      fontWeight: FontWeight.w500, color: Colors.white),
                 ),
               ),
             ),

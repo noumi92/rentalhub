@@ -96,7 +96,7 @@ class DriverModeToggle extends StatelessWidget {
                 Text(
                   label,
                   style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                    fontWeight: FontWeight.w500,
                     // CU-m1: the old AppColors.primary (navy) is
                     // unreadable on a dark surface — theme text now.
                     color: isSelected

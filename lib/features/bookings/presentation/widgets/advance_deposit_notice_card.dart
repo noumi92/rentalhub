@@ -26,11 +26,13 @@ class AdvanceDepositNoticeCard extends StatelessWidget {
           Row(
             children: [
               Icon(Icons.info_outline_rounded,
-                  color: AppColors.secondary, size: 18),
+                  color: AppColors.orangeTextFor(
+                      Theme.of(context).brightness),
+                  size: 18),
               SizedBox(width: 8),
               Text(
                 l10n.advanceNoticeTitle,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.secondary),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.orangeTextFor(Theme.of(context).brightness)),
               ),
             ],
           ),

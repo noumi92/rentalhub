@@ -132,7 +132,7 @@ class _KpiTile extends StatelessWidget {
             style: Theme.of(context)
                 .textTheme
                 .titleMedium
-                ?.copyWith(fontWeight: FontWeight.w900),
+                ?.copyWith(fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 2),
           Text(
@@ -140,7 +140,7 @@ class _KpiTile extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w500,
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
           ),

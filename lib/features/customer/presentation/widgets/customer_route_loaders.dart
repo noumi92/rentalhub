@@ -42,8 +42,10 @@ class CustomerVehicleRouteLoader extends StatefulWidget {
       _CustomerVehicleRouteLoaderState();
 
   static Future<VehicleWithShop?> _load(String vehicleId, AppLocalizations? l10n) async {
+    // F-M2 (admin audit 2026-11-14): a car the admin hid/rejected
+    // is not openable from a deep link or saved car either.
     final vehicle =
-        await sl<FleetRemoteDataSource>().getVehicleById(vehicleId);
+        await sl<FleetRemoteDataSource>().getCustomerVehicleById(vehicleId);
     if (vehicle == null) return null;
     var shopName = l10n?.rentalShowroom ?? 'Rental Showroom';
     var shopPhone = '';

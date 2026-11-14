@@ -25,7 +25,7 @@ class VehicleSpecBox extends StatelessWidget {
           const SizedBox(height: 5),
           Text(
             value,
-            style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800),
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w500),
             textAlign: TextAlign.center,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,

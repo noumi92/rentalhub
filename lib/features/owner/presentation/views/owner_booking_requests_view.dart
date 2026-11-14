@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/di/injection_container.dart';
@@ -7,6 +9,7 @@ import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
+import '../../../bookings/utils/live_booking_stream.dart';
 import '../services/whatsapp_credits_data_source.dart';
 import '../widgets/operations/request_reject_dialog.dart';
 import '../widgets/operations/requests_list_body.dart';
@@ -37,6 +40,8 @@ class _OwnerBookingRequestsViewState extends State<OwnerBookingRequestsView> {
   // shows once the real balance is known (null = not loaded yet).
   int? _waBalance;
   int _waSkipped = 0;
+  // Live updates (Item 2): the subscription behind the triage list.
+  StreamSubscription<List<BookingEntity>>? _bookingsSub;
 
   List<BookingEntity> get _filtered {
     final query = _searchQuery.trim().toLowerCase();
@@ -52,6 +57,7 @@ class _OwnerBookingRequestsViewState extends State<OwnerBookingRequestsView> {
 
   @override
   void dispose() {
+    _bookingsSub?.cancel();
     _searchController.dispose();
     super.dispose();
   }
@@ -82,32 +88,25 @@ class _OwnerBookingRequestsViewState extends State<OwnerBookingRequestsView> {
     }
   }
 
+  /// Live updates (Item 2): the triage list follows the shop's bookings stream — a customer submit lands here while the owner is looking at the list, and an approve / reject re-renders it without a manual refresh. The refresh button and the error-state retry re-run this method, which re-subscribes.
   Future<void> _loadRequests() async {
+    await _bookingsSub?.cancel();
+    _bookingsSub = null;
     setState(() {
       _isLoading = true;
       _hasError = false;
     });
-    try {
-      final ds = sl<BookingRemoteDataSource>();
-      final bookings = await ds.getShopBookings(widget.shopId);
+    _bookingsSub = subscribeLiveBookings((ds) => ds.streamShopBookings(widget.shopId), (bookings) {
+      if (!mounted) return;
       setState(() {
-        // Phase B (D1): the whole pipeline stays visible — new
-        // requests, proofs waiting for verification, and approved
-        // bookings waiting for the customer to pay. Audit §5 item 2:
-        // rejected bookings stay visible too, under the Rejected tab.
-        _requests = bookings
-            .where((b) =>
-                b.status == 'requested' ||
-                b.status == 'payment_submitted' ||
-                b.status == 'approved' ||
-                b.status == 'rejected')
-            .toList();
+        // Phase B (D1): the whole pipeline stays visible — new requests, proofs waiting for verification, and approved bookings waiting for the customer to pay. Audit §5 item 2: rejected bookings stay visible too, under the Rejected tab.
+        _requests = bookings.where((b) => b.status == 'requested' || b.status == 'payment_submitted' || b.status == 'approved' || b.status == 'rejected').toList();
+        _isLoading = false;
       });
-    } catch (_) {
-      if (mounted) setState(() => _hasError = true);
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
-    }
+    }, onError: () {
+      if (mounted) setState(() { _hasError = true; _isLoading = false; });
+    });
+    if (_bookingsSub == null && mounted) setState(() { _hasError = true; _isLoading = false; });
   }
 
   Future<void> _approveRequest(BookingEntity booking) async {

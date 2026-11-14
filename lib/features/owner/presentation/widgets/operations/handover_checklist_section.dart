@@ -84,9 +84,7 @@ class HandoverChecklistSection extends StatelessWidget {
               contentPadding: EdgeInsets.zero,
               title: Text(
                 l10n.handoverKeysTitle,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
+                style: Theme.of(context).textTheme.bodyMedium,
               ),
               value: keysHandedOver,
               onChanged: onKeysChanged,
@@ -113,7 +111,7 @@ class HandoverChecklistSection extends StatelessWidget {
       child: Text(
         title,
         style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w800,
+              fontWeight: FontWeight.w600,
             ),
       ),
     );

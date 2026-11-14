@@ -107,7 +107,7 @@ class _PricingOutCityModesState extends State<PricingOutCityModes> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(l10n.outCityPricingMode, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
+        Text(l10n.outCityPricingMode, style: Theme.of(context).textTheme.bodyMedium),
         const SizedBox(height: 8),
         SegmentedButton<String>(
           segments: [
@@ -136,7 +136,7 @@ class _PricingOutCityModesState extends State<PricingOutCityModes> {
           else if (_routes.isEmpty)
             Text(l10n.outCityFixedRouteNone, style: Theme.of(context).textTheme.bodyMedium)
           else ...[
-            Text(l10n.outCityFixedRouteLabel, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
+            Text(l10n.outCityFixedRouteLabel, style: Theme.of(context).textTheme.bodyMedium),
             const SizedBox(height: 6),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 14),
@@ -154,7 +154,7 @@ class _PricingOutCityModesState extends State<PricingOutCityModes> {
             ),
             if (selectedRoute != null) ...[
               const SizedBox(height: 8),
-              Text(l10n.fareFixedRoute(selectedRoute.displayName), style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800)),
+              Text(l10n.fareFixedRoute(selectedRoute.displayName), style: Theme.of(context).textTheme.bodyMedium),
               Text(l10n.fixedRouteSummary(selectedRoute.distanceKm, formatRs(selectedRoute.fixedPricePkr)), style: Theme.of(context).textTheme.labelSmall),
             ],
           ],

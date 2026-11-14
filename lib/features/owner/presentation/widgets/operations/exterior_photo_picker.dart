@@ -95,7 +95,7 @@ class _ExteriorPhotoPickerState extends State<ExteriorPhotoPicker> {
           Text(
             l10n.handoverPhotosTitle,
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w600,
                 ),
           ),
           const SizedBox(height: 12),
@@ -166,7 +166,7 @@ class _ExteriorPhotoPickerState extends State<ExteriorPhotoPicker> {
                   uploading ? l10n.handoverPhotoUploading : label,
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
                         color: Colors.white,
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w500,
                       ),
                 ),
               ),

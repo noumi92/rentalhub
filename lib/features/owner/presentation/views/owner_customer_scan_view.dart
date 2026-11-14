@@ -127,7 +127,7 @@ class _OwnerCustomerScanViewState extends State<OwnerCustomerScanView> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(l10n.customersScanTribunalPolicy, style: Theme.of(sheetContext).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
+            Text(l10n.customersScanTribunalPolicy, style: Theme.of(sheetContext).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
             const SizedBox(height: 8),
             Text(l10n.customersScanTribunalInfo, style: Theme.of(sheetContext).textTheme.bodyMedium),
             const SizedBox(height: 16),

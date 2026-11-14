@@ -58,7 +58,7 @@ class HomeUpcomingEvents extends StatelessWidget {
           style: Theme.of(context)
               .textTheme
               .titleSmall
-              ?.copyWith(fontWeight: FontWeight.w800),
+              ?.copyWith(fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 8),
         if (_isEmpty)
@@ -172,7 +172,7 @@ class _EventRow extends StatelessWidget {
                             .textTheme
                             .labelLarge
                             ?.copyWith(
-                                fontWeight: FontWeight.w800, color: color),
+                                fontWeight: FontWeight.w600, color: color),
                       ),
                       const SizedBox(height: 2),
                       Text(

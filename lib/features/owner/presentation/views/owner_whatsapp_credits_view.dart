@@ -170,13 +170,13 @@ class _OwnerWhatsappCreditsViewState
                                       .textTheme
                                       .titleSmall
                                       ?.copyWith(
-                                          fontWeight: FontWeight.w800)),
+                                          fontWeight: FontWeight.w600)),
                               Text('$_balance',
                                   style: Theme.of(context)
                                       .textTheme
                                       .headlineMedium
                                       ?.copyWith(
-                                          fontWeight: FontWeight.w900)),
+                                          fontWeight: FontWeight.w600)),
                               if (_balance == 0)
                                 Text(l10n.creditsEmpty,
                                     style: Theme.of(context)
@@ -194,7 +194,7 @@ class _OwnerWhatsappCreditsViewState
                             style: Theme.of(context)
                                 .textTheme
                                 .titleSmall
-                                ?.copyWith(fontWeight: FontWeight.w800)),
+                                ?.copyWith(fontWeight: FontWeight.w500)),
                         Text(l10n.creditsAutoNote,
                             style: Theme.of(context).textTheme.bodySmall),
                         const SizedBox(height: 8),
