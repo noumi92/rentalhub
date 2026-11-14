@@ -145,7 +145,7 @@ class AdminPeopleDataSource {
         }
         if (snap.docs.length < 100) break;
       }
-      return Future.wait(matched.map((d) => _rowFromDoc(firestore, d)));
+      return await Future.wait(matched.map((d) => _rowFromDoc(firestore, d)));
     } catch (_) {
       return [];
     }
