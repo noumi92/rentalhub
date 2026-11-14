@@ -122,9 +122,17 @@ abstract final class AdminSession {
   /// the admin login then falls back to password-only instead of
   /// stranding the admin on the TOTP step. REMOVE this once Functions
   /// are live: first login must enrol TOTP again.
+  ///
+  /// 'internal' is what the empty endpoint actually returns (2026-11-14):
+  /// calling a callable that was never deployed answers with a non-JSON
+  /// 404, which the SDK reports as firebase_functions/internal — so the
+  /// first sign-in showed the TOTP step with an "Internal" error instead
+  /// of falling back.
   static bool isFunctionsUnavailable(Object e) {
     if (e is FirebaseException) {
-      return e.code == 'not-found' || e.code == 'unavailable';
+      return e.code == 'not-found' ||
+          e.code == 'unavailable' ||
+          e.code == 'internal';
     }
     return e.toString().contains('Admin functions are unavailable');
   }

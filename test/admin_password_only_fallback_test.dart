@@ -35,6 +35,19 @@ void main() {
       );
     });
 
+    test('internal is what the empty endpoint returns (2026-11-14)', () {
+      expect(
+        AdminSession.isFunctionsUnavailable(
+          FirebaseException(
+            plugin: 'firebase_functions',
+            code: 'internal',
+            message: 'INTERNAL',
+          ),
+        ),
+        isTrue,
+      );
+    });
+
     test('the data source unavailable signal counts too', () {
       expect(
         AdminSession.isFunctionsUnavailable(
