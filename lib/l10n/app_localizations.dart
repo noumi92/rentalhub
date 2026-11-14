@@ -3260,6 +3260,12 @@ abstract class AppLocalizations {
   /// **'Cancellation failed: {error}'**
   String cancelFailed(String error);
 
+  /// No description provided for @cancelFailedGeneric.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancellation failed. Please try again.'**
+  String get cancelFailedGeneric;
+
   /// No description provided for @cancelAdvancePaid.
   ///
   /// In en, this message translates to:
@@ -3301,6 +3307,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Failed to submit payment proof: {error}'**
   String proofSubmitError(String error);
+
+  /// No description provided for @proofSubmitFailedGeneric.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not submit your payment proof. Please try again.'**
+  String get proofSubmitFailedGeneric;
 
   /// No description provided for @proofBookingId.
   ///
@@ -6536,6 +6548,12 @@ abstract class AppLocalizations {
   /// **'Proceed to Return & Settlement'**
   String get contractProceedReturn;
 
+  /// No description provided for @contractProceedReturnHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Available once the car is handed over'**
+  String get contractProceedReturnHint;
+
   /// No description provided for @contractAgencyLine.
   ///
   /// In en, this message translates to:
@@ -8665,6 +8683,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'A photo is required to continue'**
   String get kycWizardPhotoRequired;
+
+  /// No description provided for @kycWizardFingerprints.
+  ///
+  /// In en, this message translates to:
+  /// **'Fingerprints'**
+  String get kycWizardFingerprints;
+
+  /// No description provided for @kycWizardLeftHand.
+  ///
+  /// In en, this message translates to:
+  /// **'Left hand — 4 fingers'**
+  String get kycWizardLeftHand;
+
+  /// No description provided for @kycWizardRightHand.
+  ///
+  /// In en, this message translates to:
+  /// **'Right hand — 4 fingers'**
+  String get kycWizardRightHand;
+
+  /// No description provided for @kycWizardFingerHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold 4 fingers steady under the rear camera'**
+  String get kycWizardFingerHint;
+
+  /// No description provided for @kycWizardFingerScan.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan'**
+  String get kycWizardFingerScan;
+
+  /// No description provided for @kycWizardFingerCaptured.
+  ///
+  /// In en, this message translates to:
+  /// **'4 fingers captured'**
+  String get kycWizardFingerCaptured;
+
+  /// No description provided for @kycWizardFingerNotConfigured.
+  ///
+  /// In en, this message translates to:
+  /// **'Fingerprint licence is not set up yet. Ask the shop owner to add the key.'**
+  String get kycWizardFingerNotConfigured;
+
+  /// No description provided for @kycWizardFingerRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Fingerprints of both hands are required to continue'**
+  String get kycWizardFingerRequired;
+
+  /// No description provided for @kycWizardRelationPickFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a guarantor above to set the relation'**
+  String get kycWizardRelationPickFirst;
+
+  /// No description provided for @kycWizardGalleryFront.
+  ///
+  /// In en, this message translates to:
+  /// **'Front from gallery'**
+  String get kycWizardGalleryFront;
+
+  /// No description provided for @kycWizardGalleryBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Back from gallery'**
+  String get kycWizardGalleryBack;
+
+  /// No description provided for @kycWizardImageNotClear.
+  ///
+  /// In en, this message translates to:
+  /// **'This photo is not clear enough — no information could be read. Please provide a sharp, high-resolution photo with good light.'**
+  String get kycWizardImageNotClear;
+
+  /// No description provided for @kycWizardRemoveImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get kycWizardRemoveImage;
 
   /// No description provided for @kycWizardLicense.
   ///
@@ -12015,6 +12111,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Signature'**
   String get customerDetailSignature;
+
+  /// No description provided for @customerDetailFingerprints.
+  ///
+  /// In en, this message translates to:
+  /// **'Fingerprints on file'**
+  String get customerDetailFingerprints;
+
+  /// No description provided for @customerDetailFingerprintsNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No fingerprints on file'**
+  String get customerDetailFingerprintsNone;
+
+  /// No description provided for @customerDetailFingerprintsLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'Left hand'**
+  String get customerDetailFingerprintsLeft;
+
+  /// No description provided for @customerDetailFingerprintsRight.
+  ///
+  /// In en, this message translates to:
+  /// **'Right hand'**
+  String get customerDetailFingerprintsRight;
 
   /// No description provided for @customerDetailRentalHistory.
   ///

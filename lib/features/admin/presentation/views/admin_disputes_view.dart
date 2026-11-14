@@ -4,9 +4,11 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/responsive.dart';
+import '../../../../core/widgets/app_state_views.dart';
 import '../../../customer/data/datasources/dispute_remote_data_source.dart';
 import '../../data/datasources/admin_platform_data_source.dart';
 import '../widgets/admin_shell.dart';
+import '../widgets/admin_status_chip.dart';
 import '../widgets/dispute_decision_sheet.dart';
 
 /// Phase D (D2) — the disputes centre: every dispute with its 72 h
@@ -22,6 +24,7 @@ class AdminDisputesView extends StatefulWidget {
 class _AdminDisputesViewState extends State<AdminDisputesView> {
   List<DisputeRecord> _disputes = [];
   bool _isLoading = true;
+  bool _hasError = false;
   String _filter = 'all';
 
   @override
@@ -31,13 +34,20 @@ class _AdminDisputesViewState extends State<AdminDisputesView> {
   }
 
   Future<void> _load() async {
-    final disputes = await sl<AdminPlatformDataSource>()
-        .getDisputes(status: _filter);
-    if (mounted) {
-      setState(() {
-        _disputes = disputes;
-        _isLoading = false;
-      });
+    if (!_isLoading) setState(() => _hasError = false);
+    try {
+      final disputes = await sl<AdminPlatformDataSource>()
+          .getDisputes(status: _filter);
+      if (mounted) {
+        setState(() {
+          _disputes = disputes;
+          _isLoading = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() => _hasError = true);
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -91,18 +101,19 @@ class _AdminDisputesViewState extends State<AdminDisputesView> {
             SizedBox(height: 16),
             Expanded(
               child: _isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : _disputes.isEmpty
-                      ? Center(
-                          child: Text(
-                            'No disputes — the centre reads the disputes collection.',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                fontWeight: FontWeight.w700,
-                                color: Theme.of(context).colorScheme.onSurfaceVariant),
-                          ),
+                  ? const AppLoadingState()
+                  : _hasError
+                      ? AppErrorState(
+                          message: 'Could not load the disputes.',
+                          onRetry: _load,
                         )
-                      : ListView.separated(
+                      : _disputes.isEmpty
+                          ? const AppEmptyState(
+                              title: 'No disputes',
+                              message:
+                                  'The centre reads the disputes collection.',
+                            )
+                          : ListView.separated(
                           itemCount: _disputes.length,
                           separatorBuilder: (_, __) =>
                               const SizedBox(height: 10),
@@ -132,7 +143,7 @@ class _AdminDisputesViewState extends State<AdminDisputesView> {
                                         fontWeight: FontWeight.w800,
                                         )),
                                 subtitle: Text(
-                                  '${d.description} — ${d.status} • ${_slaText(d)}',
+                                  '${d.description} — ${humanizeStatus(d.status)} • ${_slaText(d)}',
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(

@@ -197,7 +197,7 @@ class _OwnerOnboardingViewState extends State<OwnerOnboardingView> {
             if (_currentStep < 6)
               Container(
                 padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, border: Border(top: BorderSide(color: Theme.of(context).dividerColor)), boxShadow: [BoxShadow(color: Color(0x0C000000), blurRadius: 8, offset: Offset(0, -3))]),
+                decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, border: Border(top: BorderSide(color: Theme.of(context).dividerColor)), boxShadow: [BoxShadow(color: Theme.of(context).colorScheme.shadow.withValues(alpha: 0.05), blurRadius: 8, offset: Offset(0, -3))]),
                 child: DebouncedButton(
                   text: _currentStep == 5 ? l10n.onboardingSubmitForReview : l10n.onboardingNextStep, // Audit §5 finish (P2-4): review-step button reads "Submit for Review".
                   icon: _currentStep == 5 ? Icons.check_circle_rounded : Icons.arrow_forward_rounded,

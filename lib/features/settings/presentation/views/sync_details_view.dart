@@ -143,18 +143,9 @@ class _SyncDetailsViewState extends State<SyncDetailsView> {
               child: _loading
                   ? const AppLoadingState()
                   : _entries.isEmpty
-                      ? Center(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(Icons.cloud_done_outlined, size: 48),
-                              const SizedBox(height: 12),
-                              Text(
-                                l10n?.syncNoPending ?? 'Nothing pending',
-                                style: Theme.of(context).textTheme.titleMedium,
-                              ),
-                            ],
-                          ),
+                      ? AppEmptyState(
+                          title: l10n?.syncNoPending ?? 'Nothing pending',
+                          icon: Icons.cloud_done_outlined,
                         )
                       : ListView.builder(
                           padding: const EdgeInsets.all(16),

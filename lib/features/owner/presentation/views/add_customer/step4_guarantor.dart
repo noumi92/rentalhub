@@ -6,6 +6,7 @@ import '../../../../../l10n/app_localizations.dart';
 import '../../../../customer/data/datasources/customer_remote_data_source.dart';
 import '../../../../customer/domain/entities/customer_entity.dart';
 import 'kyc_draft.dart';
+import 'kyc_info_box.dart';
 import 'kyc_step.dart';
 
 /// Wizard step 4 — guarantor (O15). The guarantor is OPTIONAL:
@@ -124,6 +125,8 @@ class _Step4GuarantorState extends KycStepState<Step4Guarantor> {
             labelText: l10n.kycWizardSearchGuarantor,
             prefixIcon: const Icon(Icons.search_rounded),
             border: const OutlineInputBorder(),
+            filled: true,
+            fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
           ),
           onChanged: (v) => setState(() => _query = v),
         ),
@@ -177,6 +180,8 @@ class _Step4GuarantorState extends KycStepState<Step4Guarantor> {
           decoration: InputDecoration(
             labelText: l10n.kycWizardRelation,
             border: const OutlineInputBorder(),
+            filled: true,
+            fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
           ),
           initialValue:
               selected == null ? null : widget.draft.guarantorRelation,
@@ -193,19 +198,27 @@ class _Step4GuarantorState extends KycStepState<Step4Guarantor> {
                   widget.onChanged();
                 },
         ),
+        // The dropdown is disabled until a guarantor is picked —
+        // say so instead of leaving a dead field unexplained.
+        if (selected == null) ...[
+          const SizedBox(height: 6),
+          Text(l10n.kycWizardRelationPickFirst,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant)),
+        ],
         const SizedBox(height: 12),
         if (selected != null &&
             (selected.signatureUrl != null ||
                 selected.thumbprintUrl != null))
-          _InfoBox(
-            color: Colors.green,
+          KycInfoBox(
+            tone: KycInfoTone.success,
             icon: Icons.check_circle_rounded,
             text: l10n.kycWizardGuarantorOnFile,
           ),
         if (widget.draft.isKycComplete) ...[
           const SizedBox(height: 8),
-          _InfoBox(
-            color: Colors.blue,
+          KycInfoBox(
+            tone: KycInfoTone.info,
             icon: Icons.verified_rounded,
             text: l10n.kycWizardKycComplete,
           ),
@@ -214,37 +227,6 @@ class _Step4GuarantorState extends KycStepState<Step4Guarantor> {
         Text(l10n.kycWizardGuarantorOptional,
             style: Theme.of(context).textTheme.bodySmall),
       ],
-    );
-  }
-}
-
-class _InfoBox extends StatelessWidget {
-  final Color color;
-  final IconData icon;
-  final String text;
-
-  const _InfoBox({
-    required this.color,
-    required this.icon,
-    required this.text,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withValues(alpha: 0.4)),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, color: color, size: 20),
-          const SizedBox(width: 8),
-          Expanded(child: Text(text)),
-        ],
-      ),
     );
   }
 }

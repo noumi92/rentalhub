@@ -37,6 +37,19 @@ class CustomerVehicleCard extends StatelessWidget {
       return Image.network(
         url,
         fit: BoxFit.cover,
+        loadingBuilder: (context, child, loadingProgress) {
+          if (loadingProgress == null) return child;
+          return Container(
+            color: Theme.of(context).colorScheme.surfaceContainerLow,
+            child: const Center(
+              child: SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            ),
+          );
+        },
         errorBuilder: (_, __, ___) => Image.asset(
           _assetFor(v),
           fit: BoxFit.cover,
@@ -51,10 +64,12 @@ class CustomerVehicleCard extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final v = vehicle;
     return Card(
-      elevation: 0,
+      // Canonical borderless card look comes from AppTheme's
+      // CardThemeData (elevation 3, soft shadow, no border) — the old
+      // explicit elevation 0 + dividerColor side read as a dark
+      // outline around every card.
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: Theme.of(context).dividerColor),
       ),
       child: InkWell(
         onTap: onTap,
@@ -83,6 +98,8 @@ class CustomerVehicleCard extends StatelessWidget {
                         child: Text(
                           '${v.displayName} (${v.year})',
                           style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                       PakistaniPlateWidget(
@@ -92,29 +109,41 @@ class CustomerVehicleCard extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 6),
-                  Row(
+                  // Wrap, not a fixed Row: at 360px / large text
+                  // scale the three chips (seats, transmission, fuel)
+                  // overflowed; they now flow onto a second line.
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 6,
                     children: [
-                      _specChip(context, 
+                      _specChip(context,
                           Icons.event_seat_rounded, l10n.vehicleSeats(v.seats)),
-                      const SizedBox(width: 6),
-                      _specChip(context, 
+                      _specChip(context,
                           Icons.settings_rounded, v.transmission),
-                      const SizedBox(width: 6),
                       _specChip(context, Icons.local_gas_station_rounded,
                           v.fuelType),
                     ],
                   ),
                   const SizedBox(height: 8),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        l10n.vehicleSelfRate(formatRs(v.rates.daily24)),
-                        style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800),
+                      Expanded(
+                        child: Text(
+                          l10n.vehicleSelfRate(formatRs(v.rates.daily24)),
+                          style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
-                      Text(
-                        l10n.vehicleDriverRate(formatRs(v.rates.daily24 + (v.withDriverSurchargePkr ?? 0))),
-                        style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.secondary),
+                      const SizedBox(width: 8),
+                      Flexible(
+                        child: Text(
+                          l10n.vehicleDriverRate(formatRs(v.rates.daily24 + (v.withDriverSurchargePkr ?? 0))),
+                          style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: AppColors.orangeTextFor(Theme.of(context).brightness)),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.end,
+                        ),
                       ),
                     ],
                   ),
@@ -133,7 +162,6 @@ class CustomerVehicleCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -143,6 +171,8 @@ class CustomerVehicleCard extends StatelessWidget {
           Text(
             label,
             style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),

@@ -26,24 +26,28 @@ class AdminComingSoonView extends StatelessWidget {
       activeRoute: activeRoute,
       title: title,
       subtitle: subtitle,
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(32),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.construction_rounded,
-                  size: 40, color: Theme.of(context).colorScheme.onSurfaceVariant),
-              const SizedBox(height: 16),
-              Text(
-                body,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: Theme.of(context).colorScheme.onSurfaceVariant),
-              ),
-            ],
+      // Scrollable: at large text scale the icon + body can exceed a
+      // short viewport, and the fixed Center column overflowed.
+      child: SingleChildScrollView(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(32),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.construction_rounded,
+                    size: 40, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                const SizedBox(height: 16),
+                Text(
+                  body,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant),
+                ),
+              ],
+            ),
           ),
         ),
       ),

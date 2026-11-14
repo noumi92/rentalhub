@@ -4,10 +4,11 @@ import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/responsive.dart';
 import '../../../../core/widgets/app_feedback.dart';
-import '../../../../l10n/app_localizations.dart';
+import '../../../../core/widgets/app_state_views.dart';
 import '../../data/datasources/admin_support_data_source.dart';
 import '../../data/services/admin_apk_release_service.dart';
 import '../widgets/admin_apk_download_card.dart';
+import '../widgets/admin_platform_settings_form.dart';
 import '../widgets/admin_shell.dart';
 
 /// Phase E (E2) — cities & settings: the single
@@ -55,6 +56,7 @@ class _AdminPlatformSettingsViewState
   bool _displayUnverifiedShops = true;
   bool _allowBookingsFromUnverifiedShops = true;
   bool _isLoading = true;
+  bool _hasError = false;
   bool _isSaving = false;
 
   AdminSupportDataSource get _dataSource =>
@@ -79,22 +81,29 @@ class _AdminPlatformSettingsViewState
   }
 
   Future<void> _load() async {
-    final settings = await _dataSource.getPlatformSettings();
-    if (!mounted) return;
-    _citiesController.text = settings.liveCities.join(', ');
-    _categoriesController.text = settings.carCategories.join(', ');
-    _advanceController.text = settings.advancePercent.toString();
-    _depositController.text = settings.defaultDepositPkr.toString();
-    _graceController.text = settings.lateGraceMinutes.toString();
-    _hoursController.text = settings.supportHours;
-    _termsController.text = settings.defaultAgreementTerms;
-    setState(() {
-      _maintenanceMode = settings.maintenanceMode;
-      _displayUnverifiedShops = settings.displayUnverifiedShops;
-      _allowBookingsFromUnverifiedShops =
-          settings.allowBookingsFromUnverifiedShops;
-      _isLoading = false;
-    });
+    if (!_isLoading) setState(() => _hasError = false);
+    try {
+      final settings = await _dataSource.getPlatformSettings();
+      if (!mounted) return;
+      _citiesController.text = settings.liveCities.join(', ');
+      _categoriesController.text = settings.carCategories.join(', ');
+      _advanceController.text = settings.advancePercent.toString();
+      _depositController.text = settings.defaultDepositPkr.toString();
+      _graceController.text = settings.lateGraceMinutes.toString();
+      _hoursController.text = settings.supportHours;
+      _termsController.text = settings.defaultAgreementTerms;
+      setState(() {
+        _maintenanceMode = settings.maintenanceMode;
+        _displayUnverifiedShops = settings.displayUnverifiedShops;
+        _allowBookingsFromUnverifiedShops =
+            settings.allowBookingsFromUnverifiedShops;
+        _isLoading = false;
+      });
+    } catch (_) {
+      if (mounted) setState(() => _hasError = true);
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
   }
 
   Future<void> _save() async {
@@ -141,9 +150,6 @@ class _AdminPlatformSettingsViewState
 
   @override
   Widget build(BuildContext context) {
-    // The admin panel pumps without localizations delegates in
-    // tests, so every toggle label falls back to English.
-    final l10n = AppLocalizations.of(context);
     final compact =
         windowSizeClassOf(context) == WindowSizeClass.compact;
     return AdminShell(
@@ -152,62 +158,37 @@ class _AdminPlatformSettingsViewState
       subtitle: 'The platform defaults, in one document',
       onRefresh: _load,
       child: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
+          ? const AppLoadingState()
+          : _hasError
+              ? AppErrorState(
+                  message: 'Could not load the platform settings.',
+                  onRetry: _load,
+                )
+              : SingleChildScrollView(
               padding: EdgeInsets.all(compact ? 16 : 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _field('Live cities (comma-separated)',
-                      _citiesController),
-                  _field('Car categories (comma-separated)',
-                      _categoriesController),
-                  _field('Advance %', _advanceController,
-                      keyboardType: TextInputType.number),
-                  _field('Default deposit (Rs.)', _depositController,
-                      keyboardType: TextInputType.number),
-                  _field('Late grace (minutes)', _graceController,
-                      keyboardType: TextInputType.number),
-                  _field('Support hours', _hoursController),
-                  _field('Default agreement terms', _termsController,
-                      maxLines: 3),
-                  SwitchListTile(
-                    title: const Text('Maintenance mode'),
-                    subtitle: const Text(
-                        'When on, the app shows a maintenance notice.'),
-                    value: _maintenanceMode,
-                    onChanged: (v) =>
+                  AdminPlatformSettingsForm(
+                    citiesController: _citiesController,
+                    categoriesController: _categoriesController,
+                    advanceController: _advanceController,
+                    depositController: _depositController,
+                    graceController: _graceController,
+                    hoursController: _hoursController,
+                    termsController: _termsController,
+                    maintenanceMode: _maintenanceMode,
+                    displayUnverifiedShops: _displayUnverifiedShops,
+                    allowBookingsFromUnverifiedShops:
+                        _allowBookingsFromUnverifiedShops,
+                    isSaving: _isSaving,
+                    onMaintenanceChanged: (v) =>
                         setState(() => _maintenanceMode = v),
-                  ),
-                  SwitchListTile(
-                    title: Text(l10n?.admin2_displayUnverifiedShops ??
-                        'Display unverified shops'),
-                    subtitle: Text(
-                        l10n?.admin2_displayUnverifiedShopsHint ??
-                            'When off, unverified shops are hidden from the Shops tab.'),
-                    value: _displayUnverifiedShops,
-                    onChanged: (v) =>
+                    onDisplayChanged: (v) =>
                         setState(() => _displayUnverifiedShops = v),
-                  ),
-                  SwitchListTile(
-                    title: Text(
-                        l10n?.admin2_allowBookingsFromUnverifiedShops ??
-                            'Allow bookings from unverified shops'),
-                    subtitle: Text(
-                        l10n?.admin2_allowBookingsFromUnverifiedShopsHint ??
-                            'When off, customers cannot book from unverified shops.'),
-                    value: _allowBookingsFromUnverifiedShops,
-                    onChanged: (v) => setState(
+                    onAllowChanged: (v) => setState(
                         () => _allowBookingsFromUnverifiedShops = v),
-                  ),
-                  const SizedBox(height: 16),
-                  SizedBox(
-                    width: double.infinity,
-                    child: FilledButton(
-                      onPressed: _isSaving ? null : _save,
-                      child: Text(
-                          _isSaving ? 'Saving…' : 'Save settings'),
-                    ),
+                    onSave: _save,
                   ),
                   // Super admin only: the card hides itself for any
                   // other role (and while the role is resolving).
@@ -222,26 +203,4 @@ class _AdminPlatformSettingsViewState
     );
   }
 
-  Widget _field(String label, TextEditingController controller,
-      {TextInputType? keyboardType, int maxLines = 1}) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 14),
-      child: TextField(
-        controller: controller,
-        keyboardType: keyboardType,
-        maxLines: maxLines,
-        decoration: InputDecoration(
-          labelText: label,
-          filled: true,
-          fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: Theme.of(context).dividerColor),
-          ),
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        ),
-      ),
-    );
-  }
 }

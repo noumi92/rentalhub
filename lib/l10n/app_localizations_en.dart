@@ -1749,6 +1749,9 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get cancelFailedGeneric => 'Cancellation failed. Please try again.';
+
+  @override
   String cancelAdvancePaid(String amount) {
     return 'You paid Rs. $amount advance directly to the showroom\'s account — the showroom decides the refund, so contact them about it. No security deposit was collected: deposits are only taken at handover.';
   }
@@ -1782,6 +1785,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String proofSubmitError(String error) {
     return 'Failed to submit payment proof: $error';
   }
+
+  @override
+  String get proofSubmitFailedGeneric =>
+      'Could not submit your payment proof. Please try again.';
 
   @override
   String proofBookingId(String id) {
@@ -3694,6 +3701,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get contractProceedReturn => 'Proceed to Return & Settlement';
 
   @override
+  String get contractProceedReturnHint =>
+      'Available once the car is handed over';
+
+  @override
   String get contractAgencyLine =>
       'Govt. Registered Commercial Motor Car Rental Agency';
 
@@ -4916,6 +4927,50 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get kycWizardPhotoRequired => 'A photo is required to continue';
+
+  @override
+  String get kycWizardFingerprints => 'Fingerprints';
+
+  @override
+  String get kycWizardLeftHand => 'Left hand — 4 fingers';
+
+  @override
+  String get kycWizardRightHand => 'Right hand — 4 fingers';
+
+  @override
+  String get kycWizardFingerHint =>
+      'Hold 4 fingers steady under the rear camera';
+
+  @override
+  String get kycWizardFingerScan => 'Scan';
+
+  @override
+  String get kycWizardFingerCaptured => '4 fingers captured';
+
+  @override
+  String get kycWizardFingerNotConfigured =>
+      'Fingerprint licence is not set up yet. Ask the shop owner to add the key.';
+
+  @override
+  String get kycWizardFingerRequired =>
+      'Fingerprints of both hands are required to continue';
+
+  @override
+  String get kycWizardRelationPickFirst =>
+      'Choose a guarantor above to set the relation';
+
+  @override
+  String get kycWizardGalleryFront => 'Front from gallery';
+
+  @override
+  String get kycWizardGalleryBack => 'Back from gallery';
+
+  @override
+  String get kycWizardImageNotClear =>
+      'This photo is not clear enough — no information could be read. Please provide a sharp, high-resolution photo with good light.';
+
+  @override
+  String get kycWizardRemoveImage => 'Remove';
 
   @override
   String get kycWizardLicense => 'Driving license';
@@ -6726,6 +6781,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get customerDetailSignature => 'Signature';
+
+  @override
+  String get customerDetailFingerprints => 'Fingerprints on file';
+
+  @override
+  String get customerDetailFingerprintsNone => 'No fingerprints on file';
+
+  @override
+  String get customerDetailFingerprintsLeft => 'Left hand';
+
+  @override
+  String get customerDetailFingerprintsRight => 'Right hand';
 
   @override
   String get customerDetailRentalHistory => 'Rental history';

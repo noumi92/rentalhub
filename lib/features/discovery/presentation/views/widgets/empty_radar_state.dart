@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/routing/route_names.dart';
+import '../../../../../core/theme/card_decoration.dart';
 import '../../../../../l10n/app_localizations.dart';
 
 /// #3: radius-aware empty state. [currentRadiusKm] is the radius the
@@ -32,11 +33,8 @@ class EmptyRadarState extends StatelessWidget {
         radii.firstWhere((r) => r > currentRadiusKm, orElse: () => 5.0);
     return Container(
       padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: Theme.of(context).dividerColor),
-      ),
+      // Canonical borderless card look (soft shadow, no dark border).
+      decoration: AppCardDecoration.of(context, radius: 18),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -73,14 +71,31 @@ class EmptyRadarState extends StatelessWidget {
           if (isMax)
             OutlinedButton.icon(
               onPressed: () => context.push(RouteNames.customerHomeMap),
+              style: OutlinedButton.styleFrom(
+                // 48dp minimum; the button grows instead of clipping
+                // when the Urdu label wraps to two lines at large
+                // text scale.
+                minimumSize: const Size(double.infinity, 48),
+              ),
               icon: const Icon(Icons.map_rounded, size: 16),
-              label: Text(l10n.emptyRadarBrowseAll),
+              label: Text(
+                l10n.emptyRadarBrowseAll,
+                maxLines: 2,
+                textAlign: TextAlign.center,
+              ),
             )
           else
             ElevatedButton.icon(
               onPressed: onExpandRadius,
+              style: ElevatedButton.styleFrom(
+                minimumSize: const Size(double.infinity, 48),
+              ),
               icon: const Icon(Icons.zoom_out_map_rounded, size: 16),
-              label: Text(l10n.emptyRadarExpandToKm(nextRadius.toInt())),
+              label: Text(
+                l10n.emptyRadarExpandToKm(nextRadius.toInt()),
+                maxLines: 2,
+                textAlign: TextAlign.center,
+              ),
             ),
         ],
       ),

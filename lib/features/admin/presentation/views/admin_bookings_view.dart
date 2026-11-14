@@ -6,10 +6,12 @@ import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/money_format.dart';
 import '../../../../core/utils/responsive.dart';
+import '../../../../core/widgets/app_state_views.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../bookings/data/models/booking_model.dart';
 import '../../data/datasources/admin_platform_data_source.dart';
 import '../widgets/admin_shell.dart';
+import '../widgets/admin_status_chip.dart';
 
 /// Phase D (D1) — the bookings list: every booking, filterable by
 /// lifecycle status, searchable by booking id, customer, or vehicle.
@@ -24,6 +26,7 @@ class _AdminBookingsViewState extends State<AdminBookingsView> {
   final _searchController = TextEditingController();
   List<BookingModel> _bookings = [];
   bool _isLoading = true;
+  bool _hasError = false;
   String _filter = 'all';
 
   static const _statuses = [
@@ -51,13 +54,20 @@ class _AdminBookingsViewState extends State<AdminBookingsView> {
   }
 
   Future<void> _load() async {
-    final bookings =
-        await sl<AdminPlatformDataSource>().getBookings(status: _filter);
-    if (mounted) {
-      setState(() {
-        _bookings = bookings;
-        _isLoading = false;
-      });
+    if (!_isLoading) setState(() => _hasError = false);
+    try {
+      final bookings =
+          await sl<AdminPlatformDataSource>().getBookings(status: _filter);
+      if (mounted) {
+        setState(() {
+          _bookings = bookings;
+          _isLoading = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() => _hasError = true);
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -127,18 +137,19 @@ class _AdminBookingsViewState extends State<AdminBookingsView> {
             SizedBox(height: 16),
             Expanded(
               child: _isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : _visible.isEmpty
-                      ? Center(
-                          child: Text(
-                            'No bookings match — the list reads the bookings collection.',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                fontWeight: FontWeight.w700,
-                                color: Theme.of(context).colorScheme.onSurfaceVariant),
-                          ),
+                  ? const AppLoadingState()
+                  : _hasError
+                      ? AppErrorState(
+                          message: 'Could not load the bookings.',
+                          onRetry: _load,
                         )
-                      : ListView.separated(
+                      : _visible.isEmpty
+                          ? const AppEmptyState(
+                              title: 'No bookings match',
+                              message:
+                                  'The list reads the bookings collection.',
+                            )
+                          : ListView.separated(
                           itemCount: _visible.length,
                           separatorBuilder: (_, __) =>
                               const SizedBox(height: 10),
@@ -213,22 +224,13 @@ class _AdminBookingsViewState extends State<AdminBookingsView> {
   }
 
   Widget _statusChip(BuildContext context, String status) {
-    final brightness = Theme.of(context).brightness;
-    final color = switch (status) {
-      'completed' => AppColors.successTextFor(brightness),
-      'active' || 'paid' => Colors.blue.shade700,
-      'rejected' || 'cancelled' => AppColors.dangerTextFor(brightness),
-      _ => Theme.of(context).colorScheme.onSurfaceVariant,
+    final tone = switch (status) {
+      'completed' => AdminStatusTone.success,
+      'active' || 'paid' => AdminStatusTone.info,
+      'rejected' || 'cancelled' => AdminStatusTone.danger,
+      _ => AdminStatusTone.neutral,
     };
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Text(status,
-          style: TextStyle(
-              fontSize: 11, fontWeight: FontWeight.w800, color: color)),
-    );
+    // Was the raw enum ('payment_submitted'); now a human label.
+    return AdminStatusChip(label: humanizeStatus(status), tone: tone);
   }
 }

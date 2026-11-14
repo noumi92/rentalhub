@@ -195,7 +195,10 @@ class _CustomerProfileViewState extends State<CustomerProfileView> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
+      // MinimalAppBar owns the top inset — SafeArea(top: false)
+      // avoids the double status-bar band (SH-M3 class).
       body: SafeArea(
+        top: false,
         child: Column(
           children: [
             MinimalAppBar(

@@ -5,9 +5,11 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/responsive.dart';
+import '../../../../core/widgets/app_state_views.dart';
 import '../../../discovery/data/models/shop_model.dart';
 import '../../data/datasources/admin_shops_data_source.dart';
 import '../widgets/admin_shell.dart';
+import '../widgets/admin_status_chip.dart';
 
 /// Phase B (B2) — the shops list: every shop, searchable, filtered by
 /// status. Tap a shop for the detail screen (plan, cars, bookings,
@@ -23,6 +25,7 @@ class _AdminShopsViewState extends State<AdminShopsView> {
   final _searchController = TextEditingController();
   List<ShopModel> _shops = [];
   bool _isLoading = true;
+  bool _hasError = false;
   String _filter = 'all';
 
   @override
@@ -38,12 +41,19 @@ class _AdminShopsViewState extends State<AdminShopsView> {
   }
 
   Future<void> _load() async {
-    final shops = await sl<AdminShopsDataSource>().getShops();
-    if (mounted) {
-      setState(() {
-        _shops = shops;
-        _isLoading = false;
-      });
+    if (!_isLoading) setState(() => _hasError = false);
+    try {
+      final shops = await sl<AdminShopsDataSource>().getShops();
+      if (mounted) {
+        setState(() {
+          _shops = shops;
+          _isLoading = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() => _hasError = true);
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -140,18 +150,19 @@ class _AdminShopsViewState extends State<AdminShopsView> {
             SizedBox(height: 16),
             Expanded(
               child: _isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : _visible.isEmpty
-                      ? Center(
-                          child: Text(
-                            'No shops match — the list reads the shops collection.',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                fontWeight: FontWeight.w700,
-                                color: Theme.of(context).colorScheme.onSurfaceVariant),
-                          ),
+                  ? const AppLoadingState()
+                  : _hasError
+                      ? AppErrorState(
+                          message: 'Could not load the shops.',
+                          onRetry: _load,
                         )
-                      : ListView.separated(
+                      : _visible.isEmpty
+                          ? const AppEmptyState(
+                              title: 'No shops match',
+                              message:
+                                  'The list reads the shops collection.',
+                            )
+                          : ListView.separated(
                           itemCount: _visible.length,
                           separatorBuilder: (_, __) =>
                               const SizedBox(height: 10),
@@ -210,21 +221,14 @@ class _AdminShopsViewState extends State<AdminShopsView> {
             ? 'Pending'
             : shop.verificationStatus == 'approved'
                 ? 'Approved'
-                : shop.verificationStatus;
-    final color = shop.suspended
-        ? Colors.red.shade700
+                : humanizeStatus(shop.verificationStatus);
+    final tone = shop.suspended
+        ? AdminStatusTone.danger
         : shop.verificationStatus == 'pending'
-            ? Colors.amber.shade800
-            : Colors.green.shade700;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Text(label,
-          style: TextStyle(
-              fontSize: 11, fontWeight: FontWeight.w800, color: color)),
-    );
+            ? AdminStatusTone.warning
+            : shop.verificationStatus == 'approved'
+                ? AdminStatusTone.success
+                : AdminStatusTone.neutral;
+    return AdminStatusChip(label: label, tone: tone);
   }
 }

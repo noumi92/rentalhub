@@ -74,6 +74,7 @@ class OwnerWhatsappTemplatePreviewView extends StatelessWidget {
                     onPressed: () => AppFeedback.showWarning(
                         context, l10n.creditsSendTestDisabled),
                   ),
+                  const SizedBox(height: 8),
                   Text(l10n.creditsSendTestDisabled,
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.bodySmall),
@@ -102,8 +103,10 @@ class _Bubble extends StatelessWidget {
             maxWidth: MediaQuery.of(context).size.width * 0.8),
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
+          // Own-bubble tint from the theme (was a raw WhatsApp
+          // green literal with no dark-mode story).
           color: isOwn
-              ? const Color(0xFFDCF8C6)
+              ? Theme.of(context).colorScheme.primaryContainer
               : Theme.of(context).colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(12),
         ),

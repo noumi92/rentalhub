@@ -43,9 +43,14 @@ class LocationPermissionDialog extends StatelessWidget {
       elevation: 8,
       child: Padding(
         padding: const EdgeInsets.all(22),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
+        // Scrollable content: at 360px with Urdu labels and a large
+        // text scale the title + explainer + two 48dp buttons are
+        // taller than the viewport, and the plain Column overflowed
+        // by 38px. At default scale nothing changes visually.
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
             Container(
               width: 64,
               height: 64,
@@ -72,42 +77,48 @@ class LocationPermissionDialog extends StatelessWidget {
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant, height: 1.4),
             ),
             const SizedBox(height: 22),
-            SizedBox(
-              width: double.infinity,
-              height: 48,
-              child: ElevatedButton.icon(
-                onPressed: onAllow,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.secondary,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  elevation: 0,
+            ElevatedButton.icon(
+              onPressed: onAllow,
+              style: ElevatedButton.styleFrom(
+                // White on AppColors.secondary (#F95700) is 3.29:1
+                // and fails WCAG AA for the 14sp label; orangeFill
+                // (#C2410C) is 5.18:1. minimumSize (not a fixed
+                // 48dp SizedBox) lets the Urdu label wrap to two
+                // lines at large text scale instead of clipping.
+                backgroundColor: AppColors.orangeFill,
+                foregroundColor: AppColors.surfaceLight,
+                minimumSize: const Size(double.infinity, 48),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                icon: const Icon(Icons.my_location_rounded, size: 18),
-                label: Text(
-                  l10n.locationAllowWhileUsing,
-                ),
+                elevation: 0,
+              ),
+              icon: const Icon(Icons.my_location_rounded, size: 18),
+              label: Text(
+                l10n.locationAllowWhileUsing,
+                maxLines: 2,
+                textAlign: TextAlign.center,
               ),
             ),
             const SizedBox(height: 10),
-            SizedBox(
-              width: double.infinity,
-              height: 44,
-              child: OutlinedButton(
-                onPressed: onManualCity,
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: Theme.of(context).colorScheme.onSurface,
-                  side: BorderSide(color: Theme.of(context).dividerColor),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+            OutlinedButton(
+              onPressed: onManualCity,
+              style: OutlinedButton.styleFrom(
+                foregroundColor: Theme.of(context).colorScheme.onSurface,
+                side: BorderSide(color: Theme.of(context).dividerColor),
+                minimumSize: const Size(double.infinity, 48),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                child: Text(l10n.locationSelectCityManually),
+              ),
+              child: Text(
+                l10n.locationSelectCityManually,
+                maxLines: 2,
+                textAlign: TextAlign.center,
               ),
             ),
-          ],
+            ],
+          ),
         ),
       ),
     );

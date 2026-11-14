@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/responsive.dart';
+import '../../../../core/widgets/app_state_views.dart';
 import '../../data/datasources/admin_remote_data_source.dart';
 import '../widgets/admin_kpi_card.dart';
 import '../widgets/admin_shell.dart';
+import '../widgets/admin_status_chip.dart';
 
 /// Phase A (A6) — the admin dashboard, real: live counts from the
 /// platform collections. No growth percentages, no volume figures, no
@@ -23,6 +24,7 @@ class AdminDashboardView extends StatefulWidget {
 class _AdminDashboardViewState extends State<AdminDashboardView> {
   PlatformStats? _stats;
   bool _isLoading = true;
+  bool _hasError = false;
 
   @override
   void initState() {
@@ -31,12 +33,19 @@ class _AdminDashboardViewState extends State<AdminDashboardView> {
   }
 
   Future<void> _load() async {
-    final stats = await sl<AdminRemoteDataSource>().getPlatformStats();
-    if (mounted) {
-      setState(() {
-        _stats = stats;
-        _isLoading = false;
-      });
+    if (!_isLoading) setState(() => _hasError = false);
+    try {
+      final stats = await sl<AdminRemoteDataSource>().getPlatformStats();
+      if (mounted) {
+        setState(() {
+          _stats = stats;
+          _isLoading = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() => _hasError = true);
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -48,8 +57,13 @@ class _AdminDashboardViewState extends State<AdminDashboardView> {
       subtitle: 'The platform at a glance, counted live',
       onRefresh: _load,
       child: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
+          ? const AppLoadingState()
+          : _hasError
+              ? AppErrorState(
+                  message: 'Could not load the dashboard.',
+                  onRetry: _load,
+                )
+              : SingleChildScrollView(
               // Mobile-first: 16dp side padding on a phone, 24dp on
               // desktop — 24dp each side leaves 312dp of content on
               // a 360dp screen.
@@ -122,21 +136,23 @@ class _AdminDashboardViewState extends State<AdminDashboardView> {
         value: '${s.activeBookingCount}',
         changeLabel: 'Approved, paid or active',
         icon: Icons.calendar_month_rounded,
-        accentColor: AppColors.successTextFor(Theme.of(context).brightness),
+        accentColor:
+            adminStatusColor(context, AdminStatusTone.success),
       ),
       AdminKpiCard(
         title: 'Open disputes',
         value: '${s.openDisputeCount}',
         changeLabel: 'Awaiting a decision',
         icon: Icons.report_problem_outlined,
-        accentColor: Colors.amber.shade800,
+        accentColor:
+            adminStatusColor(context, AdminStatusTone.warning),
       ),
       AdminKpiCard(
         title: 'Open support tickets',
         value: '${s.openTicketCount}',
         changeLabel: 'Awaiting a reply',
         icon: Icons.support_agent_rounded,
-        accentColor: Colors.blue.shade700,
+        accentColor: adminStatusColor(context, AdminStatusTone.info),
       ),
     ];
   }

@@ -4,8 +4,10 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/responsive.dart';
+import '../../../../core/widgets/app_state_views.dart';
 import '../../data/datasources/admin_support_data_source.dart';
 import '../widgets/admin_shell.dart';
+import '../widgets/admin_status_chip.dart';
 import '../widgets/ticket_detail_sheet.dart';
 
 /// Phase E (E1) — the support tickets inbox: every ticket the
@@ -22,6 +24,7 @@ class AdminTicketsView extends StatefulWidget {
 class _AdminTicketsViewState extends State<AdminTicketsView> {
   List<SupportTicket> _tickets = [];
   bool _isLoading = true;
+  bool _hasError = false;
   String _filter = 'all';
 
   @override
@@ -31,13 +34,20 @@ class _AdminTicketsViewState extends State<AdminTicketsView> {
   }
 
   Future<void> _load() async {
-    final tickets = await sl<AdminSupportDataSource>()
-        .getTickets(status: _filter);
-    if (mounted) {
-      setState(() {
-        _tickets = tickets;
-        _isLoading = false;
-      });
+    if (!_isLoading) setState(() => _hasError = false);
+    try {
+      final tickets = await sl<AdminSupportDataSource>()
+          .getTickets(status: _filter);
+      if (mounted) {
+        setState(() {
+          _tickets = tickets;
+          _isLoading = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() => _hasError = true);
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -83,18 +93,19 @@ class _AdminTicketsViewState extends State<AdminTicketsView> {
             SizedBox(height: 16),
             Expanded(
               child: _isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : _tickets.isEmpty
-                      ? Center(
-                          child: Text(
-                            'No tickets — the inbox reads the support_tickets collection.',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                fontWeight: FontWeight.w700,
-                                color: Theme.of(context).colorScheme.onSurfaceVariant),
-                          ),
+                  ? const AppLoadingState()
+                  : _hasError
+                      ? AppErrorState(
+                          message: 'Could not load the tickets.',
+                          onRetry: _load,
                         )
-                      : ListView.separated(
+                      : _tickets.isEmpty
+                          ? const AppEmptyState(
+                              title: 'No tickets',
+                              message:
+                                  'The inbox reads the support_tickets collection.',
+                            )
+                          : ListView.separated(
                           itemCount: _tickets.length,
                           separatorBuilder: (_, __) =>
                               const SizedBox(height: 10),
@@ -103,6 +114,8 @@ class _AdminTicketsViewState extends State<AdminTicketsView> {
                             final breached = t.createdAt != null &&
                                 DateTime.now().isAfter(t.createdAt!
                                     .add(Duration(hours: t.slaHours)));
+                            final danger = adminStatusColor(
+                                context, AdminStatusTone.danger);
                             return Card(
                               margin: EdgeInsets.zero,
                               elevation: 0,
@@ -110,7 +123,7 @@ class _AdminTicketsViewState extends State<AdminTicketsView> {
                                 borderRadius: BorderRadius.circular(12),
                                 side: BorderSide(
                                     color: breached
-                                        ? Colors.red.shade300
+                                        ? danger.withValues(alpha: 0.4)
                                         : Theme.of(context).dividerColor),
                               ),
                               child: ListTile(
@@ -132,11 +145,11 @@ class _AdminTicketsViewState extends State<AdminTicketsView> {
                                         fontWeight: FontWeight.w800,
                                         )),
                                 subtitle: Text(
-                                  '${t.priority.toUpperCase()} • ${t.status} • ${t.slaText()}',
+                                  '${t.priority.toUpperCase()} • ${humanizeStatus(t.status)} • ${t.slaText()}',
                                   style: TextStyle(
                                       fontSize: 12,
                                       color: breached
-                                          ? Colors.red.shade700
+                                          ? danger
                                           : Theme.of(context).colorScheme.onSurfaceVariant,
                                       fontWeight: breached
                                           ? FontWeight.w700

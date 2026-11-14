@@ -225,19 +225,18 @@ class _OwnerContractViewState extends State<OwnerContractView> {
                                   width: double.infinity,
                                   child: ElevatedButton.icon(
                                     onPressed: null,
-                                    icon: const Icon(
-                                        Icons.assignment_return_rounded,
-                                        size: 18),
+                                    icon: const Icon(Icons.assignment_return_rounded, size: 18),
                                     label: Text(l10n.contractProceedReturn),
-                                    style: ElevatedButton.styleFrom(
-                                      minimumSize:
-                                          const Size(double.infinity, 54),
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(16)),
-                                    ),
+                                    style: ElevatedButton.styleFrom(minimumSize: const Size(double.infinity, 54), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16))),
                                   ),
                                 ),
+                              // The Proceed button above is disabled
+                              // until handover ('active') — say why
+                              // instead of leaving a dead button.
+                              if (booking.status != 'active') ...[
+                                const SizedBox(height: 8),
+                                Text(l10n.contractProceedReturnHint, textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
+                              ],
                             ],
                           ),
                         ),

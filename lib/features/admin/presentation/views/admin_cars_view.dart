@@ -5,10 +5,12 @@ import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/money_format.dart';
 import '../../../../core/utils/responsive.dart';
+import '../../../../core/widgets/app_state_views.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../fleet/domain/entities/vehicle_entity.dart';
 import '../../data/datasources/admin_shops_data_source.dart';
 import '../widgets/admin_shell.dart';
+import '../widgets/admin_status_chip.dart';
 import '../widgets/car_review_detail_sheet.dart';
 
 /// Phase B (B3) — the cars list: every vehicle on the platform, with
@@ -26,6 +28,7 @@ class _AdminCarsViewState extends State<AdminCarsView> {
   List<VehicleEntity> _cars = [];
   Map<String, CarReview> _reviews = {};
   bool _isLoading = true;
+  bool _hasError = false;
   String _filter = 'all';
 
   @override
@@ -41,15 +44,22 @@ class _AdminCarsViewState extends State<AdminCarsView> {
   }
 
   Future<void> _load() async {
-    final ds = sl<AdminShopsDataSource>();
-    final cars = await ds.getCars();
-    final reviews = await ds.getCarReviews();
-    if (mounted) {
-      setState(() {
-        _cars = cars;
-        _reviews = reviews;
-        _isLoading = false;
-      });
+    if (!_isLoading) setState(() => _hasError = false);
+    try {
+      final ds = sl<AdminShopsDataSource>();
+      final cars = await ds.getCars();
+      final reviews = await ds.getCarReviews();
+      if (mounted) {
+        setState(() {
+          _cars = cars;
+          _reviews = reviews;
+          _isLoading = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() => _hasError = true);
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -104,6 +114,7 @@ class _AdminCarsViewState extends State<AdminCarsView> {
               alignment: Alignment.centerLeft,
               child: Wrap(
                 spacing: 8,
+                runSpacing: 8,
                 children: [
                   for (final entry in {
                     'all': 'All',
@@ -124,18 +135,19 @@ class _AdminCarsViewState extends State<AdminCarsView> {
             SizedBox(height: 16),
             Expanded(
               child: _isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : _visible.isEmpty
-                      ? Center(
-                          child: Text(
-                            'No cars match — the list reads the vehicles collection.',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                fontWeight: FontWeight.w700,
-                                color: Theme.of(context).colorScheme.onSurfaceVariant),
-                          ),
+                  ? const AppLoadingState()
+                  : _hasError
+                      ? AppErrorState(
+                          message: 'Could not load the cars.',
+                          onRetry: _load,
                         )
-                      : ListView.separated(
+                      : _visible.isEmpty
+                          ? const AppEmptyState(
+                              title: 'No cars match',
+                              message:
+                                  'The list reads the vehicles collection.',
+                            )
+                          : ListView.separated(
                           itemCount: _visible.length,
                           separatorBuilder: (_, __) =>
                               const SizedBox(height: 10),
@@ -193,22 +205,12 @@ class _AdminCarsViewState extends State<AdminCarsView> {
   }
 
   Widget _reviewChip(BuildContext context, String review) {
-    final brightness = Theme.of(context).brightness;
-    final color = switch (review) {
-      'approved' => AppColors.successTextFor(brightness),
-      'hidden' => AppColors.warningTextFor(brightness),
-      'rejected' => AppColors.dangerTextFor(brightness),
-      _ => Theme.of(context).colorScheme.onSurfaceVariant,
+    final tone = switch (review) {
+      'approved' => AdminStatusTone.success,
+      'hidden' => AdminStatusTone.warning,
+      'rejected' => AdminStatusTone.danger,
+      _ => AdminStatusTone.neutral,
     };
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Text(review,
-          style: TextStyle(
-              fontSize: 11, fontWeight: FontWeight.w800, color: color)),
-    );
+    return AdminStatusChip(label: humanizeStatus(review), tone: tone);
   }
 }

@@ -8,8 +8,10 @@ import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/money_format.dart';
 import '../../../../core/utils/responsive.dart';
 import '../../../../core/widgets/app_feedback.dart';
+import '../../../../core/widgets/app_state_views.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/datasources/admin_platform_data_source.dart';
+import '../widgets/admin_detail_section.dart';
 import '../widgets/admin_shell.dart';
 
 /// Phase D (D1) — one booking: the lifecycle, amounts, in/out-city,
@@ -31,6 +33,7 @@ class AdminBookingDetailView extends StatefulWidget {
 class _AdminBookingDetailViewState extends State<AdminBookingDetailView> {
   BookingDetail? _detail;
   bool _isLoading = true;
+  bool _hasError = false;
 
   @override
   void initState() {
@@ -39,13 +42,20 @@ class _AdminBookingDetailViewState extends State<AdminBookingDetailView> {
   }
 
   Future<void> _load() async {
-    final detail = await sl<AdminPlatformDataSource>()
-        .getBookingDetail(widget.bookingId);
-    if (mounted) {
-      setState(() {
-        _detail = detail;
-        _isLoading = false;
-      });
+    if (!_isLoading) setState(() => _hasError = false);
+    try {
+      final detail = await sl<AdminPlatformDataSource>()
+          .getBookingDetail(widget.bookingId);
+      if (mounted) {
+        setState(() {
+          _detail = detail;
+          _isLoading = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() => _hasError = true);
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -65,10 +75,16 @@ Deposit: ${d.deposit == null ? 'none' : '${l10n.amountRs(formatRs(d.deposit!.amo
 Agreement PDF: ${d.agreementPdfUrl ?? 'none'}
 Handover: ${d.handover == null ? 'none' : 'odometer ${d.handover!.initialOdometer} km, fuel ${d.handover!.fuelLevel}, damage: ${d.handover!.damageNotes.join('; ')}'}
 ''';
-    await SharePlus.instance.share(ShareParams(
-      text: summary,
-      subject: 'Booking ${b.bookingId}',
-    ));
+    try {
+      await SharePlus.instance.share(ShareParams(
+        text: summary,
+        subject: 'Booking ${b.bookingId}',
+      ));
+    } catch (_) {
+      if (mounted) {
+        AppFeedback.showError(context, 'Could not share the booking summary.');
+      }
+    }
   }
 
   @override
@@ -83,17 +99,15 @@ Handover: ${d.handover == null ? 'none' : 'odometer ${d.handover!.initialOdomete
       onRefresh: _load,
       onBack: () => context.go(RouteNames.adminBookings),
       child: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _detail == null
-              ? const Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(32),
-                    child: Text('Booking not found.',
-                        style: TextStyle(
-                            fontWeight: FontWeight.w700)),
-                  ),
+          ? const AppLoadingState()
+          : _hasError
+              ? AppErrorState(
+                  message: 'Could not load this booking.',
+                  onRetry: _load,
                 )
-              : SingleChildScrollView(
+              : _detail == null
+                  ? const AppEmptyState(title: 'Booking not found.')
+                  : SingleChildScrollView(
                   padding: EdgeInsets.all(compact ? 16 : 24),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -113,6 +127,8 @@ Handover: ${d.handover == null ? 'none' : 'odometer ${d.handover!.initialOdomete
                           width: double.infinity,
                           child: FilledButton.icon(
                             onPressed: _downloadAll,
+                            style: FilledButton.styleFrom(
+                                minimumSize: const Size(0, 48)),
                             icon: const Icon(Icons.download_rounded, size: 18),
                             label: const Text('Download all'),
                           ),
@@ -130,6 +146,8 @@ Handover: ${d.handover == null ? 'none' : 'odometer ${d.handover!.initialOdomete
                             ),
                             FilledButton.icon(
                               onPressed: _downloadAll,
+                              style: FilledButton.styleFrom(
+                                  minimumSize: const Size(0, 48)),
                               icon: const Icon(Icons.download_rounded, size: 18),
                               label: const Text('Download all'),
                             ),
@@ -142,7 +160,7 @@ Handover: ${d.handover == null ? 'none' : 'odometer ${d.handover!.initialOdomete
                             fontSize: 13),
                       ),
                       const SizedBox(height: 16),
-                      _section('Amounts', [
+                      AdminDetailSection(title: 'Amounts', lines: [
                         l10n.bookingTotalAmount(
                             formatRs(_detail!.booking.totalAmount)),
                         'Advance required: ${l10n.amountRs(formatRs(_detail!.booking.advanceRequired))}',
@@ -151,7 +169,7 @@ Handover: ${d.handover == null ? 'none' : 'odometer ${d.handover!.initialOdomete
                         if ((_detail!.booking.transactionId ?? '').isNotEmpty)
                           'Transaction: ${_detail!.booking.transactionId}',
                       ]),
-                      _section('Payment & deposit', [
+                      AdminDetailSection(title: 'Payment & deposit', lines: [
                         if (_detail!.booking.paymentProofUrl != null)
                           'Payment proof: ${_detail!.booking.paymentProofUrl}',
                         _detail!.deposit == null
@@ -159,7 +177,7 @@ Handover: ${d.handover == null ? 'none' : 'odometer ${d.handover!.initialOdomete
                             : 'Deposit ${l10n.amountRs(formatRs(_detail!.deposit!.amount))} — ${_detail!.deposit!.status}'
                                 '${_detail!.deposit!.deductedAmount != null ? ' (deducted ${l10n.amountRs(formatRs(_detail!.deposit!.deductedAmount!))})' : ''}',
                       ]),
-                      _section('Agreement', [
+                      AdminDetailSection(title: 'Agreement', lines: [
                         if (_detail!.agreementPdfUrl != null)
                           'Agreement PDF on file — tap to open.',
                         if (_detail!.agreementPdfUrl == null)
@@ -171,6 +189,8 @@ Handover: ${d.handover == null ? 'none' : 'odometer ${d.handover!.initialOdomete
                           child: OutlinedButton.icon(
                             icon: const Icon(Icons.picture_as_pdf_rounded,
                                 size: 18),
+                            style: OutlinedButton.styleFrom(
+                                minimumSize: const Size(0, 48)),
                             label: const Text('Open agreement PDF'),
                             onPressed: () async {
                               final uri =
@@ -185,7 +205,7 @@ Handover: ${d.handover == null ? 'none' : 'odometer ${d.handover!.initialOdomete
                             },
                           ),
                         ),
-                      _section('Handover', [
+                      AdminDetailSection(title: 'Handover', lines: [
                         if (_detail!.handover == null) 'No handover record.',
                         if (_detail!.handover != null) ...[
                           'Odometer at pickup: ${_detail!.handover!.initialOdometer} km',
@@ -194,13 +214,13 @@ Handover: ${d.handover == null ? 'none' : 'odometer ${d.handover!.initialOdomete
                         ],
                       ]),
                       if (_detail!.dispute != null)
-                        _section('Dispute', [
+                        AdminDetailSection(title: 'Dispute', lines: [
                           '${_detail!.dispute!.category}: ${_detail!.dispute!.description}',
                           'Status: ${_detail!.dispute!.status}',
                         ]),
-                      _section(
-                          'Messages log',
-                          _detail!.messages.isEmpty
+                      AdminDetailSection(
+                          title: 'Messages log',
+                          lines: _detail!.messages.isEmpty
                               ? ['No notifications recorded for this booking.']
                               : _detail!.messages
                                   .map((m) => '${m.title} — ${m.body}')
@@ -208,28 +228,6 @@ Handover: ${d.handover == null ? 'none' : 'odometer ${d.handover!.initialOdomete
                     ],
                   ),
                 ),
-    );
-  }
-
-  Widget _section(String title, List<String> lines) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(title,
-              style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w800)),
-          const SizedBox(height: 6),
-          ...lines.map((l) => Padding(
-                padding: const EdgeInsets.only(bottom: 3),
-                child: Text(l,
-                    style: const TextStyle(
-                        fontSize: 13)),
-              )),
-        ],
-      ),
     );
   }
 }

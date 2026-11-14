@@ -135,12 +135,12 @@ class _ShopCarsViewState extends State<ShopCarsView> {
                             fontWeight:
                                 isSelected ? FontWeight.w800 : FontWeight.w600,
                             color: isSelected
-                                ? Colors.white
+                                ? AppColors.surfaceLight
                                 : Theme.of(context).colorScheme.onSurface),
                     side: BorderSide(
                       color: isSelected
                           ? AppColors.primary
-                          : Theme.of(context).dividerColor,
+                          : Theme.of(context).colorScheme.outlineVariant,
                     ),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20)),

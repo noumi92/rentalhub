@@ -5,8 +5,10 @@ import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/responsive.dart';
 import '../../../../core/widgets/app_feedback.dart';
+import '../../../../core/widgets/app_state_views.dart';
 import '../../../discovery/data/models/shop_model.dart';
 import '../../data/datasources/admin_shops_data_source.dart';
+import '../widgets/admin_detail_section.dart';
 import '../widgets/admin_shell.dart';
 import '../widgets/admin_suspend_dialog.dart';
 import '../widgets/shop_detail_actions.dart';
@@ -28,6 +30,7 @@ class _AdminShopDetailViewState extends State<AdminShopDetailView> {
   int _vehicleCount = 0;
   int _bookingCount = 0;
   bool _isLoading = true;
+  bool _hasError = false;
   bool _isWorking = false;
 
   @override
@@ -37,17 +40,24 @@ class _AdminShopDetailViewState extends State<AdminShopDetailView> {
   }
 
   Future<void> _load() async {
-    final ds = sl<AdminShopsDataSource>();
-    final shop = await ds.getShop(widget.shopId);
-    final vehicles = await ds.getShopVehicleCount(widget.shopId);
-    final bookings = await ds.getShopBookingCount(widget.shopId);
-    if (mounted) {
-      setState(() {
-        _shop = shop;
-        _vehicleCount = vehicles;
-        _bookingCount = bookings;
-        _isLoading = false;
-      });
+    if (!_isLoading) setState(() => _hasError = false);
+    try {
+      final ds = sl<AdminShopsDataSource>();
+      final shop = await ds.getShop(widget.shopId);
+      final vehicles = await ds.getShopVehicleCount(widget.shopId);
+      final bookings = await ds.getShopBookingCount(widget.shopId);
+      if (mounted) {
+        setState(() {
+          _shop = shop;
+          _vehicleCount = vehicles;
+          _bookingCount = bookings;
+          _isLoading = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() => _hasError = true);
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -85,19 +95,15 @@ class _AdminShopDetailViewState extends State<AdminShopDetailView> {
       onRefresh: _load,
       onBack: () => context.go(RouteNames.adminShops),
       child: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _shop == null
-              ? const Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(32),
-                    child: Text(
-                      'Shop not found.',
-                      style: TextStyle(
-                          fontWeight: FontWeight.w700),
-                    ),
-                  ),
+          ? const AppLoadingState()
+          : _hasError
+              ? AppErrorState(
+                  message: 'Could not load this shop.',
+                  onRetry: _load,
                 )
-              : SingleChildScrollView(
+              : _shop == null
+                  ? const AppEmptyState(title: 'Shop not found.')
+                  : SingleChildScrollView(
                   // Mobile-first: 16dp on a phone, 24dp on desktop.
                   padding: EdgeInsets.all(
                       windowSizeClassOf(context) ==
@@ -143,12 +149,14 @@ class _AdminShopDetailViewState extends State<AdminShopDetailView> {
                                 color: Theme.of(context).colorScheme.error)),
                       ],
                       const SizedBox(height: 20),
-                      _section('KYC documents',
-                          _shop!.kycDocuments.isEmpty
+                      AdminDetailSection(
+                          title: 'KYC documents',
+                          lines: _shop!.kycDocuments.isEmpty
                               ? ['None uploaded yet.']
                               : _shop!.kycDocuments.keys.toList()),
-                      _section('Bank / wallet accounts',
-                          _shop!.bankAccounts.isEmpty
+                      AdminDetailSection(
+                          title: 'Bank / wallet accounts',
+                          lines: _shop!.bankAccounts.isEmpty
                               ? ['None on file.']
                               : _shop!.bankAccounts
                                   .map((a) =>
@@ -186,28 +194,6 @@ class _AdminShopDetailViewState extends State<AdminShopDetailView> {
               style: const TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w800)),
-        ],
-      ),
-    );
-  }
-
-  Widget _section(String title, List<String> lines) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(title,
-              style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w800)),
-          const SizedBox(height: 6),
-          ...lines.map((l) => Padding(
-                padding: const EdgeInsets.only(bottom: 3),
-                child: Text(l,
-                    style: const TextStyle(
-                        fontSize: 13)),
-              )),
         ],
       ),
     );

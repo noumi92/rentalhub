@@ -91,6 +91,8 @@ class KycMediaUploadService {
     final files = <String, XFile?>{
       'profilePhotoUrl': draft.facePhoto,
       'thumbprintUrl': draft.thumbprintPhoto,
+      'leftFingerprintUrl': draft.leftFingersPhoto,
+      'rightFingerprintUrl': draft.rightFingersPhoto,
       'cnicFrontUrl': draft.cnicFrontPhoto,
       'cnicBackUrl': draft.cnicBackPhoto,
       'licenseFrontUrl': draft.licenseFrontPhoto,

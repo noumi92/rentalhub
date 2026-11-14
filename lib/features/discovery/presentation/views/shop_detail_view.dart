@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/app_state_views.dart';
@@ -150,7 +151,7 @@ class _ShopDetailViewState extends State<ShopDetailView> {
                       _saved
                           ? Icons.favorite_rounded
                           : Icons.favorite_border_rounded,
-                      color: Colors.white,
+                      color: AppColors.surfaceLight,
                       size: 22,
                     ),
                     tooltip: _saved ? l10n.shopSaved : l10n.shopSave,
@@ -159,7 +160,10 @@ class _ShopDetailViewState extends State<ShopDetailView> {
                 ],
               ),
               Padding(
-                padding: const EdgeInsets.only(left: 20, top: 12),
+                // Directional padding: the badge aligns with the
+                // 16dp content padding in both LTR and RTL (Urdu);
+                // the old left: 20 was asymmetric and RTL-wrong.
+                padding: const EdgeInsetsDirectional.only(start: 16, top: 12),
                 child: VerifiedBadge(isVerified: shop.isVerified),
               ),
               Padding(
@@ -199,12 +203,18 @@ class _ShopDetailViewState extends State<ShopDetailView> {
                           child: Center(
                             child: TextButton.icon(
                               onPressed: widget.onViewAllCars,
+                              style: TextButton.styleFrom(
+                                // 48dp minimum touch target.
+                                minimumSize: const Size(0, 48),
+                              ),
                               icon: const Icon(
                                 Icons.directions_car_rounded,
                                 size: 18,
                               ),
                               label: Text(
                                 l10n.shopViewAllCars,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
                           ),

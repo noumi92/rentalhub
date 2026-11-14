@@ -75,7 +75,8 @@ class _CustomerCancelBookingViewState extends State<CustomerCancelBookingView> {
         widget.onCancelled?.call();
       }
     } catch (e) {
-      if (mounted) AppFeedback.showError(context, l10n.cancelFailed(e.toString()));
+      debugPrint('Booking cancel failed: $e');
+      if (mounted) AppFeedback.showError(context, l10n.cancelFailedGeneric);
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
     }
@@ -85,7 +86,10 @@ class _CustomerCancelBookingViewState extends State<CustomerCancelBookingView> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
+      // MinimalAppBar owns the top inset — SafeArea(top: false)
+      // avoids the double status-bar band (SH-M3 class).
       body: SafeArea(
+        top: false,
         child: Column(
           children: [
             MinimalAppBar(
@@ -102,7 +106,8 @@ class _CustomerCancelBookingViewState extends State<CustomerCancelBookingView> {
                     Container(
                       padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
-                        color: AppColors.errorContainer,
+                        color: AppColors.errorContainerFor(
+                            Theme.of(context).brightness),
                         borderRadius: BorderRadius.circular(14),
                         border: Border.all(
                             color:
@@ -188,14 +193,16 @@ class _CustomerCancelBookingViewState extends State<CustomerCancelBookingView> {
                 color: Theme.of(context).colorScheme.surface,
                 boxShadow: [
                   BoxShadow(
-                      color: Color(0x14000000),
+                      color: Colors.black.withValues(alpha: 0.08),
                       blurRadius: 10,
                       offset: Offset(0, -3))
                 ],
               ),
               child: DebouncedButton(
                 text: _isSubmitting ? l10n.cancelCancelling : l10n.cancelConfirm,
-                backgroundColor: AppColors.accentDanger,
+                // White on accentDanger #EF4444 is ~3.9:1 — below AA
+                // for the 14 sp label. errorDark #DC2626 is ~4.9:1.
+                backgroundColor: AppColors.errorDark,
                 icon: Icons.cancel_outlined,
                 isLoading: _isSubmitting,
                 onPressed: _cancelBooking,

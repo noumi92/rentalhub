@@ -51,17 +51,33 @@ void main() {
     MockImagePickerPlatform.tearDown();
   });
 
-  /// Rear-camera picks go through the media source sheet — except
-  /// the license tiles, which open the rear camera directly
-  /// (camera-only KYC rule, no sheet, no gallery).
-  Future<void> tapRearCamera(WidgetTester tester, Key buttonKey) async {
+  /// License tiles show a spinner while OCR runs; the OCR future
+  /// never completes under the fake clock (ML Kit channel), so
+  /// pumpAndSettle would time out on the spinner — pump fixed
+  /// frames instead. The photo is stored before OCR starts.
+  Future<void> tapLicenseCamera(WidgetTester tester, Key buttonKey) async {
     await tester.ensureVisible(find.byKey(buttonKey));
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
     await tester.tap(find.byKey(buttonKey));
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+  }
+
+  /// Same fixed-frame pumping for a sheet-based pick made while
+  /// the license spinners are still animating (e.g. the bill tile
+  /// on step 3): no pumpAndSettle until step 3 leaves the tree.
+  Future<void> tapSheetCamera(WidgetTester tester, Key buttonKey) async {
+    await tester.ensureVisible(find.byKey(buttonKey));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+    await tester.tap(find.byKey(buttonKey));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
     if (find.text('Take Photo (Back Camera)').evaluate().isNotEmpty) {
       await tester.tap(find.text('Take Photo (Back Camera)'));
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
     }
   }
 
@@ -123,39 +139,60 @@ void main() {
     await tester.tap(find.text('Next'));
     await tester.pumpAndSettle();
 
-    // Step 2: face (front camera) + thumbprint (rear via sheet).
+    // Step 2: face (front camera) + finger photos (rear camera,
+    // left + right hand). The finger sections sit below
+    // the fold at the default test size — scroll them into view
+    // first or the taps miss and validation keeps us on step 2.
+    // (The face button needs the same treatment: the scroll view
+    // keeps step 1's scrolled-down offset when the step changes,
+    // so it starts above the viewport.)
     expect(find.byType(Step2Photo), findsOneWidget);
+    await tester.ensureVisible(find.byKey(const ValueKey('step2_face_take')));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('step2_face_take')));
     await tester.pumpAndSettle();
-    await tapRearCamera(tester, const ValueKey('step2_thumb_take'));
+    await tester.ensureVisible(find.byKey(const ValueKey('step2_finger_left_scan')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('step2_finger_left_scan')));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.byKey(const ValueKey('step2_finger_right_scan')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('step2_finger_right_scan')));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Next'));
     await tester.pumpAndSettle();
 
     // Step 3: license front/back + bill, number + expiry, signature,
     // terms.
     expect(find.byType(Step3Docs), findsOneWidget);
-    await tapRearCamera(tester, const ValueKey('step3_license_front'));
-    await tapRearCamera(tester, const ValueKey('step3_license_back'));
-    await tapRearCamera(tester, const ValueKey('step3_bill'));
+    await tapLicenseCamera(tester, const ValueKey('step3_license_front'));
+    await tapLicenseCamera(tester, const ValueKey('step3_license_back'));
+    await tapSheetCamera(tester, const ValueKey('step3_bill'));
     final licenseFields = find.byType(TextFormField);
     await tester.enterText(licenseFields.at(0), 'LHR-1234567');
     await tester.enterText(licenseFields.at(1), '01.01.2030');
     await tester.pump();
     await tester.ensureVisible(find.byType(Signature));
-    await tester.pumpAndSettle();
+    // Fixed frames, not settle: the license spinners are still
+    // animating (OCR never completes under the fake clock).
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
     await tester.drag(find.byType(Signature), const Offset(100, 5));
     await tester.pump();
     await tester.ensureVisible(
         find.byKey(const ValueKey('step3_signature_confirm')));
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
     await tester.tap(find.byKey(const ValueKey('step3_signature_confirm')));
     await tester.runAsync(() async {
       await Future.delayed(const Duration(milliseconds: 500));
     });
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
     await tester.ensureVisible(
         find.byKey(const ValueKey('step3_terms_checkbox')));
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
     await tester.tap(find.byKey(const ValueKey('step3_terms_checkbox')));
     await tester.pump();
     await tester.tap(find.text('Next'));
@@ -176,7 +213,11 @@ void main() {
     expect(saved?.name, 'Ayesha Khan');
     expect(saved?.phone, '0300-4444444');
     expect(saved?.profilePhotoUrl, 'https://cdn.example/kyc/face.jpg');
-    expect(saved?.thumbprintUrl, 'https://cdn.example/kyc/thumb.jpg');
+    expect(saved?.thumbprintUrl, isNull);
+    expect(saved?.leftFingerprintUrl,
+        'https://cdn.example/kyc/finger-left.jpg');
+    expect(saved?.rightFingerprintUrl,
+        'https://cdn.example/kyc/finger-right.jpg');
     expect(saved?.licenseFrontUrl, 'https://cdn.example/kyc/lic-front.jpg');
     expect(saved?.licenseBackUrl, 'https://cdn.example/kyc/lic-back.jpg');
     expect(saved?.utilityBillUrl, 'https://cdn.example/kyc/bill.jpg');
@@ -202,6 +243,14 @@ class _FakeUploader extends KycMediaUploadService {
     }
     if (draft.thumbprintPhoto != null) {
       result.urls['thumbprintUrl'] = 'https://cdn.example/kyc/thumb.jpg';
+    }
+    if (draft.leftFingersPhoto != null) {
+      result.urls['leftFingerprintUrl'] =
+          'https://cdn.example/kyc/finger-left.jpg';
+    }
+    if (draft.rightFingersPhoto != null) {
+      result.urls['rightFingerprintUrl'] =
+          'https://cdn.example/kyc/finger-right.jpg';
     }
     if (draft.cnicFrontPhoto != null) {
       result.urls['cnicFrontUrl'] = 'https://cdn.example/kyc/cnic-front.jpg';

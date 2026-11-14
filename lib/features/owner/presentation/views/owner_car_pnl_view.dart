@@ -154,12 +154,8 @@ class _OwnerCarPnLViewState extends State<OwnerCarPnLView> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text(l10n.financePnlTitle,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleSmall
-                                          ?.copyWith(
-                                              fontWeight: FontWeight.w800)),
+                                  Expanded(child: Text(l10n.financePnlTitle, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800))),
+                                  const SizedBox(width: 8),
                                   DropdownButton<String>(
                                     dropdownColor: Theme.of(context)
                                         .colorScheme

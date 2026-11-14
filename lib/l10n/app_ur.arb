@@ -873,6 +873,7 @@
       }
     }
   },
+  "cancelFailedGeneric": "منسوخی ناکام رہی۔ براہ کرم دوبارہ کوشش کریں۔",
   "cancelAdvancePaid": "آپ نے شوروم کے اکاؤنٹ میں براہ راست {amount} روپے ایڈوانس ادا کیا — رقم واپسی کا فیصلہ شوروم کرتا ہے، اس لیے اس بارے میں ان سے رابطہ کریں۔ کوئی سیکیورٹی ڈپازٹ نہیں لیا گیا: ڈپازٹ صرف حوالگی پر لیا جاتا ہے۔",
   "@cancelAdvancePaid": {
     "placeholders": {
@@ -929,6 +930,7 @@
       }
     }
   },
+  "proofSubmitFailedGeneric": "ادائیگی کا ثبوت جمع نہیں ہو سکا۔ براہ کرم دوبارہ کوشش کریں۔",
   "proofBookingId": "بکنگ ID: {id}",
   "@proofBookingId": {
     "placeholders": {
@@ -2221,6 +2223,7 @@
   },
   "contractScanVerify": "اس معاہدے کی تصدیق کے لیے اسکین کریں — صفحہ بکنگ، شوروم اور دستخط شدہ پی ڈی ایف دکھاتا ہے۔",
   "contractProceedReturn": "واپسی اور تصفیے کی طرف بڑھیں",
+  "contractProceedReturnHint": "گاڑی حوالے کرنے کے بعد دستیاب ہوگا",
   "contractAgencyLine": "حکومت سے رجسٹرڈ کمرشل موٹر کار رینٹل ایجنسی",
   "contractCertifiedTitle": "رینٹل معاہدہ",
   "contractFieldAgreementNo": "معاہدہ نمبر:",
@@ -2874,6 +2877,19 @@
   "kycWizardThumbprint": "انگوٹھے کا نشان",
   "kycWizardThumbHint": "دائیں انگوٹھے کی تصویر لیں",
   "kycWizardPhotoRequired": "جاری رکھنے کے لیے تصویر ضروری ہے",
+  "kycWizardFingerprints": "انگلیوں کے نشانات",
+  "kycWizardLeftHand": "بایاں ہاتھ — 4 انگلیاں",
+  "kycWizardRightHand": "دایاں ہاتھ — 4 انگلیاں",
+  "kycWizardFingerHint": "4 انگلیاں پچھلے کیمرے کے سامنے مستحکم رکھیں",
+  "kycWizardFingerScan": "اسکین کریں",
+  "kycWizardFingerCaptured": "4 انگلیاں محفوظ ہو گئیں",
+  "kycWizardFingerNotConfigured": "فنگر پرنٹ لائسنس ابھی ترتیب نہیں دیا گیا۔ دکان کے مالک سے کلید شامل کرنے کو کہیں۔",
+  "kycWizardFingerRequired": "آگے بڑھنے کے لیے دونوں ہاتھوں کی انگلیوں کے نشانات ضروری ہیں",
+  "kycWizardRelationPickFirst": "رشتہ منتخب کرنے کے لیے پہلے اوپر سے ضامن چنیں",
+  "kycWizardGalleryFront": "سامنے والا حصہ گیلری سے",
+  "kycWizardGalleryBack": "پچھلا حصہ گیلری سے",
+  "kycWizardImageNotClear": "یہ تصویر واضح نہیں ہے — کوئی معلومات پڑھی نہیں جا سکیں۔ براہ کرم اچھی روشنی میں تیز اور واضح تصویر فراہم کریں۔",
+  "kycWizardRemoveImage": "ہٹائیں",
   "kycWizardLicense": "ڈرائیونگ لائسنس",
   "kycWizardLicenseFront": "لائسنس کا سامنے والا حصہ",
   "kycWizardLicenseBack": "لائسنس کا پچھلا حصہ",
@@ -3694,6 +3710,10 @@
   "customerDetailLicenseFront": "لائسنس سامنے",
   "customerDetailLicenseBack": "لائسنس پیچھے",
   "customerDetailSignature": "دستخط",
+  "customerDetailFingerprints": "انگلیوں کے نشانات محفوظ ہیں",
+  "customerDetailFingerprintsNone": "انگلیوں کے نشانات محفوظ نہیں ہیں",
+  "customerDetailFingerprintsLeft": "بایاں ہاتھ",
+  "customerDetailFingerprintsRight": "دایاں ہاتھ",
   "customerDetailRentalHistory": "کرایہ کی تاریخ",
   "customerDetailTotalSpent": "کل خرچ",
   "customerDetailTotalDues": "بقایا رقم",

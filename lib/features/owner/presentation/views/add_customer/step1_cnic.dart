@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/di/injection_container.dart';
 import '../../../../../core/utils/pakistani_validators.dart';
 import '../../../../../core/widgets/app_feedback.dart';
@@ -12,6 +13,7 @@ import '../../../../blacklist/data/datasources/blacklist_remote_data_source.dart
 import '../../../../trust/data/services/cnic_ocr_service.dart';
 import '../../../../trust/data/services/document_qr_service.dart';
 import '../../../../trust/utils/cnic_text_parser.dart';
+import 'cnic_capture_section.dart';
 import 'kyc_draft.dart';
 import 'kyc_step.dart';
 
@@ -23,10 +25,12 @@ class Step1Cnic extends StatefulWidget {
   final KycDraft draft;
   final VoidCallback onChanged;
 
-  /// Test seam for the QR reader; defaults to the real service.
+  /// Test seams for the QR reader and the OCR service; both
+  /// default to the real services.
   final DocumentQrService? qrService;
+  final CnicOcrService? ocrService;
 
-  const Step1Cnic({super.key, required this.draft, required this.onChanged, this.qrService});
+  const Step1Cnic({super.key, required this.draft, required this.onChanged, this.qrService, this.ocrService});
 
   @override
   State<Step1Cnic> createState() => _Step1CnicState();
@@ -51,11 +55,13 @@ class _Step1CnicState extends KycStepState<Step1Cnic> {
   bool _scanningFront = false;
   bool _scanningBack = false;
   late final DocumentQrService _qrService;
+  late final CnicOcrService _ocrService;
 
   @override
   void initState() {
     super.initState();
     _qrService = widget.qrService ?? DocumentQrService();
+    _ocrService = widget.ocrService ?? CnicOcrService();
     final d = widget.draft;
     _nameController = TextEditingController(text: d.name);
     _fatherController = TextEditingController(text: d.fatherName);
@@ -139,16 +145,23 @@ class _Step1CnicState extends KycStepState<Step1Cnic> {
     _addressController.text = widget.draft.address;
   }
 
-  Future<void> _scanCnic({required bool front}) async {
+  /// Picks a CNIC side from the rear camera (default) or the gallery
+  /// (guarded). A gallery photo is scanned first: if no information
+  /// can be extracted from it, the photo is rejected and the owner is
+  /// asked for a sharp, high-resolution image instead of saving an
+  /// unreadable photo. The camera path keeps its existing behaviour.
+  Future<void> _pickCnic({required bool front, required bool fromGallery}) async {
     final l10n = AppLocalizations.of(context)!;
-    final picked = await ImagePicker().pickImage(source: ImageSource.camera, preferredCameraDevice: CameraDevice.rear, imageQuality: 85);
+    final picked = fromGallery
+        ? await ImagePicker().pickImage(source: ImageSource.gallery)
+        : await ImagePicker().pickImage(source: ImageSource.camera, preferredCameraDevice: CameraDevice.rear, imageQuality: 85);
     if (picked == null || !mounted) return;
     setState(() { if (front) { _scanningFront = true; } else { _scanningBack = true; } });
     try {
       if (front) {
-        final result = await CnicOcrService().scanFront(File(picked.path));
+        final result = await _ocrService.scanFront(File(picked.path));
         if (!mounted) return;
-        if (!result.hasAnything) { AppFeedback.showError(context, l10n.customersScanUnreadable); return; }
+        if (!result.hasAnything) { AppFeedback.showError(context, fromGallery ? l10n.kycWizardImageNotClear : l10n.customersScanUnreadable); return; }
         setState(() { widget.draft.cnicFrontPhoto = picked; _applyScanResult(result); });
       } else {
         // Back: the QR NUMBER is stored on the draft for the restricted
@@ -157,15 +170,13 @@ class _Step1CnicState extends KycStepState<Step1Cnic> {
         // loses the OCR address, and vice versa.
         final code = await _qrService.readQr(File(picked.path));
         CnicScanResult? ocr;
-        try { ocr = await CnicOcrService().scanBack(File(picked.path)); } catch (_) { ocr = null; }
+        try { ocr = await _ocrService.scanBack(File(picked.path)); } catch (_) { ocr = null; }
         if (!mounted) return;
-        setState(() {
-          widget.draft.cnicBackPhoto = picked;
-          if (code != null && code.isNotEmpty) widget.draft.qrCode = code;
-          if (ocr != null) _applyScanResult(ocr);
-        });
+        final nothingRead = (code == null || code.isEmpty) && (ocr == null || !ocr.hasAnything);
+        if (nothingRead && fromGallery) { AppFeedback.showError(context, l10n.kycWizardImageNotClear); return; }
+        setState(() { widget.draft.cnicBackPhoto = picked; if (code != null && code.isNotEmpty) widget.draft.qrCode = code; if (ocr != null) _applyScanResult(ocr); });
         if (code != null && code.isNotEmpty) AppFeedback.showSuccess(context, l10n.kyc2_qrRead);
-        if ((code == null || code.isEmpty) && (ocr == null || !ocr.hasAnything)) AppFeedback.showError(context, l10n.customersScanUnreadable);
+        if (nothingRead) AppFeedback.showError(context, l10n.customersScanUnreadable);
       }
       widget.onChanged();
     } catch (e) {
@@ -173,6 +184,14 @@ class _Step1CnicState extends KycStepState<Step1Cnic> {
     } finally {
       if (mounted) setState(() { if (front) { _scanningFront = false; } else { _scanningBack = false; } });
     }
+  }
+
+  /// Clears a captured CNIC photo so the owner can replace it.
+  /// Removing the back photo also clears the QR number read from
+  /// it; the OCR-filled fields stay (they are editable by hand).
+  void _removeCnicPhoto({required bool front}) {
+    setState(() { if (front) { widget.draft.cnicFrontPhoto = null; } else { widget.draft.cnicBackPhoto = null; widget.draft.qrCode = ''; } });
+    widget.onChanged();
   }
 
   Widget _field(TextEditingController controller, String label, {TextInputType keyboard = TextInputType.text, String? hint, String? Function(String?)? validator, List<TextInputFormatter>? formatters, int maxLines = 1}) {
@@ -186,36 +205,15 @@ class _Step1CnicState extends KycStepState<Step1Cnic> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final errorColor = Theme.of(context).colorScheme.error;
-    final okColor = Theme.of(context).colorScheme.primary;
+    // The "clean" line is a success message — the success token, not
+    // the orange primary (orange reads as a warning/action colour).
+    final okColor = AppColors.accentSuccessStrong;
     return Form(
       key: _formKey,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
+      child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: _scanningFront ? null : () => _scanCnic(front: true),
-                    icon: _scanningFront ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.credit_card_rounded),
-                    label: Text(l10n.kycWizardScanFront))),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: _scanningBack ? null : () => _scanCnic(front: false),
-                    icon: _scanningBack ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.flip_to_back_rounded),
-                    label: Text(l10n.kycWizardScanBack))),
-              ],
-            ),
-            if (widget.draft.cnicFrontPhoto != null || widget.draft.cnicBackPhoto != null) ...[
-              const SizedBox(height: 10),
-              Wrap(spacing: 8, children: [
-                if (widget.draft.cnicFrontPhoto != null) Chip(avatar: const Icon(Icons.check_rounded, size: 16), label: Text(l10n.kycWizardFrontScanned)),
-                if (widget.draft.cnicBackPhoto != null) Chip(avatar: const Icon(Icons.check_rounded, size: 16), label: Text(l10n.kycWizardBackScanned)),
-              ]),
-            ],
+            CnicCaptureSection(draft: widget.draft, scanningFront: _scanningFront, scanningBack: _scanningBack, onPick: ({required bool front, required bool fromGallery}) => _pickCnic(front: front, fromGallery: fromGallery), onRemove: ({required bool front}) => _removeCnicPhoto(front: front)),
             const SizedBox(height: 16),
             Text(l10n.kycWizardManualEntry, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
             const SizedBox(height: 12),
@@ -236,7 +234,6 @@ class _Step1CnicState extends KycStepState<Step1Cnic> {
             _field(_addressController, l10n.kycWizardAddress, maxLines: 3),
             _field(_phoneController, l10n.kycWizardWhatsappNumber, keyboard: TextInputType.phone, hint: '0300-1234567', validator: PakistaniValidators.validatePakistaniPhone, formatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9+\- ]')), LengthLimitingTextInputFormatter(15)]),
           ],
-        ),
       ),
     );
   }

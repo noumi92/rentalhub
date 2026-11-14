@@ -109,6 +109,8 @@ class KycCustomerSaver {
       address: _orNull(draft.address),
       profilePhotoUrl: uploads.urls['profilePhotoUrl'],
       thumbprintUrl: uploads.urls['thumbprintUrl'],
+      leftFingerprintUrl: uploads.urls['leftFingerprintUrl'],
+      rightFingerprintUrl: uploads.urls['rightFingerprintUrl'],
       cnicFrontUrl: uploads.urls['cnicFrontUrl'],
       cnicBackUrl: uploads.urls['cnicBackUrl'],
       licenseNumber: _orNull(draft.licenseNumber),

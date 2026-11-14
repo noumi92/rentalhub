@@ -4,6 +4,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/responsive.dart';
+import '../../../../core/widgets/app_state_views.dart';
 import '../../../discovery/data/models/shop_model.dart';
 import '../../data/datasources/admin_shops_data_source.dart';
 import '../widgets/admin_shell.dart';
@@ -24,6 +25,7 @@ class AdminShopApprovalsView extends StatefulWidget {
 class _AdminShopApprovalsViewState extends State<AdminShopApprovalsView> {
   List<ShopModel> _pending = [];
   bool _isLoading = true;
+  bool _hasError = false;
 
   @override
   void initState() {
@@ -32,12 +34,19 @@ class _AdminShopApprovalsViewState extends State<AdminShopApprovalsView> {
   }
 
   Future<void> _load() async {
-    final pending = await sl<AdminShopsDataSource>().getPendingShops();
-    if (mounted) {
-      setState(() {
-        _pending = pending;
-        _isLoading = false;
-      });
+    if (!_isLoading) setState(() => _hasError = false);
+    try {
+      final pending = await sl<AdminShopsDataSource>().getPendingShops();
+      if (mounted) {
+        setState(() {
+          _pending = pending;
+          _isLoading = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() => _hasError = true);
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -60,21 +69,18 @@ class _AdminShopApprovalsViewState extends State<AdminShopApprovalsView> {
       subtitle: 'Applications waiting for a decision',
       onRefresh: _load,
       child: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _pending.isEmpty
-              ? Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(32),
-                    child: Text(
-                      'No pending applications — every shop has been decided.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          fontWeight: FontWeight.w700,
-                          color: Theme.of(context).colorScheme.onSurfaceVariant),
-                    ),
-                  ),
+          ? const AppLoadingState()
+          : _hasError
+              ? AppErrorState(
+                  message: 'Could not load the shop approvals.',
+                  onRetry: _load,
                 )
-              : ListView.separated(
+              : _pending.isEmpty
+                  ? const AppEmptyState(
+                      title: 'No pending applications',
+                      message: 'Every shop has been decided.',
+                    )
+                  : ListView.separated(
                   // Mobile-first: 16dp on a phone, 24dp on desktop.
                   padding: EdgeInsets.all(
                       windowSizeClassOf(context) ==

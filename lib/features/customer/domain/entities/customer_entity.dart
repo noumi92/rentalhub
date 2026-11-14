@@ -31,6 +31,14 @@ class CustomerEntity extends Equatable {
   /// it manually, so there is no match score or isVerified flag here.
   final String? profilePhotoUrl;
   final String? thumbprintUrl;
+
+  /// Fingerprint photos (one photo per hand showing the 4 fingers,
+  /// rear camera). Photos, never scans — no SDK is in the app. Null
+  /// for older records (predate the photos) and for customers added
+  /// without a capture.
+  final String? leftFingerprintUrl;
+  final String? rightFingerprintUrl;
+
   final String? cnicFrontUrl;
   final String? cnicBackUrl;
   final String? licenseNumber;
@@ -75,6 +83,8 @@ class CustomerEntity extends Equatable {
     this.address,
     this.profilePhotoUrl,
     this.thumbprintUrl,
+    this.leftFingerprintUrl,
+    this.rightFingerprintUrl,
     this.cnicFrontUrl,
     this.cnicBackUrl,
     this.licenseNumber,
@@ -105,6 +115,8 @@ class CustomerEntity extends Equatable {
     String? address,
     String? profilePhotoUrl,
     String? thumbprintUrl,
+    String? leftFingerprintUrl,
+    String? rightFingerprintUrl,
     String? cnicFrontUrl,
     String? cnicBackUrl,
     String? licenseNumber,
@@ -138,6 +150,9 @@ class CustomerEntity extends Equatable {
       address: address ?? this.address,
       profilePhotoUrl: profilePhotoUrl ?? this.profilePhotoUrl,
       thumbprintUrl: thumbprintUrl ?? this.thumbprintUrl,
+      leftFingerprintUrl: leftFingerprintUrl ?? this.leftFingerprintUrl,
+      rightFingerprintUrl:
+          rightFingerprintUrl ?? this.rightFingerprintUrl,
       cnicFrontUrl: cnicFrontUrl ?? this.cnicFrontUrl,
       cnicBackUrl: cnicBackUrl ?? this.cnicBackUrl,
       licenseNumber: licenseNumber ?? this.licenseNumber,
@@ -179,6 +194,8 @@ class CustomerEntity extends Equatable {
         address,
         profilePhotoUrl,
         thumbprintUrl,
+        leftFingerprintUrl,
+        rightFingerprintUrl,
         cnicFrontUrl,
         cnicBackUrl,
         licenseNumber,

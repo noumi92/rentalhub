@@ -6,14 +6,17 @@ import 'package:image_picker/image_picker.dart';
 import '../../../../../core/widgets/app_feedback.dart';
 import '../../../../../core/widgets/media_picker_helper.dart';
 import '../../../../../l10n/app_localizations.dart';
+import 'finger_capture_section.dart';
 import 'kyc_draft.dart';
 import 'kyc_step.dart';
 
-/// Wizard step 2 — live face photo + thumbprint (spec O13).
+/// Wizard step 2 — live face photo + fingerprints (spec O13).
 ///
-/// No face matching happens anywhere: the photos are saved and an
-/// admin reviews them manually. The face is captured with the FRONT
-/// camera; the thumbprint with the REAR camera.
+/// No face matching happens anywhere: the photo is saved and an
+/// admin reviews it manually. The face is captured with the FRONT
+/// camera; the fingerprints are a PHOTO of each hand's 4 fingers
+/// (left + right, no thumbs) with the REAR camera — photos, never
+/// scans (no fingerprint SDK in the app).
 class Step2Photo extends StatefulWidget {
   final KycDraft draft;
   final VoidCallback onChanged;
@@ -37,27 +40,23 @@ class Step2PhotoState extends KycStepState<Step2Photo> {
     );
   }
 
-  Future<void> _pickThumbprint() async {
-    await MediaPickerHelper.showMediaSourceSheet(
-      context: context,
-      onImageSelected: (file) {
-        if (file == null || !mounted) return;
-        setState(() => widget.draft.thumbprintPhoto = file);
-        widget.onChanged();
-      },
-    );
-  }
-
   @override
   Future<bool> validate() async {
-    final ok = widget.draft.hasFacePhoto && widget.draft.hasThumbprint;
-    if (!ok && mounted) {
-      AppFeedback.showError(
-        context,
-        AppLocalizations.of(context)!.kycWizardPhotoRequired,
-      );
+    final l10n = AppLocalizations.of(context)!;
+    final draft = widget.draft;
+    if (!draft.hasFacePhoto) {
+      if (mounted) {
+        AppFeedback.showError(context, l10n.kycWizardPhotoRequired);
+      }
+      return false;
     }
-    return ok;
+    if (!draft.hasLeftFingerprints || !draft.hasRightFingerprints) {
+      if (mounted) {
+        AppFeedback.showError(context, l10n.kycWizardFingerRequired);
+      }
+      return false;
+    }
+    return true;
   }
 
   Widget _section(String title) => Padding(
@@ -121,53 +120,50 @@ class Step2PhotoState extends KycStepState<Step2Photo> {
                 onPressed: _pickFace,
                 child: Text(l10n.kycWizardRetake),
               ),
+              const SizedBox(width: 8),
+              TextButton(
+                key: const ValueKey('step2_face_remove'),
+                onPressed: () {
+                  setState(() => draft.facePhoto = null);
+                  widget.onChanged();
+                },
+                child: Text(l10n.kycWizardRemoveImage),
+              ),
             ],
           ],
         ),
         const SizedBox(height: 20),
-        _section(l10n.kycWizardThumbprint),
-        Container(
-          height: 120,
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surfaceContainerHighest,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Theme.of(context).dividerColor),
-          ),
-          child: draft.thumbprintPhoto == null
-              ? const Center(child: Icon(Icons.fingerprint_rounded, size: 48))
-              : ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: _photoImage(
-                    draft.thumbprintPhoto!,
-                    fit: BoxFit.cover,
-                  ),
-                ),
+        _section(l10n.kycWizardFingerprints),
+        FingerCaptureSection(
+          title: l10n.kycWizardLeftHand,
+          photo: draft.leftFingersPhoto,
+          onCaptured: (file) {
+            setState(() => draft.leftFingersPhoto = file);
+          },
+          onRemove: () {
+            setState(() => draft.leftFingersPhoto = null);
+            widget.onChanged();
+          },
+          onChanged: widget.onChanged,
+          scanButtonKey: const ValueKey('step2_finger_left_scan'),
+          retakeButtonKey: const ValueKey('step2_finger_left_retake'),
+          removeButtonKey: const ValueKey('step2_finger_left_remove'),
         ),
-        const SizedBox(height: 8),
-        Text(
-          l10n.kycWizardThumbHint,
-          style: Theme.of(context).textTheme.labelMedium?.copyWith(
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Row(
-          children: [
-            OutlinedButton.icon(
-              key: const ValueKey('step2_thumb_take'),
-              onPressed: _pickThumbprint,
-              icon: const Icon(Icons.camera_alt_rounded),
-              label: Text(l10n.kycTakePhoto),
-            ),
-            if (draft.hasThumbprint) ...[
-              const SizedBox(width: 8),
-              TextButton(
-                key: const ValueKey('step2_thumb_retake'),
-                onPressed: _pickThumbprint,
-                child: Text(l10n.kycWizardRetake),
-              ),
-            ],
-          ],
+        const SizedBox(height: 20),
+        FingerCaptureSection(
+          title: l10n.kycWizardRightHand,
+          photo: draft.rightFingersPhoto,
+          onCaptured: (file) {
+            setState(() => draft.rightFingersPhoto = file);
+          },
+          onRemove: () {
+            setState(() => draft.rightFingersPhoto = null);
+            widget.onChanged();
+          },
+          onChanged: widget.onChanged,
+          scanButtonKey: const ValueKey('step2_finger_right_scan'),
+          retakeButtonKey: const ValueKey('step2_finger_right_retake'),
+          removeButtonKey: const ValueKey('step2_finger_right_remove'),
         ),
       ],
     );

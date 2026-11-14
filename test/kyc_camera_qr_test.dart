@@ -24,6 +24,7 @@ import 'package:rentalhub/features/owner/presentation/views/add_customer/step3_d
 import 'package:rentalhub/features/owner/presentation/views/owner_cnic_review_view.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_customer_detail_view.dart';
 import 'package:rentalhub/features/trust/data/models/customer_qr_code_model.dart';
+import 'package:rentalhub/features/trust/data/services/cnic_ocr_service.dart';
 import 'package:rentalhub/features/trust/data/services/customer_qr_code_service.dart';
 import 'package:rentalhub/features/trust/data/services/document_qr_service.dart';
 import 'package:rentalhub/features/trust/domain/entities/kyc_document_entity.dart';
@@ -48,6 +49,20 @@ import 'test_helper.dart';
 ///   and only for a super admin there;
 /// - the driving license gets the same capture treatment with OCR
 ///   auto-fill of number/expiry.
+/// Fake CNIC OCR: returns canned results instead of ML Kit.
+class _FakeCnicOcrService extends CnicOcrService {
+  final CnicScanResult frontResult;
+  final CnicScanResult backResult;
+
+  _FakeCnicOcrService({required this.frontResult, required this.backResult});
+
+  @override
+  Future<CnicScanResult> scanFront(File image) async => frontResult;
+
+  @override
+  Future<CnicScanResult> scanBack(File image) async => backResult;
+}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -470,6 +485,154 @@ void main() {
       expect(mockPicker.callCount, 1);
       expect(mockPicker.lastSource, ImageSource.camera);
       expect(mockPicker.lastCameraDevice, CameraDevice.rear);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('gallery front with an unreadable image is rejected',
+        (tester) async {
+      final draft = KycDraft();
+      await pumpApp(
+        tester,
+        Step1Cnic(draft: draft, onChanged: () {}),
+      );
+
+      // The ML Kit mock returns empty text, so nothing is extractable.
+      await tester.tap(find.text('Front from gallery'));
+      await tester.pumpAndSettle();
+
+      expect(mockPicker.callCount, 1);
+      expect(mockPicker.lastSource, ImageSource.gallery);
+      expect(
+        find.text(
+            'This photo is not clear enough — no information could be read. Please provide a sharp, high-resolution photo with good light.'),
+        findsOneWidget,
+      );
+      // Guarded: the unreadable gallery photo is NOT stored.
+      expect(draft.cnicFrontPhoto, isNull);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('gallery front with a readable image stores it and fills fields',
+        (tester) async {
+      final draft = KycDraft();
+      await pumpApp(
+        tester,
+        Step1Cnic(
+          draft: draft,
+          onChanged: () {},
+          ocrService: _FakeCnicOcrService(
+            frontResult: const CnicScanResult(
+              name: 'Ayesha Khan',
+              fatherName: 'Muhammad Khan',
+              cnicNumber: '35201-4444444-4',
+              dateOfBirth: '15.03.1990',
+              dateOfExpiry: '01.01.2030',
+              address: 'House 1, Lahore',
+            ),
+            backResult: const CnicScanResult(),
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('Front from gallery'));
+      await tester.pumpAndSettle();
+
+      expect(mockPicker.lastSource, ImageSource.gallery);
+      expect(draft.cnicFrontPhoto, isNotNull);
+      expect(draft.name, 'Ayesha Khan');
+      expect(draft.cnic, '35201-4444444-4');
+      // Thumbnail with a remove button.
+      expect(find.byKey(const ValueKey('step1_cnic_front_remove')),
+          findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('gallery back with no QR and no readable text is rejected',
+        (tester) async {
+      final draft = KycDraft();
+      await pumpApp(
+        tester,
+        Step1Cnic(
+          draft: draft,
+          onChanged: () {},
+          qrService: DocumentQrService(
+            analyzeImage: (_) async => null,
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('Back from gallery'));
+      await tester.pumpAndSettle();
+
+      expect(mockPicker.lastSource, ImageSource.gallery);
+      expect(
+        find.text(
+            'This photo is not clear enough — no information could be read. Please provide a sharp, high-resolution photo with good light.'),
+        findsOneWidget,
+      );
+      expect(draft.cnicBackPhoto, isNull);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('gallery back with a QR code stores the photo and the number',
+        (tester) async {
+      final draft = KycDraft();
+      await pumpApp(
+        tester,
+        Step1Cnic(
+          draft: draft,
+          onChanged: () {},
+          qrService: DocumentQrService(
+            analyzeImage: (_) async => 'QR-9988776655',
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('Back from gallery'));
+      await tester.pumpAndSettle();
+
+      expect(mockPicker.lastSource, ImageSource.gallery);
+      expect(draft.cnicBackPhoto, isNotNull);
+      expect(draft.qrCode, 'QR-9988776655');
+      expect(find.byKey(const ValueKey('step1_cnic_back_remove')),
+          findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('remove clears the back photo and its QR number',
+        (tester) async {
+      final draft = KycDraft()
+        ..cnicBackPhoto = XFile('test/assets/mock_cnic.jpg')
+        ..qrCode = 'QR-9988776655';
+      await pumpApp(
+        tester,
+        Step1Cnic(draft: draft, onChanged: () {}),
+      );
+
+      await tester.tap(find.byKey(const ValueKey('step1_cnic_back_remove')));
+      await tester.pumpAndSettle();
+
+      expect(draft.cnicBackPhoto, isNull);
+      expect(draft.qrCode, isEmpty);
+      expect(find.byKey(const ValueKey('step1_cnic_back_remove')),
+          findsNothing);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('remove clears the front photo', (tester) async {
+      final draft = KycDraft()
+        ..cnicFrontPhoto = XFile('test/assets/mock_cnic.jpg');
+      await pumpApp(
+        tester,
+        Step1Cnic(draft: draft, onChanged: () {}),
+      );
+
+      await tester.tap(find.byKey(const ValueKey('step1_cnic_front_remove')));
+      await tester.pumpAndSettle();
+
+      expect(draft.cnicFrontPhoto, isNull);
+      expect(find.byKey(const ValueKey('step1_cnic_front_remove')),
+          findsNothing);
       expect(tester.takeException(), isNull);
     });
   });

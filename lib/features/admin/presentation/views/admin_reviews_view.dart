@@ -4,6 +4,7 @@ import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/responsive.dart';
 import '../../../../core/widgets/app_feedback.dart';
+import '../../../../core/widgets/app_state_views.dart';
 import '../../data/datasources/admin_platform_data_source.dart';
 import '../widgets/admin_review_card.dart';
 import '../widgets/admin_shell.dart';
@@ -22,6 +23,7 @@ class AdminReviewsView extends StatefulWidget {
 class _AdminReviewsViewState extends State<AdminReviewsView> {
   List<AdminReview> _reviews = [];
   bool _isLoading = true;
+  bool _hasError = false;
   String _filter = 'all';
 
   @override
@@ -31,12 +33,19 @@ class _AdminReviewsViewState extends State<AdminReviewsView> {
   }
 
   Future<void> _load() async {
-    final reviews = await sl<AdminPlatformDataSource>().getReviews();
-    if (mounted) {
-      setState(() {
-        _reviews = reviews;
-        _isLoading = false;
-      });
+    if (!_isLoading) setState(() => _hasError = false);
+    try {
+      final reviews = await sl<AdminPlatformDataSource>().getReviews();
+      if (mounted) {
+        setState(() {
+          _reviews = reviews;
+          _isLoading = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() => _hasError = true);
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -62,9 +71,14 @@ class _AdminReviewsViewState extends State<AdminReviewsView> {
         content: TextField(
           controller: reasonController,
           maxLines: 2,
-          decoration: const InputDecoration(
+          decoration: InputDecoration(
             hintText: 'Reason (stored with the decision)',
-            border: OutlineInputBorder(),
+            filled: true,
+            fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Theme.of(context).dividerColor),
+            ),
           ),
         ),
         actions: [
@@ -139,18 +153,17 @@ class _AdminReviewsViewState extends State<AdminReviewsView> {
             SizedBox(height: 16),
             Expanded(
               child: _isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : visible.isEmpty
-                      ? Center(
-                          child: Text(
-                            'No reviews in this queue.',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                fontWeight: FontWeight.w700,
-                                color: Theme.of(context).colorScheme.onSurfaceVariant),
-                          ),
+                  ? const AppLoadingState()
+                  : _hasError
+                      ? AppErrorState(
+                          message: 'Could not load the reviews.',
+                          onRetry: _load,
                         )
-                      : ListView.separated(
+                      : visible.isEmpty
+                          ? const AppEmptyState(
+                              title: 'No reviews in this queue.',
+                            )
+                          : ListView.separated(
                           itemCount: visible.length,
                           separatorBuilder: (_, __) =>
                               const SizedBox(height: 10),

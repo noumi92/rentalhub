@@ -4,8 +4,10 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/responsive.dart';
+import '../../../../core/widgets/app_state_views.dart';
 import '../../data/datasources/admin_people_data_source.dart';
 import '../widgets/admin_shell.dart';
+import '../widgets/admin_status_chip.dart';
 import '../widgets/blacklist_appeal_dialog.dart';
 
 class AdminBlacklistTribunalView extends StatefulWidget {
@@ -18,6 +20,7 @@ class AdminBlacklistTribunalView extends StatefulWidget {
 class _AdminBlacklistTribunalViewState extends State<AdminBlacklistTribunalView> {
   List<AdminBlacklistRecord> _cases = [];
   bool _isLoading = true;
+  bool _hasError = false;
 
   @override
   void initState() {
@@ -26,13 +29,20 @@ class _AdminBlacklistTribunalViewState extends State<AdminBlacklistTribunalView>
   }
 
   Future<void> _loadTribunalCases() async {
-    setState(() => _isLoading = true);
+    setState(() {
+      _isLoading = true;
+      _hasError = false;
+    });
     try {
       // Phase C (C2): appeal-aware records — the shared entity does not
       // carry the appeal state, so the people data source wraps it.
       final records = await sl<AdminPeopleDataSource>().getBlacklistRecords();
       if (mounted) setState(() => _cases = records);
-    } catch (_) {} finally {
+    } catch (_) {
+      // Was silently swallowed: a failed load looked exactly like
+      // an empty tribunal. Show the error state with a retry instead.
+      if (mounted) setState(() => _hasError = true);
+    } finally {
       if (mounted) setState(() => _isLoading = false);
     }
   }
@@ -69,42 +79,49 @@ class _AdminBlacklistTribunalViewState extends State<AdminBlacklistTribunalView>
       subtitle: 'Central arbitration bench for inter-showroom disputes',
       onRefresh: _loadTribunalCases,
       child: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              padding: EdgeInsets.all(compact ? 16 : 24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (_cases.isEmpty)
-                    Text(
-                      'No blacklist cases — tribunal records will appear here.',
-                      style: TextStyle(
-                          fontWeight: FontWeight.w700,
-                          color: Theme.of(context).colorScheme.onSurfaceVariant),
+          ? const AppLoadingState()
+          : _hasError
+              ? AppErrorState(
+                  message: 'Could not load the blacklist cases.',
+                  onRetry: _loadTribunalCases,
+                )
+              : _cases.isEmpty
+                  ? const AppEmptyState(
+                      title: 'No blacklist cases',
+                      message: 'Tribunal records will appear here.',
+                    )
+                  : SingleChildScrollView(
+                      padding: EdgeInsets.all(compact ? 16 : 24),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ..._cases.map((c) => _caseCard(c, compact)),
+                        ],
+                      ),
                     ),
-                  ..._cases.map((c) => _caseCard(c, compact)),
-                ],
-              ),
-            ),
     );
   }
 
   Widget _caseCard(AdminBlacklistRecord record, bool compact) {
     final item = record.entity;
+    // Raw Colors.red / successTextFor (#10B981, 2.54:1) as 10px text
+    // failed contrast; the shared tones are the dark, AA-passing ones.
+    final tone = item.isActive ? AdminStatusTone.danger : AdminStatusTone.success;
+    final toneColor = adminStatusColor(context, tone);
     final badge = Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: item.isActive ? Colors.red.withAlpha(20) : AppColors.accentSuccess.withAlpha(20),
+        color: toneColor.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(
         item.isActive ? 'ACTIVE BLACKLIST' : 'REVERSED / CLEARED',
-        style: TextStyle(fontWeight: FontWeight.w900, fontSize: 10, color: item.isActive ? Colors.red : AppColors.successTextFor(Theme.of(context).brightness)),
+        style: TextStyle(fontWeight: FontWeight.w900, fontSize: 10, color: toneColor),
       ),
     );
     final idLine = Row(
       children: [
-        Icon(item.isActive ? Icons.gavel_rounded : Icons.check_circle_rounded, color: item.isActive ? Colors.red : AppColors.successTextFor(Theme.of(context).brightness), size: 22),
+        Icon(item.isActive ? Icons.gavel_rounded : Icons.check_circle_rounded, color: toneColor, size: 22),
         const SizedBox(width: 8),
         Expanded(child: Text('${item.blacklistId} • CNIC: ${item.cnicNumber}', overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14))),
       ],
@@ -115,7 +132,7 @@ class _AdminBlacklistTribunalViewState extends State<AdminBlacklistTribunalView>
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: item.isActive ? Colors.red.shade300 : Theme.of(context).dividerColor),
+        border: Border.all(color: item.isActive ? toneColor.withValues(alpha: 0.4) : Theme.of(context).dividerColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -152,7 +169,9 @@ class _AdminBlacklistTribunalViewState extends State<AdminBlacklistTribunalView>
                 width: double.infinity,
                 child: OutlinedButton(
                   onPressed: () => _showReversalDialog(record),
-                  style: OutlinedButton.styleFrom(foregroundColor: AppColors.successTextFor(Theme.of(context).brightness)),
+                  style: OutlinedButton.styleFrom(
+                      foregroundColor: AppColors.successTextFor(Theme.of(context).brightness),
+                      minimumSize: const Size(0, 48)),
                   child: const Text('Decide appeal — Keep or Remove', style: TextStyle(fontWeight: FontWeight.w400, fontSize: 12)),
                 ),
               )
@@ -162,7 +181,9 @@ class _AdminBlacklistTribunalViewState extends State<AdminBlacklistTribunalView>
                 children: [
                   OutlinedButton(
                     onPressed: () => _showReversalDialog(record),
-                    style: OutlinedButton.styleFrom(foregroundColor: AppColors.successTextFor(Theme.of(context).brightness)),
+                    style: OutlinedButton.styleFrom(
+                        foregroundColor: AppColors.successTextFor(Theme.of(context).brightness),
+                        minimumSize: const Size(0, 48)),
                     child: const Text('Decide appeal — Keep or Remove', style: TextStyle(fontWeight: FontWeight.w400, fontSize: 12)),
                   ),
                 ],

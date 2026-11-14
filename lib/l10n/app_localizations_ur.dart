@@ -1750,6 +1750,10 @@ class AppLocalizationsUr extends AppLocalizations {
   }
 
   @override
+  String get cancelFailedGeneric =>
+      'منسوخی ناکام رہی۔ براہ کرم دوبارہ کوشش کریں۔';
+
+  @override
   String cancelAdvancePaid(String amount) {
     return 'آپ نے شوروم کے اکاؤنٹ میں براہ راست $amount روپے ایڈوانس ادا کیا — رقم واپسی کا فیصلہ شوروم کرتا ہے، اس لیے اس بارے میں ان سے رابطہ کریں۔ کوئی سیکیورٹی ڈپازٹ نہیں لیا گیا: ڈپازٹ صرف حوالگی پر لیا جاتا ہے۔';
   }
@@ -1783,6 +1787,10 @@ class AppLocalizationsUr extends AppLocalizations {
   String proofSubmitError(String error) {
     return 'ادائیگی کا ثبوت جمع نہیں ہو سکا: $error';
   }
+
+  @override
+  String get proofSubmitFailedGeneric =>
+      'ادائیگی کا ثبوت جمع نہیں ہو سکا۔ براہ کرم دوبارہ کوشش کریں۔';
 
   @override
   String proofBookingId(String id) {
@@ -3692,6 +3700,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get contractProceedReturn => 'واپسی اور تصفیے کی طرف بڑھیں';
 
   @override
+  String get contractProceedReturnHint => 'گاڑی حوالے کرنے کے بعد دستیاب ہوگا';
+
+  @override
   String get contractAgencyLine =>
       'حکومت سے رجسٹرڈ کمرشل موٹر کار رینٹل ایجنسی';
 
@@ -4912,6 +4923,50 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get kycWizardPhotoRequired => 'جاری رکھنے کے لیے تصویر ضروری ہے';
+
+  @override
+  String get kycWizardFingerprints => 'انگلیوں کے نشانات';
+
+  @override
+  String get kycWizardLeftHand => 'بایاں ہاتھ — 4 انگلیاں';
+
+  @override
+  String get kycWizardRightHand => 'دایاں ہاتھ — 4 انگلیاں';
+
+  @override
+  String get kycWizardFingerHint =>
+      '4 انگلیاں پچھلے کیمرے کے سامنے مستحکم رکھیں';
+
+  @override
+  String get kycWizardFingerScan => 'اسکین کریں';
+
+  @override
+  String get kycWizardFingerCaptured => '4 انگلیاں محفوظ ہو گئیں';
+
+  @override
+  String get kycWizardFingerNotConfigured =>
+      'فنگر پرنٹ لائسنس ابھی ترتیب نہیں دیا گیا۔ دکان کے مالک سے کلید شامل کرنے کو کہیں۔';
+
+  @override
+  String get kycWizardFingerRequired =>
+      'آگے بڑھنے کے لیے دونوں ہاتھوں کی انگلیوں کے نشانات ضروری ہیں';
+
+  @override
+  String get kycWizardRelationPickFirst =>
+      'رشتہ منتخب کرنے کے لیے پہلے اوپر سے ضامن چنیں';
+
+  @override
+  String get kycWizardGalleryFront => 'سامنے والا حصہ گیلری سے';
+
+  @override
+  String get kycWizardGalleryBack => 'پچھلا حصہ گیلری سے';
+
+  @override
+  String get kycWizardImageNotClear =>
+      'یہ تصویر واضح نہیں ہے — کوئی معلومات پڑھی نہیں جا سکیں۔ براہ کرم اچھی روشنی میں تیز اور واضح تصویر فراہم کریں۔';
+
+  @override
+  String get kycWizardRemoveImage => 'ہٹائیں';
 
   @override
   String get kycWizardLicense => 'ڈرائیونگ لائسنس';
@@ -6721,6 +6776,19 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get customerDetailSignature => 'دستخط';
+
+  @override
+  String get customerDetailFingerprints => 'انگلیوں کے نشانات محفوظ ہیں';
+
+  @override
+  String get customerDetailFingerprintsNone =>
+      'انگلیوں کے نشانات محفوظ نہیں ہیں';
+
+  @override
+  String get customerDetailFingerprintsLeft => 'بایاں ہاتھ';
+
+  @override
+  String get customerDetailFingerprintsRight => 'دایاں ہاتھ';
 
   @override
   String get customerDetailRentalHistory => 'کرایہ کی تاریخ';

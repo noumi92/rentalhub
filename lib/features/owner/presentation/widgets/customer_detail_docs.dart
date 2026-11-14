@@ -18,6 +18,8 @@ class CustomerDetailDocs extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final tiles = <(String, String?)>[
       (l10n.customerDetailProfilePhoto, customer.profilePhotoUrl),
+      (l10n.kycWizardLeftHand, customer.leftFingerprintUrl),
+      (l10n.kycWizardRightHand, customer.rightFingerprintUrl),
       (l10n.customerDetailCnicFront, customer.cnicFrontUrl),
       (l10n.customerDetailCnicBack, customer.cnicBackUrl),
       (l10n.customerDetailLicenseFront, customer.licenseFrontUrl),

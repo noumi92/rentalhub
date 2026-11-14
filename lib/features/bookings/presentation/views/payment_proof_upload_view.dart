@@ -108,8 +108,9 @@ class _PaymentProofUploadViewState extends State<PaymentProofUploadView> {
         widget.onProofSubmitted?.call(updated);
       }
     } catch (e) {
+      debugPrint('Payment proof submit failed: $e');
       if (mounted) {
-        AppFeedback.showError(context, l10n.proofSubmitError(e.toString()));
+        AppFeedback.showError(context, l10n.proofSubmitFailedGeneric);
       }
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
@@ -156,7 +157,7 @@ class _PaymentProofUploadViewState extends State<PaymentProofUploadView> {
                         fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                         prefixIcon: const Icon(Icons.receipt_long_rounded),
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(16),
                           borderSide: BorderSide(color: Theme.of(context).dividerColor),
                         ),
                         contentPadding: const EdgeInsets.symmetric(
@@ -221,7 +222,7 @@ class _PaymentProofUploadViewState extends State<PaymentProofUploadView> {
                 color: Theme.of(context).colorScheme.surface,
                 boxShadow: [
                   BoxShadow(
-                      color: Color(0x14000000),
+                      color: Colors.black.withValues(alpha: 0.08),
                       blurRadius: 10,
                       offset: Offset(0, -3))
                 ],

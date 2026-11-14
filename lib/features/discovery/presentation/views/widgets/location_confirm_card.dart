@@ -25,9 +25,11 @@ class LocationConfirmCard extends StatelessWidget {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         boxShadow: [
           BoxShadow(
-            color: Color(0x1A000000),
+            // Theme shadow colour (black at 12% in light mode) —
+            // no raw hex literal.
+            color: Theme.of(context).shadowColor,
             blurRadius: 10,
-            offset: Offset(0, -3),
+            offset: const Offset(0, -3),
           ),
         ],
       ),
@@ -56,6 +58,8 @@ class LocationConfirmCard extends StatelessWidget {
                     Text(
                       selectedCity,
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 2),
                     Text(

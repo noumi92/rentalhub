@@ -166,8 +166,10 @@ class _AdminApkDownloadCardState extends State<AdminApkDownloadCard> {
                     child: CircularProgressIndicator(strokeWidth: 2),
                   ),
                   const SizedBox(width: 10),
-                  Text(l10n?.admin2_apkLoading ??
-                      'Checking for the latest build…'),
+                  Expanded(
+                    child: Text(l10n?.admin2_apkLoading ??
+                        'Checking for the latest build…'),
+                  ),
                 ],
               )
             else if (_failed)

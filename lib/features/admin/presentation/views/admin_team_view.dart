@@ -5,6 +5,7 @@ import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/responsive.dart';
 import '../../../../core/widgets/app_feedback.dart';
+import '../../../../core/widgets/app_state_views.dart';
 import '../../data/datasources/admin_remote_data_source.dart';
 import '../../data/services/admin_audit_service.dart';
 import '../../data/services/admin_session.dart';
@@ -12,7 +13,8 @@ import '../../domain/admin_permissions.dart';
 import '../widgets/admin_confirm_dialog.dart';
 import '../widgets/admin_invite_form.dart';
 import '../widgets/admin_shell.dart';
-import '../widgets/admin_team_member_tile.dart';
+import '../widgets/admin_team_members_section.dart';
+import '../widgets/admin_team_invites_section.dart';
 
 /// Phase A (A4) — the admin team screen: who holds an admin role, who
 /// still has two-factor authentication off, and (super admin only) the
@@ -37,6 +39,7 @@ class _AdminTeamViewState extends State<AdminTeamView> {
   List<AdminTeamMember> _members = [];
   List<AdminInvite> _invites = [];
   bool _isLoading = true;
+  bool _hasError = false;
   bool _isWorking = false;
   String? _role;
 
@@ -66,15 +69,22 @@ class _AdminTeamViewState extends State<AdminTeamView> {
         _role = await AdminSession.resolveAdminRole(user);
       }
     }
-    final ds = sl<AdminRemoteDataSource>();
-    final members = await ds.getTeamMembers();
-    final invites = await ds.getInvites();
-    if (mounted) {
-      setState(() {
-        _members = members;
-        _invites = invites;
-        _isLoading = false;
-      });
+    if (!_isLoading) setState(() => _hasError = false);
+    try {
+      final ds = sl<AdminRemoteDataSource>();
+      final members = await ds.getTeamMembers();
+      final invites = await ds.getInvites();
+      if (mounted) {
+        setState(() {
+          _members = members;
+          _invites = invites;
+          _isLoading = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() => _hasError = true);
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -99,8 +109,10 @@ class _AdminTeamViewState extends State<AdminTeamView> {
       if (mounted) {
         AppFeedback.showSuccess(context, 'Invite sent to $email.');
       }
-    } catch (e) {
-      if (mounted) AppFeedback.showError(context, 'Could not invite: $e');
+    } catch (_) {
+      if (mounted) {
+        AppFeedback.showError(context, 'Could not send the invite.');
+      }
     } finally {
       if (mounted) setState(() => _isWorking = false);
     }
@@ -119,8 +131,10 @@ class _AdminTeamViewState extends State<AdminTeamView> {
     try {
       await run();
       await _load();
-    } catch (e) {
-      if (mounted) AppFeedback.showError(context, 'Failed: $e');
+    } catch (_) {
+      if (mounted) {
+        AppFeedback.showError(context, 'Could not complete that action.');
+      }
     } finally {
       if (mounted) setState(() => _isWorking = false);
     }
@@ -136,8 +150,13 @@ class _AdminTeamViewState extends State<AdminTeamView> {
       subtitle: 'Who can run the platform, and with what role',
       onRefresh: _load,
       child: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : ListView(
+          ? const AppLoadingState()
+          : _hasError
+              ? AppErrorState(
+                  message: 'Could not load the admin team.',
+                  onRetry: _load,
+                )
+              : ListView(
               padding: EdgeInsets.all(compact ? 16 : 24),
               children: [
                 if (!_canManage)
@@ -151,80 +170,52 @@ class _AdminTeamViewState extends State<AdminTeamView> {
                           color: Theme.of(context).colorScheme.onSurfaceVariant),
                     ),
                   ),
-                const Text('Team members',
-                    style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w900,
-                        )),
-                const SizedBox(height: 10),
-                if (_members.isEmpty)
-                  Text('No admins found — the team list reads the users who hold an admin role.',
-                      style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant))
-                else
-                  ..._members.map((m) => Padding(
-                        padding: const EdgeInsets.only(bottom: 10),
-                        child: AdminTeamMemberTile(
-                          member: m,
-                          canManage: _canManage,
-                          onResetTotp: () => _confirmAction(
-                            title: 'Reset two-factor authentication?',
-                            body:
-                                '${m.email} will have to enrol TOTP again on their next login.',
-                            run: () async {
-                              await sl<AdminRemoteDataSource>()
-                                  .resetTotp(m.uid);
-                              await AdminAuditService.logAction(
-                                action: 'totp_reset',
-                                targetType: 'admin',
-                                targetId: m.uid,
-                                detail: 'TOTP reset for ${m.email}.',
-                              );
-                            },
-                          ),
-                          onRevoke: () => _confirmAction(
-                            title: 'Revoke this admin role?',
-                            body:
-                                '${m.email} will lose admin access and become a customer account.',
-                            run: () async {
-                              await sl<AdminRemoteDataSource>().setAdminRole(
-                                  uid: m.uid, adminRole: null);
-                            },
-                          ),
-                        ),
-                      )),
+                AdminTeamMembersSection(
+                  members: _members,
+                  canManage: _canManage,
+                  onResetTotp: (m) => _confirmAction(
+                    title: 'Reset two-factor authentication?',
+                    body:
+                        '${m.email} will have to enrol TOTP again on their next login.',
+                    run: () async {
+                      await sl<AdminRemoteDataSource>().resetTotp(m.uid);
+                      await AdminAuditService.logAction(
+                        action: 'totp_reset',
+                        targetType: 'admin',
+                        targetId: m.uid,
+                        detail: 'TOTP reset for ${m.email}.',
+                      );
+                    },
+                  ),
+                  onRevoke: (m) => _confirmAction(
+                    title: 'Revoke this admin role?',
+                    body:
+                        '${m.email} will lose admin access and become a customer account.',
+                    run: () async {
+                      await sl<AdminRemoteDataSource>()
+                          .setAdminRole(uid: m.uid, adminRole: null);
+                    },
+                  ),
+                ),
                 const SizedBox(height: 24),
-                const Text('Pending invites',
-                    style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w900,
-                        )),
-                const SizedBox(height: 10),
-                if (_invites.where((i) => !i.accepted).isEmpty)
-                  Text('No pending invites.',
-                      style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant))
-                else
-                  ..._invites.where((i) => !i.accepted).map((i) => Padding(
-                        padding: const EdgeInsets.only(bottom: 10),
-                        child: AdminInviteTile(
-                          invite: i,
-                          canManage: _canManage,
-                          onWithdraw: () => _confirmAction(
-                            title: 'Withdraw this invite?',
-                            body:
-                                '${i.email} will no longer be able to accept it.',
-                            run: () async {
-                              await sl<AdminRemoteDataSource>()
-                                  .revokeInvite(i.id);
-                              await AdminAuditService.logAction(
-                                action: 'admin_invite_revoked',
-                                targetType: 'admin_invite',
-                                targetId: i.email,
-                                detail: 'Invite withdrawn for ${i.email}.',
-                              );
-                            },
-                          ),
-                        ),
-                      )),
+                AdminTeamInvitesSection(
+                  invites: _invites,
+                  canManage: _canManage,
+                  onWithdraw: (i) => _confirmAction(
+                    title: 'Withdraw this invite?',
+                    body:
+                        '${i.email} will no longer be able to accept it.',
+                    run: () async {
+                      await sl<AdminRemoteDataSource>().revokeInvite(i.id);
+                      await AdminAuditService.logAction(
+                        action: 'admin_invite_revoked',
+                        targetType: 'admin_invite',
+                        targetId: i.email,
+                        detail: 'Invite withdrawn for ${i.email}.',
+                      );
+                    },
+                  ),
+                ),
                 if (_canManage) ...[
                   const SizedBox(height: 24),
                   const Text('Invite an admin',

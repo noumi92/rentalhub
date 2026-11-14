@@ -28,6 +28,7 @@ class _OwnerWhatsappHistoryViewState extends State<OwnerWhatsappHistoryView> {
   List<WhatsappDispatchLog> _logs = const [];
   int _freeCredits = 10;
   bool _loaded = false;
+  bool _hasError = false;
 
   @override
   void initState() {
@@ -36,15 +37,27 @@ class _OwnerWhatsappHistoryViewState extends State<OwnerWhatsappHistoryView> {
   }
 
   Future<void> _load() async {
-    final shopId = currentShopId();
-    final logs = await _credits.getDispatchLogs(shopId, category: _filter);
-    final state = await _subs.getShopSubscription(shopId);
-    if (mounted) {
-      setState(() {
-        _logs = logs;
-        _freeCredits = freeMonthlyCreditsForTier(state.tier);
-        _loaded = true;
-      });
+    try {
+      final shopId = currentShopId();
+      final logs = await _credits.getDispatchLogs(shopId, category: _filter);
+      final state = await _subs.getShopSubscription(shopId);
+      if (mounted) {
+        setState(() {
+          _logs = logs;
+          _freeCredits = freeMonthlyCreditsForTier(state.tier);
+          _loaded = true;
+          _hasError = false;
+        });
+      }
+    } catch (_) {
+      // A failed load used to spin forever — render the error
+      // state with retry instead.
+      if (mounted) {
+        setState(() {
+          _loaded = true;
+          _hasError = true;
+        });
+      }
     }
   }
 
@@ -52,6 +65,7 @@ class _OwnerWhatsappHistoryViewState extends State<OwnerWhatsappHistoryView> {
     setState(() {
       _filter = filter;
       _loaded = false;
+      _hasError = false;
     });
     _load();
   }
@@ -81,18 +95,20 @@ class _OwnerWhatsappHistoryViewState extends State<OwnerWhatsappHistoryView> {
             Expanded(
               child: !_loaded
                   ? const AppLoadingState()
-                  : ListView(
+                  : _hasError
+                      ? AppErrorState(
+                          message: l10n.dashboardLoadError,
+                          onRetry: _load,
+                        )
+                      : ListView(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16, vertical: 14),
                       children: [
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
-                            _Stat(label: l10n.creditsSent, value: sent),
-                            _Stat(
-                                label: l10n.creditsDelivered,
-                                value: delivered),
-                            _Stat(label: l10n.creditsRead, value: read),
+                            Expanded(child: _Stat(label: l10n.creditsSent, value: sent)),
+                            Expanded(child: _Stat(label: l10n.creditsDelivered, value: delivered)),
+                            Expanded(child: _Stat(label: l10n.creditsRead, value: read)),
                           ],
                         ),
                         const SizedBox(height: 12),
@@ -126,9 +142,9 @@ class _OwnerWhatsappHistoryViewState extends State<OwnerWhatsappHistoryView> {
                                   ),
                                   title: Text(log.recipientName.isEmpty
                                       ? log.phone
-                                      : log.recipientName),
+                                      : log.recipientName, maxLines: 1, overflow: TextOverflow.ellipsis),
                                   subtitle: Text(
-                                      '${log.messageType} · ${log.sentAt == null ? '' : DateFormat('d MMM, h:mm a', 'en').format(log.sentAt!)}'),
+                                      '${log.messageType} · ${log.sentAt == null ? '' : DateFormat('d MMM, h:mm a', 'en').format(log.sentAt!)}', maxLines: 1, overflow: TextOverflow.ellipsis),
                                   trailing: Text(log.status,
                                       style: Theme.of(context)
                                           .textTheme
@@ -168,7 +184,13 @@ class _Stat extends StatelessWidget {
                 .textTheme
                 .titleLarge
                 ?.copyWith(fontWeight: FontWeight.w900)),
-        Text(label, style: Theme.of(context).textTheme.bodySmall),
+        // Urdu labels wrap to two lines at 360px instead of
+        // overflowing the row.
+        Text(label,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodySmall),
       ],
     );
   }

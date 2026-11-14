@@ -873,6 +873,7 @@
       }
     }
   },
+  "cancelFailedGeneric": "Cancellation failed. Please try again.",
   "cancelAdvancePaid": "You paid Rs. {amount} advance directly to the showroom's account — the showroom decides the refund, so contact them about it. No security deposit was collected: deposits are only taken at handover.",
   "@cancelAdvancePaid": {
     "placeholders": {
@@ -929,6 +930,7 @@
       }
     }
   },
+  "proofSubmitFailedGeneric": "Could not submit your payment proof. Please try again.",
   "proofBookingId": "Booking ID: {id}",
   "@proofBookingId": {
     "placeholders": {
@@ -2221,6 +2223,7 @@
   },
   "contractScanVerify": "Scan to verify this agreement — the page shows the booking, the shop and the signed PDF.",
   "contractProceedReturn": "Proceed to Return & Settlement",
+  "contractProceedReturnHint": "Available once the car is handed over",
   "contractAgencyLine": "Govt. Registered Commercial Motor Car Rental Agency",
   "contractCertifiedTitle": "RENTAL AGREEMENT",
   "contractFieldAgreementNo": "Agreement No:",
@@ -2874,6 +2877,19 @@
   "kycWizardThumbprint": "Thumbprint",
   "kycWizardThumbHint": "Photograph the right thumb",
   "kycWizardPhotoRequired": "A photo is required to continue",
+  "kycWizardFingerprints": "Fingerprints",
+  "kycWizardLeftHand": "Left hand — 4 fingers",
+  "kycWizardRightHand": "Right hand — 4 fingers",
+  "kycWizardFingerHint": "Hold 4 fingers steady under the rear camera",
+  "kycWizardFingerScan": "Scan",
+  "kycWizardFingerCaptured": "4 fingers captured",
+  "kycWizardFingerNotConfigured": "Fingerprint licence is not set up yet. Ask the shop owner to add the key.",
+  "kycWizardFingerRequired": "Fingerprints of both hands are required to continue",
+  "kycWizardRelationPickFirst": "Choose a guarantor above to set the relation",
+  "kycWizardGalleryFront": "Front from gallery",
+  "kycWizardGalleryBack": "Back from gallery",
+  "kycWizardImageNotClear": "This photo is not clear enough — no information could be read. Please provide a sharp, high-resolution photo with good light.",
+  "kycWizardRemoveImage": "Remove",
   "kycWizardLicense": "Driving license",
   "kycWizardLicenseFront": "License front",
   "kycWizardLicenseBack": "License back",
@@ -3694,6 +3710,10 @@
   "customerDetailLicenseFront": "License front",
   "customerDetailLicenseBack": "License back",
   "customerDetailSignature": "Signature",
+  "customerDetailFingerprints": "Fingerprints on file",
+  "customerDetailFingerprintsNone": "No fingerprints on file",
+  "customerDetailFingerprintsLeft": "Left hand",
+  "customerDetailFingerprintsRight": "Right hand",
   "customerDetailRentalHistory": "Rental history",
   "customerDetailTotalSpent": "Total spent",
   "customerDetailTotalDues": "Outstanding dues",

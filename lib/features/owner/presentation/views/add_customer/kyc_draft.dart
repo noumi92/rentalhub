@@ -44,6 +44,13 @@ class KycDraft {
   XFile? cnicBackPhoto;
   XFile? facePhoto;
   XFile? thumbprintPhoto;
+
+  /// Fingerprint photos — one photo per hand showing the 4 fingers
+  /// (index/middle/ring/little), taken with the REAR camera. Photos,
+  /// never scans: no fingerprint SDK is in the app. Null = not
+  /// captured yet.
+  XFile? leftFingersPhoto;
+  XFile? rightFingersPhoto;
   XFile? licenseFrontPhoto;
   XFile? licenseBackPhoto;
   XFile? utilityBillPhoto;
@@ -82,19 +89,25 @@ class KycDraft {
 
   bool get hasFacePhoto => facePhoto != null;
   bool get hasThumbprint => thumbprintPhoto != null;
+  bool get hasLeftFingerprints => leftFingersPhoto != null;
+  bool get hasRightFingerprints => rightFingersPhoto != null;
   bool get hasLicenseFront => licenseFrontPhoto != null;
   bool get hasLicenseBack => licenseBackPhoto != null;
   bool get hasUtilityBill => utilityBillPhoto != null;
   bool get hasSignature =>
       signaturePng != null && signaturePng!.isNotEmpty;
 
-  /// Step-4 completeness box (spec O15): CNIC, Photo, Thumb,
+  /// Step-4 completeness box (spec O15): CNIC, Photo, Fingerprints,
   /// License, Signature. Guarantor is not listed — it is optional.
+  /// Fingerprints means both hand photos captured (left + right,
+  /// 4 fingers each); the old single thumbprint photo is no longer
+  /// captured in step 2.
   bool get isKycComplete =>
       cnic.trim().isNotEmpty &&
       name.trim().isNotEmpty &&
       hasFacePhoto &&
-      hasThumbprint &&
+      hasLeftFingerprints &&
+      hasRightFingerprints &&
       hasLicenseFront &&
       hasLicenseBack &&
       licenseNumber.trim().isNotEmpty &&

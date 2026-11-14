@@ -47,9 +47,9 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  /// Rear-camera picks go through the media source sheet — except
-  /// the license tiles, which open the rear camera directly
-  /// (camera-only KYC rule, no sheet, no gallery).
+  /// Rear-camera picks: the thumbprint and license tiles open the
+  /// rear camera directly (camera-only KYC rule, no sheet, no
+  /// gallery); other pickers go through the media source sheet.
   Future<void> tapRearCamera(WidgetTester tester, Key buttonKey) async {
     await tester.ensureVisible(find.byKey(buttonKey));
     await tester.pumpAndSettle();
@@ -59,6 +59,20 @@ void main() {
       await tester.tap(find.text('Take Photo (Back Camera)'));
       await tester.pumpAndSettle();
     }
+  }
+
+  /// License tiles show a spinner while OCR runs; the OCR future
+  /// never completes under the fake clock (ML Kit channel), so
+  /// pumpAndSettle would time out on the spinner — pump fixed
+  /// frames instead. The photo is stored before OCR starts, so
+  /// the draft assertions still hold.
+  Future<void> tapLicenseCamera(WidgetTester tester, Key buttonKey) async {
+    await tester.ensureVisible(find.byKey(buttonKey));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+    await tester.tap(find.byKey(buttonKey));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
   }
 
   group('Step2Photo', () {
@@ -79,19 +93,36 @@ void main() {
       expect(find.byKey(const ValueKey('step2_face_retake')), findsOneWidget);
     });
 
-    testWidgets('thumbprint Take photo uses the REAR camera via the sheet',
+    testWidgets('left-hand photo uses the REAR camera directly (no gallery)',
         (tester) async {
       final draft = KycDraft();
       await pumpStep(tester, Step2Photo(draft: draft, onChanged: () {}));
 
-      await tapRearCamera(tester, const ValueKey('step2_thumb_take'));
+      await tapRearCamera(tester, const ValueKey('step2_finger_left_scan'));
 
       expect(mockPicker.callCount, 1);
       expect(mockPicker.lastSource, ImageSource.camera);
       expect(mockPicker.lastCameraDevice, CameraDevice.rear);
-      expect(draft.thumbprintPhoto, isNotNull);
-      expect(draft.hasThumbprint, isTrue);
-      expect(find.byKey(const ValueKey('step2_thumb_retake')), findsOneWidget);
+      expect(draft.leftFingersPhoto, isNotNull);
+      expect(draft.hasLeftFingerprints, isTrue);
+      expect(find.byKey(const ValueKey('step2_finger_left_retake')),
+          findsOneWidget);
+    });
+
+    testWidgets('right-hand photo uses the REAR camera directly (no gallery)',
+        (tester) async {
+      final draft = KycDraft();
+      await pumpStep(tester, Step2Photo(draft: draft, onChanged: () {}));
+
+      await tapRearCamera(tester, const ValueKey('step2_finger_right_scan'));
+
+      expect(mockPicker.callCount, 1);
+      expect(mockPicker.lastSource, ImageSource.camera);
+      expect(mockPicker.lastCameraDevice, CameraDevice.rear);
+      expect(draft.rightFingersPhoto, isNotNull);
+      expect(draft.hasRightFingerprints, isTrue);
+      expect(find.byKey(const ValueKey('step2_finger_right_retake')),
+          findsOneWidget);
     });
 
     testWidgets('validate fails with no photos', (tester) async {
@@ -106,14 +137,69 @@ void main() {
       expect(find.text('A photo is required to continue'), findsOneWidget);
     });
 
-    testWidgets('validate passes with face + thumbprint', (tester) async {
+    testWidgets('validate fails with face but only one hand',
+        (tester) async {
       final key = GlobalKey<Step2PhotoState>();
       final draft = KycDraft()
         ..facePhoto = XFile('test/assets/mock_selfie.jpg')
-        ..thumbprintPhoto = XFile('test/assets/mock_thumb.jpg');
+        ..leftFingersPhoto = XFile('test/assets/mock_fingers_left.jpg');
+      await pumpStep(tester, Step2Photo(key: key, draft: draft, onChanged: () {}));
+
+      expect(await key.currentState!.validate(), isFalse);
+      await tester.pump();
+      expect(
+        find.text('Fingerprints of both hands are required to continue'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('validate passes with face + both hands', (tester) async {
+      final key = GlobalKey<Step2PhotoState>();
+      final draft = KycDraft()
+        ..facePhoto = XFile('test/assets/mock_selfie.jpg')
+        ..leftFingersPhoto = XFile('test/assets/mock_fingers_left.jpg')
+        ..rightFingersPhoto = XFile('test/assets/mock_fingers_right.jpg');
       await pumpStep(tester, Step2Photo(key: key, draft: draft, onChanged: () {}));
 
       expect(await key.currentState!.validate(), isTrue);
+    });
+
+    testWidgets('face photo can be removed to retake it', (tester) async {
+      final draft = KycDraft()
+        ..facePhoto = XFile('test/assets/mock_selfie.jpg');
+      await pumpStep(tester, Step2Photo(draft: draft, onChanged: () {}));
+
+      await tester.tap(find.byKey(const ValueKey('step2_face_remove')));
+      await tester.pumpAndSettle();
+
+      expect(draft.facePhoto, isNull);
+      expect(draft.hasFacePhoto, isFalse);
+      expect(find.byKey(const ValueKey('step2_face_remove')), findsNothing);
+      expect(find.byKey(const ValueKey('step2_face_take')), findsOneWidget);
+    });
+
+    testWidgets('finger photos can be removed to retake them',
+        (tester) async {
+      final draft = KycDraft()
+        ..leftFingersPhoto = XFile('test/assets/mock_fingers_left.jpg')
+        ..rightFingersPhoto = XFile('test/assets/mock_fingers_right.jpg');
+      await pumpStep(tester, Step2Photo(draft: draft, onChanged: () {}));
+
+      await tester.ensureVisible(
+          find.byKey(const ValueKey('step2_finger_left_remove')));
+      await tester.tap(
+          find.byKey(const ValueKey('step2_finger_left_remove')));
+      await tester.pumpAndSettle();
+      expect(draft.leftFingersPhoto, isNull);
+      expect(draft.rightFingersPhoto, isNotNull);
+
+      await tester.ensureVisible(
+          find.byKey(const ValueKey('step2_finger_right_remove')));
+      await tester.tap(
+          find.byKey(const ValueKey('step2_finger_right_remove')));
+      await tester.pumpAndSettle();
+      expect(draft.rightFingersPhoto, isNull);
+      expect(draft.hasRightFingerprints, isFalse);
     });
   });
 
@@ -123,11 +209,11 @@ void main() {
       final draft = KycDraft();
       await pumpStep(tester, Step3Docs(draft: draft, onChanged: () {}));
 
-      await tapRearCamera(tester, const ValueKey('step3_license_front'));
+      await tapLicenseCamera(tester, const ValueKey('step3_license_front'));
       expect(draft.licenseFrontPhoto, isNotNull);
       expect(draft.hasLicenseFront, isTrue);
 
-      await tapRearCamera(tester, const ValueKey('step3_license_back'));
+      await tapLicenseCamera(tester, const ValueKey('step3_license_back'));
       expect(draft.licenseBackPhoto, isNotNull);
       expect(draft.hasLicenseBack, isTrue);
       expect(mockPicker.callCount, 2);
@@ -142,6 +228,30 @@ void main() {
 
       expect(draft.utilityBillPhoto, isNotNull);
       expect(draft.hasUtilityBill, isTrue);
+    });
+
+    testWidgets('license and bill photos can be removed to retake them',
+        (tester) async {
+      final draft = KycDraft()
+        ..licenseFrontPhoto = XFile('test/assets/mock_lic_front.jpg')
+        ..licenseBackPhoto = XFile('test/assets/mock_lic_back.jpg')
+        ..utilityBillPhoto = XFile('test/assets/mock_bill.jpg');
+      await pumpStep(tester, Step3Docs(draft: draft, onChanged: () {}));
+
+      await tester.ensureVisible(
+          find.byKey(const ValueKey('step3_license_front_remove')));
+      await tester.tap(
+          find.byKey(const ValueKey('step3_license_front_remove')));
+      await tester.pumpAndSettle();
+      expect(draft.licenseFrontPhoto, isNull);
+      expect(draft.licenseBackPhoto, isNotNull);
+
+      await tester.ensureVisible(
+          find.byKey(const ValueKey('step3_bill_remove')));
+      await tester.tap(find.byKey(const ValueKey('step3_bill_remove')));
+      await tester.pumpAndSettle();
+      expect(draft.utilityBillPhoto, isNull);
+      expect(draft.hasUtilityBill, isFalse);
     });
 
     testWidgets('extra docs add then remove', (tester) async {

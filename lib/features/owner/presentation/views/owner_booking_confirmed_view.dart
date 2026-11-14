@@ -206,9 +206,14 @@ class _OwnerBookingConfirmedViewState
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label,
-              style: TextStyle(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant)),
+          Flexible(
+            child: Text(label,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant)),
+          ),
+          const SizedBox(width: 8),
           Flexible(
             child: Text(
               value,

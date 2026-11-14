@@ -279,7 +279,11 @@ KycDraft _fullDraft({
   draft.licenseNumber = 'LHR-1234567';
   draft.licenseExpiry = '01.01.2030';
   draft.facePhoto = XFile('test/assets/mock_selfie.jpg');
-  draft.thumbprintPhoto = XFile('test/assets/mock_selfie.jpg');
+  // No thumbs any more: completeness needs left + right finger
+  // photos (4 fingers each) — the old thumbprintPhoto no longer
+  // counts.
+  draft.leftFingersPhoto = XFile('test/assets/mock_fingers_left.jpg');
+  draft.rightFingersPhoto = XFile('test/assets/mock_fingers_right.jpg');
   draft.cnicFrontPhoto = XFile('test/assets/mock_selfie.jpg');
   draft.cnicBackPhoto = XFile('test/assets/mock_selfie.jpg');
   draft.licenseFrontPhoto = XFile('test/assets/mock_selfie.jpg');

@@ -7,12 +7,15 @@ import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/money_format.dart';
 import '../../../../core/utils/responsive.dart';
 import '../../../../core/widgets/app_feedback.dart';
+import '../../../../core/widgets/app_state_views.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/datasources/admin_people_data_source.dart';
 import '../../data/services/admin_session.dart';
 import '../../domain/admin_permissions.dart';
+import '../widgets/admin_detail_section.dart';
 import '../widgets/admin_qr_code_row.dart';
 import '../widgets/admin_shell.dart';
+import '../widgets/admin_status_chip.dart';
 import '../widgets/customer_detail_actions.dart';
 import '../widgets/customer_trust_breakdown.dart';
 
@@ -51,6 +54,7 @@ class _AdminCustomerDetailViewState extends State<AdminCustomerDetailView> {
   final _noteController = TextEditingController();
   CustomerDetail? _detail;
   bool _isLoading = true;
+  bool _hasError = false;
   bool _isWorking = false;
   bool _isSuperAdmin = false;
   String? _qrCode;
@@ -78,8 +82,16 @@ class _AdminCustomerDetailViewState extends State<AdminCustomerDetailView> {
   }
 
   Future<void> _load() async {
-    final detail = await (widget.loadDetail?.call(widget.customerId) ??
-        sl<AdminPeopleDataSource>().getCustomerDetail(widget.customerId));
+    if (!_isLoading) setState(() => _hasError = false);
+    CustomerDetail? detail;
+    try {
+      detail = await (widget.loadDetail?.call(widget.customerId) ??
+          sl<AdminPeopleDataSource>().getCustomerDetail(widget.customerId));
+    } catch (_) {
+      if (!mounted) return;
+      setState(() { _hasError = true; _isLoading = false; });
+      return;
+    }
     if (!mounted) return;
     setState(() { _detail = detail; _isLoading = false; });
     if (detail == null) return;
@@ -130,10 +142,15 @@ class _AdminCustomerDetailViewState extends State<AdminCustomerDetailView> {
       onRefresh: _load,
       onBack: () => context.go(RouteNames.adminCustomers),
       child: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _detail == null
-              ? const Center(child: Padding(padding: EdgeInsets.all(32), child: Text('Customer not found.', style: TextStyle(fontWeight: FontWeight.w700))))
-              : SingleChildScrollView(
+          ? const AppLoadingState()
+          : _hasError
+              ? AppErrorState(
+                  message: 'Could not load this customer.',
+                  onRetry: _load,
+                )
+              : _detail == null
+                  ? const AppEmptyState(title: 'Customer not found.')
+                  : SingleChildScrollView(
                   // Mobile-first: 16dp on a phone, 24dp on desktop.
                   padding: EdgeInsets.all(
                       windowSizeClassOf(context) ==
@@ -163,25 +180,27 @@ class _AdminCustomerDetailViewState extends State<AdminCustomerDetailView> {
                         kycStatus: _detail!.kycStatus,
                       ),
                       const SizedBox(height: 20),
-                      _section('Booking history',
-                          _detail!.bookings.isEmpty
+                      AdminDetailSection(
+                          title: 'Booking history',
+                          lines: _detail!.bookings.isEmpty
                               ? ['No bookings yet.']
                               : _detail!.bookings
                                   .take(10)
                                   .map((b) =>
-                                      '${b.vehicleName ?? b.vehicleId} • ${b.status} • ${l10n.amountRs(formatRs(b.totalAmount))}')
+                                      '${b.vehicleName ?? b.vehicleId} • ${humanizeStatus(b.status)} • ${l10n.amountRs(formatRs(b.totalAmount))}')
                                   .toList()),
-                      _section(
-                          'Guarantors',
-                          _detail!.bookings
+                      AdminDetailSection(
+                          title: 'Guarantors',
+                          lines: _detail!.bookings
                               .where((b) =>
                                   (b.guarantorName ?? '').isNotEmpty)
                               .map((b) =>
                                   '${b.guarantorName} • CNIC ${b.guarantorCnic ?? '—'} • ${b.guarantorPhone ?? ''}')
                               .toSet()
                               .toList()),
-                      _section('Admin notes',
-                          _detail!.notes.isEmpty
+                      AdminDetailSection(
+                          title: 'Admin notes',
+                          lines: _detail!.notes.isEmpty
                               ? ['No notes yet.']
                               : _detail!.notes
                                   .map((n) => n.text)
@@ -211,28 +230,6 @@ class _AdminCustomerDetailViewState extends State<AdminCustomerDetailView> {
                     ],
                   ),
                 ),
-    );
-  }
-
-  Widget _section(String title, List<String> lines) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(title,
-              style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w800)),
-          const SizedBox(height: 6),
-          ...lines.map((l) => Padding(
-                padding: const EdgeInsets.only(bottom: 3),
-                child: Text(l,
-                    style: const TextStyle(
-                        fontSize: 13)),
-              )),
-        ],
-      ),
     );
   }
 }

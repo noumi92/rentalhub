@@ -4,6 +4,7 @@ import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/responsive.dart';
 import '../../../../core/widgets/app_feedback.dart';
+import '../../../../core/widgets/app_state_views.dart';
 import '../../data/datasources/admin_support_data_source.dart';
 import '../widgets/admin_shell.dart';
 import '../widgets/announcement_form_sheet.dart';
@@ -25,6 +26,7 @@ class AdminAnnouncementsView extends StatefulWidget {
 class _AdminAnnouncementsViewState extends State<AdminAnnouncementsView> {
   List<AdminAnnouncement> _announcements = [];
   bool _isLoading = true;
+  bool _hasError = false;
 
   @override
   void initState() {
@@ -33,12 +35,19 @@ class _AdminAnnouncementsViewState extends State<AdminAnnouncementsView> {
   }
 
   Future<void> _load() async {
-    final list = await sl<AdminSupportDataSource>().getAnnouncements();
-    if (mounted) {
-      setState(() {
-        _announcements = list;
-        _isLoading = false;
-      });
+    if (!_isLoading) setState(() => _hasError = false);
+    try {
+      final list = await sl<AdminSupportDataSource>().getAnnouncements();
+      if (mounted) {
+        setState(() {
+          _announcements = list;
+          _isLoading = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() => _hasError = true);
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -86,18 +95,18 @@ class _AdminAnnouncementsViewState extends State<AdminAnnouncementsView> {
             SizedBox(height: 16),
             Expanded(
               child: _isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : _announcements.isEmpty
-                      ? Center(
-                          child: Text(
-                            'No announcements yet — create the first one above.',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                fontWeight: FontWeight.w700,
-                                color: Theme.of(context).colorScheme.onSurfaceVariant),
-                          ),
+                  ? const AppLoadingState()
+                  : _hasError
+                      ? AppErrorState(
+                          message: 'Could not load the announcements.',
+                          onRetry: _load,
                         )
-                      : ListView.separated(
+                      : _announcements.isEmpty
+                          ? const AppEmptyState(
+                              title: 'No announcements yet',
+                              message: 'Create the first one above.',
+                            )
+                          : ListView.separated(
                           itemCount: _announcements.length,
                           separatorBuilder: (_, __) =>
                               const SizedBox(height: 10),
@@ -143,12 +152,18 @@ class _AdminAnnouncementsViewState extends State<AdminAnnouncementsView> {
                                         OutlinedButton(
                                           onPressed: () =>
                                               _send(a, test: true),
+                                          style: OutlinedButton.styleFrom(
+                                              minimumSize:
+                                                  const Size(0, 48)),
                                           child: const Text('Send test'),
                                         ),
                                         FilledButton(
                                           onPressed: a.status == 'sent'
                                               ? null
                                               : () => _send(a, test: false),
+                                          style: FilledButton.styleFrom(
+                                              minimumSize:
+                                                  const Size(0, 48)),
                                           child: const Text('Send now'),
                                         ),
                                       ],

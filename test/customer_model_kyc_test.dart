@@ -21,6 +21,8 @@ void main() {
         address: 'House 45, Street 7, Johar Town, Lahore',
         profilePhotoUrl: 'https://example.invalid/kyc/face.jpg',
         thumbprintUrl: 'https://example.invalid/kyc/thumb.jpg',
+        leftFingerprintUrl: 'https://example.invalid/kyc/finger-left.jpg',
+        rightFingerprintUrl: 'https://example.invalid/kyc/finger-right.jpg',
         cnicFrontUrl: 'https://example.invalid/kyc/cnic-front.jpg',
         cnicBackUrl: 'https://example.invalid/kyc/cnic-back.jpg',
         licenseNumber: 'LHR-2018-45678',
@@ -40,6 +42,8 @@ void main() {
       expect(restored, equals(model));
       expect(restored.profilePhotoUrl, model.profilePhotoUrl);
       expect(restored.extraDocumentUrls, model.extraDocumentUrls);
+      expect(restored.leftFingerprintUrl, model.leftFingerprintUrl);
+      expect(restored.rightFingerprintUrl, model.rightFingerprintUrl);
       expect(restored.guarantorCustomerId, 'cust-3520298765432');
       expect(restored.guarantorRelation, 'Friend');
     });
@@ -55,12 +59,16 @@ void main() {
       });
       expect(restored.profilePhotoUrl, isNull);
       expect(restored.thumbprintUrl, isNull);
+      expect(restored.leftFingerprintUrl, isNull);
+      expect(restored.rightFingerprintUrl, isNull);
       expect(restored.licenseNumber, isNull);
       expect(restored.extraDocumentUrls, isEmpty);
       expect(restored.signatureUrl, isNull);
       expect(restored.guarantorCustomerId, isNull);
       // And it writes back without inventing the fields.
       expect(restored.toMap().containsKey('profilePhotoUrl'), isFalse);
+      expect(restored.toMap().containsKey('leftFingerprintUrl'), isFalse);
+      expect(restored.toMap().containsKey('rightFingerprintUrl'), isFalse);
       expect(restored.toMap().containsKey('extraDocumentUrls'), isFalse);
     });
   });

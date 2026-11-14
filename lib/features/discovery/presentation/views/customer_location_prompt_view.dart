@@ -61,7 +61,8 @@ class _CustomerLocationPromptViewState extends State<CustomerLocationPromptView>
       if (!serviceEnabled) {
         if (!silent && mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-             SnackBar(content: Text(l10n.locationEnableGps), backgroundColor: AppColors.warning),
+            // Dark amber text on amber: 6.84:1 (white was 2.07:1).
+            SnackBar(backgroundColor: AppColors.warning, content: Text(l10n.locationEnableGps, style: const TextStyle(color: AppColors.warningOnContainer, fontWeight: FontWeight.w600))),
           );
         }
         setState(() => _isLocating = false);
@@ -74,7 +75,8 @@ class _CustomerLocationPromptViewState extends State<CustomerLocationPromptView>
         if (permission == LocationPermission.denied) {
           if (!silent && mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content:  Text(l10n.locationPermissionDenied), backgroundColor: Theme.of(context).brightness == Brightness.dark ? AppColors.errorContainerDark : AppColors.accentDanger),
+              // White on errorDark #DC2626 is 4.83:1 (accentDanger was 3.9:1).
+              SnackBar(content: Text(l10n.locationPermissionDenied), backgroundColor: AppColors.errorDark),
             );
           }
           setState(() => _isLocating = false);
@@ -206,15 +208,17 @@ class _CustomerLocationPromptViewState extends State<CustomerLocationPromptView>
                   Positioned(
                     top: 14,
                     right: 14,
-                    child: FloatingActionButton.small(
+                    // Regular 56dp FAB, not .small (40dp < 48dp min);
+                    // theme surface, not hardcoded white.
+                    child: FloatingActionButton(
                       heroTag: 'gps_map_fetch_btn',
-                      backgroundColor: Colors.white,
+                      backgroundColor: Theme.of(context).colorScheme.surface,
                       foregroundColor: AppColors.secondary,
                       elevation: 4,
                       onPressed: _isLocating ? null : () => _fetchCurrentGpsLocation(silent: false),
                       child: _isLocating
                           ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation(AppColors.secondary)))
-                          : const Icon(Icons.my_location_rounded, size: 20),
+                          : const Icon(Icons.my_location_rounded, size: 24),
                     ),
                   ),
                 ],

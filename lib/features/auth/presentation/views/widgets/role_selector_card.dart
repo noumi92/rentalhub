@@ -23,6 +23,7 @@ class RoleSelectorCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final brightness = Theme.of(context).brightness;
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(16),
@@ -31,11 +32,13 @@ class RoleSelectorCard extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: isSelected
-              ? AppColors.secondary.withValues(alpha: 0.08)
+              ? AppColors.orangeFill.withValues(alpha: 0.08)
               : Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isSelected ? AppColors.secondary : Theme.of(context).dividerColor,
+            color: isSelected
+                ? AppColors.orangeFill
+                : Theme.of(context).dividerColor,
             width: isSelected ? 2 : 1,
           ),
         ),
@@ -46,13 +49,15 @@ class RoleSelectorCard extends StatelessWidget {
               height: 48,
               decoration: BoxDecoration(
                 color: isSelected
-                    ? AppColors.secondary
+                    ? AppColors.orangeFill
                     : AppColors.primaryContainer,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
                 icon,
-                color: isSelected ? Colors.white : Theme.of(context).colorScheme.onSurface,
+                color: isSelected
+                    ? Colors.white
+                    : Theme.of(context).colorScheme.onSurface,
                 size: 24,
               ),
             ),
@@ -76,7 +81,7 @@ class RoleSelectorCard extends StatelessWidget {
                         urduSubtitle,
                         style: Theme.of(context).textTheme.labelMedium?.copyWith(
                           fontWeight: FontWeight.w600,
-                          color: AppColors.secondary,
+                          color: AppColors.orangeTextFor(brightness),
                         ),
                       ),
                     ],
@@ -93,7 +98,9 @@ class RoleSelectorCard extends StatelessWidget {
               isSelected
                   ? Icons.radio_button_checked_rounded
                   : Icons.radio_button_off_rounded,
-              color: isSelected ? AppColors.secondary : Theme.of(context).colorScheme.onSurfaceVariant,
+              color: isSelected
+                  ? AppColors.orangeTextFor(brightness)
+                  : Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ],
         ),

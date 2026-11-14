@@ -137,7 +137,9 @@ class _OwnerAddCustomerWizardState extends State<OwnerAddCustomerWizard> {
         const SizedBox(height: 4),
         Text(
           label,
-          maxLines: 1,
+          // Urdu labels (e.g. "دستاویزات اور دستخط") need two lines
+          // at 360px — one line truncated them with an ellipsis.
+          maxLines: 2,
           overflow: TextOverflow.ellipsis,
           textAlign: TextAlign.center,
           style: TextStyle(fontSize: 11, fontWeight: current ? FontWeight.w800 : FontWeight.w600, color: color),
@@ -169,7 +171,14 @@ class _OwnerAddCustomerWizardState extends State<OwnerAddCustomerWizard> {
               ),
             ),
             Expanded(
-              child: SingleChildScrollView(child: _currentStep()),
+              child: SingleChildScrollView(
+                // Shared outer padding for every step (was step 1
+                // only — steps 2–4 sat flush to the screen edge).
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: _currentStep(),
+                ),
+              ),
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),

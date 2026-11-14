@@ -1,12 +1,15 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/responsive.dart';
+import '../../../../core/widgets/app_feedback.dart';
+import '../../../../core/widgets/app_state_views.dart';
 import '../../data/datasources/admin_remote_data_source.dart';
 import '../widgets/admin_shell.dart';
 
@@ -25,6 +28,7 @@ class _AdminActivityLogViewState extends State<AdminActivityLogView> {
   final _searchController = TextEditingController();
   List<AuditLogEntry> _entries = [];
   bool _isLoading = true;
+  bool _hasError = false;
 
   @override
   void initState() {
@@ -39,12 +43,19 @@ class _AdminActivityLogViewState extends State<AdminActivityLogView> {
   }
 
   Future<void> _load() async {
-    final entries = await sl<AdminRemoteDataSource>().getAuditLogs();
-    if (mounted) {
-      setState(() {
-        _entries = entries;
-        _isLoading = false;
-      });
+    if (!_isLoading) setState(() => _hasError = false);
+    try {
+      final entries = await sl<AdminRemoteDataSource>().getAuditLogs();
+      if (mounted) {
+        setState(() {
+          _entries = entries;
+          _isLoading = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() => _hasError = true);
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -61,17 +72,23 @@ class _AdminActivityLogViewState extends State<AdminActivityLogView> {
 
   Future<void> _exportCsv() async {
     final csv = AdminRemoteDataSource.auditLogsCsv(_visible);
-    await SharePlus.instance.share(
-      ShareParams(
-        files: [
-          XFile.fromData(
-            utf8.encode(csv),
-            name: 'rentalhub-audit-log.csv',
-            mimeType: 'text/csv',
-          ),
-        ],
-      ),
-    );
+    try {
+      await SharePlus.instance.share(
+        ShareParams(
+          files: [
+            XFile.fromData(
+              utf8.encode(csv),
+              name: 'rentalhub-audit-log.csv',
+              mimeType: 'text/csv',
+            ),
+          ],
+        ),
+      );
+    } catch (_) {
+      if (mounted) {
+        AppFeedback.showError(context, 'Could not share the CSV file.');
+      }
+    }
   }
 
   Widget _searchField() {
@@ -101,15 +118,12 @@ class _AdminActivityLogViewState extends State<AdminActivityLogView> {
     );
   }
 
-  String _formatDate(DateTime? date) {
+  // Locale-aware: the old hand-rolled English month list ignored the
+  // admin's locale (Urdu users saw English month names).
+  String _formatDate(BuildContext context, DateTime? date) {
     if (date == null) return '';
-    const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
-    ];
-    final hour = date.hour.toString().padLeft(2, '0');
-    final minute = date.minute.toString().padLeft(2, '0');
-    return '${date.day} ${months[date.month - 1]} ${date.year} $hour:$minute';
+    final locale = Localizations.localeOf(context).languageCode;
+    return DateFormat('d MMM yyyy HH:mm', locale).format(date);
   }
 
   @override
@@ -146,18 +160,19 @@ class _AdminActivityLogViewState extends State<AdminActivityLogView> {
             SizedBox(height: 16),
             Expanded(
               child: _isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : _visible.isEmpty
-                      ? Center(
-                          child: Text(
-                            'No audit entries yet — admin actions will appear here as they happen.',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                color: Theme.of(context).colorScheme.onSurfaceVariant,
-                                fontWeight: FontWeight.w700),
-                          ),
+                  ? const AppLoadingState()
+                  : _hasError
+                      ? AppErrorState(
+                          message: 'Could not load the activity log.',
+                          onRetry: _load,
                         )
-                      : ListView.separated(
+                      : _visible.isEmpty
+                          ? const AppEmptyState(
+                              title: 'No audit entries yet',
+                              message:
+                                  'Admin actions will appear here as they happen.',
+                            )
+                          : ListView.separated(
                           itemCount: _visible.length,
                           separatorBuilder: (_, __) =>
                               const SizedBox(height: 10),
@@ -194,7 +209,7 @@ class _AdminActivityLogViewState extends State<AdminActivityLogView> {
                                 ),
                                 subtitle: Text(
                                   compact
-                                      ? '$subtitle\n${_formatDate(e.createdAt)}'
+                                      ? '$subtitle\n${_formatDate(context, e.createdAt)}'
                                       : subtitle,
                                   style: TextStyle(
                                       fontSize: 12,
@@ -204,7 +219,7 @@ class _AdminActivityLogViewState extends State<AdminActivityLogView> {
                                 trailing: compact
                                     ? null
                                     : Text(
-                                        _formatDate(e.createdAt),
+                                        _formatDate(context, e.createdAt),
                                         style: TextStyle(
                                             fontSize: 11,
                                             color: Theme.of(context).colorScheme.onSurfaceVariant),

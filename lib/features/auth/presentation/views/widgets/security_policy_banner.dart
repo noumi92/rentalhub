@@ -13,20 +13,22 @@ class SecurityPolicyBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final brightness = Theme.of(context).brightness;
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppColors.warning.withValues(alpha: 0.12),
+        color: AppColors.warningContainerFor(brightness),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: AppColors.warning.withValues(alpha: 0.4),
+          color: AppColors.warningOnContainerFor(brightness)
+              .withValues(alpha: 0.4),
         ),
       ),
       child: Row(
         children: [
           Icon(
             icon,
-            color: AppColors.warning,
+            color: AppColors.warningOnContainerFor(brightness),
             size: 20,
           ),
           const SizedBox(width: 8),

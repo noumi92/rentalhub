@@ -9,6 +9,7 @@ import '../../../../../core/widgets/app_feedback.dart';
 import '../../../../../core/widgets/media_picker_helper.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../trust/data/services/cnic_ocr_service.dart';
+import 'doc_photo_tile.dart';
 import 'kyc_draft.dart';
 import 'kyc_step.dart';
 
@@ -145,28 +146,9 @@ class Step3DocsState extends KycStepState<Step3Docs> {
 
   Widget _section(String title) => Padding(padding: const EdgeInsets.only(top: 4, bottom: 10), child: Text(title, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)));
 
-  Widget _photoTile({required String label, required XFile? file, required Key buttonKey, required VoidCallback onPick}) {
-    final l10n = AppLocalizations.of(context)!;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: Theme.of(context).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700)),
-        const SizedBox(height: 6),
-        Container(
-          height: 120,
-          decoration: BoxDecoration(color: Theme.of(context).colorScheme.surfaceContainerHighest, borderRadius: BorderRadius.circular(12), border: Border.all(color: Theme.of(context).dividerColor)),
-          child: file == null
-              ? const Center(child: Icon(Icons.image_rounded, size: 40))
-              : ClipRRect(borderRadius: BorderRadius.circular(12), child: Image.file(File(file.path), width: double.infinity, fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) => const Center(child: Icon(Icons.broken_image_rounded)))),
-        ),
-        const SizedBox(height: 6),
-        OutlinedButton.icon(key: buttonKey, onPressed: onPick, icon: const Icon(Icons.camera_alt_rounded), label: Text(l10n.kycTakePhoto)),
-      ],
-    );
-  }
-
   Widget _field(TextEditingController controller, String label, {String? hint, TextInputType keyboard = TextInputType.text, List<TextInputFormatter>? formatters, required ValueChanged<String> onChanged}) {
-    return TextFormField(controller: controller, keyboardType: keyboard, inputFormatters: formatters, decoration: InputDecoration(labelText: label, hintText: hint, border: const OutlineInputBorder()), onChanged: onChanged);
+    // Filled like step 1's fields (were unfilled here).
+    return TextFormField(controller: controller, keyboardType: keyboard, inputFormatters: formatters, decoration: InputDecoration(labelText: label, hintText: hint, border: const OutlineInputBorder(), filled: true, fillColor: Theme.of(context).colorScheme.surfaceContainerHighest), onChanged: onChanged);
   }
 
   @override
@@ -180,9 +162,9 @@ class Step3DocsState extends KycStepState<Step3Docs> {
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(child: _photoTile(label: l10n.kycWizardLicenseFront, file: draft.licenseFrontPhoto, buttonKey: const ValueKey('step3_license_front'), onPick: () => _captureLicense(front: true))),
+            Expanded(child: DocPhotoTile(label: l10n.kycWizardLicenseFront, file: draft.licenseFrontPhoto, buttonKey: const ValueKey('step3_license_front'), onPick: () => _captureLicense(front: true), onRemove: () { setState(() => draft.licenseFrontPhoto = null); widget.onChanged(); }, removeButtonKey: const ValueKey('step3_license_front_remove'), scanning: _scanningLicenseFront)),
             const SizedBox(width: 12),
-            Expanded(child: _photoTile(label: l10n.kycWizardLicenseBack, file: draft.licenseBackPhoto, buttonKey: const ValueKey('step3_license_back'), onPick: () => _captureLicense(front: false))),
+            Expanded(child: DocPhotoTile(label: l10n.kycWizardLicenseBack, file: draft.licenseBackPhoto, buttonKey: const ValueKey('step3_license_back'), onPick: () => _captureLicense(front: false), onRemove: () { setState(() => draft.licenseBackPhoto = null); widget.onChanged(); }, removeButtonKey: const ValueKey('step3_license_back_remove'), scanning: _scanningLicenseBack)),
           ],
         ),
         const SizedBox(height: 12),
@@ -191,7 +173,7 @@ class Step3DocsState extends KycStepState<Step3Docs> {
         _field(_licenseExpiryController, l10n.kycWizardLicenseExpiry, hint: '01.01.2030', keyboard: TextInputType.number, formatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')), LengthLimitingTextInputFormatter(10)], onChanged: (v) { draft.licenseExpiry = v; widget.onChanged(); }),
         const SizedBox(height: 20),
         _section(l10n.kycWizardUtilityBill),
-        _photoTile(label: l10n.kycWizardUtilityBill, file: draft.utilityBillPhoto, buttonKey: const ValueKey('step3_bill'), onPick: () => _pick((f) => draft.utilityBillPhoto = f)),
+        DocPhotoTile(label: l10n.kycWizardUtilityBill, file: draft.utilityBillPhoto, buttonKey: const ValueKey('step3_bill'), onPick: () => _pick((f) => draft.utilityBillPhoto = f), onRemove: () { setState(() => draft.utilityBillPhoto = null); widget.onChanged(); }, removeButtonKey: const ValueKey('step3_bill_remove')),
         const SizedBox(height: 20),
         _section(l10n.kycWizardExtraDocs),
         Wrap(
@@ -202,7 +184,9 @@ class Step3DocsState extends KycStepState<Step3Docs> {
               Stack(
                 children: [
                   ClipRRect(borderRadius: BorderRadius.circular(8), child: Image.file(File(draft.extraPhotos[i].path), width: 72, height: 72, fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image_rounded))),
-                  Positioned(right: 0, top: 0, child: InkWell(key: ValueKey('step3_extra_remove_$i'), onTap: () { setState(() => draft.extraPhotos.removeAt(i)); widget.onChanged(); }, child: const Icon(Icons.cancel_rounded, size: 20))),
+                  // 48dp hit area (was a 20px icon) with the icon
+                  // centred in the top-right corner of the thumb.
+                  Positioned(right: 0, top: 0, child: SizedBox(width: 48, height: 48, child: IconButton(key: ValueKey('step3_extra_remove_$i'), padding: EdgeInsets.zero, icon: const Icon(Icons.cancel_rounded, size: 24), onPressed: () { setState(() => draft.extraPhotos.removeAt(i)); widget.onChanged(); }))),
                 ],
               ),
             OutlinedButton.icon(key: const ValueKey('step3_extra_add'), onPressed: () => _pick((f) => draft.extraPhotos.add(f)), icon: const Icon(Icons.add_a_photo_rounded), label: Text(l10n.kycWizardAddPhoto)),

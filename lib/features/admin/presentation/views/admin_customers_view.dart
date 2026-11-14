@@ -5,6 +5,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/responsive.dart';
+import '../../../../core/widgets/app_state_views.dart';
 import '../../../customer/data/models/customer_model.dart';
 import '../../data/datasources/admin_people_data_source.dart';
 import '../widgets/admin_shell.dart';
@@ -23,6 +24,7 @@ class _AdminCustomersViewState extends State<AdminCustomersView> {
   final _searchController = TextEditingController();
   List<CustomerModel> _customers = [];
   bool _isLoading = true;
+  bool _hasError = false;
 
   @override
   void initState() {
@@ -37,12 +39,19 @@ class _AdminCustomersViewState extends State<AdminCustomersView> {
   }
 
   Future<void> _load() async {
-    final customers = await sl<AdminPeopleDataSource>().getCustomers();
-    if (mounted) {
-      setState(() {
-        _customers = customers;
-        _isLoading = false;
-      });
+    if (!_isLoading) setState(() => _hasError = false);
+    try {
+      final customers = await sl<AdminPeopleDataSource>().getCustomers();
+      if (mounted) {
+        setState(() {
+          _customers = customers;
+          _isLoading = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() => _hasError = true);
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -91,18 +100,19 @@ class _AdminCustomersViewState extends State<AdminCustomersView> {
             SizedBox(height: 16),
             Expanded(
               child: _isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : _visible.isEmpty
-                      ? Center(
-                          child: Text(
-                            'No customers match — the list reads the customers collection.',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                fontWeight: FontWeight.w700,
-                                color: Theme.of(context).colorScheme.onSurfaceVariant),
-                          ),
+                  ? const AppLoadingState()
+                  : _hasError
+                      ? AppErrorState(
+                          message: 'Could not load the customers.',
+                          onRetry: _load,
                         )
-                      : ListView.separated(
+                      : _visible.isEmpty
+                          ? const AppEmptyState(
+                              title: 'No customers match',
+                              message:
+                                  'The list reads the customers collection.',
+                            )
+                          : ListView.separated(
                           itemCount: _visible.length,
                           separatorBuilder: (_, __) =>
                               const SizedBox(height: 10),

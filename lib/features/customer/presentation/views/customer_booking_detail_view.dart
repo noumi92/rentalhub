@@ -62,7 +62,10 @@ class CustomerBookingDetailView extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final b = booking;
     return Scaffold(
+      // C1: MinimalAppBar owns the top inset — SafeArea(top: false)
+      // avoids the double status-bar band (SH-M3 class).
       body: SafeArea(
+        top: false,
         child: Column(
           children: [
             MinimalAppBar(

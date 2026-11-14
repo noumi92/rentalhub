@@ -63,40 +63,48 @@ class VehicleDetailActionBar extends StatelessWidget {
         color: Theme.of(context).colorScheme.surface,
         boxShadow: [
           BoxShadow(
-              color: Color(0x14000000), blurRadius: 10, offset: Offset(0, -3))
+              // Theme shadow colour — no raw hex literal.
+              color: Theme.of(context).shadowColor,
+              blurRadius: 10,
+              offset: const Offset(0, -3))
         ],
       ),
       child: Row(
         children: [
-          OutlinedButton.icon(
-            onPressed: () async {
-              final uri = whatsappUri(
-                phone: shopPhone,
-                message: l10n.vehicleWhatsappInterest(shopName, v.displayName, v.plateNumber),
-              );
-              if (uri == null) {
-                AppFeedback.showInfo(
-                  context,
-                  l10n.shopNoWhatsapp,
+          Flexible(
+            child: OutlinedButton.icon(
+              onPressed: () async {
+                final uri = whatsappUri(
+                  phone: shopPhone,
+                  message: l10n.vehicleWhatsappInterest(shopName, v.displayName, v.plateNumber),
                 );
-                return;
-              }
-              if (!await launchUrl(
-                uri,
-                mode: LaunchMode.externalApplication,
-              )) {
-                if (context.mounted) {
-                  AppFeedback.showError(
+                if (uri == null) {
+                  AppFeedback.showInfo(
                     context,
-                    l10n.couldNotOpenWhatsapp,
+                    l10n.shopNoWhatsapp,
                   );
+                  return;
                 }
-              }
-            },
+                if (!await launchUrl(
+                  uri,
+                  mode: LaunchMode.externalApplication,
+                )) {
+                  if (context.mounted) {
+                    AppFeedback.showError(
+                      context,
+                      l10n.couldNotOpenWhatsapp,
+                    );
+                  }
+                }
+              },
             style: OutlinedButton.styleFrom(
               foregroundColor: AppColors.successOnContainerFor(Theme.of(context).brightness),
               side: BorderSide(color: AppColors.successBorderFor(Theme.of(context).brightness)),
               backgroundColor: AppColors.successContainerFor(Theme.of(context).brightness),
+              // 48dp minimum touch target; the label ellipsizes
+              // instead of squeezing the Book Now button off-screen
+              // at 360px / large text scale.
+              minimumSize: const Size(0, 48),
               padding:
                   const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               shape: RoundedRectangleBorder(
@@ -104,7 +112,12 @@ class VehicleDetailActionBar extends StatelessWidget {
             ),
             icon: Icon(Icons.chat_bubble_outline_rounded,
                 size: 18, color: AppColors.successOnContainerFor(Theme.of(context).brightness)),
-            label: Text(l10n.whatsapp),
+            label: Text(
+              l10n.whatsapp,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
           ),
           const SizedBox(width: 10),
           Expanded(

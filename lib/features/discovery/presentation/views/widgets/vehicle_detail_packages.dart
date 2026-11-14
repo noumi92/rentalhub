@@ -33,43 +33,53 @@ class VehicleDetailPackages extends StatelessWidget {
         Text(l10n.vehicleChoosePackage,
             style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900)),
         const SizedBox(height: 10),
-        Row(
-          children: [
-            Expanded(
-              child: VehiclePackageCard(
-                title: l10n.selfDrive,
-                urdu: l10n.vehicleSelfDriveUrdu,
-                price: selfDriveRate,
-                isSelected: !withDriver,
-                icon: Icons.drive_eta_rounded,
-                onTap: () => onDriveModeChanged(false),
+        // Equal-height package cards: without IntrinsicHeight the
+        // two cards differ in height when one label wraps at 360px /
+        // large text scale.
+        IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: VehiclePackageCard(
+                  title: l10n.selfDrive,
+                  urdu: l10n.vehicleSelfDriveUrdu,
+                  price: selfDriveRate,
+                  isSelected: !withDriver,
+                  icon: Icons.drive_eta_rounded,
+                  onTap: () => onDriveModeChanged(false),
+                ),
               ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: VehiclePackageCard(
-                title: l10n.withDriver,
-                urdu: l10n.vehicleWithDriverUrdu,
-                price: withDriverRate,
-                isSelected: withDriver,
-                icon: Icons.person_pin_rounded,
-                onTap: () => onDriveModeChanged(true),
+              const SizedBox(width: 12),
+              Expanded(
+                child: VehiclePackageCard(
+                  title: l10n.withDriver,
+                  urdu: l10n.vehicleWithDriverUrdu,
+                  price: withDriverRate,
+                  isSelected: withDriver,
+                  icon: Icons.person_pin_rounded,
+                  onTap: () => onDriveModeChanged(true),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
         const SizedBox(height: 14),
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
+            // Brightness-aware slab colours: the old raw-alpha
+            // warning fill with a primary-navy icon was unreadable
+            // in dark mode (navy on dark amber), and the success
+            // icon at #10B981 on the pale slab was below AA.
             color: withDriver
-                ? AppColors.accentSuccess.withValues(alpha: 0.08)
-                : AppColors.warning.withValues(alpha: 0.12),
+                ? AppColors.successContainerFor(Theme.of(context).brightness)
+                : AppColors.warningContainerFor(Theme.of(context).brightness),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
                 color: withDriver
-                    ? AppColors.accentSuccess.withValues(alpha: 0.25)
-                    : AppColors.warning.withValues(alpha: 0.35)),
+                    ? AppColors.successBorderFor(Theme.of(context).brightness).withValues(alpha: 0.5)
+                    : AppColors.warningOnContainerFor(Theme.of(context).brightness).withValues(alpha: 0.35)),
           ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -80,8 +90,8 @@ class VehicleDetailPackages extends StatelessWidget {
                       : Icons.security_rounded,
                   size: 18,
                   color: withDriver
-                      ? AppColors.accentSuccess
-                      : AppColors.primary),
+                      ? AppColors.successOnContainerFor(Theme.of(context).brightness)
+                      : AppColors.warningOnContainerFor(Theme.of(context).brightness)),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
