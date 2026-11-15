@@ -1,4 +1,4 @@
-import * as functions from 'firebase-functions';
+import * as functions from 'firebase-functions/v1';
 import { dispatchAgreementWhatsAppTemplate } from '../services/meta_whatsapp_service';
 
 export const onBookingUpdated = functions.firestore
