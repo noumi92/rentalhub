@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+
+import '../../../../../core/utils/shop_id_resolution.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -18,7 +20,15 @@ class FleetAddGate {
   static Future<bool> ensureApproved(BuildContext context, String shopId) async {
     String? status;
     try {
-      final doc = await FirebaseFirestore.instance.collection('shops').doc(shopId).get();
+      // Shop-id linking (2026-11-15): callers pass the owner's bare
+      // UID, but the shops document is `shop_<uid>` — the bare read
+      // always missed, so a pending-verification shop was never
+      // blocked from adding vehicles. Resolve the doc id first.
+      final fs = FirebaseFirestore.instance;
+      final doc = await fs
+          .collection('shops')
+          .doc(await canonicalShopId(fs, shopId))
+          .get();
       final data = doc.data();
       status = (data?['verificationStatus'] ?? data?['verification_status']) as String?;
     } catch (_) {

@@ -53,7 +53,29 @@ class ManualBookingVehicleSection extends StatelessWidget {
     return Column(
       children: [
         if (isLoadingVehicles)
-          const Center(child: CircularProgressIndicator())
+          // DS-11: a labelled inline spinner, not a bare one. (Parent
+          // trace: OwnerManualBookingView._loadVehicles always clears
+          // isLoadingVehicles in `finally`, and ManualBookingFormBody
+          // already renders ManualBookingLoadErrorCard with retry when
+          // _vehiclesError is set — a failed load cannot leave this
+          // spinner stuck, so no error branch is added here.)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+              const SizedBox(width: 8),
+              Flexible(
+                child: Text(
+                  l10n.manualBookingLoadingVehicles,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ),
+            ],
+          )
         else
           ManualBookingVehicleDropdown(
             vehicles: vehicles,

@@ -1,9 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
+import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/money_format.dart';
+import '../../../../core/widgets/app_state_views.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../core/widgets/masked_value.dart';
 import '../../../bookings/data/datasources/booking_remote_data_source.dart';
@@ -29,6 +32,9 @@ class _CustomerWalletViewState extends State<CustomerWalletView> {
   // E2: a load failure used to render an empty ledger silently; it
   // now renders an error state with retry.
   bool _hasError = false;
+  // AC-8: signed out — no wallet to load, and never another
+  // customer's. Renders the sign-in state instead of subscribing.
+  bool _signedOut = false;
   // Live updates (Item 2): the subscription behind the balance and
   // the ledger.
   StreamSubscription<CustomerWalletSummary>? _walletSub;
@@ -52,15 +58,20 @@ class _CustomerWalletViewState extends State<CustomerWalletView> {
   /// error-state retry re-runs this method, which re-subscribes.
   void _load() {
     _walletSub?.cancel();
-    if (mounted) setState(() => _hasError = false);
+    if (mounted) setState(() { _hasError = false; _signedOut = false; });
+    // AC-8: no signed-in user means no wallet to load — never fall
+    // back to another customer's uid.
+    final uid = CustomerWalletService.currentUid();
+    if (uid == null) {
+      if (mounted) setState(() { _signedOut = true; _isLoading = false; });
+      return;
+    }
     try {
       final service = CustomerWalletService(
         bookings: sl<BookingRemoteDataSource>(),
         deposits: sl<SecurityDepositDataSource>(),
       );
-      _walletSub = service
-          .watch(CustomerWalletService.currentUid())
-          .listen(
+      _walletSub = service.watch(uid).listen(
         (summary) {
           if (mounted) {
             setState(() {
@@ -93,13 +104,29 @@ class _CustomerWalletViewState extends State<CustomerWalletView> {
     final l10n = AppLocalizations.of(context)!;
     final summary = _summary;
     return Scaffold(
+      // Audit 2026-11-15 DS-14: top: false — the shell strips the
+      // top inset; a bare SafeArea double-insets outside it.
       body: SafeArea(
+        top: false,
         child: Column(
           children: [
             MinimalAppBar(
               title: l10n.walletTitle,
             ),
-            Expanded(
+            if (_signedOut)
+              // AC-8: signed out — offer sign-in, never another
+              // customer's wallet (same pattern as the Home PW-9 fix).
+              Expanded(
+                child: AppEmptyState(
+                  title: l10n.signInRequiredGeneric,
+                  icon: Icons.lock_rounded,
+                  actionLabel: l10n.homeSignInButton,
+                  actionIcon: Icons.login_rounded,
+                  onAction: () => context.go(RouteNames.auth),
+                ),
+              )
+            else
+              Expanded(
               child: SingleChildScrollView(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -124,30 +151,15 @@ class _CustomerWalletViewState extends State<CustomerWalletView> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            l10n.walletActiveEscrow,
-                            style: Theme.of(context)
-                                .textTheme
-                                .labelMedium
-                                ?.copyWith(
-                                    fontWeight: FontWeight.w500,
-                                    color: AppColors.primaryContainer),
-                          ),
+                          Text(l10n.walletActiveEscrow, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500, color: AppColors.primaryContainer)),
                           const SizedBox(height: 6),
                           FittedBox(
                             fit: BoxFit.scaleDown,
                             alignment: Alignment.centerLeft,
-                            // E1: the balance is masked until the user
-                            // taps the eye; the eye stays light on the
-                            // navy card.
+                            // E1: the balance is masked until the user taps the eye; the eye stays light on the navy card.
                             child: MaskedValue(
                               value: l10n.amountRs(formatRs(summary?.total ?? 0)),
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .displayLarge
-                                  ?.copyWith(
-                                      fontWeight: FontWeight.w700,
-                                      color: Colors.white),
+                              style: Theme.of(context).textTheme.displayLarge?.copyWith(fontWeight: FontWeight.w700, color: Colors.white),
                               iconColor: AppColors.primaryContainer,
                               iconSize: 28,
                               showTooltip: l10n.walletShowBalance,
@@ -170,17 +182,14 @@ class _CustomerWalletViewState extends State<CustomerWalletView> {
                               ),
                             ],
                           ),
+                          // PW-2/PW-12: deposit-refund terms under the deposit pill; the headline above is now plain language too.
+                          const SizedBox(height: 10),
+                          Text(l10n.depositRefundTerms, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.primaryContainer)),
                         ],
                       ),
                     ),
                     const SizedBox(height: 20),
-                    Text(
-                      l10n.walletLedger,
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleSmall
-                          ?.copyWith(fontWeight: FontWeight.w600),
-                    ),
+                    Text(l10n.walletLedger, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
                     const SizedBox(height: 10),
                     WalletLedger(
                       isLoading: _isLoading,
@@ -216,25 +225,9 @@ class _EscrowPill extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context)
-                  .textTheme
-                  .labelSmall
-                  ?.copyWith(color: AppColors.primaryContainer)),
-          // CU-m6: the pill amounts stay masked but carry no eye of
-          // their own — the wallet header has ONE visibility toggle
-          // (on the main balance above), not three independent ones.
-          Text(
-            MaskedValue.maskDigits(value),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context)
-                .textTheme
-                .labelMedium
-                ?.copyWith(fontWeight: FontWeight.w500, color: Colors.white),
-          ),
+          Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.primaryContainer)),
+          // CU-m6: the pill amounts stay masked but carry no eye of their own — the wallet header has ONE visibility toggle (on the main balance above), not three independent ones.
+          Text(MaskedValue.maskDigits(value), maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500, color: Colors.white)),
         ],
       ),
     );

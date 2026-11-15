@@ -5,6 +5,7 @@ import '../../../../../core/widgets/pakistani_plate_widget.dart';
 import '../../../../fleet/domain/entities/vehicle_entity.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../../core/utils/money_format.dart';
+import 'vehicle_image_asset.dart';
 
 /// B3: one car card on the shop's fleet screen, converted from MockVehicle
 /// to the real [VehicleEntity]. Shows the owner's uploaded photo when
@@ -19,18 +20,9 @@ class CustomerVehicleCard extends StatelessWidget {
     required this.onTap,
   });
 
-  String _assetFor(VehicleEntity v) {
-    final nameLower = v.displayName.toLowerCase();
-    if (nameLower.contains('civic')) {
-      return 'assets/images/honda_civic_hero.png';
-    } else if (nameLower.contains('corolla') || nameLower.contains('yaris')) {
-      return 'assets/images/toyota_corolla.png';
-    } else if (nameLower.contains('sportage') || nameLower.contains('br-v')) {
-      return 'assets/images/red_civic.png';
-    }
-    return 'assets/images/white_sedan_hero.png';
-  }
-
+  // FG-2 (UI/UX audit 2026-11-15): the make/model → asset mapping
+  // lives in the ONE shared helper now — the local _assetFor copy
+  // mapped Sportage/BR-V to a red Civic. Never duplicate it here.
   Widget _carImage(VehicleEntity v) {
     final url = v.imageUrl;
     if (url != null && url.startsWith('http')) {
@@ -51,18 +43,51 @@ class CustomerVehicleCard extends StatelessWidget {
           );
         },
         errorBuilder: (_, __, ___) => Image.asset(
-          _assetFor(v),
+          vehicleImageAsset(v.make, v.model),
           fit: BoxFit.cover,
         ),
       );
     }
-    return Image.asset(_assetFor(v), fit: BoxFit.cover);
+    return Image.asset(vehicleImageAsset(v.make, v.model), fit: BoxFit.cover);
+  }
+
+  String _statusLabel(AppLocalizations l10n, String status) {
+    switch (status) {
+      case 'rented':
+        return l10n.rentedOut;
+      case 'maintenance':
+        return l10n.inMaintenance;
+      default:
+        return l10n.available;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final v = vehicle;
+    final brightness = Theme.of(context).brightness;
+    // FG-3 (UI/UX audit 2026-11-15): the availability pill, same
+    // label + colour mapping as ShopVehicleCard (CU-M8) — green when
+    // available, neutral when rented, amber in maintenance — over the
+    // photo, so the fleet list states availability without a tap.
+    final Color pillBg;
+    final Color pillBorder;
+    final Color pillFg;
+    switch (v.status) {
+      case 'rented':
+        pillBg = Theme.of(context).colorScheme.surfaceContainerHighest;
+        pillBorder = Theme.of(context).colorScheme.outlineVariant;
+        pillFg = Theme.of(context).colorScheme.onSurfaceVariant;
+      case 'maintenance':
+        pillBg = AppColors.warningContainerFor(brightness);
+        pillBorder = AppColors.warning.withValues(alpha: 0.35);
+        pillFg = AppColors.warningOnContainerFor(brightness);
+      default:
+        pillBg = AppColors.successContainerFor(brightness);
+        pillBorder = AppColors.successBorderFor(brightness);
+        pillFg = AppColors.successOnContainerFor(brightness);
+    }
     return Card(
       // Canonical borderless card look comes from AppTheme's
       // CardThemeData (elevation 3, soft shadow, no border) — the old
@@ -83,7 +108,33 @@ class CustomerVehicleCard extends StatelessWidget {
               child: SizedBox(
                 height: 120,
                 width: double.infinity,
-                child: _carImage(v),
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    _carImage(v),
+                    Positioned(
+                      top: 10,
+                      right: 10,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: pillBg,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: pillBorder),
+                        ),
+                        child: Text(
+                          _statusLabel(l10n, v.status),
+                          style: Theme.of(context)
+                              .textTheme
+                              .labelSmall
+                              ?.copyWith(
+                                  fontWeight: FontWeight.w500, color: pillFg),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
             Padding(

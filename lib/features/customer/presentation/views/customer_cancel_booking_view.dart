@@ -180,7 +180,6 @@ class _CustomerCancelBookingViewState extends State<CustomerCancelBookingView> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 20),
                   ],
                 ),
               ),

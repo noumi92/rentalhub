@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../../../core/utils/shop_id_resolution.dart';
+
 import '../../../../l10n/app_localizations.dart';
 import '../../../discovery/data/models/shop_model.dart';
 import '../../../fleet/data/models/vehicle_model.dart';
@@ -80,9 +82,10 @@ class AdminShopsDataSource {
   Future<int> getShopVehicleCount(String shopId) async {
     final firestore = _resolvedFirestore;
     if (firestore == null) return 0;
+    final ids = await candidateShopIds(firestore, shopId);
     final snap = await firestore
         .collection('vehicles')
-        .where('shopId', isEqualTo: shopId)
+        .where('shopId', whereIn: ids)
         .count()
         .get();
     return snap.count ?? 0;
@@ -92,9 +95,10 @@ class AdminShopsDataSource {
   Future<int> getShopBookingCount(String shopId) async {
     final firestore = _resolvedFirestore;
     if (firestore == null) return 0;
+    final ids = await candidateShopIds(firestore, shopId);
     final snap = await firestore
         .collection('bookings')
-        .where('shopId', isEqualTo: shopId)
+        .where('shopId', whereIn: ids)
         .count()
         .get();
     return snap.count ?? 0;
@@ -111,7 +115,7 @@ class AdminShopsDataSource {
     try {
       final doc = await firestore
           .collection('whatsapp_credits')
-          .doc(shopId)
+          .doc(await canonicalShopId(firestore, shopId))
           .get();
       final data = doc.data();
       if (data == null) return null;

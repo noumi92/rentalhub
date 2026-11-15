@@ -105,6 +105,17 @@ class BookingSummaryCard extends StatelessWidget {
               l10n.summarySecurityDeposit,
               l10n.summaryDepositAtHandover(formatRs(securityDepositPkr!)),
             ),
+            // PW-2: the refund terms, sourced from the real settlement
+            // rule (SettlementCalculator: refund = deposit minus
+            // damage / excess-km / fuel / overtime / extra charges,
+            // settled at return). No timed rule exists in code, so no
+            // time window is promised here.
+            const SizedBox(height: 4),
+            Text(
+              l10n.depositRefundTerms,
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant),
+            ),
           ],
           const SizedBox(height: 8),
           _buildRow(context,

@@ -15,6 +15,12 @@ class SettlementBreakdown {
   final int extraCharges;
   final int totalDeductions;
   final int netRefund;
+  /// PW-21: what the customer still owes when the deductions exceed
+  /// the deposit (totalDeductions - securityDeposit, never negative).
+  /// The clamp on [netRefund] is correct (never a negative refund),
+  /// but the excess used to disappear from the settlement — the
+  /// receipt shows it from this field instead.
+  final int amountOwed;
 
   const SettlementBreakdown({
     required this.totalKmDriven,
@@ -27,6 +33,7 @@ class SettlementBreakdown {
     this.extraCharges = 0,
     required this.totalDeductions,
     required this.netRefund,
+    required this.amountOwed,
   });
 }
 
@@ -112,6 +119,7 @@ class SettlementCalculator {
       extraCharges: extraCharges,
       totalDeductions: totalDeductions,
       netRefund: netRefund,
+      amountOwed: (totalDeductions - securityDeposit).clamp(0, 1 << 30),
     );
   }
 

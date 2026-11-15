@@ -81,7 +81,10 @@ class DisputeFormFields extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: AppColors.primaryContainer,
+            // Audit 2026-11-15 AC-16: the pale primaryContainer
+            // #EEF0FF slab glares in dark mode — the dark container
+            // token there, the pale tint in light.
+            color: Theme.of(context).brightness == Brightness.dark ? AppColors.primaryContainerOnDark : AppColors.primaryContainer,
             borderRadius: BorderRadius.circular(12),
           ),
           child: Row(

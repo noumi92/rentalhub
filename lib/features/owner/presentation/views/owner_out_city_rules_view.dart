@@ -232,7 +232,6 @@ class _OwnerOutCityRulesViewState extends State<OwnerOutCityRulesView> {
                         tollsPaidBy: _tollsPaidBy,
                         onTollsChanged: (t) => setState(() => _tollsPaidBy = t),
                       ),
-                      const SizedBox(height: 20),
                     ],
                   ),
                 ),

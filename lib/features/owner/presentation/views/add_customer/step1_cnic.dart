@@ -90,14 +90,15 @@ class _Step1CnicState extends KycStepState<Step1Cnic> {
     super.dispose();
   }
 
-  /// dd.mm.yyyy only; the label itself carries the format, so it
-  /// doubles as the (localized) error text — no new .arb key needed.
-  static String? _validateDate(String? value, String label) {
+  /// dd.mm.yyyy only; an invalid date returns the localized format
+  /// error (FG-14) — never the field label, which reads as a label,
+  /// not an explanation.
+  static String? _validateDate(String? value, String error) {
     final t = value?.trim() ?? ''; if (t.isEmpty) return null;
-    final m = RegExp(r'^(\d{2})\.(\d{2})\.(\d{4})$').firstMatch(t); if (m == null) return label;
+    final m = RegExp(r'^(\d{2})\.(\d{2})\.(\d{4})$').firstMatch(t); if (m == null) return error;
     final day = int.parse(m[1]!); final month = int.parse(m[2]!); final year = int.parse(m[3]!);
     final parsed = DateTime.tryParse('$year-${month.toString().padLeft(2, '0')}-${day.toString().padLeft(2, '0')}');
-    if (parsed == null || parsed.day != day || parsed.month != month || parsed.year != year) return label;
+    if (parsed == null || parsed.day != day || parsed.month != month || parsed.year != year) return error;
     return null;
   }
 
@@ -197,7 +198,7 @@ class _Step1CnicState extends KycStepState<Step1Cnic> {
   Widget _field(TextEditingController controller, String label, {TextInputType keyboard = TextInputType.text, String? hint, String? Function(String?)? validator, List<TextInputFormatter>? formatters, int maxLines = 1}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
-      child: TextFormField(controller: controller, keyboardType: keyboard, maxLines: maxLines, inputFormatters: formatters, validator: validator, decoration: InputDecoration(labelText: label, hintText: hint, border: const OutlineInputBorder(), filled: true, fillColor: Theme.of(context).colorScheme.surfaceContainerHighest)),
+      child: TextFormField(controller: controller, keyboardType: keyboard, maxLines: maxLines, inputFormatters: formatters, validator: validator, decoration: InputDecoration(labelText: label, hintText: hint, filled: true, fillColor: Theme.of(context).colorScheme.surfaceContainerHighest)),
     );
   }
 
@@ -229,8 +230,8 @@ class _Step1CnicState extends KycStepState<Step1Cnic> {
             if (_isBlacklisted) ...[const SizedBox(height: 8), Text(l10n.kycWizardBlacklisted, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: errorColor))],
             if (_showClean) ...[const SizedBox(height: 8), Text(l10n.blacklistCleanTitle, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: okColor))],
             const SizedBox(height: 12),
-            _field(_dobController, l10n.kycWizardDateOfBirth, keyboard: TextInputType.number, hint: '15.03.1990', validator: (v) => _validateDate(v, l10n.kycWizardDateOfBirth), formatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')), LengthLimitingTextInputFormatter(10)]),
-            _field(_expiryController, l10n.kycWizardCnicExpiry, keyboard: TextInputType.number, hint: '01.01.2030', validator: (v) => _validateDate(v, l10n.kycWizardCnicExpiry), formatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')), LengthLimitingTextInputFormatter(10)]),
+            _field(_dobController, l10n.kycWizardDateOfBirth, keyboard: TextInputType.number, hint: '15.03.1990', validator: (v) => _validateDate(v, l10n.kycWizardDateFormatError), formatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')), LengthLimitingTextInputFormatter(10)]),
+            _field(_expiryController, l10n.kycWizardCnicExpiry, keyboard: TextInputType.number, hint: '01.01.2030', validator: (v) => _validateDate(v, l10n.kycWizardDateFormatError), formatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')), LengthLimitingTextInputFormatter(10)]),
             _field(_addressController, l10n.kycWizardAddress, maxLines: 3),
             _field(_phoneController, l10n.kycWizardWhatsappNumber, keyboard: TextInputType.phone, hint: '0300-1234567', validator: PakistaniValidators.validatePakistaniPhone, formatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9+\- ]')), LengthLimitingTextInputFormatter(15)]),
           ],

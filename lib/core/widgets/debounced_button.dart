@@ -69,19 +69,35 @@ class _DebouncedButtonState extends State<DebouncedButton> {
 
   @override
   Widget build(BuildContext context) {
+    // Audit SH-M1: the default is `orangeFill` #C2410C (5.18:1 with
+    // white in both modes); callers that pass an explicit
+    // backgroundColor keep it.
+    final background = widget.backgroundColor ?? AppColors.orangeFill;
+    final foreground = widget.textColor ?? Colors.white;
+    // Audit 2026-11-15 AC-20: the old styleFrom supplied no
+    // disabled-state colours, so during the 400 ms lockout the button
+    // looked fully enabled while ignoring taps. Disabled colours dim
+    // to 0.38 alpha, mirroring the theme `_buttonStyle`.
+    Color dim(Color color, Set<WidgetState> states) =>
+        states.contains(WidgetState.disabled)
+            ? color.withValues(alpha: 0.38)
+            : color;
     return ElevatedButton(
       onPressed: (widget.isLoading || _isLocked) ? null : _handleTap,
-      style: ElevatedButton.styleFrom(
-        // Audit SH-M1: white on `colorScheme.secondary` (#F95700
-        // light / #FF6D24 dark) is 3.29:1 / 2.81:1 — it fails WCAG AA
-        // for the 14 sp label. The default is `orangeFill` #C2410C
-        // (5.18:1 with white in both modes); callers that pass an
-        // explicit backgroundColor keep it.
-        backgroundColor: widget.backgroundColor ?? AppColors.orangeFill,
-        foregroundColor: widget.textColor ?? Colors.white,
-        minimumSize: const Size(double.infinity, AppDimensions.buttonHeight),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppDimensions.buttonRadius),
+      style: ButtonStyle(
+        backgroundColor: WidgetStateProperty.resolveWith(
+          (states) => dim(background, states),
+        ),
+        foregroundColor: WidgetStateProperty.resolveWith(
+          (states) => dim(foreground, states),
+        ),
+        minimumSize: WidgetStateProperty.all(
+          const Size(double.infinity, AppDimensions.buttonHeight),
+        ),
+        shape: WidgetStateProperty.all(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppDimensions.buttonRadius),
+          ),
         ),
       ),
       child: widget.isLoading

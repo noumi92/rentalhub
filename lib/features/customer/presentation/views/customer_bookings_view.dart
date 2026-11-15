@@ -110,7 +110,10 @@ class _CustomerBookingsViewState extends State<CustomerBookingsView> {
     final list = _filteredBookings;
     final tabs = [l10n.filterAll, l10n.pending, l10n.statusApproved, l10n.active, l10n.done];
     return Scaffold(
+      // Audit 2026-11-15 DS-14: top: false — the shell strips the
+      // top inset; a bare SafeArea double-insets outside it.
       body: SafeArea(
+        top: false,
         child: Column(
           children: [
             MinimalAppBar(
@@ -133,14 +136,9 @@ class _CustomerBookingsViewState extends State<CustomerBookingsView> {
                     label: Text(tabs[i]),
                     selected: isSelected,
                     onSelected: (_) => setState(() => _selectedTab = i),
-                    // No background/selected/label colours: the theme's
-                    // chipTheme drives both modes (dark-correct).
-                    labelStyle: Theme.of(context)
-                        .textTheme
-                        .labelMedium
-                        ?.copyWith(
-                            fontWeight:
-                                FontWeight.w500),
+                    // Audit 2026-11-15 DS-1: no per-file labelStyle —
+                    // the theme's chipTheme drives both modes (the old
+                    // labelMedium override is deleted).
                     side: BorderSide(
                       color: isSelected
                           ? AppColors.primary

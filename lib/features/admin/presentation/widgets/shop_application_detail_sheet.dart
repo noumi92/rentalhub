@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/utils/responsive.dart';
 import '../../../../core/widgets/app_feedback.dart';
@@ -120,9 +121,14 @@ class _ShopApplicationDetailSheetState
                             ? Icons.check_circle_rounded
                             : Icons.cancel_rounded,
                         size: 18,
+                        // Audit 2026-11-15 AC-4: green.shade700 /
+                        // amber.shade800 fail AA as 18 px icons in
+                        // light mode — the readable tokens instead.
                         color: item.done
-                            ? Colors.green.shade700
-                            : Colors.amber.shade800,
+                            ? AppColors.successTextFor(
+                                Theme.of(context).brightness)
+                            : AppColors.warningTextFor(
+                                Theme.of(context).brightness),
                       ),
                       const SizedBox(width: 8),
                       Expanded(child: Text(item.label)),

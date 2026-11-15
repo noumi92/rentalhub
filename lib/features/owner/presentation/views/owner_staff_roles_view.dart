@@ -17,7 +17,7 @@ import '../widgets/add_staff_dialog.dart';
 class OwnerStaffRolesView extends StatefulWidget {
   final String shopId;
 
-  const OwnerStaffRolesView({super.key, this.shopId = 'shop-1'});
+  const OwnerStaffRolesView({super.key, required this.shopId});
 
   @override
   State<OwnerStaffRolesView> createState() => _OwnerStaffRolesViewState();
@@ -43,7 +43,8 @@ class _OwnerStaffRolesViewState extends State<OwnerStaffRolesView> {
     try {
       final staff = await _staffDs.getShopStaff(widget.shopId);
       if (mounted) setState(() => _staff = staff);
-    } catch (_) {
+    } catch (e) {
+      debugPrint('OwnerStaffRolesView load failed: $e'); // Audit 2026-11-15 DS-6: raw error logged for diagnostics; the user only ever sees the localized per-screen message.
       if (mounted) setState(() => _hasError = true);
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -135,7 +136,7 @@ class _OwnerStaffRolesViewState extends State<OwnerStaffRolesView> {
                   ? const AppLoadingState()
                   : _hasError
                       ? AppErrorState(
-                          message: l10n.dashboardLoadError, onRetry: _load)
+                          message: l10n.staffRolesLoadError, onRetry: _load)
                       : _staff.isEmpty
                           ? AppEmptyState(
                               title: l10n.staffEmpty,

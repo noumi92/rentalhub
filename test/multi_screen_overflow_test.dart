@@ -73,7 +73,7 @@ void main() {
         textScale: 1.35,
         theme: AppTheme.lightTheme,
       );
-      expect(find.text('Find Verified Rental Shops'), findsOneWidget);
+      expect(find.text('Home'), findsOneWidget);
     });
 
     testWidgets('VehicleDetailView renders without overflow on 360px viewport and 1.35x font scale',
@@ -375,7 +375,7 @@ void main() {
         textScale: 2.0,
         theme: AppTheme.lightTheme,
       );
-      expect(find.text('Find Verified Rental Shops'), findsOneWidget);
+      expect(find.text('Home'), findsOneWidget);
     });
 
     testWidgets('OwnerDashboardView renders without overflow at 200% text scale',

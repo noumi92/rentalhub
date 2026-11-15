@@ -200,24 +200,27 @@ class _OwnerFixedRoutesViewState extends State<OwnerFixedRoutesView> {
                               onAdd: _addRoute,
                             ),
                             const SizedBox(height: 16),
-                            ..._routes.map((r) => Card(
-                                  margin: const EdgeInsets.only(bottom: 10),
+                            ..._routes.asMap().entries.map((entry) => Card(
+                                  // BP-17: the last card carries no
+                                  // bottom margin — the list padding
+                                  // (16 dp) is the bottom gap.
+                                  margin: EdgeInsets.only(bottom: entry.key == _routes.length - 1 ? 0 : 10),
                                   child: ListTile(
                                     leading: const Icon(Icons.route_rounded),
-                                    title: Text(r.displayName,
+                                    title: Text(entry.value.displayName,
                                         style: const TextStyle(fontWeight: FontWeight.w600)),
-                                    subtitle: Text(l10n.fixedRouteSummary(r.distanceKm, formatRs(r.fixedPricePkr))),
+                                    subtitle: Text(l10n.fixedRouteSummary(entry.value.distanceKm, formatRs(entry.value.fixedPricePkr))),
                                     trailing: Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
                                         Switch(
-                                          value: r.enabled,
-                                          onChanged: (v) => _save(r.copyWith(enabled: v)),
+                                          value: entry.value.enabled,
+                                          onChanged: (v) => _save(entry.value.copyWith(enabled: v)),
                                         ),
                                         IconButton(
                                           tooltip: l10n.fixedRoutesDeleteTooltip,
                                           icon: Icon(Icons.delete_outline_rounded, color: AppColors.accentDanger),
-                                          onPressed: () => _deleteRoute(r),
+                                          onPressed: () => _deleteRoute(entry.value),
                                         ),
                                       ],
                                     ),

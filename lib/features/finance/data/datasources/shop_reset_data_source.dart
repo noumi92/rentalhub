@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../../../core/utils/shop_id_resolution.dart';
+
 /// Audit impl (O50): dangerous, shop-scoped deletes for the Reset
 /// Options screen. Every delete is filtered by the current shop's
 /// id, so one shop can never wipe another shop's data. Firestore is
@@ -57,12 +59,15 @@ class ShopResetDataSource {
   }
 
   Future<int> _deleteWhere(String collection, String shopId) async {
+    // Shop-id linking (2026-11-15): a reset must delete both id
+    // forms, or canonically-written rows would survive the wipe.
     final fs = _fs;
+    final ids = await candidateShopIds(fs, shopId);
     var deleted = 0;
     while (true) {
       final snap = await fs
           .collection(collection)
-          .where('shopId', isEqualTo: shopId)
+          .where('shopId', whereIn: ids)
           .limit(400)
           .get();
       if (snap.docs.isEmpty) break;

@@ -92,16 +92,16 @@ class PaymentAccountCard extends StatelessWidget {
       children: [
         Text(
           label,
-          style: TextStyle(
-            fontSize: 12,
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
-          ),
+          // Audit 2026-11-15 DS-8: the 12 sp label is off-scale (§4.5:
+          // 28/20/16/15/13/11) — labelSmall is the 11 sp slot.
+          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
         ),
         Text(
           value,
-          style: const TextStyle(
-            fontSize: 13,
-          ),
+          // Audit 2026-11-15 DS-8: 13 sp is bodyMedium, not a literal.
+          style: Theme.of(context).textTheme.bodyMedium,
         ),
       ],
     );

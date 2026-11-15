@@ -246,8 +246,8 @@ class _AddTransferSheetState extends State<AddTransferSheet> {
               title: Text(l10n.financeDateLabel),
               trailing: TextButton(
                 onPressed: _pickDate,
-                child: Text(
-                    '${_date.day}/${_date.month}/${_date.year}'),
+                // Audit 2026-11-15 DS-5: localized date, never raw d/m/y (MaterialLocalizations needs no new import, so this 348-line widget stays at its cap).
+              child: Text(MaterialLocalizations.of(context).formatMediumDate(_date)),
               ),
             ),
             DropdownButtonFormField<String>(

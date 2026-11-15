@@ -123,8 +123,12 @@ class ProofScreenshotPicker extends StatelessWidget {
             style: Theme.of(context).textTheme.labelSmall,
           ),
           const SizedBox(height: 14),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+          // Consolidation: Wrap, not Row — the two buttons overflow
+          // the 294px content width at 360px in Urdu / large text.
+          Wrap(
+            alignment: WrapAlignment.center,
+            spacing: 10,
+            runSpacing: 8,
             children: [
               OutlinedButton.icon(
                 onPressed: () => _pickImage(context, ImageSource.gallery),
@@ -137,7 +141,6 @@ class ProofScreenshotPicker extends StatelessWidget {
                 icon: const Icon(Icons.photo_library_rounded, size: 16),
                 label:  Text(l10n.proofFromGallery),
               ),
-              const SizedBox(width: 10),
               OutlinedButton.icon(
                 onPressed: () => _pickImage(context, ImageSource.camera),
                 style: OutlinedButton.styleFrom(

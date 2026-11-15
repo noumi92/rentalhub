@@ -18,6 +18,10 @@ class RevenueKpiCard extends StatelessWidget {
   final Color color;
   final KpiTrend trend;
 
+  /// FG-1 (UI/UX audit 2026-11-15): when set, the whole card taps
+  /// (the waiting KPI routes to triage). Null keeps the card inert.
+  final VoidCallback? onTap;
+
   const RevenueKpiCard({
     super.key,
     required this.title,
@@ -26,6 +30,7 @@ class RevenueKpiCard extends StatelessWidget {
     required this.icon,
     this.color = AppColors.secondary,
     this.trend = KpiTrend.neutral,
+    this.onTap,
   });
 
   @override
@@ -57,7 +62,7 @@ class RevenueKpiCard extends StatelessWidget {
         : color == AppColors.warning
             ? AppColors.warningTextFor(brightness)
             : color;
-    return Container(
+    final card = Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
@@ -110,6 +115,13 @@ class RevenueKpiCard extends StatelessWidget {
           ),
         ],
       ),
+    );
+    final tap = onTap;
+    if (tap == null) return card;
+    return InkWell(
+      onTap: tap,
+      borderRadius: BorderRadius.circular(16),
+      child: card,
     );
   }
 }

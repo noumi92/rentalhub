@@ -175,7 +175,6 @@ class _OwnerQrScanViewState extends State<OwnerQrScanView> {
                             controller: _idController,
                             decoration: InputDecoration(
                               hintText: l10n.qrTypeHint,
-                              border: OutlineInputBorder(),
                               filled: true,
                               fillColor: Theme.of(context)
                                   .colorScheme

@@ -52,7 +52,9 @@ void main() {
       );
       final theme = Theme.of(tester.element(find.byType(Scaffold)));
       expect(theme.colorScheme.primary, const Color(0xFF252B7A));
-      expect(theme.colorScheme.secondary, const Color(0xFFFF6D24));
+      // Audit 2026-11-15 AC-10: the scheme's secondary is orangeFill
+      // now (white on #FF6D24 was 2.81:1).
+      expect(theme.colorScheme.secondary, const Color(0xFFC2410C));
       expect(theme.colorScheme.primaryContainer, const Color(0xFF1A1D42));
       expect(theme.colorScheme.surface, const Color(0xFF13152C));
       expect(theme.colorScheme.onSurface, const Color(0xFFF8FAFC));

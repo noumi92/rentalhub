@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../../../core/data/offline_sync_queue.dart';
+import '../../../../core/utils/shop_id_resolution.dart';
 
 import '../../domain/entities/finance_account_entity.dart';
 import '../models/finance_account_model.dart';
@@ -78,11 +79,14 @@ class FinanceAccountDataSource {
     if (!allowed.contains(type)) {
       throw ArgumentError('Unknown account type: $type');
     }
+    // Shop-id linking (2026-11-15): accounts must carry the shop
+    // doc id; reads below match both forms via candidates.
+    final canonical = await canonicalShopId(_resolvedFirestore, shopId);
     final id =
         'ACC-${DateTime.now().millisecondsSinceEpoch}-${_idSeq++}';
     final model = FinanceAccountModel(
       accountId: id,
-      shopId: shopId,
+      shopId: canonical,
       name: name.trim(),
       type: type,
       openingBalancePkr: openingBalancePkr,
@@ -95,12 +99,13 @@ class FinanceAccountDataSource {
   }
 
   Future<List<FinanceAccountEntity>> getShopAccounts(String shopId) async {
+    final ids = await candidateShopIds(_resolvedFirestore, shopId);
     final fs = _resolvedFirestore;
     if (fs != null) {
       try {
         final snap = await fs
             .collection('finance_accounts')
-            .where('shopId', isEqualTo: shopId)
+            .where('shopId', whereIn: ids)
             .get();
         for (final d in snap.docs) {
           final remote = FinanceAccountModel.fromMap(d.data());
@@ -112,7 +117,7 @@ class FinanceAccountDataSource {
       } catch (_) {}
     }
     List<FinanceAccountEntity> mine =
-        _inMemory.where((a) => a.shopId == shopId).toList();
+        _inMemory.where((a) => ids.contains(a.shopId)).toList();
     if (mine.isEmpty) {
       // Every shop starts with a cash account, so the ledger always
       // has somewhere to post.

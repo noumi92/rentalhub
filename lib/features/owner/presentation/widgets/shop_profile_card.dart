@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../../core/utils/current_shop.dart';
+import '../../../../../core/utils/shop_id_resolution.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../core/theme/card_decoration.dart';
 
@@ -30,7 +31,14 @@ class _ShopProfileCardState extends State<ShopProfileCard> {
 
   Future<void> _load() async {
     try {
-      final doc = await FirebaseFirestore.instance.collection('shops').doc(currentShopId()).get();
+      // Shop-id linking (2026-11-15): the shops document is
+      // `shop_<uid>`; the bare UID read always missed, so the card
+      // showed the fallback text instead of the real shop name.
+      final doc = await FirebaseFirestore.instance
+          .collection('shops')
+          .doc(await canonicalShopId(
+              FirebaseFirestore.instance, currentShopId()))
+          .get();
       final data = doc.data() ?? {};
       if (!mounted) return;
       setState(() {

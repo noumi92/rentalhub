@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../../../../l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/app_state_views.dart';
@@ -46,8 +45,9 @@ class _OwnerDisputesViewState extends State<OwnerDisputesView> {
       final items =
           await sl<DisputeRemoteDataSource>().getShopDisputes(widget.shopId);
       if (mounted) setState(() => _items = items);
-    } catch (_) {
+    } catch (e) {
       // Audit §30/C4: a failed load used to render as "no disputes".
+      debugPrint('OwnerDisputesView load failed: $e'); // Audit 2026-11-15 DS-6: raw error logged; user sees only the localized per-screen message.
       if (mounted) setState(() => _hasError = true);
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -122,7 +122,7 @@ class _OwnerDisputesViewState extends State<OwnerDisputesView> {
                   ? const AppLoadingState()
                   : _hasError
                       ? AppErrorState(
-                          message: l10n.dashboardLoadError,
+                          message: l10n.disputesLoadError,
                           onRetry: _load,
                         )
                       : _items.isEmpty
@@ -164,12 +164,8 @@ class _OwnerDisputesViewState extends State<OwnerDisputesView> {
       label: Text(label),
       selected: selected,
       onSelected: (_) => setState(() => _filter = value),
-      selectedColor: AppColors.primary,
-      labelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
-          fontWeight: FontWeight.w500,
-          color: selected
-              ? Colors.white
-              : Theme.of(context).colorScheme.onSurface),
+      // Audit 2026-11-15 DS-1: selected fill + label come from chipTheme
+      // (navy fill + white label); no per-file override.
     );
   }
 }

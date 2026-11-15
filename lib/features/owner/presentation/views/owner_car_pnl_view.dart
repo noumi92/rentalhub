@@ -22,7 +22,7 @@ import '../widgets/car_pnl_widgets.dart';
 class OwnerCarPnLView extends StatefulWidget {
   final String shopId;
 
-  const OwnerCarPnLView({super.key, this.shopId = 'shop-1'});
+  const OwnerCarPnLView({super.key, required this.shopId});
 
   @override
   State<OwnerCarPnLView> createState() => _OwnerCarPnLViewState();
@@ -67,8 +67,9 @@ class _OwnerCarPnLViewState extends State<OwnerCarPnLView> {
           _vehicleId ??= vehicles.firstOrNull?.vehicleId;
         });
       }
-    } catch (_) {
+    } catch (e) {
       // Audit §27/C4: a failed load used to render as "no cars".
+      debugPrint('OwnerCarPnlView load failed: $e'); // Audit 2026-11-15 DS-6: raw error logged; user sees only the localized per-screen message.
       if (mounted) setState(() => _hasError = true);
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -136,7 +137,7 @@ class _OwnerCarPnLViewState extends State<OwnerCarPnLView> {
                   ? const AppLoadingState()
                   : _hasError
                       ? AppErrorState(
-                          message: l10n.dashboardLoadError,
+                          message: l10n.carPnlLoadError,
                           onRetry: _load,
                         )
                       : _vehicles.isEmpty
@@ -186,7 +187,6 @@ class _OwnerCarPnLViewState extends State<OwnerCarPnLView> {
                                 initialValue: _vehicleId,
                                 decoration: InputDecoration(
                                     labelText: l10n.summaryVehicle,
-                                    border: OutlineInputBorder(),
                                     filled: true,
                                     fillColor: Theme.of(context)
                                         .colorScheme

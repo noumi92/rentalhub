@@ -9,7 +9,6 @@ import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../data/datasources/customer_location_store.dart';
 import '../../domain/entities/shop_entity.dart';
 import '../cubit/shops_filter_state.dart';
-import 'widgets/city_selector_bar.dart';
 import 'widgets/map_shop_preview_card.dart';
 import 'widgets/radius_filter_pills.dart';
 import 'widgets/shops_empty_banner.dart';
@@ -20,15 +19,11 @@ import 'widgets/shops_map_canvas.dart';
 import 'widgets/shops_tab_data.dart';
 import '../../../../l10n/app_localizations.dart';
 
-/// The full-screen Nearby showrooms map — the ONE customer map
-/// screen, reused as the Shops tab's map view (`/customer/shops/map`;
-/// the old `/customer/home/map` route still lands here too). It starts
-/// on the WHOLE of Pakistan and carries the SAME filters as the Shops
-/// listing through the shared [ShopsFilterState]. Pins are real shop
-/// locations only, every pin carries its Verified/Unverified status,
-/// and tapping a pin shows the shop preview. The "you are here" pin is
-/// DRAGGABLE: dragging it re-sorts the nearby shops by distance from
-/// its new point (shop pins never move).
+/// The full-screen Nearby showrooms map, reused as the Shops tab's
+/// map view. Same filters as the listing via the shared
+/// [ShopsFilterState]; pins are real shop locations only. The "you
+/// are here" pin is DRAGGABLE: dragging it re-sorts the nearby shops
+/// by distance from its new point (shop pins never move).
 class CustomerHomeMapView extends StatefulWidget {
   const CustomerHomeMapView({
     super.key,
@@ -64,13 +59,16 @@ class _CustomerHomeMapViewState extends State<CustomerHomeMapView> {
   List<ShopEntity> _shops = const [];
   ShopEntity? _selectedShop;
   bool _loading = true;
+
+  /// FG-5: the shops fetch failed — the map area renders the error
+  /// state with retry instead of an empty map.
+  bool _loadFailed = false;
   bool _online = true;
   bool? _locationAvailable;
   String? _lastCity;
-  // CU-m11: the "nearby" radius, wired to the pills below and the
-  // circle on the canvas. 3 km is the middle of the 1/2/3/5 set.
+  // CU-m11: the "nearby" radius, wired to the floating control and
+  // the circle on the canvas. 3 km is the middle of the 1/2/3/5 set.
   double _radiusKm = 3.0;
-
   @override
   void initState() {
     super.initState();
@@ -81,6 +79,8 @@ class _CustomerHomeMapViewState extends State<CustomerHomeMapView> {
     _checkLocation();
     _checkOnline();
     _loadStoredLocation();
+    // PW-5: nearest known city by GPS, else the saved city.
+    ShopsTabData.preselectCity(_filters);
   }
 
   @override
@@ -97,8 +97,7 @@ class _CustomerHomeMapViewState extends State<CustomerHomeMapView> {
       _mapController.move(_filters.mapCenter, _filters.mapZoom);
     }
     final filtered = _filters.apply(_shops);
-    // Compare by id: the preview holds a distance-sorted copy whose
-    // recomputed distanceKm differs from the stored entity, so
+    // Compare by id: the preview holds a distance-sorted copy, so
     // Equatable contains() would wrongly clear it on every change.
     if (_selectedShop != null &&
         !filtered.any((s) => s.shopId == _selectedShop!.shopId)) {
@@ -107,22 +106,23 @@ class _CustomerHomeMapViewState extends State<CustomerHomeMapView> {
   }
 
   Future<void> _loadShops() async {
-    final shops = await ShopsTabData.loadShops(
+    final result = await ShopsTabData.loadShops(
       filters: _filters,
       shopsLoader: widget.shopsLoader,
       displayUnverifiedLoader: widget.displayUnverifiedLoader,
     );
     if (!mounted) return;
     setState(() {
-      _shops = shops;
+      _shops = result.shops;
+      _loadFailed = result.loadFailed;
       _loading = false;
       // CU-m19: no auto-select — the preview opens only when the
       // customer taps a pin.
     });
   }
 
-  /// The stored location (from the set-location flow) places the user
-  /// pin on first open; a drag after that wins over it.
+  /// The stored location places the user pin on first open; a drag
+  /// after that wins over it.
   Future<void> _loadStoredLocation() async {
     if (_filters.userPoint != null) return;
     try {
@@ -185,30 +185,22 @@ class _CustomerHomeMapViewState extends State<CustomerHomeMapView> {
                       _filters.city ?? l10n.shops_allCities),
                   onBack: () => context.pop(),
                 ),
-                CitySelectorBar(
+                // F-R1: the same single 60px filter row as the listing.
+                ShopsFilterBar(
                   majorCities: shopsCityMenuEntries(l10n),
                   selectedCity: _filters.city ?? l10n.shops_allCities,
                   onSelectCity: _selectCity,
-                ),
-                ShopsFilterBar(
                   verification: _filters.verification,
                   onVerificationChanged: _filters.setVerification,
                   showUnverifiedFilter: _filters.displayUnverifiedShops,
                 ),
                 if (_locationAvailable == false)
                   ShopsLocationNote(text: l10n.shops_chooseCity),
-                // CU-m11: the radius control — the pills and the
-                // circle on the canvas say what "nearby" means.
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                  child: RadiusFilterPills(
-                    selectedRadiusKm: _radiusKm,
-                    onRadiusSelected: (km) =>
-                        setState(() => _radiusKm = km),
-                  ),
-                ),
                 Expanded(
-                  child: Stack(
+                  // FG-5: a failed load is an error with retry.
+                  child: _loadFailed
+                      ? AppErrorState(message: l10n.shops_loadFailed, onRetry: _loadShops)
+                      : Stack(
                     children: [
                       ShopsMapCanvas(
                         mapController: _mapController,
@@ -228,7 +220,7 @@ class _CustomerHomeMapViewState extends State<CustomerHomeMapView> {
                         Positioned(
                           left: 16,
                           right: 16,
-                          bottom: 16,
+                          bottom: 76,
                           child: ShopsEmptyBanner(
                               text: l10n.shops_emptyTitle),
                         )
@@ -237,6 +229,14 @@ class _CustomerHomeMapViewState extends State<CustomerHomeMapView> {
                           shop: selectedShop,
                           onViewShowroom: () => _openShop(selectedShop),
                         ),
+                      // F-R1: floating radius control, bottom-center
+                      // above the preview card (196) or the empty
+                      // banner (76), else at the map edge (16).
+                      FloatingRadiusOverlay(
+                        bottom: selectedShop != null ? 196 : (!_loading && shops.isEmpty ? 76 : 16),
+                        selectedRadiusKm: _radiusKm,
+                        onRadiusSelected: (km) => setState(() => _radiusKm = km),
+                      ),
                     ],
                   ),
                 ),

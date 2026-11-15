@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../../core/constants/app_colors.dart';
+import '../../../../../core/utils/money_format.dart';
 import '../../../../../core/utils/whatsapp.dart';
 import '../../../../../core/widgets/app_feedback.dart';
 import '../../../../../core/widgets/verified_badge.dart';
@@ -14,12 +15,18 @@ class ShopListCard extends StatelessWidget {
   final VoidCallback? onCall;
   final VoidCallback? onWhatsApp;
 
+  /// PW-4: cheapest available daily rate for this shop (min over
+  /// its available cars' `rates.daily24`). Null hides the price
+  /// line — a price is never invented.
+  final int? minDailyRate;
+
   const ShopListCard({
     super.key,
     required this.shop,
     required this.onTap,
     this.onCall,
     this.onWhatsApp,
+    this.minDailyRate,
   });
 
   @override
@@ -29,13 +36,17 @@ class ShopListCard extends StatelessWidget {
     // only showed a SnackBar. Without a phone number both buttons
     // are disabled with a tooltip explaining why.
     final hasPhone = shop.phoneNumber.trim().isNotEmpty;
-    // Alternate banner images between showrooms
-    final bannerAsset = shop.shopId.hashCode % 2 == 0
-        ? 'assets/images/showroom_banner_1.jpg'
-        : 'assets/images/showroom_banner_2.jpg';
+    // FG-21: the shop's real header photo when one exists, else a
+    // neutral surface + storefront icon — never a stock banner
+    // presented as the showroom.
+    final headerUrl = shop.headerUrl?.trim() ?? '';
+    Widget neutralBanner() => Container(height: 135, color: Theme.of(context).colorScheme.surfaceContainerHighest, child: const Center(child: Icon(Icons.storefront_rounded, size: 48)));
 
+    // BP-13: no bottom margin on the card — the list separates
+    // items with spacing between them only, so the last item sits
+    // at the list padding instead of margin + padding.
     return Card(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: EdgeInsets.zero,
       elevation: 2.5,
       clipBehavior: Clip.antiAlias,
       // CU-M2: cards carry no dark border — the shadow does the work.
@@ -47,19 +58,19 @@ class ShopListCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 1. Showroom Fleet Hero Banner (Screen 07 Reference)
+            // 1. Showroom photo (real header photo, or neutral).
             Stack(
               children: [
-                Image.asset(
-                  bannerAsset,
-                  height: 135,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(
-                    height: 135, color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                    child: const Center(child: Icon(Icons.storefront_rounded, size: 48)),
-                  ),
-                ),
+                if (headerUrl.isNotEmpty)
+                  Image.network(
+                    headerUrl,
+                    height: 135,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => neutralBanner(),
+                  )
+                else
+                  neutralBanner(),
                 // Distance badge — only when the distance is real (never the 1.2 km fallback).
                 if (shop.hasRealDistance)
                   Positioned(
@@ -110,12 +121,19 @@ class ShopListCard extends StatelessWidget {
                       // plainly — "Verified" for verified shops, an
                       // explicit "Unverified" label for the rest
                       // (the badge's own fallback reads "Pending
-                      // Review", which is not the same claim).
-                      VerifiedBadge(
-                        isVerified: isShopVerified(shop),
-                        label: isShopVerified(shop)
-                            ? null
-                            : l10n.shops_unverified,
+                      // Review", which is not the same claim). The
+                      // badge caps at 180 dp so a long Urdu label at
+                      // large text scales ellipsizes inside the badge
+                      // instead of overflowing the title row.
+                      ConstrainedBox(
+                        constraints:
+                            const BoxConstraints(maxWidth: 180),
+                        child: VerifiedBadge(
+                          isVerified: isShopVerified(shop),
+                          label: isShopVerified(shop)
+                              ? null
+                              : l10n.shops_unverified,
+                        ),
                       ),
                     ],
                   ),
@@ -156,6 +174,14 @@ class ShopListCard extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 12),
+
+                  // PW-4: "from Rs. X/day" — the cheapest available
+                  // car, so shops can be compared from the listing.
+                  if (minDailyRate != null)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: Text(l10n.shopFromPerDay(l10n.amountRs(formatRs(minDailyRate!))), style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
+                    ),
 
                   // 3. Action Bar: Call, WhatsApp, View Fleet
                   Wrap(
@@ -260,7 +286,13 @@ class ShopListCard extends StatelessWidget {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text(l10n.viewFleet),
+                            Flexible(
+                              child: Text(
+                                l10n.viewFleet,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
                             SizedBox(width: 4),
                             Icon(Icons.arrow_forward_rounded, size: 13),
                           ],

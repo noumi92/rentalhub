@@ -373,7 +373,7 @@ void main() {
       final theme = Theme.of(
         tester.element(find.byType(AppShellNav)),
       );
-      expect(theme.navigationBarTheme.indicatorColor, AppColors.secondary);
+      expect(theme.navigationBarTheme.indicatorColor, AppColors.orangeFill);
       expect(
         theme.navigationBarTheme.labelTextStyle
             ?.resolve({WidgetState.selected})
@@ -391,7 +391,7 @@ void main() {
       final theme = Theme.of(
         tester.element(find.byType(AppShellNav)),
       );
-      expect(theme.navigationBarTheme.indicatorColor, AppColors.secondaryDark);
+      expect(theme.navigationBarTheme.indicatorColor, AppColors.orangeFill);
     });
 
     testWidgets(

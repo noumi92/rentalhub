@@ -106,13 +106,17 @@ class FingerCaptureSection extends StatelessWidget {
               label: Text(l10n.kycTakePhoto),
             ),
             if (captured) ...[
+              // DS-17: 48dp hit area, like the CNIC remove (48x48
+              // IconButton) — bare TextButtons have no such guarantee.
               TextButton(
                 key: retakeButtonKey,
+                style: TextButton.styleFrom(minimumSize: const Size(0, 48)),
                 onPressed: () => _takePhoto(context),
                 child: Text(l10n.kycWizardRetake),
               ),
               TextButton(
                 key: removeButtonKey,
+                style: TextButton.styleFrom(minimumSize: const Size(0, 48)),
                 onPressed: onRemove,
                 child: Text(l10n.kycWizardRemoveImage),
               ),

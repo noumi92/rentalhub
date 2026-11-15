@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/utils/money_format.dart';
 import '../../../../../l10n/app_localizations.dart';
+import 'needs_review_card.dart';
 import 'revenue_kpi_card.dart';
 
 /// Phase B (G1): the dashboard's KPI cards, extracted from
@@ -20,6 +21,14 @@ class DashboardKpis extends StatelessWidget {
   final int fleetAvailable;
   final int fleetTotal;
 
+  /// FG-1 (UI/UX audit 2026-11-15): the waiting split (new requests
+  /// vs proofs), the oldest-wait label, and the triage destination
+  /// for the decision card + the waiting KPI itself.
+  final int newCount;
+  final int proofCount;
+  final String? oldestWaitLabel;
+  final VoidCallback? onWaitingTap;
+
   const DashboardKpis({
     super.key,
     required this.totalRevenue,
@@ -32,6 +41,10 @@ class DashboardKpis extends StatelessWidget {
     required this.waitingCount,
     required this.fleetAvailable,
     required this.fleetTotal,
+    this.newCount = 0,
+    this.proofCount = 0,
+    this.oldestWaitLabel,
+    this.onWaitingTap,
   });
 
   @override
@@ -39,6 +52,20 @@ class DashboardKpis extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     return Column(
       children: [
+        // FG-1 (UI/UX audit 2026-11-15): the decision is the first
+        // read — the "Needs review" card sits above the revenue
+        // cards whenever anything is waiting. It only renders with
+        // a real destination — never a dead tap.
+        if (waitingCount > 0 && onWaitingTap != null) ...[
+          NeedsReviewCard(
+            waitingCount: waitingCount,
+            newCount: newCount,
+            proofCount: proofCount,
+            oldestWaitLabel: oldestWaitLabel,
+            onTap: onWaitingTap!,
+          ),
+          const SizedBox(height: 12),
+        ],
         // Audit impl (O29): today's earnings — today's completed /
         // paid bookings revenue — above the month gross figure.
         RevenueKpiCard(
@@ -94,9 +121,14 @@ class DashboardKpis extends StatelessWidget {
               child: RevenueKpiCard(
                 title: l10n.dashboardRequestsWaiting,
                 amount: '$waitingCount',
-                changeLabel: l10n.dashboardNeedsReview,
+                // FG-1: the count is split — "2 new · 1 proof" —
+                // instead of the lumped "Needs your review".
+                changeLabel: waitingCount > 0
+                    ? l10n.dashboardNeedsReviewSplit(newCount, proofCount)
+                    : l10n.dashboardNeedsReview,
                 icon: Icons.inbox_rounded,
                 color: AppColors.warning,
+                onTap: onWaitingTap,
               ),
             ),
             const SizedBox(width: 10),

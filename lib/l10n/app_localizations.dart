@@ -755,7 +755,7 @@ abstract class AppLocalizations {
   /// No description provided for @homeTitle.
   ///
   /// In en, this message translates to:
-  /// **'Find Verified Rental Shops'**
+  /// **'Home'**
   String get homeTitle;
 
   /// No description provided for @homeSwitchToMap.
@@ -1253,7 +1253,7 @@ abstract class AppLocalizations {
   /// No description provided for @walletActiveEscrow.
   ///
   /// In en, this message translates to:
-  /// **'Active Escrow & Advances'**
+  /// **'Total with shop: advances paid + deposit held'**
   String get walletActiveEscrow;
 
   /// No description provided for @walletAdvancesPaid.
@@ -2333,7 +2333,7 @@ abstract class AppLocalizations {
   /// No description provided for @proofPrivateNote.
   ///
   /// In en, this message translates to:
-  /// **'Proof is uploaded to private storage. The showroom checks it and confirms your booking — there is no fixed waiting time.'**
+  /// **'Proof is uploaded to private storage. The showroom checks it and confirms your booking, and you will be notified in the app when it is confirmed. If you do not hear back, message the shop on WhatsApp.'**
   String get proofPrivateNote;
 
   /// No description provided for @passTitle.
@@ -2477,7 +2477,7 @@ abstract class AppLocalizations {
   /// No description provided for @tripTrackerNote.
   ///
   /// In en, this message translates to:
-  /// **'Tracker clearance required — the shop confirms it before pickup.'**
+  /// **'Tracker clearance required — the shop confirms it before pickup. If clearance is refused, the shop contacts you before pickup.'**
   String get tripTrackerNote;
 
   /// No description provided for @advanceNoticeTitle.
@@ -3167,8 +3167,8 @@ abstract class AppLocalizations {
   /// No description provided for @advanceNoticeWithDriver.
   ///
   /// In en, this message translates to:
-  /// **'• Chauffeur arrives at showroom/pickup point 15 mins early.\n• Advance payment confirms vehicle lock and fuel reservation.\n• Outstation overnight stay: Rs. 1,500/night driver food & lodge.'**
-  String get advanceNoticeWithDriver;
+  /// **'• Chauffeur arrives at showroom/pickup point 15 mins early.\n• Advance payment confirms vehicle lock and fuel reservation.\n• Outstation overnight stay: {nightStay}/night driver food & lodge.'**
+  String advanceNoticeWithDriver(String nightStay);
 
   /// No description provided for @advanceNoticeSelfDrive.
   ///
@@ -3284,12 +3284,6 @@ abstract class AppLocalizations {
   /// **'Showroom: {name}'**
   String vehicleShowroom(String name);
 
-  /// No description provided for @vehicleDepositCnic.
-  ///
-  /// In en, this message translates to:
-  /// **'Security Deposit: Rs. {amount} + Original NADRA CNIC guarantee required at pickup'**
-  String vehicleDepositCnic(String amount);
-
   /// No description provided for @vehicleDriverPackageDetail.
   ///
   /// In en, this message translates to:
@@ -3311,7 +3305,7 @@ abstract class AppLocalizations {
   /// No description provided for @bookNowWithRate.
   ///
   /// In en, this message translates to:
-  /// **'Book Now (Rs. {rate})'**
+  /// **'Book Now ({rate}/day)'**
   String bookNowWithRate(String rate);
 
   /// No description provided for @vehicleManageRates.
@@ -3649,12 +3643,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Advances Rs. {adv} • Escrow Rs. {esc}'**
   String walletAdvancesEscrow(String adv, String esc);
-
-  /// No description provided for @ticketPickupDate.
-  ///
-  /// In en, this message translates to:
-  /// **'Pickup: {day}/{month}/{year}'**
-  String ticketPickupDate(int day, int month, int year);
 
   /// No description provided for @profileSignOut.
   ///
@@ -6536,12 +6524,6 @@ abstract class AppLocalizations {
   /// **'Vehicle returned! Deposit settled — Rs. {refund} refunded.'**
   String returnSettled(String refund);
 
-  /// No description provided for @returnCustomerOwes.
-  ///
-  /// In en, this message translates to:
-  /// **'Customer owes Rs. {amount}'**
-  String returnCustomerOwes(String amount);
-
   /// No description provided for @returnFinalizeFailed.
   ///
   /// In en, this message translates to:
@@ -7003,12 +6985,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Confirming…'**
   String get paymentVerificationConfirming;
-
-  /// No description provided for @paymentVerificationConfirmButton.
-  ///
-  /// In en, this message translates to:
-  /// **'Confirm Payment — Rs. {amount}'**
-  String paymentVerificationConfirmButton(String amount);
 
   /// No description provided for @manualBookingTitle.
   ///
@@ -16946,6 +16922,402 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Revoke admin role'**
   String get admin2_teamRevokeTooltip;
+
+  /// No description provided for @extraChargeLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading saved extra charges…'**
+  String get extraChargeLoading;
+
+  /// No description provided for @kycWizardDateFormatError.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the date as DD.MM.YYYY'**
+  String get kycWizardDateFormatError;
+
+  /// No description provided for @kycWizardMissingItem.
+  ///
+  /// In en, this message translates to:
+  /// **'{item} is missing — please add it to continue'**
+  String kycWizardMissingItem(String item);
+
+  /// No description provided for @kycWizardSignatureMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'Please draw your signature before continuing'**
+  String get kycWizardSignatureMissing;
+
+  /// No description provided for @kycWizardTermsMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'Please agree to the rental terms before continuing'**
+  String get kycWizardTermsMissing;
+
+  /// No description provided for @manualBookingLoadingRoutes.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading fixed routes…'**
+  String get manualBookingLoadingRoutes;
+
+  /// No description provided for @mediaCameraError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open the camera. Check the camera permission and try again.'**
+  String get mediaCameraError;
+
+  /// No description provided for @passNotValid.
+  ///
+  /// In en, this message translates to:
+  /// **'This pass is not valid for pickup'**
+  String get passNotValid;
+
+  /// No description provided for @contractSignAgreementHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Add the guarantor signature to sign.'**
+  String get contractSignAgreementHint;
+
+  /// No description provided for @depositRefundTerms.
+  ///
+  /// In en, this message translates to:
+  /// **'Deposit refunded after return inspection, minus damage and excess-km charges.'**
+  String get depositRefundTerms;
+
+  /// No description provided for @disputeLastUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Last updated {date}'**
+  String disputeLastUpdated(String date);
+
+  /// No description provided for @handoverBalanceDue.
+  ///
+  /// In en, this message translates to:
+  /// **'Balance due at handover'**
+  String get handoverBalanceDue;
+
+  /// No description provided for @handoverBalanceMethodRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose how the balance was collected, or Not yet, before certifying.'**
+  String get handoverBalanceMethodRequired;
+
+  /// No description provided for @handoverBalanceNotYet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not yet'**
+  String get handoverBalanceNotYet;
+
+  /// No description provided for @handoverFuelRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Select the fuel level before certifying.'**
+  String get handoverFuelRequired;
+
+  /// No description provided for @manualBookingLoadingVehicles.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading vehicles…'**
+  String get manualBookingLoadingVehicles;
+
+  /// No description provided for @profileLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load your profile. Check your connection and try again.'**
+  String get profileLoadFailed;
+
+  /// No description provided for @proofAdvanceCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Advance amount copied to clipboard'**
+  String get proofAdvanceCopied;
+
+  /// No description provided for @proofCopyAdvance.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy advance amount'**
+  String get proofCopyAdvance;
+
+  /// No description provided for @proofMessageShop.
+  ///
+  /// In en, this message translates to:
+  /// **'Message shop on WhatsApp'**
+  String get proofMessageShop;
+
+  /// No description provided for @returnAmountOwedByCustomer.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount owed by customer: {amount}'**
+  String returnAmountOwedByCustomer(String amount);
+
+  /// No description provided for @returnCloseBookingHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Record the refund to close the booking.'**
+  String get returnCloseBookingHint;
+
+  /// No description provided for @returnFinalizeFailedGeneric.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not finalize the return. Please try again.'**
+  String get returnFinalizeFailedGeneric;
+
+  /// No description provided for @returnOwedCollected.
+  ///
+  /// In en, this message translates to:
+  /// **'Owed amount collected: {amount} via {method}'**
+  String returnOwedCollected(String amount, String method);
+
+  /// No description provided for @tripOutCityEstimate.
+  ///
+  /// In en, this message translates to:
+  /// **'≈ {estimate} for {days} days × {km} km/day'**
+  String tripOutCityEstimate(int days, String estimate, int km);
+
+  /// No description provided for @shopFromPerDay.
+  ///
+  /// In en, this message translates to:
+  /// **'from {rate}/day'**
+  String shopFromPerDay(String rate);
+
+  /// No description provided for @shops_loadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load the shops.'**
+  String get shops_loadFailed;
+
+  /// No description provided for @shops_radiusChip.
+  ///
+  /// In en, this message translates to:
+  /// **'Radius: {km} km'**
+  String shops_radiusChip(String km);
+
+  /// No description provided for @shops_searchCities.
+  ///
+  /// In en, this message translates to:
+  /// **'Search cities'**
+  String get shops_searchCities;
+
+  /// No description provided for @dashboardNeedsReviewSplit.
+  ///
+  /// In en, this message translates to:
+  /// **'{newCount} new · {proofCount} proof'**
+  String dashboardNeedsReviewSplit(int newCount, int proofCount);
+
+  /// No description provided for @dashboardNeedsReviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs review'**
+  String get dashboardNeedsReviewTitle;
+
+  /// No description provided for @dashboardOldestWait.
+  ///
+  /// In en, this message translates to:
+  /// **'Oldest wait: {wait}'**
+  String dashboardOldestWait(String wait);
+
+  /// No description provided for @dashboardQuickRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'Requests'**
+  String get dashboardQuickRequests;
+
+  /// No description provided for @fleetOutCityFixedRoute.
+  ///
+  /// In en, this message translates to:
+  /// **'Out-city: fixed route'**
+  String get fleetOutCityFixedRoute;
+
+  /// No description provided for @fleetOutCityPerKm.
+  ///
+  /// In en, this message translates to:
+  /// **'Out-city: per-km'**
+  String get fleetOutCityPerKm;
+
+  /// No description provided for @homeSignInButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in'**
+  String get homeSignInButton;
+
+  /// No description provided for @priorTripsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} prior trips'**
+  String priorTripsCount(int count);
+
+  /// No description provided for @requestsOldestProofWait.
+  ///
+  /// In en, this message translates to:
+  /// **'Oldest proof wait: {wait}'**
+  String requestsOldestProofWait(String wait);
+
+  /// No description provided for @requestsWaitingTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting {wait}'**
+  String requestsWaitingTime(String wait);
+
+  /// No description provided for @triageKycMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'KYC missing'**
+  String get triageKycMissing;
+
+  /// No description provided for @triageKycPending.
+  ///
+  /// In en, this message translates to:
+  /// **'KYC pending'**
+  String get triageKycPending;
+
+  /// No description provided for @triageKycRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'KYC rejected'**
+  String get triageKycRejected;
+
+  /// No description provided for @triageKycVerified.
+  ///
+  /// In en, this message translates to:
+  /// **'KYC verified'**
+  String get triageKycVerified;
+
+  /// No description provided for @triageTrustScore.
+  ///
+  /// In en, this message translates to:
+  /// **'Trust {score}/5'**
+  String triageTrustScore(String score);
+
+  /// No description provided for @waitDurationDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{days}d {hours}h'**
+  String waitDurationDays(int days, int hours);
+
+  /// No description provided for @waitDurationHm.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours}h {minutes}m'**
+  String waitDurationHm(int hours, int minutes);
+
+  /// No description provided for @waitDurationMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes}m'**
+  String waitDurationMinutes(int minutes);
+
+  /// No description provided for @carPnlLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load this car\'s profit and loss. Check your connection and try again.'**
+  String get carPnlLoadError;
+
+  /// No description provided for @cashClosingLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load cash closing. Check your connection and try again.'**
+  String get cashClosingLoadError;
+
+  /// No description provided for @customerStatementLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load this customer\'s statement. Check your connection and try again.'**
+  String get customerStatementLoadError;
+
+  /// No description provided for @disputesLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load disputes. Check your connection and try again.'**
+  String get disputesLoadError;
+
+  /// No description provided for @financeCategoriesLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load finance categories. Check your connection and try again.'**
+  String get financeCategoriesLoadError;
+
+  /// No description provided for @financeLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load your finances. Check your connection and try again.'**
+  String get financeLoadError;
+
+  /// No description provided for @financeSettingsLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load finance settings. Check your connection and try again.'**
+  String get financeSettingsLoadError;
+
+  /// No description provided for @reportsLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load reports. Check your connection and try again.'**
+  String get reportsLoadError;
+
+  /// No description provided for @staffRolesLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load staff roles. Check your connection and try again.'**
+  String get staffRolesLoadError;
+
+  /// No description provided for @ticketPickupDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Pickup: {date}'**
+  String ticketPickupDate(String date);
+
+  /// No description provided for @whatsappCreditsLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load WhatsApp credits. Check your connection and try again.'**
+  String get whatsappCreditsLoadError;
+
+  /// No description provided for @whatsappHistoryLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load WhatsApp history. Check your connection and try again.'**
+  String get whatsappHistoryLoadError;
+
+  /// No description provided for @currencyPrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'Rs. '**
+  String get currencyPrefix;
+
+  /// No description provided for @pricingHintKmPerDay.
+  ///
+  /// In en, this message translates to:
+  /// **'{km} km / day'**
+  String pricingHintKmPerDay(int km);
+
+  /// No description provided for @pricingHintPerHour.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} / hour'**
+  String pricingHintPerHour(String amount);
+
+  /// No description provided for @paymentVerificationConfirmButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Payment — {amount}'**
+  String paymentVerificationConfirmButton(String amount);
+
+  /// No description provided for @returnCustomerOwes.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer owes {amount}'**
+  String returnCustomerOwes(String amount);
+
+  /// No description provided for @vehicleDepositCnic.
+  ///
+  /// In en, this message translates to:
+  /// **'Security Deposit: {amount} + Original NADRA CNIC guarantee required at pickup'**
+  String vehicleDepositCnic(String amount);
+
+  /// No description provided for @returnOwedRecordFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not record the owed amount collection. Please try again.'**
+  String get returnOwedRecordFailed;
 }
 
 class _AppLocalizationsDelegate

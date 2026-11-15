@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../../../core/data/offline_sync_queue.dart';
+import '../../../../core/utils/shop_id_resolution.dart';
 import '../../domain/entities/finance_transfer_entity.dart';
 import '../models/finance_transfer_model.dart';
 
@@ -49,9 +50,10 @@ class FinanceTransferDataSource {
     }
     final id =
         'TRF-${DateTime.now().millisecondsSinceEpoch}-${_idSeq++}';
+    final canonical = await canonicalShopId(_resolvedFirestore, shopId);
     final model = FinanceTransferModel(
       transferId: id,
-      shopId: shopId,
+      shopId: canonical,
       accountId: accountId,
       kind: kind,
       category: category,
@@ -101,12 +103,13 @@ class FinanceTransferDataSource {
 
   Future<List<FinanceTransferEntity>> getShopTransfers(
       String shopId) async {
+    final ids = await candidateShopIds(_resolvedFirestore, shopId);
     final fs = _resolvedFirestore;
     if (fs != null) {
       try {
         final snap = await fs
             .collection('finance_transfers')
-            .where('shopId', isEqualTo: shopId)
+            .where('shopId', whereIn: ids)
             .get();
         for (final d in snap.docs) {
           final remote = FinanceTransferModel.fromMap(d.data());
@@ -117,7 +120,7 @@ class FinanceTransferDataSource {
         }
       } catch (_) {}
     }
-    final mine = _inMemory.where((t) => t.shopId == shopId).toList()
+    final mine = _inMemory.where((t) => ids.contains(t.shopId)).toList()
       ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
     return mine;
   }

@@ -137,11 +137,20 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
     final l10n = AppLocalizations.of(context)!;
     final name = _greetingName();
     final data = _data;
+    // DS-16 (UI/UX audit 2026-11-15): the KYC card is the one tile
+    // that can block the user — it sits above the KPI grid when it
+    // needs action (not submitted, or rejected), below it otherwise.
+    final kycNeedsAction =
+        data?.kyc == null || data?.kyc?.status == 'rejected';
     return Scaffold(
       // Phase D (D2): the only tab root that lacked a SafeArea — the
       // header and content now clear the status bar like the other
       // nine tab roots do.
+      // Audit 2026-11-15 DS-14: top: false — the shell strips the
+      // top inset from the whole branch subtree, so a bare SafeArea
+      // would double-inset by a status-bar height outside the shell.
       body: SafeArea(
+        top: false,
         child: Column(
           children: [
             CustomerHomeAppBar(
@@ -161,11 +170,18 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
                       if (_loading)
                         const AppLoadingState()
                       else if (_signedOut)
+                        // PW-9 (UI/UX audit 2026-11-15): the old retry
+                        // just re-ran the load and re-produced the
+                        // same signed-out error. The action is Sign
+                        // in, routing to login.
                         AppErrorState(
                           message: l10n.signInRequiredGeneric,
-                          onRetry: _reload,
+                          onRetry: () => context.go(RouteNames.auth),
+                          retryLabel: l10n.homeSignInButton,
                         )
                       else if (data != null) ...[
+                        if (kycNeedsAction) HomeKycCard(kyc: data.kyc),
+                        if (kycNeedsAction) const SizedBox(height: 12),
                         HomeKpiGrid(
                           activeBookings: data.activeBookings,
                           totalTrips: data.totalTrips,
@@ -181,8 +197,8 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
                               context.go(RouteNames.customerWallet),
                         ),
                         const SizedBox(height: 12),
-                        HomeKycCard(kyc: data.kyc),
-                        const SizedBox(height: 16),
+                        if (!kycNeedsAction) HomeKycCard(kyc: data.kyc),
+                        if (!kycNeedsAction) const SizedBox(height: 16),
                       ],
                       Text(
                         l10n.quickLinks,

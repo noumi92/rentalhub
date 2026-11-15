@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../core/utils/current_shop.dart';
+import '../../../../core/utils/shop_id_resolution.dart';
 import '../../../../core/utils/pakistani_validators.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/app_state_views.dart';
@@ -15,7 +16,9 @@ import '../../../../l10n/app_localizations.dart';
 /// (try/catch): a failed load renders an error state with retry, and
 /// a failed save reports the error instead of pretending it saved.
 class OwnerShopSettingsView extends StatefulWidget {
-  const OwnerShopSettingsView({super.key});
+  final FirebaseFirestore? firestore;
+
+  const OwnerShopSettingsView({super.key, this.firestore});
 
   @override
   State<OwnerShopSettingsView> createState() => _OwnerShopSettingsViewState();
@@ -34,6 +37,21 @@ class _OwnerShopSettingsViewState extends State<OwnerShopSettingsView> {
   // OW-m12: dirty guard — edits used to be lost silently on back.
   String _initialSnapshot = '';
   bool _discardConfirmed = false;
+  // Shop-id linking (2026-11-15): shop docs are `shops/shop_<uid>`
+  // while [currentShopId] is the bare UID — resolve the doc id once
+  // on load and reuse it on save, or saving would create a duplicate
+  // shop doc under the bare UID.
+  String? _shopDocId;
+
+  /// Injectable Firestore for tests; production uses the default instance, or null when Firebase is not initialised.
+  FirebaseFirestore? get _firestore {
+    if (widget.firestore != null) return widget.firestore;
+    try {
+      return FirebaseFirestore.instance;
+    } catch (_) {
+      return null;
+    }
+  }
 
   String _snapshot() => [_shopNameController.text, _ownerNameController.text, _phoneController.text, _addressController.text, _cityController.text, _openingHoursController.text].join('|');
 
@@ -59,10 +77,13 @@ class _OwnerShopSettingsViewState extends State<OwnerShopSettingsView> {
       _hasError = false;
     });
     try {
-      final doc = await FirebaseFirestore.instance.collection('shops').doc(currentShopId()).get();
+      final fs = _firestore; if (fs == null) throw StateError('Firestore unavailable');
+      final docId = await canonicalShopId(fs, currentShopId());
+      final doc = await fs.collection('shops').doc(docId).get();
       final data = doc.data() ?? {};
       if (!mounted) return;
       setState(() {
+        _shopDocId = docId;
         _shopNameController.text = (data['name'] ?? data['shopName'] ?? '') as String;
         _ownerNameController.text = (data['ownerName'] ?? '') as String;
         _phoneController.text = (data['phoneNumber'] ?? data['phone'] ?? '') as String;
@@ -101,7 +122,9 @@ class _OwnerShopSettingsViewState extends State<OwnerShopSettingsView> {
     }
     setState(() => _isSaving = true);
     try {
-      await FirebaseFirestore.instance.collection('shops').doc(currentShopId()).set({
+      final fs = _firestore; if (fs == null) throw StateError('Firestore unavailable');
+      final docId = _shopDocId ?? await canonicalShopId(fs, currentShopId());
+      await fs.collection('shops').doc(docId).set({
         'name': _shopNameController.text.trim(),
         'ownerName': _ownerNameController.text.trim(),
         'phoneNumber': _phoneController.text.trim(),

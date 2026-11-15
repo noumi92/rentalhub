@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/current_shop.dart';
+import '../../../../core/utils/shop_id_resolution.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/debounced_button.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
@@ -26,7 +28,11 @@ import 'add_customer/step4_guarantor.dart';
 class OwnerAddCustomerWizard extends StatefulWidget {
   final String? prefilledCnic;
 
-  const OwnerAddCustomerWizard({super.key, this.prefilledCnic});
+  /// Injectable Firestore for tests; production uses the default
+  /// instance (see [_OwnerAddCustomerWizardState._firestore]).
+  final FirebaseFirestore? firestore;
+
+  const OwnerAddCustomerWizard({super.key, this.prefilledCnic, this.firestore});
 
   @override
   State<OwnerAddCustomerWizard> createState() => _OwnerAddCustomerWizardState();
@@ -38,6 +44,18 @@ class _OwnerAddCustomerWizardState extends State<OwnerAddCustomerWizard> {
   int _step = 0;
   bool _isSaving = false;
   bool _isValidating = false;
+
+  /// The Firestore to resolve the shop id against, or null when
+  /// Firebase is not initialised (tests) — the save then keeps the
+  /// bare UID, as before.
+  FirebaseFirestore? get _firestore {
+    if (widget.firestore != null) return widget.firestore;
+    try {
+      return FirebaseFirestore.instance;
+    } catch (_) {
+      return null;
+    }
+  }
 
   @override
   void initState() {
@@ -67,7 +85,13 @@ class _OwnerAddCustomerWizardState extends State<OwnerAddCustomerWizard> {
     final l10n = AppLocalizations.of(context)!;
     setState(() => _isSaving = true);
     try {
-      final result = await KycCustomerSaver().save(shopId: currentShopId(), draft: _draft);
+      // Shop-id linking (2026-11-15): customers must be written
+      // with the shop DOCUMENT id (`shop_<uid>`), not the bare UID
+      // from [currentShopId] — the customers list reads by that doc
+      // id. Falls back to the bare UID for the legacy shop whose doc
+      // id IS the UID.
+      final shopId = await canonicalShopId(_firestore, currentShopId());
+      final result = await KycCustomerSaver().save(shopId: shopId, draft: _draft);
       if (!mounted) return;
       if (result.queuedPhotos > 0) {
         AppFeedback.showInfo(context, l10n.kycWizardPhotosPending);
@@ -131,7 +155,9 @@ class _OwnerAddCustomerWizardState extends State<OwnerAddCustomerWizard> {
           child: Center(
             child: done
                 ? const Icon(Icons.check_rounded, size: 16, color: Colors.white)
-                : Text('${index + 1}', style: TextStyle(color: current ? Colors.white : color, fontSize: 13)),
+                : Text('${index + 1}',
+                    // Audit 2026-11-15 DS-8: 13 sp is bodyMedium, not a literal.
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: current ? Colors.white : color)),
           ),
         ),
         const SizedBox(height: 4),
@@ -142,7 +168,9 @@ class _OwnerAddCustomerWizardState extends State<OwnerAddCustomerWizard> {
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
           textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 11, fontWeight: FontWeight.w500, color: color),
+          // Audit 2026-11-15 DS-8: 11 sp w500 is labelSmall — read
+          // the theme slot instead of a hardcoded size.
+          style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w500, color: color),
         ),
       ],
     );

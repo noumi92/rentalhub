@@ -19,6 +19,10 @@ const Map<String, int> kOverLimitViews = {};
 // this pass — splitting the add-vehicle steps / transfer sheet
 // mid-batch risks the flows they belong to. They may shrink, never
 // grow past their registered counts; splitting them removes the entry.
+// Audit 2026-11-15 DS-19: the three are pinned here (they were already
+// registered — the audit's "outside the cap test's scope" was the
+// view-scan test above, which only covers views/ folders). The review
+// step's registered count is re-pinned 278 -> 274 (verified actual).
 const Map<String, int> kSharedWidgetLineCap = {
   'lib/core/widgets/quick_action_tiles.dart': 250,
   'lib/core/widgets/masked_value.dart': 250,
@@ -28,7 +32,7 @@ const Map<String, int> kSharedWidgetLineCap = {
   'lib/features/owner/presentation/widgets/add_vehicle/vehicle_rates_step_widget.dart':
       330,
   'lib/features/owner/presentation/widgets/add_vehicle/vehicle_review_step_widget.dart':
-      278,
+      274,
   'lib/features/owner/presentation/widgets/finance/add_transfer_sheet.dart':
       348,
 };

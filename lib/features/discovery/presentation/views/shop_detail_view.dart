@@ -6,6 +6,7 @@ import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/app_state_views.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../core/widgets/verified_badge.dart';
+import 'widgets/shop_detail_header.dart';
 import 'widgets/shop_vehicle_card.dart';
 import '../../../customer/data/datasources/customer_remote_data_source.dart';
 import '../../../customer/domain/entities/customer_entity.dart';
@@ -159,6 +160,11 @@ class _ShopDetailViewState extends State<ShopDetailView> {
                   ),
                 ],
               ),
+              // PW-7 (UI/UX audit 2026-11-15): the real photo (when
+              // one exists), the real rating, and Call / WhatsApp —
+              // the trust signals the list card has but the detail
+              // screen lost.
+              ShopDetailHeader(shop: shop),
               Padding(
                 // Directional padding: the badge aligns with the
                 // 16dp content padding in both LTR and RTL (Urdu);

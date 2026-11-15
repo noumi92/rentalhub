@@ -15,7 +15,7 @@ import '../../../finance/data/datasources/shop_reset_data_source.dart';
 class OwnerResetOptionsView extends StatefulWidget {
   final String shopId;
 
-  const OwnerResetOptionsView({super.key, this.shopId = 'shop-1'});
+  const OwnerResetOptionsView({super.key, required this.shopId});
 
   @override
   State<OwnerResetOptionsView> createState() => _OwnerResetOptionsViewState();

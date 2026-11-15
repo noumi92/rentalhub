@@ -101,7 +101,11 @@ class OnboardingPhotoUploadBox extends StatelessWidget {
                   ),
                   Text(
                     isRequired ? l10n.onboardingTapToUpload : l10n.onboardingOptional,
-                    style: Theme.of(context).textTheme.labelSmall?.copyWith(color: isRequired ? Theme.of(context).colorScheme.onSurfaceVariant : AppColors.primaryContainer),
+                    // Audit 2026-11-15 AC-3: the "Optional" hint in
+                    // primaryContainer #EEF0FF was 1.13:1 on the light
+                    // surface (unreadable). onSurfaceVariant in light;
+                    // primaryContainer only in dark (15.83:1 there).
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(color: isRequired || Theme.of(context).brightness != Brightness.dark ? Theme.of(context).colorScheme.onSurfaceVariant : AppColors.primaryContainer),
                   ),
                 ],
               ),

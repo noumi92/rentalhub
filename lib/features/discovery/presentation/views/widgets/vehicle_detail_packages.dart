@@ -97,12 +97,28 @@ class VehicleDetailPackages extends StatelessWidget {
                 child: Text(
                   withDriver
                       ? l10n.vehicleDriverPackageDetail(formatRs(v.extraHourPkr ?? 0), formatRs(v.rates.outOfCityDaily ?? 0))
-                      : l10n.vehicleDepositCnic(formatRs(v.securityDepositPkr ?? 0)),
+                      // Audit 2026-11-15 PW-11: the deposit amount
+                      // routes through amountRs (§4.5 money rule) —
+                      // the .arb value no longer embeds 'Rs.'.
+                      : l10n.vehicleDepositCnic(l10n.amountRs(formatRs(v.securityDepositPkr ?? 0))),
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w500, height: 1.3),
                 ),
               ),
             ],
           ),
+        ),
+        // Audit 2026-11-15 PW-2: the deposit refund terms, directly
+        // under the deposit row — the customer's #1 fear (deposit
+        // back?) is answered before booking, not only at review.
+        // Kept INSIDE this widget (not after it in the detail view)
+        // so VehicleDetailPackages stays the last scroll child and
+        // the BP-11 12 dp bottom gap still holds.
+        const SizedBox(height: 8),
+        Text(
+          l10n.depositRefundTerms,
+          style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
         ),
       ],
     );

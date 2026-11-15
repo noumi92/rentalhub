@@ -216,7 +216,8 @@ class _CustomerReputationViewState extends State<CustomerReputationView> {
                           Container(
                             padding: const EdgeInsets.all(14),
                             decoration: BoxDecoration(
-                              color: AppColors.primaryContainer,
+                              // Audit 2026-11-15 AC-16: dark container token in dark mode (pale slab glares).
+                              color: Theme.of(context).brightness == Brightness.dark ? AppColors.primaryContainerOnDark : AppColors.primaryContainer,
                               borderRadius: BorderRadius.circular(14),
                             ),
                             child: Row(

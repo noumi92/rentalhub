@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -59,6 +60,12 @@ class _KycSubmissionFormState extends State<KycSubmissionForm> {
   /// the restricted doc. Never rendered anywhere in this app.
   String _qrCode = '';
   bool _scanning = false;
+
+  /// FG-20: inline field errors (shown under the field), the same
+  /// pattern the wizard step 1 uses — the submit snackbar alone
+  /// left the owner/customer guessing which field was wrong.
+  String? _cnicError;
+  String? _licenseExpiryError;
 
   @override
   void initState() {
@@ -135,11 +142,28 @@ class _KycSubmissionFormState extends State<KycSubmissionForm> {
     }
   }
 
+  /// dd.mm.yyyy with a real calendar date (FG-20: the licence expiry
+  /// is validated on submit, like the wizard's date fields).
+  static bool _isValidDate(String value) {
+    final m = RegExp(r'^(\d{2})\.(\d{2})\.(\d{4})$').firstMatch(value.trim());
+    if (m == null) return false;
+    final day = int.parse(m[1]!); final month = int.parse(m[2]!); final year = int.parse(m[3]!);
+    final parsed = DateTime.tryParse('$year-${month.toString().padLeft(2, '0')}-${day.toString().padLeft(2, '0')}');
+    return parsed != null && parsed.day == day && parsed.month == month && parsed.year == year;
+  }
+
   Future<void> _submit(KycCubit cubit) async {
     final l10n = AppLocalizations.of(context)!;
     final cnicErr = PakistaniValidators.validateCnic(_cnicController.text);
     if (cnicErr != null) {
+      setState(() => _cnicError = cnicErr);
       AppFeedback.showError(context, cnicErr);
+      return;
+    }
+    // FG-20: a filled licence expiry must be a real dd.mm.yyyy date;
+    // an empty expiry stays optional (no licence submitted yet).
+    if (_licenseData.expiry.trim().isNotEmpty && !_isValidDate(_licenseData.expiry)) {
+      setState(() => _licenseExpiryError = l10n.kycWizardDateFormatError);
       return;
     }
     if (_cnicFront == null || _cnicBack == null) {
@@ -186,9 +210,16 @@ class _KycSubmissionFormState extends State<KycSubmissionForm> {
           TextField(
             controller: _cnicController,
             keyboardType: TextInputType.number,
+            // FG-20: same digits-only + length-limit formatters as the
+            // wizard step 1 CNIC field, plus the inline error.
+            inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9\-]')), LengthLimitingTextInputFormatter(15)],
+            onChanged: (v) {
+              if (_cnicError != null && PakistaniValidators.validateCnic(v) == null) setState(() => _cnicError = null);
+            },
             decoration: InputDecoration(
               prefixIcon: const Icon(Icons.badge_outlined),
               hintText: '35202-1234567-1',
+              errorText: _cnicError,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -231,7 +262,12 @@ class _KycSubmissionFormState extends State<KycSubmissionForm> {
           KycLicenseSection(
             data: _licenseData,
             existing: widget.existing,
-            onChanged: () => setState(() {}),
+            expiryError: _licenseExpiryError,
+            // Clear the expiry error once the field is empty or a
+            // real date again.
+            onChanged: () => setState(() {
+              if (_licenseExpiryError != null && (_licenseData.expiry.trim().isEmpty || _isValidDate(_licenseData.expiry))) _licenseExpiryError = null;
+            }),
           ),
           const SizedBox(height: 18),
           BlocBuilder<KycCubit, KycState>(

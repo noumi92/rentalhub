@@ -70,7 +70,8 @@ class _OwnerReportsViewState extends State<OwnerReportsView> {
           _vehicles = vehicles;
         });
       }
-    } catch (_) {
+    } catch (e) {
+      debugPrint('OwnerReportsView load failed: $e'); // Audit 2026-11-15 DS-6: raw error logged for diagnostics; the user only ever sees the localized per-screen message.
       if (mounted) setState(() => _hasError = true);
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -196,7 +197,7 @@ class _OwnerReportsViewState extends State<OwnerReportsView> {
                   ? const AppLoadingState()
                   : _hasError
                       ? AppErrorState(
-                          message: l10n.dashboardLoadError, onRetry: _load)
+                          message: l10n.reportsLoadError, onRetry: _load)
                       : SingleChildScrollView(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 16, vertical: 14),

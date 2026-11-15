@@ -8,6 +8,7 @@ import '../../../bookings/domain/entities/booking_entity.dart';
 import '../../../bookings/presentation/widgets/booking_status_chip.dart';
 import '../../../handover/data/datasources/pdf_contract_generator.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../../core/utils/date_format.dart';
 import '../../../../core/utils/money_format.dart';
 
 class BookingTicketCard extends StatelessWidget {
@@ -82,7 +83,9 @@ class BookingTicketCard extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      l10n.ticketPickupDate(booking.pickupTime.day, booking.pickupTime.month, booking.pickupTime.year),
+                      // Audit 2026-11-15 DS-5: the key now takes one
+                      // localized date string, never day/month/year parts.
+                      l10n.ticketPickupDate(formatDate(context, booking.pickupTime)),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500),

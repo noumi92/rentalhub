@@ -102,7 +102,7 @@ class _OwnerCustomerAddedViewState extends State<OwnerCustomerAddedView> {
                               title: l10n.customerDetailNotFound,
                               message: l10n.customerDetailNotFoundMessage)
                           : SingleChildScrollView(
-                          padding: const EdgeInsets.all(24),
+                          padding: const EdgeInsets.all(16),
                           child: Column(
                             children: [
                               const SizedBox(height: 24),

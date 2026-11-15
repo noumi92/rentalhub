@@ -204,17 +204,19 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('New Requester'), findsOneWidget);
-      expect(find.text('Proof Sender'), findsNothing);
-      expect(find.text('Approved Waiter'), findsNothing);
-      expect(find.text('Approve'), findsOneWidget);
-
-      await tester.tap(find.textContaining('Proof ('));
-      await tester.pumpAndSettle();
+      // Team B (FG-4): the default filter is now the proof bucket —
+      // the most urgent one — so the proof sender shows first.
       expect(find.text('Proof Sender'), findsOneWidget);
       expect(find.text('New Requester'), findsNothing);
+      expect(find.text('Approved Waiter'), findsNothing);
       expect(find.text('Verify Payment Proof'), findsOneWidget);
       expect(find.text('Approve'), findsNothing);
+
+      await tester.tap(find.textContaining('New ('));
+      await tester.pumpAndSettle();
+      expect(find.text('New Requester'), findsOneWidget);
+      expect(find.text('Proof Sender'), findsNothing);
+      expect(find.text('Approve'), findsOneWidget);
 
       await tester.tap(find.textContaining('Approved ('));
       await tester.pumpAndSettle();
@@ -234,6 +236,10 @@ void main() {
           home: OwnerBookingRequestsView(shopId: 'shop-1'),
         ),
       );
+      await tester.pumpAndSettle();
+      // Team B (FG-4): the default filter is the proof bucket; the
+      // requested booking lives under New.
+      await tester.tap(find.textContaining('New ('));
       await tester.pumpAndSettle();
       expect(find.text('Reject Me'), findsOneWidget);
 

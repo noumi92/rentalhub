@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/utils/current_shop.dart';
+import '../../../../core/utils/date_format.dart';
 import '../../../../core/utils/money_format.dart';
 import '../../../../core/widgets/app_state_views.dart';
 import '../../../../core/widgets/debounced_button.dart';
@@ -163,7 +164,10 @@ class _OwnerCustomersListViewState extends State<OwnerCustomersListView> {
                                 final expanded = _expandedKey == c.key;
                                 final blacklisted = _isBlacklisted(c);
                                 return Card(
-                                  margin: const EdgeInsets.only(bottom: 10),
+                                  // BP-14: the last card carries no
+                                  // bottom margin — the list padding
+                                  // (16 dp) is the bottom gap.
+                                  margin: EdgeInsets.only(bottom: index == filtered.length - 1 ? 0 : 10),
                                   child: Column(
                                     children: [
                                       ListTile(
@@ -204,7 +208,7 @@ class _OwnerCustomersListViewState extends State<OwnerCustomersListView> {
                                               dense: true,
                                               leading: const Icon(Icons.receipt_long_rounded, size: 18),
                                               title: Text('${b.vehicleName ?? l10n.summaryVehicle} • ${b.packageType}', maxLines: 1, overflow: TextOverflow.ellipsis),
-                                              subtitle: Text('${b.pickupTime.day}/${b.pickupTime.month}/${b.pickupTime.year} • ${_statusLabel(l10n, b.status)}', maxLines: 2, overflow: TextOverflow.ellipsis),
+                                              subtitle: Text('${formatDate(context, b.pickupTime)} • ${_statusLabel(l10n, b.status)}', maxLines: 2, overflow: TextOverflow.ellipsis), // Audit 2026-11-15 DS-5: localized date, never raw d/m/y.
                                               // C5: grouped amount.
                                               trailing: Text(l10n.amountRs(formatRs(b.totalAmount)), style: const TextStyle(fontWeight: FontWeight.w600)),
                                             )),

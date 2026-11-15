@@ -1,6 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../../../../core/routing/auth_route_guard.dart';
 import '../../../../core/utils/current_shop.dart';
+import '../../../../core/utils/shop_id_resolution.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../domain/entities/booking_entity.dart';
 import '../widgets/approved_accounts_body.dart';
@@ -18,11 +20,16 @@ class OwnerPaymentAccountsView extends StatefulWidget {
   final VoidCallback? onProceedToUploadProof;
   final VoidCallback? onBack;
 
+  /// Injectable Firestore for tests; production uses the default
+  /// instance (see [_OwnerPaymentAccountsViewState._resolveOwner]).
+  final FirebaseFirestore? firestore;
+
   const OwnerPaymentAccountsView({
     super.key,
     required this.booking,
     this.onProceedToUploadProof,
     this.onBack,
+    this.firestore,
   });
 
   @override
@@ -33,10 +40,37 @@ class OwnerPaymentAccountsView extends StatefulWidget {
 class _OwnerPaymentAccountsViewState extends State<OwnerPaymentAccountsView> {
   late BookingEntity _booking;
 
+  /// The shop ids this signed-in owner may act for — the bare UID
+  /// plus the shop doc id it owns. Starts as the bare UID so the
+  /// first frame behaves as before; the async resolution below
+  /// widens it once Firestore answers.
+  Set<String> _ownerShopIds = {};
+
   @override
   void initState() {
     super.initState();
     _booking = widget.booking;
+    _ownerShopIds = {currentShopId()};
+    _resolveOwnerShopIds();
+  }
+
+  /// Shop-id linking (2026-11-15): customer bookings carry the shop
+  /// DOCUMENT id (`shop_<uid>`) while [currentShopId] is the bare
+  /// UID, so a direct `==` failed for the rightful owner. Resolve
+  /// both forms once and test membership — a different shop's owner
+  /// still matches nothing. Fails soft to the bare UID when
+  /// Firestore is unavailable.
+  Future<void> _resolveOwnerShopIds() async {
+    FirebaseFirestore? fs;
+    if (widget.firestore != null) {
+      fs = widget.firestore;
+    } else {
+      try {
+        fs = FirebaseFirestore.instance;
+      } catch (_) {}
+    }
+    final ids = await candidateShopIds(fs, currentShopId());
+    if (mounted) setState(() => _ownerShopIds = ids.toSet());
   }
 
   @override
@@ -51,7 +85,7 @@ class _OwnerPaymentAccountsViewState extends State<OwnerPaymentAccountsView> {
     // whose locked role is 'owner'; anything else (customer role,
     // another shop, signed out) gets the summary only. Default deny.
     final isShopOwner = AuthRouteGuard.lockedRole == 'owner' &&
-        currentShopId() == _booking.shopId;
+        _ownerShopIds.contains(_booking.shopId);
     return Scaffold(
       // C1: MinimalAppBar owns the top inset.
       body: SafeArea(

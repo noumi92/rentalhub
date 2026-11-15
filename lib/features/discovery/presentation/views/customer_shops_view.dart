@@ -2,13 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/routing/route_names.dart';
-import '../../../../core/utils/responsive.dart';
 import '../../../../core/widgets/app_state_views.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../domain/entities/shop_entity.dart';
 import '../cubit/shops_filter_state.dart';
-import 'widgets/city_selector_bar.dart';
-import 'widgets/shop_list_card.dart';
+import 'widgets/home_shop_list.dart';
 import 'widgets/shops_filter_bar.dart';
 import 'widgets/shops_location_note.dart';
 import 'widgets/shops_tab_data.dart';
@@ -32,6 +30,7 @@ class CustomerShopsView extends StatefulWidget {
     super.key,
     this.shopsLoader,
     this.displayUnverifiedLoader,
+    this.minDailyRateLoader,
     this.filterState,
     this.onShopSelected,
   });
@@ -41,6 +40,9 @@ class CustomerShopsView extends StatefulWidget {
 
   /// Test seam: override the `displayUnverifiedShops` setting read.
   final Future<bool> Function()? displayUnverifiedLoader;
+
+  /// Test seam: override the per-shop cheapest-rate read (PW-4).
+  final Future<int?> Function(String shopId)? minDailyRateLoader;
 
   /// Test seam: the shared filter state (default [ShopsFilterState.shared]).
   final ShopsFilterState? filterState;
@@ -57,6 +59,16 @@ class _CustomerShopsViewState extends State<CustomerShopsView> {
   List<ShopEntity> _shops = const [];
   bool _loading = true;
 
+  /// FG-5: true when the shops fetch itself failed (not an empty
+  /// result) — the view renders the error state with retry.
+  bool _loadFailed = false;
+
+  /// PW-4: cheapest available daily rate per shop id.
+  Map<String, int> _minDailyRates = const {};
+
+  /// PW-5: the city pre-select runs once per view instance.
+  bool _preselectedCity = false;
+
   /// null until the permission check answers; false means no GPS
   /// permission, so the city menu below is the manual entry.
   bool? _locationAvailable;
@@ -67,19 +79,47 @@ class _CustomerShopsViewState extends State<CustomerShopsView> {
     _filters = widget.filterState ?? ShopsFilterState.shared;
     _loadShops();
     _checkLocation();
+    _preselectCity();
   }
 
   Future<void> _loadShops() async {
-    final shops = await ShopsTabData.loadShops(
+    if (mounted) {
+      setState(() {
+        _loading = true;
+        _loadFailed = false;
+      });
+    }
+    final result = await ShopsTabData.loadShops(
       filters: _filters,
       shopsLoader: widget.shopsLoader,
       displayUnverifiedLoader: widget.displayUnverifiedLoader,
     );
     if (!mounted) return;
     setState(() {
-      _shops = shops;
+      _shops = result.shops;
+      _loadFailed = result.loadFailed;
       _loading = false;
     });
+    if (!result.loadFailed) _loadMinRates();
+  }
+
+  /// PW-4: cheapest rates fill in after the list; a failure here
+  /// never hides the shops.
+  Future<void> _loadMinRates() async {
+    final rates = await ShopsTabData.loadMinDailyRates(
+      shops: _shops,
+      minDailyRateLoader: widget.minDailyRateLoader,
+    );
+    if (!mounted) return;
+    setState(() => _minDailyRates = rates);
+  }
+
+  /// PW-5: nearest known city by GPS, else the saved city — only
+  /// when the user has not picked one yet.
+  Future<void> _preselectCity() async {
+    if (_preselectedCity) return;
+    _preselectedCity = true;
+    await ShopsTabData.preselectCity(_filters);
   }
 
   Future<void> _checkLocation() async {
@@ -111,7 +151,10 @@ class _CustomerShopsViewState extends State<CustomerShopsView> {
       builder: (context, _) {
         final shops = _filters.apply(_shops);
         return Scaffold(
+          // Audit 2026-11-15 DS-14: top: false — the shell strips
+          // the top inset; a bare SafeArea double-insets outside it.
           body: SafeArea(
+            top: false,
             child: Column(
               children: [
                 MinimalAppBar(
@@ -126,12 +169,13 @@ class _CustomerShopsViewState extends State<CustomerShopsView> {
                     ),
                   ],
                 ),
-                CitySelectorBar(
+                // F-R1: ONE 60px scrollable filter row (city button
+                // + verification chips). Chrome above the first card
+                // is now app bar (56) + this row (60) = ~116px.
+                ShopsFilterBar(
                   majorCities: shopsCityMenuEntries(l10n),
                   selectedCity: _filters.city ?? l10n.shops_allCities,
                   onSelectCity: _selectCity,
-                ),
-                ShopsFilterBar(
                   verification: _filters.verification,
                   onVerificationChanged: _filters.setVerification,
                   showUnverifiedFilter: _filters.displayUnverifiedShops,
@@ -141,67 +185,36 @@ class _CustomerShopsViewState extends State<CustomerShopsView> {
                 Expanded(
                   child: _loading
                       ? AppLoadingState(message: l10n.homeFindingShops)
-                      : shops.isEmpty
-                          // CU-m2: the shared empty state, not a
-                          // hand-rolled icon + two Texts.
-                          ? AppEmptyState(
-                              title: l10n.shops_emptyTitle,
-                              message: l10n.shops_emptySubtitle,
-                              icon: Icons.storefront_rounded,
+                      : _loadFailed
+                          // FG-5: a failed load is an error with
+                          // retry, not an empty state.
+                          ? AppErrorState(
+                              message: l10n.shops_loadFailed,
+                              onRetry: _loadShops,
                             )
-                          : SingleChildScrollView(
-                              padding:
-                                  const EdgeInsets.fromLTRB(16, 4, 16, 16),
-                              child: HomeShopList(
-                                shops: shops,
-                                onShopSelected: _openShop,
-                              ),
-                            ),
+                          : shops.isEmpty
+                              // CU-m2: the shared empty state, not a
+                              // hand-rolled icon + two Texts.
+                              ? AppEmptyState(
+                                  title: l10n.shops_emptyTitle,
+                                  message: l10n.shops_emptySubtitle,
+                                  icon: Icons.storefront_rounded,
+                                )
+                              : SingleChildScrollView(
+                                  padding: const EdgeInsets.fromLTRB(
+                                      16, 4, 16, 16),
+                                  child: HomeShopList(
+                                    shops: shops,
+                                    minDailyRates: _minDailyRates,
+                                    onShopSelected: _openShop,
+                                  ),
+                                ),
                 ),
               ],
             ),
           ),
         );
       },
-    );
-  }
-}
-
-/// Phase D (D3): the shop list section of the Shops tab, moved here
-/// from the customer Home view (Worker C) — the Home screen itself no
-/// longer renders it. Compact shows the single-column list exactly as
-/// before; medium+ shows two columns of shop cards via
-/// [twoColumnLayout]. The immersion tests pump it directly.
-class HomeShopList extends StatelessWidget {
-  final List<ShopEntity> shops;
-  final ValueChanged<ShopEntity> onShopSelected;
-
-  const HomeShopList({
-    super.key,
-    required this.shops,
-    required this.onShopSelected,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    if (!isMediumOrLarger(context)) {
-      return Column(
-        children: shops
-            .map((shop) => ShopListCard(
-                  shop: shop,
-                  onTap: () => onShopSelected(shop),
-                ))
-            .toList(),
-      );
-    }
-    return twoColumnLayout(
-      key: const Key('home-shop-two-columns'),
-      items: shops,
-      itemSpacing: 0, // ShopListCard already has a 16 bottom margin.
-      itemBuilder: (shop) => ShopListCard(
-        shop: shop,
-        onTap: () => onShopSelected(shop),
-      ),
     );
   }
 }

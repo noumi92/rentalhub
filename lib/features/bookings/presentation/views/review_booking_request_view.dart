@@ -164,10 +164,7 @@ class _ReviewBookingRequestViewState extends State<ReviewBookingRequestView> {
                     // platform setting is ON.
                     if (_shopIsVerified == false) ...[
                       const SizedBox(height: 10),
-                      VerifiedBadge(
-                        isVerified: false,
-                        label: l10n.shops_unverified,
-                      ),
+                      VerifiedBadge(isVerified: false, label: l10n.shops_unverified),
                     ],
                     const SizedBox(height: 14),
                     AdvanceDepositNoticeCard(
@@ -214,7 +211,7 @@ class _ReviewBookingRequestViewState extends State<ReviewBookingRequestView> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    // BP-4: no trailing spacer — the submit footer is a sibling below the scroll view, and it is absent entirely for an incomplete draft.
                   ],
                 ),
               ),

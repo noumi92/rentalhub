@@ -325,4 +325,53 @@ class ReturnSettlementService {
       merge: true,
     );
   }
+
+  /// Audit 2026-11-15 PW-21: records the collected owed amount — the
+  /// excess over the deposit ([SettlementBreakdown.amountOwed]) the
+  /// owner collected at return — as its own step on
+  /// `return_settlements/{bookingId}` (merge, mirroring
+  /// [recordRefund]). The collection step used to be in-session only:
+  /// closing the screen lost the record. Throws on failure so the
+  /// caller shows the failure state instead of pretending the
+  /// collection landed. [amount] 0 with no method clears a previous
+  /// collection (undo).
+  static Future<void> recordOwedCollected({
+    required String bookingId,
+    required int amount,
+    String? method,
+  }) async {
+    await sl<FirestoreService>().setDocument(
+      'return_settlements',
+      bookingId,
+      {
+        'bookingId': bookingId,
+        'owedCollected': amount,
+        'owedCollectionMethod': method,
+        'owedCollectedAt': FieldValue.serverTimestamp(),
+        'updatedAt': FieldValue.serverTimestamp(),
+      },
+      merge: true,
+    );
+  }
+
+  /// Audit 2026-11-15 PW-21: the owed-collection state for one
+  /// booking, so the return steps restore a collection recorded in
+  /// an earlier session (mirroring [loadRefundState]). Absent (or
+  /// unreadable) resolves to "not collected", never an error.
+  static Future<({bool collected, int amount, String? method})>
+      loadOwedState(String bookingId) async {
+    try {
+      final data = await sl<FirestoreService>()
+          .getDocument('return_settlements', bookingId);
+      if (data == null) return (collected: false, amount: 0, method: null);
+      final amount = (data['owedCollected'] as num?)?.toInt() ?? 0;
+      return (
+        collected: amount > 0,
+        amount: amount,
+        method: data['owedCollectionMethod'] as String?,
+      );
+    } catch (_) {
+      return (collected: false, amount: 0, method: null);
+    }
+  }
 }

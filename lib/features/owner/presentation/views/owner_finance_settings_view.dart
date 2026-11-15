@@ -19,7 +19,7 @@ import '../../../finance/domain/entities/finance_settings_entity.dart';
 class OwnerFinanceSettingsView extends StatefulWidget {
   final String shopId;
 
-  const OwnerFinanceSettingsView({super.key, this.shopId = 'shop-1'});
+  const OwnerFinanceSettingsView({super.key, required this.shopId});
 
   @override
   State<OwnerFinanceSettingsView> createState() =>
@@ -70,7 +70,8 @@ class _OwnerFinanceSettingsViewState extends State<OwnerFinanceSettingsView> {
           _initialSnapshot = _snapshot();
         });
       }
-    } catch (_) {
+    } catch (e) {
+      debugPrint('OwnerFinanceSettingsView load failed: $e'); // Audit 2026-11-15 DS-6: raw error logged for diagnostics; the user only ever sees the localized per-screen message.
       if (mounted) setState(() => _hasError = true);
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -165,7 +166,7 @@ class _OwnerFinanceSettingsViewState extends State<OwnerFinanceSettingsView> {
                   ? const AppLoadingState()
                   : _hasError
                       ? AppErrorState(
-                          message: l10n.dashboardLoadError, onRetry: _load)
+                          message: l10n.financeSettingsLoadError, onRetry: _load)
                       : settings == null
                           ? AppEmptyState(
                               title: l10n.financeSettingsEmpty,

@@ -295,8 +295,8 @@ void main() {
         onReject: () {},
       )));
       await tester.pumpAndSettle();
-      expect(find.textContaining('26 Oct'), findsOneWidget);
-      expect(find.textContaining('29 Oct'), findsOneWidget);
+      expect(find.textContaining('Oct 26'), findsOneWidget);
+      expect(find.textContaining('Oct 29'), findsOneWidget);
       expect(find.textContaining('3 days'), findsOneWidget);
     });
 
@@ -435,6 +435,10 @@ void main() {
       );
       await tester.pumpWidget(
           appFor(const OwnerBookingRequestsView(shopId: 'shop-1')));
+      await tester.pumpAndSettle();
+      // FG-4: the default triage filter is now proofs-first, so tap
+      // New to see fresh 'requested' bookings before searching.
+      await tester.tap(find.textContaining('New ('));
       await tester.pumpAndSettle();
       expect(find.text('Searchable Samina'), findsOneWidget);
       expect(find.text('Other Osman'), findsOneWidget);

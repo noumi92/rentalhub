@@ -30,6 +30,7 @@ class KycLicenseSection extends StatefulWidget {
     required this.data,
     required this.onChanged,
     this.existing,
+    this.expiryError,
   });
 
   final KycLicenseData data;
@@ -39,6 +40,10 @@ class KycLicenseSection extends StatefulWidget {
   /// its own stored document (like the CNIC slots) instead of only
   /// ever showing newly picked files.
   final KycDocumentEntity? existing;
+
+  /// FG-20: the submit-time expiry-format error, rendered inline
+  /// under the expiry field by the parent form.
+  final String? expiryError;
 
   @override
   State<KycLicenseSection> createState() => _KycLicenseSectionState();
@@ -131,24 +136,43 @@ class _KycLicenseSectionState extends State<KycLicenseSection> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        DocumentSlotTile(
-          title: l10n.kycWizardLicenseFront,
-          subtitle: widget.data.front != null
-              ? l10n.kycSelectedFile(_fileName(widget.data.front))
-              : l10n.kycSelfDriveNote,
-          isUploaded: widget.data.front != null ||
-              (widget.existing?.licenseKey.isNotEmpty ?? false),
-          onTap: _scanningFront ? () {} : () => _pickSlot('front'),
+        // FG-20: while OCR runs the slot is visibly disabled (dimmed
+        // + "Scanning…" + taps ignored) instead of a live-looking
+        // tile whose tap is a silent no-op.
+        IgnorePointer(
+          ignoring: _scanningFront,
+          child: Opacity(
+            opacity: _scanningFront ? 0.5 : 1.0,
+            child: DocumentSlotTile(
+              title: l10n.kycWizardLicenseFront,
+              subtitle: _scanningFront
+                  ? l10n.kycScanning
+                  : widget.data.front != null
+                      ? l10n.kycSelectedFile(_fileName(widget.data.front))
+                      : l10n.kycSelfDriveNote,
+              isUploaded: widget.data.front != null ||
+                  (widget.existing?.licenseKey.isNotEmpty ?? false),
+              onTap: () => _pickSlot('front'),
+            ),
+          ),
         ),
         const SizedBox(height: 10),
-        DocumentSlotTile(
-          title: l10n.kycWizardLicenseBack,
-          subtitle: widget.data.back != null
-              ? l10n.kycSelectedFile(_fileName(widget.data.back))
-              : l10n.kycSelfDriveNote,
-          isUploaded: widget.data.back != null ||
-              (widget.existing?.licenseBackKey.isNotEmpty ?? false),
-          onTap: _scanningBack ? () {} : () => _pickSlot('back'),
+        IgnorePointer(
+          ignoring: _scanningBack,
+          child: Opacity(
+            opacity: _scanningBack ? 0.5 : 1.0,
+            child: DocumentSlotTile(
+              title: l10n.kycWizardLicenseBack,
+              subtitle: _scanningBack
+                  ? l10n.kycScanning
+                  : widget.data.back != null
+                      ? l10n.kycSelectedFile(_fileName(widget.data.back))
+                      : l10n.kycSelfDriveNote,
+              isUploaded: widget.data.back != null ||
+                  (widget.existing?.licenseBackKey.isNotEmpty ?? false),
+              onTap: () => _pickSlot('back'),
+            ),
+          ),
         ),
         const SizedBox(height: 10),
         TextField(
@@ -167,6 +191,7 @@ class _KycLicenseSectionState extends State<KycLicenseSection> {
           decoration: InputDecoration(
             labelText: l10n.kycWizardLicenseExpiry,
             hintText: '01.01.2030',
+            errorText: widget.expiryError,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
             ),

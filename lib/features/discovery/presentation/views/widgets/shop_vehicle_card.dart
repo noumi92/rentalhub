@@ -26,7 +26,7 @@ class ShopVehicleCard extends StatelessWidget {
     if (url != null && url.startsWith('http')) {
       return Image.network(
         url,
-        height: 120,
+        height: 130,
         fit: BoxFit.cover,
         errorBuilder: (_, __, ___) => _assetImage(v),
       );
@@ -39,7 +39,7 @@ class ShopVehicleCard extends StatelessWidget {
     // helper now — Sportage/BR-V no longer render as a red Civic.
     return Image.asset(
       vehicleImageAsset(v.make, v.model),
-      height: 120,
+      height: 130,
       fit: BoxFit.contain,
       errorBuilder: (_, __, ___) => Image.asset(
         'assets/images/white_sedan_hero.png',

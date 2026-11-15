@@ -401,9 +401,17 @@ void main() {
       await sl.reset();
       SharedPreferences.setMockInitialValues({});
       await initDependencies();
+      // AC-8: the wallet reads the signed-in user's records — stand
+      // in as 'cust-101' via the SignedInUser test override.
+      SignedInUser.override = const SignedInUserData(
+        uid: 'cust-101',
+        displayName: 'Ahmed Raza',
+        phoneNumber: '03001234567',
+      );
     });
 
     tearDown(() async {
+      SignedInUser.override = null;
       await sl.reset();
     });
 
@@ -419,7 +427,7 @@ void main() {
 
     testWidgets('Customer Home at 200%', (tester) async {
       await pumpAt200(tester, const CustomerHomeView());
-      expect(find.text('Find Verified Rental Shops'), findsOneWidget);
+      expect(find.text('Home'), findsOneWidget);
     });
 
     testWidgets('Customer Bookings at 200%', (tester) async {
@@ -578,6 +586,11 @@ void main() {
         customerName: 'Muhammad Ahmed Khan Butt',
       );
       await pumpAt200(tester, const OwnerBookingRequestsView(shopId: 'shop-1'));
+      // The list loads async — settle before tapping the filter, or
+      // the filter bar is not in the tree yet (loading state).
+      await tester.pumpAndSettle();
+      await tester.tap(find.textContaining('New ('));
+      await tester.pumpAndSettle();
       expect(find.text('Rs. 1,250,000'), findsWidgets);
     });
   });

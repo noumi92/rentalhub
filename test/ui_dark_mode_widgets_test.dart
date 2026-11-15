@@ -20,6 +20,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:rentalhub/core/di/injection_container.dart';
+import 'package:rentalhub/core/auth/signed_in_user.dart';
 import 'package:rentalhub/core/theme/app_theme.dart';
 import 'package:rentalhub/core/widgets/pakistani_plate_widget.dart';
 import 'package:rentalhub/features/bookings/domain/entities/booking_entity.dart';
@@ -130,9 +131,17 @@ void main() {
     await sl.reset();
     SharedPreferences.setMockInitialValues({});
     await initDependencies();
+    // AC-8: the wallet reads the signed-in user's records — stand
+    // in as 'cust-101' via the SignedInUser test override.
+    SignedInUser.override = const SignedInUserData(
+      uid: 'cust-101',
+      displayName: 'Ahmed Raza',
+      phoneNumber: '03001234567',
+    );
   });
 
   tearDown(() async {
+    SignedInUser.override = null;
     await sl.reset();
   });
 
@@ -289,7 +298,7 @@ void main() {
     });
 
     testWidgets(
-        'DigitalQrPassWidget: dark surface with readable text, white QR tile',
+        'DigitalQrPassWidget: whole pass forced light in dark mode, caption dark-on-light (FG-13/PW-10)',
         (tester) async {
       await TestHarness.pumpScreenWithOverflowCheck(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -300,36 +309,59 @@ void main() {
           plateNumber: 'LEA-21-4820',
           shopName: 'Al-Madina Rent a Car',
           pickupTime: DateTime(2026, 11, 8, 10, 30),
+          bookingStatus: 'paid',
         ),
         theme: AppTheme.darkTheme,
       );
-      // Only the QR tile itself stays white in dark mode (a scannable
-      // QR needs a light quiet zone); the pass card follows the theme
-      // surface (#13152C in dark mode — the audit counts 0
-      // forced-light Scaffolds/surfaces). So the text on the card is
-      // the near-white theme text, which is correct and readable on
-      // the dark surface — not dark ink, which would be invisible.
+      // Audit 2026-11-15 FG-13/PW-10: the WHOLE pass is forced light
+      // in both themes (the QR needs a light quiet zone, and the
+      // caption was light-grey theme text on the near-white panel in
+      // dark mode). So the card is #F8FAFC and every text on it is
+      // dark ink — not the dark theme's near-white text, which would
+      // be invisible on the light card.
       expect(
         find.byWidgetPredicate((w) =>
             w is Container &&
-            (w.decoration as BoxDecoration?)?.color == Colors.white),
+            (w.decoration as BoxDecoration?)?.color ==
+                AppColors.backgroundLight),
         findsWidgets,
       );
-      final darkSurface = AppTheme.darkTheme.colorScheme.surface;
-      final darkOnSurface = AppTheme.darkTheme.colorScheme.onSurface;
-      final darkOnSurfaceVariant =
-          AppTheme.darkTheme.colorScheme.onSurfaceVariant;
-      expect(_contrastRatio(darkOnSurface, darkSurface),
-          greaterThanOrEqualTo(4.5));
       expect(_textColor(tester, 'Toyota Corolla Grande 1.8'),
-          darkOnSurface);
+          AppColors.onSurfaceLight);
       expect(_textColor(tester, 'Al-Madina Rent a Car'),
-          darkOnSurfaceVariant);
+          AppColors.onSurfaceVariantLight);
+      // The caption sits on the light panel: dark ink, ≥4.5:1.
+      _expectReadable(tester,
+          'Present this QR Code to showroom staff at handover',
+          AppColors.backgroundLight);
       // The booking id sits ON the white QR tile, so it stays dark ink.
       expect(_textColor(tester, 'RH-1762574400123-0042'), Colors.black87);
       // CU-C2: the QR is a real QrImageView, not a decorative icon —
       // there is no Icons.qr_code_2_rounded in this widget to assert on.
       expect(find.byType(QrImageView), findsOneWidget);
+    });
+
+    testWidgets(
+        'DigitalQrPassWidget: cancelled booking renders no QR + not-valid message (PW-10)',
+        (tester) async {
+      await TestHarness.pumpScreenWithOverflowCheck(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        tester: tester,
+        screen: DigitalQrPassWidget(
+          bookingId: 'RH-1762574400123-0042',
+          vehicleName: 'Toyota Corolla Grande 1.8',
+          plateNumber: 'LEA-21-4820',
+          shopName: 'Al-Madina Rent a Car',
+          pickupTime: DateTime(2026, 11, 8, 10, 30),
+          bookingStatus: 'cancelled',
+        ),
+        theme: AppTheme.darkTheme,
+      );
+      expect(find.byType(QrImageView), findsNothing);
+      expect(find.text('This pass is not valid for pickup'), findsOneWidget);
+      // The vehicle/shop header still renders above the not-valid
+      // state — only the QR itself is withheld.
+      expect(find.text('Toyota Corolla Grande 1.8'), findsOneWidget);
     });
   });
 

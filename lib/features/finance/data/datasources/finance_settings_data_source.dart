@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../../../core/utils/shop_id_resolution.dart';
 import '../../domain/entities/finance_settings_entity.dart';
 import '../models/finance_settings_model.dart';
 
@@ -24,12 +25,22 @@ class FinanceSettingsDataSource {
   }
 
   Future<FinanceSettingsEntity> getSettings(String shopId) async {
+    // Shop-id linking (2026-11-15): the settings document is keyed
+    // by the canonical shop doc id; a legacy bare-UID document is
+    // still honoured as a fallback.
     final fs = _resolvedFirestore;
     if (fs != null) {
       try {
-        final doc =
-            await fs.collection('finance_settings').doc(shopId).get();
-        final data = doc.data();
+        final canonical = await canonicalShopId(fs, shopId);
+        var doc = await fs
+            .collection('finance_settings')
+            .doc(canonical)
+            .get();
+        var data = doc.data();
+        if (data == null && canonical != shopId) {
+          doc = await fs.collection('finance_settings').doc(shopId).get();
+          data = doc.data();
+        }
         if (data != null) {
           _inMemory = FinanceSettingsModel.fromMap(data);
           return _inMemory!;
@@ -40,13 +51,16 @@ class FinanceSettingsDataSource {
   }
 
   Future<void> saveSettings(FinanceSettingsEntity settings) async {
-    _inMemory = FinanceSettingsModel.fromEntity(settings);
     final fs = _resolvedFirestore;
+    final canonical =
+        await canonicalShopId(fs, settings.shopId);
+    _inMemory = FinanceSettingsModel.fromEntity(
+        settings.copyWith(shopId: canonical));
     if (fs != null) {
       try {
         await fs
             .collection('finance_settings')
-            .doc(settings.shopId)
+            .doc(canonical)
             .set(
               {
                 ..._inMemory!.toMap(),

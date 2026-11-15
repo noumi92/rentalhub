@@ -48,6 +48,14 @@ class WalkInBookingService {
     int advanceReceived = 0,
   }) async {
     final ds = sl<BookingRemoteDataSource>();
+    // Shop-id mismatch (2026-11-15, rulebook D12): the booking (and
+    // the walk-in customer record below) must carry the shop
+    // DOCUMENT id, not the signed-in owner's bare UID — a bare-UID
+    // walk-in is invisible to the same owner's triage read, which
+    // resolves candidates. The customer flow already writes the
+    // document id. A missing/unreachable Firestore resolves to the
+    // argument itself, so offline behaviour is unchanged.
+    final shopId = await ds.canonicalShopIdFor(currentShopId());
     final pickup = pickupTime ?? DateTime.now();
     final ret = returnTime ??
         ManualBookingPackageSelector.returnTimeFor(
@@ -56,7 +64,7 @@ class WalkInBookingService {
         );
     final booking = await ds.createBookingRequest(
       customerId: 'walkin-${DateTime.now().millisecondsSinceEpoch}',
-      shopId: currentShopId(),
+      shopId: shopId,
       vehicleId: vehicle.vehicleId,
       vehicleName: '${vehicle.make} ${vehicle.model}',
       customerName: name,
@@ -83,7 +91,7 @@ class WalkInBookingService {
     // never fail the booking itself.
     try {
       await saveWalkInCustomer(
-        shopId: currentShopId(),
+        shopId: shopId,
         name: name,
         phone: phone,
         cnic: cnic,

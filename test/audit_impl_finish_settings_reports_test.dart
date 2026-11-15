@@ -84,6 +84,10 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
+      // UI/UX audit fix (Team J): the toggles moved into the
+      // notifications bottom sheet — open it first.
+      await tester.tap(find.text('Notifications'));
+      await tester.pumpAndSettle();
       for (final label in [
         'Booking requests',
         'Payment proofs',

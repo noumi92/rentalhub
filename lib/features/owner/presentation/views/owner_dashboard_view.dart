@@ -1,19 +1,25 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_dimensions.dart';
 import '../../../../core/di/injection_container.dart';
+import '../../../../core/routing/route_names.dart';
+import '../../../../core/utils/shop_id_resolution.dart';
 import '../../../../core/utils/responsive.dart';
 import '../../../../core/widgets/app_state_views.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
+import '../../../bookings/utils/booking_request_time.dart';
 import '../../../fleet/data/datasources/fleet_remote_data_source.dart';
 import '../../../notifications/data/datasources/notification_data_source.dart';
 import '../widgets/dashboard/dashboard_app_bar.dart';
+import '../widgets/dashboard/dashboard_booking_stats.dart';
 import '../widgets/dashboard/dashboard_greeting_header.dart';
 import '../widgets/dashboard/dashboard_kpis.dart';
 import '../widgets/dashboard/dashboard_ledger_section.dart';
 import '../widgets/dashboard/dashboard_live_bookings.dart';
+import '../widgets/dashboard/dashboard_live_notifications.dart';
 import '../widgets/dashboard/dashboard_quick_actions.dart';
 import '../widgets/dashboard/dashboard_schedule_section.dart';
 import '../widgets/dashboard/revenue_kpi_card.dart';
@@ -42,6 +48,13 @@ class _OwnerDashboardViewState extends State<OwnerDashboardView> {
   double? _settleRate;
   // Live updates (Item 2): the bookings subscription behind the KPIs, schedule and ledger. Fleet, notifications and shop names stay one-time loads (refreshed by the app-bar button).
   final _liveBookings = DashboardLiveBookings();
+  // PW-19 (UI/UX audit 2026-11-15): the unread-badge subscription
+  // — the one-time count above goes stale while the dashboard is
+  // open; this keeps it live.
+  final _liveNotifications = DashboardLiveNotifications();
+  // FG-1: the waiting bookings' request times, for the oldest wait
+  // (see booking_request_time.dart — the entity carries no timestamp).
+  Map<String, DateTime?> _requestTimes = {};
 
   @override
   void initState() {
@@ -52,6 +65,7 @@ class _OwnerDashboardViewState extends State<OwnerDashboardView> {
   @override
   void dispose() {
     _liveBookings.dispose();
+    _liveNotifications.dispose();
     super.dispose();
   }
 
@@ -65,12 +79,23 @@ class _OwnerDashboardViewState extends State<OwnerDashboardView> {
           await sl<FleetRemoteDataSource>().getShopVehicles(widget.shopId);
       final notifications = await sl<NotificationDataSource>()
           .getShopNotifications(widget.shopId);
+      // PW-19: the badge then stays live on the notifications
+      // stream (same live pattern as bookings) instead of freezing
+      // at this one-time count.
+      await _liveNotifications.subscribe(
+        shopId: widget.shopId,
+        onUnreadCount: (n) { if (mounted) setState(() => _unreadNotifications = n); },
+      );
       String shopName = '';
       String ownerName = '';
       try {
+        // Shop-id linking (2026-11-15): the shops document is
+        // `shop_<uid>`; the bare UID read always missed, so the
+        // dashboard showed no shop/owner name.
         final doc = await FirebaseFirestore.instance
             .collection('shops')
-            .doc(widget.shopId)
+            .doc(await canonicalShopId(
+                FirebaseFirestore.instance, widget.shopId))
             .get();
         final data = doc.data() ?? {};
         shopName = (data['name'] ?? data['shopName'] ?? '') as String;
@@ -92,7 +117,7 @@ class _OwnerDashboardViewState extends State<OwnerDashboardView> {
       // renders and its retry re-runs this method.
       if (!_liveBookings.subscribe(
         shopId: widget.shopId,
-        onBookings: (list) { if (!mounted) return; setState(() => _allBookings = list); },
+        onBookings: (list) { if (!mounted) return; setState(() => _allBookings = list); _refreshRequestTimes(list); },
         onSettleRate: (rate) { if (!mounted) return; setState(() => _settleRate = rate); },
       )) {
         if (mounted) setState(() => _hasError = true);
@@ -104,80 +129,55 @@ class _OwnerDashboardViewState extends State<OwnerDashboardView> {
     }
   }
 
-  int get _totalRevenue => _allBookings
-      .where((b) => b.status == 'completed' || b.status == 'active' || b.status == 'paid')
-      .fold(0, (total, b) => total + b.totalAmount);
-
-  /// Audit impl (O29): today's earnings — today's completed / paid
-  /// bookings revenue, by pickup date.
-  int get _todayEarnings {
-    final now = DateTime.now();
-    return _allBookings
-        .where((b) =>
-            (b.status == 'completed' ||
-                b.status == 'active' ||
-                b.status == 'paid') &&
-            b.pickupTime.year == now.year &&
-            b.pickupTime.month == now.month &&
-            b.pickupTime.day == now.day)
-        .fold(0, (total, b) => total + b.totalAmount);
-  }
-
   int get _activeCount => _allBookings.where((b) => b.status == 'active').length;
   int get _completedCount => _allBookings.where((b) => b.status == 'completed').length;
   int get _waitingCount => _allBookings
       .where((b) => b.status == 'requested' || b.status == 'payment_submitted')
       .length;
+  int get _newCount => _allBookings.where((b) => b.status == 'requested').length;
+  int get _proofCount => _allBookings.where((b) => b.status == 'payment_submitted').length;
 
-  int _monthRevenue(int year, int month) => _allBookings
-      .where((b) =>
-          (b.status == 'completed' ||
-              b.status == 'active' ||
-              b.status == 'paid') &&
-          b.pickupTime.year == year &&
-          b.pickupTime.month == month)
-      .fold(0, (total, b) => total + b.totalAmount);
-
-  int? get _growthPct {
-    final now = DateTime.now();
-    final thisMonth = _monthRevenue(now.year, now.month);
-    final lastMonthDate = DateTime(now.year, now.month - 1);
-    final lastMonth = _monthRevenue(lastMonthDate.year, lastMonthDate.month);
-    if (lastMonth == 0) return null;
-    return ((thisMonth - lastMonth) / lastMonth * 100).round();
+  // FG-1: the waiting bookings' request times (cached per session
+  // by BookingRequestTimes) so the oldest wait can be shown.
+  Future<void> _refreshRequestTimes(List<BookingEntity> list) async {
+    final times = await BookingRequestTimes.fetch(list.map((b) => b.bookingId));
+    if (mounted) setState(() => _requestTimes = {..._requestTimes, ...times});
   }
-
-  List<BookingEntity> get _ledger => (List<BookingEntity>.of(_allBookings)
-        ..sort((a, b) => b.pickupTime.compareTo(a.pickupTime)))
-      .take(8)
-      .toList();
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final growthPct = _growthPct;
+    // Revenue numbers live in dashboard_booking_stats.dart now
+    // (extracted so this view stays under the 250-line cap).
+    final growth = growthPct(_allBookings);
+    final waiting = _allBookings.where((b) => b.status == 'requested' || b.status == 'payment_submitted').toList();
+    final oldestWait = oldestWaitFor(waiting, _requestTimes);
     final greeting = DashboardGreetingHeader(
       ownerName: _ownerName,
       shopName: _shopName,
     );
     final kpis = DashboardKpis(
-      totalRevenue: _totalRevenue,
-      todayEarnings: _todayEarnings,
-      growthLabel: growthPct == null ? l10n.dashboardNoRevenueLastMonth : l10n.dashboardGrowthLabel('${growthPct >= 0 ? '+' : ''}$growthPct'),
-      growthTrend: growthPct == null || growthPct == 0 ? KpiTrend.neutral : growthPct > 0 ? KpiTrend.up : KpiTrend.down,
+      totalRevenue: totalRevenue(_allBookings),
+      todayEarnings: todayEarnings(_allBookings),
+      growthLabel: growth == null ? l10n.dashboardNoRevenueLastMonth : l10n.dashboardGrowthLabel('${growth >= 0 ? '+' : ''}$growth'),
+      growthTrend: growth == null || growth == 0 ? KpiTrend.neutral : growth > 0 ? KpiTrend.up : KpiTrend.down,
       activeCount: _activeCount,
       completedCount: _completedCount,
       settleLabel: _settleRate == null
           ? l10n.dashboardNoCompletedTrips
           : l10n.dashboardSettleRate((_settleRate! * 100).round()),
       waitingCount: _waitingCount,
+      newCount: _newCount,
+      proofCount: _proofCount,
+      oldestWaitLabel: oldestWait == null ? null : waitDurationLabel(l10n, oldestWait),
+      onWaitingTap: () => context.go(RouteNames.ownerRequests),
       fleetAvailable: _fleetAvailable,
       fleetTotal: _fleetTotal,
     );
     final schedule = DashboardScheduleSection(bookings: _allBookings);
     final ledger = DashboardLedgerSection(
       isEmpty: _allBookings.isEmpty,
-      ledger: _ledger,
+      ledger: ledgerFor(_allBookings),
     );
     final leftColumn = Column(
       crossAxisAlignment: CrossAxisAlignment.start,

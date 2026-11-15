@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/utils/current_shop.dart';
+import '../../../../core/utils/shop_id_resolution.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/app_state_views.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
@@ -30,7 +31,7 @@ import '../../../../core/utils/money_format.dart';
 class OwnerCashClosingView extends StatefulWidget {
   final String shopId;
 
-  const OwnerCashClosingView({super.key, this.shopId = 'shop-1'});
+  const OwnerCashClosingView({super.key, required this.shopId});
 
   @override
   State<OwnerCashClosingView> createState() => _OwnerCashClosingViewState();
@@ -56,12 +57,12 @@ class _OwnerCashClosingViewState extends State<OwnerCashClosingView> {
   }
 
   // Audit §26: the P&L CSV was labelled with the raw shop id — load the real shop name like Settings.
+  // Shop-id linking (2026-11-15): this IS a `shops` doc read, so the bare UID is resolved to the canonical shop doc id first. The finance reads/writes below pass widget.shopId through, and each finance data source resolves candidates on read and canonicalizes on write, so both id forms match.
   Future<void> _loadShopName() async {
     try {
-      final doc = await FirebaseFirestore.instance
-          .collection('shops')
-          .doc(currentShopId())
-          .get();
+      FirebaseFirestore? fs;
+      try { fs = FirebaseFirestore.instance; } catch (_) {} if (fs == null) return;
+      final doc = await fs.collection('shops').doc(await canonicalShopId(fs, currentShopId())).get();
       final name = (doc.data()?['name'] ?? doc.data()?['shopName']) as String?;
       if (name != null && name.isNotEmpty && mounted) {
         setState(() => _shopName = name);
@@ -91,7 +92,7 @@ class _OwnerCashClosingViewState extends State<OwnerCashClosingView> {
           _closings = closings;
         });
       }
-    } catch (_) {
+    } catch (e) { debugPrint('OwnerCashClosingView load failed: $e'); // Audit 2026-11-15 DS-6: raw error logged for diagnostics; the user only ever sees the localized per-screen message.
       // Audit §26/C4: a failed load used to render as "expected Rs. 0".
       if (mounted) setState(() => _hasError = true);
     } finally {
@@ -160,8 +161,7 @@ class _OwnerCashClosingViewState extends State<OwnerCashClosingView> {
             : _noteController.text.trim(),
       );
       if (mounted) {
-        AppFeedback.showSuccess(
-            context, l10n.financeClosingClosed(formatRs(counted - _expectedCash)));
+        AppFeedback.showSuccess(context, l10n.financeClosingClosed(formatRs(counted - _expectedCash)));
         _countedController.clear();
         _noteController.clear();
         _load();
@@ -205,7 +205,7 @@ class _OwnerCashClosingViewState extends State<OwnerCashClosingView> {
                   ? const AppLoadingState()
                   : _hasError
                       ? AppErrorState(
-                          message: l10n.dashboardLoadError,
+                          message: l10n.cashClosingLoadError,
                           onRetry: _load,
                         )
                       : SingleChildScrollView(

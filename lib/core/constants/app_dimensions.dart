@@ -13,7 +13,12 @@ class AppDimensions {
   static const double buttonHeight = 54.0;
 
   // Paddings
-  static const double paddingHorizontal = 20.0;
+  // Audit 2026-11-15 DS-7: re-specced from 20 to 16 — 16 is the
+  // de-facto horizontal screen padding (71 ad-hoc sites) and the
+  // rulebook §4.4 spacing scale; the token now matches the app
+  // instead of aspiring to a value nothing used. Do NOT migrate the
+  // 71 ad-hoc 16s to the token in this pass — the number is one now.
+  static const double paddingHorizontal = 16.0;
   static const double paddingVertical = 16.0;
   static const double spaceBetweenCards = 14.0;
 

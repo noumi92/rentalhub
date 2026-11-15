@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../../../core/utils/shop_id_resolution.dart';
+
 import '../../domain/entities/notification_entity.dart';
 import '../models/notification_model.dart';
 
@@ -31,11 +33,15 @@ class NotificationDataSource {
     required String type,
     String? bookingId,
   }) async {
+    // Shop-id linking (2026-11-15): booking notifications arrive
+    // with the booking's (canonical) shop id; canonicalize here so
+    // every notification carries one id form.
+    final canonical = await canonicalShopId(_resolvedFirestore, shopId);
     final id =
         'NTF-${DateTime.now().millisecondsSinceEpoch}-${_idSeq++}';
     final model = NotificationModel(
       notificationId: id,
-      shopId: shopId,
+      shopId: canonical,
       title: title,
       body: body,
       type: type,
@@ -57,12 +63,16 @@ class NotificationDataSource {
 
   Future<List<NotificationEntity>> getShopNotifications(
       String shopId) async {
+    // Shop-id linking (2026-11-15): notifications are written under
+    // the booking's canonical shop id while the owner reads by bare
+    // UID — the old `==` read missed them all. Match both forms.
+    final ids = await candidateShopIds(_resolvedFirestore, shopId);
     final fs = _resolvedFirestore;
     if (fs != null) {
       try {
         final snap = await fs
             .collection('notifications')
-            .where('shopId', isEqualTo: shopId)
+            .where('shopId', whereIn: ids)
             .get();
         final remote = snap.docs
             .map((d) => NotificationModel.fromMap(d.data()))
@@ -75,7 +85,7 @@ class NotificationDataSource {
       } catch (_) {}
     }
     final mine =
-        _inMemory.where((n) => n.shopId == shopId).toList()
+        _inMemory.where((n) => ids.contains(n.shopId)).toList()
           ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
     return mine;
   }
@@ -99,7 +109,8 @@ class NotificationDataSource {
   }
 
   Future<void> markAllRead(String shopId) async {
-    final mine = _inMemory.where((n) => n.shopId == shopId).toList();
+    final ids = await candidateShopIds(_resolvedFirestore, shopId);
+    final mine = _inMemory.where((n) => ids.contains(n.shopId)).toList();
     for (final n in mine) {
       await markRead(n.notificationId);
     }

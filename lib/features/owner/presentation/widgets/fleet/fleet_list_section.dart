@@ -70,6 +70,9 @@ class FleetListSection extends StatelessWidget {
         key: const Key('fleet-two-columns'),
         items: filtered,
         padding: const EdgeInsets.all(16),
+        // BP-18: the last card of each column carries no bottom
+        // spacing — the 16 dp list padding is the bottom gap.
+        flushLastItem: true,
         itemBuilder: _vehicleCard,
       );
     }

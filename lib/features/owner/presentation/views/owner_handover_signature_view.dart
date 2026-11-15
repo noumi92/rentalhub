@@ -7,7 +7,6 @@ import 'package:signature/signature.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/network/connectivity_service.dart';
 import '../../../../core/routing/route_names.dart';
-import '../../../../core/utils/money_format.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/app_state_views.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
@@ -20,6 +19,7 @@ import '../widgets/handover_damage_notes_editor.dart';
 import '../widgets/operations/dual_signature_pad_widget.dart';
 import '../widgets/operations/exterior_photo_picker.dart';
 import '../widgets/operations/fuel_odometer_input_widget.dart';
+import '../widgets/operations/handover_balance_section.dart';
 import '../widgets/operations/handover_checklist_section.dart';
 import '../../../../core/theme/card_decoration.dart';
 
@@ -38,28 +38,22 @@ class OwnerHandoverSignatureView extends StatefulWidget {
       _OwnerHandoverSignatureViewState();
 }
 
-class _OwnerHandoverSignatureViewState
-    extends State<OwnerHandoverSignatureView> {
-  // Audit §13: the odometer starts EMPTY (hint text only) — a prefilled
-  // number would be certified as real if the owner never changed it.
+class _OwnerHandoverSignatureViewState extends State<OwnerHandoverSignatureView> {
+  // Audit §13: the odometer starts EMPTY (hint text only) — a prefilled number would be certified as real if the owner never changed it.
   final _odometerController = TextEditingController();
   final _customerSig = SignatureController(penStrokeWidth: 3, penColor: Colors.black, exportBackgroundColor: Colors.white);
   final _ownerSig = SignatureController(penStrokeWidth: 3, penColor: Colors.black, exportBackgroundColor: Colors.white);
-  String _selectedFuel = '4/4 (Full)';
+  String _selectedFuel = '';
+  // PW-16: how the balance due was collected — null until the owner picks one; certify is blocked while it is null and a balance is due.
+  String? _balanceMethod;
   List<String> _damageNotes = const [];
   bool _isSaving = false;
   bool _isLoadingShop = true;
   String? _loadError;
   String _shopName = '';
   int _securityDeposit = 0;
-  // Audit item 4 (O19): exterior photos (side → signed URL), the
-  // documents/accessories checklist, and the keys toggle.
-  Map<String, String?> _photos = const {
-    'front': null,
-    'back': null,
-    'left': null,
-    'right': null,
-  };
+  // Audit item 4 (O19): exterior photos (side → signed URL), the documents/accessories checklist, and the keys toggle.
+  Map<String, String?> _photos = const {'front': null, 'back': null, 'left': null, 'right': null};
   Set<String> _documentsGiven = {};
   Set<String> _accessories = {};
   bool _keysHandedOver = false;
@@ -77,10 +71,7 @@ class _OwnerHandoverSignatureViewState
 
   Future<void> _loadShopAndVehicle() async {
     // Audit C4: a failed shop/vehicle load shows a visible error with a retry — the shop name / deposit never silently fall back to 'RentalHub' / 0 without the owner knowing.
-    setState(() {
-      _isLoadingShop = true;
-      _loadError = null;
-    });
+    setState(() { _isLoadingShop = true; _loadError = null; });
     String? error;
     try {
       final shopId = widget.booking.shopId;
@@ -94,21 +85,13 @@ class _OwnerHandoverSignatureViewState
       final vehicles = await sl<FleetRemoteDataSource>().getShopVehicles(shopId);
       final vehicle = vehicles.where((v) => v.vehicleId == widget.booking.vehicleId).toList();
       if (vehicle.isNotEmpty && mounted) {
-        setState(() {
-          _securityDeposit = vehicle.first.securityDepositPkr ?? 0;
-          _vehiclePlate = vehicle.first.plateNumber;
-          _vehicleColour = vehicle.first.color;
-          _vehicleFuel = vehicle.first.fuelType;
-        });
+        setState(() { _securityDeposit = vehicle.first.securityDepositPkr ?? 0; _vehiclePlate = vehicle.first.plateNumber; _vehicleColour = vehicle.first.color; _vehicleFuel = vehicle.first.fuelType; });
       }
     } catch (e) {
       error = e.toString();
     }
     if (!mounted) return;
-    setState(() {
-      _loadError = error;
-      _isLoadingShop = false;
-    });
+    setState(() { _loadError = error; _isLoadingShop = false; });
   }
 
   @override
@@ -119,11 +102,26 @@ class _OwnerHandoverSignatureViewState
     super.dispose();
   }
 
+  /// PW-16: the balance due at handover (total − advance paid), never negative. The deposit is separate and shown alongside it.
+  int get _balanceDue => (widget.booking.totalAmount - widget.booking.advancePaid).clamp(0, 1 << 30);
+
   Future<void> _completeHandover() async {
   final l10n = AppLocalizations.of(context)!;
     final odo = int.tryParse(_odometerController.text.trim());
     if (odo == null || odo <= 0) {
       AppFeedback.showError(context, l10n.handoverOdometerInvalid);
+      return;
+    }
+
+    // PW-17: fuel starts unselected — like the odometer, it must be explicitly picked; a preselected Full could be certified without the owner touching the control.
+    if (_selectedFuel.isEmpty) {
+      AppFeedback.showError(context, l10n.handoverFuelRequired);
+      return;
+    }
+
+    // PW-16: block certifying while a balance due has no collection method recorded. An explicit 'Not yet' IS a recorded choice and passes — the balance is then visibly uncollected, not silently unrecorded.
+    if (_balanceDue > 0 && _balanceMethod == null) {
+      AppFeedback.showError(context, l10n.handoverBalanceMethodRequired);
       return;
     }
 
@@ -146,6 +144,11 @@ class _OwnerHandoverSignatureViewState
         cnicNumber: booking.customerCnic ?? 'Not provided', vehicleDetails: booking.vehicleName ?? l10n.summaryVehicle, packageType: booking.packageType,
         isWithDriver: booking.isWithDriver, pickupTime: booking.pickupTime, returnTime: booking.returnTime,
         totalAmount: booking.totalAmount, advancePaid: booking.advancePaid, securityDeposit: _securityDeposit,
+        // Audit 2026-11-15 PW-16: first-class balance fields — the
+        // cubit records them with the handover (offline queue +
+        // agreement/handover docs), replacing the view's direct
+        // Firestore merge onto the agreement doc.
+        balanceDuePkr: _balanceDue, balancePaymentMethod: _balanceMethod,
         initialOdometer: odo, fuelLevel: _selectedFuel, damageNotes: _damageNotes,
         photoFrontUrl: _photos['front'], photoBackUrl: _photos['back'], photoLeftUrl: _photos['left'], photoRightUrl: _photos['right'],
         documentsGiven: _documentsGiven.toList(), accessories: _accessories.toList(), keysHandedOver: _keysHandedOver,
@@ -200,9 +203,10 @@ class _OwnerHandoverSignatureViewState
                       const SizedBox(height: 16),
                       HandoverDamageNotesEditor(onChanged: (notes) => setState(() => _damageNotes = notes)),
                       const SizedBox(height: 16),
-                      DualSignaturePadWidget(customerController: _customerSig, ownerController: _ownerSig),
+                      // PW-16/PW-17: balance + deposit rows sit ABOVE the signature pads — the money is visible before the owner certifies.
+                      HandoverBalanceSection(balanceDue: _balanceDue, securityDeposit: _securityDeposit, selectedMethod: _balanceMethod, onMethodChanged: (m) => setState(() => _balanceMethod = m)),
                       const SizedBox(height: 16),
-                      _depositRow(context, l10n),
+                      DualSignaturePadWidget(customerController: _customerSig, ownerController: _ownerSig),
                       const SizedBox(height: 24),
                       DebouncedButton(text: _isSaving ? l10n.handoverIssuing : l10n.handoverCertify, icon: Icons.assignment_turned_in_rounded, isLoading: _isSaving, onPressed: _completeHandover),
                     ],
@@ -230,20 +234,5 @@ class _OwnerHandoverSignatureViewState
       ),
     );
   }
-
-  /// The already-loaded security deposit, surfaced before the owner certifies the handover (audit §13).
-  Widget _depositRow(BuildContext context, AppLocalizations l10n) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, borderRadius: BorderRadius.circular(12), boxShadow: AppCardDecoration.shadow(context)),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Flexible(child: Text(l10n.returnReceiptDepositHeld, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodyMedium)),
-          const SizedBox(width: 8),
-          Text(l10n.amountRs(formatRs(_securityDeposit)), style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w500)),
-        ],
-      ),
-    );
-  }
+  // PW-16/PW-17: the deposit row now lives in HandoverBalanceSection (with the balance row), rendered above the signature pads.
 }

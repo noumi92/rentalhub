@@ -84,6 +84,11 @@ class HandoverCubit extends Cubit<HandoverState> {
     int totalAmount = 0,
     int advancePaid = 0,
     int securityDeposit = 0,
+    // Audit 2026-11-15 PW-16: the balance due at handover and how
+    // it was collected — recorded on the entity and synced with it
+    // (see [_syncOne]), never a side merge from the view.
+    int? balanceDuePkr,
+    String? balancePaymentMethod,
     required int initialOdometer,
     required String fuelLevel,
     List<String> damageNotes = const [],
@@ -158,6 +163,8 @@ class HandoverCubit extends Cubit<HandoverState> {
       cnicNumber: cnicNumber,
       vehicleDetails: vehicleDetails,
       totalAmount: totalAmount,
+      balanceDuePkr: balanceDuePkr,
+      balancePaymentMethod: balancePaymentMethod,
     );
 
     await localDataSource.saveHandoverOffline(entity);
@@ -221,6 +228,8 @@ class HandoverCubit extends Cubit<HandoverState> {
         cnicNumber: map['cnic'] as String?,
         vehicleDetails: map['vehicle_details'] as String?,
         totalAmount: (map['total_amount'] as num?)?.toInt(),
+        balanceDuePkr: (map['balance_due_pkr'] as num?)?.toInt(),
+        balancePaymentMethod: map['balance_payment_method'] as String?,
         photoFrontUrl: map['photo_front_url'] as String?,
         photoBackUrl: map['photo_back_url'] as String?,
         photoLeftUrl: map['photo_left_url'] as String?,
@@ -298,6 +307,14 @@ class HandoverCubit extends Cubit<HandoverState> {
           'cnicNumber': item.cnicNumber ?? '',
           'vehicleDetails': item.vehicleDetails ?? '',
           'totalAmount': item.totalAmount ?? 0,
+          // Audit 2026-11-15 PW-16: the handover balance, recorded
+          // with the agreement (merge — a retry never clobbers).
+          // Absent entirely when unknown (older queued records),
+          // never a fabricated 0.
+          if (item.balanceDuePkr != null) ...{
+            'balanceDueAtHandover': item.balanceDuePkr,
+            'balancePaymentMethod': item.balancePaymentMethod,
+          },
           'agreementPdfUrl': url,
           'agreementPdfSha256': pdfHash,
           'status': 'active',
@@ -322,6 +339,12 @@ class HandoverCubit extends Cubit<HandoverState> {
           'documentsGiven': item.documentsGiven,
           'accessories': item.accessories,
           'keysHandedOver': item.keysHandedOver,
+          // Audit 2026-11-15 PW-16: same balance record on the
+          // handover doc itself (absent when unknown).
+          if (item.balanceDuePkr != null) ...{
+            'balanceDueAtHandover': item.balanceDuePkr,
+            'balancePaymentMethod': item.balancePaymentMethod,
+          },
           'agreementPdfUrl': url,
           'agreementPdfSha256': pdfHash,
           'createdAt': FieldValue.serverTimestamp(),

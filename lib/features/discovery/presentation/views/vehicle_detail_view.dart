@@ -147,7 +147,6 @@ class _VehicleDetailViewState extends State<VehicleDetailView> {
                             onDriveModeChanged: (val) =>
                                 setState(() => _withDriver = val),
                           ),
-                          const SizedBox(height: 20),
                         ],
                       ),
                     ),

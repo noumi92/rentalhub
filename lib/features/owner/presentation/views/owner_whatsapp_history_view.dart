@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 import '../../../../core/utils/current_shop.dart';
+import '../../../../core/utils/date_format.dart';
 import '../../../../core/widgets/app_state_views.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -49,9 +49,10 @@ class _OwnerWhatsappHistoryViewState extends State<OwnerWhatsappHistoryView> {
           _hasError = false;
         });
       }
-    } catch (_) {
+    } catch (e) {
       // A failed load used to spin forever — render the error
       // state with retry instead.
+      debugPrint('OwnerWhatsappHistoryView load failed: $e'); // Audit 2026-11-15 DS-6: raw error logged; user sees only the localized per-screen message.
       if (mounted) {
         setState(() {
           _loaded = true;
@@ -97,7 +98,7 @@ class _OwnerWhatsappHistoryViewState extends State<OwnerWhatsappHistoryView> {
                   ? const AppLoadingState()
                   : _hasError
                       ? AppErrorState(
-                          message: l10n.dashboardLoadError,
+                          message: l10n.whatsappHistoryLoadError,
                           onRetry: _load,
                         )
                       : ListView(
@@ -144,7 +145,8 @@ class _OwnerWhatsappHistoryViewState extends State<OwnerWhatsappHistoryView> {
                                       ? log.phone
                                       : log.recipientName, maxLines: 1, overflow: TextOverflow.ellipsis),
                                   subtitle: Text(
-                                      '${log.messageType} · ${log.sentAt == null ? '' : DateFormat('d MMM, h:mm a', 'en').format(log.sentAt!)}', maxLines: 1, overflow: TextOverflow.ellipsis),
+                                      // Audit 2026-11-15 DS-5: localized day + time, never a hardcoded-'en' format.
+                                      '${log.messageType} · ${log.sentAt == null ? '' : formatDayTime(context, log.sentAt!)}', maxLines: 1, overflow: TextOverflow.ellipsis),
                                   trailing: Text(log.status,
                                       style: Theme.of(context)
                                           .textTheme

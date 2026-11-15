@@ -63,6 +63,20 @@ class DashboardQuickActions extends StatelessWidget {
             ),
           ],
         ),
+        const SizedBox(height: 8),
+        // FG-1 (UI/UX audit 2026-11-15): the triage shortcut the
+        // quick actions lacked — the queue is one tap away from the
+        // dashboard. A single tile stretches full width by design.
+        QuickActionTiles(
+          tiles: [
+            QuickActionTile(
+              icon: Icons.inbox_rounded,
+              label: l10n.dashboardQuickRequests,
+              color: Theme.of(context).colorScheme.primary,
+              onTap: () => context.go(RouteNames.ownerRequests),
+            ),
+          ],
+        ),
       ],
     );
   }

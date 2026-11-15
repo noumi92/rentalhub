@@ -20,6 +20,9 @@ class TripTypeSection extends StatelessWidget {
     this.outCityMode,
     this.outCityPerKmPkr,
     this.outCityDailyPkr,
+    this.pickup,
+    this.returnTime,
+    this.kmPerDay,
   });
 
   final bool isOutOfCity;
@@ -36,6 +39,34 @@ class TripTypeSection extends StatelessWidget {
   final String? outCityMode;
   final int? outCityPerKmPkr;
   final int? outCityDailyPkr;
+
+  /// PW-13: the picked dates + the package's included km/day, so the
+  /// per-km estimate can render live. All three are optional — the
+  /// estimate only renders when all are present, never invented.
+  /// (The picker passes them; without them only the rate line shows.)
+  final DateTime? pickup;
+  final DateTime? returnTime;
+  final int? kmPerDay;
+
+  /// PW-13: "≈ Rs. X for N days × Y km/day" — days from the picked
+  /// dates (at least 1), km/day from the package, rate from the
+  /// vehicle. Null unless every input is present and positive.
+  String? _outCityEstimate(AppLocalizations l10n) {
+    if (outCityMode != 'perKm' ||
+        outCityPerKmPkr == null ||
+        outCityPerKmPkr! <= 0 ||
+        pickup == null ||
+        returnTime == null ||
+        kmPerDay == null ||
+        kmPerDay! <= 0) {
+      return null;
+    }
+    var days = returnTime!.difference(pickup!).inDays;
+    if (days < 1) days = 1;
+    final estimate = days * kmPerDay! * outCityPerKmPkr!;
+    return l10n.tripOutCityEstimate(
+        days, l10n.amountRs(formatRs(estimate)), kmPerDay!);
+  }
 
   /// CU-m17: the out-of-city price basis line for the current mode,
   /// or null when no vehicle field states one.
@@ -69,12 +100,9 @@ class TripTypeSection extends StatelessWidget {
                 materialTapTargetSize: MaterialTapTargetSize.padded,
                 label:  Text(l10n.inCityHyphen),
                 selected: !isOutOfCity,
-                selectedColor: AppColors.primary,
-                labelStyle: TextStyle(
-                    fontWeight: FontWeight.w500,
-                    color: isOutOfCity
-                        ? Theme.of(context).colorScheme.onSurface
-                        : Colors.white),
+                // Audit 2026-11-15 DS-1: no selectedColor/labelStyle
+                // override — the chip inherits the ONE navy
+                // selected-chip spec from the theme.
                 onSelected: (_) => onChanged(false),
               ),
             ),
@@ -84,12 +112,7 @@ class TripTypeSection extends StatelessWidget {
                 materialTapTargetSize: MaterialTapTargetSize.padded,
                 label:  Text(l10n.outOfCityHyphen),
                 selected: isOutOfCity,
-                selectedColor: AppColors.primary,
-                labelStyle: TextStyle(
-                    fontWeight: FontWeight.w500,
-                    color: isOutOfCity
-                        ? Colors.white
-                        : Theme.of(context).colorScheme.onSurface),
+                // Audit 2026-11-15 DS-1: theme-owned selected chip.
                 onSelected: (_) => onChanged(true),
               ),
             ),
@@ -115,6 +138,17 @@ class TripTypeSection extends StatelessWidget {
                   ,
             ),
           ],
+          // PW-13: the live per-km estimate for the picked dates.
+          if (_outCityEstimate(l10n) != null) ...[
+            const SizedBox(height: 4),
+            Text(
+              _outCityEstimate(l10n)!,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.orangeTextFor(
+                      Theme.of(context).brightness)),
+            ),
+          ],
           if (fixedRoutes.isNotEmpty) ...[
             const SizedBox(height: 10),
             Text(l10n.tripFixedRoutes,
@@ -133,14 +167,8 @@ class TripTypeSection extends StatelessWidget {
                   label: Text(l10n.fixedRouteChip(
                       r.destinationCity, formatRs(r.fixedPricePkr))),
                   selected: selected,
-                  // CU-M1: white on #F95700 fails AA — the selected
-                  // chip uses the darker orangeFill (5.18:1).
-                  selectedColor: AppColors.orangeFill,
-                  labelStyle: TextStyle(
-                      fontWeight: FontWeight.w500,
-                      color: selected
-                          ? Colors.white
-                          : Theme.of(context).colorScheme.onSurface),
+                  // Audit 2026-11-15 DS-1: theme-owned selected chip
+                  // (the navy token here was the second dialect).
                   onSelected: (_) => onRouteSelected(selected ? null : r),
                 );
               }).toList(),

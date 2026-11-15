@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../../../../l10n/app_localizations.dart';
+
 class RateMatrixFieldWidget extends StatelessWidget {
   final TextEditingController controller;
   final String label;
@@ -22,6 +24,9 @@ class RateMatrixFieldWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Audit 2026-11-15 DS-10: the currency prefix comes from the
+    // currencyPrefix .arb key, never a Dart literal.
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
@@ -76,8 +81,12 @@ class RateMatrixFieldWidget extends StatelessWidget {
                 color: Theme.of(context).colorScheme.onSurface,
               ),
               decoration: InputDecoration(
-                prefixText: 'Rs. ',
+                prefixText: l10n.currencyPrefix,
                 prefixStyle: Theme.of(context).textTheme.bodyMedium,
+                // Audit 2026-11-15 DS-10: the hint prop was accepted
+                // but never passed to the field — every localized
+                // hint in the rate editors was silently dropped.
+                hintText: hint,
                 isDense: true,
                 filled: true,
                 fillColor: enabled

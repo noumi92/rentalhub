@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../../../core/data/offline_sync_queue.dart';
+import '../../../../core/utils/shop_id_resolution.dart';
 
 import '../../domain/entities/cash_closing_entity.dart';
 import '../models/cash_closing_model.dart';
@@ -72,11 +73,15 @@ class CashClosingDataSource {
     required int countedCash,
     String? note,
   }) async {
+    // Shop-id linking (2026-11-15): the closing id embeds the shop
+    // id, so it must embed the canonical doc id — otherwise the
+    // one-per-day rule splits into one closing per id form.
+    final canonical = await canonicalShopId(_resolvedFirestore, shopId);
     final day = DateTime(date.year, date.month, date.day);
-    final id = 'CLS-$shopId-${day.millisecondsSinceEpoch}';
+    final id = 'CLS-$canonical-${day.millisecondsSinceEpoch}';
     final model = CashClosingModel(
       closingId: id,
-      shopId: shopId,
+      shopId: canonical,
       date: day,
       openingCash: openingCash,
       expectedCash: expectedCash,
@@ -93,12 +98,13 @@ class CashClosingDataSource {
   }
 
   Future<List<CashClosingEntity>> getShopClosings(String shopId) async {
+    final ids = await candidateShopIds(_resolvedFirestore, shopId);
     final fs = _resolvedFirestore;
     if (fs != null) {
       try {
         final snap = await fs
             .collection('cash_closings')
-            .where('shopId', isEqualTo: shopId)
+            .where('shopId', whereIn: ids)
             .get();
         for (final d in snap.docs) {
           final remote = CashClosingModel.fromMap(d.data());
@@ -108,7 +114,7 @@ class CashClosingDataSource {
         }
       } catch (_) {}
     }
-    final mine = _inMemory.where((c) => c.shopId == shopId).toList()
+    final mine = _inMemory.where((c) => ids.contains(c.shopId)).toList()
       ..sort((a, b) => b.date.compareTo(a.date));
     return mine;
   }

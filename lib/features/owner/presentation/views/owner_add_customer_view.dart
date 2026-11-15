@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/current_shop.dart';
+import '../../../../core/utils/shop_id_resolution.dart';
 import '../../../../core/utils/pakistani_validators.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/debounced_button.dart';
@@ -23,7 +25,11 @@ import '../../../customer/utils/save_walk_in_customer.dart';
 class OwnerAddCustomerView extends StatefulWidget {
   final String? prefilledCnic;
 
-  const OwnerAddCustomerView({super.key, this.prefilledCnic});
+  /// Injectable Firestore for tests; production uses the default
+  /// instance (see [_OwnerAddCustomerViewState._firestore]).
+  final FirebaseFirestore? firestore;
+
+  const OwnerAddCustomerView({super.key, this.prefilledCnic, this.firestore});
 
   @override
   State<OwnerAddCustomerView> createState() => _OwnerAddCustomerViewState();
@@ -35,6 +41,18 @@ class _OwnerAddCustomerViewState extends State<OwnerAddCustomerView> {
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
   bool _isSaving = false;
+
+  /// The Firestore to resolve the shop id against, or null when
+  /// Firebase is not initialised (tests) — the save then keeps the
+  /// bare UID, as before.
+  FirebaseFirestore? get _firestore {
+    if (widget.firestore != null) return widget.firestore;
+    try {
+      return FirebaseFirestore.instance;
+    } catch (_) {
+      return null;
+    }
+  }
 
   @override
   void initState() {
@@ -56,8 +74,13 @@ class _OwnerAddCustomerViewState extends State<OwnerAddCustomerView> {
     if (!(_formKey.currentState?.validate() ?? false)) return;
     setState(() => _isSaving = true);
     try {
+      // Shop-id linking (2026-11-15): write the customer with the
+      // shop DOCUMENT id (`shop_<uid>`), not the bare UID — the
+      // customers list reads by that doc id. Falls back to the bare
+      // UID for the legacy shop whose doc id IS the UID.
+      final shopId = await canonicalShopId(_firestore, currentShopId());
       await saveWalkInCustomer(
-        shopId: currentShopId(),
+        shopId: shopId,
         name: _nameController.text.trim(),
         phone: _phoneController.text.trim(),
         cnic: _cnicController.text.trim(),

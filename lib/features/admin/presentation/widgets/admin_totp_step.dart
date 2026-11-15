@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
+import '../../../../core/constants/app_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 
 
@@ -111,9 +112,12 @@ class AdminTotpStep extends StatelessWidget {
         if (error != null) ...[
           const SizedBox(height: 12),
           Text(error!,
-              style: const TextStyle(
+              style: TextStyle(
                   fontSize: 13,
-                  color: Colors.red)),
+                  // Audit 2026-11-15 AC-5: raw Colors.red #F44336 is
+                  // 3.68:1 in light mode — the readable danger token.
+                  color: AppColors.dangerTextFor(
+                      Theme.of(context).brightness))),
         ],
         const SizedBox(height: 16),
         FilledButton(

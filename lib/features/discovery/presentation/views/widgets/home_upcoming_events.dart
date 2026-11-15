@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/routing/route_names.dart';
+import '../../../../../core/utils/date_format.dart';
 import '../../../../../core/utils/money_format.dart';
 import '../../../../../core/widgets/app_state_views.dart';
 import '../../../../../l10n/app_localizations.dart';
@@ -96,9 +97,7 @@ class HomeUpcomingEvents extends StatelessWidget {
               color: AppColors.primary,
               title: l10n.dashboardScheduleHandover,
               detail: l10n.ticketPickupDate(
-                data.nextHandover!.pickupTime.day,
-                data.nextHandover!.pickupTime.month,
-                data.nextHandover!.pickupTime.year,
+                formatDate(context, data.nextHandover!.pickupTime),
               ),
               onTap: () => onOpenBooking?.call(data.nextHandover!),
             ),

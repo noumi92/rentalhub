@@ -103,10 +103,10 @@ class _OwnerSubscriptionPlanDetailViewState
                 children: [
                   Text(
                     l10n.amountRs(formatRs(plan.monthlyFor(_yearly))),
-                    style: Theme.of(context)
-                        .textTheme
-                        .headlineMedium
-                        ?.copyWith(fontWeight: FontWeight.w700),
+                    // Audit 2026-11-15 AC-9: headlineMedium is not in
+                    // the §4.5 scale — displayLarge (28/Bold) is the
+                    // price slot.
+                    style: Theme.of(context).textTheme.displayLarge,
                   ),
                   Text(
                     _yearly

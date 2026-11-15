@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../../../core/data/offline_sync_queue.dart';
+import '../../../../core/utils/shop_id_resolution.dart';
 
 import '../../domain/entities/partner_share_entity.dart';
 import '../models/partner_share_model.dart';
@@ -76,9 +77,10 @@ class PartnerShareDataSource {
     }
     final id =
         'SHR-${DateTime.now().millisecondsSinceEpoch}-${_idSeq++}';
+    final canonical = await canonicalShopId(_resolvedFirestore, shopId);
     final model = PartnerShareModel(
       shareId: id,
-      shopId: shopId,
+      shopId: canonical,
       partnerName: partnerName.trim(),
       sharePercent: sharePercent,
       createdAt: DateTime.now(),
@@ -90,12 +92,13 @@ class PartnerShareDataSource {
   }
 
   Future<List<PartnerShareEntity>> getShopPartners(String shopId) async {
+    final ids = await candidateShopIds(_resolvedFirestore, shopId);
     final fs = _resolvedFirestore;
     if (fs != null) {
       try {
         final snap = await fs
             .collection('partner_shares')
-            .where('shopId', isEqualTo: shopId)
+            .where('shopId', whereIn: ids)
             .get();
         for (final d in snap.docs) {
           final remote = PartnerShareModel.fromMap(d.data());
@@ -105,7 +108,7 @@ class PartnerShareDataSource {
         }
       } catch (_) {}
     }
-    final mine = _inMemory.where((p) => p.shopId == shopId).toList()
+    final mine = _inMemory.where((p) => ids.contains(p.shopId)).toList()
       ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
     return mine;
   }

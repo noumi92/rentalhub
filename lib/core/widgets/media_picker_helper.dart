@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../constants/app_colors.dart';
+import 'app_feedback.dart';
 import '../../l10n/app_localizations.dart';
 
 class MediaPickerHelper {
@@ -31,7 +32,16 @@ class MediaPickerHelper {
           onImageSelected(photo);
         }
       } catch (e) {
+        // FG-19: a failed front-camera pick used to be swallowed
+        // silently (debugPrint only) — the owner tapped and nothing
+        // happened. Surface a localized error instead.
         debugPrint('Front camera pick error: $e');
+        if (context.mounted) {
+          AppFeedback.showError(
+              context,
+              AppLocalizations.of(context)?.mediaCameraError ??
+                  'Could not open the camera. Check the camera permission and try again.');
+        }
       }
       return;
     }
@@ -48,7 +58,15 @@ class MediaPickerHelper {
           onImageSelected(photo);
         }
       } catch (e) {
+        // Same silent-swallow as the front-camera branch (FG-19):
+        // surface the failure instead of dropping it.
         debugPrint('Rear camera pick error: $e');
+        if (context.mounted) {
+          AppFeedback.showError(
+              context,
+              AppLocalizations.of(context)?.mediaCameraError ??
+                  'Could not open the camera. Check the camera permission and try again.');
+        }
       }
       return;
     }

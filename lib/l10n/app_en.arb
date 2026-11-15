@@ -109,7 +109,7 @@
   "kycCustomer": "Customer",
   "walletLabel": "Wallet",
   "profileGuest": "Guest",
-  "homeTitle": "Find Verified Rental Shops",
+  "homeTitle": "Home",
   "homeSwitchToMap": "Switch to Interactive Map",
   "homeFindingShops": "Finding nearby shops…",
   "homeNearbyShowrooms": "Nearby Showrooms",
@@ -199,7 +199,7 @@
   "summaryAdvancePayable": "Advance Payable",
   "summaryBalanceAtHandover": "Balance at Handover",
   "walletTitle": "Wallet & Security Escrow",
-  "walletActiveEscrow": "Active Escrow & Advances",
+  "walletActiveEscrow": "Total with shop: advances paid + deposit held",
   "walletAdvancesPaid": "Advances Paid",
   "walletSecurityEscrow": "Security Escrow",
   "walletLedger": "Transaction Ledger",
@@ -393,7 +393,7 @@
   "proofUploading": "Uploading Proof...",
   "proofSubmitted": "Proof submitted! Waiting for showroom confirmation.",
   "proofSubmittedOffline": "Proof submitted! Receipt will sync when you are back online.",
-  "proofPrivateNote": "Proof is uploaded to private storage. The showroom checks it and confirms your booking — there is no fixed waiting time.",
+  "proofPrivateNote": "Proof is uploaded to private storage. The showroom checks it and confirms your booking, and you will be notified in the app when it is confirmed. If you do not hear back, message the shop on WhatsApp.",
   "passTitle": "Pickup Countdown Pass",
   "passDoneHome": "Done • Back to Home",
   "passRentalVehicle": "Rental Vehicle",
@@ -417,7 +417,7 @@
   "pkgDailyDesc": "Full day flexibility with grace return period",
   "pkgWeeklyDesc": "Seven days, one price",
   "tripFixedRoutes": "Fixed routes from this shop",
-  "tripTrackerNote": "Tracker clearance required — the shop confirms it before pickup.",
+  "tripTrackerNote": "Tracker clearance required — the shop confirms it before pickup. If clearance is refused, the shop contacts you before pickup.",
   "advanceNoticeTitle": "Advance & Verification Notice",
   "pickerPickupDate": "Pickup Date",
   "pickerPickupSchedule": "Pickup Schedule",
@@ -539,7 +539,7 @@
   "vehicleWithDriverUrdu": "ڈرائیور کے ساتھ",
   "roleCustomerUrdu": "گاڑی کرایہ پر لیں",
   "roleOwnerUrdu": "شوروم رجسٹر کریں",
-  "advanceNoticeWithDriver": "• Chauffeur arrives at showroom/pickup point 15 mins early.\n• Advance payment confirms vehicle lock and fuel reservation.\n• Outstation overnight stay: Rs. 1,500/night driver food & lodge.",
+  "advanceNoticeWithDriver": "• Chauffeur arrives at showroom/pickup point 15 mins early.\n• Advance payment confirms vehicle lock and fuel reservation.\n• Outstation overnight stay: {nightStay}/night driver food & lodge.",
   "advanceNoticeSelfDrive": "• Original NADRA CNIC & valid Driving License required at handover.\n• Advance confirms vehicle booking lock with showroom.\n• Refundable security deposit collected digitally or in cash at handover.",
   "ticketShowCode": "Show this code at the counter for handover — it opens your booking and its agreement.",
   "bookingsEmptyForTab": "No {tab} bookings found.",
@@ -687,14 +687,6 @@
       }
     }
   },
-  "vehicleDepositCnic": "Security Deposit: Rs. {amount} + Original NADRA CNIC guarantee required at pickup",
-  "@vehicleDepositCnic": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "vehicleDriverPackageDetail": "Verified chauffeur included • Overtime: Rs. {overtime}/hr • Outstation: +Rs. {outstation}/day",
   "@vehicleDriverPackageDetail": {
     "placeholders": {
@@ -728,7 +720,7 @@
       }
     }
   },
-  "bookNowWithRate": "Book Now (Rs. {rate})",
+  "bookNowWithRate": "Book Now ({rate}/day)",
   "@bookNowWithRate": {
     "placeholders": {
       "rate": {
@@ -1178,20 +1170,6 @@
       },
       "esc": {
         "type": "String"
-      }
-    }
-  },
-  "ticketPickupDate": "Pickup: {day}/{month}/{year}",
-  "@ticketPickupDate": {
-    "placeholders": {
-      "day": {
-        "type": "int"
-      },
-      "month": {
-        "type": "int"
-      },
-      "year": {
-        "type": "int"
       }
     }
   },
@@ -2176,14 +2154,6 @@
       }
     }
   },
-  "returnCustomerOwes": "Customer owes Rs. {amount}",
-  "@returnCustomerOwes": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "returnFinalizeFailed": "Finalizing return failed: {error}",
   "@returnFinalizeFailed": {
     "placeholders": {
@@ -2341,14 +2311,6 @@
     }
   },
   "paymentVerificationConfirming": "Confirming…",
-  "paymentVerificationConfirmButton": "Confirm Payment — Rs. {amount}",
-  "@paymentVerificationConfirmButton": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "manualBookingTitle": "Walk-in Booking Wizard",
   "manualBookingSubtitle": "Showroom Counter Direct Issue",
   "manualBookingCustomerSection": "Customer KYC Details",
@@ -5446,5 +5408,250 @@
   "admin2_evidenceTitle": "Evidence",
   "close": "Close",
   "admin2_teamResetTotpTooltip": "Reset two-factor authentication",
-  "admin2_teamRevokeTooltip": "Revoke admin role"
+  "admin2_teamRevokeTooltip": "Revoke admin role",
+  "@kycWizardMissingItem": {
+    "placeholders": {
+      "item": {
+        "type": "String"
+      }
+    }
+  },
+  "extraChargeLoading": "Loading saved extra charges…",
+  "kycWizardDateFormatError": "Enter the date as DD.MM.YYYY",
+  "kycWizardMissingItem": "{item} is missing — please add it to continue",
+  "kycWizardSignatureMissing": "Please draw your signature before continuing",
+  "kycWizardTermsMissing": "Please agree to the rental terms before continuing",
+  "manualBookingLoadingRoutes": "Loading fixed routes…",
+  "mediaCameraError": "Could not open the camera. Check the camera permission and try again.",
+  "passNotValid": "This pass is not valid for pickup",
+  "@advanceNoticeWithDriver": {
+    "placeholders": {
+      "nightStay": {
+        "type": "String"
+      }
+    }
+  },
+  "@disputeLastUpdated": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "@returnAmountOwedByCustomer": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "@returnOwedCollected": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "method": {
+        "type": "String"
+      }
+    }
+  },
+  "@tripOutCityEstimate": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      },
+      "estimate": {
+        "type": "String"
+      },
+      "km": {
+        "type": "int"
+      }
+    }
+  },
+  "contractSignAgreementHint": "Add the guarantor signature to sign.",
+  "depositRefundTerms": "Deposit refunded after return inspection, minus damage and excess-km charges.",
+  "disputeLastUpdated": "Last updated {date}",
+  "handoverBalanceDue": "Balance due at handover",
+  "handoverBalanceMethodRequired": "Choose how the balance was collected, or Not yet, before certifying.",
+  "handoverBalanceNotYet": "Not yet",
+  "handoverFuelRequired": "Select the fuel level before certifying.",
+  "manualBookingLoadingVehicles": "Loading vehicles…",
+  "profileLoadFailed": "Could not load your profile. Check your connection and try again.",
+  "proofAdvanceCopied": "Advance amount copied to clipboard",
+  "proofCopyAdvance": "Copy advance amount",
+  "proofMessageShop": "Message shop on WhatsApp",
+  "returnAmountOwedByCustomer": "Amount owed by customer: {amount}",
+  "returnCloseBookingHint": "Record the refund to close the booking.",
+  "returnFinalizeFailedGeneric": "Could not finalize the return. Please try again.",
+  "returnOwedCollected": "Owed amount collected: {amount} via {method}",
+  "tripOutCityEstimate": "≈ {estimate} for {days} days × {km} km/day",
+  "@shopFromPerDay": {
+    "placeholders": {
+      "rate": {
+        "type": "String"
+      }
+    }
+  },
+  "@shops_radiusChip": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "shopFromPerDay": "from {rate}/day",
+  "shops_loadFailed": "Could not load the shops.",
+  "shops_radiusChip": "Radius: {km} km",
+  "shops_searchCities": "Search cities",
+  "@dashboardNeedsReviewSplit": {
+    "placeholders": {
+      "newCount": {
+        "type": "int"
+      },
+      "proofCount": {
+        "type": "int"
+      }
+    }
+  },
+  "@dashboardOldestWait": {
+    "placeholders": {
+      "wait": {
+        "type": "String"
+      }
+    }
+  },
+  "@priorTripsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@requestsOldestProofWait": {
+    "placeholders": {
+      "wait": {
+        "type": "String"
+      }
+    }
+  },
+  "@requestsWaitingTime": {
+    "placeholders": {
+      "wait": {
+        "type": "String"
+      }
+    }
+  },
+  "@triageTrustScore": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "@waitDurationDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      },
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "@waitDurationHm": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "@waitDurationMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "dashboardNeedsReviewSplit": "{newCount} new · {proofCount} proof",
+  "dashboardNeedsReviewTitle": "Needs review",
+  "dashboardOldestWait": "Oldest wait: {wait}",
+  "dashboardQuickRequests": "Requests",
+  "fleetOutCityFixedRoute": "Out-city: fixed route",
+  "fleetOutCityPerKm": "Out-city: per-km",
+  "homeSignInButton": "Sign in",
+  "priorTripsCount": "{count} prior trips",
+  "requestsOldestProofWait": "Oldest proof wait: {wait}",
+  "requestsWaitingTime": "Waiting {wait}",
+  "triageKycMissing": "KYC missing",
+  "triageKycPending": "KYC pending",
+  "triageKycRejected": "KYC rejected",
+  "triageKycVerified": "KYC verified",
+  "triageTrustScore": "Trust {score}/5",
+  "waitDurationDays": "{days}d {hours}h",
+  "waitDurationHm": "{hours}h {minutes}m",
+  "waitDurationMinutes": "{minutes}m",
+  "carPnlLoadError": "Could not load this car's profit and loss. Check your connection and try again.",
+  "cashClosingLoadError": "Could not load cash closing. Check your connection and try again.",
+  "customerStatementLoadError": "Could not load this customer's statement. Check your connection and try again.",
+  "disputesLoadError": "Could not load disputes. Check your connection and try again.",
+  "financeCategoriesLoadError": "Could not load finance categories. Check your connection and try again.",
+  "financeLoadError": "Could not load your finances. Check your connection and try again.",
+  "financeSettingsLoadError": "Could not load finance settings. Check your connection and try again.",
+  "reportsLoadError": "Could not load reports. Check your connection and try again.",
+  "staffRolesLoadError": "Could not load staff roles. Check your connection and try again.",
+  "ticketPickupDate": "Pickup: {date}",
+  "@ticketPickupDate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "whatsappCreditsLoadError": "Could not load WhatsApp credits. Check your connection and try again.",
+  "whatsappHistoryLoadError": "Could not load WhatsApp history. Check your connection and try again.",
+  "currencyPrefix": "Rs. ",
+  "pricingHintKmPerDay": "{km} km / day",
+  "@pricingHintKmPerDay": {
+    "placeholders": {
+      "km": {
+        "type": "int"
+      }
+    }
+  },
+  "pricingHintPerHour": "{amount} / hour",
+  "@pricingHintPerHour": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "paymentVerificationConfirmButton": "Confirm Payment — {amount}",
+  "@paymentVerificationConfirmButton": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "returnCustomerOwes": "Customer owes {amount}",
+  "@returnCustomerOwes": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "vehicleDepositCnic": "Security Deposit: {amount} + Original NADRA CNIC guarantee required at pickup",
+  "@vehicleDepositCnic": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "returnOwedRecordFailed": "Could not record the owed amount collection. Please try again."
 }

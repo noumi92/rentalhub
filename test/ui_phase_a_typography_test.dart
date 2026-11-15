@@ -72,6 +72,37 @@ void main() {
       expect(light.labelSmall?.height, closeTo(14 / 11, 0.01));
     });
 
+    test('dark slots match §4.5 (same sizes/weights/heights as light)', () {
+      // Audit 2026-11-15 DS-7: the scale was only pinned for light —
+      // a dark-only drift (e.g. a heavier dark title) passed silently.
+      expect(dark.displayLarge?.fontSize, 28);
+      expect(dark.displayLarge?.fontWeight, FontWeight.w700);
+      expect(dark.displayLarge?.height, closeTo(34 / 28, 0.01));
+      expect(dark.titleLarge?.fontSize, 20);
+      expect(dark.titleLarge?.fontWeight, FontWeight.w600);
+      expect(dark.titleLarge?.height, closeTo(26 / 20, 0.01));
+      expect(dark.titleMedium?.fontSize, 16);
+      expect(dark.titleMedium?.fontWeight, FontWeight.w600);
+      expect(dark.titleMedium?.height, closeTo(22 / 16, 0.01));
+      expect(dark.bodyLarge?.fontSize, 15);
+      expect(dark.bodyLarge?.fontWeight, FontWeight.w400);
+      expect(dark.bodyLarge?.height, closeTo(22 / 15, 0.01));
+      expect(dark.bodyMedium?.fontSize, 13);
+      expect(dark.bodyMedium?.fontWeight, FontWeight.w400);
+      expect(dark.bodyMedium?.height, closeTo(18 / 13, 0.01));
+      expect(dark.labelSmall?.fontSize, 11);
+      expect(dark.labelSmall?.fontWeight, FontWeight.w500);
+      expect(dark.labelSmall?.height, closeTo(14 / 11, 0.01));
+    });
+
+    test('horizontal screen padding standard is 16 (DS-7)', () {
+      // Audit 2026-11-15 DS-7: 16 re-specced as the one horizontal
+      // standard (was AppDimensions.paddingHorizontal 20, used nowhere
+      // except the curved header, against 71 ad-hoc 16s). The 71 ad-hoc
+      // sites are NOT migrated in this pass — the number is one now.
+      expect(AppDimensions.paddingHorizontal, 16);
+    });
+
     test('companion slots exist (titleSmall, bodySmall, labelLarge/Medium)',
         () {
       expect(light.titleSmall?.fontSize, 14);

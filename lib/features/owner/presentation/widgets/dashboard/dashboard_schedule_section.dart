@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../../core/routing/route_names.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../bookings/domain/entities/booking_entity.dart';
 import '../../../../../core/theme/card_decoration.dart';
@@ -85,35 +87,48 @@ class DashboardScheduleSection extends StatelessWidget {
   Widget _row(BuildContext context, String label, BookingEntity b) {
     final name = b.customerName ?? '';
     final vehicle = b.vehicleName ?? b.vehiclePlate ?? '';
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
+    // PW-19 (UI/UX audit 2026-11-15): schedule rows open the booking
+    // detail — the row used to be inert, so the owner had to re-find
+    // the booking under Requests.
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Material(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: AppCardDecoration.shadow(context)
-      ),
-      child: Row(
-        children: [
-          Icon(Icons.schedule_rounded,
-              color: Theme.of(context).colorScheme.primary),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: () => context.push(RouteNames.ownerRequestsDetail
+              .replaceFirst(':id', b.bookingId)),
+          child: Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: AppCardDecoration.shadow(context),
+            ),
+            child: Row(
               children: [
-                Text(label,
-                    style: Theme.of(context).textTheme.bodyMedium),
-                Text(
-                  [name, vehicle].where((s) => s.isNotEmpty).join(' — '),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.labelSmall,
+                Icon(Icons.schedule_rounded,
+                    color: Theme.of(context).colorScheme.primary),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(label,
+                          style: Theme.of(context).textTheme.bodyMedium),
+                      Text(
+                        [name, vehicle].where((s) => s.isNotEmpty).join(' — '),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.labelSmall,
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }

@@ -40,6 +40,11 @@ class HandoverLocalDataSource {
         'cnic': handover.cnicNumber,
         'vehicle_details': handover.vehicleDetails,
         'total_amount': handover.totalAmount,
+        // Audit 2026-11-15 PW-16: the handover balance rides the
+        // offline queue with the record (old records lack the keys
+        // and read back as null).
+        'balance_due_pkr': handover.balanceDuePkr,
+        'balance_payment_method': handover.balancePaymentMethod,
         'photo_front_url': handover.photoFrontUrl,
         'photo_back_url': handover.photoBackUrl,
         'photo_left_url': handover.photoLeftUrl,
@@ -69,6 +74,8 @@ class HandoverLocalDataSource {
       cnicNumber: d['cnic'],
       vehicleDetails: d['vehicle_details'],
       totalAmount: d['total_amount'],
+      balanceDuePkr: (d['balance_due_pkr'] as num?)?.toInt(),
+      balancePaymentMethod: d['balance_payment_method'] as String?,
       photoFrontUrl: d['photo_front_url'] as String?,
       photoBackUrl: d['photo_back_url'] as String?,
       photoLeftUrl: d['photo_left_url'] as String?,

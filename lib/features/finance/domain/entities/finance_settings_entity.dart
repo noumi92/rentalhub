@@ -31,6 +31,7 @@ class FinanceSettingsEntity extends Equatable {
   });
 
   FinanceSettingsEntity copyWith({
+    String? shopId,
     double? taxPercent,
     double? serviceChargePercent,
     bool? paymentCash,
@@ -40,7 +41,7 @@ class FinanceSettingsEntity extends Equatable {
     bool? autoSendReceipt,
   }) {
     return FinanceSettingsEntity(
-      shopId: shopId,
+      shopId: shopId ?? this.shopId,
       currency: currency,
       taxPercent: taxPercent ?? this.taxPercent,
       serviceChargePercent: serviceChargePercent ?? this.serviceChargePercent,

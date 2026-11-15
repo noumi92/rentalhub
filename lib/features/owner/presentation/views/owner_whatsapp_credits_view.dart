@@ -54,7 +54,8 @@ class _OwnerWhatsappCreditsViewState
           _settings = settings;
         });
       }
-    } catch (_) {
+    } catch (e) {
+      debugPrint('OwnerWhatsappCreditsView load failed: $e'); // Audit 2026-11-15 DS-6: raw error logged for diagnostics; the user only ever sees the localized per-screen message.
       if (mounted) setState(() => _hasError = true);
     }
   }
@@ -148,7 +149,7 @@ class _OwnerWhatsappCreditsViewState
             Expanded(
               child: _hasError
                   ? AppErrorState(
-                      message: l10n.dashboardLoadError, onRetry: _load)
+                      message: l10n.whatsappCreditsLoadError, onRetry: _load)
                   : _balance == null
                       ? const AppLoadingState()
                       : ListView(

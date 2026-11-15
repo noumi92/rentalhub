@@ -28,6 +28,15 @@ class HandoverEntity extends Equatable {
   final String? vehicleDetails;
   final int? totalAmount;
 
+  /// Audit 2026-11-15 PW-16: the balance due at handover (total −
+  /// advance paid) and how it was collected ('cash' | 'jazzcash' |
+  /// 'easypaisa' | 'bank_transfer' | 'not_yet'). First-class fields
+  /// on the handover record — the view used to merge them onto the
+  /// agreement doc best-effort, bypassing the offline queue, so an
+  /// offline handover lost the balance record entirely.
+  final int? balanceDuePkr;
+  final String? balancePaymentMethod;
+
   /// Audit item 4 (O19 1/2 + 2/2): the exterior photos taken at
   /// handover, the documents handed to the customer, the accessories
   /// in the car, and whether the keys were handed over. All four
@@ -59,6 +68,8 @@ class HandoverEntity extends Equatable {
     this.cnicNumber,
     this.vehicleDetails,
     this.totalAmount,
+    this.balanceDuePkr,
+    this.balancePaymentMethod,
     this.photoFrontUrl,
     this.photoBackUrl,
     this.photoLeftUrl,
@@ -72,6 +83,8 @@ class HandoverEntity extends Equatable {
     String? agreementPdfUrl,
     bool? isSynced,
     String? agreementPdfB64,
+    int? balanceDuePkr,
+    String? balancePaymentMethod,
     String? photoFrontUrl,
     String? photoBackUrl,
     String? photoLeftUrl,
@@ -92,6 +105,9 @@ class HandoverEntity extends Equatable {
       customerSignatureB64: customerSignatureB64,
       ownerSignatureB64: ownerSignatureB64,
       agreementPdfB64: agreementPdfB64 ?? this.agreementPdfB64,
+      balanceDuePkr: balanceDuePkr ?? this.balanceDuePkr,
+      balancePaymentMethod:
+          balancePaymentMethod ?? this.balancePaymentMethod,
       shopId: shopId,
       shopName: shopName,
       customerName: customerName,
@@ -127,6 +143,8 @@ class HandoverEntity extends Equatable {
         cnicNumber,
         vehicleDetails,
         totalAmount,
+        balanceDuePkr,
+        balancePaymentMethod,
         photoFrontUrl,
         photoBackUrl,
         photoLeftUrl,

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../../../core/utils/shop_id_resolution.dart';
 import '../../../fleet/data/datasources/fleet_remote_data_source.dart';
 import 'subscription_plans.dart';
 
@@ -88,16 +89,24 @@ class SubscriptionDataSource {
       value is Timestamp ? value.toDate() : null;
 
   Future<ShopSubscriptionState> getShopSubscription(String shopId) async {
+    // Shop-id linking (2026-11-15): the shops document is
+    // `shop_<uid>`, so reading `shops/<bare UID>` always missed and
+    // every shop read as free. Read the canonical doc; requests
+    // match both id forms via candidates.
     final fs = _resolvedFirestore;
     if (fs == null) return const ShopSubscriptionState(tier: 'free');
     try {
-      final doc = await fs.collection('shops').doc(shopId).get();
+      final ids = await candidateShopIds(fs, shopId);
+      final doc = await fs
+          .collection('shops')
+          .doc(await canonicalShopId(fs, shopId))
+          .get();
       final data = doc.data() ?? {};
       String? pendingTier;
       try {
         final pending = await fs
             .collection('subscription_requests')
-            .where('shopId', isEqualTo: shopId)
+            .where('shopId', whereIn: ids)
             .where('status', isEqualTo: 'pending')
             .orderBy('createdAt', descending: true)
             .limit(1)
@@ -127,9 +136,10 @@ class SubscriptionDataSource {
     final fs = _resolvedFirestore;
     if (fs == null) return const [];
     try {
+      final ids = await candidateShopIds(fs, shopId);
       final snap = await fs
           .collection('subscription_requests')
-          .where('shopId', isEqualTo: shopId)
+          .where('shopId', whereIn: ids)
           .orderBy('createdAt', descending: true)
           .get();
       return snap.docs
@@ -150,8 +160,9 @@ class SubscriptionDataSource {
   }) async {
     final fs = _resolvedFirestore;
     if (fs == null) throw StateError('Firestore is not available.');
+    final canonical = await canonicalShopId(fs, shopId);
     await fs.collection('subscription_requests').add({
-      'shopId': shopId,
+      'shopId': canonical,
       'tier': tier,
       'billingPeriod': billingPeriod,
       'price': price,
@@ -183,9 +194,10 @@ class SubscriptionDataSource {
     final fs = _resolvedFirestore;
     if (fs == null) return 0;
     try {
+      final ids = await candidateShopIds(fs, shopId);
       final snap = await fs
           .collection('staff')
-          .where('shopId', isEqualTo: shopId)
+          .where('shopId', whereIn: ids)
           .get();
       return snap.docs.length;
     } catch (_) {

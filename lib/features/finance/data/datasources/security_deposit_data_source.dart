@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../../../core/data/offline_sync_queue.dart';
+import '../../../../core/utils/shop_id_resolution.dart';
 
 import '../../domain/entities/security_deposit_entity.dart';
 import '../models/security_deposit_model.dart';
@@ -82,12 +83,17 @@ class SecurityDepositDataSource {
   /// Phase B (H4): every deposit the shop holds, for the finance
   /// summary — collected, released and deducted.
   Future<List<SecurityDepositEntity>> getShopDeposits(String shopId) async {
+    // Shop-id linking (2026-11-15): deposits are collected under the
+    // booking's shop id (the canonical doc id) while this read used
+    // to query the bare UID — the finance summary missed every
+    // deposit. Match both forms.
+    final ids = await candidateShopIds(_resolvedFirestore, shopId);
     final fs = _resolvedFirestore;
     if (fs != null) {
       try {
         final snap = await fs
             .collection('security_deposits')
-            .where('shopId', isEqualTo: shopId)
+            .where('shopId', whereIn: ids)
             .get();
         for (final d in snap.docs) {
           final model = SecurityDepositModel.fromMap(d.data());
@@ -95,7 +101,7 @@ class SecurityDepositDataSource {
         }
       } catch (_) {}
     }
-    final mine = _inMemory.values.where((d) => d.shopId == shopId).toList()
+    final mine = _inMemory.values.where((d) => ids.contains(d.shopId)).toList()
       ..sort((a, b) =>
           (b.collectedAt ?? DateTime.fromMillisecondsSinceEpoch(0))
               .compareTo(
@@ -115,11 +121,12 @@ class SecurityDepositDataSource {
   }) async {
     final existing = await getByBookingId(bookingId);
     if (existing != null) return existing;
+    final canonical = await canonicalShopId(_resolvedFirestore, shopId);
     final model = SecurityDepositModel(
       depositId: bookingId,
       bookingId: bookingId,
       customerId: customerId,
-      shopId: shopId,
+      shopId: canonical,
       amount: amount,
       status: 'collected',
       collectedAt: collectedAt ?? DateTime.now(),

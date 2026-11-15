@@ -154,7 +154,6 @@ class _CustomerDisputeViewState extends State<CustomerDisputeView> {
                     ),
                     const SizedBox(height: 20),
                     const MyDisputesList(),
-                    const SizedBox(height: 20),
                   ],
                 ),
               ),

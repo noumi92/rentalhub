@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+
+import '../../../../core/utils/shop_id_resolution.dart';
 import '../../domain/entities/blacklist_entity.dart';
 import '../models/blacklist_model.dart';
 
@@ -72,9 +74,14 @@ class BlacklistRemoteDataSource {
   }) async {
     final id =
         'BLK-${DateTime.now().millisecondsSinceEpoch}-${_idSeq++}';
+    // Shop-id linking (2026-11-15): reports must carry the shop doc
+    // id so the owner inbox (candidate read below) and the admin
+    // tribunal agree on the reporter.
+    final canonical =
+        await canonicalShopId(_resolvedFirestore, reportedByShopId);
     final entity = BlacklistEntity(
       blacklistId: id,
-      reportedByShopId: reportedByShopId,
+      reportedByShopId: canonical,
       cnicNumber: cnicNumber,
       phoneNumber: phoneNumber,
       reasonCategory: reasonCategory,
@@ -193,9 +200,10 @@ class BlacklistRemoteDataSource {
 
   /// Phase B (C4): the reports this shop filed, newest first.
   Future<List<BlacklistEntity>> getShopReports(String shopId) async {
+    final ids = await candidateShopIds(_resolvedFirestore, shopId);
     final all = await _readAll();
     final mine =
-        all.where((r) => r.reportedByShopId == shopId).toList();
+        all.where((r) => ids.contains(r.reportedByShopId)).toList();
     mine.sort((a, b) => (b.reportedAt ?? DateTime(2000))
         .compareTo(a.reportedAt ?? DateTime(2000)));
     return mine;

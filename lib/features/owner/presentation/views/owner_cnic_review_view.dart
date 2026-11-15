@@ -170,7 +170,7 @@ class _OwnerCnicReviewViewState extends State<OwnerCnicReviewView> {
       {TextInputType keyboard = TextInputType.text, String? hint, String? Function(String?)? validator, List<TextInputFormatter>? formatters}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
-      child: TextFormField(controller: controller, keyboardType: keyboard, inputFormatters: formatters, validator: validator, decoration: InputDecoration(labelText: label, hintText: hint, border: const OutlineInputBorder(), filled: true, fillColor: Theme.of(context).colorScheme.surfaceContainerHighest)),
+      child: TextFormField(controller: controller, keyboardType: keyboard, inputFormatters: formatters, validator: validator, decoration: InputDecoration(labelText: label, hintText: hint, filled: true, fillColor: Theme.of(context).colorScheme.surfaceContainerHighest)),
     );
   }
 

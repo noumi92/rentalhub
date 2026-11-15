@@ -6,6 +6,7 @@ import '../../../../core/data/sync_engine.dart';
 import '../../../../core/data/sync_queue_entry.dart';
 import '../../../../core/error/exceptions.dart';
 import '../../../../core/utils/money_format.dart';
+import '../../../../core/utils/shop_id_resolution.dart';
 import '../../../blacklist/data/datasources/blacklist_remote_data_source.dart';
 import '../../../notifications/data/datasources/notification_data_source.dart';
 import '../../domain/entities/booking_entity.dart';
@@ -80,6 +81,13 @@ class BookingRemoteDataSource {
       return null;
     }
   }
+
+  /// Shop-id mismatch (2026-11-15, rulebook D12): the shop DOCUMENT
+  /// id a new booking for this shop must carry. The walk-in flow
+  /// resolves the signed-in owner's bare UID through this before
+  /// writing; the customer flow already writes the document id.
+  Future<String> canonicalShopIdFor(String shopId) =>
+      canonicalShopId(_resolvedFirestore, shopId);
 
   /// Phase B (G2): owner notifications are best-effort — a failed
   /// write must never fail the booking it describes.
@@ -621,19 +629,28 @@ class BookingRemoteDataSource {
   /// 'payment_submitted'). Firestore snapshots when available; the
   /// in-memory fallback list when offline or in tests (no Firebase
   /// app), so the badge hides instead of throwing.
-  Stream<List<BookingEntity>> streamShopBookings(String shopId) {
+  ///
+  /// Shop-id mismatch (2026-11-15, rulebook D12): the owner signs in
+  /// with the bare UID while customer bookings carry the shop
+  /// DOCUMENT id (`shop_<uid>`), so the query matches every
+  /// candidate id — the same resolution the fleet layer already
+  /// uses. Async generator: the candidates resolve before the
+  /// snapshots subscription starts.
+  Stream<List<BookingEntity>> streamShopBookings(String shopId) async* {
+    final ids = await candidateShopIds(_resolvedFirestore, shopId);
     final fs = _resolvedFirestore;
     if (fs != null) {
-      return fs
+      yield* fs
           .collection('bookings')
-          .where('shopId', isEqualTo: shopId)
+          .where('shopId', whereIn: ids)
           .snapshots()
           .map((snap) => snap.docs
               .map((d) => BookingModel.fromMap(d.data(), d.id))
               .toList());
+      return;
     }
-    return _liveFallback(() => _inMemoryFallback.values
-        .where((b) => b.shopId == shopId)
+    yield* _liveFallback(() => _inMemoryFallback.values
+        .where((b) => ids.contains(b.shopId))
         .toList());
   }
 
@@ -701,12 +718,16 @@ class BookingRemoteDataSource {
   }
 
   Future<List<BookingEntity>> getShopBookings(String shopId) async {
+    // Shop-id mismatch (2026-11-15, rulebook D12): match every
+    // candidate id, like [streamShopBookings] — customer bookings
+    // carry the shop document id, walk-ins the bare UID.
+    final ids = await candidateShopIds(_resolvedFirestore, shopId);
     final fs = _resolvedFirestore;
     if (fs != null) {
       try {
         final snap = await fs
             .collection('bookings')
-            .where('shopId', isEqualTo: shopId)
+            .where('shopId', whereIn: ids)
             .get();
         if (snap.docs.isNotEmpty) {
           final list = snap.docs
@@ -717,7 +738,7 @@ class BookingRemoteDataSource {
       } catch (_) {}
     }
     final list =
-        _inMemoryFallback.values.where((b) => b.shopId == shopId).toList();
+        _inMemoryFallback.values.where((b) => ids.contains(b.shopId)).toList();
     return _mergePendingInto(list);
   }
 

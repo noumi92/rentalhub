@@ -146,7 +146,6 @@ class _OnboardingRoleViewState extends State<OnboardingRoleView> {
                             onTap: () =>
                                 setState(() => _selectedRole = 'owner'),
                           ),
-                          const SizedBox(height: 20),
                         ],
                       ),
                     ),

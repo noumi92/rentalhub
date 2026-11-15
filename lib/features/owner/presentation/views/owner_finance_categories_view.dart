@@ -17,7 +17,7 @@ import '../../../finance/domain/entities/finance_category_entity.dart';
 class OwnerFinanceCategoriesView extends StatefulWidget {
   final String shopId;
 
-  const OwnerFinanceCategoriesView({super.key, this.shopId = 'shop-1'});
+  const OwnerFinanceCategoriesView({super.key, required this.shopId});
 
   @override
   State<OwnerFinanceCategoriesView> createState() =>
@@ -54,7 +54,8 @@ class _OwnerFinanceCategoriesViewState
           _expense = expense;
         });
       }
-    } catch (_) {
+    } catch (e) {
+      debugPrint('OwnerFinanceCategoriesView load failed: $e'); // Audit 2026-11-15 DS-6: raw error logged for diagnostics; the user only ever sees the localized per-screen message.
       if (mounted) setState(() => _hasError = true);
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -176,7 +177,7 @@ class _OwnerFinanceCategoriesViewState
                   ? const AppLoadingState()
                   : _hasError
                       ? AppErrorState(
-                          message: l10n.dashboardLoadError, onRetry: _load)
+                          message: l10n.financeCategoriesLoadError, onRetry: _load)
                       : SingleChildScrollView(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 16, vertical: 14),

@@ -27,10 +27,9 @@ class VehicleRatesStepWidget extends StatelessWidget {
   final ValueChanged<bool> onToggleMonthly;
   final TextEditingController rateMonthlyController;
 
-  // Audit §5 finish (O07): the Out-City day rate. The In-City day
-  // rate IS the 24h package rate, so its row below reuses
-  // [rate24HoursController] — one rate, shown in both places. Typing
-  // the full-day rate prefills the out-city field while it is empty.
+  // Audit §5 finish (O07): the Out-City day rate. The In-City day rate IS the 24h
+  // package rate, so its row below reuses [rate24HoursController] — one rate,
+  // shown in both places. Typing the full-day rate prefills the out-city field while it is empty.
   final TextEditingController outCityDayRateController;
 
   final bool supportSelfDrive;
@@ -132,8 +131,7 @@ class VehicleRatesStepWidget extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    // Overflow hardening: the text column must flex —
-                    // the hint is ~620px wide at 360px/1.35× otherwise.
+                    // Overflow hardening: the text column must flex (hint ~620px wide at 360px/1.35× otherwise).
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -178,7 +176,8 @@ class VehicleRatesStepWidget extends StatelessWidget {
                           textAlign: TextAlign.end,
                           style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.onSurface),
                           decoration: InputDecoration(
-                            prefixText: 'Rs. ',
+                            // Audit 2026-11-15 DS-10: localized prefix.
+                            prefixText: l10n.currencyPrefix,
                             prefixStyle: const TextStyle(fontWeight: FontWeight.w500),
                             suffixText: l10n.addVehiclePerDaySuffix,
                             suffixStyle: Theme.of(context).textTheme.labelSmall,
@@ -234,9 +233,7 @@ class VehicleRatesStepWidget extends StatelessWidget {
                           dropdownColor: Theme.of(context).colorScheme.surface,
                           value: fuelPolicy,
                           items: fuelPolicies.map((f) => DropdownMenuItem(value: f, child: Text(f, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500)))).toList(),
-                          onChanged: (v) {
-                            if (v != null) onFuelPolicyChanged(v);
-                          },
+                          onChanged: (v) { if (v != null) onFuelPolicyChanged(v); },
                         ),
                       ),
                     ),
@@ -273,7 +270,8 @@ class VehicleRatesStepWidget extends StatelessWidget {
               textAlign: TextAlign.end,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: isEnabled ? Theme.of(context).colorScheme.onSurface : Theme.of(context).colorScheme.onSurfaceVariant),
               decoration: InputDecoration(
-                prefixText: 'Rs. ',
+                // Audit 2026-11-15 DS-10: localized currency prefix.
+                prefixText: AppLocalizations.of(context)!.currencyPrefix,
                 prefixStyle: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500, color: isEnabled ? Theme.of(context).colorScheme.onSurface : Theme.of(context).colorScheme.onSurfaceVariant),
                 filled: true,
                 fillColor: isEnabled ? Theme.of(context).colorScheme.surfaceContainerHighest : Theme.of(context).colorScheme.surfaceContainer,
@@ -311,7 +309,8 @@ class VehicleRatesStepWidget extends StatelessWidget {
             textAlign: TextAlign.end,
             style: Theme.of(context).textTheme.bodyMedium,
             decoration: InputDecoration(
-              prefixText: 'Rs. ',
+              // Audit 2026-11-15 DS-10: localized currency prefix.
+              prefixText: AppLocalizations.of(context)!.currencyPrefix,
               prefixStyle: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500, color: Theme.of(context).colorScheme.onSurface),
               suffixText: suffix,
               suffixStyle: Theme.of(context).textTheme.labelSmall,

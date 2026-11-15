@@ -204,7 +204,8 @@ class AppTheme {
 
   // Button labels (user decision 2026-11-09): regular weight, never bold.
   // Primary (elevated/filled) labels are 14sp; secondary
-  // (outlined/text) labels are 12sp. `fontSize` picks the tier.
+  // (outlined/text) labels are 13sp (audit 2026-11-15 DS-8: 12sp is
+  // off-scale — §4.5 has no 12sp step). `fontSize` picks the tier.
   static ButtonStyle _buttonStyle({
     required Color backgroundColor,
     required Color foregroundColor,
@@ -265,7 +266,12 @@ class AppTheme {
         primary: AppColors.primary,
         onPrimary: Colors.white,
         primaryContainer: AppColors.primaryContainer,
-        secondary: AppColors.secondary,
+        // Audit 2026-11-15 AC-10: `secondary` #F95700 with white
+        // onSecondary is 3.29:1 — the scheme's secondary is the
+        // orangeFill #C2410C instead (white on it is 5.18:1), so any
+        // widget reading onSecondary as text inherits a passing pair.
+        // #F95700 stays the brand / large-fill token in AppColors.
+        secondary: AppColors.orangeFill,
         onSecondary: Colors.white,
         secondaryContainer: AppColors.secondaryContainer,
         surface: AppColors.surfaceLight,
@@ -273,7 +279,10 @@ class AppTheme {
         onSurfaceVariant: AppColors.onSurfaceVariantLight,
         surfaceContainer: AppColors.surfaceElevated,
         surfaceContainerHighest: AppColors.surfaceContainerHighestLight,
-        error: AppColors.accentDanger,
+        // Audit 2026-11-15 AC-10: `error` was accentDanger #EF4444
+        // with white onError (3.76:1). errorDark #DC2626 with white
+        // onError is 4.83:1.
+        error: AppColors.errorDark,
         onError: Colors.white,
       ),
       textTheme: _textTheme(
@@ -317,14 +326,14 @@ class AppTheme {
           backgroundColor: Colors.transparent,
           foregroundColor: AppColors.primary,
           borderColor: AppColors.primary,
-          fontSize: 12,
+          fontSize: 13,
         ),
       ),
       textButtonTheme: TextButtonThemeData(
         style: _buttonStyle(
           backgroundColor: Colors.transparent,
           foregroundColor: AppColors.primary,
-          fontSize: 12,
+          fontSize: 13,
         ),
       ),
       // Card rework (2026-11-10): cards lift off the screen on a
@@ -343,7 +352,11 @@ class AppTheme {
       ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: AppColors.primary,
-        indicatorColor: AppColors.secondary,
+        // Audit 2026-11-15 AC-1: white on `secondary` #F95700 is
+        // 3.29:1 (light) / 2.81:1 (dark) — the selected icon failed
+        // even the 3:1 non-text threshold in dark. orangeFill
+        // #C2410C with the white icon is 5.18:1 in both modes.
+        indicatorColor: AppColors.orangeFill,
         iconTheme: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
             return const IconThemeData(color: Colors.white, size: 24);
@@ -392,17 +405,23 @@ class AppTheme {
       ),
       chipTheme: ChipThemeData(
         backgroundColor: AppColors.surfaceLight,
-        selectedColor: AppColors.primaryContainer,
+        // Audit 2026-11-15 DS-1: ONE selected-chip spec — navy fill
+        // + white label (white on primary #1B1E5C is 15.14:1). The
+        // pale primaryContainer selected state was the weakest of
+        // three dialects; per-file selectedColor overrides are gone.
+        selectedColor: AppColors.primary,
         disabledColor: AppColors.surfaceElevated,
+        // Audit 2026-11-15 DS-8: the 12 sp label is off-scale (§4.5:
+        // 28/20/16/15/13/11) — labelSmall 11.
         labelStyle: const TextStyle(
-          fontSize: 12,
+          fontSize: 11,
           fontWeight: FontWeight.w500,
           color: AppColors.onSurfaceLight,
         ),
         secondaryLabelStyle: const TextStyle(
-          fontSize: 12,
+          fontSize: 11,
           fontWeight: FontWeight.w600,
-          color: AppColors.primary,
+          color: Colors.white,
         ),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         shape: RoundedRectangleBorder(
@@ -419,7 +438,10 @@ class AppTheme {
         iconColor: AppColors.onSurfaceVariantLight,
       ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
-        backgroundColor: AppColors.secondary,
+        // Audit 2026-11-15 AC-10: white on `secondary` #F95700 is
+        // 3.29:1 — latent (the one FAB overrides), so the theme pair
+        // is orangeFill + white (5.18:1) like the buttons.
+        backgroundColor: AppColors.orangeFill,
         foregroundColor: Colors.white,
       ),
       progressIndicatorTheme: const ProgressIndicatorThemeData(
@@ -523,7 +545,9 @@ class AppTheme {
         primary: AppColors.primaryOnDark,
         onPrimary: Colors.white,
         primaryContainer: AppColors.primaryContainerOnDark,
-        secondary: AppColors.secondaryDark,
+        // Audit 2026-11-15 AC-10: same orangeFill secondary as light
+        // (white on secondaryDark #FF6D24 is 2.81:1).
+        secondary: AppColors.orangeFill,
         onSecondary: Colors.white,
         secondaryContainer: AppColors.secondaryLightDark,
         surface: AppColors.surfaceDark,
@@ -532,8 +556,14 @@ class AppTheme {
         surfaceContainer: AppColors.surfaceContainerDark,
         surfaceContainerLow: AppColors.backgroundDark,
         surfaceContainerHighest: AppColors.surfaceContainerHighestDark,
+        // Audit 2026-11-15 AC-10: the dark error fill stays the
+        // light red #F87171 (6.48:1 as text on the dark surface —
+        // `error` is read as a text colour by error labels) with a
+        // dark onError (6.59:1 on the fill, the M3 dark pattern).
+        // errorDark #DC2626 as the fill would pass for white onError
+        // (4.83:1) but reads only ~3.67:1 as text on #13152C.
         error: AppColors.accentDangerDark,
-        onError: Colors.white,
+        onError: AppColors.surfaceDark,
       ),
       textTheme: _textTheme(
         fontFamily: fontFamily,
@@ -575,14 +605,14 @@ class AppTheme {
           backgroundColor: Colors.transparent,
           foregroundColor: AppColors.onSurfaceDark,
           borderColor: AppColors.onSurfaceDark,
-          fontSize: 12,
+          fontSize: 13,
         ),
       ),
       textButtonTheme: TextButtonThemeData(
         style: _buttonStyle(
           backgroundColor: Colors.transparent,
           foregroundColor: AppColors.onSurfaceDark,
-          fontSize: 12,
+          fontSize: 13,
         ),
       ),
       // Card rework (2026-11-10): same borderless lift as light.
@@ -600,7 +630,9 @@ class AppTheme {
       ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: AppColors.primaryDarkOnDark,
-        indicatorColor: AppColors.secondaryDark,
+        // Audit 2026-11-15 AC-1: same orangeFill indicator as light
+        // (white on secondaryDark #FF6D24 is 2.81:1).
+        indicatorColor: AppColors.orangeFill,
         iconTheme: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
             return const IconThemeData(color: Colors.white, size: 24);
@@ -649,15 +681,19 @@ class AppTheme {
       ),
       chipTheme: ChipThemeData(
         backgroundColor: AppColors.surfaceDark,
-        selectedColor: AppColors.primaryContainerOnDark,
+        // Audit 2026-11-15 DS-1: same navy selected fill as light
+        // (white label on primary #1B1E5C is 15.14:1).
+        selectedColor: AppColors.primary,
         disabledColor: AppColors.surfaceContainerDark,
+        // Audit 2026-11-15 DS-8: the 12 sp label is off-scale (§4.5)
+        // — labelSmall 11.
         labelStyle: const TextStyle(
-          fontSize: 12,
+          fontSize: 11,
           fontWeight: FontWeight.w500,
           color: AppColors.onSurfaceDark,
         ),
         secondaryLabelStyle: const TextStyle(
-          fontSize: 12,
+          fontSize: 11,
           fontWeight: FontWeight.w600,
           color: Colors.white,
         ),
@@ -676,7 +712,9 @@ class AppTheme {
         iconColor: AppColors.onSurfaceVariantDark,
       ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
-        backgroundColor: AppColors.secondaryDark,
+        // Audit 2026-11-15 AC-10: same orangeFill FAB as light
+        // (white on secondaryDark #FF6D24 is 2.81:1).
+        backgroundColor: AppColors.orangeFill,
         foregroundColor: Colors.white,
       ),
       progressIndicatorTheme: const ProgressIndicatorThemeData(

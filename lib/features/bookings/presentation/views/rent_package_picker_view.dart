@@ -9,7 +9,7 @@ import '../widgets/duration_calendar_picker.dart';
 import '../widgets/package_picker_header.dart';
 import '../widgets/package_summary_bar.dart';
 import '../widgets/package_tier_list.dart';
-import '../widgets/trip_type_section.dart';
+import '../widgets/picker_out_city_section.dart';
 import '../../../../l10n/app_localizations.dart';
 
 /// Phase B (B2): when a [vehicle] is supplied, the picker offers only
@@ -125,6 +125,10 @@ class _RentPackagePickerViewState extends State<RentPackagePickerView> {
 
   int get _advanceRequired => PackagePricing.advanceFor(vehicle: widget.vehicle, total: _calculatedRate);
 
+  DateTime get _pickupDateTime => DateTime(_pickupDate.year, _pickupDate.month, _pickupDate.day, _pickupTime.hour, _pickupTime.minute);
+
+  DateTime get _returnDateTime => _pickupDateTime.add(Duration(days: _durationDays));
+
   void _continue() {
     widget.onProceedToReview?.call(buildBookingDraft(
       carId: widget.carId,
@@ -177,26 +181,24 @@ class _RentPackagePickerViewState extends State<RentPackagePickerView> {
                       isWithDriver: _isWithDriver,
                       onChanged: (val) => setState(() => _isWithDriver = val),
                     ),
-                    if (vehicle != null) ...[
-                      const SizedBox(height: 12),
-                      TripTypeSection(
+                    if (vehicle != null)
+                      PickerOutCitySection(
+                        vehicle: vehicle,
                         isOutOfCity: _isOutOfCity,
                         onChanged: (v) => setState(() {
                           _isOutOfCity = v;
                           _selectedRoute = null;
                         }),
-                        fixedRoutes: _availability?.routes ?? const [],
+                        routes: _availability?.routes ?? const [],
                         selectedRoute: _selectedRoute,
                         onRouteSelected: (r) =>
                             setState(() => _selectedRoute = r),
-                        // CU-m17: the section states the out-of-city
-                        // price basis from the vehicle's own fields.
-                        outCityMode: vehicle.outCityMode,
-                        outCityPerKmPkr: vehicle.outCityPerKmPkr,
-                        outCityDailyPkr: vehicle.rates.outOfCityDaily ??
-                            vehicle.rates.daily24,
+                        pickup: _pickupDateTime,
+                        returnTime: _returnDateTime,
+                        kmPerDay: _selectedTier.perKmKmPerDay ??
+                            vehicle.outOfCityKmPerDay ??
+                            kDefaultOutCityKmPerDay,
                       ),
-                    ],
                     const SizedBox(height: 16),
                     Text(l10n.packageTiersTitle,
                         style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
@@ -226,7 +228,6 @@ class _RentPackagePickerViewState extends State<RentPackagePickerView> {
                       onDurationChanged: (days) =>
                           setState(() => _durationDays = days),
                     ),
-                    const SizedBox(height: 20),
                   ],
                 ),
               ),

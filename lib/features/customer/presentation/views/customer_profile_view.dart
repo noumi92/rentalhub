@@ -53,6 +53,9 @@ class _CustomerProfileViewState extends State<CustomerProfileView> {
   bool _kycVerified = false;
   bool _isBlacklisted = false;
   bool _loading = true;
+  // AC-18: signed-out stays "Guest"; a signed-in user whose profile
+  // failed to load gets an error state with retry instead.
+  bool _loadFailed = false;
 
   @override
   void initState() {
@@ -76,31 +79,38 @@ class _CustomerProfileViewState extends State<CustomerProfileView> {
     double? trustScore;
     var kycVerified = false;
     var isBlacklisted = false;
+    // AC-18: only a signed-in load failure counts as a failure —
+    // a signed-out visitor simply stays 'Guest'.
+    var loadFailed = false;
     try {
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) {
         name = user.displayName ?? 'Guest';
         email = user.email ?? '';
         phone = user.phoneNumber ?? '';
-        double? storedTrustScore;
-        if (sl.isRegistered<FirestoreService>()) {
-          final record = await sl<FirestoreService>().getUser(user.uid);
-          storedTrustScore = record?.trustScore;
-          isBlacklisted = record?.isBlacklisted ?? false;
-        }
-        // Live score first (shared TrustScoreService, same as the admin panel); stored trust_score is the fallback.
-        trustScore = (await const TrustScoreService().compute(user.uid))?.breakdown.total ?? storedTrustScore;
-        if (sl.isRegistered<CustomerRemoteDataSource>()) {
-          final customer = await sl<CustomerRemoteDataSource>().getCustomerById(user.uid);
-          if (customer != null) {
-            name = customer.name;
-            phone = customer.phone;
-            cnic = customer.cnic ?? '';
+        try {
+          double? storedTrustScore;
+          if (sl.isRegistered<FirestoreService>()) {
+            final record = await sl<FirestoreService>().getUser(user.uid);
+            storedTrustScore = record?.trustScore;
+            isBlacklisted = record?.isBlacklisted ?? false;
           }
-        }
-        if (sl.isRegistered<KycRemoteDataSource>()) {
-          final kyc = await sl<KycRemoteDataSource>().getKyc(user.uid);
-          kycVerified = kyc?.status == 'verified';
+          // Live score first (shared TrustScoreService, same as the admin panel); stored trust_score is the fallback.
+          trustScore = (await const TrustScoreService().compute(user.uid))?.breakdown.total ?? storedTrustScore;
+          if (sl.isRegistered<CustomerRemoteDataSource>()) {
+            final customer = await sl<CustomerRemoteDataSource>().getCustomerById(user.uid);
+            if (customer != null) {
+              name = customer.name;
+              phone = customer.phone;
+              cnic = customer.cnic ?? '';
+            }
+          }
+          if (sl.isRegistered<KycRemoteDataSource>()) {
+            final kyc = await sl<KycRemoteDataSource>().getKyc(user.uid);
+            kycVerified = kyc?.status == 'verified';
+          }
+        } catch (_) {
+          loadFailed = true;
         }
       }
     } catch (_) {}
@@ -114,6 +124,7 @@ class _CustomerProfileViewState extends State<CustomerProfileView> {
         _kycVerified = kycVerified;
         _isBlacklisted = isBlacklisted;
         _loading = false;
+        _loadFailed = loadFailed;
       });
     }
   }
@@ -195,23 +206,12 @@ class _CustomerProfileViewState extends State<CustomerProfileView> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      // MinimalAppBar owns the top inset — SafeArea(top: false)
-      // avoids the double status-bar band (SH-M3 class).
+      // MinimalAppBar owns the top inset — SafeArea(top: false) avoids the double status-bar band (SH-M3 class).
       body: SafeArea(
         top: false,
         child: Column(
           children: [
-            MinimalAppBar(
-              title: _name == 'Guest' ? l10n.profileGuest : _name,
-              subtitle: _email.isNotEmpty ? _email : (_phone.isNotEmpty ? _phone : l10n.profileNotSignedInShort),
-              actions: [
-                IconButton(
-                  icon: const Icon(Icons.edit_rounded, color: Colors.white, size: 20),
-                  tooltip: l10n.profileEditProfile,
-                  onPressed: _openEdit,
-                ),
-              ],
-            ),
+            MinimalAppBar(title: _name == 'Guest' ? l10n.profileGuest : _name, subtitle: _email.isNotEmpty ? _email : (_phone.isNotEmpty ? _phone : l10n.profileNotSignedInShort), actions: [IconButton(icon: const Icon(Icons.edit_rounded, color: Colors.white, size: 20), tooltip: l10n.profileEditProfile, onPressed: _openEdit)]),
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -220,6 +220,9 @@ class _CustomerProfileViewState extends State<CustomerProfileView> {
                     if (_loading)
                       // E2: shared loading state.
                       AppLoadingState(message: l10n.profileLoading)
+                    else if (_loadFailed)
+                      // AC-18: signed-in + load failed — an error with retry, never a silent "Guest".
+                      AppErrorState(message: l10n.profileLoadFailed, onRetry: _loadProfile)
                     else ...[
                       ProfileTrustCard(trustScore: _trustScore, kycVerified: _kycVerified, isBlacklisted: _isBlacklisted, onTap: widget.onOpenReputation, onAppeal: (_isBlacklisted && _cnic.isNotEmpty) ? _openAppeal : null),
                       const SizedBox(height: 16),
@@ -228,12 +231,7 @@ class _CustomerProfileViewState extends State<CustomerProfileView> {
                         ProfileCnicRow(cnic: _cnic),
                         const SizedBox(height: 16),
                       ],
-                      ProfileMenuSection(
-                        onOpenDocuments: widget.onOpenDocuments,
-                        onOpenSavedShops: widget.onOpenSavedShops,
-                        onOpenSettings: widget.onOpenSettings,
-                        onOpenSupport: widget.onOpenSupport,
-                      ),
+                      ProfileMenuSection(onOpenDocuments: widget.onOpenDocuments, onOpenSavedShops: widget.onOpenSavedShops, onOpenSettings: widget.onOpenSettings, onOpenSupport: widget.onOpenSupport),
                       const SizedBox(height: 16),
                       ProfileSignOutTile(onTap: widget.onSignOut),
                     ],

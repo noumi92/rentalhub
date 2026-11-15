@@ -46,13 +46,16 @@ T columnsFor<T>(
 /// a column (pass 0 when the cards carry their own bottom margin, as
 /// [ShopListCard] does); [gap] is the horizontal gap between columns;
 /// [padding] is the outer padding (the compact list's padding, so both
-/// layouts align).
+/// layouts align). [flushLastItem] drops the bottom spacing under the
+/// last card of each column, so the list bottom is the outer padding
+/// alone (BP-18) — off by default, so existing callers are unchanged.
 Widget twoColumnLayout<T>({
   required List<T> items,
   required Widget Function(T item) itemBuilder,
   double gap = 14,
   double itemSpacing = 14,
   EdgeInsetsGeometry padding = EdgeInsets.zero,
+  bool flushLastItem = false,
   Key? key,
 }) {
   final columns = [<T>[], <T>[]];
@@ -60,11 +63,16 @@ Widget twoColumnLayout<T>({
     columns[i % 2].add(items[i]);
   }
   Widget column(List<T> vs) => Column(
-        children: vs
-            .map((v) => Padding(
-                padding: EdgeInsets.only(bottom: itemSpacing),
-                child: itemBuilder(v)))
-            .toList(),
+        children: [
+          for (var i = 0; i < vs.length; i++)
+            Padding(
+              padding: EdgeInsets.only(
+                  bottom: flushLastItem && i == vs.length - 1
+                      ? 0
+                      : itemSpacing),
+              child: itemBuilder(vs[i]),
+            ),
+        ],
       );
   return Padding(
     padding: padding,

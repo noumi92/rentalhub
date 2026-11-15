@@ -20,7 +20,7 @@ import '../../../../core/theme/card_decoration.dart';
 class OwnerNotificationsView extends StatefulWidget {
   final String shopId;
 
-  const OwnerNotificationsView({super.key, this.shopId = 'shop-1'});
+  const OwnerNotificationsView({super.key, required this.shopId});
 
   @override
   State<OwnerNotificationsView> createState() => _OwnerNotificationsViewState();

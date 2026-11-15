@@ -9,6 +9,7 @@ import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
+import '../../../bookings/utils/booking_request_time.dart';
 import '../../../bookings/utils/live_booking_stream.dart';
 import '../services/whatsapp_credits_data_source.dart';
 import '../widgets/operations/request_reject_dialog.dart';
@@ -33,7 +34,13 @@ class _OwnerBookingRequestsViewState extends State<OwnerBookingRequestsView> {
   // list; it now renders an error state with retry.
   bool _hasError = false;
   String? _processingId;
-  String _filter = 'requested';
+  // FG-4 (UI/UX audit 2026-11-15): proofs first — the most urgent
+  // bucket (payment proofs awaiting verification) is the default,
+  // not new requests.
+  String _filter = 'payment_submitted';
+  // FG-4: the requests' request times, for oldest-first order and
+  // the oldest-wait line (see booking_request_time.dart).
+  Map<String, DateTime?> _requestTimes = {};
   final _searchController = TextEditingController();
   String _searchQuery = '';
   // Audit impl (worker E, W6): the WhatsApp zero-balance banner only
@@ -45,7 +52,7 @@ class _OwnerBookingRequestsViewState extends State<OwnerBookingRequestsView> {
 
   List<BookingEntity> get _filtered {
     final query = _searchQuery.trim().toLowerCase();
-    return _requests.where((b) {
+    final list = _requests.where((b) {
       if (b.status != _filter) return false;
       if (query.isEmpty) return true;
       return (b.customerName ?? '').toLowerCase().contains(query) ||
@@ -53,6 +60,16 @@ class _OwnerBookingRequestsViewState extends State<OwnerBookingRequestsView> {
           (b.vehicleName ?? '').toLowerCase().contains(query) ||
           b.bookingId.toLowerCase().contains(query);
     }).toList();
+    // FG-4: oldest first within the filter (an unknown request time
+    // sorts last, never first).
+    return sortByRequestAgeOldestFirst(list, _requestTimes);
+  }
+
+  // FG-4: fetch the request times for newly arrived bookings (the
+  // session cache keeps this to one doc read per booking).
+  Future<void> _refreshRequestTimes(List<BookingEntity> list) async {
+    final times = await BookingRequestTimes.fetch(list.map((b) => b.bookingId));
+    if (mounted) setState(() => _requestTimes = {..._requestTimes, ...times});
   }
 
   @override
@@ -77,12 +94,7 @@ class _OwnerBookingRequestsViewState extends State<OwnerBookingRequestsView> {
       final ds = WhatsappCreditsDataSource();
       final balance = await ds.getBalance(widget.shopId);
       final skipped = await ds.getSkippedCount(widget.shopId);
-      if (mounted) {
-        setState(() {
-          _waBalance = balance;
-          _waSkipped = skipped;
-        });
-      }
+      if (mounted) setState(() { _waBalance = balance; _waSkipped = skipped; });
     } catch (_) {
       // Banner stays hidden when credits cannot be read.
     }
@@ -103,6 +115,7 @@ class _OwnerBookingRequestsViewState extends State<OwnerBookingRequestsView> {
         _requests = bookings.where((b) => b.status == 'requested' || b.status == 'payment_submitted' || b.status == 'approved' || b.status == 'rejected').toList();
         _isLoading = false;
       });
+      _refreshRequestTimes(bookings);
     }, onError: () {
       if (mounted) setState(() { _hasError = true; _isLoading = false; });
     });
@@ -163,16 +176,13 @@ class _OwnerBookingRequestsViewState extends State<OwnerBookingRequestsView> {
     }
   }
 
-  String _emptyLabel(AppLocalizations l10n) => {
-        'payment_submitted': l10n.requestsEmptyProof,
-        'approved': l10n.requestsEmptyApproved,
-        'rejected': l10n.bookingEmptyRejected,
-      }[_filter] ??
-      l10n.requestsEmptyNew;
+  String _emptyLabel(AppLocalizations l10n) => {'payment_submitted': l10n.requestsEmptyProof, 'approved': l10n.requestsEmptyApproved, 'rejected': l10n.bookingEmptyRejected}[_filter] ?? l10n.requestsEmptyNew;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    // FG-4: the oldest proof wait, surfaced in the list header.
+    final oldestProofWait = oldestWaitFor(_requests.where((b) => b.status == 'payment_submitted'), _requestTimes);
     return Scaffold(
       // C1: MinimalAppBar owns the top inset; SafeArea must not add it
       // again or the navy header gains a dead band.
@@ -182,7 +192,9 @@ class _OwnerBookingRequestsViewState extends State<OwnerBookingRequestsView> {
           children: [
             MinimalAppBar(
               title: l10n.requestsTitle,
-              subtitle: l10n.requestsAwaitingReview(_filtered.length),
+              subtitle: oldestProofWait == null
+                  ? l10n.requestsAwaitingReview(_filtered.length)
+                  : '${l10n.requestsAwaitingReview(_filtered.length)} · ${l10n.requestsOldestProofWait(waitDurationLabel(l10n, oldestProofWait))}',
               actions: [
                 // §9: the tab that owns the booking lifecycle gets a New
                 // walk-in booking entry (was only reachable from

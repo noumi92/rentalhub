@@ -21,7 +21,7 @@ import 'package:rentalhub/core/theme/app_theme.dart';
 import 'package:rentalhub/core/utils/responsive.dart';
 import 'package:rentalhub/features/discovery/domain/entities/shop_entity.dart';
 import 'package:rentalhub/features/discovery/presentation/views/customer_home_view.dart';
-import 'package:rentalhub/features/discovery/presentation/views/customer_shops_view.dart';
+import 'package:rentalhub/features/discovery/presentation/views/widgets/home_shop_list.dart';
 import 'package:rentalhub/features/fleet/data/datasources/fleet_remote_data_source.dart';
 import 'package:rentalhub/features/fleet/domain/entities/vehicle_entity.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_dashboard_view.dart';
@@ -244,7 +244,7 @@ void main() {
           screen: const CustomerHomeView(),
           width: width,
         );
-        expect(find.text('Find Verified Rental Shops'), findsOneWidget);
+        expect(find.text('Home'), findsOneWidget);
       }
     });
   });
@@ -376,10 +376,10 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(tester.takeException(), isNull);
-      expect(find.text('Find Verified Rental Shops'), findsOneWidget);
+      expect(find.text('Home'), findsOneWidget);
       // The header clears the notch: its title is fully visible, not
       // clipped under the status bar.
-      final title = tester.getTopLeft(find.text('Find Verified Rental Shops'));
+      final title = tester.getTopLeft(find.text('Home'));
       expect(title.dy, greaterThanOrEqualTo(47));
     });
   });

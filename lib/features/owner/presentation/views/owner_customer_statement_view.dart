@@ -70,7 +70,8 @@ class _OwnerCustomerStatementViewState
             ..sort((a, b) => b.pickupTime.compareTo(a.pickupTime));
         });
       }
-    } catch (_) {
+    } catch (e) {
+      debugPrint('OwnerCustomerStatementView load failed: $e'); // Audit 2026-11-15 DS-6: raw error logged for diagnostics; the user only ever sees the localized per-screen message.
       if (mounted) setState(() => _hasError = true);
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -188,7 +189,7 @@ class _OwnerCustomerStatementViewState
                   ? const AppLoadingState()
                   : _hasError
                       ? AppErrorState(
-                          message: l10n.dashboardLoadError, onRetry: _load)
+                          message: l10n.customerStatementLoadError, onRetry: _load)
                       : _bookings.isEmpty
                           ? AppEmptyState(
                               title: l10n.financeStatementEmpty,

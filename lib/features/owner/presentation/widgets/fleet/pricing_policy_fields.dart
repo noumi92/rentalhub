@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../core/utils/money_format.dart';
 import '../../../../../l10n/app_localizations.dart';
 import 'rate_matrix_field_widget.dart';
 
@@ -37,28 +38,30 @@ class PricingPolicyFields extends StatelessWidget {
         RateMatrixFieldWidget(
           controller: surchargeController,
           label: l10n.pricingWithDriverSurcharge,
-          hint: 'Rs. 2,000 / day',
+          // Audit 2026-11-15 DS-10: no hardcoded-English 'Rs.' hint —
+          // the money text comes from .arb via amountRs.
+          hint: l10n.vehicleDetailDailyRate(l10n.amountRs(formatRs(2000))),
           kmCap: l10n.pricingWithDriverSurchargeCap,
         ),
         const SizedBox(height: 10),
         RateMatrixFieldWidget(
           controller: depositController,
           label: l10n.pricingSecurityDeposit,
-          hint: 'Rs. 25,000',
+          hint: l10n.amountRs(formatRs(25000)),
           kmCap: l10n.pricingSecurityDepositCap,
         ),
         const SizedBox(height: 10),
         RateMatrixFieldWidget(
           controller: advanceController,
           label: l10n.pricingAdvanceRequired,
-          hint: 'Rs. 2,000',
+          hint: l10n.amountRs(formatRs(2000)),
           kmCap: l10n.pricingAdvanceCap,
         ),
         const SizedBox(height: 10),
         RateMatrixFieldWidget(
           controller: extraHourController,
           label: l10n.pricingExtraHourCharge,
-          hint: 'Rs. 600 / hour',
+          hint: l10n.pricingHintPerHour(l10n.amountRs(formatRs(600))),
           kmCap: l10n.pricingExtraHourCap,
         ),
         const SizedBox(height: 14),

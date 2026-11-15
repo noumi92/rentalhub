@@ -216,7 +216,10 @@ void main() {
       );
       final theme = Theme.of(tester.element(find.byType(Scaffold)));
       expect(theme.colorScheme.primary, const Color(0xFF1B1E5C));
-      expect(theme.colorScheme.secondary, const Color(0xFFF95700));
+      // Audit 2026-11-15 AC-10: the scheme's secondary is orangeFill
+      // now (white on #F95700 was 3.29:1); #F95700 stays the brand
+      // token in AppColors.
+      expect(theme.colorScheme.secondary, const Color(0xFFC2410C));
       expect(theme.colorScheme.primaryContainer, const Color(0xFFEEF0FF));
       expect(theme.scaffoldBackgroundColor, const Color(0xFFF8FAFC));
       expect(theme.brightness, Brightness.light);
@@ -228,7 +231,9 @@ void main() {
       );
       final theme = Theme.of(tester.element(find.byType(Scaffold)));
       expect(theme.colorScheme.primary, const Color(0xFF252B7A));
-      expect(theme.colorScheme.secondary, const Color(0xFFFF6D24));
+      // Audit 2026-11-15 AC-10: the scheme's secondary is orangeFill
+      // now (white on #FF6D24 was 2.81:1).
+      expect(theme.colorScheme.secondary, const Color(0xFFC2410C));
       expect(theme.colorScheme.primaryContainer, const Color(0xFF1A1D42));
       expect(theme.scaffoldBackgroundColor, const Color(0xFF0A0B1A));
       expect(theme.brightness, Brightness.dark);
@@ -571,6 +576,104 @@ void main() {
         expect(theme.checkboxTheme.fillColor, isNotNull);
         expect(theme.radioTheme.fillColor, isNotNull);
       }
+    });
+  });
+
+  group('Audit 2026-11-15 (Team A) — nav indicator, on* pairs, chips, FAB, disabled button', () {
+    test('nav selected indicator: white icon on orangeFill passes WCAG AA, both modes (AC-1)', () {
+      for (final theme in [AppTheme.lightTheme, AppTheme.darkTheme]) {
+        // White on secondary #F95700 was 3.29:1 (light) and on
+        // secondaryDark #FF6D24 2.81:1 (dark) — both fail AA for the
+        // 24 px selected icon. orangeFill #C2410C is 5.18:1.
+        expect(theme.navigationBarTheme.indicatorColor,
+            const Color(0xFFC2410C));
+        final icon = theme.navigationBarTheme.iconTheme
+            ?.resolve({WidgetState.selected});
+        expect(icon?.color, Colors.white);
+        expect(
+          _contrastRatio(
+              Colors.white, theme.navigationBarTheme.indicatorColor!),
+          greaterThanOrEqualTo(4.5),
+        );
+      }
+    });
+
+    test('every on* colour measures >=4.5:1 against its fill, both schemes (AC-10)', () {
+      for (final theme in [AppTheme.lightTheme, AppTheme.darkTheme]) {
+        final scheme = theme.colorScheme;
+        final pairs = <(Color, Color, String)>[
+          (scheme.onPrimary, scheme.primary, 'onPrimary/primary'),
+          (scheme.onSecondary, scheme.secondary, 'onSecondary/secondary'),
+          (scheme.onSurface, scheme.surface, 'onSurface/surface'),
+          (
+            scheme.onSurfaceVariant,
+            scheme.surface,
+            'onSurfaceVariant/surface'
+          ),
+          (scheme.onError, scheme.error, 'onError/error'),
+        ];
+        for (final (fg, bg, name) in pairs) {
+          expect(
+            _contrastRatio(fg, bg),
+            greaterThanOrEqualTo(4.5),
+            reason: '${theme.brightness} $name',
+          );
+        }
+      }
+    });
+
+    test('selected chip is navy fill + white w600 label, both modes (DS-1/DS-8)', () {
+      for (final theme in [AppTheme.lightTheme, AppTheme.darkTheme]) {
+        // One selected-chip spec: AppColors.primary fill with a
+        // white label (15.14:1). The pale primaryContainer selected
+        // state and the per-file orange/navy overrides are gone.
+        expect(theme.chipTheme.selectedColor, const Color(0xFF1B1E5C));
+        expect(theme.chipTheme.secondaryLabelStyle?.color, Colors.white);
+        expect(theme.chipTheme.secondaryLabelStyle?.fontWeight,
+            FontWeight.w600);
+        // DS-8: the 12 sp chip labels were off-scale (§4.5 has no
+        // 12 sp step) — labelSmall 11.
+        expect(theme.chipTheme.secondaryLabelStyle?.fontSize, 11);
+        expect(theme.chipTheme.labelStyle?.fontSize, 11);
+      }
+    });
+
+    test('FAB is orangeFill + white in both modes (AC-10)', () {
+      for (final theme in [AppTheme.lightTheme, AppTheme.darkTheme]) {
+        // White on secondary #F95700 was 3.29:1 (light) and on
+        // secondaryDark #FF6D24 2.81:1 (dark) — latent, but any new
+        // FAB would have inherited the failing pair.
+        expect(theme.floatingActionButtonTheme.backgroundColor,
+            const Color(0xFFC2410C));
+        expect(theme.floatingActionButtonTheme.foregroundColor,
+            Colors.white);
+        expect(
+          _contrastRatio(Colors.white,
+              theme.floatingActionButtonTheme.backgroundColor!),
+          greaterThanOrEqualTo(4.5),
+        );
+      }
+    });
+
+    testWidgets('DebouncedButton dims to 0.38 alpha when disabled (AC-20)',
+        (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.lightTheme,
+          home: Scaffold(
+            body: DebouncedButton(text: 'Save', onPressed: () {}),
+          ),
+        ),
+      );
+      final style =
+          tester.widget<ElevatedButton>(find.byType(ElevatedButton)).style;
+      expect(style?.backgroundColor?.resolve(<WidgetState>{}),
+          const Color(0xFFC2410C));
+      expect(style?.foregroundColor?.resolve(<WidgetState>{}), Colors.white);
+      expect(style?.backgroundColor?.resolve({WidgetState.disabled}),
+          const Color(0xFFC2410C).withValues(alpha: 0.38));
+      expect(style?.foregroundColor?.resolve({WidgetState.disabled}),
+          Colors.white.withValues(alpha: 0.38));
     });
   });
 }

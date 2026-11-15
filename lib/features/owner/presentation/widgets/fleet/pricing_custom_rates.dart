@@ -52,7 +52,8 @@ class PricingCustomRates extends StatelessWidget {
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   labelText: l10n.ratesCustomPriceLabel,
-                  prefixText: 'Rs. ',
+                  // Audit 2026-11-15 DS-10: localized currency prefix.
+                  prefixText: l10n.currencyPrefix,
                   border: const OutlineInputBorder(),
                 ),
               ),

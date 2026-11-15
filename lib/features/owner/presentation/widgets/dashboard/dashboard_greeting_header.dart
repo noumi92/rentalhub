@@ -21,7 +21,9 @@ class DashboardGreetingHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final name = ownerName.isNotEmpty ? ownerName : shopName;
-    final date = DateFormat('EEEE, d MMMM y').format(DateTime.now());
+    // Audit 2026-11-15 DS-5: the locale is passed explicitly — a bare
+    // DateFormat('EEEE, d MMMM y') shows English month/day names to Urdu users.
+    final date = DateFormat('EEEE, d MMMM y', Localizations.localeOf(context).languageCode).format(DateTime.now());
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

@@ -159,10 +159,13 @@ class _OwnerFleetCalendarViewState extends State<OwnerFleetCalendarView> {
                                   ],
                                 ),
                                 const SizedBox(height: 16),
-                                ..._fleet.map((v) => Card(
-                                      margin: const EdgeInsets.only(bottom: 12),
+                                ..._fleet.asMap().entries.map((entry) => Card(
+                                      // BP-16: the last card carries no
+                                      // bottom margin — the list padding
+                                      // (16 dp) is the bottom gap.
+                                      margin: EdgeInsets.only(bottom: entry.key == _fleet.length - 1 ? 0 : 12),
                                       child: InkWell(
-                                        onTap: () => context.push(RouteNames.ownerCalendar.replaceFirst(':vehicleId', v.vehicleId)),
+                                        onTap: () => context.push(RouteNames.ownerCalendar.replaceFirst(':vehicleId', entry.value.vehicleId)),
                                         borderRadius: BorderRadius.circular(12),
                                         child: Padding(
                                           padding: const EdgeInsets.all(12),
@@ -171,8 +174,8 @@ class _OwnerFleetCalendarViewState extends State<OwnerFleetCalendarView> {
                                             children: [
                                               Row(
                                                 children: [
-                                                  Expanded(child: Text(v.displayName, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600))),
-                                                  Text(v.plateNumber, style: Theme.of(context).textTheme.labelMedium),
+                                                  Expanded(child: Text(entry.value.displayName, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600))),
+                                                  Text(entry.value.plateNumber, style: Theme.of(context).textTheme.labelMedium),
                                                 ],
                                               ),
                                               const SizedBox(height: 10),
@@ -186,7 +189,7 @@ class _OwnerFleetCalendarViewState extends State<OwnerFleetCalendarView> {
                                                         height: 18,
                                                         margin: const EdgeInsets.symmetric(horizontal: 0.5),
                                                         decoration: BoxDecoration(
-                                                          color: _isBooked(v.vehicleId, DateTime(_month.year, _month.month, day)) ? AppColors.errorContainerFor(Theme.of(context).brightness) : AppColors.successContainerFor(Theme.of(context).brightness),
+                                                          color: _isBooked(entry.value.vehicleId, DateTime(_month.year, _month.month, day)) ? AppColors.errorContainerFor(Theme.of(context).brightness) : AppColors.successContainerFor(Theme.of(context).brightness),
                                                           borderRadius: BorderRadius.circular(2),
                                                           // OW-m33: a ring on today so the owner can
                                                           // find the current day at a glance.

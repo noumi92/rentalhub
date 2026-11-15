@@ -14,6 +14,7 @@ import '../../../discovery/presentation/views/widgets/vehicle_hero_card.dart'
     show vehicleHeroTag;
 import '../../../../l10n/app_localizations.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
+import '../../../bookings/presentation/widgets/booking_status_chip.dart';
 import '../../../bookings/utils/live_booking_stream.dart';
 import '../../../fleet/domain/entities/vehicle_entity.dart';
 
@@ -183,8 +184,7 @@ class _OwnerVehicleDetailViewState extends State<OwnerVehicleDetailView> {
                           const SizedBox(height: 18),
                           Text(l10n.vehicleDetailBookingsTitle, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
                           const SizedBox(height: 8),
-                          if (_loading)
-                            AppLoadingState(message: l10n.vehicleDetailBookingsTitle)
+                          if (_loading) AppLoadingState(message: l10n.vehicleDetailBookingsTitle)
                           else if (bookings.isEmpty)
                             Text(l10n.vehicleDetailNoBookings, style: Theme.of(context).textTheme.bodyMedium)
                           else
@@ -192,11 +192,11 @@ class _OwnerVehicleDetailViewState extends State<OwnerVehicleDetailView> {
                                   margin: const EdgeInsets.only(bottom: 8),
                                   child: ListTile(
                                     title: Text(b.customerName ?? b.customerId, style: const TextStyle(fontWeight: FontWeight.w600)),
-                                    subtitle: Text('${b.packageType} • ${DateFormat('d MMM, h:mm a').format(b.pickupTime)} → ${DateFormat('d MMM, h:mm a').format(b.returnTime)}'),
-                                    // OW-m15: the booking chip is
-                                    // coloured by status (was raw text
-                                    // on the default chip).
-                                    trailing: Chip(label: Text(b.status, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.white)), backgroundColor: _bookingStatusColor(b.status)),
+                                    subtitle: Text('${b.packageType} • ${DateFormat('d MMM, h:mm a', Localizations.localeOf(context).languageCode).format(b.pickupTime)} → ${DateFormat('d MMM, h:mm a', Localizations.localeOf(context).languageCode).format(b.returnTime)}'), // Audit 2026-11-15 DS-5: locale passed explicitly (was a bare DateFormat).
+                                    // OW-m15: the booking chip is coloured by status (was raw
+                                    // text on the default chip). FG-10: the label is localised
+                                    // too — the raw stored code never shows.
+                                    trailing: Chip(label: Text(BookingStatusChip.labelFor(l10n, b.status), style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.white)), backgroundColor: _bookingStatusColor(b.status)),
                                   ),
                                 )),
                         ],

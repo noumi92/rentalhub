@@ -25,6 +25,13 @@ class SettlementSummaryReceiptWidget extends StatelessWidget {
   /// [totalDeductions] / [netRefund] below.
   final PerKmSettlement? perKm;
 
+  /// Audit 2026-11-15 PW-21: what the customer still owes when the
+  /// deductions exceed the deposit ([SettlementBreakdown.amountOwed]).
+  /// The old `netRefund < 0` branch could never fire — the refund is
+  /// clamped at zero — so the owed line was dead; it renders from
+  /// this field instead.
+  final int amountOwed;
+
   const SettlementSummaryReceiptWidget({
     super.key,
     required this.totalKm,
@@ -38,6 +45,7 @@ class SettlementSummaryReceiptWidget extends StatelessWidget {
     required this.netRefund,
     this.extraCharges = 0,
     this.perKm,
+    this.amountOwed = 0,
   });
 
   @override
@@ -109,10 +117,13 @@ class SettlementSummaryReceiptWidget extends StatelessWidget {
               ),
             ],
           ),
-          if (netRefund < 0) ...[
+          if (amountOwed > 0) ...[
             const SizedBox(height: 8),
             Text(
-              l10n.returnCustomerOwes(formatRs(-netRefund)),
+              // Audit 2026-11-15 PW-21: routed through amountRs
+              // (§4.5 money rule); the .arb value no longer embeds
+              // 'Rs.'.
+              l10n.returnCustomerOwes(l10n.amountRs(formatRs(amountOwed))),
               style: Theme.of(context).textTheme.labelMedium?.copyWith(
                     fontWeight: FontWeight.w500,
                     color: AppColors.dangerTextFor(Theme.of(context).brightness),

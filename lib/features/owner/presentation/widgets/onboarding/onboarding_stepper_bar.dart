@@ -59,17 +59,13 @@ class OnboardingStepperBar extends StatelessWidget {
           Text(
             label,
             textAlign: TextAlign.center,
-            style: TextStyle(
-              // Audit §1: 10sp is below the §4.5 minimum (11sp) and
-              // maxLines 1 truncated Urdu labels — allow 2 lines.
-              fontSize: 11,
-              fontWeight: FontWeight.w500,
-              // #10: theme-aware — the hardcoded AppColors.primary navy
-              // was ~1.2:1 on a dark surface (invisible). Light mode
-              // keeps the theme primary; dark mode uses the pale
-              // lavender primaryContainer — NOT colorScheme.primary,
-              // which in the dark theme is the dark navy #252B7A
-              // (1.46:1 on the dark surface, still unreadable).
+            // Audit 2026-11-15 DS-8: 11 sp w500 is labelSmall — read
+            // the theme slot instead of a hardcoded size. The colour
+            // ternary stays: hardcoded primary navy was ~1.2:1 on a
+            // dark surface (invisible); dark mode uses the pale
+            // lavender primaryContainer, NOT colorScheme.primary
+            // (#252B7A, 1.46:1 on the dark surface).
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
               color: isCurrent ? (Theme.of(context).brightness == Brightness.dark ? AppColors.primaryContainer : Theme.of(context).colorScheme.primary) : Theme.of(context).colorScheme.onSurfaceVariant,
             ),
             maxLines: 2,

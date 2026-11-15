@@ -5,6 +5,7 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
 import '../../../../core/constants/api_endpoints.dart';
+import '../../../../core/utils/date_format.dart';
 import '../../../../core/utils/money_format.dart';
 import 'pdf_signature_box.dart';
 
@@ -267,7 +268,12 @@ class PdfContractGenerator {
     return doc.save();
   }
 
-  static String _date(DateTime d) => '${d.day}/${d.month}/${d.year}';
+  // Audit 2026-11-15 DS-5: unambiguous "5 Nov 2026", never raw d/m/y.
+  // No BuildContext in a PDF generator, so the English locale is pinned
+  // (the legal document is generated in English). formatDateEn is
+  // intl-free: DateFormat.yMMMd('en') throws LocaleDataException in
+  // plain unit tests, where no locale data is initialised.
+  static String _date(DateTime d) => formatDateEn(d);
 
   static String _dateTime(DateTime d) {
     final hour = d.hour.toString().padLeft(2, '0');

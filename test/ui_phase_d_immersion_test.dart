@@ -1102,7 +1102,9 @@ void main() {
       expect(find.byType(AppLoadingState), findsOneWidget);
       await tester.pumpAndSettle();
       expect(find.byType(AppEmptyState), findsOneWidget);
-      expect(find.text('No pending booking requests'), findsOneWidget);
+      // FG-4: the default triage filter is now proofs-first, so the
+      // empty state shows the proof queue text, not the New text.
+      expect(find.text('No payment proofs waiting for verification'), findsOneWidget);
     });
 
     testWidgets('owner Requests: missing data source renders the shared '

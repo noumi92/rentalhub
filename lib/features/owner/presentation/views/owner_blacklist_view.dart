@@ -126,7 +126,6 @@ class _OwnerBlacklistViewState extends State<OwnerBlacklistView> {
         maxLines: maxLines,
         decoration: InputDecoration(
           labelText: label,
-          border: const OutlineInputBorder(),
           filled: true,
           fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
         ),
@@ -174,7 +173,7 @@ class _OwnerBlacklistViewState extends State<OwnerBlacklistView> {
                                       DropdownButtonFormField<String>(
                                         dropdownColor: Theme.of(context).colorScheme.surface,
                                         initialValue: _reason,
-                                        decoration: InputDecoration(labelText: l10n.blacklistReasonLabel, border: const OutlineInputBorder(), filled: true, fillColor: Theme.of(context).colorScheme.surfaceContainerHighest),
+                                        decoration: InputDecoration(labelText: l10n.blacklistReasonLabel, filled: true, fillColor: Theme.of(context).colorScheme.surfaceContainerHighest),
                                         items: _reasons.map((r) => DropdownMenuItem(value: r, child: Text(_reasonLabel(l10n, r)))).toList(),
                                         onChanged: (r) => setState(() => _reason = r ?? _reason),
                                       ),
@@ -202,24 +201,31 @@ class _OwnerBlacklistViewState extends State<OwnerBlacklistView> {
                               if (reports.isEmpty)
                                 AppEmptyState(title: l10n.blacklistNoReports, icon: Icons.flag_outlined)
                               else
-                                ...reports.map((r) => Card(
-                                      margin: const EdgeInsets.only(bottom: 10),
-                                      child: ListTile(
-                                        leading: Icon(Icons.flag_rounded, color: r.isActive ? AppColors.errorDark : Theme.of(context).colorScheme.onSurfaceVariant),
-                                        title: Text(r.cnicNumber, style: const TextStyle(fontWeight: FontWeight.w600)),
-                                        subtitle: Text('${_reasonLabel(l10n, r.reasonCategory)}\n${r.description}'),
-                                        isThreeLine: true,
-                                        trailing: Chip(
-                                          label: Text(r.isActive ? l10n.active : l10n.blacklistReverted, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.white)),
-                                          // Audit §22: white on
-                                          // Colors.red is 3.68:1 —
-                                          // errorDark #DC2626 is ~4.9:1.
-                                          // (Reverted keeps textMuted,
-                                          // 4.76:1 — already passing.)
-                                          backgroundColor: r.isActive ? AppColors.errorDark : AppColors.textMuted,
-                                        ),
+                                // BP-15: separator pattern — the 10dp gap
+                                // sits BETWEEN cards only, never below
+                                // the last one (the ListView's own 16dp
+                                // padding is the bottom clearance).
+                                for (var i = 0; i < reports.length; i++) ...[
+                                  Card(
+                                    margin: EdgeInsets.zero,
+                                    child: ListTile(
+                                      leading: Icon(Icons.flag_rounded, color: reports[i].isActive ? AppColors.errorDark : Theme.of(context).colorScheme.onSurfaceVariant),
+                                      title: Text(reports[i].cnicNumber, style: const TextStyle(fontWeight: FontWeight.w600)),
+                                      subtitle: Text('${_reasonLabel(l10n, reports[i].reasonCategory)}\n${reports[i].description}'),
+                                      isThreeLine: true,
+                                      trailing: Chip(
+                                        label: Text(reports[i].isActive ? l10n.active : l10n.blacklistReverted, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.white)),
+                                        // Audit §22: white on
+                                        // Colors.red is 3.68:1 —
+                                        // errorDark #DC2626 is ~4.9:1.
+                                        // (Reverted keeps textMuted,
+                                        // 4.76:1 — already passing.)
+                                        backgroundColor: reports[i].isActive ? AppColors.errorDark : AppColors.textMuted,
                                       ),
-                                    )),
+                                    ),
+                                  ),
+                                  if (i < reports.length - 1) const SizedBox(height: 10),
+                                ],
                             ],
                           ),
                         ),

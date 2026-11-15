@@ -50,12 +50,9 @@ class DisputeCategoryChips extends StatelessWidget {
           label: Text(disputeCategoryLabel(l10n, cat)),
           selected: isSelected,
           onSelected: (_) => onSelected(cat),
-          selectedColor: AppColors.primary,
-          labelStyle: Theme.of(context).textTheme.labelSmall?.copyWith(
-              fontWeight: FontWeight.w500,
-              color: isSelected
-                  ? Colors.white
-                  : Theme.of(context).colorScheme.onSurface),
+          // Audit 2026-11-15 DS-1: no per-file selectedColor/
+          // labelStyle — the theme's chipTheme is the one selected
+          // spec (navy fill + white label).
           side: BorderSide(
               color: isSelected
                   ? AppColors.primary

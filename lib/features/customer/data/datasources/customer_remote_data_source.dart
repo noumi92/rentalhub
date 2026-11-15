@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../../../core/data/offline_sync_queue.dart';
+import '../../../../core/utils/shop_id_resolution.dart';
 import '../../domain/entities/customer_entity.dart';
 import '../models/customer_model.dart';
 
@@ -63,13 +64,20 @@ class CustomerRemoteDataSource {
     );
   }
 
+  /// Shop-id linking (2026-11-15): customers are written with the
+  /// shop DOCUMENT id (`shop_<uid>`) while callers pass the bare
+  /// owner UID, so a raw `shopId ==` query missed the shop's own
+  /// customers. Match both id forms (Firestore `whereIn`, in-memory
+  /// membership) — the same candidate pattern the fleet layer uses.
+  /// [getCustomerByCnic] delegates here, so it is covered too.
   Future<List<CustomerEntity>> getShopCustomers(String shopId) async {
     final fs = _resolvedFirestore;
+    final ids = await candidateShopIds(fs, shopId);
     if (fs != null) {
       try {
         final snap = await fs
             .collection('customers')
-            .where('shopId', isEqualTo: shopId)
+            .where('shopId', whereIn: ids)
             .get();
         if (snap.docs.isNotEmpty) {
           return snap.docs
@@ -79,7 +87,7 @@ class CustomerRemoteDataSource {
       } catch (_) {}
     }
     return _inMemoryCustomers.values
-        .where((c) => c.shopId == shopId)
+        .where((c) => ids.contains(c.shopId))
         .toList();
   }
 
@@ -116,7 +124,14 @@ class CustomerRemoteDataSource {
   }
 
   Future<void> upsertCustomer(CustomerEntity customer) async {
-    final model = CustomerModel.fromEntity(customer);
+    // Shop-id linking (2026-11-15): callers pass the bare UID (CNIC
+    // review) or the doc id (wizard); the stored record always
+    // carries the canonical doc id. Canonicalizing an already
+    // canonical id is a no-op.
+    final canonical =
+        await canonicalShopId(_resolvedFirestore, customer.shopId);
+    final model =
+        CustomerModel.fromEntity(customer.copyWith(shopId: canonical));
     _inMemoryCustomers[customer.customerId] = model;
 
     final written = await _writeDoc('customers', customer.customerId, model.toMap());

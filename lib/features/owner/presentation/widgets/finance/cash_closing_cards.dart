@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../../l10n/app_localizations.dart';
 
 import '../../../../../core/constants/app_colors.dart';
+import '../../../../../core/utils/date_format.dart';
 import '../../../../../core/utils/money_format.dart';
 import '../../../../finance/domain/entities/cash_closing_entity.dart';
 import '../../../../../core/theme/card_decoration.dart';
@@ -121,7 +122,8 @@ class CashClosingRow extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text('${closing.date.day}/${closing.date.month}/${closing.date.year}',
+          // Audit 2026-11-15 DS-5: localized date, never raw d/m/y.
+          Text(formatDate(context, closing.date),
               style: const TextStyle(fontWeight: FontWeight.w600)),
           Text(
               l10n.financeClosingCounted(formatRs(closing.countedCash), formatRs(closing.difference)),

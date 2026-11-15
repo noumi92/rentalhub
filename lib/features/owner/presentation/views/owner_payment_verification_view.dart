@@ -12,7 +12,9 @@ import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
 import '../../../bookings/presentation/widgets/proof_image_viewer.dart';
 import '../../../bookings/presentation/widgets/shop_payment_accounts.dart';
+import '../../../trust/data/services/trust_score_service.dart';
 import '../widgets/operations/booking_fare_breakdown.dart';
+import '../widgets/operations/payment_reject_dialog.dart';
 
 /// Phase B (D3): the owner checks a submitted payment proof — the
 /// screenshot and the transaction id — and either confirms the
@@ -23,10 +25,15 @@ class OwnerPaymentVerificationView extends StatefulWidget {
   final BookingEntity booking;
   final VoidCallback? onBack;
 
+  /// PW-18: a preloaded trust result (tests / embeds). When null
+  /// the view loads it from [TrustScoreService] in initState.
+  final TrustScoreResult? trustResult;
+
   const OwnerPaymentVerificationView({
     super.key,
     required this.booking,
     this.onBack,
+    this.trustResult,
   });
 
   @override
@@ -37,6 +44,23 @@ class OwnerPaymentVerificationView extends StatefulWidget {
 class _OwnerPaymentVerificationViewState
     extends State<OwnerPaymentVerificationView> {
   bool _processing = false;
+
+  /// PW-18: the customer risk context (live trust score, KYC state,
+  /// prior trips) for the money decision. Null until loaded.
+  TrustScoreResult? _trust;
+
+  @override
+  void initState() {
+    super.initState();
+    _trust = widget.trustResult;
+    if (_trust == null) {
+      const TrustScoreService().compute(_booking.customerId).then((r) {
+        if (mounted && r != null) setState(() => _trust = r);
+      });
+    }
+  }
+
+  String _kycLabel(AppLocalizations l10n, String status) => {'verified': l10n.verified, 'rejected': l10n.kycStatusRejected, 'submitted': l10n.kycStatusSubmitted, 'pending': l10n.kycStatusSubmitted}[status] ?? l10n.home2_kycNotStarted;
 
   BookingEntity get _booking => widget.booking;
 
@@ -49,16 +73,12 @@ class _OwnerPaymentVerificationViewState
         advanceAmount: _booking.advanceRequired,
       );
       if (!mounted) return;
-      AppFeedback.showSuccess(context,
-          l10n.paymentVerificationConfirmed(_booking.bookingId));
+      AppFeedback.showSuccess(context, l10n.paymentVerificationConfirmed(_booking.bookingId));
       // Audit §5 item 3 (O18): approval lands on the Booking
       // Confirmed screen, not straight on handover.
       // Registrar: RouteNames.ownerBookingConfirmed =
-      // '/owner/booking-confirmed/:id' (see
-      // audit_impl_manifest_worker_a.md).
-      context.pushReplacement(
-        '/owner/booking-confirmed/${_booking.bookingId}',
-      );
+      // '/owner/booking-confirmed/:id' (see audit_impl_manifest_worker_a.md).
+      context.pushReplacement('/owner/booking-confirmed/${_booking.bookingId}');
     } catch (e) {
       if (mounted) AppFeedback.showError(context, l10n.paymentVerificationConfirmFailed(e.toString()));
     } finally {
@@ -68,44 +88,7 @@ class _OwnerPaymentVerificationViewState
 
   Future<void> _reject() async {
   final l10n = AppLocalizations.of(context)!;
-    final reasonController = TextEditingController();
-    final reason = await showDialog<String>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(l10n.paymentVerificationRejectTitle),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(l10n.paymentVerificationRejectNote),
-            const SizedBox(height: 12),
-            TextField(
-              controller: reasonController,
-              autofocus: true,
-              maxLines: 3,
-              decoration: InputDecoration(
-                labelText: l10n.paymentVerificationReasonLabel,
-                hintText: l10n.paymentVerificationReasonHint,
-                // OW-m29: 16 dp, same as every other dialog field.
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16)),
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: Text(l10n.cancel),
-          ),
-          FilledButton(
-            onPressed: () =>
-                Navigator.of(dialogContext).pop(reasonController.text.trim()),
-            child: Text(l10n.paymentVerificationRejectButton),
-          ),
-        ],
-      ),
-    );
+    final reason = await showPaymentRejectDialog(context);
     if (reason == null || reason.isEmpty || !mounted) return;
     setState(() => _processing = true);
     try {
@@ -114,8 +97,7 @@ class _OwnerPaymentVerificationViewState
         reason: reason,
       );
       if (!mounted) return;
-      AppFeedback.showInfo(
-          context, l10n.paymentVerificationRejected);
+      AppFeedback.showInfo(context, l10n.paymentVerificationRejected);
       context.pop();
     } catch (e) {
       if (mounted) AppFeedback.showError(context, l10n.paymentVerificationRejectFailed(e.toString()));
@@ -184,6 +166,21 @@ class _OwnerPaymentVerificationViewState
                             _row(l10n.paymentVerificationAdvanceDue, l10n.amountRs(formatRs(b.advanceRequired))),
                             _row(l10n.paymentVerificationAdvancePaid, l10n.amountRs(formatRs(b.advancePaid))),
                             _row(l10n.paymentVerificationTransactionId, b.transactionId ?? '—'),
+                            // PW-18: the risk context for the money
+                            // decision — live trust score, KYC state,
+                            // prior trips. Nothing renders until the
+                            // computation arrives. No account is
+                            // highlighted: no per-booking destination
+                            // account exists on the entity, so there
+                            // is no number to match against the shop's
+                            // accounts (that needs a destination field
+                            // on the booking, a data-layer change).
+                            if (_trust != null) ...[
+                              const Divider(height: 16),
+                              Text(l10n.reputationTrustScoreValue(_trust!.breakdown.total.toStringAsFixed(1))),
+                              Text(l10n.kycStatus(_kycLabel(l10n, _trust!.kycStatus))),
+                              Text(l10n.priorTripsCount(_trust!.completedTrips)),
+                            ],
                           ],
                         ),
                       ),
@@ -218,7 +215,10 @@ class _OwnerPaymentVerificationViewState
                       child: DebouncedButton(
                         text: _processing
                             ? l10n.paymentVerificationConfirming
-                            : l10n.paymentVerificationConfirmButton(formatRs(b.advanceRequired)),
+                            // Audit 2026-11-15 PW-11: route through
+                            // amountRs (§4.5 money rule); the .arb
+                            // value no longer embeds 'Rs.'.
+                            : l10n.paymentVerificationConfirmButton(l10n.amountRs(formatRs(b.advanceRequired))),
                         icon: Icons.check_circle_rounded,
                         isLoading: _processing,
                         onPressed: _approve,

@@ -55,7 +55,9 @@ class AdminKpiCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
-          Text(value, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700)),
+          // Audit 2026-11-15 AC-9 (admin line): 24 sp w700 is not in
+          // the §4.5 scale — displayLarge (28/Bold) is the value slot.
+          Text(value, style: Theme.of(context).textTheme.displayLarge),
           const SizedBox(height: 6),
           Text(changeLabel, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w500, color: AppColors.successTextFor(Theme.of(context).brightness))),
         ],

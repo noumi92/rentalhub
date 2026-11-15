@@ -1,5 +1,4 @@
-import 'package:firebase_auth/firebase_auth.dart';
-
+import '../../../../../core/auth/signed_in_user.dart';
 import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
 import '../../../finance/data/datasources/security_deposit_data_source.dart';
@@ -54,13 +53,13 @@ class CustomerWalletService {
   final BookingRemoteDataSource _bookings;
   final SecurityDepositDataSource _deposits;
 
-  static String currentUid() {
-    try {
-      return FirebaseAuth.instance.currentUser?.uid ?? 'cust-101';
-    } catch (_) {
-      return 'cust-101';
-    }
-  }
+  /// The signed-in customer's uid, or null when nobody is signed in.
+  /// AC-8: this NEVER falls back to a placeholder uid — a signed-out
+  /// wallet must never read another customer's bookings and deposits.
+  /// Uses the [SignedInUser] seam, so widget tests exercise the
+  /// signed-in path via `SignedInUser.override` (same pattern as the
+  /// bookings view) without reintroducing a fallback in production.
+  static String? currentUid() => SignedInUser.current()?.uid;
 
   Future<CustomerWalletSummary> load(String uid) async {
     final bookings = await _bookings.getCustomerBookings(uid);

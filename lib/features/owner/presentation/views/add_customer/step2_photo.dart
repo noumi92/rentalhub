@@ -104,8 +104,14 @@ class Step2PhotoState extends KycStepState<Step2Photo> {
           ),
         ),
         const SizedBox(height: 8),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+        // Audit 2026-11-15 (Team D find): Take + Retake + Remove in
+        // one Row overflowed 108 px at 360 px once a face photo
+        // exists — a Wrap lets the actions flow to a second line,
+        // like the finger sections below.
+        Wrap(
+          alignment: WrapAlignment.center,
+          spacing: 8,
+          runSpacing: 8,
           children: [
             OutlinedButton.icon(
               key: const ValueKey('step2_face_take'),
@@ -114,13 +120,11 @@ class Step2PhotoState extends KycStepState<Step2Photo> {
               label: Text(l10n.kycTakePhoto),
             ),
             if (draft.hasFacePhoto) ...[
-              const SizedBox(width: 8),
               TextButton(
                 key: const ValueKey('step2_face_retake'),
                 onPressed: _pickFace,
                 child: Text(l10n.kycWizardRetake),
               ),
-              const SizedBox(width: 8),
               TextButton(
                 key: const ValueKey('step2_face_remove'),
                 onPressed: () {

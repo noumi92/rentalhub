@@ -165,7 +165,7 @@ void main() {
       expect(find.text('تھیم'), findsOneWidget);
     });
 
-    testWidgets('tapping a language chip persists the choice',
+    testWidgets('tapping the language row persists the choice',
         (tester) async {
       final prefs = await SharedPreferences.getInstance();
       await di.sl<AppSettingsCubit>().setLocale('en');
@@ -181,14 +181,23 @@ void main() {
       // (l10n.settings) and the quick link (l10n.fleetShopSettings).
       expect(find.text('Shop Settings'), findsNWidgets(2));
 
-      // In the English locale the chip is labelled 'Urdu' (the .arb
-      // English value); tapping it persists 'ur' in the cubit.
+      // Team J redesign (audit 2026-11-15): language is a row + bottom
+      // sheet, not visible chips — tap the Language row, then the
+      // sheet's Urdu option. (This pump's MaterialApp has no locale
+      // binding to the cubit, so the UI stays English throughout;
+      // the persisted cubit state + prefs are the assertions.)
+      await tester.ensureVisible(find.text('Language'));
+      await tester.tap(find.text('Language'));
+      await tester.pumpAndSettle();
       await tester.ensureVisible(find.text('Urdu'));
       await tester.tap(find.text('Urdu'));
       await tester.pumpAndSettle();
       expect(di.sl<AppSettingsCubit>().state.localeCode, 'ur');
       expect(prefs.getString(AppSettingsCubit.localeKey), 'ur');
 
+      await tester.ensureVisible(find.text('Language'));
+      await tester.tap(find.text('Language'));
+      await tester.pumpAndSettle();
       await tester.ensureVisible(find.text('English'));
       await tester.tap(find.text('English'));
       await tester.pumpAndSettle();

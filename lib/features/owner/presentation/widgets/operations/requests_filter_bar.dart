@@ -49,10 +49,10 @@ class RequestsFilterBar extends StatelessWidget {
               filled: true,
               fillColor:
                   Theme.of(context).colorScheme.surfaceContainerHighest,
-              border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide:
-                      BorderSide(color: Theme.of(context).dividerColor)),
+              // Audit 2026-11-15 DS-12: no explicit border — the theme
+              // owns the radius-16 input border. The chips below
+              // already inherit the navy selected-chip theme token
+              // (DS-1): this bar carries no selectedColor override.
               contentPadding:
                   const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
             ),

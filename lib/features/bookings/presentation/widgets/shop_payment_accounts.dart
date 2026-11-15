@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/widgets/app_feedback.dart';
 import '../../../../l10n/app_localizations.dart';
 
 /// The shop's real payment accounts, read from the shop doc's
@@ -28,6 +30,9 @@ class ShopPaymentAccounts extends StatelessWidget {
 
   /// When true, only the first account renders, as one
   /// `paymentProofPayTo` line ("Pay to: JazzCash 0300-…").
+  /// PW-3: retained for callers but NO LONGER TRUNCATES — every
+  /// configured account renders with its own copy button, so the
+  /// payer never has to memorise and retype a long account number.
   final bool singleLine;
 
   Future<Map<String, dynamic>?> _getShopData() async {
@@ -78,9 +83,11 @@ class ShopPaymentAccounts extends StatelessWidget {
           final number = isWallet
               ? (acc['account'] as String? ?? '')
               : (acc['iban'] as String? ?? '');
-          return '$methodTitle $number'.trim();
-        }).toList();
-        final shown = singleLine ? accounts.take(1).toList() : accounts;
+          return (method: methodTitle, number: number);
+        }).where((a) => a.number.isNotEmpty).toList();
+        // PW-3: all configured accounts, never first-only — the
+        // singleLine flag is kept for callers but does not truncate.
+        final shown = accounts;
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -97,12 +104,33 @@ class ShopPaymentAccounts extends StatelessWidget {
             for (final account in shown)
               Padding(
                 padding: const EdgeInsets.only(bottom: 2),
-                child: Text(
-                  l10n.paymentProofPayTo(account),
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppColors.successTextFor(
-                            Theme.of(context).brightness),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        l10n.paymentProofPayTo(
+                            '${account.method} ${account.number}'.trim()),
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: AppColors.successTextFor(
+                                  Theme.of(context).brightness),
+                            ),
                       ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.copy_rounded, size: 18),
+                      tooltip: l10n.paymentCopyNumber,
+                      constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+                      padding: EdgeInsets.zero,
+                      onPressed: () async {
+                        await Clipboard.setData(
+                            ClipboardData(text: account.number));
+                        if (context.mounted) {
+                          AppFeedback.showSuccess(context,
+                              l10n.paymentCopied(account.method));
+                        }
+                      },
+                    ),
+                  ],
                 ),
               ),
           ],

@@ -50,30 +50,48 @@ class Step3DocsState extends KycStepState<Step3Docs> {
     super.dispose();
   }
 
-  /// dd.mm.yyyy only; the label itself carries the format, so it
-  /// doubles as the (localized) error text — no new .arb key needed.
-  static String? _validateDate(String? value, String label) {
+  /// dd.mm.yyyy only; an invalid date returns the localized format
+  /// error (FG-14) — never the field label, which reads as a label,
+  /// not an explanation.
+  static String? _validateDate(String? value, String error) {
     final t = value?.trim() ?? '';
     if (t.isEmpty) return null;
     final m = RegExp(r'^(\d{2})\.(\d{2})\.(\d{4})$').firstMatch(t);
-    if (m == null) return label;
+    if (m == null) return error;
     final day = int.parse(m[1]!); final month = int.parse(m[2]!); final year = int.parse(m[3]!);
     final parsed = DateTime.tryParse('$year-${month.toString().padLeft(2, '0')}-${day.toString().padLeft(2, '0')}');
-    if (parsed == null || parsed.day != day || parsed.month != month || parsed.year != year) return label;
+    if (parsed == null || parsed.day != day || parsed.month != month || parsed.year != year) return error;
     return null;
   }
 
+  /// FG-16: name the FIRST missing item instead of one generic
+  /// "step incomplete" for all seven requirements, so the owner
+  /// knows exactly what to add; an empty signature pad and the
+  /// unaccepted terms each get their own message.
   @override
   Future<bool> validate() async {
     final d = widget.draft;
-    final expiryOk = d.licenseExpiry.trim().isNotEmpty && _validateDate(d.licenseExpiry, '') == null;
-    final ok = d.hasLicenseFront && d.hasLicenseBack && d.licenseNumber.trim().isNotEmpty && expiryOk && d.hasUtilityBill && d.hasSignature && d.termsAgreed;
-    if (!ok && mounted) AppFeedback.showError(context, AppLocalizations.of(context)!.kycWizardStepIncomplete);
-    return ok;
+    final l10n = AppLocalizations.of(context)!;
+    // First missing item wins, in screen order.
+    final missing = !d.hasLicenseFront ? l10n.kycWizardMissingItem(l10n.kycWizardLicenseFront)
+        : !d.hasLicenseBack ? l10n.kycWizardMissingItem(l10n.kycWizardLicenseBack)
+        : d.licenseNumber.trim().isEmpty ? l10n.kycWizardMissingItem(l10n.kycWizardLicenseNumber)
+        : d.licenseExpiry.trim().isEmpty ? l10n.kycWizardMissingItem(l10n.kycWizardLicenseExpiry)
+        : _validateDate(d.licenseExpiry, l10n.kycWizardDateFormatError) != null ? l10n.kycWizardDateFormatError
+        : !d.hasUtilityBill ? l10n.kycWizardMissingItem(l10n.kycWizardUtilityBill)
+        : !d.hasSignature ? l10n.kycWizardSignatureMissing
+        : !d.termsAgreed ? l10n.kycWizardTermsMissing
+        : null;
+    if (missing != null && mounted) AppFeedback.showError(context, missing);
+    return missing == null;
   }
 
+  /// Utility bill + extra docs: rear camera only (FG-17). The wizard
+  /// plan allows the gallery for CNIC front/back only; the bill and
+  /// extra documents are KYC evidence like the license, so they
+  /// follow the same camera-only rule (no gallery row).
   Future<void> _pick(ValueSetter<XFile> set) async {
-    await MediaPickerHelper.showMediaSourceSheet(context: context, onImageSelected: (file) { if (file == null || !mounted) return; setState(() => set(file)); widget.onChanged(); });
+    await MediaPickerHelper.showMediaSourceSheet(context: context, cameraOnly: true, onImageSelected: (file) { if (file == null || !mounted) return; setState(() => set(file)); widget.onChanged(); });
   }
 
   void _syncLicenseControllers() {
@@ -113,7 +131,7 @@ class Step3DocsState extends KycStepState<Step3Docs> {
 
   Future<void> _confirmSignature() async {
     if (_signatureController.isEmpty) {
-      AppFeedback.showError(context, AppLocalizations.of(context)!.kycWizardStepIncomplete);
+      AppFeedback.showError(context, AppLocalizations.of(context)!.kycWizardSignatureMissing);
       return;
     }
     final bytes = await _signatureController.toPngBytes();
@@ -148,7 +166,7 @@ class Step3DocsState extends KycStepState<Step3Docs> {
 
   Widget _field(TextEditingController controller, String label, {String? hint, TextInputType keyboard = TextInputType.text, List<TextInputFormatter>? formatters, required ValueChanged<String> onChanged}) {
     // Filled like step 1's fields (were unfilled here).
-    return TextFormField(controller: controller, keyboardType: keyboard, inputFormatters: formatters, decoration: InputDecoration(labelText: label, hintText: hint, border: const OutlineInputBorder(), filled: true, fillColor: Theme.of(context).colorScheme.surfaceContainerHighest), onChanged: onChanged);
+    return TextFormField(controller: controller, keyboardType: keyboard, inputFormatters: formatters, decoration: InputDecoration(labelText: label, hintText: hint, filled: true, fillColor: Theme.of(context).colorScheme.surfaceContainerHighest), onChanged: onChanged);
   }
 
   @override

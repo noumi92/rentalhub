@@ -123,7 +123,8 @@ class _PricingOutCityModesState extends State<PricingOutCityModes> {
         if (mode == 'perDay')
           PricingOutCityRates(outOfCityController: widget.outOfCityController, extraKmController: widget.extraKmController, outOfCityKmController: widget.outOfCityKmController, perKmEnabled: widget.perKmEnabled, onPerKmChanged: widget.onPerKmChanged)
         else if (mode == 'perKm') ...[
-          RateMatrixFieldWidget(controller: widget.perKmController, label: l10n.outCityPerKmRate, hint: 'Rs. 30 / km', kmCap: l10n.farePerKmUnit(l10n.amountRs(formatRs(int.tryParse(widget.perKmController.text.trim()) ?? 0)))),
+          // Audit 2026-11-15 DS-10: localized hint, no literal 'Rs.'.
+          RateMatrixFieldWidget(controller: widget.perKmController, label: l10n.outCityPerKmRate, hint: l10n.farePerKmUnit(l10n.amountRs(formatRs(30))), kmCap: l10n.farePerKmUnit(l10n.amountRs(formatRs(int.tryParse(widget.perKmController.text.trim()) ?? 0)))),
           const SizedBox(height: 10),
           Text(l10n.farePerKmEstimate(int.tryParse(widget.outOfCityKmController.text.trim()) ?? kDefaultOutCityKmPerDay), style: Theme.of(context).textTheme.labelSmall),
         ] else ...[

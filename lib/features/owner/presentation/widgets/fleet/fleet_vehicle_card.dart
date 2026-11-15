@@ -109,7 +109,22 @@ class FleetVehicleCard extends StatelessWidget {
     // filled token — orangeFill #C2410C (white 5.18:1, both modes) for
     // non-available, accentSuccessStrong #047857 (white 5.48:1) for
     // available. Never white on #F95700 / #FF6D24 (~3:1).
-    final chipColor = isAvailable ? AppColors.accentSuccessStrong : AppColors.orangeFill;
+    // FG-8 (UI/UX audit 2026-11-15): maintenance is no longer the
+    // rented orange — the detail view's three-way mapping:
+    // maintenance on warningOnContainer amber, on-rent on orangeFill.
+    final chipColor = vehicle.status == 'maintenance'
+        ? AppColors.warningOnContainer
+        : isAvailable
+            ? AppColors.accentSuccessStrong
+            : AppColors.orangeFill;
+    // PW-20 (UI/UX audit 2026-11-15): the out-of-city signal — a
+    // chip only when the vehicle has non-default out-city pricing
+    // (per-km or fixed route); per-day / unset shows nothing.
+    final outCityLabel = vehicle.outCityMode == 'perKm'
+        ? l10n.fleetOutCityPerKm
+        : vehicle.outCityMode == 'fixedRoute'
+            ? l10n.fleetOutCityFixedRoute
+            : null;
     return Card(
       elevation: 2,
       clipBehavior: Clip.antiAlias,
@@ -183,11 +198,14 @@ class FleetVehicleCard extends StatelessWidget {
                           style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600, color: Colors.white),
                         ),
                         const SizedBox(height: 6),
-                        Row(
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 6,
                           children: [
                             Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3), decoration: BoxDecoration(color: chipColor, borderRadius: BorderRadius.circular(10)), child: Text(_statusLabel(l10n, vehicle.status), style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w500, color: Colors.white))),
-                            const SizedBox(width: 8),
                             Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3), decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.22), borderRadius: BorderRadius.circular(10), border: Border.all(color: Colors.white.withValues(alpha: 0.65))), child: Text(vehicle.isSelfDriveAvailable ? l10n.selfDriveHyphen : l10n.withDriver, style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w500, color: Colors.white))),
+                            if (outCityLabel != null)
+                              Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3), decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.22), borderRadius: BorderRadius.circular(10), border: Border.all(color: Colors.white.withValues(alpha: 0.65))), child: Text(outCityLabel, style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w500, color: Colors.white))),
                           ],
                         ),
                         // RQ-F10: the active booking's return date on
@@ -250,7 +268,10 @@ class FleetVehicleCard extends StatelessWidget {
               const SizedBox(height: 2),
               Text(
                 label,
-                maxLines: 1,
+                // FG-6 (UI/UX audit 2026-11-15): two lines, not one —
+                // the Urdu out-of-city-rules label ellipsized in its
+                // ~92 dp slot at 360 px with maxLines: 1.
+                maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(color: orange),

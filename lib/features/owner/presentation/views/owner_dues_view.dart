@@ -23,7 +23,7 @@ import '../../../../core/utils/money_format.dart';
 class OwnerDuesView extends StatefulWidget {
   final String shopId;
 
-  const OwnerDuesView({super.key, this.shopId = 'shop-1'});
+  const OwnerDuesView({super.key, required this.shopId});
 
   @override
   State<OwnerDuesView> createState() => _OwnerDuesViewState();

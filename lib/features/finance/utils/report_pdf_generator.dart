@@ -5,6 +5,7 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
 import '../../bookings/domain/entities/booking_entity.dart';
+import '../../../core/utils/date_format.dart';
 import '../../../core/utils/money_format.dart';
 
 /// Audit impl (O37): a real A4 earnings report, built with the
@@ -196,5 +197,9 @@ class ReportPdfGenerator {
     return doc.save();
   }
 
-  static String _date(DateTime d) => '${d.day}/${d.month}/${d.year}';
+  // Audit 2026-11-15 DS-5: unambiguous "5 Nov 2026", never raw d/m/y.
+  // No BuildContext in a PDF generator, so the English locale is pinned
+  // (the report is generated in English). formatDateEn is intl-free:
+  // DateFormat.yMMMd('en') throws LocaleDataException in plain tests.
+  static String _date(DateTime d) => formatDateEn(d);
 }

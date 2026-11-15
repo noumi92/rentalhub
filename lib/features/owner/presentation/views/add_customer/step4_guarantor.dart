@@ -124,7 +124,6 @@ class _Step4GuarantorState extends KycStepState<Step4Guarantor> {
           decoration: InputDecoration(
             labelText: l10n.kycWizardSearchGuarantor,
             prefixIcon: const Icon(Icons.search_rounded),
-            border: const OutlineInputBorder(),
             filled: true,
             fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
           ),
@@ -132,7 +131,16 @@ class _Step4GuarantorState extends KycStepState<Step4Guarantor> {
         ),
         const SizedBox(height: 12),
         if (_loading)
-          const Center(child: CircularProgressIndicator())
+          // DS-11: labelled inline spinner (text + spinner), not a
+          // bare spinner — the error branch below already retries.
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)),
+              const SizedBox(width: 8),
+              Text(l10n.customersLoadingMessage),
+            ],
+          )
         else if (_loadFailed) ...[
           Text(l10n.customersLoadError,
               style: Theme.of(context).textTheme.bodySmall),
@@ -179,7 +187,6 @@ class _Step4GuarantorState extends KycStepState<Step4Guarantor> {
           key: ValueKey(widget.draft.guarantorCustomerId),
           decoration: InputDecoration(
             labelText: l10n.kycWizardRelation,
-            border: const OutlineInputBorder(),
             filled: true,
             fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
           ),

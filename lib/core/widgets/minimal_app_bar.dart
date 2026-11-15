@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../l10n/app_localizations.dart';
-import '../constants/app_colors.dart';
 import '../theme/app_theme.dart';
 
 /// Minimal app bar (design direction #16): flat solid navy, 56 dp title
@@ -71,14 +70,18 @@ class MinimalAppBar extends StatelessWidget implements PreferredSizeWidget {
                 children: [
                   Text(
                     title,
-                    maxLines: 1,
+                    // Audit 2026-11-15 AC-15: long Urdu titles
+                    // truncated at maxLines 1 at 360 px — allow 2
+                    // lines (the bar grows past 56 dp instead of
+                    // clipping). Phone check still owed.
+                    maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: headerText.headerTitle,
                   ),
                   if (subtitle != null)
                     Text(
                       subtitle!,
-                      maxLines: 1,
+                      maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: headerText.headerSubtitle,
                     ),

@@ -60,7 +60,9 @@ class DocPhotoTile extends StatelessWidget {
         if (photo != null)
           Align(
             alignment: Alignment.centerLeft,
-            child: TextButton(key: removeButtonKey, onPressed: scanning ? null : onRemove, child: Text(l10n.kycWizardRemoveImage)),
+            // DS-17: 48dp hit area, like the CNIC remove (48x48
+            // IconButton) — a bare TextButton has no such guarantee.
+            child: TextButton(key: removeButtonKey, style: TextButton.styleFrom(minimumSize: const Size(0, 48)), onPressed: scanning ? null : onRemove, child: Text(l10n.kycWizardRemoveImage)),
           ),
       ],
     );

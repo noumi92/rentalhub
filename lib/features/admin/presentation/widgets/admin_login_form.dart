@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/constants/app_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 
 /// The admin login's credentials form, extracted from AdminLoginView
@@ -71,9 +72,12 @@ class _AdminLoginFormState extends State<AdminLoginForm> {
         if (widget.error != null) ...[
           const SizedBox(height: 12),
           Text(widget.error!,
-              style: const TextStyle(
+              style: TextStyle(
                   fontSize: 13,
-                  color: Colors.red)),
+                  // Audit 2026-11-15 AC-5: raw Colors.red #F44336 is
+                  // 3.68:1 in light mode — the readable danger token.
+                  color: AppColors.dangerTextFor(
+                      Theme.of(context).brightness))),
         ],
         const SizedBox(height: 20),
         FilledButton(

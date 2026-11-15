@@ -185,7 +185,11 @@ void main() {
       // Per-km rate (deck default Rs. 30/km) appears; the daily rate
       // and the km allowance do not apply and are hidden.
       expect(fieldShows(tester, '30'), isTrue);
-      expect(find.text('Rs. 30 / km'), findsOneWidget);
+      // Audit 2026-11-15 DS-10: the string appears twice — the per-km
+      // field's hint AND the value display (the hint used to be
+      // silently dropped by RateMatrixFieldWidget, so the old test
+      // only ever saw one copy).
+      expect(find.text('Rs. 30 / km'), findsNWidgets(2));
       expect(find.text('Estimated on 300 km — final total on actual km at return'), findsOneWidget);
       expect(fieldShows(tester, '9500'), isFalse);
       expect(fieldShows(tester, '300'), isFalse);

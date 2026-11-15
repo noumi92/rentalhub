@@ -105,6 +105,7 @@ class CustomerEntity extends Equatable {
   });
 
   CustomerEntity copyWith({
+    String? shopId,
     String? name,
     String? phone,
     String? cnic,
@@ -138,7 +139,7 @@ class CustomerEntity extends Equatable {
   }) {
     return CustomerEntity(
       customerId: customerId,
-      shopId: shopId,
+      shopId: shopId ?? this.shopId,
       name: name ?? this.name,
       phone: phone ?? this.phone,
       cnic: cnic ?? this.cnic,

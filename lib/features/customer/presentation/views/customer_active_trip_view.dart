@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../core/widgets/minimal_app_bar.dart';
+import '../../../../core/utils/date_format.dart';
 import '../../../../core/utils/money_format.dart';
 import '../../../../core/widgets/debounced_button.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
@@ -61,8 +62,8 @@ class _CustomerActiveTripViewState extends State<CustomerActiveTripView> {
     }
   }
 
-  String _when(DateTime t) =>
-      '${t.day}/${t.month}/${t.year} at ${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
+  // Audit 2026-11-15 DS-5: localized date + time, never raw d/m/y.
+  String _when(DateTime t) => formatDateTime(context, t);
 
   @override
   Widget build(BuildContext context) {
@@ -153,7 +154,6 @@ class _CustomerActiveTripViewState extends State<CustomerActiveTripView> {
                       shopPhone: b.shopPhone,
                       bookingId: b.bookingId,
                     ),
-                    const SizedBox(height: 20),
                   ],
                 ),
               ),

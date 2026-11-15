@@ -64,7 +64,7 @@ class _DisputeDetailSheetState extends State<DisputeDetailSheet> {
     final color = DisputeListTile.statusColor(context, d.status);
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+        padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,

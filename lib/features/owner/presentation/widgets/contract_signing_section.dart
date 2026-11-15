@@ -287,18 +287,31 @@ class _ContractSigningSectionState extends State<ContractSigningSection> {
             ),
             const SizedBox(height: 4),
             if (_guarantorSig.isEmpty)
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: null,
-                  icon: const Icon(Icons.draw_rounded, size: 18),
-                  label: Text(l10n.contractSignAgreement),
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size(double.infinity, 54),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16)),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: null,
+                      icon: const Icon(Icons.draw_rounded, size: 18),
+                      label: Text(l10n.contractSignAgreement),
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: const Size(double.infinity, 54),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16)),
+                      ),
+                    ),
                   ),
-                ),
+                  // AC-11: the disabled button now says why — the
+                  // contract-view pattern (disabled button + reason).
+                  const SizedBox(height: 6),
+                  Text(
+                    l10n.contractSignAgreementHint,
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant),
+                  ),
+                ],
               )
             else
               DebouncedButton(

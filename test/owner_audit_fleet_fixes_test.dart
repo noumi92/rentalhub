@@ -125,7 +125,7 @@ void main() {
       expect(find.text('Out-of-city rules'), findsOneWidget);
     });
 
-    testWidgets('selected filter chip label is white on orange', (tester) async {
+    testWidgets('selected filter chip label is white on the navy theme fill (DS-1)', (tester) async {
       await tester.pumpWidget(_wrap(FleetFilterChips(
         selectedFilter: 'All',
         totalCount: 3,
@@ -135,9 +135,23 @@ void main() {
         onSelected: (_) {},
       )));
       await tester.pumpAndSettle();
+      // Audit 2026-11-15 DS-1: no per-file selectedColor/labelStyle
+      // any more — the chip is theme-driven (navy fill + white
+      // label). The old orangeFill override is deleted.
       final chip = tester.widget<ChoiceChip>(find.byType(ChoiceChip).first);
-      expect(chip.selectedColor, AppColors.orangeFill);
-      expect(chip.labelStyle?.color, Colors.white);
+      expect(chip.selectedColor, isNull);
+      expect(chip.labelStyle, isNull);
+      expect(AppTheme.lightTheme.chipTheme.selectedColor,
+          AppColors.primary);
+      expect(AppTheme.lightTheme.chipTheme.secondaryLabelStyle?.color,
+          Colors.white);
+      // The rendered selected label ("All (3)") takes the theme's
+      // secondary label style (white w600): DefaultTextStyle.of is
+      // the effective style the Text paints with.
+      final labelElement = find.text('All (3)').evaluate().single;
+      expect(DefaultTextStyle.of(labelElement).style.color, Colors.white);
+      expect(DefaultTextStyle.of(labelElement).style.fontWeight,
+          FontWeight.w600);
     });
   });
 

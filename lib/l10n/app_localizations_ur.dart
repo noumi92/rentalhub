@@ -339,7 +339,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get profileGuest => 'مہمان';
 
   @override
-  String get homeTitle => 'تصدیق شدہ کرایہ شوروم تلاش کریں';
+  String get homeTitle => 'ہوم';
 
   @override
   String get homeSwitchToMap => 'انٹرایکٹو نقشہ دیکھیں';
@@ -600,7 +600,8 @@ class AppLocalizationsUr extends AppLocalizations {
   String get walletTitle => 'والیٹ اور سیکیورٹی ایسکرو';
 
   @override
-  String get walletActiveEscrow => 'فعال ایسکرو اور ایڈوانس';
+  String get walletActiveEscrow =>
+      'شوروم کے پاس کل: ادا شدہ ایڈوانس + محفوظ ڈپازٹ';
 
   @override
   String get walletAdvancesPaid => 'ادا شدہ ایڈوانس';
@@ -1183,7 +1184,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get proofPrivateNote =>
-      'ثبوت نجی اسٹوریج پر اپ لوڈ ہوتا ہے۔ شوروم اسے چیک کر کے آپ کی بکنگ کی تصدیق کرتا ہے — انتظار کا کوئی مقررہ وقت نہیں۔';
+      'ثبوت نجی اسٹوریج پر اپ لوڈ ہوتا ہے۔ شوروم اسے چیک کر کے آپ کی بکنگ کی تصدیق کرتا ہے اور تصدیق ہوتے ہی آپ کو ایپ میں اطلاع ملے گی۔ اگر جواب نہ آئے تو شوروم کو واٹس ایپ پر پیغام بھیجیں۔';
 
   @override
   String get passTitle => 'پک اپ کاؤنٹ ڈاؤن پاس';
@@ -1256,7 +1257,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get tripTrackerNote =>
-      'ٹریکر کلیئرنس درکار ہے — شوروم پک اپ سے پہلے اس کی تصدیق کرتا ہے۔';
+      'ٹریکر کلیئرنس درکار ہے — شوروم پک اپ سے پہلے اس کی تصدیق کرتا ہے۔ اگر کلیئرنس نہ ملی تو شوروم پک اپ سے پہلے آپ سے رابطہ کرے گا۔';
 
   @override
   String get advanceNoticeTitle => 'ایڈوانس اور تصدیق کی اطلاع';
@@ -1619,8 +1620,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get roleOwnerUrdu => 'شوروم رجسٹر کریں';
 
   @override
-  String get advanceNoticeWithDriver =>
-      '• ڈرائیور شوروم / پک اپ پوائنٹ پر 15 منٹ پہلے پہنچتا ہے۔\n• ایڈوانس ادائیگی گاڑی کی بکنگ اور ایندھن کی ریزرویشن کی تصدیق کرتی ہے۔\n• آؤٹ اسٹیشن قیام: ڈرائیور کے کھانے اور رہائش کے لیے 1,500 روپے فی رات۔';
+  String advanceNoticeWithDriver(String nightStay) {
+    return '• ڈرائیور شوروم / پک اپ پوائنٹ پر 15 منٹ پہلے پہنچتا ہے۔\n• ایڈوانس ادائیگی گاڑی کی بکنگ اور ایندھن کی ریزرویشن کی تصدیق کرتی ہے۔\n• آؤٹ اسٹیشن قیام: ڈرائیور کے کھانے اور رہائش کے لیے $nightStay فی رات۔';
+  }
 
   @override
   String get advanceNoticeSelfDrive =>
@@ -1716,11 +1718,6 @@ class AppLocalizationsUr extends AppLocalizations {
   }
 
   @override
-  String vehicleDepositCnic(String amount) {
-    return 'سیکیورٹی ڈپازٹ: $amount روپے + پک اپ پر اصل نادرا شناختی کارڈ ضمانت کے طور پر درکار ہے';
-  }
-
-  @override
   String vehicleDriverPackageDetail(String overtime, String outstation) {
     return 'تصدیق شدہ ڈرائیور شامل • اوور ٹائم: $overtime روپے/گھنٹہ • آؤٹ اسٹیشن: +$outstation روپے/دن';
   }
@@ -1737,7 +1734,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String bookNowWithRate(String rate) {
-    return 'ابھی بک کریں ($rate روپے)';
+    return 'ابھی بک کریں ($rate/دن)';
   }
 
   @override
@@ -2024,11 +2021,6 @@ class AppLocalizationsUr extends AppLocalizations {
   @override
   String walletAdvancesEscrow(String adv, String esc) {
     return 'ایڈوانس $adv روپے • ایسکرو $esc روپے';
-  }
-
-  @override
-  String ticketPickupDate(int day, int month, int year) {
-    return 'پک اپ: $day/$month/$year';
   }
 
   @override
@@ -3684,11 +3676,6 @@ class AppLocalizationsUr extends AppLocalizations {
   }
 
   @override
-  String returnCustomerOwes(String amount) {
-    return 'گاہک پر $amount روپے واجب الادا ہیں';
-  }
-
-  @override
   String returnFinalizeFailed(String error) {
     return 'واپسی مکمل کرنا ناکام ہوا: $error';
   }
@@ -3951,11 +3938,6 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get paymentVerificationConfirming => 'تصدیق ہو رہی ہے…';
-
-  @override
-  String paymentVerificationConfirmButton(String amount) {
-    return 'ادائیگی تصدیق کریں — $amount روپے';
-  }
 
   @override
   String get manualBookingTitle => 'واک اِن بکنگ وزرڈ';
@@ -9551,4 +9533,267 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get admin2_teamRevokeTooltip => 'ایڈمن کردار واپس لیں';
+
+  @override
+  String get extraChargeLoading => 'محفوظ شدہ اضافی چارجز لوڈ ہو رہے ہیں…';
+
+  @override
+  String get kycWizardDateFormatError => 'تاریخ DD.MM.YYYY کی شکل میں درج کریں';
+
+  @override
+  String kycWizardMissingItem(String item) {
+    return '$item موجود نہیں ہے — جاری رکھنے کے لیے اسے شامل کریں';
+  }
+
+  @override
+  String get kycWizardSignatureMissing =>
+      'جاری رکھنے سے پہلے اپنے دستخط بنائیں';
+
+  @override
+  String get kycWizardTermsMissing =>
+      'جاری رکھنے سے پہلے کرایے کی شرائط سے اتفاق کریں';
+
+  @override
+  String get manualBookingLoadingRoutes => 'مقررہ راستے لوڈ ہو رہے ہیں…';
+
+  @override
+  String get mediaCameraError =>
+      'کیمرہ نہیں کھل سکا۔ کیمرے کی اجازت چیک کریں اور دوبارہ کوشش کریں۔';
+
+  @override
+  String get passNotValid => 'یہ پاس پک اپ کے لیے درست نہیں ہے';
+
+  @override
+  String get contractSignAgreementHint =>
+      'دستخط کے لیے ضامن کے دستخط شامل کریں۔';
+
+  @override
+  String get depositRefundTerms =>
+      'واپسی کے معائنے کے بعد ڈپازٹ واپس کیا جائے گا، نقصان اور اضافی کلومیٹر کے چارجز منہا کر کے۔';
+
+  @override
+  String disputeLastUpdated(String date) {
+    return 'آخری اپ ڈیٹ $date';
+  }
+
+  @override
+  String get handoverBalanceDue => 'حوالگی پر واجب الادا بقایا';
+
+  @override
+  String get handoverBalanceMethodRequired =>
+      'تصدیق سے پہلے بتائیں کہ بقایا کس طرح وصول ہوا، یا \'ابھی نہیں\' منتخب کریں۔';
+
+  @override
+  String get handoverBalanceNotYet => 'ابھی نہیں';
+
+  @override
+  String get handoverFuelRequired => 'تصدیق سے پہلے ایندھن کی سطح منتخب کریں۔';
+
+  @override
+  String get manualBookingLoadingVehicles => 'گاڑیاں لوڈ ہو رہی ہیں…';
+
+  @override
+  String get profileLoadFailed =>
+      'آپ کا پروفائل لوڈ نہیں ہو سکا۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔';
+
+  @override
+  String get proofAdvanceCopied => 'ایڈوانس رقم کلپ بورڈ پر کاپی ہو گئی';
+
+  @override
+  String get proofCopyAdvance => 'ایڈوانس رقم کاپی کریں';
+
+  @override
+  String get proofMessageShop => 'شوروم کو واٹس ایپ پر پیغام بھیجیں';
+
+  @override
+  String returnAmountOwedByCustomer(String amount) {
+    return 'گاہک کی طرف واجب الادا رقم: $amount';
+  }
+
+  @override
+  String get returnCloseBookingHint =>
+      'بکنگ بند کرنے سے پہلے ڈپازٹ کی واپسی درج کریں۔';
+
+  @override
+  String get returnFinalizeFailedGeneric =>
+      'واپسی مکمل نہ ہو سکی۔ دوبارہ کوشش کریں۔';
+
+  @override
+  String returnOwedCollected(String amount, String method) {
+    return 'واجب الادا رقم وصول ہوئی: $method کے ذریعے $amount';
+  }
+
+  @override
+  String tripOutCityEstimate(int days, String estimate, int km) {
+    return '≈ $days دن × $km کلومیٹر فی دن کے لیے $estimate';
+  }
+
+  @override
+  String shopFromPerDay(String rate) {
+    return '$rate فی دن سے';
+  }
+
+  @override
+  String get shops_loadFailed => 'شاپس لوڈ نہیں ہو سکیں۔';
+
+  @override
+  String shops_radiusChip(String km) {
+    return 'دائرہ: $km km';
+  }
+
+  @override
+  String get shops_searchCities => 'شہر تلاش کریں';
+
+  @override
+  String dashboardNeedsReviewSplit(int newCount, int proofCount) {
+    return '$newCount نئی · $proofCount ثبوت';
+  }
+
+  @override
+  String get dashboardNeedsReviewTitle => 'جائزہ درکار';
+
+  @override
+  String dashboardOldestWait(String wait) {
+    return 'سب سے پرانا انتظار: $wait';
+  }
+
+  @override
+  String get dashboardQuickRequests => 'درخواستیں';
+
+  @override
+  String get fleetOutCityFixedRoute => 'شہر سے باہر: مقررہ راستہ';
+
+  @override
+  String get fleetOutCityPerKm => 'شہر سے باہر: فی کلومیٹر';
+
+  @override
+  String get homeSignInButton => 'سائن ان کریں';
+
+  @override
+  String priorTripsCount(int count) {
+    return '$count پچھلے سفر';
+  }
+
+  @override
+  String requestsOldestProofWait(String wait) {
+    return 'ثبوت کا سب سے پرانا انتظار: $wait';
+  }
+
+  @override
+  String requestsWaitingTime(String wait) {
+    return 'انتظار: $wait';
+  }
+
+  @override
+  String get triageKycMissing => 'KYC موجود نہیں';
+
+  @override
+  String get triageKycPending => 'KYC زیر التواء';
+
+  @override
+  String get triageKycRejected => 'KYC مسترد';
+
+  @override
+  String get triageKycVerified => 'KYC تصدیق شدہ';
+
+  @override
+  String triageTrustScore(String score) {
+    return 'اعتماد $score/5';
+  }
+
+  @override
+  String waitDurationDays(int days, int hours) {
+    return '$days دن $hours گھنٹے';
+  }
+
+  @override
+  String waitDurationHm(int hours, int minutes) {
+    return '$hours گھنٹے $minutes منٹ';
+  }
+
+  @override
+  String waitDurationMinutes(int minutes) {
+    return '$minutes منٹ';
+  }
+
+  @override
+  String get carPnlLoadError =>
+      'اس گاڑی کا نفع نقصان لوڈ نہیں ہو سکا۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔';
+
+  @override
+  String get cashClosingLoadError =>
+      'کیش کلوزنگ لوڈ نہیں ہو سکی۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔';
+
+  @override
+  String get customerStatementLoadError =>
+      'اس گاہک کا گوشوارہ لوڈ نہیں ہو سکا۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔';
+
+  @override
+  String get disputesLoadError =>
+      'تنازعات لوڈ نہیں ہو سکے۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔';
+
+  @override
+  String get financeCategoriesLoadError =>
+      'مالیات کی اقسام لوڈ نہیں ہو سکیں۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔';
+
+  @override
+  String get financeLoadError =>
+      'آپ کے مالیات لوڈ نہیں ہو سکے۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔';
+
+  @override
+  String get financeSettingsLoadError =>
+      'مالیات کی ترتیبات لوڈ نہیں ہو سکیں۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔';
+
+  @override
+  String get reportsLoadError =>
+      'رپورٹس لوڈ نہیں ہو سکیں۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔';
+
+  @override
+  String get staffRolesLoadError =>
+      'عملے کے کردار لوڈ نہیں ہو سکے۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔';
+
+  @override
+  String ticketPickupDate(String date) {
+    return 'پک اپ: $date';
+  }
+
+  @override
+  String get whatsappCreditsLoadError =>
+      'واٹس ایپ کریڈٹس لوڈ نہیں ہو سکے۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔';
+
+  @override
+  String get whatsappHistoryLoadError =>
+      'واٹس ایپ کی تاریخ لوڈ نہیں ہو سکی۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔';
+
+  @override
+  String get currencyPrefix => 'روپے ';
+
+  @override
+  String pricingHintKmPerDay(int km) {
+    return '$km کلومیٹر / دن';
+  }
+
+  @override
+  String pricingHintPerHour(String amount) {
+    return '$amount / گھنٹہ';
+  }
+
+  @override
+  String paymentVerificationConfirmButton(String amount) {
+    return 'ادائیگی تصدیق کریں — $amount';
+  }
+
+  @override
+  String returnCustomerOwes(String amount) {
+    return 'گاہک پر $amount واجب الادا ہیں';
+  }
+
+  @override
+  String vehicleDepositCnic(String amount) {
+    return 'سیکیورٹی ڈپازٹ: $amount + پک اپ پر اصل نادرا شناختی کارڈ ضمانت کے طور پر درکار ہے';
+  }
+
+  @override
+  String get returnOwedRecordFailed =>
+      'واجب الادا رقم کی وصولی درج نہ ہو سکی۔ براہ کرم دوبارہ کوشش کریں۔';
 }

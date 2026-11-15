@@ -54,10 +54,15 @@ class AuthStepperBar extends StatelessWidget {
     required bool isCurrent,
     required IconData icon,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    // Audit 2026-11-15 AC-2: copied from the onboarding stepper
+    // verbatim — done accentSuccessStrong (white check 5.48:1),
+    // current orangeFill (white icon 5.18:1). The old done
+    // accentSuccess (2.54:1) and current secondary (3.29:1) failed.
     final color = isDone
-        ? AppColors.accentSuccess
+        ? AppColors.accentSuccessStrong
         : isCurrent
-            ? AppColors.secondary
+            ? AppColors.orangeFill
             : Theme.of(context).colorScheme.onSurfaceVariant;
 
     return Row(
@@ -84,11 +89,17 @@ class AuthStepperBar extends StatelessWidget {
         Flexible(
           child: Text(
             title,
-            maxLines: 1,
+            // Audit 2026-11-15 AC-2: Urdu labels truncated at
+            // maxLines 1 — allow 2, like the onboarding stepper.
+            // (Phone check still owed: truncation is UNVERIFIED live.)
+            maxLines: 2,
             overflow: TextOverflow.ellipsis,
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
               fontWeight: FontWeight.w500,
-              color: isCurrent ? AppColors.primary : Theme.of(context).colorScheme.onSurfaceVariant,
+              // The hardcoded AppColors.primary navy was 1.18:1 on
+              // the dark surface (invisible). Light keeps the theme
+              // primary; dark uses the pale lavender primaryContainer.
+              color: isCurrent ? (isDark ? AppColors.primaryContainer : Theme.of(context).colorScheme.primary) : Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
         ),

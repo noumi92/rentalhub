@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../core/constants/app_colors.dart';
+import '../../../../../core/utils/money_format.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../fleet/domain/entities/vehicle_entity.dart';
 import 'rate_matrix_field_widget.dart';
@@ -51,7 +52,8 @@ class PricingOutCityRates extends StatelessWidget {
           RateMatrixFieldWidget(
             controller: outOfCityController,
             label: l10n.pricingOutOfCityDaily,
-            hint: 'Rs. 10,500 / day',
+            // Audit 2026-11-15 DS-10: localized hint, no literal 'Rs.'.
+            hint: l10n.vehicleDetailDailyRate(l10n.amountRs(formatRs(10500))),
             kmCap: l10n.pricingOutOfCityDailyCap,
           ),
           const SizedBox(height: 10),
@@ -77,7 +79,7 @@ class PricingOutCityRates extends StatelessWidget {
           RateMatrixFieldWidget(
             controller: extraKmController,
             label: l10n.pricingExtraKmCharge,
-            hint: 'Rs. 100 / km',
+            hint: l10n.farePerKmUnit(l10n.amountRs(formatRs(100))),
             kmCap: l10n.pricingExtraKmCap,
             enabled: perKmEnabled,
           ),
@@ -87,7 +89,7 @@ class PricingOutCityRates extends StatelessWidget {
           RateMatrixFieldWidget(
             controller: outOfCityKmController,
             label: l10n.pricingOutOfCityKmAllowance,
-            hint: '$kDefaultOutCityKmPerDay km / day',
+            hint: l10n.pricingHintKmPerDay(kDefaultOutCityKmPerDay),
             kmCap: l10n.pricingOutOfCityKmCap,
           ),
       ],

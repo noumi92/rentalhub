@@ -271,6 +271,17 @@ class _ManualBookingPackageSelectorState
     _maybeLoadRoutes();
   }
 
+  /// Retry after a failed routes load: clear the load key so
+  /// [_maybeLoadRoutes] runs again for the same vehicle (DS-11:
+  /// the error branch below now has a retry).
+  void _retryRoutes() {
+    setState(() {
+      _routesKey = '';
+      _routesFailed = false;
+    });
+    _maybeLoadRoutes();
+  }
+
   void _maybeLoadRoutes() {
     final key = _loadKey;
     if (key.isEmpty || key == _routesKey) return;
@@ -383,10 +394,29 @@ class _ManualBookingPackageSelectorState
                   ),
           const SizedBox(height: 6),
           if (_loadingRoutes)
-            const Center(child: CircularProgressIndicator())
+            // DS-11: labelled inline spinner (text + spinner), not
+            // a bare spinner.
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)),
+                const SizedBox(width: 8),
+                Text(l10n.manualBookingLoadingRoutes),
+              ],
+            )
           else if (_routesFailed)
-            Text(l10n.fixedRoutesLoadError,
-                style: Theme.of(context).textTheme.bodyMedium)
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(l10n.fixedRoutesLoadError,
+                    style: Theme.of(context).textTheme.bodyMedium),
+                TextButton.icon(
+                  onPressed: _retryRoutes,
+                  icon: const Icon(Icons.refresh_rounded, size: 18),
+                  label: Text(l10n.commonRetry),
+                ),
+              ],
+            )
           else if (_routes.isEmpty)
             Text(l10n.outCityFixedRouteNone,
                 style: Theme.of(context).textTheme.bodyMedium)

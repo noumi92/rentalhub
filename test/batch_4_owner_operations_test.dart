@@ -168,7 +168,10 @@ void main() {
       expect(find.text('Booking Requests Triage'), findsOneWidget);
       // Phase A (A1): the hardcoded demo request was removed. With no
       // bookings in Firestore the view shows an honest empty state.
-      expect(find.text('No pending booking requests'), findsOneWidget);
+      // Team B (FG-4): the default filter is now the proof bucket,
+      // so the empty state is the proofs one.
+      expect(find.text('No payment proofs waiting for verification'),
+          findsOneWidget);
       expect(find.text('Approve & Pay'), findsNothing);
     });
 
@@ -210,6 +213,12 @@ void main() {
           find.byWidgetPredicate((w) =>
               w is TextField && w.decoration?.hintText == 'e.g. 45200'),
           '45200');
+      await tester.pumpAndSettle();
+      // PW-17 (concurrent audit team, not Team B): fuel now starts
+      // unselected and its check runs before the signature check —
+      // pick a level so the tap reaches the signature refusal.
+      await tester.ensureVisible(find.text('4/4 (Full)'));
+      await tester.tap(find.text('4/4 (Full)'));
       await tester.pumpAndSettle();
       await tester.ensureVisible(
           find.text('Certify Handover & Generate Contract'));

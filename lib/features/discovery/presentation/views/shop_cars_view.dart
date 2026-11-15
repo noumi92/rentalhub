@@ -127,16 +127,10 @@ class _ShopCarsViewState extends State<ShopCarsView> {
                     label: Text(_categoryLabel(l10n, cat)),
                     selected: isSelected,
                     onSelected: (_) => setState(() => _selectedCategory = cat),
-                    selectedColor: AppColors.primary,
-                    labelStyle: Theme.of(context)
-                        .textTheme
-                        .labelMedium
-                        ?.copyWith(
-                            fontWeight:
-                                FontWeight.w500,
-                            color: isSelected
-                                ? AppColors.surfaceLight
-                                : Theme.of(context).colorScheme.onSurface),
+                    // Audit 2026-11-15 DS-1: no per-file
+                    // selectedColor/labelStyle — the theme's chipTheme
+                    // is the one selected spec (navy fill + white
+                    // label). The border below keeps the navy edge.
                     side: BorderSide(
                       color: isSelected
                           ? AppColors.primary

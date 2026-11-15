@@ -162,7 +162,6 @@ class _OwnerRecordExtraChargesViewState
                       decoration: InputDecoration(
                         labelText: l10n.extraChargeAmountLabel,
                         hintText: l10n.extraChargeAmountHint,
-                        border: const OutlineInputBorder(),
                         filled: true,
                         fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                       ),
@@ -174,7 +173,6 @@ class _OwnerRecordExtraChargesViewState
                       decoration: InputDecoration(
                         labelText: l10n.extraChargeRemarksLabel,
                         hintText: l10n.extraChargeRemarksHint,
-                        border: const OutlineInputBorder(),
                         filled: true,
                         fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                       ),
@@ -188,7 +186,10 @@ class _OwnerRecordExtraChargesViewState
                     ),
                     if (_isLoading) ...[
                       const SizedBox(height: 24),
-                      const Center(child: CircularProgressIndicator()),
+                      // DS-11: labelled inline spinner (text + spinner),
+                      // not a bare spinner — the error branch below
+                      // already retries via AppErrorState.
+                      Row(mainAxisAlignment: MainAxisAlignment.center, children: [const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)), const SizedBox(width: 8), Text(l10n.extraChargeLoading)]),
                     ] else if (_loadFailed) ...[
                       const SizedBox(height: 24),
                       AppErrorState(

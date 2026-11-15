@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../../../core/data/offline_sync_queue.dart';
+import '../../../../core/utils/shop_id_resolution.dart';
 import '../../domain/entities/staff_entity.dart';
 import '../models/staff_model.dart';
 
@@ -37,10 +38,11 @@ class StaffDataSource {
   }) async {
     if (name.trim().isEmpty) throw ArgumentError('Staff name is required');
     if (role.trim().isEmpty) throw ArgumentError('Staff role is required');
+    final canonical = await canonicalShopId(_resolvedFirestore, shopId);
     final id = 'STF-${DateTime.now().millisecondsSinceEpoch}-${_idSeq++}';
     final model = StaffModel(
       staffId: id,
-      shopId: shopId,
+      shopId: canonical,
       name: name.trim(),
       role: role.trim(),
       phone: phone.trim(),
@@ -80,12 +82,13 @@ class StaffDataSource {
   }
 
   Future<List<StaffEntity>> getShopStaff(String shopId) async {
+    final ids = await candidateShopIds(_resolvedFirestore, shopId);
     final fs = _resolvedFirestore;
     if (fs != null) {
       try {
         final snap = await fs
             .collection('staff')
-            .where('shopId', isEqualTo: shopId)
+            .where('shopId', whereIn: ids)
             .get();
         for (final d in snap.docs) {
           final remote = StaffModel.fromMap(d.data());
@@ -95,7 +98,7 @@ class StaffDataSource {
         }
       } catch (_) {}
     }
-    final mine = _inMemory.where((s) => s.shopId == shopId).toList()
+    final mine = _inMemory.where((s) => ids.contains(s.shopId)).toList()
       ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
     return mine;
   }

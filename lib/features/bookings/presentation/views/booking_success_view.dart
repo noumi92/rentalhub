@@ -36,7 +36,7 @@ class BookingSuccessView extends StatelessWidget {
             Expanded(
               child: SingleChildScrollView(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                 child: Column(
                   children: [
                     Container(

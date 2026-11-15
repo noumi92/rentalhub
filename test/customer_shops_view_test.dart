@@ -12,9 +12,13 @@ import 'package:rentalhub/features/discovery/presentation/views/customer_home_ma
 import 'package:rentalhub/features/discovery/presentation/views/customer_location_prompt_view.dart';
 import 'package:rentalhub/features/discovery/presentation/views/customer_shops_view.dart';
 import 'package:rentalhub/features/discovery/presentation/views/widgets/city_selector_bar.dart';
+import 'package:rentalhub/features/discovery/presentation/views/widgets/radius_filter_pills.dart';
 import 'package:rentalhub/features/discovery/presentation/views/widgets/shop_list_card.dart';
 import 'package:rentalhub/features/discovery/presentation/views/widgets/shops_filter_bar.dart';
+import 'package:rentalhub/features/discovery/presentation/views/widgets/shops_map_canvas.dart';
+import 'package:rentalhub/features/discovery/presentation/views/widgets/shops_tab_data.dart';
 import 'package:rentalhub/l10n/app_localizations.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // Shops tab: the LISTING is the default view; a map button opens
 // the full-screen Nearby showrooms map (Pakistan viewport, same
@@ -25,7 +29,9 @@ void main() {
 
   ShopEntity shop(String id, String name, String city, double lat,
       double lng,
-      {bool verified = true, bool hasRealLocation = true}) {
+      {bool verified = true,
+      bool hasRealLocation = true,
+      String? headerUrl}) {
     return ShopEntity(
       shopId: id,
       ownerId: 'owner-$id',
@@ -38,6 +44,7 @@ void main() {
       isVerified: verified,
       verificationStatus: verified ? 'approved' : 'pending',
       hasRealLocation: hasRealLocation,
+      headerUrl: headerUrl,
     );
   }
 
@@ -65,6 +72,7 @@ void main() {
     ShopsFilterState? filters,
     Future<bool> Function()? displayUnverified,
     Future<List<ShopEntity>> Function()? loader,
+    Future<int?> Function(String shopId)? minDailyRateLoader,
   }) async {
     // Tall surface: all three list cards fit, so counts are stable.
     tester.view.physicalSize = const Size(800, 3000);
@@ -74,6 +82,7 @@ void main() {
     await tester.pumpWidget(wrap(CustomerShopsView(
       shopsLoader: loader ?? allShops,
       displayUnverifiedLoader: displayUnverified ?? () async => true,
+      minDailyRateLoader: minDailyRateLoader,
       filterState: filters ?? ShopsFilterState(),
     )));
     await tester.pump();
@@ -110,13 +119,18 @@ void main() {
     await tester.pump();
   }
 
-  /// Tap a city chip (scoped to the city menu).
+  /// Tap a city: the city chip-button in the single filter row opens
+  /// the picker bottom sheet; the city is picked there.
   Future<void> tapCityChip(WidgetTester tester, String city) async {
     await tester.tap(find.descendant(
-      of: find.byType(CitySelectorBar),
-      matching: find.text(city),
+      of: find.byType(ShopsFilterBar),
+      matching: find.byType(ActionChip),
     ));
     await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.tap(find.text(city));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
   }
 
   group('Shops listing (default view)', () {
@@ -408,6 +422,285 @@ void main() {
       // city area label any more.
       expect(find.text('Gulberg III, Lahore'), findsNothing);
       expect(find.textContaining('°N'), findsOneWidget);
+    });
+  });
+
+  group('F-R1 single filter row', () {
+    testWidgets('one 60px row: city button + verification chips, no city row',
+        (tester) async {
+      await pumpListing(tester);
+      expect(find.byType(CitySelectorBar), findsNothing);
+      expect(find.byType(ShopsFilterBar), findsOneWidget);
+      expect(tester.getSize(find.byType(ShopsFilterBar)).height, 60);
+      // The city button shows the current selection (All cities).
+      expect(
+        find.descendant(
+          of: find.byType(ShopsFilterBar),
+          matching: find.text('All cities'),
+        ),
+        findsOneWidget,
+      );
+      for (final label in ['All', 'Verified', 'Unverified']) {
+        expect(
+          find.descendant(
+            of: find.byType(ShopsFilterBar),
+            matching: find.text(label),
+          ),
+          findsOneWidget,
+        );
+      }
+    });
+
+    testWidgets('city button opens the picker sheet; search narrows it',
+        (tester) async {
+      await pumpListing(tester);
+      await tester.tap(find.descendant(
+        of: find.byType(ShopsFilterBar),
+        matching: find.byType(ActionChip),
+      ));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(find.text('All cities'), findsWidgets);
+      expect(find.text('Lahore'), findsOneWidget);
+      expect(find.text('Karachi'), findsOneWidget);
+      await tester.enterText(
+          find.byType(TextField), 'kara');
+      await tester.pump();
+      expect(find.text('Karachi'), findsOneWidget);
+      expect(find.text('Lahore'), findsNothing);
+      await tester.tap(find.text('Karachi'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(find.text('Karachi Rentals'), findsOneWidget);
+      expect(find.text('Lahore Motors'), findsNothing);
+      // The button now displays the selected city.
+      expect(
+        find.descendant(
+          of: find.byType(ShopsFilterBar),
+          matching: find.text('Karachi'),
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('360px: first card fully visible, second peeking',
+        (tester) async {
+      tester.view.physicalSize = const Size(360, 640);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      await tester.pumpWidget(wrap(CustomerShopsView(
+        shopsLoader: allShops,
+        displayUnverifiedLoader: () async => true,
+        minDailyRateLoader: (_) async => null,
+        filterState: ShopsFilterState(),
+      )));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(tester.takeException(), isNull);
+      final first = tester.getRect(find.byType(ShopListCard).first);
+      expect(first.bottom, lessThanOrEqualTo(640));
+      final second = tester.getRect(find.byType(ShopListCard).at(1));
+      expect(second.top, lessThan(640));
+      expect(second.bottom, greaterThan(640));
+    });
+
+    testWidgets('360px Urdu large text: row holds, no overflow',
+        (tester) async {
+      tester.view.physicalSize = const Size(360, 640);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      await tester.pumpWidget(MaterialApp(
+        locale: const Locale('ur'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(context).copyWith(
+              textScaler: const TextScaler.linear(2.0)),
+          child: child!,
+        ),
+        home: Scaffold(
+          body: CustomerShopsView(
+            shopsLoader: allShops,
+            displayUnverifiedLoader: () async => true,
+            minDailyRateLoader: (_) async => null,
+            filterState: ShopsFilterState(),
+          ),
+        ),
+      ));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(tester.takeException(), isNull);
+      expect(find.byType(ShopsFilterBar), findsOneWidget);
+      // Urdu sheet: the picker opens and lists All cities in Urdu.
+      await tester.tap(find.descendant(
+        of: find.byType(ShopsFilterBar),
+        matching: find.byType(ActionChip),
+      ));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(find.text('تمام شہر'), findsWidgets);
+      // The sheet really opened: the city list is visible.
+      expect(find.text('Lahore'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('map uses the same single row, no city row',
+        (tester) async {
+      await pumpMap(tester);
+      expect(find.byType(CitySelectorBar), findsNothing);
+      expect(find.byType(ShopsFilterBar), findsOneWidget);
+      expect(tester.getSize(find.byType(ShopsFilterBar)).height, 60);
+    });
+  });
+
+  group('FG-5 load failure', () {
+    testWidgets('throwing loader shows the error state with retry',
+        (tester) async {
+      var attempt = 0;
+      await pumpListing(tester, loader: () async {
+        attempt++;
+        if (attempt == 1) throw Exception('offline');
+        return [lahore];
+      });
+      expect(find.text('Could not load the shops.'), findsOneWidget);
+      expect(find.text('No shops match these filters'), findsNothing);
+      expect(find.text('Retry'), findsOneWidget);
+      await tester.tap(find.text('Retry'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(find.text('Lahore Motors'), findsOneWidget);
+      expect(find.text('Could not load the shops.'), findsNothing);
+    });
+
+    testWidgets('map load failure shows the error state with retry',
+        (tester) async {
+      await tester.pumpWidget(wrap(CustomerHomeMapView(
+        shopsLoader: () async => throw Exception('offline'),
+        displayUnverifiedLoader: () async => true,
+        filterState: ShopsFilterState(),
+      )));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(find.text('Could not load the shops.'), findsOneWidget);
+      expect(find.byType(FlutterMap), findsNothing);
+    });
+  });
+
+  group('PW-4 cheapest rate on the card', () {
+    testWidgets('from-rate shows only where a rate is known',
+        (tester) async {
+      await pumpListing(tester,
+          minDailyRateLoader: (id) async =>
+              id == 'lhr' ? 7500 : null);
+      expect(find.text('from Rs. 7,500/day'), findsOneWidget);
+      // No invented price on the other cards.
+      expect(find.textContaining('from Rs.'), findsOneWidget);
+    });
+  });
+
+  group('FG-21 real shop photo', () {
+    testWidgets('real header photo renders an Image; otherwise no Image',
+        (tester) async {
+      final withPhoto = shop('pho', 'Photo Motors', 'Lahore', 31.52,
+          74.35,
+          headerUrl: 'https://example.com/header.jpg');
+      await pumpListing(tester,
+          loader: () async => [withPhoto, lahore]);
+      final photoCard = find.ancestor(
+        of: find.text('Photo Motors'),
+        matching: find.byType(ShopListCard),
+      );
+      expect(
+        find.descendant(
+            of: photoCard, matching: find.byType(Image)),
+        findsOneWidget,
+      );
+      final plainCard = find.ancestor(
+        of: find.text('Lahore Motors'),
+        matching: find.byType(ShopListCard),
+      );
+      expect(
+        find.descendant(
+            of: plainCard, matching: find.byType(Image)),
+        findsNothing,
+      );
+      expect(
+        find.descendant(
+            of: plainCard,
+            matching: find.byIcon(Icons.storefront_rounded)),
+        findsOneWidget,
+      );
+    });
+  });
+
+  group('Floating radius control', () {
+    testWidgets('chip + 1/2/3/5 km menu, selection drives the canvas',
+        (tester) async {
+      await pumpMap(tester);
+      expect(find.byType(FloatingRadiusControl), findsOneWidget);
+      expect(find.text('Radius: 3 km'), findsOneWidget);
+      await tester.tap(find.text('Radius: 3 km'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(find.text('5 km'), findsOneWidget);
+      await tester.tap(find.text('5 km'));
+      await tester.pump();
+      expect(find.text('Radius: 5 km'), findsOneWidget);
+      final canvas =
+          tester.widget<ShopsMapCanvas>(find.byType(ShopsMapCanvas));
+      expect(canvas.radiusKm, 5.0);
+    });
+  });
+
+  group('BP-13 last-item spacing', () {
+    testWidgets('cards carry no bottom margin; gaps sit between items',
+        (tester) async {
+      await pumpListing(tester);
+      final cards =
+          tester.widgetList<Card>(find.byType(Card)).toList();
+      expect(cards, isNotEmpty);
+      for (final card in cards) {
+        expect(card.margin, EdgeInsets.zero);
+      }
+      // One 16dp separator between consecutive cards, none after
+      // the last: the last card bottom sits at the scroll padding.
+      final first = tester.getRect(find.byType(ShopListCard).first);
+      final second = tester.getRect(find.byType(ShopListCard).at(1));
+      expect(second.top - first.bottom, 16);
+    });
+  });
+
+  group('PW-5 nearest / saved city', () {
+    test('nearestKnownCity picks the closest major city', () {
+      expect(
+          ShopsTabData.nearestKnownCity(24.8607, 67.0011), 'Karachi');
+      expect(
+          ShopsTabData.nearestKnownCity(31.5204, 74.3587), 'Lahore');
+      expect(ShopsTabData.nearestKnownCity(0, 0), isNull);
+    });
+
+    testWidgets('saved city pre-selects the filter (GPS denied)',
+        (tester) async {
+      SharedPreferences.setMockInitialValues({
+        'customer_lat': 24.8607,
+        'customer_lng': 67.0011,
+        'customer_city': 'Karachi',
+        'customer_area': 'Karachi',
+        'customer_from_gps': true,
+      });
+      addTearDown(() => SharedPreferences.setMockInitialValues({}));
+      const channel = MethodChannel('flutter.baseflow.com/geolocator');
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(channel, (call) async => 0);
+      addTearDown(() => TestDefaultBinaryMessengerBinding
+          .instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(channel, null));
+      await pumpListing(tester);
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(find.text('Karachi Rentals'), findsOneWidget);
+      expect(find.text('Lahore Motors'), findsNothing);
     });
   });
 }

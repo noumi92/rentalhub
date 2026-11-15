@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../../../core/data/offline_sync_queue.dart';
+import '../../../../core/utils/shop_id_resolution.dart';
 import '../../domain/entities/finance_category_entity.dart';
 import '../models/finance_category_model.dart';
 
@@ -62,6 +63,7 @@ class FinanceCategoryDataSource {
     String shopId, {
     required String kind,
   }) async {
+    final ids = await candidateShopIds(_resolvedFirestore, shopId);
     final fs = _resolvedFirestore;
     if (fs != null) {
       try {
@@ -69,7 +71,7 @@ class FinanceCategoryDataSource {
         // below) so no composite Firestore index is needed.
         final snap = await fs
             .collection('finance_categories')
-            .where('shopId', isEqualTo: shopId)
+            .where('shopId', whereIn: ids)
             .get();
         for (final d in snap.docs) {
           final remote = FinanceCategoryModel.fromMap(d.data());
@@ -80,7 +82,7 @@ class FinanceCategoryDataSource {
       } catch (_) {}
     }
     var mine = _inMemory
-        .where((c) => c.shopId == shopId && c.kind == kind)
+        .where((c) => ids.contains(c.shopId) && c.kind == kind)
         .toList();
     if (mine.isEmpty) {
       // First use: seed the defaults so the sheet keeps working
@@ -108,8 +110,9 @@ class FinanceCategoryDataSource {
       throw ArgumentError("kind must be 'income' or 'expense'");
     }
     final code = slugify(name);
+    final ids = await candidateShopIds(_resolvedFirestore, shopId);
     final existing = _inMemory.where(
-        (c) => c.shopId == shopId && c.kind == kind && c.code == code);
+        (c) => ids.contains(c.shopId) && c.kind == kind && c.code == code);
     if (existing.isNotEmpty) return existing.first;
     return _save(shopId: shopId, kind: kind, code: code, name: name.trim());
   }
@@ -120,10 +123,11 @@ class FinanceCategoryDataSource {
     required String code,
     required String name,
   }) async {
+    final canonical = await canonicalShopId(_resolvedFirestore, shopId);
     final id = 'CAT-${DateTime.now().millisecondsSinceEpoch}-${_idSeq++}';
     final model = FinanceCategoryModel(
       categoryId: id,
-      shopId: shopId,
+      shopId: canonical,
       kind: kind,
       code: code,
       name: name,

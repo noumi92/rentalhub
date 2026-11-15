@@ -138,6 +138,18 @@ void main() {
       // before certifying — otherwise the odometer error fires first.
       await tester.enterText(find.byType(TextField).first, '45200');
       await tester.pumpAndSettle();
+      // PW-17/PW-16 gates: pick a fuel level and a balance-collection
+      // method first, or the fuel/balance error fires before the
+      // signature error this test asserts.
+      await tester.ensureVisible(
+          find.widgetWithText(ChoiceChip, '4/4 (Full)'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(ChoiceChip, '4/4 (Full)'));
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.widgetWithText(ChoiceChip, 'Cash'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(ChoiceChip, 'Cash'));
+      await tester.pumpAndSettle();
       await tester.ensureVisible(
           find.text('Certify Handover & Generate Contract'));
       await tester.tap(find.text('Certify Handover & Generate Contract'));
@@ -284,6 +296,10 @@ void main() {
           home: OwnerBookingRequestsView(shopId: 'shop-1'),
         ),
       );
+      await tester.pumpAndSettle();
+      // FG-4: the default triage filter is now proofs-first, so a
+      // fresh 'requested' booking needs the New filter to be visible.
+      await tester.tap(find.textContaining('New ('));
       await tester.pumpAndSettle();
       expect(find.text('Approve Me'), findsOneWidget);
 

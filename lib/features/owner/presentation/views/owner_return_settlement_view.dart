@@ -176,7 +176,10 @@ class _OwnerReturnSettlementViewState extends State<OwnerReturnSettlementView> {
         context.pushReplacement(RouteNames.ownerRateCustomer.replaceFirst(':id', widget.booking.bookingId));
       }
     } catch (e) {
-      if (mounted) AppFeedback.showError(context, l10n.returnFinalizeFailed(e.toString()));
+      // DS-13: the user sees a generic message; the raw error is
+      // only logged for diagnostics, never shown.
+      debugPrint('Return finalize failed: $e');
+      if (mounted) AppFeedback.showError(context, l10n.returnFinalizeFailedGeneric);
     } finally {
       if (mounted) setState(() => _isFinalizing = false);
     }
@@ -202,41 +205,24 @@ class _OwnerReturnSettlementViewState extends State<OwnerReturnSettlementView> {
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                   child: Column(
                     children: [
-                    // Finish build (O25): the landing moved to its own
-                    // route (/owner/return-landing/:id) — this view now
-                    // starts directly at the inspection.
+                    // Finish build (O25): the landing moved to its own route (/owner/return-landing/:id) — this view now starts directly at the inspection.
                     ReturnConditionSelector(bookingId: widget.booking.bookingId, condition: _condition, onChanged: (c) => setState(() => _condition = c)),
                       const SizedBox(height: 16),
                       ExteriorPhotoPicker(bookingId: widget.booking.bookingId, shopId: widget.booking.shopId, photos: _returnPhotos, targetCollection: 'return_settlements', onChanged: (photos) => setState(() => _returnPhotos = photos)),
                       const SizedBox(height: 16),
                       FuelOdometerInputWidget(title: l10n.returnTelemetryTitle, odometerController: _returnOdometerController, selectedFuel: _returnFuel, onFuelSelected: (f) => setState(() => _returnFuel = f)),
-                      if (_handoverDamageNotes.isNotEmpty) ...[
-                        const SizedBox(height: 12),
-                        HandoverNotesBanner(notes: _handoverDamageNotes),
-                      ],
+                      if (_handoverDamageNotes.isNotEmpty) ...[const SizedBox(height: 12), HandoverNotesBanner(notes: _handoverDamageNotes)],
                       const SizedBox(height: 16),
                       HandoverDamageNotesEditor(title: l10n.returnNewDamageTitle, subtitle: l10n.returnNewDamageSubtitle, onChanged: (notes) => setState(() => _returnDamageNotes = notes)),
                       const SizedBox(height: 12),
-                      TextField(
-                        controller: _damageChargeController,
-                        keyboardType: TextInputType.number,
-                        onChanged: _onDamageChargeChanged,
-                        decoration: InputDecoration(labelText: l10n.returnDamageChargeLabel, hintText: l10n.returnDamageChargeHint, border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)), filled: true, fillColor: Theme.of(context).colorScheme.surfaceContainerHighest),
-                      ),
+                      TextField(controller: _damageChargeController, keyboardType: TextInputType.number, onChanged: _onDamageChargeChanged, decoration: InputDecoration(labelText: l10n.returnDamageChargeLabel, hintText: l10n.returnDamageChargeHint, border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)), filled: true, fillColor: Theme.of(context).colorScheme.surfaceContainerHighest)),
                       const SizedBox(height: 16),
                       ReturnFarePaymentSection(booking: widget.booking, onCollected: (amount, method) => setState(() => _collected = (amount: amount, method: method))),
                       const SizedBox(height: 16),
-                      SettlementSummaryReceiptWidget(totalKm: breakdown.totalKmDriven, excessKm: breakdown.excessKm, excessKmPenalty: breakdown.excessKmCharge, extraKmRate: _extraKmPkr, fuelDeficitFee: breakdown.fuelDeficit, overtimeFee: breakdown.overtimeFee, damageCharge: breakdown.damageCharge, extraCharges: breakdown.extraCharges, securityDeposit: _deposit, netRefund: breakdown.netRefund, perKm: _perKm),
+                      SettlementSummaryReceiptWidget(totalKm: breakdown.totalKmDriven, excessKm: breakdown.excessKm, excessKmPenalty: breakdown.excessKmCharge, extraKmRate: _extraKmPkr, fuelDeficitFee: breakdown.fuelDeficit, overtimeFee: breakdown.overtimeFee, damageCharge: breakdown.damageCharge, extraCharges: breakdown.extraCharges, securityDeposit: _deposit, netRefund: breakdown.netRefund, perKm: _perKm, amountOwed: breakdown.amountOwed),
                       const SizedBox(height: 24),
-                      // Finish build (O26): refund first, then close —
-                      // the steps widget owns the refund record; close
-                      // still runs _finalizeReturn below.
-                      ReturnPaymentSteps(
-                        bookingId: widget.booking.bookingId,
-                        netRefund: breakdown.netRefund,
-                        isFinalizing: _isFinalizing,
-                        onCompleteClose: _finalizeReturn,
-                      ),
+                      // Finish build (O26): refund first, then close — the steps widget owns the refund record; close still runs _finalizeReturn below.
+                      ReturnPaymentSteps(bookingId: widget.booking.bookingId, netRefund: breakdown.netRefund, amountOwed: breakdown.amountOwed, isFinalizing: _isFinalizing, onCompleteClose: _finalizeReturn),
                     ],
                   ),
                 ),

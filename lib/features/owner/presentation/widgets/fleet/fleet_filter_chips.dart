@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/app_dimensions.dart';
 import '../../../../../l10n/app_localizations.dart';
 
@@ -57,15 +56,9 @@ class FleetFilterChips extends StatelessWidget {
       materialTapTargetSize: MaterialTapTargetSize.padded,
       label: Text(l10n.fleetFilterChip(_filterLabel(l10n, label), count)),
       selected: isSelected,
-      // Audit §4: explicit label colour per state — white on the
-      // orangeFill (5.18:1, both modes), theme onSurface unselected.
-      // The old implicit chipTheme colour on #F95700 failed AA.
-      selectedColor: AppColors.orangeFill,
-      labelStyle: Theme.of(context).textTheme.labelSmall?.copyWith(
-          fontWeight: FontWeight.w500,
-          color: isSelected
-              ? Colors.white
-              : Theme.of(context).colorScheme.onSurface),
+      // Audit 2026-11-15 DS-1: no per-file selectedColor/labelStyle
+      // — the theme's chipTheme is the one selected spec (navy fill
+      // + white label). The old orangeFill override is deleted.
       onSelected: (_) => onSelected(label),
     );
   }

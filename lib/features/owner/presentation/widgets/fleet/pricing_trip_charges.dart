@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../core/utils/money_format.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../constants/owner_vehicle_constants.dart';
 import 'rate_matrix_field_widget.dart';
@@ -51,19 +52,20 @@ class PricingTripCharges extends StatelessWidget {
         RateMatrixFieldWidget(
             controller: depositController,
             label: l10n.pricingSecurityDeposit,
-            hint: 'Rs. 25,000',
+            // Audit 2026-11-15 DS-10: localized hint, no literal 'Rs.'.
+            hint: l10n.amountRs(formatRs(25000)),
             kmCap: l10n.pricingSecurityDepositCap),
         const SizedBox(height: 10),
         RateMatrixFieldWidget(
             controller: advanceController,
             label: l10n.pricingAdvanceRequired,
-            hint: 'Rs. 2,000',
+            hint: l10n.amountRs(formatRs(2000)),
             kmCap: l10n.pricingAdvanceCap),
         const SizedBox(height: 10),
         RateMatrixFieldWidget(
             controller: nightStayController,
             label: l10n.outCityNightStay,
-            hint: 'Rs. 2,000',
+            hint: l10n.amountRs(formatRs(2000)),
             kmCap: l10n.outCityNightStayCap),
         const SizedBox(height: 14),
         Text(l10n.pricingFuelPolicy,

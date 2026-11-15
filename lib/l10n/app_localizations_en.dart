@@ -339,7 +339,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileGuest => 'Guest';
 
   @override
-  String get homeTitle => 'Find Verified Rental Shops';
+  String get homeTitle => 'Home';
 
   @override
   String get homeSwitchToMap => 'Switch to Interactive Map';
@@ -601,7 +601,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get walletTitle => 'Wallet & Security Escrow';
 
   @override
-  String get walletActiveEscrow => 'Active Escrow & Advances';
+  String get walletActiveEscrow =>
+      'Total with shop: advances paid + deposit held';
 
   @override
   String get walletAdvancesPaid => 'Advances Paid';
@@ -1182,7 +1183,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get proofPrivateNote =>
-      'Proof is uploaded to private storage. The showroom checks it and confirms your booking — there is no fixed waiting time.';
+      'Proof is uploaded to private storage. The showroom checks it and confirms your booking, and you will be notified in the app when it is confirmed. If you do not hear back, message the shop on WhatsApp.';
 
   @override
   String get passTitle => 'Pickup Countdown Pass';
@@ -1255,7 +1256,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tripTrackerNote =>
-      'Tracker clearance required — the shop confirms it before pickup.';
+      'Tracker clearance required — the shop confirms it before pickup. If clearance is refused, the shop contacts you before pickup.';
 
   @override
   String get advanceNoticeTitle => 'Advance & Verification Notice';
@@ -1617,8 +1618,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get roleOwnerUrdu => 'شوروم رجسٹر کریں';
 
   @override
-  String get advanceNoticeWithDriver =>
-      '• Chauffeur arrives at showroom/pickup point 15 mins early.\n• Advance payment confirms vehicle lock and fuel reservation.\n• Outstation overnight stay: Rs. 1,500/night driver food & lodge.';
+  String advanceNoticeWithDriver(String nightStay) {
+    return '• Chauffeur arrives at showroom/pickup point 15 mins early.\n• Advance payment confirms vehicle lock and fuel reservation.\n• Outstation overnight stay: $nightStay/night driver food & lodge.';
+  }
 
   @override
   String get advanceNoticeSelfDrive =>
@@ -1714,11 +1716,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String vehicleDepositCnic(String amount) {
-    return 'Security Deposit: Rs. $amount + Original NADRA CNIC guarantee required at pickup';
-  }
-
-  @override
   String vehicleDriverPackageDetail(String overtime, String outstation) {
     return 'Verified chauffeur included • Overtime: Rs. $overtime/hr • Outstation: +Rs. $outstation/day';
   }
@@ -1735,7 +1732,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String bookNowWithRate(String rate) {
-    return 'Book Now (Rs. $rate)';
+    return 'Book Now ($rate/day)';
   }
 
   @override
@@ -2023,11 +2020,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String walletAdvancesEscrow(String adv, String esc) {
     return 'Advances Rs. $adv • Escrow Rs. $esc';
-  }
-
-  @override
-  String ticketPickupDate(int day, int month, int year) {
-    return 'Pickup: $day/$month/$year';
   }
 
   @override
@@ -3682,11 +3674,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String returnCustomerOwes(String amount) {
-    return 'Customer owes Rs. $amount';
-  }
-
-  @override
   String returnFinalizeFailed(String error) {
     return 'Finalizing return failed: $error';
   }
@@ -3951,11 +3938,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get paymentVerificationConfirming => 'Confirming…';
-
-  @override
-  String paymentVerificationConfirmButton(String amount) {
-    return 'Confirm Payment — Rs. $amount';
-  }
 
   @override
   String get manualBookingTitle => 'Walk-in Booking Wizard';
@@ -9540,4 +9522,267 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get admin2_teamRevokeTooltip => 'Revoke admin role';
+
+  @override
+  String get extraChargeLoading => 'Loading saved extra charges…';
+
+  @override
+  String get kycWizardDateFormatError => 'Enter the date as DD.MM.YYYY';
+
+  @override
+  String kycWizardMissingItem(String item) {
+    return '$item is missing — please add it to continue';
+  }
+
+  @override
+  String get kycWizardSignatureMissing =>
+      'Please draw your signature before continuing';
+
+  @override
+  String get kycWizardTermsMissing =>
+      'Please agree to the rental terms before continuing';
+
+  @override
+  String get manualBookingLoadingRoutes => 'Loading fixed routes…';
+
+  @override
+  String get mediaCameraError =>
+      'Could not open the camera. Check the camera permission and try again.';
+
+  @override
+  String get passNotValid => 'This pass is not valid for pickup';
+
+  @override
+  String get contractSignAgreementHint =>
+      'Add the guarantor signature to sign.';
+
+  @override
+  String get depositRefundTerms =>
+      'Deposit refunded after return inspection, minus damage and excess-km charges.';
+
+  @override
+  String disputeLastUpdated(String date) {
+    return 'Last updated $date';
+  }
+
+  @override
+  String get handoverBalanceDue => 'Balance due at handover';
+
+  @override
+  String get handoverBalanceMethodRequired =>
+      'Choose how the balance was collected, or Not yet, before certifying.';
+
+  @override
+  String get handoverBalanceNotYet => 'Not yet';
+
+  @override
+  String get handoverFuelRequired => 'Select the fuel level before certifying.';
+
+  @override
+  String get manualBookingLoadingVehicles => 'Loading vehicles…';
+
+  @override
+  String get profileLoadFailed =>
+      'Could not load your profile. Check your connection and try again.';
+
+  @override
+  String get proofAdvanceCopied => 'Advance amount copied to clipboard';
+
+  @override
+  String get proofCopyAdvance => 'Copy advance amount';
+
+  @override
+  String get proofMessageShop => 'Message shop on WhatsApp';
+
+  @override
+  String returnAmountOwedByCustomer(String amount) {
+    return 'Amount owed by customer: $amount';
+  }
+
+  @override
+  String get returnCloseBookingHint =>
+      'Record the refund to close the booking.';
+
+  @override
+  String get returnFinalizeFailedGeneric =>
+      'Could not finalize the return. Please try again.';
+
+  @override
+  String returnOwedCollected(String amount, String method) {
+    return 'Owed amount collected: $amount via $method';
+  }
+
+  @override
+  String tripOutCityEstimate(int days, String estimate, int km) {
+    return '≈ $estimate for $days days × $km km/day';
+  }
+
+  @override
+  String shopFromPerDay(String rate) {
+    return 'from $rate/day';
+  }
+
+  @override
+  String get shops_loadFailed => 'Could not load the shops.';
+
+  @override
+  String shops_radiusChip(String km) {
+    return 'Radius: $km km';
+  }
+
+  @override
+  String get shops_searchCities => 'Search cities';
+
+  @override
+  String dashboardNeedsReviewSplit(int newCount, int proofCount) {
+    return '$newCount new · $proofCount proof';
+  }
+
+  @override
+  String get dashboardNeedsReviewTitle => 'Needs review';
+
+  @override
+  String dashboardOldestWait(String wait) {
+    return 'Oldest wait: $wait';
+  }
+
+  @override
+  String get dashboardQuickRequests => 'Requests';
+
+  @override
+  String get fleetOutCityFixedRoute => 'Out-city: fixed route';
+
+  @override
+  String get fleetOutCityPerKm => 'Out-city: per-km';
+
+  @override
+  String get homeSignInButton => 'Sign in';
+
+  @override
+  String priorTripsCount(int count) {
+    return '$count prior trips';
+  }
+
+  @override
+  String requestsOldestProofWait(String wait) {
+    return 'Oldest proof wait: $wait';
+  }
+
+  @override
+  String requestsWaitingTime(String wait) {
+    return 'Waiting $wait';
+  }
+
+  @override
+  String get triageKycMissing => 'KYC missing';
+
+  @override
+  String get triageKycPending => 'KYC pending';
+
+  @override
+  String get triageKycRejected => 'KYC rejected';
+
+  @override
+  String get triageKycVerified => 'KYC verified';
+
+  @override
+  String triageTrustScore(String score) {
+    return 'Trust $score/5';
+  }
+
+  @override
+  String waitDurationDays(int days, int hours) {
+    return '${days}d ${hours}h';
+  }
+
+  @override
+  String waitDurationHm(int hours, int minutes) {
+    return '${hours}h ${minutes}m';
+  }
+
+  @override
+  String waitDurationMinutes(int minutes) {
+    return '${minutes}m';
+  }
+
+  @override
+  String get carPnlLoadError =>
+      'Could not load this car\'s profit and loss. Check your connection and try again.';
+
+  @override
+  String get cashClosingLoadError =>
+      'Could not load cash closing. Check your connection and try again.';
+
+  @override
+  String get customerStatementLoadError =>
+      'Could not load this customer\'s statement. Check your connection and try again.';
+
+  @override
+  String get disputesLoadError =>
+      'Could not load disputes. Check your connection and try again.';
+
+  @override
+  String get financeCategoriesLoadError =>
+      'Could not load finance categories. Check your connection and try again.';
+
+  @override
+  String get financeLoadError =>
+      'Could not load your finances. Check your connection and try again.';
+
+  @override
+  String get financeSettingsLoadError =>
+      'Could not load finance settings. Check your connection and try again.';
+
+  @override
+  String get reportsLoadError =>
+      'Could not load reports. Check your connection and try again.';
+
+  @override
+  String get staffRolesLoadError =>
+      'Could not load staff roles. Check your connection and try again.';
+
+  @override
+  String ticketPickupDate(String date) {
+    return 'Pickup: $date';
+  }
+
+  @override
+  String get whatsappCreditsLoadError =>
+      'Could not load WhatsApp credits. Check your connection and try again.';
+
+  @override
+  String get whatsappHistoryLoadError =>
+      'Could not load WhatsApp history. Check your connection and try again.';
+
+  @override
+  String get currencyPrefix => 'Rs. ';
+
+  @override
+  String pricingHintKmPerDay(int km) {
+    return '$km km / day';
+  }
+
+  @override
+  String pricingHintPerHour(String amount) {
+    return '$amount / hour';
+  }
+
+  @override
+  String paymentVerificationConfirmButton(String amount) {
+    return 'Confirm Payment — $amount';
+  }
+
+  @override
+  String returnCustomerOwes(String amount) {
+    return 'Customer owes $amount';
+  }
+
+  @override
+  String vehicleDepositCnic(String amount) {
+    return 'Security Deposit: $amount + Original NADRA CNIC guarantee required at pickup';
+  }
+
+  @override
+  String get returnOwedRecordFailed =>
+      'Could not record the owed amount collection. Please try again.';
 }

@@ -86,8 +86,9 @@ class _SignaturePadWidgetState extends State<SignaturePadWidget> {
                 style: TextButton.styleFrom(
                   padding: const EdgeInsets.symmetric(
                       horizontal: 8, vertical: 2),
-                  minimumSize: Size.zero,
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  // Audit 2026-11-15 AC-17: Size.zero + shrinkWrap
+                  // left a ~30x20 dp hit area — the 48 dp minimum.
+                  minimumSize: const Size(0, 48),
                 ),
                 child: Text(
                   l10n?.handoverClear ?? 'Clear',

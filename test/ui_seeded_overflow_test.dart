@@ -12,6 +12,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:rentalhub/core/di/injection_container.dart';
+import 'package:rentalhub/core/auth/signed_in_user.dart';
 import 'package:rentalhub/core/theme/app_theme.dart';
 import 'package:rentalhub/features/bookings/data/datasources/booking_remote_data_source.dart';
 import 'package:rentalhub/features/bookings/domain/entities/booking_entity.dart';
@@ -60,9 +61,17 @@ void main() {
     await sl.reset();
     SharedPreferences.setMockInitialValues({});
     await initDependencies();
+    // AC-8: the wallet reads the signed-in user's records — stand
+    // in as 'cust-101' via the SignedInUser test override.
+    SignedInUser.override = const SignedInUserData(
+      uid: 'cust-101',
+      displayName: 'Ahmed Raza',
+      phoneNumber: '03001234567',
+    );
   });
 
   tearDown(() async {
+    SignedInUser.override = null;
     await sl.reset();
   });
 
@@ -217,7 +226,7 @@ void main() {
         screen: const CustomerHomeView(),
         theme: AppTheme.lightTheme,
       );
-      expect(find.text('Find Verified Rental Shops'), findsOneWidget);
+      expect(find.text('Home'), findsOneWidget);
     });
 
     testWidgets('Customer Bookings', (tester) async {

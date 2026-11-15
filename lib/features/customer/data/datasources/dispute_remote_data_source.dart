@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../../../core/utils/shop_id_resolution.dart';
+
 /// G4: the customer's disputes — filed to Firestore `disputes` with an
 /// in-memory fallback (offline / tests), the same pattern the booking
 /// data source uses. [fileDispute] reports whether the cloud write
@@ -176,6 +178,13 @@ class DisputeRemoteDataSource {
   /// resolving their booking document. Returns the records with the
   /// customer name enriched from the booking when available.
   Future<List<DisputeRecord>> getShopDisputes(String shopId) async {
+    // Shop-id linking (2026-11-15): disputes are filed under the
+    // booking's canonical shop id; match both id forms.
+    FirebaseFirestore? fs;
+    try {
+      fs = FirebaseFirestore.instance;
+    } catch (_) {}
+    final ids = await candidateShopIds(fs, shopId);
     final records = <DisputeRecord>[];
     try {
       final snap =
@@ -186,13 +195,13 @@ class DisputeRemoteDataSource {
           data['shopId'] as String?,
           data['bookingId'] as String? ?? '',
         );
-        if (recordShopId != shopId) continue;
+        if (recordShopId == null || !ids.contains(recordShopId)) continue;
         records.add(await _toRecord(doc.id, data));
       }
     } catch (_) {}
     if (records.isEmpty) {
       for (final e in _inMemory.entries) {
-        if ((e.value['shopId'] as String?) != shopId) continue;
+        if (!ids.contains(e.value['shopId'] as String?)) continue;
         records.add(_recordFromMap(e.key, e.value));
       }
     }

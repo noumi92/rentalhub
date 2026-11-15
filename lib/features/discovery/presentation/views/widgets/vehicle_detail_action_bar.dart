@@ -131,7 +131,10 @@ class VehicleDetailActionBar extends StatelessWidget {
                     ),
                   )
                 : DebouncedButton(
-                    text: l10n.bookNowWithRate(formatRs(selectedRate)),
+                    // Audit 2026-11-15 PW-11: the rate routes through
+                    // amountRs (§4.5 money rule) — the .arb value no
+                    // longer embeds 'Rs.' (that would double it).
+                    text: l10n.bookNowWithRate(l10n.amountRs(formatRs(selectedRate))),
                     icon: Icons.check_circle_outline_rounded,
                     onPressed: () async {
                       if (onBookNow != null) {

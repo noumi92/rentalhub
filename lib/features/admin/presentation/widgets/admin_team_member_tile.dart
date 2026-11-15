@@ -28,13 +28,16 @@ class AdminTeamMemberTile extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final compact =
         windowSizeClassOf(context) == WindowSizeClass.compact;
+    // Audit 2026-11-15 AC-4: green.shade700 was 4.12:1 on white /
+    // 4.36:1 on the dark surface and amber.shade800 2.29:1 in light
+    // — the readable success/warning text tokens instead.
+    final badgeColor = member.totpEnabled
+        ? AppColors.successTextFor(Theme.of(context).brightness)
+        : AppColors.warningTextFor(Theme.of(context).brightness);
     final badge = Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: (member.totpEnabled
-                ? Colors.green.shade700
-                : Colors.amber.shade800)
-            .withValues(alpha: 0.12),
+        color: badgeColor.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(
@@ -44,9 +47,7 @@ class AdminTeamMemberTile extends StatelessWidget {
         style: TextStyle(
             fontSize: 11,
             fontWeight: FontWeight.w500,
-            color: member.totpEnabled
-                ? Colors.green.shade700
-                : Colors.amber.shade800),
+            color: badgeColor),
       ),
     );
     final card = Card(

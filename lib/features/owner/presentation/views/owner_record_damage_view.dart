@@ -155,7 +155,6 @@ class _OwnerRecordDamageViewState extends State<OwnerRecordDamageView> {
                       decoration: InputDecoration(
                         labelText: l10n.damageDescriptionLabel,
                         hintText: l10n.damageDescriptionHint,
-                        border: const OutlineInputBorder(),
                         filled: true,
                         fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                       ),
@@ -167,7 +166,6 @@ class _OwnerRecordDamageViewState extends State<OwnerRecordDamageView> {
                       decoration: InputDecoration(
                         labelText: l10n.damageRepairCostLabel,
                         hintText: l10n.damageRepairCostHint,
-                        border: const OutlineInputBorder(),
                         filled: true,
                         fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                       ),

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
+import '../utils/shop_id_resolution.dart';
 import '../error/exceptions.dart';
 import '../../features/auth/data/models/user_model.dart';
 import '../../features/discovery/data/models/shop_model.dart';
@@ -217,11 +218,16 @@ class FirestoreService {
   }
 
   Future<List<VehicleModel>> getShopVehicles(String shopId) async {
+    // Shop-id linking (2026-11-15): vehicles carry the shop doc id;
+    // match both id forms like the fleet data source does.
+    final ids = _hasLiveFirestore
+        ? await candidateShopIds(_firestore, shopId)
+        : <String>[shopId];
     try {
       if (_hasLiveFirestore) {
         final query = await _firestore!
             .collection('vehicles')
-            .where('shop_id', isEqualTo: shopId)
+            .where('shop_id', whereIn: ids)
             .get();
 
         return query.docs.map((doc) {
@@ -248,7 +254,7 @@ class FirestoreService {
     }
 
     return _inMemoryVehicles.values
-        .where((v) => v['shop_id'] == shopId)
+        .where((v) => ids.contains(v['shop_id']))
         .map((d) => VehicleModel(
               vehicleId: d['vehicle_id'] ?? '',
               shopId: d['shop_id'] ?? '',

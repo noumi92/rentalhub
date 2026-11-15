@@ -49,6 +49,10 @@ class PickupCountdownPassView extends StatelessWidget {
                       plateNumber: booking.vehiclePlate ?? '—',
                       shopName: booking.shopName ?? l10n.rentalShowroom,
                       pickupTime: booking.pickupTime,
+                      // PW-10: the pass is only valid for a paid/active
+                      // booking — any other status renders the
+                      // not-valid state instead of the QR.
+                      bookingStatus: booking.status,
                     ),
                     const SizedBox(height: 16),
                     PassShopContactCard(
@@ -57,7 +61,6 @@ class PickupCountdownPassView extends StatelessWidget {
                       shopPhone: booking.shopPhone,
                       bookingId: booking.bookingId,
                     ),
-                    const SizedBox(height: 20),
                   ],
                 ),
               ),

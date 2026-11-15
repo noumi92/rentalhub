@@ -125,7 +125,7 @@ void main() {
       theme: AppTheme.lightTheme,
     );
 
-    expect(find.text('Find Verified Rental Shops'), findsOneWidget);
+    expect(find.text('Home'), findsOneWidget);
     // Customer rework (Worker C): the radius pills moved to the
     // Shops tab with discovery — Home now shows the dashboard
     // (KPIs, KYC, quick actions, recent bookings) with honest

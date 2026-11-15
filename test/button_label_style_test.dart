@@ -8,8 +8,9 @@ import 'package:rentalhub/l10n/app_localizations.dart';
 
 // User decision 2026-11-09: button labels use smaller regular text —
 // never bold. Primary (elevated/filled) labels are 14sp w400;
-// secondary (outlined/text) labels are 12sp w400. The button themes
-// own the sizes; hardcoded bold label styles in views were removed
+// secondary (outlined/text) labels are 13sp w400 (audit 2026-11-15
+// DS-8: 12sp is off-scale — rulebook §4.5 has no 12sp step). The button
+// themes own the sizes; hardcoded bold label styles in views were removed
 // in the same change, so a plain button label inherits the theme.
 
 TextStyle? _buttonTextStyle(ButtonStyle? style) =>
@@ -31,7 +32,7 @@ void main() {
       }
     });
 
-    test('secondary buttons (outlined/text) use 12sp regular labels', () {
+    test('secondary buttons (outlined/text) use 13sp regular labels', () {
       for (final theme in [AppTheme.lightTheme, AppTheme.darkTheme]) {
         for (final style in [
           theme.outlinedButtonTheme.style,
@@ -39,7 +40,7 @@ void main() {
         ]) {
           final textStyle = _buttonTextStyle(style);
           expect(textStyle, isNotNull);
-          expect(textStyle!.fontSize, 12);
+          expect(textStyle!.fontSize, 13);
           expect(textStyle.fontWeight, FontWeight.w400);
         }
       }

@@ -103,7 +103,6 @@ class BookingApprovedView extends StatelessWidget {
                       tripType: booking.tripType,
                       kmLimit: booking.kmLimit,
                     ),
-                    const SizedBox(height: 20),
                   ],
                 ),
               ),

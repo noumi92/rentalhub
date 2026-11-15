@@ -109,7 +109,7 @@
   "kycCustomer": "گاہک",
   "walletLabel": "والیٹ",
   "profileGuest": "مہمان",
-  "homeTitle": "تصدیق شدہ کرایہ شوروم تلاش کریں",
+  "homeTitle": "ہوم",
   "homeSwitchToMap": "انٹرایکٹو نقشہ دیکھیں",
   "homeFindingShops": "قریبی شوروم تلاش کیے جا رہے ہیں…",
   "homeNearbyShowrooms": "قریبی شورومز",
@@ -199,7 +199,7 @@
   "summaryAdvancePayable": "قابل ادا ایڈوانس",
   "summaryBalanceAtHandover": "حوالگی پر باقی رقم",
   "walletTitle": "والیٹ اور سیکیورٹی ایسکرو",
-  "walletActiveEscrow": "فعال ایسکرو اور ایڈوانس",
+  "walletActiveEscrow": "شوروم کے پاس کل: ادا شدہ ایڈوانس + محفوظ ڈپازٹ",
   "walletAdvancesPaid": "ادا شدہ ایڈوانس",
   "walletSecurityEscrow": "سیکیورٹی ایسکرو",
   "walletLedger": "لین دین کی فہرست",
@@ -393,7 +393,7 @@
   "proofUploading": "ثبوت اپ لوڈ ہو رہا ہے…",
   "proofSubmitted": "ثبوت جمع ہو گیا! شوروم کی تصدیق کا انتظار ہے۔",
   "proofSubmittedOffline": "ثبوت جمع ہو گیا! آن لائن ہونے پر رسید سنک ہو جائے گی۔",
-  "proofPrivateNote": "ثبوت نجی اسٹوریج پر اپ لوڈ ہوتا ہے۔ شوروم اسے چیک کر کے آپ کی بکنگ کی تصدیق کرتا ہے — انتظار کا کوئی مقررہ وقت نہیں۔",
+  "proofPrivateNote": "ثبوت نجی اسٹوریج پر اپ لوڈ ہوتا ہے۔ شوروم اسے چیک کر کے آپ کی بکنگ کی تصدیق کرتا ہے اور تصدیق ہوتے ہی آپ کو ایپ میں اطلاع ملے گی۔ اگر جواب نہ آئے تو شوروم کو واٹس ایپ پر پیغام بھیجیں۔",
   "passTitle": "پک اپ کاؤنٹ ڈاؤن پاس",
   "passDoneHome": "مکمل • ہوم پر واپس جائیں",
   "passRentalVehicle": "کرایہ کی گاڑی",
@@ -417,7 +417,7 @@
   "pkgDailyDesc": "پورے دن کی سہولت معہ مہلت واپسی",
   "pkgWeeklyDesc": "سات دن، ایک قیمت",
   "tripFixedRoutes": "اس شوروم کے مقررہ روٹس",
-  "tripTrackerNote": "ٹریکر کلیئرنس درکار ہے — شوروم پک اپ سے پہلے اس کی تصدیق کرتا ہے۔",
+  "tripTrackerNote": "ٹریکر کلیئرنس درکار ہے — شوروم پک اپ سے پہلے اس کی تصدیق کرتا ہے۔ اگر کلیئرنس نہ ملی تو شوروم پک اپ سے پہلے آپ سے رابطہ کرے گا۔",
   "advanceNoticeTitle": "ایڈوانس اور تصدیق کی اطلاع",
   "pickerPickupDate": "پک اپ کی تاریخ",
   "pickerPickupSchedule": "پک اپ کا شیڈول",
@@ -539,7 +539,7 @@
   "vehicleWithDriverUrdu": "ڈرائیور کے ساتھ",
   "roleCustomerUrdu": "گاڑی کرایہ پر لیں",
   "roleOwnerUrdu": "شوروم رجسٹر کریں",
-  "advanceNoticeWithDriver": "• ڈرائیور شوروم / پک اپ پوائنٹ پر 15 منٹ پہلے پہنچتا ہے۔\n• ایڈوانس ادائیگی گاڑی کی بکنگ اور ایندھن کی ریزرویشن کی تصدیق کرتی ہے۔\n• آؤٹ اسٹیشن قیام: ڈرائیور کے کھانے اور رہائش کے لیے 1,500 روپے فی رات۔",
+  "advanceNoticeWithDriver": "• ڈرائیور شوروم / پک اپ پوائنٹ پر 15 منٹ پہلے پہنچتا ہے۔\n• ایڈوانس ادائیگی گاڑی کی بکنگ اور ایندھن کی ریزرویشن کی تصدیق کرتی ہے۔\n• آؤٹ اسٹیشن قیام: ڈرائیور کے کھانے اور رہائش کے لیے {nightStay} فی رات۔",
   "advanceNoticeSelfDrive": "• حوالگی پر اصل نادرا شناختی کارڈ اور درست ڈرائیونگ لائسنس درکار ہے۔\n• ایڈوانس شوروم کے ساتھ گاڑی کی بکنگ کی تصدیق کرتا ہے۔\n• قابل واپسی سیکیورٹی ڈپازٹ حوالگی پر ڈیجیٹل یا نقد وصول کیا جاتا ہے۔",
   "ticketShowCode": "حوالگی کے لیے یہ کوڈ کاؤنٹر پر دکھائیں — اس سے آپ کی بکنگ اور معاہدہ کھلتا ہے۔",
   "bookingsEmptyForTab": "{tab} کی کوئی بکنگ نہیں ملی۔",
@@ -687,14 +687,6 @@
       }
     }
   },
-  "vehicleDepositCnic": "سیکیورٹی ڈپازٹ: {amount} روپے + پک اپ پر اصل نادرا شناختی کارڈ ضمانت کے طور پر درکار ہے",
-  "@vehicleDepositCnic": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "vehicleDriverPackageDetail": "تصدیق شدہ ڈرائیور شامل • اوور ٹائم: {overtime} روپے/گھنٹہ • آؤٹ اسٹیشن: +{outstation} روپے/دن",
   "@vehicleDriverPackageDetail": {
     "placeholders": {
@@ -728,7 +720,7 @@
       }
     }
   },
-  "bookNowWithRate": "ابھی بک کریں ({rate} روپے)",
+  "bookNowWithRate": "ابھی بک کریں ({rate}/دن)",
   "@bookNowWithRate": {
     "placeholders": {
       "rate": {
@@ -1178,20 +1170,6 @@
       },
       "esc": {
         "type": "String"
-      }
-    }
-  },
-  "ticketPickupDate": "پک اپ: {day}/{month}/{year}",
-  "@ticketPickupDate": {
-    "placeholders": {
-      "day": {
-        "type": "int"
-      },
-      "month": {
-        "type": "int"
-      },
-      "year": {
-        "type": "int"
       }
     }
   },
@@ -2176,14 +2154,6 @@
       }
     }
   },
-  "returnCustomerOwes": "گاہک پر {amount} روپے واجب الادا ہیں",
-  "@returnCustomerOwes": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "returnFinalizeFailed": "واپسی مکمل کرنا ناکام ہوا: {error}",
   "@returnFinalizeFailed": {
     "placeholders": {
@@ -2341,14 +2311,6 @@
     }
   },
   "paymentVerificationConfirming": "تصدیق ہو رہی ہے…",
-  "paymentVerificationConfirmButton": "ادائیگی تصدیق کریں — {amount} روپے",
-  "@paymentVerificationConfirmButton": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "manualBookingTitle": "واک اِن بکنگ وزرڈ",
   "manualBookingSubtitle": "شوروم کاؤنٹر سے براہ راست اجراء",
   "manualBookingCustomerSection": "گاہک کی کے وائی سی تفصیلات",
@@ -5446,5 +5408,250 @@
   "admin2_evidenceTitle": "ثبوت",
   "close": "بند کریں",
   "admin2_teamResetTotpTooltip": "دو مرحلہ تصدیق ری سیٹ کریں",
-  "admin2_teamRevokeTooltip": "ایڈمن کردار واپس لیں"
+  "admin2_teamRevokeTooltip": "ایڈمن کردار واپس لیں",
+  "@kycWizardMissingItem": {
+    "placeholders": {
+      "item": {
+        "type": "String"
+      }
+    }
+  },
+  "extraChargeLoading": "محفوظ شدہ اضافی چارجز لوڈ ہو رہے ہیں…",
+  "kycWizardDateFormatError": "تاریخ DD.MM.YYYY کی شکل میں درج کریں",
+  "kycWizardMissingItem": "{item} موجود نہیں ہے — جاری رکھنے کے لیے اسے شامل کریں",
+  "kycWizardSignatureMissing": "جاری رکھنے سے پہلے اپنے دستخط بنائیں",
+  "kycWizardTermsMissing": "جاری رکھنے سے پہلے کرایے کی شرائط سے اتفاق کریں",
+  "manualBookingLoadingRoutes": "مقررہ راستے لوڈ ہو رہے ہیں…",
+  "mediaCameraError": "کیمرہ نہیں کھل سکا۔ کیمرے کی اجازت چیک کریں اور دوبارہ کوشش کریں۔",
+  "passNotValid": "یہ پاس پک اپ کے لیے درست نہیں ہے",
+  "@advanceNoticeWithDriver": {
+    "placeholders": {
+      "nightStay": {
+        "type": "String"
+      }
+    }
+  },
+  "@disputeLastUpdated": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "@returnAmountOwedByCustomer": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "@returnOwedCollected": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "method": {
+        "type": "String"
+      }
+    }
+  },
+  "@tripOutCityEstimate": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      },
+      "estimate": {
+        "type": "String"
+      },
+      "km": {
+        "type": "int"
+      }
+    }
+  },
+  "contractSignAgreementHint": "دستخط کے لیے ضامن کے دستخط شامل کریں۔",
+  "depositRefundTerms": "واپسی کے معائنے کے بعد ڈپازٹ واپس کیا جائے گا، نقصان اور اضافی کلومیٹر کے چارجز منہا کر کے۔",
+  "disputeLastUpdated": "آخری اپ ڈیٹ {date}",
+  "handoverBalanceDue": "حوالگی پر واجب الادا بقایا",
+  "handoverBalanceMethodRequired": "تصدیق سے پہلے بتائیں کہ بقایا کس طرح وصول ہوا، یا 'ابھی نہیں' منتخب کریں۔",
+  "handoverBalanceNotYet": "ابھی نہیں",
+  "handoverFuelRequired": "تصدیق سے پہلے ایندھن کی سطح منتخب کریں۔",
+  "manualBookingLoadingVehicles": "گاڑیاں لوڈ ہو رہی ہیں…",
+  "profileLoadFailed": "آپ کا پروفائل لوڈ نہیں ہو سکا۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔",
+  "proofAdvanceCopied": "ایڈوانس رقم کلپ بورڈ پر کاپی ہو گئی",
+  "proofCopyAdvance": "ایڈوانس رقم کاپی کریں",
+  "proofMessageShop": "شوروم کو واٹس ایپ پر پیغام بھیجیں",
+  "returnAmountOwedByCustomer": "گاہک کی طرف واجب الادا رقم: {amount}",
+  "returnCloseBookingHint": "بکنگ بند کرنے سے پہلے ڈپازٹ کی واپسی درج کریں۔",
+  "returnFinalizeFailedGeneric": "واپسی مکمل نہ ہو سکی۔ دوبارہ کوشش کریں۔",
+  "returnOwedCollected": "واجب الادا رقم وصول ہوئی: {method} کے ذریعے {amount}",
+  "tripOutCityEstimate": "≈ {days} دن × {km} کلومیٹر فی دن کے لیے {estimate}",
+  "@shopFromPerDay": {
+    "placeholders": {
+      "rate": {
+        "type": "String"
+      }
+    }
+  },
+  "@shops_radiusChip": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "shopFromPerDay": "{rate} فی دن سے",
+  "shops_loadFailed": "شاپس لوڈ نہیں ہو سکیں۔",
+  "shops_radiusChip": "دائرہ: {km} km",
+  "shops_searchCities": "شہر تلاش کریں",
+  "@dashboardNeedsReviewSplit": {
+    "placeholders": {
+      "newCount": {
+        "type": "int"
+      },
+      "proofCount": {
+        "type": "int"
+      }
+    }
+  },
+  "@dashboardOldestWait": {
+    "placeholders": {
+      "wait": {
+        "type": "String"
+      }
+    }
+  },
+  "@priorTripsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@requestsOldestProofWait": {
+    "placeholders": {
+      "wait": {
+        "type": "String"
+      }
+    }
+  },
+  "@requestsWaitingTime": {
+    "placeholders": {
+      "wait": {
+        "type": "String"
+      }
+    }
+  },
+  "@triageTrustScore": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "@waitDurationDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      },
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "@waitDurationHm": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "@waitDurationMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "dashboardNeedsReviewSplit": "{newCount} نئی · {proofCount} ثبوت",
+  "dashboardNeedsReviewTitle": "جائزہ درکار",
+  "dashboardOldestWait": "سب سے پرانا انتظار: {wait}",
+  "dashboardQuickRequests": "درخواستیں",
+  "fleetOutCityFixedRoute": "شہر سے باہر: مقررہ راستہ",
+  "fleetOutCityPerKm": "شہر سے باہر: فی کلومیٹر",
+  "homeSignInButton": "سائن ان کریں",
+  "priorTripsCount": "{count} پچھلے سفر",
+  "requestsOldestProofWait": "ثبوت کا سب سے پرانا انتظار: {wait}",
+  "requestsWaitingTime": "انتظار: {wait}",
+  "triageKycMissing": "KYC موجود نہیں",
+  "triageKycPending": "KYC زیر التواء",
+  "triageKycRejected": "KYC مسترد",
+  "triageKycVerified": "KYC تصدیق شدہ",
+  "triageTrustScore": "اعتماد {score}/5",
+  "waitDurationDays": "{days} دن {hours} گھنٹے",
+  "waitDurationHm": "{hours} گھنٹے {minutes} منٹ",
+  "waitDurationMinutes": "{minutes} منٹ",
+  "carPnlLoadError": "اس گاڑی کا نفع نقصان لوڈ نہیں ہو سکا۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔",
+  "cashClosingLoadError": "کیش کلوزنگ لوڈ نہیں ہو سکی۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔",
+  "customerStatementLoadError": "اس گاہک کا گوشوارہ لوڈ نہیں ہو سکا۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔",
+  "disputesLoadError": "تنازعات لوڈ نہیں ہو سکے۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔",
+  "financeCategoriesLoadError": "مالیات کی اقسام لوڈ نہیں ہو سکیں۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔",
+  "financeLoadError": "آپ کے مالیات لوڈ نہیں ہو سکے۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔",
+  "financeSettingsLoadError": "مالیات کی ترتیبات لوڈ نہیں ہو سکیں۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔",
+  "reportsLoadError": "رپورٹس لوڈ نہیں ہو سکیں۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔",
+  "staffRolesLoadError": "عملے کے کردار لوڈ نہیں ہو سکے۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔",
+  "ticketPickupDate": "پک اپ: {date}",
+  "@ticketPickupDate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "whatsappCreditsLoadError": "واٹس ایپ کریڈٹس لوڈ نہیں ہو سکے۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔",
+  "whatsappHistoryLoadError": "واٹس ایپ کی تاریخ لوڈ نہیں ہو سکی۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔",
+  "currencyPrefix": "روپے ",
+  "pricingHintKmPerDay": "{km} کلومیٹر / دن",
+  "@pricingHintKmPerDay": {
+    "placeholders": {
+      "km": {
+        "type": "int"
+      }
+    }
+  },
+  "pricingHintPerHour": "{amount} / گھنٹہ",
+  "@pricingHintPerHour": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "paymentVerificationConfirmButton": "ادائیگی تصدیق کریں — {amount}",
+  "@paymentVerificationConfirmButton": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "returnCustomerOwes": "گاہک پر {amount} واجب الادا ہیں",
+  "@returnCustomerOwes": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "vehicleDepositCnic": "سیکیورٹی ڈپازٹ: {amount} + پک اپ پر اصل نادرا شناختی کارڈ ضمانت کے طور پر درکار ہے",
+  "@vehicleDepositCnic": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "returnOwedRecordFailed": "واجب الادا رقم کی وصولی درج نہ ہو سکی۔ براہ کرم دوبارہ کوشش کریں۔"
 }

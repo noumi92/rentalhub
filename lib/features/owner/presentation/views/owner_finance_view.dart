@@ -88,7 +88,8 @@ class _OwnerFinanceViewState extends State<OwnerFinanceView> {
           _vehicles = vehicles;
         });
       }
-    } catch (_) {
+    } catch (e) {
+      debugPrint('OwnerFinanceView load failed: $e'); // Audit 2026-11-15 DS-6: raw error logged for diagnostics; the user only ever sees the localized per-screen message.
       if (mounted) setState(() => _hasError = true);
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -183,7 +184,7 @@ class _OwnerFinanceViewState extends State<OwnerFinanceView> {
                   ? const AppLoadingState()
                   : _hasError
                       ? AppErrorState(
-                          message: l10n.dashboardLoadError,
+                          message: l10n.financeLoadError,
                           onRetry: _load,
                         )
                       : SingleChildScrollView(

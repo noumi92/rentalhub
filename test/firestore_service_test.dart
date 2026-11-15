@@ -380,7 +380,9 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(submitted, isFalse);
-      expect(find.text('CNIC must be exactly 13 digits'), findsOneWidget);
+      // FG-20: the same message now renders twice by design — the
+      // inline field error plus the submission snackbar.
+      expect(find.text('CNIC must be exactly 13 digits'), findsNWidgets(2));
     });
   });
 }

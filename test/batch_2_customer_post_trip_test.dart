@@ -115,7 +115,7 @@ supportedLocales: AppLocalizations.supportedLocales,
       await tester.pump();
 
       expect(find.text('Wallet & Security Escrow'), findsOneWidget);
-      expect(find.text('Active Escrow & Advances'), findsOneWidget);
+      expect(find.text('Total with shop: advances paid + deposit held'), findsOneWidget);
       expect(find.text('Rs. 12,500'), findsOneWidget);
       expect(find.text('- Rs. 2,500'), findsOneWidget);
       expect(find.text('- Rs. 10,000'), findsOneWidget);

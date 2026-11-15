@@ -232,7 +232,16 @@ class _GuarantorPickerState extends State<GuarantorPicker> {
           ),
         ],
         if (_loadingSaved)
-          const Center(child: CircularProgressIndicator())
+          // DS-11: labelled inline spinner (text + spinner), not a
+          // bare spinner — the error branch above already retries.
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)),
+              const SizedBox(width: 8),
+              Text(l10n.customersLoadingMessage),
+            ],
+          )
         else if (_saved.isNotEmpty)
           SizedBox(
             height: 120,

@@ -62,18 +62,16 @@ class FinanceDepositsSection extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(label,
-                style: const TextStyle(
-                    fontSize: 13)),
+            // Audit 2026-11-15 DS-8: 13 sp is bodyMedium, 11 sp is
+            // labelSmall — theme slots, not hardcoded sizes.
+            Text(label, style: Theme.of(context).textTheme.bodyMedium),
             Text(count,
-                style: TextStyle(
-                    fontSize: 11, color: Theme.of(context).colorScheme.onSurfaceVariant)),
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant)),
           ],
         ),
         Text(l10n.amountRs(formatRs(amount)),
-            style: const TextStyle(
-                fontSize: 13,
-                )),
+            style: Theme.of(context).textTheme.bodyMedium),
       ],
     );
   }

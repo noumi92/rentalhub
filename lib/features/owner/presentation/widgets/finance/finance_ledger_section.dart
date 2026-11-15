@@ -5,6 +5,7 @@ import '../../../../../core/constants/app_colors.dart';
 import  '../../../../bookings/domain/entities/booking_entity.dart';
 import  '../../../../finance/domain/entities/finance_account_entity.dart';
 import  '../../../../finance/domain/entities/finance_transfer_entity.dart';
+import '../../../../../core/utils/date_format.dart';
 import '../../../../../core/utils/money_format.dart';
 import '../../../../../core/theme/card_decoration.dart';
 
@@ -134,7 +135,8 @@ class _FinanceLedgerSectionState extends State<FinanceLedgerSection> {
                       Text(_categoryLabel(l10n, t.category),
                           style: Theme.of(context).textTheme.bodyMedium),
                       Text(
-                          '${_accountName(l10n, t.accountId)} • ${t.createdAt.day}/${t.createdAt.month}/${t.createdAt.year}${t.note != null ? ' • ${t.note}' : ''}',
+                          // Audit 2026-11-15 DS-5: localized date, never raw d/m/y.
+                          '${_accountName(l10n, t.accountId)} • ${formatDate(context, t.createdAt)}${t.note != null ? ' • ${t.note}' : ''}',
                           style: Theme.of(context).textTheme.labelSmall),
                       if (bookingLine != null)
                         Text(bookingLine,

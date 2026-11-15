@@ -122,10 +122,14 @@ class AppShellNav extends StatelessWidget {
     // past 56 px instead of clipping: the tallest column is the
     // selected one (32 px pill + 2 px gap + the scaled label), so
     // the growth budget is 36 px + 1.4x the scaled label size.
+    // Audit 2026-11-15 AC-15: at large text scale the label may
+    // wrap to 2 lines, so the budget counts 2 lines then.
     final bottomInset = MediaQuery.of(context).padding.bottom;
     final textScaler = MediaQuery.textScalerOf(context);
-    final contentHeight =
-        math.max(navHeight, 36 + textScaler.scale(12) * 1.4);
+    final allowTwoLineLabels = textScaler.scale(1) > 1.3;
+    final labelLines = allowTwoLineLabels ? 2 : 1;
+    final contentHeight = math.max(
+        navHeight, 34 + labelLines * textScaler.scale(12) * 1.4);
     // Phone bug: a Material NavigationBar forced to 56 px clips the
     // labels (its destinations need ~64 px). Each destination here
     // is an explicit icon-over-label column that fits 56 px, with a
@@ -147,6 +151,7 @@ class AppShellNav extends StatelessWidget {
                   indicatorColor: indicatorColor,
                   iconTheme: theme.navigationBarTheme.iconTheme,
                   labelStyle: theme.navigationBarTheme.labelTextStyle,
+                  allowTwoLineLabel: allowTwoLineLabels,
                   onTap: () {
                     // E2: a light selection click on every tab tap.
                     HapticFeedback.selectionClick();
@@ -173,6 +178,7 @@ class _TabDestination extends StatelessWidget {
   final Color indicatorColor;
   final WidgetStateProperty<IconThemeData?>? iconTheme;
   final WidgetStateProperty<TextStyle?>? labelStyle;
+  final bool allowTwoLineLabel;
   final VoidCallback onTap;
 
   const _TabDestination({
@@ -182,6 +188,7 @@ class _TabDestination extends StatelessWidget {
     required this.indicatorColor,
     required this.iconTheme,
     required this.labelStyle,
+    this.allowTwoLineLabel = false,
     required this.onTap,
   });
 
@@ -190,8 +197,22 @@ class _TabDestination extends StatelessWidget {
     final states = selected ? {WidgetState.selected} : <WidgetState>{};
     final resolvedIcon =
         iconTheme?.resolve(states) ?? const IconThemeData(size: 24);
+    // Audit 2026-11-15 DS-8: the 12 sp fallback is off-scale (§4.5:
+    // 28/20/16/15/13/11) — read the labelSmall theme slot instead,
+    // with the nav's white-on-navy colours per state. The last
+    // fallback carries no size: ThemeData always defines labelSmall,
+    // so it only renders if a foreign theme drops the slot.
     final resolvedLabel = labelStyle?.resolve(states) ??
-        const TextStyle(fontSize: 12, fontWeight: FontWeight.w500);
+        Theme.of(context).textTheme.labelSmall?.copyWith(
+              fontWeight:
+                  selected ? FontWeight.w600 : FontWeight.w500,
+              color: Colors.white.withValues(
+                  alpha: selected ? 1 : 0.6),
+            ) ??
+        TextStyle(
+          fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
+          color: Colors.white.withValues(alpha: selected ? 1 : 0.6),
+        );
     final icon = selected
         ? Container(
             width: 64,
@@ -227,7 +248,10 @@ class _TabDestination extends StatelessWidget {
             Text(
               label,
               style: resolvedLabel,
-              maxLines: 1,
+              // Audit 2026-11-15 AC-15: 2 lines at large text scale
+              // (Urdu labels at 360 px); 1 line at default scale, so
+              // the 56 px flush bar is unchanged. Phone check owed.
+              maxLines: allowTwoLineLabel ? 2 : 1,
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.center,
             ),

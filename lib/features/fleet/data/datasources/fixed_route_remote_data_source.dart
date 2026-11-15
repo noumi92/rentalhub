@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../../../core/data/offline_sync_queue.dart';
+import '../../../../core/utils/shop_id_resolution.dart';
 import '../../domain/entities/fixed_route_entity.dart';
 import '../models/fixed_route_model.dart';
 
@@ -113,12 +114,16 @@ class FixedRouteRemoteDataSource {
   }
 
   Future<List<FixedRouteEntity>> getShopFixedRoutes(String shopId) async {
+    // Shop-id linking (2026-11-15): routes saved under the bare UID
+    // and under the shop doc id must both surface; writes below
+    // canonicalize, so legacy bare rows keep working via candidates.
+    final ids = await candidateShopIds(_resolvedFirestore, shopId);
     final fs = _resolvedFirestore;
     if (fs != null) {
       try {
         final snap = await fs
             .collection('fixed_routes')
-            .where('shopId', isEqualTo: shopId)
+            .where('shopId', whereIn: ids)
             .get();
         if (snap.docs.isNotEmpty) {
           return snap.docs
@@ -127,11 +132,14 @@ class FixedRouteRemoteDataSource {
         }
       } catch (_) {}
     }
-    return _inMemoryRoutes.where((r) => r.shopId == shopId).toList();
+    return _inMemoryRoutes.where((r) => ids.contains(r.shopId)).toList();
   }
 
   Future<void> saveFixedRoute(FixedRouteEntity route) async {
-    final model = FixedRouteModel.fromEntity(route);
+    final canonical =
+        await canonicalShopId(_resolvedFirestore, route.shopId);
+    final model =
+        FixedRouteModel.fromEntity(route.copyWith(shopId: canonical));
     final idx =
         _inMemoryRoutes.indexWhere((r) => r.routeId == route.routeId);
     if (idx != -1) {

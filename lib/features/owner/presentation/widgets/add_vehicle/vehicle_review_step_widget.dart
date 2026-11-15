@@ -97,7 +97,9 @@ class VehicleReviewStepWidget extends StatelessWidget {
                       Container(
                         width: 50,
                         height: 50,
-                        decoration: BoxDecoration(color: AppColors.primaryContainer, borderRadius: BorderRadius.circular(12)),
+                        // Audit 2026-11-15 AC-16: pale primaryContainer
+                        // glares in dark mode — dark container token there.
+                        decoration: BoxDecoration(color: Theme.of(context).brightness == Brightness.dark ? AppColors.primaryContainerOnDark : AppColors.primaryContainer, borderRadius: BorderRadius.circular(12)),
                         child: const Icon(Icons.directions_car_rounded, size: 28),
                       ),
                     const SizedBox(width: 12),

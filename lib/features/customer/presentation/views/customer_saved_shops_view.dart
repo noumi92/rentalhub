@@ -186,9 +186,12 @@ class _CustomerSavedShopsViewState extends State<CustomerSavedShopsView> {
                                                             .textTheme
                                                             .labelSmall
                                                             ?.copyWith(
+                                                                // Audit 2026-11-15 AC-9:
+                                                                // labelSmall is defined
+                                                                // 11/w500 — w700 is off-scale.
                                                                 fontWeight:
                                                                     FontWeight
-                                                                        .w700)),
+                                                                        .w500)),
                                                     const SizedBox(width: 8),
                                                   ],
                                                   if (shop

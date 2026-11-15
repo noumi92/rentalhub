@@ -64,6 +64,10 @@ class PakistaniPlateWidget extends StatelessWidget {
                 ),
                 Text(
                   stripLabel,
+                  // Audit 2026-11-15 DS-8 documented exception: the
+                  // plate strip label is a fixed-size graphic (digits
+                  // drawn on the plate image), not text — 7/8 sp is
+                  // the plate's own scale, not a §4.5 slot.
                   style: TextStyle(
                     fontSize: isCompact ? 7 : 8,
                     fontWeight: FontWeight.w500,
