@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../core/constants/app_colors.dart';
 import '../../../../../l10n/app_localizations.dart';
 
 /// Phone-test round 4: the fleet tab's quick-action row, rendered
@@ -31,8 +32,21 @@ class FleetQuickActions extends StatelessWidget {
     // weight is overridden (no ad-hoc size here: the typography test
     // caps ad-hoc sizes at 40). The icon carries the emphasis, not
     // the text weight.
-    final labelStyle = Theme.of(context).textTheme.labelMedium?.copyWith(
+    // Phone-test build 81: `labelMedium` carries the theme's grey
+    // `onSurfaceVariant` (#64748B light) — a label with no explicit
+    // colour renders grey, which is what washed out Schedule and
+    // Customers on the phone. Each label takes its own button's
+    // foreground instead: white on the filled orange Schedule button
+    // (filledButtonTheme: orangeFill + white), dark onSurface on the
+    // pale tonal Customers button (light + dark legs).
+    final brightness = Theme.of(context).brightness;
+    final scheduleLabelStyle = Theme.of(context).textTheme.labelMedium?.copyWith(
           fontWeight: FontWeight.w400,
+          color: Colors.white,
+        );
+    final customersLabelStyle = Theme.of(context).textTheme.labelMedium?.copyWith(
+          fontWeight: FontWeight.w400,
+          color: brightness == Brightness.dark ? AppColors.onSurfaceDark : AppColors.onSurfaceLight,
         );
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
@@ -43,14 +57,14 @@ class FleetQuickActions extends StatelessWidget {
             key: const Key('fleet-action-schedule'),
             onPressed: onSchedule,
             icon: const Icon(Icons.calendar_month_rounded, size: 18),
-            label: Text(l10n.fleetSchedule, style: labelStyle),
+            label: Text(l10n.fleetSchedule, style: scheduleLabelStyle),
           ),
           const SizedBox(width: 8),
           FilledButton.tonalIcon(
             key: const Key('fleet-action-customers'),
             onPressed: onCustomers,
             icon: const Icon(Icons.people_outline_rounded, size: 18),
-            label: Text(l10n.customersTitle, style: labelStyle),
+            label: Text(l10n.customersTitle, style: customersLabelStyle),
           ),
         ],
       ),

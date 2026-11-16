@@ -13,6 +13,7 @@ import '../widgets/vehicle_detail/vehicle_detail_bookings.dart';
 import '../widgets/vehicle_detail/vehicle_detail_feature_actions.dart';
 import '../widgets/vehicle_detail/vehicle_detail_photo_card.dart';
 import '../widgets/vehicle_detail/vehicle_detail_rates_grid.dart';
+import '../widgets/vehicle_detail/vehicle_detail_spec_chips.dart';
 
 /// Audit §5 (item 15): the OWNER vehicle-detail screen — the fleet
 /// card used to open the customer detail route. Photo, identity,
@@ -108,10 +109,17 @@ class _OwnerVehicleDetailViewState extends State<OwnerVehicleDetailView> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Wrap(
-                            spacing: 8,
-                            runSpacing: 8,
-                            children: [_specChip(context, v.color ?? '—'), _specChip(context, l10n.vehicleDetailSeats(v.seats)), _specChip(context, v.fuelType), _specChip(context, v.transmission), _specChip(context, v.category)],
+                          // Phone-test build 81 (user feedback): the
+                          // 5 spec chips are ONE single icon row now,
+                          // not a wrapping text layout — each feature
+                          // keeps its data, with an icon, in a
+                          // horizontally scrollable row at 360px.
+                          VehicleDetailSpecChips(
+                            colorLabel: v.color ?? '—',
+                            seatsLabel: l10n.vehicleDetailSeats(v.seats),
+                            fuelLabel: v.fuelType,
+                            transmissionLabel: v.transmission,
+                            categoryLabel: v.category,
                           ),
                           const SizedBox(height: 18),
                           // Phone-test build 80: all three feature
@@ -149,9 +157,5 @@ class _OwnerVehicleDetailViewState extends State<OwnerVehicleDetailView> {
         ),
       ),
     );
-  }
-
-  Widget _specChip(BuildContext context, String label) {
-    return Chip(label: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500)));
   }
 }

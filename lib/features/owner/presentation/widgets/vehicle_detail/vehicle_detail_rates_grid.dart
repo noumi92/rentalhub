@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/theme/card_decoration.dart';
 import '../../../../../core/utils/money_format.dart';
 import '../../../../../l10n/app_localizations.dart';
@@ -80,6 +81,11 @@ class VehicleDetailRatesGrid extends StatelessWidget {
   }
 
   Widget _rateTile(BuildContext context, String label, String value) {
+    // Phone-test build 81: `labelMedium` is the theme's grey
+    // `onSurfaceVariant` — the tier labels rendered grey on the tile.
+    // Explicit onSurface (light + dark legs) matches the card surface.
+    final brightness = Theme.of(context).brightness;
+    final labelColor = brightness == Brightness.dark ? AppColors.onSurfaceDark : AppColors.onSurfaceLight;
     return Container(
       decoration: AppCardDecoration.of(context, radius: 12, boxShadow: const []),
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
@@ -90,7 +96,7 @@ class VehicleDetailRatesGrid extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500)),
+            Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500, color: labelColor)),
             const SizedBox(height: 2),
             Text(value, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
           ],
