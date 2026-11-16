@@ -165,7 +165,7 @@ void main() {
       expect(find.text('تھیم'), findsOneWidget);
     });
 
-    testWidgets('tapping the language row persists the choice',
+    testWidgets('language dropdown persists the choice',
         (tester) async {
       final prefs = await SharedPreferences.getInstance();
       await di.sl<AppSettingsCubit>().setLocale('en');
@@ -181,24 +181,22 @@ void main() {
       // (l10n.settings) and the quick link (l10n.fleetShopSettings).
       expect(find.text('Shop Settings'), findsNWidgets(2));
 
-      // Team J redesign (audit 2026-11-15): language is a row + bottom
-      // sheet, not visible chips — tap the Language row, then the
-      // sheet's Urdu option. (This pump's MaterialApp has no locale
-      // binding to the cubit, so the UI stays English throughout;
-      // the persisted cubit state + prefs are the assertions.)
-      await tester.ensureVisible(find.text('Language'));
-      await tester.tap(find.text('Language'));
+      // Showroom redesign Phase 4 (2026-11-16): language is a
+      // dropdown pill in a card, not a row + bottom sheet — tap the
+      // dropdown, then the Urdu option in the menu. (This pump's
+      // MaterialApp has no locale binding to the cubit, so the UI
+      // stays English throughout; the persisted cubit state + prefs
+      // are the assertions.)
+      expect(find.text('Language'), findsOneWidget);
+      await tester.tap(find.text('English'));
       await tester.pumpAndSettle();
-      await tester.ensureVisible(find.text('Urdu'));
       await tester.tap(find.text('Urdu'));
       await tester.pumpAndSettle();
       expect(di.sl<AppSettingsCubit>().state.localeCode, 'ur');
       expect(prefs.getString(AppSettingsCubit.localeKey), 'ur');
 
-      await tester.ensureVisible(find.text('Language'));
-      await tester.tap(find.text('Language'));
+      await tester.tap(find.text('Urdu'));
       await tester.pumpAndSettle();
-      await tester.ensureVisible(find.text('English'));
       await tester.tap(find.text('English'));
       await tester.pumpAndSettle();
       expect(di.sl<AppSettingsCubit>().state.localeCode, 'en');
@@ -419,7 +417,7 @@ void main() {
       router.dispose();
     });
 
-    testWidgets('Scan QR tile icon uses the theme primary in dark mode',
+    testWidgets('Scan QR tile icon uses the orange accent in dark mode',
         (tester) async {
       await tester.pumpWidget(
         MaterialApp(
@@ -433,9 +431,10 @@ void main() {
       final icon = tester.widget<Icon>(
         find.byIcon(Icons.qr_code_scanner_rounded),
       );
-      // Theme primary in dark is lavender — not the navy
-      // AppColors.primary (#1B1E5C), which was ~1.2:1 on dark.
-      expect(icon.color, AppTheme.darkTheme.colorScheme.primary);
+      // Phase 1 showroom redesign: quick-action icons use the guide
+      // accent — #FB923C in dark (the dark leg of accentOrange),
+      // never the navy AppColors.primary, which was ~1.2:1 on dark.
+      expect(icon.color, AppColors.accentOrangeFor(Brightness.dark));
       expect(icon.color, isNot(AppColors.primary));
     });
   });

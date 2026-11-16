@@ -29,8 +29,40 @@ Color adminStatusColor(BuildContext context, AdminStatusTone tone) {
   };
 }
 
+/// Badge background for [AdminStatusChip] (showroom redesign Phase 0,
+/// 2026-11-16): the guide tints — success #DCFCE7, error #FEE2E2,
+/// warning the warning container — light; the dark containers in dark
+/// mode. Info/neutral keep the old 12% tint of the tone colour.
+/// [adminStatusColor] itself is unchanged: other callers (dashboard
+/// accents, tribunal, ticket tiles) use it for text/icon colour.
+Color adminStatusBadgeBackground(BuildContext context, AdminStatusTone tone) {
+  final brightness = Theme.of(context).brightness;
+  return switch (tone) {
+    AdminStatusTone.success => AppColors.successBadgeFor(brightness),
+    AdminStatusTone.danger => AppColors.errorBadgeFor(brightness),
+    AdminStatusTone.warning => AppColors.warningContainerFor(brightness),
+    _ => adminStatusColor(context, tone).withValues(alpha: 0.12),
+  };
+}
+
+/// Badge text for [AdminStatusChip]: the badge text tokens — success
+/// `accentSuccessStrong` #047857 (4.99:1 on #DCFCE7), danger
+/// `errorText` #B91C1C (5.3:1 on #FEE2E2) — light; the light
+/// on-container colours in dark mode. Info/neutral keep
+/// [adminStatusColor].
+Color adminStatusBadgeText(BuildContext context, AdminStatusTone tone) {
+  final brightness = Theme.of(context).brightness;
+  return switch (tone) {
+    AdminStatusTone.success => AppColors.successBadgeTextFor(brightness),
+    AdminStatusTone.danger => AppColors.errorBadgeTextFor(brightness),
+    AdminStatusTone.warning => AppColors.warningTextFor(brightness),
+    _ => adminStatusColor(context, tone),
+  };
+}
 /// A small pill for a list status, with a human label (never a raw
 /// `snake_case` enum value). Display-only: it is not tappable.
+/// Badge labels are weight 500, never bold (rulebook §4.5: Bold only
+/// at displayLarge 28).
 class AdminStatusChip extends StatelessWidget {
   const AdminStatusChip({super.key, required this.label, required this.tone});
 
@@ -39,11 +71,11 @@ class AdminStatusChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = adminStatusColor(context, tone);
+    final color = adminStatusBadgeText(context, tone);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
+        color: adminStatusBadgeBackground(context, tone),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(label,

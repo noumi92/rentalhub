@@ -5653,5 +5653,40 @@
       }
     }
   },
-  "returnOwedRecordFailed": "واجب الادا رقم کی وصولی درج نہ ہو سکی۔ براہ کرم دوبارہ کوشش کریں۔"
+  "returnOwedRecordFailed": "واجب الادا رقم کی وصولی درج نہ ہو سکی۔ براہ کرم دوبارہ کوشش کریں۔",
+  "dashboardMonthlyRevenue": "ماہانہ آمدنی",
+  "dashboardActiveRentalsToday": "آج کے فعال کرائے",
+  "fleetHandoverQr": "حوالگی QR",
+  "vehicleDetailEditVehicle": "گاڑی میں ترمیم کریں",
+  "vehicleDetailRatesPricing": "کرایے اور قیمتیں",
+  "customerDetailKycDocumentsCount": "KYC دستاویزات ({count}/{total} اپ لوڈ شدہ)",
+  "@customerDetailKycDocumentsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "kycLeftFourFingers": "بائیں 4 انگلیاں",
+  "kycRightFourFingers": "دائیں 4 انگلیاں",
+  "settingsShowroomOwner": "شوروم مالک",
+  "settingsSetUpShop": "دکان ترتیب دیں",
+  "settingsAccountAlerts": "اکاؤنٹ اور اطلاعات",
+  "activeRentals": "فعال کرائے",
+  "settingsOperations": "آپریشنز",
+  "customersBookingTotal": "{amount} • {count, plural, other{{count} بکنگز}}",
+  "@customersBookingTotal": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "fleetReady": "تیار"
 }

@@ -8,7 +8,12 @@ class AppDimensions {
   static const double cardOverlapMargin = -28.0;
   // Rulebook §4.3: content cards overlap the header by -28.
   static const double headerOverlapOffset = -28.0;
-  static const double cardRadius = 20.0;
+  // Rulebook §4.4 already said cards radius 16 — the token was 20.
+  // Showroom redesign Phase 0 (2026-11-16) aligns the code with the
+  // rulebook: every card/theme/dialog radius that reads this token is
+  // now 16. (BoardingPassCard migrated to the canonical decoration in
+  // Phase 5, so no card keeps a local 20 anymore.)
+  static const double cardRadius = 16.0;
   static const double buttonRadius = 16.0;
   static const double buttonHeight = 54.0;
 

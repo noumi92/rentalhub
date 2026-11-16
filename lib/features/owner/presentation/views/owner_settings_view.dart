@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../auth/presentation/utils/sign_out_confirm_dialog.dart';
 import '../../../auth/domain/repositories/auth_repository.dart';
+import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/settings/app_settings_cubit.dart';
@@ -16,22 +17,16 @@ import '../widgets/notification_preferences_section.dart';
 import '../widgets/shop_profile_card.dart';
 import '../../../../core/theme/card_decoration.dart';
 
-/// Phase B (G3): the owner settings screen. The language and theme
-/// choices are real — they persist in SharedPreferences and the
-/// whole app rebuilds with the new locale (Urdu flips the layout
-/// to RTL) and theme. The screen's own strings come from the
-/// `.arb` files, so switching to Urdu translates it immediately.
-/// UI/UX audit fix: language, theme, notifications and sync are
-/// rows in one flat list (no section cards, no heading). Language
-/// and theme pick from a bottom sheet; notifications opens a sheet
-/// with the five persisted toggles plus a link to the list; sync
-/// opens the sync details screen.
+/// Phase B (G3): the owner settings screen. Language and theme persist in SharedPreferences and the whole app rebuilds with the new locale (Urdu flips the layout to RTL) and theme; the screen's own strings come from the `.arb` files, so switching to Urdu translates it immediately. Showroom redesign Phase 4 (2026-11-16): the "Showroom Owner" card on top (with a shortcut to the shop editor), language + theme as two side-by-side cards — a dropdown pill for the language, a Light | Dark | System segmented switch for the theme (System is kept) — and the remaining rows grouped into an Operations card and an Account & Alerts card. Every row keeps its old target and carries a 36x36 pastel circular icon badge. The five notification toggles stay in the bottom sheet opened by the Notifications row, with the link to the list below.
 class OwnerSettingsView extends StatefulWidget {
   const OwnerSettingsView({super.key});
 
   @override
   State<OwnerSettingsView> createState() => _OwnerSettingsViewState();
 }
+
+/// One pastel badge colour per row, from the existing container tokens — never a hardcoded hex. Dark legs come from the matching `*For(brightness)` helpers / dark container tokens.
+enum _BadgeKind { orange, green, red, amber, navy, grey }
 
 class _OwnerSettingsViewState extends State<OwnerSettingsView> {
 
@@ -41,134 +36,157 @@ class _OwnerSettingsViewState extends State<OwnerSettingsView> {
     return Scaffold(
       body: SafeArea(
         top: false,
-        child: Column(
-          children: [
-            MinimalAppBar(title: l10n.settings, subtitle: l10n.settingsSubtitle),
-            Expanded(
-              child: BlocBuilder<AppSettingsCubit, AppSettingsState>(
-                bloc: sl<AppSettingsCubit>(),
-                builder: (context, settings) {
-                  return SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Audit §5 (O33): owner name + avatar above the shop name (was shop-name-only).
-                        const ShopProfileCard(),
-                        const SizedBox(height: 16),
-                        _flatCard(
-                          child: Column(
-                            children: [
-                              _settingRow(context, icon: Icons.language_rounded, label: l10n.language, value: settings.localeCode == 'ur' ? l10n.languageUrdu : l10n.languageEnglish, onTap: () => _openLanguageSheet(settings)),
-                              _settingRow(context, icon: Icons.palette_rounded, label: l10n.theme, value: switch (settings.themeMode) { ThemeMode.dark => l10n.themeDark, ThemeMode.system => l10n.themeSystem, _ => l10n.themeLight }, onTap: () => _openThemeSheet(settings)),
-                              _settingRow(context, icon: Icons.notifications_rounded, label: l10n.notifications, onTap: _openNotificationsSheet),
-                              _link(context, Icons.sync_rounded, l10n.syncDetailsTitle, RouteNames.syncDetails),
-                              _link(context, Icons.storefront_rounded, l10n.fleetShopSettings, RouteNames.ownerShopSettings),
-                              _link(context, Icons.route_rounded, l10n.fixedRoutes, RouteNames.ownerFixedRoutes),
-                              _link(context, Icons.shield_rounded, l10n.blacklist, RouteNames.ownerBlacklist),
-                              _link(context, Icons.workspace_premium_rounded, l10n.subscription, RouteNames.ownerSubscription),
-                              _link(context, Icons.chat_rounded, l10n.whatsappLogs, RouteNames.ownerWhatsappLogs),
-                              // Audit impl (worker E): WhatsApp Credits sits next to the WhatsApp Logs link.
-                              _link(context, Icons.message_rounded, l10n.creditsTitle, RouteNames.ownerWhatsappCredits),
-                              _link(context, Icons.report_problem_outlined, l10n.disputes, RouteNames.ownerDisputes),
-                              _link(context, Icons.account_balance_rounded, l10n.finance, RouteNames.ownerFinance),
-                              // Audit impl (worker C): finance settings + categories, staff & roles, reset options.
-                              _link(context, Icons.tune_rounded, l10n.financeSettingsTitle, RouteNames.ownerFinanceSettings),
-                              _link(context, Icons.category_rounded, l10n.financeCategoriesTitle, RouteNames.ownerFinanceCategories),
-                              _link(context, Icons.group_rounded, l10n.staffTitle, RouteNames.ownerStaffRoles),
-                              _link(context, Icons.restart_alt_rounded, l10n.resetTitle, RouteNames.ownerResetOptions),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 24),
-                        SizedBox(
-                          width: double.infinity,
-                          child: OutlinedButton.icon(
-                            icon: const Icon(Icons.logout_rounded),
-                            label: Text(l10n.signOut),
-                            onPressed: () async {
-                              // Audit impl (worker C, O49): confirm first; on confirm sign out (same repository path as signOutToAuth, same error feedback) and land on the signed-out screen instead of /auth.
-                              final confirmed = await showSignOutConfirmDialog(context);
-                              if (!confirmed || !context.mounted) return;
-                              try {
-                                await sl<AuthRepository>().signOut();
-                              } catch (_) {
-                                if (!context.mounted) return;
-                                AppFeedback.showError(context, l10n.ownerSignOutError);
-                                return;
-                              }
-                              if (!context.mounted) return;
-                              context.go(RouteNames.ownerSignedOut);
-                            },
-                          ),
-                        ),
-                      ],
+        child: Column(children: [
+          MinimalAppBar(title: l10n.settings, subtitle: l10n.settingsSubtitle),
+          Expanded(
+            child: BlocBuilder<AppSettingsCubit, AppSettingsState>(
+              bloc: sl<AppSettingsCubit>(),
+              builder: (context, settings) {
+                return SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    const ShopProfileCard(),
+                    const SizedBox(height: 16),
+                    Row(crossAxisAlignment: CrossAxisAlignment.start, children: [Expanded(child: _languageCard(context, settings)), const SizedBox(width: 12), Expanded(child: _themeCard(context, settings))]),
+                    const SizedBox(height: 16),
+                    _groupCard(context, title: l10n.settingsOperations, children: [
+                      _link(context, _BadgeKind.orange, Icons.storefront_rounded, l10n.fleetShopSettings, RouteNames.ownerShopSettings),
+                      _link(context, _BadgeKind.navy, Icons.route_rounded, l10n.fixedRoutes, RouteNames.ownerFixedRoutes),
+                      _link(context, _BadgeKind.green, Icons.account_balance_rounded, l10n.finance, RouteNames.ownerFinance),
+                      _link(context, _BadgeKind.grey, Icons.tune_rounded, l10n.financeSettingsTitle, RouteNames.ownerFinanceSettings),
+                      _link(context, _BadgeKind.amber, Icons.category_rounded, l10n.financeCategoriesTitle, RouteNames.ownerFinanceCategories),
+                      _link(context, _BadgeKind.red, Icons.shield_rounded, l10n.blacklist, RouteNames.ownerBlacklist),
+                      _link(context, _BadgeKind.navy, Icons.group_rounded, l10n.staffTitle, RouteNames.ownerStaffRoles),
+                      _link(context, _BadgeKind.orange, Icons.report_problem_outlined, l10n.disputes, RouteNames.ownerDisputes),
+                    ]),
+                    const SizedBox(height: 16),
+                    _groupCard(context, title: l10n.settingsAccountAlerts, children: [
+                      _row(context, _BadgeKind.orange, Icons.notifications_rounded, l10n.notifications, onTap: _openNotificationsSheet),
+                      _link(context, _BadgeKind.navy, Icons.sync_rounded, l10n.syncDetailsTitle, RouteNames.syncDetails),
+                      _link(context, _BadgeKind.amber, Icons.workspace_premium_rounded, l10n.subscription, RouteNames.ownerSubscription),
+                      _link(context, _BadgeKind.green, Icons.chat_rounded, l10n.whatsappLogs, RouteNames.ownerWhatsappLogs),
+                      _link(context, _BadgeKind.grey, Icons.message_rounded, l10n.creditsTitle, RouteNames.ownerWhatsappCredits),
+                      _link(context, _BadgeKind.red, Icons.restart_alt_rounded, l10n.resetTitle, RouteNames.ownerResetOptions),
+                    ]),
+                    const SizedBox(height: 24),
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        icon: const Icon(Icons.logout_rounded),
+                        label: Text(l10n.signOut),
+                        onPressed: () async {
+                          // Audit impl (worker C, O49): confirm first; on confirm sign out (same repository path as signOutToAuth, same error feedback) and land on the signed-out screen instead of /auth.
+                          final confirmed = await showSignOutConfirmDialog(context);
+                          if (!confirmed || !context.mounted) return;
+                          try {
+                            await sl<AuthRepository>().signOut();
+                          } catch (_) {
+                            if (!context.mounted) return;
+                            AppFeedback.showError(context, l10n.ownerSignOutError);
+                            return;
+                          }
+                          if (!context.mounted) return;
+                          context.go(RouteNames.ownerSignedOut);
+                        },
+                      ),
                     ),
-                  );
-                },
-              ),
+                  ]),
+                );
+              },
             ),
-          ],
+          ),
+        ]),
+      ),
+    );
+  }
+
+  Widget _cardLabel(BuildContext context, IconData icon, String label) {
+    return Row(children: [Icon(icon, size: 20, color: Theme.of(context).colorScheme.onSurfaceVariant), const SizedBox(width: 8), Expanded(child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)))]);
+  }
+
+  Widget _languageCard(BuildContext context, AppSettingsState settings) {
+    final l10n = AppLocalizations.of(context)!;
+    final dark = Theme.of(context).brightness == Brightness.dark;
+    return Container(
+      padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+      decoration: AppCardDecoration.of(context),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        _cardLabel(context, Icons.language_rounded, l10n.language),
+        const SizedBox(height: 12),
+        Container(
+          height: 48,
+          alignment: Alignment.center,
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          decoration: BoxDecoration(border: Border.all(color: dark ? AppColors.borderDark : AppColors.borderSubtle), borderRadius: BorderRadius.circular(999)),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+              value: settings.localeCode,
+              isExpanded: true,
+              icon: const Icon(Icons.keyboard_arrow_down_rounded),
+              items: [DropdownMenuItem(value: 'en', child: Text(l10n.languageEnglish)), DropdownMenuItem(value: 'ur', child: Text(l10n.languageUrdu))],
+              onChanged: (code) { if (code != null) unawaited(sl<AppSettingsCubit>().setLocale(code)); },
+            ),
+          ),
         ),
-      ),
+      ]),
     );
   }
 
-  Widget _flatCard({required Widget child}) {
-    // Audit §23 (Critical): hardcoded white made the card's theme text invisible in dark mode.
-    return Container(width: double.infinity, padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8), decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, borderRadius: BorderRadius.circular(16), boxShadow: AppCardDecoration.shadow(context)), child: child);
+  Widget _themeCard(BuildContext context, AppSettingsState settings) {
+    final l10n = AppLocalizations.of(context)!;
+    final dark = Theme.of(context).brightness == Brightness.dark;
+    final modes = <(ThemeMode, String)>[(ThemeMode.light, l10n.themeLight), (ThemeMode.dark, l10n.themeDark), (ThemeMode.system, l10n.themeSystem)];
+    return Container(
+      padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+      decoration: AppCardDecoration.of(context),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        _cardLabel(context, Icons.palette_rounded, l10n.theme),
+        const SizedBox(height: 12),
+        Container(
+          height: 48,
+          decoration: BoxDecoration(border: Border.all(color: dark ? AppColors.borderDark : AppColors.borderSubtle), borderRadius: BorderRadius.circular(999)),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(999),
+            child: Row(children: [for (final (mode, label) in modes) Expanded(child: _themeSegment(context, label: label, selected: settings.themeMode == mode, onTap: () => unawaited(sl<AppSettingsCubit>().setThemeMode(mode))))]),
+          ),
+        ),
+      ]),
+    );
   }
 
-  Widget _settingRow(BuildContext context, {required IconData icon, required String label, String? value, required VoidCallback onTap}) {
-    // Same row language as the links below: leading icon, bold label, current value + chevron trailing (chevron flips in RTL so it still points forward).
+  Widget _themeSegment(BuildContext context, {required String label, required bool selected, required VoidCallback onTap}) {
+    // FittedBox scales the label down instead of overflowing at 320px / large text scales.
+    return Material(color: selected ? AppColors.orangeFill : Colors.transparent, child: InkWell(onTap: onTap, child: Center(child: FittedBox(fit: BoxFit.scaleDown, child: Text(label, maxLines: 1, style: TextStyle(fontWeight: FontWeight.w500, fontSize: 12, color: selected ? Colors.white : Theme.of(context).colorScheme.onSurface))))));
+  }
+
+  Widget _groupCard(BuildContext context, {required String title, required List<Widget> children}) {
+    return Container(width: double.infinity, padding: const EdgeInsets.fromLTRB(16, 14, 16, 8), decoration: AppCardDecoration.of(context), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(title, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)), const SizedBox(height: 6), ...children]));
+  }
+
+  Widget _row(BuildContext context, _BadgeKind badge, IconData icon, String label, {required VoidCallback onTap}) {
+    // Same row language as before: pastel badge, bold label, chevron trailing (chevron flips in RTL so it still points forward).
     final isRtl = Directionality.of(context) == TextDirection.rtl;
-    return Material(
-      color: Colors.transparent,
-      child: ListTile(
-        contentPadding: EdgeInsets.zero,
-        leading: Icon(icon),
-        title: Text(label, style: const TextStyle(fontWeight: FontWeight.w600)),
-        trailing: Row(mainAxisSize: MainAxisSize.min, children: [if (value != null) Text(value, style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)), Icon(isRtl ? Icons.chevron_left_rounded : Icons.chevron_right_rounded)]),
-        onTap: onTap,
-      ),
-    );
+    return Material(color: Colors.transparent, child: ListTile(contentPadding: EdgeInsets.zero, leading: _iconBadge(context, badge, icon), title: Text(label, style: const TextStyle(fontWeight: FontWeight.w600)), trailing: Icon(isRtl ? Icons.chevron_left_rounded : Icons.chevron_right_rounded), onTap: onTap));
   }
 
-  void _openLanguageSheet(AppSettingsState settings) {
-    final l10n = AppLocalizations.of(context)!;
-    showModalBottomSheet<void>(
-      context: context,
-      builder: (sheetContext) => SafeArea(
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
-          _sheetOption(sheetContext, label: l10n.languageEnglish, selected: settings.localeCode == 'en', onTap: () => _pickLocale(sheetContext, 'en')),
-          _sheetOption(sheetContext, label: l10n.languageUrdu, selected: settings.localeCode == 'ur', onTap: () => _pickLocale(sheetContext, 'ur')),
-        ]),
-      ),
-    );
+  Widget _link(BuildContext context, _BadgeKind badge, IconData icon, String label, String route, {VoidCallback? onTap}) {
+    return _row(context, badge, icon, label, onTap: onTap ?? () => context.push(route));
   }
 
-  void _pickLocale(BuildContext sheetContext, String code) {
-    unawaited(sl<AppSettingsCubit>().setLocale(code));
-    Navigator.of(sheetContext).pop();
+  Widget _iconBadge(BuildContext context, _BadgeKind kind, IconData icon) {
+    final colors = _badgeColors(Theme.of(context).brightness, kind);
+    return Container(width: 36, height: 36, decoration: BoxDecoration(shape: BoxShape.circle, color: colors.bg), child: Icon(icon, size: 20, color: colors.fg));
   }
 
-  void _openThemeSheet(AppSettingsState settings) {
-    final l10n = AppLocalizations.of(context)!;
-    showModalBottomSheet<void>(
-      context: context,
-      builder: (sheetContext) => SafeArea(
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
-          _sheetOption(sheetContext, label: l10n.themeLight, selected: settings.themeMode == ThemeMode.light, onTap: () => _pickTheme(sheetContext, ThemeMode.light)),
-          _sheetOption(sheetContext, label: l10n.themeDark, selected: settings.themeMode == ThemeMode.dark, onTap: () => _pickTheme(sheetContext, ThemeMode.dark)),
-          _sheetOption(sheetContext, label: l10n.themeSystem, selected: settings.themeMode == ThemeMode.system, onTap: () => _pickTheme(sheetContext, ThemeMode.system)),
-        ]),
-      ),
-    );
-  }
-
-  void _pickTheme(BuildContext sheetContext, ThemeMode mode) {
-    unawaited(sl<AppSettingsCubit>().setThemeMode(mode));
-    Navigator.of(sheetContext).pop();
+  ({Color bg, Color fg}) _badgeColors(Brightness brightness, _BadgeKind kind) {
+    return switch (kind) {
+      _BadgeKind.orange => (bg: AppColors.orangeContainerFor(brightness), fg: AppColors.orangeOnContainerFor(brightness)),
+      _BadgeKind.green => (bg: AppColors.successContainerFor(brightness), fg: AppColors.successOnContainerFor(brightness)),
+      _BadgeKind.red => (bg: AppColors.errorContainerFor(brightness), fg: AppColors.errorOnContainerFor(brightness)),
+      _BadgeKind.amber => (bg: AppColors.warningContainerFor(brightness), fg: AppColors.warningOnContainerFor(brightness)),
+      _BadgeKind.navy => (bg: brightness == Brightness.dark ? AppColors.primaryContainerOnDark : AppColors.primaryContainer, fg: brightness == Brightness.dark ? AppColors.onSurfaceDark : AppColors.primary),
+      _BadgeKind.grey => (bg: brightness == Brightness.dark ? AppColors.surfaceElevatedDark : AppColors.surfaceElevated, fg: brightness == Brightness.dark ? AppColors.onSurfaceVariantDark : AppColors.onSurfaceVariantLight),
+    };
   }
 
   void _openNotificationsSheet() {
@@ -183,35 +201,12 @@ class _OwnerSettingsViewState extends State<OwnerSettingsView> {
             // The five persisted toggles, reused as-is — the notifications list itself is one tap away below.
             const NotificationPreferencesSection(),
             const SizedBox(height: 4),
-            _link(sheetContext, Icons.notifications_rounded, l10n.notifications, RouteNames.ownerNotifications, onTap: () {
+            _link(sheetContext, _BadgeKind.orange, Icons.notifications_rounded, l10n.notifications, RouteNames.ownerNotifications, onTap: () {
               Navigator.of(sheetContext).pop();
               context.push(RouteNames.ownerNotifications);
             }),
           ]),
         ),
-      ),
-    );
-  }
-
-  Widget _sheetOption(BuildContext context, {required String label, required bool selected, required VoidCallback onTap}) {
-    return ListTile(
-      title: Text(label, style: const TextStyle(fontWeight: FontWeight.w600)),
-      trailing: selected ? const Icon(Icons.check_rounded) : null,
-      onTap: onTap,
-    );
-  }
-
-  Widget _link(BuildContext context, IconData icon, String label, String route, {VoidCallback? onTap}) {
-    // Audit §23: the chevron flips in RTL (Urdu) so it still points forward.
-    final isRtl = Directionality.of(context) == TextDirection.rtl;
-    return Material(
-      color: Colors.transparent,
-      child: ListTile(
-        contentPadding: EdgeInsets.zero,
-        leading: Icon(icon),
-        title: Text(label, style: const TextStyle(fontWeight: FontWeight.w600)),
-        trailing: Icon(isRtl ? Icons.chevron_left_rounded : Icons.chevron_right_rounded),
-        onTap: onTap ?? () => context.push(route),
       ),
     );
   }

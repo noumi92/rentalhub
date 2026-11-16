@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
+import '../constants/app_colors.dart';
 import '../constants/app_dimensions.dart';
 
 /// Shared card (card rework, 2026-11-10): the one card look for both
-/// modules — theme surface, elevation, soft shadow, no border.
+/// modules — theme surface, elevation 1.5, soft shadow, 1 px hairline
+/// border in `borderSubtle` / `borderDark` (showroom redesign Phase 0
+/// + Phase 5, 2026-11-16). The explicit shape carries the hairline
+/// side because an explicit shape otherwise overrides the theme's
+/// `CardThemeData` side; the elevation stays null so the theme's 1.5
+/// applies.
 ///
 /// This is a thin wrapper over [Card]: when [elevation]/[color]/
 /// [borderRadius] are left null the theme's `CardThemeData` applies
-/// (surface, elevation 3, borderless rounded shape), so every card in
+/// (surface, elevation 1.5, hairline, rounded shape), so every card in
 /// the app changes together. Pass [onTap] for a tappable card; the
 /// ripple is clipped to the card's rounded shape.
 class AppCard extends StatelessWidget {
@@ -34,6 +40,7 @@ class AppCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final radius = borderRadius ?? AppDimensions.cardRadius;
+    final dark = Theme.of(context).brightness == Brightness.dark;
     final content = padding == null
         ? child
         : Padding(padding: padding!, child: child);
@@ -44,6 +51,9 @@ class AppCard extends StatelessWidget {
       clipBehavior: clipBehavior,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(radius),
+        side: BorderSide(
+          color: dark ? AppColors.borderDark : AppColors.borderSubtle,
+        ),
       ),
       child: onTap == null
           ? content

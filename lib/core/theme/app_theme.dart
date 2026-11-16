@@ -336,18 +336,23 @@ class AppTheme {
           fontSize: 13,
         ),
       ),
-      // Card rework (2026-11-10): cards lift off the screen on a
-      // different background with a soft shadow — never a dark/grey
-      // border. The old 1px borderSubtle side read as a dark outline
-      // around every white card. Light: white card on the #F8FAFC
-      // screen; elevation 3 with a soft shadow.
+      // Card rework (2026-11-10), showroom redesign Phase 0
+      // (2026-11-16): the guide reintroduces a 1 px hairline border
+      // in `borderSubtle` (`#E2E8F0` light / `#23274D` dark) with
+      // elevation 1.5 and radius 16 — the 2026-11-10 borderless look
+      // is superseded deliberately (the old 1 px `dividerColor` side
+      // read as a dark outline because it resolved to M3 `outline`,
+      // a mid-grey; the hairline uses the subtle token instead).
+      // Light: white card on the #F8FAFC screen; elevation 1.5 with
+      // a soft shadow.
       cardTheme: CardThemeData(
         color: AppColors.surfaceLight,
-        elevation: 3,
+        elevation: 1.5,
         shadowColor: Colors.black.withValues(alpha: 0.12),
         surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
+          side: const BorderSide(color: AppColors.borderSubtle),
         ),
       ),
       navigationBarTheme: NavigationBarThemeData(
@@ -615,17 +620,20 @@ class AppTheme {
           fontSize: 13,
         ),
       ),
-      // Card rework (2026-11-10): same borderless lift as light.
-      // Dark: #13152C card on the #0A0B1A screen, so the card is a
-      // lighter slab than the screen and still lifts without a border;
-      // the shadow is stronger because it falls on near-black.
+      // Card rework (2026-11-10), showroom redesign Phase 0
+      // (2026-11-16): same 1 px hairline + elevation 1.5 + radius 16
+      // as light, with the dark border token. Dark: #13152C card on
+      // the #0A0B1A screen, so the card is a lighter slab than the
+      // screen and still lifts; the shadow is stronger because it
+      // falls on near-black.
       cardTheme: CardThemeData(
         color: AppColors.surfaceDark,
-        elevation: 3,
+        elevation: 1.5,
         shadowColor: Colors.black.withValues(alpha: 0.5),
         surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
+          side: const BorderSide(color: AppColors.borderDark),
         ),
       ),
       navigationBarTheme: NavigationBarThemeData(

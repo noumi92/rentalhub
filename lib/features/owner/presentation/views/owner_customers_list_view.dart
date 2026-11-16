@@ -8,12 +8,13 @@ import '../../../../core/utils/current_shop.dart';
 import '../../../../core/utils/date_format.dart';
 import '../../../../core/utils/money_format.dart';
 import '../../../../core/widgets/app_state_views.dart';
-import '../../../../core/widgets/debounced_button.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../blacklist/data/datasources/blacklist_remote_data_source.dart';
 import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../customer/domain/usecases/get_shop_customers_usecase.dart';
 import '../../../customer/utils/customer_grouping.dart';
+import '../widgets/customer_active_rental_banner.dart';
+import '../widgets/customer_list_card_header.dart';
 import '../widgets/customer_list_filter_chips.dart';
 import '../widgets/customer_row_book_action.dart';
 
@@ -112,6 +113,25 @@ class _OwnerCustomersListViewState extends State<OwnerCustomersListView> {
               title: l10n.customersTitle,
               subtitle: _loading ? l10n.customersLoading : l10n.customersCount(_customers.length),
               actions: [
+                // Phase 3: "+ Add" orange pill in the AppBar
+                // (orangeFill — small white text needs 5.18:1) next
+                // to the scan-CNIC icon, which stays. Flexible +
+                // ellipsis: at 200% text scale the label shrinks
+                // instead of overflowing the bar (E3).
+                Flexible(
+                  child: FilledButton.icon(
+                    onPressed: () => context.push('/owner/customers/add'),
+                    style: FilledButton.styleFrom(
+                      backgroundColor: AppColors.orangeFill,
+                      foregroundColor: Colors.white,
+                      minimumSize: const Size(0, 48),
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                    ),
+                    icon: const Icon(Icons.add_rounded, size: 18),
+                    label: Text(l10n.addCustomerTitle,
+                        maxLines: 1, overflow: TextOverflow.ellipsis),
+                  ),
+                ),
                 IconButton(
                   tooltip: l10n.customersScanCnic,
                   icon: const Icon(Icons.document_scanner_rounded, color: Colors.white),
@@ -120,9 +140,13 @@ class _OwnerCustomersListViewState extends State<OwnerCustomersListView> {
               ],
             ),
             // Audit §18: search is 52dp, radius 16, borderSubtle
-            // border, with a clear button; the labelled Add action
-            // below it (the header scan icon, tooltip only, was the
-            // only add entry point before).
+            // border, with a clear button. The full-width Add
+            // Customer banner that used to sit below it is gone —
+            // the action moved to the prominent AppBar pill above
+            // (before, the header scan icon, tooltip only, was the
+            // only add entry point, which is why the banner
+            // existed); the action itself is kept, only its
+            // position changed.
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
               child: SizedBox(
@@ -141,10 +165,6 @@ class _OwnerCustomersListViewState extends State<OwnerCustomersListView> {
                   onChanged: (v) => setState(() => _query = v),
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-              child: DebouncedButton(text: l10n.addCustomerTitle, icon: Icons.person_add_rounded, onPressed: () => context.push('/owner/customers/add')),
             ),
             // O11: filter chips (All / Regular / New / Flagged).
             CustomerListFilterChips(selected: _chipFilter, onSelected: (f) => setState(() => _chipFilter = f)),
@@ -170,39 +190,20 @@ class _OwnerCustomersListViewState extends State<OwnerCustomersListView> {
                                   margin: EdgeInsets.only(bottom: index == filtered.length - 1 ? 0 : 10),
                                   child: Column(
                                     children: [
-                                      ListTile(
-                                        leading: CircleAvatar(
-                                          backgroundColor: AppColors.primary,
-                                          child: Text(c.name.isNotEmpty ? c.name[0].toUpperCase() : '?', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
-                                        ),
-                                        title: Wrap(
-                                          spacing: 6,
-                                          runSpacing: 4,
-                                          crossAxisAlignment:
-                                              WrapCrossAlignment.center,
-                                          children: [
-                                            Text(c.name, style: const TextStyle(fontWeight: FontWeight.w600)),
-                                            if (c.bookingCount >= 2)
-                                              Chip(label: Text(l10n.customersBadgeRegular, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.white)), backgroundColor: AppColors.accentSuccessStrong, padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
-                                            if (c.bookingCount <= 1)
-                                              Chip(label: Text(l10n.customersBadgeNew, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.white)), backgroundColor: AppColors.orangeFill, padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
-                                            if (blacklisted)
-                                              // Audit §18: white on
-                                              // Colors.red is 3.68:1 —
-                                              // errorDark #DC2626 is
-                                              // ~4.9:1. No KYC/trust
-                                              // marker: neither the
-                                              // entity nor the summary
-                                              // carries KYC data.
-                                              Chip(label: Text(l10n.customersBlacklisted, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.white)), backgroundColor: AppColors.errorDark, padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
-                                          ],
-                                        ),
-                                        // Audit §18: subtitle capped at
-                                        // 3 lines with ellipsis.
-                                        subtitle: Text([if (c.phone.isNotEmpty) c.phone, if (c.cnic != null) c.cnic!, l10n.customersBookingsLine(c.bookingCount, formatRs(c.totalSpent))].join('\n'), maxLines: 3, overflow: TextOverflow.ellipsis),
-                                        trailing: Icon(expanded ? Icons.expand_less_rounded : Icons.expand_more_rounded),
+                                      CustomerListCardHeader(
+                                        customer: c,
+                                        blacklisted: blacklisted,
+                                        expanded: expanded,
                                         onTap: () => setState(() { _expandedKey = expanded ? null : c.key; }),
                                       ),
+                                      // Phase 3: the mint active-rental
+                                      // banner (from the already-loaded
+                                      // bookings — no new fetch) renders
+                                      // only when an active booking
+                                      // exists; ALL bookings are still
+                                      // listed below it.
+                                      if (expanded)
+                                        CustomerActiveRentalBanner(bookings: c.bookings),
                                       if (expanded)
                                         ...c.bookings.map((b) => ListTile(
                                               dense: true,

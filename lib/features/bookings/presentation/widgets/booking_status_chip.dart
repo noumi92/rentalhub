@@ -37,27 +37,50 @@ class BookingStatusChip extends StatelessWidget {
 
   /// Status text colour, brightness-aware: the light tokens are too dark
   /// to read on dark surfaces, so dark mode uses the lighter variants.
+  /// Showroom redesign Phase 0 (2026-11-16): these ARE the badge text
+  /// colours — success `accentSuccessStrong` #047857 (4.99:1 on the
+  /// #DCFCE7 badge), danger `errorText` #B91C1C (5.3:1 on the #FEE2E2
+  /// badge). Never the raw accents #10B981 (2.31:1) / #EF4444 (3.08:1).
   static Color colorFor(String status, Brightness brightness) {
     switch (status) {
       case 'approved':
       case 'paid':
-        return AppColors.successTextFor(brightness);
+        return AppColors.successBadgeTextFor(brightness);
       case 'rejected':
       case 'payment_rejected':
       case 'cancelled':
-        return AppColors.dangerTextFor(brightness);
+        return AppColors.errorBadgeTextFor(brightness);
       default:
         return AppColors.warningTextFor(brightness);
     }
   }
 
+  /// Badge background, brightness-aware (showroom redesign Phase 0):
+  /// the guide tints — success #DCFCE7, error #FEE2E2, warning the
+  /// warning container — light; the dark containers in dark mode.
+  /// Replaces the old `color.withValues(alpha: 0.15)` tint.
+  static Color backgroundFor(String status, Brightness brightness) {
+    switch (status) {
+      case 'approved':
+      case 'paid':
+        return AppColors.successBadgeFor(brightness);
+      case 'rejected':
+      case 'payment_rejected':
+      case 'cancelled':
+        return AppColors.errorBadgeFor(brightness);
+      default:
+        return AppColors.warningContainerFor(brightness);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final color = colorFor(status, Theme.of(context).brightness);
+    final brightness = Theme.of(context).brightness;
+    final color = colorFor(status, brightness);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.15),
+        color: backgroundFor(status, brightness),
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(

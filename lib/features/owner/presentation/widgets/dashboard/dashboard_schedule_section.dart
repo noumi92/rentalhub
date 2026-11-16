@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/routing/route_names.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../bookings/domain/entities/booking_entity.dart';
@@ -94,7 +95,7 @@ class DashboardScheduleSection extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 8),
       child: Material(
         color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
           onTap: () => context.push(RouteNames.ownerRequestsDetail
@@ -102,7 +103,16 @@ class DashboardScheduleSection extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(16),
+              // Phase 1 showroom redesign: the canonical card
+              // language — 1 px borderSubtle hairline — on the
+              // schedule rows too (the decoration stays colourless
+              // so the InkWell ripple above the Material still shows).
+              border: Border.all(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? AppColors.borderDark
+                    : AppColors.borderSubtle,
+              ),
               boxShadow: AppCardDecoration.shadow(context),
             ),
             child: Row(

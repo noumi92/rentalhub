@@ -9796,4 +9796,58 @@ class AppLocalizationsUr extends AppLocalizations {
   @override
   String get returnOwedRecordFailed =>
       'واجب الادا رقم کی وصولی درج نہ ہو سکی۔ براہ کرم دوبارہ کوشش کریں۔';
+
+  @override
+  String get dashboardMonthlyRevenue => 'ماہانہ آمدنی';
+
+  @override
+  String get dashboardActiveRentalsToday => 'آج کے فعال کرائے';
+
+  @override
+  String get fleetHandoverQr => 'حوالگی QR';
+
+  @override
+  String get vehicleDetailEditVehicle => 'گاڑی میں ترمیم کریں';
+
+  @override
+  String get vehicleDetailRatesPricing => 'کرایے اور قیمتیں';
+
+  @override
+  String customerDetailKycDocumentsCount(int count, int total) {
+    return 'KYC دستاویزات ($count/$total اپ لوڈ شدہ)';
+  }
+
+  @override
+  String get kycLeftFourFingers => 'بائیں 4 انگلیاں';
+
+  @override
+  String get kycRightFourFingers => 'دائیں 4 انگلیاں';
+
+  @override
+  String get settingsShowroomOwner => 'شوروم مالک';
+
+  @override
+  String get settingsSetUpShop => 'دکان ترتیب دیں';
+
+  @override
+  String get settingsAccountAlerts => 'اکاؤنٹ اور اطلاعات';
+
+  @override
+  String get activeRentals => 'فعال کرائے';
+
+  @override
+  String get settingsOperations => 'آپریشنز';
+
+  @override
+  String customersBookingTotal(String amount, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count بکنگز',
+    );
+    return '$amount • $_temp0';
+  }
+
+  @override
+  String get fleetReady => 'تیار';
 }

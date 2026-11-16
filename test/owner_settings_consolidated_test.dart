@@ -1,9 +1,11 @@
-// UI/UX audit fix (Team J): owner settings consolidation —
-// language, theme, notifications and sync are rows in one flat
-// list (no section cards, no "Quick links" heading). Language and
-// theme pick from a bottom sheet and persist via AppSettingsCubit;
-// notifications opens a sheet with the five persisted toggles plus
-// a link to the notifications list; sync opens sync details.
+// Showroom redesign Phase 4 (2026-11-16): owner settings rebuild —
+// language + theme are inline side-by-side cards (dropdown pill /
+// Light | Dark | System segmented switch), the other rows are
+// grouped into Operations and Account & Alerts cards under the
+// "Showroom Owner" card. Language and theme still persist via
+// AppSettingsCubit; notifications still opens a sheet with the five
+// persisted toggles plus a link to the notifications list; sync
+// still opens sync details.
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -34,16 +36,23 @@ void main() {
   }
 
   group('Owner settings — consolidated flat list', () {
-    testWidgets('four rows present; heading and section cards gone',
+    testWidgets('grouped rows present; language/theme inline',
         (tester) async {
       await pumpSettings(tester);
+      expect(find.text('Showroom Owner'), findsOneWidget);
+      expect(find.text('Operations'), findsOneWidget);
+      expect(find.text('Account & Alerts'), findsOneWidget);
       expect(find.text('Language'), findsOneWidget);
       expect(find.text('Theme'), findsOneWidget);
       expect(find.text('Notifications'), findsOneWidget);
       expect(find.text('Sync details'), findsOneWidget);
-      // The current values ride on the language/theme rows.
+      // The current values ride on the inline controls: the
+      // language dropdown shows English, the theme segments show
+      // all three options with Light selected.
       expect(find.text('English'), findsOneWidget);
       expect(find.text('Light'), findsOneWidget);
+      expect(find.text('Dark'), findsOneWidget);
+      expect(find.text('System'), findsOneWidget);
       // No heading, no language/theme chips, no sync card title.
       expect(find.text('Quick links'), findsNothing);
       expect(find.byType(ChoiceChip), findsNothing);
@@ -53,12 +62,12 @@ void main() {
       expect(find.text('Sign Out'), findsOneWidget);
     });
 
-    testWidgets('language sheet changes the persisted setting',
+    testWidgets('language dropdown changes the persisted setting',
         (tester) async {
       await pumpSettings(tester);
-      await tester.tap(find.text('Language'));
+      expect(find.byType(DropdownButton<String>), findsOneWidget);
+      await tester.tap(find.byType(DropdownButton<String>));
       await tester.pumpAndSettle();
-      expect(find.text('English'), findsNWidgets(2));
       expect(find.text('Urdu'), findsOneWidget);
       await tester.tap(find.text('Urdu'));
       await tester.pumpAndSettle();
@@ -67,30 +76,24 @@ void main() {
       expect(find.text('Urdu'), findsOneWidget);
       expect(find.text('English'), findsNothing);
       // Restore the default so later tests see a clean preference.
-      await tester.tap(find.text('Language'));
+      await tester.tap(find.byType(DropdownButton<String>));
       await tester.pumpAndSettle();
       await tester.tap(find.text('English'));
       await tester.pumpAndSettle();
       expect(sl<SharedPreferences>().getString('app_locale'), 'en');
     });
 
-    testWidgets('theme sheet changes the persisted setting',
+    testWidgets('theme segmented switch changes the persisted setting',
         (tester) async {
       await pumpSettings(tester);
-      await tester.tap(find.text('Theme'));
-      await tester.pumpAndSettle();
-      expect(find.text('Light'), findsNWidgets(2));
+      expect(find.text('Light'), findsOneWidget);
       expect(find.text('Dark'), findsOneWidget);
       expect(find.text('System'), findsOneWidget);
       await tester.tap(find.text('Dark'));
       await tester.pumpAndSettle();
       expect(sl<SharedPreferences>().getString('app_theme_mode'), 'dark');
       expect(sl<AppSettingsCubit>().state.themeMode, ThemeMode.dark);
-      expect(find.text('Dark'), findsOneWidget);
-      expect(find.text('Light'), findsNothing);
       // Restore the default so later tests see a clean preference.
-      await tester.tap(find.text('Theme'));
-      await tester.pumpAndSettle();
       await tester.tap(find.text('Light'));
       await tester.pumpAndSettle();
       expect(sl<SharedPreferences>().getString('app_theme_mode'), 'light');
@@ -99,6 +102,11 @@ void main() {
     testWidgets('notifications sheet shows the toggles; one persists',
         (tester) async {
       await pumpSettings(tester);
+      // The grouped screen is taller than the 800x600 test
+      // viewport — scroll the row into view first (the screen
+      // itself scrolls on a phone, so this is test-only).
+      await tester.ensureVisible(find.text('Notifications'));
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Notifications'));
       await tester.pumpAndSettle();
       for (final label in [
@@ -153,12 +161,19 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
+      // The grouped screen is taller than the 800x600 test
+      // viewport — scroll each row into view first (the screen
+      // itself scrolls on a phone, so this is test-only).
+      await tester.ensureVisible(find.text('Sync details'));
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Sync details'));
       await tester.pumpAndSettle();
       expect(find.text('sync-page'), findsOneWidget);
       router.pop();
       await tester.pumpAndSettle();
       expect(find.text('Sync details'), findsOneWidget);
+      await tester.ensureVisible(find.text('Notifications'));
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Notifications'));
       await tester.pumpAndSettle();
       expect(find.text('Booking requests'), findsOneWidget);

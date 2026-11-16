@@ -293,8 +293,12 @@ void main() {
         theme: AppTheme.darkTheme,
       );
       // CU-M5: 'paid' renders the human label 'Paid', not 'PAID'.
+      // Showroom redesign Phase 0 (2026-11-16): the chip's dark text
+      // is the badge on-container colour #86EFAC (was accentSuccessDark
+      // #34D399) — the dark badge leg is the dark container #123524
+      // with light on-container text.
       expect(_textColor(tester, 'Paid'),
-          AppColors.successTextFor(Brightness.dark));
+          AppColors.successBadgeTextFor(Brightness.dark));
     });
 
     testWidgets(

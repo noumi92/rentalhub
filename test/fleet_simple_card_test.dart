@@ -10,15 +10,17 @@ import 'package:rentalhub/features/owner/presentation/widgets/fleet/fleet_body.d
 import 'package:rentalhub/features/owner/presentation/widgets/fleet/fleet_vehicle_card.dart';
 import 'package:rentalhub/l10n/app_localizations.dart';
 
-// Simplified fleet card (2026-11-09, header rework round 4): the car
-// header lives ON the photo — name, plate, one in-city daily rate and
-// the self-drive badge stack over the bottom gradient scrim — and
-// UNDER the photo there is exactly ONE row of small orange icon
-// buttons: Rates (09b editor), Out-of-city rules (010b) and Edit
-// (edit-details route, only when onEditDetails is provided). No price
-// block and no OutlinedButtons below the photo. No availability
-// switch, no "On Rent until" row, no calendar / edit-rent /
-// update-price actions. Pure widget tests — no DI, no Firebase.
+// Simplified fleet card (2026-11-09, header rework round 4; horizontal
+// split in the Phase 2 showroom redesign, 2026-11-16): the car header
+// lives BESIDE the 110x95 thumbnail — name, plate, one in-city daily
+// rate and the self-drive badge stack in the details column on the
+// right — and UNDER the details there is exactly ONE slim row of
+// small orange icon buttons: Rates (09b editor), Out-of-city rules
+// (010b) and Edit (edit-details route, only when onEditDetails is
+// provided). No price block and no OutlinedButtons below the photo.
+// No availability switch, no "On Rent until" row, no calendar /
+// edit-rent / update-price actions. Pure widget tests — no DI, no
+// Firebase.
 class _TestAssetBundle extends AssetBundle {
   static final ByteData _pixel = ByteData.view(base64Decode(
     'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
@@ -72,7 +74,7 @@ const _rentedVehicle = VehicleEntity(
 
 void main() {
   group('Simplified fleet card', () {
-    testWidgets('shows name, plate, rate and badges on the photo',
+    testWidgets('shows name, plate, rate and badges beside the thumbnail',
         (tester) async {
       await tester.pumpWidget(_wrap(FleetVehicleCard(
         vehicle: _testVehicle,
@@ -82,7 +84,8 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Toyota Corolla Grande 2022'), findsOneWidget);
       expect(find.text('LEA-23-4567'), findsOneWidget);
-      // The rate now lives on the photo, not in a price block below it.
+      // Phase 2: the rate lives in the details column beside the
+      // thumbnail, not in a price block below the photo.
       expect(find.text('Rs. 8,500/day'), findsOneWidget);
       expect(find.text('Daily Self-Drive Rate'), findsNothing);
       expect(find.text('Available'), findsOneWidget);

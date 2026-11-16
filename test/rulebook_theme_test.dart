@@ -20,7 +20,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 // this map change together — never one without the other.
 const Map<String, String> kLightTokens = {
   'primary': '0xFF1B1E5C',
-  'primaryDark': '0xFF16194F',
+  // Showroom redesign Phase 0 (2026-11-16): the light AppBar navy is
+  // #0F172A (was #16194F); the dark AppBar stays #0B0D26.
+  'primaryDark': '0xFF0F172A',
   'primaryContainer': '0xFFEEF0FF',
   'primaryOnDark': '0xFF252B7A',
   'primaryContainerOnDark': '0xFF1A1D42',
@@ -48,6 +50,10 @@ const Map<String, String> kLightTokens = {
   'accentSuccessDark': '0xFF34D399',
   'borderSubtle': '0xFFE2E8F0',
   'borderDark': '0xFF23274D',
+  // Showroom redesign Phase 0 (2026-11-16): guide accent + badge tints.
+  'accentOrange': '0xFFEA580C',
+  'successBadge': '0xFFDCFCE7',
+  'errorBadge': '0xFFFEE2E2',
 };
 
 // Rulebook §4.2 (Phase A3): the dark container / on-container tokens.
@@ -82,7 +88,7 @@ const Map<String, String> kDarkContainerTokens = {
 // instead of a literal.
 const Map<String, String> kTokenBindings = {
   'primary': '0xFF1B1E5C',
-  'primaryDark': '0xFF16194F',
+  'primaryDark': '0xFF0F172A',
   'primaryOnDark': '0xFF252B7A',
   'primaryContainerOnDark': '0xFF1A1D42',
   'primaryDarkOnDark': '0xFF0B0D26',
@@ -122,6 +128,12 @@ const Map<String, String> kTokenBindings = {
   'surfaceContainerHighestDark': '0xFF1E2138',
   'headerGradientEnd': '0xFF242875',
   'errorDark': '0xFFDC2626',
+  // Showroom redesign Phase 0 (2026-11-16): guide accent + badge tints.
+  // No `errorStrong` binding: `errorText` #B91C1C already IS that value
+  // (one name per value, SH-N3), so the badge error text is `errorText`.
+  'accentOrange': '0xFFEA580C',
+  'successBadge': '0xFFDCFCE7',
+  'errorBadge': '0xFFFEE2E2',
   // Audit SH-N1/SH-N14: tokens added for the splash gradient, the
   // plate strips and the light warning on-container text.
   'splashBackground': '0xFF131842',
@@ -674,6 +686,79 @@ void main() {
           const Color(0xFFC2410C).withValues(alpha: 0.38));
       expect(style?.foregroundColor?.resolve({WidgetState.disabled}),
           Colors.white.withValues(alpha: 0.38));
+    });
+  });
+
+  group('Showroom redesign Phase 0 (2026-11-16) — cards, accent orange, badge tints', () {
+    test('card radius is 16 (rulebook §4.4) and card themes use elevation 1.5 + 1px borderSubtle hairline', () {
+      // Rulebook §4.4 already said cards radius 16; the token was 20.
+      expect(AppDimensions.cardRadius, 16.0);
+      for (final theme in [AppTheme.lightTheme, AppTheme.darkTheme]) {
+        expect(theme.cardTheme.elevation, 1.5);
+        final shape = theme.cardTheme.shape as RoundedRectangleBorder?;
+        expect(shape, isNotNull);
+        expect(shape!.borderRadius,
+            BorderRadius.circular(AppDimensions.cardRadius));
+        final borderColor = theme.brightness == Brightness.dark
+            ? AppColors.borderDark
+            : AppColors.borderSubtle;
+        expect(shape.side, BorderSide(color: borderColor, width: 1));
+      }
+    });
+
+    test('accentOrange is the guide accent; white on it FAILS AA, so small white labels stay on orangeFill', () {
+      expect(AppColors.accentOrange, const Color(0xFFEA580C));
+      // White on #EA580C is 3.56:1 — below WCAG AA 4.5:1 for small
+      // text. Filled buttons/chips keep orangeFill #C2410C (5.18:1).
+      expect(_contrastRatio(Colors.white, AppColors.accentOrange),
+          lessThan(4.5));
+      expect(_contrastRatio(Colors.white, AppColors.orangeFill),
+          greaterThanOrEqualTo(4.5));
+      // Dark leg for text/icons on dark surfaces is orangeTextDark.
+      expect(AppColors.accentOrangeFor(Brightness.light),
+          AppColors.accentOrange);
+      expect(AppColors.accentOrangeFor(Brightness.dark),
+          AppColors.orangeTextDark);
+    });
+
+    test('badge tint pairs pass WCAG AA in both modes', () {
+      // Light: guide tints with dark text — #047857 on #DCFCE7 is
+      // 4.99:1, #B91C1C on #FEE2E2 is 5.3:1. Dark: the dark containers
+      // with their light on-container text.
+      expect(
+          _contrastRatio(AppColors.accentSuccessStrong,
+              AppColors.successBadge),
+          greaterThanOrEqualTo(4.5));
+      expect(
+          _contrastRatio(
+              AppColors.errorText, AppColors.errorBadge),
+          greaterThanOrEqualTo(4.5));
+      expect(
+          _contrastRatio(AppColors.successOnContainerDark,
+              AppColors.successContainerDark),
+          greaterThanOrEqualTo(4.5));
+      expect(
+          _contrastRatio(AppColors.errorOnContainerDark,
+              AppColors.errorContainerDark),
+          greaterThanOrEqualTo(4.5));
+      // The raw accents must NOT be badge text: #10B981 is 2.31:1
+      // and #EF4444 is 3.08:1 as text on their badge tints.
+      expect(
+          _contrastRatio(
+              AppColors.accentSuccess, AppColors.successBadge),
+          lessThan(4.5));
+      expect(
+          _contrastRatio(AppColors.accentDanger, AppColors.errorBadge),
+          lessThan(4.5));
+    });
+
+    test('AppBar navy is #0F172A light / #0B0D26 dark (white text still passes AA)', () {
+      expect(AppTheme.lightTheme.appBarTheme.backgroundColor,
+          const Color(0xFF0F172A));
+      expect(AppTheme.darkTheme.appBarTheme.backgroundColor,
+          const Color(0xFF0B0D26));
+      expect(_contrastRatio(Colors.white, AppColors.primaryDark),
+          greaterThanOrEqualTo(4.5));
     });
   });
 }

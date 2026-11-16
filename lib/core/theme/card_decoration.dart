@@ -1,20 +1,23 @@
 import 'package:flutter/material.dart';
+import '../constants/app_colors.dart';
 import '../constants/app_dimensions.dart';
 
-/// The one card look for RentalHub (card rework, 2026-11-10).
+/// The one card look for RentalHub (card rework, 2026-11-10; showroom
+/// redesign Phase 0, 2026-11-16).
 ///
 /// Cards lift off the screen on a different background with a soft
-/// shadow — never a dark/grey border. The old look drew every card
-/// with `Border.all(color: Theme.of(context).dividerColor)`; in the
-/// Material 3 defaults that resolves to `colorScheme.outline`, a
-/// mid-grey that read as a dark outline around every white card, in
-/// both modules. The new look is:
+/// shadow, plus a 1 px hairline border in `borderSubtle` (`#E2E8F0`
+/// light / `#23274D` dark). The 2026-11-10 look was borderless — the
+/// old `Border.all(color: dividerColor)` read as a dark outline
+/// because it resolved to M3 `outline`, a mid-grey; the showroom
+/// guide deliberately reintroduces the border as the subtle token,
+/// with elevation 1.5 and radius 16. The look is:
 ///
 /// * light: white card (`colorScheme.surface`) on the `#F8FAFC`
 ///   screen background, soft black shadow (8% alpha);
 /// * dark: `#13152C` card on the `#0A0B1A` screen background, deeper
 ///   shadow (45% alpha) — the card is a lighter slab than the screen,
-///   so it still lifts without a border.
+///   so it still lifts.
 ///
 /// Use [of] for `Container`-based cards and [shadow] when a
 /// decoration already sets its own colour/radius. `Card` widgets get
@@ -35,16 +38,20 @@ class AppCardDecoration {
   }
 
   /// The canonical card decoration: theme surface, rounded corners,
-  /// soft shadow, no border. [radius] defaults to the theme card
-  /// radius ([AppDimensions.cardRadius]).
+  /// 1 px `borderSubtle` hairline, soft shadow. [radius] defaults to
+  /// the theme card radius ([AppDimensions.cardRadius]).
   static BoxDecoration of(
     BuildContext context, {
     double radius = AppDimensions.cardRadius,
     Color? color,
     List<BoxShadow>? boxShadow,
   }) {
+    final dark = Theme.of(context).brightness == Brightness.dark;
     return BoxDecoration(
       color: color ?? Theme.of(context).colorScheme.surface,
+      border: Border.all(
+        color: dark ? AppColors.borderDark : AppColors.borderSubtle,
+      ),
       borderRadius: BorderRadius.circular(radius),
       boxShadow: boxShadow ?? shadow(context),
     );

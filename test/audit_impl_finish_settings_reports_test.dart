@@ -85,7 +85,12 @@ void main() {
       );
       await tester.pumpAndSettle();
       // UI/UX audit fix (Team J): the toggles moved into the
-      // notifications bottom sheet — open it first.
+      // notifications bottom sheet — open it first. Redesign
+      // Phase 4: the grouped screen is taller than the 800x600
+      // test viewport, so scroll the row into view first (the
+      // screen itself scrolls on a phone, so this is test-only).
+      await tester.ensureVisible(find.text('Notifications'));
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Notifications'));
       await tester.pumpAndSettle();
       for (final label in [

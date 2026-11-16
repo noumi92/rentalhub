@@ -3,10 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/current_shop.dart';
-import '../../../../core/widgets/app_icon_chip.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../fleet/domain/entities/vehicle_entity.dart';
@@ -18,19 +18,18 @@ import '../widgets/fleet/fleet_helpers.dart';
 import '../widgets/fleet/fleet_list_section.dart';
 import '../widgets/fleet/fleet_rented_until.dart';
 import '../widgets/fleet/fleet_filter_chips.dart';
-import '../widgets/fleet/fleet_metrics_row.dart';
 import '../widgets/fleet/fleet_quick_actions.dart';
 import '../widgets/fleet/fleet_search_field.dart';
 import '../services/subscription_data_source.dart';
 import 'owner_subscription_limit_sheet.dart';
 
-/// Phase B (B1): the fleet list now reads real vehicles through
-/// [FleetCubit] (Firestore, with the in-memory fallback when offline)
-/// instead of `MockDatabase.vehicles`. Status values are the entity's
-/// lowercase ones ('available' | 'rented' | 'maintenance'). The
-/// simplified card (2026-11-09) has only two actions: Rates opens the
-/// per-vehicle rate matrix (Phase A route `/owner/rates/:vehicleId`)
-/// and Out-of-city rules opens `/owner/out-city-rules/:vehicleId`.
+/// Showroom redesign (Phase 2, 2026-11-16): the 4 control rows
+/// collapsed into 2 — "+ Add Vehicle" is an orange pill in the
+/// AppBar, Handover QR + Requests sit inside the white search bar,
+/// and the KPI boxes + filter chips are one segmented bar
+/// ([FleetFilterChips]: All / Ready / On Rent / Maintenance). The
+/// quick-actions row keeps only Schedule + Customers. Nothing is
+/// dropped: every destination from the old layout is still reachable.
 class OwnerFleetView extends StatefulWidget {
   final String? shopId;
   final VoidCallback? onAddVehicle;
@@ -122,12 +121,7 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
         'business' => l10n.subscriptionPlanBusiness,
         _ => l10n.subscriptionPlanFree,
       };
-      await CarLimitSheet.show(
-        context,
-        carsUsed: currentFleet.length,
-        carLimit: carLimit,
-        planName: planName,
-      );
+      await CarLimitSheet.show(context, carsUsed: currentFleet.length, carLimit: carLimit, planName: planName);
       return;
     }
     _pushOnce(RouteNames.ownerAddVehicle).then((_) {
@@ -157,36 +151,61 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // #9/#12/#15: MinimalAppBar with tinted chips; the header scrolls with the list as before.
+                    // #9/#12/#15: MinimalAppBar with the pill; the header scrolls with the list as before.
+                    // Phase 2: "+ Add Vehicle" is an orange pill here
+                    // (orangeFill #C2410C — small white label 5.18:1;
+                    // never white on accentOrange). The gated add logic
+                    // in [_openAddVehicle] stays. The old route/schedule
+                    // icon chips are gone: the guide's AppBar carries
+                    // only the pill (Schedule stays in the quick-actions
+                    // row; Fixed Routes is reachable from settings).
+                    // The loose Flexible + scale-down FittedBox keep the
+                    // pill from overflowing the 360px bar at 200% text
+                    // scale (the pill is ~390dp wide there).
                     MinimalAppBar(
                       title: l10n.fleetTitle,
                       subtitle: l10n.fleetSubtitle,
                       actions: [
-                        AppIconChip(icon: Icons.route_rounded, tooltip: l10n.fixedRoutes, background: Colors.white.withValues(alpha: 0.15), iconColor: Colors.white, onPressed: () => context.push(RouteNames.ownerFixedRoutes)),
-                        const SizedBox(width: 8),
-                        // Audit §5 (O31): "Schedule" opens the multi-car calendar.
-                        AppIconChip(icon: Icons.calendar_month_rounded, tooltip: l10n.fleetSchedule, background: Colors.white.withValues(alpha: 0.15), iconColor: Colors.white, onPressed: () => _pushOnce(RouteNames.ownerFleetCalendar)),
-                        const SizedBox(width: 8),
-                        AppIconChip(icon: Icons.add_circle_rounded, tooltip: l10n.fleetAddVehicle, background: Colors.white.withValues(alpha: 0.15), iconColor: Colors.white, onPressed: _openAddVehicle),
+                        Flexible(
+                          fit: FlexFit.loose,
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            alignment: Alignment.centerRight,
+                            child: Tooltip(message: l10n.fleetAddVehicle, child: FilledButton.icon(key: const Key('fleet-action-add-vehicle'), onPressed: _openAddVehicle, style: FilledButton.styleFrom(backgroundColor: AppColors.orangeFill, foregroundColor: Colors.white, minimumSize: const Size(0, 48), padding: const EdgeInsets.symmetric(horizontal: 14)), icon: const Icon(Icons.add_rounded, size: 20), label: Text(l10n.fleetAddVehicle))),
+                          ),
+                        ),
                       ],
                     ),
 
-                    // Metrics Row (extracted: FleetMetricsRow).
-                    FleetMetricsRow(
+                    // Audit §4: search (name/plate) directly under the
+                    // header — Handover QR + Requests live inside it
+                    // now (Phase 2), as trailing icon buttons.
+                    FleetSearchField(
+                      onChanged: (q) => setState(() => _searchQuery = q),
+                      onHandover: () => context.go(RouteNames.ownerQrScan),
+                      onRequests: () => context.go(RouteNames.ownerRequests),
+                    ),
+
+                    // Phase 2: KPI boxes + filter chips merged into one
+                    // segmented bar (All / Ready / On Rent /
+                    // Maintenance — Total Fleet is the "All" count).
+                    FleetFilterChips(
+                      selectedFilter: _selectedFilter,
                       totalCount: totalCount,
                       availableCount: availableCount,
                       onRentCount: onRentCount,
+                      maintenanceCount: maintenanceCount,
+                      onSelected: (label) => setState(() => _selectedFilter = label),
                     ),
 
-                    // Phone-test round 4: quick actions directly
-                    // beneath the KPI tiles. Cross-branch destinations
-                    // (Requests, Customers, QR scan) use `go` — the
-                    // tab-switch semantic used elsewhere for those
-                    // branches; same-branch ones use `_pushOnce`.
+                    // Phone-test round 4: quick actions beneath the
+                    // filter bar. Phase 2 keeps only Schedule +
+                    // Customers here; Handover/Requests moved into the
+                    // search bar and Add Vehicle into the AppBar pill.
+                    // Cross-branch destinations (Customers) use `go`
+                    // — the tab-switch semantic used elsewhere for
+                    // those branches; same-branch ones use `_pushOnce`.
                     FleetQuickActions(
-                      onHandover: () => context.go(RouteNames.ownerQrScan),
-                      onRequests: () => context.go(RouteNames.ownerRequests),
-                      onAddVehicle: _openAddVehicle,
                       onSchedule: () => _pushOnce(RouteNames.ownerFleetCalendar),
                       onCustomers: () => context.go(RouteNames.ownerCustomers),
                     ),
@@ -197,22 +216,6 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
                         padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
                         child: Text(l10n.fleetActiveRentals(onRentCount), style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
                       ),
-
-                    // Audit §4: search (name/plate) above the chips.
-                    FleetSearchField(
-                      onChanged: (q) => setState(() => _searchQuery = q),
-                    ),
-
-                    // Filter Chips
-                    FleetFilterChips(
-                      selectedFilter: _selectedFilter,
-                      totalCount: totalCount,
-                      availableCount: availableCount,
-                      onRentCount: onRentCount,
-                      maintenanceCount: maintenanceCount,
-                      onSelected: (label) => setState(() => _selectedFilter = label),
-                    ),
-                    const Divider(height: 1),
 
                     // D3: medium+ shows two columns; compact keeps
                     // FleetBody (see FleetListSection).

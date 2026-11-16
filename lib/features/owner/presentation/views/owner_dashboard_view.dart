@@ -2,18 +2,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/constants/app_dimensions.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/shop_id_resolution.dart';
 import '../../../../core/utils/responsive.dart';
-import '../../../../core/widgets/app_state_views.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
 import '../../../bookings/utils/booking_request_time.dart';
 import '../../../fleet/data/datasources/fleet_remote_data_source.dart';
 import '../../../notifications/data/datasources/notification_data_source.dart';
 import '../widgets/dashboard/dashboard_app_bar.dart';
+import '../widgets/dashboard/dashboard_body.dart';
 import '../widgets/dashboard/dashboard_booking_stats.dart';
 import '../widgets/dashboard/dashboard_greeting_header.dart';
 import '../widgets/dashboard/dashboard_kpis.dart';
@@ -157,7 +156,7 @@ class _OwnerDashboardViewState extends State<OwnerDashboardView> {
       shopName: _shopName,
     );
     final kpis = DashboardKpis(
-      totalRevenue: totalRevenue(_allBookings),
+      totalRevenue: monthRevenue(_allBookings),
       todayEarnings: todayEarnings(_allBookings),
       growthLabel: growth == null ? l10n.dashboardNoRevenueLastMonth : l10n.dashboardGrowthLabel('${growth >= 0 ? '+' : ''}$growth'),
       growthTrend: growth == null || growth == 0 ? KpiTrend.neutral : growth > 0 ? KpiTrend.up : KpiTrend.down,
@@ -174,27 +173,37 @@ class _OwnerDashboardViewState extends State<OwnerDashboardView> {
       fleetAvailable: _fleetAvailable,
       fleetTotal: _fleetTotal,
     );
-    final schedule = DashboardScheduleSection(bookings: _allBookings);
+    // Phase 1 showroom redesign: one scroll column in the guide's
+    // order — greeting, revenue + review, the 4+3 actions, the live
+    // Active Rentals card, then schedule and ledger. Nothing is
+    // dropped, only rearranged; the ledger moves to the second
+    // column on medium screens and below the schedule on phones.
+    final content = <Widget>[
+      greeting,
+      const SizedBox(height: 16),
+      kpis,
+      const SizedBox(height: 20),
+      DashboardQuickActions(waitingCount: _waitingCount),
+      const SizedBox(height: 16),
+      ActiveRentalsTodayCard(activeCount: _activeCount),
+      const SizedBox(height: 20),
+      DashboardScheduleSection(bookings: _allBookings),
+    ];
     final ledger = DashboardLedgerSection(
       isEmpty: _allBookings.isEmpty,
       ledger: ledgerFor(_allBookings),
-    );
-    final leftColumn = Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        greeting,
-        const SizedBox(height: 16),
-        kpis,
-        const SizedBox(height: 20),
-        schedule,
-      ],
     );
     final body = isMediumOrLarger(context)
         ? Row(
             key: const Key('dashboard-two-columns'),
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(child: leftColumn),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: content,
+                ),
+              ),
               const SizedBox(width: 20),
               Expanded(child: ledger),
             ],
@@ -202,11 +211,7 @@ class _OwnerDashboardViewState extends State<OwnerDashboardView> {
         : Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              greeting,
-              const SizedBox(height: 16),
-              kpis,
-              const SizedBox(height: 20),
-              schedule,
+              ...content,
               const SizedBox(height: 20),
               ledger,
             ],
@@ -221,21 +226,17 @@ class _OwnerDashboardViewState extends State<OwnerDashboardView> {
               unreadNotifications: _unreadNotifications,
               onRefresh: _loadDashboardData,
             ),
-            const Padding(
-              padding: EdgeInsets.fromLTRB(16, 12, 16, 4),
-              child: DashboardQuickActions(),
-            ),
             Expanded(
-              child: _isLoading
-                  ? AppLoadingState(message: l10n.dashboardLoading)
-                  : _hasError
-                      ? AppErrorState(message: l10n.dashboardLoadError, onRetry: _loadDashboardData)
-                      : SingleChildScrollView(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: AppDimensions.spaceBetweenCards),
-                          child: body,
-                        ),
+              child: DashboardBody(
+                isLoading: _isLoading,
+                hasError: _hasError,
+                quickActions:
+                    DashboardQuickActions(waitingCount: _waitingCount),
+                body: body,
+                loadingMessage: l10n.dashboardLoading,
+                errorMessage: l10n.dashboardLoadError,
+                onRetry: _loadDashboardData,
+              ),
             ),
           ],
         ),

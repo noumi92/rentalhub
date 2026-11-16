@@ -32,9 +32,19 @@ int _monthRevenue(List<BookingEntity> bookings, int year, int month) =>
             b.pickupTime.month == month)
         .fold(0, (total, b) => total + b.totalAmount);
 
+/// Phase 1 showroom redesign: the dashboard's Monthly Revenue is
+/// the CURRENT calendar month's revenue (by pickup date) — the old
+/// "Gross Revenue (This Month)" label displayed the all-time total
+/// ([totalRevenue]) under a monthly name. This is the real month
+/// figure; [growthPct] compares it with last month.
+int monthRevenue(List<BookingEntity> bookings) {
+  final now = DateTime.now();
+  return _monthRevenue(bookings, now.year, now.month);
+}
+
 int? growthPct(List<BookingEntity> bookings) {
   final now = DateTime.now();
-  final thisMonth = _monthRevenue(bookings, now.year, now.month);
+  final thisMonth = monthRevenue(bookings);
   final lastMonthDate = DateTime(now.year, now.month - 1);
   final lastMonth =
       _monthRevenue(bookings, lastMonthDate.year, lastMonthDate.month);

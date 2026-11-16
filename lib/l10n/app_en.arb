@@ -5653,5 +5653,40 @@
       }
     }
   },
-  "returnOwedRecordFailed": "Could not record the owed amount collection. Please try again."
+  "returnOwedRecordFailed": "Could not record the owed amount collection. Please try again.",
+  "dashboardMonthlyRevenue": "Monthly Revenue",
+  "dashboardActiveRentalsToday": "Active Rentals Today",
+  "fleetHandoverQr": "Handover QR",
+  "vehicleDetailEditVehicle": "Edit Vehicle",
+  "vehicleDetailRatesPricing": "Rates & Pricing",
+  "customerDetailKycDocumentsCount": "KYC Documents ({count}/{total} Uploaded)",
+  "@customerDetailKycDocumentsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "kycLeftFourFingers": "Left 4 Fingers",
+  "kycRightFourFingers": "Right 4 Fingers",
+  "settingsShowroomOwner": "Showroom Owner",
+  "settingsSetUpShop": "Set Up Shop",
+  "settingsAccountAlerts": "Account & Alerts",
+  "activeRentals": "Active Rentals",
+  "settingsOperations": "Operations",
+  "customersBookingTotal": "{amount} • {count, plural, =1{1 booking} other{{count} bookings}}",
+  "@customersBookingTotal": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "fleetReady": "Ready"
 }

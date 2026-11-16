@@ -100,7 +100,11 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Showroom Revenue & Operations'), findsOneWidget);
-      expect(find.text('Gross Revenue (This Month)'), findsOneWidget);
+      // Showroom redesign Phase 1 (2026-11-16): the old "Gross
+      // Revenue (This Month)" label showed the all-time total; the
+      // card now reads "Monthly Revenue" and shows the real
+      // current-month figure.
+      expect(find.text('Monthly Revenue'), findsOneWidget);
       expect(find.text('Completed Trip Ledger & Settlements'), findsOneWidget);
     });
 

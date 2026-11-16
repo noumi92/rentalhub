@@ -289,7 +289,9 @@ void main() {
       expect(find.text('Ali Raza'), findsOneWidget);
       expect(find.text('Manage rates'), findsOneWidget);
       expect(find.text('Booking calendar'), findsOneWidget);
-      expect(find.text('Edit'), findsOneWidget);
+      // Phase 2: the sticky bar is gone — Edit is the inline
+      // "Edit Vehicle" button below the spec chips.
+      expect(find.text('Edit Vehicle'), findsOneWidget);
       expect(find.text('Fare table'), findsOneWidget);
     });
   });

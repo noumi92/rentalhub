@@ -84,7 +84,7 @@ void main() {
     });
 
     test('login hero tokens are the rulebook §4.3 values', () {
-      expect(AppColors.primaryDark, const Color(0xFF16194F));
+      expect(AppColors.primaryDark, const Color(0xFF0F172A));
       expect(AppColors.headerGradientEnd, const Color(0xFF242875));
       expect(AppColors.primaryDarkOnDark, const Color(0xFF0B0D26));
       expect(AppDimensions.headerHeight, 230.0);

@@ -17318,6 +17318,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not record the owed amount collection. Please try again.'**
   String get returnOwedRecordFailed;
+
+  /// No description provided for @dashboardMonthlyRevenue.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly Revenue'**
+  String get dashboardMonthlyRevenue;
+
+  /// No description provided for @dashboardActiveRentalsToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Active Rentals Today'**
+  String get dashboardActiveRentalsToday;
+
+  /// No description provided for @fleetHandoverQr.
+  ///
+  /// In en, this message translates to:
+  /// **'Handover QR'**
+  String get fleetHandoverQr;
+
+  /// No description provided for @vehicleDetailEditVehicle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Vehicle'**
+  String get vehicleDetailEditVehicle;
+
+  /// No description provided for @vehicleDetailRatesPricing.
+  ///
+  /// In en, this message translates to:
+  /// **'Rates & Pricing'**
+  String get vehicleDetailRatesPricing;
+
+  /// No description provided for @customerDetailKycDocumentsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'KYC Documents ({count}/{total} Uploaded)'**
+  String customerDetailKycDocumentsCount(int count, int total);
+
+  /// No description provided for @kycLeftFourFingers.
+  ///
+  /// In en, this message translates to:
+  /// **'Left 4 Fingers'**
+  String get kycLeftFourFingers;
+
+  /// No description provided for @kycRightFourFingers.
+  ///
+  /// In en, this message translates to:
+  /// **'Right 4 Fingers'**
+  String get kycRightFourFingers;
+
+  /// No description provided for @settingsShowroomOwner.
+  ///
+  /// In en, this message translates to:
+  /// **'Showroom Owner'**
+  String get settingsShowroomOwner;
+
+  /// No description provided for @settingsSetUpShop.
+  ///
+  /// In en, this message translates to:
+  /// **'Set Up Shop'**
+  String get settingsSetUpShop;
+
+  /// No description provided for @settingsAccountAlerts.
+  ///
+  /// In en, this message translates to:
+  /// **'Account & Alerts'**
+  String get settingsAccountAlerts;
+
+  /// No description provided for @activeRentals.
+  ///
+  /// In en, this message translates to:
+  /// **'Active Rentals'**
+  String get activeRentals;
+
+  /// No description provided for @settingsOperations.
+  ///
+  /// In en, this message translates to:
+  /// **'Operations'**
+  String get settingsOperations;
+
+  /// No description provided for @customersBookingTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} • {count, plural, =1{1 booking} other{{count} bookings}}'**
+  String customersBookingTotal(String amount, int count);
+
+  /// No description provided for @fleetReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready'**
+  String get fleetReady;
 }
 
 class _AppLocalizationsDelegate

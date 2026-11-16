@@ -12,7 +12,7 @@ import 'package:flutter/material.dart';
 /// still reference them — new code must use the `onSurface*` names.
 class AppColors {
   // Header gradient (rulebook §4.3): the curved header's base gradient
-  // is #16194F → #242875 in light mode and #0B0D26 → #16194F in dark
+  // is #0F172A → #242875 in light mode and #0B0D26 → #0F172A in dark
   // mode. The light end #242875 was removed earlier as a redundant navy
   // (see primaryLight) — it now has rulebook meaning as the header
   // gradient end, so it lives here under a header- name.
@@ -47,7 +47,14 @@ class AppColors {
   static const Color plateStripDefault = Color(0xFF15803D);
 
   // Primary palette (Deep Midnight Navy)
-  static const Color primaryDark = Color(0xFF16194F);
+  // Showroom redesign Phase 0 (2026-11-16): the light AppBar navy is
+  // #0F172A (was #16194F) — the same value as `onSurfaceLight`, the
+  // slate-900 of the guide. `MinimalAppBar`, `AppTheme.appBarTheme`
+  // and the light snackbar all follow this token, so they darken
+  // together; the login hero gradient start darkens slightly too
+  // (#0F172A → #242875 light, #0B0D26 → #0F172A dark), which is
+  // consistent. The dark AppBar stays #0B0D26 (`primaryDarkOnDark`).
+  static const Color primaryDark = Color(0xFF0F172A);
   static const Color primary = Color(0xFF1B1E5C);
   // Dark-mode values of the primary tokens (rulebook §4.2, Dark column).
   static const Color primaryOnDark = Color(0xFF252B7A);
@@ -85,6 +92,18 @@ class AppColors {
   static const Color orangeTextDark = Color(0xFFFB923C);
   static const Color orangeFill = Color(0xFFC2410C);
 
+  // Showroom redesign Phase 0 (2026-11-16) — CONTRAST RULE, deliberate
+  // deviation, same ruling family as "never white text on #F95700":
+  // `accentOrange` #EA580C is the guide's primary accent for icons,
+  // large text and highlights — but white on #EA580C is only 3.56:1,
+  // so it FAILS WCAG AA (4.5:1) for small labels and must NEVER carry
+  // small white text. Filled buttons/chips with small white labels
+  // KEEP `orangeFill` #C2410C (5.18:1) in BOTH themes. Dark leg for
+  // text/icons on dark surfaces is the existing `orangeTextDark`
+  // #FB923C — use `accentOrangeFor(brightness)`, never a hardcoded
+  // light hex in a view.
+  static const Color accentOrange = Color(0xFFEA580C);
+
   // Status colors — canonical names are accentSuccess / accentDanger
   // (rulebook §11). Dark variants added in Phase A (were missing, D9).
   static const Color accentSuccess = Color(0xFF10B981);
@@ -117,6 +136,18 @@ class AppColors {
   static const Color errorContainer = Color(0xFFFEF2F2);
   static const Color errorContainerDark = Color(0xFF3B1215);
   static const Color errorOnContainerDark = Color(0xFFFCA5A5);
+
+  // Showroom redesign Phase 0 (2026-11-16) — badge tints (guide
+  // colours). Light badge backgrounds are the pale tints below, with
+  // DARK text: success text is the existing `accentSuccessStrong`
+  // #047857 (4.99:1 on #DCFCE7) and error text is the existing
+  // `errorText` #B91C1C (5.3:1 on #FEE2E2) — no `errorStrong` token
+  // was added because `errorText` already IS #B91C1C (one name per
+  // value, SH-N3). Dark legs are the existing dark containers with
+  // their light on-container text. Do NOT use the raw accents
+  // #10B981 (2.31:1) / #EF4444 (3.08:1) as badge text.
+  static const Color successBadge = Color(0xFFDCFCE7);
+  static const Color errorBadge = Color(0xFFFEE2E2);
 
   static const Color warning = Color(0xFFF59E0B);
   static const Color warningContainer = Color(0xFFFFFBEB);
@@ -190,6 +221,28 @@ class AppColors {
       brightness == Brightness.dark ? secondaryLightDark : secondaryContainer;
   static Color orangeOnContainerFor(Brightness brightness) =>
       brightness == Brightness.dark ? orangeTextDark : orangeText;
+
+  /// Showroom redesign Phase 0: the guide accent for icons, large
+  /// text and highlights — #EA580C in light, #FB923C (`orangeTextDark`)
+  /// in dark. Never small white text on the light leg (3.56:1);
+  /// filled buttons/chips keep `orangeFill` #C2410C (5.18:1).
+  static Color accentOrangeFor(Brightness brightness) =>
+      brightness == Brightness.dark ? orangeTextDark : accentOrange;
+
+  /// Showroom redesign Phase 0: badge background / text pairs. Light
+  /// mode uses the guide tints (`successBadge` #DCFCE7 /
+  /// `errorBadge` #FEE2E2) with the dark text tokens; dark mode uses
+  /// the dark containers with their light on-container text.
+  static Color successBadgeFor(Brightness brightness) =>
+      brightness == Brightness.dark ? successContainerDark : successBadge;
+  static Color successBadgeTextFor(Brightness brightness) =>
+      brightness == Brightness.dark
+          ? successOnContainerDark
+          : accentSuccessStrong;
+  static Color errorBadgeFor(Brightness brightness) =>
+      brightness == Brightness.dark ? errorContainerDark : errorBadge;
+  static Color errorBadgeTextFor(Brightness brightness) =>
+      brightness == Brightness.dark ? errorOnContainerDark : errorText;
 
   // Background & surfaces
   static const Color backgroundLight = Color(0xFFF8FAFC);

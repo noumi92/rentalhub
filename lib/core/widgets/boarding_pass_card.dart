@@ -1,5 +1,16 @@
 import 'package:flutter/material.dart';
 
+import '../theme/card_decoration.dart';
+
+/// Boarding-pass card (customer pickup pass): top + bottom sections
+/// split by a perforated tear line with side notches.
+///
+/// Showroom redesign Phase 5 (2026-11-16): the outer card uses the
+/// canonical [AppCardDecoration.of] (1 px hairline, radius 16,
+/// elevation 1.5) like every other card; the tear-line notches are
+/// still borderless scaffold-coloured circles, so the hairline is
+/// interrupted exactly at the tear — the perforation look. The old
+/// local radius-20 borderless decoration is gone.
 class BoardingPassCard extends StatelessWidget {
   final Widget topSection;
   final Widget bottomSection;
@@ -13,18 +24,7 @@ class BoardingPassCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(20),
-        
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
-            blurRadius: 14,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
+      decoration: AppCardDecoration.of(context),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

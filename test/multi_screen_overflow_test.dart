@@ -131,8 +131,12 @@ void main() {
         theme: AppTheme.lightTheme,
       );
       expect(find.text('Fleet Management'), findsOneWidget);
-      expect(find.text('Total Fleet'), findsOneWidget);
-      expect(find.byIcon(Icons.add_circle_rounded), findsOneWidget);
+      // Phase 2: the KPI boxes are merged into the segmented bar
+      // (All / Ready / On Rent / Maintenance), and "+ Add Vehicle"
+      // is the orange pill in the AppBar. The count depends on the
+      // harness's seeded shop, so only the "All" segment is pinned.
+      expect(find.textContaining('All ('), findsOneWidget);
+      expect(find.byTooltip('Add Vehicle'), findsOneWidget);
     });
 
     testWidgets('CustomerDocumentsView renders without overflow on 360px viewport and 1.35x font scale',

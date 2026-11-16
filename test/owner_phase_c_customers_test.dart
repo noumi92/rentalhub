@@ -237,7 +237,10 @@ House 12, Street 4, Gulberg III, Lahore
       );
       await tester.pumpAndSettle();
       expect(find.text('Muhammad Ahmed'), findsOneWidget);
-      expect(find.textContaining('2 bookings • Rs. 20,500'), findsOneWidget);
+      // Phase 3: the booking-total pill renders through
+      // customersBookingTotal ("Rs. 20,500 • 2 bookings"), not the
+      // old customersBookingsLine order.
+      expect(find.textContaining('Rs. 20,500 • 2 bookings'), findsOneWidget);
 
       await tester.tap(find.text('Muhammad Ahmed'));
       await tester.pumpAndSettle();

@@ -8,7 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:rentalhub/core/di/injection_container.dart' as di;
 import 'package:rentalhub/core/routing/route_names.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_fleet_view.dart';
-import 'package:rentalhub/features/owner/presentation/widgets/fleet/fleet_metrics_row.dart';
+import 'package:rentalhub/features/owner/presentation/widgets/fleet/fleet_filter_chips.dart';
 import 'package:rentalhub/features/owner/presentation/widgets/fleet/fleet_quick_actions.dart';
 import 'package:rentalhub/l10n/app_localizations.dart';
 
@@ -16,6 +16,15 @@ import 'package:rentalhub/l10n/app_localizations.dart';
 // beneath the KPI tiles — Handover, Requests, Add Vehicle, Schedule,
 // Customers — each navigating to its real sub-screen, plus the
 // `onEditDetails` wiring (Worker 3 owns the card/body side).
+//
+// Showroom redesign (Phase 2, 2026-11-16): the actions moved —
+// Handover QR + Requests live inside the search bar (icon-only,
+// tooltip-labelled), Add Vehicle is the orange pill in the AppBar,
+// and the quick-actions row keeps only Schedule + Customers. The KPI
+// tiles are gone, merged into the segmented filter bar
+// ([FleetFilterChips]: All / Ready / On Rent / Maintenance). The
+// destinations are unchanged, so the navigation tests below still
+// address the same keys.
 //
 // The local copy's PNG assets are corrupt (downloaded through the
 // connector's text path), so any widget rendering a car photo throws
@@ -133,36 +142,37 @@ void main() {
     await di.initDependencies();
   });
 
-  group('Fleet tab quick actions (beneath the KPI tiles)', () {
-    testWidgets('KPI tiles exist and the action row sits beneath them',
+  group('Fleet tab actions (search bar, segmented bar, quick actions)', () {
+    testWidgets('segmented bar exists and the action row sits beneath it',
         (tester) async {
       final router = _buildRouter();
       await _pumpFleet(tester, router);
 
-      expect(find.byType(FleetMetricsRow), findsOneWidget);
+      expect(find.byType(FleetFilterChips), findsOneWidget);
       expect(find.byType(FleetQuickActions), findsOneWidget);
-      expect(find.text('Total Fleet'), findsOneWidget);
-      final tilesBottom =
-          tester.getBottomLeft(find.byType(FleetMetricsRow)).dy;
+      expect(find.text('All (3)'), findsOneWidget);
+      final barBottom =
+          tester.getBottomLeft(find.byType(FleetFilterChips)).dy;
       final actionsTop =
           tester.getTopLeft(find.byType(FleetQuickActions)).dy;
-      expect(actionsTop, greaterThanOrEqualTo(tilesBottom));
+      expect(actionsTop, greaterThanOrEqualTo(barBottom));
     });
 
-    testWidgets('every action exists with its icon + short label',
+    testWidgets('every action exists with its icon + label or tooltip',
         (tester) async {
       final router = _buildRouter();
       await _pumpFleet(tester, router);
 
-      final actions = <(String key, IconData icon, String label)>[
-        ('fleet-action-handover', Icons.qr_code_scanner_rounded, 'Handover'),
-        ('fleet-action-requests', Icons.inbox_rounded, 'Requests'),
-        ('fleet-action-add-vehicle', Icons.add_circle_outline_rounded,
-            'Add Vehicle'),
-        ('fleet-action-schedule', Icons.calendar_month_rounded, 'Schedule'),
-        ('fleet-action-customers', Icons.people_outline_rounded, 'Customers'),
+      // Search-bar actions are icon-only (tooltip carries the label);
+      // the AppBar pill and the quick-actions row keep text labels.
+      final actions = <(String key, IconData icon, String label, bool isTooltip)>[
+        ('fleet-action-handover', Icons.qr_code_scanner_rounded, 'Handover QR', true),
+        ('fleet-action-requests', Icons.inbox_rounded, 'Requests', true),
+        ('fleet-action-add-vehicle', Icons.add_rounded, 'Add Vehicle', false),
+        ('fleet-action-schedule', Icons.calendar_month_rounded, 'Schedule', false),
+        ('fleet-action-customers', Icons.people_outline_rounded, 'Customers', false),
       ];
-      for (final (key, icon, label) in actions) {
+      for (final (key, icon, label, isTooltip) in actions) {
         final button = find.byKey(Key(key));
         expect(button, findsOneWidget, reason: 'missing action: $label');
         expect(
@@ -170,11 +180,16 @@ void main() {
           findsOneWidget,
           reason: 'missing icon for: $label',
         );
-        expect(
-          find.descendant(of: button, matching: find.text(label)),
-          findsOneWidget,
-          reason: 'missing label for: $label',
-        );
+        if (isTooltip) {
+          expect(find.byTooltip(label), findsOneWidget,
+              reason: 'missing tooltip for: $label');
+        } else {
+          expect(
+            find.descendant(of: button, matching: find.text(label)),
+            findsOneWidget,
+            reason: 'missing label for: $label',
+          );
+        }
       }
     });
 

@@ -9785,4 +9785,59 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get returnOwedRecordFailed =>
       'Could not record the owed amount collection. Please try again.';
+
+  @override
+  String get dashboardMonthlyRevenue => 'Monthly Revenue';
+
+  @override
+  String get dashboardActiveRentalsToday => 'Active Rentals Today';
+
+  @override
+  String get fleetHandoverQr => 'Handover QR';
+
+  @override
+  String get vehicleDetailEditVehicle => 'Edit Vehicle';
+
+  @override
+  String get vehicleDetailRatesPricing => 'Rates & Pricing';
+
+  @override
+  String customerDetailKycDocumentsCount(int count, int total) {
+    return 'KYC Documents ($count/$total Uploaded)';
+  }
+
+  @override
+  String get kycLeftFourFingers => 'Left 4 Fingers';
+
+  @override
+  String get kycRightFourFingers => 'Right 4 Fingers';
+
+  @override
+  String get settingsShowroomOwner => 'Showroom Owner';
+
+  @override
+  String get settingsSetUpShop => 'Set Up Shop';
+
+  @override
+  String get settingsAccountAlerts => 'Account & Alerts';
+
+  @override
+  String get activeRentals => 'Active Rentals';
+
+  @override
+  String get settingsOperations => 'Operations';
+
+  @override
+  String customersBookingTotal(String amount, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count bookings',
+      one: '1 booking',
+    );
+    return '$amount • $_temp0';
+  }
+
+  @override
+  String get fleetReady => 'Ready';
 }

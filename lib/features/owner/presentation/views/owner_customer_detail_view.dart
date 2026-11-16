@@ -15,7 +15,8 @@ import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
 import '../../../customer/data/datasources/customer_remote_data_source.dart';
 import '../../../customer/domain/entities/customer_entity.dart';
-import '../widgets/customer_detail_docs.dart';
+import '../widgets/customer_detail_header.dart';
+import '../widgets/customer_detail_kyc_section.dart';
 import '../widgets/customer_reject_reason_dialog.dart';
 
 /// Owner-deck finish — the 1 missing screen (#35): a customer profile.
@@ -162,56 +163,19 @@ class _OwnerCustomerDetailViewState extends State<OwnerCustomerDetailView> {
 
   Widget _body(BuildContext context, AppLocalizations l10n, CustomerEntity customer) {
     final approval = customer.approvalStatus;
-    final approvalLabel = approval == 'approved' ? l10n.statusApproved : approval == 'rejected' ? l10n.statusRejected : l10n.customerDetailApprovalPending;
-    final approvalColor = approval == 'approved' ? AppColors.accentSuccessStrong : approval == 'rejected' ? AppColors.errorDark : AppColors.orangeFill;
-    final hasKyc = customer.profilePhotoUrl != null || customer.licenseFrontUrl != null || customer.signatureUrl != null || customer.cnicFrontUrl != null;
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              CircleAvatar(
-                backgroundColor: AppColors.primary,
-                radius: 28,
-                child: Text(customer.name.isNotEmpty ? customer.name[0].toUpperCase() : '?', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(customer.name, maxLines: 2, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600)),
-                    if (customer.phone.isNotEmpty) Text(customer.phone),
-                    if (customer.cnic != null) Text(customer.cnic!),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Wrap(
-            spacing: 8,
-            children: [
-              Chip(label: Text(approvalLabel, style: const TextStyle(color: Colors.white)), backgroundColor: approvalColor),
-              if (_blacklisted) Chip(label: Text(l10n.customersBlacklisted, style: const TextStyle(color: Colors.white)), backgroundColor: AppColors.errorDark),
-            ],
-          ),
-          if (!_blacklisted) ...[const SizedBox(height: 8), Text(l10n.customerDetailNotBlacklisted, style: Theme.of(context).textTheme.bodySmall)],
-          if (approval == 'rejected' && customer.rejectionReason != null) ...[
-            const SizedBox(height: 8),
-            Text(l10n.customerDetailRejectReasonTitle, style: const TextStyle(fontWeight: FontWeight.w600)),
-            Text(customer.rejectionReason!),
-          ],
+          // Phase 3: slim identity card + merged red alert banner
+          // (rejection reason + KYC status together).
+          CustomerDetailHeader(customer: customer, blacklisted: _blacklisted),
           const SizedBox(height: 16),
-          Text(l10n.customerDetailKycTitle, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
-          const SizedBox(height: 4),
-          Text(hasKyc ? l10n.customerDetailKycOnFile : l10n.customerDetailKycNotOnFile),
-          const SizedBox(height: 12),
-          Text(l10n.customerDetailDocuments, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
-          const SizedBox(height: 8),
-          CustomerDetailDocs(customer: customer),
+          // Phase 3: KYC header carries the real uploaded count
+          // (e.g. "KYC Documents (3/11 Uploaded)") over the 3x4
+          // dashed grid of all 11 tracked slots.
+          CustomerDetailKycSection(customer: customer),
           const SizedBox(height: 8),
           Row(children: [Expanded(child: Text(l10n.customerDetailTotalSpent, style: const TextStyle(fontWeight: FontWeight.w500))), Text(l10n.amountRs(formatRs(_totalSpent)), style: const TextStyle(fontWeight: FontWeight.w500))]),
           const SizedBox(height: 4),

@@ -19,6 +19,15 @@ import 'package:rentalhub/l10n/app_localizations.dart';
 // badge and status sit on its photo; the rate/status row below the
 // photo is gone (name/plate stay in the app bar, not repeated on the
 // photo). Pure widget tests — no DI, no Firebase.
+//
+// Showroom redesign (Phase 2, 2026-11-16): the FLEET card is now a
+// horizontal split — 110x95 thumbnail left, name/rate/plate/badges
+// on the right, slim 3-button footer below — so the "header on the
+// photo" assertions move to "beside the thumbnail". The DETAIL photo
+// card is unchanged (rate/badges still sit on its photo), but its
+// sticky bottom bar is deleted: Manage rates / Booking calendar /
+// Edit now live inline (rates header pill + the action row below the
+// spec chips).
 class _TestAssetBundle extends AssetBundle {
   static final ByteData _pixel = ByteData.view(base64Decode(
     'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
@@ -60,8 +69,8 @@ const _testVehicle = VehicleEntity(
 );
 
 void main() {
-  group('Fleet card header on the photo', () {
-    testWidgets('name, plate, rate and self-drive badge render inside the photo Stack',
+  group('Fleet card header beside the thumbnail', () {
+    testWidgets('name, plate, rate and self-drive badge render beside the thumbnail',
         (tester) async {
       await tester.pumpWidget(_wrap(FleetVehicleCard(
         vehicle: _testVehicle,
@@ -70,9 +79,13 @@ void main() {
       )));
       await tester.pumpAndSettle();
 
-      final photoStack = find.byType(Stack).first;
+      // Phase 2: the identity sits in the details column to the
+      // right of the 110x95 thumbnail — no overlay scrim and no
+      // Positioned overlay any more.
+      expect(find.byType(Positioned), findsNothing);
+      expect(tester.getSize(find.byType(Hero).first), const Size(110, 95));
       for (final label in ['Toyota Corolla Grande 2022', 'LEA-23-4567', 'Rs. 8,500/day', 'Self-Drive', 'Available']) {
-        expect(find.descendant(of: photoStack, matching: find.text(label)), findsOneWidget, reason: '$label must sit on the photo');
+        expect(find.text(label), findsOneWidget, reason: '$label must render beside the thumbnail');
       }
       // The rate is no longer in a price block below the photo.
       expect(find.text('Daily Self-Drive Rate'), findsNothing);
@@ -92,7 +105,7 @@ void main() {
       expect(tester.takeException(), isNull);
     });
 
-    testWidgets('exactly one action row under the image, with small orange regular labels',
+    testWidgets('exactly one slim footer row under the details, with small orange regular labels',
         (tester) async {
       await tester.pumpWidget(_wrap(FleetVehicleCard(
         vehicle: _testVehicle,
@@ -108,16 +121,16 @@ void main() {
       expect(find.byType(ElevatedButton), findsNothing);
       expect(find.byType(FilledButton), findsNothing);
 
-      // All three actions live in one single Row, outside the photo Stack.
+      // All three actions live in one single footer Row, below the
+      // thumbnail/details row — not beside the thumbnail.
       for (final label in ['Rates', 'Out-of-city rules', 'Edit']) {
-        expect(find.descendant(of: find.byType(Stack).first, matching: find.text(label)), findsNothing, reason: '$label must be under the image, not on it');
         final rowAncestors = find.ancestor(of: find.text(label), matching: find.byType(Row));
-        expect(rowAncestors, findsOneWidget, reason: '$label must have exactly one ancestor Row — the single action row');
+        expect(rowAncestors, findsOneWidget, reason: '$label must have exactly one ancestor Row — the single footer row');
       }
       final actionRow = find.ancestor(of: find.text('Rates'), matching: find.byType(Row)).evaluate().single;
       for (final label in ['Out-of-city rules', 'Edit']) {
         final otherRow = find.ancestor(of: find.text(label), matching: find.byType(Row)).evaluate().single;
-        expect(identical(otherRow.widget, actionRow.widget), isTrue, reason: '$label must share the Rates action row');
+        expect(identical(otherRow.widget, actionRow.widget), isTrue, reason: '$label must share the Rates footer row');
       }
 
       // Eye-catching: orange icons on the pale orange container, and
@@ -197,10 +210,13 @@ void main() {
       expect(find.text('Rs. 8,500 / day'), findsNothing);
       // Name/plate stay in the app bar, not repeated on the photo.
       expect(find.descendant(of: photoStack, matching: find.text('Toyota Corolla Grande 2022')), findsNothing);
-      // The bottom action bar is untouched.
+      // Phase 2: the sticky bottom bar is deleted — its three
+      // actions live inline now (Manage rates pill in the rates
+      // header, Booking calendar + Edit Vehicle below the chips).
       expect(find.text('Manage rates'), findsOneWidget);
       expect(find.text('Booking calendar'), findsOneWidget);
-      expect(find.text('Edit'), findsOneWidget);
+      expect(find.text('Edit Vehicle'), findsOneWidget);
+      expect(find.text('Edit'), findsNothing);
       expect(tester.takeException(), isNull);
     });
   });

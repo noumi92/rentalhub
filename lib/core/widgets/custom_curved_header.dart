@@ -245,8 +245,8 @@ class CurvedGradientHeaderPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final rect = Offset.zero & size;
 
-    // 1. Base gradient fill (rulebook §4.3): #16194F → #242875 light,
-    // #0B0D26 → #16194F dark.
+    // 1. Base gradient fill (rulebook §4.3): #0F172A → #242875 light,
+    // #0B0D26 → #0F172A dark.
     final baseGradient = LinearGradient(
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,

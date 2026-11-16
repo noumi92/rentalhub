@@ -205,8 +205,9 @@ void main() {
       expect(find.text('Fleet Management'), findsOneWidget);
       expect(find.text('Honda Civic Oriel 2021'), findsOneWidget);
       expect(find.text('Toyota Corolla Grande 2022'), findsOneWidget);
-      expect(find.text('Total Fleet'), findsOneWidget);
-      expect(find.text('3 Cars'), findsOneWidget);
+      // Phase 2: the KPI boxes are merged into the segmented bar —
+      // Total Fleet is the "All" count.
+      expect(find.text('All (3)'), findsOneWidget);
       expect(find.text('Al-Falah Rent a Car'), findsNothing);
     });
 

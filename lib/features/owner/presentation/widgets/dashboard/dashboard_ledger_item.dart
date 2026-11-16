@@ -45,13 +45,11 @@ class DashboardLedgerItem extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(12),
-        // Audit fix (§2): the hardcoded light border stayed pale grey
-        // in dark mode — use the theme outline instead.
-        boxShadow: AppCardDecoration.shadow(context)
-      ),
+      // Phase 1 showroom redesign: the canonical card language —
+      // 1 px borderSubtle, radius 12, soft shadow — via
+      // AppCardDecoration (the old hand-rolled decoration had no
+      // border and a hardcoded light radius).
+      decoration: AppCardDecoration.of(context, radius: 12),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [

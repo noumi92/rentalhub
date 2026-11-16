@@ -94,7 +94,8 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Ayesha Khan'), findsWidgets);
-      expect(find.text('35202-1111111-1'), findsOneWidget);
+      // Phase 3: phone + CNIC share one line in the slim identity card.
+      expect(find.text('0300-1111111 • 35202-1111111-1'), findsOneWidget);
       expect(find.text('Rs. 20,500'), findsOneWidget);
       expect(find.text('Pending review'), findsOneWidget);
       expect(find.text('Not blacklisted'), findsOneWidget);
