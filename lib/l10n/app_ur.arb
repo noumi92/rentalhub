@@ -223,6 +223,8 @@
   "profileKycSubtitle": "شناختی کارڈ (آگے/پیچھے) اور ڈرائیونگ لائسنس",
   "profileSettingsLanguage": "ترتیبات اور زبان",
   "profileSettingsSubtitle": "انگریزی / اردو، اطلاعات",
+  "profileSectionAccount": "میرا اکاؤنٹ",
+  "profileSectionSupport": "مدد اور ترتیبات",
   "profileSaved": "پروفائل محفوظ ہو گیا۔",
   "editProfile": "پروفائل میں ترمیم کریں",
   "editFullName": "پورا نام",
@@ -1332,6 +1334,7 @@
   "dashboardQuickNewBooking": "نئی بکنگ",
   "dashboardQuickFinance": "مالیات",
   "requestsTitle": "بکنگ درخواستوں کی جانچ",
+  "bookingsManagementTitle": "بکنگز مینجمنٹ",
   "requestsAwaitingReview": "{count} درخواستیں جائزے کی منتظر",
   "@requestsAwaitingReview": {
     "placeholders": {
@@ -1686,6 +1689,7 @@
     }
   },
   "customersTitle": "گاہک",
+  "customersManagementTitle": "گاہکوں کا انتظام",
   "customersCount": "{count} گاہک",
   "@customersCount": {
     "placeholders": {
@@ -2312,6 +2316,7 @@
   },
   "paymentVerificationConfirming": "تصدیق ہو رہی ہے…",
   "manualBookingTitle": "واک اِن بکنگ وزرڈ",
+  "walkInBookingButton": "واک اِن بکنگ",
   "manualBookingSubtitle": "شوروم کاؤنٹر سے براہ راست اجراء",
   "manualBookingCustomerSection": "گاہک کی کے وائی سی تفصیلات",
   "manualBookingGuarantorSection": "ضامن (اختیاری)",
@@ -2659,7 +2664,7 @@
   "navProfile": "پروفائل",
   "navDashboard": "ڈیش بورڈ",
   "navFleet": "فلیٹ",
-  "navRequests": "درخواستیں",
+  "navRequests": "بکنگز",
   "navCustomers": "گاہک",
   "navSettings": "ترتیبات",
   "syncOfflineWithPending": "{count, plural, =1{آپ آف لائن ہیں — 1 تبدیلی دوبارہ آن لائن ہونے پر ہم آہنگ ہو جائے گی} other{آپ آف لائن ہیں — {count} تبدیلیاں دوبارہ آن لائن ہونے پر ہم آہنگ ہو جائیں گی}}",
@@ -5578,7 +5583,7 @@
   "dashboardNeedsReviewSplit": "{newCount} نئی · {proofCount} ثبوت",
   "dashboardNeedsReviewTitle": "جائزہ درکار",
   "dashboardOldestWait": "سب سے پرانا انتظار: {wait}",
-  "dashboardQuickRequests": "درخواستیں",
+  "dashboardQuickRequests": "بکنگز",
   "fleetOutCityFixedRoute": "شہر سے باہر: مقررہ راستہ",
   "fleetOutCityPerKm": "شہر سے باہر: فی کلومیٹر",
   "homeSignInButton": "سائن ان کریں",

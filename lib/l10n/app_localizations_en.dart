@@ -676,6 +676,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileSettingsSubtitle => 'English / Urdu, Notifications';
 
   @override
+  String get profileSectionAccount => 'My Account';
+
+  @override
+  String get profileSectionSupport => 'Support & Settings';
+
+  @override
   String get profileSaved => 'Profile saved.';
 
   @override
@@ -2228,6 +2234,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get requestsTitle => 'Booking Requests Triage';
 
   @override
+  String get bookingsManagementTitle => 'Bookings Management';
+
+  @override
   String requestsAwaitingReview(int count) {
     return '$count Requests Awaiting Review';
   }
@@ -2907,6 +2916,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get customersTitle => 'Customers';
+
+  @override
+  String get customersManagementTitle => 'Customers Management';
 
   @override
   String customersCount(int count) {
@@ -3943,6 +3955,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get manualBookingTitle => 'Walk-in Booking Wizard';
 
   @override
+  String get walkInBookingButton => 'Walk-in Booking';
+
+  @override
   String get manualBookingSubtitle => 'Showroom Counter Direct Issue';
 
   @override
@@ -4664,7 +4679,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navFleet => 'Fleet';
 
   @override
-  String get navRequests => 'Requests';
+  String get navRequests => 'Bookings';
 
   @override
   String get navCustomers => 'Customers';
@@ -9647,7 +9662,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get dashboardQuickRequests => 'Requests';
+  String get dashboardQuickRequests => 'Bookings';
 
   @override
   String get fleetOutCityFixedRoute => 'Out-city: fixed route';

@@ -45,7 +45,7 @@ class _OwnerDashboardViewState extends State<OwnerDashboardView> {
   int _fleetAvailable = 0;
   int _unreadNotifications = 0;
   double? _settleRate;
-  // Live updates (Item 2): the bookings subscription behind the KPIs, schedule and ledger. Fleet, notifications and shop names stay one-time loads (refreshed by the app-bar button).
+  // Live updates (Item 2): the bookings subscription behind the KPIs, schedule and ledger. Fleet, notifications and shop names stay one-time loads (pull-to-refresh re-runs this load; the app-bar refresh button is gone).
   final _liveBookings = DashboardLiveBookings();
   // PW-19 (UI/UX audit 2026-11-15): the unread-badge subscription
   // — the one-time count above goes stale while the dashboard is
@@ -224,18 +224,21 @@ class _OwnerDashboardViewState extends State<OwnerDashboardView> {
             DashboardAppBar(
               shopName: _shopName,
               unreadNotifications: _unreadNotifications,
-              onRefresh: _loadDashboardData,
             ),
             Expanded(
-              child: DashboardBody(
-                isLoading: _isLoading,
-                hasError: _hasError,
-                quickActions:
-                    DashboardQuickActions(waitingCount: _waitingCount),
-                body: body,
-                loadingMessage: l10n.dashboardLoading,
-                errorMessage: l10n.dashboardLoadError,
-                onRetry: _loadDashboardData,
+              // Pull-to-refresh (user layout, 2026-11-16) re-runs
+              // [_loadDashboardData] here.
+              child: RefreshIndicator(
+                onRefresh: _loadDashboardData,
+                child: DashboardBody(
+                  isLoading: _isLoading,
+                  hasError: _hasError,
+                  quickActions: DashboardQuickActions(waitingCount: _waitingCount),
+                  body: body,
+                  loadingMessage: l10n.dashboardLoading,
+                  errorMessage: l10n.dashboardLoadError,
+                  onRetry: _loadDashboardData,
+                ),
               ),
             ),
           ],

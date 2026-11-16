@@ -79,10 +79,15 @@ class _CustomerActiveTripViewState extends State<CustomerActiveTripView> {
               onBack: widget.onBack,
             ),
             Expanded(
-              child: SingleChildScrollView(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                child: Column(
+              child: RefreshIndicator(
+                onRefresh: _loadHandover,
+                child: SingleChildScrollView(
+                  // AlwaysScrollable: pull-to-refresh must work even
+                  // when the trip card is shorter than the viewport.
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     PickupCountdownTimer(
@@ -156,6 +161,7 @@ class _CustomerActiveTripViewState extends State<CustomerActiveTripView> {
                     ),
                   ],
                 ),
+              ),
               ),
             ),
             Container(

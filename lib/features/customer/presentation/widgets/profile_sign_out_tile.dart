@@ -15,10 +15,10 @@ class ProfileSignOutTile extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     return Material(
       color: Theme.of(context).colorScheme.surface,
-      borderRadius: BorderRadius.circular(14),
+      borderRadius: BorderRadius.circular(16),
       child: ListTile(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(16),
           side: BorderSide(color: Theme.of(context).dividerColor),
         ),
         leading: Icon(Icons.logout_rounded,

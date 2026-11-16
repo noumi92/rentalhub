@@ -465,12 +465,12 @@ void main() {
 
     testWidgets('Owner Requests at 200%', (tester) async {
       await pumpAt200(tester, const OwnerBookingRequestsView(shopId: 'shop-1'));
-      expect(find.text('Booking Requests Triage'), findsOneWidget);
+      expect(find.text('Bookings Management'), findsOneWidget);
     });
 
     testWidgets('Owner Customers at 200%', (tester) async {
       await pumpAt200(tester, const OwnerCustomersListView());
-      expect(find.text('Customers'), findsOneWidget);
+      expect(find.text('Customers Management'), findsOneWidget);
     });
 
     testWidgets('Owner Settings at 200%', (tester) async {

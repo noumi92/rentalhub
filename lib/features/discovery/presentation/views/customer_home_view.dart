@@ -7,6 +7,7 @@ import '../../../../core/routing/route_names.dart';
 import '../../../../core/widgets/app_state_views.dart';
 import '../../../customer/data/services/customer_home_service.dart';
 import 'widgets/home_app_bar.dart';
+import 'widgets/home_book_car_fab.dart';
 import 'widgets/home_kpi_grid.dart';
 import 'widgets/home_kyc_card.dart';
 import 'widgets/home_quick_actions.dart';
@@ -143,6 +144,11 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
     final kycNeedsAction =
         data?.kyc == null || data?.kyc?.status == 'rejected';
     return Scaffold(
+      // Customer pass (2026-11-16): "Book a Car" is the Home's
+      // primary action — the extended floating button below (same
+      // orange FAB language as the owner screens, same destination
+      // as the quick-action tile it replaces: the Shops tab).
+      floatingActionButton: const HomeBookCarFab(),
       // Phase D (D2): the only tab root that lacked a SafeArea — the
       // header and content now clear the status bar like the other
       // nine tab roots do.
@@ -160,8 +166,13 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
               userInitial: _userInitial(),
             ),
             Expanded(
-              child: SingleChildScrollView(
-                child: Padding(
+              child: RefreshIndicator(
+                onRefresh: _reload,
+                child: SingleChildScrollView(
+                  // AlwaysScrollable: pull-to-refresh must work even
+                  // when the content is shorter than the viewport.
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -220,6 +231,7 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
                     ],
                   ),
                 ),
+              ),
               ),
             ),
           ],

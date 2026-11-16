@@ -601,7 +601,8 @@ void main() {
   });
 
   group('FG-21 real shop photo', () {
-    testWidgets('real header photo renders an Image; otherwise no Image',
+    testWidgets(
+        'real header photo renders a network Image; otherwise the generic showroom placeholder',
         (tester) async {
       final withPhoto = shop('pho', 'Photo Motors', 'Lahore', 31.52,
           74.35,
@@ -612,25 +613,39 @@ void main() {
         of: find.text('Photo Motors'),
         matching: find.byType(ShopListCard),
       );
+      // The real header photo is attempted as a network image (in
+      // tests the HTTP request fails, so the error fallback — the
+      // placeholder — also renders; in production a working URL
+      // renders the photo alone).
+      final photoImages = tester.widgetList<Image>(find.descendant(
+          of: photoCard, matching: find.byType(Image)));
       expect(
-        find.descendant(
-            of: photoCard, matching: find.byType(Image)),
-        findsOneWidget,
+        photoImages.any((w) =>
+            w.image is NetworkImage &&
+            (w.image as NetworkImage).url ==
+                'https://example.com/header.jpg'),
+        isTrue,
       );
       final plainCard = find.ancestor(
         of: find.text('Lahore Motors'),
         matching: find.byType(ShopListCard),
       );
-      expect(
-        find.descendant(
-            of: plainCard, matching: find.byType(Image)),
-        findsNothing,
-      );
+      // Customer pass (2026-11-16): no header photo no longer means
+      // no image — the generic showroom placeholder renders instead
+      // of the dull grey storefront icon.
+      final placeholder = find.descendant(
+          of: plainCard, matching: find.byType(Image));
+      expect(placeholder, findsOneWidget);
+      final image =
+          tester.widget<Image>(placeholder).image;
+      expect(image, isA<AssetImage>());
+      expect((image as AssetImage).assetName,
+          'assets/images/showroom_banner_1.jpg');
       expect(
         find.descendant(
             of: plainCard,
             matching: find.byIcon(Icons.storefront_rounded)),
-        findsOneWidget,
+        findsNothing,
       );
     });
   });

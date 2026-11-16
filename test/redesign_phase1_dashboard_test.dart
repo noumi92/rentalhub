@@ -157,7 +157,7 @@ void main() {
     });
   });
 
-  group('Phase 1 — 4+3 quick actions with a live Requests badge', () {
+  group('Phase 1 — 4+3 quick actions with a live Bookings badge', () {
     testWidgets('shows all seven actions; badge only while work waits',
         (tester) async {
       await tester.pumpWidget(_wrap(const DashboardQuickActions(waitingCount: 3)));
@@ -169,7 +169,7 @@ void main() {
         'Add Customer',
         'Finance',
         'View Reports',
-        'Requests',
+        'Bookings',
       ]) {
         expect(find.text(label), findsOneWidget);
       }
@@ -185,11 +185,11 @@ void main() {
       await tester.pumpWidget(_wrap(const DashboardQuickActions(waitingCount: 0)));
       await tester.pumpAndSettle();
       expect(find.byKey(const Key('requests-waiting-badge')), findsNothing);
-      expect(find.text('Requests'), findsOneWidget);
+      expect(find.text('Bookings'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
 
-    testWidgets('tapping Requests opens the triage tab', (tester) async {
+    testWidgets('tapping Bookings opens the triage tab', (tester) async {
       final router = GoRouter(
         initialLocation: '/',
         routes: [
@@ -219,7 +219,7 @@ void main() {
       ));
       await tester.pumpAndSettle();
       expect(find.byKey(const Key('requests-waiting-badge')), findsOneWidget);
-      await tester.tap(find.text('Requests'));
+      await tester.tap(find.text('Bookings'));
       await tester.pumpAndSettle();
       expect(find.text('Requests'), findsOneWidget);
       expect(find.text('Add Car'), findsNothing);

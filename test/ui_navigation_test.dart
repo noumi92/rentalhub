@@ -129,12 +129,12 @@ void main() {
       );
     });
 
-    test('owner tab 3 is labelled Requests, not Bookings', () {
-      expect(AppRouter.ownerTabs[2].label, 'Requests');
+    test('owner tab 3 is labelled Bookings', () {
+      expect(AppRouter.ownerTabs[2].label, 'Bookings');
       expect(AppRouter.ownerTabs.map((t) => t.label).toList(), [
         'Dashboard',
         'Fleet',
-        'Requests',
+        'Bookings',
         'Customers',
         'Settings',
       ]);

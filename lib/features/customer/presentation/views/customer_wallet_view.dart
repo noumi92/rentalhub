@@ -99,6 +99,13 @@ class _CustomerWalletViewState extends State<CustomerWalletView> {
     }
   }
 
+  /// Customer pass (2026-11-16): pull-to-refresh entry point —
+  /// [_load] re-subscribes to the wallet stream; the indicator needs
+  /// a Future to await.
+  Future<void> _reload() async {
+    _load();
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -127,10 +134,15 @@ class _CustomerWalletViewState extends State<CustomerWalletView> {
               )
             else
               Expanded(
-              child: SingleChildScrollView(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                child: Column(
+              child: RefreshIndicator(
+                onRefresh: _reload,
+                child: SingleChildScrollView(
+                  // AlwaysScrollable: pull-to-refresh must work even
+                  // when the ledger is shorter than the viewport.
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
@@ -139,7 +151,7 @@ class _CustomerWalletViewState extends State<CustomerWalletView> {
                         // CU-m15: was a degenerate gradient (primary
                         // twice) — a plain fill is the same look.
                         color: AppColors.primary,
-                        borderRadius: BorderRadius.circular(18),
+                        borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
                             color: AppColors.primary.withValues(alpha: 0.25),
@@ -199,6 +211,7 @@ class _CustomerWalletViewState extends State<CustomerWalletView> {
                     ),
                   ],
                 ),
+              ),
               ),
             ),
           ],

@@ -711,7 +711,18 @@ void main() {
         shop: _shop(headerUrl: 'https://example.com/photo.jpg'),
       )));
       await tester.pumpAndSettle();
-      expect(find.byType(Image), findsOneWidget);
+      // The real header photo is attempted as a network image (in
+      // tests the HTTP request fails, so the error fallback — the
+      // placeholder — also renders; in production a working URL
+      // renders the photo alone).
+      final images = tester.widgetList<Image>(find.byType(Image));
+      expect(
+        images.any((w) =>
+            w.image is NetworkImage &&
+            (w.image as NetworkImage).url ==
+                'https://example.com/photo.jpg'),
+        isTrue,
+      );
       expect(find.text('4.8'), findsOneWidget);
       expect(
         tester.widget<FilledButton>(find.byType(FilledButton)).onPressed,
@@ -724,12 +735,21 @@ void main() {
       expect(tester.takeException(), isNull);
     });
 
-    testWidgets('no photo and no rating when none is real', (tester) async {
+    testWidgets('no photo shows the generic placeholder; no rating shows nothing', (tester) async {
       await tester.pumpWidget(_wrap(ShopDetailHeader(
         shop: _shop(hasRealRating: false),
       )));
       await tester.pumpAndSettle();
-      expect(find.byType(Image), findsNothing);
+      // Customer pass (2026-11-16): no header photo no longer means
+      // no image — the generic showroom placeholder renders instead
+      // of the dull grey storefront icon. The rating still shows
+      // nothing when none is real.
+      final placeholder = find.byType(Image);
+      expect(placeholder, findsOneWidget);
+      final image = tester.widget<Image>(placeholder).image;
+      expect(image, isA<AssetImage>());
+      expect((image as AssetImage).assetName,
+          'assets/images/showroom_banner_1.jpg');
       expect(find.text('4.8'), findsNothing);
       expect(tester.takeException(), isNull);
     });

@@ -7,6 +7,7 @@ import '../../../../../core/widgets/app_feedback.dart';
 import '../../../../../core/widgets/verified_badge.dart';
 import '../../../domain/entities/shop_entity.dart';
 import '../../../../../l10n/app_localizations.dart';
+import 'shop_placeholder_image.dart';
 import 'shops_filter_logic.dart';
 
 class ShopListCard extends StatelessWidget {
@@ -36,23 +37,22 @@ class ShopListCard extends StatelessWidget {
     // only showed a SnackBar. Without a phone number both buttons
     // are disabled with a tooltip explaining why.
     final hasPhone = shop.phoneNumber.trim().isNotEmpty;
-    // FG-21: the shop's real header photo when one exists, else a
-    // neutral surface + storefront icon — never a stock banner
-    // presented as the showroom.
+    // FG-21 (revised 2026-11-16, customer pass): the shop's real
+    // header photo when one exists, else the generic showroom
+    // placeholder photo — never a stock banner presented as the
+    // shop's own showroom, and never the dull grey icon box.
     final headerUrl = shop.headerUrl?.trim() ?? '';
-    Widget neutralBanner() => Container(height: 135, color: Theme.of(context).colorScheme.surfaceContainerHighest, child: const Center(child: Icon(Icons.storefront_rounded, size: 48)));
+    Widget neutralBanner() => const ShopPlaceholderImage(height: 135);
 
     // BP-13: no bottom margin on the card — the list separates
     // items with spacing between them only, so the last item sits
     // at the list padding instead of margin + padding.
     return Card(
       margin: EdgeInsets.zero,
-      elevation: 2.5,
       clipBehavior: Clip.antiAlias,
-      // CU-M2: cards carry no dark border — the shadow does the work.
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      // Customer pass (2026-11-16): the theme Card is the canonical
+      // showroom card (surface, 1px hairline, radius 16, elevation
+      // 1.5) — no per-file elevation/shape override.
       child: InkWell(
         onTap: onTap,
         child: Column(

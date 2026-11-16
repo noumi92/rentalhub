@@ -327,10 +327,12 @@ void main() {
         await tester.pumpAndSettle();
       }
 
-      // The tile's InkWell key: the recent-bookings empty state has
-      // a second 'Book a Car' button, so the text finder is ambiguous.
-      await _tapVisible(
-          tester, find.byKey(const ValueKey('quick-action-Book a Car')));
+      // Customer pass (2026-11-16): "Book a Car" left the quick-action
+      // row — it is the Home's extended floating button now (same
+      // destination, the Shops tab). The recent-bookings empty state
+      // has a second 'Book a Car' button, so the text finder is
+      // ambiguous; the FAB is found by type (the Home has one).
+      await _tapVisible(tester, find.byType(FloatingActionButton));
       expect(find.text('Shops stub body'), findsOneWidget);
       await goHome();
 

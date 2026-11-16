@@ -104,34 +104,28 @@ class _OwnerCustomersListViewState extends State<OwnerCustomersListView> {
   final l10n = AppLocalizations.of(context)!;
     final filtered = _filtered;
     return Scaffold(
+      // User layout 2026-11-16: Add Customer is an extended
+      // floating button instead of the old AppBar pill — same
+      // destination ('/owner/customers/add'), visible label.
+      floatingActionButton: FloatingActionButton.extended(
+        key: const Key('customers-action-add'),
+        heroTag: 'customers-add',
+        onPressed: () => context.push('/owner/customers/add'),
+        tooltip: l10n.addCustomerTitle,
+        backgroundColor: AppColors.orangeFill,
+        foregroundColor: Colors.white,
+        icon: const Icon(Icons.add_rounded, size: 20),
+        label: Text(l10n.addCustomerTitle),
+      ),
       // C1: MinimalAppBar owns the top inset — no double status bar.
       body: SafeArea(
         top: false,
         child: Column(
           children: [
             MinimalAppBar(
-              title: l10n.customersTitle,
+              title: l10n.customersManagementTitle,
               subtitle: _loading ? l10n.customersLoading : l10n.customersCount(_customers.length),
               actions: [
-                // Phase 3: "+ Add" orange pill in the AppBar
-                // (orangeFill — small white text needs 5.18:1) next
-                // to the scan-CNIC icon, which stays. Flexible +
-                // ellipsis: at 200% text scale the label shrinks
-                // instead of overflowing the bar (E3).
-                Flexible(
-                  child: FilledButton.icon(
-                    onPressed: () => context.push('/owner/customers/add'),
-                    style: FilledButton.styleFrom(
-                      backgroundColor: AppColors.orangeFill,
-                      foregroundColor: Colors.white,
-                      minimumSize: const Size(0, 48),
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                    ),
-                    icon: const Icon(Icons.add_rounded, size: 18),
-                    label: Text(l10n.addCustomerTitle,
-                        maxLines: 1, overflow: TextOverflow.ellipsis),
-                  ),
-                ),
                 IconButton(
                   tooltip: l10n.customersScanCnic,
                   icon: const Icon(Icons.document_scanner_rounded, color: Colors.white),
@@ -142,7 +136,7 @@ class _OwnerCustomersListViewState extends State<OwnerCustomersListView> {
             // Audit §18: search is 52dp, radius 16, borderSubtle
             // border, with a clear button. The full-width Add
             // Customer banner that used to sit below it is gone —
-            // the action moved to the prominent AppBar pill above
+            // the action moved to the extended floating button
             // (before, the header scan icon, tooltip only, was the
             // only add entry point, which is why the banner
             // existed); the action itself is kept, only its
@@ -176,7 +170,14 @@ class _OwnerCustomersListViewState extends State<OwnerCustomersListView> {
                       ? AppErrorState(message: l10n.customersLoadError, onRetry: _load)
                       : filtered.isEmpty
                           ? AppEmptyState(title: l10n.customersEmptyTitle, message: l10n.customersEmptyMessage, actionLabel: l10n.customersScanCnic, actionIcon: Icons.document_scanner_rounded, onAction: () => context.push('/owner/customers/scan'))
-                          : ListView.builder(
+                          : RefreshIndicator(
+                              // Pull-to-refresh (user layout,
+                              // 2026-11-16): re-runs [_load].
+                              onRefresh: _load,
+                              child: ListView.builder(
+                              // Short lists must stay draggable or
+                              // the indicator never triggers.
+                              physics: const AlwaysScrollableScrollPhysics(),
                               padding: const EdgeInsets.all(16),
                               itemCount: filtered.length,
                               itemBuilder: (context, index) {
@@ -228,6 +229,7 @@ class _OwnerCustomersListViewState extends State<OwnerCustomersListView> {
                                   ),
                                 );
                               },
+                              ),
                             ),
             ),
           ],

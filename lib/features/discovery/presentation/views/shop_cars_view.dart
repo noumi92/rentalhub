@@ -162,21 +162,29 @@ class _ShopCarsViewState extends State<ShopCarsView> {
                                   l10n.shopCarsTryOther,
                               icon: Icons.directions_car_outlined,
                             )
-                          : ListView.builder(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 16, vertical: 8),
-                              itemCount: filtered.length,
-                              itemBuilder: (context, index) {
-                                final car = filtered[index];
-                                return Padding(
-                                  padding: const EdgeInsets.only(bottom: 12),
-                                  child: CustomerVehicleCard(
-                                    vehicle: car,
-                                    onTap: () =>
-                                        widget.onCarSelected?.call(car),
-                                  ),
-                                );
-                              },
+                          : RefreshIndicator(
+                              onRefresh: _load,
+                              child: ListView.builder(
+                                // AlwaysScrollable: pull-to-refresh
+                                // must work even with one car.
+                                physics:
+                                    const AlwaysScrollableScrollPhysics(),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 8),
+                                itemCount: filtered.length,
+                                itemBuilder: (context, index) {
+                                  final car = filtered[index];
+                                  return Padding(
+                                    padding:
+                                        const EdgeInsets.only(bottom: 12),
+                                    child: CustomerVehicleCard(
+                                      vehicle: car,
+                                      onTap: () =>
+                                          widget.onCarSelected?.call(car),
+                                    ),
+                                  );
+                                },
+                              ),
                             ),
             ),
           ],

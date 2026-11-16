@@ -97,6 +97,10 @@ class RequestsListBody extends StatelessWidget {
               // E2: shared empty state.
               ? AppEmptyState(title: emptyTitle, message: emptyMessage)
               : ListView.separated(
+                  // Pull-to-refresh (user layout, 2026-11-16): the
+                  // list must stay draggable even with few items, or
+                  // the RefreshIndicator above it never triggers.
+                  physics: const AlwaysScrollableScrollPhysics(),
                   padding: const EdgeInsets.symmetric(
                       horizontal: 16, vertical: 14),
                   itemCount: filtered.length,

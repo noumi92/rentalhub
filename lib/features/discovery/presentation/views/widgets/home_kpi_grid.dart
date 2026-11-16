@@ -120,7 +120,7 @@ class _KpiTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final tile = Container(
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-      decoration: AppCardDecoration.of(context, radius: 14),
+      decoration: AppCardDecoration.of(context),
       child: Column(
         children: [
           Icon(icon, size: 20, color: Theme.of(context).colorScheme.primary),
@@ -154,7 +154,7 @@ class _KpiTile extends StatelessWidget {
       child: InkWell(
         key: tileKey ?? const ValueKey('home-kpi-trust'),
         onTap: onTap,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(16),
         child: tile,
       ),
     );

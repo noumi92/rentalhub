@@ -196,7 +196,7 @@ class AppRouter {
     ShellNavItem(
         icon: OwnerRequestsBadge(
             icon: const Icon(Icons.receipt_long_rounded)),
-        label: 'Requests',
+        label: 'Bookings',
         l10nKey: 'navRequests'),
     const ShellNavItem(
         icon: Icon(Icons.people_rounded),

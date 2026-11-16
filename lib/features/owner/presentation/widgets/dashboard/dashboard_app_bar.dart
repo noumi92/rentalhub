@@ -6,28 +6,29 @@ import '../../../../../core/widgets/app_icon_chip.dart';
 import '../../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../../l10n/app_localizations.dart';
 
-/// Audit impl (O29): the dashboard app bar — title + real shop
-/// name, bell (with unread badge) to notifications, settings and
-/// refresh. Extracted from [OwnerDashboardView] so the view stays
+/// Audit impl (O29): the dashboard app bar — the title is the real
+/// shop name (subtitle: the dashboard label), with only the bell
+/// (unread badge) to notifications. The Settings and Refresh chips
+/// are gone (user layout, 2026-11-16): Settings stays on its own
+/// tab, and reload is pull-to-refresh on the body instead of a
+/// button. Extracted from [OwnerDashboardView] so the view stays
 /// under the 250-line cap.
 class DashboardAppBar extends StatelessWidget {
   final String shopName;
   final int unreadNotifications;
-  final VoidCallback onRefresh;
 
   const DashboardAppBar({
     super.key,
     required this.shopName,
     required this.unreadNotifications,
-    required this.onRefresh,
   });
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return MinimalAppBar(
-      title: l10n.dashboardTitle,
-      subtitle: shopName.isNotEmpty ? shopName : l10n.dashboardMyShowroom,
+      title: shopName.isNotEmpty ? shopName : l10n.dashboardMyShowroom,
+      subtitle: l10n.dashboardTitle,
       actions: [
         AppIconChip(
           icon: Icons.notifications_rounded,
@@ -36,22 +37,6 @@ class DashboardAppBar extends StatelessWidget {
           iconColor: Colors.white,
           badgeCount: unreadNotifications > 0 ? unreadNotifications : null,
           onPressed: () => context.push(RouteNames.ownerNotifications),
-        ),
-        const SizedBox(width: 8),
-        AppIconChip(
-          icon: Icons.settings_rounded,
-          tooltip: l10n.dashboardSettingsTooltip,
-          background: Colors.white.withValues(alpha: 0.15),
-          iconColor: Colors.white,
-          onPressed: () => context.push(RouteNames.ownerSettings),
-        ),
-        const SizedBox(width: 8),
-        AppIconChip(
-          icon: Icons.refresh_rounded,
-          tooltip: l10n.dashboardRefreshTooltip,
-          background: Colors.white.withValues(alpha: 0.15),
-          iconColor: Colors.white,
-          onPressed: onRefresh,
         ),
       ],
     );

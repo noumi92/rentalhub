@@ -165,6 +165,9 @@ void main() {
       expect(find.text('Ready (1)'), findsOneWidget);
       expect(find.text('On Rent (1)'), findsOneWidget);
       expect(find.text('Maintenance (1)'), findsOneWidget);
+      // User layout 2026-11-16: segment labels are 14sp (set on
+      // the label Text; the chip theme still supplies color/weight).
+      expect(tester.widget<Text>(find.text('All (3)')).style?.fontSize, 14);
 
       await tester.tap(find.text('Maintenance (1)'));
       expect(selected, 'Maintenance');
@@ -216,22 +219,27 @@ void main() {
       }
     });
 
-    testWidgets('search bar holds Handover QR + Requests, AppBar the add pill',
+    testWidgets('AppBar holds Schedule + Handover + Requests, Add Vehicle is the FAB',
         (tester) async {
       await tester.pumpWidget(_wrap(
         const OwnerFleetView(shopId: 'shop-basic'),
       ));
       await tester.pumpAndSettle();
 
+      // User layout 2026-11-16: the three AppBar icon actions
+      // (Schedule, Handover QR, Requests) and the extended FAB.
+      expect(find.byKey(const Key('fleet-action-schedule')), findsOneWidget);
+      expect(find.byTooltip('Schedule'), findsOneWidget);
       expect(find.byKey(const Key('fleet-action-handover')), findsOneWidget);
       expect(find.byKey(const Key('fleet-action-requests')), findsOneWidget);
       expect(find.byTooltip('Handover QR'), findsOneWidget);
-      expect(find.byTooltip('Requests'), findsOneWidget);
+      expect(find.byTooltip('Bookings'), findsOneWidget);
       expect(find.byKey(const Key('fleet-action-add-vehicle')), findsOneWidget);
       expect(find.text('Add Vehicle'), findsOneWidget);
-      // The quick-actions row keeps only Schedule + Customers.
-      expect(find.byKey(const Key('fleet-action-schedule')), findsOneWidget);
-      expect(find.byKey(const Key('fleet-action-customers')), findsOneWidget);
+      // The search bar and the quick-actions row are gone; Customers
+      // left the fleet screen (still on the Customers tab).
+      expect(find.byType(TextField), findsNothing);
+      expect(find.byKey(const Key('fleet-action-customers')), findsNothing);
       expect(tester.takeException(), isNull);
     });
   });

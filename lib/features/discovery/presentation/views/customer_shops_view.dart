@@ -200,13 +200,20 @@ class _CustomerShopsViewState extends State<CustomerShopsView> {
                                   message: l10n.shops_emptySubtitle,
                                   icon: Icons.storefront_rounded,
                                 )
-                              : SingleChildScrollView(
-                                  padding: const EdgeInsets.fromLTRB(
-                                      16, 4, 16, 16),
-                                  child: HomeShopList(
-                                    shops: shops,
-                                    minDailyRates: _minDailyRates,
-                                    onShopSelected: _openShop,
+                              : RefreshIndicator(
+                                  onRefresh: _loadShops,
+                                  child: SingleChildScrollView(
+                                    // AlwaysScrollable: pull-to-refresh
+                                    // must work even with one shop.
+                                    physics:
+                                        const AlwaysScrollableScrollPhysics(),
+                                    padding: const EdgeInsets.fromLTRB(
+                                        16, 4, 16, 16),
+                                    child: HomeShopList(
+                                      shops: shops,
+                                      minDailyRates: _minDailyRates,
+                                      onShopSelected: _openShop,
+                                    ),
                                   ),
                                 ),
                 ),

@@ -40,9 +40,8 @@ class BookingTicketCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      // Customer pass (2026-11-16): the theme Card is the canonical
+      // showroom card — no per-file shape override.
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(16),

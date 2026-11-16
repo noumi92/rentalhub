@@ -60,7 +60,7 @@ void main() {
       expect(AppRouter.ownerTabs.map((t) => t.label).toList(), [
         'Dashboard',
         'Fleet',
-        'Requests',
+        'Bookings',
         'Customers',
         'Settings',
       ]);

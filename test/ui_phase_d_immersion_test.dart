@@ -398,17 +398,17 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      // The reworked Home keeps one 'Book a Car' tile; a second
-      // 'Book a Car' action lives in the recent-bookings empty state,
-      // so the tile is asserted by its key, not its text.
-      expect(find.byKey(const ValueKey('quick-action-Book a Car')),
-          findsOneWidget);
+      // Customer pass (2026-11-16): "Book a Car" left the
+      // quick-action row — it is the Home's extended floating button
+      // now (the recent-bookings empty state has a second 'Book a
+      // Car' action, so the FAB is asserted by type; the Home has
+      // exactly one).
+      expect(find.byType(FloatingActionButton), findsOneWidget);
     }
 
     testWidgets('Book a Car opens the Shops tab', (tester) async {
       await pumpHome(tester);
-      await tester.tap(
-          find.byKey(const ValueKey('quick-action-Book a Car')));
+      await tester.tap(find.byType(FloatingActionButton));
       await tester.pumpAndSettle();
       expect(find.text('stub-shops'), findsOneWidget);
     });
@@ -423,6 +423,19 @@ void main() {
 
     testWidgets('SOS opens the SOS screen', (tester) async {
       await pumpHome(tester);
+      // Customer pass (2026-11-16): the "Book a Car" FAB floats at
+      // the bottom-right and can cover the rightmost quick-action
+      // tile in short viewports — scroll the tile clear of it first,
+      // as a user would (the Home's scroll view is the SingleChild-
+      // ScrollView ancestor of the SOS tile).
+      await tester.drag(
+        find.ancestor(
+          of: find.byKey(const ValueKey('quick-action-SOS')),
+          matching: find.byType(SingleChildScrollView),
+        ),
+        const Offset(0, -250),
+      );
+      await tester.pumpAndSettle();
       await tester.tap(find.text('SOS'));
       await tester.pumpAndSettle();
       expect(find.text('stub-sos'), findsOneWidget);

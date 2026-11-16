@@ -165,7 +165,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Booking Requests Triage'), findsOneWidget);
+      expect(find.text('Bookings Management'), findsOneWidget);
       // Phase A (A1): the hardcoded demo request was removed. With no
       // bookings in Firestore the view shows an honest empty state.
       // Team B (FG-4): the default filter is now the proof bucket,

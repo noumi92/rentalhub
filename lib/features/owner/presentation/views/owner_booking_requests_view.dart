@@ -14,6 +14,7 @@ import '../../../bookings/utils/live_booking_stream.dart';
 import '../services/whatsapp_credits_data_source.dart';
 import '../widgets/operations/request_reject_dialog.dart';
 import '../widgets/operations/requests_list_body.dart';
+import '../widgets/operations/walk_in_booking_fab.dart';
 
 class OwnerBookingRequestsView extends StatefulWidget {
   final String shopId;
@@ -184,6 +185,8 @@ class _OwnerBookingRequestsViewState extends State<OwnerBookingRequestsView> {
     // FG-4: the oldest proof wait, surfaced in the list header.
     final oldestProofWait = oldestWaitFor(_requests.where((b) => b.status == 'payment_submitted'), _requestTimes);
     return Scaffold(
+      // Walk-in booking is an extended FAB ([WalkInBookingFab]).
+      floatingActionButton: const WalkInBookingFab(),
       // C1: MinimalAppBar owns the top inset; SafeArea must not add it
       // again or the navy header gains a dead band.
       body: SafeArea(
@@ -191,15 +194,11 @@ class _OwnerBookingRequestsViewState extends State<OwnerBookingRequestsView> {
         child: Column(
           children: [
             MinimalAppBar(
-              title: l10n.requestsTitle,
+              title: l10n.bookingsManagementTitle,
               subtitle: oldestProofWait == null
                   ? l10n.requestsAwaitingReview(_filtered.length)
                   : '${l10n.requestsAwaitingReview(_filtered.length)} · ${l10n.requestsOldestProofWait(waitDurationLabel(l10n, oldestProofWait))}',
               actions: [
-                // §9: the tab that owns the booking lifecycle gets a New
-                // walk-in booking entry (was only reachable from
-                // Customers / scan).
-                IconButton(icon: const Icon(Icons.person_add_rounded, color: Colors.white), tooltip: l10n.manualBookingTitle, onPressed: () => context.push(RouteNames.ownerManualBooking)),
                 IconButton(
                   icon: const Icon(Icons.qr_code_scanner_rounded, color: Colors.white),
                   tooltip: l10n.requestsScanQrTooltip,
@@ -214,29 +213,32 @@ class _OwnerBookingRequestsViewState extends State<OwnerBookingRequestsView> {
             ),
             Expanded(
               // The list body lives in RequestsListBody so this view
-              // stays under the 250-line cap.
-              child: RequestsListBody(
-                isLoading: _isLoading,
-                hasError: _hasError,
-                loadingMessage: l10n.requestsLoading,
-                errorMessage: l10n.requestsLoadError,
-                emptyTitle: _emptyLabel(l10n),
-                emptyMessage: l10n.requestsEmptyMessage,
-                requests: _requests,
-                filtered: _filtered,
-                filter: _filter,
-                searchController: _searchController,
-                onSearchChanged: (q) => setState(() => _searchQuery = q),
-                onFilterChanged: (s) => setState(() => _filter = s),
-                waBalance: _waBalance,
-                waSkipped: _waSkipped,
-                processingId: _processingId,
-                onRetry: _loadRequests,
-                onApprove: _approveRequest,
-                onReject: _rejectRequest,
-                onOpenDetail: (b) => context.push(RouteNames
-                    .ownerRequestsDetail
-                    .replaceFirst(':id', b.bookingId)),
+              // stays under the 250-line cap; pull-to-refresh re-runs [_loadRequests].
+              child: RefreshIndicator(
+                onRefresh: _loadRequests,
+                child: RequestsListBody(
+                  isLoading: _isLoading,
+                  hasError: _hasError,
+                  loadingMessage: l10n.requestsLoading,
+                  errorMessage: l10n.requestsLoadError,
+                  emptyTitle: _emptyLabel(l10n),
+                  emptyMessage: l10n.requestsEmptyMessage,
+                  requests: _requests,
+                  filtered: _filtered,
+                  filter: _filter,
+                  searchController: _searchController,
+                  onSearchChanged: (q) => setState(() => _searchQuery = q),
+                  onFilterChanged: (s) => setState(() => _filter = s),
+                  waBalance: _waBalance,
+                  waSkipped: _waSkipped,
+                  processingId: _processingId,
+                  onRetry: _loadRequests,
+                  onApprove: _approveRequest,
+                  onReject: _rejectRequest,
+                  onOpenDetail: (b) => context.push(RouteNames
+                      .ownerRequestsDetail
+                      .replaceFirst(':id', b.bookingId)),
+                ),
               ),
             ),
           ],

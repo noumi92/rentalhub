@@ -80,12 +80,9 @@ class HomeKycCard extends StatelessWidget {
     final ready = _documentsReady;
     final needsAction = doc == null || doc.status == 'rejected';
     return Card(
-      elevation: 0,
-      // CU-M2: no border on cards — the flat look comes from the
-      // surface difference, not a side stroke.
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      // Customer pass (2026-11-16): the theme Card is the canonical
+      // showroom card (surface, 1px hairline, radius 16, elevation
+      // 1.5) — no per-file elevation/shape override.
       child: Padding(
         padding: const EdgeInsets.all(14),
         child: Column(

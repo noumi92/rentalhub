@@ -6,6 +6,7 @@ import '../../../../../core/utils/whatsapp.dart';
 import '../../../../../core/widgets/app_feedback.dart';
 import '../../../domain/entities/shop_entity.dart';
 import '../../../../../l10n/app_localizations.dart';
+import 'shop_placeholder_image.dart';
 
 /// Team B (UI/UX audit 2026-11-15, PW-7): the shop detail header —
 /// the shop's real photo when one exists (never a stock banner
@@ -62,24 +63,24 @@ class ShopDetailHeader extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (photoUrl != null && photoUrl.startsWith('http'))
-          ClipRRect(
-            borderRadius:
-                const BorderRadius.vertical(bottom: Radius.circular(20)),
-            child: Image.network(
-              photoUrl,
-              height: 180,
-              width: double.infinity,
-              fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => Container(
-                height: 180,
-                color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                child: const Center(
-                  child: Icon(Icons.storefront_rounded, size: 48),
-                ),
-              ),
-            ),
-          ),
+        // Customer pass (2026-11-16): the shop's real header photo
+        // when one exists; the generic showroom placeholder when no
+        // photo was provided (or the network photo fails to load) —
+        // never the dull grey icon box.
+        ClipRRect(
+          borderRadius:
+              const BorderRadius.vertical(bottom: Radius.circular(20)),
+          child: (photoUrl != null && photoUrl.startsWith('http'))
+              ? Image.network(
+                  photoUrl,
+                  height: 180,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) =>
+                      const ShopPlaceholderImage(height: 180),
+                )
+              : const ShopPlaceholderImage(height: 180),
+        ),
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
           child: Row(

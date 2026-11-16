@@ -10,6 +10,7 @@ import '../../../customer/data/datasources/customer_remote_data_source.dart';
 import '../../../customer/domain/entities/customer_entity.dart';
 import '../../../discovery/data/models/shop_model.dart';
 import '../../../discovery/domain/entities/shop_entity.dart';
+import '../../../discovery/presentation/views/widgets/shop_placeholder_image.dart';
 import '../../../../l10n/app_localizations.dart';
 
 // H5: saved showrooms now come from the signed-in customer's own
@@ -112,35 +113,39 @@ class _CustomerSavedShopsViewState extends State<CustomerSavedShopsView> {
                           message: l10n.savedShopsEmptyHint,
                           icon: Icons.favorite_border_rounded,
                         )
-                      : ListView.builder(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 12),
-                          itemCount: _shops.length,
-                          itemBuilder: (context, index) {
-                            final shop = _shops[index];
-                            return Card(
-                              margin: const EdgeInsets.only(bottom: 10),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              child: InkWell(
+                      : RefreshIndicator(
+                          onRefresh: _load,
+                          child: ListView.builder(
+                            // AlwaysScrollable: pull-to-refresh must
+                            // work even with one saved shop.
+                            physics:
+                                const AlwaysScrollableScrollPhysics(),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 12),
+                            itemCount: _shops.length,
+                            itemBuilder: (context, index) {
+                              final shop = _shops[index];
+                              return Card(
+                                margin: const EdgeInsets.only(bottom: 10),
+                                // Customer pass (2026-11-16): the theme
+                                // Card is the canonical showroom card
+                                // — no per-file shape override.
+                                child: InkWell(
                                 onTap: () => widget.onSelectShop?.call(shop),
                                 borderRadius: BorderRadius.circular(16),
                                 child: Padding(
                                   padding: const EdgeInsets.all(14),
                                   child: Row(
                                     children: [
-                                      Container(
-                                        width: 48,
-                                        height: 48,
-                                        decoration: BoxDecoration(
-                                          color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                                          borderRadius:
-                                              BorderRadius.circular(12),
-                                        ),
-                                        child: const Icon(
-                                            Icons.storefront_rounded,
-                                            color: AppColors.primary),
+                                      // Customer pass (2026-11-16): the
+                                      // generic showroom placeholder
+                                      // thumbnail instead of the dull
+                                      // grey storefront-icon box.
+                                      const ClipRRect(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(12)),
+                                        child: ShopPlaceholderImage(
+                                            height: 48, width: 48),
                                       ),
                                       const SizedBox(width: 12),
                                       Expanded(
@@ -226,6 +231,7 @@ class _CustomerSavedShopsViewState extends State<CustomerSavedShopsView> {
                               ),
                             );
                           },
+                        ),
                         ),
             ),
           ],

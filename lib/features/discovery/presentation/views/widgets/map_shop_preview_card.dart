@@ -6,6 +6,7 @@ import '../../../../../core/widgets/app_feedback.dart';
 import '../../../../../core/widgets/verified_badge.dart';
 import '../../../domain/entities/shop_entity.dart';
 import '../../../../../l10n/app_localizations.dart';
+import 'shop_placeholder_image.dart';
 import 'shops_filter_logic.dart';
 
 class MapShopPreviewCard extends StatelessWidget {
@@ -43,17 +44,12 @@ class MapShopPreviewCard extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Container(
-                    width: 44,
-                    height: 44,
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Icon(
-                      Icons.storefront_rounded,
-                      size: 24,
-                    ),
+                  // Customer pass (2026-11-16): the generic showroom
+                  // placeholder thumbnail instead of the dull grey
+                  // storefront-icon box.
+                  const ClipRRect(
+                    borderRadius: BorderRadius.all(Radius.circular(12)),
+                    child: ShopPlaceholderImage(height: 44, width: 44),
                   ),
                   const SizedBox(width: 10),
                   Expanded(

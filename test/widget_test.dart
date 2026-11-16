@@ -129,11 +129,12 @@ void main() {
     // Customer rework (Worker C): the radius pills moved to the
     // Shops tab with discovery — Home now shows the dashboard
     // (KPIs, KYC, quick actions, recent bookings) with honest
-    // empty states when nothing is loaded. The tile key pins the
-    // quick action itself: the recent-bookings empty state has a
-    // second 'Book a Car' button, so the text finder is ambiguous.
-    expect(find.byKey(const ValueKey('quick-action-Book a Car')),
-        findsOneWidget);
+    // empty states when nothing is loaded. Customer pass
+    // (2026-11-16): "Book a Car" left the quick-action row — it is
+    // the Home's extended floating button now (the recent-bookings
+    // empty state has a second 'Book a Car' button, so the text
+    // finder is ambiguous; the Home has exactly one FAB).
+    expect(find.byType(FloatingActionButton), findsOneWidget);
     expect(find.text('No bookings yet'), findsOneWidget);
     expect(find.text('Nothing coming up'), findsOneWidget);
   });

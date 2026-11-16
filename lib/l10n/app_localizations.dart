@@ -1394,6 +1394,18 @@ abstract class AppLocalizations {
   /// **'English / Urdu, Notifications'**
   String get profileSettingsSubtitle;
 
+  /// No description provided for @profileSectionAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'My Account'**
+  String get profileSectionAccount;
+
+  /// No description provided for @profileSectionSupport.
+  ///
+  /// In en, this message translates to:
+  /// **'Support & Settings'**
+  String get profileSectionSupport;
+
   /// No description provided for @profileSaved.
   ///
   /// In en, this message translates to:
@@ -3998,6 +4010,12 @@ abstract class AppLocalizations {
   /// **'Booking Requests Triage'**
   String get requestsTitle;
 
+  /// No description provided for @bookingsManagementTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Bookings Management'**
+  String get bookingsManagementTitle;
+
   /// No description provided for @requestsAwaitingReview.
   ///
   /// In en, this message translates to:
@@ -5233,6 +5251,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Customers'**
   String get customersTitle;
+
+  /// No description provided for @customersManagementTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Customers Management'**
+  String get customersManagementTitle;
 
   /// No description provided for @customersCount.
   ///
@@ -6992,6 +7016,12 @@ abstract class AppLocalizations {
   /// **'Walk-in Booking Wizard'**
   String get manualBookingTitle;
 
+  /// No description provided for @walkInBookingButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Walk-in Booking'**
+  String get walkInBookingButton;
+
   /// No description provided for @manualBookingSubtitle.
   ///
   /// In en, this message translates to:
@@ -8291,7 +8321,7 @@ abstract class AppLocalizations {
   /// No description provided for @navRequests.
   ///
   /// In en, this message translates to:
-  /// **'Requests'**
+  /// **'Bookings'**
   String get navRequests;
 
   /// No description provided for @navCustomers.
@@ -17118,7 +17148,7 @@ abstract class AppLocalizations {
   /// No description provided for @dashboardQuickRequests.
   ///
   /// In en, this message translates to:
-  /// **'Requests'**
+  /// **'Bookings'**
   String get dashboardQuickRequests;
 
   /// No description provided for @fleetOutCityFixedRoute.

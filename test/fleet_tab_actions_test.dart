@@ -10,21 +10,23 @@ import 'package:rentalhub/core/routing/route_names.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_fleet_view.dart';
 import 'package:rentalhub/features/owner/presentation/widgets/fleet/fleet_filter_chips.dart';
 import 'package:rentalhub/features/owner/presentation/widgets/fleet/fleet_quick_actions.dart';
+import 'package:rentalhub/features/owner/presentation/widgets/fleet/fleet_search_field.dart';
 import 'package:rentalhub/l10n/app_localizations.dart';
 
-// Phone-test round 4 (Worker 4): the fleet tab's quick-action row
-// beneath the KPI tiles — Handover, Requests, Add Vehicle, Schedule,
-// Customers — each navigating to its real sub-screen, plus the
-// `onEditDetails` wiring (Worker 3 owns the card/body side).
+// Phone-test round 4 (Worker 4): the fleet tab's actions —
+// Schedule, Handover, Requests, Add Vehicle — each navigating to
+// its real sub-screen, plus the `onEditDetails` wiring (Worker 3
+// owns the card/body side).
 //
-// Showroom redesign (Phase 2, 2026-11-16): the actions moved —
-// Handover QR + Requests live inside the search bar (icon-only,
-// tooltip-labelled), Add Vehicle is the orange pill in the AppBar,
-// and the quick-actions row keeps only Schedule + Customers. The KPI
-// tiles are gone, merged into the segmented filter bar
-// ([FleetFilterChips]: All / Ready / On Rent / Maintenance). The
-// destinations are unchanged, so the navigation tests below still
-// address the same keys.
+// User layout 2026-11-16: the search bar and the quick-actions row
+// are gone. Schedule, Handover QR and Requests are icon buttons in
+// the AppBar (tooltip-labelled, in that order), Add Vehicle is an
+// extended floating button, and the filter bar
+// ([FleetFilterChips]: All / Ready / On Rent / Maintenance) sits
+// directly on the scaffold. Customers left the fleet screen — it
+// stays reachable from the Customers tab, so there is no Customers
+// button here any more. The destinations are unchanged, so the
+// navigation tests below still address the same keys.
 //
 // The local copy's PNG assets are corrupt (downloaded through the
 // connector's text path), so any widget rendering a car photo throws
@@ -125,8 +127,8 @@ Future<void> _pumpFleet(WidgetTester tester, GoRouter router) async {
   await tester.pumpAndSettle();
 }
 
-/// The row scrolls horizontally, so a later button can sit off-screen
-/// at the 800px test width — scroll it into view before tapping.
+/// The AppBar actions and the FAB are always visible at the test
+/// width — tap directly after ensuring visibility.
 Future<void> _tapAction(WidgetTester tester, String key) async {
   final finder = find.byKey(Key(key));
   await tester.ensureVisible(finder);
@@ -142,20 +144,19 @@ void main() {
     await di.initDependencies();
   });
 
-  group('Fleet tab actions (search bar, segmented bar, quick actions)', () {
-    testWidgets('segmented bar exists and the action row sits beneath it',
+  group('Fleet tab actions (AppBar icons, filter bar, FAB)', () {
+    testWidgets('segmented bar exists; search bar and quick actions are gone',
         (tester) async {
       final router = _buildRouter();
       await _pumpFleet(tester, router);
 
       expect(find.byType(FleetFilterChips), findsOneWidget);
-      expect(find.byType(FleetQuickActions), findsOneWidget);
+      expect(find.byType(FleetQuickActions), findsNothing);
+      expect(find.byType(FleetSearchField), findsNothing);
       expect(find.text('All (3)'), findsOneWidget);
-      final barBottom =
-          tester.getBottomLeft(find.byType(FleetFilterChips)).dy;
-      final actionsTop =
-          tester.getTopLeft(find.byType(FleetQuickActions)).dy;
-      expect(actionsTop, greaterThanOrEqualTo(barBottom));
+      // Add Vehicle is the extended FAB, not an AppBar pill.
+      expect(find.byKey(const Key('fleet-action-add-vehicle')), findsOneWidget);
+      expect(find.text('Add Vehicle'), findsOneWidget);
     });
 
     testWidgets('every action exists with its icon + label or tooltip',
@@ -163,14 +164,14 @@ void main() {
       final router = _buildRouter();
       await _pumpFleet(tester, router);
 
-      // Search-bar actions are icon-only (tooltip carries the label);
-      // the AppBar pill and the quick-actions row keep text labels.
+      // AppBar actions are icon-only (tooltip carries the label);
+      // the FAB keeps its text label. Customers left the fleet
+      // screen (still on the Customers tab) — no button here.
       final actions = <(String key, IconData icon, String label, bool isTooltip)>[
+        ('fleet-action-schedule', Icons.calendar_month_rounded, 'Schedule', true),
         ('fleet-action-handover', Icons.qr_code_scanner_rounded, 'Handover QR', true),
-        ('fleet-action-requests', Icons.inbox_rounded, 'Requests', true),
+        ('fleet-action-requests', Icons.inbox_rounded, 'Bookings', true),
         ('fleet-action-add-vehicle', Icons.add_rounded, 'Add Vehicle', false),
-        ('fleet-action-schedule', Icons.calendar_month_rounded, 'Schedule', false),
-        ('fleet-action-customers', Icons.people_outline_rounded, 'Customers', false),
       ];
       for (final (key, icon, label, isTooltip) in actions) {
         final button = find.byKey(Key(key));
@@ -191,6 +192,7 @@ void main() {
           );
         }
       }
+      expect(find.byKey(const Key('fleet-action-customers')), findsNothing);
     });
 
     testWidgets('Handover navigates to the QR scan screen',
@@ -235,17 +237,6 @@ void main() {
       await _tapAction(tester, 'fleet-action-schedule');
 
       expect(find.text('Calendar stub'), findsOneWidget);
-    });
-
-    testWidgets('Customers navigates to the customers list', (tester) async {
-      final router = _buildRouter();
-      await _pumpFleet(tester, router);
-
-      await _tapAction(tester, 'fleet-action-customers');
-
-      expect(router.routeInformationProvider.value.uri.path,
-          RouteNames.ownerCustomers);
-      expect(find.text('Customers stub'), findsOneWidget);
     });
 
     testWidgets('card Edit icon pushes the edit-details route',

@@ -366,7 +366,7 @@ void main() {
           AppColors.dangerTextFor(Brightness.light));
     });
 
-    testWidgets('"View all requests" opens the Requests tab',
+    testWidgets('"View all requests" opens the Bookings tab',
         (tester) async {
       final booking = BookingEntity(
         bookingId: 'RH-1',

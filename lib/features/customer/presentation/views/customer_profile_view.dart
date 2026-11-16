@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/network/firestore_service.dart';
 import '../../../../core/widgets/app_feedback.dart';
-import '../../../../core/widgets/app_state_views.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../data/datasources/customer_remote_data_source.dart';
 import '../../domain/entities/customer_entity.dart';
@@ -13,10 +12,7 @@ import '../../../trust/data/datasources/kyc_remote_data_source.dart';
 import '../../../trust/data/services/trust_score_service.dart';
 import '../widgets/blacklist_appeal_sheet.dart';
 import '../widgets/edit_profile_sheet.dart';
-import '../widgets/profile_cnic_row.dart';
-import '../widgets/profile_menu_section.dart';
-import '../widgets/profile_sign_out_tile.dart';
-import '../widgets/profile_trust_card.dart';
+import '../widgets/profile_body.dart';
 import '../../../../l10n/app_localizations.dart';
 
 // H1: the profile is the customer's real record — name/phone/CNIC
@@ -213,29 +209,32 @@ class _CustomerProfileViewState extends State<CustomerProfileView> {
           children: [
             MinimalAppBar(title: _name == 'Guest' ? l10n.profileGuest : _name, subtitle: _email.isNotEmpty ? _email : (_phone.isNotEmpty ? _phone : l10n.profileNotSignedInShort), actions: [IconButton(icon: const Icon(Icons.edit_rounded, color: Colors.white, size: 20), tooltip: l10n.profileEditProfile, onPressed: _openEdit)]),
             Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                child: Column(
-                  children: [
-                    if (_loading)
-                      // E2: shared loading state.
-                      AppLoadingState(message: l10n.profileLoading)
-                    else if (_loadFailed)
-                      // AC-18: signed-in + load failed — an error with retry, never a silent "Guest".
-                      AppErrorState(message: l10n.profileLoadFailed, onRetry: _loadProfile)
-                    else ...[
-                      ProfileTrustCard(trustScore: _trustScore, kycVerified: _kycVerified, isBlacklisted: _isBlacklisted, onTap: widget.onOpenReputation, onAppeal: (_isBlacklisted && _cnic.isNotEmpty) ? _openAppeal : null),
-                      const SizedBox(height: 16),
-                      // E1: the customer's own CNIC, masked by default.
-                      if (_cnic.isNotEmpty) ...[
-                        ProfileCnicRow(cnic: _cnic),
-                        const SizedBox(height: 16),
-                      ],
-                      ProfileMenuSection(onOpenDocuments: widget.onOpenDocuments, onOpenSavedShops: widget.onOpenSavedShops, onOpenSettings: widget.onOpenSettings, onOpenSupport: widget.onOpenSupport),
-                      const SizedBox(height: 16),
-                      ProfileSignOutTile(onTap: widget.onSignOut),
-                    ],
-                  ],
+              child: RefreshIndicator(
+                onRefresh: _loadProfile,
+                child: SingleChildScrollView(
+                  // AlwaysScrollable: pull-to-refresh must work even
+                  // when the profile is shorter than the viewport.
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  child: ProfileBody(
+                    loading: _loading,
+                    loadFailed: _loadFailed,
+                    trustScore: _trustScore,
+                    kycVerified: _kycVerified,
+                    isBlacklisted: _isBlacklisted,
+                    onOpenReputation: widget.onOpenReputation,
+                    onAppeal: (_isBlacklisted && _cnic.isNotEmpty)
+                        ? _openAppeal
+                        : null,
+                    cnic: _cnic,
+                    onOpenDocuments: widget.onOpenDocuments,
+                    onOpenSavedShops: widget.onOpenSavedShops,
+                    onOpenSettings: widget.onOpenSettings,
+                    onOpenSupport: widget.onOpenSupport,
+                    onSignOut: widget.onSignOut,
+                    onRetry: _loadProfile,
+                  ),
                 ),
               ),
             ),

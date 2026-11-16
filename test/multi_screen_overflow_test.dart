@@ -133,7 +133,7 @@ void main() {
       expect(find.text('Fleet Management'), findsOneWidget);
       // Phase 2: the KPI boxes are merged into the segmented bar
       // (All / Ready / On Rent / Maintenance), and "+ Add Vehicle"
-      // is the orange pill in the AppBar. The count depends on the
+      // is the extended floating button. The count depends on the
       // harness's seeded shop, so only the "All" segment is pinned.
       expect(find.textContaining('All ('), findsOneWidget);
       expect(find.byTooltip('Add Vehicle'), findsOneWidget);

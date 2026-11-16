@@ -676,6 +676,12 @@ class AppLocalizationsUr extends AppLocalizations {
   String get profileSettingsSubtitle => 'انگریزی / اردو، اطلاعات';
 
   @override
+  String get profileSectionAccount => 'میرا اکاؤنٹ';
+
+  @override
+  String get profileSectionSupport => 'مدد اور ترتیبات';
+
+  @override
   String get profileSaved => 'پروفائل محفوظ ہو گیا۔';
 
   @override
@@ -2230,6 +2236,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get requestsTitle => 'بکنگ درخواستوں کی جانچ';
 
   @override
+  String get bookingsManagementTitle => 'بکنگز مینجمنٹ';
+
+  @override
   String requestsAwaitingReview(int count) {
     return '$count درخواستیں جائزے کی منتظر';
   }
@@ -2909,6 +2918,9 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get customersTitle => 'گاہک';
+
+  @override
+  String get customersManagementTitle => 'گاہکوں کا انتظام';
 
   @override
   String customersCount(int count) {
@@ -3943,6 +3955,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get manualBookingTitle => 'واک اِن بکنگ وزرڈ';
 
   @override
+  String get walkInBookingButton => 'واک اِن بکنگ';
+
+  @override
   String get manualBookingSubtitle => 'شوروم کاؤنٹر سے براہ راست اجراء';
 
   @override
@@ -4660,7 +4675,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get navFleet => 'فلیٹ';
 
   @override
-  String get navRequests => 'درخواستیں';
+  String get navRequests => 'بکنگز';
 
   @override
   String get navCustomers => 'گاہک';
@@ -9658,7 +9673,7 @@ class AppLocalizationsUr extends AppLocalizations {
   }
 
   @override
-  String get dashboardQuickRequests => 'درخواستیں';
+  String get dashboardQuickRequests => 'بکنگز';
 
   @override
   String get fleetOutCityFixedRoute => 'شہر سے باہر: مقررہ راستہ';

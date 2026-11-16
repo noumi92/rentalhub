@@ -8,6 +8,7 @@ import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../data/datasources/review_remote_data_source.dart';
 import '../../../trust/data/services/trust_score_service.dart';
 import '../widgets/reputation_score_bar.dart';
+import '../widgets/reputation_score_header.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../core/theme/card_decoration.dart';
 
@@ -107,136 +108,80 @@ class _CustomerReputationViewState extends State<CustomerReputationView> {
             Expanded(
               child: _loading
                   ? const AppLoadingState()
-                  : SingleChildScrollView(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 14),
-                      child: Column(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(20),
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.surface,
-                              borderRadius: BorderRadius.circular(20),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.04),
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 3),
-                                ),
-                              ],
+                  : RefreshIndicator(
+                      onRefresh: _load,
+                      child: SingleChildScrollView(
+                        // AlwaysScrollable: pull-to-refresh must work
+                        // even when the content is short.
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 14),
+                        child: Column(
+                          children: [
+                            ReputationScoreHeader(
+                              overall: overall,
+                              trustScore: _trustScore,
+                              reviewCount: _ownerReviews.length,
                             ),
-                            child: Column(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(16),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.accentSuccess
-                                        .withValues(alpha: 0.1),
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: Icon(Icons.verified_rounded,
-                                      color: AppColors.successTextFor(
-                                          Theme.of(context).brightness),
-                                      size: 50),
+                            const SizedBox(height: 16),
+                            if (_ownerReviews.isNotEmpty)
+                              Container(
+                                padding: const EdgeInsets.all(16),
+                                decoration: AppCardDecoration.of(context),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      l10n.reputationShopRatings,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleSmall
+                                          ?.copyWith(fontWeight: FontWeight.w600),
+                                    ),
+                                    const SizedBox(height: 14),
+                                    ReputationScoreBar(
+                                        label: l10n.reputationVehicleCare,
+                                        ratio: care / 5,
+                                        score: care),
+                                    const SizedBox(height: 10),
+                                    ReputationScoreBar(
+                                        label: l10n.reputationPunctuality,
+                                        ratio: punctuality / 5,
+                                        score: punctuality),
+                                    const SizedBox(height: 10),
+                                    ReputationScoreBar(
+                                        label: l10n.reputationStaffBehavior,
+                                        ratio: behavior / 5,
+                                        score: behavior),
+                                  ],
                                 ),
-                                const SizedBox(height: 12),
-                                Text(
-                                  overall == null
-                                      ? '— / 5.0'
-                                      : '${overall.toStringAsFixed(1)} / 5.0',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .displayLarge
-                                      ?.copyWith(fontWeight: FontWeight.w700),
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  _trustScore == null
-                                      ? l10n.reputationTrustScoreDash
-                                      : l10n.reputationTrustScoreValue(_trustScore!.toStringAsFixed(1)),
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyMedium
-                                      ?.copyWith(
-                                          color: AppColors.successTextFor(
-                                              Theme.of(context).brightness)),
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  _ownerReviews.isEmpty
-                                      ? l10n.reputationEmpty
-                                      : l10n.reputationBasedOnReviews(_ownerReviews.length),
-                                  textAlign: TextAlign.center,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .labelSmall
-                                      ?.copyWith(height: 1.4),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          if (_ownerReviews.isNotEmpty)
-                            Container(
-                              padding: const EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).colorScheme.surface,
-                                borderRadius: BorderRadius.circular(16),
-                                boxShadow: AppCardDecoration.shadow(context),
                               ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                            const SizedBox(height: 16),
+                            Container(
+                              padding: const EdgeInsets.all(14),
+                              decoration: BoxDecoration(
+                                // Audit 2026-11-15 AC-16: dark container token in dark mode (pale slab glares).
+                                color: Theme.of(context).brightness == Brightness.dark ? AppColors.primaryContainerOnDark : AppColors.primaryContainer,
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              child: Row(
                                 children: [
-                                  Text(
-                                    l10n.reputationShopRatings,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleSmall
-                                        ?.copyWith(fontWeight: FontWeight.w600),
+                                  Icon(Icons.shield_rounded, size: 20),
+                                  SizedBox(width: 10),
+                                  Expanded(
+                                    child: Text(
+                                      l10n.reputationVisibleNote,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .labelSmall
+                                          ?.copyWith(fontWeight: FontWeight.w500),
+                                    ),
                                   ),
-                                  const SizedBox(height: 14),
-                                  ReputationScoreBar(
-                                      label: l10n.reputationVehicleCare,
-                                      ratio: care / 5,
-                                      score: care),
-                                  const SizedBox(height: 10),
-                                  ReputationScoreBar(
-                                      label: l10n.reputationPunctuality,
-                                      ratio: punctuality / 5,
-                                      score: punctuality),
-                                  const SizedBox(height: 10),
-                                  ReputationScoreBar(
-                                      label: l10n.reputationStaffBehavior,
-                                      ratio: behavior / 5,
-                                      score: behavior),
                                 ],
                               ),
                             ),
-                          const SizedBox(height: 16),
-                          Container(
-                            padding: const EdgeInsets.all(14),
-                            decoration: BoxDecoration(
-                              // Audit 2026-11-15 AC-16: dark container token in dark mode (pale slab glares).
-                              color: Theme.of(context).brightness == Brightness.dark ? AppColors.primaryContainerOnDark : AppColors.primaryContainer,
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(Icons.shield_rounded, size: 20),
-                                SizedBox(width: 10),
-                                Expanded(
-                                  child: Text(
-                                    l10n.reputationVisibleNote,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .labelSmall
-                                        ?.copyWith(fontWeight: FontWeight.w500),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
             ),

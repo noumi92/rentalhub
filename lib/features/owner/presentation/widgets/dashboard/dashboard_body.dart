@@ -33,12 +33,17 @@ class DashboardBody extends StatelessWidget {
   Widget build(BuildContext context) {
     if (!isLoading && !hasError) {
       return SingleChildScrollView(
+        // Pull-to-refresh (user layout, 2026-11-16): the scroll view
+        // must stay draggable even when the content is short, or
+        // the RefreshIndicator above it never triggers.
+        physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.symmetric(
             horizontal: 16, vertical: AppDimensions.spaceBetweenCards),
         child: body,
       );
     }
     return SingleChildScrollView(
+      physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.symmetric(
           horizontal: 16, vertical: AppDimensions.spaceBetweenCards),
       child: Column(

@@ -18,18 +18,18 @@ import '../widgets/fleet/fleet_helpers.dart';
 import '../widgets/fleet/fleet_list_section.dart';
 import '../widgets/fleet/fleet_rented_until.dart';
 import '../widgets/fleet/fleet_filter_chips.dart';
-import '../widgets/fleet/fleet_quick_actions.dart';
-import '../widgets/fleet/fleet_search_field.dart';
 import '../services/subscription_data_source.dart';
 import 'owner_subscription_limit_sheet.dart';
 
-/// Showroom redesign (Phase 2, 2026-11-16): the 4 control rows
-/// collapsed into 2 — "+ Add Vehicle" is an orange pill in the
-/// AppBar, Handover QR + Requests sit inside the white search bar,
-/// and the KPI boxes + filter chips are one segmented bar
-/// ([FleetFilterChips]: All / Ready / On Rent / Maintenance). The
-/// quick-actions row keeps only Schedule + Customers. Nothing is
-/// dropped: every destination from the old layout is still reachable.
+/// Fleet screen (user layout, 2026-11-16): the controls are split
+/// between the AppBar and a floating button — Schedule, Handover QR
+/// and Requests are icon buttons in the AppBar (in that order),
+/// "+ Add Vehicle" is an extended floating action button, and the
+/// filter bar ([FleetFilterChips]: All / Ready / On Rent /
+/// Maintenance) sits directly on the scaffold with no search bar
+/// and no quick-actions row above it. Nothing is dropped: every
+/// destination from the old layout is still reachable (Customers
+/// stays on the Customers tab in the bottom nav).
 class OwnerFleetView extends StatefulWidget {
   final String? shopId;
   final VoidCallback? onAddVehicle;
@@ -41,7 +41,6 @@ class OwnerFleetView extends StatefulWidget {
 
 class _OwnerFleetViewState extends State<OwnerFleetView> {
   String _selectedFilter = 'All';
-  String _searchQuery = '';
   late final FleetCubit _cubit;
 
   /// RQ-F10: the active booking's return date per vehicle (same
@@ -82,9 +81,6 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
     var result = fleet;
     final status = statuses[_selectedFilter];
     if (status != null) result = result.where((v) => v.status == status).toList();
-    // Audit §4: search by name or plate.
-    final q = _searchQuery.trim().toLowerCase();
-    if (q.isNotEmpty) result = result.where((v) => v.displayName.toLowerCase().contains(q) || v.plateNumber.toLowerCase().contains(q)).toList();
     return result;
   }
 
@@ -135,6 +131,25 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
     return BlocProvider.value(
       value: _cubit,
       child: Scaffold(
+        // User layout 2026-11-16: "+ Add Vehicle" is an extended
+        // floating button (orangeFill #C2410C, white icon + label
+        // 5.18:1) instead of the old AppBar pill. It calls the same
+        // gated [_openAddVehicle] — shop approval + plan car cap —
+        // and keeps the `fleet-action-add-vehicle` key so tests keep
+        // addressing it. Standard Scaffold placement puts it above
+        // the bottom tab bar. Unique heroTag: the shell keeps all
+        // branches mounted, so the default tag could collide with
+        // another tab's FAB.
+        floatingActionButton: FloatingActionButton.extended(
+          key: const Key('fleet-action-add-vehicle'),
+          heroTag: 'fleet-add-vehicle',
+          onPressed: _openAddVehicle,
+          tooltip: l10n.fleetAddVehicle,
+          backgroundColor: AppColors.orangeFill,
+          foregroundColor: Colors.white,
+          icon: const Icon(Icons.add_rounded, size: 20),
+          label: Text(l10n.fleetAddVehicle),
+        ),
         body: SafeArea(
           // C1: MinimalAppBar owns the top inset; a second SafeArea would add a dead navy band above the header.
           top: false,
@@ -147,43 +162,29 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
               final onRentCount = fleet.where((v) => v.status == 'rented').length;
               final maintenanceCount = fleet.where((v) => v.status == 'maintenance').length;
 
-              return SingleChildScrollView(
+              return RefreshIndicator(
+                // Pull-to-refresh (user layout, 2026-11-16): reloads
+                // the fleet via the cubit. Nothing else changes here.
+                onRefresh: () => _cubit.loadVehicles(_shopId),
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // #9/#12/#15: MinimalAppBar with the pill; the header scrolls with the list as before.
-                    // Phase 2: "+ Add Vehicle" is an orange pill here
-                    // (orangeFill #C2410C — small white label 5.18:1;
-                    // never white on accentOrange). The gated add logic
-                    // in [_openAddVehicle] stays. The old route/schedule
-                    // icon chips are gone: the guide's AppBar carries
-                    // only the pill (Schedule stays in the quick-actions
-                    // row; Fixed Routes is reachable from settings).
-                    // The loose Flexible + scale-down FittedBox keep the
-                    // pill from overflowing the 360px bar at 200% text
-                    // scale (the pill is ~390dp wide there).
+                    // User layout 2026-11-16: the AppBar carries only
+                    // icon actions — Schedule, Handover QR, Requests,
+                    // in that order (white icons on the navy bar; E3
+                    // tooltips carry the labels). "+ Add Vehicle"
+                    // moved to the extended FAB below; Customers left
+                    // the fleet screen (still on the Customers tab).
                     MinimalAppBar(
                       title: l10n.fleetTitle,
                       subtitle: l10n.fleetSubtitle,
                       actions: [
-                        Flexible(
-                          fit: FlexFit.loose,
-                          child: FittedBox(
-                            fit: BoxFit.scaleDown,
-                            alignment: Alignment.centerRight,
-                            child: Tooltip(message: l10n.fleetAddVehicle, child: FilledButton.icon(key: const Key('fleet-action-add-vehicle'), onPressed: _openAddVehicle, style: FilledButton.styleFrom(backgroundColor: AppColors.orangeFill, foregroundColor: Colors.white, minimumSize: const Size(0, 48), padding: const EdgeInsets.symmetric(horizontal: 14)), icon: const Icon(Icons.add_rounded, size: 20), label: Text(l10n.fleetAddVehicle))),
-                          ),
-                        ),
+                        IconButton(key: const Key('fleet-action-schedule'), tooltip: l10n.fleetSchedule, icon: const Icon(Icons.calendar_month_rounded, color: Colors.white, size: 22), onPressed: () => _pushOnce(RouteNames.ownerFleetCalendar)),
+                        IconButton(key: const Key('fleet-action-handover'), tooltip: l10n.fleetHandoverQr, icon: const Icon(Icons.qr_code_scanner_rounded, color: Colors.white, size: 22), onPressed: () => context.go(RouteNames.ownerQrScan)),
+                        IconButton(key: const Key('fleet-action-requests'), tooltip: l10n.navRequests, icon: const Icon(Icons.inbox_rounded, color: Colors.white, size: 22), onPressed: () => context.go(RouteNames.ownerRequests)),
                       ],
-                    ),
-
-                    // Audit §4: search (name/plate) directly under the
-                    // header — Handover QR + Requests live inside it
-                    // now (Phase 2), as trailing icon buttons.
-                    FleetSearchField(
-                      onChanged: (q) => setState(() => _searchQuery = q),
-                      onHandover: () => context.go(RouteNames.ownerQrScan),
-                      onRequests: () => context.go(RouteNames.ownerRequests),
                     ),
 
                     // Phase 2: KPI boxes + filter chips merged into one
@@ -196,18 +197,6 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
                       onRentCount: onRentCount,
                       maintenanceCount: maintenanceCount,
                       onSelected: (label) => setState(() => _selectedFilter = label),
-                    ),
-
-                    // Phone-test round 4: quick actions beneath the
-                    // filter bar. Phase 2 keeps only Schedule +
-                    // Customers here; Handover/Requests moved into the
-                    // search bar and Add Vehicle into the AppBar pill.
-                    // Cross-branch destinations (Customers) use `go`
-                    // — the tab-switch semantic used elsewhere for
-                    // those branches; same-branch ones use `_pushOnce`.
-                    FleetQuickActions(
-                      onSchedule: () => _pushOnce(RouteNames.ownerFleetCalendar),
-                      onCustomers: () => context.go(RouteNames.ownerCustomers),
                     ),
 
                     // Audit §5 (O05/O30): "N active rentals" header count.
@@ -233,6 +222,7 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
                       rentedUntilFor: (v) => _rentedUntil[v.vehicleId],
                     ),
                   ],
+                ),
                 ),
               );
             },

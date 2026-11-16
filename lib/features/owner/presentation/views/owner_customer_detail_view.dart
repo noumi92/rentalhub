@@ -153,7 +153,12 @@ class _OwnerCustomerDetailViewState extends State<OwnerCustomerDetailView> {
                       ? AppErrorState(message: l10n.customersLoadError, onRetry: _load)
                       : customer == null
                           ? AppEmptyState(title: l10n.customerDetailNotFound, message: l10n.customerDetailNotFoundMessage)
-                          : _body(context, l10n, customer),
+                          : RefreshIndicator(
+                              // Pull-to-refresh (user layout,
+                              // 2026-11-16): re-runs [_load].
+                              onRefresh: _load,
+                              child: _body(context, l10n, customer),
+                            ),
             ),
           ],
         ),
@@ -164,6 +169,10 @@ class _OwnerCustomerDetailViewState extends State<OwnerCustomerDetailView> {
   Widget _body(BuildContext context, AppLocalizations l10n, CustomerEntity customer) {
     final approval = customer.approvalStatus;
     return SingleChildScrollView(
+      // Pull-to-refresh (user layout, 2026-11-16): the scroll view
+      // must stay draggable even when the content is short, or the
+      // RefreshIndicator above it never triggers.
+      physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

@@ -302,7 +302,7 @@ void main() {
         screen: const OwnerBookingRequestsView(shopId: 'shop-1'),
         theme: AppTheme.lightTheme,
       );
-      expect(find.text('Booking Requests Triage'), findsOneWidget);
+      expect(find.text('Bookings Management'), findsOneWidget);
     });
 
     testWidgets('Owner Customers (empty)', (tester) async {
@@ -312,7 +312,7 @@ void main() {
         theme: AppTheme.lightTheme,
         localizationsDelegates: l10nDelegates,
       );
-      expect(find.text('Customers'), findsOneWidget);
+      expect(find.text('Customers Management'), findsOneWidget);
     });
 
     testWidgets('Owner Settings (empty)', (tester) async {

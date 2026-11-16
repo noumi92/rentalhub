@@ -8,10 +8,11 @@ import '../../../../../l10n/app_localizations.dart';
 
 /// Customer rework (Worker C): the customer Home quick actions.
 ///
+/// Customer pass (2026-11-16): "Book a Car" left this row — it is
+/// the Home's primary action and now lives on the extended floating
+/// button in [CustomerHomeView], same destination (the Shops tab).
+///
 /// Destinations (all real, no dead tiles):
-/// - Book a Car → the Shops tab ([RouteNames.customerShops]): the
-///   tab is where the customer browses shops, taps one, then its
-///   cars — the real booking entry.
 /// - Wallet → the wallet tab ([RouteNames.customerWallet]).
 /// - Support → the support inbox ([RouteNames.customerSupport]) as
 ///   a sub-screen (pushed, so back returns to Home — Support is no
@@ -25,12 +26,6 @@ class CustomerHomeQuickActions extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     return QuickActionTiles(
       tiles: [
-        QuickActionTile(
-          icon: Icons.directions_car_rounded,
-          label: l10n.quickBookCar,
-          color: AppColors.secondary,
-          onTap: () => context.go(RouteNames.customerShops),
-        ),
         QuickActionTile(
           icon: Icons.account_balance_wallet_rounded,
           label: l10n.walletLabel,

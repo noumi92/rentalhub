@@ -122,6 +122,11 @@ class _ShopDetailViewState extends State<ShopDetailView> {
     }
   }
 
+  /// Customer pass (2026-11-16): pull-to-refresh reloads the fleet
+  /// and the saved state together.
+  Future<void> _reload() async =>
+      Future.wait([_loadVehicles(), _loadSaved()]);
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -130,8 +135,13 @@ class _ShopDetailViewState extends State<ShopDetailView> {
 
     return Scaffold(
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
+        child: RefreshIndicator(
+          onRefresh: _reload,
+          child: SingleChildScrollView(
+            // AlwaysScrollable: pull-to-refresh must work even when
+            // the fleet is shorter than the viewport.
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               MinimalAppBar(
@@ -231,6 +241,7 @@ class _ShopDetailViewState extends State<ShopDetailView> {
               ),
             ],
           ),
+        ),
         ),
       ),
     );

@@ -259,7 +259,7 @@ void main() {
       );
       expect(find.text('ڈیش بورڈ'), findsOneWidget);
       expect(find.text('فلیٹ'), findsOneWidget);
-      expect(find.text('درخواستیں'), findsOneWidget);
+      expect(find.text('بکنگز'), findsOneWidget);
       expect(find.text('گاہک'), findsOneWidget);
       expect(find.text('ترتیبات'), findsOneWidget);
       expect(find.text('Dashboard'), findsNothing);

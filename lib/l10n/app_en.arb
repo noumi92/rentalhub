@@ -223,6 +223,8 @@
   "profileKycSubtitle": "CNIC Front/Back & Driving License",
   "profileSettingsLanguage": "Settings & Language",
   "profileSettingsSubtitle": "English / Urdu, Notifications",
+  "profileSectionAccount": "My Account",
+  "profileSectionSupport": "Support & Settings",
   "profileSaved": "Profile saved.",
   "editProfile": "Edit Profile",
   "editFullName": "Full name",
@@ -1332,6 +1334,7 @@
   "dashboardQuickNewBooking": "New Booking",
   "dashboardQuickFinance": "Finance",
   "requestsTitle": "Booking Requests Triage",
+  "bookingsManagementTitle": "Bookings Management",
   "requestsAwaitingReview": "{count} Requests Awaiting Review",
   "@requestsAwaitingReview": {
     "placeholders": {
@@ -1686,6 +1689,7 @@
     }
   },
   "customersTitle": "Customers",
+  "customersManagementTitle": "Customers Management",
   "customersCount": "{count} customers",
   "@customersCount": {
     "placeholders": {
@@ -2312,6 +2316,7 @@
   },
   "paymentVerificationConfirming": "Confirming…",
   "manualBookingTitle": "Walk-in Booking Wizard",
+  "walkInBookingButton": "Walk-in Booking",
   "manualBookingSubtitle": "Showroom Counter Direct Issue",
   "manualBookingCustomerSection": "Customer KYC Details",
   "manualBookingGuarantorSection": "Guarantor (optional)",
@@ -2659,7 +2664,7 @@
   "navProfile": "Profile",
   "navDashboard": "Dashboard",
   "navFleet": "Fleet",
-  "navRequests": "Requests",
+  "navRequests": "Bookings",
   "navCustomers": "Customers",
   "navSettings": "Settings",
   "syncOfflineWithPending": "{count, plural, =1{You're offline — 1 change will sync when you're back online} other{You're offline — {count} changes will sync when you're back online}}",
@@ -5578,7 +5583,7 @@
   "dashboardNeedsReviewSplit": "{newCount} new · {proofCount} proof",
   "dashboardNeedsReviewTitle": "Needs review",
   "dashboardOldestWait": "Oldest wait: {wait}",
-  "dashboardQuickRequests": "Requests",
+  "dashboardQuickRequests": "Bookings",
   "fleetOutCityFixedRoute": "Out-city: fixed route",
   "fleetOutCityPerKm": "Out-city: per-km",
   "homeSignInButton": "Sign in",
