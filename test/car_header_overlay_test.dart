@@ -105,7 +105,7 @@ void main() {
       expect(tester.takeException(), isNull);
     });
 
-    testWidgets('exactly one slim footer row under the details, with small orange regular labels',
+    testWidgets('exactly one slim footer row under the details, with dark readable labels',
         (tester) async {
       await tester.pumpWidget(_wrap(FleetVehicleCard(
         vehicle: _testVehicle,
@@ -134,15 +134,19 @@ void main() {
       }
 
       // Eye-catching: orange icons on the pale orange container, and
-      // short labels in small regular type — never bold.
+      // short labels in dark 12sp semibold — never bold. Phone-test
+      // build 80: the old 11sp orange-on-peach labels (#C2410C on
+      // #FFF3EB, 4.75:1 same-hue) washed out on a real phone, so the
+      // labels are dark onSurface text (16.38:1 light) while the
+      // orange icon keeps the accent.
       final ratesIcon = tester.widget<Icon>(find.byIcon(Icons.tune_rounded));
       expect(ratesIcon.color, AppColors.orangeTextFor(Brightness.light));
       expect(ratesIcon.size, 20);
       for (final label in ['Rates', 'Out-of-city rules', 'Edit']) {
         final text = tester.widget<Text>(find.text(label));
-        final weight = text.style?.fontWeight;
-        expect(weight == null || weight.value < FontWeight.w700.value, isTrue, reason: '$label must be regular, never bold');
-        expect(text.style?.color, AppColors.orangeTextFor(Brightness.light));
+        expect(text.style?.color, AppColors.onSurfaceLight);
+        expect(text.style?.fontSize, 12.0);
+        expect(text.style?.fontWeight, FontWeight.w600);
       }
       expect(tester.takeException(), isNull);
     });

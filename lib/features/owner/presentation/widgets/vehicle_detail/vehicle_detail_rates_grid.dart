@@ -8,20 +8,20 @@ import '../../../../fleet/domain/entities/vehicle_entity.dart';
 /// Showroom redesign (Phase 2, 2026-11-16): the vehicle-detail rates
 /// section, extracted from [OwnerVehicleDetailView] so the view stays
 /// under the 250-line cap. One white card holds the "Rates & Pricing"
-/// header with the right-aligned "Manage rates" pill, the 7 rate
-/// tiers in a 2-column grid, the security-deposit row, and the Fare
-/// table / View estimated rates buttons. Nothing is dropped — the old
-/// rate rows are the same seven packages, only re-laid-out.
+/// header, the 7 rate tiers in a 2-column grid, the security-deposit
+/// row, and the Fare table / View estimated rates buttons. Nothing is
+/// dropped — the old rate rows are the same seven packages, only
+/// re-laid-out. Phone-test build 80: Manage rates no longer lives
+/// here as a header pill — it moved into the feature-actions row
+/// above the rates card, with Booking calendar and Edit Vehicle.
 class VehicleDetailRatesGrid extends StatelessWidget {
   final VehicleEntity vehicle;
-  final VoidCallback onManageRates;
   final VoidCallback onFareTable;
   final VoidCallback onEstimate;
 
   const VehicleDetailRatesGrid({
     super.key,
     required this.vehicle,
-    required this.onManageRates,
     required this.onFareTable,
     required this.onEstimate,
   });
@@ -36,19 +36,11 @@ class VehicleDetailRatesGrid extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // "Manage rates" is a pill right-aligned (directional/end)
-          // in the Rates & Pricing header.
-          Row(
-            children: [
-              Expanded(child: Text(l10n.vehicleDetailRatesPricing, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600))),
-              FilledButton.tonalIcon(
-                style: FilledButton.styleFrom(minimumSize: const Size(0, 48)),
-                icon: const Icon(Icons.tune_rounded, size: 18),
-                label: Text(l10n.vehicleDetailManageRates),
-                onPressed: onManageRates,
-              ),
-            ],
-          ),
+          // Phone-test build 80: the header is just the title now —
+          // Manage rates moved into the feature-actions row above
+          // (one row, all three actions), so this card no longer
+          // carries its own pill.
+          Text(l10n.vehicleDetailRatesPricing, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
           const SizedBox(height: 10),
           // The 7 rate tiers in a 2-column grid. Each tile is a
           // border-only cell (no shadow — seven shadows in a grid

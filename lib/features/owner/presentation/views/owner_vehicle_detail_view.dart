@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../core/widgets/pakistani_plate_widget.dart';
@@ -11,6 +10,7 @@ import '../../../bookings/domain/entities/booking_entity.dart';
 import '../../../bookings/utils/live_booking_stream.dart';
 import '../../../fleet/domain/entities/vehicle_entity.dart';
 import '../widgets/vehicle_detail/vehicle_detail_bookings.dart';
+import '../widgets/vehicle_detail/vehicle_detail_feature_actions.dart';
 import '../widgets/vehicle_detail/vehicle_detail_photo_card.dart';
 import '../widgets/vehicle_detail/vehicle_detail_rates_grid.dart';
 
@@ -23,12 +23,13 @@ import '../widgets/vehicle_detail/vehicle_detail_rates_grid.dart';
 ///
 /// Showroom redesign (Phase 2, 2026-11-16): the sticky bottom bar is
 /// DELETED — its three actions are relocated inline, so no action is
-/// lost: Booking calendar + Edit Vehicle sit side-by-side below the
-/// spec chips, and Manage rates is a pill in the Rates & Pricing
-/// header. The 7 rate tiers render in a 2-column grid. The navy
-/// AppBar with the green PK plate badge, the rounded photo card and
-/// all 5 spec chips (the guide shows 4; colour is the 5th — kept)
-/// stay exactly as they were.
+/// lost: Booking calendar, Edit Vehicle and Manage rates sit in ONE
+/// icon-over-label tile row below the spec chips (phone-test build
+/// 80 — they were split across the chips row and the Rates header).
+/// The 7 rate tiers render in a 2-column grid. The navy AppBar with
+/// the green PK plate badge, the rounded photo card and all 5 spec
+/// chips (the guide shows 4; colour is the 5th — kept) stay exactly
+/// as they were.
 class OwnerVehicleDetailView extends StatefulWidget {
   final VehicleEntity vehicle;
 
@@ -113,23 +114,20 @@ class _OwnerVehicleDetailViewState extends State<OwnerVehicleDetailView> {
                             children: [_specChip(context, v.color ?? '—'), _specChip(context, l10n.vehicleDetailSeats(v.seats)), _specChip(context, v.fuelType), _specChip(context, v.transmission), _specChip(context, v.category)],
                           ),
                           const SizedBox(height: 18),
-                          // Phase 2: Booking calendar + Edit Vehicle
-                          // side-by-side BELOW the chips, in the
-                          // scroll body. Edit is orange-filled
-                          // (orangeFill #C2410C — the small white
-                          // label is 5.18:1 on it; never white on
-                          // accentOrange).
-                          Row(
-                            children: [
-                              Expanded(child: OutlinedButton.icon(style: OutlinedButton.styleFrom(minimumSize: const Size(0, 48)), icon: const Icon(Icons.calendar_month_rounded, size: 18), label: Text(l10n.vehicleDetailCalendar), onPressed: () => context.push(RouteNames.ownerCalendar.replaceFirst(':vehicleId', v.vehicleId)))),
-                              const SizedBox(width: 8),
-                              Expanded(child: FilledButton.icon(style: FilledButton.styleFrom(backgroundColor: AppColors.orangeFill, foregroundColor: Colors.white, minimumSize: const Size(0, 48)), icon: const Icon(Icons.edit_rounded, size: 18), label: Text(l10n.vehicleDetailEditVehicle), onPressed: () => context.push(RouteNames.ownerEditVehicle.replaceFirst(':id', v.vehicleId)))),
-                            ],
+                          // Phone-test build 80: all three feature
+                          // actions in ONE icon-over-label tile row
+                          // below the chips (was: calendar + Edit
+                          // here, Manage rates as a pill in the
+                          // Rates header). Edit stays the filled
+                          // primary (white on orangeFill 5.18:1).
+                          VehicleDetailFeatureActions(
+                            onCalendar: () => context.push(RouteNames.ownerCalendar.replaceFirst(':vehicleId', v.vehicleId)),
+                            onEdit: () => context.push(RouteNames.ownerEditVehicle.replaceFirst(':id', v.vehicleId)),
+                            onManageRates: () => context.push(RouteNames.ownerRatesVehicle.replaceFirst(':vehicleId', v.vehicleId)),
                           ),
                           const SizedBox(height: 18),
                           VehicleDetailRatesGrid(
                             vehicle: v,
-                            onManageRates: () => context.push(RouteNames.ownerRatesVehicle.replaceFirst(':vehicleId', v.vehicleId)),
                             onFareTable: () => context.push(RouteNames.ownerFareTable.replaceFirst(':vehicleId', v.vehicleId)),
                             onEstimate: () => context.push(RouteNames.ownerPriceEstimate.replaceFirst(':vehicleId', v.vehicleId)),
                           ),

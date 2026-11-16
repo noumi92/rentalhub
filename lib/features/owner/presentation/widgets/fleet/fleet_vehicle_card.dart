@@ -19,9 +19,10 @@ import '../../../../../core/utils/money_format.dart';
 /// footer keeps the same three actions. Tapping the thumbnail or the
 /// details opens vehicle detail via the existing hero tag. The old
 /// photo-overlay scrim is gone — chips sit on the card surface now,
-/// so the translucent-white chip treatment is replaced with the orange
-/// container + orange text treatment. The photo is the vehicle's
-/// uploaded image when one exists (network URL from cPanel, or a local
+/// so the translucent-white chip treatment is replaced with the
+/// orange container + dark text treatment (phone-test build 80:
+/// orange-on-peach labels washed out — see _footerAction). The photo
+/// is the vehicle's uploaded image when one exists (network URL from cPanel, or a local
 /// file path on the owner's phone); otherwise the old name-based asset
 /// fallback is kept so cars without photos still show a sensible
 /// image. The card shape/elevation/border come from the theme
@@ -201,23 +202,34 @@ class FleetVehicleCard extends StatelessWidget {
     );
   }
 
-  /// Secondary chip on the card surface: orange container + orange
-  /// text (the old white-translucent treatment only worked over the
-  /// photo scrim).
+  /// Secondary chip on the card surface: orange container + dark
+  /// text (same phone-test build 80 cause as the footer labels —
+  /// 11sp orange-on-peach washed out; the label is dark onSurface
+  /// at 16.38:1 light / 14.77:1 dark, semibold, and the container
+  /// tint keeps the orange signal).
   Widget _outlineChip(BuildContext context, String label) {
     final brightness = Theme.of(context).brightness;
+    final labelColor = brightness == Brightness.dark ? AppColors.onSurfaceDark : AppColors.onSurfaceLight;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(color: AppColors.orangeContainerFor(brightness), borderRadius: BorderRadius.circular(10)),
-      child: Text(label, style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w500, color: AppColors.orangeTextFor(brightness))),
+      child: Text(label, style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600, color: labelColor)),
     );
   }
 
-  /// One eye-catching action: orange icon over a short regular
-  /// (never bold) label on a pale orange container.
+  /// One eye-catching action: orange icon over a short dark label
+  /// on a pale orange container. Phone-test build 80: the old
+  /// 11sp orange-on-peach label (#C2410C on #FFF3EB) measured
+  /// 4.75:1 — an AA pass on paper — but text and background are
+  /// the same orange hue, so the thin strokes washed out on a real
+  /// phone and the Urdu label ellipsized. The label is now dark
+  /// onSurface text (16.38:1 light, 14.77:1 dark) at 12sp semibold;
+  /// the orange icon keeps the accent (4.75:1, passes the 3:1
+  /// non-text bar). Never white text on #EA580C (3.56:1) here.
   Widget _footerAction(BuildContext context, {required IconData icon, required String label, required VoidCallback onPressed}) {
     final brightness = Theme.of(context).brightness;
     final orange = AppColors.orangeTextFor(brightness);
+    final labelColor = brightness == Brightness.dark ? AppColors.onSurfaceDark : AppColors.onSurfaceLight;
     return Material(
       color: AppColors.orangeContainerFor(brightness),
       borderRadius: BorderRadius.circular(12),
@@ -239,7 +251,7 @@ class FleetVehicleCard extends StatelessWidget {
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.labelSmall?.copyWith(color: orange),
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w600, color: labelColor),
               ),
             ],
           ),

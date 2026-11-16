@@ -16,6 +16,7 @@ import 'package:rentalhub/features/owner/presentation/views/owner_fleet_view.dar
 import 'package:rentalhub/features/owner/presentation/views/owner_vehicle_detail_view.dart';
 import 'package:rentalhub/features/owner/presentation/widgets/fleet/fleet_filter_chips.dart';
 import 'package:rentalhub/features/owner/presentation/widgets/fleet/fleet_vehicle_card.dart';
+import 'package:rentalhub/features/owner/presentation/widgets/vehicle_detail/vehicle_detail_feature_actions.dart';
 import 'package:rentalhub/l10n/app_localizations.dart';
 
 // Showroom redesign Phase 2 (2026-11-16): the fleet segmented bar
@@ -334,6 +335,128 @@ void main() {
       await tester.tap(find.text('Manage rates'));
       await tester.pumpAndSettle();
       expect(find.text('Rates stub'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+  });
+
+  group('Phone-test build 80: footer readability + one-row feature actions', () {
+    const cardVehicle = VehicleEntity(
+      vehicleId: 'veh-test-1',
+      shopId: 'shop-1',
+      make: 'Toyota',
+      model: 'Corolla Grande',
+      year: 2022,
+      plateNumber: 'LEA-23-4567',
+      rates: VehicleRatesEntity(daily24: 8500, outOfCityDaily: 10500),
+    );
+
+    Widget cardWrap(Widget child, {ThemeData? theme, Locale? locale}) {
+      return MaterialApp(
+        locale: locale,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        theme: theme ?? AppTheme.lightTheme,
+        home: DefaultAssetBundle(
+          bundle: _TestAssetBundle(),
+          child: Scaffold(body: child),
+        ),
+      );
+    }
+
+    void setNarrow(WidgetTester tester) {
+      tester.view.physicalSize = const Size(1080, 2400);
+      tester.view.devicePixelRatio = 3.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+    }
+
+    Widget testCard() => FleetVehicleCard(
+          vehicle: cardVehicle,
+          onEditRates: () {},
+          onOutCityRules: () {},
+          onEditDetails: () {},
+        );
+
+    testWidgets('footer labels are dark onSurface text, 12sp semibold (light)',
+        (tester) async {
+      await tester.pumpWidget(cardWrap(testCard()));
+      await tester.pumpAndSettle();
+      for (final label in ['Rates', 'Out-of-city rules', 'Edit']) {
+        final text = tester.widget<Text>(find.text(label));
+        expect(text.style?.color, AppColors.onSurfaceLight,
+            reason: '$label label colour');
+        expect(text.style?.fontSize, 12.0, reason: '$label label size');
+        expect(text.style?.fontWeight, FontWeight.w600,
+            reason: '$label label weight');
+      }
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('footer labels are light onSurface text (dark mode)',
+        (tester) async {
+      await tester.pumpWidget(
+          cardWrap(testCard(), theme: AppTheme.darkTheme));
+      await tester.pumpAndSettle();
+      final text = tester.widget<Text>(find.text('Rates'));
+      expect(text.style?.color, AppColors.onSurfaceDark);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('fleet card fits at 360px in Urdu, no overflow',
+        (tester) async {
+      setNarrow(tester);
+      await tester.pumpWidget(cardWrap(
+        SingleChildScrollView(child: testCard()),
+        locale: const Locale('ur'),
+      ));
+      await tester.pumpAndSettle();
+      expect(find.text('نرخ'), findsOneWidget);
+      expect(find.text('شہر سے باہر کے قواعد'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('feature actions are one row: calendar, Edit, Manage rates',
+        (tester) async {
+      await _pumpDetail(tester);
+      for (final label in ['Booking calendar', 'Edit Vehicle', 'Manage rates']) {
+        expect(find.text(label), findsOneWidget, reason: 'missing $label');
+      }
+      // All three labels share one Row ancestor — one row, not split.
+      Row? rowOf(String label) => tester
+          .element(find.text(label))
+          .findAncestorWidgetOfExactType<Row>();
+      final row = rowOf('Booking calendar');
+      expect(row, isNotNull);
+      expect(identical(row, rowOf('Edit Vehicle')), isTrue);
+      expect(identical(row, rowOf('Manage rates')), isTrue);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('feature-actions row fits at 360px in Urdu, no overflow',
+        (tester) async {
+      setNarrow(tester);
+      var calendarFired = false;
+      var editFired = false;
+      var ratesFired = false;
+      await tester.pumpWidget(cardWrap(
+        Padding(
+          padding: const EdgeInsets.all(16),
+          child: VehicleDetailFeatureActions(
+            onCalendar: () => calendarFired = true,
+            onEdit: () => editFired = true,
+            onManageRates: () => ratesFired = true,
+          ),
+        ),
+        locale: const Locale('ur'),
+      ));
+      await tester.pumpAndSettle();
+      expect(find.text('بکنگ کیلنڈر'), findsOneWidget);
+      expect(find.text('گاڑی میں ترمیم کریں'), findsOneWidget);
+      expect(find.text('نرخ مینیج کریں'), findsOneWidget);
+      await tester.tap(find.text('بکنگ کیلنڈر'));
+      await tester.tap(find.text('گاڑی میں ترمیم کریں'));
+      await tester.tap(find.text('نرخ مینیج کریں'));
+      expect(calendarFired && editFired && ratesFired, isTrue);
       expect(tester.takeException(), isNull);
     });
   });
