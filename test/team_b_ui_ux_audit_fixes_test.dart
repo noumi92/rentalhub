@@ -298,13 +298,13 @@ void main() {
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
       );
-      expect(find.text(ur.outCityRulesTitle), findsOneWidget);
-      expect(find.text(ur.vehicleDetailRatesTitle), findsOneWidget);
+      expect(find.text(ur.outOfCity), findsOneWidget);
+      expect(find.text(ur.withinCity), findsOneWidget);
       expect(find.text(ur.vehicleDetailEdit), findsOneWidget);
       // Two lines allowed — the Urdu label no longer ellipsizes
       // out of a one-line slot.
       expect(
-        tester.widget<Text>(find.text(ur.outCityRulesTitle)).maxLines,
+        tester.widget<Text>(find.text(ur.outOfCity)).maxLines,
         2,
       );
     });

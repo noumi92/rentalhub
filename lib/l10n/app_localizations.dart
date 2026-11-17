@@ -590,6 +590,12 @@ abstract class AppLocalizations {
   /// **'In city'**
   String get inCity;
 
+  /// No description provided for @withinCity.
+  ///
+  /// In en, this message translates to:
+  /// **'Within city'**
+  String get withinCity;
+
   /// No description provided for @outOfCity.
   ///
   /// In en, this message translates to:

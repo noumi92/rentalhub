@@ -15,7 +15,7 @@ import 'package:rentalhub/l10n/app_localizations.dart';
 // lives BESIDE the 110x95 thumbnail — name, plate, one in-city daily
 // rate and the self-drive badge stack in the details column on the
 // right — and UNDER the details there is exactly ONE slim row of
-// small orange icon buttons: Rates (09b editor), Out-of-city rules
+// small orange icon buttons: Within city (09b editor), Out of city
 // (010b) and Edit (edit-details route, only when onEditDetails is
 // provided). No price block and no OutlinedButtons below the photo.
 // No availability switch, no "On Rent until" row, no calendar /
@@ -93,7 +93,7 @@ void main() {
       expect(tester.takeException(), isNull);
     });
 
-    testWidgets('one icon-button row: Rates + Out-of-city rules fire, no Edit without callback',
+    testWidgets('one icon-button row: Within city + Out of city fire, no Edit without callback',
         (tester) async {
       var ratesFired = false;
       var rulesFired = false;
@@ -107,12 +107,12 @@ void main() {
       expect(find.byType(OutlinedButton), findsNothing);
       expect(find.byType(TextButton), findsNothing);
       expect(find.byType(ElevatedButton), findsNothing);
-      expect(find.text('Rates'), findsOneWidget);
-      expect(find.text('Out-of-city rules'), findsOneWidget);
+      expect(find.text('Within city'), findsOneWidget);
+      expect(find.text('Out of city'), findsOneWidget);
       expect(find.text('Edit'), findsNothing);
-      await tester.tap(find.text('Rates'));
+      await tester.tap(find.text('Within city'));
       expect(ratesFired, isTrue);
-      await tester.tap(find.text('Out-of-city rules'));
+      await tester.tap(find.text('Out of city'));
       expect(rulesFired, isTrue);
       expect(tester.takeException(), isNull);
     });
@@ -178,7 +178,7 @@ void main() {
       expect(find.byType(FleetVehicleCard), findsOneWidget);
       expect(find.text('Toyota Corolla Grande 2022'), findsOneWidget);
       expect(find.byType(OutlinedButton), findsNothing);
-      expect(find.text('Rates'), findsOneWidget);
+      expect(find.text('Within city'), findsOneWidget);
       expect(find.byType(Switch), findsNothing);
       expect(tester.takeException(), isNull);
     });

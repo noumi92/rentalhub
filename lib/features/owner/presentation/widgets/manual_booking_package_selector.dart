@@ -510,7 +510,7 @@ class ManualBookingStepIndicator extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        for (var i = 0; i < labels.length; i++)
+        for (var i = 0; i < labels.length; i++) ...[
           Expanded(
             child: Column(
               children: [
@@ -544,18 +544,40 @@ class ManualBookingStepIndicator extends StatelessWidget {
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        fontWeight: i + 1 == currentStep
-                            ? FontWeight.w500
+                        fontWeight: i + 1 <= currentStep
+                            ? FontWeight.w600
                             : FontWeight.w500,
-                        color: i + 1 == currentStep
-                            ? colorScheme.onSurface
-                            : colorScheme.onSurfaceVariant,
+                        color: i + 1 < currentStep
+                            ? AppColors.accentSuccessStrong
+                            : i + 1 == currentStep
+                                ? AppColors.orangeFill
+                                : colorScheme.onSurfaceVariant,
                       ),
                 ),
               ],
             ),
           ),
+          if (i < labels.length - 1) _stepConnector(context, i),
+        ],
       ],
+    );
+  }
+
+  /// Connector line between two steps, centred on the 28px circles
+  /// (the box is the circle height, so the 2px line sits at the
+  /// circle centre). Green once the step on its left is done — the
+  /// line into the current step stays grey until that step is
+  /// completed — grey for the road ahead.
+  Widget _stepConnector(BuildContext context, int leftIndex) {
+    final passed = leftIndex + 1 < currentStep;
+    return Container(
+      width: 24,
+      height: 28,
+      alignment: Alignment.center,
+      child: Container(
+        height: 2,
+        decoration: BoxDecoration(color: passed ? AppColors.accentSuccessStrong : Theme.of(context).dividerColor, borderRadius: BorderRadius.circular(1)),
+      ),
     );
   }
 }

@@ -97,15 +97,15 @@ void main() {
       await tester.pumpAndSettle();
       // Simplified card (2026-11-09): no availability switch, no
       // "On Rent until" row — the status is a badge, and the only
-      // actions are Rates and Out-of-city rules.
+      // actions are Within city and Out of city.
       expect(find.byType(Switch), findsNothing);
       expect(find.text('On Rent'), findsOneWidget);
       expect(find.text('Available'), findsNothing);
       expect(find.byType(OutlinedButton), findsNothing);
-      expect(find.text('Rates'), findsOneWidget);
-      expect(find.text('Out-of-city rules'), findsOneWidget);
-      await tester.tap(find.text('Rates'));
-      await tester.tap(find.text('Out-of-city rules'));
+      expect(find.text('Within city'), findsOneWidget);
+      expect(find.text('Out of city'), findsOneWidget);
+      await tester.tap(find.text('Within city'));
+      await tester.tap(find.text('Out of city'));
       expect(ratesTapped, isTrue);
       expect(rulesTapped, isTrue);
     });
@@ -121,8 +121,8 @@ void main() {
       expect(find.text('Available'), findsOneWidget);
       expect(find.text('On Rent'), findsNothing);
       expect(find.byType(OutlinedButton), findsNothing);
-      expect(find.text('Rates'), findsOneWidget);
-      expect(find.text('Out-of-city rules'), findsOneWidget);
+      expect(find.text('Within city'), findsOneWidget);
+      expect(find.text('Out of city'), findsOneWidget);
     });
 
     testWidgets('selected filter chip label is white on the navy theme fill (DS-1)', (tester) async {

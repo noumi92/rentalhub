@@ -25,7 +25,7 @@ import 'package:rentalhub/l10n/app_localizations.dart';
 // Audit §5 implementation (worker D): Monthly package, custom rates,
 // Per KM toggle, fare table, price estimate, published confirmation,
 // owner vehicle detail, onboarding Review + status timeline, fleet
-// card (simplified 2026-11-09: Rates / Out-of-city rules, no switch,
+// card (simplified 2026-11-09: Within city / Out of city, no switch,
 // no "On Rent until" row), shop settings, multi-car fleet calendar.
 // Pure widget/entity tests; the rate matrix save goes through DI
 // (in-memory fallback), like the Phase B tests.
@@ -325,10 +325,10 @@ void main() {
       expect(find.text('Update Price'), findsNothing);
       expect(find.byType(Switch), findsNothing);
       expect(find.byType(OutlinedButton), findsNothing);
-      expect(find.text('Rates'), findsOneWidget);
-      expect(find.text('Out-of-city rules'), findsOneWidget);
-      await tester.tap(find.text('Rates'));
-      await tester.tap(find.text('Out-of-city rules'));
+      expect(find.text('Within city'), findsOneWidget);
+      expect(find.text('Out of city'), findsOneWidget);
+      await tester.tap(find.text('Within city'));
+      await tester.tap(find.text('Out of city'));
       expect(ratesTapped, isTrue);
       expect(rulesTapped, isTrue);
     });
@@ -346,8 +346,8 @@ void main() {
       expect(find.text('On Rent'), findsNothing);
       expect(find.byType(Switch), findsNothing);
       expect(find.byType(OutlinedButton), findsNothing);
-      expect(find.text('Rates'), findsOneWidget);
-      expect(find.text('Out-of-city rules'), findsOneWidget);
+      expect(find.text('Within city'), findsOneWidget);
+      expect(find.text('Out of city'), findsOneWidget);
     });
   });
 

@@ -12,7 +12,7 @@ import '../../../../../core/utils/money_format.dart';
 /// Showroom redesign (Phase 2, 2026-11-16): the tall vertical card
 /// is now a compact HORIZONTAL split — a 110x95 rounded thumbnail on
 /// the left, name / daily rate / plate / status chips on the right,
-/// and a slim 3-button footer below (Rates, Out-of-city rules, Edit).
+/// and a slim 3-button footer below (Within city, Out of city, Edit).
 /// Two cards fit on a phone screen. Nothing is dropped: the rate,
 /// the self-drive badge, the status chip, the out-of-city signal and
 /// the active booking's return date all move to the right column; the
@@ -187,9 +187,9 @@ class FleetVehicleCard extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
             child: Row(
               children: [
-                Expanded(child: _footerAction(context, icon: Icons.tune_rounded, label: l10n.vehicleDetailRatesTitle, onPressed: onEditRates)),
+                Expanded(child: _footerAction(context, icon: Icons.tune_rounded, label: l10n.withinCity, onPressed: onEditRates)),
                 const SizedBox(width: 8),
-                Expanded(child: _footerAction(context, icon: Icons.route_rounded, label: l10n.outCityRulesTitle, onPressed: onOutCityRules)),
+                Expanded(child: _footerAction(context, icon: Icons.route_rounded, label: l10n.outOfCity, onPressed: onOutCityRules)),
                 if (onEditDetails != null) ...[
                   const SizedBox(width: 8),
                   Expanded(child: _footerAction(context, icon: Icons.edit_rounded, label: l10n.vehicleDetailEdit, onPressed: onEditDetails!)),

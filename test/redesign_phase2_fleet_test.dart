@@ -282,8 +282,8 @@ void main() {
       expect(tester.getSize(find.byType(FleetVehicleCard)).height,
           lessThan(260));
       // Footer: the same three actions, no Button widgets.
-      expect(find.text('Rates'), findsOneWidget);
-      expect(find.text('Out-of-city rules'), findsOneWidget);
+      expect(find.text('Within city'), findsOneWidget);
+      expect(find.text('Out of city'), findsOneWidget);
       expect(find.text('Edit'), findsOneWidget);
       expect(find.byType(OutlinedButton), findsNothing);
       expect(find.byType(FilledButton), findsNothing);
@@ -389,7 +389,7 @@ void main() {
         (tester) async {
       await tester.pumpWidget(cardWrap(testCard()));
       await tester.pumpAndSettle();
-      for (final label in ['Rates', 'Out-of-city rules', 'Edit']) {
+      for (final label in ['Within city', 'Out of city', 'Edit']) {
         final text = tester.widget<Text>(find.text(label));
         expect(text.style?.color, AppColors.onSurfaceLight,
             reason: '$label label colour');
@@ -405,7 +405,7 @@ void main() {
       await tester.pumpWidget(
           cardWrap(testCard(), theme: AppTheme.darkTheme));
       await tester.pumpAndSettle();
-      final text = tester.widget<Text>(find.text('Rates'));
+      final text = tester.widget<Text>(find.text('Within city'));
       expect(text.style?.color, AppColors.onSurfaceDark);
       expect(tester.takeException(), isNull);
     });
@@ -418,8 +418,8 @@ void main() {
         locale: const Locale('ur'),
       ));
       await tester.pumpAndSettle();
-      expect(find.text('نرخ'), findsOneWidget);
-      expect(find.text('شہر سے باہر کے قواعد'), findsOneWidget);
+      expect(find.text('شہر کے اندر'), findsOneWidget);
+      expect(find.text('شہر سے باہر'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
 

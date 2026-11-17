@@ -258,6 +258,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get inCity => 'In city';
 
   @override
+  String get withinCity => 'Within city';
+
+  @override
   String get outOfCity => 'Out of city';
 
   @override

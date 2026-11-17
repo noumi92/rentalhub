@@ -258,6 +258,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get inCity => 'شہر کے اندر';
 
   @override
+  String get withinCity => 'شہر کے اندر';
+
+  @override
   String get outOfCity => 'شہر سے باہر';
 
   @override

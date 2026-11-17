@@ -13,7 +13,7 @@ import 'package:rentalhub/l10n/app_localizations.dart';
 // lives ON the photo — name, plate, one in-city daily rate and the
 // self-drive badge stack over the bottom gradient scrim — and under
 // the photo there is exactly ONE row of small orange icon buttons
-// with short regular labels (Rates, Out-of-city rules, Edit). The old
+// with short regular labels (Within city, Out of city, Edit). The old
 // price block and the stacked OutlinedButtons are gone. The owner
 // vehicle-detail header follows the same pattern: rate, self-drive
 // badge and status sit on its photo; the rate/status row below the
@@ -123,14 +123,14 @@ void main() {
 
       // All three actions live in one single footer Row, below the
       // thumbnail/details row — not beside the thumbnail.
-      for (final label in ['Rates', 'Out-of-city rules', 'Edit']) {
+      for (final label in ['Within city', 'Out of city', 'Edit']) {
         final rowAncestors = find.ancestor(of: find.text(label), matching: find.byType(Row));
         expect(rowAncestors, findsOneWidget, reason: '$label must have exactly one ancestor Row — the single footer row');
       }
-      final actionRow = find.ancestor(of: find.text('Rates'), matching: find.byType(Row)).evaluate().single;
-      for (final label in ['Out-of-city rules', 'Edit']) {
+      final actionRow = find.ancestor(of: find.text('Within city'), matching: find.byType(Row)).evaluate().single;
+      for (final label in ['Out of city', 'Edit']) {
         final otherRow = find.ancestor(of: find.text(label), matching: find.byType(Row)).evaluate().single;
-        expect(identical(otherRow.widget, actionRow.widget), isTrue, reason: '$label must share the Rates footer row');
+        expect(identical(otherRow.widget, actionRow.widget), isTrue, reason: '$label must share the Within city footer row');
       }
 
       // Eye-catching: orange icons on the pale orange container, and
@@ -142,7 +142,7 @@ void main() {
       final ratesIcon = tester.widget<Icon>(find.byIcon(Icons.tune_rounded));
       expect(ratesIcon.color, AppColors.orangeTextFor(Brightness.light));
       expect(ratesIcon.size, 20);
-      for (final label in ['Rates', 'Out-of-city rules', 'Edit']) {
+      for (final label in ['Within city', 'Out of city', 'Edit']) {
         final text = tester.widget<Text>(find.text(label));
         expect(text.style?.color, AppColors.onSurfaceLight);
         expect(text.style?.fontSize, 12.0);
@@ -151,7 +151,7 @@ void main() {
       expect(tester.takeException(), isNull);
     });
 
-    testWidgets('Edit hidden without onEditDetails; Rates / rules / Edit callbacks fire',
+    testWidgets('Edit hidden without onEditDetails; Within city / Out of city / Edit callbacks fire',
         (tester) async {
       var ratesFired = false;
       var rulesFired = false;
@@ -163,10 +163,10 @@ void main() {
       )));
       await tester.pumpAndSettle();
       expect(find.text('Edit'), findsNothing);
-      expect(find.text('Rates'), findsOneWidget);
-      expect(find.text('Out-of-city rules'), findsOneWidget);
-      await tester.tap(find.text('Rates'));
-      await tester.tap(find.text('Out-of-city rules'));
+      expect(find.text('Within city'), findsOneWidget);
+      expect(find.text('Out of city'), findsOneWidget);
+      await tester.tap(find.text('Within city'));
+      await tester.tap(find.text('Out of city'));
       expect(ratesFired, isTrue);
       expect(rulesFired, isTrue);
 

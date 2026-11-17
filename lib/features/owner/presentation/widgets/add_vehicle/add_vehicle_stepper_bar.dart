@@ -14,6 +14,7 @@ class AddVehicleStepperBar extends StatelessWidget {
       color: Theme.of(context).colorScheme.surface,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _stepperItem(context, 1, l10n.addVehicleStepperSpecs),
           _stepperDivider(context, 1),
@@ -62,14 +63,16 @@ class AddVehicleStepperBar extends StatelessWidget {
             label,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              fontWeight: FontWeight.w500,
-              // Audit §5 (Critical): theme-aware exactly like the
-              // onboarding stepper fix — hardcoded AppColors.primary
-              // navy was ~1.5:1 on a dark surface. Dark mode uses the
-              // pale lavender primaryContainer — NOT
-              // colorScheme.primary, which in the dark theme is the
-              // dark navy #252B7A (1.46:1, still unreadable).
-              color: isCurrent ? (Theme.of(context).brightness == Brightness.dark ? AppColors.primaryContainer : Theme.of(context).colorScheme.primary) : Theme.of(context).colorScheme.onSurfaceVariant,
+              fontWeight: isDone || isCurrent ? FontWeight.w600 : FontWeight.w500,
+              // Done steps read green so the completed road stands
+              // out; the current step keeps its pinned primary
+              // treatment (dark: pale lavender primaryContainer —
+              // see the comment below).
+              color: isDone
+                  ? AppColors.accentSuccessStrong
+                  : isCurrent
+                      ? (Theme.of(context).brightness == Brightness.dark ? AppColors.primaryContainer : Theme.of(context).colorScheme.primary)
+                      : Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
         ],
@@ -77,13 +80,21 @@ class AddVehicleStepperBar extends StatelessWidget {
     );
   }
 
+  /// Connector line between two steps. The box is the 28px circle
+  /// height with the 2px line centred in it, so the line sits at
+  /// the circle centre (the old bottom-margin-16 version floated
+  /// ~16px below the circles). Green — the same strong green as
+  /// the done circles — once the step on its left is passed.
   Widget _stepperDivider(BuildContext context, int step) {
     final isPassed = currentStep > step;
     return Container(
       width: 24,
-      height: 2,
-      margin: const EdgeInsets.only(bottom: 16),
-      color: isPassed ? AppColors.accentSuccess : Theme.of(context).dividerColor,
+      height: 28,
+      alignment: Alignment.center,
+      child: Container(
+        height: 2,
+        decoration: BoxDecoration(color: isPassed ? AppColors.accentSuccessStrong : Theme.of(context).dividerColor, borderRadius: BorderRadius.circular(1)),
+      ),
     );
   }
 }

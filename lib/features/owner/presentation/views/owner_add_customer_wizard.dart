@@ -169,10 +169,30 @@ class _OwnerAddCustomerWizardState extends State<OwnerAddCustomerWizard> {
           overflow: TextOverflow.ellipsis,
           textAlign: TextAlign.center,
           // Audit 2026-11-15 DS-8: 11 sp w500 is labelSmall — read
-          // the theme slot instead of a hardcoded size.
-          style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w500, color: color),
+          // the theme slot instead of a hardcoded size. Done and
+          // current labels read semibold so the progress stands out
+          // against the grey upcoming steps.
+          style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: done || current ? FontWeight.w600 : FontWeight.w500, color: color),
         ),
       ],
+    );
+  }
+
+  /// Connector line between two steps, centred on the 28px circles
+  /// (the box is the circle height, so the 2px line sits at the
+  /// circle centre). Green once the step on its left is done — the
+  /// line into the current step stays grey until that step is
+  /// completed — grey for the road ahead.
+  Widget _stepConnector(int leftIndex) {
+    final passed = leftIndex < _step;
+    return Container(
+      width: 24,
+      height: 28,
+      alignment: Alignment.center,
+      child: Container(
+        height: 2,
+        decoration: BoxDecoration(color: passed ? AppColors.accentSuccessStrong : Theme.of(context).dividerColor, borderRadius: BorderRadius.circular(1)),
+      ),
     );
   }
 
@@ -190,10 +210,11 @@ class _OwnerAddCustomerWizardState extends State<OwnerAddCustomerWizard> {
               key: const Key('kyc-stepper-header'),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   for (var i = 0; i < 4; i++) ...[
                     Expanded(child: _stepItem(i, labels[i])),
-                    if (i < 3) const SizedBox(width: 4),
+                    if (i < 3) _stepConnector(i),
                   ],
                 ],
               ),
