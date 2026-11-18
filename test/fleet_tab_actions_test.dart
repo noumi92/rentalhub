@@ -18,15 +18,15 @@ import 'package:rentalhub/l10n/app_localizations.dart';
 // its real sub-screen, plus the `onEditDetails` wiring (Worker 3
 // owns the card/body side).
 //
-// User layout 2026-11-16: the search bar and the quick-actions row
-// are gone. Schedule, Handover QR and Requests are icon buttons in
-// the AppBar (tooltip-labelled, in that order), Add Vehicle is an
-// extended floating button, and the filter bar
-// ([FleetFilterChips]: All / Ready / On Rent / Maintenance) sits
-// directly on the scaffold. Customers left the fleet screen — it
-// stays reachable from the Customers tab, so there is no Customers
-// button here any more. The destinations are unchanged, so the
-// navigation tests below still address the same keys.
+// User layout 2026-11-18: the header holds the Schedule icon and
+// the orange "+ Add Vehicle" pill (the FAB overlapped the third
+// card on a phone); the white search bar is back under the header
+// with Handover QR and Requests as inline icon+text buttons inside
+// it; the filter bar ([FleetFilterChips]: All / Ready / On Rent /
+// Maintenance) sits below that. Customers left the fleet screen —
+// it stays reachable from the Customers tab, so there is no
+// Customers button here any more. The destinations are unchanged,
+// so the navigation tests below still address the same keys.
 //
 // The local copy's PNG assets are corrupt (downloaded through the
 // connector's text path), so any widget rendering a car photo throws
@@ -144,19 +144,42 @@ void main() {
     await di.initDependencies();
   });
 
-  group('Fleet tab actions (AppBar icons, filter bar, FAB)', () {
-    testWidgets('segmented bar exists; search bar and quick actions are gone',
+  group('Fleet tab actions (header pill, search bar, filter bar)', () {
+    testWidgets('segmented bar exists; search bar is back under the header',
         (tester) async {
       final router = _buildRouter();
       await _pumpFleet(tester, router);
 
       expect(find.byType(FleetFilterChips), findsOneWidget);
       expect(find.byType(FleetQuickActions), findsNothing);
-      expect(find.byType(FleetSearchField), findsNothing);
       expect(find.text('All (3)'), findsOneWidget);
-      // Add Vehicle is the extended FAB, not an AppBar pill.
+      // User layout 2026-11-18: the search bar is back (Handover QR
+      // and Requests live inside it) and Add Vehicle is the orange
+      // header pill, not a FAB.
+      expect(find.byType(FleetSearchField), findsOneWidget);
+      expect(find.byType(FloatingActionButton), findsNothing);
       expect(find.byKey(const Key('fleet-action-add-vehicle')), findsOneWidget);
       expect(find.text('Add Vehicle'), findsOneWidget);
+    });
+
+    testWidgets('header pill fits at 360px without overflow',
+        (tester) async {
+      tester.view.physicalSize = const Size(360, 800);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      final router = _buildRouter();
+      await _pumpFleet(tester, router);
+
+      expect(find.text('Fleet Management'), findsOneWidget);
+      expect(find.byKey(const Key('fleet-action-add-vehicle')), findsOneWidget);
+      // Schedule lives inside the search bar now (icon-only), not
+      // in the header — the reference design shows title + pill
+      // only up top.
+      expect(find.byKey(const Key('fleet-action-schedule')), findsOneWidget);
+      expect(find.descendant(of: find.byType(FleetSearchField), matching: find.byKey(const Key('fleet-action-schedule'))), findsOneWidget);
+      expect(tester.takeException(), isNull);
     });
 
     testWidgets('every action exists with its icon + label or tooltip',
@@ -164,9 +187,13 @@ void main() {
       final router = _buildRouter();
       await _pumpFleet(tester, router);
 
-      // AppBar actions are icon-only (tooltip carries the label);
-      // the FAB keeps its text label. Customers left the fleet
-      // screen (still on the Customers tab) — no button here.
+      // Schedule is an icon-only button inside the search bar
+      // (tooltip carries the label); Handover QR and Requests are
+      // icon+text buttons inside the search bar (tooltip + icon +
+      // visible label); Add Vehicle is the header pill (icon +
+      // text label).
+      // Customers left the fleet screen (still on the Customers
+      // tab) — no button here.
       final actions = <(String key, IconData icon, String label, bool isTooltip)>[
         ('fleet-action-schedule', Icons.calendar_month_rounded, 'Schedule', true),
         ('fleet-action-handover', Icons.qr_code_scanner_rounded, 'Handover QR', true),

@@ -4,15 +4,18 @@ import '../../../../../core/constants/app_colors.dart';
 import '../../../../../l10n/app_localizations.dart';
 
 /// Showroom redesign (Phase 2, 2026-11-16): the old KPI boxes and the
-/// filter chips are merged into ONE segmented bar — four equal
-/// segments (All / Ready / On Rent / Maintenance) in a single row.
-/// Maintenance is KEPT: the guide's 3-segment example drops it,
-/// but a maintenance car must stay filterable. Total Fleet is the
-/// "All" count. Each segment carries its count (the merged KPI) and a
-/// status dot (Ready green, On Rent orange, Maintenance amber); the
-/// selected segment keeps the theme chip spec (navy fill + white
-/// label, DS-1) via [ChoiceChip] — the theme owns the selected style,
-/// this file sets no selectedColor.
+/// filter chips are merged into ONE segmented bar — three segments
+/// (All / Ready / On Rent) in a single row, plus Maintenance only
+/// when a car is actually in maintenance: the reference design
+/// shows three segments, and a zero-count Maintenance chip would
+/// only add noise — but the filter must survive the moment a car
+/// goes into maintenance, so it appears as soon as its count is
+/// above zero (or while it is the selected filter). Total Fleet is
+/// the "All" count. Each segment carries its count (the merged KPI)
+/// and a status dot (Ready green, On Rent orange, Maintenance
+/// amber); the selected segment keeps the theme chip spec (navy fill
+/// + white label, DS-1) via [ChoiceChip] — the theme owns the
+/// selected style, this file sets no selectedColor.
 ///
 /// User layout 2026-11-16: the white card behind the bar is gone —
 /// the four segments sit directly on the scaffold background, with no
@@ -57,8 +60,12 @@ class FleetFilterChips extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    // Four loose chips directly on the scaffold background — no
-    // wrapping card (user layout 2026-11-16).
+    // Three loose chips directly on the scaffold background — no
+    // wrapping card (user layout 2026-11-16). Maintenance joins
+    // them only when a car is actually in maintenance (or while it
+    // is the selected filter, so the selection can never strand
+    // the user on a hidden segment).
+    final showMaintenance = maintenanceCount > 0 || selectedFilter == 'Maintenance';
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
       child: Row(
@@ -66,7 +73,7 @@ class FleetFilterChips extends StatelessWidget {
           _segment(context, l10n, 'All', totalCount),
           _segment(context, l10n, 'Available', availableCount),
           _segment(context, l10n, 'On Rent', onRentCount),
-          _segment(context, l10n, 'Maintenance', maintenanceCount),
+          if (showMaintenance) _segment(context, l10n, 'Maintenance', maintenanceCount),
         ],
       ),
     );

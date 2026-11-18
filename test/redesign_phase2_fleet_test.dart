@@ -219,15 +219,16 @@ void main() {
       }
     });
 
-    testWidgets('AppBar holds Schedule + Handover + Requests, Add Vehicle is the FAB',
+    testWidgets('AppBar holds Schedule + Add Vehicle pill; search bar holds Handover + Requests',
         (tester) async {
       await tester.pumpWidget(_wrap(
         const OwnerFleetView(shopId: 'shop-basic'),
       ));
       await tester.pumpAndSettle();
 
-      // User layout 2026-11-16: the three AppBar icon actions
-      // (Schedule, Handover QR, Requests) and the extended FAB.
+      // User layout 2026-11-18: the Schedule icon and the orange
+      // "+ Add Vehicle" pill are in the header; Handover QR and
+      // Requests live inside the search bar below it.
       expect(find.byKey(const Key('fleet-action-schedule')), findsOneWidget);
       expect(find.byTooltip('Schedule'), findsOneWidget);
       expect(find.byKey(const Key('fleet-action-handover')), findsOneWidget);
@@ -236,9 +237,10 @@ void main() {
       expect(find.byTooltip('Bookings'), findsOneWidget);
       expect(find.byKey(const Key('fleet-action-add-vehicle')), findsOneWidget);
       expect(find.text('Add Vehicle'), findsOneWidget);
-      // The search bar and the quick-actions row are gone; Customers
-      // left the fleet screen (still on the Customers tab).
-      expect(find.byType(TextField), findsNothing);
+      // The search bar is back under the header; the quick-actions
+      // row is gone; Customers left the fleet screen (still on the
+      // Customers tab).
+      expect(find.byType(TextField), findsOneWidget);
       expect(find.byKey(const Key('fleet-action-customers')), findsNothing);
       expect(tester.takeException(), isNull);
     });

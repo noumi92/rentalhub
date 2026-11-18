@@ -146,17 +146,32 @@ class FleetVehicleCard extends StatelessWidget {
                           style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
                         ),
                         const SizedBox(height: 4),
-                        Text(
-                          l10n.fleetDailyRate(formatRs(vehicle.rates.daily24)),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600, color: orange),
+                        // Reference design (2026-11-18): plate and
+                        // daily rate share one row. Neither fits at
+                        // full size in the ~206dp details column at
+                        // 360dp (the price alone is ~210dp wide in
+                        // the test font; the plate ~170dp), so the
+                        // row is min-sized and scaled down as one
+                        // unit — on a real phone it is ~0.97x (the
+                        // test font runs ~1.85x wider than Inter),
+                        // and it can never overflow. A loose
+                        // Flexible/Expanded split cannot work: the
+                        // price would have to ellipsize.
+                        FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.centerLeft,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              PakistaniPlateWidget(plateNumber: vehicle.plateNumber, isCompact: true),
+                              const SizedBox(width: 8),
+                              Text(
+                                l10n.fleetDailyRate(formatRs(vehicle.rates.daily24)),
+                                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600, color: orange),
+                              ),
+                            ],
+                          ),
                         ),
-                        const SizedBox(height: 6),
-                        // FG-6: the plate is a fixed graphic — at 360px /
-                        // 1.35x its natural width exceeds the details
-                        // column, so it scales down, never overflows.
-                        FittedBox(fit: BoxFit.scaleDown, alignment: Alignment.centerLeft, child: PakistaniPlateWidget(plateNumber: vehicle.plateNumber, isCompact: true)),
                         const SizedBox(height: 6),
                         Wrap(
                           spacing: 8,
