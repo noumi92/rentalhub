@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 // (typed_data comes in via flutter_test)
 
+import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -140,11 +141,11 @@ void main() {
       await tester.pumpAndSettle();
       // PW-17/PW-16 gates: pick a fuel level and a balance-collection
       // method first, or the fuel/balance error fires before the
-      // signature error this test asserts.
-      await tester.ensureVisible(
-          find.widgetWithText(ChoiceChip, '4/4 (Full)'));
+      // signature error this test asserts. Item 9 (O28): fuel is an
+      // E–F slider now, not chips — drag it right to pick a level.
+      await tester.ensureVisible(find.byType(Slider));
       await tester.pumpAndSettle();
-      await tester.tap(find.widgetWithText(ChoiceChip, '4/4 (Full)'));
+      await tester.drag(find.byType(Slider), const Offset(400, 0));
       await tester.pumpAndSettle();
       await tester.ensureVisible(find.widgetWithText(ChoiceChip, 'Cash'));
       await tester.pumpAndSettle();
@@ -289,11 +290,26 @@ void main() {
         totalAmount: 9000,
         advanceRequired: 3000,
       );
+      // O18: the approve sheet lists the shop's real payment
+      // accounts, so the fake shop needs one configured.
+      final fakeShop = FakeFirebaseFirestore();
+      await fakeShop.collection('shops').doc('shop-1').set({
+        'bank_accounts': [
+          {
+            'type': 'jazzcash',
+            'account': '0300-1111111',
+            'title': 'Shop JazzCash',
+          },
+        ],
+      });
       await tester.pumpWidget(
-        const MaterialApp(
+        MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: OwnerBookingRequestsView(shopId: 'shop-1'),
+          home: OwnerBookingRequestsView(
+            shopId: 'shop-1',
+            firestore: fakeShop,
+          ),
         ),
       );
       await tester.pumpAndSettle();
@@ -303,7 +319,15 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Approve Me'), findsOneWidget);
 
+      // O18: Approve no longer flips the status in one tap — it
+      // opens the approve sheet, where the owner picks the payment
+      // account the customer pays into.
       await tester.tap(find.text('Approve'));
+      await tester.pumpAndSettle();
+      expect(find.text('Approve & assign payment account'), findsOneWidget);
+      await tester.tap(find.text('JazzCash'));
+      await tester.pump();
+      await tester.tap(find.text('Approve & assign account'));
       await tester.pumpAndSettle();
       expect(find.text('Approve Me'), findsNothing);
 
@@ -311,8 +335,10 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Approve Me'), findsOneWidget);
       expect(find.text('Approve'), findsNothing);
-      expect(
-          (await ds.getBookingById(booking.bookingId))?.status, 'approved');
+      final stored = await ds.getBookingById(booking.bookingId);
+      expect(stored?.status, 'approved');
+      expect(stored?.selectedPaymentAccount, '0300-1111111');
+      expect(stored?.paymentDeadline, isNotNull);
     });
   });
 

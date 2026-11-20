@@ -7,6 +7,7 @@ import '../../../../core/widgets/debounced_button.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/booking_entity.dart';
 import 'payment_account_card.dart';
+import 'shop_payment_account.dart';
 import '../../../../core/utils/money_format.dart';
 import '../../../owner/presentation/widgets/operations/booking_fare_breakdown.dart';
 
@@ -20,10 +21,15 @@ class ApprovedAccountsBody extends StatelessWidget {
     super.key,
     required this.booking,
     required this.onProceedToUploadProof,
+    this.firestore,
   });
 
   final BookingEntity booking;
   final VoidCallback? onProceedToUploadProof;
+
+  /// Injectable Firestore for tests; production uses the default
+  /// instance (see [ShopPaymentAccount.fetch]).
+  final FirebaseFirestore? firestore;
 
   @override
   Widget build(BuildContext context) {
@@ -88,6 +94,29 @@ class ApprovedAccountsBody extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
+                // O18: the payment deadline is display-only — the
+                // customer sees how long they have to pay; nothing
+                // auto-cancels when it passes.
+                if (booking.paymentDeadline != null)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 16),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.timer_rounded, size: 18),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            l10n.paymentPayByDeadline(
+                              MaterialLocalizations.of(context)
+                                  .formatTimeOfDay(TimeOfDay.fromDateTime(
+                                      booking.paymentDeadline!)),
+                            ),
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 // Audit §5 item 2 (O15): the fare breakdown — dates,
                 // day count, daily rate × days, advance / remaining.
                 BookingFareBreakdown(booking: booking),
@@ -101,7 +130,12 @@ class ApprovedAccountsBody extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  l10n.paymentPayHint,
+                  // O18: an assigned account is the ONLY one the
+                  // customer pays into; older bookings with no
+                  // assignment still see every account.
+                  booking.selectedPaymentAccount == null
+                      ? l10n.paymentPayHint
+                      : l10n.paymentAssignedAccountOnly,
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
                 const SizedBox(height: 14),
@@ -134,22 +168,11 @@ class ApprovedAccountsBody extends StatelessWidget {
     );
   }
 
-  Future<Map<String, dynamic>?> _getShopData() async {
-    try {
-      final snap = await FirebaseFirestore.instance
-          .collection('shops')
-          .doc(booking.shopId)
-          .get();
-      return snap.data();
-    } catch (_) {
-      return null;
-    }
-  }
-
   Widget _buildDynamicAccountsList(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return FutureBuilder<Map<String, dynamic>?>(
-      future: _getShopData(),
+    return FutureBuilder<List<ShopPaymentAccount>>(
+      future: ShopPaymentAccount.fetch(booking.shopId,
+          firestore: firestore),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           // E2: shared loading state (the FutureBuilder used to
@@ -158,51 +181,33 @@ class ApprovedAccountsBody extends StatelessWidget {
             message: l10n.paymentLoading,
           );
         }
-        if (snapshot.hasData && snapshot.data != null) {
-          final data = snapshot.data!;
-          // D1: the shop doc stores accounts under `bank_accounts`
-          // (ShopModel.toMap), shaped by the owner onboarding — wallets
-          // {'type': 'jazzcash'|'easypaisa', 'account', 'title'} and
-          // banks {'type': 'bank', 'bank_name', 'iban', 'title'}. The
-          // old code read a `bankAccounts` field with different keys,
-          // so it never found the shop's real accounts.
-          final rawAccounts = data['bank_accounts'] as List<dynamic>?;
-          if (rawAccounts != null && rawAccounts.isNotEmpty) {
-            return Column(
-              children: rawAccounts.map((a) {
-                final acc = a as Map<String, dynamic>;
-                final type = (acc['type'] as String? ?? 'bank').toLowerCase();
-                final isWallet = type == 'jazzcash' || type == 'easypaisa';
-                final methodTitle = isWallet
-                    ? (type == 'jazzcash'
-                        ? l10n.paymentJazzcash
-                        : l10n.paymentEasypaisa)
-                    : (acc['bank_name'] as String? ?? l10n.paymentBankTransfer);
-                // Banks only store an IBAN (no separate account number);
-                // wallets store the mobile number.
-                final number = isWallet
-                    ? (acc['account'] as String? ?? '')
-                    : (acc['iban'] as String? ?? '');
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: PaymentAccountCard(
-                    methodTitle: methodTitle,
-                    accountTitle:
-                        acc['title'] as String? ?? l10n.paymentVerified,
-                    accountNumber: number,
-                    iban: null,
-                    brandColor: isWallet
-                        ? AppColors.successTextFor(
-                            Theme.of(context).brightness)
-                        : Theme.of(context).colorScheme.onSurface,
-                    icon: isWallet
-                        ? Icons.account_balance_wallet_rounded
-                        : Icons.account_balance_rounded,
-                  ),
-                );
-              }).toList(),
-            );
-          }
+        final accounts = ShopPaymentAccount.visible(
+          snapshot.data ?? const [],
+          booking.selectedPaymentAccount,
+        );
+        if (accounts.isNotEmpty) {
+          return Column(
+            children: accounts.map((acc) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: PaymentAccountCard(
+                  methodTitle: acc.methodTitle(l10n),
+                  accountTitle: acc.title.isEmpty
+                      ? l10n.paymentVerified
+                      : acc.title,
+                  accountNumber: acc.number,
+                  iban: null,
+                  brandColor: acc.isWallet
+                      ? AppColors.successTextFor(
+                          Theme.of(context).brightness)
+                      : Theme.of(context).colorScheme.onSurface,
+                  icon: acc.isWallet
+                      ? Icons.account_balance_wallet_rounded
+                      : Icons.account_balance_rounded,
+                ),
+              );
+            }).toList(),
+          );
         }
         // Phase B (D1): when the shop has not configured any payment
         // accounts, say so — never show another shop's accounts as

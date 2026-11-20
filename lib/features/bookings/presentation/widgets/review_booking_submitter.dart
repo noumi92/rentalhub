@@ -132,6 +132,7 @@ class ReviewBookingSubmitter {
         customerName: customerName,
         customerPhone: customerPhone,
         customerCnic: customerCnic,
+        origin: 'online',
         tripType: draft['tripType'] as String? ?? 'in_city',
         kmLimit: draft['kmLimit'] as int?,
         fixedRouteId: draft['fixedRouteId'] as String?,

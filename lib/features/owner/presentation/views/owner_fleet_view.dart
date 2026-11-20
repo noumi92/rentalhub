@@ -30,7 +30,7 @@ import 'owner_subscription_limit_sheet.dart';
 /// reference design shows title + pill only. Row 2 is the white
 /// search bar inside the header — a name/plate search that actually
 /// filters the list, a divider, then Schedule (icon-only — the fleet
-/// calendar is reachable only from here), Handover QR and Requests
+/// calendar is reachable only from here) and Handover QR
 /// as inline buttons. (MinimalAppBar has no `bottom` slot, so the
 /// header + search bar share one navy container — visually the same
 /// as an AppBar.bottom.) The filter bar ([FleetFilterChips]: All /
@@ -173,7 +173,7 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
                     // BOTH top rows — the title row (orange "+ Add
                     // Vehicle" pill only; the FAB overlapped the
                     // third card) and the white search bar under it.
-                    // Schedule, Handover QR and Requests live inside
+                    // Schedule and Handover QR live inside
                     // the search bar (same destinations the old
                     // header icons used); Customers left the fleet
                     // screen (still on the Customers tab).
@@ -193,7 +193,6 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
                             onChanged: (query) => setState(() => _searchQuery = query),
                             onSchedule: () => _pushOnce(RouteNames.ownerFleetCalendar),
                             onHandover: () => context.go(RouteNames.ownerQrScan),
-                            onRequests: () => context.go(RouteNames.ownerRequests),
                           ),
                         ],
                       ),

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:rentalhub/core/di/injection_container.dart' as di;
+import 'package:rentalhub/core/routing/route_names.dart';
 import 'package:rentalhub/features/bookings/data/datasources/booking_remote_data_source.dart';
 import 'package:rentalhub/features/bookings/data/models/booking_model.dart';
 import 'package:rentalhub/features/bookings/presentation/views/owner_payment_accounts_view.dart';
@@ -10,9 +12,12 @@ import 'package:rentalhub/features/owner/presentation/services/walk_in_booking_s
 import 'package:rentalhub/features/owner/presentation/views/owner_booking_confirmed_view.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_booking_requests_view.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_manual_booking_confirm_view.dart';
+import 'package:rentalhub/features/owner/presentation/views/owner_payment_verification_view.dart';
 import 'package:rentalhub/features/owner/presentation/widgets/manual_booking_package_selector.dart';
 import 'package:rentalhub/features/owner/presentation/widgets/operations/booking_fare_breakdown.dart';
+import 'package:rentalhub/features/owner/presentation/widgets/operations/request_detail_checks.dart';
 import 'package:rentalhub/features/owner/presentation/widgets/operations/request_triage_card.dart';
+import 'package:rentalhub/features/owner/presentation/widgets/operations/triage_trust_row.dart';
 import 'package:rentalhub/l10n/app_localizations.dart';
 
 // Audit §5 items 1, 2, 3, 16 (O14–O18): manual booking with dates +
@@ -340,6 +345,147 @@ void main() {
       expect(find.text('Rs. 21,000'), findsOneWidget);
       expect(find.text('Rs. 16,000'), findsOneWidget);
     });
+
+    testWidgets('O20: countdown, Reserved chip, checklist, QR scan and Call render',
+        (tester) async {
+      final now = DateTime.now();
+      // copyWith carries no pickup/return, so the future-pickup
+      // booking is built directly (same fields as modelFor).
+      final booking = BookingModel(
+        bookingId: 'RH-conf2',
+        customerId: 'cust-RH-conf2',
+        shopId: 'shop-1',
+        vehicleId: 'veh-audit-1',
+        packageType: '24h',
+        pickupTime: now.add(const Duration(hours: 5)),
+        returnTime: now.add(const Duration(days: 2)),
+        totalAmount: 21000,
+        advanceRequired: 5000,
+        advancePaid: 5000,
+        remainingBalance: 16000,
+        status: 'paid',
+        customerName: 'Confirmed Two',
+        customerPhone: '03001234567',
+        vehicleName: 'Honda Civic Oriel',
+      );
+      await tester.pumpWidget(
+          appFor(OwnerBookingConfirmedView(booking: booking)));
+      await tester.pumpAndSettle();
+      expect(find.text('COUNTDOWN TO PICKUP'), findsOneWidget);
+      expect(find.text('Reserved'), findsOneWidget);
+      expect(find.text('Approval checklist'), findsOneWidget);
+      expect(find.text('Request Approved'), findsOneWidget);
+      expect(find.text('Advance Received'), findsOneWidget);
+      expect(find.text('Pickup'), findsOneWidget);
+      expect(find.text('Return'), findsOneWidget);
+      // Paid: request + advance done, pickup + return pending.
+      expect(find.text('Done'), findsNWidgets(2));
+      expect(find.text('Pending'), findsNWidgets(2));
+      expect(find.text('Scan Customer QR at Pickup'), findsOneWidget);
+      expect(find.text('Call'), findsOneWidget);
+      expect(find.text('Message Customer'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+  });
+
+  group('O17 request detail: note, blacklist line, split KYC badges (widget)', () {
+    testWidgets('customer note renders verbatim', (tester) async {
+      final booking = BookingModel.fromEntity(
+          modelFor('RH-note', 'Note Customer')
+              .copyWith(notes: 'Please call before pickup.'));
+      await tester.pumpWidget(
+          appFor(OwnerPaymentAccountsView(booking: booking)));
+      await tester.pumpAndSettle();
+      expect(find.text('Customer note'), findsOneWidget);
+      expect(find.text('Please call before pickup.'), findsOneWidget);
+    });
+
+    testWidgets('no note renders no note section', (tester) async {
+      await tester.pumpWidget(appFor(OwnerPaymentAccountsView(
+        booking: modelFor('RH-nonote', 'No Note Customer'),
+      )));
+      await tester.pumpAndSettle();
+      expect(find.text('Customer note'), findsNothing);
+    });
+
+    testWidgets('live blacklist re-check shows Not Blacklisted for a clean CNIC',
+        (tester) async {
+      // modelFor carries a CNIC; the in-memory blacklist is empty
+      // in tests, so the live re-check resolves clean.
+      await tester.pumpWidget(appFor(OwnerPaymentAccountsView(
+        booking: modelFor('RH-bl', 'Clean Customer'),
+      )));
+      await tester.pumpAndSettle();
+      expect(find.text('Not Blacklisted'), findsOneWidget);
+    });
+
+    testWidgets('blacklist line override shows Blacklisted', (tester) async {
+      await tester.pumpWidget(appFor(const RequestBlacklistLine(
+        cnic: '35202-1234567-1',
+        isBlacklisted: true,
+      )));
+      await tester.pumpAndSettle();
+      expect(find.text('Blacklisted'), findsOneWidget);
+      expect(find.text('Not Blacklisted'), findsNothing);
+    });
+
+    testWidgets('blacklist line hides without a CNIC', (tester) async {
+      await tester.pumpWidget(
+          appFor(const RequestBlacklistLine(cnic: null)));
+      await tester.pumpAndSettle();
+      expect(find.text('Not Blacklisted'), findsNothing);
+      expect(find.text('Blacklisted'), findsNothing);
+    });
+
+    testWidgets('split KYC badges render per document', (tester) async {
+      await tester.pumpWidget(appFor(const TriageTrustRow(
+        customerId: 'cust-1',
+        trustScore: 4.0,
+        kycStatus: 'verified',
+        completedTrips: 2,
+      )));
+      await tester.pumpAndSettle();
+      expect(find.text('Verified CNIC'), findsOneWidget);
+      expect(find.text('Verified License'), findsOneWidget);
+      expect(find.text('KYC verified'), findsNothing);
+    });
+  });
+
+  group('O19 payment verification: banner, timestamp, renamed reject (widget)', () {
+    testWidgets('waiting banner and proof submission time render',
+        (tester) async {
+      final booking = BookingModel.fromEntity(
+          modelFor('RH-proof', 'Proof Customer').copyWith(
+        status: 'payment_submitted',
+        paymentProofUrl: 'https://example.com/proof.jpg',
+        transactionId: 'TID-4242',
+        proofSubmittedAt: DateTime(2026, 11, 6, 14, 30),
+      ));
+      await tester.pumpWidget(
+          appFor(OwnerPaymentVerificationView(booking: booking)));
+      await tester.pumpAndSettle();
+      expect(find.text('Waiting for your verification'), findsOneWidget);
+      expect(find.text('Proof submitted'), findsOneWidget);
+      expect(find.textContaining('Nov 6, 2026'), findsOneWidget);
+      expect(find.text('TID-4242'), findsOneWidget);
+      expect(find.text('Payment Not Received'), findsOneWidget);
+      expect(find.text('Reject Proof'), findsNothing);
+    });
+
+    testWidgets('no proof submission time renders no timestamp line',
+        (tester) async {
+      final booking = BookingModel.fromEntity(
+          modelFor('RH-proof2', 'Proof Customer Two').copyWith(
+        status: 'payment_submitted',
+        paymentProofUrl: 'https://example.com/proof.jpg',
+        transactionId: 'TID-4343',
+      ));
+      await tester.pumpWidget(
+          appFor(OwnerPaymentVerificationView(booking: booking)));
+      await tester.pumpAndSettle();
+      expect(find.text('Waiting for your verification'), findsOneWidget);
+      expect(find.text('Proof submitted'), findsNothing);
+    });
   });
 
   group('requested detail: checklist, terms, convert (widget)', () {
@@ -450,14 +596,103 @@ void main() {
       expect(find.text('Searchable Samina'), findsOneWidget);
       expect(find.text('Other Osman'), findsNothing);
     });
+
+    testWidgets('O16: active and completed bookings have their own tabs',
+        (tester) async {
+      final ds = di.sl<BookingRemoteDataSource>();
+      final active = await ds.createBookingRequest(
+        customerId: 'cust-active-1',
+        shopId: 'shop-1',
+        vehicleId: 'veh-audit-1',
+        packageType: '24h',
+        isWithDriver: false,
+        pickupTime: DateTime(2026, 10, 26, 10),
+        returnTime: DateTime(2026, 10, 29, 10),
+        totalAmount: 9000,
+        advanceRequired: 3000,
+        customerName: 'Active Anwar',
+      );
+      await ds.updateBookingStatus(
+          bookingId: active.bookingId, status: 'active');
+      final done = await ds.createBookingRequest(
+        customerId: 'cust-done-1',
+        shopId: 'shop-1',
+        vehicleId: 'veh-audit-1',
+        packageType: '24h',
+        isWithDriver: false,
+        pickupTime: DateTime(2026, 10, 26, 10),
+        returnTime: DateTime(2026, 10, 29, 10),
+        totalAmount: 9000,
+        advanceRequired: 3000,
+        customerName: 'Completed Camila',
+      );
+      await ds.updateBookingStatus(
+          bookingId: done.bookingId, status: 'completed');
+      await tester.pumpWidget(
+          appFor(const OwnerBookingRequestsView(shopId: 'shop-1')));
+      await tester.pumpAndSettle();
+      // Both new chips render with counts; neither booking shows
+      // under the default Proof-first filter.
+      expect(find.textContaining('Active ('), findsOneWidget);
+      expect(find.textContaining('Completed ('), findsOneWidget);
+      expect(find.text('Active Anwar'), findsNothing);
+      expect(find.text('Completed Camila'), findsNothing);
+      // Six chips now overflow the 800-wide test viewport, so scroll
+      // each chip into view before tapping it.
+      await tester.ensureVisible(find.textContaining('Active ('));
+      await tester.pumpAndSettle();
+      await tester.tap(find.textContaining('Active ('));
+      await tester.pumpAndSettle();
+      expect(find.text('Active Anwar'), findsOneWidget);
+      expect(find.text('Completed Camila'), findsNothing);
+      await tester.ensureVisible(find.textContaining('Completed ('));
+      await tester.pumpAndSettle();
+      await tester.tap(find.textContaining('Completed ('));
+      await tester.pumpAndSettle();
+      expect(find.text('Completed Camila'), findsOneWidget);
+      expect(find.text('Active Anwar'), findsNothing);
+    });
+
+    testWidgets('Item 6: calendar button replaces refresh and opens '
+        'the fleet calendar route', (tester) async {
+      final router = GoRouter(
+        initialLocation: RouteNames.ownerRequests,
+        routes: [
+          GoRoute(
+            path: RouteNames.ownerRequests,
+            builder: (context, state) =>
+                const OwnerBookingRequestsView(shopId: 'shop-1'),
+          ),
+          GoRoute(
+            path: RouteNames.ownerFleetCalendar,
+            builder: (context, state) =>
+                const Scaffold(body: Text('Calendar stub')),
+          ),
+        ],
+      );
+      await tester.pumpWidget(MaterialApp.router(
+        routerConfig: router,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+      ));
+      await tester.pumpAndSettle();
+      // The redundant reload icon is gone; the QR-scan icon stays.
+      expect(find.byIcon(Icons.refresh), findsNothing);
+      expect(find.byIcon(Icons.qr_code_scanner_rounded), findsOneWidget);
+      expect(find.byIcon(Icons.calendar_month_rounded), findsOneWidget);
+      await tester.tap(find.byTooltip('Booking calendar'));
+      await tester.pumpAndSettle();
+      expect(find.text('Calendar stub'), findsOneWidget);
+    });
   });
 
   group('manual confirm view (widget)', () {
-    testWidgets('fare summary + advance prefilled with the package advance',
+    testWidgets('step 4 summary shows the full money picture',
         (tester) async {
       final pkg24 =
           testVehicle.packages.firstWhere((p) => p.label == '24h');
       await tester.pumpWidget(appFor(OwnerManualBookingConfirmView(
+        customerId: 'cust-confirm-1',
         customerName: 'Confirm Customer',
         customerPhone: '03001234567',
         customerCnic: '35202-1234567-1',
@@ -467,21 +702,35 @@ void main() {
         isOutOfCity: false,
         pickupTime: DateTime(2026, 10, 26, 10),
         returnTime: DateTime(2026, 10, 29, 10),
+        rentAmount: 27000,
+        driverAmount: 0,
+        advanceReceived: 3000,
+        paymentMethod: 'cash',
+        depositAmountPkr: 20000,
+        depositMethod: 'cash',
+        addRemainingToDues: true,
       )));
       await tester.pumpAndSettle();
-      expect(find.text('Review Fare'), findsOneWidget);
+      expect(find.text('Booking Summary'), findsOneWidget);
+      expect(find.text('Payment'), findsOneWidget);
+      expect(find.text('Summary'), findsOneWidget);
       expect(find.text('Rs. 27,000'), findsWidgets);
-      final advanceField = tester.widget<TextField>(
-          find.widgetWithText(TextField, 'Advance received'));
-      expect(advanceField.controller?.text, '3000');
+      expect(find.text('Rs. 3,000 (Cash)'), findsOneWidget);
+      expect(find.text('Rs. 20,000 (Cash)'), findsOneWidget);
       expect(find.text('Rs. 24,000'), findsOneWidget);
+      expect(
+          find.text(
+              'Agreement is generated automatically at handover using saved signatures'),
+          findsOneWidget);
+      expect(find.text('Confirm Booking'), findsOneWidget);
     });
 
-    testWidgets('editing the advance updates the remaining live',
+    testWidgets('a discount lowers the total and the remaining',
         (tester) async {
       final pkg24 =
           testVehicle.packages.firstWhere((p) => p.label == '24h');
       await tester.pumpWidget(appFor(OwnerManualBookingConfirmView(
+        customerId: 'cust-confirm-1',
         customerName: 'Confirm Customer',
         customerPhone: '03001234567',
         customerCnic: '35202-1234567-1',
@@ -491,12 +740,19 @@ void main() {
         isOutOfCity: false,
         pickupTime: DateTime(2026, 10, 26, 10),
         returnTime: DateTime(2026, 10, 29, 10),
+        rentAmount: 27000,
+        driverAmount: 0,
+        discountAmountPkr: 1000,
+        advanceReceived: 1000,
+        paymentMethod: 'jazzcash',
+        depositAmountPkr: 20000,
+        depositMethod: 'cash',
+        addRemainingToDues: true,
       )));
       await tester.pumpAndSettle();
-      await tester.enterText(
-          find.widgetWithText(TextField, 'Advance received'), '1000');
-      await tester.pumpAndSettle();
       expect(find.text('Rs. 26,000'), findsOneWidget);
+      expect(find.text('Rs. 25,000'), findsOneWidget);
+      expect(find.text('Rs. 1,000 (JazzCash)'), findsOneWidget);
     });
   });
 }

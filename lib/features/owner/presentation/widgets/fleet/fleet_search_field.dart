@@ -4,20 +4,19 @@ import '../../../../../l10n/app_localizations.dart';
 
 /// Fleet search bar (user layout, 2026-11-18): the white bar under
 /// the navy header — a search TextField (name or plate, actually
-/// filtering the list) on the left, a VerticalDivider, then compact
-/// Handover QR and Requests buttons on the right, plus an icon-only
+/// filtering the list) on the left, a VerticalDivider, then a compact
+/// Handover QR button on the right, plus an icon-only
 /// Schedule (calendar) button first among them: the fleet calendar
 /// is reachable ONLY from here (the header carries no icons — the
 /// reference design shows title + Add Vehicle pill only). Extracted
 /// from [OwnerFleetView] so the view stays under the 250-line cap.
 ///
-/// Showroom redesign (Phase 2, 2026-11-16): Handover QR and
-/// Requests live INSIDE this bar — the quick-actions row loses those
-/// two buttons. Both are icon + short text (tooltip carries the
-/// label); [onHandover]/[onRequests]/[onSchedule] are null in embeds
+/// Showroom redesign (Phase 2, 2026-11-16): Handover QR lives
+/// INSIDE this bar — the quick-actions row loses that button. It is
+/// icon + short text (tooltip carries the label);
+/// [onHandover]/[onSchedule] are null in embeds
 /// that render the field without navigation, and the buttons are then
-/// hidden. The "Requests" button reads the `navRequests` label —
-/// "Bookings" since batch 3 renamed the tab — not a new key.
+/// hidden.
 ///
 /// DS-12: the inner TextField carries NO explicit border — its
 /// InputDecoration leaves `border` null and the Theme override below
@@ -28,21 +27,19 @@ class FleetSearchField extends StatelessWidget {
   final ValueChanged<String> onChanged;
   final VoidCallback? onSchedule;
   final VoidCallback? onHandover;
-  final VoidCallback? onRequests;
 
   const FleetSearchField({
     super.key,
     required this.onChanged,
     this.onSchedule,
     this.onHandover,
-    this.onRequests,
   });
 
   Widget _barButton(BuildContext context, {required Key key, required String tooltip, required IconData icon, required String label, required VoidCallback onPressed}) {
     // Flexible + FittedBox: the button scales its label down
     // instead of overflowing — at 360px / 1.35x / 200% text scale
-    // the two buttons share the bar evenly with the search field
-    // (1:1:1 flex), so nothing here can push the field to zero
+    // the button shares the bar with the search field
+    // (2:1 flex), so nothing here can push the field to zero
     // width or spill past the bar edge.
     return Flexible(
       child: FittedBox(
@@ -112,7 +109,7 @@ class FleetSearchField extends StatelessWidget {
                 ),
               ),
             ),
-            if (onSchedule != null || onHandover != null || onRequests != null) ...[
+            if (onSchedule != null || onHandover != null) ...[
               const SizedBox(
                 height: 24,
                 child: VerticalDivider(width: 16, thickness: 1),
@@ -127,8 +124,6 @@ class FleetSearchField extends StatelessWidget {
                 ),
               if (onHandover != null)
                 _barButton(context, key: const Key('fleet-action-handover'), tooltip: l10n.fleetHandoverQr, icon: Icons.qr_code_scanner_rounded, label: l10n.fleetHandoverQr, onPressed: onHandover!),
-              if (onRequests != null)
-                _barButton(context, key: const Key('fleet-action-requests'), tooltip: l10n.navRequests, icon: Icons.inbox_rounded, label: l10n.navRequests, onPressed: onRequests!),
             ],
           ],
         ),

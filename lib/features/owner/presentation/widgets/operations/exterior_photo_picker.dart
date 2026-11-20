@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -7,6 +5,7 @@ import '../../../../../core/widgets/media_picker_helper.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../services/handover_photo_upload_service.dart';
 import '../../../../../core/theme/card_decoration.dart';
+import 'handover_photo_tile.dart';
 
 /// Audit item 4/5 (O19, O25): the exterior-photo picker shared by
 /// the handover and return flows — Front / Back / Left / Right, each
@@ -28,6 +27,15 @@ class ExteriorPhotoPicker extends StatefulWidget {
   /// Return flow stores its photos on the settlement doc instead.
   final String targetCollection;
 
+  /// Item 9 (O29): the wizard adds Interior + Dashboard slots, so
+  /// the picker covers six sides instead of four. Off by default —
+  /// the return flow keeps its four exterior slots.
+  final bool includeInterior;
+
+  /// Side → ISO-8601 timestamp of when the photo was taken (O29).
+  final Map<String, String> takenAt;
+  final ValueChanged<Map<String, String>>? onTakenAtChanged;
+
   const ExteriorPhotoPicker({
     super.key,
     required this.bookingId,
@@ -35,11 +43,22 @@ class ExteriorPhotoPicker extends StatefulWidget {
     required this.photos,
     required this.onChanged,
     this.targetCollection = 'handovers',
+    this.includeInterior = false,
+    this.takenAt = const {},
+    this.onTakenAtChanged,
   });
 
   static const List<String> sides = ['front', 'back', 'left', 'right'];
 
+  /// All slots this picker shows: the four exterior sides, plus
+  /// Interior + Dashboard when the wizard asks for them.
+  List<String> get allSides => includeInterior
+      ? [...sides, 'interior', 'dashboard']
+      : sides;
+
   static String fieldFor(String side) {
+    if (side == 'interior') return 'photoInteriorUrl';
+    if (side == 'dashboard') return 'photoDashboardUrl';
     final cap = side[0].toUpperCase() + side.substring(1);
     return 'photo${cap}Url';
   }
@@ -57,6 +76,11 @@ class _ExteriorPhotoPickerState extends State<ExteriorPhotoPicker> {
       context: context,
       onImageSelected: (XFile? file) async {
         if (file == null) return;
+        // O29: the timestamp is when the photo was taken, not when
+        // the upload finished — record it at pick time.
+        final takenAt = DateTime.now().toIso8601String();
+        widget.onTakenAtChanged?.call(
+            {...widget.takenAt, side: takenAt});
         setState(() {
           _localPaths[side] = file.path;
           _uploading.add(side);
@@ -108,9 +132,9 @@ class _ExteriorPhotoPickerState extends State<ExteriorPhotoPicker> {
               crossAxisSpacing: 10,
               childAspectRatio: 1.6,
             ),
-            itemCount: ExteriorPhotoPicker.sides.length,
+            itemCount: widget.allSides.length,
             itemBuilder: (context, index) {
-              final side = ExteriorPhotoPicker.sides[index];
+              final side = widget.allSides[index];
               return _photoTile(context, l10n, side);
             },
           ),
@@ -120,73 +144,26 @@ class _ExteriorPhotoPickerState extends State<ExteriorPhotoPicker> {
   }
 
   Widget _photoTile(BuildContext context, AppLocalizations l10n, String side) {
-    final url = widget.photos[side];
-    final localPath = _localPaths[side];
-    final uploading = _uploading.contains(side);
-    final label = _sideLabel(l10n, side);
-    return InkWell(
-      onTap: uploading ? null : () => _pick(side),
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Theme.of(context).dividerColor),
-          color: Theme.of(context).colorScheme.surfaceContainerHighest,
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            if (url != null)
-              Image.network(url, fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => _placeholder(context))
-            else if (localPath != null)
-              Image.file(File(localPath), fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => _placeholder(context))
-            else
-              _placeholder(context),
-            if (uploading)
-              Container(
-                color: Colors.black45,
-                child: const Center(
-                  child: CircularProgressIndicator(color: Colors.white),
-                ),
-              ),
-            Positioned(
-              left: 8,
-              bottom: 8,
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(
-                  color: Colors.black54,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  uploading ? l10n.handoverPhotoUploading : label,
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w500,
-                      ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
+    final takenAt = widget.takenAt[side];
+    return HandoverPhotoTile(
+      label: _sideLabel(l10n, side),
+      uploadingLabel: l10n.handoverPhotoUploading,
+      url: widget.photos[side],
+      localPath: _localPaths[side],
+      uploading: _uploading.contains(side),
+      takenAtLabel: takenAt == null
+          ? null
+          : l10n.handoverWizardPhotoTakenAt(_shortTime(takenAt)),
+      onTap: () => _pick(side),
     );
   }
 
-  // The side label is shown once, in the overlay chip below — the
-  // placeholder itself is icon-only, otherwise "Front" renders twice.
-  Widget _placeholder(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(Icons.add_a_photo_rounded,
-            color: Theme.of(context).colorScheme.onSurfaceVariant),
-      ],
-    );
+  String _shortTime(String iso) {
+    final parsed = DateTime.tryParse(iso);
+    if (parsed == null) return iso;
+    final hour = parsed.hour.toString().padLeft(2, '0');
+    final minute = parsed.minute.toString().padLeft(2, '0');
+    return '$hour:$minute';
   }
 
   String _sideLabel(AppLocalizations l10n, String side) {
@@ -197,6 +174,10 @@ class _ExteriorPhotoPickerState extends State<ExteriorPhotoPicker> {
         return l10n.handoverPhotoBack;
       case 'left':
         return l10n.handoverPhotoLeft;
+      case 'interior':
+        return l10n.handoverPhotoInterior;
+      case 'dashboard':
+        return l10n.handoverPhotoDashboard;
       default:
         return l10n.handoverPhotoRight;
     }

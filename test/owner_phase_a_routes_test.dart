@@ -21,7 +21,9 @@ void main() {
           reason: 'Phase A (A1): no owner route may point at OwnerFlowView.');
       expect(router, contains('OwnerDashboardView'));
       expect(router, contains('OwnerBookingRequestsView'));
-      expect(router, contains('OwnerHandoverSignatureView'));
+      // Item 9 (O26–O30): the handover route now lands on the
+      // 5-step wizard instead of the old single view.
+      expect(router, contains('OwnerHandoverWizardView'));
       expect(router, contains('OwnerReturnSettlementView'));
       expect(router, contains('OwnerContractView'));
       expect(router, contains('OwnerCustomerRatingView'));

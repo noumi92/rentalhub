@@ -396,6 +396,7 @@
   "proofUploading": "ثبوت اپ لوڈ ہو رہا ہے…",
   "proofSubmitted": "ثبوت جمع ہو گیا! شوروم کی تصدیق کا انتظار ہے۔",
   "proofSubmittedOffline": "ثبوت جمع ہو گیا! آن لائن ہونے پر رسید سنک ہو جائے گی۔",
+  "proofUploadQueued": "رسید اپ لوڈ نہیں ہوئی — یہ اس ڈیوائس پر محفوظ ہے اور آن لائن ہوتے ہی دوبارہ کوشش کی جائے گی۔ آپ کی ادائیگی ابھی جمع شدہ نہیں مانی گئی۔",
   "proofPrivateNote": "ثبوت نجی اسٹوریج پر اپ لوڈ ہوتا ہے۔ شوروم اسے چیک کر کے آپ کی بکنگ کی تصدیق کرتا ہے اور تصدیق ہوتے ہی آپ کو ایپ میں اطلاع ملے گی۔ اگر جواب نہ آئے تو شوروم کو واٹس ایپ پر پیغام بھیجیں۔",
   "passTitle": "پک اپ کاؤنٹ ڈاؤن پاس",
   "passDoneHome": "مکمل • ہوم پر واپس جائیں",
@@ -1345,7 +1346,7 @@
     }
   },
   "requestsScanQrTooltip": "بکنگ QR اسکین کریں",
-  "requestsRefreshTooltip": "تازہ کریں",
+  "requestsCalendarTooltip": "بکنگ کیلنڈر",
   "requestsLoading": "بکنگ درخواستیں لوڈ ہو رہی ہیں…",
   "requestsLoadError": "بکنگ درخواستیں لوڈ نہیں ہو سکیں۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔",
   "requestsFilterNew": "نئی",
@@ -1364,6 +1365,8 @@
   "requestsEmptyProof": "تصدیق کے منتظر کوئی ادائیگی ثبوت نہیں",
   "requestsEmptyApproved": "ادائیگی کے منتظر کوئی منظور شدہ بکنگ نہیں",
   "requestsEmptyNew": "کوئی زیر التواء بکنگ درخواست نہیں",
+  "requestsEmptyActive": "فی الحال کوئی فعال بکنگ نہیں",
+  "requestsEmptyCompleted": "ابھی تک کوئی مکمل بکنگ نہیں",
   "requestsEmptyMessage": "نئی درخواستیں جائزے کے لیے یہاں نظر آئیں گی۔",
   "requestsRejectTitle": "کیا یہ درخواست مسترد کرنی ہے؟",
   "requestsRejectReasonLabel": "وجہ (لازمی)",
@@ -1406,6 +1409,9 @@
   "requestsWithChauffeur": "ڈرائیور کے ساتھ",
   "requestsVerifyProof": "ادائیگی ثبوت کی تصدیق کریں",
   "requestsDecline": "مسترد کریں",
+  "requestsCustomerNote": "گاہک کا نوٹ",
+  "requestsNotBlacklisted": "بلیک لسٹ میں نہیں ہے",
+  "requestsBlacklisted": "بلیک لسٹ میں ہے",
   "requestsApprovePay": "منظور کریں",
   "requestsStatusRequested": "درخواست شدہ",
   "calendarTitle": "بکنگ کیلنڈر",
@@ -2289,7 +2295,7 @@
   "paymentVerificationRejectNote": "گاہک یہ وجہ دیکھتا ہے اور نیا ثبوت اپ لوڈ کر سکتا ہے۔",
   "paymentVerificationReasonLabel": "وجہ (لازمی)",
   "paymentVerificationReasonHint": "مثلاً اسکرین شاٹ پڑھا نہیں جا سکتا",
-  "paymentVerificationRejectButton": "ثبوت مسترد کریں",
+  "paymentVerificationRejectButton": "ادائیگی موصول نہیں ہوئی",
   "paymentVerificationRejected": "ثبوت مسترد ہو گیا — گاہک نیا ثبوت اپ لوڈ کر سکتا ہے۔",
   "paymentVerificationRejectFailed": "مسترد کرنا ناکام ہوا: {error}",
   "@paymentVerificationRejectFailed": {
@@ -2316,6 +2322,8 @@
     }
   },
   "paymentVerificationConfirming": "تصدیق ہو رہی ہے…",
+  "paymentVerificationWaitingBanner": "آپ کی تصدیق کا انتظار ہے",
+  "paymentVerificationProofSubmittedAt": "ثبوت جمع کرایا گیا",
   "manualBookingTitle": "واک اِن بکنگ وزرڈ",
   "walkInBookingButton": "واک اِن بکنگ",
   "manualBookingSubtitle": "شوروم کاؤنٹر سے براہ راست اجراء",
@@ -2981,6 +2989,13 @@
     }
   },
   "bookingConfirmedWhatsappFailed": "واٹس ایپ نہیں کھولا جا سکا۔",
+  "bookingConfirmedChecklistTitle": "منظوری کی چیک لسٹ",
+  "bookingConfirmedCheckRequestApproved": "درخواست منظور ہو گئی",
+  "bookingConfirmedCheckAdvanceReceived": "ایڈوانس موصول ہو گیا",
+  "bookingConfirmedCheckPickup": "پک اپ",
+  "bookingConfirmedCheckReturn": "واپسی",
+  "bookingConfirmedReserved": "محفوظ",
+  "bookingConfirmedScanCustomerQr": "پک اپ پر گاہک کا QR اسکین کریں",
   "manualBookingNext": "اگلا",
   "manualBookingReturnAfterPickup": "واپسی کا وقت پک اپ کے بعد ہونا چاہیے۔",
   "manualBookingConfirmTitle": "کرایہ کا جائزہ",
@@ -3143,6 +3158,45 @@
       }
     }
   },
+  "agreementWizardTitle": "معاہدہ",
+  "agreementWizardGenerated": "تیار شدہ",
+  "agreementWizardGuarantor": "ضامن",
+  "agreementWizardRelation": "رشتہ",
+  "agreementWizardNoGuarantor": "کوئی ضامن شامل نہیں",
+  "agreementWizardHandoverPhotos": "حوالگی کی تصاویر",
+  "agreementWizardPhotoCount": "{count} تصاویر",
+  "@agreementWizardPhotoCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "agreementWizardLicense": "لائسنس",
+  "agreementWizardTermsSignatures": "شرائط و دستخط",
+  "agreementWizardTermsSubtitle": "10 شرائط · 3 دستخط",
+  "agreementWizardSignatures": "دستخط",
+  "agreementWizardSaved": "محفوظ شدہ",
+  "agreementWizardAutoFetched": "خودکار حاصل شدہ",
+  "agreementWizardFinalize": "معاہدہ مکمل کریں",
+  "agreementWizardFinalizeHint": "مکمل کرنے سے پہلے تینوں دستخط ضروری ہیں۔",
+  "agreementWizardSignedByAll": "تینوں فریقوں کے دستخط ہو گئے",
+  "agreementWizardAgreementReady": "معاہدہ تیار ہے",
+  "agreementWizardFileMeta": "A4 · 1 صفحہ · {size}",
+  "@agreementWizardFileMeta": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "agreementWizardQrVerified": "QR تصدیق شدہ",
+  "agreementWizardShareTitle": "معاہدہ شیئر کریں",
+  "agreementWizardShareOnWhatsapp": "واٹس ایپ پر شیئر کریں",
+  "agreementWizardCopyLink": "تصدیقی لنک کاپی کریں",
+  "agreementWizardLinkCopied": "تصدیقی لنک کاپی ہو گیا",
+  "agreementWizardPrintSingleCopy": "ایک کاپی پرنٹ ہوگی",
+  "agreementWizardShopStamp": "دکان کی مہر",
   "dashboardGreeting": "السلام علیکم، {name}",
   "@dashboardGreeting": {
     "placeholders": {
@@ -3552,6 +3606,18 @@
   "fleetCalendarEmptyMessage": "اس کا شیڈول یہاں دیکھنے کے لیے گاڑی شامل کریں۔",
   "fleetCalendarBooked": "بک شدہ",
   "fleetCalendarAvailable": "دستیاب",
+  "fleetCalendarMonth": "مہینہ",
+  "fleetCalendarDay": "دن",
+  "fleetCalendarWeek": "ہفتہ",
+  "fleetCalendarOnline": "آن لائن",
+  "fleetCalendarWalkIn": "واک ان",
+  "fleetCalendarOnlineBooking": "آن لائن بکنگ",
+  "fleetCalendarManualBooking": "دستی بکنگ",
+  "fleetCalendarOverlapNote": "اوورلیپنگ بکنگز خود بخود بلاک ہو جاتی ہیں، اس لیے ایک گاڑی کبھی ڈبل بک نہیں ہو سکتی۔",
+  "fleetCalendarPrevDay": "پچھلا دن",
+  "fleetCalendarNextDay": "اگلا دن",
+  "fleetCalendarPrevWeek": "پچھلا ہفتہ",
+  "fleetCalendarNextWeek": "اگلا ہفتہ",
   "vehicleReviewDelivery": "ڈیلیوری اور وصولی",
   "vehicleReviewDiscounts": "رعایتیں",
   "vehicleReviewInsurance": "انشورنس اور تحفظ",
@@ -5482,6 +5548,69 @@
   "handoverBalanceNotYet": "ابھی نہیں",
   "handoverFuelRequired": "تصدیق سے پہلے ایندھن کی سطح منتخب کریں۔",
   "manualBookingLoadingVehicles": "گاڑیاں لوڈ ہو رہی ہیں…",
+  "manualBookingStepPayment": "ادائیگی",
+  "manualBookingStepSummary": "خلاصہ",
+  "manualBookingSearchCustomers": "رجسٹرڈ صارفین تلاش کریں",
+  "manualBookingNoCustomers": "ابھی کوئی رجسٹرڈ صارف نہیں ہے۔",
+  "manualBookingNoMatchingCustomers": "اس تلاش سے کوئی صارف نہیں ملا۔",
+  "manualBookingAddNewCustomer": "+ نیا صارف شامل کریں",
+  "manualBookingAddNewCustomerHint": "مکمل KYC طریقہ کھلتا ہے",
+  "manualBookingCustomerNotRegistered": "یہ صارف ابھی رجسٹرڈ نہیں ہے — پہلے اسے شامل کریں۔",
+  "manualBookingSelectCustomer": "جاری رکھنے کے لیے صارف منتخب کریں۔",
+  "manualBookingBlacklistedCustomer": "بلیک لسٹڈ — بکنگ نہیں ہو سکتی",
+  "manualBookingNotBlacklisted": "بلیک لسٹڈ نہیں",
+  "manualBookingKycDone": "KYC مکمل",
+  "manualBookingKycPending": "KYC زیر التوا",
+  "manualBookingSavedSignature": "محفوظ شدہ دستخط خودکار لگائے جائیں گے",
+  "manualBookingNoSignature": "کوئی محفوظ شدہ دستخط نہیں",
+  "manualBookingCarFree": "گاڑی اس وقت کے لیے خالی ہے",
+  "manualBookingCarBusy": "گاڑی اس وقت کے لیے پہلے سے بک ہے",
+  "manualBookingCarOnRent": "کرائے پر",
+  "manualBookingCarAvailable": "دستیاب",
+  "manualBookingCarMaintenance": "مرمت میں",
+  "manualBookingStartNow": "ابھی شروع کریں",
+  "manualBookingRentLine": "کرایہ",
+  "manualBookingDriverLine": "ڈرائیور",
+  "manualBookingDiscountLine": "رعایت",
+  "manualBookingDiscountHint": "رعایت (روپے)",
+  "manualBookingPaidNow": "ابھی ادا شدہ",
+  "manualBookingDepositReceived": "ڈپازٹ موصول",
+  "manualBookingDepositMethod": "ڈپازٹ کا طریقہ",
+  "manualBookingRemainingDues": "باقی واجبات",
+  "manualBookingAddToDues": "باقی رقم صارف کے واجبات میں شامل کریں",
+  "manualBookingCollectFull": "پوری رقم وصول کریں، یا باقی رقم صارف کے واجبات میں شامل کریں۔",
+  "manualBookingAmountInvalid": "درست رقم درج کریں۔",
+  "manualBookingDiscountTooHigh": "رعایت کرائے سے زیادہ نہیں ہو سکتی۔",
+  "manualBookingSummaryTitle": "بکنگ کا خلاصہ",
+  "manualBookingWalkInBadge": "واک ان",
+  "manualBookingShareReceipt": "رسید شیئر کریں",
+  "manualBookingAgreementNote": "معاہدہ حوالگی کے وقت محفوظ شدہ دستخطوں سے خودکار بنایا جائے گا",
+  "manualBookingReceiptMessage": "السلام علیکم {customer}، آپ کی واک ان بکنگ {bookingId} برائے {vehicle} کی تصدیق ہو گئی ہے۔ روانگی: {pickup}۔ کل: {total} روپے۔ باقی واجبات: {remaining} روپے۔ شکریہ!",
+  "manualBookingReceiptDone": "ہو گیا",
+  "manualBookingRentPaid": "ادا شدہ کرایہ",
+  "@manualBookingReceiptMessage": {
+    "description": "WhatsApp receipt for a confirmed walk-in booking.",
+    "placeholders": {
+      "customer": {
+        "type": "String"
+      },
+      "bookingId": {
+        "type": "String"
+      },
+      "vehicle": {
+        "type": "String"
+      },
+      "pickup": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      },
+      "remaining": {
+        "type": "String"
+      }
+    }
+  },
   "profileLoadFailed": "آپ کا پروفائل لوڈ نہیں ہو سکا۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔",
   "proofAdvanceCopied": "ایڈوانس رقم کلپ بورڈ پر کاپی ہو گئی",
   "proofCopyAdvance": "ایڈوانس رقم کاپی کریں",
@@ -5595,6 +5724,10 @@
   "triageKycPending": "KYC زیر التواء",
   "triageKycRejected": "KYC مسترد",
   "triageKycVerified": "KYC تصدیق شدہ",
+  "requestsKycCnicVerified": "تصدیق شدہ شناختی کارڈ",
+  "requestsKycCnicNotVerified": "شناختی کارڈ کی تصدیق نہیں ہوئی",
+  "requestsKycLicenseVerified": "تصدیق شدہ لائسنس",
+  "requestsKycLicenseNotVerified": "لائسنس کی تصدیق نہیں ہوئی",
   "triageTrustScore": "اعتماد {score}/5",
   "waitDurationDays": "{days} دن {hours} گھنٹے",
   "waitDurationHm": "{hours} گھنٹے {minutes} منٹ",
@@ -5694,5 +5827,155 @@
       }
     }
   },
-  "fleetReady": "تیار"
+  "fleetReady": "تیار",
+  "approveAssignTitle": "منظور کریں اور ادائیگی کا اکاؤنٹ منتخب کریں",
+  "approveAssignChooseAccount": "وہ اکاؤنٹ منتخب کریں جس میں گاہک ادائیگی کرے گا",
+  "approveAssignNoAccounts": "اس دکان کے لیے ابھی کوئی ادائیگی اکاؤنٹ ترتیب نہیں دیا گیا۔ منظوری سے پہلے دکان کی ترتیبات میں اکاؤنٹ شامل کریں۔",
+  "approveAssignTermsTitle": "ادائیگی کی شرائط",
+  "approveAssignAdvanceNow": "ابھی واجب پیشگی رقم: {amount}",
+  "@approveAssignAdvanceNow": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "approveAssignRemainingPickup": "وصولی پر باقی رقم: {amount}",
+  "@approveAssignRemainingPickup": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "approveAssignDepositPickup": "وصولی پر قابل واپسی ضمانت: {amount}",
+  "@approveAssignDepositPickup": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "approveAssignDeadline": "منظوری کے 30 منٹ کے اندر ادائیگی کریں — {time} تک",
+  "@approveAssignDeadline": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "approveAssignNoAutoCancel": "خودکار منسوخی نہیں ہے — آخری وقت صرف گاہک کو دکھایا جاتا ہے۔",
+  "approveAssignConfirm": "منظور کریں اور اکاؤنٹ منتخب کریں",
+  "paymentAssignedAccountOnly": "صرف نیچے دیے گئے منتخب اکاؤنٹ میں ادائیگی کریں۔",
+  "paymentPayByDeadline": "منظوری کے 30 منٹ کے اندر ادائیگی کریں — {time} تک",
+  "@paymentPayByDeadline": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "handoverWizardTitle": "حوالگی",
+  "handoverWizardStepVerify": "تصدیق",
+  "handoverWizardStepPayment": "ادائیگی",
+  "handoverWizardStepChecklist": "فہرست",
+  "handoverWizardStepPhotos": "تصاویر",
+  "handoverWizardStepAgreement": "معاہدہ",
+  "handoverWizardBookingMatched": "بکنگ مل گئی",
+  "handoverWizardFaceTitle": "چہرے کی جانچ",
+  "handoverWizardFaceHint": "گاہک کا موازنہ ان کی KYC پروفائل تصویر سے کریں۔ یہ دستی بصری جانچ ہے — کوئی خودکار چہرہ ملان نہیں کیا جاتا اور کوئی اسکور نہیں دکھایا جاتا۔",
+  "handoverWizardFaceConfirm": "چہرہ KYC تصویر سے ملتا ہے",
+  "handoverWizardFaceConfirmed": "چہرے کی جانچ کی تصدیق ہو گئی",
+  "handoverWizardFaceRequired": "آگے بڑھنے سے پہلے چہرے کی جانچ کی تصدیق کریں۔",
+  "handoverWizardFaceNoPhoto": "KYC تصویر موجود نہیں — اصل شناختی کارڈ چیک کریں۔",
+  "handoverWizardSelectBooking": "بکنگ دستی طور پر منتخب کریں",
+  "handoverWizardNoReadyBookings": "حوالگی کے لیے کوئی بکنگ تیار نہیں۔",
+  "handoverWizardAdvancePaid": "ایڈوانس (آن لائن ادا شدہ)",
+  "handoverWizardDepositMethod": "ڈپازٹ کا طریقہ",
+  "handoverWizardDepositReceived": "ڈپازٹ موصول ہوا",
+  "handoverWizardBalanceReceived": "بقیہ رقم موصول ہوئی",
+  "handoverWizardReceiptTitle": "حوالگی کی رسید",
+  "handoverWizardReceiptId": "رسید {id}",
+  "@handoverWizardReceiptId": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "handoverWizardReceiptView": "رسید دیکھیں",
+  "handoverWizardReceiptShare": "رسید واٹس ایپ پر شیئر کریں",
+  "handoverWizardReceiptMessage": "حوالگی کی رسید {receipt} برائے {vehicle}: کل روپے {total}، ایڈوانس روپے {advance}، بقیہ روپے {balance}، ڈپازٹ روپے {deposit}۔ — رینٹل ہب",
+  "@handoverWizardReceiptMessage": {
+    "placeholders": {
+      "receipt": {
+        "type": "String"
+      },
+      "vehicle": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      },
+      "advance": {
+        "type": "String"
+      },
+      "balance": {
+        "type": "String"
+      },
+      "deposit": {
+        "type": "String"
+      }
+    }
+  },
+  "handoverWizardReceiptWhatsappFailed": "واٹس ایپ نہیں کھل سکا۔",
+  "handoverWizardAcWorking": "ایئر کنڈیشنر کام کر رہا ہے",
+  "handoverWizardLightsWorking": "تمام لائٹس کام کر رہی ہیں",
+  "handoverPhotoInterior": "اندرونی",
+  "handoverPhotoDashboard": "ڈیش بورڈ",
+  "handoverWizardPhotoTakenAt": "{time} پر لی گئی",
+  "@handoverWizardPhotoTakenAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "handoverWizardDamageDiagram": "موجودہ نقصان نشان زد کریں",
+  "handoverWizardSignatureOnFile": "دستخط محفوظ ہیں",
+  "handoverWizardSignFresh": "تازہ دستخط کریں",
+  "handoverWizardUseSaved": "محفوظ دستخط استعمال کریں",
+  "handoverWizardGuarantorPending": "ضامن کے دستخط زیر التوا ہیں — معاہدے کے مرحلے میں دستخط ہوں گے۔",
+  "handoverWizardTripStarted": "سفر شروع {time}",
+  "@handoverWizardTripStarted": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "handoverWizardHandedOver": "گاڑی حوالے کر دی گئی",
+  "handoverWizardSharePdf": "معاہدہ PDF شیئر کریں",
+  "handoverWizardPaymentRequired": "آگے بڑھنے سے پہلے بتائیں کہ بقیہ رقم کیسے وصول ہوئی۔",
+  "handoverWizardDepositMethodRequired": "آگے بڑھنے سے پہلے بتائیں کہ ڈپازٹ کیسے وصول ہوا۔",
+  "handoverWizardChecklistRequired": "آگے بڑھنے سے پہلے اوڈومیٹر اور فیول لیول درج کریں۔",
+  "handoverWizardHandoverFailed": "حوالگی ناکام: {error}",
+  "@handoverWizardHandoverFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "rentalStartedTripLine": "شروع {time} · سفر جاری {elapsed}",
+  "@rentalStartedTripLine": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      },
+      "elapsed": {
+        "type": "String"
+      }
+    }
+  }
 }

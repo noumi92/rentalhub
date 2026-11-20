@@ -7,9 +7,16 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:printing/printing.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+import '../../../../core/di/injection_container.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../bookings/domain/entities/booking_entity.dart';
+import '../../../fleet/data/datasources/fleet_remote_data_source.dart';
+import '../../../fleet/domain/entities/vehicle_entity.dart';
+import '../../../handover/data/datasources/pdf_contract_generator.dart';
+import 'contract_trip_charges.dart';
 
 /// Audit item 17/18 (O20, O24): the agreement-PDF actions shared by
 /// the contract view and the Agreement Signed screen — share, print,
@@ -155,6 +162,119 @@ class ContractPdfActions {
       if (context.mounted) {
         AppFeedback.showError(context, l10n.contractPdfDownloadFailed(e.toString()));
       }
+      return null;
+    }
+  }
+
+  /// Item 10 (O47): regenerates the 1-page A4 PDF with all three
+  /// signatures plus the guarantor detail block and the true photo
+  /// count. Returns null when the handover odometer/fuel are
+  /// unknown — the PDF cannot be regenerated honestly then. A
+  /// failed vehicle lookup resolves to null rates, and the resolver
+  /// omits the night-stay / tolls lines rather than printing
+  /// defaults.
+  static Future<Uint8List?> regenerateAgreementPdf({
+    required BookingEntity booking,
+    required int? odometer,
+    required String? fuelLevel,
+    required int? securityDeposit,
+    required Uint8List? customerSignaturePng,
+    required Uint8List? ownerSignaturePng,
+    required Uint8List? guarantorSignaturePng,
+    required List<String> damageNotes,
+    required int? handoverPhotoCount,
+  }) async {
+    if (odometer == null || fuelLevel == null) return null;
+    VehicleEntity? vehicle;
+    try {
+      if (sl.isRegistered<FleetRemoteDataSource>()) {
+        vehicle = await sl<FleetRemoteDataSource>()
+            .getVehicleById(booking.vehicleId);
+      }
+    } catch (_) {
+      vehicle = null;
+    }
+    final charges = resolvePdfTripCharges(booking: booking, vehicle: vehicle);
+    return PdfContractGenerator.generateA4Agreement(
+      agreementId: booking.bookingId,
+      shopName: booking.shopName ?? 'RentalHub',
+      customerName: booking.customerName ?? '',
+      cnicNumber: booking.customerCnic ?? '',
+      customerPhone: booking.customerPhone ?? '',
+      vehicleDetails: booking.vehicleName ?? '',
+      packageType: booking.packageType,
+      isWithDriver: booking.isWithDriver,
+      pickupTime: booking.pickupTime,
+      returnTime: booking.returnTime,
+      totalAmount: booking.totalAmount,
+      advancePaid: booking.advancePaid,
+      securityDeposit: securityDeposit ?? 0,
+      initialOdometer: odometer,
+      fuelLevel: fuelLevel,
+      damageNotes: damageNotes,
+      customerSignaturePng: customerSignaturePng,
+      ownerSignaturePng: ownerSignaturePng,
+      guarantorSignaturePng: guarantorSignaturePng,
+      guarantorName: booking.guarantorName,
+      guarantorCnic: booking.guarantorCnic,
+      guarantorRelation: booking.guarantorRelation,
+      handoverPhotoCount: handoverPhotoCount,
+      vehiclePlate: booking.vehiclePlate,
+      tripType: charges.tripType,
+      driverNightStayPkr: charges.driverNightStayPkr,
+      tollsPaidBy: charges.tollsPaidBy,
+    );
+  }
+
+  /// Item 10 (O48): opens a WhatsApp chat with the customer
+  /// carrying the agreement verification link (manual send, same
+  /// pattern as the dues reminder — no automated send, D2-gated).
+  /// Returns false when there is no phone number or WhatsApp did
+  /// not open, so the caller can say so instead of claiming a send.
+  static Future<bool> sendVerificationToCustomer({
+    required BuildContext context,
+    required BookingEntity booking,
+  }) async {
+    final l10n = AppLocalizations.of(context)!;
+    final phone = booking.customerPhone ?? '';
+    final digits = phone.replaceAll(RegExp(r'\D'), '');
+    final number = digits.startsWith('92')
+        ? digits
+        : digits.startsWith('0')
+            ? '92${digits.substring(1)}'
+            : digits;
+    if (number.isEmpty) {
+      AppFeedback.showError(context, l10n.rentalStartedNoPhone);
+      return false;
+    }
+    final url = PdfContractGenerator.verificationUrlFor(booking.bookingId);
+    final message = l10n.agreementSignedSendMessage(
+      booking.customerName ?? l10n.requestsCustomerFallback,
+      url,
+    );
+    final uri = Uri.parse(
+        'https://wa.me/$number?text=${Uri.encodeComponent(message)}');
+    final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (!opened && context.mounted) {
+      AppFeedback.showError(context, l10n.rentalStartedWhatsappFailed);
+    }
+    return opened;
+  }
+
+  /// Item 10 (O46): the customer's driving-license number off
+  /// `customers/{customerId}`, when one was recorded. Anything
+  /// unreadable resolves to null — the row is omitted, never
+  /// invented. Trust score is deliberately NOT resolved here: it is
+  /// a live admin computation, not a field on the customer record.
+  static Future<String?> resolveCustomerLicenseNumber({
+    required String customerId,
+  }) async {
+    try {
+      final fs = FirebaseFirestore.instance;
+      final doc = await fs.collection('customers').doc(customerId).get();
+      final license = doc.data()?['licenseNumber'] as String?;
+      return license != null && license.isNotEmpty ? license : null;
+    } catch (_) {
       return null;
     }
   }

@@ -297,14 +297,18 @@ void main() {
       final pkg24 =
           testVehicle.packages.firstWhere((p) => p.label == '24h');
       // The confirm step navigates with go_router, so the test app
-      // needs a router; the confirmed route is a stub — the booked
-      // total is asserted against the data source below.
+      // needs a router; the receipt route is a stub — the booked
+      // total is asserted against the data source below. Step-3
+      // money for this out-of-city with-driver trip: rent 34,500
+      // (3 × 11,500 out-of-city day) + driver 8,500 (3 × 1,500
+      // surcharge + 2 × 2,000 night stay) = 43,000.
       final router = GoRouter(
         initialLocation: '/confirm',
         routes: [
           GoRoute(
             path: '/confirm',
             builder: (_, __) => OwnerManualBookingConfirmView(
+              customerId: 'cust-counter-1',
               customerName: 'Counter Customer',
               customerPhone: '03001234567',
               customerCnic: '35202-1234567-1',
@@ -314,12 +318,18 @@ void main() {
               isOutOfCity: true,
               pickupTime: DateTime(2026, 10, 26, 10),
               returnTime: DateTime(2026, 10, 29, 10),
+              rentAmount: 34500,
+              driverAmount: 8500,
+              advanceReceived: 3000,
+              paymentMethod: 'cash',
+              depositMethod: 'cash',
+              addRemainingToDues: true,
             ),
           ),
           GoRoute(
-            path: '/owner/booking-confirmed/:id',
-            builder: (_, state) =>
-                Scaffold(body: Text('confirmed-stub ${state.pathParameters['id']}')),
+            path: '/owner/manual-booking/receipt',
+            builder: (_, __) =>
+                const Scaffold(body: Text('receipt-stub')),
           ),
         ],
       );
@@ -338,7 +348,7 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('Confirm Booking'));
       await tester.pumpAndSettle();
-      expect(find.textContaining('confirmed-stub'), findsOneWidget);
+      expect(find.textContaining('receipt-stub'), findsOneWidget);
 
       // The stored booking total is the package total (39,000) plus
       // the 2-night stay (4,000) — the same sum the breakdown shows.

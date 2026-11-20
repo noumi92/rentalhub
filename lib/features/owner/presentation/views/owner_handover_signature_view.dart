@@ -153,6 +153,8 @@ class _OwnerHandoverSignatureViewState extends State<OwnerHandoverSignatureView>
         photoFrontUrl: _photos['front'], photoBackUrl: _photos['back'], photoLeftUrl: _photos['left'], photoRightUrl: _photos['right'],
         documentsGiven: _documentsGiven.toList(), accessories: _accessories.toList(), keysHandedOver: _keysHandedOver,
         vehiclePlate: _vehiclePlate, vehicleColour: _vehicleColour, vehicleFuel: _vehicleFuel,
+        // Item 10 (O46–O48): guarantor identity for the PDF block.
+        guarantorName: booking.guarantorName, guarantorCnic: booking.guarantorCnic, guarantorRelation: booking.guarantorRelation,
         customerSignaturePng: customerPng, ownerSignaturePng: ownerPng,
         // OW-m25: was hardcoded true — the offline queue would never have queued. Real connectivity now.
         isOnline: sl.isRegistered<ConnectivityService>() ? sl<ConnectivityService>().isOnline : true,
@@ -163,9 +165,10 @@ class _OwnerHandoverSignatureViewState extends State<OwnerHandoverSignatureView>
 
       if (mounted) {
         AppFeedback.showSuccess(context, l10n.handoverCertified);
-        // Audit item 17 (O24): handover completion lands on the
-        // Agreement Signed screen, which continues to Rental Started.
-        context.pushReplacement(RouteNames.ownerAgreementSigned.replaceFirst(':id', booking.bookingId));
+        // Item 10 (O46–O48): handover completion lands on the
+        // agreement wizard (preview → terms → share) instead of the
+        // old Agreement Signed screen; that route stays reachable.
+        context.pushReplacement(RouteNames.ownerAgreementWizard.replaceFirst(':id', booking.bookingId));
       }
     } catch (e) {
       if (mounted) AppFeedback.showError(context, l10n.handoverCompleteFailed(e.toString()));

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/data/offline_sync_queue.dart';
-import '../../../../core/data/queued_upload.dart';
+import '../services/payment_proof_upload_service.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/network/cpanel_storage_client.dart';
 import '../../../../core/utils/money_format.dart';
@@ -73,29 +73,52 @@ class _PaymentProofUploadViewState extends State<PaymentProofUploadView> {
 
     setState(() => _isSubmitting = true);
     try {
-      // D2: the proof must really upload. A failed upload is an error
-      // the customer sees — never a made-up storage URL filed as their
-      // proof for the shop to "verify".
-      // Phase B (B3): ...unless the device is offline. Then the
-      // receipt is queued and the proof is recorded with its TID —
-      // the image follows on sync, and nothing fake is filed.
+      // Item 8: the same upload path as the vehicle / handover
+      // photo uploads (PaymentProofUploadService): uploadOrQueue
+      // with folder 'payments', targeting
+      // bookings/{id}.paymentProofUrl. It never returns a fake URL.
       final cpanel = sl<CPanelStorageClient>();
       final queue =
           sl.isRegistered<OfflineSyncQueue>() ? sl<OfflineSyncQueue>() : null;
-      String proofUrl = '';
-      try {
-        final key = await cpanel.uploadFile(file: _selectedFile!, userUid: widget.booking.customerId, folder: 'payments');
-        proofUrl = cpanel.getSignedMediaUrl(key, widget.booking.customerId);
-      } catch (_) {
-        if (queue == null) rethrow;
-        await enqueueUpload(file: _selectedFile!, userUid: widget.booking.customerId, folder: 'payments', queue: queue, targetCollection: 'bookings', targetDocId: widget.booking.bookingId, targetField: 'paymentProofUrl', extra: {'status': 'payment_submitted', 'transactionId': tid});
+      final result = await PaymentProofUploadService.uploadProof(
+        client: cpanel,
+        file: _selectedFile!,
+        customerId: widget.booking.customerId,
+        bookingId: widget.booking.bookingId,
+        transactionId: tid,
+        queue: queue,
+      );
+
+      // GUARD (non-negotiable): no URL, no `payment_submitted`, no
+      // success message. updatePaymentProof stamps status +
+      // proofSubmittedAt unconditionally, so it only runs on a real
+      // URL — the old code called it with '' after a failed upload
+      // and showed "Proof submitted!" anyway.
+      switch (result.status) {
+        case PaymentProofUploadStatus.queued:
+          // Upload failed but the receipt is queued: the drain
+          // files the real URL + payment_submitted when online.
+          // A pending state, not a submission.
+          if (mounted) AppFeedback.showInfo(context, l10n.proofUploadQueued);
+          return;
+        case PaymentProofUploadStatus.failed:
+          if (mounted) {
+            AppFeedback.showError(context, l10n.proofSubmitFailedGeneric);
+          }
+          return;
+        case PaymentProofUploadStatus.uploaded:
+          break;
       }
 
       final ds = sl<BookingRemoteDataSource>();
-      final updated = await ds.updatePaymentProof(bookingId: widget.booking.bookingId, paymentProofUrl: proofUrl, transactionId: tid);
+      final updated = await ds.updatePaymentProof(
+        bookingId: widget.booking.bookingId,
+        paymentProofUrl: result.proofUrl!,
+        transactionId: tid,
+      );
 
       if (mounted) {
-        AppFeedback.showSuccess(context, proofUrl.isEmpty ? l10n.proofSubmittedOffline : l10n.proofSubmitted);
+        AppFeedback.showSuccess(context, l10n.proofSubmitted);
         widget.onProofSubmitted?.call(updated);
       }
     } catch (e) {

@@ -64,6 +64,33 @@ class BookingEntity extends Equatable {
   final String? outCityMode;
   final int? outCityPerKmPkr;
 
+  /// Booking source ('online' | 'walk_in'). Older docs carry no
+  /// value — [BookingModel.fromMap] backfills it from the
+  /// customerId ('walkin-…' => 'walk_in', anything else 'online').
+  final String? origin;
+
+  /// When the customer submitted payment proof (set by
+  /// updatePaymentProof). Null until a proof is submitted.
+  final DateTime? proofSubmittedAt;
+
+  /// Approve step: the payment account the owner chose for this
+  /// booking and the deadline for the customer to pay into it.
+  /// Null until the owner approves with an account selected.
+  final String? selectedPaymentAccount;
+  final DateTime? paymentDeadline;
+
+  /// The guarantor's relationship to the customer (e.g. "Cousin").
+  /// Null when no guarantor was picked or no relation recorded.
+  final String? guarantorRelation;
+
+  /// Deposit received for the booking (Rs). Null until a deposit
+  /// is recorded; later workers write it.
+  final double? depositAmountPkr;
+
+  /// Discount given at the counter (Rs, walk-in step 3). Null when
+  /// no discount was given; the booked total is already net of it.
+  final double? discountAmountPkr;
+
   const BookingEntity({
     required this.bookingId,
     required this.customerId,
@@ -99,6 +126,13 @@ class BookingEntity extends Equatable {
     this.fixedRouteSummary,
     this.outCityMode,
     this.outCityPerKmPkr,
+    this.origin,
+    this.proofSubmittedAt,
+    this.selectedPaymentAccount,
+    this.paymentDeadline,
+    this.guarantorRelation,
+    this.depositAmountPkr,
+    this.discountAmountPkr,
   });
 
   BookingEntity copyWith({
@@ -126,6 +160,13 @@ class BookingEntity extends Equatable {
     String? fixedRouteSummary,
     String? outCityMode,
     int? outCityPerKmPkr,
+    String? origin,
+    DateTime? proofSubmittedAt,
+    String? selectedPaymentAccount,
+    DateTime? paymentDeadline,
+    String? guarantorRelation,
+    double? depositAmountPkr,
+    double? discountAmountPkr,
   }) {
     return BookingEntity(
       bookingId: bookingId,
@@ -164,6 +205,14 @@ class BookingEntity extends Equatable {
       fixedRouteSummary: fixedRouteSummary ?? this.fixedRouteSummary,
       outCityMode: outCityMode ?? this.outCityMode,
       outCityPerKmPkr: outCityPerKmPkr ?? this.outCityPerKmPkr,
+      origin: origin ?? this.origin,
+      proofSubmittedAt: proofSubmittedAt ?? this.proofSubmittedAt,
+      selectedPaymentAccount:
+          selectedPaymentAccount ?? this.selectedPaymentAccount,
+      paymentDeadline: paymentDeadline ?? this.paymentDeadline,
+      guarantorRelation: guarantorRelation ?? this.guarantorRelation,
+      depositAmountPkr: depositAmountPkr ?? this.depositAmountPkr,
+      discountAmountPkr: discountAmountPkr ?? this.discountAmountPkr,
     );
   }
 
@@ -203,5 +252,12 @@ class BookingEntity extends Equatable {
         fixedRouteSummary,
         outCityMode,
         outCityPerKmPkr,
+        origin,
+        proofSubmittedAt,
+        selectedPaymentAccount,
+        paymentDeadline,
+        guarantorRelation,
+        depositAmountPkr,
+        discountAmountPkr,
       ];
 }

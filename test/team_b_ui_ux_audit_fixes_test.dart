@@ -33,6 +33,7 @@ import 'package:rentalhub/features/owner/presentation/widgets/dashboard/dashboar
 import 'package:rentalhub/features/owner/presentation/widgets/dashboard/needs_review_card.dart';
 import 'package:rentalhub/features/owner/presentation/widgets/fleet/fleet_vehicle_card.dart';
 import 'package:rentalhub/features/owner/presentation/widgets/operations/request_triage_card.dart';
+import 'package:rentalhub/features/owner/presentation/widgets/operations/triage_trust_row.dart';
 import 'package:rentalhub/features/trust/data/datasources/kyc_remote_data_source.dart';
 import 'package:rentalhub/features/trust/data/services/trust_score_service.dart';
 import 'package:rentalhub/features/trust/domain/entities/kyc_document_entity.dart';
@@ -542,7 +543,7 @@ void main() {
       expect(tester.takeException(), isNull);
     });
 
-    testWidgets('card shows trust score, KYC badge and prior trips',
+    testWidgets('card shows trust score, KYC badges and prior trips',
         (tester) async {
       await tester.pumpWidget(_wrap(RequestTriageCard(
         booking: _booking(),
@@ -554,8 +555,27 @@ void main() {
       )));
       await tester.pumpAndSettle();
       expect(find.text('Trust 4.2/5'), findsOneWidget);
-      expect(find.text('KYC verified'), findsOneWidget);
+      // O17: the single combined KYC badge is split per document.
+      expect(find.text('Verified CNIC'), findsOneWidget);
+      expect(find.text('Verified License'), findsOneWidget);
+      expect(find.text('KYC verified'), findsNothing);
       expect(find.text('3 prior trips'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('trust row shows each KYC document separately when split',
+        (tester) async {
+      await tester.pumpWidget(_wrap(TriageTrustRow(
+        customerId: 'cust-1',
+        trustScore: 3.5,
+        kycStatus: 'submitted',
+        cnicVerified: true,
+        licenseVerified: false,
+        completedTrips: 1,
+      )));
+      await tester.pumpAndSettle();
+      expect(find.text('Verified CNIC'), findsOneWidget);
+      expect(find.text('License not verified'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
 

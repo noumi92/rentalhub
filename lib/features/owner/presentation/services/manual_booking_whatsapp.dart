@@ -53,3 +53,41 @@ String _waNumber(String? phone) {
   if (digits.startsWith('0')) return '92${digits.substring(1)}';
   return digits;
 }
+
+/// O24: share the walk-in receipt on WhatsApp (wa.me, same pattern
+/// as the booking confirmation above). Opens the owner's WhatsApp
+/// with the receipt pre-written; nothing is sent automatically.
+Future<void> sendManualBookingReceipt(
+  BuildContext context, {
+  required String bookingId,
+  required String customerName,
+  required String customerPhone,
+  required String vehicleName,
+  required DateTime pickupTime,
+  required int total,
+  required int remainingDues,
+}) async {
+  final l10n = AppLocalizations.of(context)!;
+  final number = _waNumber(customerPhone);
+  if (number.isEmpty) {
+    if (context.mounted) {
+      AppFeedback.showError(context, l10n.financeDuesNoPhoneError);
+    }
+    return;
+  }
+  final when = DateFormat('d MMM yyyy, h:mm a').format(pickupTime);
+  final message = l10n.manualBookingReceiptMessage(
+    customerName,
+    bookingId,
+    vehicleName,
+    when,
+    formatRs(total),
+    formatRs(remainingDues),
+  );
+  final uri = Uri.parse(
+      'https://wa.me/$number?text=${Uri.encodeComponent(message)}');
+  final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
+  if (!opened && context.mounted) {
+    AppFeedback.showError(context, l10n.bookingConfirmedWhatsappFailed);
+  }
+}

@@ -51,7 +51,25 @@ class CPanelStorageClient {
 
     if (streamedResponse.statusCode == 200) {
       final json = jsonDecode(responseBody) as Map<String, dynamic>;
-      return (json['url'] ?? json['filename'] ?? '') as String;
+      // upload.php returns BOTH a full public `url` and a bare
+      // `filename`. The key media.php serves is the RELATIVE path
+      // `<folder>/<filename>` — returning the full URL here used to
+      // wrap it as the media.php key, so every stored image link
+      // was broken (payment proof, vehicle photos, KYC). Prefer
+      // the filename; fall back to the path after '/storage/' in
+      // `url` for servers that only return the full URL.
+      final filename = json['filename'] as String?;
+      if (filename != null && filename.isNotEmpty) {
+        return '$folder/$filename';
+      }
+      final url = json['url'] as String?;
+      if (url != null && url.isNotEmpty) {
+        const marker = '/storage/';
+        final idx = url.indexOf(marker);
+        if (idx >= 0) return url.substring(idx + marker.length);
+        return url;
+      }
+      return '';
     } else {
       throw ServerException(
           message:
@@ -59,10 +77,23 @@ class CPanelStorageClient {
     }
   }
 
-  /// Generates a short-lived signed URL for private media viewing
+  /// Generates a short-lived signed URL for private media viewing.
+  /// [fileKey] is the relative path media.php serves
+  /// (`<category>/<filename>`). Back-compat: Firestore docs written
+  /// before the key fix store the full public URL as the key, and
+  /// some store a full signed URL — both are stripped down to the
+  /// relative key here so old stored values keep working.
   String getSignedMediaUrl(String fileKey, [String? userUid]) {
+    var key = fileKey.trim();
+    const marker = '/storage/';
+    final idx = key.indexOf(marker);
+    if (idx >= 0) key = key.substring(idx + marker.length);
+    final uri = Uri.tryParse(key);
+    if (uri != null && uri.queryParameters.containsKey('key')) {
+      key = uri.queryParameters['key'] ?? key;
+    }
     final token = generateAuthToken(userUid);
-    return '$baseUrl${ApiEndpoints.mediaEndpoint}?key=${Uri.encodeComponent(fileKey)}&auth=${Uri.encodeComponent(token)}';
+    return '$baseUrl${ApiEndpoints.mediaEndpoint}?key=${Uri.encodeComponent(key)}&auth=${Uri.encodeComponent(token)}';
   }
 }
 

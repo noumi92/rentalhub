@@ -28,6 +28,12 @@ class ContractPaperSheet extends StatelessWidget {
   final String? guarantorSignatureUrl;
   final Uint8List? guarantorSignaturePng;
   final String? guarantorName;
+  /// Item 10 (O46): the customer's driving-license number, when
+  /// resolved — null omits the row, never invented.
+  final String? licenseNumber;
+  /// Item 10 (O46): the true handover photo count — null omits
+  /// the row, never the spec's "8".
+  final int? handoverPhotoCount;
 
   const ContractPaperSheet({
     super.key,
@@ -40,6 +46,8 @@ class ContractPaperSheet extends StatelessWidget {
     this.guarantorSignatureUrl,
     this.guarantorSignaturePng,
     this.guarantorName,
+    this.licenseNumber,
+    this.handoverPhotoCount,
   });
 
   @override
@@ -103,6 +111,8 @@ class ContractPaperSheet extends StatelessWidget {
           _fieldRow(context, l10n.contractFieldHirer, booking.customerName ?? l10n.contractWalkInCustomer),
           _fieldRow(context, l10n.contractFieldContact, booking.customerPhone ?? '—'),
           _fieldRow(context, l10n.contractFieldCnic, booking.customerCnic ?? l10n.contractNotProvided),
+          if (licenseNumber != null && licenseNumber!.isNotEmpty)
+            _fieldRow(context, l10n.agreementWizardLicense, licenseNumber!),
           const Divider(height: 20),
           _fieldRow(context, l10n.contractFieldVehicle, booking.vehicleName ?? l10n.summaryVehicle),
           if (booking.vehiclePlate != null && booking.vehiclePlate!.isNotEmpty)
@@ -118,6 +128,9 @@ class ContractPaperSheet extends StatelessWidget {
               odometer == null ? '—' : '$odometer KM'),
           _fieldRow(context, l10n.contractFieldFuel,
               fuelLevel == null ? '—' : fuelLevelLabel(l10n, fuelLevel!)),
+          if (handoverPhotoCount != null)
+            _fieldRow(context, l10n.agreementWizardHandoverPhotos,
+                l10n.agreementWizardPhotoCount(handoverPhotoCount!)),
           _fieldRow(context, l10n.contractFieldTotalPaid, l10n.amountRs(formatRs(booking.totalAmount))),
           _fieldRow(context, l10n.contractFieldAdvance, l10n.amountRs(formatRs(booking.advancePaid))),
           _fieldRow(context, l10n.contractFieldRemaining, l10n.amountRs(formatRs(booking.remainingBalance))),

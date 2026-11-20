@@ -69,10 +69,14 @@ class RouteNames {
   static const String ownerManualBooking = '/owner/manual-booking';
   static const String ownerManualBookingConfirm =
       '/owner/manual-booking/confirm';
+  static const String ownerManualBookingReceipt =
+      '/owner/manual-booking/receipt';
   static const String ownerBookingConfirmed = '/owner/booking-confirmed/:id';
   static const String ownerPaymentProof = '/owner/payment/:id';
   static const String ownerHandover = '/owner/handover/:id';
-  static const String ownerAgreementSigned = '/owner/agreement-signed/:id';
+  // Item 10 (O46–O48): the agreement wizard (preview → terms →
+  // share); `?step=0|1|2` picks the starting step, default 0.
+  static const String ownerAgreementWizard = '/owner/agreement/:id';
   static const String ownerRentalStarted = '/owner/rental-started/:id';
   static const String ownerRecordDamage = '/owner/record-damage/:id';
   static const String ownerRecordExtraCharges =

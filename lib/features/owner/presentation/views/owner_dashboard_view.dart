@@ -97,7 +97,8 @@ class _OwnerDashboardViewState extends State<OwnerDashboardView> {
                 FirebaseFirestore.instance, widget.shopId))
             .get();
         final data = doc.data() ?? {};
-        shopName = (data['name'] ?? data['shopName'] ?? '') as String;
+        // Item 7: snake_case first — live docs store shop_name (ShopModel.toMap()), not `name`.
+        shopName = (data['shop_name'] ?? data['name'] ?? data['shopName'] ?? '') as String;
         ownerName = (data['owner_name'] ?? data['ownerName'] ?? '') as String;
       } catch (_) {}
       if (mounted) {

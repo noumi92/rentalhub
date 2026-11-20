@@ -489,13 +489,14 @@ class _ManualBookingPackageSelectorState
   }
 }
 
-/// Lightweight 3-step indicator for the walk-in booking wizard
-/// (Customer / Vehicle+Package / Confirm). Display-only: the wizard
-/// stays a single page; the indicator just shows where the owner is.
+/// Lightweight 4-step indicator for the walk-in booking wizard
+/// (Customer / Car / Payment / Summary). Display-only: the wizard
+/// moves between per-step screens; the indicator just shows where
+/// the owner is.
 class ManualBookingStepIndicator extends StatelessWidget {
   const ManualBookingStepIndicator({super.key, required this.currentStep});
 
-  /// 1-based step the owner is on (1..3).
+  /// 1-based step the owner is on (1..4).
   final int currentStep;
 
   @override
@@ -504,7 +505,8 @@ class ManualBookingStepIndicator extends StatelessWidget {
     final labels = [
       l10n.manualBookingCustomerSection,
       l10n.manualBookingVehicleSection,
-      l10n.manualBookingConfirmTitle,
+      l10n.manualBookingStepPayment,
+      l10n.manualBookingStepSummary,
     ];
     final colorScheme = Theme.of(context).colorScheme;
     return Row(

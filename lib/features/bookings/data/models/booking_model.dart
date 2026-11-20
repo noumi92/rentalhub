@@ -1,4 +1,16 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../../domain/entities/booking_entity.dart';
+
+/// Parses a stored date that may be an ISO string (what [toMap]
+/// writes), a Firestore [Timestamp], or epoch milliseconds.
+DateTime? _parseDateTime(Object? value) {
+  if (value == null) return null;
+  if (value is Timestamp) return value.toDate();
+  if (value is DateTime) return value;
+  if (value is int) return DateTime.fromMillisecondsSinceEpoch(value);
+  return DateTime.tryParse(value.toString());
+}
 
 class BookingModel extends BookingEntity {
   const BookingModel({
@@ -36,6 +48,13 @@ class BookingModel extends BookingEntity {
     super.fixedRouteSummary,
     super.outCityMode,
     super.outCityPerKmPkr,
+    super.origin,
+    super.proofSubmittedAt,
+    super.selectedPaymentAccount,
+    super.paymentDeadline,
+    super.guarantorRelation,
+    super.depositAmountPkr,
+    super.discountAmountPkr,
   });
 
   Map<String, dynamic> toMap() {
@@ -74,14 +93,29 @@ class BookingModel extends BookingEntity {
       if (fixedRouteSummary != null) 'fixedRouteSummary': fixedRouteSummary,
       if (outCityMode != null) 'outCityMode': outCityMode,
       if (outCityPerKmPkr != null) 'outCityPerKmPkr': outCityPerKmPkr,
+      if (origin != null) 'origin': origin,
+      if (proofSubmittedAt != null)
+        'proofSubmittedAt': proofSubmittedAt!.toIso8601String(),
+      if (selectedPaymentAccount != null)
+        'selectedPaymentAccount': selectedPaymentAccount,
+      if (paymentDeadline != null)
+        'paymentDeadline': paymentDeadline!.toIso8601String(),
+      if (guarantorRelation != null) 'guarantorRelation': guarantorRelation,
+      if (depositAmountPkr != null) 'depositAmountPkr': depositAmountPkr,
+      if (discountAmountPkr != null) 'discountAmountPkr': discountAmountPkr,
     };
   }
 
   factory BookingModel.fromMap(Map<String, dynamic> map, [String? id]) {
     final bId = id ?? (map['bookingId'] as String? ?? '');
+    final customerId = (map['customerId'] as String?) ?? '';
+    // Backfill: older docs carry no origin — walk-in bookings were
+    // filed under a 'walkin-…' customerId, everything else is online.
+    final origin = (map['origin'] as String?) ??
+        (customerId.startsWith('walkin-') ? 'walk_in' : 'online');
     return BookingModel(
       bookingId: bId,
-      customerId: (map['customerId'] as String?) ?? '',
+      customerId: customerId,
       shopId: (map['shopId'] as String?) ?? '',
       vehicleId: (map['vehicleId'] as String?) ?? '',
       packageType: (map['packageType'] as String?) ?? '24h',
@@ -119,6 +153,13 @@ class BookingModel extends BookingEntity {
       fixedRouteSummary: map['fixedRouteSummary'] as String?,
       outCityMode: map['outCityMode'] as String?,
       outCityPerKmPkr: (map['outCityPerKmPkr'] as num?)?.toInt(),
+      origin: origin,
+      proofSubmittedAt: _parseDateTime(map['proofSubmittedAt']),
+      selectedPaymentAccount: map['selectedPaymentAccount'] as String?,
+      paymentDeadline: _parseDateTime(map['paymentDeadline']),
+      guarantorRelation: map['guarantorRelation'] as String?,
+      depositAmountPkr: (map['depositAmountPkr'] as num?)?.toDouble(),
+      discountAmountPkr: (map['discountAmountPkr'] as num?)?.toDouble(),
     );
   }
 
@@ -158,6 +199,13 @@ class BookingModel extends BookingEntity {
       fixedRouteSummary: entity.fixedRouteSummary,
       outCityMode: entity.outCityMode,
       outCityPerKmPkr: entity.outCityPerKmPkr,
+      origin: entity.origin,
+      proofSubmittedAt: entity.proofSubmittedAt,
+      selectedPaymentAccount: entity.selectedPaymentAccount,
+      paymentDeadline: entity.paymentDeadline,
+      guarantorRelation: entity.guarantorRelation,
+      depositAmountPkr: entity.depositAmountPkr,
+      discountAmountPkr: entity.discountAmountPkr,
     );
   }
 }

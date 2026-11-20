@@ -56,7 +56,10 @@ void main() {
       final restored = BookingModel.fromMap(rejected.toMap(), 'RH-d1');
       expect(restored.status, 'rejected');
       expect(restored.rejectionReason, 'No car free');
-      expect(restored.toMap(), rejected.toMap());
+      // fromMap backfills a missing origin: 'cust-…' is not a
+      // walk-in id, so the restored map gains 'origin': 'online'.
+      expect(restored.origin, 'online');
+      expect(restored.toMap(), {...rejected.toMap(), 'origin': 'online'});
     });
 
     test('rejecting a request stores the reason', () async {
@@ -350,14 +353,14 @@ void main() {
       await tester.pumpWidget(appFor(booking));
       await tester.pumpAndSettle();
 
-      await tester.ensureVisible(find.text('Reject Proof'));
-      await tester.tap(find.text('Reject Proof'));
+      await tester.ensureVisible(find.text('Payment Not Received'));
+      await tester.tap(find.text('Payment Not Received'));
       await tester.pumpAndSettle();
       expect(find.text('Reject this proof?'), findsOneWidget);
       await tester.enterText(
           find.widgetWithText(TextField, 'Reason (required)'),
           'Screenshot is unreadable.');
-      await tester.tap(find.text('Reject Proof').last);
+      await tester.tap(find.text('Payment Not Received').last);
       await tester.pumpAndSettle();
       final stored = await ds.getBookingById(booking.bookingId);
       expect(stored?.status, 'approved');
@@ -414,7 +417,7 @@ void main() {
   });
 
   group('Audit §12 — manual booking starts with no demo identity', () {
-    testWidgets('customer, phone and CNIC fields start empty',
+    testWidgets('step 1 has a customer search, not typed name/phone/CNIC fields',
         (tester) async {
       await tester.pumpWidget(
         MaterialApp(
@@ -425,22 +428,23 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      // The old demo defaults must never appear as real values.
+      // Walk-in rework (O21): registered customers only — the old
+      // free-text identity fields are gone; the old demo defaults
+      // must never appear as real values either.
       expect(find.text('Walk-in Customer'), findsNothing);
       expect(find.text('0300-1122334'), findsNothing);
       expect(find.text('35201-1234567-1'), findsNothing);
-      final nameField = tester.widget<TextField>(
-          find.widgetWithText(TextField, 'Customer Full Name'));
-      expect(nameField.controller?.text, isEmpty);
-      final phoneField = tester.widget<TextField>(
-          find.widgetWithText(TextField, 'Phone Number'));
-      expect(phoneField.controller?.text, isEmpty);
-      final cnicField = tester.widget<TextField>(
-          find.widgetWithText(TextField, 'NADRA CNIC'));
-      expect(cnicField.controller?.text, isEmpty);
+      expect(find.widgetWithText(TextField, 'Customer Full Name'),
+          findsNothing);
+      expect(find.widgetWithText(TextField, 'NADRA CNIC'), findsNothing);
+      expect(find.byKey(const Key('manual-booking-customer-search')),
+          findsOneWidget);
+      expect(find.byKey(const Key('manual-booking-add-customer')),
+          findsOneWidget);
+      expect(find.text('+ Add New Customer'), findsOneWidget);
     });
 
-    testWidgets('real query params still prefill the fields',
+    testWidgets('an unregistered prefill shows the add-customer hint',
         (tester) async {
       await tester.pumpWidget(
         MaterialApp(
@@ -455,9 +459,70 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Ayesha Khan'), findsOneWidget);
-      expect(find.text('03001234567'), findsOneWidget);
-      expect(find.text('35202-1234567-1'), findsOneWidget);
+      // No saved customer matches in the test env, so the step
+      // reports the handoff instead of prefilling typed fields.
+      expect(
+          find.text(
+              'This customer is not registered yet — add them first.'),
+          findsOneWidget);
+      expect(find.byKey(const Key('manual-booking-add-customer')),
+          findsOneWidget);
+    });
+  });
+
+  group('Booking data-model foundation — new fields', () {
+    test('origin, proof time, payment account, guarantor relation '
+        'and deposit round-trip through the model', () {
+      final model = BookingModel(
+        bookingId: 'RH-new-1',
+        customerId: 'cust-new-1',
+        shopId: 'shop-1',
+        vehicleId: 'veh-1',
+        packageType: '24h',
+        pickupTime: DateTime(2026, 11, 6, 9),
+        returnTime: DateTime(2026, 11, 7, 9),
+        totalAmount: 9000,
+        remainingBalance: 9000,
+        origin: 'online',
+        proofSubmittedAt: DateTime(2026, 11, 6, 10, 30),
+        selectedPaymentAccount: 'JazzCash 0300-1111111',
+        paymentDeadline: DateTime(2026, 11, 7, 9),
+        guarantorRelation: 'Cousin',
+        depositAmountPkr: 5000,
+      );
+      final restored = BookingModel.fromMap(model.toMap(), 'RH-new-1');
+      expect(restored.origin, 'online');
+      expect(restored.proofSubmittedAt, DateTime(2026, 11, 6, 10, 30));
+      expect(restored.selectedPaymentAccount, 'JazzCash 0300-1111111');
+      expect(restored.paymentDeadline, DateTime(2026, 11, 7, 9));
+      expect(restored.guarantorRelation, 'Cousin');
+      expect(restored.depositAmountPkr, 5000);
+      expect(restored.toMap(), model.toMap());
+    });
+
+    test('updatePaymentProof stamps proofSubmittedAt', () async {
+      final ds = BookingRemoteDataSource();
+      final created = await ds.createBookingRequest(
+        customerId: 'cust-proof-1',
+        shopId: 'shop-1',
+        vehicleId: 'veh-1',
+        packageType: '24h',
+        isWithDriver: false,
+        pickupTime: DateTime(2026, 11, 6, 9),
+        returnTime: DateTime(2026, 11, 7, 9),
+        totalAmount: 9000,
+        advanceRequired: 1000,
+      );
+      expect(created.origin, 'online');
+      expect(created.proofSubmittedAt, isNull);
+      final proofed = await ds.updatePaymentProof(
+        bookingId: created.bookingId,
+        paymentProofUrl: 'https://example.test/proof.jpg',
+        transactionId: 'TID-1',
+      );
+      expect(proofed.proofSubmittedAt, isNotNull);
+      final reloaded = await ds.getBookingById(created.bookingId);
+      expect(reloaded?.proofSubmittedAt, isNotNull);
     });
   });
 }

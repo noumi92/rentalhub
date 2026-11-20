@@ -106,11 +106,13 @@ class _OwnerPaymentAccountsViewState extends State<OwnerPaymentAccountsView> {
                   ? RequestedBookingDetail(
                       booking: _booking,
                       showActions: isShopOwner,
+                      firestore: widget.firestore,
                       onApproved: (updated) =>
                           setState(() => _booking = updated),
                     )
                   : ApprovedAccountsBody(
                       booking: _booking,
+                      firestore: widget.firestore,
                       onProceedToUploadProof:
                           widget.onProceedToUploadProof,
                     ),

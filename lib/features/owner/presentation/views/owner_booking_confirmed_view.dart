@@ -3,7 +3,6 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/money_format.dart';
 import '../../../../core/widgets/app_feedback.dart';
@@ -11,6 +10,9 @@ import '../../../../core/widgets/debounced_button.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
+import '../../../bookings/presentation/widgets/pickup_countdown_timer.dart';
+import '../widgets/operations/booking_confirmed_checklist.dart';
+import '../widgets/operations/booking_confirmed_header.dart';
 
 /// Audit §5 item 3 (O18 p.6+p.7): the owner-side "Booking Confirmed"
 /// screen. Reached after a payment-proof approval and after a manual
@@ -66,6 +68,20 @@ class _OwnerBookingConfirmedViewState
     }
   }
 
+  /// O20: call the customer — the same `tel:` + [launchUrl] pattern
+  /// the customers list Call button uses. Disabled with no phone
+  /// number; a dialer failure is surfaced, never silent.
+  Future<void> _callCustomer() async {
+    final l10n = AppLocalizations.of(context)!;
+    final digits =
+        (widget.booking.customerPhone ?? '').replaceAll(RegExp(r'[^0-9+]'), '');
+    if (digits.isEmpty) return;
+    final opened = await launchUrl(Uri(scheme: 'tel', path: digits));
+    if (!opened && mounted) {
+      AppFeedback.showError(context, l10n.couldNotOpenDialer);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -88,48 +104,18 @@ class _OwnerBookingConfirmedViewState
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: AppColors.accentSuccess
-                            .withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(14),
-                        border: Border.all(
-                            color: AppColors.accentSuccess
-                                .withValues(alpha: 0.35)),
-                      ),
-                      child: Column(
-                        children: [
-                          Icon(Icons.check_circle_rounded,
-                              size: 48,
-                              color: AppColors.successTextFor(
-                                  Theme.of(context).brightness)),
-                          const SizedBox(height: 8),
-                          Text(
-                            l10n.bookingConfirmedTitle,
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleMedium
-                                ?.copyWith(fontWeight: FontWeight.w600),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            l10n.paymentVerificationBooking(
-                                booking.bookingId),
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            l10n.bookingConfirmedHandoverScheduled(when),
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ,
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      ),
+                    BookingConfirmedHeader(
+                      bookingId: booking.bookingId,
+                      handoverLine:
+                          l10n.bookingConfirmedHandoverScheduled(when),
+                    ),
+                    const SizedBox(height: 14),
+                    // O20: the pickup countdown, reusing the customer
+                    // side's PickupCountdownTimer (same target, same
+                    // overdue behaviour) instead of a second timer.
+                    PickupCountdownTimer(
+                      targetPickupTime: booking.pickupTime,
+                      overdueLabel: l10n.countdownPickupReached,
                     ),
                     const SizedBox(height: 14),
                     Card(
@@ -160,6 +146,10 @@ class _OwnerBookingConfirmedViewState
                         ),
                       ),
                     ),
+                    const SizedBox(height: 14),
+                    // O20: request / advance / pickup / return, each
+                    // derived from the booking — see the widget.
+                    BookingConfirmedChecklist(booking: booking),
                     const SizedBox(height: 20),
                     DebouncedButton(
                       text: l10n.bookingConfirmedStartHandover,
@@ -185,9 +175,31 @@ class _OwnerBookingConfirmedViewState
                     SizedBox(
                       width: double.infinity,
                       child: OutlinedButton.icon(
+                        onPressed: () =>
+                            context.push(RouteNames.ownerQrScan),
+                        icon: const Icon(Icons.qr_code_scanner_rounded),
+                        label: Text(l10n.bookingConfirmedScanCustomerQr),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
                         onPressed: _messageCustomer,
                         icon: const Icon(Icons.chat_rounded),
                         label: Text(l10n.bookingConfirmedMessageCustomer),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        onPressed:
+                            (booking.customerPhone ?? '').trim().isEmpty
+                                ? null
+                                : _callCustomer,
+                        icon: const Icon(Icons.call_rounded),
+                        label: Text(l10n.call),
                       ),
                     ),
                   ],

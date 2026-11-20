@@ -21,6 +21,7 @@ import 'package:rentalhub/features/bookings/domain/entities/booking_entity.dart'
 import 'package:rentalhub/features/fleet/domain/entities/vehicle_entity.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_vehicle_calendar_view.dart';
 import 'package:rentalhub/features/owner/presentation/widgets/availability_month_grid.dart';
+import 'package:rentalhub/features/owner/presentation/widgets/booking_calendar_origin_colors.dart';
 import 'package:rentalhub/features/owner/presentation/widgets/calendar_status_chip.dart';
 import 'package:rentalhub/l10n/app_localizations.dart';
 
@@ -443,6 +444,38 @@ void main() {
             surfaceContainerHighest: scheme.surfaceContainerHighest,
           ).background);
       expect(chip.side, isNotNull);
+    });
+  });
+
+  group('light theme — O25 origin blocks (day / week calendar)', () {
+    test('white labels on the navy and orange fills are AA', () {
+      for (final brightness in [Brightness.light, Brightness.dark]) {
+        for (final origin in [
+          BookingCalendarOriginColors.online,
+          BookingCalendarOriginColors.walkIn,
+        ]) {
+          final fill =
+              BookingCalendarOriginColors.fillFor(brightness, origin);
+          final label = BookingCalendarOriginColors.labelColorFor(
+              brightness, origin);
+          final ratio = _ratio(label, fill);
+          debugPrint('O25 $brightness $origin label on fill: '
+              '${ratio.toStringAsFixed(2)}:1');
+          expect(ratio, greaterThanOrEqualTo(4.5),
+              reason: '$brightness $origin label');
+        }
+      }
+      // The two origin fills are distinguishable from each other and
+      // from the light surface.
+      final online = BookingCalendarOriginColors.fillFor(
+          Brightness.light, BookingCalendarOriginColors.online);
+      final walkIn = BookingCalendarOriginColors.fillFor(
+          Brightness.light, BookingCalendarOriginColors.walkIn);
+      expect(_ratio(online, walkIn), greaterThanOrEqualTo(2.0));
+      expect(_ratio(online, AppColors.surfaceLight),
+          greaterThanOrEqualTo(1.30));
+      expect(_ratio(walkIn, AppColors.surfaceLight),
+          greaterThanOrEqualTo(1.30));
     });
   });
 }

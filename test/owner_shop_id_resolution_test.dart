@@ -84,15 +84,19 @@ void main() {
   }
 
   Future<void> seedShop(FakeFirebaseFirestore fake) async {
+    // Item 7 (2026-11-20): seeded in the LIVE schema — snake_case
+    // keys as written by ShopModel.toMap() (verified against the
+    // live Al-Falah doc: shop_name, owner_name, phone_number,
+    // opening_hours; no `name` / `ownerName` keys).
     await fake.collection('shops').doc('shop_shop-1').set({
       'owner_id': 'shop-1',
       'shop_id': 'shop_shop-1',
-      'name': 'Al-Falah Rent a Car',
-      'ownerName': 'Nouman Karim',
-      'phoneNumber': '0300-1111111',
+      'shop_name': 'Al-Falah Rent a Car',
+      'owner_name': 'Nouman Karim',
+      'phone_number': '0300-1111111',
       'address': 'Main Boulevard',
       'city': 'Lahore',
-      'openingHours': '9:00 AM - 9:00 PM',
+      'opening_hours': '9:00 AM - 9:00 PM',
     });
   }
 
@@ -343,10 +347,67 @@ void main() {
 
       final doc =
           await fake.collection('shops').doc('shop_shop-1').get();
-      expect(doc.data()?['name'], 'Al-Falah Motors');
+      // Item 7: the editor saves canonical snake_case keys, one
+      // schema — no legacy camelCase `name` alongside `shop_name`.
+      expect(doc.data()?['shop_name'], 'Al-Falah Motors');
+      expect(doc.data()?['name'], isNull);
       expect(
           (await fake.collection('shops').doc('shop-1').get()).exists,
           isFalse);
+    });
+
+    testWidgets('snake_case wins when both schemas are present (Item 7)',
+        (tester) async {
+      final fake = shopFirestore();
+      await fake.collection('shops').doc('shop_shop-1').set({
+        'owner_id': 'shop-1',
+        'shop_id': 'shop_shop-1',
+        'shop_name': 'Snake Shop',
+        'name': 'Camel Shop',
+        'owner_name': 'Snake Owner',
+        'ownerName': 'Camel Owner',
+        'phone_number': '0300-9999999',
+        'phoneNumber': '0300-0000000',
+        'address': 'Main Boulevard',
+        'city': 'Lahore',
+        'opening_hours': '9:00 AM - 9:00 PM',
+        'openingHours': '8:00 AM - 8:00 PM',
+      });
+      await tester.pumpWidget(
+          wrap(OwnerShopSettingsView(firestore: fake)));
+      await tester.pumpAndSettle();
+
+      expect(find.widgetWithText(TextField, 'Snake Shop'), findsOneWidget);
+      expect(find.widgetWithText(TextField, 'Camel Shop'), findsNothing);
+      expect(find.widgetWithText(TextField, 'Snake Owner'), findsOneWidget);
+      expect(find.widgetWithText(TextField, '0300-9999999'), findsOneWidget);
+      expect(find.widgetWithText(TextField, '9:00 AM - 9:00 PM'),
+          findsOneWidget);
+    });
+
+    testWidgets('legacy camelCase doc still loads via fallback (Item 7)',
+        (tester) async {
+      final fake = shopFirestore();
+      await fake.collection('shops').doc('shop_shop-1').set({
+        'owner_id': 'shop-1',
+        'shop_id': 'shop_shop-1',
+        'name': 'Legacy Camel Shop',
+        'ownerName': 'Legacy Owner',
+        'phoneNumber': '0300-5555555',
+        'address': 'Main Boulevard',
+        'city': 'Lahore',
+        'openingHours': '10:00 AM - 10:00 PM',
+      });
+      await tester.pumpWidget(
+          wrap(OwnerShopSettingsView(firestore: fake)));
+      await tester.pumpAndSettle();
+
+      expect(find.widgetWithText(TextField, 'Legacy Camel Shop'),
+          findsOneWidget);
+      expect(find.widgetWithText(TextField, 'Legacy Owner'), findsOneWidget);
+      expect(find.widgetWithText(TextField, '0300-5555555'), findsOneWidget);
+      expect(find.widgetWithText(TextField, '10:00 AM - 10:00 PM'),
+          findsOneWidget);
     });
   });
 

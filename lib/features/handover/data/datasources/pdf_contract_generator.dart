@@ -91,6 +91,14 @@ class PdfContractGenerator {
     // never an invented signature.
     Uint8List? guarantorSignaturePng,
     String? guarantorName,
+    // Item 10 (O46–O48): the guarantor's identity for the detail
+    // block — name/CNIC/relation, read from the booking. Any of
+    // them null/empty omits that row; all absent omits the block.
+    String? guarantorCnic,
+    String? guarantorRelation,
+    // Item 10: the true count of handover photos on the record
+    // (4 exterior slots today). Null omits the row — never guessed.
+    int? handoverPhotoCount,
     // Audit item 14 (O23): real vehicle detail + host name for the
     // parties / vehicle sections. Null renders as "—", never invented.
     String? vehiclePlate,
@@ -180,6 +188,20 @@ class PdfContractGenerator {
               pw.Text('Owner / Host', style: heading),
               row('Name:', ownerName ?? shopName),
               row('Shop:', shopName),
+              // Item 10 (O46–O48): guarantor identity — only when at
+              // least one detail is known; never an invented block.
+              if (guarantorName != null && guarantorName.isNotEmpty ||
+                  guarantorCnic != null && guarantorCnic.isNotEmpty ||
+                  guarantorRelation != null && guarantorRelation.isNotEmpty) ...[
+                pw.SizedBox(height: 8),
+                pw.Text('Guarantor', style: heading),
+                if (guarantorName != null && guarantorName.isNotEmpty)
+                  row('Name:', guarantorName),
+                if (guarantorCnic != null && guarantorCnic.isNotEmpty)
+                  row('CNIC:', guarantorCnic),
+                if (guarantorRelation != null && guarantorRelation.isNotEmpty)
+                  row('Relation:', guarantorRelation),
+              ],
               pw.SizedBox(height: 8),
               pw.Text('Rented Vehicle', style: heading),
               row('Vehicle:', vehicleDetails),
@@ -208,6 +230,9 @@ class PdfContractGenerator {
               pw.Text('Handover Inspection', style: heading),
               row('Departure odometer:', '$initialOdometer KM'),
               row('Fuel gauge:', fuelLevel),
+              // Item 10: the true handover photo count — null omits.
+              if (handoverPhotoCount != null)
+                row('Handover photos:', '$handoverPhotoCount photos'),
               row('Damage noted:',
                   damageNotes.isEmpty ? 'None' : damageNotes.join('; ')),
               pw.SizedBox(height: 8),

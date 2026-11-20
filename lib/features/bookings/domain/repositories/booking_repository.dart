@@ -20,6 +20,8 @@ abstract class BookingRepository {
   Future<BookingEntity> updateBookingStatus({
     required String bookingId,
     required String status,
+    String? selectedPaymentAccount,
+    DateTime? paymentDeadline,
   });
 
   Future<BookingEntity> updatePaymentProof({

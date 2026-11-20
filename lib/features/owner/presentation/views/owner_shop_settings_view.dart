@@ -84,12 +84,13 @@ class _OwnerShopSettingsViewState extends State<OwnerShopSettingsView> {
       if (!mounted) return;
       setState(() {
         _shopDocId = docId;
-        _shopNameController.text = (data['name'] ?? data['shopName'] ?? '') as String;
-        _ownerNameController.text = (data['ownerName'] ?? '') as String;
-        _phoneController.text = (data['phoneNumber'] ?? data['phone'] ?? '') as String;
+        // Item 7: snake_case first — live docs store shop_name / owner_name / phone_number / opening_hours (ShopModel.toMap()); camelCase is a legacy fallback only.
+        _shopNameController.text = (data['shop_name'] ?? data['name'] ?? data['shopName'] ?? '') as String;
+        _ownerNameController.text = (data['owner_name'] ?? data['ownerName'] ?? '') as String;
+        _phoneController.text = (data['phone_number'] ?? data['phoneNumber'] ?? data['phone'] ?? '') as String;
         _addressController.text = (data['address'] ?? '') as String;
         _cityController.text = (data['city'] ?? '') as String;
-        _openingHoursController.text = (data['openingHours'] ?? '') as String;
+        _openingHoursController.text = (data['opening_hours'] ?? data['openingHours'] ?? '') as String;
         _loading = false;
         _initialSnapshot = _snapshot();
       });
@@ -124,13 +125,11 @@ class _OwnerShopSettingsViewState extends State<OwnerShopSettingsView> {
     try {
       final fs = _firestore; if (fs == null) throw StateError('Firestore unavailable');
       final docId = _shopDocId ?? await canonicalShopId(fs, currentShopId());
+      // Item 7: save canonical snake_case keys — the one schema ShopModel.toMap() / discovery / admin read (no legacy camelCase `name` alongside `shop_name`).
       await fs.collection('shops').doc(docId).set({
-        'name': _shopNameController.text.trim(),
-        'ownerName': _ownerNameController.text.trim(),
-        'phoneNumber': _phoneController.text.trim(),
-        'address': _addressController.text.trim(),
-        'city': _cityController.text.trim(),
-        'openingHours': _openingHoursController.text.trim(),
+        'shop_name': _shopNameController.text.trim(), 'owner_name': _ownerNameController.text.trim(),
+        'phone_number': _phoneController.text.trim(), 'address': _addressController.text.trim(),
+        'city': _cityController.text.trim(), 'opening_hours': _openingHoursController.text.trim(),
       }, SetOptions(merge: true));
       if (mounted) {
         _initialSnapshot = _snapshot();

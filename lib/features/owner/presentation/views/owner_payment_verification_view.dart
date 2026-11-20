@@ -15,6 +15,7 @@ import '../../../bookings/presentation/widgets/shop_payment_accounts.dart';
 import '../../../trust/data/services/trust_score_service.dart';
 import '../widgets/operations/booking_fare_breakdown.dart';
 import '../widgets/operations/payment_reject_dialog.dart';
+import '../widgets/operations/payment_verification_summary.dart';
 
 /// Phase B (D3): the owner checks a submitted payment proof — the
 /// screenshot and the transaction id — and either confirms the
@@ -60,8 +61,6 @@ class _OwnerPaymentVerificationViewState
     }
   }
 
-  String _kycLabel(AppLocalizations l10n, String status) => {'verified': l10n.verified, 'rejected': l10n.kycStatusRejected, 'submitted': l10n.kycStatusSubmitted, 'pending': l10n.kycStatusSubmitted}[status] ?? l10n.home2_kycNotStarted;
-
   BookingEntity get _booking => widget.booking;
 
   Future<void> _approve() async {
@@ -106,32 +105,6 @@ class _OwnerPaymentVerificationViewState
     }
   }
 
-  Widget _row(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(label,
-              style: TextStyle(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant)),
-          // §10: the value flexes + ellipsizes (the contract sheet's
-          // _fieldRow pattern) instead of overflowing at 360px / 1.35x
-          // / Urdu on a long vehicle or customer name.
-          Flexible(
-            child: Text(
-              value,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.end,
-              style: const TextStyle(fontWeight: FontWeight.w500),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
   final l10n = AppLocalizations.of(context)!;
@@ -153,38 +126,43 @@ class _OwnerPaymentVerificationViewState
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(14),
-                        child: Column(
-                          children: [
-                            _row(l10n.summaryVehicle, b.vehicleName ?? b.vehicleId),
-                            _row(l10n.requestsCustomerFallback, b.customerName ?? b.customerId),
-                            _row(l10n.editPhone, b.customerPhone ?? '—'),
-                            _row(l10n.packageLabel, b.packageType),
-                            _row(l10n.paymentVerificationTotalRent, l10n.amountRs(formatRs(b.totalAmount))),
-                            _row(l10n.paymentVerificationAdvanceDue, l10n.amountRs(formatRs(b.advanceRequired))),
-                            _row(l10n.paymentVerificationAdvancePaid, l10n.amountRs(formatRs(b.advancePaid))),
-                            _row(l10n.paymentVerificationTransactionId, b.transactionId ?? '—'),
-                            // PW-18: the risk context for the money
-                            // decision — live trust score, KYC state,
-                            // prior trips. Nothing renders until the
-                            // computation arrives. No account is
-                            // highlighted: no per-booking destination
-                            // account exists on the entity, so there
-                            // is no number to match against the shop's
-                            // accounts (that needs a destination field
-                            // on the booking, a data-layer change).
-                            if (_trust != null) ...[
-                              const Divider(height: 16),
-                              Text(l10n.reputationTrustScoreValue(_trust!.breakdown.total.toStringAsFixed(1))),
-                              Text(l10n.kycStatus(_kycLabel(l10n, _trust!.kycStatus))),
-                              Text(l10n.priorTripsCount(_trust!.completedTrips)),
-                            ],
-                          ],
-                        ),
+                    // O19: the proof is waiting on this owner — the
+                    // banner says so up front, before the amounts.
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: AppColors.warningContainerFor(
+                            Theme.of(context).brightness),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.hourglass_top_rounded,
+                            size: 18,
+                            color: AppColors.warningTextFor(
+                                Theme.of(context).brightness),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              l10n.paymentVerificationWaitingBanner,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .labelMedium
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.w500,
+                                    color: AppColors.warningTextFor(
+                                        Theme.of(context).brightness),
+                                  ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
+                    const SizedBox(height: 14),
+                    PaymentVerificationSummary(booking: b, trust: _trust),
                     const SizedBox(height: 14),
                     // Audit §5 item 2 (O15): fare breakdown — daily
                     // rate × days, dates + times, trip tag, remaining.

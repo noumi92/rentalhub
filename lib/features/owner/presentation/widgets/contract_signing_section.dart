@@ -10,6 +10,7 @@ import '../../../../core/di/injection_container.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
 import '../../../fleet/data/datasources/fleet_remote_data_source.dart';
 import '../../../fleet/domain/entities/vehicle_entity.dart';
+import '../../../handover/data/datasources/handover_local_data_source.dart';
 import '../../../handover/data/datasources/pdf_contract_generator.dart';
 import '../services/contract_pdf_actions.dart';
 import '../services/contract_trip_charges.dart';
@@ -135,6 +136,19 @@ class _ContractSigningSectionState extends State<ContractSigningSection> {
       final booking = widget.booking;
       Uint8List? newPdf;
       if (widget.odometer != null && widget.fuelLevel != null) {
+        // Item 10: the stored handover's true photo count, so the
+        // regenerated PDF keeps the photo line the handover PDF
+        // had — a failed lookup omits the row, never fakes it.
+        int? photoCount;
+        try {
+          if (sl.isRegistered<HandoverLocalDataSource>()) {
+            final handover = await sl<HandoverLocalDataSource>()
+                .getHandover(booking.bookingId);
+            photoCount = handover?.photoCount;
+          }
+        } catch (_) {
+          photoCount = null;
+        }
         // Gap (a): the vehicle behind this booking, looked up at the
         // signing point — the handover cubit has no vehicle context,
         // so the rates are resolved here instead. A failed lookup
@@ -172,6 +186,9 @@ class _ContractSigningSectionState extends State<ContractSigningSection> {
           ownerSignaturePng: widget.ownerSignaturePng,
           guarantorSignaturePng: png,
           guarantorName: booking.guarantorName,
+          guarantorCnic: booking.guarantorCnic,
+          guarantorRelation: booking.guarantorRelation,
+          handoverPhotoCount: photoCount,
           vehiclePlate: booking.vehiclePlate,
           tripType: charges.tripType,
           driverNightStayPkr: charges.driverNightStayPkr,

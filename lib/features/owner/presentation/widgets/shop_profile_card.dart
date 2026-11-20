@@ -48,9 +48,15 @@ class _ShopProfileCardState extends State<ShopProfileCard> {
       final data = doc.data() ?? {};
       if (!mounted) return;
       setState(() {
-        _shopName = (data['name'] ?? data['shopName'] ?? '') as String;
-        _ownerName = (data['ownerName'] ?? '') as String;
-        _logoUrl = data['logoUrl'] as String?;
+        // Item 7 (2026-11-20): onboarding writes snake_case via
+        // ShopModel.toMap() (shop_name / owner_name / logo_url), so
+        // read snake_case FIRST — the camelCase keys below are only
+        // a fallback for legacy docs. Reading camelCase first (or
+        // only) silently rendered the fallbacks for every onboarded
+        // shop (live Al-Falah doc has shop_name, no `name`).
+        _shopName = (data['shop_name'] ?? data['name'] ?? data['shopName'] ?? '') as String;
+        _ownerName = (data['owner_name'] ?? data['ownerName'] ?? '') as String;
+        _logoUrl = (data['logo_url'] ?? data['logoUrl']) as String?;
       });
     } catch (_) {
       // Keeps the fallback text below; the card still resolves.

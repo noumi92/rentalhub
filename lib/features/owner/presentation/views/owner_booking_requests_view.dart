@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/di/injection_container.dart';
@@ -12,6 +13,7 @@ import '../../../bookings/domain/entities/booking_entity.dart';
 import '../../../bookings/utils/booking_request_time.dart';
 import '../../../bookings/utils/live_booking_stream.dart';
 import '../services/whatsapp_credits_data_source.dart';
+import '../widgets/operations/approve_booking_sheet.dart';
 import '../widgets/operations/request_reject_dialog.dart';
 import '../widgets/operations/requests_list_body.dart';
 import '../widgets/operations/walk_in_booking_fab.dart';
@@ -19,9 +21,13 @@ import '../widgets/operations/walk_in_booking_fab.dart';
 class OwnerBookingRequestsView extends StatefulWidget {
   final String shopId;
 
+  /// Injectable Firestore for the approve sheet (tests only).
+  final FirebaseFirestore? firestore;
+
   const OwnerBookingRequestsView({
     super.key,
     required this.shopId,
+    this.firestore,
   });
 
   @override
@@ -101,7 +107,7 @@ class _OwnerBookingRequestsViewState extends State<OwnerBookingRequestsView> {
     }
   }
 
-  /// Live updates (Item 2): the triage list follows the shop's bookings stream — a customer submit lands here while the owner is looking at the list, and an approve / reject re-renders it without a manual refresh. The refresh button and the error-state retry re-run this method, which re-subscribes.
+  /// Live updates (Item 2): the triage list follows the shop's bookings stream — a customer submit lands here while the owner is looking at the list, and an approve / reject re-renders it without a manual refresh. Pull-to-refresh and the error-state retry re-run this method, which re-subscribes.
   Future<void> _loadRequests() async {
     await _bookingsSub?.cancel();
     _bookingsSub = null;
@@ -112,8 +118,8 @@ class _OwnerBookingRequestsViewState extends State<OwnerBookingRequestsView> {
     _bookingsSub = subscribeLiveBookings((ds) => ds.streamShopBookings(widget.shopId), (bookings) {
       if (!mounted) return;
       setState(() {
-        // Phase B (D1): the whole pipeline stays visible — new requests, proofs waiting for verification, and approved bookings waiting for the customer to pay. Audit §5 item 2: rejected bookings stay visible too, under the Rejected tab.
-        _requests = bookings.where((b) => b.status == 'requested' || b.status == 'payment_submitted' || b.status == 'approved' || b.status == 'rejected').toList();
+        // Phase B (D1): the whole pipeline stays visible — new requests, proofs waiting for verification, and approved bookings waiting for the customer to pay. Audit §5 item 2: rejected bookings stay visible too, under the Rejected tab. O16: active rentals and completed bookings stay visible too, under the Active and Completed tabs.
+        _requests = bookings.where((b) => b.status == 'requested' || b.status == 'payment_submitted' || b.status == 'approved' || b.status == 'rejected' || b.status == 'active' || b.status == 'completed').toList();
         _isLoading = false;
       });
       _refreshRequestTimes(bookings);
@@ -123,27 +129,22 @@ class _OwnerBookingRequestsViewState extends State<OwnerBookingRequestsView> {
     if (_bookingsSub == null && mounted) setState(() { _hasError = true; _isLoading = false; });
   }
 
+  /// O18: approving opens the approve sheet instead of a one-tap flip.
   Future<void> _approveRequest(BookingEntity booking) async {
     final l10n = AppLocalizations.of(context)!;
-    setState(() => _processingId = booking.bookingId);
-    try {
-      final ds = sl<BookingRemoteDataSource>();
-      await ds.updateBookingStatus(bookingId: booking.bookingId, status: 'approved');
-      if (mounted) {
-        AppFeedback.showSuccess(context, l10n.requestsApproved(booking.bookingId));
-        // Phase B (D1): the approved booking stays in the list under
-        // the Approved filter instead of vanishing.
+    await showApproveBookingSheet(
+      context,
+      booking: booking,
+      firestore: widget.firestore,
+      onApproved: (updated) {
+        if (!mounted) return;
+        AppFeedback.showSuccess(context, l10n.requestsApproved(updated.bookingId));
+        // Phase B (D1): the approved booking stays under Approved.
         setState(() => _requests = _requests
-            .map((b) => b.bookingId == booking.bookingId
-                ? b.copyWith(status: 'approved')
-                : b)
+            .map((b) => b.bookingId == updated.bookingId ? updated : b)
             .toList());
-      }
-    } catch (e) {
-      if (mounted) AppFeedback.showError(context, l10n.requestsApprovalFailed('$e'));
-    } finally {
-      if (mounted) setState(() => _processingId = null);
-    }
+      },
+    );
   }
 
   Future<void> _rejectRequest(BookingEntity booking) async {
@@ -177,7 +178,7 @@ class _OwnerBookingRequestsViewState extends State<OwnerBookingRequestsView> {
     }
   }
 
-  String _emptyLabel(AppLocalizations l10n) => {'payment_submitted': l10n.requestsEmptyProof, 'approved': l10n.requestsEmptyApproved, 'rejected': l10n.bookingEmptyRejected}[_filter] ?? l10n.requestsEmptyNew;
+  String _emptyLabel(AppLocalizations l10n) => {'payment_submitted': l10n.requestsEmptyProof, 'approved': l10n.requestsEmptyApproved, 'rejected': l10n.bookingEmptyRejected, 'active': l10n.requestsEmptyActive, 'completed': l10n.requestsEmptyCompleted}[_filter] ?? l10n.requestsEmptyNew;
 
   @override
   Widget build(BuildContext context) {
@@ -205,9 +206,9 @@ class _OwnerBookingRequestsViewState extends State<OwnerBookingRequestsView> {
                   onPressed: () => context.push(RouteNames.ownerQrScan),
                 ),
                 IconButton(
-                  tooltip: l10n.requestsRefreshTooltip,
-                  icon: const Icon(Icons.refresh, color: Colors.white),
-                  onPressed: _loadRequests,
+                  tooltip: l10n.requestsCalendarTooltip,
+                  icon: const Icon(Icons.calendar_month_rounded, color: Colors.white),
+                  onPressed: () => context.push(RouteNames.ownerFleetCalendar),
                 ),
               ],
             ),

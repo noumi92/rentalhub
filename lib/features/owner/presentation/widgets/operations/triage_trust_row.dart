@@ -22,6 +22,8 @@ class TriageTrustRow extends StatefulWidget {
     this.kycStatus,
     this.completedTrips,
     this.trustService,
+    this.cnicVerified,
+    this.licenseVerified,
   });
 
   final String customerId;
@@ -29,6 +31,14 @@ class TriageTrustRow extends StatefulWidget {
   final String? kycStatus;
   final int? completedTrips;
   final TrustScoreService? trustService;
+
+  /// O17: per-document verification overrides (tests / embeds that
+  /// already hold the result). When null, the live path derives each
+  /// document from the trust result — 'verified' status AND the
+  /// document actually submitted — and the override path falls back
+  /// to `kycStatus == 'verified'` for both.
+  final bool? cnicVerified;
+  final bool? licenseVerified;
 
   @override
   State<TriageTrustRow> createState() => _TriageTrustRowState();
@@ -65,21 +75,11 @@ class _TriageTrustRowState extends State<TriageTrustRow> {
       completedTrips: widget.completedTrips ?? 0,
       meanOwnerRating: null,
       kycStatus: widget.kycStatus ?? 'missing',
+      kycCnicSubmitted:
+          widget.cnicVerified ?? widget.kycStatus == 'verified',
+      kycLicenseSubmitted:
+          widget.licenseVerified ?? widget.kycStatus == 'verified',
     );
-  }
-
-  String _kycLabel(AppLocalizations l10n, String status) {
-    switch (status) {
-      case 'verified':
-        return l10n.triageKycVerified;
-      case 'rejected':
-        return l10n.triageKycRejected;
-      case 'submitted':
-      case 'pending':
-        return l10n.triageKycPending;
-      default:
-        return l10n.triageKycMissing;
-    }
   }
 
   @override
@@ -91,21 +91,17 @@ class _TriageTrustRowState extends State<TriageTrustRow> {
         if (result == null) return const SizedBox.shrink();
         final l10n = AppLocalizations.of(context)!;
         final brightness = Theme.of(context).brightness;
-        final kycStatus = result.kycStatus;
-        final (Color badgeBg, Color badgeFg) = switch (kycStatus) {
-          'verified' => (
-              AppColors.successContainerFor(brightness),
-              AppColors.successTextFor(brightness),
-            ),
-          'rejected' => (
-              Theme.of(context).colorScheme.errorContainer,
-              Theme.of(context).colorScheme.onErrorContainer,
-            ),
-          _ => (
-              AppColors.warningContainerFor(brightness),
-              AppColors.warningTextFor(brightness),
-            ),
-        };
+        // O17: the single combined KYC badge is split — CNIC and
+        // licence verify separately. On the live path a document is
+        // verified only when the whole submission is 'verified' AND
+        // that document was actually submitted (see
+        // TrustScoreResult); an explicit per-document override (tests
+        // / embeds) wins over the derivation. Anything else renders
+        // as not verified, never as verified.
+        final cnicVerified = widget.cnicVerified ??
+            (result.kycStatus == 'verified' && result.kycCnicSubmitted);
+        final licenseVerified = widget.licenseVerified ??
+            (result.kycStatus == 'verified' && result.kycLicenseSubmitted);
         return Padding(
           padding: const EdgeInsets.only(top: 8),
           child: Wrap(
@@ -133,20 +129,17 @@ class _TriageTrustRowState extends State<TriageTrustRow> {
                   ),
                 ],
               ),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
-                decoration: BoxDecoration(
-                  color: badgeBg,
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: Text(
-                  _kycLabel(l10n, kycStatus),
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        fontWeight: FontWeight.w500,
-                        color: badgeFg,
-                      ),
-                ),
+              _documentBadge(
+                l10n,
+                verified: cnicVerified,
+                verifiedLabel: l10n.requestsKycCnicVerified,
+                notVerifiedLabel: l10n.requestsKycCnicNotVerified,
+              ),
+              _documentBadge(
+                l10n,
+                verified: licenseVerified,
+                verifiedLabel: l10n.requestsKycLicenseVerified,
+                notVerifiedLabel: l10n.requestsKycLicenseNotVerified,
               ),
               Text(
                 l10n.priorTripsCount(result.completedTrips),
@@ -156,6 +149,51 @@ class _TriageTrustRowState extends State<TriageTrustRow> {
           ),
         );
       },
+    );
+  }
+
+  Widget _documentBadge(
+    AppLocalizations l10n, {
+    required bool verified,
+    required String verifiedLabel,
+    required String notVerifiedLabel,
+  }) {
+    final brightness = Theme.of(context).brightness;
+    final (Color badgeBg, Color badgeFg) = verified
+        ? (
+            AppColors.successContainerFor(brightness),
+            AppColors.successTextFor(brightness),
+          )
+        : (
+            AppColors.warningContainerFor(brightness),
+            AppColors.warningTextFor(brightness),
+          );
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+      decoration: BoxDecoration(
+        color: badgeBg,
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            verified
+                ? Icons.verified_rounded
+                : Icons.hourglass_top_rounded,
+            size: 12,
+            color: badgeFg,
+          ),
+          const SizedBox(width: 3),
+          Text(
+            verified ? verifiedLabel : notVerifiedLabel,
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  fontWeight: FontWeight.w500,
+                  color: badgeFg,
+                ),
+          ),
+        ],
+      ),
     );
   }
 }

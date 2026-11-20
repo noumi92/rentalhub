@@ -200,7 +200,10 @@ void main() {
       expect(restored.tripType, 'out_of_city');
       expect(restored.kmLimit, 700);
       expect(restored.trackerCleared, isFalse);
-      expect(restored.toMap(), model.toMap());
+      // fromMap backfills a missing origin: 'cust-1' is not a
+      // walk-in id, so the restored map gains 'origin': 'online'.
+      expect(restored.origin, 'online');
+      expect(restored.toMap(), {...model.toMap(), 'origin': 'online'});
     });
 
     test('getVehicleBookings returns intervals, not cancelled ones',

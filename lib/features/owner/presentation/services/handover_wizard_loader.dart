@@ -1,0 +1,123 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:http/http.dart' as http;
+
+import '../../../../core/di/injection_container.dart';
+import '../../../bookings/domain/entities/booking_entity.dart';
+import '../../../customer/data/datasources/customer_remote_data_source.dart';
+import '../../../fleet/data/datasources/fleet_remote_data_source.dart';
+import '../../../handover/presentation/cubit/handover_wizard_cubit.dart';
+
+/// Item 9 (O26–O30): the wizard shell's data load, extracted so
+/// the shell stays under the 250-line cap.
+///
+/// Loads the shop name + the vehicle's per-vehicle deposit and
+/// detail (the deposit is `securityDepositPkr` — never hardcoded),
+/// the customer's KYC photo (O26 face check) + saved signature
+/// (O30, spec O21 "Saved signature auto-applied"), and the owner's
+/// on-file signature from the shop record. Nothing here invents a
+/// value: a missing shop field or a failed fetch leaves the
+/// signature absent, and the wizard falls back to the fresh pad.
+class HandoverWizardLoader {
+  static Future<({
+    String shopName,
+    int securityDeposit,
+    String? vehiclePlate,
+    String? vehicleColour,
+    String? vehicleFuel,
+    String? kycPhotoUrl,
+  })> load({
+    required BookingEntity booking,
+    required HandoverWizardCubit wizard,
+  }) async {
+    var shopName = booking.shopName ?? '';
+    var securityDeposit = 0;
+    String? vehiclePlate;
+    String? vehicleColour;
+    String? vehicleFuel;
+    String? kycPhotoUrl;
+    final shopId = booking.shopId;
+    if (shopName.isEmpty && shopId.isNotEmpty) {
+      final doc = await FirebaseFirestore.instance
+          .collection('shops')
+          .doc(shopId)
+          .get();
+      final name =
+          (doc.data()?['name'] ?? doc.data()?['shopName']) as String?;
+      if (name != null && name.isNotEmpty) shopName = name;
+      // O30: the owner's on-file signature, if the shop record
+      // carries one (no such field exists on shops today — the
+      // lookup is honest: absent means "sign fresh on the pad").
+      final ownerSigUrl = (doc.data()?['ownerSignatureUrl'] ??
+          doc.data()?['signatureUrl']) as String?;
+      final ownerSigB64 = doc.data()?['ownerSignatureB64'] as String?;
+      Uint8List? ownerPng;
+      if (ownerSigB64 != null && ownerSigB64.isNotEmpty) {
+        try {
+          ownerPng = base64Decode(ownerSigB64);
+        } catch (_) {}
+      } else if (ownerSigUrl != null && ownerSigUrl.isNotEmpty) {
+        ownerPng = await _fetchImageBytes(ownerSigUrl);
+      }
+      if ((ownerSigUrl != null && ownerSigUrl.isNotEmpty) ||
+          ownerPng != null) {
+        wizard.setOwnerSavedSignature(url: ownerSigUrl, pngBytes: ownerPng);
+      }
+    }
+    final vehicles =
+        await sl<FleetRemoteDataSource>().getShopVehicles(shopId);
+    final vehicle = vehicles
+        .where((v) => v.vehicleId == booking.vehicleId)
+        .toList();
+    if (vehicle.isNotEmpty) {
+      securityDeposit = vehicle.first.securityDepositPkr ?? 0;
+      vehiclePlate = vehicle.first.plateNumber;
+      vehicleColour = vehicle.first.color;
+      vehicleFuel = vehicle.first.fuelType;
+    }
+    // O26/O30: the customer's KYC photo (face check) + saved
+    // signature. A failed customer load never fails the wizard —
+    // the face check falls back to the CNIC hint.
+    try {
+      final customer = await sl<CustomerRemoteDataSource>()
+          .getCustomerById(booking.customerId);
+      if (customer != null) {
+        kycPhotoUrl = customer.profilePhotoUrl;
+        final sigUrl = customer.signatureUrl;
+        if (sigUrl != null && sigUrl.isNotEmpty) {
+          final png = await _fetchImageBytes(sigUrl);
+          wizard.setCustomerSavedSignature(url: sigUrl, pngBytes: png);
+        }
+      }
+    } catch (_) {}
+    return (
+      shopName: shopName,
+      securityDeposit: securityDeposit,
+      vehiclePlate: vehiclePlate,
+      vehicleColour: vehicleColour,
+      vehicleFuel: vehicleFuel,
+      kycPhotoUrl: kycPhotoUrl,
+    );
+  }
+
+  static Future<Uint8List?> _fetchImageBytes(String url) async {
+    try {
+      final res = await http
+          .get(Uri.parse(url))
+          .timeout(const Duration(seconds: 10));
+      if (res.statusCode != 200 || res.bodyBytes.length < 8) return null;
+      // A PNG starts with the 8-byte PNG signature; the PDF
+      // generator only embeds real PNGs, so anything else is not a
+      // usable saved signature (the URL can still display on file).
+      const pngMagic = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A];
+      for (var i = 0; i < pngMagic.length; i++) {
+        if (res.bodyBytes[i] != pngMagic[i]) return null;
+      }
+      return res.bodyBytes;
+    } catch (_) {
+      return null;
+    }
+  }
+}

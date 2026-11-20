@@ -1,25 +1,37 @@
 import 'package:flutter/material.dart';
-import '../../../../l10n/app_localizations.dart';
+import 'package:go_router/go_router.dart';
+
 import '../../../../core/di/injection_container.dart';
+import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/current_shop.dart';
 import '../../../../core/widgets/app_feedback.dart';
+import '../../../../core/widgets/debounced_button.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../fleet/data/datasources/fleet_remote_data_source.dart';
-import '../../../fleet/domain/entities/fixed_route_entity.dart';
 import '../../../fleet/domain/entities/vehicle_entity.dart';
-import '../services/walk_in_booking_service.dart';
-import '../widgets/guarantor_picker.dart';
-import '../widgets/manual_booking_form_body.dart';
+import '../widgets/manual_booking_car_step.dart';
+import '../widgets/manual_booking_customer_step.dart';
+import '../widgets/manual_booking_draft.dart';
 import '../widgets/manual_booking_package_selector.dart';
+import '../widgets/manual_booking_payment_step.dart';
 import 'owner_manual_booking_confirm_view.dart';
 
-/// Audit §5 item 1 (O16/O17 p.7): the manual booking entry — customer,
-/// vehicle + package, pickup/return date+time pickers, In-City /
-/// Out-City toggle — then "Next" to the confirm step.
+/// Walk-in booking wizard (O21–O24), 4 steps: 1 Customer → 2 Car
+/// → 3 Payment → 4 Summary. This view owns steps 1–3 and the
+/// vehicle load; the draft ([ManualBookingDraft]) owns the money
+/// math and validation. Step 4 is [OwnerManualBookingConfirmView]
+/// (its own route, so the draft travels via `state.extra` like the
+/// CNIC-review route).
+///
+/// Step 1 picks a REGISTERED customer — no new customer is ever
+/// typed here; "+ Add New Customer" opens the full Add Customer
+/// (KYC) flow and the customer-added screen's Start Booking action
+/// returns here with the new customer prefilled. Step 2 is the car
+/// radio list + packages + schedule (pickup defaults to Now).
+/// Step 3 is payment + deposit.
 class OwnerManualBookingView extends StatefulWidget {
   final String? prefilledCnic;
-  // #18 + audit §5 item 16: name/phone/CNIC (Customers list) and
-  // vehicle/dates/trip type (request-to-manual) arrive as query params.
   final String? prefilledName;
   final String? prefilledPhone;
   final String? prefilledVehicleId;
@@ -45,92 +57,27 @@ class OwnerManualBookingView extends StatefulWidget {
 }
 
 class _OwnerManualBookingViewState extends State<OwnerManualBookingView> {
-  late final TextEditingController _nameController;
-  late final TextEditingController _phoneController;
-  late final TextEditingController _cnicController;
-  // Audit §12: no demo identity defaults — controllers start empty
-  // and are prefilled only from real query params / scan.
-  final _depositController = TextEditingController();
-
+  int _step = 1;
+  late final ManualBookingDraft _draft;
   List<VehicleEntity> _vehicles = [];
-  VehicleEntity? _selectedVehicle;
-  VehiclePackageEntity? _selectedPackage;
-  // 09b §2: the fixed route chosen for this out-of-city trip.
-  FixedRouteEntity? _selectedRoute;
-  bool _isWithDriver = false;
   bool _isLoadingVehicles = true;
   String? _vehiclesError;
-  bool _isChecking = false;
-  GuarantorSelection? _guarantor;
-
-  late DateTime _pickupTime;
-  late DateTime _returnTime;
-  bool _returnEdited = false;
-  late bool _isOutOfCity;
 
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController(text: widget.prefilledName ?? '');
-    _phoneController = TextEditingController(text: widget.prefilledPhone ?? '');
-    _cnicController = TextEditingController(text: widget.prefilledCnic ?? '');
-    _pickupTime = widget.prefilledPickupTime ??
-        DateTime.now().add(const Duration(hours: 1));
-    _returnTime = widget.prefilledReturnTime ??
-        _pickupTime.add(const Duration(hours: 24));
-    _returnEdited = widget.prefilledReturnTime != null;
-    _isOutOfCity = widget.prefilledTripType == 'out_of_city';
-    // Keep the step indicator live as the owner types.
-    _nameController.addListener(_refreshStep);
-    _phoneController.addListener(_refreshStep);
-    _cnicController.addListener(_refreshStep);
+    _draft = ManualBookingDraft(
+      pickupTime: widget.prefilledPickupTime,
+      returnTime: widget.prefilledReturnTime,
+      isOutOfCity: widget.prefilledTripType == 'out_of_city',
+    )..returnEdited = widget.prefilledReturnTime != null;
     _loadVehicles();
-  }
-
-  void _refreshStep() {
-    if (mounted) setState(() {});
-  }
-
-  /// 1-based wizard step: 1 Customer, 2 Vehicle+Package, 3 Confirm.
-  int get _currentStep {
-    final customerDone = _nameController.text.trim().isNotEmpty && _phoneController.text.trim().isNotEmpty && _cnicController.text.trim().isNotEmpty;
-    if (!customerDone) return 1;
-    if (_selectedVehicle == null || _selectedPackage == null) return 2;
-    return 3;
   }
 
   @override
   void dispose() {
-    _nameController.dispose();
-    _phoneController.dispose();
-    _cnicController.dispose();
-    _depositController.dispose();
+    _draft.dispose();
     super.dispose();
-  }
-
-  void _selectVehicle(VehicleEntity? v) {
-    setState(() {
-      _selectedVehicle = v;
-      _selectedRoute = null;
-      final packages = v?.enabledPackages ?? const [];
-      _selectedPackage = packages.isNotEmpty ? packages.first : null;
-      final deposit = v?.securityDepositPkr;
-      if (deposit != null) _depositController.text = deposit.toString();
-      if (!_returnEdited && _selectedPackage != null) {
-        _returnTime = ManualBookingPackageSelector.returnTimeFor(
-            pickup: _pickupTime, package: _selectedPackage!);
-      }
-    });
-  }
-
-  void _onPickupChanged(DateTime next) {
-    setState(() {
-      _pickupTime = next;
-      if (!_returnEdited && _selectedPackage != null) {
-        _returnTime = ManualBookingPackageSelector.returnTimeFor(
-            pickup: _pickupTime, package: _selectedPackage!);
-      }
-    });
   }
 
   Future<void> _loadVehicles() async {
@@ -139,8 +86,7 @@ class _OwnerManualBookingViewState extends State<OwnerManualBookingView> {
       _vehiclesError = null;
     });
     try {
-      final ds = sl<FleetRemoteDataSource>();
-      final cars = await ds.getShopVehicles(currentShopId());
+      final cars = await sl<FleetRemoteDataSource>().getShopVehicles(currentShopId());
       if (mounted) {
         setState(() {
           _vehicles = cars;
@@ -148,8 +94,7 @@ class _OwnerManualBookingViewState extends State<OwnerManualBookingView> {
           for (final v in cars) {
             if (v.vehicleId == widget.prefilledVehicleId) prefilled = v;
           }
-          _selectVehicle(
-              prefilled ?? (cars.isNotEmpty ? cars.first : null));
+          _draft.selectVehicle(prefilled ?? (cars.isNotEmpty ? cars.first : null));
         });
       }
     } catch (e) {
@@ -159,50 +104,65 @@ class _OwnerManualBookingViewState extends State<OwnerManualBookingView> {
     }
   }
 
-  Future<void> _goToConfirm() async {
+  void _addNewCustomer(String query) {
+    final params = <String, String>{};
+    if (query.replaceAll(RegExp(r'\D'), '').length >= 5) params['cnic'] = query.trim();
+    context.push(Uri(path: RouteNames.ownerAddCustomer, queryParameters: params.isEmpty ? null : params).toString());
+  }
+
+  void _next() {
     final l10n = AppLocalizations.of(context)!;
-    final name = _nameController.text.trim();
-    final phone = _phoneController.text.trim();
-    final cnic = _cnicController.text.trim();
-    if (name.isEmpty || phone.isEmpty || cnic.isEmpty) {
-      AppFeedback.showError(context, l10n.manualBookingCompleteDetails);
-      return;
-    }
-    if (_selectedVehicle == null || _selectedPackage == null) {
-      AppFeedback.showError(context, l10n.manualBookingSelectVehicle);
-      return;
-    }
-    // 09b §2: a fixed-route vehicle prices by its route — without one chosen there is no honest total, so block, don't fall back.
-    if (_isOutOfCity && _selectedVehicle?.outCityMode == 'fixedRoute' && _selectedRoute == null) {
-      AppFeedback.showError(context, l10n.outCityFixedRouteNone);
-      return;
-    }
-    if (!_returnTime.isAfter(_pickupTime)) {
-      AppFeedback.showError(context, l10n.manualBookingReturnAfterPickup);
-      return;
-    }
-    // Phase B (D2): a blacklisted CNIC cannot book at the counter
-    // either — the scan screen is not the only way in.
-    setState(() => _isChecking = true);
-    bool blacklisted;
-    try {
-      blacklisted =
-          await WalkInBookingService.isCnicBlacklisted(cnic);
-    } catch (e) {
-      if (mounted) {
-        AppFeedback.showError(
-            context, l10n.manualBookingCreateFailed(e.toString()));
+    if (_step == 1) {
+      if (_draft.selectedCustomer == null) {
+        AppFeedback.showError(context, l10n.manualBookingSelectCustomer);
+        return;
       }
-      setState(() => _isChecking = false);
+      setState(() => _step = 2);
       return;
     }
-    setState(() => _isChecking = false);
-    if (blacklisted) {
-      if (mounted) AppFeedback.showError(context, l10n.manualBookingBlacklisted);
+    if (_step == 2) {
+      final error = _draft.validateStep2(l10n);
+      if (error != null) {
+        AppFeedback.showError(context, error);
+        return;
+      }
+      _draft.prefillAdvanceIfEmpty();
+      setState(() => _step = 3);
       return;
     }
-    if (!mounted) return;
-    OwnerManualBookingConfirmView.open(context, customerName: name, customerPhone: phone, customerCnic: cnic, guarantor: _guarantor, vehicle: _selectedVehicle!, package: _selectedPackage!, isWithDriver: _isWithDriver, isOutOfCity: _isOutOfCity, pickupTime: _pickupTime, returnTime: _returnTime, fixedRoute: _selectedRoute);
+    final error = _draft.validatePayment(l10n);
+    if (_draft.discountError != null || _draft.advanceError != null) {
+      setState(() {});
+      return;
+    }
+    if (error != null) {
+      AppFeedback.showError(context, error);
+      return;
+    }
+    final customer = _draft.selectedCustomer!;
+    OwnerManualBookingConfirmView.open(
+      context,
+      customerId: customer.customerId,
+      customerName: customer.name,
+      customerPhone: customer.phone,
+      customerCnic: customer.cnic ?? '',
+      guarantor: _draft.guarantor,
+      vehicle: _draft.selectedVehicle!,
+      package: _draft.selectedPackage!,
+      isWithDriver: _draft.isWithDriver,
+      isOutOfCity: _draft.isOutOfCity,
+      pickupTime: _draft.pickupTime,
+      returnTime: _draft.returnTime,
+      fixedRoute: _draft.selectedRoute,
+      rentAmount: _draft.rentAmount,
+      driverAmount: _draft.driverAmount,
+      discountAmountPkr: _draft.discount > 0 ? _draft.discount.toDouble() : null,
+      advanceReceived: _draft.advanceReceived,
+      paymentMethod: _draft.paymentMethod,
+      depositAmountPkr: _draft.depositAmount,
+      depositMethod: _draft.depositMethod,
+      addRemainingToDues: _draft.addToDues,
+    );
   }
 
   @override
@@ -214,37 +174,70 @@ class _OwnerManualBookingViewState extends State<OwnerManualBookingView> {
         child: Column(
           children: [
             MinimalAppBar(title: l10n.manualBookingTitle, subtitle: l10n.manualBookingSubtitle, onBack: widget.onBack),
-            Padding(padding: const EdgeInsets.fromLTRB(16, 14, 16, 4), child: ManualBookingStepIndicator(currentStep: _currentStep)),
+            Padding(padding: const EdgeInsets.fromLTRB(16, 14, 16, 4), child: ManualBookingStepIndicator(currentStep: _step)),
             Expanded(
-              child: ManualBookingFormBody(
-                nameController: _nameController, phoneController: _phoneController, cnicController: _cnicController,
-                onGuarantorChanged: (g) => setState(() => _guarantor = g),
-                vehiclesError: _vehiclesError, onRetryLoad: _loadVehicles,
-                isLoadingVehicles: _isLoadingVehicles, vehicles: _vehicles,
-                selectedVehicle: _selectedVehicle, onVehicleChanged: (v) => _selectVehicle(v),
-                selectedPackage: _selectedPackage,
-                onPackageChanged: (p) => setState(() {
-                  _selectedPackage = p;
-                  if (!_returnEdited && p != null) {
-                    _returnTime = ManualBookingPackageSelector.returnTimeFor(pickup: _pickupTime, package: p);
-                  }
-                }),
-                isWithDriver: _isWithDriver, onDriverModeChanged: (v) => setState(() => _isWithDriver = v),
-                depositController: _depositController,
-                isOutOfCity: _isOutOfCity, pickupTime: _pickupTime, returnTime: _returnTime,
-                onPickupChanged: _onPickupChanged,
-                onReturnChanged: (next) => setState(() {
-                  _returnTime = next;
-                  _returnEdited = true;
-                }),
-                onTripTypeChanged: (v) => setState(() => _isOutOfCity = v),
-                selectedFixedRoute: _selectedRoute, onFixedRouteChanged: (r) => setState(() => _selectedRoute = r),
-                isChecking: _isChecking, onNext: _goToConfirm,
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                child: _stepBody(),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+              child: Row(
+                children: [
+                  if (_step > 1)
+                    OutlinedButton.icon(
+                      onPressed: () => setState(() => _step--),
+                      icon: const Icon(Icons.arrow_back_rounded, size: 18),
+                      label: Text(l10n.commonGoBack),
+                      style: OutlinedButton.styleFrom(minimumSize: const Size(0, 48)),
+                    ),
+                  if (_step > 1) const SizedBox(width: 10),
+                  Expanded(
+                    child: DebouncedButton(text: l10n.manualBookingNext, icon: Icons.arrow_forward_rounded, onPressed: _next),
+                  ),
+                ],
               ),
             ),
           ],
         ),
       ),
     );
+  }
+
+  Widget _stepBody() {
+    switch (_step) {
+      case 1:
+        return ManualBookingCustomerStep(
+          selected: _draft.selectedCustomer, onSelected: (c) => setState(() => _draft.selectedCustomer = c),
+          onAddNewCustomer: _addNewCustomer, onGuarantorChanged: (g) => setState(() => _draft.guarantor = g),
+          prefilledCnic: widget.prefilledCnic, prefilledName: widget.prefilledName, prefilledPhone: widget.prefilledPhone,
+        );
+      case 2:
+        return ManualBookingCarStep(
+          isLoadingVehicles: _isLoadingVehicles, vehiclesError: _vehiclesError, onRetryLoad: _loadVehicles, vehicles: _vehicles,
+          selectedVehicle: _draft.selectedVehicle, onVehicleChanged: (v) => setState(() => _draft.selectVehicle(v)),
+          selectedPackage: _draft.selectedPackage, onPackageChanged: (p) => setState(() => _draft.onPackageChanged(p)),
+          isWithDriver: _draft.isWithDriver, onDriverModeChanged: (v) => setState(() => _draft.isWithDriver = v),
+          isOutOfCity: _draft.isOutOfCity, pickupTime: _draft.pickupTime, returnTime: _draft.returnTime,
+          onPickupChanged: (next) => setState(() => _draft.onPickupChanged(next)),
+          onReturnChanged: (next) => setState(() => _draft.onReturnChanged(next)),
+          onTripTypeChanged: (v) => setState(() => _draft.isOutOfCity = v),
+          selectedFixedRoute: _draft.selectedRoute, onFixedRouteChanged: (r) => setState(() => _draft.selectedRoute = r),
+          onAvailabilityChanged: (free) => _draft.carFree = free,
+        );
+      default:
+        return ManualBookingPaymentStep(
+          rentAmount: _draft.rentAmount, driverAmount: _draft.driverAmount,
+          discountController: _draft.discountController, discountError: _draft.discountError, onDiscountChanged: () => setState(() {}),
+          advanceController: _draft.advanceController, advanceError: _draft.advanceError, onAdvanceChanged: () => setState(() {}),
+          advanceRequired: _draft.advanceRequired, paymentMethod: _draft.paymentMethod,
+          onPaymentMethodChanged: (m) => setState(() => _draft.paymentMethod = m),
+          depositController: _draft.depositController, depositReceived: _draft.depositReceived,
+          onDepositReceivedChanged: (v) => setState(() => _draft.depositReceived = v),
+          depositMethod: _draft.depositMethod, onDepositMethodChanged: (m) => setState(() => _draft.depositMethod = m),
+          remainingDues: _draft.remaining, addToDues: _draft.addToDues, onAddToDuesChanged: (v) => setState(() => _draft.addToDues = v),
+        );
+    }
   }
 }

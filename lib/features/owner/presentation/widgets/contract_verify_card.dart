@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
+import '../../../../core/widgets/app_feedback.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../core/theme/card_decoration.dart';
 
@@ -33,6 +35,20 @@ class ContractVerifyCard extends StatelessWidget {
               l10n.contractScanVerify,
               style: Theme.of(context).textTheme.bodySmall,
             ),
+          ),
+          // Item 10 (O48): copy the verification link — the same
+          // URL the QR encodes.
+          IconButton(
+            tooltip: l10n.agreementWizardCopyLink,
+            icon: const Icon(Icons.link_rounded),
+            onPressed: () async {
+              await Clipboard.setData(
+                  ClipboardData(text: verificationUrl));
+              if (context.mounted) {
+                AppFeedback.showSuccess(
+                    context, l10n.agreementWizardLinkCopied);
+              }
+            },
           ),
         ],
       ),

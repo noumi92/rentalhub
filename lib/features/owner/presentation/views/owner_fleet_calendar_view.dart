@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/current_shop.dart';
@@ -15,13 +14,26 @@ import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
 import '../../../fleet/data/datasources/fleet_remote_data_source.dart';
 import '../../../fleet/domain/entities/vehicle_entity.dart';
+import '../widgets/calendar_day_time_grid.dart';
+import '../widgets/calendar_month_fleet_grid.dart';
+import '../widgets/calendar_week_grid.dart';
+import '../widgets/fleet_calendar_legend.dart';
 
-/// Audit §5 (O31): the multi-car fleet calendar — one month grid with
-/// a per-car availability bar for every fleet vehicle (Booked /
-/// Available legend), where the existing per-vehicle calendar stays
-/// the drill-down: tapping a car opens its own calendar. Loads are
-/// lazy (try/catch): any failure renders an empty fleet + error
-/// state with retry instead of a spinner that never resolves.
+enum _CalendarMode { month, day, week }
+
+/// Audit §5 (O31) + O25: the multi-car fleet calendar. Month is the
+/// original per-car availability bar (Booked / Available legend);
+/// Day is the spec day view — a 9 AM–9 PM time grid, one row per car,
+/// booking blocks coloured Online (navy) vs Walk-in (orange);
+/// Week is a 7-day grid of the same per-car rows (tap a day to open
+/// it in Day view). Tapping a car still opens its per-vehicle
+/// calendar. The grids live in widgets/ so this view stays under the
+/// 250-line cap.
+///
+/// Overlap note: the "blocked automatically" copy is spec text only.
+/// The real guarantee today is the vehicle-status lock at booking
+/// creation (createBookingLock) — true time-window overlap validation
+/// is NOT built; see the O25 report.
 class OwnerFleetCalendarView extends StatefulWidget {
   final VoidCallback? onBack;
 
@@ -36,11 +48,22 @@ class _OwnerFleetCalendarViewState extends State<OwnerFleetCalendarView> {
   List<BookingEntity> _bookings = [];
   bool _loading = true;
   bool _hasError = false;
+  _CalendarMode _mode = _CalendarMode.month;
   DateTime _month = DateTime(DateTime.now().year, DateTime.now().month);
+  DateTime _day = _today();
+  DateTime _weekStart = _mondayOf(_today());
   // Live updates (Item 2): the subscription behind the booked-day
   // bars. The fleet list itself stays a one-time load (re-run by
   // the error-state retry).
   StreamSubscription<List<BookingEntity>>? _bookingsSub;
+
+  static DateTime _today() {
+    final now = DateTime.now();
+    return DateTime(now.year, now.month, now.day);
+  }
+
+  static DateTime _mondayOf(DateTime day) =>
+      day.subtract(Duration(days: day.weekday - 1));
 
   @override
   void initState() {
@@ -96,47 +119,85 @@ class _OwnerFleetCalendarViewState extends State<OwnerFleetCalendarView> {
     } catch (_) {}
   }
 
-  bool _isBooked(String vehicleId, DateTime day) {
-    final d = DateTime(day.year, day.month, day.day);
-    return _bookings.any((b) {
-      if (b.vehicleId != vehicleId) return false;
-      // OW-m33: 'requested' is a pending ask, not a booking —
-      // it used to paint the car red before anyone approved it.
-      if (b.status == 'rejected' || b.status == 'cancelled' || b.status == 'requested') return false;
-      final from = DateTime(b.pickupTime.year, b.pickupTime.month, b.pickupTime.day);
-      final to = DateTime(b.returnTime.year, b.returnTime.month, b.returnTime.day);
-      return !d.isBefore(from) && !d.isAfter(to);
+  void _shift(int delta) {
+    setState(() {
+      switch (_mode) {
+        case _CalendarMode.month:
+          _month = DateTime(_month.year, _month.month + delta);
+        case _CalendarMode.day:
+          _day = _day.add(Duration(days: delta));
+        case _CalendarMode.week:
+          _weekStart = _weekStart.add(Duration(days: 7 * delta));
+      }
     });
   }
 
-  void _shiftMonth(int delta) {
-    setState(() => _month = DateTime(_month.year, _month.month + delta));
+  void _goToday() {
+    setState(() {
+      _month = DateTime(DateTime.now().year, DateTime.now().month);
+      _day = _today();
+      _weekStart = _mondayOf(_today());
+    });
   }
 
-  bool _isToday(int day) {
-    final now = DateTime.now();
-    return _month.year == now.year && _month.month == now.month && day == now.day;
+  String _title(AppLocalizations l10n) => _mode == _CalendarMode.month
+      ? l10n.fleetCalendarTitle
+      : l10n.calendarTitle;
+
+  String _subtitle(AppLocalizations l10n) {
+    switch (_mode) {
+      case _CalendarMode.month:
+        return DateFormat('MMMM yyyy').format(_month);
+      case _CalendarMode.day:
+        return DateFormat('EEE, d MMM yyyy').format(_day);
+      case _CalendarMode.week:
+        final end = _weekStart.add(const Duration(days: 6));
+        return '${DateFormat('d MMM').format(_weekStart)} – ${DateFormat('d MMM yyyy').format(end)}';
+    }
   }
+
+  String _prevTooltip(AppLocalizations l10n) {
+    switch (_mode) {
+      case _CalendarMode.month:
+        return l10n.fleetCalendarPrevMonth;
+      case _CalendarMode.day:
+        return l10n.fleetCalendarPrevDay;
+      case _CalendarMode.week:
+        return l10n.fleetCalendarPrevWeek;
+    }
+  }
+
+  String _nextTooltip(AppLocalizations l10n) {
+    switch (_mode) {
+      case _CalendarMode.month:
+        return l10n.fleetCalendarNextMonth;
+      case _CalendarMode.day:
+        return l10n.fleetCalendarNextDay;
+      case _CalendarMode.week:
+        return l10n.fleetCalendarNextWeek;
+    }
+  }
+
+  void _openVehicle(VehicleEntity vehicle) => context.push(
+      RouteNames.ownerCalendar.replaceFirst(':vehicleId', vehicle.vehicleId));
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final daysInMonth = DateTime(_month.year, _month.month + 1, 0).day;
-    final monthLabel = DateFormat('MMMM yyyy').format(_month);
     return Scaffold(
       body: SafeArea(
         top: false,
         child: Column(
           children: [
             MinimalAppBar(
-              title: l10n.fleetCalendarTitle,
-              subtitle: monthLabel,
+              title: _title(l10n),
+              subtitle: _subtitle(l10n),
               onBack: widget.onBack ?? () => context.pop(),
               actions: [
-                // OW-m33: jump back to the current month.
-                TextButton(onPressed: () => setState(() => _month = DateTime(DateTime.now().year, DateTime.now().month)), child: Text(l10n.dashboardToday, style: const TextStyle(color: Colors.white))),
-                IconButton(icon: const Icon(Icons.chevron_left_rounded, color: Colors.white), tooltip: l10n.fleetCalendarPrevMonth, onPressed: () => _shiftMonth(-1)),
-                IconButton(icon: const Icon(Icons.chevron_right_rounded, color: Colors.white), tooltip: l10n.fleetCalendarNextMonth, onPressed: () => _shiftMonth(1)),
+                // OW-m33: jump back to the current period.
+                TextButton(onPressed: _goToday, child: Text(l10n.dashboardToday, style: const TextStyle(color: Colors.white))),
+                IconButton(icon: const Icon(Icons.chevron_left_rounded, color: Colors.white), tooltip: _prevTooltip(l10n), onPressed: () => _shift(-1)),
+                IconButton(icon: const Icon(Icons.chevron_right_rounded, color: Colors.white), tooltip: _nextTooltip(l10n), onPressed: () => _shift(1)),
               ],
             ),
             Expanded(
@@ -149,84 +210,40 @@ class _OwnerFleetCalendarViewState extends State<OwnerFleetCalendarView> {
                           : ListView(
                               padding: const EdgeInsets.all(16),
                               children: [
-                                Wrap(
-                                  alignment: WrapAlignment.spaceEvenly,
-                                  spacing: 16,
-                                  runSpacing: 8,
-                                  children: [
-                                    _legend(context, AppColors.errorContainerFor(Theme.of(context).brightness), l10n.fleetCalendarBooked),
-                                    _legend(context, AppColors.successContainerFor(Theme.of(context).brightness), l10n.fleetCalendarAvailable),
+                                SegmentedButton<_CalendarMode>(
+                                  segments: [
+                                    ButtonSegment(value: _CalendarMode.month, label: Text(l10n.fleetCalendarMonth)),
+                                    ButtonSegment(value: _CalendarMode.day, label: Text(l10n.fleetCalendarDay)),
+                                    ButtonSegment(value: _CalendarMode.week, label: Text(l10n.fleetCalendarWeek)),
                                   ],
+                                  selected: {_mode},
+                                  onSelectionChanged: (selection) => setState(() => _mode = selection.first),
                                 ),
+                                const SizedBox(height: 12),
+                                FleetCalendarLegend(isMonthMode: _mode == _CalendarMode.month),
+                                const SizedBox(height: 12),
+                                const FleetCalendarOverlapNote(),
                                 const SizedBox(height: 16),
-                                ..._fleet.asMap().entries.map((entry) => Card(
-                                      // BP-16: the last card carries no
-                                      // bottom margin — the list padding
-                                      // (16 dp) is the bottom gap.
-                                      margin: EdgeInsets.only(bottom: entry.key == _fleet.length - 1 ? 0 : 12),
-                                      child: InkWell(
-                                        onTap: () => context.push(RouteNames.ownerCalendar.replaceFirst(':vehicleId', entry.value.vehicleId)),
-                                        borderRadius: BorderRadius.circular(12),
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(12),
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Row(
-                                                children: [
-                                                  Expanded(child: Text(entry.value.displayName, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600))),
-                                                  Text(entry.value.plateNumber, style: Theme.of(context).textTheme.labelMedium),
-                                                ],
-                                              ),
-                                              const SizedBox(height: 10),
-                                              // One segment per day of the
-                                              // month: booked = red, else green.
-                                              Row(
-                                                children: [
-                                                  for (int day = 1; day <= daysInMonth; day++)
-                                                    Expanded(
-                                                      child: Container(
-                                                        height: 18,
-                                                        margin: const EdgeInsets.symmetric(horizontal: 0.5),
-                                                        decoration: BoxDecoration(
-                                                          color: _isBooked(entry.value.vehicleId, DateTime(_month.year, _month.month, day)) ? AppColors.errorContainerFor(Theme.of(context).brightness) : AppColors.successContainerFor(Theme.of(context).brightness),
-                                                          borderRadius: BorderRadius.circular(2),
-                                                          // OW-m33: a ring on today so the owner can
-                                                          // find the current day at a glance.
-                                                          border: _isToday(day) ? Border.all(color: Theme.of(context).colorScheme.primary, width: 1.5) : null,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    )),
+                                switch (_mode) {
+                                  _CalendarMode.month => CalendarMonthFleetGrid(month: _month, fleet: _fleet, bookings: _bookings, onVehicleTap: _openVehicle),
+                                  _CalendarMode.day => CalendarDayTimeGrid(day: _day, fleet: _fleet, bookings: _bookings, onVehicleTap: _openVehicle),
+                                  _CalendarMode.week => CalendarWeekGrid(
+                                      weekStart: _weekStart,
+                                      fleet: _fleet,
+                                      bookings: _bookings,
+                                      onDaySelected: (day) => setState(() {
+                                        _day = day;
+                                        _mode = _CalendarMode.day;
+                                      }),
+                                      onVehicleTap: _openVehicle,
+                                    ),
+                                },
                               ],
                             ),
             ),
           ],
         ),
       ),
-    );
-  }
-
-  Widget _legend(BuildContext context, Color color, String label) {
-    final brightness = Theme.of(context).brightness;
-    // OW-m33: the pale swatches were indistinguishable at a
-    // glance — a matching border + a bold label tell them apart.
-    final border = color == AppColors.errorContainerFor(brightness)
-        ? AppColors.errorOnContainerFor(brightness)
-        : AppColors.successBorderFor(brightness);
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(width: 14, height: 14, decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(4), border: Border.all(color: border, width: 1.5))),
-        const SizedBox(width: 4),
-        Text(label, style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w500)),
-      ],
     );
   }
 }

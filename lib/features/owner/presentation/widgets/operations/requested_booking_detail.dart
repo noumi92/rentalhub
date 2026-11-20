@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -9,9 +10,11 @@ import '../../../../../core/widgets/debounced_button.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../../bookings/domain/entities/booking_entity.dart';
+import 'approve_booking_sheet.dart';
 import 'booking_fare_breakdown.dart';
 import 'booking_request_checklist.dart';
 import 'confirm_terms_step.dart';
+import 'request_detail_checks.dart';
 import 'request_reject_dialog.dart';
 import 'request_triage_card.dart';
 
@@ -30,6 +33,7 @@ class RequestedBookingDetail extends StatefulWidget {
     required this.booking,
     required this.onApproved,
     this.showActions = true,
+    this.firestore,
   });
 
   final BookingEntity booking;
@@ -40,6 +44,9 @@ class RequestedBookingDetail extends StatefulWidget {
   /// summary renders, but no owner Approve/Reject actions.
   final bool showActions;
 
+  /// Injectable Firestore for the approve sheet (tests only).
+  final FirebaseFirestore? firestore;
+
   @override
   State<RequestedBookingDetail> createState() =>
       _RequestedBookingDetailState();
@@ -48,26 +55,22 @@ class RequestedBookingDetail extends StatefulWidget {
 class _RequestedBookingDetailState extends State<RequestedBookingDetail> {
   bool _processing = false;
 
+  /// O18: approving opens the approve sheet (account + terms)
+  /// instead of a one-tap status flip; the sheet writes status +
+  /// account + deadline and reports back.
   Future<void> _approve() async {
     final l10n = AppLocalizations.of(context)!;
-    setState(() => _processing = true);
-    try {
-      final ds = sl<BookingRemoteDataSource>();
-      await ds.updateBookingStatus(
-          bookingId: widget.booking.bookingId, status: 'approved');
-      if (mounted) {
+    await showApproveBookingSheet(
+      context,
+      booking: widget.booking,
+      firestore: widget.firestore,
+      onApproved: (updated) {
+        if (!mounted) return;
         AppFeedback.showSuccess(
-            context, l10n.requestsApproved(widget.booking.bookingId));
-        widget.onApproved(widget.booking.copyWith(status: 'approved'));
-      }
-    } catch (e) {
-      if (mounted) {
-        AppFeedback.showError(
-            context, l10n.requestsApprovalFailed('$e'));
-      }
-    } finally {
-      if (mounted) setState(() => _processing = false);
-    }
+            context, l10n.requestsApproved(updated.bookingId));
+        widget.onApproved(updated);
+      },
+    );
   }
 
   Future<void> _reject() async {
@@ -137,6 +140,49 @@ class _RequestedBookingDetailState extends State<RequestedBookingDetail> {
             onApprove: _approve,
             onReject: _reject,
           ),
+          const SizedBox(height: 12),
+          // O17: the customer note, stored on the booking — shown
+          // verbatim, never summarised or invented. Hidden when the
+          // booking carries no note.
+          if ((widget.booking.notes ?? '').trim().isNotEmpty)
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surface,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color(0x0A000000),
+                    blurRadius: 8,
+                    offset: Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l10n.requestsCustomerNote,
+                    style: Theme.of(context)
+                        .textTheme
+                        .labelMedium
+                        ?.copyWith(fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    widget.booking.notes!.trim(),
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ],
+              ),
+            ),
+          if ((widget.booking.notes ?? '').trim().isNotEmpty)
+            const SizedBox(height: 12),
+          // O17: the live blacklist re-check for this customer's
+          // CNIC. Renders nothing when the booking has no CNIC or
+          // the list cannot be read.
+          RequestBlacklistLine(cnic: widget.booking.customerCnic),
           const SizedBox(height: 12),
           // Audit §5 item 2 (O15): the fare breakdown — daily rate ×
           // days, advance paid / remaining, dates + times, trip tag.

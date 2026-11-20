@@ -1192,6 +1192,10 @@ class AppLocalizationsUr extends AppLocalizations {
       'ثبوت جمع ہو گیا! آن لائن ہونے پر رسید سنک ہو جائے گی۔';
 
   @override
+  String get proofUploadQueued =>
+      'رسید اپ لوڈ نہیں ہوئی — یہ اس ڈیوائس پر محفوظ ہے اور آن لائن ہوتے ہی دوبارہ کوشش کی جائے گی۔ آپ کی ادائیگی ابھی جمع شدہ نہیں مانی گئی۔';
+
+  @override
   String get proofPrivateNote =>
       'ثبوت نجی اسٹوریج پر اپ لوڈ ہوتا ہے۔ شوروم اسے چیک کر کے آپ کی بکنگ کی تصدیق کرتا ہے اور تصدیق ہوتے ہی آپ کو ایپ میں اطلاع ملے گی۔ اگر جواب نہ آئے تو شوروم کو واٹس ایپ پر پیغام بھیجیں۔';
 
@@ -2250,7 +2254,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get requestsScanQrTooltip => 'بکنگ QR اسکین کریں';
 
   @override
-  String get requestsRefreshTooltip => 'تازہ کریں';
+  String get requestsCalendarTooltip => 'بکنگ کیلنڈر';
 
   @override
   String get requestsLoading => 'بکنگ درخواستیں لوڈ ہو رہی ہیں…';
@@ -2279,6 +2283,12 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get requestsEmptyNew => 'کوئی زیر التواء بکنگ درخواست نہیں';
+
+  @override
+  String get requestsEmptyActive => 'فی الحال کوئی فعال بکنگ نہیں';
+
+  @override
+  String get requestsEmptyCompleted => 'ابھی تک کوئی مکمل بکنگ نہیں';
 
   @override
   String get requestsEmptyMessage =>
@@ -2331,6 +2341,15 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get requestsDecline => 'مسترد کریں';
+
+  @override
+  String get requestsCustomerNote => 'گاہک کا نوٹ';
+
+  @override
+  String get requestsNotBlacklisted => 'بلیک لسٹ میں نہیں ہے';
+
+  @override
+  String get requestsBlacklisted => 'بلیک لسٹ میں ہے';
 
   @override
   String get requestsApprovePay => 'منظور کریں';
@@ -3910,7 +3929,7 @@ class AppLocalizationsUr extends AppLocalizations {
       'مثلاً اسکرین شاٹ پڑھا نہیں جا سکتا';
 
   @override
-  String get paymentVerificationRejectButton => 'ثبوت مسترد کریں';
+  String get paymentVerificationRejectButton => 'ادائیگی موصول نہیں ہوئی';
 
   @override
   String get paymentVerificationRejected =>
@@ -3953,6 +3972,12 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get paymentVerificationConfirming => 'تصدیق ہو رہی ہے…';
+
+  @override
+  String get paymentVerificationWaitingBanner => 'آپ کی تصدیق کا انتظار ہے';
+
+  @override
+  String get paymentVerificationProofSubmittedAt => 'ثبوت جمع کرایا گیا';
 
   @override
   String get manualBookingTitle => 'واک اِن بکنگ وزرڈ';
@@ -5247,6 +5272,27 @@ class AppLocalizationsUr extends AppLocalizations {
   String get bookingConfirmedWhatsappFailed => 'واٹس ایپ نہیں کھولا جا سکا۔';
 
   @override
+  String get bookingConfirmedChecklistTitle => 'منظوری کی چیک لسٹ';
+
+  @override
+  String get bookingConfirmedCheckRequestApproved => 'درخواست منظور ہو گئی';
+
+  @override
+  String get bookingConfirmedCheckAdvanceReceived => 'ایڈوانس موصول ہو گیا';
+
+  @override
+  String get bookingConfirmedCheckPickup => 'پک اپ';
+
+  @override
+  String get bookingConfirmedCheckReturn => 'واپسی';
+
+  @override
+  String get bookingConfirmedReserved => 'محفوظ';
+
+  @override
+  String get bookingConfirmedScanCustomerQr => 'پک اپ پر گاہک کا QR اسکین کریں';
+
+  @override
   String get manualBookingNext => 'اگلا';
 
   @override
@@ -5562,6 +5608,86 @@ class AppLocalizationsUr extends AppLocalizations {
   String agreementSignedSendMessage(String name, String url) {
     return 'السلام علیکم $name، آپ کا کرایے کا معاہدہ تیار ہے: $url';
   }
+
+  @override
+  String get agreementWizardTitle => 'معاہدہ';
+
+  @override
+  String get agreementWizardGenerated => 'تیار شدہ';
+
+  @override
+  String get agreementWizardGuarantor => 'ضامن';
+
+  @override
+  String get agreementWizardRelation => 'رشتہ';
+
+  @override
+  String get agreementWizardNoGuarantor => 'کوئی ضامن شامل نہیں';
+
+  @override
+  String get agreementWizardHandoverPhotos => 'حوالگی کی تصاویر';
+
+  @override
+  String agreementWizardPhotoCount(int count) {
+    return '$count تصاویر';
+  }
+
+  @override
+  String get agreementWizardLicense => 'لائسنس';
+
+  @override
+  String get agreementWizardTermsSignatures => 'شرائط و دستخط';
+
+  @override
+  String get agreementWizardTermsSubtitle => '10 شرائط · 3 دستخط';
+
+  @override
+  String get agreementWizardSignatures => 'دستخط';
+
+  @override
+  String get agreementWizardSaved => 'محفوظ شدہ';
+
+  @override
+  String get agreementWizardAutoFetched => 'خودکار حاصل شدہ';
+
+  @override
+  String get agreementWizardFinalize => 'معاہدہ مکمل کریں';
+
+  @override
+  String get agreementWizardFinalizeHint =>
+      'مکمل کرنے سے پہلے تینوں دستخط ضروری ہیں۔';
+
+  @override
+  String get agreementWizardSignedByAll => 'تینوں فریقوں کے دستخط ہو گئے';
+
+  @override
+  String get agreementWizardAgreementReady => 'معاہدہ تیار ہے';
+
+  @override
+  String agreementWizardFileMeta(String size) {
+    return 'A4 · 1 صفحہ · $size';
+  }
+
+  @override
+  String get agreementWizardQrVerified => 'QR تصدیق شدہ';
+
+  @override
+  String get agreementWizardShareTitle => 'معاہدہ شیئر کریں';
+
+  @override
+  String get agreementWizardShareOnWhatsapp => 'واٹس ایپ پر شیئر کریں';
+
+  @override
+  String get agreementWizardCopyLink => 'تصدیقی لنک کاپی کریں';
+
+  @override
+  String get agreementWizardLinkCopied => 'تصدیقی لنک کاپی ہو گیا';
+
+  @override
+  String get agreementWizardPrintSingleCopy => 'ایک کاپی پرنٹ ہوگی';
+
+  @override
+  String get agreementWizardShopStamp => 'دکان کی مہر';
 
   @override
   String dashboardGreeting(String name) {
@@ -6407,6 +6533,43 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get fleetCalendarAvailable => 'دستیاب';
+
+  @override
+  String get fleetCalendarMonth => 'مہینہ';
+
+  @override
+  String get fleetCalendarDay => 'دن';
+
+  @override
+  String get fleetCalendarWeek => 'ہفتہ';
+
+  @override
+  String get fleetCalendarOnline => 'آن لائن';
+
+  @override
+  String get fleetCalendarWalkIn => 'واک ان';
+
+  @override
+  String get fleetCalendarOnlineBooking => 'آن لائن بکنگ';
+
+  @override
+  String get fleetCalendarManualBooking => 'دستی بکنگ';
+
+  @override
+  String get fleetCalendarOverlapNote =>
+      'اوورلیپنگ بکنگز خود بخود بلاک ہو جاتی ہیں، اس لیے ایک گاڑی کبھی ڈبل بک نہیں ہو سکتی۔';
+
+  @override
+  String get fleetCalendarPrevDay => 'پچھلا دن';
+
+  @override
+  String get fleetCalendarNextDay => 'اگلا دن';
+
+  @override
+  String get fleetCalendarPrevWeek => 'پچھلا ہفتہ';
+
+  @override
+  String get fleetCalendarNextWeek => 'اگلا ہفتہ';
 
   @override
   String get vehicleReviewDelivery => 'ڈیلیوری اور وصولی';
@@ -9611,6 +9774,137 @@ class AppLocalizationsUr extends AppLocalizations {
   String get manualBookingLoadingVehicles => 'گاڑیاں لوڈ ہو رہی ہیں…';
 
   @override
+  String get manualBookingStepPayment => 'ادائیگی';
+
+  @override
+  String get manualBookingStepSummary => 'خلاصہ';
+
+  @override
+  String get manualBookingSearchCustomers => 'رجسٹرڈ صارفین تلاش کریں';
+
+  @override
+  String get manualBookingNoCustomers => 'ابھی کوئی رجسٹرڈ صارف نہیں ہے۔';
+
+  @override
+  String get manualBookingNoMatchingCustomers =>
+      'اس تلاش سے کوئی صارف نہیں ملا۔';
+
+  @override
+  String get manualBookingAddNewCustomer => '+ نیا صارف شامل کریں';
+
+  @override
+  String get manualBookingAddNewCustomerHint => 'مکمل KYC طریقہ کھلتا ہے';
+
+  @override
+  String get manualBookingCustomerNotRegistered =>
+      'یہ صارف ابھی رجسٹرڈ نہیں ہے — پہلے اسے شامل کریں۔';
+
+  @override
+  String get manualBookingSelectCustomer =>
+      'جاری رکھنے کے لیے صارف منتخب کریں۔';
+
+  @override
+  String get manualBookingBlacklistedCustomer =>
+      'بلیک لسٹڈ — بکنگ نہیں ہو سکتی';
+
+  @override
+  String get manualBookingNotBlacklisted => 'بلیک لسٹڈ نہیں';
+
+  @override
+  String get manualBookingKycDone => 'KYC مکمل';
+
+  @override
+  String get manualBookingKycPending => 'KYC زیر التوا';
+
+  @override
+  String get manualBookingSavedSignature =>
+      'محفوظ شدہ دستخط خودکار لگائے جائیں گے';
+
+  @override
+  String get manualBookingNoSignature => 'کوئی محفوظ شدہ دستخط نہیں';
+
+  @override
+  String get manualBookingCarFree => 'گاڑی اس وقت کے لیے خالی ہے';
+
+  @override
+  String get manualBookingCarBusy => 'گاڑی اس وقت کے لیے پہلے سے بک ہے';
+
+  @override
+  String get manualBookingCarOnRent => 'کرائے پر';
+
+  @override
+  String get manualBookingCarAvailable => 'دستیاب';
+
+  @override
+  String get manualBookingCarMaintenance => 'مرمت میں';
+
+  @override
+  String get manualBookingStartNow => 'ابھی شروع کریں';
+
+  @override
+  String get manualBookingRentLine => 'کرایہ';
+
+  @override
+  String get manualBookingDriverLine => 'ڈرائیور';
+
+  @override
+  String get manualBookingDiscountLine => 'رعایت';
+
+  @override
+  String get manualBookingDiscountHint => 'رعایت (روپے)';
+
+  @override
+  String get manualBookingPaidNow => 'ابھی ادا شدہ';
+
+  @override
+  String get manualBookingDepositReceived => 'ڈپازٹ موصول';
+
+  @override
+  String get manualBookingDepositMethod => 'ڈپازٹ کا طریقہ';
+
+  @override
+  String get manualBookingRemainingDues => 'باقی واجبات';
+
+  @override
+  String get manualBookingAddToDues => 'باقی رقم صارف کے واجبات میں شامل کریں';
+
+  @override
+  String get manualBookingCollectFull =>
+      'پوری رقم وصول کریں، یا باقی رقم صارف کے واجبات میں شامل کریں۔';
+
+  @override
+  String get manualBookingAmountInvalid => 'درست رقم درج کریں۔';
+
+  @override
+  String get manualBookingDiscountTooHigh =>
+      'رعایت کرائے سے زیادہ نہیں ہو سکتی۔';
+
+  @override
+  String get manualBookingSummaryTitle => 'بکنگ کا خلاصہ';
+
+  @override
+  String get manualBookingWalkInBadge => 'واک ان';
+
+  @override
+  String get manualBookingShareReceipt => 'رسید شیئر کریں';
+
+  @override
+  String get manualBookingAgreementNote =>
+      'معاہدہ حوالگی کے وقت محفوظ شدہ دستخطوں سے خودکار بنایا جائے گا';
+
+  @override
+  String manualBookingReceiptMessage(String customer, String bookingId,
+      String vehicle, String pickup, String total, String remaining) {
+    return 'السلام علیکم $customer، آپ کی واک ان بکنگ $bookingId برائے $vehicle کی تصدیق ہو گئی ہے۔ روانگی: $pickup۔ کل: $total روپے۔ باقی واجبات: $remaining روپے۔ شکریہ!';
+  }
+
+  @override
+  String get manualBookingReceiptDone => 'ہو گیا';
+
+  @override
+  String get manualBookingRentPaid => 'ادا شدہ کرایہ';
+
+  @override
   String get profileLoadFailed =>
       'آپ کا پروفائل لوڈ نہیں ہو سکا۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔';
 
@@ -9713,6 +10007,18 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get triageKycVerified => 'KYC تصدیق شدہ';
+
+  @override
+  String get requestsKycCnicVerified => 'تصدیق شدہ شناختی کارڈ';
+
+  @override
+  String get requestsKycCnicNotVerified => 'شناختی کارڈ کی تصدیق نہیں ہوئی';
+
+  @override
+  String get requestsKycLicenseVerified => 'تصدیق شدہ لائسنس';
+
+  @override
+  String get requestsKycLicenseNotVerified => 'لائسنس کی تصدیق نہیں ہوئی';
 
   @override
   String triageTrustScore(String score) {
@@ -9868,4 +10174,205 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get fleetReady => 'تیار';
+
+  @override
+  String get approveAssignTitle =>
+      'منظور کریں اور ادائیگی کا اکاؤنٹ منتخب کریں';
+
+  @override
+  String get approveAssignChooseAccount =>
+      'وہ اکاؤنٹ منتخب کریں جس میں گاہک ادائیگی کرے گا';
+
+  @override
+  String get approveAssignNoAccounts =>
+      'اس دکان کے لیے ابھی کوئی ادائیگی اکاؤنٹ ترتیب نہیں دیا گیا۔ منظوری سے پہلے دکان کی ترتیبات میں اکاؤنٹ شامل کریں۔';
+
+  @override
+  String get approveAssignTermsTitle => 'ادائیگی کی شرائط';
+
+  @override
+  String approveAssignAdvanceNow(String amount) {
+    return 'ابھی واجب پیشگی رقم: $amount';
+  }
+
+  @override
+  String approveAssignRemainingPickup(String amount) {
+    return 'وصولی پر باقی رقم: $amount';
+  }
+
+  @override
+  String approveAssignDepositPickup(String amount) {
+    return 'وصولی پر قابل واپسی ضمانت: $amount';
+  }
+
+  @override
+  String approveAssignDeadline(String time) {
+    return 'منظوری کے 30 منٹ کے اندر ادائیگی کریں — $time تک';
+  }
+
+  @override
+  String get approveAssignNoAutoCancel =>
+      'خودکار منسوخی نہیں ہے — آخری وقت صرف گاہک کو دکھایا جاتا ہے۔';
+
+  @override
+  String get approveAssignConfirm => 'منظور کریں اور اکاؤنٹ منتخب کریں';
+
+  @override
+  String get paymentAssignedAccountOnly =>
+      'صرف نیچے دیے گئے منتخب اکاؤنٹ میں ادائیگی کریں۔';
+
+  @override
+  String paymentPayByDeadline(String time) {
+    return 'منظوری کے 30 منٹ کے اندر ادائیگی کریں — $time تک';
+  }
+
+  @override
+  String get handoverWizardTitle => 'حوالگی';
+
+  @override
+  String get handoverWizardStepVerify => 'تصدیق';
+
+  @override
+  String get handoverWizardStepPayment => 'ادائیگی';
+
+  @override
+  String get handoverWizardStepChecklist => 'فہرست';
+
+  @override
+  String get handoverWizardStepPhotos => 'تصاویر';
+
+  @override
+  String get handoverWizardStepAgreement => 'معاہدہ';
+
+  @override
+  String get handoverWizardBookingMatched => 'بکنگ مل گئی';
+
+  @override
+  String get handoverWizardFaceTitle => 'چہرے کی جانچ';
+
+  @override
+  String get handoverWizardFaceHint =>
+      'گاہک کا موازنہ ان کی KYC پروفائل تصویر سے کریں۔ یہ دستی بصری جانچ ہے — کوئی خودکار چہرہ ملان نہیں کیا جاتا اور کوئی اسکور نہیں دکھایا جاتا۔';
+
+  @override
+  String get handoverWizardFaceConfirm => 'چہرہ KYC تصویر سے ملتا ہے';
+
+  @override
+  String get handoverWizardFaceConfirmed => 'چہرے کی جانچ کی تصدیق ہو گئی';
+
+  @override
+  String get handoverWizardFaceRequired =>
+      'آگے بڑھنے سے پہلے چہرے کی جانچ کی تصدیق کریں۔';
+
+  @override
+  String get handoverWizardFaceNoPhoto =>
+      'KYC تصویر موجود نہیں — اصل شناختی کارڈ چیک کریں۔';
+
+  @override
+  String get handoverWizardSelectBooking => 'بکنگ دستی طور پر منتخب کریں';
+
+  @override
+  String get handoverWizardNoReadyBookings =>
+      'حوالگی کے لیے کوئی بکنگ تیار نہیں۔';
+
+  @override
+  String get handoverWizardAdvancePaid => 'ایڈوانس (آن لائن ادا شدہ)';
+
+  @override
+  String get handoverWizardDepositMethod => 'ڈپازٹ کا طریقہ';
+
+  @override
+  String get handoverWizardDepositReceived => 'ڈپازٹ موصول ہوا';
+
+  @override
+  String get handoverWizardBalanceReceived => 'بقیہ رقم موصول ہوئی';
+
+  @override
+  String get handoverWizardReceiptTitle => 'حوالگی کی رسید';
+
+  @override
+  String handoverWizardReceiptId(String id) {
+    return 'رسید $id';
+  }
+
+  @override
+  String get handoverWizardReceiptView => 'رسید دیکھیں';
+
+  @override
+  String get handoverWizardReceiptShare => 'رسید واٹس ایپ پر شیئر کریں';
+
+  @override
+  String handoverWizardReceiptMessage(String receipt, String vehicle,
+      String total, String advance, String balance, String deposit) {
+    return 'حوالگی کی رسید $receipt برائے $vehicle: کل روپے $total، ایڈوانس روپے $advance، بقیہ روپے $balance، ڈپازٹ روپے $deposit۔ — رینٹل ہب';
+  }
+
+  @override
+  String get handoverWizardReceiptWhatsappFailed => 'واٹس ایپ نہیں کھل سکا۔';
+
+  @override
+  String get handoverWizardAcWorking => 'ایئر کنڈیشنر کام کر رہا ہے';
+
+  @override
+  String get handoverWizardLightsWorking => 'تمام لائٹس کام کر رہی ہیں';
+
+  @override
+  String get handoverPhotoInterior => 'اندرونی';
+
+  @override
+  String get handoverPhotoDashboard => 'ڈیش بورڈ';
+
+  @override
+  String handoverWizardPhotoTakenAt(String time) {
+    return '$time پر لی گئی';
+  }
+
+  @override
+  String get handoverWizardDamageDiagram => 'موجودہ نقصان نشان زد کریں';
+
+  @override
+  String get handoverWizardSignatureOnFile => 'دستخط محفوظ ہیں';
+
+  @override
+  String get handoverWizardSignFresh => 'تازہ دستخط کریں';
+
+  @override
+  String get handoverWizardUseSaved => 'محفوظ دستخط استعمال کریں';
+
+  @override
+  String get handoverWizardGuarantorPending =>
+      'ضامن کے دستخط زیر التوا ہیں — معاہدے کے مرحلے میں دستخط ہوں گے۔';
+
+  @override
+  String handoverWizardTripStarted(String time) {
+    return 'سفر شروع $time';
+  }
+
+  @override
+  String get handoverWizardHandedOver => 'گاڑی حوالے کر دی گئی';
+
+  @override
+  String get handoverWizardSharePdf => 'معاہدہ PDF شیئر کریں';
+
+  @override
+  String get handoverWizardPaymentRequired =>
+      'آگے بڑھنے سے پہلے بتائیں کہ بقیہ رقم کیسے وصول ہوئی۔';
+
+  @override
+  String get handoverWizardDepositMethodRequired =>
+      'آگے بڑھنے سے پہلے بتائیں کہ ڈپازٹ کیسے وصول ہوا۔';
+
+  @override
+  String get handoverWizardChecklistRequired =>
+      'آگے بڑھنے سے پہلے اوڈومیٹر اور فیول لیول درج کریں۔';
+
+  @override
+  String handoverWizardHandoverFailed(String error) {
+    return 'حوالگی ناکام: $error';
+  }
+
+  @override
+  String rentalStartedTripLine(String time, String elapsed) {
+    return 'شروع $time · سفر جاری $elapsed';
+  }
 }

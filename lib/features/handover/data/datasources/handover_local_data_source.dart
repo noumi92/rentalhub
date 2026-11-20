@@ -52,6 +52,27 @@ class HandoverLocalDataSource {
         'documents_given': handover.documentsGiven,
         'accessories': handover.accessories,
         'keys_handed_over': handover.keysHandedOver,
+        // Item 9 (O26–O30): the wizard's new fields ride the offline
+        // queue with the record (old records lack the keys and read
+        // back as null / false / empty).
+        'face_check_confirmed': handover.faceCheckConfirmed,
+        'face_checked_at': handover.faceCheckedAt?.toIso8601String(),
+        'deposit_payment_method': handover.depositPaymentMethod,
+        'deposit_received_at':
+            handover.depositReceivedAt?.toIso8601String(),
+        'receipt_id': handover.receiptId,
+        'ac_working': handover.acWorking,
+        'lights_working': handover.lightsWorking,
+        'photo_interior_url': handover.photoInteriorUrl,
+        'photo_dashboard_url': handover.photoDashboardUrl,
+        'photo_taken_at': handover.photoTakenAt,
+        'damage_pins':
+            handover.damagePins.map((p) => p.toJson()).toList(),
+        'trip_start_at': handover.tripStartAt?.toIso8601String(),
+        'wizard_completed_at':
+            handover.wizardCompletedAt?.toIso8601String(),
+        'customer_signature_source': handover.customerSignatureSource,
+        'owner_signature_source': handover.ownerSignatureSource,
         'agreement_pdf_url': handover.agreementPdfUrl,
         'is_synced': false,
         'created_at': DateTime.now().toIso8601String(),
@@ -83,9 +104,35 @@ class HandoverLocalDataSource {
       documentsGiven: List<String>.from(d['documents_given'] ?? []),
       accessories: List<String>.from(d['accessories'] ?? []),
       keysHandedOver: d['keys_handed_over'] == true,
+      faceCheckConfirmed: d['face_check_confirmed'] == true,
+      faceCheckedAt: _parseDate(d['face_checked_at']),
+      depositPaymentMethod: d['deposit_payment_method'] as String?,
+      depositReceivedAt: _parseDate(d['deposit_received_at']),
+      receiptId: d['receipt_id'] as String?,
+      acWorking: d['ac_working'] as bool?,
+      lightsWorking: d['lights_working'] as bool?,
+      photoInteriorUrl: d['photo_interior_url'] as String?,
+      photoDashboardUrl: d['photo_dashboard_url'] as String?,
+      photoTakenAt: Map<String, String>.from(
+          (d['photo_taken_at'] as Map? ?? {}).map(
+              (k, v) => MapEntry(k.toString(), v.toString()))),
+      damagePins: (d['damage_pins'] as List? ?? [])
+          .map((p) => HandoverDamagePin.fromJson(
+              Map<String, dynamic>.from(p as Map)))
+          .toList(),
+      tripStartAt: _parseDate(d['trip_start_at']),
+      wizardCompletedAt: _parseDate(d['wizard_completed_at']),
+      customerSignatureSource: d['customer_signature_source'] as String?,
+      ownerSignatureSource: d['owner_signature_source'] as String?,
       agreementPdfUrl: d['agreement_pdf_url'],
       isSynced: d['is_synced'] == true,
     );
+  }
+
+  static DateTime? _parseDate(dynamic value) {
+    if (value == null) return null;
+    if (value is DateTime) return value;
+    return DateTime.tryParse(value.toString());
   }
 
   Future<void> saveHandoverOffline(HandoverEntity handover) async {

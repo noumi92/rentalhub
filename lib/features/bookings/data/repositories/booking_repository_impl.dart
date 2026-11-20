@@ -42,10 +42,14 @@ class BookingRepositoryImpl implements BookingRepository {
   Future<BookingEntity> updateBookingStatus({
     required String bookingId,
     required String status,
+    String? selectedPaymentAccount,
+    DateTime? paymentDeadline,
   }) =>
       remoteDataSource.updateBookingStatus(
         bookingId: bookingId,
         status: status,
+        selectedPaymentAccount: selectedPaymentAccount,
+        paymentDeadline: paymentDeadline,
       );
 
   @override

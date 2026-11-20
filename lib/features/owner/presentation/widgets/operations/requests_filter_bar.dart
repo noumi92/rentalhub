@@ -71,6 +71,14 @@ class RequestsFilterBar extends StatelessWidget {
               _chip(context, l10n, 'approved', l10n.statusApproved),
               const SizedBox(width: 8),
               _chip(context, l10n, 'rejected', l10n.statusRejected),
+              const SizedBox(width: 8),
+              // O16: active rentals and completed bookings are
+              // reachable from this tab too — the labels reuse the
+              // existing status keys (active / statusCompleted), so
+              // no new .arb keys are needed for the chips.
+              _chip(context, l10n, 'active', l10n.active),
+              const SizedBox(width: 8),
+              _chip(context, l10n, 'completed', l10n.statusCompleted),
             ],
           ),
         ),

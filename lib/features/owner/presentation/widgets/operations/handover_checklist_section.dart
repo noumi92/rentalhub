@@ -16,6 +16,13 @@ class HandoverChecklistSection extends StatelessWidget {
   final ValueChanged<Set<String>> onAccessoriesChanged;
   final ValueChanged<bool> onKeysChanged;
 
+  /// Item 9 (O28): the condition checkboxes — null when the
+  /// owning view does not track them (legacy call sites).
+  final bool? acWorking;
+  final ValueChanged<bool>? onAcWorkingChanged;
+  final bool? lightsWorking;
+  final ValueChanged<bool>? onLightsWorkingChanged;
+
   const HandoverChecklistSection({
     super.key,
     required this.documentsGiven,
@@ -24,6 +31,10 @@ class HandoverChecklistSection extends StatelessWidget {
     required this.onDocumentsChanged,
     required this.onAccessoriesChanged,
     required this.onKeysChanged,
+    this.acWorking,
+    this.onAcWorkingChanged,
+    this.lightsWorking,
+    this.onLightsWorkingChanged,
   });
 
   @override
@@ -78,6 +89,25 @@ class HandoverChecklistSection extends StatelessWidget {
                 _toggled(accessories, 'tool_kit', v)),
           ),
           const SizedBox(height: 12),
+          // Item 9 (O28): AC / lights condition — persisted on the
+          // handover record with the rest of the checklist.
+          if (onAcWorkingChanged != null)
+            _checkRow(
+              context,
+              label: l10n.handoverWizardAcWorking,
+              value: acWorking == true,
+              onChanged: (v) => onAcWorkingChanged!(v == true),
+            ),
+          if (onLightsWorkingChanged != null)
+            _checkRow(
+              context,
+              label: l10n.handoverWizardLightsWorking,
+              value: lightsWorking == true,
+              onChanged: (v) => onLightsWorkingChanged!(v == true),
+            ),
+          if (onAcWorkingChanged != null ||
+              onLightsWorkingChanged != null)
+            const SizedBox(height: 12),
           Material(
             color: Colors.transparent,
             child: SwitchListTile(

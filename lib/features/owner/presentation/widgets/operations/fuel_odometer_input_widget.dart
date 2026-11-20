@@ -75,31 +75,54 @@ class FuelOdometerInputWidget extends StatelessWidget {
                   .labelMedium
                   ?.copyWith(fontWeight: FontWeight.w500)),
           const SizedBox(height: 8),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: fuelLevels.map((lvl) {
-              final isSelected = selectedFuel == lvl;
-              return ChoiceChip(
-                materialTapTargetSize: MaterialTapTargetSize.padded,
-                label: Text(fuelLevelLabel(l10n, lvl)),
-                selected: isSelected,
-                selectedColor: AppColors.secondary,
-                backgroundColor:
-                    Theme.of(context).colorScheme.surfaceContainerHighest,
-                labelStyle: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      fontWeight: FontWeight.w500,
-                      color: isSelected
-                          ? Colors.white
-                          : Theme.of(context).colorScheme.onSurface,
-                    ),
-                onSelected: (_) => onFuelSelected(lvl),
-              );
-            }).toList(),
+          // Item 9 (O28): an E–F slider replaces the four chips — the
+          // stored value is unchanged (one of the four level strings),
+          // so old records and the return flow keep reading it.
+          Row(
+            children: [
+              Text('E',
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                      fontWeight: FontWeight.w600)),
+              Expanded(
+                child: Slider(
+                  value: _fuelSliderValue(selectedFuel),
+                  min: 0,
+                  max: 3,
+                  divisions: 3,
+                  label: selectedFuel.isEmpty
+                      ? null
+                      : fuelLevelLabel(l10n, selectedFuel),
+                  onChanged: (v) =>
+                      onFuelSelected(fuelLevels[v.round()]),
+                ),
+              ),
+              Text('F',
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                      fontWeight: FontWeight.w600)),
+            ],
           ),
+          if (selectedFuel.isNotEmpty)
+            Align(
+              alignment: Alignment.centerRight,
+              child: Text(
+                fuelLevelLabel(l10n, selectedFuel),
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+              ),
+            ),
         ],
       ),
     );
+  }
+
+  /// Slider position for the stored level; -1 (unselected) reads as
+  /// 0 so the thumb rests at E until the owner moves it — the
+  /// stored value stays empty until then, so certify still blocks.
+  double _fuelSliderValue(String level) {
+    const fuelLevels = ['1/4 (25%)', '2/4 (50%)', '3/4 (75%)', '4/4 (Full)'];
+    final idx = fuelLevels.indexOf(level);
+    return idx < 0 ? 0 : idx.toDouble();
   }
 }
 

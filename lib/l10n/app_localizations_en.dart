@@ -1191,6 +1191,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Proof submitted! Receipt will sync when you are back online.';
 
   @override
+  String get proofUploadQueued =>
+      'Receipt upload failed — saved on this device and will retry when you are back online. Your payment is not marked as submitted yet.';
+
+  @override
   String get proofPrivateNote =>
       'Proof is uploaded to private storage. The showroom checks it and confirms your booking, and you will be notified in the app when it is confirmed. If you do not hear back, message the shop on WhatsApp.';
 
@@ -2248,7 +2252,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get requestsScanQrTooltip => 'Scan booking QR';
 
   @override
-  String get requestsRefreshTooltip => 'Refresh';
+  String get requestsCalendarTooltip => 'Booking calendar';
 
   @override
   String get requestsLoading => 'Loading booking requests…';
@@ -2277,6 +2281,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get requestsEmptyNew => 'No pending booking requests';
+
+  @override
+  String get requestsEmptyActive => 'No active rentals right now';
+
+  @override
+  String get requestsEmptyCompleted => 'No completed bookings yet';
 
   @override
   String get requestsEmptyMessage =>
@@ -2329,6 +2339,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get requestsDecline => 'Decline';
+
+  @override
+  String get requestsCustomerNote => 'Customer note';
+
+  @override
+  String get requestsNotBlacklisted => 'Not Blacklisted';
+
+  @override
+  String get requestsBlacklisted => 'Blacklisted';
 
   @override
   String get requestsApprovePay => 'Approve';
@@ -3910,7 +3929,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get paymentVerificationReasonHint => 'e.g. Screenshot is unreadable';
 
   @override
-  String get paymentVerificationRejectButton => 'Reject Proof';
+  String get paymentVerificationRejectButton => 'Payment Not Received';
 
   @override
   String get paymentVerificationRejected =>
@@ -3953,6 +3972,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get paymentVerificationConfirming => 'Confirming…';
+
+  @override
+  String get paymentVerificationWaitingBanner =>
+      'Waiting for your verification';
+
+  @override
+  String get paymentVerificationProofSubmittedAt => 'Proof submitted';
 
   @override
   String get manualBookingTitle => 'Walk-in Booking Wizard';
@@ -5250,6 +5276,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String get bookingConfirmedWhatsappFailed => 'Could not open WhatsApp.';
 
   @override
+  String get bookingConfirmedChecklistTitle => 'Approval checklist';
+
+  @override
+  String get bookingConfirmedCheckRequestApproved => 'Request Approved';
+
+  @override
+  String get bookingConfirmedCheckAdvanceReceived => 'Advance Received';
+
+  @override
+  String get bookingConfirmedCheckPickup => 'Pickup';
+
+  @override
+  String get bookingConfirmedCheckReturn => 'Return';
+
+  @override
+  String get bookingConfirmedReserved => 'Reserved';
+
+  @override
+  String get bookingConfirmedScanCustomerQr => 'Scan Customer QR at Pickup';
+
+  @override
   String get manualBookingNext => 'Next';
 
   @override
@@ -5567,6 +5614,86 @@ class AppLocalizationsEn extends AppLocalizations {
   String agreementSignedSendMessage(String name, String url) {
     return 'Assalam-o-Alaikum $name, your rental agreement is ready: $url';
   }
+
+  @override
+  String get agreementWizardTitle => 'Agreement';
+
+  @override
+  String get agreementWizardGenerated => 'Generated';
+
+  @override
+  String get agreementWizardGuarantor => 'Guarantor';
+
+  @override
+  String get agreementWizardRelation => 'Relation';
+
+  @override
+  String get agreementWizardNoGuarantor => 'No guarantor added';
+
+  @override
+  String get agreementWizardHandoverPhotos => 'Handover photos';
+
+  @override
+  String agreementWizardPhotoCount(int count) {
+    return '$count photos';
+  }
+
+  @override
+  String get agreementWizardLicense => 'License';
+
+  @override
+  String get agreementWizardTermsSignatures => 'Terms & signatures';
+
+  @override
+  String get agreementWizardTermsSubtitle => '10 terms · 3 signatures';
+
+  @override
+  String get agreementWizardSignatures => 'Signatures';
+
+  @override
+  String get agreementWizardSaved => 'Saved';
+
+  @override
+  String get agreementWizardAutoFetched => 'Auto-fetched';
+
+  @override
+  String get agreementWizardFinalize => 'Finalize agreement';
+
+  @override
+  String get agreementWizardFinalizeHint =>
+      'All 3 signatures are required before finalizing.';
+
+  @override
+  String get agreementWizardSignedByAll => 'Signed by all 3 parties';
+
+  @override
+  String get agreementWizardAgreementReady => 'Agreement ready';
+
+  @override
+  String agreementWizardFileMeta(String size) {
+    return 'A4 · 1 page · $size';
+  }
+
+  @override
+  String get agreementWizardQrVerified => 'QR verified';
+
+  @override
+  String get agreementWizardShareTitle => 'Share agreement';
+
+  @override
+  String get agreementWizardShareOnWhatsapp => 'Share on WhatsApp';
+
+  @override
+  String get agreementWizardCopyLink => 'Copy verification link';
+
+  @override
+  String get agreementWizardLinkCopied => 'Verification link copied';
+
+  @override
+  String get agreementWizardPrintSingleCopy => 'Prints a single copy';
+
+  @override
+  String get agreementWizardShopStamp => 'Shop stamp';
 
   @override
   String dashboardGreeting(String name) {
@@ -6413,6 +6540,43 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get fleetCalendarAvailable => 'Available';
+
+  @override
+  String get fleetCalendarMonth => 'Month';
+
+  @override
+  String get fleetCalendarDay => 'Day';
+
+  @override
+  String get fleetCalendarWeek => 'Week';
+
+  @override
+  String get fleetCalendarOnline => 'Online';
+
+  @override
+  String get fleetCalendarWalkIn => 'Walk-in';
+
+  @override
+  String get fleetCalendarOnlineBooking => 'Online booking';
+
+  @override
+  String get fleetCalendarManualBooking => 'Manual booking';
+
+  @override
+  String get fleetCalendarOverlapNote =>
+      'Overlapping bookings are blocked automatically, so a car can never be double-booked.';
+
+  @override
+  String get fleetCalendarPrevDay => 'Previous day';
+
+  @override
+  String get fleetCalendarNextDay => 'Next day';
+
+  @override
+  String get fleetCalendarPrevWeek => 'Previous week';
+
+  @override
+  String get fleetCalendarNextWeek => 'Next week';
 
   @override
   String get vehicleReviewDelivery => 'Delivery & Collection';
@@ -9600,6 +9764,133 @@ class AppLocalizationsEn extends AppLocalizations {
   String get manualBookingLoadingVehicles => 'Loading vehicles…';
 
   @override
+  String get manualBookingStepPayment => 'Payment';
+
+  @override
+  String get manualBookingStepSummary => 'Summary';
+
+  @override
+  String get manualBookingSearchCustomers => 'Search registered customers';
+
+  @override
+  String get manualBookingNoCustomers => 'No registered customers yet.';
+
+  @override
+  String get manualBookingNoMatchingCustomers =>
+      'No customers match this search.';
+
+  @override
+  String get manualBookingAddNewCustomer => '+ Add New Customer';
+
+  @override
+  String get manualBookingAddNewCustomerHint => 'Opens the full KYC flow';
+
+  @override
+  String get manualBookingCustomerNotRegistered =>
+      'This customer is not registered yet — add them first.';
+
+  @override
+  String get manualBookingSelectCustomer => 'Select a customer to continue.';
+
+  @override
+  String get manualBookingBlacklistedCustomer => 'Blacklisted — cannot book';
+
+  @override
+  String get manualBookingNotBlacklisted => 'Not blacklisted';
+
+  @override
+  String get manualBookingKycDone => 'KYC done';
+
+  @override
+  String get manualBookingKycPending => 'KYC pending';
+
+  @override
+  String get manualBookingSavedSignature => 'Saved signature auto-applied';
+
+  @override
+  String get manualBookingNoSignature => 'No saved signature';
+
+  @override
+  String get manualBookingCarFree => 'Car is free for this time';
+
+  @override
+  String get manualBookingCarBusy => 'Car is already booked for this time';
+
+  @override
+  String get manualBookingCarOnRent => 'On Rent';
+
+  @override
+  String get manualBookingCarAvailable => 'Available';
+
+  @override
+  String get manualBookingCarMaintenance => 'Maintenance';
+
+  @override
+  String get manualBookingStartNow => 'Start now';
+
+  @override
+  String get manualBookingRentLine => 'Rent';
+
+  @override
+  String get manualBookingDriverLine => 'Driver';
+
+  @override
+  String get manualBookingDiscountLine => 'Discount';
+
+  @override
+  String get manualBookingDiscountHint => 'Discount (Rs.)';
+
+  @override
+  String get manualBookingPaidNow => 'Paid now';
+
+  @override
+  String get manualBookingDepositReceived => 'Deposit received';
+
+  @override
+  String get manualBookingDepositMethod => 'Deposit method';
+
+  @override
+  String get manualBookingRemainingDues => 'Remaining Dues';
+
+  @override
+  String get manualBookingAddToDues => 'Add remaining to customer dues';
+
+  @override
+  String get manualBookingCollectFull =>
+      'Collect the full amount, or add the remaining to customer dues.';
+
+  @override
+  String get manualBookingAmountInvalid => 'Enter a valid amount.';
+
+  @override
+  String get manualBookingDiscountTooHigh => 'Discount cannot exceed the rent.';
+
+  @override
+  String get manualBookingSummaryTitle => 'Booking Summary';
+
+  @override
+  String get manualBookingWalkInBadge => 'Walk-in';
+
+  @override
+  String get manualBookingShareReceipt => 'Share Receipt';
+
+  @override
+  String get manualBookingAgreementNote =>
+      'Agreement is generated automatically at handover using saved signatures';
+
+  @override
+  String manualBookingReceiptMessage(String customer, String bookingId,
+      String vehicle, String pickup, String total, String remaining) {
+    return 'Assalam-o-Alaikum $customer, your walk-in booking $bookingId for $vehicle is confirmed. Pickup: $pickup. Total: Rs. $total. Remaining dues: Rs. $remaining. Thank you!';
+  }
+
+  @override
+  String get manualBookingReceiptDone => 'Done';
+
+  @override
+  String get manualBookingRentPaid => 'Rent Paid';
+
+  @override
   String get profileLoadFailed =>
       'Could not load your profile. Check your connection and try again.';
 
@@ -9702,6 +9993,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get triageKycVerified => 'KYC verified';
+
+  @override
+  String get requestsKycCnicVerified => 'Verified CNIC';
+
+  @override
+  String get requestsKycCnicNotVerified => 'CNIC not verified';
+
+  @override
+  String get requestsKycLicenseVerified => 'Verified License';
+
+  @override
+  String get requestsKycLicenseNotVerified => 'License not verified';
 
   @override
   String triageTrustScore(String score) {
@@ -9858,4 +10161,203 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get fleetReady => 'Ready';
+
+  @override
+  String get approveAssignTitle => 'Approve & assign payment account';
+
+  @override
+  String get approveAssignChooseAccount =>
+      'Choose the account the customer will pay into';
+
+  @override
+  String get approveAssignNoAccounts =>
+      'No payment accounts configured for this shop yet. Add one in shop settings before approving.';
+
+  @override
+  String get approveAssignTermsTitle => 'Payment terms';
+
+  @override
+  String approveAssignAdvanceNow(String amount) {
+    return 'Advance due now: $amount';
+  }
+
+  @override
+  String approveAssignRemainingPickup(String amount) {
+    return 'Remaining at pickup: $amount';
+  }
+
+  @override
+  String approveAssignDepositPickup(String amount) {
+    return 'Refundable deposit at pickup: $amount';
+  }
+
+  @override
+  String approveAssignDeadline(String time) {
+    return 'Pay within 30 minutes of approval — by $time';
+  }
+
+  @override
+  String get approveAssignNoAutoCancel =>
+      'No automatic cancellation — the deadline is shown to the customer only.';
+
+  @override
+  String get approveAssignConfirm => 'Approve & assign account';
+
+  @override
+  String get paymentAssignedAccountOnly =>
+      'Pay only into the assigned account below.';
+
+  @override
+  String paymentPayByDeadline(String time) {
+    return 'Pay within 30 minutes of approval — by $time';
+  }
+
+  @override
+  String get handoverWizardTitle => 'Handover';
+
+  @override
+  String get handoverWizardStepVerify => 'Verify';
+
+  @override
+  String get handoverWizardStepPayment => 'Payment';
+
+  @override
+  String get handoverWizardStepChecklist => 'Checklist';
+
+  @override
+  String get handoverWizardStepPhotos => 'Photos';
+
+  @override
+  String get handoverWizardStepAgreement => 'Agreement';
+
+  @override
+  String get handoverWizardBookingMatched => 'Booking matched';
+
+  @override
+  String get handoverWizardFaceTitle => 'Face check';
+
+  @override
+  String get handoverWizardFaceHint =>
+      'Compare the customer with their KYC profile photo. This is a manual visual check — no automatic face match is made and no match score is shown.';
+
+  @override
+  String get handoverWizardFaceConfirm => 'Face matches KYC photo';
+
+  @override
+  String get handoverWizardFaceConfirmed => 'Face check confirmed';
+
+  @override
+  String get handoverWizardFaceRequired =>
+      'Confirm the face check before continuing.';
+
+  @override
+  String get handoverWizardFaceNoPhoto =>
+      'No KYC photo on file — check the original CNIC instead.';
+
+  @override
+  String get handoverWizardSelectBooking => 'Select booking manually';
+
+  @override
+  String get handoverWizardNoReadyBookings => 'No bookings ready for handover.';
+
+  @override
+  String get handoverWizardAdvancePaid => 'Advance (paid online)';
+
+  @override
+  String get handoverWizardDepositMethod => 'Deposit method';
+
+  @override
+  String get handoverWizardDepositReceived => 'Deposit received';
+
+  @override
+  String get handoverWizardBalanceReceived => 'Balance received';
+
+  @override
+  String get handoverWizardReceiptTitle => 'Handover receipt';
+
+  @override
+  String handoverWizardReceiptId(String id) {
+    return 'Receipt $id';
+  }
+
+  @override
+  String get handoverWizardReceiptView => 'View receipt';
+
+  @override
+  String get handoverWizardReceiptShare => 'Share receipt on WhatsApp';
+
+  @override
+  String handoverWizardReceiptMessage(String receipt, String vehicle,
+      String total, String advance, String balance, String deposit) {
+    return 'Handover receipt $receipt for $vehicle: total Rs. $total, advance Rs. $advance, balance Rs. $balance, deposit Rs. $deposit. — RentalHub';
+  }
+
+  @override
+  String get handoverWizardReceiptWhatsappFailed => 'Could not open WhatsApp.';
+
+  @override
+  String get handoverWizardAcWorking => 'Air conditioning working';
+
+  @override
+  String get handoverWizardLightsWorking => 'All lights working';
+
+  @override
+  String get handoverPhotoInterior => 'Interior';
+
+  @override
+  String get handoverPhotoDashboard => 'Dashboard';
+
+  @override
+  String handoverWizardPhotoTakenAt(String time) {
+    return 'Taken $time';
+  }
+
+  @override
+  String get handoverWizardDamageDiagram => 'Mark existing damage';
+
+  @override
+  String get handoverWizardSignatureOnFile => 'Signature on file';
+
+  @override
+  String get handoverWizardSignFresh => 'Sign fresh instead';
+
+  @override
+  String get handoverWizardUseSaved => 'Use saved signature';
+
+  @override
+  String get handoverWizardGuarantorPending =>
+      'Guarantor signature pending — signed in the agreement step.';
+
+  @override
+  String handoverWizardTripStarted(String time) {
+    return 'Trip started $time';
+  }
+
+  @override
+  String get handoverWizardHandedOver => 'Car Handed Over';
+
+  @override
+  String get handoverWizardSharePdf => 'Share Agreement PDF';
+
+  @override
+  String get handoverWizardPaymentRequired =>
+      'Choose how the balance was collected before continuing.';
+
+  @override
+  String get handoverWizardDepositMethodRequired =>
+      'Choose how the deposit was collected before continuing.';
+
+  @override
+  String get handoverWizardChecklistRequired =>
+      'Enter the odometer reading and fuel level before continuing.';
+
+  @override
+  String handoverWizardHandoverFailed(String error) {
+    return 'Handover failed: $error';
+  }
+
+  @override
+  String rentalStartedTripLine(String time, String elapsed) {
+    return 'Started $time · on trip $elapsed';
+  }
 }

@@ -101,10 +101,32 @@ class HandoverCubit extends Cubit<HandoverState> {
     List<String> documentsGiven = const [],
     List<String> accessories = const [],
     bool keysHandedOver = false,
+    // Item 9 (O26–O30): the wizard's new fields — carried onto the
+    // stored record and the Firestore handover/agreement docs.
+    bool faceCheckConfirmed = false,
+    DateTime? faceCheckedAt,
+    String? depositPaymentMethod,
+    DateTime? depositReceivedAt,
+    String? receiptId,
+    bool? acWorking,
+    bool? lightsWorking,
+    String? photoInteriorUrl,
+    String? photoDashboardUrl,
+    Map<String, String> photoTakenAt = const {},
+    List<HandoverDamagePin> damagePins = const [],
+    DateTime? tripStartAt,
+    DateTime? wizardCompletedAt,
+    String? customerSignatureSource,
+    String? ownerSignatureSource,
     // Audit item 14 (O23): real vehicle detail for the PDF.
     String? vehiclePlate,
     String? vehicleColour,
     String? vehicleFuel,
+    // Item 10 (O46–O48): guarantor identity for the PDF detail
+    // block — read from the booking by the caller.
+    String? guarantorName,
+    String? guarantorCnic,
+    String? guarantorRelation,
     Uint8List? customerSignaturePng,
     Uint8List? ownerSignaturePng,
     // Kept for the older call sites (tests); the real pads now pass
@@ -135,6 +157,19 @@ class HandoverCubit extends Cubit<HandoverState> {
       vehiclePlate: vehiclePlate,
       vehicleColour: vehicleColour,
       vehicleFuel: vehicleFuel,
+      guarantorName: guarantorName,
+      guarantorCnic: guarantorCnic,
+      guarantorRelation: guarantorRelation,
+      // Item 10: the true photo count — never the spec's "8".
+      // Item 9 (O29): the wizard's interior + dashboard slots count.
+      handoverPhotoCount: [
+        photoFrontUrl,
+        photoBackUrl,
+        photoLeftUrl,
+        photoRightUrl,
+        photoInteriorUrl,
+        photoDashboardUrl,
+      ].where((url) => url != null && url.isNotEmpty).length,
     );
 
     var entity = HandoverEntity(
@@ -146,9 +181,24 @@ class HandoverCubit extends Cubit<HandoverState> {
       photoBackUrl: photoBackUrl,
       photoLeftUrl: photoLeftUrl,
       photoRightUrl: photoRightUrl,
+      photoInteriorUrl: photoInteriorUrl,
+      photoDashboardUrl: photoDashboardUrl,
+      photoTakenAt: photoTakenAt,
+      damagePins: damagePins,
       documentsGiven: documentsGiven,
       accessories: accessories,
       keysHandedOver: keysHandedOver,
+      faceCheckConfirmed: faceCheckConfirmed,
+      faceCheckedAt: faceCheckedAt,
+      depositPaymentMethod: depositPaymentMethod,
+      depositReceivedAt: depositReceivedAt,
+      receiptId: receiptId,
+      acWorking: acWorking,
+      lightsWorking: lightsWorking,
+      tripStartAt: tripStartAt ?? DateTime.now(),
+      wizardCompletedAt: wizardCompletedAt ?? DateTime.now(),
+      customerSignatureSource: customerSignatureSource,
+      ownerSignatureSource: ownerSignatureSource,
       customerSignatureSvg: customerSignatureSvg,
       ownerSignatureSvg: ownerSignatureSvg,
       customerSignatureB64: customerSignaturePng != null
@@ -234,9 +284,29 @@ class HandoverCubit extends Cubit<HandoverState> {
         photoBackUrl: map['photo_back_url'] as String?,
         photoLeftUrl: map['photo_left_url'] as String?,
         photoRightUrl: map['photo_right_url'] as String?,
+        photoInteriorUrl: map['photo_interior_url'] as String?,
+        photoDashboardUrl: map['photo_dashboard_url'] as String?,
+        photoTakenAt: Map<String, String>.from(
+            (map['photo_taken_at'] as Map? ?? {}).map(
+                (k, v) => MapEntry(k.toString(), v.toString()))),
+        damagePins: (map['damage_pins'] as List? ?? [])
+            .map((p) => HandoverDamagePin.fromJson(
+                Map<String, dynamic>.from(p as Map)))
+            .toList(),
         documentsGiven: List<String>.from(map['documents_given'] ?? []),
         accessories: List<String>.from(map['accessories'] ?? []),
         keysHandedOver: map['keys_handed_over'] == true,
+        faceCheckConfirmed: map['face_check_confirmed'] == true,
+        faceCheckedAt: _queuedDate(map['face_checked_at']),
+        depositPaymentMethod: map['deposit_payment_method'] as String?,
+        depositReceivedAt: _queuedDate(map['deposit_received_at']),
+        receiptId: map['receipt_id'] as String?,
+        acWorking: map['ac_working'] as bool?,
+        lightsWorking: map['lights_working'] as bool?,
+        tripStartAt: _queuedDate(map['trip_start_at']),
+        wizardCompletedAt: _queuedDate(map['wizard_completed_at']),
+        customerSignatureSource: map['customer_signature_source'] as String?,
+        ownerSignatureSource: map['owner_signature_source'] as String?,
         agreementPdfUrl: map['agreement_pdf_url'] as String?,
         isSynced: false,
       );
@@ -244,6 +314,12 @@ class HandoverCubit extends Cubit<HandoverState> {
     } catch (_) {
       return false;
     }
+  }
+
+  static DateTime? _queuedDate(dynamic value) {
+    if (value == null) return null;
+    if (value is DateTime) return value;
+    return DateTime.tryParse(value.toString());
   }
 
   Future<int> syncPendingHandovers() async {
@@ -315,6 +391,11 @@ class HandoverCubit extends Cubit<HandoverState> {
             'balanceDueAtHandover': item.balanceDuePkr,
             'balancePaymentMethod': item.balancePaymentMethod,
           },
+          // Item 9 (O27/O30): the receipt + the trip start, so the
+          // agreement doc can show when the trip actually started.
+          if (item.receiptId != null) 'receiptId': item.receiptId,
+          if (item.tripStartAt != null)
+            'tripStartAt': Timestamp.fromDate(item.tripStartAt!),
           'agreementPdfUrl': url,
           'agreementPdfSha256': pdfHash,
           'status': 'active',
@@ -336,6 +417,11 @@ class HandoverCubit extends Cubit<HandoverState> {
           'photoBackUrl': item.photoBackUrl,
           'photoLeftUrl': item.photoLeftUrl,
           'photoRightUrl': item.photoRightUrl,
+          'photoInteriorUrl': item.photoInteriorUrl,
+          'photoDashboardUrl': item.photoDashboardUrl,
+          'photoTakenAt': item.photoTakenAt,
+          'damagePins':
+              item.damagePins.map((p) => p.toJson()).toList(),
           'documentsGiven': item.documentsGiven,
           'accessories': item.accessories,
           'keysHandedOver': item.keysHandedOver,
@@ -345,6 +431,29 @@ class HandoverCubit extends Cubit<HandoverState> {
             'balanceDueAtHandover': item.balanceDuePkr,
             'balancePaymentMethod': item.balancePaymentMethod,
           },
+          // Item 9 (O26–O30): the wizard fields. Face check is a
+          // confirmed flag + timestamp only — never a match score.
+          'faceCheckConfirmed': item.faceCheckConfirmed,
+          if (item.faceCheckedAt != null)
+            'faceCheckedAt': Timestamp.fromDate(item.faceCheckedAt!),
+          if (item.depositPaymentMethod != null)
+            'depositPaymentMethod': item.depositPaymentMethod,
+          if (item.depositReceivedAt != null)
+            'depositReceivedAt':
+                Timestamp.fromDate(item.depositReceivedAt!),
+          if (item.receiptId != null) 'receiptId': item.receiptId,
+          if (item.acWorking != null) 'acWorking': item.acWorking,
+          if (item.lightsWorking != null)
+            'lightsWorking': item.lightsWorking,
+          if (item.tripStartAt != null)
+            'tripStartAt': Timestamp.fromDate(item.tripStartAt!),
+          if (item.wizardCompletedAt != null)
+            'wizardCompletedAt':
+                Timestamp.fromDate(item.wizardCompletedAt!),
+          if (item.customerSignatureSource != null)
+            'customerSignatureSource': item.customerSignatureSource,
+          if (item.ownerSignatureSource != null)
+            'ownerSignatureSource': item.ownerSignatureSource,
           'agreementPdfUrl': url,
           'agreementPdfSha256': pdfHash,
           'createdAt': FieldValue.serverTimestamp(),

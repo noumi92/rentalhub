@@ -8,6 +8,7 @@ import '../../../../core/routing/route_names.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../bookings/data/datasources/booking_remote_data_source.dart';
+import '../widgets/handover_wizard/handover_booking_picker_sheet.dart';
 import '../widgets/qr_camera_error_state.dart';
 import '../widgets/qr_scan_frame_overlay.dart';
 
@@ -96,6 +97,16 @@ class _OwnerQrScanViewState extends State<OwnerQrScanView> {
     _openBooking(bookingId);
   }
 
+  /// Item 9 (O26): the manual-entry field is not the only fallback
+  /// any more — the owner can pick from the bookings actually ready
+  /// for handover (approved / paid) instead of typing an id.
+  Future<void> _showBookingPicker() async {
+    final picked = await HandoverBookingPickerSheet.show(context);
+    if (picked != null && picked.isNotEmpty && mounted) {
+      _openBooking(picked);
+    }
+  }
+
   Future<void> _toggleTorch() async {
     try {
       await _scannerController.toggleTorch();
@@ -117,7 +128,19 @@ class _OwnerQrScanViewState extends State<OwnerQrScanView> {
             MinimalAppBar(
               title: l10n.qrScanTitle,
               subtitle: l10n.qrScanSubtitle,
-              onBack: () => context.pop(),
+              onBack: () {
+                if (context.canPop()) {
+                  context.pop();
+                } else {
+                  // Fleet reaches this screen with go(), so it is the
+                  // Bookings branch root here: canPop is false and a
+                  // plain pop() is a no-op (same trap as the customer
+                  // scan's "View all" — owner_customer_scan_view).
+                  // Fall back to the fleet tab instead of stranding
+                  // the user with no way out.
+                  context.go(RouteNames.ownerFleet);
+                }
+              },
               actions: [
                 // §17: torch toggle (existing MobileScanner API, no
                 // new dependency).
@@ -199,6 +222,18 @@ class _OwnerQrScanViewState extends State<OwnerQrScanView> {
                           ),
                         ),
                       ],
+                    ),
+                    const SizedBox(height: 8),
+                    // Item 9 (O26): pick a ready booking from a list
+                    // instead of typing its id.
+                    SizedBox(
+                      width: double.infinity,
+                      child: TextButton.icon(
+                        onPressed:
+                            _resolving ? null : _showBookingPicker,
+                        icon: const Icon(Icons.list_alt_rounded),
+                        label: Text(l10n.handoverWizardSelectBooking),
+                      ),
                     ),
                   ],
                 ),

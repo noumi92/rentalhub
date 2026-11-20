@@ -297,12 +297,16 @@ class BookingRemoteDataSource {
     String? guarantorName,
     String? guarantorCnic,
     String? guarantorPhone,
+    String? guarantorRelation,
+    String? origin,
     String tripType = 'in_city',
     int? kmLimit,
     String? fixedRouteId,
     String? fixedRouteSummary,
     String? outCityMode,
     int? outCityPerKmPkr,
+    double? depositAmountPkr,
+    double? discountAmountPkr,
   }) async {
     // Phase C (C2): the booking-time blacklist check. The owner
     // walk-in flow already refuses blacklisted CNICs; the customer
@@ -328,6 +332,16 @@ class BookingRemoteDataSource {
     // counter) are exempt — the setting governs customer bookings.
     // A missing gate or a failed lookup fails open, like the
     // blacklist check above.
+    // Booking source: explicit when the caller knows it (walk-in
+    // passes 'walk_in', the online review flow 'online'); otherwise
+    // derived from the customerId the same way fromMap backfills
+    // older docs, so a direct caller can never file a booking with
+    // no origin. Resolved FIRST: the walk-in exemption below and the
+    // notification rule both key off it, not off the customerId
+    // prefix — a walk-in for a REGISTERED customer carries a real
+    // customerId, not a 'walkin-…' one.
+    final resolvedOrigin = origin ??
+        (customerId.startsWith('walkin-') ? 'walk_in' : 'online');
     final gate = unverifiedShopGate;
     // Admin-integration audit (2026-11-10): a suspended shop takes
     // no bookings at all — online or walk-in. Suspension is a
@@ -339,7 +353,7 @@ class BookingRemoteDataSource {
             'This shop is currently suspended by the platform. Bookings are disabled.',
       );
     }
-    if (gate != null && !customerId.startsWith('walkin-')) {
+    if (gate != null && resolvedOrigin != 'walk_in') {
       if (!await gate.isBookingAllowed(shopId: shopId)) {
         throw const ServerException(
           message:
@@ -347,6 +361,11 @@ class BookingRemoteDataSource {
         );
       }
     }
+    // Booking source: explicit when the caller knows it (walk-in
+    // passes 'walk_in', the online review flow 'online'); otherwise
+    // derived from the customerId the same way fromMap backfills
+    // older docs, so a direct caller can never file a booking with
+    // no origin.
     // Millisecond ids can collide when two bookings are created back
     // to back, so a per-process counter keeps each id unique.
     final id =
@@ -376,12 +395,16 @@ class BookingRemoteDataSource {
       guarantorName: guarantorName,
       guarantorCnic: guarantorCnic,
       guarantorPhone: guarantorPhone,
+      guarantorRelation: guarantorRelation,
+      origin: resolvedOrigin,
       tripType: tripType,
       kmLimit: kmLimit,
       fixedRouteId: fixedRouteId,
       fixedRouteSummary: fixedRouteSummary,
       outCityMode: outCityMode,
       outCityPerKmPkr: outCityPerKmPkr,
+      depositAmountPkr: depositAmountPkr,
+      discountAmountPkr: discountAmountPkr,
     );
 
     _inMemoryFallback[id] = model;
@@ -402,9 +425,10 @@ class BookingRemoteDataSource {
     }
 
     // Phase B (G2): an online request alerts the shop. Walk-in
-    // bookings (customerId 'walkin-…') do not — the owner is
-    // standing at the counter when those are made.
-    if (!customerId.startsWith('walkin-')) {
+    // bookings do not — the owner is standing at the counter when
+    // those are made (keyed off origin, not the customerId prefix,
+    // so a walk-in for a registered customer stays silent too).
+    if (resolvedOrigin != 'walk_in') {
       await _notify(
         shopId: shopId,
         title: 'New booking request',
@@ -423,10 +447,19 @@ class BookingRemoteDataSource {
     return model;
   }
 
+  /// O18: approving with an assigned account also carries
+  /// [selectedPaymentAccount] (the account number the customer pays
+  /// into) and [paymentDeadline] (now + 30 minutes, display-only —
+  /// nothing auto-cancels on it). Both ride the same `fields` map
+  /// as the status, so the offline queue replays them together
+  /// (syncQueuedUpdate merge-sets `fields`) and reads see them via
+  /// _applyPendingUpdates.
   Future<BookingEntity> updateBookingStatus({
     required String bookingId,
     required String status,
     String? rejectionReason,
+    String? selectedPaymentAccount,
+    DateTime? paymentDeadline,
   }) async {
     final existing = await getBookingById(bookingId);
     if (existing == null) {
@@ -435,6 +468,8 @@ class BookingRemoteDataSource {
     final updated = existing.copyWith(
       status: status,
       rejectionReason: rejectionReason,
+      selectedPaymentAccount: selectedPaymentAccount,
+      paymentDeadline: paymentDeadline,
     );
     final model = BookingModel.fromEntity(updated);
     _inMemoryFallback[bookingId] = model;
@@ -442,6 +477,12 @@ class BookingRemoteDataSource {
     final fields = <String, dynamic>{'status': status};
     if (rejectionReason != null) {
       fields['rejectionReason'] = rejectionReason;
+    }
+    if (selectedPaymentAccount != null) {
+      fields['selectedPaymentAccount'] = selectedPaymentAccount;
+    }
+    if (paymentDeadline != null) {
+      fields['paymentDeadline'] = paymentDeadline.toIso8601String();
     }
     final written = await _writeBookingDoc(bookingId, fields);
     if (!written) {
@@ -479,10 +520,12 @@ class BookingRemoteDataSource {
     if (existing == null) {
       throw Exception('Booking not found: $bookingId');
     }
+    final proofSubmittedAt = DateTime.now();
     final updated = existing.copyWith(
       status: 'payment_submitted',
       paymentProofUrl: paymentProofUrl.isEmpty ? null : paymentProofUrl,
       transactionId: transactionId,
+      proofSubmittedAt: proofSubmittedAt,
       clearRejectionReason: true,
     );
     final model = BookingModel.fromEntity(updated);
@@ -496,6 +539,7 @@ class BookingRemoteDataSource {
       'status': 'payment_submitted',
       'transactionId': transactionId,
       'rejectionReason': null,
+      'proofSubmittedAt': proofSubmittedAt.toIso8601String(),
     };
     if (paymentProofUrl.isNotEmpty) {
       fields['paymentProofUrl'] = paymentProofUrl;

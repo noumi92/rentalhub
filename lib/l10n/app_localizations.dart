@@ -2348,6 +2348,12 @@ abstract class AppLocalizations {
   /// **'Proof submitted! Receipt will sync when you are back online.'**
   String get proofSubmittedOffline;
 
+  /// No description provided for @proofUploadQueued.
+  ///
+  /// In en, this message translates to:
+  /// **'Receipt upload failed — saved on this device and will retry when you are back online. Your payment is not marked as submitted yet.'**
+  String get proofUploadQueued;
+
   /// No description provided for @proofPrivateNote.
   ///
   /// In en, this message translates to:
@@ -4034,11 +4040,11 @@ abstract class AppLocalizations {
   /// **'Scan booking QR'**
   String get requestsScanQrTooltip;
 
-  /// No description provided for @requestsRefreshTooltip.
+  /// No description provided for @requestsCalendarTooltip.
   ///
   /// In en, this message translates to:
-  /// **'Refresh'**
-  String get requestsRefreshTooltip;
+  /// **'Booking calendar'**
+  String get requestsCalendarTooltip;
 
   /// No description provided for @requestsLoading.
   ///
@@ -4087,6 +4093,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No pending booking requests'**
   String get requestsEmptyNew;
+
+  /// No description provided for @requestsEmptyActive.
+  ///
+  /// In en, this message translates to:
+  /// **'No active rentals right now'**
+  String get requestsEmptyActive;
+
+  /// No description provided for @requestsEmptyCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'No completed bookings yet'**
+  String get requestsEmptyCompleted;
 
   /// No description provided for @requestsEmptyMessage.
   ///
@@ -4171,6 +4189,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Decline'**
   String get requestsDecline;
+
+  /// No description provided for @requestsCustomerNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer note'**
+  String get requestsCustomerNote;
+
+  /// No description provided for @requestsNotBlacklisted.
+  ///
+  /// In en, this message translates to:
+  /// **'Not Blacklisted'**
+  String get requestsNotBlacklisted;
+
+  /// No description provided for @requestsBlacklisted.
+  ///
+  /// In en, this message translates to:
+  /// **'Blacklisted'**
+  String get requestsBlacklisted;
 
   /// No description provided for @requestsApprovePay.
   ///
@@ -6941,7 +6977,7 @@ abstract class AppLocalizations {
   /// No description provided for @paymentVerificationRejectButton.
   ///
   /// In en, this message translates to:
-  /// **'Reject Proof'**
+  /// **'Payment Not Received'**
   String get paymentVerificationRejectButton;
 
   /// No description provided for @paymentVerificationRejected.
@@ -7015,6 +7051,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Confirming…'**
   String get paymentVerificationConfirming;
+
+  /// No description provided for @paymentVerificationWaitingBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for your verification'**
+  String get paymentVerificationWaitingBanner;
+
+  /// No description provided for @paymentVerificationProofSubmittedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Proof submitted'**
+  String get paymentVerificationProofSubmittedAt;
 
   /// No description provided for @manualBookingTitle.
   ///
@@ -9291,6 +9339,48 @@ abstract class AppLocalizations {
   /// **'Could not open WhatsApp.'**
   String get bookingConfirmedWhatsappFailed;
 
+  /// No description provided for @bookingConfirmedChecklistTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Approval checklist'**
+  String get bookingConfirmedChecklistTitle;
+
+  /// No description provided for @bookingConfirmedCheckRequestApproved.
+  ///
+  /// In en, this message translates to:
+  /// **'Request Approved'**
+  String get bookingConfirmedCheckRequestApproved;
+
+  /// No description provided for @bookingConfirmedCheckAdvanceReceived.
+  ///
+  /// In en, this message translates to:
+  /// **'Advance Received'**
+  String get bookingConfirmedCheckAdvanceReceived;
+
+  /// No description provided for @bookingConfirmedCheckPickup.
+  ///
+  /// In en, this message translates to:
+  /// **'Pickup'**
+  String get bookingConfirmedCheckPickup;
+
+  /// No description provided for @bookingConfirmedCheckReturn.
+  ///
+  /// In en, this message translates to:
+  /// **'Return'**
+  String get bookingConfirmedCheckReturn;
+
+  /// No description provided for @bookingConfirmedReserved.
+  ///
+  /// In en, this message translates to:
+  /// **'Reserved'**
+  String get bookingConfirmedReserved;
+
+  /// No description provided for @bookingConfirmedScanCustomerQr.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan Customer QR at Pickup'**
+  String get bookingConfirmedScanCustomerQr;
+
   /// No description provided for @manualBookingNext.
   ///
   /// In en, this message translates to:
@@ -9878,6 +9968,156 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Assalam-o-Alaikum {name}, your rental agreement is ready: {url}'**
   String agreementSignedSendMessage(String name, String url);
+
+  /// No description provided for @agreementWizardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Agreement'**
+  String get agreementWizardTitle;
+
+  /// No description provided for @agreementWizardGenerated.
+  ///
+  /// In en, this message translates to:
+  /// **'Generated'**
+  String get agreementWizardGenerated;
+
+  /// No description provided for @agreementWizardGuarantor.
+  ///
+  /// In en, this message translates to:
+  /// **'Guarantor'**
+  String get agreementWizardGuarantor;
+
+  /// No description provided for @agreementWizardRelation.
+  ///
+  /// In en, this message translates to:
+  /// **'Relation'**
+  String get agreementWizardRelation;
+
+  /// No description provided for @agreementWizardNoGuarantor.
+  ///
+  /// In en, this message translates to:
+  /// **'No guarantor added'**
+  String get agreementWizardNoGuarantor;
+
+  /// No description provided for @agreementWizardHandoverPhotos.
+  ///
+  /// In en, this message translates to:
+  /// **'Handover photos'**
+  String get agreementWizardHandoverPhotos;
+
+  /// No description provided for @agreementWizardPhotoCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} photos'**
+  String agreementWizardPhotoCount(int count);
+
+  /// No description provided for @agreementWizardLicense.
+  ///
+  /// In en, this message translates to:
+  /// **'License'**
+  String get agreementWizardLicense;
+
+  /// No description provided for @agreementWizardTermsSignatures.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms & signatures'**
+  String get agreementWizardTermsSignatures;
+
+  /// No description provided for @agreementWizardTermsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'10 terms · 3 signatures'**
+  String get agreementWizardTermsSubtitle;
+
+  /// No description provided for @agreementWizardSignatures.
+  ///
+  /// In en, this message translates to:
+  /// **'Signatures'**
+  String get agreementWizardSignatures;
+
+  /// No description provided for @agreementWizardSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved'**
+  String get agreementWizardSaved;
+
+  /// No description provided for @agreementWizardAutoFetched.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-fetched'**
+  String get agreementWizardAutoFetched;
+
+  /// No description provided for @agreementWizardFinalize.
+  ///
+  /// In en, this message translates to:
+  /// **'Finalize agreement'**
+  String get agreementWizardFinalize;
+
+  /// No description provided for @agreementWizardFinalizeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'All 3 signatures are required before finalizing.'**
+  String get agreementWizardFinalizeHint;
+
+  /// No description provided for @agreementWizardSignedByAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Signed by all 3 parties'**
+  String get agreementWizardSignedByAll;
+
+  /// No description provided for @agreementWizardAgreementReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Agreement ready'**
+  String get agreementWizardAgreementReady;
+
+  /// No description provided for @agreementWizardFileMeta.
+  ///
+  /// In en, this message translates to:
+  /// **'A4 · 1 page · {size}'**
+  String agreementWizardFileMeta(String size);
+
+  /// No description provided for @agreementWizardQrVerified.
+  ///
+  /// In en, this message translates to:
+  /// **'QR verified'**
+  String get agreementWizardQrVerified;
+
+  /// No description provided for @agreementWizardShareTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Share agreement'**
+  String get agreementWizardShareTitle;
+
+  /// No description provided for @agreementWizardShareOnWhatsapp.
+  ///
+  /// In en, this message translates to:
+  /// **'Share on WhatsApp'**
+  String get agreementWizardShareOnWhatsapp;
+
+  /// No description provided for @agreementWizardCopyLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy verification link'**
+  String get agreementWizardCopyLink;
+
+  /// No description provided for @agreementWizardLinkCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification link copied'**
+  String get agreementWizardLinkCopied;
+
+  /// No description provided for @agreementWizardPrintSingleCopy.
+  ///
+  /// In en, this message translates to:
+  /// **'Prints a single copy'**
+  String get agreementWizardPrintSingleCopy;
+
+  /// No description provided for @agreementWizardShopStamp.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop stamp'**
+  String get agreementWizardShopStamp;
 
   /// No description provided for @dashboardGreeting.
   ///
@@ -11427,6 +11667,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Available'**
   String get fleetCalendarAvailable;
+
+  /// No description provided for @fleetCalendarMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Month'**
+  String get fleetCalendarMonth;
+
+  /// No description provided for @fleetCalendarDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Day'**
+  String get fleetCalendarDay;
+
+  /// No description provided for @fleetCalendarWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'Week'**
+  String get fleetCalendarWeek;
+
+  /// No description provided for @fleetCalendarOnline.
+  ///
+  /// In en, this message translates to:
+  /// **'Online'**
+  String get fleetCalendarOnline;
+
+  /// No description provided for @fleetCalendarWalkIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Walk-in'**
+  String get fleetCalendarWalkIn;
+
+  /// No description provided for @fleetCalendarOnlineBooking.
+  ///
+  /// In en, this message translates to:
+  /// **'Online booking'**
+  String get fleetCalendarOnlineBooking;
+
+  /// No description provided for @fleetCalendarManualBooking.
+  ///
+  /// In en, this message translates to:
+  /// **'Manual booking'**
+  String get fleetCalendarManualBooking;
+
+  /// No description provided for @fleetCalendarOverlapNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Overlapping bookings are blocked automatically, so a car can never be double-booked.'**
+  String get fleetCalendarOverlapNote;
+
+  /// No description provided for @fleetCalendarPrevDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous day'**
+  String get fleetCalendarPrevDay;
+
+  /// No description provided for @fleetCalendarNextDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Next day'**
+  String get fleetCalendarNextDay;
+
+  /// No description provided for @fleetCalendarPrevWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous week'**
+  String get fleetCalendarPrevWeek;
+
+  /// No description provided for @fleetCalendarNextWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'Next week'**
+  String get fleetCalendarNextWeek;
 
   /// No description provided for @vehicleReviewDelivery.
   ///
@@ -17055,6 +17367,247 @@ abstract class AppLocalizations {
   /// **'Loading vehicles…'**
   String get manualBookingLoadingVehicles;
 
+  /// No description provided for @manualBookingStepPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment'**
+  String get manualBookingStepPayment;
+
+  /// No description provided for @manualBookingStepSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Summary'**
+  String get manualBookingStepSummary;
+
+  /// No description provided for @manualBookingSearchCustomers.
+  ///
+  /// In en, this message translates to:
+  /// **'Search registered customers'**
+  String get manualBookingSearchCustomers;
+
+  /// No description provided for @manualBookingNoCustomers.
+  ///
+  /// In en, this message translates to:
+  /// **'No registered customers yet.'**
+  String get manualBookingNoCustomers;
+
+  /// No description provided for @manualBookingNoMatchingCustomers.
+  ///
+  /// In en, this message translates to:
+  /// **'No customers match this search.'**
+  String get manualBookingNoMatchingCustomers;
+
+  /// No description provided for @manualBookingAddNewCustomer.
+  ///
+  /// In en, this message translates to:
+  /// **'+ Add New Customer'**
+  String get manualBookingAddNewCustomer;
+
+  /// No description provided for @manualBookingAddNewCustomerHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Opens the full KYC flow'**
+  String get manualBookingAddNewCustomerHint;
+
+  /// No description provided for @manualBookingCustomerNotRegistered.
+  ///
+  /// In en, this message translates to:
+  /// **'This customer is not registered yet — add them first.'**
+  String get manualBookingCustomerNotRegistered;
+
+  /// No description provided for @manualBookingSelectCustomer.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a customer to continue.'**
+  String get manualBookingSelectCustomer;
+
+  /// No description provided for @manualBookingBlacklistedCustomer.
+  ///
+  /// In en, this message translates to:
+  /// **'Blacklisted — cannot book'**
+  String get manualBookingBlacklistedCustomer;
+
+  /// No description provided for @manualBookingNotBlacklisted.
+  ///
+  /// In en, this message translates to:
+  /// **'Not blacklisted'**
+  String get manualBookingNotBlacklisted;
+
+  /// No description provided for @manualBookingKycDone.
+  ///
+  /// In en, this message translates to:
+  /// **'KYC done'**
+  String get manualBookingKycDone;
+
+  /// No description provided for @manualBookingKycPending.
+  ///
+  /// In en, this message translates to:
+  /// **'KYC pending'**
+  String get manualBookingKycPending;
+
+  /// No description provided for @manualBookingSavedSignature.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved signature auto-applied'**
+  String get manualBookingSavedSignature;
+
+  /// No description provided for @manualBookingNoSignature.
+  ///
+  /// In en, this message translates to:
+  /// **'No saved signature'**
+  String get manualBookingNoSignature;
+
+  /// No description provided for @manualBookingCarFree.
+  ///
+  /// In en, this message translates to:
+  /// **'Car is free for this time'**
+  String get manualBookingCarFree;
+
+  /// No description provided for @manualBookingCarBusy.
+  ///
+  /// In en, this message translates to:
+  /// **'Car is already booked for this time'**
+  String get manualBookingCarBusy;
+
+  /// No description provided for @manualBookingCarOnRent.
+  ///
+  /// In en, this message translates to:
+  /// **'On Rent'**
+  String get manualBookingCarOnRent;
+
+  /// No description provided for @manualBookingCarAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Available'**
+  String get manualBookingCarAvailable;
+
+  /// No description provided for @manualBookingCarMaintenance.
+  ///
+  /// In en, this message translates to:
+  /// **'Maintenance'**
+  String get manualBookingCarMaintenance;
+
+  /// No description provided for @manualBookingStartNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Start now'**
+  String get manualBookingStartNow;
+
+  /// No description provided for @manualBookingRentLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Rent'**
+  String get manualBookingRentLine;
+
+  /// No description provided for @manualBookingDriverLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Driver'**
+  String get manualBookingDriverLine;
+
+  /// No description provided for @manualBookingDiscountLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Discount'**
+  String get manualBookingDiscountLine;
+
+  /// No description provided for @manualBookingDiscountHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Discount (Rs.)'**
+  String get manualBookingDiscountHint;
+
+  /// No description provided for @manualBookingPaidNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid now'**
+  String get manualBookingPaidNow;
+
+  /// No description provided for @manualBookingDepositReceived.
+  ///
+  /// In en, this message translates to:
+  /// **'Deposit received'**
+  String get manualBookingDepositReceived;
+
+  /// No description provided for @manualBookingDepositMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'Deposit method'**
+  String get manualBookingDepositMethod;
+
+  /// No description provided for @manualBookingRemainingDues.
+  ///
+  /// In en, this message translates to:
+  /// **'Remaining Dues'**
+  String get manualBookingRemainingDues;
+
+  /// No description provided for @manualBookingAddToDues.
+  ///
+  /// In en, this message translates to:
+  /// **'Add remaining to customer dues'**
+  String get manualBookingAddToDues;
+
+  /// No description provided for @manualBookingCollectFull.
+  ///
+  /// In en, this message translates to:
+  /// **'Collect the full amount, or add the remaining to customer dues.'**
+  String get manualBookingCollectFull;
+
+  /// No description provided for @manualBookingAmountInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid amount.'**
+  String get manualBookingAmountInvalid;
+
+  /// No description provided for @manualBookingDiscountTooHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'Discount cannot exceed the rent.'**
+  String get manualBookingDiscountTooHigh;
+
+  /// No description provided for @manualBookingSummaryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking Summary'**
+  String get manualBookingSummaryTitle;
+
+  /// No description provided for @manualBookingWalkInBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Walk-in'**
+  String get manualBookingWalkInBadge;
+
+  /// No description provided for @manualBookingShareReceipt.
+  ///
+  /// In en, this message translates to:
+  /// **'Share Receipt'**
+  String get manualBookingShareReceipt;
+
+  /// No description provided for @manualBookingAgreementNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Agreement is generated automatically at handover using saved signatures'**
+  String get manualBookingAgreementNote;
+
+  /// WhatsApp receipt for a confirmed walk-in booking.
+  ///
+  /// In en, this message translates to:
+  /// **'Assalam-o-Alaikum {customer}, your walk-in booking {bookingId} for {vehicle} is confirmed. Pickup: {pickup}. Total: Rs. {total}. Remaining dues: Rs. {remaining}. Thank you!'**
+  String manualBookingReceiptMessage(String customer, String bookingId,
+      String vehicle, String pickup, String total, String remaining);
+
+  /// No description provided for @manualBookingReceiptDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get manualBookingReceiptDone;
+
+  /// No description provided for @manualBookingRentPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Rent Paid'**
+  String get manualBookingRentPaid;
+
   /// No description provided for @profileLoadFailed.
   ///
   /// In en, this message translates to:
@@ -17216,6 +17769,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'KYC verified'**
   String get triageKycVerified;
+
+  /// No description provided for @requestsKycCnicVerified.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified CNIC'**
+  String get requestsKycCnicVerified;
+
+  /// No description provided for @requestsKycCnicNotVerified.
+  ///
+  /// In en, this message translates to:
+  /// **'CNIC not verified'**
+  String get requestsKycCnicNotVerified;
+
+  /// No description provided for @requestsKycLicenseVerified.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified License'**
+  String get requestsKycLicenseVerified;
+
+  /// No description provided for @requestsKycLicenseNotVerified.
+  ///
+  /// In en, this message translates to:
+  /// **'License not verified'**
+  String get requestsKycLicenseNotVerified;
 
   /// No description provided for @triageTrustScore.
   ///
@@ -17444,6 +18021,337 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Ready'**
   String get fleetReady;
+
+  /// No description provided for @approveAssignTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve & assign payment account'**
+  String get approveAssignTitle;
+
+  /// No description provided for @approveAssignChooseAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the account the customer will pay into'**
+  String get approveAssignChooseAccount;
+
+  /// No description provided for @approveAssignNoAccounts.
+  ///
+  /// In en, this message translates to:
+  /// **'No payment accounts configured for this shop yet. Add one in shop settings before approving.'**
+  String get approveAssignNoAccounts;
+
+  /// No description provided for @approveAssignTermsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment terms'**
+  String get approveAssignTermsTitle;
+
+  /// No description provided for @approveAssignAdvanceNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Advance due now: {amount}'**
+  String approveAssignAdvanceNow(String amount);
+
+  /// No description provided for @approveAssignRemainingPickup.
+  ///
+  /// In en, this message translates to:
+  /// **'Remaining at pickup: {amount}'**
+  String approveAssignRemainingPickup(String amount);
+
+  /// No description provided for @approveAssignDepositPickup.
+  ///
+  /// In en, this message translates to:
+  /// **'Refundable deposit at pickup: {amount}'**
+  String approveAssignDepositPickup(String amount);
+
+  /// No description provided for @approveAssignDeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay within 30 minutes of approval — by {time}'**
+  String approveAssignDeadline(String time);
+
+  /// No description provided for @approveAssignNoAutoCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'No automatic cancellation — the deadline is shown to the customer only.'**
+  String get approveAssignNoAutoCancel;
+
+  /// No description provided for @approveAssignConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve & assign account'**
+  String get approveAssignConfirm;
+
+  /// No description provided for @paymentAssignedAccountOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay only into the assigned account below.'**
+  String get paymentAssignedAccountOnly;
+
+  /// No description provided for @paymentPayByDeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay within 30 minutes of approval — by {time}'**
+  String paymentPayByDeadline(String time);
+
+  /// No description provided for @handoverWizardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Handover'**
+  String get handoverWizardTitle;
+
+  /// No description provided for @handoverWizardStepVerify.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify'**
+  String get handoverWizardStepVerify;
+
+  /// No description provided for @handoverWizardStepPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment'**
+  String get handoverWizardStepPayment;
+
+  /// No description provided for @handoverWizardStepChecklist.
+  ///
+  /// In en, this message translates to:
+  /// **'Checklist'**
+  String get handoverWizardStepChecklist;
+
+  /// No description provided for @handoverWizardStepPhotos.
+  ///
+  /// In en, this message translates to:
+  /// **'Photos'**
+  String get handoverWizardStepPhotos;
+
+  /// No description provided for @handoverWizardStepAgreement.
+  ///
+  /// In en, this message translates to:
+  /// **'Agreement'**
+  String get handoverWizardStepAgreement;
+
+  /// No description provided for @handoverWizardBookingMatched.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking matched'**
+  String get handoverWizardBookingMatched;
+
+  /// No description provided for @handoverWizardFaceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Face check'**
+  String get handoverWizardFaceTitle;
+
+  /// No description provided for @handoverWizardFaceHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Compare the customer with their KYC profile photo. This is a manual visual check — no automatic face match is made and no match score is shown.'**
+  String get handoverWizardFaceHint;
+
+  /// No description provided for @handoverWizardFaceConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Face matches KYC photo'**
+  String get handoverWizardFaceConfirm;
+
+  /// No description provided for @handoverWizardFaceConfirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'Face check confirmed'**
+  String get handoverWizardFaceConfirmed;
+
+  /// No description provided for @handoverWizardFaceRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm the face check before continuing.'**
+  String get handoverWizardFaceRequired;
+
+  /// No description provided for @handoverWizardFaceNoPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'No KYC photo on file — check the original CNIC instead.'**
+  String get handoverWizardFaceNoPhoto;
+
+  /// No description provided for @handoverWizardSelectBooking.
+  ///
+  /// In en, this message translates to:
+  /// **'Select booking manually'**
+  String get handoverWizardSelectBooking;
+
+  /// No description provided for @handoverWizardNoReadyBookings.
+  ///
+  /// In en, this message translates to:
+  /// **'No bookings ready for handover.'**
+  String get handoverWizardNoReadyBookings;
+
+  /// No description provided for @handoverWizardAdvancePaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Advance (paid online)'**
+  String get handoverWizardAdvancePaid;
+
+  /// No description provided for @handoverWizardDepositMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'Deposit method'**
+  String get handoverWizardDepositMethod;
+
+  /// No description provided for @handoverWizardDepositReceived.
+  ///
+  /// In en, this message translates to:
+  /// **'Deposit received'**
+  String get handoverWizardDepositReceived;
+
+  /// No description provided for @handoverWizardBalanceReceived.
+  ///
+  /// In en, this message translates to:
+  /// **'Balance received'**
+  String get handoverWizardBalanceReceived;
+
+  /// No description provided for @handoverWizardReceiptTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Handover receipt'**
+  String get handoverWizardReceiptTitle;
+
+  /// No description provided for @handoverWizardReceiptId.
+  ///
+  /// In en, this message translates to:
+  /// **'Receipt {id}'**
+  String handoverWizardReceiptId(String id);
+
+  /// No description provided for @handoverWizardReceiptView.
+  ///
+  /// In en, this message translates to:
+  /// **'View receipt'**
+  String get handoverWizardReceiptView;
+
+  /// No description provided for @handoverWizardReceiptShare.
+  ///
+  /// In en, this message translates to:
+  /// **'Share receipt on WhatsApp'**
+  String get handoverWizardReceiptShare;
+
+  /// No description provided for @handoverWizardReceiptMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Handover receipt {receipt} for {vehicle}: total Rs. {total}, advance Rs. {advance}, balance Rs. {balance}, deposit Rs. {deposit}. — RentalHub'**
+  String handoverWizardReceiptMessage(String receipt, String vehicle,
+      String total, String advance, String balance, String deposit);
+
+  /// No description provided for @handoverWizardReceiptWhatsappFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open WhatsApp.'**
+  String get handoverWizardReceiptWhatsappFailed;
+
+  /// No description provided for @handoverWizardAcWorking.
+  ///
+  /// In en, this message translates to:
+  /// **'Air conditioning working'**
+  String get handoverWizardAcWorking;
+
+  /// No description provided for @handoverWizardLightsWorking.
+  ///
+  /// In en, this message translates to:
+  /// **'All lights working'**
+  String get handoverWizardLightsWorking;
+
+  /// No description provided for @handoverPhotoInterior.
+  ///
+  /// In en, this message translates to:
+  /// **'Interior'**
+  String get handoverPhotoInterior;
+
+  /// No description provided for @handoverPhotoDashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Dashboard'**
+  String get handoverPhotoDashboard;
+
+  /// No description provided for @handoverWizardPhotoTakenAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Taken {time}'**
+  String handoverWizardPhotoTakenAt(String time);
+
+  /// No description provided for @handoverWizardDamageDiagram.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark existing damage'**
+  String get handoverWizardDamageDiagram;
+
+  /// No description provided for @handoverWizardSignatureOnFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Signature on file'**
+  String get handoverWizardSignatureOnFile;
+
+  /// No description provided for @handoverWizardSignFresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign fresh instead'**
+  String get handoverWizardSignFresh;
+
+  /// No description provided for @handoverWizardUseSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Use saved signature'**
+  String get handoverWizardUseSaved;
+
+  /// No description provided for @handoverWizardGuarantorPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Guarantor signature pending — signed in the agreement step.'**
+  String get handoverWizardGuarantorPending;
+
+  /// No description provided for @handoverWizardTripStarted.
+  ///
+  /// In en, this message translates to:
+  /// **'Trip started {time}'**
+  String handoverWizardTripStarted(String time);
+
+  /// No description provided for @handoverWizardHandedOver.
+  ///
+  /// In en, this message translates to:
+  /// **'Car Handed Over'**
+  String get handoverWizardHandedOver;
+
+  /// No description provided for @handoverWizardSharePdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Share Agreement PDF'**
+  String get handoverWizardSharePdf;
+
+  /// No description provided for @handoverWizardPaymentRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose how the balance was collected before continuing.'**
+  String get handoverWizardPaymentRequired;
+
+  /// No description provided for @handoverWizardDepositMethodRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose how the deposit was collected before continuing.'**
+  String get handoverWizardDepositMethodRequired;
+
+  /// No description provided for @handoverWizardChecklistRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the odometer reading and fuel level before continuing.'**
+  String get handoverWizardChecklistRequired;
+
+  /// No description provided for @handoverWizardHandoverFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Handover failed: {error}'**
+  String handoverWizardHandoverFailed(String error);
+
+  /// No description provided for @rentalStartedTripLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Started {time} · on trip {elapsed}'**
+  String rentalStartedTripLine(String time, String elapsed);
 }
 
 class _AppLocalizationsDelegate

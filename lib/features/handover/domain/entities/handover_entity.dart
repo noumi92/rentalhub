@@ -1,5 +1,27 @@
 import 'package:equatable/equatable.dart';
 
+/// One damage pin placed on the handover car diagram (O29): the
+/// zone tapped plus the damage type recorded for it. Stored as a
+/// plain value (not the return-side [DamagePin] widget type) so the
+/// entity stays UI-free and round-trips through JSON / Firestore.
+class HandoverDamagePin extends Equatable {
+  final String zone;
+  final String type;
+
+  const HandoverDamagePin({required this.zone, required this.type});
+
+  Map<String, dynamic> toJson() => {'zone': zone, 'type': type};
+
+  factory HandoverDamagePin.fromJson(Map<String, dynamic> json) =>
+      HandoverDamagePin(
+        zone: json['zone'] as String? ?? '',
+        type: json['type'] as String? ?? '',
+      );
+
+  @override
+  List<Object?> get props => [zone, type];
+}
+
 class HandoverEntity extends Equatable {
   final String bookingId;
   final int initialOdometer;
@@ -50,6 +72,45 @@ class HandoverEntity extends Equatable {
   final List<String> accessories; // 'spare_tyre' | 'jack' | 'tool_kit'
   final bool keysHandedOver;
 
+  /// Item 9 (O26–O30): the 5-step handover wizard's new fields.
+  /// All nullable / defaulted so records saved before the wizard
+  /// keep round-tripping unchanged.
+  ///
+  /// O26: the manual face check — the owner confirms the customer
+  /// against the KYC profile photo. NO match percentage is ever
+  /// stored: the spec's "94%" is a mockup number, and no face-match
+  /// SDK exists in the app. Only a confirmed flag + timestamp.
+  final bool faceCheckConfirmed;
+  final DateTime? faceCheckedAt;
+
+  /// O27: the deposit's own collection method + when it was
+  /// actually received (the Received toggle), and the in-app
+  /// receipt id (`RH-RCT-<bookingId>`).
+  final String? depositPaymentMethod;
+  final DateTime? depositReceivedAt;
+  final String? receiptId;
+
+  /// O28: the condition checkboxes on the checklist step.
+  final bool? acWorking;
+  final bool? lightsWorking;
+
+  /// O29: the two extra photo slots (interior, dashboard) plus a
+  /// per-photo taken-at timestamp (side → ISO-8601), and the
+  /// damage pins tapped on the car diagram.
+  final String? photoInteriorUrl;
+  final String? photoDashboardUrl;
+  final Map<String, String> photoTakenAt;
+  final List<HandoverDamagePin> damagePins;
+
+  /// O30: when the trip started (certify time — the trip timer on
+  /// Rental Started counts from here), when the wizard itself
+  /// completed, and where each signature came from ('saved' = the
+  /// KYC / shop on-file signature, 'fresh' = drawn on the pad).
+  final DateTime? tripStartAt;
+  final DateTime? wizardCompletedAt;
+  final String? customerSignatureSource;
+  final String? ownerSignatureSource;
+
   const HandoverEntity({
     required this.bookingId,
     required this.initialOdometer,
@@ -77,6 +138,21 @@ class HandoverEntity extends Equatable {
     this.documentsGiven = const [],
     this.accessories = const [],
     this.keysHandedOver = false,
+    this.faceCheckConfirmed = false,
+    this.faceCheckedAt,
+    this.depositPaymentMethod,
+    this.depositReceivedAt,
+    this.receiptId,
+    this.acWorking,
+    this.lightsWorking,
+    this.photoInteriorUrl,
+    this.photoDashboardUrl,
+    this.photoTakenAt = const {},
+    this.damagePins = const [],
+    this.tripStartAt,
+    this.wizardCompletedAt,
+    this.customerSignatureSource,
+    this.ownerSignatureSource,
   });
 
   HandoverEntity copyWith({
@@ -92,6 +168,21 @@ class HandoverEntity extends Equatable {
     List<String>? documentsGiven,
     List<String>? accessories,
     bool? keysHandedOver,
+    bool? faceCheckConfirmed,
+    DateTime? faceCheckedAt,
+    String? depositPaymentMethod,
+    DateTime? depositReceivedAt,
+    String? receiptId,
+    bool? acWorking,
+    bool? lightsWorking,
+    String? photoInteriorUrl,
+    String? photoDashboardUrl,
+    Map<String, String>? photoTakenAt,
+    List<HandoverDamagePin>? damagePins,
+    DateTime? tripStartAt,
+    DateTime? wizardCompletedAt,
+    String? customerSignatureSource,
+    String? ownerSignatureSource,
   }) {
     return HandoverEntity(
       bookingId: bookingId,
@@ -121,8 +212,39 @@ class HandoverEntity extends Equatable {
       documentsGiven: documentsGiven ?? this.documentsGiven,
       accessories: accessories ?? this.accessories,
       keysHandedOver: keysHandedOver ?? this.keysHandedOver,
+      faceCheckConfirmed: faceCheckConfirmed ?? this.faceCheckConfirmed,
+      faceCheckedAt: faceCheckedAt ?? this.faceCheckedAt,
+      depositPaymentMethod:
+          depositPaymentMethod ?? this.depositPaymentMethod,
+      depositReceivedAt: depositReceivedAt ?? this.depositReceivedAt,
+      receiptId: receiptId ?? this.receiptId,
+      acWorking: acWorking ?? this.acWorking,
+      lightsWorking: lightsWorking ?? this.lightsWorking,
+      photoInteriorUrl: photoInteriorUrl ?? this.photoInteriorUrl,
+      photoDashboardUrl: photoDashboardUrl ?? this.photoDashboardUrl,
+      photoTakenAt: photoTakenAt ?? this.photoTakenAt,
+      damagePins: damagePins ?? this.damagePins,
+      tripStartAt: tripStartAt ?? this.tripStartAt,
+      wizardCompletedAt: wizardCompletedAt ?? this.wizardCompletedAt,
+      customerSignatureSource:
+          customerSignatureSource ?? this.customerSignatureSource,
+      ownerSignatureSource:
+          ownerSignatureSource ?? this.ownerSignatureSource,
     );
   }
+
+  /// Item 10 (O46–O48): the true count of exterior photos actually
+  /// taken at handover (4 slots today) — never the spec's "8".
+  /// Item 9 (O29): the wizard adds Interior + Dashboard, so the
+  /// count now covers all six slots.
+  int get photoCount => [
+        photoFrontUrl,
+        photoBackUrl,
+        photoLeftUrl,
+        photoRightUrl,
+        photoInteriorUrl,
+        photoDashboardUrl,
+      ].where((url) => url != null && url.isNotEmpty).length;
 
   @override
   List<Object?> get props => [
@@ -152,5 +274,20 @@ class HandoverEntity extends Equatable {
         documentsGiven,
         accessories,
         keysHandedOver,
+        faceCheckConfirmed,
+        faceCheckedAt,
+        depositPaymentMethod,
+        depositReceivedAt,
+        receiptId,
+        acWorking,
+        lightsWorking,
+        photoInteriorUrl,
+        photoDashboardUrl,
+        photoTakenAt,
+        damagePins,
+        tripStartAt,
+        wizardCompletedAt,
+        customerSignatureSource,
+        ownerSignatureSource,
       ];
 }

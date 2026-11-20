@@ -396,6 +396,7 @@
   "proofUploading": "Uploading Proof...",
   "proofSubmitted": "Proof submitted! Waiting for showroom confirmation.",
   "proofSubmittedOffline": "Proof submitted! Receipt will sync when you are back online.",
+  "proofUploadQueued": "Receipt upload failed — saved on this device and will retry when you are back online. Your payment is not marked as submitted yet.",
   "proofPrivateNote": "Proof is uploaded to private storage. The showroom checks it and confirms your booking, and you will be notified in the app when it is confirmed. If you do not hear back, message the shop on WhatsApp.",
   "passTitle": "Pickup Countdown Pass",
   "passDoneHome": "Done • Back to Home",
@@ -1345,7 +1346,7 @@
     }
   },
   "requestsScanQrTooltip": "Scan booking QR",
-  "requestsRefreshTooltip": "Refresh",
+  "requestsCalendarTooltip": "Booking calendar",
   "requestsLoading": "Loading booking requests…",
   "requestsLoadError": "Could not load booking requests. Check your connection and try again.",
   "requestsFilterNew": "New",
@@ -1364,6 +1365,8 @@
   "requestsEmptyProof": "No payment proofs waiting for verification",
   "requestsEmptyApproved": "No approved bookings waiting for payment",
   "requestsEmptyNew": "No pending booking requests",
+  "requestsEmptyActive": "No active rentals right now",
+  "requestsEmptyCompleted": "No completed bookings yet",
   "requestsEmptyMessage": "New requests will appear here for review.",
   "requestsRejectTitle": "Reject this request?",
   "requestsRejectReasonLabel": "Reason (required)",
@@ -1406,6 +1409,9 @@
   "requestsWithChauffeur": "With Chauffeur",
   "requestsVerifyProof": "Verify Payment Proof",
   "requestsDecline": "Decline",
+  "requestsCustomerNote": "Customer note",
+  "requestsNotBlacklisted": "Not Blacklisted",
+  "requestsBlacklisted": "Blacklisted",
   "requestsApprovePay": "Approve",
   "requestsStatusRequested": "Requested",
   "calendarTitle": "Booking Calendar",
@@ -2289,7 +2295,7 @@
   "paymentVerificationRejectNote": "The customer sees this reason and can upload a new proof.",
   "paymentVerificationReasonLabel": "Reason (required)",
   "paymentVerificationReasonHint": "e.g. Screenshot is unreadable",
-  "paymentVerificationRejectButton": "Reject Proof",
+  "paymentVerificationRejectButton": "Payment Not Received",
   "paymentVerificationRejected": "Proof rejected — the customer can upload a new one.",
   "paymentVerificationRejectFailed": "Rejection failed: {error}",
   "@paymentVerificationRejectFailed": {
@@ -2316,6 +2322,8 @@
     }
   },
   "paymentVerificationConfirming": "Confirming…",
+  "paymentVerificationWaitingBanner": "Waiting for your verification",
+  "paymentVerificationProofSubmittedAt": "Proof submitted",
   "manualBookingTitle": "Walk-in Booking Wizard",
   "walkInBookingButton": "Walk-in Booking",
   "manualBookingSubtitle": "Showroom Counter Direct Issue",
@@ -2981,6 +2989,13 @@
     }
   },
   "bookingConfirmedWhatsappFailed": "Could not open WhatsApp.",
+  "bookingConfirmedChecklistTitle": "Approval checklist",
+  "bookingConfirmedCheckRequestApproved": "Request Approved",
+  "bookingConfirmedCheckAdvanceReceived": "Advance Received",
+  "bookingConfirmedCheckPickup": "Pickup",
+  "bookingConfirmedCheckReturn": "Return",
+  "bookingConfirmedReserved": "Reserved",
+  "bookingConfirmedScanCustomerQr": "Scan Customer QR at Pickup",
   "manualBookingNext": "Next",
   "manualBookingReturnAfterPickup": "Return must be after pickup.",
   "manualBookingConfirmTitle": "Review Fare",
@@ -3143,6 +3158,45 @@
       }
     }
   },
+  "agreementWizardTitle": "Agreement",
+  "agreementWizardGenerated": "Generated",
+  "agreementWizardGuarantor": "Guarantor",
+  "agreementWizardRelation": "Relation",
+  "agreementWizardNoGuarantor": "No guarantor added",
+  "agreementWizardHandoverPhotos": "Handover photos",
+  "agreementWizardPhotoCount": "{count} photos",
+  "@agreementWizardPhotoCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "agreementWizardLicense": "License",
+  "agreementWizardTermsSignatures": "Terms & signatures",
+  "agreementWizardTermsSubtitle": "10 terms · 3 signatures",
+  "agreementWizardSignatures": "Signatures",
+  "agreementWizardSaved": "Saved",
+  "agreementWizardAutoFetched": "Auto-fetched",
+  "agreementWizardFinalize": "Finalize agreement",
+  "agreementWizardFinalizeHint": "All 3 signatures are required before finalizing.",
+  "agreementWizardSignedByAll": "Signed by all 3 parties",
+  "agreementWizardAgreementReady": "Agreement ready",
+  "agreementWizardFileMeta": "A4 · 1 page · {size}",
+  "@agreementWizardFileMeta": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "agreementWizardQrVerified": "QR verified",
+  "agreementWizardShareTitle": "Share agreement",
+  "agreementWizardShareOnWhatsapp": "Share on WhatsApp",
+  "agreementWizardCopyLink": "Copy verification link",
+  "agreementWizardLinkCopied": "Verification link copied",
+  "agreementWizardPrintSingleCopy": "Prints a single copy",
+  "agreementWizardShopStamp": "Shop stamp",
   "dashboardGreeting": "Assalam-o-Alaikum, {name}",
   "@dashboardGreeting": {
     "placeholders": {
@@ -3552,6 +3606,18 @@
   "fleetCalendarEmptyMessage": "Add a car to see its schedule here.",
   "fleetCalendarBooked": "Booked",
   "fleetCalendarAvailable": "Available",
+  "fleetCalendarMonth": "Month",
+  "fleetCalendarDay": "Day",
+  "fleetCalendarWeek": "Week",
+  "fleetCalendarOnline": "Online",
+  "fleetCalendarWalkIn": "Walk-in",
+  "fleetCalendarOnlineBooking": "Online booking",
+  "fleetCalendarManualBooking": "Manual booking",
+  "fleetCalendarOverlapNote": "Overlapping bookings are blocked automatically, so a car can never be double-booked.",
+  "fleetCalendarPrevDay": "Previous day",
+  "fleetCalendarNextDay": "Next day",
+  "fleetCalendarPrevWeek": "Previous week",
+  "fleetCalendarNextWeek": "Next week",
   "vehicleReviewDelivery": "Delivery & Collection",
   "vehicleReviewDiscounts": "Discounts",
   "vehicleReviewInsurance": "Insurance & Protection",
@@ -5482,6 +5548,69 @@
   "handoverBalanceNotYet": "Not yet",
   "handoverFuelRequired": "Select the fuel level before certifying.",
   "manualBookingLoadingVehicles": "Loading vehicles…",
+  "manualBookingStepPayment": "Payment",
+  "manualBookingStepSummary": "Summary",
+  "manualBookingSearchCustomers": "Search registered customers",
+  "manualBookingNoCustomers": "No registered customers yet.",
+  "manualBookingNoMatchingCustomers": "No customers match this search.",
+  "manualBookingAddNewCustomer": "+ Add New Customer",
+  "manualBookingAddNewCustomerHint": "Opens the full KYC flow",
+  "manualBookingCustomerNotRegistered": "This customer is not registered yet — add them first.",
+  "manualBookingSelectCustomer": "Select a customer to continue.",
+  "manualBookingBlacklistedCustomer": "Blacklisted — cannot book",
+  "manualBookingNotBlacklisted": "Not blacklisted",
+  "manualBookingKycDone": "KYC done",
+  "manualBookingKycPending": "KYC pending",
+  "manualBookingSavedSignature": "Saved signature auto-applied",
+  "manualBookingNoSignature": "No saved signature",
+  "manualBookingCarFree": "Car is free for this time",
+  "manualBookingCarBusy": "Car is already booked for this time",
+  "manualBookingCarOnRent": "On Rent",
+  "manualBookingCarAvailable": "Available",
+  "manualBookingCarMaintenance": "Maintenance",
+  "manualBookingStartNow": "Start now",
+  "manualBookingRentLine": "Rent",
+  "manualBookingDriverLine": "Driver",
+  "manualBookingDiscountLine": "Discount",
+  "manualBookingDiscountHint": "Discount (Rs.)",
+  "manualBookingPaidNow": "Paid now",
+  "manualBookingDepositReceived": "Deposit received",
+  "manualBookingDepositMethod": "Deposit method",
+  "manualBookingRemainingDues": "Remaining Dues",
+  "manualBookingAddToDues": "Add remaining to customer dues",
+  "manualBookingCollectFull": "Collect the full amount, or add the remaining to customer dues.",
+  "manualBookingAmountInvalid": "Enter a valid amount.",
+  "manualBookingDiscountTooHigh": "Discount cannot exceed the rent.",
+  "manualBookingSummaryTitle": "Booking Summary",
+  "manualBookingWalkInBadge": "Walk-in",
+  "manualBookingShareReceipt": "Share Receipt",
+  "manualBookingAgreementNote": "Agreement is generated automatically at handover using saved signatures",
+  "manualBookingReceiptMessage": "Assalam-o-Alaikum {customer}, your walk-in booking {bookingId} for {vehicle} is confirmed. Pickup: {pickup}. Total: Rs. {total}. Remaining dues: Rs. {remaining}. Thank you!",
+  "manualBookingReceiptDone": "Done",
+  "manualBookingRentPaid": "Rent Paid",
+  "@manualBookingReceiptMessage": {
+    "description": "WhatsApp receipt for a confirmed walk-in booking.",
+    "placeholders": {
+      "customer": {
+        "type": "String"
+      },
+      "bookingId": {
+        "type": "String"
+      },
+      "vehicle": {
+        "type": "String"
+      },
+      "pickup": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      },
+      "remaining": {
+        "type": "String"
+      }
+    }
+  },
   "profileLoadFailed": "Could not load your profile. Check your connection and try again.",
   "proofAdvanceCopied": "Advance amount copied to clipboard",
   "proofCopyAdvance": "Copy advance amount",
@@ -5595,6 +5724,10 @@
   "triageKycPending": "KYC pending",
   "triageKycRejected": "KYC rejected",
   "triageKycVerified": "KYC verified",
+  "requestsKycCnicVerified": "Verified CNIC",
+  "requestsKycCnicNotVerified": "CNIC not verified",
+  "requestsKycLicenseVerified": "Verified License",
+  "requestsKycLicenseNotVerified": "License not verified",
   "triageTrustScore": "Trust {score}/5",
   "waitDurationDays": "{days}d {hours}h",
   "waitDurationHm": "{hours}h {minutes}m",
@@ -5694,5 +5827,155 @@
       }
     }
   },
-  "fleetReady": "Ready"
+  "fleetReady": "Ready",
+  "approveAssignTitle": "Approve & assign payment account",
+  "approveAssignChooseAccount": "Choose the account the customer will pay into",
+  "approveAssignNoAccounts": "No payment accounts configured for this shop yet. Add one in shop settings before approving.",
+  "approveAssignTermsTitle": "Payment terms",
+  "approveAssignAdvanceNow": "Advance due now: {amount}",
+  "@approveAssignAdvanceNow": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "approveAssignRemainingPickup": "Remaining at pickup: {amount}",
+  "@approveAssignRemainingPickup": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "approveAssignDepositPickup": "Refundable deposit at pickup: {amount}",
+  "@approveAssignDepositPickup": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "approveAssignDeadline": "Pay within 30 minutes of approval — by {time}",
+  "@approveAssignDeadline": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "approveAssignNoAutoCancel": "No automatic cancellation — the deadline is shown to the customer only.",
+  "approveAssignConfirm": "Approve & assign account",
+  "paymentAssignedAccountOnly": "Pay only into the assigned account below.",
+  "paymentPayByDeadline": "Pay within 30 minutes of approval — by {time}",
+  "@paymentPayByDeadline": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "handoverWizardTitle": "Handover",
+  "handoverWizardStepVerify": "Verify",
+  "handoverWizardStepPayment": "Payment",
+  "handoverWizardStepChecklist": "Checklist",
+  "handoverWizardStepPhotos": "Photos",
+  "handoverWizardStepAgreement": "Agreement",
+  "handoverWizardBookingMatched": "Booking matched",
+  "handoverWizardFaceTitle": "Face check",
+  "handoverWizardFaceHint": "Compare the customer with their KYC profile photo. This is a manual visual check — no automatic face match is made and no match score is shown.",
+  "handoverWizardFaceConfirm": "Face matches KYC photo",
+  "handoverWizardFaceConfirmed": "Face check confirmed",
+  "handoverWizardFaceRequired": "Confirm the face check before continuing.",
+  "handoverWizardFaceNoPhoto": "No KYC photo on file — check the original CNIC instead.",
+  "handoverWizardSelectBooking": "Select booking manually",
+  "handoverWizardNoReadyBookings": "No bookings ready for handover.",
+  "handoverWizardAdvancePaid": "Advance (paid online)",
+  "handoverWizardDepositMethod": "Deposit method",
+  "handoverWizardDepositReceived": "Deposit received",
+  "handoverWizardBalanceReceived": "Balance received",
+  "handoverWizardReceiptTitle": "Handover receipt",
+  "handoverWizardReceiptId": "Receipt {id}",
+  "@handoverWizardReceiptId": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "handoverWizardReceiptView": "View receipt",
+  "handoverWizardReceiptShare": "Share receipt on WhatsApp",
+  "handoverWizardReceiptMessage": "Handover receipt {receipt} for {vehicle}: total Rs. {total}, advance Rs. {advance}, balance Rs. {balance}, deposit Rs. {deposit}. — RentalHub",
+  "@handoverWizardReceiptMessage": {
+    "placeholders": {
+      "receipt": {
+        "type": "String"
+      },
+      "vehicle": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      },
+      "advance": {
+        "type": "String"
+      },
+      "balance": {
+        "type": "String"
+      },
+      "deposit": {
+        "type": "String"
+      }
+    }
+  },
+  "handoverWizardReceiptWhatsappFailed": "Could not open WhatsApp.",
+  "handoverWizardAcWorking": "Air conditioning working",
+  "handoverWizardLightsWorking": "All lights working",
+  "handoverPhotoInterior": "Interior",
+  "handoverPhotoDashboard": "Dashboard",
+  "handoverWizardPhotoTakenAt": "Taken {time}",
+  "@handoverWizardPhotoTakenAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "handoverWizardDamageDiagram": "Mark existing damage",
+  "handoverWizardSignatureOnFile": "Signature on file",
+  "handoverWizardSignFresh": "Sign fresh instead",
+  "handoverWizardUseSaved": "Use saved signature",
+  "handoverWizardGuarantorPending": "Guarantor signature pending — signed in the agreement step.",
+  "handoverWizardTripStarted": "Trip started {time}",
+  "@handoverWizardTripStarted": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "handoverWizardHandedOver": "Car Handed Over",
+  "handoverWizardSharePdf": "Share Agreement PDF",
+  "handoverWizardPaymentRequired": "Choose how the balance was collected before continuing.",
+  "handoverWizardDepositMethodRequired": "Choose how the deposit was collected before continuing.",
+  "handoverWizardChecklistRequired": "Enter the odometer reading and fuel level before continuing.",
+  "handoverWizardHandoverFailed": "Handover failed: {error}",
+  "@handoverWizardHandoverFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "rentalStartedTripLine": "Started {time} · on trip {elapsed}",
+  "@rentalStartedTripLine": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      },
+      "elapsed": {
+        "type": "String"
+      }
+    }
+  }
 }

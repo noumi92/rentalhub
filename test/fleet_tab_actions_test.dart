@@ -188,8 +188,8 @@ void main() {
       await _pumpFleet(tester, router);
 
       // Schedule is an icon-only button inside the search bar
-      // (tooltip carries the label); Handover QR and Requests are
-      // icon+text buttons inside the search bar (tooltip + icon +
+      // (tooltip carries the label); Handover QR is an
+      // icon+text button inside the search bar (tooltip + icon +
       // visible label); Add Vehicle is the header pill (icon +
       // text label).
       // Customers left the fleet screen (still on the Customers
@@ -197,7 +197,6 @@ void main() {
       final actions = <(String key, IconData icon, String label, bool isTooltip)>[
         ('fleet-action-schedule', Icons.calendar_month_rounded, 'Schedule', true),
         ('fleet-action-handover', Icons.qr_code_scanner_rounded, 'Handover QR', true),
-        ('fleet-action-requests', Icons.inbox_rounded, 'Bookings', true),
         ('fleet-action-add-vehicle', Icons.add_rounded, 'Add Vehicle', false),
       ];
       for (final (key, icon, label, isTooltip) in actions) {
@@ -232,17 +231,6 @@ void main() {
       expect(router.routeInformationProvider.value.uri.path,
           RouteNames.ownerQrScan);
       expect(find.text('Scan stub'), findsOneWidget);
-    });
-
-    testWidgets('Requests navigates to the requests list', (tester) async {
-      final router = _buildRouter();
-      await _pumpFleet(tester, router);
-
-      await _tapAction(tester, 'fleet-action-requests');
-
-      expect(router.routeInformationProvider.value.uri.path,
-          RouteNames.ownerRequests);
-      expect(find.text('Requests stub'), findsOneWidget);
     });
 
     testWidgets('Add Vehicle navigates to the add-vehicle flow',

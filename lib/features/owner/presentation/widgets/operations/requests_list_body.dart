@@ -86,7 +86,9 @@ class RequestsListBody extends StatelessWidget {
               'requested',
               'payment_submitted',
               'approved',
-              'rejected'
+              'rejected',
+              'active',
+              'completed'
             ])
               s: requests.where((b) => b.status == s).length,
           },

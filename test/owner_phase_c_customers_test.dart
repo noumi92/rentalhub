@@ -194,7 +194,9 @@ House 12, Street 4, Gulberg III, Lahore
       expect(restored.customerCnic, '35201-1234567-1');
       expect(restored.guarantorName, 'Muhammad Ali');
       expect(restored.guarantorCnic, '35201-7654321-2');
-      expect(restored.toMap(), model.toMap());
+      // fromMap backfills a missing origin: 'walkin-1' is a walk-in id.
+      expect(restored.origin, 'walk_in');
+      expect(restored.toMap(), {...model.toMap(), 'origin': 'walk_in'});
     });
 
     testWidgets('customers list rolls bookings up per customer',

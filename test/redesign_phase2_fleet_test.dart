@@ -219,7 +219,7 @@ void main() {
       }
     });
 
-    testWidgets('AppBar holds Schedule + Add Vehicle pill; search bar holds Handover + Requests',
+    testWidgets('AppBar holds Schedule + Add Vehicle pill; search bar holds Handover',
         (tester) async {
       await tester.pumpWidget(_wrap(
         const OwnerFleetView(shopId: 'shop-basic'),
@@ -227,14 +227,12 @@ void main() {
       await tester.pumpAndSettle();
 
       // User layout 2026-11-18: the Schedule icon and the orange
-      // "+ Add Vehicle" pill are in the header; Handover QR and
-      // Requests live inside the search bar below it.
+      // "+ Add Vehicle" pill are in the header; Handover QR
+      // lives inside the search bar below it.
       expect(find.byKey(const Key('fleet-action-schedule')), findsOneWidget);
       expect(find.byTooltip('Schedule'), findsOneWidget);
       expect(find.byKey(const Key('fleet-action-handover')), findsOneWidget);
-      expect(find.byKey(const Key('fleet-action-requests')), findsOneWidget);
       expect(find.byTooltip('Handover QR'), findsOneWidget);
-      expect(find.byTooltip('Bookings'), findsOneWidget);
       expect(find.byKey(const Key('fleet-action-add-vehicle')), findsOneWidget);
       expect(find.text('Add Vehicle'), findsOneWidget);
       // The search bar is back under the header; the quick-actions

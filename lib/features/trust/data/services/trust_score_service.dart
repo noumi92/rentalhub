@@ -30,6 +30,8 @@ class TrustScoreResult {
     required this.meanOwnerRating,
     required this.kycStatus,
     this.kycCnic,
+    this.kycCnicSubmitted = false,
+    this.kycLicenseSubmitted = false,
   });
 
   final TrustScoreBreakdown breakdown;
@@ -41,6 +43,15 @@ class TrustScoreResult {
   final double? meanOwnerRating;
   final String kycStatus;
   final String? kycCnic;
+
+  /// O17: which KYC documents the customer actually submitted, from
+  /// the same `kyc_documents/{uid}` read that yields [kycStatus]
+  /// (CNIC front/back keys, licence key). A document counts as
+  /// verified only when the whole submission is 'verified' AND the
+  /// document itself was submitted — the single `status` field never
+  /// says per-document, so the triage badges derive it from these.
+  final bool kycCnicSubmitted;
+  final bool kycLicenseSubmitted;
 }
 
 class TrustScoreService {
@@ -69,6 +80,15 @@ class TrustScoreService {
       final kycData = kycDoc.data();
       final kycStatus = kycData?['status'] as String? ?? 'missing';
       final kycCnic = kycData?['cnicNumber'] as String?;
+      // O17: per-document presence on the same read — a CNIC counts
+      // as submitted when either side's key is stored, a licence
+      // when its key is stored. Empty strings are the queued-upload
+      // placeholder (see KycRemoteDataSource), not a submission.
+      final kycCnicSubmitted =
+          (kycData?['cnicFrontKey'] as String? ?? '').isNotEmpty ||
+              (kycData?['cnicBackKey'] as String? ?? '').isNotEmpty;
+      final kycLicenseSubmitted =
+          (kycData?['licenseKey'] as String? ?? '').isNotEmpty;
 
       final bookings = await BookingRemoteDataSource(firestore: firestore)
           .getCustomerBookings(customerId);
@@ -132,6 +152,8 @@ class TrustScoreService {
         meanOwnerRating: meanRating,
         kycStatus: kycStatus,
         kycCnic: kycCnic,
+        kycCnicSubmitted: kycCnicSubmitted,
+        kycLicenseSubmitted: kycLicenseSubmitted,
       );
     } catch (_) {
       return null;

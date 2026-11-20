@@ -8,7 +8,14 @@ class UpdateBookingStatusUseCase {
   Future<BookingEntity> call({
     required String bookingId,
     required String status,
+    String? selectedPaymentAccount,
+    DateTime? paymentDeadline,
   }) =>
-      repository.updateBookingStatus(bookingId: bookingId, status: status);
+      repository.updateBookingStatus(
+        bookingId: bookingId,
+        status: status,
+        selectedPaymentAccount: selectedPaymentAccount,
+        paymentDeadline: paymentDeadline,
+      );
 }
 

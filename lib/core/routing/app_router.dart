@@ -61,9 +61,11 @@ import '../../features/owner/presentation/views/owner_customers_list_view.dart';
 import '../../features/owner/presentation/views/owner_payment_verification_view.dart';
 import '../../features/owner/presentation/views/owner_dashboard_view.dart';
 import '../../features/owner/presentation/views/owner_fixed_routes_view.dart';
-import '../../features/owner/presentation/views/owner_handover_signature_view.dart';
+import '../../features/owner/presentation/views/handover_wizard/handover_wizard_view.dart';
 import '../../features/owner/presentation/views/owner_manual_booking_view.dart';
 import '../../features/owner/presentation/views/owner_manual_booking_confirm_view.dart';
+import '../../features/owner/presentation/views/owner_manual_booking_receipt_view.dart';
+import '../../features/bookings/domain/entities/booking_entity.dart';
 import '../../features/fleet/domain/entities/vehicle_entity.dart';
 import '../../features/fleet/domain/entities/fixed_route_entity.dart';
 import '../../features/owner/presentation/widgets/guarantor_picker.dart';
@@ -97,7 +99,7 @@ import '../../features/owner/presentation/views/owner_price_estimate_view.dart';
 import '../../features/owner/presentation/views/owner_shop_settings_view.dart';
 import '../../features/owner/presentation/views/owner_fleet_calendar_view.dart';
 import '../../features/owner/presentation/views/owner_booking_confirmed_view.dart';
-import '../../features/owner/presentation/views/owner_agreement_signed_view.dart';
+import '../../features/owner/presentation/views/owner_agreement_wizard_view.dart';
 import '../../features/owner/presentation/views/owner_rental_started_view.dart';
 import '../../features/owner/presentation/views/owner_record_damage_view.dart';
 import '../../features/owner/presentation/views/owner_record_extra_charges_view.dart';
@@ -988,7 +990,10 @@ class AppRouter {
               // route/deep link). The form passes its validated draft
               // via extra, same pattern as the CNIC-review route;
               // without extra the manual form is shown instead of
-              // crashing on a deep link.
+              // crashing on a deep link. Walk-in rework (O24): the
+              // draft now carries the registered customer id and the
+              // step-3 money (rent/driver/discount/advance/method/
+              // deposit/dues flag).
               GoRoute(
                 path: RouteNames.ownerManualBookingConfirm,
                 builder: (context, state) {
@@ -998,6 +1003,7 @@ class AppRouter {
                       extra?['package'] as VehiclePackageEntity?;
                   final pickup = extra?['pickupTime'] as DateTime?;
                   final returnTime = extra?['returnTime'] as DateTime?;
+                  final customerId = extra?['customerId'] as String?;
                   final customerName = extra?['customerName'] as String?;
                   final customerPhone = extra?['customerPhone'] as String?;
                   final customerCnic = extra?['customerCnic'] as String?;
@@ -1005,12 +1011,14 @@ class AppRouter {
                       package == null ||
                       pickup == null ||
                       returnTime == null ||
+                      customerId == null ||
                       customerName == null ||
                       customerPhone == null ||
                       customerCnic == null) {
                     return const OwnerManualBookingView();
                   }
                   return OwnerManualBookingConfirmView(
+                    customerId: customerId,
                     customerName: customerName,
                     customerPhone: customerPhone,
                     customerCnic: customerCnic,
@@ -1023,6 +1031,43 @@ class AppRouter {
                     pickupTime: pickup,
                     returnTime: returnTime,
                     fixedRoute: extra?['fixedRoute'] as FixedRouteEntity?,
+                    rentAmount: extra?['rentAmount'] as int? ?? 0,
+                    driverAmount: extra?['driverAmount'] as int? ?? 0,
+                    discountAmountPkr:
+                        (extra?['discountAmountPkr'] as num?)?.toDouble(),
+                    advanceReceived: extra?['advanceReceived'] as int? ?? 0,
+                    paymentMethod:
+                        extra?['paymentMethod'] as String? ?? 'cash',
+                    depositAmountPkr:
+                        (extra?['depositAmountPkr'] as num?)?.toDouble(),
+                    depositMethod:
+                        extra?['depositMethod'] as String? ?? 'cash',
+                    addRemainingToDues:
+                        extra?['addRemainingToDues'] as bool? ?? true,
+                  );
+                },
+              ),
+              // Requests: ownerManualBookingReceipt (walk-in rework,
+              // O24) — the receipt for the just-created booking,
+              // carried via extra; without it the manual form is
+              // shown instead of crashing on a deep link.
+              GoRoute(
+                path: RouteNames.ownerManualBookingReceipt,
+                builder: (context, state) {
+                  final extra = state.extra as Map<String, dynamic>?;
+                  final booking = extra?['booking'] as BookingEntity?;
+                  if (booking == null) {
+                    return const OwnerManualBookingView();
+                  }
+                  return OwnerManualBookingReceiptView(
+                    booking: booking,
+                    paymentMethod:
+                        extra?['paymentMethod'] as String? ?? 'cash',
+                    rentAmount: extra?['rentAmount'] as int? ?? 0,
+                    driverAmount: extra?['driverAmount'] as int? ?? 0,
+                    depositMethod:
+                        extra?['depositMethod'] as String? ?? 'cash',
+                    onBack: () => context.pop(),
                   );
                 },
               ),
@@ -1037,13 +1082,18 @@ class AppRouter {
                   ),
                 ),
               ),
-              // Requests: ownerAgreementSigned (audit impl, worker B)
+              // Requests: ownerAgreementWizard (item 10, O46–O48)
               GoRoute(
-                path: RouteNames.ownerAgreementSigned,
+                path: RouteNames.ownerAgreementWizard,
                 builder: (context, state) => BookingRouteLoader(
                   bookingId: state.pathParameters['id']!,
-                  builder: (context, booking) => OwnerAgreementSignedView(
+                  builder: (context, booking) =>
+                      OwnerAgreementWizardView(
                     booking: booking,
+                    initialStep:
+                        int.tryParse(state.uri.queryParameters['step'] ?? '0')
+                                ?.clamp(0, 2) ??
+                            0,
                     onBack: () => context.pop(),
                   ),
                 ),
@@ -1082,13 +1132,20 @@ class AppRouter {
                   ),
                 ),
               ),
-              // Requests: ownerHandover
+              // Requests: ownerHandover — Item 9 (O26–O30): the
+              // 5-step wizard. `?step=0..4` picks the starting step.
+              // The old single view stays in the tree (its tests
+              // still pump it directly) but is no longer routed to.
               GoRoute(
                 path: RouteNames.ownerHandover,
                 builder: (context, state) => BookingRouteLoader(
                   bookingId: state.pathParameters['id']!,
-                  builder: (context, booking) => OwnerHandoverSignatureView(
+                  builder: (context, booking) => OwnerHandoverWizardView(
                     booking: booking,
+                    initialStep:
+                        int.tryParse(state.uri.queryParameters['step'] ?? '0')
+                                ?.clamp(0, 4) ??
+                            0,
                     onBack: () => context.pop(),
                   ),
                 ),

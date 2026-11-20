@@ -217,8 +217,11 @@ void main() {
       // PW-17 (concurrent audit team, not Team B): fuel now starts
       // unselected and its check runs before the signature check —
       // pick a level so the tap reaches the signature refusal.
-      await tester.ensureVisible(find.text('4/4 (Full)'));
-      await tester.tap(find.text('4/4 (Full)'));
+      // Item 9 (O28): fuel is an E–F slider now, not chips — drag
+      // it right to pick a level.
+      await tester.ensureVisible(find.byType(Slider));
+      await tester.pumpAndSettle();
+      await tester.drag(find.byType(Slider), const Offset(400, 0));
       await tester.pumpAndSettle();
       await tester.ensureVisible(
           find.text('Certify Handover & Generate Contract'));
