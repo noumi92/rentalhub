@@ -62,11 +62,20 @@ class ManualBookingDraft {
       vehicle: selectedVehicle, package: selectedPackage, isWithDriver: false,
       isOutOfCity: isOutOfCity, pickup: _pickupTime, returnTime: _returnTime, fixedRoute: selectedRoute);
 
-  int get driverAmount =>
-      (ManualBookingPackageSelector.totalFor(vehicle: selectedVehicle, package: selectedPackage, isWithDriver: true,
-              isOutOfCity: isOutOfCity, pickup: _pickupTime, returnTime: _returnTime, fixedRoute: selectedRoute) -
-          rentAmount)
-          .clamp(0, 1 << 30);
+  int get driverAmount {
+    // The driver surcharge is charged ONLY when the owner chose a
+    // driver. (A hardcoded isWithDriver: true here used to charge
+    // every walk-in the full surcharge, inflating the total and the
+    // advance required: with dues off the booking could not be
+    // saved in full, and the phantom charge re-appeared as a
+    // balance due after creation — "the advance was never
+    // recorded".)
+    if (!isWithDriver) return 0;
+    return (ManualBookingPackageSelector.totalFor(vehicle: selectedVehicle, package: selectedPackage, isWithDriver: true,
+            isOutOfCity: isOutOfCity, pickup: _pickupTime, returnTime: _returnTime, fixedRoute: selectedRoute) -
+        rentAmount)
+        .clamp(0, 1 << 30);
+  }
 
   int get discount =>
       (int.tryParse(discountController.text.trim()) ?? 0).clamp(0, 1 << 30);

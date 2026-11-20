@@ -13,6 +13,7 @@ import 'package:rentalhub/features/owner/presentation/views/owner_booking_confir
 import 'package:rentalhub/features/owner/presentation/views/owner_booking_requests_view.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_manual_booking_confirm_view.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_payment_verification_view.dart';
+import 'package:rentalhub/features/owner/presentation/widgets/guarantor_picker.dart';
 import 'package:rentalhub/features/owner/presentation/widgets/manual_booking_package_selector.dart';
 import 'package:rentalhub/features/owner/presentation/widgets/operations/booking_fare_breakdown.dart';
 import 'package:rentalhub/features/owner/presentation/widgets/operations/request_detail_checks.dart';
@@ -485,6 +486,91 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Waiting for your verification'), findsOneWidget);
       expect(find.text('Proof submitted'), findsNothing);
+    });
+  });
+
+  group('O19 payment verification: verified amount (widget)', () {
+    testWidgets('amount over the required advance is recorded in full',
+        (tester) async {
+      // An approved booking whose customer paid MORE than the
+      // required advance (the proof shows the full rent). Before
+      // the fix the view always recorded exactly the required
+      // advance, so the excess stayed due and the handover asked
+      // for it again.
+      final pkg24 =
+          testVehicle.packages.firstWhere((p) => p.label == '24h');
+      final created = await WalkInBookingService.createWalkInBooking(
+        name: 'Proof Customer',
+        phone: '03001234567',
+        cnic: '35202-1234567-1',
+        guarantor: const GuarantorSelection(
+            name: 'Bilal Ahmed',
+            cnic: '35202-1234567-2',
+            phone: '03007654321',
+            relationship: 'Brother'),
+        vehicle: testVehicle,
+        package: pkg24,
+        isWithDriver: false,
+        rentAmount: 7500,
+        advanceRequired: 3000,
+        pickupTime: DateTime(2026, 11, 20, 10),
+        returnTime: DateTime(2026, 11, 21, 10),
+        tripType: 'in_city',
+        advanceReceived: 0,
+        customerId: 'cust-proof',
+        depositAmountPkr: null,
+        discountAmountPkr: null,
+        paymentMethod: 'cash',
+        depositMethod: 'cash',
+      );
+      expect(created.advancePaid, 0);
+      expect(created.totalAmount, 7500);
+
+      final router = GoRouter(
+        initialLocation: '/verify',
+        routes: [
+          GoRoute(
+            path: '/verify',
+            builder: (context, state) =>
+                OwnerPaymentVerificationView(booking: created),
+          ),
+          GoRoute(
+            path: '/owner/booking-confirmed/:id',
+            builder: (context, state) => const Scaffold(
+              body: Center(child: Text('confirmed')),
+            ),
+          ),
+        ],
+      );
+      await tester.pumpWidget(MaterialApp.router(
+        routerConfig: router,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+      ));
+      await tester.pumpAndSettle();
+
+      // Prefilled with the required advance.
+      final field = find.byType(TextField);
+      expect(field, findsOneWidget);
+      expect(tester.widget<TextField>(field).controller?.text, '3000');
+
+      // The customer actually paid the full rent: Rs. 6,000.
+      await tester.enterText(field, '6000');
+      await tester.pumpAndSettle();
+      expect(find.text('Confirm Payment — Rs. 6,000'), findsOneWidget);
+
+      await tester.ensureVisible(find.text('Confirm Payment — Rs. 6,000'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Confirm Payment — Rs. 6,000'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('confirmed'), findsOneWidget);
+      final ds = di.sl<BookingRemoteDataSource>();
+      final verified =
+          await ds.getBookingById(created.bookingId);
+      expect(verified?.advancePaid, 6000);
+      expect(verified?.remainingBalance, 1500);
+      expect(verified?.status, 'paid');
     });
   });
 

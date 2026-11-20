@@ -46,6 +46,14 @@ class _OwnerPaymentVerificationViewState
     extends State<OwnerPaymentVerificationView> {
   bool _processing = false;
 
+  /// Audit 2026-11-20 (§10): the amount the customer actually paid,
+  /// as shown on the proof — prefilled with the required advance,
+  /// editable. Recording only the required advance used to lose the
+  /// excess (the booking kept a balance due already paid).
+  final _amountController = TextEditingController();
+
+  int get _verifiedAmount => (int.tryParse(_amountController.text.trim()) ?? _booking.advanceRequired).clamp(0, _booking.totalAmount);
+
   /// PW-18: the customer risk context (live trust score, KYC state,
   /// prior trips) for the money decision. Null until loaded.
   TrustScoreResult? _trust;
@@ -54,6 +62,7 @@ class _OwnerPaymentVerificationViewState
   void initState() {
     super.initState();
     _trust = widget.trustResult;
+    _amountController.text = _booking.advanceRequired.toString();
     if (_trust == null) {
       const TrustScoreService().compute(_booking.customerId).then((r) {
         if (mounted && r != null) setState(() => _trust = r);
@@ -61,15 +70,20 @@ class _OwnerPaymentVerificationViewState
     }
   }
 
+  @override
+  void dispose() { _amountController.dispose(); super.dispose(); }
+
   BookingEntity get _booking => widget.booking;
 
   Future<void> _approve() async {
   final l10n = AppLocalizations.of(context)!;
+    final amount = int.tryParse(_amountController.text.trim());
+    if (amount == null || amount <= 0) { AppFeedback.showError(context, l10n.manualBookingAmountInvalid); return; }
     setState(() => _processing = true);
     try {
       await sl<BookingRemoteDataSource>().verifyPayment(
         bookingId: _booking.bookingId,
-        advanceAmount: _booking.advanceRequired,
+        advanceAmount: amount.clamp(0, _booking.totalAmount),
       );
       if (!mounted) return;
       AppFeedback.showSuccess(context, l10n.paymentVerificationConfirmed(_booking.bookingId));
@@ -187,6 +201,11 @@ class _OwnerPaymentVerificationViewState
                       const SizedBox(height: 14),
                       Text(l10n.paymentVerificationPreviouslyRejected(b.rejectionReason!), style: Theme.of(context) .textTheme .bodyMedium ?.copyWith(color: AppColors.warningTextFor(Theme.of(context).brightness))),
                     ],
+                    TextField(
+                      controller: _amountController, keyboardType: TextInputType.number,
+                      decoration: InputDecoration(labelText: l10n.bookingCheckAdvance, prefixText: 'Rs. '),
+                      onChanged: (_) => setState(() {}),
+                    ),
                     const SizedBox(height: 20),
                     SizedBox(
                       width: double.infinity,
@@ -196,7 +215,7 @@ class _OwnerPaymentVerificationViewState
                             // Audit 2026-11-15 PW-11: route through
                             // amountRs (§4.5 money rule); the .arb
                             // value no longer embeds 'Rs.'.
-                            : l10n.paymentVerificationConfirmButton(l10n.amountRs(formatRs(b.advanceRequired))),
+                            : l10n.paymentVerificationConfirmButton(l10n.amountRs(formatRs(_verifiedAmount))),
                         icon: Icons.check_circle_rounded,
                         isLoading: _processing,
                         onPressed: _approve,
