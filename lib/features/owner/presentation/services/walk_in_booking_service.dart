@@ -4,6 +4,8 @@ import '../../../bookings/domain/entities/booking_entity.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/utils/current_shop.dart';
 import '../../../customer/utils/save_walk_in_customer.dart';
+import '../../../finance/data/datasources/security_deposit_data_source.dart';
+import '../../../finance/data/services/booking_ledger_service.dart';
 import '../../../fleet/domain/entities/fixed_route_entity.dart';
 import '../../../fleet/domain/entities/vehicle_entity.dart';
 import '../widgets/guarantor_picker.dart';
@@ -56,6 +58,12 @@ class WalkInBookingService {
     // of the discount.
     double? depositAmountPkr,
     double? discountAmountPkr,
+    // Financial audit (2026-11-20): how the advance and the
+    // deposit were paid at the counter. These used to die on the
+    // receipt view — the booking never stored them, so the ledger
+    // could never post the counter cash to the right account.
+    String? paymentMethod,
+    String? depositMethod,
   }) async {
     final ds = sl<BookingRemoteDataSource>();
     // Shop-id mismatch (2026-11-15, rulebook D12): the booking (and
@@ -99,6 +107,8 @@ class WalkInBookingService {
       outCityPerKmPkr: vehicle.outCityPerKmPkr,
       depositAmountPkr: depositAmountPkr,
       discountAmountPkr: discountAmountPkr,
+      advancePaymentMethod: paymentMethod,
+      depositPaymentMethod: depositMethod,
     );
 
     // Phase B (C1): an UNREGISTERED walk-in customer is saved with
@@ -119,12 +129,44 @@ class WalkInBookingService {
     // Audit §5 item 1: the counter advance decides the status — a
     // full advance pays the booking, anything less approves it with
     // the balance still due.
-    if (advanceReceived >= advanceRequired && advanceRequired > 0) {
-      return ds.verifyPayment(
-          bookingId: booking.bookingId, advanceAmount: advanceReceived);
+    final created = advanceReceived >= advanceRequired && advanceRequired > 0
+        ? await ds.verifyPayment(
+            bookingId: booking.bookingId, advanceAmount: advanceReceived)
+        : await ds.recordAdvancePayment(
+            bookingId: booking.bookingId, advanceAmount: advanceReceived);
+    // Financial audit (2026-11-20): a deposit taken at the counter
+    // is a held liability, not just a number on the booking. Before
+    // this it never reached `security_deposits` — the deposits
+    // summary missed it, and the return flow backfilled the record
+    // with the VEHICLE's deposit instead of what was actually
+    // taken. Recording it here also makes the handover collect
+    // idempotent (it returns the existing record), so the same
+    // deposit is never held twice. Best-effort: a failed record
+    // must never fail the booking itself.
+    final deposit = depositAmountPkr;
+    if (deposit != null && deposit > 0) {
+      try {
+        await sl<SecurityDepositDataSource>().collect(
+          bookingId: booking.bookingId,
+          customerId: booking.customerId,
+          shopId: shopId,
+          amount: deposit.round(),
+          collectedAt: pickup,
+        );
+      } catch (_) {}
+      try {
+        await sl<BookingLedgerService>().postOnce(
+          booking: created,
+          event: 'deposit',
+          kind: 'income',
+          category: 'deposit',
+          amount: deposit.round(),
+          paymentMethod: depositMethod,
+          note: 'Security deposit for ${booking.bookingId}',
+        );
+      } catch (_) {}
     }
-    return ds.recordAdvancePayment(
-        bookingId: booking.bookingId, advanceAmount: advanceReceived);
+    return created;
   }
 
   /// O22 "Car is free for this time": true when no live booking for

@@ -219,26 +219,29 @@ void main() {
       }
     });
 
-    testWidgets('AppBar holds Schedule + Add Vehicle pill; search bar holds Handover',
+    testWidgets('search bar is search-only; Add Vehicle pill kept, Schedule + Handover QR removed',
         (tester) async {
       await tester.pumpWidget(_wrap(
         const OwnerFleetView(shopId: 'shop-basic'),
       ));
       await tester.pumpAndSettle();
 
-      // User layout 2026-11-18: the Schedule icon and the orange
-      // "+ Add Vehicle" pill are in the header; Handover QR
-      // lives inside the search bar below it.
-      expect(find.byKey(const Key('fleet-action-schedule')), findsOneWidget);
-      expect(find.byTooltip('Schedule'), findsOneWidget);
-      expect(find.byKey(const Key('fleet-action-handover')), findsOneWidget);
-      expect(find.byTooltip('Handover QR'), findsOneWidget);
+      // Item 1 (2026-11-20): Schedule + Handover QR removed from
+      // the search bar as duplicates (calendar via the Bookings
+      // app bar, scan via Dashboard / Bookings). The orange
+      // "+ Add Vehicle" pill stays in the header, the search bar
+      // keeps only its field + magnifier.
+      expect(find.byKey(const Key('fleet-action-schedule')), findsNothing);
+      expect(find.byTooltip('Schedule'), findsNothing);
+      expect(find.byKey(const Key('fleet-action-handover')), findsNothing);
+      expect(find.byTooltip('Handover QR'), findsNothing);
       expect(find.byKey(const Key('fleet-action-add-vehicle')), findsOneWidget);
       expect(find.text('Add Vehicle'), findsOneWidget);
       // The search bar is back under the header; the quick-actions
       // row is gone; Customers left the fleet screen (still on the
       // Customers tab).
       expect(find.byType(TextField), findsOneWidget);
+      expect(find.byIcon(Icons.search_rounded), findsOneWidget);
       expect(find.byKey(const Key('fleet-action-customers')), findsNothing);
       expect(tester.takeException(), isNull);
     });

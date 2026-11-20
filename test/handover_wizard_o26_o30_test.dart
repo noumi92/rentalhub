@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:signature/signature.dart';
 import 'package:rentalhub/core/di/injection_container.dart' as di;
 import 'package:rentalhub/features/bookings/data/datasources/booking_remote_data_source.dart';
 import 'package:rentalhub/features/bookings/domain/entities/booking_entity.dart';
@@ -127,6 +128,29 @@ void main() {
       expect(cubit.signaturesReady, isTrue);
       expect(cubit.customerSignatureSource, 'saved');
       expect(cubit.ownerSignatureSource, 'saved');
+    });
+
+    test(
+        'fresh pad signatures satisfy the gate when no saved signature exists',
+        () {
+      // Regression: the use-saved flags default to true and nothing
+      // flips them when no saved signature is on file, so drawing
+      // on both pads used to leave signaturesReady false forever
+      // and the wizard could never leave step 4.
+      final cubit = HandoverWizardCubit(bookingId: 'RH-WIZ-1');
+      expect(cubit.state.useCustomerSaved, isTrue);
+      expect(cubit.state.useOwnerSaved, isTrue);
+      expect(cubit.state.customerSavedSignaturePng, isNull);
+      expect(cubit.state.ownerSavedSignaturePng, isNull);
+      cubit.customerSigController.addPoint(
+          Point(const Offset(10, 10), PointType.move, 1.0));
+      cubit.customerSigController.addPoint(
+          Point(const Offset(20, 20), PointType.move, 1.0));
+      cubit.ownerSigController.addPoint(
+          Point(const Offset(10, 10), PointType.move, 1.0));
+      expect(cubit.signaturesReady, isTrue);
+      expect(cubit.customerSignatureSource, 'fresh');
+      expect(cubit.ownerSignatureSource, 'fresh');
     });
 
     test('exportSignatures returns the saved PNG bytes', () async {
@@ -377,6 +401,38 @@ void main() {
               'Both customer and host must sign on the pads before vehicle departure.'),
           findsOneWidget);
       // Drain the SnackBar timer so it cannot leak into the next test.
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets(
+        'step 4 advances past the signature gate after drawing on both pads',
+        (tester) async {
+      // Regression: with no saved signature on file the pads are the
+      // only way to sign, but the gate used to stay closed after
+      // drawing on both — the wizard never left step 4.
+      _tallViewport(tester);
+      await tester.pumpWidget(_pumpable(OwnerHandoverWizardView(
+          booking: _booking(), initialStep: 4)));
+      await tester.pumpAndSettle();
+      final pads = find.byType(Signature);
+      expect(pads, findsNWidgets(2));
+      await tester.drag(pads.first, const Offset(60, 10));
+      await tester.drag(pads.last, const Offset(60, 10));
+      await tester.pump();
+      await tester.tap(find.text('Car Handed Over'));
+      await tester.pump();
+      expect(
+          find.text(
+              'Both customer and host must sign on the pads before vehicle departure.'),
+          findsNothing);
+      // In this test env the shop name cannot load (no Firebase), so
+      // finalize proceeds past the signature gate and stops at the
+      // next check — the shop-name error — which proves the gate
+      // opened.
+      expect(
+          find.text(
+              'The shop name could not be loaded. Retry the load before certifying the handover.'),
+          findsOneWidget);
       await tester.pumpAndSettle();
     });
   });

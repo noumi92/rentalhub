@@ -67,6 +67,10 @@ class _OwnerReturnSettlementViewState extends State<OwnerReturnSettlementView> {
   String _condition = 'good';
   Map<String, String?> _returnPhotos = const {'front': null, 'back': null, 'left': null, 'right': null};
   ({int amount, String? method}) _collected = (amount: 0, method: null);
+  // Per-km extra fare (2026-11-20): collected at return, or the
+  // remainder goes onto the customer's dues at finalize.
+  ({int amount, String? method}) _extraFareCollected =
+      (amount: 0, method: null);
   int _deductibleDamage = 0;
   int _extraCharges = 0;
 
@@ -169,6 +173,7 @@ class _OwnerReturnSettlementViewState extends State<OwnerReturnSettlementView> {
         returnDamageNotes: _returnDamageNotes, damageCharge: _damageCharge,
         condition: _condition, returnPhotoUrls: _returnPhotos, deductibleDamage: _deductibleDamage, extraCharges: _extraCharges,
         remainingRentCollected: _collected.amount, paymentMethod: _collected.method, perKmSettlement: _perKm,
+        extraFareCollected: _extraFareCollected.amount, extraFarePaymentMethod: _extraFareCollected.method,
       );
       if (mounted) {
         AppFeedback.showSuccess(context, l10n.returnSettled(formatRs(breakdown.netRefund)));
@@ -217,7 +222,7 @@ class _OwnerReturnSettlementViewState extends State<OwnerReturnSettlementView> {
                       const SizedBox(height: 12),
                       TextField(controller: _damageChargeController, keyboardType: TextInputType.number, onChanged: _onDamageChargeChanged, decoration: InputDecoration(labelText: l10n.returnDamageChargeLabel, hintText: l10n.returnDamageChargeHint, border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)), filled: true, fillColor: Theme.of(context).colorScheme.surfaceContainerHighest)),
                       const SizedBox(height: 16),
-                      ReturnFarePaymentSection(booking: widget.booking, onCollected: (amount, method) => setState(() => _collected = (amount: amount, method: method))),
+                      ReturnFarePaymentSection(booking: widget.booking, onCollected: (amount, method) => setState(() => _collected = (amount: amount, method: method)), extraFareDue: _perKm?.extraDue ?? 0, onExtraFareCollected: (amount, method) => setState(() => _extraFareCollected = (amount: amount, method: method))),
                       const SizedBox(height: 16),
                       SettlementSummaryReceiptWidget(totalKm: breakdown.totalKmDriven, excessKm: breakdown.excessKm, excessKmPenalty: breakdown.excessKmCharge, extraKmRate: _extraKmPkr, fuelDeficitFee: breakdown.fuelDeficit, overtimeFee: breakdown.overtimeFee, damageCharge: breakdown.damageCharge, extraCharges: breakdown.extraCharges, securityDeposit: _deposit, netRefund: breakdown.netRefund, perKm: _perKm, amountOwed: breakdown.amountOwed),
                       const SizedBox(height: 24),

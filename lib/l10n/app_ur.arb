@@ -3076,6 +3076,8 @@
   "returnPaymentReceived": "ادائیگی موصول ہو گئی",
   "returnPaymentUndo": "واپس لیں",
   "returnPaymentRecordExtraCharges": "اضافی چارجز درج کریں",
+  "returnExtraFareTitle": "اضافی کرایہ (فی کلومیٹر)",
+  "returnExtraFareReceived": "اضافی کرایہ موصول ہو گیا",
   "returnReceiptExtraCharges": "اضافی چارجز",
   "damageTitle": "نقصان درج کریں",
   "damageAddPhoto": "تصویر شامل کریں",

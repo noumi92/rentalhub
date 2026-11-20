@@ -5,6 +5,7 @@ import '../../../bookings/domain/entities/booking_entity.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/network/firestore_service.dart';
 import '../../../finance/data/datasources/security_deposit_data_source.dart';
+import '../../../finance/data/services/booking_ledger_service.dart';
 import '../../../finance/utils/settlement_calculator.dart';
 import '../../../fleet/data/datasources/fleet_remote_data_source.dart';
 import '../../../handover/data/datasources/handover_local_data_source.dart';
@@ -175,6 +176,11 @@ class ReturnSettlementService {
     // (null for every other booking). It is persisted on the
     // settlement doc below; it never changes the deposit math.
     PerKmSettlement? perKmSettlement,
+    // Per-km extra fare (2026-11-20): the part of the extra fare
+    // the owner collected at return, with its method. Clamped to
+    // the extra due inside; the remainder goes onto the dues.
+    int extraFareCollected = 0,
+    String? extraFarePaymentMethod,
   }) async {
     final totalKmDriven = (returnOdometer - initialOdometer).clamp(0, 99999);
     final overtimeHours = _overtimeHours(booking.returnTime);
@@ -182,6 +188,27 @@ class ReturnSettlementService {
     // km is paid at the per-km rate through the reconciliation, so
     // the package excess-km charge must not also apply on top of it.
     final effectiveExtraKmPkr = perKmSettlement != null ? 0 : extraKmPkr;
+    // Financial audit (2026-11-20): the deposit actually held.
+    // The handover may have recorded a method but never the
+    // receipt (Received toggle OFF) — then nothing was held, and
+    // settling deductions against the vehicle's deposit would
+    // refund money the shop never took. A deposit record that
+    // exists (counter or handover) is authoritative and wins over
+    // the handover flag. Older bookings with no handover record
+    // keep the old behaviour (the vehicle's deposit).
+    var effectiveDeposit = deposit;
+    try {
+      final handover = await sl<HandoverLocalDataSource>()
+          .getHandover(booking.bookingId);
+      final held = await sl<SecurityDepositDataSource>()
+          .getByBookingId(booking.bookingId);
+      if (held == null &&
+          handover != null &&
+          handover.depositPaymentMethod != null &&
+          handover.depositReceivedAt == null) {
+        effectiveDeposit = 0;
+      }
+    } catch (_) {}
     final breakdown = SettlementCalculator.calculate(
       totalKmDriven: totalKmDriven,
       kmAllowance: kmAllowance,
@@ -190,7 +217,7 @@ class ReturnSettlementService {
       damageCharge: damageCharge + deductibleDamage,
       overtimeHours: overtimeHours,
       extraHourPkr: extraHourPkr,
-      securityDeposit: deposit,
+      securityDeposit: effectiveDeposit,
       extraCharges: extraCharges,
     );
     // The remaining rent collected here reduces what the customer
@@ -198,6 +225,16 @@ class ReturnSettlementService {
     // the refund — it is recorded on the settlement doc below.
     final remainingRentDue =
         (booking.remainingBalance - remainingRentCollected).clamp(0, 1 << 30);
+
+    // Per-km extra fare (2026-11-20): the actual-km fare above the
+    // booked estimate. Collected at return when the owner marks it
+    // received; whatever is left goes onto the customer's dues (see
+    // the [recordExtraFare] call below). Clamped on both ends so a
+    // collected amount can never also sit in dues, and a stray
+    // collection without a per-km settlement collects nothing.
+    final extraDue = perKmSettlement?.extraDue ?? 0;
+    final extraCollected = extraFareCollected.clamp(0, extraDue);
+    final extraRemainder = extraDue - extraCollected;
 
     // The return record: condition, photos, payment and totals, on
     // `return_settlements/{bookingId}` (merge). Firestore resolves
@@ -227,6 +264,9 @@ class ReturnSettlementService {
           'perKmEstimatedFare': perKmSettlement.estimatedFare,
           'perKmExtraDue': perKmSettlement.extraDue,
           'perKmRefundDue': perKmSettlement.refundDue,
+          'extraFareCollected': extraCollected,
+          'extraFareCollectionMethod': extraFarePaymentMethod,
+          'extraFareRemainder': extraRemainder,
         },
         'completedAt': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
@@ -235,13 +275,16 @@ class ReturnSettlementService {
     final depositDs = sl<SecurityDepositDataSource>();
     // The handover normally collects the deposit; if it never did
     // (older bookings, a failed write), backfill it now so the
-    // settlement still has a record to settle.
+    // settlement still has a record to settle. When the handover
+    // shows the deposit was never received, the backfill is for
+    // Rs 0 — nothing was held, so the deductions surface as
+    // amount owed instead of being netted against phantom money.
     var record = await depositDs.getByBookingId(booking.bookingId);
     record ??= await depositDs.collect(
       bookingId: booking.bookingId,
       customerId: booking.customerId,
       shopId: booking.shopId,
-      amount: deposit,
+      amount: effectiveDeposit,
       collectedAt: booking.pickupTime,
     );
     await depositDs.settle(
@@ -258,9 +301,56 @@ class ReturnSettlementService {
     );
 
     final bookingDs = sl<BookingRemoteDataSource>();
+    // Financial audit (2026-11-20): the remaining rent collected
+    // at return used to live only on the settlement doc — the
+    // booking kept its old remaining balance, so a fully-paid
+    // completed booking stayed in the dues list forever. Applying
+    // it here clears the due, and the ledger post below records
+    // the cash exactly once. Clamped to what was still owed, so a
+    // stray over-collection can never over-pay the booking or
+    // over-post the ledger.
+    final rentCollected =
+        remainingRentCollected.clamp(0, booking.remainingBalance);
+    if (rentCollected > 0) {
+      await bookingDs.recordBalanceCollected(
+        bookingId: booking.bookingId,
+        amount: rentCollected,
+      );
+    }
+    // Per-km extra fare (2026-11-20): the fare grew by the extra,
+    // so the total grows with it and the collected part counts as
+    // paid — the remainder stays in the remaining balance and
+    // shows in the dues list on this completed booking. Applied
+    // after the rent collection above (which clamped to the old
+    // balance, so it could never eat the extra), and awaited, not
+    // best-effort: a failure here fails the settlement rather than
+    // silently dropping money the customer still owes.
+    if (extraDue > 0) {
+      await bookingDs.recordExtraFare(
+        bookingId: booking.bookingId,
+        extraDue: extraDue,
+        collected: extraCollected,
+      );
+    }
     await bookingDs.updateBookingStatus(
       bookingId: booking.bookingId,
       status: 'completed',
+    );
+
+    // Financial audit (2026-11-20): the return cash, posted to
+    // the ledger exactly once (deterministic ids) — the remaining
+    // rent, the deposit refund and the collected owed amount all
+    // used to live only on `return_settlements/{bookingId}`, so
+    // account balances and cash closing missed real cash. The
+    // refund / owed amounts are read back from the settlement doc
+    // (they were recorded as separate steps before close).
+    // Best-effort: a ledger failure never fails the settlement.
+    await _postReturnCash(
+      booking: booking,
+      remainingRentCollected: rentCollected,
+      paymentMethod: paymentMethod,
+      extraFareCollected: extraCollected,
+      extraFarePaymentMethod: extraFarePaymentMethod,
     );
 
     final fleetDs = sl<FleetRemoteDataSource>();
@@ -273,6 +363,78 @@ class ReturnSettlementService {
       mileageKm: returnOdometer,
     );
     return breakdown;
+  }
+
+  static Future<void> _postReturnCash({
+    required BookingEntity booking,
+    required int remainingRentCollected,
+    required String? paymentMethod,
+    int extraFareCollected = 0,
+    String? extraFarePaymentMethod,
+  }) async {
+    try {
+      if (!sl.isRegistered<BookingLedgerService>()) return;
+      final ledger = sl<BookingLedgerService>();
+      if (remainingRentCollected > 0) {
+        await ledger.postOnce(
+          booking: booking,
+          event: 'rent-return',
+          kind: 'income',
+          category: 'rent',
+          amount: remainingRentCollected,
+          paymentMethod: paymentMethod,
+          note: 'Remaining rent collected at return for ${booking.bookingId}',
+        );
+      }
+      // Per-km extra fare (2026-11-20): its own deterministic id
+      // (`LEDGER-<id>-extra-fare`), so it can never collide with
+      // or double the remaining-rent posting above. P&L treatment
+      // is the same as the remaining rent: the fare is now part of
+      // the booking's total (see recordExtraFare), so the
+      // booking-revenue exclusion in FinanceSummary keeps this
+      // posting out of P&L income and the fare is counted exactly
+      // once, as booking revenue — never hidden, never doubled.
+      // The cash itself still counts in account balances and cash
+      // closing.
+      if (extraFareCollected > 0) {
+        await ledger.postOnce(
+          booking: booking,
+          event: 'extra-fare',
+          kind: 'income',
+          category: 'rent',
+          amount: extraFareCollected,
+          paymentMethod: extraFarePaymentMethod,
+          note:
+              'Per-km extra fare collected at return for ${booking.bookingId}',
+        );
+      }
+      final settlement = await sl<FirestoreService>()
+          .getDocument('return_settlements', booking.bookingId);
+      if (settlement == null) return;
+      final refunded = (settlement['depositRefunded'] as num?)?.toInt() ?? 0;
+      if (settlement['refundRecorded'] == true && refunded > 0) {
+        await ledger.postOnce(
+          booking: booking,
+          event: 'deposit-refund',
+          kind: 'expense',
+          category: 'deposit_refund',
+          amount: refunded,
+          note: 'Deposit refund for ${booking.bookingId}',
+        );
+      }
+      final owed = (settlement['owedCollected'] as num?)?.toInt() ?? 0;
+      if (owed > 0) {
+        await ledger.postOnce(
+          booking: booking,
+          event: 'owed',
+          kind: 'income',
+          category: 'other',
+          amount: owed,
+          paymentMethod: settlement['owedCollectionMethod'] as String?,
+          note: 'Owed amount collected at return for ${booking.bookingId}',
+        );
+      }
+    } catch (_) {}
   }
 
   static int _overtimeHours(DateTime dueBack) {

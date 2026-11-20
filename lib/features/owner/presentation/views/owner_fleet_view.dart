@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
@@ -29,9 +28,11 @@ import 'owner_subscription_limit_sheet.dart';
 /// overlapped the third card on a phone). No header icons: the
 /// reference design shows title + pill only. Row 2 is the white
 /// search bar inside the header — a name/plate search that actually
-/// filters the list, a divider, then Schedule (icon-only — the fleet
-/// calendar is reachable only from here) and Handover QR
-/// as inline buttons. (MinimalAppBar has no `bottom` slot, so the
+/// filters the list, and nothing else: the Schedule and Handover QR
+/// buttons that used to sit inside the bar were removed as
+/// duplicates (Item 1, 2026-11-20) — the calendar stays reachable
+/// from the Bookings app bar, the QR scan from Dashboard / Bookings
+/// / booking-confirmed. (MinimalAppBar has no `bottom` slot, so the
 /// header + search bar share one navy container — visually the same
 /// as an AppBar.bottom.) The filter bar ([FleetFilterChips]: All /
 /// Ready / On Rent / Maintenance when any car is in maintenance)
@@ -173,9 +174,10 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
                     // BOTH top rows — the title row (orange "+ Add
                     // Vehicle" pill only; the FAB overlapped the
                     // third card) and the white search bar under it.
-                    // Schedule and Handover QR live inside
-                    // the search bar (same destinations the old
-                    // header icons used); Customers left the fleet
+                    // Item 1 (2026-11-20): Schedule and Handover QR
+                    // no longer live inside the search bar (duplicates
+                    // — calendar via Bookings app bar, scan via
+                    // Dashboard / Bookings); Customers left the fleet
                     // screen (still on the Customers tab).
                     Container(
                       color: AppColors.primaryDark,
@@ -191,8 +193,6 @@ class _OwnerFleetViewState extends State<OwnerFleetView> {
                           ),
                           FleetSearchField(
                             onChanged: (query) => setState(() => _searchQuery = query),
-                            onSchedule: () => _pushOnce(RouteNames.ownerFleetCalendar),
-                            onHandover: () => context.go(RouteNames.ownerQrScan),
                           ),
                         ],
                       ),

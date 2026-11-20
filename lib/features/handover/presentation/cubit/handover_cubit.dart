@@ -9,7 +9,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/data/sync_engine.dart';
 import '../../../../core/data/sync_queue_entry.dart';
 import '../../../../core/network/cpanel_storage_client.dart';
+import '../../../bookings/data/datasources/booking_remote_data_source.dart';
+import '../../../bookings/domain/entities/booking_entity.dart';
 import '../../../finance/data/datasources/security_deposit_data_source.dart';
+import '../../../finance/data/services/booking_ledger_service.dart';
 import '../../data/datasources/handover_local_data_source.dart';
 import '../../data/datasources/pdf_contract_generator.dart';
 import '../../domain/entities/handover_entity.dart';
@@ -51,11 +54,21 @@ class HandoverCubit extends Cubit<HandoverState> {
   final SecurityDepositDataSource? depositDataSource;
   final FirebaseFirestore? _firestore;
 
+  /// Financial audit (2026-11-20): posts handover cash to the
+  /// ledger and applies a collected balance to the booking.
+  /// Both optional — null keeps the old behaviour (handover
+  /// recorded, cash unledgered). Best-effort by design: a ledger
+  /// or booking failure must never fail the handover itself.
+  final BookingLedgerService? ledgerService;
+  final BookingRemoteDataSource? bookingDataSource;
+
   HandoverCubit({
     required this.localDataSource,
     this.storageClient,
     this.depositDataSource,
     FirebaseFirestore? firestore,
+    this.ledgerService,
+    this.bookingDataSource,
   })  : _firestore = firestore,
         super(const HandoverInitial());
 
@@ -89,6 +102,20 @@ class HandoverCubit extends Cubit<HandoverState> {
     // (see [_syncOne]), never a side merge from the view.
     int? balanceDuePkr,
     String? balancePaymentMethod,
+    // Financial audit (2026-11-20): whether the balance / deposit
+    // were actually received (the wizard's Received toggles).
+    // Null = unknown (legacy callers pass neither): the balance is
+    // inferred from the method ('not_yet' = not collected, any
+    // real method = collected) and the deposit is inferred from
+    // the receipt timestamp, or assumed collected when no method
+    // was picked at all (the legacy single-view has no toggle and
+    // always collected the deposit with the handover). The wizard
+    // finalize should pass the toggles explicitly — see the audit
+    // report — because a toggled-off deposit keeps a stale
+    // [depositReceivedAt] from an earlier toggle-on.
+    bool? balanceReceived,
+    bool? depositReceived,
+    String? vehicleId,
     required int initialOdometer,
     required String fuelLevel,
     List<String> damageNotes = const [],
@@ -215,14 +242,30 @@ class HandoverCubit extends Cubit<HandoverState> {
       totalAmount: totalAmount,
       balanceDuePkr: balanceDuePkr,
       balancePaymentMethod: balancePaymentMethod,
+      // Financial audit (2026-11-20): the effective received
+      // flags (see the parameter docs above). Stored on the
+      // record so the return flow can tell a held deposit from
+      // one that was never taken.
+      balanceReceived: _effectiveBalanceReceived(
+        balanceDuePkr: balanceDuePkr,
+        balancePaymentMethod: balancePaymentMethod,
+        balanceReceived: balanceReceived,
+      ),
     );
 
     await localDataSource.saveHandoverOffline(entity);
 
+    // Financial audit (2026-11-20): was the deposit actually
+    // received? Before this the record below was written whenever
+    // the vehicle charged a deposit — even with the Received
+    // toggle OFF — so the deposits summary showed money the shop
+    // never took.
+    final depositCollected = depositReceived ??
+        (depositReceivedAt != null || depositPaymentMethod == null);
     // Phase B (F2): the deposit is held from the moment the car
     // leaves. Best-effort — a failed record must never fail the
     // handover itself; the return flow backfills it if needed.
-    if (securityDeposit > 0 && depositDataSource != null) {
+    if (depositCollected && securityDeposit > 0 && depositDataSource != null) {
       try {
         await depositDataSource!.collect(
           bookingId: bookingId,
@@ -233,6 +276,31 @@ class HandoverCubit extends Cubit<HandoverState> {
         );
       } catch (_) {}
     }
+
+    // Financial audit (2026-11-20): the handover cash, posted to
+    // the ledger exactly once (deterministic ids) and applied to
+    // the booking — before this a balance collected here never
+    // reduced the booking's remaining balance, so the dues view
+    // kept showing it as owed and the return flow could collect
+    // the same balance a second time. All best-effort: a ledger
+    // failure never fails the handover.
+    await _postHandoverCash(
+      bookingId: bookingId,
+      shopId: shopId,
+      customerId: customerId,
+      vehicleId: vehicleId,
+      totalAmount: totalAmount,
+      advancePaid: advancePaid,
+      pickupTime: pickupTime,
+      returnTime: returnTime,
+      packageType: packageType,
+      balanceDuePkr: balanceDuePkr,
+      balancePaymentMethod: balancePaymentMethod,
+      balanceCollected: entity.balanceReceived ?? false,
+      securityDeposit: securityDeposit,
+      depositCollected: depositCollected,
+      depositPaymentMethod: depositPaymentMethod,
+    );
 
     if (isOnline) {
       final url = await _syncOne(entity);
@@ -246,6 +314,86 @@ class HandoverCubit extends Cubit<HandoverState> {
       emit(HandoverSavedOffline(entity));
     }
     return entity;
+  }
+
+  /// Financial audit (2026-11-20): the effective balance-received
+  /// flag for the record. Null when nothing was due (moot);
+  /// otherwise the explicit toggle when given, else the method —
+  /// 'not_yet' (or no method) means the balance stays owed.
+  static bool? _effectiveBalanceReceived({
+    required int? balanceDuePkr,
+    required String? balancePaymentMethod,
+    required bool? balanceReceived,
+  }) {
+    if (balanceDuePkr == null || balanceDuePkr <= 0) return null;
+    if (balanceReceived != null) return balanceReceived;
+    return balancePaymentMethod != null &&
+        balancePaymentMethod != 'not_yet';
+  }
+
+  Future<void> _postHandoverCash({
+    required String bookingId,
+    required String shopId,
+    required String customerId,
+    required String? vehicleId,
+    required int totalAmount,
+    required int advancePaid,
+    required DateTime? pickupTime,
+    required DateTime? returnTime,
+    required String packageType,
+    required int? balanceDuePkr,
+    required String? balancePaymentMethod,
+    required bool balanceCollected,
+    required int securityDeposit,
+    required bool depositCollected,
+    required String? depositPaymentMethod,
+  }) async {
+    final ledger = ledgerService;
+    if (ledger == null) return;
+    final booking = BookingEntity(
+      bookingId: bookingId,
+      customerId: customerId,
+      shopId: shopId,
+      vehicleId: vehicleId ?? '',
+      packageType: packageType,
+      pickupTime: pickupTime ?? DateTime.now(),
+      returnTime: returnTime ?? DateTime.now().add(const Duration(days: 1)),
+      totalAmount: totalAmount,
+      advancePaid: advancePaid,
+      remainingBalance: (totalAmount - advancePaid).clamp(0, 1 << 30),
+    );
+    if (balanceCollected && balanceDuePkr != null && balanceDuePkr > 0) {
+      try {
+        await ledger.postOnce(
+          booking: booking,
+          event: 'balance',
+          kind: 'income',
+          category: 'rent',
+          amount: balanceDuePkr,
+          paymentMethod: balancePaymentMethod,
+          note: 'Balance collected at handover for $bookingId',
+        );
+      } catch (_) {}
+      try {
+        await bookingDataSource?.recordBalanceCollected(
+          bookingId: bookingId,
+          amount: balanceDuePkr,
+        );
+      } catch (_) {}
+    }
+    if (depositCollected && securityDeposit > 0) {
+      try {
+        await ledger.postOnce(
+          booking: booking,
+          event: 'deposit',
+          kind: 'income',
+          category: 'deposit',
+          amount: securityDeposit,
+          paymentMethod: depositPaymentMethod,
+          note: 'Security deposit for $bookingId',
+        );
+      } catch (_) {}
+    }
   }
 
   /// Phase B (B4): the agreement PDF hash, recorded in Firestore
@@ -280,6 +428,7 @@ class HandoverCubit extends Cubit<HandoverState> {
         totalAmount: (map['total_amount'] as num?)?.toInt(),
         balanceDuePkr: (map['balance_due_pkr'] as num?)?.toInt(),
         balancePaymentMethod: map['balance_payment_method'] as String?,
+        balanceReceived: map['balance_received'] as bool?,
         photoFrontUrl: map['photo_front_url'] as String?,
         photoBackUrl: map['photo_back_url'] as String?,
         photoLeftUrl: map['photo_left_url'] as String?,
@@ -390,6 +539,8 @@ class HandoverCubit extends Cubit<HandoverState> {
           if (item.balanceDuePkr != null) ...{
             'balanceDueAtHandover': item.balanceDuePkr,
             'balancePaymentMethod': item.balancePaymentMethod,
+            if (item.balanceReceived != null)
+              'balanceReceived': item.balanceReceived,
           },
           // Item 9 (O27/O30): the receipt + the trip start, so the
           // agreement doc can show when the trip actually started.
@@ -430,6 +581,8 @@ class HandoverCubit extends Cubit<HandoverState> {
           if (item.balanceDuePkr != null) ...{
             'balanceDueAtHandover': item.balanceDuePkr,
             'balancePaymentMethod': item.balancePaymentMethod,
+            if (item.balanceReceived != null)
+              'balanceReceived': item.balanceReceived,
           },
           // Item 9 (O26–O30): the wizard fields. Face check is a
           // confirmed flag + timestamp only — never a match score.

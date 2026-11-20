@@ -15,6 +15,8 @@ abstract class BookingRepository {
     String? fixedRouteSummary,
     String? outCityMode,
     int? outCityPerKmPkr,
+    String? advancePaymentMethod,
+    String? depositPaymentMethod,
   });
 
   Future<BookingEntity> updateBookingStatus({
@@ -33,6 +35,26 @@ abstract class BookingRepository {
   Future<BookingEntity> verifyPayment({
     required String bookingId,
     required int advanceAmount,
+  });
+
+  /// Financial audit (2026-11-20): cash collected against the
+  /// remaining balance after the advance (handover balance,
+  /// remaining rent at return). Additive and clamped to the amount
+  /// still owed; the status is untouched.
+  Future<BookingEntity> recordBalanceCollected({
+    required String bookingId,
+    required int amount,
+  });
+
+  /// Per-km extra fare (2026-11-20): the actual-km fare above the
+  /// booked estimate, settled at return. Adds the extra to the
+  /// total and the collected part to the amount paid, so the
+  /// uncollected remainder sits in the remaining balance (dues).
+  /// Clamped: collected ≤ extraDue; the status is untouched.
+  Future<BookingEntity> recordExtraFare({
+    required String bookingId,
+    required int extraDue,
+    required int collected,
   });
 
   Future<List<BookingEntity>> getCustomerBookings(String customerId);

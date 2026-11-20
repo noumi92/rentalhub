@@ -5464,6 +5464,12 @@ class AppLocalizationsUr extends AppLocalizations {
   String get returnPaymentRecordExtraCharges => 'اضافی چارجز درج کریں';
 
   @override
+  String get returnExtraFareTitle => 'اضافی کرایہ (فی کلومیٹر)';
+
+  @override
+  String get returnExtraFareReceived => 'اضافی کرایہ موصول ہو گیا';
+
+  @override
   String get returnReceiptExtraCharges => 'اضافی چارجز';
 
   @override

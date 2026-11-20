@@ -11,13 +11,18 @@ import 'package:rentalhub/features/owner/presentation/views/owner_fleet_view.dar
 import 'package:rentalhub/features/owner/presentation/views/owner_qr_scan_view.dart';
 import 'package:rentalhub/l10n/app_localizations.dart';
 
-// QR scan back button (Item 1): the Fleet search bar reaches the scan
-// screen with `go()` (owner_fleet_view.dart), and /owner/scan lives in
-// the Bookings StatefulShellBranch, so go() makes it that branch's
-// root — canPop is false, a plain context.pop() is a no-op, and the
-// user was stranded (no bottom nav on /owner/scan either). The view
-// now falls back to go(RouteNames.ownerFleet) when it cannot pop.
-// These tests pin that: back from the Fleet path lands on /owner/fleet.
+// QR scan back button (Item 1): /owner/scan lives in the
+// Bookings StatefulShellBranch. The scan view falls back to
+// go(RouteNames.ownerFleet) when it cannot pop, so back from a
+// pushed scan lands on /owner/fleet. These tests pin that.
+//
+// Item 1 (2026-11-20): the Fleet search bar's Handover button —
+// which used to reach the scan with `go()` (making it that
+// branch's root, canPop false) — is REMOVED as a duplicate. The
+// scan stays reachable via push() from the Dashboard quick action,
+// the Bookings app-bar QR icon, and booking-confirmed, so the
+// back behaviour is now pinned through the push() path only; the
+// first test also asserts the fleet Handover entry is gone.
 //
 // The local copy's PNG assets are corrupt (downloaded through the
 // connector's text path), so any widget rendering a car photo throws
@@ -44,8 +49,9 @@ class _TestAssetBundle extends AssetBundle {
 
 /// Test router mirroring the real branch structure (app_router.dart):
 /// Fleet branch holds the fleet tab; the Bookings branch holds the
-/// requests list and the QR scan. The Fleet Handover button crosses
-/// branches with `go`, exactly like the real fleet view does.
+/// requests list and the QR scan. The scan is reached with push()
+/// (Dashboard / Bookings path), exactly like the real app does now
+/// that the Fleet Handover go() entry is removed (Item 1).
 GoRouter _buildRouter() {
   return GoRouter(
     initialLocation: RouteNames.ownerFleet,
@@ -104,23 +110,27 @@ void main() {
     setUp(() => router = _buildRouter());
     tearDown(() => router.dispose());
 
-    testWidgets('back from the Fleet-reached scan lands on /owner/fleet',
+    testWidgets('fleet Handover entry is gone; back pops from a pushed scan to /owner/fleet',
         (tester) async {
       await _pumpRouter(tester, router);
       expect(find.byType(OwnerFleetView), findsOneWidget);
 
-      // The real Fleet Handover button: go() to the scan screen.
-      final handover = find.byKey(const Key('fleet-action-handover'));
-      await tester.ensureVisible(handover);
-      await tester.pumpAndSettle();
-      await tester.tap(handover);
+      // Item 1 (2026-11-20): no Handover (or Schedule) button in
+      // the fleet search bar any more — the scan is reached from
+      // Dashboard / Bookings instead.
+      expect(find.byKey(const Key('fleet-action-handover')), findsNothing);
+      expect(find.byKey(const Key('fleet-action-schedule')), findsNothing);
+
+      // Dashboard / Bookings reach the scan with push(), so a real
+      // stack entry exists and back must pop it. (A push inside a
+      // shell branch renders the pushed page but does NOT move the
+      // URI, so the destination is asserted on the rendered view,
+      // not the URI.)
+      router.push(RouteNames.ownerQrScan);
       await tester.pumpAndSettle();
 
-      expect(router.routeInformationProvider.value.uri.path,
-          RouteNames.ownerQrScan);
       expect(find.byType(OwnerQrScanView), findsOneWidget);
-      // go() made the scan the Bookings branch root: nothing to pop.
-      expect(router.canPop(), isFalse);
+      expect(router.canPop(), isTrue);
 
       // The back arrow in the scan screen's MinimalAppBar.
       await tester.tap(find.byIcon(Icons.arrow_back_ios_new_rounded));

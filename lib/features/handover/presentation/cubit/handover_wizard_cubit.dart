@@ -139,6 +139,7 @@ class HandoverWizardState extends Equatable {
     Uint8List? completedPdfBytes,
     String? error,
     bool clearError = false,
+    bool clearDepositReceivedAt = false,
   }) {
     return HandoverWizardState(
       step: step ?? this.step,
@@ -149,7 +150,9 @@ class HandoverWizardState extends Equatable {
       balanceReceived: balanceReceived ?? this.balanceReceived,
       depositMethod: depositMethod ?? this.depositMethod,
       depositReceived: depositReceived ?? this.depositReceived,
-      depositReceivedAt: depositReceivedAt ?? this.depositReceivedAt,
+      depositReceivedAt: clearDepositReceivedAt
+          ? null
+          : (depositReceivedAt ?? this.depositReceivedAt),
       receiptId: receiptId,
       odometer: odometer ?? this.odometer,
       fuelLevel: fuelLevel ?? this.fuelLevel,
@@ -306,8 +309,8 @@ class HandoverWizardCubit extends Cubit<HandoverWizardState> {
 
   void setDepositReceived(bool received) => emit(state.copyWith(
         depositReceived: received,
-        depositReceivedAt:
-            received ? DateTime.now() : state.depositReceivedAt,
+        depositReceivedAt: received ? DateTime.now() : null,
+        clearDepositReceivedAt: !received,
       ));
 
   void setOdometer(int value) =>
@@ -405,18 +408,37 @@ class HandoverWizardCubit extends Cubit<HandoverWizardState> {
   /// Finalize gate for step 4: a customer signature and an owner
   /// signature, saved or fresh. Guarantor is NOT signed here — it
   /// moves to the O47 wizard step; O30 shows it as pending.
+  ///
+  /// A side is satisfied by its saved PNG when one is on file and
+  /// chosen, OR by ink on its fresh pad. The pad branch must not
+  /// depend on `useSaved` being false: the flags default to true
+  /// and nothing flips them when no saved signature exists (the
+  /// loader only sets them when one is found, and the signature
+  /// block only offers "Sign fresh instead" when a saved signature
+  /// is shown) — so gating the pad on `!useSaved` left the wizard
+  /// stuck at step 4 whenever the customer/owner had no signature
+  /// on file, no matter how much they signed on the pads.
   bool get signaturesReady {
     final customerOk = (state.useCustomerSaved &&
             state.customerSavedSignaturePng != null) ||
-        (!state.useCustomerSaved && customerSigController.isNotEmpty);
+        customerSigController.isNotEmpty;
     final ownerOk = (state.useOwnerSaved &&
             state.ownerSavedSignaturePng != null) ||
-        (!state.useOwnerSaved && ownerSigController.isNotEmpty);
+        ownerSigController.isNotEmpty;
     return customerOk && ownerOk;
   }
 
+  /// The source actually used: 'saved' only when a saved PNG is on
+  /// file and chosen — a fresh pad signature is 'fresh' even though
+  /// `useSaved` still holds its `true` default when no saved
+  /// signature exists.
   String get customerSignatureSource =>
-      state.useCustomerSaved ? 'saved' : 'fresh';
+      (state.useCustomerSaved &&
+              state.customerSavedSignaturePng != null)
+          ? 'saved'
+          : 'fresh';
   String get ownerSignatureSource =>
-      state.useOwnerSaved ? 'saved' : 'fresh';
+      (state.useOwnerSaved && state.ownerSavedSignaturePng != null)
+          ? 'saved'
+          : 'fresh';
 }

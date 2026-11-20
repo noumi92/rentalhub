@@ -14,19 +14,20 @@ import 'package:rentalhub/features/owner/presentation/widgets/fleet/fleet_search
 import 'package:rentalhub/l10n/app_localizations.dart';
 
 // Phone-test round 4 (Worker 4): the fleet tab's actions —
-// Schedule, Handover, Requests, Add Vehicle — each navigating to
-// its real sub-screen, plus the `onEditDetails` wiring (Worker 3
-// owns the card/body side).
+// Add Vehicle navigating to its real sub-screen, plus the
+// `onEditDetails` wiring (Worker 3 owns the card/body side).
 //
-// User layout 2026-11-18: the header holds the Schedule icon and
-// the orange "+ Add Vehicle" pill (the FAB overlapped the third
-// card on a phone); the white search bar is back under the header
-// with Handover QR and Requests as inline icon+text buttons inside
-// it; the filter bar ([FleetFilterChips]: All / Ready / On Rent /
-// Maintenance) sits below that. Customers left the fleet screen —
-// it stays reachable from the Customers tab, so there is no
-// Customers button here any more. The destinations are unchanged,
-// so the navigation tests below still address the same keys.
+// User layout 2026-11-18: the header holds the orange "+ Add
+// Vehicle" pill (the FAB overlapped the third card on a phone);
+// the white search bar is back under the header as a search-only
+// bar. Item 1 (2026-11-20): the Schedule and Handover QR buttons
+// that used to live inside the search bar are REMOVED as
+// duplicates — the calendar stays reachable from the Bookings
+// app bar, the QR scan from Dashboard / Bookings /
+// booking-confirmed — so the navigation tests for them are gone
+// and absence is asserted instead. Customers left the fleet
+// screen — it stays reachable from the Customers tab, so there is
+// no Customers button here any more.
 //
 // The local copy's PNG assets are corrupt (downloaded through the
 // connector's text path), so any widget rendering a car photo throws
@@ -153,8 +154,9 @@ void main() {
       expect(find.byType(FleetFilterChips), findsOneWidget);
       expect(find.byType(FleetQuickActions), findsNothing);
       expect(find.text('All (3)'), findsOneWidget);
-      // User layout 2026-11-18: the search bar is back (Handover QR
-      // and Requests live inside it) and Add Vehicle is the orange
+      // User layout 2026-11-18: the search bar is back as a
+      // search-only bar (Item 1, 2026-11-20: Schedule + Handover QR
+      // removed as duplicates) and Add Vehicle is the orange
       // header pill, not a FAB.
       expect(find.byType(FleetSearchField), findsOneWidget);
       expect(find.byType(FloatingActionButton), findsNothing);
@@ -174,11 +176,41 @@ void main() {
 
       expect(find.text('Fleet Management'), findsOneWidget);
       expect(find.byKey(const Key('fleet-action-add-vehicle')), findsOneWidget);
-      // Schedule lives inside the search bar now (icon-only), not
-      // in the header — the reference design shows title + pill
-      // only up top.
-      expect(find.byKey(const Key('fleet-action-schedule')), findsOneWidget);
-      expect(find.descendant(of: find.byType(FleetSearchField), matching: find.byKey(const Key('fleet-action-schedule'))), findsOneWidget);
+      // Item 1 (2026-11-20): Schedule + Handover QR are gone from
+      // the search bar (duplicates) — the header shows title + pill
+      // only and the bar is search-only.
+      expect(find.byKey(const Key('fleet-action-schedule')), findsNothing);
+      expect(find.byKey(const Key('fleet-action-handover')), findsNothing);
+      expect(find.byType(FleetSearchField), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('search bar has no action buttons; search still filters by name/plate',
+        (tester) async {
+      final router = _buildRouter();
+      await _pumpFleet(tester, router);
+
+      // The magnifier prefix (search affordance) stays; the two
+      // duplicate action buttons and their tooltips are gone.
+      expect(find.byIcon(Icons.search_rounded), findsOneWidget);
+      expect(find.byKey(const Key('fleet-action-schedule')), findsNothing);
+      expect(find.byKey(const Key('fleet-action-handover')), findsNothing);
+      expect(find.byTooltip('Schedule'), findsNothing);
+      expect(find.byTooltip('Handover QR'), findsNothing);
+
+      // Search still filters: 'Civic' leaves only the Civic card.
+      await tester.enterText(find.byType(TextField), 'Civic');
+      await tester.pumpAndSettle();
+      expect(find.text('Honda Civic Oriel 2021'), findsOneWidget);
+      expect(find.text('Toyota Corolla Grande 2022'), findsNothing);
+      expect(find.text('Suzuki Alto VXL 2023'), findsNothing);
+
+      // Clearing the query restores all three cards.
+      await tester.enterText(find.byType(TextField), '');
+      await tester.pumpAndSettle();
+      expect(find.text('Honda Civic Oriel 2021'), findsOneWidget);
+      expect(find.text('Toyota Corolla Grande 2022'), findsOneWidget);
+      expect(find.text('Suzuki Alto VXL 2023'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
 
@@ -187,50 +219,30 @@ void main() {
       final router = _buildRouter();
       await _pumpFleet(tester, router);
 
-      // Schedule is an icon-only button inside the search bar
-      // (tooltip carries the label); Handover QR is an
-      // icon+text button inside the search bar (tooltip + icon +
-      // visible label); Add Vehicle is the header pill (icon +
-      // text label).
+      // Item 1 (2026-11-20): the only fleet action left is Add
+      // Vehicle, the header pill (icon + text label). Schedule and
+      // Handover QR were removed from the search bar as duplicates
+      // (calendar via Bookings app bar, scan via Dashboard /
+      // Bookings) — assert they are absent, not present.
       // Customers left the fleet screen (still on the Customers
       // tab) — no button here.
-      final actions = <(String key, IconData icon, String label, bool isTooltip)>[
-        ('fleet-action-schedule', Icons.calendar_month_rounded, 'Schedule', true),
-        ('fleet-action-handover', Icons.qr_code_scanner_rounded, 'Handover QR', true),
-        ('fleet-action-add-vehicle', Icons.add_rounded, 'Add Vehicle', false),
-      ];
-      for (final (key, icon, label, isTooltip) in actions) {
-        final button = find.byKey(Key(key));
-        expect(button, findsOneWidget, reason: 'missing action: $label');
-        expect(
-          find.descendant(of: button, matching: find.byIcon(icon)),
-          findsOneWidget,
-          reason: 'missing icon for: $label',
-        );
-        if (isTooltip) {
-          expect(find.byTooltip(label), findsOneWidget,
-              reason: 'missing tooltip for: $label');
-        } else {
-          expect(
-            find.descendant(of: button, matching: find.text(label)),
-            findsOneWidget,
-            reason: 'missing label for: $label',
-          );
-        }
-      }
+      expect(find.byKey(const Key('fleet-action-schedule')), findsNothing);
+      expect(find.byKey(const Key('fleet-action-handover')), findsNothing);
+      expect(find.byTooltip('Schedule'), findsNothing);
+      expect(find.byTooltip('Handover QR'), findsNothing);
+      final button = find.byKey(const Key('fleet-action-add-vehicle'));
+      expect(button, findsOneWidget, reason: 'missing action: Add Vehicle');
+      expect(
+        find.descendant(of: button, matching: find.byIcon(Icons.add_rounded)),
+        findsOneWidget,
+        reason: 'missing icon for: Add Vehicle',
+      );
+      expect(
+        find.descendant(of: button, matching: find.text('Add Vehicle')),
+        findsOneWidget,
+        reason: 'missing label for: Add Vehicle',
+      );
       expect(find.byKey(const Key('fleet-action-customers')), findsNothing);
-    });
-
-    testWidgets('Handover navigates to the QR scan screen',
-        (tester) async {
-      final router = _buildRouter();
-      await _pumpFleet(tester, router);
-
-      await _tapAction(tester, 'fleet-action-handover');
-
-      expect(router.routeInformationProvider.value.uri.path,
-          RouteNames.ownerQrScan);
-      expect(find.text('Scan stub'), findsOneWidget);
     });
 
     testWidgets('Add Vehicle navigates to the add-vehicle flow',
@@ -243,15 +255,6 @@ void main() {
       await _tapAction(tester, 'fleet-action-add-vehicle');
 
       expect(find.text('Add vehicle stub'), findsOneWidget);
-    });
-
-    testWidgets('Schedule navigates to the fleet calendar', (tester) async {
-      final router = _buildRouter();
-      await _pumpFleet(tester, router);
-
-      await _tapAction(tester, 'fleet-action-schedule');
-
-      expect(find.text('Calendar stub'), findsOneWidget);
     });
 
     testWidgets('card Edit icon pushes the edit-details route',

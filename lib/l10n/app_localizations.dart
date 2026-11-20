@@ -9699,6 +9699,18 @@ abstract class AppLocalizations {
   /// **'Record Extra Charges'**
   String get returnPaymentRecordExtraCharges;
 
+  /// No description provided for @returnExtraFareTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Extra Fare (per-km)'**
+  String get returnExtraFareTitle;
+
+  /// No description provided for @returnExtraFareReceived.
+  ///
+  /// In en, this message translates to:
+  /// **'Extra Fare Received'**
+  String get returnExtraFareReceived;
+
   /// No description provided for @returnReceiptExtraCharges.
   ///
   /// In en, this message translates to:

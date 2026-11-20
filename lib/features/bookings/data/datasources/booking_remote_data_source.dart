@@ -8,6 +8,7 @@ import '../../../../core/error/exceptions.dart';
 import '../../../../core/utils/money_format.dart';
 import '../../../../core/utils/shop_id_resolution.dart';
 import '../../../blacklist/data/datasources/blacklist_remote_data_source.dart';
+import '../../../finance/data/services/booking_ledger_service.dart';
 import '../../../notifications/data/datasources/notification_data_source.dart';
 import '../../domain/entities/booking_entity.dart';
 import '../../utils/unverified_shop_gate.dart';
@@ -29,6 +30,13 @@ class BookingRemoteDataSource {
   /// syncs on reconnect. Null in tests, where the in-memory
   /// fallback keeps the old behaviour.
   final OfflineSyncQueue? syncQueue;
+
+  /// Financial audit (2026-11-20): posts booking cash to the
+  /// ledger (see [BookingLedgerService]). Null in tests and legacy
+  /// callers — the booking write still lands, just unledgered.
+  /// Best-effort by design: a ledger failure must never fail the
+  /// booking it describes.
+  final BookingLedgerService? ledgerService;
 
   final Map<String, BookingModel> _inMemoryFallback = {};
   static int _idSeq = 0;
@@ -68,7 +76,8 @@ class BookingRemoteDataSource {
       NotificationDataSource? notifications,
       BlacklistRemoteDataSource? blacklist,
       this.unverifiedShopGate,
-      this.syncQueue})
+      this.syncQueue,
+      this.ledgerService})
       : _firestore = firestore,
         _notifications = notifications,
         _blacklist = blacklist;
@@ -307,6 +316,8 @@ class BookingRemoteDataSource {
     int? outCityPerKmPkr,
     double? depositAmountPkr,
     double? discountAmountPkr,
+    String? advancePaymentMethod,
+    String? depositPaymentMethod,
   }) async {
     // Phase C (C2): the booking-time blacklist check. The owner
     // walk-in flow already refuses blacklisted CNICs; the customer
@@ -405,6 +416,8 @@ class BookingRemoteDataSource {
       outCityPerKmPkr: outCityPerKmPkr,
       depositAmountPkr: depositAmountPkr,
       discountAmountPkr: discountAmountPkr,
+      advancePaymentMethod: advancePaymentMethod,
+      depositPaymentMethod: depositPaymentMethod,
     );
 
     _inMemoryFallback[id] = model;
@@ -561,6 +574,23 @@ class BookingRemoteDataSource {
     return model;
   }
 
+  /// Financial audit (2026-11-20): posts the verified advance to
+  /// the ledger (best-effort — a ledger failure never fails the
+  /// verification). The posting is idempotent
+  /// (`LEDGER-<bookingId>-advance`), so re-verifying the same
+  /// booking updates the one entry instead of doubling it.
+  Future<void> _postAdvance(BookingEntity booking) async {
+    final ledger = ledgerService;
+    if (ledger == null) return;
+    try {
+      await ledger.postAdvance(
+        booking: booking,
+        amount: booking.advancePaid,
+        selectedPaymentAccount: booking.selectedPaymentAccount,
+      );
+    } catch (_) {}
+  }
+
   Future<BookingEntity> verifyPayment({
     required String bookingId,
     required int advanceAmount,
@@ -569,22 +599,26 @@ class BookingRemoteDataSource {
     if (existing == null) {
       throw Exception('Booking not found: $bookingId');
     }
+    // The verified amount is an absolute, like
+    // [recordAdvancePayment] — never more than the booked total.
+    final verified = advanceAmount.clamp(0, existing.totalAmount);
     final updated = existing.copyWith(
       status: 'paid',
-      advancePaid: advanceAmount,
+      advancePaid: verified,
     );
     final model = BookingModel.fromEntity(updated);
     _inMemoryFallback[bookingId] = model;
 
     final fields = <String, dynamic>{
       'status': 'paid',
-      'advancePaid': advanceAmount,
+      'advancePaid': verified,
       'remainingBalance': updated.remainingBalance,
     };
     final written = await _writeBookingDoc(bookingId, fields);
     if (!written) {
       await _queueWrite('booking_update', bookingId, {'fields': fields});
     }
+    await _postAdvance(updated);
     _notifyBookingChanged();
     return model;
   }
@@ -614,6 +648,88 @@ class BookingRemoteDataSource {
     final fields = <String, dynamic>{
       'status': updated.status,
       'advancePaid': received,
+      'remainingBalance': updated.remainingBalance,
+    };
+    final written = await _writeBookingDoc(bookingId, fields);
+    if (!written) {
+      await _queueWrite('booking_update', bookingId, {'fields': fields});
+    }
+    await _postAdvance(updated);
+    _notifyBookingChanged();
+    return model;
+  }
+
+  /// Financial audit (2026-11-20): cash collected against the
+  /// remaining balance AFTER the advance — the handover balance and
+  /// the remaining rent at return. Additive (unlike
+  /// [verifyPayment], which sets the absolute advance): the
+  /// collected amount is clamped to what is still owed, so the
+  /// booking can never be over-paid and the dues view stops
+  /// showing money that was already collected. The status is
+  /// untouched — the caller owns the status transition
+  /// (handover → 'active', return → 'completed').
+  Future<BookingEntity> recordBalanceCollected({
+    required String bookingId,
+    required int amount,
+  }) async {
+    final existing = await getBookingById(bookingId);
+    if (existing == null) {
+      throw Exception('Booking not found: $bookingId');
+    }
+    final collected = amount.clamp(0, existing.remainingBalance);
+    if (collected <= 0) return existing;
+    final updated = existing.copyWith(
+      advancePaid: existing.advancePaid + collected,
+    );
+    final model = BookingModel.fromEntity(updated);
+    _inMemoryFallback[bookingId] = model;
+
+    final fields = <String, dynamic>{
+      'advancePaid': updated.advancePaid,
+      'remainingBalance': updated.remainingBalance,
+    };
+    final written = await _writeBookingDoc(bookingId, fields);
+    if (!written) {
+      await _queueWrite('booking_update', bookingId, {'fields': fields});
+    }
+    _notifyBookingChanged();
+    return model;
+  }
+
+  /// Per-km extra fare (2026-11-20): the actual-km fare above the
+  /// booked estimate, settled at return. The trip's fare genuinely
+  /// grew, so the extra is added to [totalAmount] and the part
+  /// collected at return is added to [advancePaid] — the
+  /// uncollected remainder then sits in [remainingBalance] and
+  /// shows in the dues list (a completed booking with a balance
+  /// still due) until it is collected later. Clamped: collected ≤
+  /// extraDue, remainder ≥ 0, so a collected amount can never
+  /// also sit in dues. The status is untouched — the caller owns
+  /// the status transition. Not best-effort: a failure throws so
+  /// the remainder is never silently dropped (unlike the ledger
+  /// post, which is best-effort by convention).
+  Future<BookingEntity> recordExtraFare({
+    required String bookingId,
+    required int extraDue,
+    required int collected,
+  }) async {
+    final existing = await getBookingById(bookingId);
+    if (existing == null) {
+      throw Exception('Booking not found: $bookingId');
+    }
+    final due = extraDue.clamp(0, 1 << 30);
+    if (due <= 0) return existing;
+    final paid = collected.clamp(0, due);
+    final updated = existing.copyWith(
+      totalAmount: existing.totalAmount + due,
+      advancePaid: existing.advancePaid + paid,
+    );
+    final model = BookingModel.fromEntity(updated);
+    _inMemoryFallback[bookingId] = model;
+
+    final fields = <String, dynamic>{
+      'totalAmount': updated.totalAmount,
+      'advancePaid': updated.advancePaid,
       'remainingBalance': updated.remainingBalance,
     };
     final written = await _writeBookingDoc(bookingId, fields);

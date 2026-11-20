@@ -59,6 +59,14 @@ class HandoverEntity extends Equatable {
   final int? balanceDuePkr;
   final String? balancePaymentMethod;
 
+  /// Financial audit (2026-11-20): whether the balance was
+  /// actually received at handover. Before this the record carried
+  /// the amount + a method but no received flag — a balance picked
+  /// as 'cash' with the Received toggle OFF looked exactly like a
+  /// collected one, and the booking's remaining balance was never
+  /// reduced either way. Null on older records (unknown).
+  final bool? balanceReceived;
+
   /// Audit item 4 (O19 1/2 + 2/2): the exterior photos taken at
   /// handover, the documents handed to the customer, the accessories
   /// in the car, and whether the keys were handed over. All four
@@ -131,6 +139,7 @@ class HandoverEntity extends Equatable {
     this.totalAmount,
     this.balanceDuePkr,
     this.balancePaymentMethod,
+    this.balanceReceived,
     this.photoFrontUrl,
     this.photoBackUrl,
     this.photoLeftUrl,
@@ -161,6 +170,7 @@ class HandoverEntity extends Equatable {
     String? agreementPdfB64,
     int? balanceDuePkr,
     String? balancePaymentMethod,
+    bool? balanceReceived,
     String? photoFrontUrl,
     String? photoBackUrl,
     String? photoLeftUrl,
@@ -199,6 +209,7 @@ class HandoverEntity extends Equatable {
       balanceDuePkr: balanceDuePkr ?? this.balanceDuePkr,
       balancePaymentMethod:
           balancePaymentMethod ?? this.balancePaymentMethod,
+      balanceReceived: balanceReceived ?? this.balanceReceived,
       shopId: shopId,
       shopName: shopName,
       customerName: customerName,
@@ -267,6 +278,7 @@ class HandoverEntity extends Equatable {
         totalAmount,
         balanceDuePkr,
         balancePaymentMethod,
+        balanceReceived,
         photoFrontUrl,
         photoBackUrl,
         photoLeftUrl,

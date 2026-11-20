@@ -20,8 +20,14 @@ class FinanceDepositsSection extends StatelessWidget {
     final deducted = deposits.where((d) => d.status == 'deducted').toList();
     final heldAmount =
         held.fold<int>(0, (total, d) => total + d.amount);
-    final refundedAmount =
-        released.fold<int>(0, (total, d) => total + (d.netRefund ?? d.amount));
+    // Financial audit (2026-11-20): a partially-deducted deposit
+    // ('deducted' with a netRefund > 0) DID refund money, but the
+    // refunded row only summed 'released' records — the partial
+    // refund vanished from the summary while the ledger's
+    // deposit_refund expense still showed it.
+    final refundedAmount = released.fold<int>(
+            0, (total, d) => total + (d.netRefund ?? d.amount)) +
+        deducted.fold<int>(0, (total, d) => total + (d.netRefund ?? 0));
     final deductedAmount =
         deducted.fold<int>(0, (total, d) => total + (d.deductedAmount ?? 0));
     return Column(

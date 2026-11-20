@@ -21,6 +21,8 @@ class BookingRepositoryImpl implements BookingRepository {
     String? fixedRouteSummary,
     String? outCityMode,
     int? outCityPerKmPkr,
+    String? advancePaymentMethod,
+    String? depositPaymentMethod,
   }) =>
       remoteDataSource.createBookingRequest(
         customerId: customerId,
@@ -36,6 +38,8 @@ class BookingRepositoryImpl implements BookingRepository {
         fixedRouteSummary: fixedRouteSummary,
         outCityMode: outCityMode,
         outCityPerKmPkr: outCityPerKmPkr,
+        advancePaymentMethod: advancePaymentMethod,
+        depositPaymentMethod: depositPaymentMethod,
       );
 
   @override
@@ -72,6 +76,28 @@ class BookingRepositoryImpl implements BookingRepository {
       remoteDataSource.verifyPayment(
         bookingId: bookingId,
         advanceAmount: advanceAmount,
+      );
+
+  @override
+  Future<BookingEntity> recordBalanceCollected({
+    required String bookingId,
+    required int amount,
+  }) =>
+      remoteDataSource.recordBalanceCollected(
+        bookingId: bookingId,
+        amount: amount,
+      );
+
+  @override
+  Future<BookingEntity> recordExtraFare({
+    required String bookingId,
+    required int extraDue,
+    required int collected,
+  }) =>
+      remoteDataSource.recordExtraFare(
+        bookingId: bookingId,
+        extraDue: extraDue,
+        collected: collected,
       );
 
   @override

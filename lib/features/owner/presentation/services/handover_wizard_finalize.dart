@@ -53,6 +53,9 @@ class HandoverWizardFinalize {
       balanceDuePkr:
           (booking.totalAmount - booking.advancePaid).clamp(0, 1 << 30),
       balancePaymentMethod: state.balanceMethod,
+      balanceReceived: state.balanceReceived,
+      depositReceived: state.depositReceived,
+      vehicleId: booking.vehicleId,
       initialOdometer: state.odometer,
       fuelLevel: state.fuelLevel,
       damageNotes: state.damageNotes,

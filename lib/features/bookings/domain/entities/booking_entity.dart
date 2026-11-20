@@ -91,6 +91,18 @@ class BookingEntity extends Equatable {
   /// no discount was given; the booked total is already net of it.
   final double? discountAmountPkr;
 
+  /// Financial audit (2026-11-20): how the advance and the deposit
+  /// were actually paid at the counter ('cash' | 'jazzcash' |
+  /// 'easypaisa' | 'bank_transfer'). Before this the methods lived
+  /// only on the walk-in receipt view — the booking carried the
+  /// amounts but not how they were paid, so the ledger could never
+  /// post them to the right account and the receipt could not be
+  /// re-derived from the booking. Null on older bookings and on
+  /// online bookings (the advance there arrives on the owner's
+  /// assigned account, [selectedPaymentAccount]).
+  final String? advancePaymentMethod;
+  final String? depositPaymentMethod;
+
   const BookingEntity({
     required this.bookingId,
     required this.customerId,
@@ -133,10 +145,13 @@ class BookingEntity extends Equatable {
     this.guarantorRelation,
     this.depositAmountPkr,
     this.discountAmountPkr,
+    this.advancePaymentMethod,
+    this.depositPaymentMethod,
   });
 
   BookingEntity copyWith({
     String? status,
+    int? totalAmount,
     int? advancePaid,
     String? paymentProofUrl,
     String? transactionId,
@@ -167,6 +182,8 @@ class BookingEntity extends Equatable {
     String? guarantorRelation,
     double? depositAmountPkr,
     double? discountAmountPkr,
+    String? advancePaymentMethod,
+    String? depositPaymentMethod,
   }) {
     return BookingEntity(
       bookingId: bookingId,
@@ -177,10 +194,11 @@ class BookingEntity extends Equatable {
       isWithDriver: isWithDriver,
       pickupTime: pickupTime,
       returnTime: returnTime,
-      totalAmount: totalAmount,
+      totalAmount: totalAmount ?? this.totalAmount,
       advanceRequired: advanceRequired,
       advancePaid: advancePaid ?? this.advancePaid,
-      remainingBalance: totalAmount - (advancePaid ?? this.advancePaid),
+      remainingBalance:
+          (totalAmount ?? this.totalAmount) - (advancePaid ?? this.advancePaid),
       status: status ?? this.status,
       paymentProofUrl: paymentProofUrl ?? this.paymentProofUrl,
       transactionId: transactionId ?? this.transactionId,
@@ -213,6 +231,10 @@ class BookingEntity extends Equatable {
       guarantorRelation: guarantorRelation ?? this.guarantorRelation,
       depositAmountPkr: depositAmountPkr ?? this.depositAmountPkr,
       discountAmountPkr: discountAmountPkr ?? this.discountAmountPkr,
+      advancePaymentMethod:
+          advancePaymentMethod ?? this.advancePaymentMethod,
+      depositPaymentMethod:
+          depositPaymentMethod ?? this.depositPaymentMethod,
     );
   }
 
@@ -259,5 +281,7 @@ class BookingEntity extends Equatable {
         guarantorRelation,
         depositAmountPkr,
         discountAmountPkr,
+        advancePaymentMethod,
+        depositPaymentMethod,
       ];
 }

@@ -29,6 +29,11 @@ class FinanceTransferDataSource {
     }
   }
 
+  /// Financial audit (2026-11-20): an explicit [transferId] makes
+  /// a posting idempotent — the same cash event replayed (retry,
+  /// offline-queue replay, a second call site) merge-sets the same
+  /// Firestore doc instead of writing a second ledger line. Null
+  /// keeps the old generated id for manual entries.
   Future<FinanceTransferEntity> addTransfer({
     required String shopId,
     required String accountId,
@@ -41,6 +46,7 @@ class FinanceTransferDataSource {
     String? note,
     String? paymentMethod,
     DateTime? createdAt,
+    String? transferId,
   }) async {
     if (kind != 'income' && kind != 'expense') {
       throw ArgumentError("kind must be 'income' or 'expense'");
@@ -48,7 +54,7 @@ class FinanceTransferDataSource {
     if (amountPkr <= 0) {
       throw ArgumentError('Amount must be greater than zero');
     }
-    final id =
+    final id = transferId ??
         'TRF-${DateTime.now().millisecondsSinceEpoch}-${_idSeq++}';
     final canonical = await canonicalShopId(_resolvedFirestore, shopId);
     final model = FinanceTransferModel(
@@ -65,6 +71,12 @@ class FinanceTransferDataSource {
       paymentMethod: paymentMethod,
       createdAt: createdAt ?? DateTime.now(),
     );
+    // Financial audit (2026-11-20): a re-post under an explicit
+    // id (e.g. a partial advance followed by the full verification)
+    // replaces the in-memory entry — the Firestore merge-set
+    // already overwrites the doc, so without this the local list
+    // would hold the same transfer twice.
+    _inMemory.removeWhere((m) => m.transferId == id);
     _inMemory.add(model);
     // Phase B (B1/B4): merge-set + server timestamp; on failure the
     // transfer is queued (persisted) — a money record must never
@@ -99,6 +111,24 @@ class FinanceTransferDataSource {
       }
     }
     return model;
+  }
+
+  /// Financial audit (2026-11-20): whether a deterministic ledger
+  /// id (see [BookingLedgerService]) was already posted — the
+  /// in-memory list first, then the Firestore doc. False on any
+  /// read failure: the caller re-posts with the same id and the
+  /// merge-set still lands exactly once.
+  Future<bool> transferExists(String transferId) async {
+    if (_inMemory.any((m) => m.transferId == transferId)) return true;
+    final fs = _resolvedFirestore;
+    if (fs == null) return false;
+    try {
+      final doc =
+          await fs.collection('finance_transfers').doc(transferId).get();
+      return doc.exists;
+    } catch (_) {
+      return false;
+    }
   }
 
   Future<List<FinanceTransferEntity>> getShopTransfers(

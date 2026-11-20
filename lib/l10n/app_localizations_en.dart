@@ -5468,6 +5468,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get returnPaymentRecordExtraCharges => 'Record Extra Charges';
 
   @override
+  String get returnExtraFareTitle => 'Extra Fare (per-km)';
+
+  @override
+  String get returnExtraFareReceived => 'Extra Fare Received';
+
+  @override
   String get returnReceiptExtraCharges => 'Extra Charges';
 
   @override

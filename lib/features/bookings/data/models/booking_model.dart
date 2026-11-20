@@ -55,6 +55,8 @@ class BookingModel extends BookingEntity {
     super.guarantorRelation,
     super.depositAmountPkr,
     super.discountAmountPkr,
+    super.advancePaymentMethod,
+    super.depositPaymentMethod,
   });
 
   Map<String, dynamic> toMap() {
@@ -103,6 +105,10 @@ class BookingModel extends BookingEntity {
       if (guarantorRelation != null) 'guarantorRelation': guarantorRelation,
       if (depositAmountPkr != null) 'depositAmountPkr': depositAmountPkr,
       if (discountAmountPkr != null) 'discountAmountPkr': discountAmountPkr,
+      if (advancePaymentMethod != null)
+        'advancePaymentMethod': advancePaymentMethod,
+      if (depositPaymentMethod != null)
+        'depositPaymentMethod': depositPaymentMethod,
     };
   }
 
@@ -160,6 +166,8 @@ class BookingModel extends BookingEntity {
       guarantorRelation: map['guarantorRelation'] as String?,
       depositAmountPkr: (map['depositAmountPkr'] as num?)?.toDouble(),
       discountAmountPkr: (map['discountAmountPkr'] as num?)?.toDouble(),
+      advancePaymentMethod: map['advancePaymentMethod'] as String?,
+      depositPaymentMethod: map['depositPaymentMethod'] as String?,
     );
   }
 
@@ -206,6 +214,8 @@ class BookingModel extends BookingEntity {
       guarantorRelation: entity.guarantorRelation,
       depositAmountPkr: entity.depositAmountPkr,
       discountAmountPkr: entity.discountAmountPkr,
+      advancePaymentMethod: entity.advancePaymentMethod,
+      depositPaymentMethod: entity.depositPaymentMethod,
     );
   }
 }

@@ -157,6 +157,7 @@ class _OwnerManualBookingConfirmViewState
         advanceRequired: _advanceRequired, pickupTime: widget.pickupTime, returnTime: widget.returnTime,
         tripType: widget.isOutOfCity ? 'out_of_city' : 'in_city', fixedRoute: widget.fixedRoute, advanceReceived: widget.advanceReceived,
         customerId: widget.customerId, depositAmountPkr: widget.depositAmountPkr, discountAmountPkr: widget.discountAmountPkr,
+        paymentMethod: widget.paymentMethod, depositMethod: widget.depositMethod,
       );
       if (!mounted) return;
       AppFeedback.showSuccess(context, l10n.manualBookingRegistered(booking.bookingId));

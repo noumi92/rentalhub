@@ -3076,6 +3076,8 @@
   "returnPaymentReceived": "Payment Received",
   "returnPaymentUndo": "Undo",
   "returnPaymentRecordExtraCharges": "Record Extra Charges",
+  "returnExtraFareTitle": "Extra Fare (per-km)",
+  "returnExtraFareReceived": "Extra Fare Received",
   "returnReceiptExtraCharges": "Extra Charges",
   "damageTitle": "Record Damage",
   "damageAddPhoto": "Add Photo",

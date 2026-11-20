@@ -76,6 +76,7 @@ import '../../features/finance/data/datasources/finance_account_data_source.dart
 import '../../features/finance/data/datasources/finance_transfer_data_source.dart';
 import '../../features/finance/data/datasources/partner_share_data_source.dart';
 import '../../features/finance/data/datasources/security_deposit_data_source.dart';
+import '../../features/finance/data/services/booking_ledger_service.dart';
 import '../../features/notifications/data/datasources/notification_data_source.dart';
 import '../../features/handover/data/datasources/handover_local_data_source.dart';
 import '../../features/handover/presentation/cubit/handover_cubit.dart';
@@ -324,7 +325,8 @@ Future<void> initDependencies() async {
         blacklist: sl<BlacklistRemoteDataSource>(),
         unverifiedShopGate: UnverifiedShopBookingGate(
             settings: sl<PlatformSettingsRepository>()),
-        syncQueue: sl<OfflineSyncQueue>()),
+        syncQueue: sl<OfflineSyncQueue>(),
+        ledgerService: sl<BookingLedgerService>()),
   );
   sl.registerLazySingleton<BookingRepository>(
     () => BookingRepositoryImpl(
@@ -364,6 +366,16 @@ Future<void> initDependencies() async {
       syncQueue: sl<OfflineSyncQueue>(),
     ),
   );
+  // Financial audit (2026-11-20): the single choke point that
+  // posts booking cash to the ledger. Registered after the
+  // transfer + account sources it posts through; the booking
+  // source above resolves it lazily on first use.
+  sl.registerLazySingleton<BookingLedgerService>(
+    () => BookingLedgerService(
+      transfers: sl<FinanceTransferDataSource>(),
+      accounts: sl<FinanceAccountDataSource>(),
+    ),
+  );
   sl.registerLazySingleton<PartnerShareDataSource>(
     () => PartnerShareDataSource(syncQueue: sl<OfflineSyncQueue>()),
   );
@@ -375,6 +387,8 @@ Future<void> initDependencies() async {
       localDataSource: sl<HandoverLocalDataSource>(),
       storageClient: sl<CPanelStorageClient>(),
       depositDataSource: sl<SecurityDepositDataSource>(),
+      ledgerService: sl<BookingLedgerService>(),
+      bookingDataSource: sl<BookingRemoteDataSource>(),
     ),
   );
 

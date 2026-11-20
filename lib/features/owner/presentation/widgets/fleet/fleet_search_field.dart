@@ -4,19 +4,19 @@ import '../../../../../l10n/app_localizations.dart';
 
 /// Fleet search bar (user layout, 2026-11-18): the white bar under
 /// the navy header — a search TextField (name or plate, actually
-/// filtering the list) on the left, a VerticalDivider, then a compact
-/// Handover QR button on the right, plus an icon-only
-/// Schedule (calendar) button first among them: the fleet calendar
-/// is reachable ONLY from here (the header carries no icons — the
-/// reference design shows title + Add Vehicle pill only). Extracted
+/// filtering the list) with a magnifier prefix icon. Extracted
 /// from [OwnerFleetView] so the view stays under the 250-line cap.
 ///
-/// Showroom redesign (Phase 2, 2026-11-16): Handover QR lives
-/// INSIDE this bar — the quick-actions row loses that button. It is
-/// icon + short text (tooltip carries the label);
-/// [onHandover]/[onSchedule] are null in embeds
-/// that render the field without navigation, and the buttons are then
-/// hidden.
+/// Item 1 (2026-11-20): the Schedule (calendar) and Handover QR
+/// action buttons that used to sit inside this bar are REMOVED —
+/// the user called them duplicates. Both destinations stay
+/// reachable elsewhere, so nothing is orphaned: the fleet calendar
+/// (`/owner/fleet/calendar`) from the Bookings screen app-bar
+/// calendar icon, and the QR scan (`/owner/scan`) from the
+/// Dashboard "Scan QR" quick action, the Bookings app-bar QR icon,
+/// and the booking-confirmed screen. The search field itself (with
+/// its magnifier prefix) is the search affordance, not a duplicate
+/// action, and stays.
 ///
 /// DS-12: the inner TextField carries NO explicit border — its
 /// InputDecoration leaves `border` null and the Theme override below
@@ -25,47 +25,11 @@ import '../../../../../l10n/app_localizations.dart';
 /// the same card language as the rest of the screen.
 class FleetSearchField extends StatelessWidget {
   final ValueChanged<String> onChanged;
-  final VoidCallback? onSchedule;
-  final VoidCallback? onHandover;
 
   const FleetSearchField({
     super.key,
     required this.onChanged,
-    this.onSchedule,
-    this.onHandover,
   });
-
-  Widget _barButton(BuildContext context, {required Key key, required String tooltip, required IconData icon, required String label, required VoidCallback onPressed}) {
-    // Flexible + FittedBox: the button scales its label down
-    // instead of overflowing — at 360px / 1.35x / 200% text scale
-    // the button shares the bar with the search field
-    // (2:1 flex), so nothing here can push the field to zero
-    // width or spill past the bar edge.
-    return Flexible(
-      child: FittedBox(
-        fit: BoxFit.scaleDown,
-        child: Tooltip(
-          message: tooltip,
-          child: TextButton.icon(
-            key: key,
-            onPressed: onPressed,
-            icon: Icon(icon, size: 18),
-            label: Text(
-              label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600),
-            ),
-            style: TextButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 6),
-              minimumSize: const Size(0, 40),
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -81,10 +45,6 @@ class FleetSearchField extends StatelessWidget {
         child: Row(
           children: [
             Expanded(
-              // The field takes twice the flex of each text button,
-              // so the icon-only Schedule button (40dp) never
-              // squeezes it below a usable width at 360px.
-              flex: 2,
               // Borderless inner field: the Theme override renders
               // no input border (DS-12 checks the widget's own
               // decoration.border is null, which still holds — the
@@ -109,22 +69,6 @@ class FleetSearchField extends StatelessWidget {
                 ),
               ),
             ),
-            if (onSchedule != null || onHandover != null) ...[
-              const SizedBox(
-                height: 24,
-                child: VerticalDivider(width: 16, thickness: 1),
-              ),
-              if (onSchedule != null)
-                IconButton(
-                  key: const Key('fleet-action-schedule'),
-                  tooltip: l10n.fleetSchedule,
-                  icon: const Icon(Icons.calendar_month_rounded, size: 20),
-                  onPressed: onSchedule!,
-                  style: IconButton.styleFrom(minimumSize: const Size(40, 40), tapTargetSize: MaterialTapTargetSize.shrinkWrap, padding: const EdgeInsets.all(6)),
-                ),
-              if (onHandover != null)
-                _barButton(context, key: const Key('fleet-action-handover'), tooltip: l10n.fleetHandoverQr, icon: Icons.qr_code_scanner_rounded, label: l10n.fleetHandoverQr, onPressed: onHandover!),
-            ],
           ],
         ),
       ),

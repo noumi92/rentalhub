@@ -6,6 +6,22 @@ import '../domain/entities/finance_transfer_entity.dart';
 /// period totals and per-car P&L, all computed from the ledger and
 /// the bookings so the numbers can never disagree with the data.
 class FinanceSummary {
+  /// Financial audit (2026-11-20): a ledger entry that IS booking
+  /// revenue — rent / advance income tagged to a booking. The
+  /// booking's full total is already counted as revenue once the
+  /// booking is paid / active / completed ([vehiclePnL] and the
+  /// P&L report), so counting the tagged cash again as ledger
+  /// income would double-count every auto-posted advance and
+  /// balance. These entries still count in account balances and
+  /// cash closing (the cash really arrived) — they are excluded
+  /// only from the P&L income figures. Untagged rent / advance
+  /// (manual entries with no booking) still count as income, and
+  /// 'deposit' entries are untouched: a deposit is not booking
+  /// revenue, it is cash held until the refund expense nets it.
+  static bool isBookingRevenueTransfer(FinanceTransferEntity t) =>
+      t.bookingId != null &&
+      (t.category == 'rent' || t.category == 'advance');
+
   /// The live balance of one account: its opening balance plus
   /// every transfer posted to it.
   static int accountBalance(
@@ -31,6 +47,10 @@ class FinanceSummary {
       if (from != null && t.createdAt.isBefore(from)) continue;
       if (to != null && !t.createdAt.isBefore(to)) continue;
       if (t.kind == 'income') {
+        // Booking revenue is counted once, from the bookings —
+        // never again from the tagged cash (see
+        // [isBookingRevenueTransfer]).
+        if (isBookingRevenueTransfer(t)) continue;
         income += t.amountPkr;
       } else {
         expenses += t.amountPkr;
@@ -54,6 +74,10 @@ class FinanceSummary {
       if (t.kind != kind) continue;
       if (from != null && t.createdAt.isBefore(from)) continue;
       if (to != null && !t.createdAt.isBefore(to)) continue;
+      // The breakdown feeds the P&L report, so booking-tagged
+      // rent / advance stays out of the income rows for the same
+      // reason as [periodTotals] — it is already booking revenue.
+      if (kind == 'income' && isBookingRevenueTransfer(t)) continue;
       totals[t.category] = (totals[t.category] ?? 0) + t.amountPkr;
     }
     return totals;
@@ -75,8 +99,9 @@ class FinanceSummary {
                 b.status == 'active'))
         .fold<int>(0, (total, b) => total + b.totalAmount);
     final tagged = transfers.where((t) => t.vehicleId == vehicleId);
-    final income =
-        tagged.where((t) => t.kind == 'income').fold<int>(0, (total, t) => total + t.amountPkr);
+    final income = tagged
+        .where((t) => t.kind == 'income' && !isBookingRevenueTransfer(t))
+        .fold<int>(0, (total, t) => total + t.amountPkr);
     final expenses = tagged
         .where((t) => t.kind == 'expense')
         .fold<int>(0, (total, t) => total + t.amountPkr);

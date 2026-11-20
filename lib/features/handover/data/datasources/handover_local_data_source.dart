@@ -45,6 +45,10 @@ class HandoverLocalDataSource {
         // and read back as null).
         'balance_due_pkr': handover.balanceDuePkr,
         'balance_payment_method': handover.balancePaymentMethod,
+        // Financial audit (2026-11-20): whether the balance was
+        // actually received — without it the offline record cannot
+        // tell a collected balance from an uncollected one.
+        'balance_received': handover.balanceReceived,
         'photo_front_url': handover.photoFrontUrl,
         'photo_back_url': handover.photoBackUrl,
         'photo_left_url': handover.photoLeftUrl,
@@ -97,6 +101,7 @@ class HandoverLocalDataSource {
       totalAmount: d['total_amount'],
       balanceDuePkr: (d['balance_due_pkr'] as num?)?.toInt(),
       balancePaymentMethod: d['balance_payment_method'] as String?,
+      balanceReceived: d['balance_received'] as bool?,
       photoFrontUrl: d['photo_front_url'] as String?,
       photoBackUrl: d['photo_back_url'] as String?,
       photoLeftUrl: d['photo_left_url'] as String?,
