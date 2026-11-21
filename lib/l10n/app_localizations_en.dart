@@ -592,7 +592,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get summaryKmIncluded => 'KM Included';
 
   @override
-  String get summarySecurityDeposit => 'Security Deposit';
+  String get summarySecurityDeposit => 'Security';
 
   @override
   String get summaryTotalFare => 'Total Rental Fare';
@@ -608,7 +608,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get walletActiveEscrow =>
-      'Total with shop: advances paid + deposit held';
+      'Total with shop: advances paid + Security held';
 
   @override
   String get walletAdvancesPaid => 'Advances Paid';
@@ -632,11 +632,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get walletShowBalance => 'Show balance';
 
   @override
-  String get walletEmptyHint => 'Advances and deposits will appear here.';
+  String get walletEmptyHint => 'Advances and Security will appear here.';
 
   @override
   String get walletLedgerEmptyHint =>
-      'Advances you pay and deposits you leave will appear here.';
+      'Advances you pay and Security you leave will appear here.';
 
   @override
   String get walletLoadError =>
@@ -647,6 +647,68 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get walletNoActivity => 'No wallet activity yet.';
+
+  @override
+  String walletEntrySecurityHeld(String vehicle, String booking) {
+    return 'Security held — $vehicle ($booking)';
+  }
+
+  @override
+  String walletEntrySecurityReleased(String vehicle, String booking) {
+    return 'Security released — $vehicle ($booking)';
+  }
+
+  @override
+  String walletEntrySecurityReleasedCancel(String vehicle, String booking) {
+    return 'Security released on cancellation — $vehicle ($booking)';
+  }
+
+  @override
+  String walletEntrySecurityDeducted(String vehicle, String booking) {
+    return 'Security deduction — $vehicle ($booking)';
+  }
+
+  @override
+  String walletEntrySecurityRefunded(String vehicle, String booking) {
+    return 'Security refund — $vehicle ($booking)';
+  }
+
+  @override
+  String walletEntrySecurityOwed(String vehicle, String booking) {
+    return 'Security still owed — $vehicle ($booking)';
+  }
+
+  @override
+  String get walletSecuritySection => 'Security';
+
+  @override
+  String get walletSecurityHeld => 'Held';
+
+  @override
+  String get walletSecurityReleased => 'Released';
+
+  @override
+  String get walletSecurityDeducted => 'Deducted';
+
+  @override
+  String get walletSecurityRefunded => 'Refunded';
+
+  @override
+  String get walletSecurityOwed => 'Still owed';
+
+  @override
+  String get ownerSecurityWalletTitle => 'Security wallet';
+
+  @override
+  String get ownerSecurityWalletOnline =>
+      'Online customers manage their own Security wallet.';
+
+  @override
+  String get customerDetailSecurityWallet => 'Security wallet';
+
+  @override
+  String get ownerSecurityWalletEmpty =>
+      'No Security activity for this customer yet.';
 
   @override
   String get profileTotalTrips => 'Total Trips';
@@ -792,7 +854,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get supportDisputeHint =>
-      'Overcharged or deposit withheld? File an arbitration claim.';
+      'Overcharged or Security withheld? File an arbitration claim.';
 
   @override
   String get supportFaqTitle => 'Frequently Asked Questions';
@@ -819,11 +881,11 @@ class AppLocalizationsEn extends AppLocalizations {
       'Your advance payment locks the vehicle exclusively for your scheduled time and guarantees showroom reservation. It is safely recorded and deducted from your final bill.';
 
   @override
-  String get supportFaqQ2 => 'When is my security deposit returned?';
+  String get supportFaqQ2 => 'When is my Security returned?';
 
   @override
   String get supportFaqA2 =>
-      'The deposit is settled at return handover. Any deduction for excess kilometres, fuel or damage is shown on the settlement, and the rest is released to you.';
+      'The Security is settled at return handover. Any deduction for excess kilometres, fuel or damage is shown on the settlement, and the rest is released to you.';
 
   @override
   String get supportFaqQ3 => 'What happens if a vehicle breaks down?';
@@ -921,7 +983,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get disputeTitle => 'File Complaint / Dispute';
 
   @override
-  String get disputeDepositWithheld => 'Deposit Withheld';
+  String get disputeDepositWithheld => 'Security Withheld';
 
   @override
   String get disputeOvercharge => 'Showroom Overcharge';
@@ -1002,7 +1064,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cancelNoAdvanceNote =>
-      'No advance has been paid yet, so there is nothing to refund. No security deposit was collected: deposits are only taken at handover.';
+      'No advance has been paid yet, so there is nothing to refund. If a Security was collected, it will be refunded in full.';
 
   @override
   String get cancelDone => 'Reservation cancelled.';
@@ -1354,7 +1416,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get passOpenAgreementError => 'Could not open the agreement.';
 
   @override
-  String get driverRequiresCnic => 'Requires CNIC + Deposit';
+  String get driverRequiresCnic => 'Requires CNIC + Security';
 
   @override
   String get driverVerifiedIncluded => 'Verified Driver Included';
@@ -1640,7 +1702,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get advanceNoticeSelfDrive =>
-      '• Original NADRA CNIC & valid Driving License required at handover.\n• Advance confirms vehicle booking lock with showroom.\n• Refundable security deposit collected digitally or in cash at handover.';
+      '• Original NADRA CNIC & valid Driving License required at handover.\n• Advance confirms vehicle booking lock with showroom.\n• Refundable Security collected digitally or in cash at handover.';
 
   @override
   String get ticketShowCode =>
@@ -1738,7 +1800,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String vehicleSelectedMode(String mode) {
-    return 'Selected: $mode. Advance deposit required.';
+    return 'Selected: $mode. Security required in advance.';
   }
 
   @override
@@ -1859,7 +1921,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String cancelAdvancePaid(String amount) {
-    return 'You paid Rs. $amount advance directly to the showroom\'s account — the showroom decides the refund, so contact them about it. No security deposit was collected: deposits are only taken at handover.';
+    return 'You paid Rs. $amount advance directly to the showroom\'s account — the showroom decides the refund, so contact them about it. If a Security was collected, it will be refunded in full.';
   }
 
   @override
@@ -1908,7 +1970,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String successBody(String vehicle, String shop) {
-    return 'Your reservation request for $vehicle has been delivered to $shop. Once approved, you will be notified to submit the advance deposit.';
+    return 'Your reservation request for $vehicle has been delivered to $shop. Once approved, you will be notified to submit the advance Security.';
   }
 
   @override
@@ -1938,7 +2000,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String packageSecurityDeposit(String amount) {
-    return 'Security Deposit: Rs. $amount';
+    return 'Security: Rs. $amount';
   }
 
   @override
@@ -2175,7 +2237,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String dashboardSettleRate(int percent) {
-    return '$percent% deposits settled';
+    return '$percent% Security settled';
   }
 
   @override
@@ -2495,7 +2557,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addVehicleStep2Subtitle => '4-angle photos, book & excise tax';
 
   @override
-  String get addVehicleStep3Subtitle => 'Hourly rates, deposit & fuel policy';
+  String get addVehicleStep3Subtitle => 'Hourly rates, Security & fuel policy';
 
   @override
   String get addVehicleStep4Subtitle => 'Verify vehicle details before listing';
@@ -2663,17 +2725,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addVehicleWithDriverHint => 'Shop provides experienced chauffeur';
 
   @override
-  String get addVehicleDriverAllowance => 'Driver Daily Allowance:';
-
-  @override
   String get addVehiclePerDaySuffix => '/day';
 
   @override
-  String get addVehicleDepositPolicies => 'Security Deposit & Rental Policies';
+  String get addVehicleDepositPolicies => 'Security & Rental Policies';
 
   @override
-  String get addVehicleSecurityDepositSelfDrive =>
-      'Security Deposit (Self-Drive)';
+  String get addVehicleSecurityDepositSelfDrive => 'Security (Self-Drive)';
 
   @override
   String get addVehicleSecurityDepositHint =>
@@ -2738,7 +2796,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get addVehicleReviewDeposit => 'Deposit';
+  String get addVehicleReviewDeposit => 'Security';
 
   @override
   String get addVehicleReviewAdvance => 'Advance';
@@ -2801,8 +2859,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pricingSelfDriveAllowed => 'Self-Drive Allowed';
 
   @override
-  String get pricingSelfDriveHint =>
-      'Requires original NADRA CNIC + security deposit';
+  String get pricingSelfDriveHint => 'Requires original NADRA CNIC + Security';
 
   @override
   String get pricingChauffeurAllowed => 'Chauffeur Service Allowed';
@@ -2840,14 +2897,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pricingOutOfCityDailyCap => '300 km included + tracker cleared';
 
   @override
-  String get pricingWithDriverSurcharge => 'With-Driver Surcharge (per day)';
-
-  @override
-  String get pricingWithDriverSurchargeCap =>
-      'Added on top of the package price';
-
-  @override
-  String get pricingSecurityDeposit => 'Security Deposit';
+  String get pricingSecurityDeposit => 'Security';
 
   @override
   String get pricingSecurityDepositCap => 'Refundable after return inspection';
@@ -3339,7 +3389,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get financeCategoryPartnerShare => 'Partner share';
 
   @override
-  String get financeCategoryDepositRefund => 'Deposit refund';
+  String get financeCategoryDepositRefund => 'Security refund';
 
   @override
   String get financeCategoryLabel => 'Category';
@@ -3390,7 +3440,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get financeAccountFallback => 'Account';
 
   @override
-  String get financeSecurityDeposits => 'Security Deposits';
+  String get financeSecurityDeposits => 'Security';
 
   @override
   String get financeDepositsHeld => 'Held now';
@@ -3406,8 +3456,8 @@ class AppLocalizationsEn extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count deposits',
-      one: '$count deposit',
+      other: '$count Security',
+      one: '$count Security',
     );
     return '$_temp0';
   }
@@ -3734,7 +3784,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String returnSettled(String refund) {
-    return 'Vehicle returned! Deposit settled — Rs. $refund refunded.';
+    return 'Vehicle returned! Security settled — Rs. $refund refunded.';
   }
 
   @override
@@ -3762,10 +3812,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get returnFinalizing => 'Finalizing Settlement...';
 
   @override
-  String get returnFinalize => 'Finalize Return & Settle Deposit';
+  String get returnFinalize => 'Finalize Return & Settle Security';
 
   @override
-  String get returnReceiptTitle => 'Deposit & Return Balance Settlement';
+  String get returnReceiptTitle => 'Security & Return Balance Settlement';
 
   @override
   String get returnReceiptTotalKm => 'Total Kilometers Driven';
@@ -3788,7 +3838,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get returnReceiptDamage => 'Damage Found at Return';
 
   @override
-  String get returnReceiptDepositHeld => 'Initial Security Deposit Held';
+  String get returnReceiptDepositHeld => 'Initial Security Held';
 
   @override
   String get returnReceiptTotalDeductions =>
@@ -3883,7 +3933,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get contractFieldTotalPaid => 'Total Rental Paid:';
 
   @override
-  String get contractFieldDeposit => 'Security Deposit:';
+  String get contractFieldDeposit => 'Security:';
 
   @override
   String get contractWalkInCustomer => 'Walk-in Customer';
@@ -4086,7 +4136,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get manualBookingDepositLabel => 'Security Deposit (Rs.)';
+  String get manualBookingDepositLabel => 'Security (Rs.)';
 
   @override
   String get manualBookingGuarantorNotFound =>
@@ -4323,7 +4373,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onboardingPayoutSubtitle =>
-      'Select at least one payout channel to receive rental bookings and customer advance deposits.';
+      'Select at least one payout channel to receive rental bookings and customer advance Security.';
 
   @override
   String get onboardingJazzCashTitle => 'JazzCash Mobile Account';
@@ -5206,6 +5256,38 @@ class AppLocalizationsEn extends AppLocalizations {
   String get bookingSearchHint => 'Search name, phone, car or booking #';
 
   @override
+  String get bookingSettingsTitle => 'Booking Settings';
+
+  @override
+  String get bookingSettingsSubtitle => 'Driver rate for the whole shop';
+
+  @override
+  String get bookingSettingsDriverRate => 'Driver rate (per day)';
+
+  @override
+  String get bookingSettingsDriverRateNote =>
+      'Charged on top of the package price whenever a trip has a driver. Leave empty for no driver charge.';
+
+  @override
+  String get bookingSettingsDriverRateUnset =>
+      'Not set — trips with a driver add no extra charge.';
+
+  @override
+  String get bookingSettingsSaved => 'Booking settings saved.';
+
+  @override
+  String get bookingSettingsLoadError =>
+      'Could not load booking settings. Check your connection and try again.';
+
+  @override
+  String get bookingSettingsEmpty =>
+      'Booking settings are not available right now.';
+
+  @override
+  String get bookingSettingsInvalidRate =>
+      'Enter a valid driver rate (0 or more).';
+
+  @override
   String get bookingEmptyRejected => 'No rejected requests';
 
   @override
@@ -5360,7 +5442,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get contractTerm9 =>
-      '9. The security deposit is refunded after inspection at return, less any damage or extra-kilometre charges.';
+      '9. The Security is refunded after inspection at return, less any damage or extra-kilometre charges.';
 
   @override
   String get contractTerm10 => '10. Both parties agree to the terms above.';
@@ -5528,7 +5610,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get damageRepairCostHint => 'e.g. 5000';
 
   @override
-  String get damageDeductFromDeposit => 'Deduct from Deposit';
+  String get damageDeductFromDeposit => 'Deduct from Security';
 
   @override
   String get damageSave => 'Save';
@@ -6429,7 +6511,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get estimateDeposit => 'Security deposit';
+  String get estimateDeposit => 'Security';
 
   @override
   String get estimateHint =>
@@ -6480,7 +6562,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get vehicleDetailRatesTitle => 'Rates';
 
   @override
-  String get vehicleDetailDeposit => 'Security deposit';
+  String get vehicleDetailDeposit => 'Security';
 
   @override
   String get vehicleDetailFareTable => 'Fare table';
@@ -6878,7 +6960,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get creditsToggleReturn => 'Return reminder & late warning';
 
   @override
-  String get creditsToggleDeposit => 'Deposit refunded';
+  String get creditsToggleDeposit => 'Security refunded';
 
   @override
   String get creditsToggleDues => 'Dues reminder';
@@ -7257,16 +7339,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get customersViewProfile => 'View Profile';
 
   @override
-  String get returnRefundDeposit => 'Refund Deposit';
+  String get returnRefundDeposit => 'Refund Security';
 
   @override
   String returnRefundRecorded(String amount) {
-    return 'Deposit refund of Rs. $amount recorded.';
+    return 'Security refund of Rs. $amount recorded.';
   }
 
   @override
   String get returnRefundFailed =>
-      'Could not record the deposit refund. Please try again.';
+      'Could not record the Security refund. Please try again.';
 
   @override
   String get returnRecordingRefund => 'Recording refund…';
@@ -7348,7 +7430,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get legalTermsBody =>
-      'RentalHub Terms of Service\n\n1. What RentalHub is\nRentalHub is a car rental marketplace in Pakistan that connects vehicle owners (shops) with customers. Owners list their vehicles and set their own rates; customers book through the app.\n\n2. Your account\nYou are responsible for keeping your sign-in details safe and for everything done with your account. Give true information about yourself, your shop and your vehicles.\n\n3. Bookings and payments\nBooking prices are set by the vehicle owner. Payments, advances and security deposits follow the terms shown at booking time. A booking can be cancelled under the cancellation terms shown for that booking.\n\n4. Your responsibilities\nOwners must keep their vehicles roadworthy, insured and legally registered, and must honour confirmed bookings. Customers must return vehicles on time, in the condition received, and pay any agreed extra charges for damage, late return or extra kilometres.\n\n5. Prohibited use\nDo not use RentalHub for anything unlawful, do not list a vehicle you do not have the right to rent out, and do not share another person\'s personal information without their permission.\n\n6. Liability\nRentalHub provides the marketplace and the booking tools. Owners and customers are responsible for their own vehicles, driving and agreements with each other. To the extent allowed by law, RentalHub is not liable for loss or damage arising from a rental between an owner and a customer.\n\n7. Changes and contact\nWe may update these terms and will show the current version in the app. Questions: contact RentalHub support from the Help section in the app.';
+      'RentalHub Terms of Service\n\n1. What RentalHub is\nRentalHub is a car rental marketplace in Pakistan that connects vehicle owners (shops) with customers. Owners list their vehicles and set their own rates; customers book through the app.\n\n2. Your account\nYou are responsible for keeping your sign-in details safe and for everything done with your account. Give true information about yourself, your shop and your vehicles.\n\n3. Bookings and payments\nBooking prices are set by the vehicle owner. Payments, advances and Security follow the terms shown at booking time. A booking can be cancelled under the cancellation terms shown for that booking.\n\n4. Your responsibilities\nOwners must keep their vehicles roadworthy, insured and legally registered, and must honour confirmed bookings. Customers must return vehicles on time, in the condition received, and pay any agreed extra charges for damage, late return or extra kilometres.\n\n5. Prohibited use\nDo not use RentalHub for anything unlawful, do not list a vehicle you do not have the right to rent out, and do not share another person\'s personal information without their permission.\n\n6. Liability\nRentalHub provides the marketplace and the booking tools. Owners and customers are responsible for their own vehicles, driving and agreements with each other. To the extent allowed by law, RentalHub is not liable for loss or damage arising from a rental between an owner and a customer.\n\n7. Changes and contact\nWe may update these terms and will show the current version in the app. Questions: contact RentalHub support from the Help section in the app.';
 
   @override
   String get legalPrivacyBody =>
@@ -8887,7 +8969,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get admin2_settingsNumbersInvalid =>
-      'Advance %, deposit and late grace must be numbers.';
+      'Advance %, Security and late grace must be numbers.';
 
   @override
   String get admin2_settingsSaved => 'Platform settings saved.';
@@ -8902,7 +8984,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get admin2_settingsAdvance => 'Advance %';
 
   @override
-  String get admin2_settingsDeposit => 'Default deposit (Rs.)';
+  String get admin2_settingsDeposit => 'Default Security (Rs.)';
 
   @override
   String get admin2_settingsGrace => 'Late grace (minutes)';
@@ -9073,7 +9155,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get admin2_disputeNoShopStatement =>
-      'The shop has no written statement on file — the decision uses the booking, handover and deposit records.';
+      'The shop has no written statement on file — the decision uses the booking, handover and Security records.';
 
   @override
   String get admin2_disputeDecisionHeading => 'Decision';
@@ -9185,7 +9267,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get admin2_bookingDetailPaymentDeposit => 'Payment & deposit';
+  String get admin2_bookingDetailPaymentDeposit => 'Payment & Security';
 
   @override
   String admin2_bookingDetailPaymentProof(String url) {
@@ -9193,11 +9275,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get admin2_bookingDetailNoDeposit => 'No deposit record.';
+  String get admin2_bookingDetailNoDeposit => 'No Security record.';
 
   @override
   String admin2_bookingDetailDeposit(String amount, String status) {
-    return 'Deposit $amount — $status';
+    return 'Security $amount — $status';
   }
 
   @override
@@ -9297,7 +9379,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get admin2_carReviewWeekly => 'Weekly rate';
 
   @override
-  String get admin2_carReviewDeposit => 'Security deposit';
+  String get admin2_carReviewDeposit => 'Security';
 
   @override
   String get admin2_carReviewTracker => 'Tracker';
@@ -9630,7 +9712,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Advance must be between 0 and 100.';
 
   @override
-  String get admin2_settingsDepositNegative => 'Deposit cannot be negative.';
+  String get admin2_settingsDepositNegative => 'Security cannot be negative.';
 
   @override
   String get admin2_settingsGraceNegative => 'Late grace cannot be negative.';
@@ -9695,7 +9777,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String admin2_bookingDetailDepositDeducted(
       String amount, String status, String deducted) {
-    return 'Deposit $amount — $status (deducted $deducted)';
+    return 'Security $amount — $status (deducted $deducted)';
   }
 
   @override
@@ -9796,11 +9878,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get admin2_bookingSummaryDepositNone => 'Deposit: none';
+  String get admin2_bookingSummaryDepositNone => 'Security: none';
 
   @override
   String admin2_bookingSummaryDeposit(String amount, String status) {
-    return 'Deposit: $amount ($status)';
+    return 'Security: $amount ($status)';
   }
 
   @override
@@ -9884,7 +9966,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get depositRefundTerms =>
-      'Deposit refunded after return inspection, minus damage and excess-km charges.';
+      'Security refunded after return inspection, minus damage and excess-km charges.';
 
   @override
   String disputeLastUpdated(String date) {
@@ -9995,10 +10077,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get manualBookingPaidNow => 'Paid now';
 
   @override
-  String get manualBookingDepositReceived => 'Deposit received';
+  String get manualBookingDepositReceived => 'Security received';
 
   @override
-  String get manualBookingDepositMethod => 'Deposit method';
+  String get manualBookingDepositMethod => 'Security method';
 
   @override
   String get manualBookingRemainingDues => 'Remaining Dues';
@@ -10251,7 +10333,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String vehicleDepositCnic(String amount) {
-    return 'Security Deposit: $amount + Original NADRA CNIC guarantee required at pickup';
+    return 'Security: $amount + Original NADRA CNIC guarantee required at pickup';
   }
 
   @override
@@ -10339,7 +10421,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String approveAssignDepositPickup(String amount) {
-    return 'Refundable deposit at pickup: $amount';
+    return 'Refundable Security at pickup: $amount';
   }
 
   @override
@@ -10415,10 +10497,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get handoverWizardAdvancePaid => 'Advance (paid online)';
 
   @override
-  String get handoverWizardDepositMethod => 'Deposit method';
+  String get handoverWizardDepositMethod => 'Security method';
 
   @override
-  String get handoverWizardDepositReceived => 'Deposit received';
+  String get handoverWizardDepositReceived => 'Security received';
 
   @override
   String get handoverWizardBalanceReceived => 'Balance received';
@@ -10440,7 +10522,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String handoverWizardReceiptMessage(String receipt, String vehicle,
       String total, String advance, String balance, String deposit) {
-    return 'Handover receipt $receipt for $vehicle: total Rs. $total, advance Rs. $advance, balance Rs. $balance, deposit Rs. $deposit. — RentalHub';
+    return 'Handover receipt $receipt for $vehicle: total Rs. $total, advance Rs. $advance, balance Rs. $balance, Security Rs. $deposit. — RentalHub';
   }
 
   @override
@@ -10496,7 +10578,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get handoverWizardDepositMethodRequired =>
-      'Choose how the deposit was collected before continuing.';
+      'Choose how the Security was collected before continuing.';
 
   @override
   String get handoverWizardChecklistRequired =>

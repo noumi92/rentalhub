@@ -390,7 +390,7 @@ class HandoverCubit extends Cubit<HandoverState> {
           category: 'deposit',
           amount: securityDeposit,
           paymentMethod: depositPaymentMethod,
-          note: 'Security deposit for $bookingId',
+          note: 'Security collected for $bookingId',
         );
       } catch (_) {}
     }

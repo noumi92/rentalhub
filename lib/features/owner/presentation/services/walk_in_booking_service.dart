@@ -162,7 +162,7 @@ class WalkInBookingService {
           category: 'deposit',
           amount: deposit.round(),
           paymentMethod: depositMethod,
-          note: 'Security deposit for ${booking.bookingId}',
+          note: 'Security collected for ${booking.bookingId}',
         );
       } catch (_) {}
     }

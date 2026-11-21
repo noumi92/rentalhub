@@ -5,6 +5,8 @@ import '../../../../../core/widgets/pakistani_plate_widget.dart';
 import '../../../../fleet/domain/entities/vehicle_entity.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../../core/utils/money_format.dart';
+import '../../../../bookings/data/datasources/booking_settings_data_source.dart';
+import 'vehicle_driver_rate_text.dart';
 import 'vehicle_image_asset.dart';
 
 /// B3: one car card on the shop's fleet screen, converted from MockVehicle
@@ -14,10 +16,16 @@ class CustomerVehicleCard extends StatelessWidget {
   final VehicleEntity vehicle;
   final VoidCallback onTap;
 
+  /// Worker 3 (2026-11-21): test seam — forwarded to
+  /// [VehicleDriverRateText], which loads the shop's booking-settings
+  /// driver rate for the with-driver daily rate.
+  final BookingSettingsDataSource? settingsDataSource;
+
   const CustomerVehicleCard({
     super.key,
     required this.vehicle,
     required this.onTap,
+    this.settingsDataSource,
   });
 
   // FG-2 (UI/UX audit 2026-11-15): the make/model → asset mapping
@@ -188,12 +196,12 @@ class CustomerVehicleCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 8),
                       Flexible(
-                        child: Text(
-                          l10n.vehicleDriverRate(formatRs(v.rates.daily24 + (v.withDriverSurchargePkr ?? 0))),
+                        child: VehicleDriverRateText(
+                          vehicle: v,
                           style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500, color: AppColors.orangeTextFor(Theme.of(context).brightness)),
                           maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
                           textAlign: TextAlign.end,
+                          settingsDataSource: settingsDataSource,
                         ),
                       ),
                     ],

@@ -32,7 +32,7 @@ class PdfContractGenerator {
     '6. Damage is charged as per inspection at return.',
     '7. The owner is not liable for personal belongings left in the vehicle.',
     '8. This agreement is governed by the laws of Pakistan.',
-    '9. The security deposit is refunded after inspection at return, less any damage or extra-kilometre charges.',
+    '9. The Security is refunded after inspection at return, less any damage or extra-kilometre charges.',
     '10. Both parties agree to the terms above.',
   ];
 
@@ -224,7 +224,7 @@ class PdfContractGenerator {
                     tollsPaidBy == 'included' ? 'Included in rent' : 'Paid by customer'),
               row('Advance paid:', 'Rs. ${formatRs(advancePaid)}'),
               row('Remaining:', 'Rs. ${formatRs(totalAmount - advancePaid)}'),
-              row('Security deposit:',
+              row('Security:',
                   'Rs. ${formatRs(securityDeposit)} (refundable)'),
               pw.SizedBox(height: 8),
               pw.Text('Handover Inspection', style: heading),

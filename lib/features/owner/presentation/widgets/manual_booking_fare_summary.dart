@@ -26,6 +26,7 @@ class ManualBookingFareSummary extends StatelessWidget {
     required this.customerName,
     required this.advanceReceived,
     this.fixedRoute,
+    this.driverRatePerDayPkr,
   });
 
   final VehicleEntity vehicle;
@@ -39,6 +40,10 @@ class ManualBookingFareSummary extends StatelessWidget {
   /// 09b §2: the fixed route chosen for this out-of-city trip.
   final FixedRouteEntity? fixedRoute;
 
+  /// Worker A (2026-11-21): the shop's booking-settings driver
+  /// rate (Rs/day). Null (unset) charges Rs. 0.
+  final int? driverRatePerDayPkr;
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -49,6 +54,7 @@ class ManualBookingFareSummary extends StatelessWidget {
       isWithDriver: isWithDriver,
       isOutOfCity: isOutOfCity,
       fixedRoute: fixedRoute,
+      driverRatePerDayPkr: driverRatePerDayPkr,
     );
     final total = ManualBookingPackageSelector.totalFor(
       vehicle: vehicle,
@@ -58,6 +64,7 @@ class ManualBookingFareSummary extends StatelessWidget {
       pickup: pickupTime,
       returnTime: returnTime,
       fixedRoute: fixedRoute,
+      driverRatePerDayPkr: driverRatePerDayPkr,
     );
     final days = dayCountBetween(pickupTime, returnTime);
     final advanceRequired =

@@ -14,11 +14,20 @@ class VehicleDetailPackages extends StatelessWidget {
     required this.vehicle,
     required this.withDriver,
     required this.onDriveModeChanged,
+    this.driverRatePerDayPkr,
   });
 
   final VehicleEntity vehicle;
   final bool withDriver;
   final ValueChanged<bool> onDriveModeChanged;
+
+  /// Worker 3 (2026-11-21): the shop's booking-settings driver rate
+  /// (Rs/day), loaded by the parent [VehicleDetailView] from
+  /// `booking_settings/{shopId}`. Null while the parent is still
+  /// loading or when the shop never set a rate: the with-driver
+  /// package price falls back to the self-drive rate (no surcharge).
+  /// The vehicle's stored `withDriverSurchargePkr` is never read.
+  final int? driverRatePerDayPkr;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +35,7 @@ class VehicleDetailPackages extends StatelessWidget {
     final v = vehicle;
     final selfDriveRate = v.rates.daily24;
     final withDriverRate =
-        v.rates.daily24 + (v.withDriverSurchargePkr ?? 0);
+        v.rates.daily24 + (driverRatePerDayPkr ?? 0);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

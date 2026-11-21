@@ -8,6 +8,7 @@ import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/debounced_button.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../bookings/data/datasources/booking_settings_data_source.dart';
 import '../../../fleet/data/datasources/fleet_remote_data_source.dart';
 import '../../../fleet/domain/entities/vehicle_entity.dart';
 import '../widgets/manual_booking_car_step.dart';
@@ -62,6 +63,10 @@ class _OwnerManualBookingViewState extends State<OwnerManualBookingView> {
   List<VehicleEntity> _vehicles = [];
   bool _isLoadingVehicles = true;
   String? _vehiclesError;
+  // Worker A (2026-11-21): the shop's booking-settings driver rate
+  // (Rs/day) — the only source for the driver surcharge in step 2
+  // and in the draft's money math. Loaded once; null charges Rs. 0.
+  int? _driverRatePerDayPkr;
 
   @override
   void initState() {
@@ -72,6 +77,7 @@ class _OwnerManualBookingViewState extends State<OwnerManualBookingView> {
       isOutOfCity: widget.prefilledTripType == 'out_of_city',
     )..returnEdited = widget.prefilledReturnTime != null;
     _loadVehicles();
+    BookingSettingsDataSource().getSettings(currentShopId()).then((s) { if (mounted) setState(() { _driverRatePerDayPkr = s.driverRatePerDayPkr; _draft.driverRatePerDayPkr = s.driverRatePerDayPkr; }); });
   }
 
   @override
@@ -225,6 +231,7 @@ class _OwnerManualBookingViewState extends State<OwnerManualBookingView> {
           onTripTypeChanged: (v) => setState(() => _draft.isOutOfCity = v),
           selectedFixedRoute: _draft.selectedRoute, onFixedRouteChanged: (r) => setState(() => _draft.selectedRoute = r),
           onAvailabilityChanged: (free) => _draft.carFree = free,
+          driverRatePerDayPkr: _driverRatePerDayPkr,
         );
       default:
         return ManualBookingPaymentStep(

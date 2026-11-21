@@ -98,6 +98,10 @@ class RouteNames {
   // only — the route refuses online records). 4 segments, so it
   // cannot collide with the 3-segment detail route above.
   static const String ownerCustomerEdit = '/owner/customers/:id/edit';
+  // Customer Security wallet (Worker C): the shop-managed Security
+  // view for one walk-in customer. 4 segments, like the edit route.
+  static const String ownerCustomerSecurityWallet =
+      '/owner/customers/:id/security-wallet';
   static const String ownerCustomerAdded = '/owner/customers/added/:id';
   static const String ownerBlacklist = '/owner/blacklist';
   static const String ownerSubscription = '/owner/subscription';
@@ -122,6 +126,7 @@ class RouteNames {
   static const String ownerCustomerStatement =
       '/owner/finance/statement/:customerId';
   static const String ownerFinanceSettings = '/owner/finance/settings';
+  static const String ownerBookingSettings = '/owner/settings/booking';
   static const String ownerFinanceCategories = '/owner/finance/categories';
   static const String ownerDues = '/owner/finance/dues';
   static const String ownerCashClosing = '/owner/finance/closing';

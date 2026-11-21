@@ -339,6 +339,7 @@ void main() {
           tier: daily,
           durationDays: 2,
           isWithDriver: true,
+          driverRatePerDayPkr: 1500,
         ),
         21000, // (9000 + 1500) x 2
       );

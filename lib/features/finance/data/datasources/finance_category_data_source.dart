@@ -36,7 +36,7 @@ class FinanceCategoryDataSource {
     'income': [
       ('rent', 'Rent'),
       ('advance', 'Advance'),
-      ('deposit', 'Deposit'),
+      ('deposit', 'Security'),
       ('other', 'Other'),
     ],
     'expense': [
@@ -45,7 +45,7 @@ class FinanceCategoryDataSource {
       ('wash', 'Wash'),
       ('salary', 'Salary'),
       ('partner_share', 'Partner share'),
-      ('deposit_refund', 'Deposit refund'),
+      ('deposit_refund', 'Security refund'),
       ('other', 'Other'),
     ],
   };

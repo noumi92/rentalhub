@@ -64,10 +64,20 @@ void main() {
 
     test('with driver charges the full surcharge (24h)', () {
       final draft = draftFor('24h', true);
+      // Worker A (2026-11-21): the charge comes from the shop's
+      // booking-settings rate, not the vehicle's stored 1500.
+      draft.driverRatePerDayPkr = 1500;
       expect(draft.rentAmount, 6000);
       expect(draft.driverAmount, 1500);
       expect(draft.total, 7500);
       expect(draft.advanceRequired, 1875);
+    });
+
+    test('with driver and no setting rate charges nothing (24h)', () {
+      final draft = draftFor('24h', true);
+      expect(draft.rentAmount, 6000);
+      expect(draft.driverAmount, 0);
+      expect(draft.total, 6000);
     });
 
     test('full rent collected with dues off passes validation', () {

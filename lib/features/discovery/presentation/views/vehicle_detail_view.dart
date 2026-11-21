@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../core/widgets/pakistani_plate_widget.dart';
+import '../../../../features/bookings/data/datasources/booking_settings_data_source.dart';
 import '../../../../features/fleet/domain/entities/vehicle_entity.dart';
 import 'widgets/vehicle_detail_action_bar.dart';
 import 'widgets/vehicle_detail_packages.dart';
@@ -27,6 +28,10 @@ class VehicleDetailView extends StatefulWidget {
   final VoidCallback? onBookNow;
   final VoidCallback? onBack;
 
+  /// Worker 3 (2026-11-21): test seam — the shop booking-settings
+  /// data source. Defaults to a fresh [BookingSettingsDataSource].
+  final BookingSettingsDataSource? settingsDataSource;
+
   const VehicleDetailView({
     super.key,
     required this.vehicle,
@@ -35,6 +40,7 @@ class VehicleDetailView extends StatefulWidget {
     this.shopOwnerId = '',
     this.onBookNow,
     this.onBack,
+    this.settingsDataSource,
   });
 
   @override
@@ -43,6 +49,24 @@ class VehicleDetailView extends StatefulWidget {
 
 class _VehicleDetailViewState extends State<VehicleDetailView> {
   bool _withDriver = false;
+
+  /// Worker 3 (2026-11-21): the shop's booking-settings driver rate
+  /// (Rs/day), loaded in initState from `booking_settings/{shopId}` —
+  /// the same load pattern as RentPackagePickerView. It feeds both
+  /// the with-driver package price (via [VehicleDetailPackages]) and
+  /// the Book Now button rate. Null while loading or unset: the
+  /// with-driver rate falls back to the self-drive rate (no
+  /// surcharge), so the display always matches the picker total.
+  /// The vehicle's stored `withDriverSurchargePkr` is never read.
+  int? _driverRatePerDayPkr;
+
+  @override
+  void initState() {
+    super.initState();
+    (widget.settingsDataSource ?? BookingSettingsDataSource())
+        .getSettings(widget.vehicle.shopId)
+        .then((s) { if (mounted) setState(() => _driverRatePerDayPkr = s.driverRatePerDayPkr); });
+  }
 
   // CU-M9: the make/model → asset mapping is the shared
   // [vehicleImageAsset] helper — this view used to carry its own
@@ -68,7 +92,7 @@ class _VehicleDetailViewState extends State<VehicleDetailView> {
     final v = widget.vehicle;
     final int selfDriveRate = v.rates.daily24;
     final int withDriverRate =
-        v.rates.daily24 + (v.withDriverSurchargePkr ?? 0);
+        v.rates.daily24 + (_driverRatePerDayPkr ?? 0);
     final int selectedRate = _withDriver ? withDriverRate : selfDriveRate;
     final carAsset = _getCarImage(v);
 
@@ -144,6 +168,7 @@ class _VehicleDetailViewState extends State<VehicleDetailView> {
                           VehicleDetailPackages(
                             vehicle: v,
                             withDriver: _withDriver,
+                            driverRatePerDayPkr: _driverRatePerDayPkr,
                             onDriveModeChanged: (val) =>
                                 setState(() => _withDriver = val),
                           ),

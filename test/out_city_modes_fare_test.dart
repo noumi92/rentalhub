@@ -122,7 +122,7 @@ void main() {
       // (10500 + 1500 driver) × 2 days + 1 night × 2000 stay.
       expect(
         ManualBookingPackageSelector.totalFor(
-            vehicle: v, package: pkg(v, '24h'), isWithDriver: true, isOutOfCity: true, pickup: pickup, returnTime: twoDays),
+            vehicle: v, package: pkg(v, '24h'), isWithDriver: true, isOutOfCity: true, pickup: pickup, returnTime: twoDays, driverRatePerDayPkr: 1500),
         26000,
       );
     });
@@ -147,7 +147,7 @@ void main() {
       );
       expect(
         ManualBookingPackageSelector.unitFor(
-            vehicle: v, package: pkg(v, '24h'), isWithDriver: true, isOutOfCity: true, fixedRoute: route),
+            vehicle: v, package: pkg(v, '24h'), isWithDriver: true, isOutOfCity: true, fixedRoute: route, driverRatePerDayPkr: 1500),
         19500,
       );
     });
@@ -157,7 +157,7 @@ void main() {
       // 18000 + 1500 × 3 days + 2 nights × 2000 stay — NOT 18000 × 3.
       expect(
         ManualBookingPackageSelector.totalFor(
-            vehicle: v, package: pkg(v, '24h'), isWithDriver: true, isOutOfCity: true, pickup: pickup, returnTime: threeDays, fixedRoute: route),
+            vehicle: v, package: pkg(v, '24h'), isWithDriver: true, isOutOfCity: true, pickup: pickup, returnTime: threeDays, fixedRoute: route, driverRatePerDayPkr: 1500),
         26500,
       );
       expect(

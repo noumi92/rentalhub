@@ -332,10 +332,10 @@ void main() {
       // Deducted = 5,000 kept + 10,000 fully kept.
       expect(find.text('Rs. 15,000'), findsOneWidget);
       // Refunded count = 1 released + 1 partial refund = 2;
-      // deducted count = 2 — the same "2 deposits" label appears
+      // deducted count = 2 — the same "2 Security" label appears
       // on both rows, and nothing is held.
-      expect(find.text('2 deposits'), findsNWidgets(2));
-      expect(find.text('0 deposits'), findsOneWidget);
+      expect(find.text('2 Security'), findsNWidgets(2));
+      expect(find.text('0 Security'), findsOneWidget);
     });
   });
 }

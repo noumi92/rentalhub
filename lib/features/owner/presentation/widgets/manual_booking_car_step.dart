@@ -43,6 +43,7 @@ class ManualBookingCarStep extends StatefulWidget {
     this.onFixedRouteChanged,
     required this.onAvailabilityChanged,
     this.existingBookings,
+    this.driverRatePerDayPkr,
   });
 
   final bool isLoadingVehicles;
@@ -67,6 +68,9 @@ class ManualBookingCarStep extends StatefulWidget {
 
   /// Test override: check against these bookings, not Firestore.
   final List<BookingEntity>? existingBookings;
+
+  /// Worker A (2026-11-21): the shop's booking-settings driver rate (Rs/day), threaded to the package selector. Null charges Rs. 0 — the vehicle's stored surcharge is never read.
+  final int? driverRatePerDayPkr;
 
   @override
   State<ManualBookingCarStep> createState() => _ManualBookingCarStepState();
@@ -176,7 +180,7 @@ class _ManualBookingCarStepState extends State<ManualBookingCarStep> {
           pickup: widget.pickupTime,
           returnTime: widget.returnTime,
           selectedFixedRoute: widget.selectedFixedRoute,
-          onFixedRouteChanged: widget.onFixedRouteChanged,
+          onFixedRouteChanged: widget.onFixedRouteChanged, driverRatePerDayPkr: widget.driverRatePerDayPkr,
         ),
         const SizedBox(height: 14),
         Align(

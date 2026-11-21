@@ -25,6 +25,7 @@ class ManualBookingVehicleSection extends StatelessWidget {
     this.returnTime,
     this.selectedFixedRoute,
     this.onFixedRouteChanged,
+    this.driverRatePerDayPkr,
   });
 
   final bool isLoadingVehicles;
@@ -46,6 +47,10 @@ class ManualBookingVehicleSection extends StatelessWidget {
   /// 09b §2: the fixed route chosen for this out-of-city trip.
   final FixedRouteEntity? selectedFixedRoute;
   final ValueChanged<FixedRouteEntity?>? onFixedRouteChanged;
+
+  /// Worker A (2026-11-21): the shop's booking-settings driver
+  /// rate (Rs/day), threaded to the package selector.
+  final int? driverRatePerDayPkr;
 
   @override
   Widget build(BuildContext context) {
@@ -94,6 +99,7 @@ class ManualBookingVehicleSection extends StatelessWidget {
           returnTime: returnTime,
           selectedFixedRoute: selectedFixedRoute,
           onFixedRouteChanged: onFixedRouteChanged,
+          driverRatePerDayPkr: driverRatePerDayPkr,
         ),
         const SizedBox(height: 12),
         TextField(

@@ -35,6 +35,12 @@ class ManualBookingDraft {
   bool returnEdited = false;
   bool? carFree;
 
+  /// Worker A (2026-11-21): the shop's booking-settings driver
+  /// rate (Rs/day), set by the wizard view when it loads the shop's
+  /// booking settings. The ONLY source for the driver surcharge —
+  /// null (unset) charges Rs. 0, whatever the vehicle stores.
+  int? driverRatePerDayPkr;
+
   DateTime _pickupTime;
   DateTime _returnTime;
   bool isOutOfCity;
@@ -60,7 +66,7 @@ class ManualBookingDraft {
 
   int get rentAmount => ManualBookingPackageSelector.totalFor(
       vehicle: selectedVehicle, package: selectedPackage, isWithDriver: false,
-      isOutOfCity: isOutOfCity, pickup: _pickupTime, returnTime: _returnTime, fixedRoute: selectedRoute);
+      isOutOfCity: isOutOfCity, pickup: _pickupTime, returnTime: _returnTime, fixedRoute: selectedRoute, driverRatePerDayPkr: driverRatePerDayPkr);
 
   int get driverAmount {
     // The driver surcharge is charged ONLY when the owner chose a
@@ -72,7 +78,7 @@ class ManualBookingDraft {
     // recorded".)
     if (!isWithDriver) return 0;
     return (ManualBookingPackageSelector.totalFor(vehicle: selectedVehicle, package: selectedPackage, isWithDriver: true,
-            isOutOfCity: isOutOfCity, pickup: _pickupTime, returnTime: _returnTime, fixedRoute: selectedRoute) -
+            isOutOfCity: isOutOfCity, pickup: _pickupTime, returnTime: _returnTime, fixedRoute: selectedRoute, driverRatePerDayPkr: driverRatePerDayPkr) -
         rentAmount)
         .clamp(0, 1 << 30);
   }

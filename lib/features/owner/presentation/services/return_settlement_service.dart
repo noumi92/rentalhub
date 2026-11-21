@@ -439,7 +439,7 @@ class ReturnSettlementService {
           kind: 'expense',
           category: 'deposit_refund',
           amount: refunded,
-          note: 'Deposit refund for ${booking.bookingId}',
+          note: 'Security refund for ${booking.bookingId}',
         );
       }
       final owed = (settlement['owedCollected'] as num?)?.toInt() ?? 0;
@@ -531,7 +531,7 @@ class ReturnSettlementService {
         kind: 'expense',
         category: 'deposit_refund',
         amount: amount,
-        note: 'Deposit refund for $bookingId',
+        note: 'Security refund for $bookingId',
       );
     } catch (_) {}
   }

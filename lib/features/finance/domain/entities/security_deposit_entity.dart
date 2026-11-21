@@ -34,6 +34,13 @@ class SecurityDepositEntity extends Equatable {
   final int? amountOwed;
   final List<String> returnDamageNotes;
 
+  /// Worker B (cancel releases the deposit): why a 'released'
+  /// record was released — 'cancel' when the booking was cancelled
+  /// (full refund, no deductions), 'return' when settled at return.
+  /// Null on older records (pre-cancel-release), which the wallet
+  /// treats as return-releases.
+  final String? releaseReason;
+
   const SecurityDepositEntity({
     required this.depositId,
     required this.bookingId,
@@ -54,6 +61,7 @@ class SecurityDepositEntity extends Equatable {
     this.netRefund,
     this.amountOwed,
     this.returnDamageNotes = const [],
+    this.releaseReason,
   });
 
   SecurityDepositEntity copyWith({
@@ -70,6 +78,7 @@ class SecurityDepositEntity extends Equatable {
     int? netRefund,
     int? amountOwed,
     List<String>? returnDamageNotes,
+    String? releaseReason,
   }) {
     return SecurityDepositEntity(
       depositId: depositId,
@@ -91,6 +100,7 @@ class SecurityDepositEntity extends Equatable {
       netRefund: netRefund ?? this.netRefund,
       amountOwed: amountOwed ?? this.amountOwed,
       returnDamageNotes: returnDamageNotes ?? this.returnDamageNotes,
+      releaseReason: releaseReason ?? this.releaseReason,
     );
   }
 
@@ -115,5 +125,6 @@ class SecurityDepositEntity extends Equatable {
         netRefund,
         amountOwed,
         returnDamageNotes,
+        releaseReason,
       ];
 }

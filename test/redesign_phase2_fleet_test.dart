@@ -314,7 +314,7 @@ void main() {
       for (final label in ['1h', '3h', '6h', '12h', '24h', 'Weekly', 'Monthly']) {
         expect(find.text(label), findsOneWidget, reason: 'missing tier $label');
       }
-      expect(find.text('Security deposit'), findsOneWidget);
+      expect(find.text('Security'), findsOneWidget);
       expect(find.text('Rs. 50,000'), findsOneWidget);
       expect(find.text('Fare table'), findsOneWidget);
       expect(find.text('View estimated rates'), findsOneWidget);

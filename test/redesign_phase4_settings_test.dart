@@ -1,7 +1,7 @@
 // Showroom redesign Phase 4 (2026-11-16): owner settings rebuild —
 // the "Showroom Owner" card with a shortcut pill to the shop
-// editor, language + theme as side-by-side cards, and the other 14
-// rows grouped into Operations and Account & Alerts. All 16 rows
+// editor, language + theme as side-by-side cards, and the other 15
+// rows grouped into Operations and Account & Alerts. All 17 rows
 // keep their targets; theme keeps its System option; the five
 // notification toggles stay in the Notifications bottom sheet.
 import 'package:flutter/material.dart';
@@ -46,13 +46,13 @@ void main() {
   }
 
   group('Redesign Phase 4 — owner settings', () {
-    testWidgets('all 16 rows present, grouped under two headings',
+    testWidgets('all 17 rows present, grouped under two headings',
         (tester) async {
       await pumpSettings(tester);
       expect(find.text('Showroom Owner'), findsOneWidget);
       expect(find.text('Operations'), findsOneWidget);
       expect(find.text('Account & Alerts'), findsOneWidget);
-      // Language + theme are cards, not rows; the other 14 are rows.
+      // Language + theme are cards, not rows; the other 15 are rows.
       for (final label in [
         'Language',
         'Theme',
@@ -60,6 +60,7 @@ void main() {
         'Fixed Routes',
         'Finance',
         'Finance Settings',
+        'Booking Settings',
         'Income & Expense Categories',
         'Blacklist Reports',
         'Staff & Roles',
@@ -76,9 +77,23 @@ void main() {
       // 'Shop Settings' renders twice by design: the app-bar title
       // and the Operations row. The pill reads 'Set Up Shop'.
       expect(find.text('Shop Settings'), findsNWidgets(2));
+      // 'Booking Settings' sits under Operations, not Account &
+      // Alerts: in tree order it follows the Operations heading and
+      // precedes the Account & Alerts heading.
+      expect(find.text('Booking Settings'), findsOneWidget);
+      final texts = tester
+          .widgetList(find.byType(Text))
+          .map((w) => (w as Text).data)
+          .toList();
+      final ops = texts.indexOf('Operations');
+      final booking = texts.indexOf('Booking Settings');
+      final account = texts.indexOf('Account & Alerts');
+      expect(ops, isNot(-1));
+      expect(booking, greaterThan(ops));
+      expect(account, greaterThan(booking));
       expect(find.text('Sign Out'), findsOneWidget);
       // Every link row carries a 36x36 pastel circular icon badge.
-      expect(circleBadges(tester), findsNWidgets(14));
+      expect(circleBadges(tester), findsNWidgets(15));
     });
 
     testWidgets('theme options include System and it persists',

@@ -76,6 +76,7 @@ class ManualBookingPackageSelector extends StatefulWidget {
     this.returnTime,
     this.selectedFixedRoute,
     this.onFixedRouteChanged,
+    this.driverRatePerDayPkr,
   });
 
   final VehicleEntity? vehicle;
@@ -95,6 +96,12 @@ class ManualBookingPackageSelector extends StatefulWidget {
   /// owns it and threads it into the confirm step's total.
   final FixedRouteEntity? selectedFixedRoute;
   final ValueChanged<FixedRouteEntity?>? onFixedRouteChanged;
+
+  /// Worker A (2026-11-21): the shop's booking-settings driver
+  /// rate (Rs/day). The ONLY source for the driver surcharge —
+  /// the vehicle's `withDriverSurchargePkr` is never read here.
+  /// Null (unset) charges Rs. 0.
+  final int? driverRatePerDayPkr;
 
   @override
   State<ManualBookingPackageSelector> createState() =>
@@ -119,6 +126,7 @@ class ManualBookingPackageSelector extends StatefulWidget {
     required bool isWithDriver,
     bool isOutOfCity = false,
     FixedRouteEntity? fixedRoute,
+    int? driverRatePerDayPkr,
   }) {
     if (vehicle == null || package == null) return 0;
     var unit = package.pricePkr;
@@ -137,7 +145,7 @@ class ManualBookingPackageSelector extends StatefulWidget {
       }
     }
     if (!isWithDriver) return unit;
-    final perDay = vehicle.withDriverSurchargePkr ?? 0;
+    final perDay = driverRatePerDayPkr ?? 0;
     final surcharge = package.hours >= 24
         ? perDay * (package.hours ~/ 24)
         : (perDay * package.hours / 24).round();
@@ -162,6 +170,7 @@ class ManualBookingPackageSelector extends StatefulWidget {
     DateTime? pickup,
     DateTime? returnTime,
     FixedRouteEntity? fixedRoute,
+    int? driverRatePerDayPkr,
   }) {
     final v = vehicle;
     if (isOutOfCity && v != null && v.outCityMode == 'fixedRoute' && fixedRoute != null) {
@@ -172,11 +181,12 @@ class ManualBookingPackageSelector extends StatefulWidget {
           isWithDriver: isWithDriver,
           isOutOfCity: isOutOfCity,
           fixedRoute: fixedRoute,
+          driverRatePerDayPkr: driverRatePerDayPkr,
         );
       }
       final days = dayCountBetween(pickup, returnTime);
       final driver =
-          isWithDriver ? (v.withDriverSurchargePkr ?? 0) * days : 0;
+          isWithDriver ? (driverRatePerDayPkr ?? 0) * days : 0;
       // Night stay (010b): out-of-city with-driver trips add nights ×
       // the vehicle's per-night rate; 0 otherwise.
       return fixedRoute.fixedPricePkr +
@@ -195,6 +205,7 @@ class ManualBookingPackageSelector extends StatefulWidget {
       isWithDriver: isWithDriver,
       isOutOfCity: isOutOfCity,
       fixedRoute: fixedRoute,
+      driverRatePerDayPkr: driverRatePerDayPkr,
     );
     if (unit == 0 || package == null || pickup == null || returnTime == null) {
       return unit;
@@ -320,6 +331,7 @@ class _ManualBookingPackageSelectorState
         pickup: widget.pickup,
         returnTime: widget.returnTime,
         fixedRoute: widget.selectedFixedRoute,
+        driverRatePerDayPkr: widget.driverRatePerDayPkr,
       );
 
   /// The per-km estimate note: estimated km for this trip (days ×

@@ -7,13 +7,18 @@ import '../presentation/widgets/package_tier_list.dart';
 class PackagePricing {
   /// With-driver surcharge for a tier: full daily surcharge per day
   /// (24h: one day, Weekly: seven), prorated for hourly tiers.
+  /// Worker A (2026-11-21): the rate comes from the shop's booking
+  /// settings ([driverRatePerDayPkr]); the per-vehicle
+  /// `withDriverSurchargePkr` is no longer read by pricing. Null
+  /// (unset) charges Rs. 0.
   static int driverSurchargeFor({
     required VehicleEntity? vehicle,
     required PackageTierOption tier,
     required bool isWithDriver,
+    int? driverRatePerDayPkr,
   }) {
     if (!isWithDriver || vehicle == null) return 0;
-    final perDay = vehicle.withDriverSurchargePkr ?? 0;
+    final perDay = driverRatePerDayPkr ?? 0;
     if (tier.hours >= 24) return perDay * (tier.hours ~/ 24);
     return (perDay * tier.hours / 24).round();
   }
@@ -26,9 +31,10 @@ class PackagePricing {
     required PackageTierOption tier,
     required int durationDays,
     required bool isWithDriver,
+    int? driverRatePerDayPkr,
   }) {
     final unit =
-        tier.price + driverSurchargeFor(vehicle: vehicle, tier: tier, isWithDriver: isWithDriver);
+        tier.price + driverSurchargeFor(vehicle: vehicle, tier: tier, isWithDriver: isWithDriver, driverRatePerDayPkr: driverRatePerDayPkr);
     if (vehicle != null) {
       if (tier.label == '24h') return unit * durationDays;
       if (tier.label == 'Weekly') {

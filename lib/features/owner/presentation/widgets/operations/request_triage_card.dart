@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../../../../core/constants/app_colors.dart';
-import '../../../../../core/utils/date_format.dart';
-import '../../../../../core/utils/money_format.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../bookings/domain/entities/booking_entity.dart';
 import '../../../../bookings/utils/booking_request_time.dart';
-import 'booking_fare_breakdown.dart';
+import 'request_triage_actions.dart';
+import 'request_triage_summary.dart';
 import 'triage_trust_row.dart';
 
 class RequestTriageCard extends StatelessWidget {
@@ -14,6 +13,12 @@ class RequestTriageCard extends StatelessWidget {
   final VoidCallback onReject;
   final VoidCallback? onVerifyProof;
   final bool isProcessing;
+
+  /// Worker B: owner cancel for a walk-in `approved` / `paid`
+  /// booking (see [BookingCancelService.canOwnerCancel]). Null —
+  /// and the button hidden — for every other booking, so an
+  /// online booking never shows a cancel action.
+  final VoidCallback? onCancel;
 
   /// False hides the owner Approve/Decline row (e.g. a customer
   /// viewing a `requested` booking through the shared accounts
@@ -43,6 +48,7 @@ class RequestTriageCard extends StatelessWidget {
     this.onVerifyProof,
     this.isProcessing = false,
     this.showActions = true,
+    this.onCancel,
     this.requestedAt,
     this.trustScore,
     this.kycStatus,
@@ -168,140 +174,26 @@ class RequestTriageCard extends StatelessWidget {
             kycStatus: kycStatus,
             completedTrips: completedTrips,
           ),
-          const Divider(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Text(
-                  booking.vehicleName ?? l10n.requestsRequestedCar,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyMedium
-                      ,
-                ),
-              ),
-              const SizedBox(width: 8),
-              // E3: the amount shrinks to fit instead of overflowing —
-              // at 200% text scale 'Rs. 1250000' is wider than the card
-              // and pushed the row 23px past the edge. A money amount
-              // must stay fully visible, so it scales down rather than
-              // ellipsizing.
-              Flexible(
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: Alignment.centerRight,
-                  child: Text(
-                    // C5: grouped rupees, via the localised wrapper.
-                    l10n.amountRs(formatRs(booking.totalAmount)),
-                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        // OW-m34: the amount is orange text, not the
-                        // secondary teal — same token as the status
-                        // label above it.
-                        color: AppColors.orangeTextFor(
-                            Theme.of(context).brightness)),
-                  ),
-                ),
-              ),
-            ],
+          // Booking summary (vehicle + fare, package, dates, wait
+          // time) — extracted into RequestTriageSummary so this
+          // card stays under the 250-line cap.
+          RequestTriageSummary(
+            booking: booking,
+            requestedAt: requestedAt,
           ),
-          const SizedBox(height: 4),
-          Text(
-            // The package code (e.g. '24h') is stored data and stays
-            // as-is; only the drive-mode words are localized.
-            '${booking.packageType.toUpperCase()} • ${booking.isWithDriver ? l10n.requestsWithChauffeur : l10n.selfDrive}',
-            style: Theme.of(context).textTheme.labelSmall,
-          ),
-          const SizedBox(height: 4),
-          // Audit §5 item 2 (O14): the pickup/return dates and the
-          // day count the request cards were missing.
-          Text(
-            // Audit 2026-11-15 DS-5: localized day + time, never a bare DateFormat.
-            '${formatDayTime(context, booking.pickupTime)} → ${formatDayTime(context, booking.returnTime)} • ${l10n.bookingDaysCount(bookingDayCount(booking))}',
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
-          ),
-          // FG-4: how long the request has waited — the card's job
-          // is "decide oldest first". No known request time renders
-          // no line, never an invented one.
-          if (requestedAt != null) ...[
-            const SizedBox(height: 4),
-            Text(
-              l10n.requestsWaitingTime(waitDurationLabel(
-                  l10n, DateTime.now().difference(requestedAt))),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    fontWeight: FontWeight.w500,
-                    color: booking.status == 'payment_submitted'
-                        ? AppColors.warningTextFor(brightness)
-                        : Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-            ),
-          ],
           const SizedBox(height: 14),
           // Phase B (D1): the actions depend on where the booking is
-          // in the pipeline — only new requests can be approved or
-          // declined; a submitted proof is verified on the detail
-          // screen; an approved booking just waits for payment.
-          if (booking.status == 'payment_submitted')
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: isProcessing ? null : onVerifyProof,
-                icon: const Icon(Icons.fact_check_rounded, size: 18),
-                label: Text(l10n.requestsVerifyProof),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)),
-                ),
-              ),
-            )
-          else if (booking.status == 'requested' && showActions)
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: isProcessing ? null : onReject,
-                    style: OutlinedButton.styleFrom(
-                      // §9: theme danger tokens, not raw red shades.
-                      foregroundColor: AppColors.dangerTextFor(
-                          Theme.of(context).brightness),
-                      side: BorderSide(
-                          color: Theme.of(context).colorScheme.error),
-                      minimumSize: const Size(0, 54),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10)),
-                    ),
-                    child: Text(l10n.requestsDecline),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: isProcessing ? null : onApprove,
-                    style: ElevatedButton.styleFrom(
-                      // §9: white on accentSuccess #10B981 is ~2.5:1;
-                      // accentSuccessStrong #047857 is 5.48:1.
-                      backgroundColor: AppColors.accentSuccessStrong,
-                      foregroundColor: Colors.white,
-                      minimumSize: const Size(0, 54),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10)),
-                    ),
-                    child: Text(l10n.requestsApprovePay),
-                  ),
-                ),
-              ],
-            ),
+          // in the pipeline — extracted into RequestTriageActions
+          // so this card stays under the 250-line cap.
+          RequestTriageActions(
+            booking: booking,
+            onApprove: onApprove,
+            onReject: onReject,
+            onVerifyProof: onVerifyProof,
+            onCancel: onCancel,
+            isProcessing: isProcessing,
+            showActions: showActions,
+          ),
         ],
       ),
     );

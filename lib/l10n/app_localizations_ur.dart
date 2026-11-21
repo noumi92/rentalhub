@@ -591,7 +591,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get summaryKmIncluded => 'کلومیٹر شامل';
 
   @override
-  String get summarySecurityDeposit => 'سیکیورٹی ڈپازٹ';
+  String get summarySecurityDeposit => 'سیکیورٹی';
 
   @override
   String get summaryTotalFare => 'کل کرایہ';
@@ -607,7 +607,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get walletActiveEscrow =>
-      'شوروم کے پاس کل: ادا شدہ ایڈوانس + محفوظ ڈپازٹ';
+      'شوروم کے پاس کل: ادا شدہ ایڈوانس + محفوظ سیکیورٹی';
 
   @override
   String get walletAdvancesPaid => 'ادا شدہ ایڈوانس';
@@ -631,11 +631,11 @@ class AppLocalizationsUr extends AppLocalizations {
   String get walletShowBalance => 'بیلنس دکھائیں';
 
   @override
-  String get walletEmptyHint => 'ایڈوانس اور ڈپازٹ یہاں ظاہر ہوں گے۔';
+  String get walletEmptyHint => 'ایڈوانس اور سیکیورٹی یہاں ظاہر ہوں گے۔';
 
   @override
   String get walletLedgerEmptyHint =>
-      'آپ کے ادا کردہ ایڈوانس اور ڈپازٹ یہاں ظاہر ہوں گے۔';
+      'آپ کے ادا کردہ ایڈوانس اور سیکیورٹی یہاں ظاہر ہوں گے۔';
 
   @override
   String get walletLoadError =>
@@ -646,6 +646,68 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get walletNoActivity => 'ابھی کوئی والیٹ سرگرمی نہیں۔';
+
+  @override
+  String walletEntrySecurityHeld(String vehicle, String booking) {
+    return 'سیکیورٹی روکی گئی — $vehicle ($booking)';
+  }
+
+  @override
+  String walletEntrySecurityReleased(String vehicle, String booking) {
+    return 'سیکیورٹی واپس کر دی گئی — $vehicle ($booking)';
+  }
+
+  @override
+  String walletEntrySecurityReleasedCancel(String vehicle, String booking) {
+    return 'منسوخی پر سیکیورٹی واپس کر دی گئی — $vehicle ($booking)';
+  }
+
+  @override
+  String walletEntrySecurityDeducted(String vehicle, String booking) {
+    return 'سیکیورٹی سے کٹوتی — $vehicle ($booking)';
+  }
+
+  @override
+  String walletEntrySecurityRefunded(String vehicle, String booking) {
+    return 'سیکیورٹی واپسی — $vehicle ($booking)';
+  }
+
+  @override
+  String walletEntrySecurityOwed(String vehicle, String booking) {
+    return 'سیکیورٹی ابھی واجب الادا — $vehicle ($booking)';
+  }
+
+  @override
+  String get walletSecuritySection => 'سیکیورٹی';
+
+  @override
+  String get walletSecurityHeld => 'روکی گئی';
+
+  @override
+  String get walletSecurityReleased => 'واپس شدہ';
+
+  @override
+  String get walletSecurityDeducted => 'کٹوتی';
+
+  @override
+  String get walletSecurityRefunded => 'واپسی';
+
+  @override
+  String get walletSecurityOwed => 'ابھی واجب الادا';
+
+  @override
+  String get ownerSecurityWalletTitle => 'سیکیورٹی والیٹ';
+
+  @override
+  String get ownerSecurityWalletOnline =>
+      'آن لائن صارفین اپنا سیکیورٹی والیٹ خود سنبھالتے ہیں۔';
+
+  @override
+  String get customerDetailSecurityWallet => 'سیکیورٹی والیٹ';
+
+  @override
+  String get ownerSecurityWalletEmpty =>
+      'اس صارف کی ابھی کوئی سیکیورٹی سرگرمی نہیں۔';
 
   @override
   String get profileTotalTrips => 'کل سفر';
@@ -792,7 +854,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get supportDisputeHint =>
-      'زیادہ چارج یا ڈپازٹ روکا گیا؟ ثالثی کا دعویٰ درج کریں۔';
+      'زیادہ چارج یا سیکیورٹی روکی گئی؟ ثالثی کا دعویٰ درج کریں۔';
 
   @override
   String get supportFaqTitle => 'اکثر پوچھے جانے والے سوالات';
@@ -819,11 +881,11 @@ class AppLocalizationsUr extends AppLocalizations {
       'آپ کی ایڈوانس ادائیگی گاڑی کو آپ کے مقررہ وقت کے لیے خصوصی طور پر محفوظ کرتی ہے اور شوروم کی بکنگ کی ضمانت دیتی ہے۔ یہ محفوظ طریقے سے درج کی جاتی ہے اور آپ کے حتمی بل سے منہا کر دی جاتی ہے۔';
 
   @override
-  String get supportFaqQ2 => 'میرا سیکیورٹی ڈپازٹ کب واپس ملتا ہے؟';
+  String get supportFaqQ2 => 'میری سیکیورٹی کب واپس ملتی ہے؟';
 
   @override
   String get supportFaqA2 =>
-      'ڈپازٹ واپسی کی حوالگی پر طے کیا جاتا ہے۔ اضافی کلومیٹر، ایندھن یا نقصان کی کوئی بھی کٹوتی تصفیے میں دکھائی جاتی ہے، اور باقی رقم آپ کو واپس کر دی جاتی ہے۔';
+      'سیکیورٹی واپسی کی حوالگی پر طے کی جاتی ہے۔ اضافی کلومیٹر، ایندھن یا نقصان کی کوئی بھی کٹوتی تصفیے میں دکھائی جاتی ہے، اور باقی رقم آپ کو واپس کر دی جاتی ہے۔';
 
   @override
   String get supportFaqQ3 => 'اگر گاڑی خراب ہو جائے تو کیا ہوتا ہے؟';
@@ -923,7 +985,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get disputeTitle => 'شکایت / تنازع درج کریں';
 
   @override
-  String get disputeDepositWithheld => 'ڈپازٹ روکا گیا';
+  String get disputeDepositWithheld => 'سیکیورٹی روکی گئی';
 
   @override
   String get disputeOvercharge => 'شوروم کی زیادہ چارجنگ';
@@ -1004,7 +1066,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get cancelNoAdvanceNote =>
-      'ابھی کوئی ایڈوانس ادا نہیں ہوا، اس لیے واپسی کے لیے کچھ نہیں۔ کوئی سیکیورٹی ڈپازٹ نہیں لیا گیا: ڈپازٹ صرف حوالگی پر لیا جاتا ہے۔';
+      'ابھی کوئی ایڈوانس ادا نہیں ہوا، اس لیے واپسی کے لیے کچھ نہیں۔ اگر سیکیورٹی لی گئی ہو تو وہ پوری واپس کر دی جائے گی۔';
 
   @override
   String get cancelDone => 'بکنگ منسوخ کر دی گئی۔';
@@ -1354,7 +1416,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get passOpenAgreementError => 'معاہدہ نہیں کھولا جا سکا۔';
 
   @override
-  String get driverRequiresCnic => 'شناختی کارڈ + ڈپازٹ درکار ہے';
+  String get driverRequiresCnic => 'شناختی کارڈ + سیکیورٹی درکار ہے';
 
   @override
   String get driverVerifiedIncluded => 'تصدیق شدہ ڈرائیور شامل ہے';
@@ -1642,7 +1704,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get advanceNoticeSelfDrive =>
-      '• حوالگی پر اصل نادرا شناختی کارڈ اور درست ڈرائیونگ لائسنس درکار ہے۔\n• ایڈوانس شوروم کے ساتھ گاڑی کی بکنگ کی تصدیق کرتا ہے۔\n• قابل واپسی سیکیورٹی ڈپازٹ حوالگی پر ڈیجیٹل یا نقد وصول کیا جاتا ہے۔';
+      '• حوالگی پر اصل نادرا شناختی کارڈ اور درست ڈرائیونگ لائسنس درکار ہے۔\n• ایڈوانس شوروم کے ساتھ گاڑی کی بکنگ کی تصدیق کرتا ہے۔\n• قابل واپسی سیکیورٹی حوالگی پر ڈیجیٹل یا نقد وصول کی جاتی ہے۔';
 
   @override
   String get ticketShowCode =>
@@ -1740,7 +1802,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String vehicleSelectedMode(String mode) {
-    return 'منتخب: $mode۔ ایڈوانس ڈپازٹ درکار ہے۔';
+    return 'منتخب: $mode۔ سیکیورٹی پیشگی درکار ہے۔';
   }
 
   @override
@@ -1862,7 +1924,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String cancelAdvancePaid(String amount) {
-    return 'آپ نے شوروم کے اکاؤنٹ میں براہ راست $amount روپے ایڈوانس ادا کیا — رقم واپسی کا فیصلہ شوروم کرتا ہے، اس لیے اس بارے میں ان سے رابطہ کریں۔ کوئی سیکیورٹی ڈپازٹ نہیں لیا گیا: ڈپازٹ صرف حوالگی پر لیا جاتا ہے۔';
+    return 'آپ نے شوروم کے اکاؤنٹ میں براہ راست $amount روپے ایڈوانس ادا کیا — رقم واپسی کا فیصلہ شوروم کرتا ہے، اس لیے اس بارے میں ان سے رابطہ کریں۔ اگر سیکیورٹی لی گئی ہو تو وہ پوری واپس کر دی جائے گی۔';
   }
 
   @override
@@ -1911,7 +1973,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String successBody(String vehicle, String shop) {
-    return 'آپ کی بکنگ کی درخواست $vehicle کے لیے $shop کو پہنچا دی گئی ہے۔ منظوری کے بعد آپ کو ایڈوانس ڈپازٹ جمع کرنے کی اطلاع دی جائے گی۔';
+    return 'آپ کی بکنگ کی درخواست $vehicle کے لیے $shop کو پہنچا دی گئی ہے۔ منظوری کے بعد آپ کو ایڈوانس سیکیورٹی جمع کرنے کی اطلاع دی جائے گی۔';
   }
 
   @override
@@ -1941,7 +2003,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String packageSecurityDeposit(String amount) {
-    return 'سیکیورٹی ڈپازٹ: $amount روپے';
+    return 'سیکیورٹی: $amount روپے';
   }
 
   @override
@@ -2177,7 +2239,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String dashboardSettleRate(int percent) {
-    return '$percent٪ ضمانتیں طے شدہ';
+    return '$percent٪ سیکیورٹیز طے شدہ';
   }
 
   @override
@@ -2499,7 +2561,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get addVehicleStep3Subtitle =>
-      'گھنٹہ وار کرایے، ضمانت اور ایندھن پالیسی';
+      'گھنٹہ وار کرایے، سیکیورٹی اور ایندھن پالیسی';
 
   @override
   String get addVehicleStep4Subtitle =>
@@ -2666,16 +2728,13 @@ class AppLocalizationsUr extends AppLocalizations {
   String get addVehicleWithDriverHint => 'دکان تجربہ کار ڈرائیور فراہم کرتی ہے';
 
   @override
-  String get addVehicleDriverAllowance => 'ڈرائیور کا یومیہ الاؤنس:';
-
-  @override
   String get addVehiclePerDaySuffix => 'فی دن';
 
   @override
-  String get addVehicleDepositPolicies => 'ضمانت اور کرایے کی پالیسیاں';
+  String get addVehicleDepositPolicies => 'سیکیورٹی اور کرایے کی پالیسیاں';
 
   @override
-  String get addVehicleSecurityDepositSelfDrive => 'ضمانت (سیلف ڈرائیو)';
+  String get addVehicleSecurityDepositSelfDrive => 'سیکیورٹی (سیلف ڈرائیو)';
 
   @override
   String get addVehicleSecurityDepositHint =>
@@ -2740,7 +2799,7 @@ class AppLocalizationsUr extends AppLocalizations {
   }
 
   @override
-  String get addVehicleReviewDeposit => 'ضمانت';
+  String get addVehicleReviewDeposit => 'سیکیورٹی';
 
   @override
   String get addVehicleReviewAdvance => 'ایڈوانس';
@@ -2804,7 +2863,8 @@ class AppLocalizationsUr extends AppLocalizations {
   String get pricingSelfDriveAllowed => 'سیلف ڈرائیو کی اجازت ہے';
 
   @override
-  String get pricingSelfDriveHint => 'اصل نادرا شناختی کارڈ + ضمانت درکار ہے';
+  String get pricingSelfDriveHint =>
+      'اصل نادرا شناختی کارڈ + سیکیورٹی درکار ہے';
 
   @override
   String get pricingChauffeurAllowed => 'ڈرائیور سروس کی اجازت ہے';
@@ -2843,14 +2903,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get pricingOutOfCityDailyCap => '300 کلومیٹر شامل + ٹریکر کلیئر';
 
   @override
-  String get pricingWithDriverSurcharge => 'ڈرائیور کے ساتھ اضافی چارج (فی دن)';
-
-  @override
-  String get pricingWithDriverSurchargeCap =>
-      'پیکج کی قیمت کے علاوہ شامل کیا جاتا ہے';
-
-  @override
-  String get pricingSecurityDeposit => 'ضمانت';
+  String get pricingSecurityDeposit => 'سیکیورٹی';
 
   @override
   String get pricingSecurityDepositCap =>
@@ -3342,7 +3395,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get financeCategoryPartnerShare => 'پارٹنر کا حصہ';
 
   @override
-  String get financeCategoryDepositRefund => 'ڈپازٹ واپسی';
+  String get financeCategoryDepositRefund => 'سیکیورٹی واپسی';
 
   @override
   String get financeCategoryLabel => 'قسم';
@@ -3393,7 +3446,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get financeAccountFallback => 'اکاؤنٹ';
 
   @override
-  String get financeSecurityDeposits => 'سیکیورٹی ڈپازٹس';
+  String get financeSecurityDeposits => 'سیکیورٹی';
 
   @override
   String get financeDepositsHeld => 'ابھی محفوظ';
@@ -3409,7 +3462,7 @@ class AppLocalizationsUr extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count ڈپازٹس',
+      other: '$count سیکیورٹی',
     );
     return '$_temp0';
   }
@@ -3736,7 +3789,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String returnSettled(String refund) {
-    return 'گاڑی واپس ہو گئی! ڈپازٹ طے ہو گیا — $refund روپے واپس کیے گئے۔';
+    return 'گاڑی واپس ہو گئی! سیکیورٹی طے ہو گئی — $refund روپے واپس کیے گئے۔';
   }
 
   @override
@@ -3764,10 +3817,10 @@ class AppLocalizationsUr extends AppLocalizations {
   String get returnFinalizing => 'تصفیہ مکمل ہو رہا ہے...';
 
   @override
-  String get returnFinalize => 'واپسی مکمل کریں اور ڈپازٹ طے کریں';
+  String get returnFinalize => 'واپسی مکمل کریں اور سیکیورٹی طے کریں';
 
   @override
-  String get returnReceiptTitle => 'ڈپازٹ اور واپسی کے بیلنس کا تصفیہ';
+  String get returnReceiptTitle => 'سیکیورٹی اور واپسی کے بیلنس کا تصفیہ';
 
   @override
   String get returnReceiptTotalKm => 'کل چلائے گئے کلومیٹر';
@@ -3790,7 +3843,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get returnReceiptDamage => 'واپسی پر نقصان ملا';
 
   @override
-  String get returnReceiptDepositHeld => 'ابتدائی سیکیورٹی ڈپازٹ محفوظ';
+  String get returnReceiptDepositHeld => 'ابتدائی سیکیورٹی محفوظ';
 
   @override
   String get returnReceiptTotalDeductions => 'کل واقعہ / جرمانہ کٹوتیاں';
@@ -3882,7 +3935,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get contractFieldTotalPaid => 'کل کرایہ ادا شدہ:';
 
   @override
-  String get contractFieldDeposit => 'سیکیورٹی ڈپازٹ:';
+  String get contractFieldDeposit => 'سیکیورٹی:';
 
   @override
   String get contractWalkInCustomer => 'واک اِن گاہک';
@@ -4085,7 +4138,7 @@ class AppLocalizationsUr extends AppLocalizations {
   }
 
   @override
-  String get manualBookingDepositLabel => 'سیکیورٹی ڈپازٹ (روپے)';
+  String get manualBookingDepositLabel => 'سیکیورٹی (روپے)';
 
   @override
   String get manualBookingGuarantorNotFound =>
@@ -4318,7 +4371,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get onboardingPayoutSubtitle =>
-      'رینٹل بکنگز اور گاہکوں کے ایڈوانس ڈپازٹس وصول کرنے کے لیے کم از کم ایک ادائیگی چینل منتخب کریں۔';
+      'رینٹل بکنگز اور گاہکوں کی ایڈوانس سیکیورٹی وصول کرنے کے لیے کم از کم ایک ادائیگی چینل منتخب کریں۔';
 
   @override
   String get onboardingJazzCashTitle => 'جیز کیش موبائل اکاؤنٹ';
@@ -5202,6 +5255,38 @@ class AppLocalizationsUr extends AppLocalizations {
   String get bookingSearchHint => 'نام، فون، گاڑی یا بکنگ نمبر تلاش کریں';
 
   @override
+  String get bookingSettingsTitle => 'بکنگ کی ترتیبات';
+
+  @override
+  String get bookingSettingsSubtitle => 'پوری دکان کے لیے ڈرائیور کا نرخ';
+
+  @override
+  String get bookingSettingsDriverRate => 'ڈرائیور کا نرخ (فی دن)';
+
+  @override
+  String get bookingSettingsDriverRateNote =>
+      'جب بھی سفر میں ڈرائیور ہو تو پیکج کی قیمت کے علاوہ یہ چارج لگے گا۔ کوئی اضافی چارج نہ ہو تو خالی چھوڑ دیں۔';
+
+  @override
+  String get bookingSettingsDriverRateUnset =>
+      'طے نہیں — ڈرائیور والے سفر پر کوئی اضافی چارج نہیں لگے گا۔';
+
+  @override
+  String get bookingSettingsSaved => 'بکنگ کی ترتیبات محفوظ ہو گئیں۔';
+
+  @override
+  String get bookingSettingsLoadError =>
+      'بکنگ کی ترتیبات لوڈ نہیں ہو سکیں۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔';
+
+  @override
+  String get bookingSettingsEmpty =>
+      'بکنگ کی ترتیبات فی الحال دستیاب نہیں ہیں۔';
+
+  @override
+  String get bookingSettingsInvalidRate =>
+      'درست ڈرائیور نرخ درج کریں (0 یا زیادہ)۔';
+
+  @override
   String get bookingEmptyRejected => 'کوئی مسترد شدہ درخواست نہیں ہے';
 
   @override
@@ -5355,7 +5440,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get contractTerm9 =>
-      '9۔ سیکیورٹی ڈپازٹ واپسی پر معائنے کے بعد واپس کیا جائے گا، نقصان یا اضافی کلومیٹر کے چارجز منہا کر کے۔';
+      '9۔ سیکیورٹی واپسی پر معائنے کے بعد واپس کی جائے گی، نقصان یا اضافی کلومیٹر کے چارجز منہا کر کے۔';
 
   @override
   String get contractTerm10 =>
@@ -5524,7 +5609,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get damageRepairCostHint => 'مثلاً 5000';
 
   @override
-  String get damageDeductFromDeposit => 'ڈپازٹ سے کاٹیں';
+  String get damageDeductFromDeposit => 'سیکیورٹی سے کاٹیں';
 
   @override
   String get damageSave => 'محفوظ کریں';
@@ -6421,7 +6506,7 @@ class AppLocalizationsUr extends AppLocalizations {
   }
 
   @override
-  String get estimateDeposit => 'سیکیورٹی ڈپازٹ';
+  String get estimateDeposit => 'سیکیورٹی';
 
   @override
   String get estimateHint =>
@@ -6472,7 +6557,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get vehicleDetailRatesTitle => 'نرخ';
 
   @override
-  String get vehicleDetailDeposit => 'سیکیورٹی ڈپازٹ';
+  String get vehicleDetailDeposit => 'سیکیورٹی';
 
   @override
   String get vehicleDetailFareTable => 'کرایہ جدول';
@@ -6872,7 +6957,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get creditsToggleReturn => 'واپسی کی یاد دہانی اور تاخیر کی تنبیہ';
 
   @override
-  String get creditsToggleDeposit => 'ڈپازٹ واپس کر دیا گیا';
+  String get creditsToggleDeposit => 'سیکیورٹی واپس کر دی گئی';
 
   @override
   String get creditsToggleDues => 'بقایا جات کی یاد دہانی';
@@ -7253,16 +7338,16 @@ class AppLocalizationsUr extends AppLocalizations {
   String get customersViewProfile => 'پروفائل دیکھیں';
 
   @override
-  String get returnRefundDeposit => 'ڈپازٹ واپس کریں';
+  String get returnRefundDeposit => 'سیکیورٹی واپس کریں';
 
   @override
   String returnRefundRecorded(String amount) {
-    return 'ڈپازٹ کی واپسی درج کر دی گئی: $amount روپے۔';
+    return 'سیکیورٹی کی واپسی درج کر دی گئی: $amount روپے۔';
   }
 
   @override
   String get returnRefundFailed =>
-      'ڈپازٹ کی واپسی درج نہ ہو سکی۔ دوبارہ کوشش کریں۔';
+      'سیکیورٹی کی واپسی درج نہ ہو سکی۔ دوبارہ کوشش کریں۔';
 
   @override
   String get returnRecordingRefund => 'واپسی درج ہو رہی ہے…';
@@ -7343,7 +7428,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get legalTermsBody =>
-      'رینٹل ہب کی شرائطِ خدمت\n\n1. رینٹل ہب کیا ہے\nرینٹل ہب پاکستان میں گاڑیاں کرائے پر دینے کا ایک بازار ہے جو گاڑیوں کے مالکان (دکانوں) کو گاہکوں سے جوڑتا ہے۔ مالکان اپنی گاڑیاں لسٹ کرتے ہیں اور اپنے نرخ خود مقرر کرتے ہیں؛ گاہک ایپ کے ذریعے بکنگ کرتے ہیں۔\n\n2. آپ کا اکاؤنٹ\nآپ اپنے سائن ان کی تفصیلات محفوظ رکھنے اور اپنے اکاؤنٹ سے ہونے والے ہر کام کے ذمہ دار ہیں۔ اپنے، اپنی دکان اور اپنی گاڑیوں کے بارے میں درست معلومات دیں۔\n\n3. بکنگ اور ادائیگیاں\nبکنگ کی قیمتیں گاڑی کے مالک مقرر کرتے ہیں۔ ادائیگیاں، ایڈوانس اور سیکیورٹی ڈپازٹ بکنگ کے وقت دکھائی گئی شرائط کے مطابق ہوں گے۔ بکنگ اس بکنگ کے لیے دکھائی گئی منسوخی کی شرائط کے تحت منسوخ کی جا سکتی ہے۔\n\n4. آپ کی ذمہ داریاں\nمالکان کو اپنی گاڑیاں سڑک کے قابل، بیمہ شدہ اور قانونی طور پر رجسٹرڈ رکھنا چاہیے اور تصدیق شدہ بکنگوں کی پاسداری کرنی چاہیے۔ گاہکوں کو گاڑیاں وقت پر، موصول شدہ حالت میں واپس کرنی چاہییں اور نقصان، دیر سے واپسی یا اضافی کلومیٹر کے طے شدہ اضافی چارجز ادا کرنے چاہییں۔\n\n5. ممنوعہ استعمال\nرینٹل ہب کو کسی غیر قانونی کام کے لیے استعمال نہ کریں، ایسی گاڑی لسٹ نہ کریں جسے کرائے پر دینے کا حق آپ کو حاصل نہ ہو، اور کسی دوسرے شخص کی ذاتی معلومات ان کی اجازت کے بغیر شیئر نہ کریں۔\n\n6. ذمہ داری\nرینٹل ہب بازار اور بکنگ کے اوزار فراہم کرتا ہے۔ مالکان اور گاہک اپنی گاڑیوں، ڈرائیونگ اور ایک دوسرے کے ساتھ اپنے معاہدوں کے خود ذمہ دار ہیں۔ قانون کی اجازت کی حد تک، رینٹل ہب مالک اور گاہک کے درمیان کرائے سے ہونے والے نقصان یا خرابی کا ذمہ دار نہیں ہے۔\n\n7. تبدیلیاں اور رابطہ\nہم ان شرائط کو اپ ڈیٹ کر سکتے ہیں اور موجودہ نسخہ ایپ میں دکھایا جائے گا۔ سوالات کے لیے ایپ کے مدد کے حصے سے رینٹل ہب سپورٹ سے رابطہ کریں۔';
+      'رینٹل ہب کی شرائطِ خدمت\n\n1. رینٹل ہب کیا ہے\nرینٹل ہب پاکستان میں گاڑیاں کرائے پر دینے کا ایک بازار ہے جو گاڑیوں کے مالکان (دکانوں) کو گاہکوں سے جوڑتا ہے۔ مالکان اپنی گاڑیاں لسٹ کرتے ہیں اور اپنے نرخ خود مقرر کرتے ہیں؛ گاہک ایپ کے ذریعے بکنگ کرتے ہیں۔\n\n2. آپ کا اکاؤنٹ\nآپ اپنے سائن ان کی تفصیلات محفوظ رکھنے اور اپنے اکاؤنٹ سے ہونے والے ہر کام کے ذمہ دار ہیں۔ اپنے، اپنی دکان اور اپنی گاڑیوں کے بارے میں درست معلومات دیں۔\n\n3. بکنگ اور ادائیگیاں\nبکنگ کی قیمتیں گاڑی کے مالک مقرر کرتے ہیں۔ ادائیگیاں، ایڈوانس اور سیکیورٹی بکنگ کے وقت دکھائی گئی شرائط کے مطابق ہوں گی۔ بکنگ اس بکنگ کے لیے دکھائی گئی منسوخی کی شرائط کے تحت منسوخ کی جا سکتی ہے۔\n\n4. آپ کی ذمہ داریاں\nمالکان کو اپنی گاڑیاں سڑک کے قابل، بیمہ شدہ اور قانونی طور پر رجسٹرڈ رکھنا چاہیے اور تصدیق شدہ بکنگوں کی پاسداری کرنی چاہیے۔ گاہکوں کو گاڑیاں وقت پر، موصول شدہ حالت میں واپس کرنی چاہییں اور نقصان، دیر سے واپسی یا اضافی کلومیٹر کے طے شدہ اضافی چارجز ادا کرنے چاہییں۔\n\n5. ممنوعہ استعمال\nرینٹل ہب کو کسی غیر قانونی کام کے لیے استعمال نہ کریں، ایسی گاڑی لسٹ نہ کریں جسے کرائے پر دینے کا حق آپ کو حاصل نہ ہو، اور کسی دوسرے شخص کی ذاتی معلومات ان کی اجازت کے بغیر شیئر نہ کریں۔\n\n6. ذمہ داری\nرینٹل ہب بازار اور بکنگ کے اوزار فراہم کرتا ہے۔ مالکان اور گاہک اپنی گاڑیوں، ڈرائیونگ اور ایک دوسرے کے ساتھ اپنے معاہدوں کے خود ذمہ دار ہیں۔ قانون کی اجازت کی حد تک، رینٹل ہب مالک اور گاہک کے درمیان کرائے سے ہونے والے نقصان یا خرابی کا ذمہ دار نہیں ہے۔\n\n7. تبدیلیاں اور رابطہ\nہم ان شرائط کو اپ ڈیٹ کر سکتے ہیں اور موجودہ نسخہ ایپ میں دکھایا جائے گا۔ سوالات کے لیے ایپ کے مدد کے حصے سے رینٹل ہب سپورٹ سے رابطہ کریں۔';
 
   @override
   String get legalPrivacyBody =>
@@ -8892,7 +8977,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get admin2_settingsNumbersInvalid =>
-      'ایڈوانس فیصد، ڈپازٹ اور تاخیر کی مہلت اعداد ہونے چاہئیں۔';
+      'ایڈوانس فیصد، سیکیورٹی اور تاخیر کی مہلت اعداد ہونے چاہئیں۔';
 
   @override
   String get admin2_settingsSaved => 'پلیٹ فارم کی ترتیبات محفوظ ہو گئیں۔';
@@ -8907,7 +8992,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get admin2_settingsAdvance => 'ایڈوانس فیصد';
 
   @override
-  String get admin2_settingsDeposit => 'ڈیفالٹ ڈپازٹ (روپے)';
+  String get admin2_settingsDeposit => 'ڈیفالٹ سیکیورٹی (روپے)';
 
   @override
   String get admin2_settingsGrace => 'تاخیر کی مہلت (منٹ)';
@@ -9077,7 +9162,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get admin2_disputeNoShopStatement =>
-      'دکان کا کوئی تحریری بیان ریکارڈ میں نہیں ہے — فیصلہ بکنگ، حوالگی اور ڈپازٹ ریکارڈ کی بنیاد پر کیا جاتا ہے۔';
+      'دکان کا کوئی تحریری بیان ریکارڈ میں نہیں ہے — فیصلہ بکنگ، حوالگی اور سیکیورٹی ریکارڈ کی بنیاد پر کیا جاتا ہے۔';
 
   @override
   String get admin2_disputeDecisionHeading => 'فیصلہ';
@@ -9191,7 +9276,7 @@ class AppLocalizationsUr extends AppLocalizations {
   }
 
   @override
-  String get admin2_bookingDetailPaymentDeposit => 'ادائیگی اور ڈپازٹ';
+  String get admin2_bookingDetailPaymentDeposit => 'ادائیگی اور سیکیورٹی';
 
   @override
   String admin2_bookingDetailPaymentProof(String url) {
@@ -9199,11 +9284,11 @@ class AppLocalizationsUr extends AppLocalizations {
   }
 
   @override
-  String get admin2_bookingDetailNoDeposit => 'ڈپازٹ کا کوئی ریکارڈ نہیں۔';
+  String get admin2_bookingDetailNoDeposit => 'سیکیورٹی کا کوئی ریکارڈ نہیں۔';
 
   @override
   String admin2_bookingDetailDeposit(String amount, String status) {
-    return 'ڈپازٹ $amount — $status';
+    return 'سیکیورٹی $amount — $status';
   }
 
   @override
@@ -9305,7 +9390,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get admin2_carReviewWeekly => 'ہفتہ وار قیمت';
 
   @override
-  String get admin2_carReviewDeposit => 'سیکیورٹی ڈپازٹ';
+  String get admin2_carReviewDeposit => 'سیکیورٹی';
 
   @override
   String get admin2_carReviewTracker => 'ٹریکر';
@@ -9640,7 +9725,7 @@ class AppLocalizationsUr extends AppLocalizations {
       'ایڈوانس 0 اور 100 کے درمیان ہونا چاہیے۔';
 
   @override
-  String get admin2_settingsDepositNegative => 'ڈپازٹ منفی نہیں ہو سکتا۔';
+  String get admin2_settingsDepositNegative => 'سیکیورٹی منفی نہیں ہو سکتی۔';
 
   @override
   String get admin2_settingsGraceNegative => 'تاخیر کی مہلت منفی نہیں ہو سکتی۔';
@@ -9705,7 +9790,7 @@ class AppLocalizationsUr extends AppLocalizations {
   @override
   String admin2_bookingDetailDepositDeducted(
       String amount, String status, String deducted) {
-    return 'ڈپازٹ $amount — $status (کٹوتی $deducted)';
+    return 'سیکیورٹی $amount — $status (کٹوتی $deducted)';
   }
 
   @override
@@ -9806,11 +9891,11 @@ class AppLocalizationsUr extends AppLocalizations {
   }
 
   @override
-  String get admin2_bookingSummaryDepositNone => 'ڈپازٹ: کوئی نہیں';
+  String get admin2_bookingSummaryDepositNone => 'سیکیورٹی: کوئی نہیں';
 
   @override
   String admin2_bookingSummaryDeposit(String amount, String status) {
-    return 'ڈپازٹ: $amount ($status)';
+    return 'سیکیورٹی: $amount ($status)';
   }
 
   @override
@@ -9894,7 +9979,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get depositRefundTerms =>
-      'واپسی کے معائنے کے بعد ڈپازٹ واپس کیا جائے گا، نقصان اور اضافی کلومیٹر کے چارجز منہا کر کے۔';
+      'واپسی کے معائنے کے بعد سیکیورٹی واپس کی جائے گی، نقصان اور اضافی کلومیٹر کے چارجز منہا کر کے۔';
 
   @override
   String disputeLastUpdated(String date) {
@@ -10008,10 +10093,10 @@ class AppLocalizationsUr extends AppLocalizations {
   String get manualBookingPaidNow => 'ابھی ادا شدہ';
 
   @override
-  String get manualBookingDepositReceived => 'ڈپازٹ موصول';
+  String get manualBookingDepositReceived => 'سیکیورٹی موصول';
 
   @override
-  String get manualBookingDepositMethod => 'ڈپازٹ کا طریقہ';
+  String get manualBookingDepositMethod => 'سیکیورٹی کا طریقہ';
 
   @override
   String get manualBookingRemainingDues => 'باقی واجبات';
@@ -10075,7 +10160,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get returnCloseBookingHint =>
-      'بکنگ بند کرنے سے پہلے ڈپازٹ کی واپسی درج کریں۔';
+      'بکنگ بند کرنے سے پہلے سیکیورٹی کی واپسی درج کریں۔';
 
   @override
   String get returnFinalizeFailedGeneric =>
@@ -10265,7 +10350,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String vehicleDepositCnic(String amount) {
-    return 'سیکیورٹی ڈپازٹ: $amount + پک اپ پر اصل نادرا شناختی کارڈ ضمانت کے طور پر درکار ہے';
+    return 'سیکیورٹی: $amount + پک اپ پر اصل نادرا شناختی کارڈ ضمانت کے طور پر درکار ہے';
   }
 
   @override
@@ -10353,7 +10438,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String approveAssignDepositPickup(String amount) {
-    return 'وصولی پر قابل واپسی ضمانت: $amount';
+    return 'وصولی پر قابل واپسی سیکیورٹی: $amount';
   }
 
   @override
@@ -10430,10 +10515,10 @@ class AppLocalizationsUr extends AppLocalizations {
   String get handoverWizardAdvancePaid => 'ایڈوانس (آن لائن ادا شدہ)';
 
   @override
-  String get handoverWizardDepositMethod => 'ڈپازٹ کا طریقہ';
+  String get handoverWizardDepositMethod => 'سیکیورٹی کا طریقہ';
 
   @override
-  String get handoverWizardDepositReceived => 'ڈپازٹ موصول ہوا';
+  String get handoverWizardDepositReceived => 'سیکیورٹی موصول ہوئی';
 
   @override
   String get handoverWizardBalanceReceived => 'بقیہ رقم موصول ہوئی';
@@ -10455,7 +10540,7 @@ class AppLocalizationsUr extends AppLocalizations {
   @override
   String handoverWizardReceiptMessage(String receipt, String vehicle,
       String total, String advance, String balance, String deposit) {
-    return 'حوالگی کی رسید $receipt برائے $vehicle: کل روپے $total، ایڈوانس روپے $advance، بقیہ روپے $balance، ڈپازٹ روپے $deposit۔ — رینٹل ہب';
+    return 'حوالگی کی رسید $receipt برائے $vehicle: کل روپے $total، ایڈوانس روپے $advance، بقیہ روپے $balance، سیکیورٹی روپے $deposit۔ — رینٹل ہب';
   }
 
   @override
@@ -10511,7 +10596,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get handoverWizardDepositMethodRequired =>
-      'آگے بڑھنے سے پہلے بتائیں کہ ڈپازٹ کیسے وصول ہوا۔';
+      'آگے بڑھنے سے پہلے بتائیں کہ سیکیورٹی کیسے وصول ہوئی۔';
 
   @override
   String get handoverWizardChecklistRequired =>

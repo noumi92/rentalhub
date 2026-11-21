@@ -196,12 +196,12 @@
   "summaryReturnDue": "واپسی کی تاریخ",
   "summaryPackageTier": "پیکج کی قسم",
   "summaryKmIncluded": "کلومیٹر شامل",
-  "summarySecurityDeposit": "سیکیورٹی ڈپازٹ",
+  "summarySecurityDeposit": "سیکیورٹی",
   "summaryTotalFare": "کل کرایہ",
   "summaryAdvancePayable": "قابل ادا ایڈوانس",
   "summaryBalanceAtHandover": "حوالگی پر باقی رقم",
   "walletTitle": "والیٹ اور سیکیورٹی ایسکرو",
-  "walletActiveEscrow": "شوروم کے پاس کل: ادا شدہ ایڈوانس + محفوظ ڈپازٹ",
+  "walletActiveEscrow": "شوروم کے پاس کل: ادا شدہ ایڈوانس + محفوظ سیکیورٹی",
   "walletAdvancesPaid": "ادا شدہ ایڈوانس",
   "walletSecurityEscrow": "سیکیورٹی ایسکرو",
   "walletLedger": "لین دین کی فہرست",
@@ -209,11 +209,87 @@
   "walletShowAmount": "رقم دکھائیں",
   "walletHideBalance": "بیلنس چھپائیں",
   "walletShowBalance": "بیلنس دکھائیں",
-  "walletEmptyHint": "ایڈوانس اور ڈپازٹ یہاں ظاہر ہوں گے۔",
-  "walletLedgerEmptyHint": "آپ کے ادا کردہ ایڈوانس اور ڈپازٹ یہاں ظاہر ہوں گے۔",
+  "walletEmptyHint": "ایڈوانس اور سیکیورٹی یہاں ظاہر ہوں گے۔",
+  "walletLedgerEmptyHint": "آپ کے ادا کردہ ایڈوانس اور سیکیورٹی یہاں ظاہر ہوں گے۔",
   "walletLoadError": "آپ کا والیٹ لوڈ نہیں ہو سکا۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔",
   "walletLoading": "آپ کا والیٹ لوڈ ہو رہا ہے…",
   "walletNoActivity": "ابھی کوئی والیٹ سرگرمی نہیں۔",
+  "walletEntrySecurityHeld": "سیکیورٹی روکی گئی — {vehicle} ({booking})",
+  "@walletEntrySecurityHeld": {
+    "placeholders": {
+      "vehicle": {
+        "type": "String"
+      },
+      "booking": {
+        "type": "String"
+      }
+    }
+  },
+  "walletEntrySecurityReleased": "سیکیورٹی واپس کر دی گئی — {vehicle} ({booking})",
+  "@walletEntrySecurityReleased": {
+    "placeholders": {
+      "vehicle": {
+        "type": "String"
+      },
+      "booking": {
+        "type": "String"
+      }
+    }
+  },
+  "walletEntrySecurityReleasedCancel": "منسوخی پر سیکیورٹی واپس کر دی گئی — {vehicle} ({booking})",
+  "@walletEntrySecurityReleasedCancel": {
+    "placeholders": {
+      "vehicle": {
+        "type": "String"
+      },
+      "booking": {
+        "type": "String"
+      }
+    }
+  },
+  "walletEntrySecurityDeducted": "سیکیورٹی سے کٹوتی — {vehicle} ({booking})",
+  "@walletEntrySecurityDeducted": {
+    "placeholders": {
+      "vehicle": {
+        "type": "String"
+      },
+      "booking": {
+        "type": "String"
+      }
+    }
+  },
+  "walletEntrySecurityRefunded": "سیکیورٹی واپسی — {vehicle} ({booking})",
+  "@walletEntrySecurityRefunded": {
+    "placeholders": {
+      "vehicle": {
+        "type": "String"
+      },
+      "booking": {
+        "type": "String"
+      }
+    }
+  },
+  "walletEntrySecurityOwed": "سیکیورٹی ابھی واجب الادا — {vehicle} ({booking})",
+  "@walletEntrySecurityOwed": {
+    "placeholders": {
+      "vehicle": {
+        "type": "String"
+      },
+      "booking": {
+        "type": "String"
+      }
+    }
+  },
+  "walletSecuritySection": "سیکیورٹی",
+  "walletSecurityHeld": "روکی گئی",
+  "walletSecurityReleased": "واپس شدہ",
+  "walletSecurityDeducted": "کٹوتی",
+  "walletSecurityRefunded": "واپسی",
+  "walletSecurityOwed": "ابھی واجب الادا",
+  "ownerSecurityWalletTitle": "سیکیورٹی والیٹ",
+  "ownerSecurityWalletOnline": "آن لائن صارفین اپنا سیکیورٹی والیٹ خود سنبھالتے ہیں۔",
+  "customerDetailSecurityWallet": "سیکیورٹی والیٹ",
+  "ownerSecurityWalletEmpty": "اس صارف کی ابھی کوئی سیکیورٹی سرگرمی نہیں۔",
   "profileTotalTrips": "کل سفر",
   "profileTrustScore": "اعتماد اسکور",
   "profileLoading": "آپ کا پروفائل لوڈ ہو رہا ہے…",
@@ -260,7 +336,7 @@
   "supportNoBooking": "ابھی کوئی بکنگ نہیں",
   "supportNoBookingHint": "ابھی کوئی بکنگ نہیں — بکنگ ہونے کے بعد شوروم کا رابطہ یہاں ظاہر ہوگا۔",
   "supportFileDispute": "باقاعدہ شکایت / تنازع درج کریں",
-  "supportDisputeHint": "زیادہ چارج یا ڈپازٹ روکا گیا؟ ثالثی کا دعویٰ درج کریں۔",
+  "supportDisputeHint": "زیادہ چارج یا سیکیورٹی روکی گئی؟ ثالثی کا دعویٰ درج کریں۔",
   "supportFaqTitle": "اکثر پوچھے جانے والے سوالات",
   "supportFaqEmpty": "آپ کی تلاش سے کوئی مدد کا موضوع نہیں ملا۔",
   "supportFaqEmptyHint": "کوئی اور لفظ آزمائیں، یا اپنے شوروم سے براہ راست پوچھیں۔",
@@ -268,8 +344,8 @@
   "supportSosSubtitle": "پولیس 15 · ریسکیو 1122 — ایک ٹیپ میں ایمرجنسی مدد۔",
   "supportFaqQ1": "ایڈوانس ادائیگی میری بکنگ کی حفاظت کیسے کرتی ہے؟",
   "supportFaqA1": "آپ کی ایڈوانس ادائیگی گاڑی کو آپ کے مقررہ وقت کے لیے خصوصی طور پر محفوظ کرتی ہے اور شوروم کی بکنگ کی ضمانت دیتی ہے۔ یہ محفوظ طریقے سے درج کی جاتی ہے اور آپ کے حتمی بل سے منہا کر دی جاتی ہے۔",
-  "supportFaqQ2": "میرا سیکیورٹی ڈپازٹ کب واپس ملتا ہے؟",
-  "supportFaqA2": "ڈپازٹ واپسی کی حوالگی پر طے کیا جاتا ہے۔ اضافی کلومیٹر، ایندھن یا نقصان کی کوئی بھی کٹوتی تصفیے میں دکھائی جاتی ہے، اور باقی رقم آپ کو واپس کر دی جاتی ہے۔",
+  "supportFaqQ2": "میری سیکیورٹی کب واپس ملتی ہے؟",
+  "supportFaqA2": "سیکیورٹی واپسی کی حوالگی پر طے کی جاتی ہے۔ اضافی کلومیٹر، ایندھن یا نقصان کی کوئی بھی کٹوتی تصفیے میں دکھائی جاتی ہے، اور باقی رقم آپ کو واپس کر دی جاتی ہے۔",
   "supportFaqQ3": "اگر گاڑی خراب ہو جائے تو کیا ہوتا ہے؟",
   "supportFaqA3": "سڑک پر مدد شوروم پر منحصر ہے — گاڑی لیتے وقت اپنے شوروم سے پوچھیں۔ ایمرجنسی کے لیے ایمرجنسی SOS اسکرین استعمال کریں۔",
   "supportFaqQ4": "کیا میں کرایہ کی گاڑی شہر سے باہر لے جا سکتا ہوں؟",
@@ -299,7 +375,7 @@
   "sosNoBookingHint": "ابھی کوئی بکنگ نہیں — بکنگ ہونے کے بعد آپ کی موجودہ جگہ آپ کے شوروم کے ساتھ شیئر کی جائے گی۔",
   "sosLocationPermission": "اپنی موجودہ جگہ شیئر کرنے کے لیے جگہ کی اجازت درکار ہے۔",
   "disputeTitle": "شکایت / تنازع درج کریں",
-  "disputeDepositWithheld": "ڈپازٹ روکا گیا",
+  "disputeDepositWithheld": "سیکیورٹی روکی گئی",
   "disputeOvercharge": "شوروم کی زیادہ چارجنگ",
   "disputeBreakdown": "گاڑی خراب ہونے سے تاخیر",
   "disputeDamagePenalty": "ناانصافی پر مبنی نقصان کا جرمانہ",
@@ -337,7 +413,7 @@
   "cancelConfirm": "منسوخی کی تصدیق کریں",
   "cancelCancelling": "منسوخ کیا جا رہا ہے…",
   "cancelWhatHappens": "منسوخ کرنے پر کیا ہوتا ہے",
-  "cancelNoAdvanceNote": "ابھی کوئی ایڈوانس ادا نہیں ہوا، اس لیے واپسی کے لیے کچھ نہیں۔ کوئی سیکیورٹی ڈپازٹ نہیں لیا گیا: ڈپازٹ صرف حوالگی پر لیا جاتا ہے۔",
+  "cancelNoAdvanceNote": "ابھی کوئی ایڈوانس ادا نہیں ہوا، اس لیے واپسی کے لیے کچھ نہیں۔ اگر سیکیورٹی لی گئی ہو تو وہ پوری واپس کر دی جائے گی۔",
   "cancelDone": "بکنگ منسوخ کر دی گئی۔",
   "cancelReasonPlans": "سفر کے منصوبے بدل گئے",
   "cancelReasonOtherVehicle": "دوسری گاڑی مل گئی",
@@ -455,7 +531,7 @@
   "passNoPhone": "اس شوروم کا فون نمبر ابھی درج نہیں۔",
   "passOpenMapsError": "نقشہ نہیں کھولا جا سکا۔",
   "passOpenAgreementError": "معاہدہ نہیں کھولا جا سکا۔",
-  "driverRequiresCnic": "شناختی کارڈ + ڈپازٹ درکار ہے",
+  "driverRequiresCnic": "شناختی کارڈ + سیکیورٹی درکار ہے",
   "driverVerifiedIncluded": "تصدیق شدہ ڈرائیور شامل ہے",
   "authWelcome": "رینٹل ہب میں خوش آمدید",
   "authSignInSubtitle": "اپنے قریب گاڑی کرایہ پر لینے کے لیے سائن ان کریں",
@@ -545,7 +621,7 @@
   "roleCustomerUrdu": "گاڑی کرایہ پر لیں",
   "roleOwnerUrdu": "شوروم رجسٹر کریں",
   "advanceNoticeWithDriver": "• ڈرائیور شوروم / پک اپ پوائنٹ پر 15 منٹ پہلے پہنچتا ہے۔\n• ایڈوانس ادائیگی گاڑی کی بکنگ اور ایندھن کی ریزرویشن کی تصدیق کرتی ہے۔\n• آؤٹ اسٹیشن قیام: ڈرائیور کے کھانے اور رہائش کے لیے {nightStay} فی رات۔",
-  "advanceNoticeSelfDrive": "• حوالگی پر اصل نادرا شناختی کارڈ اور درست ڈرائیونگ لائسنس درکار ہے۔\n• ایڈوانس شوروم کے ساتھ گاڑی کی بکنگ کی تصدیق کرتا ہے۔\n• قابل واپسی سیکیورٹی ڈپازٹ حوالگی پر ڈیجیٹل یا نقد وصول کیا جاتا ہے۔",
+  "advanceNoticeSelfDrive": "• حوالگی پر اصل نادرا شناختی کارڈ اور درست ڈرائیونگ لائسنس درکار ہے۔\n• ایڈوانس شوروم کے ساتھ گاڑی کی بکنگ کی تصدیق کرتا ہے۔\n• قابل واپسی سیکیورٹی حوالگی پر ڈیجیٹل یا نقد وصول کی جاتی ہے۔",
   "ticketShowCode": "حوالگی کے لیے یہ کوڈ کاؤنٹر پر دکھائیں — اس سے آپ کی بکنگ اور معاہدہ کھلتا ہے۔",
   "bookingsEmptyForTab": "{tab} کی کوئی بکنگ نہیں ملی۔",
   "@bookingsEmptyForTab": {
@@ -703,7 +779,7 @@
       }
     }
   },
-  "vehicleSelectedMode": "منتخب: {mode}۔ ایڈوانس ڈپازٹ درکار ہے۔",
+  "vehicleSelectedMode": "منتخب: {mode}۔ سیکیورٹی پیشگی درکار ہے۔",
   "@vehicleSelectedMode": {
     "placeholders": {
       "mode": {
@@ -901,7 +977,7 @@
     }
   },
   "cancelFailedGeneric": "منسوخی ناکام رہی۔ براہ کرم دوبارہ کوشش کریں۔",
-  "cancelAdvancePaid": "آپ نے شوروم کے اکاؤنٹ میں براہ راست {amount} روپے ایڈوانس ادا کیا — رقم واپسی کا فیصلہ شوروم کرتا ہے، اس لیے اس بارے میں ان سے رابطہ کریں۔ کوئی سیکیورٹی ڈپازٹ نہیں لیا گیا: ڈپازٹ صرف حوالگی پر لیا جاتا ہے۔",
+  "cancelAdvancePaid": "آپ نے شوروم کے اکاؤنٹ میں براہ راست {amount} روپے ایڈوانس ادا کیا — رقم واپسی کا فیصلہ شوروم کرتا ہے، اس لیے اس بارے میں ان سے رابطہ کریں۔ اگر سیکیورٹی لی گئی ہو تو وہ پوری واپس کر دی جائے گی۔",
   "@cancelAdvancePaid": {
     "placeholders": {
       "amount": {
@@ -974,7 +1050,7 @@
       }
     }
   },
-  "successBody": "آپ کی بکنگ کی درخواست {vehicle} کے لیے {shop} کو پہنچا دی گئی ہے۔ منظوری کے بعد آپ کو ایڈوانس ڈپازٹ جمع کرنے کی اطلاع دی جائے گی۔",
+  "successBody": "آپ کی بکنگ کی درخواست {vehicle} کے لیے {shop} کو پہنچا دی گئی ہے۔ منظوری کے بعد آپ کو ایڈوانس سیکیورٹی جمع کرنے کی اطلاع دی جائے گی۔",
   "@successBody": {
     "placeholders": {
       "vehicle": {
@@ -1031,7 +1107,7 @@
       }
     }
   },
-  "packageSecurityDeposit": "سیکیورٹی ڈپازٹ: {amount} روپے",
+  "packageSecurityDeposit": "سیکیورٹی: {amount} روپے",
   "@packageSecurityDeposit": {
     "placeholders": {
       "amount": {
@@ -1295,7 +1371,7 @@
     }
   },
   "dashboardNoCompletedTrips": "ابھی کوئی مکمل سفر نہیں",
-  "dashboardSettleRate": "{percent}٪ ضمانتیں طے شدہ",
+  "dashboardSettleRate": "{percent}٪ سیکیورٹیز طے شدہ",
   "@dashboardSettleRate": {
     "placeholders": {
       "percent": {
@@ -1485,7 +1561,7 @@
   "addVehicleStep4Title": "جائزہ اور اشاعت",
   "addVehicleStep1Subtitle": "گنجائش، AC، خصوصیات اور تفصیلات",
   "addVehicleStep2Subtitle": "چار زاویوں کی تصاویر، بک اور ایکسائز ٹیکس",
-  "addVehicleStep3Subtitle": "گھنٹہ وار کرایے، ضمانت اور ایندھن پالیسی",
+  "addVehicleStep3Subtitle": "گھنٹہ وار کرایے، سیکیورٹی اور ایندھن پالیسی",
   "addVehicleStep4Subtitle": "لسٹ کرنے سے پہلے گاڑی کی تفصیلات چیک کریں",
   "addVehicleStepCounter": "مرحلہ {step} از 4",
   "@addVehicleStepCounter": {
@@ -1551,10 +1627,9 @@
   "addVehicleSelfDriveHint": "گاہک خود گاڑی چلاتا ہے",
   "addVehicleWithDriverService": "ڈرائیور کے ساتھ سروس",
   "addVehicleWithDriverHint": "دکان تجربہ کار ڈرائیور فراہم کرتی ہے",
-  "addVehicleDriverAllowance": "ڈرائیور کا یومیہ الاؤنس:",
   "addVehiclePerDaySuffix": "فی دن",
-  "addVehicleDepositPolicies": "ضمانت اور کرایے کی پالیسیاں",
-  "addVehicleSecurityDepositSelfDrive": "ضمانت (سیلف ڈرائیو)",
+  "addVehicleDepositPolicies": "سیکیورٹی اور کرایے کی پالیسیاں",
+  "addVehicleSecurityDepositSelfDrive": "سیکیورٹی (سیلف ڈرائیو)",
   "addVehicleSecurityDepositHint": "گاڑی صاف حالت میں واپس کرنے پر واپس کی جائے گی",
   "addVehicleAdvanceFee": "ایڈوانس بکنگ فیس",
   "addVehicleAdvanceHint": "سلاٹ محفوظ کرنے کے لیے پیشگی درکار ہے",
@@ -1588,7 +1663,7 @@
       }
     }
   },
-  "addVehicleReviewDeposit": "ضمانت",
+  "addVehicleReviewDeposit": "سیکیورٹی",
   "addVehicleReviewAdvance": "ایڈوانس",
   "addVehicleReviewOverstay": "اضافی وقت",
   "addVehicleReviewBanner": "یہ گاڑی منظوری کے بعد فوری طور پر آپ کی فلیٹ کیٹلاگ میں دستیاب ہوگی اور قریبی گاہکوں کو نظر آئے گی۔",
@@ -1621,7 +1696,7 @@
   "unsavedChangesTitle": "غیر محفوظ شدہ تبدیلیاں ضائع کر دیں؟",
   "unsavedChangesBody": "آپ کی تبدیلیاں محفوظ نہیں ہوئیں۔",
   "pricingSelfDriveAllowed": "سیلف ڈرائیو کی اجازت ہے",
-  "pricingSelfDriveHint": "اصل نادرا شناختی کارڈ + ضمانت درکار ہے",
+  "pricingSelfDriveHint": "اصل نادرا شناختی کارڈ + سیکیورٹی درکار ہے",
   "pricingChauffeurAllowed": "ڈرائیور سروس کی اجازت ہے",
   "pricingChauffeurHint": "شوروم کا ڈرائیور بکنگ کے لیے مختص کیا جاتا ہے",
   "pricingPackage1h": "ایک گھنٹے کا شہر کا سفر",
@@ -1640,9 +1715,7 @@
   },
   "pricingOutOfCityDaily": "شہر سے باہر روزانہ (24 گھنٹے)",
   "pricingOutOfCityDailyCap": "300 کلومیٹر شامل + ٹریکر کلیئر",
-  "pricingWithDriverSurcharge": "ڈرائیور کے ساتھ اضافی چارج (فی دن)",
-  "pricingWithDriverSurchargeCap": "پیکج کی قیمت کے علاوہ شامل کیا جاتا ہے",
-  "pricingSecurityDeposit": "ضمانت",
+  "pricingSecurityDeposit": "سیکیورٹی",
   "pricingSecurityDepositCap": "واپسی کی جانچ کے بعد واپس کی جائے گی",
   "pricingAdvanceRequired": "ایڈوانس درکار ہے",
   "pricingAdvanceCap": "بکنگ کی تصدیق سے پہلے واجب الادا",
@@ -1903,7 +1976,7 @@
   "financeCategoryFuel": "ایندھن",
   "financeCategorySalary": "تنخواہ",
   "financeCategoryPartnerShare": "پارٹنر کا حصہ",
-  "financeCategoryDepositRefund": "ڈپازٹ واپسی",
+  "financeCategoryDepositRefund": "سیکیورٹی واپسی",
   "financeCategoryLabel": "قسم",
   "financeNoteOptional": "نوٹ (اختیاری)",
   "financeLedgerAmount": "{sign} {amount} روپے",
@@ -1929,11 +2002,11 @@
   "financeAddEntry": "اندراج شامل کریں",
   "financeLedgerEmpty": "ابھی کوئی اندراج نہیں — اپنی پہلی آمدنی یا خرچ ریکارڈ کریں۔",
   "financeAccountFallback": "اکاؤنٹ",
-  "financeSecurityDeposits": "سیکیورٹی ڈپازٹس",
+  "financeSecurityDeposits": "سیکیورٹی",
   "financeDepositsHeld": "ابھی محفوظ",
   "financeDepositsRefunded": "مکمل واپس",
   "financeDepositsDeducted": "واپسی پر کاٹا گیا",
-  "financeDepositsCount": "{count, plural, other{{count} ڈپازٹس}}",
+  "financeDepositsCount": "{count, plural, other{{count} سیکیورٹی}}",
   "@financeDepositsCount": {
     "placeholders": {
       "count": {
@@ -2173,7 +2246,7 @@
       }
     }
   },
-  "returnSettled": "گاڑی واپس ہو گئی! ڈپازٹ طے ہو گیا — {refund} روپے واپس کیے گئے۔",
+  "returnSettled": "گاڑی واپس ہو گئی! سیکیورٹی طے ہو گئی — {refund} روپے واپس کیے گئے۔",
   "@returnSettled": {
     "placeholders": {
       "refund": {
@@ -2195,8 +2268,8 @@
   "returnDamageChargeLabel": "نقصان کا چارج (روپے)",
   "returnDamageChargeHint": "0 اگر کچھ نیا نہیں ملا",
   "returnFinalizing": "تصفیہ مکمل ہو رہا ہے...",
-  "returnFinalize": "واپسی مکمل کریں اور ڈپازٹ طے کریں",
-  "returnReceiptTitle": "ڈپازٹ اور واپسی کے بیلنس کا تصفیہ",
+  "returnFinalize": "واپسی مکمل کریں اور سیکیورٹی طے کریں",
+  "returnReceiptTitle": "سیکیورٹی اور واپسی کے بیلنس کا تصفیہ",
   "returnReceiptTotalKm": "کل چلائے گئے کلومیٹر",
   "returnReceiptAllowance": "مجاز کلومیٹر کی حد",
   "returnReceiptExcessPenalty": "اضافی کلومیٹر جرمانہ ({excess} کلومیٹر × {rate} روپے)",
@@ -2213,7 +2286,7 @@
   "returnReceiptFuelDeficit": "ایندھن کی کمی",
   "returnReceiptOvertime": "دیر سے واپسی کی فیس",
   "returnReceiptDamage": "واپسی پر نقصان ملا",
-  "returnReceiptDepositHeld": "ابتدائی سیکیورٹی ڈپازٹ محفوظ",
+  "returnReceiptDepositHeld": "ابتدائی سیکیورٹی محفوظ",
   "returnReceiptTotalDeductions": "کل واقعہ / جرمانہ کٹوتیاں",
   "returnReceiptDeductionsAmount": "- {amount} روپے",
   "@returnReceiptDeductionsAmount": {
@@ -2262,7 +2335,7 @@
   "contractFieldOdometer": "روانگی اوڈومیٹر:",
   "contractFieldFuel": "حوالگی ایندھن گیج:",
   "contractFieldTotalPaid": "کل کرایہ ادا شدہ:",
-  "contractFieldDeposit": "سیکیورٹی ڈپازٹ:",
+  "contractFieldDeposit": "سیکیورٹی:",
   "contractWalkInCustomer": "واک اِن گاہک",
   "contractNotProvided": "فراہم نہیں کیا گیا",
   "contractChauffeur": "ڈرائیور کے ساتھ",
@@ -2392,7 +2465,7 @@
       }
     }
   },
-  "manualBookingDepositLabel": "سیکیورٹی ڈپازٹ (روپے)",
+  "manualBookingDepositLabel": "سیکیورٹی (روپے)",
   "manualBookingGuarantorNotFound": "اس شناختی کارڈ کا کوئی محفوظ گاہک نہیں — نیچے شامل کریں۔",
   "manualBookingGuarantorBlacklisted": "یہ شناختی کارڈ بلیک لسٹڈ ہے اور ضامن نہیں بن سکتا۔",
   "manualBookingGuarantorRequired": "ضامن کے لیے نام، فون اور شناختی کارڈ درکار ہیں۔",
@@ -2509,7 +2582,7 @@
   "onboardingShopAddress": "شوروم کا جسمانی پتہ",
   "onboardingAddressHint": "دکان نمبر، پلازہ، گلی، سیکٹر / کمرشل ایریا",
   "onboardingPayoutTitle": "ادائیگی اکاؤنٹس اور تصفیہ",
-  "onboardingPayoutSubtitle": "رینٹل بکنگز اور گاہکوں کے ایڈوانس ڈپازٹس وصول کرنے کے لیے کم از کم ایک ادائیگی چینل منتخب کریں۔",
+  "onboardingPayoutSubtitle": "رینٹل بکنگز اور گاہکوں کی ایڈوانس سیکیورٹی وصول کرنے کے لیے کم از کم ایک ادائیگی چینل منتخب کریں۔",
   "onboardingJazzCashTitle": "جیز کیش موبائل اکاؤنٹ",
   "onboardingJazzCashSubtitle": "فوری موبائل والیٹ ادائیگی",
   "onboardingEasyPaisaTitle": "ایزی پیسہ والیٹ اکاؤنٹ",
@@ -2938,6 +3011,15 @@
   "kycWizardGuarantorOptional": "ضامن اختیاری ہے — آپ اس کے بغیر بھی محفوظ کر سکتے ہیں",
   "kycWizardExtraSkipped": "محفوظ ہو گیا — کچھ اضافی دستاویزات آف لائن اپ لوڈ نہیں ہو سکیں",
   "bookingSearchHint": "نام، فون، گاڑی یا بکنگ نمبر تلاش کریں",
+  "bookingSettingsTitle": "بکنگ کی ترتیبات",
+  "bookingSettingsSubtitle": "پوری دکان کے لیے ڈرائیور کا نرخ",
+  "bookingSettingsDriverRate": "ڈرائیور کا نرخ (فی دن)",
+  "bookingSettingsDriverRateNote": "جب بھی سفر میں ڈرائیور ہو تو پیکج کی قیمت کے علاوہ یہ چارج لگے گا۔ کوئی اضافی چارج نہ ہو تو خالی چھوڑ دیں۔",
+  "bookingSettingsDriverRateUnset": "طے نہیں — ڈرائیور والے سفر پر کوئی اضافی چارج نہیں لگے گا۔",
+  "bookingSettingsSaved": "بکنگ کی ترتیبات محفوظ ہو گئیں۔",
+  "bookingSettingsLoadError": "بکنگ کی ترتیبات لوڈ نہیں ہو سکیں۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔",
+  "bookingSettingsEmpty": "بکنگ کی ترتیبات فی الحال دستیاب نہیں ہیں۔",
+  "bookingSettingsInvalidRate": "درست ڈرائیور نرخ درج کریں (0 یا زیادہ)۔",
   "bookingEmptyRejected": "کوئی مسترد شدہ درخواست نہیں ہے",
   "bookingDaysCount": "{count} دن",
   "@bookingDaysCount": {
@@ -3021,7 +3103,7 @@
   "contractTerm6": "6۔ نقصان کا چارج واپسی پر معائنے کے مطابق ہوگا۔",
   "contractTerm7": "7۔ گاڑی میں رہ جانے والے ذاتی سامان کا مالک ذمہ دار نہیں ہے۔",
   "contractTerm8": "8۔ یہ معاہدہ پاکستان کے قوانین کے تحت ہے۔",
-  "contractTerm9": "9۔ سیکیورٹی ڈپازٹ واپسی پر معائنے کے بعد واپس کیا جائے گا، نقصان یا اضافی کلومیٹر کے چارجز منہا کر کے۔",
+  "contractTerm9": "9۔ سیکیورٹی واپسی پر معائنے کے بعد واپس کی جائے گی، نقصان یا اضافی کلومیٹر کے چارجز منہا کر کے۔",
   "contractTerm10": "10۔ دونوں فریقین مندرجہ بالا شرائط سے متفق ہیں۔",
   "contractFieldAdvance": "ایڈوانس:",
   "contractFieldRemaining": "بقایا:",
@@ -3102,7 +3184,7 @@
   "damageDescriptionRequired": "براہ کرم نقصان کی تفصیل لکھیں۔",
   "damageRepairCostLabel": "مرمت کی لاگت",
   "damageRepairCostHint": "مثلاً 5000",
-  "damageDeductFromDeposit": "ڈپازٹ سے کاٹیں",
+  "damageDeductFromDeposit": "سیکیورٹی سے کاٹیں",
   "damageSave": "محفوظ کریں",
   "damageSaved": "نقصان کی رپورٹ محفوظ ہو گئی۔",
   "damageSaveFailed": "نقصان کی رپورٹ محفوظ نہ ہو سکی۔ دوبارہ کوشش کریں۔",
@@ -3538,7 +3620,7 @@
       }
     }
   },
-  "estimateDeposit": "سیکیورٹی ڈپازٹ",
+  "estimateDeposit": "سیکیورٹی",
   "estimateHint": "تخمینے آپ کے موجودہ نرخوں پر مبنی ہیں۔ انہیں ریٹ میٹرکس میں تبدیل کریں۔",
   "estimateGoToMyCars": "میری گاڑیوں پر جائیں",
   "vehiclePublishedTitle": "گاڑی شائع ہو گئی",
@@ -3586,7 +3668,7 @@
     }
   },
   "vehicleDetailRatesTitle": "نرخ",
-  "vehicleDetailDeposit": "سیکیورٹی ڈپازٹ",
+  "vehicleDetailDeposit": "سیکیورٹی",
   "vehicleDetailFareTable": "کرایہ جدول",
   "vehicleDetailBookingsTitle": "بکنگز",
   "vehicleDetailNoBookings": "اس گاڑی کی ابھی کوئی بکنگ نہیں۔",
@@ -3729,7 +3811,7 @@
   "creditsTogglePickupNote": "پک اپ سے 2 گھنٹے پہلے",
   "creditsToggleAgreement": "حوالگی پر معاہدے کی PDF",
   "creditsToggleReturn": "واپسی کی یاد دہانی اور تاخیر کی تنبیہ",
-  "creditsToggleDeposit": "ڈپازٹ واپس کر دیا گیا",
+  "creditsToggleDeposit": "سیکیورٹی واپس کر دی گئی",
   "creditsToggleDues": "بقایا جات کی یاد دہانی",
   "creditsToggleDuesNote": "ادائیگی تک ہر 3 دن بعد",
   "creditsBuy": "کریڈٹس خریدیں",
@@ -3865,8 +3947,8 @@
   "customersBadgeKycIncomplete": "کے وائی سی نامکمل",
   "customersBadgeDormant": "غیر فعال",
   "customersViewProfile": "پروفائل دیکھیں",
-  "returnRefundDeposit": "ڈپازٹ واپس کریں",
-  "returnRefundRecorded": "ڈپازٹ کی واپسی درج کر دی گئی: {amount} روپے۔",
+  "returnRefundDeposit": "سیکیورٹی واپس کریں",
+  "returnRefundRecorded": "سیکیورٹی کی واپسی درج کر دی گئی: {amount} روپے۔",
   "@returnRefundRecorded": {
     "placeholders": {
       "amount": {
@@ -3874,7 +3956,7 @@
       }
     }
   },
-  "returnRefundFailed": "ڈپازٹ کی واپسی درج نہ ہو سکی۔ دوبارہ کوشش کریں۔",
+  "returnRefundFailed": "سیکیورٹی کی واپسی درج نہ ہو سکی۔ دوبارہ کوشش کریں۔",
   "returnRecordingRefund": "واپسی درج ہو رہی ہے…",
   "returnCloseBooking": "بکنگ مکمل کر کے بند کریں",
   "contractFareTitle": "کرایے کی تفصیل",
@@ -3906,7 +3988,7 @@
   "authPrivacyPolicy": "رازداری کی پالیسی",
   "authLegalIntro": "جاری رکھ کر آپ ہماری",
   "authLegalAnd": "اور",
-  "legalTermsBody": "رینٹل ہب کی شرائطِ خدمت\n\n1. رینٹل ہب کیا ہے\nرینٹل ہب پاکستان میں گاڑیاں کرائے پر دینے کا ایک بازار ہے جو گاڑیوں کے مالکان (دکانوں) کو گاہکوں سے جوڑتا ہے۔ مالکان اپنی گاڑیاں لسٹ کرتے ہیں اور اپنے نرخ خود مقرر کرتے ہیں؛ گاہک ایپ کے ذریعے بکنگ کرتے ہیں۔\n\n2. آپ کا اکاؤنٹ\nآپ اپنے سائن ان کی تفصیلات محفوظ رکھنے اور اپنے اکاؤنٹ سے ہونے والے ہر کام کے ذمہ دار ہیں۔ اپنے، اپنی دکان اور اپنی گاڑیوں کے بارے میں درست معلومات دیں۔\n\n3. بکنگ اور ادائیگیاں\nبکنگ کی قیمتیں گاڑی کے مالک مقرر کرتے ہیں۔ ادائیگیاں، ایڈوانس اور سیکیورٹی ڈپازٹ بکنگ کے وقت دکھائی گئی شرائط کے مطابق ہوں گے۔ بکنگ اس بکنگ کے لیے دکھائی گئی منسوخی کی شرائط کے تحت منسوخ کی جا سکتی ہے۔\n\n4. آپ کی ذمہ داریاں\nمالکان کو اپنی گاڑیاں سڑک کے قابل، بیمہ شدہ اور قانونی طور پر رجسٹرڈ رکھنا چاہیے اور تصدیق شدہ بکنگوں کی پاسداری کرنی چاہیے۔ گاہکوں کو گاڑیاں وقت پر، موصول شدہ حالت میں واپس کرنی چاہییں اور نقصان، دیر سے واپسی یا اضافی کلومیٹر کے طے شدہ اضافی چارجز ادا کرنے چاہییں۔\n\n5. ممنوعہ استعمال\nرینٹل ہب کو کسی غیر قانونی کام کے لیے استعمال نہ کریں، ایسی گاڑی لسٹ نہ کریں جسے کرائے پر دینے کا حق آپ کو حاصل نہ ہو، اور کسی دوسرے شخص کی ذاتی معلومات ان کی اجازت کے بغیر شیئر نہ کریں۔\n\n6. ذمہ داری\nرینٹل ہب بازار اور بکنگ کے اوزار فراہم کرتا ہے۔ مالکان اور گاہک اپنی گاڑیوں، ڈرائیونگ اور ایک دوسرے کے ساتھ اپنے معاہدوں کے خود ذمہ دار ہیں۔ قانون کی اجازت کی حد تک، رینٹل ہب مالک اور گاہک کے درمیان کرائے سے ہونے والے نقصان یا خرابی کا ذمہ دار نہیں ہے۔\n\n7. تبدیلیاں اور رابطہ\nہم ان شرائط کو اپ ڈیٹ کر سکتے ہیں اور موجودہ نسخہ ایپ میں دکھایا جائے گا۔ سوالات کے لیے ایپ کے مدد کے حصے سے رینٹل ہب سپورٹ سے رابطہ کریں۔",
+  "legalTermsBody": "رینٹل ہب کی شرائطِ خدمت\n\n1. رینٹل ہب کیا ہے\nرینٹل ہب پاکستان میں گاڑیاں کرائے پر دینے کا ایک بازار ہے جو گاڑیوں کے مالکان (دکانوں) کو گاہکوں سے جوڑتا ہے۔ مالکان اپنی گاڑیاں لسٹ کرتے ہیں اور اپنے نرخ خود مقرر کرتے ہیں؛ گاہک ایپ کے ذریعے بکنگ کرتے ہیں۔\n\n2. آپ کا اکاؤنٹ\nآپ اپنے سائن ان کی تفصیلات محفوظ رکھنے اور اپنے اکاؤنٹ سے ہونے والے ہر کام کے ذمہ دار ہیں۔ اپنے، اپنی دکان اور اپنی گاڑیوں کے بارے میں درست معلومات دیں۔\n\n3. بکنگ اور ادائیگیاں\nبکنگ کی قیمتیں گاڑی کے مالک مقرر کرتے ہیں۔ ادائیگیاں، ایڈوانس اور سیکیورٹی بکنگ کے وقت دکھائی گئی شرائط کے مطابق ہوں گی۔ بکنگ اس بکنگ کے لیے دکھائی گئی منسوخی کی شرائط کے تحت منسوخ کی جا سکتی ہے۔\n\n4. آپ کی ذمہ داریاں\nمالکان کو اپنی گاڑیاں سڑک کے قابل، بیمہ شدہ اور قانونی طور پر رجسٹرڈ رکھنا چاہیے اور تصدیق شدہ بکنگوں کی پاسداری کرنی چاہیے۔ گاہکوں کو گاڑیاں وقت پر، موصول شدہ حالت میں واپس کرنی چاہییں اور نقصان، دیر سے واپسی یا اضافی کلومیٹر کے طے شدہ اضافی چارجز ادا کرنے چاہییں۔\n\n5. ممنوعہ استعمال\nرینٹل ہب کو کسی غیر قانونی کام کے لیے استعمال نہ کریں، ایسی گاڑی لسٹ نہ کریں جسے کرائے پر دینے کا حق آپ کو حاصل نہ ہو، اور کسی دوسرے شخص کی ذاتی معلومات ان کی اجازت کے بغیر شیئر نہ کریں۔\n\n6. ذمہ داری\nرینٹل ہب بازار اور بکنگ کے اوزار فراہم کرتا ہے۔ مالکان اور گاہک اپنی گاڑیوں، ڈرائیونگ اور ایک دوسرے کے ساتھ اپنے معاہدوں کے خود ذمہ دار ہیں۔ قانون کی اجازت کی حد تک، رینٹل ہب مالک اور گاہک کے درمیان کرائے سے ہونے والے نقصان یا خرابی کا ذمہ دار نہیں ہے۔\n\n7. تبدیلیاں اور رابطہ\nہم ان شرائط کو اپ ڈیٹ کر سکتے ہیں اور موجودہ نسخہ ایپ میں دکھایا جائے گا۔ سوالات کے لیے ایپ کے مدد کے حصے سے رینٹل ہب سپورٹ سے رابطہ کریں۔",
   "legalPrivacyBody": "رینٹل ہب کی رازداری کی پالیسی\n\n1. ہم کیا جمع کرتے ہیں\nہم وہ معلومات جمع کرتے ہیں جو آپ ہمیں دیتے ہیں: آپ کا نام، فون نمبر، ای میل پتہ، شناختی کارڈ کی تفصیلات اور دستاویزات، دکان کی تفصیلات، گاڑیوں کی تفصیلات اور تصاویر، بکنگ اور ادائیگی کا ریکارڈ، اور ایپ کے ذریعے بھیجے گئے پیغامات۔ ہم بنیادی تکنیکی معلومات بھی جمع کرتے ہیں جیسے ڈیوائس کی قسم اور ایپ کا استعمال جو سروس چلانے کے لیے ضروری ہے۔\n\n2. ہم اسے کیسے استعمال کرتے ہیں\nہم آپ کی معلومات رینٹل ہب چلانے کے لیے استعمال کرتے ہیں: اکاؤنٹ بنانے اور تصدیق کرنے، گاڑیاں لسٹ کرنے، بکنگ اور ادائیگیاں مکمل کرنے، دھوکہ دہی اور بلیک لسٹ شدہ کرایوں کو روکنے، اور آپ کی بکنگوں اور آپ کی دکان کے بارے میں آپ سے رابطہ کرنے کے لیے۔\n\n3. ہم اسے کیسے شیئر کرتے ہیں\nہم آپ کی معلومات صرف سروس چلانے کے لیے ضرورت کے مطابق شیئر کرتے ہیں: آپ کی بکنگ کے دوسرے فریق (مالک یا گاہک) کے ساتھ، ادائیگیاں مکمل کرنے کے لیے ادائیگی فراہم کرنے والوں کے ساتھ، اور جب قانون کا تقاضا ہو تو حکام کے ساتھ۔ ہم آپ کی ذاتی معلومات فروخت نہیں کرتے۔\n\n4. تصاویر اور دستاویزات\nشناختی کارڈ کی تصاویر، سیلفیز، لائسنس اور دکان کی تصاویر صرف تصدیق اور کرائے کے ریکارڈ کے لیے استعمال ہوتی ہیں۔ وہ چہرے کی شناخت کے لیے استعمال نہیں ہوتیں اور عوامی طور پر شیئر نہیں کی جاتیں۔\n\n5. ہم اسے کب تک رکھتے ہیں\nہم آپ کی معلومات اس وقت تک رکھتے ہیں جب تک آپ کا اکاؤنٹ فعال ہے اور جب تک بکنگ، ادائیگیوں، تنازعات اور قانونی ریکارڈ کے لیے ضرورت ہو۔ آپ مدد کے حصے سے اپنے اکاؤنٹ اور اس کی ذاتی معلومات حذف کرنے کے لیے کہہ سکتے ہیں، سوائے ان ریکارڈوں کے جو قانون کے مطابق رکھنا ضروری ہیں۔\n\n6. آپ کے انتخاب\nآپ ایپ میں اپنی پروفائل اور دکان کی تفصیلات اپ ڈیٹ کر سکتے ہیں، اور سیٹنگز میں ایپ کی اطلاعات آن یا آف کر سکتے ہیں۔\n\n7. رابطہ\nاپنے ڈیٹا کے بارے میں سوالات کے لیے ایپ کے مدد کے حصے سے رینٹل ہب سپورٹ سے رابطہ کریں۔",
   "onboardingSubmitForReview": "جائزے کے لیے جمع کرائیں",
   "onboardingDocRequired": "{document} جمع کرانے سے پہلے ضروری ہے۔",
@@ -4724,12 +4806,12 @@
   "admin2_settingsTitle": "شہر اور ترتیبات",
   "admin2_settingsSubtitle": "پلیٹ فارم کی ڈیفالٹ ترتیبات، ایک دستاویز میں",
   "admin2_settingsLoadFailed": "پلیٹ فارم کی ترتیبات لوڈ نہیں ہو سکیں۔",
-  "admin2_settingsNumbersInvalid": "ایڈوانس فیصد، ڈپازٹ اور تاخیر کی مہلت اعداد ہونے چاہئیں۔",
+  "admin2_settingsNumbersInvalid": "ایڈوانس فیصد، سیکیورٹی اور تاخیر کی مہلت اعداد ہونے چاہئیں۔",
   "admin2_settingsSaved": "پلیٹ فارم کی ترتیبات محفوظ ہو گئیں۔",
   "admin2_settingsCities": "فعال شہر (کاما سے الگ کریں)",
   "admin2_settingsCategories": "گاڑیوں کی اقسام (کاما سے الگ کریں)",
   "admin2_settingsAdvance": "ایڈوانس فیصد",
-  "admin2_settingsDeposit": "ڈیفالٹ ڈپازٹ (روپے)",
+  "admin2_settingsDeposit": "ڈیفالٹ سیکیورٹی (روپے)",
   "admin2_settingsGrace": "تاخیر کی مہلت (منٹ)",
   "admin2_settingsSupportHours": "سپورٹ کے اوقات",
   "admin2_settingsAgreementTerms": "ڈیفالٹ معاہدے کی شرائط",
@@ -4881,7 +4963,7 @@
       }
     }
   },
-  "admin2_disputeNoShopStatement": "دکان کا کوئی تحریری بیان ریکارڈ میں نہیں ہے — فیصلہ بکنگ، حوالگی اور ڈپازٹ ریکارڈ کی بنیاد پر کیا جاتا ہے۔",
+  "admin2_disputeNoShopStatement": "دکان کا کوئی تحریری بیان ریکارڈ میں نہیں ہے — فیصلہ بکنگ، حوالگی اور سیکیورٹی ریکارڈ کی بنیاد پر کیا جاتا ہے۔",
   "admin2_disputeDecisionHeading": "فیصلہ",
   "admin2_disputeFullCustomer": "گاہک کو مکمل رقم کی واپسی",
   "admin2_disputePartial": "جزوی — تقسیم",
@@ -4948,7 +5030,7 @@
       }
     }
   },
-  "admin2_bookingDetailPaymentDeposit": "ادائیگی اور ڈپازٹ",
+  "admin2_bookingDetailPaymentDeposit": "ادائیگی اور سیکیورٹی",
   "admin2_bookingDetailPaymentProof": "ادائیگی کا ثبوت: {url}",
   "@admin2_bookingDetailPaymentProof": {
     "placeholders": {
@@ -4957,8 +5039,8 @@
       }
     }
   },
-  "admin2_bookingDetailNoDeposit": "ڈپازٹ کا کوئی ریکارڈ نہیں۔",
-  "admin2_bookingDetailDeposit": "ڈپازٹ {amount} — {status}",
+  "admin2_bookingDetailNoDeposit": "سیکیورٹی کا کوئی ریکارڈ نہیں۔",
+  "admin2_bookingDetailDeposit": "سیکیورٹی {amount} — {status}",
   "@admin2_bookingDetailDeposit": {
     "placeholders": {
       "amount": {
@@ -5052,7 +5134,7 @@
   "admin2_carReviewOutCityDaily": "شہر سے باہر روزانہ",
   "admin2_carReviewNotSet": "طے نہیں ہوا",
   "admin2_carReviewWeekly": "ہفتہ وار قیمت",
-  "admin2_carReviewDeposit": "سیکیورٹی ڈپازٹ",
+  "admin2_carReviewDeposit": "سیکیورٹی",
   "admin2_carReviewTracker": "ٹریکر",
   "admin2_carReviewInsurance": "انشورنس پالیسی",
   "admin2_carReviewChassis": "چیسس",
@@ -5295,7 +5377,7 @@
   "admin2_inviteAcceptGranting": "دیا جا رہا ہے…",
   "admin2_inviteAcceptBackToTeam": "ٹیم پر واپس",
   "admin2_settingsAdvanceRange": "ایڈوانس 0 اور 100 کے درمیان ہونا چاہیے۔",
-  "admin2_settingsDepositNegative": "ڈپازٹ منفی نہیں ہو سکتا۔",
+  "admin2_settingsDepositNegative": "سیکیورٹی منفی نہیں ہو سکتی۔",
   "admin2_settingsGraceNegative": "تاخیر کی مہلت منفی نہیں ہو سکتی۔",
   "admin2_settingsNoDocument": "ابھی پلیٹ فارم سیٹنگز محفوظ نہیں ہوئیں — ڈیفالٹ دکھائی جا رہی ہیں۔ بنانے کے لیے محفوظ کریں۔",
   "admin2_settingsUnsavedTitle": "محفوظ کیے بغیر جائیں؟",
@@ -5334,7 +5416,7 @@
   "admin2_reportsExportCsv": "CSV ایکسپورٹ کریں",
   "admin2_reportsCsvShareFailed": "CSV فائل شیئر نہیں ہو سکی۔",
   "admin2_bookingsCustomer": "کسٹمر",
-  "admin2_bookingDetailDepositDeducted": "ڈپازٹ {amount} — {status} (کٹوتی {deducted})",
+  "admin2_bookingDetailDepositDeducted": "سیکیورٹی {amount} — {status} (کٹوتی {deducted})",
   "@admin2_bookingDetailDepositDeducted": {
     "placeholders": {
       "amount": {
@@ -5497,8 +5579,8 @@
       }
     }
   },
-  "admin2_bookingSummaryDepositNone": "ڈپازٹ: کوئی نہیں",
-  "admin2_bookingSummaryDeposit": "ڈپازٹ: {amount} ({status})",
+  "admin2_bookingSummaryDepositNone": "سیکیورٹی: کوئی نہیں",
+  "admin2_bookingSummaryDeposit": "سیکیورٹی: {amount} ({status})",
   "@admin2_bookingSummaryDeposit": {
     "placeholders": {
       "amount": {
@@ -5602,7 +5684,7 @@
     }
   },
   "contractSignAgreementHint": "دستخط کے لیے ضامن کے دستخط شامل کریں۔",
-  "depositRefundTerms": "واپسی کے معائنے کے بعد ڈپازٹ واپس کیا جائے گا، نقصان اور اضافی کلومیٹر کے چارجز منہا کر کے۔",
+  "depositRefundTerms": "واپسی کے معائنے کے بعد سیکیورٹی واپس کی جائے گی، نقصان اور اضافی کلومیٹر کے چارجز منہا کر کے۔",
   "disputeLastUpdated": "آخری اپ ڈیٹ {date}",
   "handoverBalanceDue": "حوالگی پر واجب الادا بقایا",
   "handoverBalanceMethodRequired": "تصدیق سے پہلے بتائیں کہ بقایا کس طرح وصول ہوا، یا 'ابھی نہیں' منتخب کریں۔",
@@ -5637,8 +5719,8 @@
   "manualBookingDiscountLine": "رعایت",
   "manualBookingDiscountHint": "رعایت (روپے)",
   "manualBookingPaidNow": "ابھی ادا شدہ",
-  "manualBookingDepositReceived": "ڈپازٹ موصول",
-  "manualBookingDepositMethod": "ڈپازٹ کا طریقہ",
+  "manualBookingDepositReceived": "سیکیورٹی موصول",
+  "manualBookingDepositMethod": "سیکیورٹی کا طریقہ",
   "manualBookingRemainingDues": "باقی واجبات",
   "manualBookingAddToDues": "باقی رقم صارف کے واجبات میں شامل کریں",
   "manualBookingCollectFull": "پوری رقم وصول کریں، یا باقی رقم صارف کے واجبات میں شامل کریں۔",
@@ -5679,7 +5761,7 @@
   "proofCopyAdvance": "ایڈوانس رقم کاپی کریں",
   "proofMessageShop": "شوروم کو واٹس ایپ پر پیغام بھیجیں",
   "returnAmountOwedByCustomer": "گاہک کی طرف واجب الادا رقم: {amount}",
-  "returnCloseBookingHint": "بکنگ بند کرنے سے پہلے ڈپازٹ کی واپسی درج کریں۔",
+  "returnCloseBookingHint": "بکنگ بند کرنے سے پہلے سیکیورٹی کی واپسی درج کریں۔",
   "returnFinalizeFailedGeneric": "واپسی مکمل نہ ہو سکی۔ دوبارہ کوشش کریں۔",
   "returnOwedCollected": "واجب الادا رقم وصول ہوئی: {method} کے ذریعے {amount}",
   "tripOutCityEstimate": "≈ {days} دن × {km} کلومیٹر فی دن کے لیے {estimate}",
@@ -5847,7 +5929,7 @@
       }
     }
   },
-  "vehicleDepositCnic": "سیکیورٹی ڈپازٹ: {amount} + پک اپ پر اصل نادرا شناختی کارڈ ضمانت کے طور پر درکار ہے",
+  "vehicleDepositCnic": "سیکیورٹی: {amount} + پک اپ پر اصل نادرا شناختی کارڈ ضمانت کے طور پر درکار ہے",
   "@vehicleDepositCnic": {
     "placeholders": {
       "amount": {
@@ -5911,7 +5993,7 @@
       }
     }
   },
-  "approveAssignDepositPickup": "وصولی پر قابل واپسی ضمانت: {amount}",
+  "approveAssignDepositPickup": "وصولی پر قابل واپسی سیکیورٹی: {amount}",
   "@approveAssignDepositPickup": {
     "placeholders": {
       "amount": {
@@ -5954,8 +6036,8 @@
   "handoverWizardSelectBooking": "بکنگ دستی طور پر منتخب کریں",
   "handoverWizardNoReadyBookings": "حوالگی کے لیے کوئی بکنگ تیار نہیں۔",
   "handoverWizardAdvancePaid": "ایڈوانس (آن لائن ادا شدہ)",
-  "handoverWizardDepositMethod": "ڈپازٹ کا طریقہ",
-  "handoverWizardDepositReceived": "ڈپازٹ موصول ہوا",
+  "handoverWizardDepositMethod": "سیکیورٹی کا طریقہ",
+  "handoverWizardDepositReceived": "سیکیورٹی موصول ہوئی",
   "handoverWizardBalanceReceived": "بقیہ رقم موصول ہوئی",
   "handoverWizardReceiptTitle": "حوالگی کی رسید",
   "handoverWizardReceiptId": "رسید {id}",
@@ -5968,7 +6050,7 @@
   },
   "handoverWizardReceiptView": "رسید دیکھیں",
   "handoverWizardReceiptShare": "رسید واٹس ایپ پر شیئر کریں",
-  "handoverWizardReceiptMessage": "حوالگی کی رسید {receipt} برائے {vehicle}: کل روپے {total}، ایڈوانس روپے {advance}، بقیہ روپے {balance}، ڈپازٹ روپے {deposit}۔ — رینٹل ہب",
+  "handoverWizardReceiptMessage": "حوالگی کی رسید {receipt} برائے {vehicle}: کل روپے {total}، ایڈوانس روپے {advance}، بقیہ روپے {balance}، سیکیورٹی روپے {deposit}۔ — رینٹل ہب",
   "@handoverWizardReceiptMessage": {
     "placeholders": {
       "receipt": {
@@ -6020,7 +6102,7 @@
   "handoverWizardHandedOver": "گاڑی حوالے کر دی گئی",
   "handoverWizardSharePdf": "معاہدہ PDF شیئر کریں",
   "handoverWizardPaymentRequired": "آگے بڑھنے سے پہلے بتائیں کہ بقیہ رقم کیسے وصول ہوئی۔",
-  "handoverWizardDepositMethodRequired": "آگے بڑھنے سے پہلے بتائیں کہ ڈپازٹ کیسے وصول ہوا۔",
+  "handoverWizardDepositMethodRequired": "آگے بڑھنے سے پہلے بتائیں کہ سیکیورٹی کیسے وصول ہوئی۔",
   "handoverWizardChecklistRequired": "آگے بڑھنے سے پہلے اوڈومیٹر اور فیول لیول درج کریں۔",
   "handoverWizardHandoverFailed": "حوالگی ناکام: {error}",
   "@handoverWizardHandoverFailed": {

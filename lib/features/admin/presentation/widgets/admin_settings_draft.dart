@@ -101,7 +101,7 @@ class AdminSettingsDraft {
     }
     if (deposit == null || deposit < 0) {
       errors['deposit'] = l10n?.admin2_settingsDepositNegative ??
-          'Deposit cannot be negative.';
+          'Security cannot be negative.';
     }
     if (grace == null || grace < 0) {
       errors['grace'] = l10n?.admin2_settingsGraceNegative ??

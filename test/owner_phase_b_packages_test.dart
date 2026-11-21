@@ -180,12 +180,14 @@ void main() {
       expect(find.text('Applies to all packages'), findsOneWidget);
       expect(find.text('Out-of-City Daily (24h)'), findsOneWidget);
       expect(find.text('Extra Hour Charge'), findsOneWidget);
-      expect(find.text('With-Driver Surcharge (per day)'), findsOneWidget);
+      // Worker A (2026-11-21): the per-car driver surcharge editor
+      // is gone — the rate is shop-scoped in booking settings.
+      expect(find.text('With-Driver Surcharge (per day)'), findsNothing);
       expect(find.text('Per KM Pricing?'), findsOneWidget);
       expect(find.text('Self-Drive Allowed'), findsOneWidget);
       // Deposit / advance / fuel policy moved to the 010b rules
       // screen — they are no longer on the rates editor.
-      expect(find.text('Security Deposit'), findsNothing);
+      expect(find.text('Security'), findsNothing);
       expect(find.text('Fuel Policy'), findsNothing);
       expect(find.text('Pricing Policy'), findsNothing);
 
@@ -227,7 +229,7 @@ void main() {
       // 24h selected by default, 1 day, self-drive: Rs. 9,000.
       expect(find.text('Total: Rs. 9,000'), findsOneWidget);
       expect(find.text('Advance Due: Rs. 3,000'), findsOneWidget);
-      expect(find.text('Security Deposit: Rs. 20,000'), findsOneWidget);
+      expect(find.text('Security: Rs. 20,000'), findsOneWidget);
 
       await tester.tap(find.text('Continue'));
       await tester.pumpAndSettle();
@@ -257,6 +259,7 @@ void main() {
             dailyWithDriverRate: 10500,
             hourlyRate: 1500,
             vehicle: testVehicle,
+            driverRatePerDayPkr: 1500,
             onProceedToReview: (d) => draft = d,
           ),
         ),
@@ -294,6 +297,7 @@ void main() {
           vehicle: testVehicle,
           package: pkg24,
           isWithDriver: true,
+          driverRatePerDayPkr: 1500,
         ),
         10500,
       );
@@ -303,8 +307,19 @@ void main() {
           vehicle: testVehicle,
           package: pkg6,
           isWithDriver: true,
+          driverRatePerDayPkr: 1500,
         ),
         6375,
+      );
+      // Worker A (2026-11-21): without the shop setting the
+      // vehicle's stored surcharge is ignored — no driver charge.
+      expect(
+        ManualBookingPackageSelector.totalFor(
+          vehicle: testVehicle,
+          package: pkg24,
+          isWithDriver: true,
+        ),
+        9000,
       );
       expect(
         ManualBookingPackageSelector.totalFor(

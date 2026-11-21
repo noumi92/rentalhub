@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/date_format.dart';
 import '../../../../core/utils/money_format.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -100,6 +102,23 @@ class CustomerDetailBody extends StatelessWidget {
           const SizedBox(height: 4),
           Row(children: [Expanded(child: Text(l10n.customerDetailTotalDues, style: const TextStyle(fontWeight: FontWeight.w500))), Text(l10n.amountRs(formatRs(_totalDues)), style: const TextStyle(fontWeight: FontWeight.w500))]),
           const SizedBox(height: 16),
+          // Worker C: walk-in wallets are shop-managed — the owner
+          // opens this customer's Security wallet here. Online
+          // customers maintain their own wallet, so no entry point
+          // is offered for them (and the view refuses them too).
+          if (isWalkIn) ...[
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const Icon(Icons.account_balance_wallet_outlined, size: 18),
+              title: Text(l10n.customerDetailSecurityWallet, style: const TextStyle(fontWeight: FontWeight.w500)),
+              trailing: const Icon(Icons.chevron_right_rounded, size: 20),
+              onTap: () => context.push(
+                RouteNames.ownerCustomerSecurityWallet.replaceFirst(':id', customer.customerId),
+                extra: customer,
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
           Text(l10n.customerDetailRentalHistory, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
           const SizedBox(height: 4),
           if (bookings.isEmpty)

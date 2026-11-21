@@ -54,6 +54,7 @@ class _OwnerSettingsViewState extends State<OwnerSettingsView> {
                       _link(context, _BadgeKind.navy, Icons.route_rounded, l10n.fixedRoutes, RouteNames.ownerFixedRoutes),
                       _link(context, _BadgeKind.green, Icons.account_balance_rounded, l10n.finance, RouteNames.ownerFinance),
                       _link(context, _BadgeKind.grey, Icons.tune_rounded, l10n.financeSettingsTitle, RouteNames.ownerFinanceSettings),
+                      _link(context, _BadgeKind.green, Icons.drive_eta_rounded, l10n.bookingSettingsTitle, RouteNames.ownerBookingSettings),
                       _link(context, _BadgeKind.amber, Icons.category_rounded, l10n.financeCategoriesTitle, RouteNames.ownerFinanceCategories),
                       _link(context, _BadgeKind.red, Icons.shield_rounded, l10n.blacklist, RouteNames.ownerBlacklist),
                       _link(context, _BadgeKind.navy, Icons.group_rounded, l10n.staffTitle, RouteNames.ownerStaffRoles),

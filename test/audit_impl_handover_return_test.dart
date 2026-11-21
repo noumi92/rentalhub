@@ -162,9 +162,9 @@ void main() {
       expect(find.text('Cash'), findsOneWidget);
       expect(find.text('JazzCash'), findsOneWidget);
       // The single Finalize button is gone, replaced by the two steps.
-      expect(find.text('Finalize Return & Settle Deposit'), findsNothing);
-      // Step 1: Refund Deposit (row label + button).
-      expect(find.text('Refund Deposit'), findsNWidgets(2));
+      expect(find.text('Finalize Return & Settle Security'), findsNothing);
+      // Step 1: Refund Security (row label + button).
+      expect(find.text('Refund Security'), findsNWidgets(2));
       // Step 2: Complete & Close Booking, disabled until the refund
       // step is recorded.
       expect(find.text('Complete & Close Booking'), findsOneWidget);
@@ -179,7 +179,7 @@ void main() {
       expect(find.text('Add Photo'), findsOneWidget);
       expect(find.text('Description'), findsOneWidget);
       expect(find.text('Repair Cost'), findsOneWidget);
-      expect(find.text('Deduct from Deposit'), findsOneWidget);
+      expect(find.text('Deduct from Security'), findsOneWidget);
       expect(find.text('Save'), findsOneWidget);
     });
 

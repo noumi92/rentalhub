@@ -38,7 +38,7 @@ class _OwnerRateMatrixViewState extends State<OwnerRateMatrixView> {
   late List<VehiclePackageEntity> _packages;
   final Map<String, TextEditingController> _priceControllers = {};
   String _selectedLabel = '24h';
-  late TextEditingController _outOfCityController, _perKmController, _surchargeController, _extraHourController, _extraKmController, _outOfCityKmController;
+  late TextEditingController _outOfCityController, _perKmController, _extraHourController, _extraKmController, _outOfCityKmController;
   late bool _isSelfDrive, _isWithDriver, _perKmEnabled;
   late String _outCityMode; late String? _selectedRouteId; final Map<String, GlobalKey> _chipKeys = {};
   bool _isSaving = false;
@@ -59,7 +59,6 @@ class _OwnerRateMatrixViewState extends State<OwnerRateMatrixView> {
     _outOfCityController = TextEditingController(text: (v.rates.outOfCityDaily ?? (v.rates.daily24 * 1.3).round()).toString());
     _perKmController = TextEditingController(text: (v.outCityPerKmPkr ?? 30).toString());
     _outCityMode = v.outCityMode ?? 'perDay'; _selectedRouteId = v.outCityFixedRouteId;
-    _surchargeController = TextEditingController(text: (v.withDriverSurchargePkr ?? 2000).toString());
     _extraHourController = TextEditingController(text: (v.extraHourPkr ?? 600).toString());
     _extraKmController = TextEditingController(text: (v.extraKmPkr ?? 100).toString());
     _outOfCityKmController = TextEditingController(text: (v.outOfCityKmPerDay ?? kDefaultOutCityKmPerDay).toString());
@@ -75,7 +74,6 @@ class _OwnerRateMatrixViewState extends State<OwnerRateMatrixView> {
       c.dispose();
     }
     _outOfCityController.dispose(); _perKmController.dispose();
-    _surchargeController.dispose();
     _extraHourController.dispose();
     _extraKmController.dispose();
     _outOfCityKmController.dispose();
@@ -85,7 +83,7 @@ class _OwnerRateMatrixViewState extends State<OwnerRateMatrixView> {
   /// One string capturing every editable value, for the dirty check.
   /// The selected chip is UI state, not data — switching packages
   /// never marks the form dirty.
-  String _snapshot() => [..._priceControllers.values.map((c) => c.text), _outOfCityController.text, _surchargeController.text, _extraHourController.text, _extraKmController.text, _outOfCityKmController.text, '$_isSelfDrive', '$_isWithDriver', '$_perKmEnabled', _outCityMode, _perKmController.text, '$_selectedRouteId'].join('|');
+  String _snapshot() => [..._priceControllers.values.map((c) => c.text), _outOfCityController.text, _extraHourController.text, _extraKmController.text, _outOfCityKmController.text, '$_isSelfDrive', '$_isWithDriver', '$_perKmEnabled', _outCityMode, _perKmController.text, '$_selectedRouteId'].join('|');
 
   bool get _isDirty => _snapshot() != _initialSnapshot;
 
@@ -140,7 +138,6 @@ class _OwnerRateMatrixViewState extends State<OwnerRateMatrixView> {
     if (_outCityMode == 'perKm') { if (bad(l10n.outCityPerKmRate, _perKmController.text)) return false; }
     else if (_outCityMode == 'fixedRoute') { if (_selectedRouteId == null) { AppFeedback.showError(context, l10n.rateMatrixInvalidField(l10n.outCityFixedRouteLabel)); return false; } }
     else { if (bad(l10n.pricingOutOfCityDaily, _outOfCityController.text)) return false; if (_perKmEnabled && bad(l10n.pricingExtraKmCharge, _extraKmController.text)) return false; if (bad(l10n.pricingOutOfCityKmAllowance, _outOfCityKmController.text)) return false; }
-    if (bad(l10n.pricingWithDriverSurcharge, _surchargeController.text)) return false;
     if (bad(l10n.pricingExtraHourCharge, _extraHourController.text)) return false;
     return true;
   }
@@ -159,7 +156,6 @@ class _OwnerRateMatrixViewState extends State<OwnerRateMatrixView> {
         weeklyRate: _priceOf('Weekly') ?? widget.vehicle.weeklyRate,
         monthlyRate: _priceOf('Monthly') ?? widget.vehicle.monthlyRate,
         isSelfDriveAvailable: _isSelfDrive, isWithDriverAvailable: _isWithDriver,
-        withDriverSurchargePkr: int.parse(_surchargeController.text.trim()),
         extraHourPkr: int.parse(_extraHourController.text.trim()),
         extraKmPkr: int.parse(_extraKmController.text.trim()),
         outOfCityKmPerDay: int.parse(_outOfCityKmController.text.trim()),
@@ -233,8 +229,6 @@ class _OwnerRateMatrixViewState extends State<OwnerRateMatrixView> {
                       Text(l10n.outCityRulesAppliesAll, style: Theme.of(context).textTheme.labelSmall),
                       const SizedBox(height: 8),
                       PricingOutCityModes(mode: _outCityMode, onModeChanged: (m) => setState(() => _outCityMode = m), outOfCityController: _outOfCityController, perKmController: _perKmController, extraKmController: _extraKmController, outOfCityKmController: _outOfCityKmController, perKmEnabled: _perKmEnabled, onPerKmChanged: (val) => setState(() => _perKmEnabled = val), shopId: v.shopId, selectedRouteId: _selectedRouteId, onRouteChanged: (id) => setState(() => _selectedRouteId = id)),
-                      const SizedBox(height: 10),
-                      RateMatrixFieldWidget(controller: _surchargeController, label: l10n.pricingWithDriverSurcharge, hint: l10n.vehicleDetailDailyRate(l10n.amountRs(formatRs(2000))), kmCap: l10n.pricingWithDriverSurchargeCap),
                     ],
                   ),
                 ),

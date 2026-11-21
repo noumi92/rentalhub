@@ -137,6 +137,42 @@ class SecurityDepositDataSource {
     return model;
   }
 
+  /// Worker B (cancel releases the deposit): releases a held
+  /// deposit IN FULL when its booking is cancelled — a cancelled
+  /// booking has no km / fuel / damage to deduct, so [netRefund]
+  /// is the whole [amount] and [deductedAmount] is 0. The advance
+  /// is untouched (it stays with the showroom).
+  ///
+  /// Idempotent, same pattern as [collect]: no record → null
+  /// (nothing held, nothing to release); an already-released or
+  /// deducted record is returned unchanged, so a double-cancel
+  /// can never release twice. Deliberately NOT [settle] — that
+  /// needs the full return breakdown and throws when no record
+  /// exists.
+  Future<SecurityDepositEntity?> releaseOnCancel({
+    required String bookingId,
+  }) async {
+    final existing = await getByBookingId(bookingId);
+    if (existing == null) return null;
+    if (existing.status != 'collected') return existing;
+    final released = existing.copyWith(
+      status: 'released',
+      releasedAt: DateTime.now(),
+      deductedAmount: 0,
+      netRefund: existing.amount,
+      amountOwed: 0,
+      releaseReason: 'cancel',
+    );
+    final model = SecurityDepositModel.fromEntity(released);
+    _inMemory[bookingId] = model;
+    final written =
+        await _writeDoc('security_deposits', bookingId, model.toMap());
+    if (!written) {
+      await _queueDoc('security_deposits', bookingId, model.toMap());
+    }
+    return released;
+  }
+
   /// Settles the deposit at return. Nothing deducted → 'released'
   /// with a releasedAt timestamp; anything deducted → 'deducted'
   /// with a deductedAt timestamp and the full breakdown.

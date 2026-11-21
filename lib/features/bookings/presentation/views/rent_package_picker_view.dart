@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../bookings/data/datasources/booking_settings_data_source.dart';
 import '../../../bookings/utils/package_pricing.dart';
 import '../../../bookings/utils/picker_availability.dart';
 import '../../../fleet/domain/entities/fixed_route_entity.dart';
@@ -27,6 +28,10 @@ class RentPackagePickerView extends StatefulWidget {
   final int dailyWithDriverRate;
   final int? hourlyRate;
   final VehicleEntity? vehicle;
+  // Worker A (2026-11-21): test/route override for the shop's
+  // booking-settings driver rate (Rs/day). When null the picker
+  // loads it from `booking_settings/{shopId}` itself.
+  final int? driverRatePerDayPkr;
   // Worker E: carried into the booking draft when the caller knows the shop's verification state (null = unknown; the review screen looks it up and fails open).
   final bool? shopIsVerified;
   final Function(Map<String, dynamic> bookingDraft)? onProceedToReview;
@@ -43,6 +48,7 @@ class RentPackagePickerView extends StatefulWidget {
     required this.dailyWithDriverRate,
     this.hourlyRate,
     this.vehicle,
+    this.driverRatePerDayPkr,
     this.shopIsVerified,
     this.onProceedToReview,
     this.onBack,
@@ -69,10 +75,17 @@ class _RentPackagePickerViewState extends State<RentPackagePickerView> {
   FixedRouteEntity? _selectedRoute;
   // Live updates (Item 2): the availability feed — blocked days + fixed routes, kept live while the picker is open.
   PickerAvailabilityFeed? _availability;
+  // Worker A (2026-11-21): the shop's booking-settings driver rate
+  // (Rs/day), loaded in initState when no override was passed.
+  // Null (unset) charges Rs. 0 — the vehicle's stored surcharge is
+  // never read by pricing.
+  int? _driverRatePerDayPkr;
+  int? get _driverRate => widget.driverRatePerDayPkr ?? _driverRatePerDayPkr;
 
   @override
   void initState() {
     super.initState();
+    if (widget.driverRatePerDayPkr == null) BookingSettingsDataSource().getSettings(widget.shopId).then((s) { if (mounted) setState(() => _driverRatePerDayPkr = s.driverRatePerDayPkr); });
     final vehicle = widget.vehicle;
     if (vehicle != null) {
       _selectedPackage = PackageTierList.defaultSelection(vehicle);
@@ -108,17 +121,10 @@ class _RentPackagePickerViewState extends State<RentPackagePickerView> {
     // A fixed route is one fixed trip price; a chauffeur is added on
     // top, per day of the trip.
     if (_selectedRoute != null) {
-      final driver = _isWithDriver
-          ? (widget.vehicle?.withDriverSurchargePkr ?? 0) * _durationDays
-          : 0;
+      final driver = _isWithDriver ? (_driverRate ?? 0) * _durationDays : 0;
       return _selectedRoute!.fixedPricePkr + driver;
     }
-    return PackagePricing.rateFor(
-      vehicle: widget.vehicle,
-      tier: _selectedTier,
-      durationDays: _durationDays,
-      isWithDriver: _isWithDriver,
-    );
+    return PackagePricing.rateFor(vehicle: widget.vehicle, tier: _selectedTier, durationDays: _durationDays, isWithDriver: _isWithDriver, driverRatePerDayPkr: _driverRate);
   }
 
   int get _kmLimit => PackagePricing.kmLimitFor(tier: _selectedTier, durationDays: _durationDays);
@@ -210,12 +216,7 @@ class _RentPackagePickerViewState extends State<RentPackagePickerView> {
                         _selectedPackage = label;
                         _selectedRoute = null;
                       }),
-                      surchargeFor: (o) =>
-                          PackagePricing.driverSurchargeFor(
-                        vehicle: widget.vehicle,
-                        tier: o,
-                        isWithDriver: _isWithDriver,
-                      ),
+                      surchargeFor: (o) => PackagePricing.driverSurchargeFor(vehicle: widget.vehicle, tier: o, isWithDriver: _isWithDriver, driverRatePerDayPkr: _driverRate),
                     ),
                     const SizedBox(height: 16),
                     DurationCalendarPicker(

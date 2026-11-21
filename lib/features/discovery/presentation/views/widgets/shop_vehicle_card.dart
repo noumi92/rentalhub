@@ -6,6 +6,8 @@ import '../../../../fleet/domain/entities/vehicle_entity.dart';
 import 'vehicle_hero_card.dart' show vehicleHeroTag;
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../../core/utils/money_format.dart';
+import '../../../../bookings/data/datasources/booking_settings_data_source.dart';
+import 'vehicle_driver_rate_text.dart';
 import 'vehicle_image_asset.dart';
 
 /// Phase A (A1): one car card on the shop detail screen, extracted so the
@@ -16,10 +18,16 @@ class ShopVehicleCard extends StatelessWidget {
     super.key,
     required this.vehicle,
     this.onTap,
+    this.settingsDataSource,
   });
 
   final VehicleEntity vehicle;
   final VoidCallback? onTap;
+
+  /// Worker 3 (2026-11-21): test seam — forwarded to
+  /// [VehicleDriverRateText], which loads the shop's booking-settings
+  /// driver rate for the with-driver daily rate.
+  final BookingSettingsDataSource? settingsDataSource;
 
   Widget _carImage(VehicleEntity v) {
     final url = v.imageUrl;
@@ -184,8 +192,8 @@ class ShopVehicleCard extends StatelessWidget {
                             .labelMedium
                             ?.copyWith(fontWeight: FontWeight.w500),
                       ),
-                      Text(
-                        l10n.vehicleDriverRate(formatRs(v.rates.daily24 + (v.withDriverSurchargePkr ?? 0))),
+                      VehicleDriverRateText(
+                        vehicle: v,
                         style: Theme.of(context)
                             .textTheme
                             .labelMedium
@@ -194,6 +202,7 @@ class ShopVehicleCard extends StatelessWidget {
                                 // CU-M1: white-on-orange small text
                                 // was 3.29:1 — orangeTextFor is AA.
                                 color: AppColors.orangeTextFor(brightness)),
+                        settingsDataSource: settingsDataSource,
                       ),
                     ],
                   ),

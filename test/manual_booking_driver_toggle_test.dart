@@ -49,8 +49,11 @@ void main() {
 
   /// The step-2 widget exactly as the wizard wires it: the switch
   /// callback flips a state-held flag (the draft's isWithDriver in
-  /// production) and the flag feeds back into the step.
-  Widget carStep({required bool isWithDriver, required ValueChanged<bool> onDriverModeChanged}) {
+  /// production) and the flag feeds back into the step. The driver
+  /// rate comes from the shop's booking settings (worker A,
+  /// 2026-11-21) — 1500 here, matching the old per-car value the
+  /// vehicle still stores; null means no driver charge at all.
+  Widget carStep({required bool isWithDriver, required ValueChanged<bool> onDriverModeChanged, int? driverRate = 1500}) {
     final pkg24 = testVehicle.packages.firstWhere((p) => p.label == '24h');
     return Scaffold(
       body: SingleChildScrollView(
@@ -73,6 +76,7 @@ void main() {
           onTripTypeChanged: (_) {},
           onAvailabilityChanged: (_) {},
           existingBookings: const [],
+          driverRatePerDayPkr: driverRate,
         ),
       ),
     );
@@ -120,6 +124,28 @@ void main() {
       expect(find.text('Total: Rs. 6,000'), findsOneWidget);
     });
 
+    testWidgets('no booking-settings rate: the driver adds nothing',
+        (tester) async {
+      var isWithDriver = false;
+      await tester.pumpWidget(appFor(StatefulBuilder(
+        builder: (context, setState) => carStep(
+          isWithDriver: isWithDriver,
+          driverRate: null,
+          onDriverModeChanged: (v) => setState(() => isWithDriver = v),
+        ),
+      )));
+      await tester.pumpAndSettle();
+      expect(find.text('Total: Rs. 6,000'), findsOneWidget);
+
+      await tester.tap(find.byType(Switch));
+      await tester.pumpAndSettle();
+
+      // The vehicle still stores a 1500 surcharge, but pricing
+      // reads the shop setting only — unset means Rs. 0.
+      expect(isWithDriver, isTrue);
+      expect(find.text('Total: Rs. 6,000'), findsOneWidget);
+    });
+
     testWidgets('selector alone: total follows the driver flag',
         (tester) async {
       var isWithDriver = false;
@@ -135,6 +161,7 @@ void main() {
             isOutOfCity: false,
             pickup: DateTime(2026, 11, 20, 10),
             returnTime: DateTime(2026, 11, 21, 10),
+            driverRatePerDayPkr: 1500,
           ),
         ),
       )));
@@ -147,18 +174,17 @@ void main() {
     });
 
     testWidgets(
-        'characterisation: a car with no driver rate stored adds Rs. 0',
+        'characterisation: no booking-settings rate adds Rs. 0',
         (tester) async {
-      // Diagnosis pin (ITEM 1): the toggle, the draft flag and the
-      // total math are all verified above — the ONLY input that
-      // leaves the step-2 total flat when the driver is switched on
-      // is a vehicle whose withDriverSurchargePkr is null (or 0).
-      // A car added with "support with driver" off, or a seeded
-      // Firestore doc written without the field, behaves exactly
-      // like this on the phone: the switch flips, the total does
-      // not move, and nothing says why. If the phone's car HAS a
-      // rate stored and still adds nothing, the repro needs a
-      // screen recording — the code path below is verified.
+      // Worker A (2026-11-21): the diagnosis pin, updated — the
+      // ONLY input that leaves the step-2 total flat when the driver
+      // is switched on is an UNSET booking-settings driver rate.
+      // The vehicle's stored surcharge is no longer read: this car
+      // stores no rate AND the setting is unset, so the switch
+      // flips, the total does not move, and nothing says why. If
+      // the phone's shop HAS a rate set and still adds nothing, the
+      // repro needs a screen recording — the code path below is
+      // verified.
       const noRateVehicle = VehicleEntity(
         vehicleId: 'veh-driver-toggle-2',
         shopId: 'shop-1',
@@ -206,8 +232,9 @@ void main() {
       await tester.tap(find.byType(Switch));
       await tester.pumpAndSettle();
       expect(isWithDriver, isTrue);
-      // The switch flips, but with no rate stored the surcharge is
-      // Rs. 0 — this is the exact symptom reported from the phone.
+      // The switch flips, but with no booking-settings rate the
+      // surcharge is Rs. 0 — this is the exact symptom reported
+      // from the phone (fix: set the rate in Booking Settings).
       expect(find.text('Total: Rs. 6,000'), findsOneWidget);
     });
   });

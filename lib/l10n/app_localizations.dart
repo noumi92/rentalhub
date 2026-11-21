@@ -1235,7 +1235,7 @@ abstract class AppLocalizations {
   /// No description provided for @summarySecurityDeposit.
   ///
   /// In en, this message translates to:
-  /// **'Security Deposit'**
+  /// **'Security'**
   String get summarySecurityDeposit;
 
   /// No description provided for @summaryTotalFare.
@@ -1265,7 +1265,7 @@ abstract class AppLocalizations {
   /// No description provided for @walletActiveEscrow.
   ///
   /// In en, this message translates to:
-  /// **'Total with shop: advances paid + deposit held'**
+  /// **'Total with shop: advances paid + Security held'**
   String get walletActiveEscrow;
 
   /// No description provided for @walletAdvancesPaid.
@@ -1313,13 +1313,13 @@ abstract class AppLocalizations {
   /// No description provided for @walletEmptyHint.
   ///
   /// In en, this message translates to:
-  /// **'Advances and deposits will appear here.'**
+  /// **'Advances and Security will appear here.'**
   String get walletEmptyHint;
 
   /// No description provided for @walletLedgerEmptyHint.
   ///
   /// In en, this message translates to:
-  /// **'Advances you pay and deposits you leave will appear here.'**
+  /// **'Advances you pay and Security you leave will appear here.'**
   String get walletLedgerEmptyHint;
 
   /// No description provided for @walletLoadError.
@@ -1339,6 +1339,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No wallet activity yet.'**
   String get walletNoActivity;
+
+  /// No description provided for @walletEntrySecurityHeld.
+  ///
+  /// In en, this message translates to:
+  /// **'Security held — {vehicle} ({booking})'**
+  String walletEntrySecurityHeld(String vehicle, String booking);
+
+  /// No description provided for @walletEntrySecurityReleased.
+  ///
+  /// In en, this message translates to:
+  /// **'Security released — {vehicle} ({booking})'**
+  String walletEntrySecurityReleased(String vehicle, String booking);
+
+  /// No description provided for @walletEntrySecurityReleasedCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Security released on cancellation — {vehicle} ({booking})'**
+  String walletEntrySecurityReleasedCancel(String vehicle, String booking);
+
+  /// No description provided for @walletEntrySecurityDeducted.
+  ///
+  /// In en, this message translates to:
+  /// **'Security deduction — {vehicle} ({booking})'**
+  String walletEntrySecurityDeducted(String vehicle, String booking);
+
+  /// No description provided for @walletEntrySecurityRefunded.
+  ///
+  /// In en, this message translates to:
+  /// **'Security refund — {vehicle} ({booking})'**
+  String walletEntrySecurityRefunded(String vehicle, String booking);
+
+  /// No description provided for @walletEntrySecurityOwed.
+  ///
+  /// In en, this message translates to:
+  /// **'Security still owed — {vehicle} ({booking})'**
+  String walletEntrySecurityOwed(String vehicle, String booking);
+
+  /// No description provided for @walletSecuritySection.
+  ///
+  /// In en, this message translates to:
+  /// **'Security'**
+  String get walletSecuritySection;
+
+  /// No description provided for @walletSecurityHeld.
+  ///
+  /// In en, this message translates to:
+  /// **'Held'**
+  String get walletSecurityHeld;
+
+  /// No description provided for @walletSecurityReleased.
+  ///
+  /// In en, this message translates to:
+  /// **'Released'**
+  String get walletSecurityReleased;
+
+  /// No description provided for @walletSecurityDeducted.
+  ///
+  /// In en, this message translates to:
+  /// **'Deducted'**
+  String get walletSecurityDeducted;
+
+  /// No description provided for @walletSecurityRefunded.
+  ///
+  /// In en, this message translates to:
+  /// **'Refunded'**
+  String get walletSecurityRefunded;
+
+  /// No description provided for @walletSecurityOwed.
+  ///
+  /// In en, this message translates to:
+  /// **'Still owed'**
+  String get walletSecurityOwed;
+
+  /// No description provided for @ownerSecurityWalletTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Security wallet'**
+  String get ownerSecurityWalletTitle;
+
+  /// No description provided for @ownerSecurityWalletOnline.
+  ///
+  /// In en, this message translates to:
+  /// **'Online customers manage their own Security wallet.'**
+  String get ownerSecurityWalletOnline;
+
+  /// No description provided for @customerDetailSecurityWallet.
+  ///
+  /// In en, this message translates to:
+  /// **'Security wallet'**
+  String get customerDetailSecurityWallet;
+
+  /// No description provided for @ownerSecurityWalletEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No Security activity for this customer yet.'**
+  String get ownerSecurityWalletEmpty;
 
   /// No description provided for @profileTotalTrips.
   ///
@@ -1619,7 +1715,7 @@ abstract class AppLocalizations {
   /// No description provided for @supportDisputeHint.
   ///
   /// In en, this message translates to:
-  /// **'Overcharged or deposit withheld? File an arbitration claim.'**
+  /// **'Overcharged or Security withheld? File an arbitration claim.'**
   String get supportDisputeHint;
 
   /// No description provided for @supportFaqTitle.
@@ -1667,13 +1763,13 @@ abstract class AppLocalizations {
   /// No description provided for @supportFaqQ2.
   ///
   /// In en, this message translates to:
-  /// **'When is my security deposit returned?'**
+  /// **'When is my Security returned?'**
   String get supportFaqQ2;
 
   /// No description provided for @supportFaqA2.
   ///
   /// In en, this message translates to:
-  /// **'The deposit is settled at return handover. Any deduction for excess kilometres, fuel or damage is shown on the settlement, and the rest is released to you.'**
+  /// **'The Security is settled at return handover. Any deduction for excess kilometres, fuel or damage is shown on the settlement, and the rest is released to you.'**
   String get supportFaqA2;
 
   /// No description provided for @supportFaqQ3.
@@ -1853,7 +1949,7 @@ abstract class AppLocalizations {
   /// No description provided for @disputeDepositWithheld.
   ///
   /// In en, this message translates to:
-  /// **'Deposit Withheld'**
+  /// **'Security Withheld'**
   String get disputeDepositWithheld;
 
   /// No description provided for @disputeOvercharge.
@@ -1997,7 +2093,7 @@ abstract class AppLocalizations {
   /// No description provided for @cancelNoAdvanceNote.
   ///
   /// In en, this message translates to:
-  /// **'No advance has been paid yet, so there is nothing to refund. No security deposit was collected: deposits are only taken at handover.'**
+  /// **'No advance has been paid yet, so there is nothing to refund. If a Security was collected, it will be refunded in full.'**
   String get cancelNoAdvanceNote;
 
   /// No description provided for @cancelDone.
@@ -2663,7 +2759,7 @@ abstract class AppLocalizations {
   /// No description provided for @driverRequiresCnic.
   ///
   /// In en, this message translates to:
-  /// **'Requires CNIC + Deposit'**
+  /// **'Requires CNIC + Security'**
   String get driverRequiresCnic;
 
   /// No description provided for @driverVerifiedIncluded.
@@ -3203,7 +3299,7 @@ abstract class AppLocalizations {
   /// No description provided for @advanceNoticeSelfDrive.
   ///
   /// In en, this message translates to:
-  /// **'• Original NADRA CNIC & valid Driving License required at handover.\n• Advance confirms vehicle booking lock with showroom.\n• Refundable security deposit collected digitally or in cash at handover.'**
+  /// **'• Original NADRA CNIC & valid Driving License required at handover.\n• Advance confirms vehicle booking lock with showroom.\n• Refundable Security collected digitally or in cash at handover.'**
   String get advanceNoticeSelfDrive;
 
   /// No description provided for @ticketShowCode.
@@ -3323,7 +3419,7 @@ abstract class AppLocalizations {
   /// No description provided for @vehicleSelectedMode.
   ///
   /// In en, this message translates to:
-  /// **'Selected: {mode}. Advance deposit required.'**
+  /// **'Selected: {mode}. Security required in advance.'**
   String vehicleSelectedMode(String mode);
 
   /// No description provided for @vehicleWhatsappInterest.
@@ -3473,7 +3569,7 @@ abstract class AppLocalizations {
   /// No description provided for @cancelAdvancePaid.
   ///
   /// In en, this message translates to:
-  /// **'You paid Rs. {amount} advance directly to the showroom\'s account — the showroom decides the refund, so contact them about it. No security deposit was collected: deposits are only taken at handover.'**
+  /// **'You paid Rs. {amount} advance directly to the showroom\'s account — the showroom decides the refund, so contact them about it. If a Security was collected, it will be refunded in full.'**
   String cancelAdvancePaid(String amount);
 
   /// No description provided for @rateSaveError.
@@ -3533,7 +3629,7 @@ abstract class AppLocalizations {
   /// No description provided for @successBody.
   ///
   /// In en, this message translates to:
-  /// **'Your reservation request for {vehicle} has been delivered to {shop}. Once approved, you will be notified to submit the advance deposit.'**
+  /// **'Your reservation request for {vehicle} has been delivered to {shop}. Once approved, you will be notified to submit the advance Security.'**
   String successBody(String vehicle, String shop);
 
   /// No description provided for @successReference.
@@ -3569,7 +3665,7 @@ abstract class AppLocalizations {
   /// No description provided for @packageSecurityDeposit.
   ///
   /// In en, this message translates to:
-  /// **'Security Deposit: Rs. {amount}'**
+  /// **'Security: Rs. {amount}'**
   String packageSecurityDeposit(String amount);
 
   /// No description provided for @packageTotal.
@@ -3905,7 +4001,7 @@ abstract class AppLocalizations {
   /// No description provided for @dashboardSettleRate.
   ///
   /// In en, this message translates to:
-  /// **'{percent}% deposits settled'**
+  /// **'{percent}% Security settled'**
   String dashboardSettleRate(int percent);
 
   /// No description provided for @dashboardGrossRevenue.
@@ -4487,7 +4583,7 @@ abstract class AppLocalizations {
   /// No description provided for @addVehicleStep3Subtitle.
   ///
   /// In en, this message translates to:
-  /// **'Hourly rates, deposit & fuel policy'**
+  /// **'Hourly rates, Security & fuel policy'**
   String get addVehicleStep3Subtitle;
 
   /// No description provided for @addVehicleStep4Subtitle.
@@ -4796,12 +4892,6 @@ abstract class AppLocalizations {
   /// **'Shop provides experienced chauffeur'**
   String get addVehicleWithDriverHint;
 
-  /// No description provided for @addVehicleDriverAllowance.
-  ///
-  /// In en, this message translates to:
-  /// **'Driver Daily Allowance:'**
-  String get addVehicleDriverAllowance;
-
   /// No description provided for @addVehiclePerDaySuffix.
   ///
   /// In en, this message translates to:
@@ -4811,13 +4901,13 @@ abstract class AppLocalizations {
   /// No description provided for @addVehicleDepositPolicies.
   ///
   /// In en, this message translates to:
-  /// **'Security Deposit & Rental Policies'**
+  /// **'Security & Rental Policies'**
   String get addVehicleDepositPolicies;
 
   /// No description provided for @addVehicleSecurityDepositSelfDrive.
   ///
   /// In en, this message translates to:
-  /// **'Security Deposit (Self-Drive)'**
+  /// **'Security (Self-Drive)'**
   String get addVehicleSecurityDepositSelfDrive;
 
   /// No description provided for @addVehicleSecurityDepositHint.
@@ -4937,7 +5027,7 @@ abstract class AppLocalizations {
   /// No description provided for @addVehicleReviewDeposit.
   ///
   /// In en, this message translates to:
-  /// **'Deposit'**
+  /// **'Security'**
   String get addVehicleReviewDeposit;
 
   /// No description provided for @addVehicleReviewAdvance.
@@ -5051,7 +5141,7 @@ abstract class AppLocalizations {
   /// No description provided for @pricingSelfDriveHint.
   ///
   /// In en, this message translates to:
-  /// **'Requires original NADRA CNIC + security deposit'**
+  /// **'Requires original NADRA CNIC + Security'**
   String get pricingSelfDriveHint;
 
   /// No description provided for @pricingChauffeurAllowed.
@@ -5120,22 +5210,10 @@ abstract class AppLocalizations {
   /// **'300 km included + tracker cleared'**
   String get pricingOutOfCityDailyCap;
 
-  /// No description provided for @pricingWithDriverSurcharge.
-  ///
-  /// In en, this message translates to:
-  /// **'With-Driver Surcharge (per day)'**
-  String get pricingWithDriverSurcharge;
-
-  /// No description provided for @pricingWithDriverSurchargeCap.
-  ///
-  /// In en, this message translates to:
-  /// **'Added on top of the package price'**
-  String get pricingWithDriverSurchargeCap;
-
   /// No description provided for @pricingSecurityDeposit.
   ///
   /// In en, this message translates to:
-  /// **'Security Deposit'**
+  /// **'Security'**
   String get pricingSecurityDeposit;
 
   /// No description provided for @pricingSecurityDepositCap.
@@ -5981,7 +6059,7 @@ abstract class AppLocalizations {
   /// No description provided for @financeCategoryDepositRefund.
   ///
   /// In en, this message translates to:
-  /// **'Deposit refund'**
+  /// **'Security refund'**
   String get financeCategoryDepositRefund;
 
   /// No description provided for @financeCategoryLabel.
@@ -6077,7 +6155,7 @@ abstract class AppLocalizations {
   /// No description provided for @financeSecurityDeposits.
   ///
   /// In en, this message translates to:
-  /// **'Security Deposits'**
+  /// **'Security'**
   String get financeSecurityDeposits;
 
   /// No description provided for @financeDepositsHeld.
@@ -6101,7 +6179,7 @@ abstract class AppLocalizations {
   /// No description provided for @financeDepositsCount.
   ///
   /// In en, this message translates to:
-  /// **'{count, plural, =1{{count} deposit} other{{count} deposits}}'**
+  /// **'{count, plural, =1{{count} Security} other{{count} Security}}'**
   String financeDepositsCount(int count);
 
   /// No description provided for @financePartners.
@@ -6641,7 +6719,7 @@ abstract class AppLocalizations {
   /// No description provided for @returnSettled.
   ///
   /// In en, this message translates to:
-  /// **'Vehicle returned! Deposit settled — Rs. {refund} refunded.'**
+  /// **'Vehicle returned! Security settled — Rs. {refund} refunded.'**
   String returnSettled(String refund);
 
   /// No description provided for @returnFinalizeFailed.
@@ -6689,13 +6767,13 @@ abstract class AppLocalizations {
   /// No description provided for @returnFinalize.
   ///
   /// In en, this message translates to:
-  /// **'Finalize Return & Settle Deposit'**
+  /// **'Finalize Return & Settle Security'**
   String get returnFinalize;
 
   /// No description provided for @returnReceiptTitle.
   ///
   /// In en, this message translates to:
-  /// **'Deposit & Return Balance Settlement'**
+  /// **'Security & Return Balance Settlement'**
   String get returnReceiptTitle;
 
   /// No description provided for @returnReceiptTotalKm.
@@ -6737,7 +6815,7 @@ abstract class AppLocalizations {
   /// No description provided for @returnReceiptDepositHeld.
   ///
   /// In en, this message translates to:
-  /// **'Initial Security Deposit Held'**
+  /// **'Initial Security Held'**
   String get returnReceiptDepositHeld;
 
   /// No description provided for @returnReceiptTotalDeductions.
@@ -6905,7 +6983,7 @@ abstract class AppLocalizations {
   /// No description provided for @contractFieldDeposit.
   ///
   /// In en, this message translates to:
-  /// **'Security Deposit:'**
+  /// **'Security:'**
   String get contractFieldDeposit;
 
   /// No description provided for @contractWalkInCustomer.
@@ -7247,7 +7325,7 @@ abstract class AppLocalizations {
   /// No description provided for @manualBookingDepositLabel.
   ///
   /// In en, this message translates to:
-  /// **'Security Deposit (Rs.)'**
+  /// **'Security (Rs.)'**
   String get manualBookingDepositLabel;
 
   /// No description provided for @manualBookingGuarantorNotFound.
@@ -7661,7 +7739,7 @@ abstract class AppLocalizations {
   /// No description provided for @onboardingPayoutSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Select at least one payout channel to receive rental bookings and customer advance deposits.'**
+  /// **'Select at least one payout channel to receive rental bookings and customer advance Security.'**
   String get onboardingPayoutSubtitle;
 
   /// No description provided for @onboardingJazzCashTitle.
@@ -9212,6 +9290,60 @@ abstract class AppLocalizations {
   /// **'Search name, phone, car or booking #'**
   String get bookingSearchHint;
 
+  /// No description provided for @bookingSettingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking Settings'**
+  String get bookingSettingsTitle;
+
+  /// No description provided for @bookingSettingsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Driver rate for the whole shop'**
+  String get bookingSettingsSubtitle;
+
+  /// No description provided for @bookingSettingsDriverRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Driver rate (per day)'**
+  String get bookingSettingsDriverRate;
+
+  /// No description provided for @bookingSettingsDriverRateNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Charged on top of the package price whenever a trip has a driver. Leave empty for no driver charge.'**
+  String get bookingSettingsDriverRateNote;
+
+  /// No description provided for @bookingSettingsDriverRateUnset.
+  ///
+  /// In en, this message translates to:
+  /// **'Not set — trips with a driver add no extra charge.'**
+  String get bookingSettingsDriverRateUnset;
+
+  /// No description provided for @bookingSettingsSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking settings saved.'**
+  String get bookingSettingsSaved;
+
+  /// No description provided for @bookingSettingsLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load booking settings. Check your connection and try again.'**
+  String get bookingSettingsLoadError;
+
+  /// No description provided for @bookingSettingsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking settings are not available right now.'**
+  String get bookingSettingsEmpty;
+
+  /// No description provided for @bookingSettingsInvalidRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid driver rate (0 or more).'**
+  String get bookingSettingsInvalidRate;
+
   /// No description provided for @bookingEmptyRejected.
   ///
   /// In en, this message translates to:
@@ -9492,7 +9624,7 @@ abstract class AppLocalizations {
   /// No description provided for @contractTerm9.
   ///
   /// In en, this message translates to:
-  /// **'9. The security deposit is refunded after inspection at return, less any damage or extra-kilometre charges.'**
+  /// **'9. The Security is refunded after inspection at return, less any damage or extra-kilometre charges.'**
   String get contractTerm9;
 
   /// No description provided for @contractTerm10.
@@ -9816,7 +9948,7 @@ abstract class AppLocalizations {
   /// No description provided for @damageDeductFromDeposit.
   ///
   /// In en, this message translates to:
-  /// **'Deduct from Deposit'**
+  /// **'Deduct from Security'**
   String get damageDeductFromDeposit;
 
   /// No description provided for @damageSave.
@@ -11467,7 +11599,7 @@ abstract class AppLocalizations {
   /// No description provided for @estimateDeposit.
   ///
   /// In en, this message translates to:
-  /// **'Security deposit'**
+  /// **'Security'**
   String get estimateDeposit;
 
   /// No description provided for @estimateHint.
@@ -11551,7 +11683,7 @@ abstract class AppLocalizations {
   /// No description provided for @vehicleDetailDeposit.
   ///
   /// In en, this message translates to:
-  /// **'Security deposit'**
+  /// **'Security'**
   String get vehicleDetailDeposit;
 
   /// No description provided for @vehicleDetailFareTable.
@@ -12307,7 +12439,7 @@ abstract class AppLocalizations {
   /// No description provided for @creditsToggleDeposit.
   ///
   /// In en, this message translates to:
-  /// **'Deposit refunded'**
+  /// **'Security refunded'**
   String get creditsToggleDeposit;
 
   /// No description provided for @creditsToggleDues.
@@ -13021,19 +13153,19 @@ abstract class AppLocalizations {
   /// No description provided for @returnRefundDeposit.
   ///
   /// In en, this message translates to:
-  /// **'Refund Deposit'**
+  /// **'Refund Security'**
   String get returnRefundDeposit;
 
   /// No description provided for @returnRefundRecorded.
   ///
   /// In en, this message translates to:
-  /// **'Deposit refund of Rs. {amount} recorded.'**
+  /// **'Security refund of Rs. {amount} recorded.'**
   String returnRefundRecorded(String amount);
 
   /// No description provided for @returnRefundFailed.
   ///
   /// In en, this message translates to:
-  /// **'Could not record the deposit refund. Please try again.'**
+  /// **'Could not record the Security refund. Please try again.'**
   String get returnRefundFailed;
 
   /// No description provided for @returnRecordingRefund.
@@ -13183,7 +13315,7 @@ abstract class AppLocalizations {
   /// No description provided for @legalTermsBody.
   ///
   /// In en, this message translates to:
-  /// **'RentalHub Terms of Service\n\n1. What RentalHub is\nRentalHub is a car rental marketplace in Pakistan that connects vehicle owners (shops) with customers. Owners list their vehicles and set their own rates; customers book through the app.\n\n2. Your account\nYou are responsible for keeping your sign-in details safe and for everything done with your account. Give true information about yourself, your shop and your vehicles.\n\n3. Bookings and payments\nBooking prices are set by the vehicle owner. Payments, advances and security deposits follow the terms shown at booking time. A booking can be cancelled under the cancellation terms shown for that booking.\n\n4. Your responsibilities\nOwners must keep their vehicles roadworthy, insured and legally registered, and must honour confirmed bookings. Customers must return vehicles on time, in the condition received, and pay any agreed extra charges for damage, late return or extra kilometres.\n\n5. Prohibited use\nDo not use RentalHub for anything unlawful, do not list a vehicle you do not have the right to rent out, and do not share another person\'s personal information without their permission.\n\n6. Liability\nRentalHub provides the marketplace and the booking tools. Owners and customers are responsible for their own vehicles, driving and agreements with each other. To the extent allowed by law, RentalHub is not liable for loss or damage arising from a rental between an owner and a customer.\n\n7. Changes and contact\nWe may update these terms and will show the current version in the app. Questions: contact RentalHub support from the Help section in the app.'**
+  /// **'RentalHub Terms of Service\n\n1. What RentalHub is\nRentalHub is a car rental marketplace in Pakistan that connects vehicle owners (shops) with customers. Owners list their vehicles and set their own rates; customers book through the app.\n\n2. Your account\nYou are responsible for keeping your sign-in details safe and for everything done with your account. Give true information about yourself, your shop and your vehicles.\n\n3. Bookings and payments\nBooking prices are set by the vehicle owner. Payments, advances and Security follow the terms shown at booking time. A booking can be cancelled under the cancellation terms shown for that booking.\n\n4. Your responsibilities\nOwners must keep their vehicles roadworthy, insured and legally registered, and must honour confirmed bookings. Customers must return vehicles on time, in the condition received, and pay any agreed extra charges for damage, late return or extra kilometres.\n\n5. Prohibited use\nDo not use RentalHub for anything unlawful, do not list a vehicle you do not have the right to rent out, and do not share another person\'s personal information without their permission.\n\n6. Liability\nRentalHub provides the marketplace and the booking tools. Owners and customers are responsible for their own vehicles, driving and agreements with each other. To the extent allowed by law, RentalHub is not liable for loss or damage arising from a rental between an owner and a customer.\n\n7. Changes and contact\nWe may update these terms and will show the current version in the app. Questions: contact RentalHub support from the Help section in the app.'**
   String get legalTermsBody;
 
   /// No description provided for @legalPrivacyBody.
@@ -15940,7 +16072,7 @@ abstract class AppLocalizations {
   /// No description provided for @admin2_settingsNumbersInvalid.
   ///
   /// In en, this message translates to:
-  /// **'Advance %, deposit and late grace must be numbers.'**
+  /// **'Advance %, Security and late grace must be numbers.'**
   String get admin2_settingsNumbersInvalid;
 
   /// No description provided for @admin2_settingsSaved.
@@ -15970,7 +16102,7 @@ abstract class AppLocalizations {
   /// No description provided for @admin2_settingsDeposit.
   ///
   /// In en, this message translates to:
-  /// **'Default deposit (Rs.)'**
+  /// **'Default Security (Rs.)'**
   String get admin2_settingsDeposit;
 
   /// No description provided for @admin2_settingsGrace.
@@ -16246,7 +16378,7 @@ abstract class AppLocalizations {
   /// No description provided for @admin2_disputeNoShopStatement.
   ///
   /// In en, this message translates to:
-  /// **'The shop has no written statement on file — the decision uses the booking, handover and deposit records.'**
+  /// **'The shop has no written statement on file — the decision uses the booking, handover and Security records.'**
   String get admin2_disputeNoShopStatement;
 
   /// No description provided for @admin2_disputeDecisionHeading.
@@ -16438,7 +16570,7 @@ abstract class AppLocalizations {
   /// No description provided for @admin2_bookingDetailPaymentDeposit.
   ///
   /// In en, this message translates to:
-  /// **'Payment & deposit'**
+  /// **'Payment & Security'**
   String get admin2_bookingDetailPaymentDeposit;
 
   /// No description provided for @admin2_bookingDetailPaymentProof.
@@ -16450,13 +16582,13 @@ abstract class AppLocalizations {
   /// No description provided for @admin2_bookingDetailNoDeposit.
   ///
   /// In en, this message translates to:
-  /// **'No deposit record.'**
+  /// **'No Security record.'**
   String get admin2_bookingDetailNoDeposit;
 
   /// No description provided for @admin2_bookingDetailDeposit.
   ///
   /// In en, this message translates to:
-  /// **'Deposit {amount} — {status}'**
+  /// **'Security {amount} — {status}'**
   String admin2_bookingDetailDeposit(String amount, String status);
 
   /// No description provided for @admin2_bookingDetailAgreement.
@@ -16620,7 +16752,7 @@ abstract class AppLocalizations {
   /// No description provided for @admin2_carReviewDeposit.
   ///
   /// In en, this message translates to:
-  /// **'Security deposit'**
+  /// **'Security'**
   String get admin2_carReviewDeposit;
 
   /// No description provided for @admin2_carReviewTracker.
@@ -17191,7 +17323,7 @@ abstract class AppLocalizations {
   /// No description provided for @admin2_settingsDepositNegative.
   ///
   /// In en, this message translates to:
-  /// **'Deposit cannot be negative.'**
+  /// **'Security cannot be negative.'**
   String get admin2_settingsDepositNegative;
 
   /// No description provided for @admin2_settingsGraceNegative.
@@ -17299,7 +17431,7 @@ abstract class AppLocalizations {
   /// No description provided for @admin2_bookingDetailDepositDeducted.
   ///
   /// In en, this message translates to:
-  /// **'Deposit {amount} — {status} (deducted {deducted})'**
+  /// **'Security {amount} — {status} (deducted {deducted})'**
   String admin2_bookingDetailDepositDeducted(
       String amount, String status, String deducted);
 
@@ -17447,13 +17579,13 @@ abstract class AppLocalizations {
   /// No description provided for @admin2_bookingSummaryDepositNone.
   ///
   /// In en, this message translates to:
-  /// **'Deposit: none'**
+  /// **'Security: none'**
   String get admin2_bookingSummaryDepositNone;
 
   /// No description provided for @admin2_bookingSummaryDeposit.
   ///
   /// In en, this message translates to:
-  /// **'Deposit: {amount} ({status})'**
+  /// **'Security: {amount} ({status})'**
   String admin2_bookingSummaryDeposit(String amount, String status);
 
   /// No description provided for @admin2_bookingSummaryAgreement.
@@ -17592,7 +17724,7 @@ abstract class AppLocalizations {
   /// No description provided for @depositRefundTerms.
   ///
   /// In en, this message translates to:
-  /// **'Deposit refunded after return inspection, minus damage and excess-km charges.'**
+  /// **'Security refunded after return inspection, minus damage and excess-km charges.'**
   String get depositRefundTerms;
 
   /// No description provided for @disputeLastUpdated.
@@ -17802,13 +17934,13 @@ abstract class AppLocalizations {
   /// No description provided for @manualBookingDepositReceived.
   ///
   /// In en, this message translates to:
-  /// **'Deposit received'**
+  /// **'Security received'**
   String get manualBookingDepositReceived;
 
   /// No description provided for @manualBookingDepositMethod.
   ///
   /// In en, this message translates to:
-  /// **'Deposit method'**
+  /// **'Security method'**
   String get manualBookingDepositMethod;
 
   /// No description provided for @manualBookingRemainingDues.
@@ -18199,7 +18331,7 @@ abstract class AppLocalizations {
   /// No description provided for @vehicleDepositCnic.
   ///
   /// In en, this message translates to:
-  /// **'Security Deposit: {amount} + Original NADRA CNIC guarantee required at pickup'**
+  /// **'Security: {amount} + Original NADRA CNIC guarantee required at pickup'**
   String vehicleDepositCnic(String amount);
 
   /// No description provided for @returnOwedRecordFailed.
@@ -18337,7 +18469,7 @@ abstract class AppLocalizations {
   /// No description provided for @approveAssignDepositPickup.
   ///
   /// In en, this message translates to:
-  /// **'Refundable deposit at pickup: {amount}'**
+  /// **'Refundable Security at pickup: {amount}'**
   String approveAssignDepositPickup(String amount);
 
   /// No description provided for @approveAssignDeadline.
@@ -18469,13 +18601,13 @@ abstract class AppLocalizations {
   /// No description provided for @handoverWizardDepositMethod.
   ///
   /// In en, this message translates to:
-  /// **'Deposit method'**
+  /// **'Security method'**
   String get handoverWizardDepositMethod;
 
   /// No description provided for @handoverWizardDepositReceived.
   ///
   /// In en, this message translates to:
-  /// **'Deposit received'**
+  /// **'Security received'**
   String get handoverWizardDepositReceived;
 
   /// No description provided for @handoverWizardBalanceReceived.
@@ -18511,7 +18643,7 @@ abstract class AppLocalizations {
   /// No description provided for @handoverWizardReceiptMessage.
   ///
   /// In en, this message translates to:
-  /// **'Handover receipt {receipt} for {vehicle}: total Rs. {total}, advance Rs. {advance}, balance Rs. {balance}, deposit Rs. {deposit}. — RentalHub'**
+  /// **'Handover receipt {receipt} for {vehicle}: total Rs. {total}, advance Rs. {advance}, balance Rs. {balance}, Security Rs. {deposit}. — RentalHub'**
   String handoverWizardReceiptMessage(String receipt, String vehicle,
       String total, String advance, String balance, String deposit);
 
@@ -18608,7 +18740,7 @@ abstract class AppLocalizations {
   /// No description provided for @handoverWizardDepositMethodRequired.
   ///
   /// In en, this message translates to:
-  /// **'Choose how the deposit was collected before continuing.'**
+  /// **'Choose how the Security was collected before continuing.'**
   String get handoverWizardDepositMethodRequired;
 
   /// No description provided for @handoverWizardChecklistRequired.

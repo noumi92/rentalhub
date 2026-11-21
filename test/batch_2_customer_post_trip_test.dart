@@ -115,13 +115,13 @@ supportedLocales: AppLocalizations.supportedLocales,
       await tester.pump();
 
       expect(find.text('Wallet & Security Escrow'), findsOneWidget);
-      expect(find.text('Total with shop: advances paid + deposit held'), findsOneWidget);
+      expect(find.text('Total with shop: advances paid + Security held'), findsOneWidget);
       expect(find.text('Rs. 12,500'), findsOneWidget);
       expect(find.text('- Rs. 2,500'), findsOneWidget);
       expect(find.text('- Rs. 10,000'), findsOneWidget);
       expect(find.text('Transaction Ledger'), findsOneWidget);
       expect(find.textContaining('Advance paid — Honda Civic'), findsOneWidget);
-      expect(find.textContaining('Security deposit held — Honda Civic'),
+      expect(find.textContaining('Security held — Honda Civic'),
           findsOneWidget);
     });
 
@@ -149,10 +149,10 @@ supportedLocales: AppLocalizations.supportedLocales,
 
       // Search FAQ — the ticket form adds a second TextField, so the
       // search box is the first one in the tree.
-      await tester.enterText(find.byType(TextField).first, 'deposit');
+      await tester.enterText(find.byType(TextField).first, 'Security');
       await tester.pumpAndSettle();
 
-      expect(find.text('When is my security deposit returned?'), findsOneWidget);
+      expect(find.text('When is my Security returned?'), findsOneWidget);
 
       // Tap dispute banner
       await tester.tap(find.text('File a Formal Complaint / Dispute'));
@@ -176,7 +176,7 @@ supportedLocales: AppLocalizations.supportedLocales,
       await tester.pumpAndSettle();
 
       expect(find.text('File Complaint / Dispute'), findsOneWidget);
-      expect(find.text('Deposit Withheld'), findsOneWidget);
+      expect(find.text('Security Withheld'), findsOneWidget);
       expect(find.text('RH-849201'), findsOneWidget);
 
       // Toggle category

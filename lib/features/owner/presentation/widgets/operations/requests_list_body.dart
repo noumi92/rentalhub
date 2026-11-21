@@ -33,6 +33,10 @@ class RequestsListBody extends StatelessWidget {
   final ValueChanged<BookingEntity> onReject;
   final ValueChanged<BookingEntity> onOpenDetail;
 
+  /// Worker B: owner cancel for walk-in `approved` / `paid`
+  /// bookings. Null hides the cancel button on every card.
+  final ValueChanged<BookingEntity>? onCancel;
+
   const RequestsListBody({
     super.key,
     required this.isLoading,
@@ -54,6 +58,7 @@ class RequestsListBody extends StatelessWidget {
     required this.onApprove,
     required this.onReject,
     required this.onOpenDetail,
+    this.onCancel,
   });
 
   @override
@@ -125,6 +130,8 @@ class RequestsListBody extends StatelessWidget {
                         onApprove: () => onApprove(b),
                         onReject: () => onReject(b),
                         onVerifyProof: () => onOpenDetail(b),
+                        onCancel:
+                            onCancel == null ? null : () => onCancel!(b),
                       ),
                     );
                   },

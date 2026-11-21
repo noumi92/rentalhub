@@ -329,7 +329,7 @@ void main() {
       expect(find.text('Advance (paid online)'), findsOneWidget);
     });
 
-    testWidgets('step 1 shows EasyPaisa + deposit + receipt',
+    testWidgets('step 1 shows EasyPaisa + Security + receipt',
         (tester) async {
       _tallViewport(tester);
       await tester.pumpWidget(_pumpable(OwnerHandoverWizardView(
@@ -337,7 +337,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Advance (paid online)'), findsOneWidget);
       expect(find.widgetWithText(ChoiceChip, 'EasyPaisa'), findsWidgets);
-      expect(find.text('Deposit received'), findsOneWidget);
+      expect(find.text('Security received'), findsOneWidget);
       expect(find.text('Balance received'), findsOneWidget);
       expect(find.text('View receipt'), findsOneWidget);
       await tester.ensureVisible(find.text('View receipt'));

@@ -23,7 +23,9 @@ class VehicleReviewStepWidget extends StatelessWidget {
   /// before publishing. Entries are "Label: filename".
   final List<String> documentNames;
   final int dailyRate;
-  final int driverAllowance;
+  /// Worker A (2026-11-21): the shop's booking-settings driver
+  /// rate (Rs/day). Null (unset) adds nothing to the day rate.
+  final int? driverRatePerDayPkr;
 
   /// Audit §5 (O08): the Monthly package rate, when the owner set
   /// one — the "Your Earning" row below is computed from it and only
@@ -58,7 +60,7 @@ class VehicleReviewStepWidget extends StatelessWidget {
     required this.fuelType,
     required this.seats,
     required this.dailyRate,
-    required this.driverAllowance,
+    this.driverRatePerDayPkr,
     this.monthlyRate = 0,
     this.deliveryNote,
     this.discountNote,
@@ -107,10 +109,7 @@ class VehicleReviewStepWidget extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            '$selectedMake $selectedModel',
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
-                          ),
+                          Text('$selectedMake $selectedModel', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
                           Text('$category • $selectedYear • $color', style: Theme.of(context).textTheme.bodySmall),
                         ],
                       ),
@@ -153,7 +152,7 @@ class VehicleReviewStepWidget extends StatelessWidget {
                       children: [
                         Text(l10n.addVehicleReviewWithDriverRate, style: Theme.of(context).textTheme.labelSmall),
                         Text(
-                          supportWithDriver ? l10n.addVehicleReviewDailyRate(formatRs(dailyRate + driverAllowance)) : l10n.addVehicleReviewNotOffered,
+                          supportWithDriver ? l10n.addVehicleReviewDailyRate(formatRs(dailyRate + (driverRatePerDayPkr ?? 0))) : l10n.addVehicleReviewNotOffered,
                           style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w500, color: supportWithDriver ? Theme.of(context).colorScheme.onSurface : Theme.of(context).colorScheme.onSurfaceVariant),
                         ),
                       ],

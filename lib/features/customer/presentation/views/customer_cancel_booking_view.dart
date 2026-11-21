@@ -5,6 +5,7 @@ import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../core/widgets/debounced_button.dart';
 import '../../../bookings/data/datasources/booking_remote_data_source.dart';
+import '../../../bookings/data/services/booking_cancel_service.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../core/utils/money_format.dart';
@@ -69,6 +70,16 @@ class _CustomerCancelBookingViewState extends State<CustomerCancelBookingView> {
         status: 'cancelled',
         rejectionReason: _selectedReason,
       );
+      // Worker B (cancel releases the deposit): a walk-in cancelled
+      // here may hold a counter Security — it is refunded in full
+      // (the advance stays with the showroom). Status first,
+      // release best-effort: a release / ledger failure never
+      // blocks the cancellation itself.
+      try {
+        await BookingCancelService.releaseDepositOnCancel(
+          booking: widget.booking,
+        );
+      } catch (_) {}
 
       if (mounted) {
         AppFeedback.showInfo(context, l10n.cancelDone);
@@ -124,12 +135,17 @@ class _CustomerCancelBookingViewState extends State<CustomerCancelBookingView> {
                                       color: AppColors.dangerTextFor(
                                           Theme.of(context).brightness))),
                           const SizedBox(height: 6),
-                          // G5: there is no defined refund timetable in
-                          // the app, so none is invented. What is true:
-                          // no deposit was collected (deposits are taken
-                          // at handover), and the advance went straight
-                          // to the showroom's own account, so the
-                          // showroom decides any refund.
+                          // Worker B: the old copy claimed no
+                          // deposit was ever collected ("deposits
+                          // are only taken at handover") — false
+                          // for walk-ins, whose Security is taken
+                          // at the counter. A cancelled booking's
+                          // Security is refunded in full; the
+                          // advance went straight to the showroom's
+                          // own account, so the showroom decides
+                          // any refund of it. The .arb values for
+                          // these two keys are updated by the
+                          // labels worker to say exactly that.
                           Text(
                             widget.booking.advancePaid > 0
                                 ? l10n.cancelAdvancePaid(formatRs(widget.booking.advancePaid))

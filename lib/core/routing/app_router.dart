@@ -49,6 +49,7 @@ import '../../features/owner/presentation/views/owner_booking_requests_view.dart
 import '../../features/owner/presentation/views/owner_contract_view.dart';
 import '../../features/owner/presentation/views/owner_customer_detail_view.dart';
 import '../../features/owner/presentation/views/owner_customer_added_view.dart';
+import '../../features/owner/presentation/views/owner_customer_security_wallet_view.dart';
 import '../../features/owner/presentation/views/owner_edit_customer_loader.dart';
 import '../../features/owner/presentation/views/owner_return_landing_view.dart';
 import '../../features/owner/presentation/views/owner_share_with_customers_view.dart';
@@ -106,6 +107,7 @@ import '../../features/owner/presentation/views/owner_record_damage_view.dart';
 import '../../features/owner/presentation/views/owner_record_extra_charges_view.dart';
 import '../../features/owner/presentation/views/owner_reports_view.dart';
 import '../../features/owner/presentation/views/owner_customer_statement_view.dart';
+import '../../features/owner/presentation/views/owner_booking_settings_view.dart';
 import '../../features/owner/presentation/views/owner_finance_settings_view.dart';
 import '../../features/owner/presentation/views/owner_finance_categories_view.dart';
 import '../../features/owner/presentation/views/owner_reset_options_view.dart';
@@ -349,8 +351,11 @@ class AppRouter {
                     shopId: vehicle.shopId,
                     shopName: shopName,
                     dailySelfDriveRate: vehicle.rates.daily24,
-                    dailyWithDriverRate:
-                        vehicle.rates.daily24 + (vehicle.withDriverSurchargePkr ?? 0),
+                    // Worker A (2026-11-21): the with-driver daily
+                    // rate is NOT daily + the vehicle's stored
+                    // surcharge any more — the picker loads the
+                    // shop's booking-settings driver rate itself.
+                    dailyWithDriverRate: vehicle.rates.daily24,
                     hourlyRate: vehicle.rates.hourly1,
                     vehicle: vehicle,
                     onProceedToReview: (draft) => context.push(
@@ -1274,6 +1279,20 @@ class AppRouter {
                   customer: state.extra as CustomerEntity?,
                 ),
               ),
+              // Customers: ownerCustomerSecurityWallet (Worker C) —
+              // the shop-managed Security view for one walk-in
+              // customer. Declared before the 3-segment detail
+              // route, like the edit route; the view itself refuses
+              // online records.
+              GoRoute(
+                path: RouteNames.ownerCustomerSecurityWallet,
+                builder: (context, state) =>
+                    OwnerCustomerSecurityWalletView(
+                  customerId: state.pathParameters['id']!,
+                  shopId: currentShopId(),
+                  customer: state.extra as CustomerEntity?,
+                ),
+              ),
               // Customers: ownerCustomerDetail (audit impl finish,
               // worker A) — the 1 missing screen (#35). Declared LAST
               // in this branch, after the static /add, /scan and
@@ -1366,6 +1385,13 @@ class AppRouter {
               GoRoute(
                 path: RouteNames.ownerFinanceSettings,
                 builder: (context, state) => OwnerFinanceSettingsView(
+                  shopId: currentShopId(),
+                ),
+              ),
+              // Settings: ownerBookingSettings (worker A, 2026-11-21)
+              GoRoute(
+                path: RouteNames.ownerBookingSettings,
+                builder: (context, state) => OwnerBookingSettingsView(
                   shopId: currentShopId(),
                 ),
               ),

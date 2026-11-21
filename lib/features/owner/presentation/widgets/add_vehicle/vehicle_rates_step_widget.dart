@@ -37,7 +37,6 @@ class VehicleRatesStepWidget extends StatelessWidget {
 
   final bool supportWithDriver;
   final ValueChanged<bool> onToggleWithDriver;
-  final TextEditingController driverAllowanceController;
 
   final TextEditingController securityDepositController;
   final TextEditingController advanceDepositController;
@@ -72,7 +71,6 @@ class VehicleRatesStepWidget extends StatelessWidget {
     required this.onToggleSelfDrive,
     required this.supportWithDriver,
     required this.onToggleWithDriver,
-    required this.driverAllowanceController,
     required this.securityDepositController,
     required this.advanceDepositController,
     required this.extraHourChargeController,
@@ -160,38 +158,6 @@ class VehicleRatesStepWidget extends StatelessWidget {
                     Switch(value: supportWithDriver, activeThumbColor: AppColors.secondary, onChanged: onToggleWithDriver),
                   ],
                 ),
-                if (supportWithDriver) ...[
-                  const Divider(height: 20),
-                  Row(
-                    children: [
-                      Expanded(
-                        flex: 3,
-                        child: Text(l10n.addVehicleDriverAllowance, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500)),
-                      ),
-                      Expanded(
-                        flex: 2,
-                        child: TextField(
-                          controller: driverAllowanceController,
-                          keyboardType: TextInputType.number,
-                          textAlign: TextAlign.end,
-                          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.onSurface),
-                          decoration: InputDecoration(
-                            // Audit 2026-11-15 DS-10: localized prefix.
-                            prefixText: l10n.currencyPrefix,
-                            prefixStyle: const TextStyle(fontWeight: FontWeight.w500),
-                            suffixText: l10n.addVehiclePerDaySuffix,
-                            suffixStyle: Theme.of(context).textTheme.labelSmall,
-                            filled: true,
-                            fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-                            isDense: true,
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: Theme.of(context).dividerColor)),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
               ],
             ),
           ),

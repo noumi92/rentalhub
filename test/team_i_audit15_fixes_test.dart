@@ -137,12 +137,10 @@ void main() {
     });
 
     testWidgets('policy-field hints render in Urdu', (tester) async {
-      final surcharge = TextEditingController();
       final deposit = TextEditingController();
       final advance = TextEditingController();
       final extraHour = TextEditingController();
       addTearDown(() {
-        surcharge.dispose();
         deposit.dispose();
         advance.dispose();
         extraHour.dispose();
@@ -150,7 +148,6 @@ void main() {
       await pumpUrdu360(
         tester,
         PricingPolicyFields(
-          surchargeController: surcharge,
           depositController: deposit,
           advanceController: advance,
           extraHourController: extraHour,
@@ -160,7 +157,6 @@ void main() {
         ),
       );
       expect(tester.takeException(), isNull);
-      expect(find.text('2,000 روپے / دن'), findsOneWidget);
       expect(find.text('25,000 روپے'), findsOneWidget);
       expect(find.text('Rs. 2,000 / day'), findsNothing);
       expect(find.text('Rs. 25,000'), findsNothing);

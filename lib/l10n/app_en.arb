@@ -196,12 +196,12 @@
   "summaryReturnDue": "Return Due",
   "summaryPackageTier": "Package Tier",
   "summaryKmIncluded": "KM Included",
-  "summarySecurityDeposit": "Security Deposit",
+  "summarySecurityDeposit": "Security",
   "summaryTotalFare": "Total Rental Fare",
   "summaryAdvancePayable": "Advance Payable",
   "summaryBalanceAtHandover": "Balance at Handover",
   "walletTitle": "Wallet & Security Escrow",
-  "walletActiveEscrow": "Total with shop: advances paid + deposit held",
+  "walletActiveEscrow": "Total with shop: advances paid + Security held",
   "walletAdvancesPaid": "Advances Paid",
   "walletSecurityEscrow": "Security Escrow",
   "walletLedger": "Transaction Ledger",
@@ -209,11 +209,87 @@
   "walletShowAmount": "Show amount",
   "walletHideBalance": "Hide balance",
   "walletShowBalance": "Show balance",
-  "walletEmptyHint": "Advances and deposits will appear here.",
-  "walletLedgerEmptyHint": "Advances you pay and deposits you leave will appear here.",
+  "walletEmptyHint": "Advances and Security will appear here.",
+  "walletLedgerEmptyHint": "Advances you pay and Security you leave will appear here.",
   "walletLoadError": "Could not load your wallet. Check your connection and try again.",
   "walletLoading": "Loading your wallet…",
   "walletNoActivity": "No wallet activity yet.",
+  "walletEntrySecurityHeld": "Security held — {vehicle} ({booking})",
+  "@walletEntrySecurityHeld": {
+    "placeholders": {
+      "vehicle": {
+        "type": "String"
+      },
+      "booking": {
+        "type": "String"
+      }
+    }
+  },
+  "walletEntrySecurityReleased": "Security released — {vehicle} ({booking})",
+  "@walletEntrySecurityReleased": {
+    "placeholders": {
+      "vehicle": {
+        "type": "String"
+      },
+      "booking": {
+        "type": "String"
+      }
+    }
+  },
+  "walletEntrySecurityReleasedCancel": "Security released on cancellation — {vehicle} ({booking})",
+  "@walletEntrySecurityReleasedCancel": {
+    "placeholders": {
+      "vehicle": {
+        "type": "String"
+      },
+      "booking": {
+        "type": "String"
+      }
+    }
+  },
+  "walletEntrySecurityDeducted": "Security deduction — {vehicle} ({booking})",
+  "@walletEntrySecurityDeducted": {
+    "placeholders": {
+      "vehicle": {
+        "type": "String"
+      },
+      "booking": {
+        "type": "String"
+      }
+    }
+  },
+  "walletEntrySecurityRefunded": "Security refund — {vehicle} ({booking})",
+  "@walletEntrySecurityRefunded": {
+    "placeholders": {
+      "vehicle": {
+        "type": "String"
+      },
+      "booking": {
+        "type": "String"
+      }
+    }
+  },
+  "walletEntrySecurityOwed": "Security still owed — {vehicle} ({booking})",
+  "@walletEntrySecurityOwed": {
+    "placeholders": {
+      "vehicle": {
+        "type": "String"
+      },
+      "booking": {
+        "type": "String"
+      }
+    }
+  },
+  "walletSecuritySection": "Security",
+  "walletSecurityHeld": "Held",
+  "walletSecurityReleased": "Released",
+  "walletSecurityDeducted": "Deducted",
+  "walletSecurityRefunded": "Refunded",
+  "walletSecurityOwed": "Still owed",
+  "ownerSecurityWalletTitle": "Security wallet",
+  "ownerSecurityWalletOnline": "Online customers manage their own Security wallet.",
+  "customerDetailSecurityWallet": "Security wallet",
+  "ownerSecurityWalletEmpty": "No Security activity for this customer yet.",
   "profileTotalTrips": "Total Trips",
   "profileTrustScore": "Trust Score",
   "profileLoading": "Loading your profile…",
@@ -260,7 +336,7 @@
   "supportNoBooking": "No booking yet",
   "supportNoBookingHint": "No booking yet — the showroom contact appears here once you have a booking.",
   "supportFileDispute": "File a Formal Complaint / Dispute",
-  "supportDisputeHint": "Overcharged or deposit withheld? File an arbitration claim.",
+  "supportDisputeHint": "Overcharged or Security withheld? File an arbitration claim.",
   "supportFaqTitle": "Frequently Asked Questions",
   "supportFaqEmpty": "No help topics match your search.",
   "supportFaqEmptyHint": "Try a different keyword, or ask your showroom directly.",
@@ -268,8 +344,8 @@
   "supportSosSubtitle": "Police 15 · Rescue 1122 — one-tap emergency help.",
   "supportFaqQ1": "How does advance payment protect my booking?",
   "supportFaqA1": "Your advance payment locks the vehicle exclusively for your scheduled time and guarantees showroom reservation. It is safely recorded and deducted from your final bill.",
-  "supportFaqQ2": "When is my security deposit returned?",
-  "supportFaqA2": "The deposit is settled at return handover. Any deduction for excess kilometres, fuel or damage is shown on the settlement, and the rest is released to you.",
+  "supportFaqQ2": "When is my Security returned?",
+  "supportFaqA2": "The Security is settled at return handover. Any deduction for excess kilometres, fuel or damage is shown on the settlement, and the rest is released to you.",
   "supportFaqQ3": "What happens if a vehicle breaks down?",
   "supportFaqA3": "Roadside help depends on the showroom — ask yours when you pick up the car. For an emergency, use the Emergency SOS screen.",
   "supportFaqQ4": "Can I take the rental car out of city?",
@@ -299,7 +375,7 @@
   "sosNoBookingHint": "No booking yet — your live location is shared with your showroom once you have a booking.",
   "sosLocationPermission": "Location permission is needed to share your live location.",
   "disputeTitle": "File Complaint / Dispute",
-  "disputeDepositWithheld": "Deposit Withheld",
+  "disputeDepositWithheld": "Security Withheld",
   "disputeOvercharge": "Showroom Overcharge",
   "disputeBreakdown": "Vehicle Breakdown Delay",
   "disputeDamagePenalty": "Unfair Damage Penalty",
@@ -337,7 +413,7 @@
   "cancelConfirm": "Confirm Cancellation",
   "cancelCancelling": "Cancelling...",
   "cancelWhatHappens": "What happens when you cancel",
-  "cancelNoAdvanceNote": "No advance has been paid yet, so there is nothing to refund. No security deposit was collected: deposits are only taken at handover.",
+  "cancelNoAdvanceNote": "No advance has been paid yet, so there is nothing to refund. If a Security was collected, it will be refunded in full.",
   "cancelDone": "Reservation cancelled.",
   "cancelReasonPlans": "Change of travel plans",
   "cancelReasonOtherVehicle": "Found another vehicle",
@@ -455,7 +531,7 @@
   "passNoPhone": "This showroom has no phone number listed.",
   "passOpenMapsError": "Could not open Maps.",
   "passOpenAgreementError": "Could not open the agreement.",
-  "driverRequiresCnic": "Requires CNIC + Deposit",
+  "driverRequiresCnic": "Requires CNIC + Security",
   "driverVerifiedIncluded": "Verified Driver Included",
   "authWelcome": "Welcome to RentalHub",
   "authSignInSubtitle": "Sign in to rent a car near you",
@@ -545,7 +621,7 @@
   "roleCustomerUrdu": "گاڑی کرایہ پر لیں",
   "roleOwnerUrdu": "شوروم رجسٹر کریں",
   "advanceNoticeWithDriver": "• Chauffeur arrives at showroom/pickup point 15 mins early.\n• Advance payment confirms vehicle lock and fuel reservation.\n• Outstation overnight stay: {nightStay}/night driver food & lodge.",
-  "advanceNoticeSelfDrive": "• Original NADRA CNIC & valid Driving License required at handover.\n• Advance confirms vehicle booking lock with showroom.\n• Refundable security deposit collected digitally or in cash at handover.",
+  "advanceNoticeSelfDrive": "• Original NADRA CNIC & valid Driving License required at handover.\n• Advance confirms vehicle booking lock with showroom.\n• Refundable Security collected digitally or in cash at handover.",
   "ticketShowCode": "Show this code at the counter for handover — it opens your booking and its agreement.",
   "bookingsEmptyForTab": "No {tab} bookings found.",
   "@bookingsEmptyForTab": {
@@ -703,7 +779,7 @@
       }
     }
   },
-  "vehicleSelectedMode": "Selected: {mode}. Advance deposit required.",
+  "vehicleSelectedMode": "Selected: {mode}. Security required in advance.",
   "@vehicleSelectedMode": {
     "placeholders": {
       "mode": {
@@ -901,7 +977,7 @@
     }
   },
   "cancelFailedGeneric": "Cancellation failed. Please try again.",
-  "cancelAdvancePaid": "You paid Rs. {amount} advance directly to the showroom's account — the showroom decides the refund, so contact them about it. No security deposit was collected: deposits are only taken at handover.",
+  "cancelAdvancePaid": "You paid Rs. {amount} advance directly to the showroom's account — the showroom decides the refund, so contact them about it. If a Security was collected, it will be refunded in full.",
   "@cancelAdvancePaid": {
     "placeholders": {
       "amount": {
@@ -974,7 +1050,7 @@
       }
     }
   },
-  "successBody": "Your reservation request for {vehicle} has been delivered to {shop}. Once approved, you will be notified to submit the advance deposit.",
+  "successBody": "Your reservation request for {vehicle} has been delivered to {shop}. Once approved, you will be notified to submit the advance Security.",
   "@successBody": {
     "placeholders": {
       "vehicle": {
@@ -1031,7 +1107,7 @@
       }
     }
   },
-  "packageSecurityDeposit": "Security Deposit: Rs. {amount}",
+  "packageSecurityDeposit": "Security: Rs. {amount}",
   "@packageSecurityDeposit": {
     "placeholders": {
       "amount": {
@@ -1295,7 +1371,7 @@
     }
   },
   "dashboardNoCompletedTrips": "No completed trips yet",
-  "dashboardSettleRate": "{percent}% deposits settled",
+  "dashboardSettleRate": "{percent}% Security settled",
   "@dashboardSettleRate": {
     "placeholders": {
       "percent": {
@@ -1485,7 +1561,7 @@
   "addVehicleStep4Title": "Review & Publish",
   "addVehicleStep1Subtitle": "Capacity, AC, features & specs",
   "addVehicleStep2Subtitle": "4-angle photos, book & excise tax",
-  "addVehicleStep3Subtitle": "Hourly rates, deposit & fuel policy",
+  "addVehicleStep3Subtitle": "Hourly rates, Security & fuel policy",
   "addVehicleStep4Subtitle": "Verify vehicle details before listing",
   "addVehicleStepCounter": "Step {step} of 4",
   "@addVehicleStepCounter": {
@@ -1551,10 +1627,9 @@
   "addVehicleSelfDriveHint": "Customer drives the vehicle themselves",
   "addVehicleWithDriverService": "With-Driver Service",
   "addVehicleWithDriverHint": "Shop provides experienced chauffeur",
-  "addVehicleDriverAllowance": "Driver Daily Allowance:",
   "addVehiclePerDaySuffix": "/day",
-  "addVehicleDepositPolicies": "Security Deposit & Rental Policies",
-  "addVehicleSecurityDepositSelfDrive": "Security Deposit (Self-Drive)",
+  "addVehicleDepositPolicies": "Security & Rental Policies",
+  "addVehicleSecurityDepositSelfDrive": "Security (Self-Drive)",
   "addVehicleSecurityDepositHint": "Refunded on car return in clean condition",
   "addVehicleAdvanceFee": "Advance Booking Fee",
   "addVehicleAdvanceHint": "Required up front to lock slot",
@@ -1588,7 +1663,7 @@
       }
     }
   },
-  "addVehicleReviewDeposit": "Deposit",
+  "addVehicleReviewDeposit": "Security",
   "addVehicleReviewAdvance": "Advance",
   "addVehicleReviewOverstay": "Overstay",
   "addVehicleReviewBanner": "This car will be immediately available in your fleet catalog and visible to nearby customers upon approval.",
@@ -1621,7 +1696,7 @@
   "unsavedChangesTitle": "Discard unsaved changes?",
   "unsavedChangesBody": "Your changes have not been saved.",
   "pricingSelfDriveAllowed": "Self-Drive Allowed",
-  "pricingSelfDriveHint": "Requires original NADRA CNIC + security deposit",
+  "pricingSelfDriveHint": "Requires original NADRA CNIC + Security",
   "pricingChauffeurAllowed": "Chauffeur Service Allowed",
   "pricingChauffeurHint": "Showroom driver assigned to booking",
   "pricingPackage1h": "1-Hour City Commute",
@@ -1640,9 +1715,7 @@
   },
   "pricingOutOfCityDaily": "Out-of-City Daily (24h)",
   "pricingOutOfCityDailyCap": "300 km included + tracker cleared",
-  "pricingWithDriverSurcharge": "With-Driver Surcharge (per day)",
-  "pricingWithDriverSurchargeCap": "Added on top of the package price",
-  "pricingSecurityDeposit": "Security Deposit",
+  "pricingSecurityDeposit": "Security",
   "pricingSecurityDepositCap": "Refundable after return inspection",
   "pricingAdvanceRequired": "Advance Required",
   "pricingAdvanceCap": "Due before the booking is confirmed",
@@ -1903,7 +1976,7 @@
   "financeCategoryFuel": "Fuel",
   "financeCategorySalary": "Salary",
   "financeCategoryPartnerShare": "Partner share",
-  "financeCategoryDepositRefund": "Deposit refund",
+  "financeCategoryDepositRefund": "Security refund",
   "financeCategoryLabel": "Category",
   "financeNoteOptional": "Note (optional)",
   "financeLedgerAmount": "{sign} Rs. {amount}",
@@ -1929,11 +2002,11 @@
   "financeAddEntry": "Add entry",
   "financeLedgerEmpty": "No entries yet — record your first income or expense.",
   "financeAccountFallback": "Account",
-  "financeSecurityDeposits": "Security Deposits",
+  "financeSecurityDeposits": "Security",
   "financeDepositsHeld": "Held now",
   "financeDepositsRefunded": "Refunded in full",
   "financeDepositsDeducted": "Deducted at return",
-  "financeDepositsCount": "{count, plural, =1{{count} deposit} other{{count} deposits}}",
+  "financeDepositsCount": "{count, plural, =1{{count} Security} other{{count} Security}}",
   "@financeDepositsCount": {
     "placeholders": {
       "count": {
@@ -2173,7 +2246,7 @@
       }
     }
   },
-  "returnSettled": "Vehicle returned! Deposit settled — Rs. {refund} refunded.",
+  "returnSettled": "Vehicle returned! Security settled — Rs. {refund} refunded.",
   "@returnSettled": {
     "placeholders": {
       "refund": {
@@ -2195,8 +2268,8 @@
   "returnDamageChargeLabel": "Damage charge (Rs.)",
   "returnDamageChargeHint": "0 if nothing new was found",
   "returnFinalizing": "Finalizing Settlement...",
-  "returnFinalize": "Finalize Return & Settle Deposit",
-  "returnReceiptTitle": "Deposit & Return Balance Settlement",
+  "returnFinalize": "Finalize Return & Settle Security",
+  "returnReceiptTitle": "Security & Return Balance Settlement",
   "returnReceiptTotalKm": "Total Kilometers Driven",
   "returnReceiptAllowance": "Allowed KM Allowance",
   "returnReceiptExcessPenalty": "Excess KM Penalty ({excess} km × Rs. {rate})",
@@ -2213,7 +2286,7 @@
   "returnReceiptFuelDeficit": "Fuel Level Deficit",
   "returnReceiptOvertime": "Late Overtime Fee",
   "returnReceiptDamage": "Damage Found at Return",
-  "returnReceiptDepositHeld": "Initial Security Deposit Held",
+  "returnReceiptDepositHeld": "Initial Security Held",
   "returnReceiptTotalDeductions": "Total Incident / Penalty Deductions",
   "returnReceiptDeductionsAmount": "- Rs. {amount}",
   "@returnReceiptDeductionsAmount": {
@@ -2262,7 +2335,7 @@
   "contractFieldOdometer": "Departure Odometer:",
   "contractFieldFuel": "Handover Fuel Gauge:",
   "contractFieldTotalPaid": "Total Rental Paid:",
-  "contractFieldDeposit": "Security Deposit:",
+  "contractFieldDeposit": "Security:",
   "contractWalkInCustomer": "Walk-in Customer",
   "contractNotProvided": "Not provided",
   "contractChauffeur": "Chauffeur",
@@ -2392,7 +2465,7 @@
       }
     }
   },
-  "manualBookingDepositLabel": "Security Deposit (Rs.)",
+  "manualBookingDepositLabel": "Security (Rs.)",
   "manualBookingGuarantorNotFound": "No saved customer with that CNIC — add them below.",
   "manualBookingGuarantorBlacklisted": "This CNIC is blacklisted and cannot be a guarantor.",
   "manualBookingGuarantorRequired": "Name, phone and CNIC are required for a guarantor.",
@@ -2509,7 +2582,7 @@
   "onboardingShopAddress": "Physical Showroom Address",
   "onboardingAddressHint": "Shop number, plaza, street, sector / commercial area",
   "onboardingPayoutTitle": "Payout Accounts & Settlement",
-  "onboardingPayoutSubtitle": "Select at least one payout channel to receive rental bookings and customer advance deposits.",
+  "onboardingPayoutSubtitle": "Select at least one payout channel to receive rental bookings and customer advance Security.",
   "onboardingJazzCashTitle": "JazzCash Mobile Account",
   "onboardingJazzCashSubtitle": "Instant mobile wallet payout",
   "onboardingEasyPaisaTitle": "EasyPaisa Wallet Account",
@@ -2938,6 +3011,15 @@
   "kycWizardGuarantorOptional": "Guarantor is optional — you can save without one",
   "kycWizardExtraSkipped": "Saved — some extra documents couldn't upload while offline",
   "bookingSearchHint": "Search name, phone, car or booking #",
+  "bookingSettingsTitle": "Booking Settings",
+  "bookingSettingsSubtitle": "Driver rate for the whole shop",
+  "bookingSettingsDriverRate": "Driver rate (per day)",
+  "bookingSettingsDriverRateNote": "Charged on top of the package price whenever a trip has a driver. Leave empty for no driver charge.",
+  "bookingSettingsDriverRateUnset": "Not set — trips with a driver add no extra charge.",
+  "bookingSettingsSaved": "Booking settings saved.",
+  "bookingSettingsLoadError": "Could not load booking settings. Check your connection and try again.",
+  "bookingSettingsEmpty": "Booking settings are not available right now.",
+  "bookingSettingsInvalidRate": "Enter a valid driver rate (0 or more).",
   "bookingEmptyRejected": "No rejected requests",
   "bookingDaysCount": "{count} days",
   "@bookingDaysCount": {
@@ -3021,7 +3103,7 @@
   "contractTerm6": "6. Damage is charged as per inspection at return.",
   "contractTerm7": "7. The owner is not liable for personal belongings left in the vehicle.",
   "contractTerm8": "8. This agreement is governed by the laws of Pakistan.",
-  "contractTerm9": "9. The security deposit is refunded after inspection at return, less any damage or extra-kilometre charges.",
+  "contractTerm9": "9. The Security is refunded after inspection at return, less any damage or extra-kilometre charges.",
   "contractTerm10": "10. Both parties agree to the terms above.",
   "contractFieldAdvance": "Advance:",
   "contractFieldRemaining": "Remaining:",
@@ -3102,7 +3184,7 @@
   "damageDescriptionRequired": "Please describe the damage.",
   "damageRepairCostLabel": "Repair Cost",
   "damageRepairCostHint": "e.g. 5000",
-  "damageDeductFromDeposit": "Deduct from Deposit",
+  "damageDeductFromDeposit": "Deduct from Security",
   "damageSave": "Save",
   "damageSaved": "Damage report saved.",
   "damageSaveFailed": "Could not save the damage report. Please try again.",
@@ -3538,7 +3620,7 @@
       }
     }
   },
-  "estimateDeposit": "Security deposit",
+  "estimateDeposit": "Security",
   "estimateHint": "Estimates use your current rates. Change them in the rate matrix.",
   "estimateGoToMyCars": "Go to My Cars",
   "vehiclePublishedTitle": "Car Published",
@@ -3586,7 +3668,7 @@
     }
   },
   "vehicleDetailRatesTitle": "Rates",
-  "vehicleDetailDeposit": "Security deposit",
+  "vehicleDetailDeposit": "Security",
   "vehicleDetailFareTable": "Fare table",
   "vehicleDetailBookingsTitle": "Bookings",
   "vehicleDetailNoBookings": "No bookings for this car yet.",
@@ -3729,7 +3811,7 @@
   "creditsTogglePickupNote": "2 hours before pickup",
   "creditsToggleAgreement": "Agreement PDF at handover",
   "creditsToggleReturn": "Return reminder & late warning",
-  "creditsToggleDeposit": "Deposit refunded",
+  "creditsToggleDeposit": "Security refunded",
   "creditsToggleDues": "Dues reminder",
   "creditsToggleDuesNote": "Every 3 days until paid",
   "creditsBuy": "Buy credits",
@@ -3865,8 +3947,8 @@
   "customersBadgeKycIncomplete": "KYC Incomplete",
   "customersBadgeDormant": "Dormant",
   "customersViewProfile": "View Profile",
-  "returnRefundDeposit": "Refund Deposit",
-  "returnRefundRecorded": "Deposit refund of Rs. {amount} recorded.",
+  "returnRefundDeposit": "Refund Security",
+  "returnRefundRecorded": "Security refund of Rs. {amount} recorded.",
   "@returnRefundRecorded": {
     "placeholders": {
       "amount": {
@@ -3874,7 +3956,7 @@
       }
     }
   },
-  "returnRefundFailed": "Could not record the deposit refund. Please try again.",
+  "returnRefundFailed": "Could not record the Security refund. Please try again.",
   "returnRecordingRefund": "Recording refund…",
   "returnCloseBooking": "Complete & Close Booking",
   "contractFareTitle": "Fare Breakdown",
@@ -3906,7 +3988,7 @@
   "authPrivacyPolicy": "Privacy Policy",
   "authLegalIntro": "By continuing, you agree to our",
   "authLegalAnd": "and",
-  "legalTermsBody": "RentalHub Terms of Service\n\n1. What RentalHub is\nRentalHub is a car rental marketplace in Pakistan that connects vehicle owners (shops) with customers. Owners list their vehicles and set their own rates; customers book through the app.\n\n2. Your account\nYou are responsible for keeping your sign-in details safe and for everything done with your account. Give true information about yourself, your shop and your vehicles.\n\n3. Bookings and payments\nBooking prices are set by the vehicle owner. Payments, advances and security deposits follow the terms shown at booking time. A booking can be cancelled under the cancellation terms shown for that booking.\n\n4. Your responsibilities\nOwners must keep their vehicles roadworthy, insured and legally registered, and must honour confirmed bookings. Customers must return vehicles on time, in the condition received, and pay any agreed extra charges for damage, late return or extra kilometres.\n\n5. Prohibited use\nDo not use RentalHub for anything unlawful, do not list a vehicle you do not have the right to rent out, and do not share another person's personal information without their permission.\n\n6. Liability\nRentalHub provides the marketplace and the booking tools. Owners and customers are responsible for their own vehicles, driving and agreements with each other. To the extent allowed by law, RentalHub is not liable for loss or damage arising from a rental between an owner and a customer.\n\n7. Changes and contact\nWe may update these terms and will show the current version in the app. Questions: contact RentalHub support from the Help section in the app.",
+  "legalTermsBody": "RentalHub Terms of Service\n\n1. What RentalHub is\nRentalHub is a car rental marketplace in Pakistan that connects vehicle owners (shops) with customers. Owners list their vehicles and set their own rates; customers book through the app.\n\n2. Your account\nYou are responsible for keeping your sign-in details safe and for everything done with your account. Give true information about yourself, your shop and your vehicles.\n\n3. Bookings and payments\nBooking prices are set by the vehicle owner. Payments, advances and Security follow the terms shown at booking time. A booking can be cancelled under the cancellation terms shown for that booking.\n\n4. Your responsibilities\nOwners must keep their vehicles roadworthy, insured and legally registered, and must honour confirmed bookings. Customers must return vehicles on time, in the condition received, and pay any agreed extra charges for damage, late return or extra kilometres.\n\n5. Prohibited use\nDo not use RentalHub for anything unlawful, do not list a vehicle you do not have the right to rent out, and do not share another person's personal information without their permission.\n\n6. Liability\nRentalHub provides the marketplace and the booking tools. Owners and customers are responsible for their own vehicles, driving and agreements with each other. To the extent allowed by law, RentalHub is not liable for loss or damage arising from a rental between an owner and a customer.\n\n7. Changes and contact\nWe may update these terms and will show the current version in the app. Questions: contact RentalHub support from the Help section in the app.",
   "legalPrivacyBody": "RentalHub Privacy Policy\n\n1. What we collect\nWe collect the information you give us: your name, phone number, email address, CNIC details and documents, shop details, vehicle details and photos, booking and payment records, and messages you send through the app. We also collect basic technical information such as device type and app usage needed to run the service.\n\n2. How we use it\nWe use your information to run RentalHub: to create and verify accounts, list vehicles, process bookings and payments, prevent fraud and blacklisted rentals, and to contact you about your bookings and your shop.\n\n3. How we share it\nWe share your information only as needed to run the service: with the other party to your booking (owner or customer), with payment providers to process payments, and with the authorities when the law requires it. We do not sell your personal information.\n\n4. Photos and documents\nCNIC photos, selfies, licences and shop photos are used only for verification and for the rental record. They are not used for face matching and are not shared publicly.\n\n5. How long we keep it\nWe keep your information while your account is active and for as long as needed for bookings, payments, disputes and legal records. You can ask us to delete your account and its personal information from the Help section, subject to records we must keep by law.\n\n6. Your choices\nYou can update your profile and shop details in the app, and you can turn app notifications on or off in Settings.\n\n7. Contact\nQuestions about your data: contact RentalHub support from the Help section in the app.",
   "onboardingSubmitForReview": "Submit for Review",
   "onboardingDocRequired": "{document} is required before submitting.",
@@ -4724,12 +4806,12 @@
   "admin2_settingsTitle": "Cities & settings",
   "admin2_settingsSubtitle": "The platform defaults, in one document",
   "admin2_settingsLoadFailed": "Could not load the platform settings.",
-  "admin2_settingsNumbersInvalid": "Advance %, deposit and late grace must be numbers.",
+  "admin2_settingsNumbersInvalid": "Advance %, Security and late grace must be numbers.",
   "admin2_settingsSaved": "Platform settings saved.",
   "admin2_settingsCities": "Live cities (comma-separated)",
   "admin2_settingsCategories": "Car categories (comma-separated)",
   "admin2_settingsAdvance": "Advance %",
-  "admin2_settingsDeposit": "Default deposit (Rs.)",
+  "admin2_settingsDeposit": "Default Security (Rs.)",
   "admin2_settingsGrace": "Late grace (minutes)",
   "admin2_settingsSupportHours": "Support hours",
   "admin2_settingsAgreementTerms": "Default agreement terms",
@@ -4881,7 +4963,7 @@
       }
     }
   },
-  "admin2_disputeNoShopStatement": "The shop has no written statement on file — the decision uses the booking, handover and deposit records.",
+  "admin2_disputeNoShopStatement": "The shop has no written statement on file — the decision uses the booking, handover and Security records.",
   "admin2_disputeDecisionHeading": "Decision",
   "admin2_disputeFullCustomer": "Full refund to customer",
   "admin2_disputePartial": "Partial — split",
@@ -4948,7 +5030,7 @@
       }
     }
   },
-  "admin2_bookingDetailPaymentDeposit": "Payment & deposit",
+  "admin2_bookingDetailPaymentDeposit": "Payment & Security",
   "admin2_bookingDetailPaymentProof": "Payment proof: {url}",
   "@admin2_bookingDetailPaymentProof": {
     "placeholders": {
@@ -4957,8 +5039,8 @@
       }
     }
   },
-  "admin2_bookingDetailNoDeposit": "No deposit record.",
-  "admin2_bookingDetailDeposit": "Deposit {amount} — {status}",
+  "admin2_bookingDetailNoDeposit": "No Security record.",
+  "admin2_bookingDetailDeposit": "Security {amount} — {status}",
   "@admin2_bookingDetailDeposit": {
     "placeholders": {
       "amount": {
@@ -5052,7 +5134,7 @@
   "admin2_carReviewOutCityDaily": "Out-of-city daily",
   "admin2_carReviewNotSet": "Not set",
   "admin2_carReviewWeekly": "Weekly rate",
-  "admin2_carReviewDeposit": "Security deposit",
+  "admin2_carReviewDeposit": "Security",
   "admin2_carReviewTracker": "Tracker",
   "admin2_carReviewInsurance": "Insurance policy",
   "admin2_carReviewChassis": "Chassis",
@@ -5295,7 +5377,7 @@
   "admin2_inviteAcceptGranting": "Granting…",
   "admin2_inviteAcceptBackToTeam": "Back to team",
   "admin2_settingsAdvanceRange": "Advance must be between 0 and 100.",
-  "admin2_settingsDepositNegative": "Deposit cannot be negative.",
+  "admin2_settingsDepositNegative": "Security cannot be negative.",
   "admin2_settingsGraceNegative": "Late grace cannot be negative.",
   "admin2_settingsNoDocument": "No platform settings saved yet — showing defaults. Save to create them.",
   "admin2_settingsUnsavedTitle": "Leave without saving?",
@@ -5334,7 +5416,7 @@
   "admin2_reportsExportCsv": "Export CSV",
   "admin2_reportsCsvShareFailed": "Could not share the CSV file.",
   "admin2_bookingsCustomer": "Customer",
-  "admin2_bookingDetailDepositDeducted": "Deposit {amount} — {status} (deducted {deducted})",
+  "admin2_bookingDetailDepositDeducted": "Security {amount} — {status} (deducted {deducted})",
   "@admin2_bookingDetailDepositDeducted": {
     "placeholders": {
       "amount": {
@@ -5497,8 +5579,8 @@
       }
     }
   },
-  "admin2_bookingSummaryDepositNone": "Deposit: none",
-  "admin2_bookingSummaryDeposit": "Deposit: {amount} ({status})",
+  "admin2_bookingSummaryDepositNone": "Security: none",
+  "admin2_bookingSummaryDeposit": "Security: {amount} ({status})",
   "@admin2_bookingSummaryDeposit": {
     "placeholders": {
       "amount": {
@@ -5602,7 +5684,7 @@
     }
   },
   "contractSignAgreementHint": "Add the guarantor signature to sign.",
-  "depositRefundTerms": "Deposit refunded after return inspection, minus damage and excess-km charges.",
+  "depositRefundTerms": "Security refunded after return inspection, minus damage and excess-km charges.",
   "disputeLastUpdated": "Last updated {date}",
   "handoverBalanceDue": "Balance due at handover",
   "handoverBalanceMethodRequired": "Choose how the balance was collected, or Not yet, before certifying.",
@@ -5637,8 +5719,8 @@
   "manualBookingDiscountLine": "Discount",
   "manualBookingDiscountHint": "Discount (Rs.)",
   "manualBookingPaidNow": "Paid now",
-  "manualBookingDepositReceived": "Deposit received",
-  "manualBookingDepositMethod": "Deposit method",
+  "manualBookingDepositReceived": "Security received",
+  "manualBookingDepositMethod": "Security method",
   "manualBookingRemainingDues": "Remaining Dues",
   "manualBookingAddToDues": "Add remaining to customer dues",
   "manualBookingCollectFull": "Collect the full amount, or add the remaining to customer dues.",
@@ -5847,7 +5929,7 @@
       }
     }
   },
-  "vehicleDepositCnic": "Security Deposit: {amount} + Original NADRA CNIC guarantee required at pickup",
+  "vehicleDepositCnic": "Security: {amount} + Original NADRA CNIC guarantee required at pickup",
   "@vehicleDepositCnic": {
     "placeholders": {
       "amount": {
@@ -5911,7 +5993,7 @@
       }
     }
   },
-  "approveAssignDepositPickup": "Refundable deposit at pickup: {amount}",
+  "approveAssignDepositPickup": "Refundable Security at pickup: {amount}",
   "@approveAssignDepositPickup": {
     "placeholders": {
       "amount": {
@@ -5954,8 +6036,8 @@
   "handoverWizardSelectBooking": "Select booking manually",
   "handoverWizardNoReadyBookings": "No bookings ready for handover.",
   "handoverWizardAdvancePaid": "Advance (paid online)",
-  "handoverWizardDepositMethod": "Deposit method",
-  "handoverWizardDepositReceived": "Deposit received",
+  "handoverWizardDepositMethod": "Security method",
+  "handoverWizardDepositReceived": "Security received",
   "handoverWizardBalanceReceived": "Balance received",
   "handoverWizardReceiptTitle": "Handover receipt",
   "handoverWizardReceiptId": "Receipt {id}",
@@ -5968,7 +6050,7 @@
   },
   "handoverWizardReceiptView": "View receipt",
   "handoverWizardReceiptShare": "Share receipt on WhatsApp",
-  "handoverWizardReceiptMessage": "Handover receipt {receipt} for {vehicle}: total Rs. {total}, advance Rs. {advance}, balance Rs. {balance}, deposit Rs. {deposit}. — RentalHub",
+  "handoverWizardReceiptMessage": "Handover receipt {receipt} for {vehicle}: total Rs. {total}, advance Rs. {advance}, balance Rs. {balance}, Security Rs. {deposit}. — RentalHub",
   "@handoverWizardReceiptMessage": {
     "placeholders": {
       "receipt": {
@@ -6020,7 +6102,7 @@
   "handoverWizardHandedOver": "Car Handed Over",
   "handoverWizardSharePdf": "Share Agreement PDF",
   "handoverWizardPaymentRequired": "Choose how the balance was collected before continuing.",
-  "handoverWizardDepositMethodRequired": "Choose how the deposit was collected before continuing.",
+  "handoverWizardDepositMethodRequired": "Choose how the Security was collected before continuing.",
   "handoverWizardChecklistRequired": "Enter the odometer reading and fuel level before continuing.",
   "handoverWizardHandoverFailed": "Handover failed: {error}",
   "@handoverWizardHandoverFailed": {

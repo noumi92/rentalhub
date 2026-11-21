@@ -74,7 +74,7 @@ class AdminPlatformSettingsForm extends StatelessWidget {
             digitsOnly: true,
             errorText: fieldErrors['advance']),
         AdminSettingsField(
-            label: l10n?.admin2_settingsDeposit ?? 'Default deposit (Rs.)',
+            label: l10n?.admin2_settingsDeposit ?? 'Default Security (Rs.)',
             controller: draft.depositController,
             keyboardType: TextInputType.number,
             digitsOnly: true,

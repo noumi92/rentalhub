@@ -500,7 +500,7 @@ void main() {
       expect(find.text('JazzCash'), findsWidgets);
       expect(find.text('EasyPaisa'), findsWidgets);
       expect(find.text('Bank Transfer'), findsWidgets);
-      expect(find.text('Deposit received'), findsOneWidget);
+      expect(find.text('Security received'), findsOneWidget);
       expect(find.text('Remaining Dues'), findsOneWidget);
       expect(find.text('Add remaining to customer dues'), findsOneWidget);
       await tester.enterText(

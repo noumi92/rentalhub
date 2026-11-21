@@ -84,13 +84,13 @@ void main() {
       // The landing moved to its own route: no landing content here.
       expect(find.text('Start Return Inspection'), findsNothing);
       // The single Finalize button is gone, replaced by the two steps.
-      expect(find.text('Finalize Return & Settle Deposit'), findsNothing);
+      expect(find.text('Finalize Return & Settle Security'), findsNothing);
       // The inspection itself is the first thing on the screen.
       expect(find.text('Vehicle Return & Settlement'), findsOneWidget);
       expect(find.text('Good'), findsOneWidget);
       expect(find.text('Minor damage'), findsOneWidget);
-      // Step 1: Refund Deposit (row label + button).
-      expect(find.text('Refund Deposit'), findsNWidgets(2));
+      // Step 1: Refund Security (row label + button).
+      expect(find.text('Refund Security'), findsNWidgets(2));
       // Step 2: Complete & Close Booking, disabled until the refund
       // step is recorded.
       expect(find.text('Complete & Close Booking'), findsOneWidget);

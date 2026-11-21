@@ -342,7 +342,6 @@ void main() {
         onToggleSelfDrive: (_) {},
         supportWithDriver: false,
         onToggleWithDriver: (_) {},
-        driverAllowanceController: TextEditingController(),
         securityDepositController: TextEditingController(text: '20000'),
         advanceDepositController: TextEditingController(text: '3000'),
         extraHourChargeController: TextEditingController(text: '600'),

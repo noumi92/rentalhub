@@ -279,7 +279,6 @@ class AddVehicleRatesStep extends StatelessWidget {
     required this.onToggleSelfDrive,
     required this.supportWithDriver,
     required this.onToggleWithDriver,
-    required this.driverAllowanceController,
     required this.securityDepositController,
     required this.advanceDepositController,
     required this.extraHourChargeController,
@@ -310,7 +309,6 @@ class AddVehicleRatesStep extends StatelessWidget {
   final ValueChanged<bool> onToggleSelfDrive;
   final bool supportWithDriver;
   final ValueChanged<bool> onToggleWithDriver;
-  final TextEditingController driverAllowanceController;
   final TextEditingController securityDepositController;
   final TextEditingController advanceDepositController;
   final TextEditingController extraHourChargeController;
@@ -343,7 +341,6 @@ class AddVehicleRatesStep extends StatelessWidget {
       onToggleSelfDrive: onToggleSelfDrive,
       supportWithDriver: supportWithDriver,
       onToggleWithDriver: onToggleWithDriver,
-      driverAllowanceController: driverAllowanceController,
       securityDepositController: securityDepositController,
       advanceDepositController: advanceDepositController,
       extraHourChargeController: extraHourChargeController,
@@ -368,7 +365,10 @@ class AddVehicleReviewStep extends StatelessWidget {
     required this.fuelType,
     required this.seats,
     required this.dailyRate,
-    required this.driverAllowance,
+    // Worker A (2026-11-21): the shop's booking-settings driver
+    // rate (Rs/day) — the review's with-driver daily rate is the
+    // day rate plus this, never a per-car allowance.
+    this.driverRatePerDayPkr,
     this.monthlyRate = 0,
     required this.supportSelfDrive,
     required this.supportWithDriver,
@@ -390,7 +390,7 @@ class AddVehicleReviewStep extends StatelessWidget {
   final String fuelType;
   final int seats;
   final int dailyRate;
-  final int driverAllowance;
+  final int? driverRatePerDayPkr;
   final int monthlyRate;
   final bool supportSelfDrive;
   final bool supportWithDriver;
@@ -414,7 +414,7 @@ class AddVehicleReviewStep extends StatelessWidget {
       fuelType: fuelType,
       seats: seats,
       dailyRate: dailyRate,
-      driverAllowance: driverAllowance,
+      driverRatePerDayPkr: driverRatePerDayPkr,
       monthlyRate: monthlyRate,
       supportSelfDrive: supportSelfDrive,
       supportWithDriver: supportWithDriver,

@@ -224,10 +224,10 @@ void main() {
       // Step 1 records the refund (Rs. 10,000 net); step 2 closes.
       // The recorded-refund line appears twice: the success snackbar
       // and the steps widget's recorded-state banner.
-      await tester.ensureVisible(find.text('Refund Deposit').last);
-      await tester.tap(find.text('Refund Deposit').last);
+      await tester.ensureVisible(find.text('Refund Security').last);
+      await tester.tap(find.text('Refund Security').last);
       await tester.pumpAndSettle();
-      expect(find.text('Deposit refund of Rs. 10,000 recorded.'),
+      expect(find.text('Security refund of Rs. 10,000 recorded.'),
           findsNWidgets(2));
 
       // The refund snackbar floats over the bottom of the screen
@@ -300,14 +300,14 @@ void main() {
       // form — and its Refund/Close steps — must not be rendered yet.
       // The old code settled against 45200 / 250 km / Rs. 15,000
       // fallbacks while the load was pending.
-      expect(find.text('Refund Deposit'), findsNothing);
+      expect(find.text('Refund Security'), findsNothing);
       expect(find.text('Complete & Close Booking'), findsNothing);
       expect(find.byType(AppLoadingState), findsOneWidget);
 
       // Once the load lands the steps appear and the booking can
       // be settled; it must still be 'active' — nothing settled early.
       await tester.pumpAndSettle();
-      expect(find.text('Refund Deposit'), findsNWidgets(2));
+      expect(find.text('Refund Security'), findsNWidgets(2));
       expect(find.text('Complete & Close Booking'), findsOneWidget);
       final stillActive =
           await bookingDs.getBookingById(booking.bookingId);

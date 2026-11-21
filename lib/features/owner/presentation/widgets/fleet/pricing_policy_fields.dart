@@ -4,15 +4,15 @@ import '../../../../../core/utils/money_format.dart';
 import '../../../../../l10n/app_localizations.dart';
 import 'rate_matrix_field_widget.dart';
 
-/// The pricing-policy fields of the rate matrix: with-driver
-/// surcharge, security deposit, advance, extra-hour charge and fuel
-/// policy. The out-of-city rates live in [PricingOutCityRates] now
+/// The pricing-policy fields of the rate matrix: security deposit,
+/// advance, extra-hour charge and fuel policy. The driver surcharge
+/// is shop-scoped now (booking settings) and is NOT edited here.
+/// The out-of-city rates live in [PricingOutCityRates] now
 /// (audit §5 finish, P4-O07/P4-O09). Extracted from
 /// [OwnerRateMatrixView] so the view stays under the 250-line cap.
 class PricingPolicyFields extends StatelessWidget {
   const PricingPolicyFields({
     super.key,
-    required this.surchargeController,
     required this.depositController,
     required this.advanceController,
     required this.extraHourController,
@@ -21,7 +21,6 @@ class PricingPolicyFields extends StatelessWidget {
     required this.fuelPolicies,
   });
 
-  final TextEditingController surchargeController;
   final TextEditingController depositController;
   final TextEditingController advanceController;
   final TextEditingController extraHourController;
@@ -35,15 +34,6 @@ class PricingPolicyFields extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        RateMatrixFieldWidget(
-          controller: surchargeController,
-          label: l10n.pricingWithDriverSurcharge,
-          // Audit 2026-11-15 DS-10: no hardcoded-English 'Rs.' hint —
-          // the money text comes from .arb via amountRs.
-          hint: l10n.vehicleDetailDailyRate(l10n.amountRs(formatRs(2000))),
-          kmCap: l10n.pricingWithDriverSurchargeCap,
-        ),
-        const SizedBox(height: 10),
         RateMatrixFieldWidget(
           controller: depositController,
           label: l10n.pricingSecurityDeposit,

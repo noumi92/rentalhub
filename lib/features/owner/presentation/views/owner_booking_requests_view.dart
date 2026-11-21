@@ -3,18 +3,16 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
 import '../../../bookings/utils/booking_request_time.dart';
 import '../../../bookings/utils/live_booking_stream.dart';
 import '../services/whatsapp_credits_data_source.dart';
 import '../widgets/operations/approve_booking_sheet.dart';
-import '../widgets/operations/request_reject_dialog.dart';
+import '../widgets/operations/owner_booking_cancel.dart';
 import '../widgets/operations/requests_list_body.dart';
 import '../widgets/operations/walk_in_booking_fab.dart';
 
@@ -147,36 +145,36 @@ class _OwnerBookingRequestsViewState extends State<OwnerBookingRequestsView> {
     );
   }
 
-  Future<void> _rejectRequest(BookingEntity booking) async {
-    // Phase B (D3): a rejection always carries a reason — the
-    // customer sees it and knows what to fix.
-    final l10n = AppLocalizations.of(context)!;
-    final reason = await showRequestRejectDialog(context);
-    if (reason == null || !mounted) return;
+  /// Runs an owner status action (reject / cancel) with the
+  /// processing flag, swapping the updated row in on success.
+  /// The dialog opens behind the flag (it is modal, so the card
+  /// buttons are unreachable while it is up).
+  Future<void> _applyOwnerAction(
+    BookingEntity booking,
+    Future<BookingEntity?> Function() run,
+  ) async {
     setState(() => _processingId = booking.bookingId);
-    try {
-      final ds = sl<BookingRemoteDataSource>();
-      await ds.updateBookingStatus(
-        bookingId: booking.bookingId,
-        status: 'rejected',
-        rejectionReason: reason,
-      );
-      if (mounted) {
-        AppFeedback.showInfo(context, l10n.requestsRejected(booking.bookingId));
-        // Audit §5 item 2: a rejected booking stays in the list
-        // under the Rejected tab instead of vanishing.
-        setState(() => _requests = _requests
-            .map((b) => b.bookingId == booking.bookingId
-                ? b.copyWith(status: 'rejected')
-                : b)
-            .toList());
+    final updated = await run();
+    if (!mounted) return;
+    setState(() {
+      _processingId = null;
+      if (updated != null) {
+        _requests = _requests
+            .map((b) => b.bookingId == updated.bookingId ? updated : b)
+            .toList();
       }
-    } catch (e) {
-      if (mounted) AppFeedback.showError(context, l10n.requestsDeclineFailed('$e'));
-    } finally {
-      if (mounted) setState(() => _processingId = null);
-    }
+    });
   }
+
+  Future<void> _rejectRequest(BookingEntity booking) =>
+      _applyOwnerAction(booking, () => rejectBookingRequest(context, booking));
+
+  /// Worker B: owner cancel for walk-in `approved` / `paid`
+  /// bookings — the dialog, status flip and Security release live
+  /// in [cancelWalkInBooking]; online bookings never reach here
+  /// (the triage card hides the button, and the flow guards too).
+  Future<void> _cancelRequest(BookingEntity booking) =>
+      _applyOwnerAction(booking, () => cancelWalkInBooking(context, booking));
 
   String _emptyLabel(AppLocalizations l10n) => {'payment_submitted': l10n.requestsEmptyProof, 'approved': l10n.requestsEmptyApproved, 'rejected': l10n.bookingEmptyRejected, 'active': l10n.requestsEmptyActive, 'completed': l10n.requestsEmptyCompleted, 'paid': l10n.requestsEmptyPaid, 'disputed': l10n.requestsEmptyDisputed, 'cancelled': l10n.requestsEmptyCancelled, 'all': l10n.requestsEmptyAll}[_filter] ?? l10n.requestsEmptyNew;
 
@@ -236,6 +234,7 @@ class _OwnerBookingRequestsViewState extends State<OwnerBookingRequestsView> {
                   onRetry: _loadRequests,
                   onApprove: _approveRequest,
                   onReject: _rejectRequest,
+                  onCancel: _cancelRequest,
                   onOpenDetail: (b) => context.push(RouteNames
                       .ownerRequestsDetail
                       .replaceFirst(':id', b.bookingId)),

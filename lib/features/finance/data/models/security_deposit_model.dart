@@ -21,6 +21,7 @@ class SecurityDepositModel extends SecurityDepositEntity {
     super.netRefund,
     super.amountOwed,
     super.returnDamageNotes,
+    super.releaseReason,
   });
 
   factory SecurityDepositModel.fromEntity(SecurityDepositEntity e) {
@@ -44,6 +45,7 @@ class SecurityDepositModel extends SecurityDepositEntity {
       netRefund: e.netRefund,
       amountOwed: e.amountOwed,
       returnDamageNotes: e.returnDamageNotes,
+      releaseReason: e.releaseReason,
     );
   }
 
@@ -71,6 +73,7 @@ class SecurityDepositModel extends SecurityDepositEntity {
       amountOwed: (map['amountOwed'] as num?)?.toInt(),
       returnDamageNotes:
           List<String>.from(map['returnDamageNotes'] ?? const []),
+      releaseReason: map['releaseReason'] as String?,
     );
   }
 
@@ -97,6 +100,7 @@ class SecurityDepositModel extends SecurityDepositEntity {
       if (amountOwed != null) 'amountOwed': amountOwed,
       if (returnDamageNotes.isNotEmpty)
         'returnDamageNotes': returnDamageNotes,
+      if (releaseReason != null) 'releaseReason': releaseReason,
     };
   }
 }

@@ -12,6 +12,8 @@ import '../../../../core/widgets/masked_value.dart';
 import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../finance/data/datasources/security_deposit_data_source.dart';
 import '../../data/services/customer_wallet_service.dart';
+import '../widgets/escrow_pill.dart';
+import '../widgets/security_totals_card.dart';
 import '../widgets/wallet_ledger.dart';
 import '../../../../l10n/app_localizations.dart';
 
@@ -38,11 +40,25 @@ class _CustomerWalletViewState extends State<CustomerWalletView> {
   // Live updates (Item 2): the subscription behind the balance and
   // the ledger.
   StreamSubscription<CustomerWalletSummary>? _walletSub;
+  // The locale the current subscription's entry titles were built for.
+  Locale? _titlesLocale;
 
   @override
   void initState() {
     super.initState();
-    _load();
+  }
+
+  /// Entry titles come from AppLocalizations, so the subscription
+  /// starts here (not initState): a locale change re-subscribes
+  /// with the new language's titles.
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final locale = Localizations.localeOf(context);
+    if (_titlesLocale != locale) {
+      _titlesLocale = locale;
+      _load();
+    }
   }
 
   @override
@@ -67,9 +83,16 @@ class _CustomerWalletViewState extends State<CustomerWalletView> {
       return;
     }
     try {
+      final l10n = AppLocalizations.of(context)!;
       final service = CustomerWalletService(
         bookings: sl<BookingRemoteDataSource>(),
         deposits: sl<SecurityDepositDataSource>(),
+        // Localized Security entry wording — built here, where l10n lives.
+        titles: WalletEntryTitles(
+          securityHeld: l10n.walletEntrySecurityHeld, securityReleased: l10n.walletEntrySecurityReleased,
+          securityReleasedOnCancel: l10n.walletEntrySecurityReleasedCancel, securityDeducted: l10n.walletEntrySecurityDeducted,
+          securityRefunded: l10n.walletEntrySecurityRefunded, securityOwed: l10n.walletEntrySecurityOwed,
+        ),
       );
       _walletSub = service.watch(uid).listen(
         (summary) {
@@ -182,13 +205,13 @@ class _CustomerWalletViewState extends State<CustomerWalletView> {
                           Row(
                             children: [
                               Expanded(
-                                child: _EscrowPill(
+                                child: EscrowPill(
                                     label: l10n.walletAdvancesPaid,
                                     value: l10n.amountRs(formatRs(summary?.advancesPaid ?? 0))),
                               ),
                               const SizedBox(width: 10),
                               Expanded(
-                                child: _EscrowPill(
+                                child: EscrowPill(
                                     label: l10n.walletSecurityEscrow,
                                     value: l10n.amountRs(formatRs(summary?.escrowHeld ?? 0))),
                               ),
@@ -200,6 +223,10 @@ class _CustomerWalletViewState extends State<CustomerWalletView> {
                         ],
                       ),
                     ),
+                    if (summary?.security.hasActivity == true) ...[
+                      const SizedBox(height: 20),
+                      SecurityTotalsCard(totals: summary!.security),
+                    ],
                     const SizedBox(height: 20),
                     Text(l10n.walletLedger, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
                     const SizedBox(height: 10),
@@ -216,32 +243,6 @@ class _CustomerWalletViewState extends State<CustomerWalletView> {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _EscrowPill extends StatelessWidget {
-  final String label;
-  final String value;
-
-  const _EscrowPill({required this.label, required this.value});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.primaryContainer)),
-          // CU-m6: the pill amounts stay masked but carry no eye of their own — the wallet header has ONE visibility toggle (on the main balance above), not three independent ones.
-          Text(MaskedValue.maskDigits(value), maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500, color: Colors.white)),
-        ],
       ),
     );
   }

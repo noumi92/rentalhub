@@ -163,7 +163,7 @@ void main() {
       await _pump(tester, card());
       expect(
           find.text(
-              'Deposit refunded after return inspection, minus damage and excess-km charges.'),
+              'Security refunded after return inspection, minus damage and excess-km charges.'),
           findsOneWidget);
     });
 
@@ -172,7 +172,7 @@ void main() {
       await _pump(tester, card(), locale: const Locale('ur'));
       expect(
           find.text(
-              'واپسی کے معائنے کے بعد ڈپازٹ واپس کیا جائے گا، نقصان اور اضافی کلومیٹر کے چارجز منہا کر کے۔'),
+              'واپسی کے معائنے کے بعد سیکیورٹی واپس کی جائے گی، نقصان اور اضافی کلومیٹر کے چارجز منہا کر کے۔'),
           findsOneWidget);
     });
   });
