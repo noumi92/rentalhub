@@ -232,11 +232,28 @@ void main() {
         (tester) async {
       final ds = di.sl<BookingRemoteDataSource>();
       await createInState(ds, 'Reject Me', 'requested');
+      // Item 2 navigate-back: the view now goes to All Bookings
+      // after a successful reject, so it needs a router — and the
+      // rejected booking stays visible under All instead of
+      // vanishing from the New tab.
+      final router = GoRouter(
+        initialLocation: '/owner/requests',
+        routes: [
+          GoRoute(
+            path: '/owner/requests',
+            builder: (context, state) => OwnerBookingRequestsView(
+              shopId: 'shop-1',
+              initialFilter:
+                  state.uri.queryParameters['filter'] ?? 'payment_submitted',
+            ),
+          ),
+        ],
+      );
       await tester.pumpWidget(
-        const MaterialApp(
+        MaterialApp.router(
+          routerConfig: router,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: OwnerBookingRequestsView(shopId: 'shop-1'),
         ),
       );
       await tester.pumpAndSettle();
@@ -262,7 +279,14 @@ void main() {
           'Vehicle is booked on those dates.');
       await tester.tap(find.text('Reject Request'));
       await tester.pumpAndSettle();
-      expect(find.text('Reject Me'), findsNothing);
+      // Item 2: the reject lands on All Bookings (the route's
+      // filter is `all`). The rejected card's visibility under All
+      // is asserted in next_step_owner_test.dart, where the shop
+      // is dedicated — this file shares one shop across tests, so
+      // the lazily-built list makes a card-visibility assertion
+      // here order-dependent.
+      expect(router.routeInformationProvider.value.uri.toString(),
+          '/owner/requests?filter=all');
 
       final all = await ds.getShopBookings('shop-1');
       final rejected = all.firstWhere((b) => b.customerName == 'Reject Me');
@@ -308,9 +332,12 @@ void main() {
                 OwnerPaymentVerificationView(booking: booking),
           ),
           GoRoute(
-            path: '/owner/booking-confirmed/:id',
-            builder: (context, state) => const Scaffold(
-              body: Center(child: Text('Booking Confirmed')),
+            path: '/owner/requests',
+            builder: (context, state) => Scaffold(
+              body: Center(
+                child: Text(
+                    'All Bookings filter=${state.uri.queryParameters['filter']}'),
+              ),
             ),
           ),
         ],
@@ -322,7 +349,7 @@ void main() {
       );
     }
 
-    testWidgets('approving a proof marks the booking paid and opens the confirmed screen',
+    testWidgets('approving a proof marks the booking paid and lands on All Bookings',
         (tester) async {
       final ds = di.sl<BookingRemoteDataSource>();
       final booking = await proofBooking(ds);
@@ -338,9 +365,11 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.textContaining('Confirm Payment'));
       await tester.pumpAndSettle();
-      // Audit §5 item 3 (O18): approval lands on Booking Confirmed,
-      // not straight on handover.
-      expect(find.text('Booking Confirmed'), findsOneWidget);
+      // Next-step batch (2026-11-21): Confirm lands back on All
+      // Bookings (?filter=all) instead of the Confirmed screen —
+      // the onward journey is the Start Handover button on the
+      // paid card in the list.
+      expect(find.text('All Bookings filter=all'), findsOneWidget);
       final stored = await ds.getBookingById(booking.bookingId);
       expect(stored?.status, 'paid');
       expect(stored?.advancePaid, 3000);
@@ -412,7 +441,9 @@ void main() {
       final router =
           await File('lib/core/routing/app_router.dart').readAsString();
       expect(router, contains('OwnerPaymentVerificationView'));
-      expect(router, contains("booking.status == 'payment_submitted'"));
+      // Next-step batch (2026-11-21): the branch is a status
+      // switch now, not a single ternary.
+      expect(router, contains("case 'payment_submitted':"));
     });
   });
 

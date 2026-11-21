@@ -633,6 +633,12 @@ void main() {
         'ownerManualBooking',
         'ownerContract',
         'ownerRateCustomer',
+        // Next-step batch (2026-11-21): the Confirmed screen is
+        // rendered inline by the detail route (paid / active) and by
+        // the accounts view's defence-in-depth — never pushed to via
+        // the router since Verify Confirm now lands on All Bookings.
+        // The route stays as a deep link only.
+        'ownerBookingConfirmed',
       };
 
       final routeNames =

@@ -63,7 +63,25 @@ class PaymentCubit extends Cubit<PaymentState> {
     required String customerUid,
     File? receiptScreenshot,
     required String transactionId,
+    // Next-step batch (2026-11-21): the booking's status as the
+    // caller knows it. When it is already past payment (`paid` /
+    // `active` / `completed` / `cancelled`) the submission is
+    // refused BEFORE any receipt upload — a re-filed proof would
+    // flip the booking back to `payment_submitted`. Null means
+    // unknown; the data source hard-rejects the same four
+    // statuses as a backstop, so a stale caller can never
+    // downgrade a paid booking either.
+    String? currentStatus,
   }) async {
+    if (currentStatus != null &&
+        const {'paid', 'active', 'completed', 'cancelled'}
+            .contains(currentStatus)) {
+      emit(PaymentError(
+        'Payment proof cannot be submitted for a $currentStatus booking: '
+        'the payment is already past verification.',
+      ));
+      return;
+    }
     emit(const PaymentUploading());
     try {
       // Item 8: what lands in `bookings/{id}.paymentProofUrl` must

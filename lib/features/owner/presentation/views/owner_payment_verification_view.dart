@@ -4,11 +4,11 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
+import '../../../bookings/utils/booking_next_step.dart';
 import '../../../../core/network/cpanel_storage_client.dart';
 import '../../../../core/utils/money_format.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
-import '../../../../core/widgets/debounced_button.dart';
 import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
 import '../../../bookings/presentation/widgets/proof_image_viewer.dart';
@@ -16,6 +16,7 @@ import '../../../bookings/presentation/widgets/shop_payment_accounts.dart';
 import '../../../trust/data/services/trust_score_service.dart';
 import '../widgets/operations/booking_fare_breakdown.dart';
 import '../widgets/operations/payment_reject_dialog.dart';
+import '../widgets/operations/payment_verification_actions.dart';
 import '../widgets/operations/payment_verification_summary.dart';
 
 /// Phase B (D3): the owner checks a submitted payment proof — the
@@ -88,11 +89,13 @@ class _OwnerPaymentVerificationViewState
       );
       if (!mounted) return;
       AppFeedback.showSuccess(context, l10n.paymentVerificationConfirmed(_booking.bookingId));
-      // Audit §5 item 3 (O18): approval lands on the Booking
-      // Confirmed screen, not straight on handover.
-      // Registrar: RouteNames.ownerBookingConfirmed =
-      // '/owner/booking-confirmed/:id' (see audit_impl_manifest_worker_a.md).
-      context.pushReplacement('/owner/booking-confirmed/${_booking.bookingId}');
+      // Next-step batch (2026-11-21): Confirm lands back on All
+      // Bookings (the list syncs its filter from `?filter=all`,
+      // and its stream is live, so the new `paid` status shows
+      // without a reload) instead of the Confirmed screen — the
+      // onward journey is the Start Handover button on the paid
+      // card in the list.
+      goToAllOwnerBookings(context);
     } catch (e) {
       if (mounted) AppFeedback.showError(context, l10n.paymentVerificationConfirmFailed(e.toString()));
     } finally {
@@ -112,7 +115,10 @@ class _OwnerPaymentVerificationViewState
       );
       if (!mounted) return;
       AppFeedback.showInfo(context, l10n.paymentVerificationRejected);
-      context.pop();
+      // Next-step batch (2026-11-21): same landing as Confirm —
+      // All Bookings, where the booking now shows as `approved`
+      // and the customer can upload a fresh proof.
+      goToAllOwnerBookings(context);
     } catch (e) {
       if (mounted) AppFeedback.showError(context, l10n.paymentVerificationRejectFailed(e.toString()));
     } finally {
@@ -210,33 +216,18 @@ class _OwnerPaymentVerificationViewState
                       onChanged: (_) => setState(() {}),
                     ),
                     const SizedBox(height: 20),
-                    SizedBox(
-                      width: double.infinity,
-                      child: DebouncedButton(
-                        text: _processing
-                            ? l10n.paymentVerificationConfirming
-                            // Audit 2026-11-15 PW-11: route through
-                            // amountRs (§4.5 money rule); the .arb
-                            // value no longer embeds 'Rs.'.
-                            : l10n.paymentVerificationConfirmButton(l10n.amountRs(formatRs(_verifiedAmount))),
-                        icon: Icons.check_circle_rounded,
-                        isLoading: _processing,
-                        onPressed: _approve,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    SizedBox(
-                      width: double.infinity,
-                      child: OutlinedButton.icon(
-                        onPressed: _processing ? null : _reject,
-                        icon: Icon(Icons.close_rounded,
-                            color: AppColors.dangerTextFor(
-                                Theme.of(context).brightness)),
-                        label: Text(l10n.paymentVerificationRejectButton,
-                            style: TextStyle(
-                                color: AppColors.dangerTextFor(
-                                    Theme.of(context).brightness))),
-                      ),
+                    PaymentVerificationActions(
+                      processing: _processing,
+                      confirmLabel: _processing
+                          ? l10n.paymentVerificationConfirming
+                          // Audit 2026-11-15 PW-11: route through
+                          // amountRs (§4.5 money rule); the .arb
+                          // value no longer embeds 'Rs.'.
+                          : l10n.paymentVerificationConfirmButton(
+                              l10n.amountRs(formatRs(_verifiedAmount))),
+                      rejectLabel: l10n.paymentVerificationRejectButton,
+                      onConfirm: _approve,
+                      onReject: _reject,
                     ),
                   ],
                 ),

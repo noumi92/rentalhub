@@ -21,6 +21,7 @@ import '../../features/bookings/presentation/views/rent_package_picker_view.dart
 import '../../features/bookings/presentation/views/review_booking_request_view.dart';
 import '../../features/customer/presentation/views/customer_booking_detail_view.dart';
 import '../../features/customer/presentation/views/customer_bookings_view.dart';
+import '../../features/customer/presentation/widgets/customer_bookings_list_helpers.dart';
 import '../../features/customer/presentation/widgets/customer_route_loaders.dart';
 import '../../features/customer/presentation/views/customer_cancel_booking_view.dart';
 import '../../features/customer/presentation/views/customer_active_trip_view.dart';
@@ -101,6 +102,7 @@ import '../../features/owner/presentation/views/owner_price_estimate_view.dart';
 import '../../features/owner/presentation/views/owner_shop_settings_view.dart';
 import '../../features/owner/presentation/views/owner_fleet_calendar_view.dart';
 import '../../features/owner/presentation/views/owner_booking_confirmed_view.dart';
+import '../../features/owner/presentation/views/owner_booking_summary_view.dart';
 import '../../features/owner/presentation/views/owner_agreement_wizard_view.dart';
 import '../../features/owner/presentation/views/owner_rental_started_view.dart';
 import '../../features/owner/presentation/views/owner_record_damage_view.dart';
@@ -450,6 +452,11 @@ class AppRouter {
               GoRoute(
                 path: RouteNames.customerBookings,
                 builder: (context, state) => CustomerBookingsView(
+                  // Next-step batch (2026-11-21): save navigations
+                  // pass `?tab=all` so the just-saved booking is
+                  // visible at once; anything else falls back to All.
+                  initialTab: customerTabIndexFromName(
+                      state.uri.queryParameters['tab']),
                   onOpenBookingDetails: (booking) => context.push(
                     RouteNames.customerBookingDetail
                         .replaceFirst(':id', booking.bookingId),
@@ -458,9 +465,20 @@ class AppRouter {
                     RouteNames.customerBookingApproved
                         .replaceFirst(':id', booking.bookingId),
                   ),
+                  onViewPass: (booking) => context.push(
+                    RouteNames.customerPickupPass
+                        .replaceFirst(':id', booking.bookingId),
+                  ),
+                  onViewActiveTrip: (booking) => context.push(
+                    RouteNames.customerActiveTrip
+                        .replaceFirst(':id', booking.bookingId),
+                  ),
                   onRateTrip: (booking) => context.push(
                     RouteNames.customerRateTrip
                         .replaceFirst(':id', booking.bookingId),
+                  ),
+                  onTrackDispute: (booking) => context.push(
+                    RouteNames.customerDisputes,
                   ),
                 ),
               ),
@@ -478,6 +496,13 @@ class AppRouter {
                     onViewPass: () => context.push(
                       RouteNames.customerPickupPass
                           .replaceFirst(':id', booking.bookingId),
+                    ),
+                    onViewActiveTrip: () => context.push(
+                      RouteNames.customerActiveTrip
+                          .replaceFirst(':id', booking.bookingId),
+                    ),
+                    onTrackDispute: () => context.push(
+                      RouteNames.customerDisputes,
                     ),
                     onCancel: () => context.push(
                       RouteNames.customerCancelBooking
@@ -532,8 +557,8 @@ class AppRouter {
                   bookingId: state.pathParameters['id']!,
                   builder: (context, booking) => PaymentProofUploadView(
                     booking: booking,
-                    onProofSubmitted: (_) =>
-                        context.go(RouteNames.customerBookings),
+                    onProofSubmitted: (_) => context.go(
+                        '${RouteNames.customerBookings}?tab=all'),
                     onBack: () => context.pop(),
                   ),
                 ),
@@ -557,7 +582,8 @@ class AppRouter {
                   bookingId: state.pathParameters['id']!,
                   builder: (context, booking) => CustomerRateTripView(
                     booking: booking,
-                    onRatingSubmitted: () => context.go(RouteNames.customerBookings),
+                    onRatingSubmitted: () => context.go(
+                        '${RouteNames.customerBookings}?tab=all'),
                     onBack: () => context.pop(),
                   ),
                 ),
@@ -569,7 +595,8 @@ class AppRouter {
                   bookingId: state.pathParameters['id']!,
                   builder: (context, booking) => CustomerCancelBookingView(
                     booking: booking,
-                    onCancelled: () => context.go(RouteNames.customerBookings),
+                    onCancelled: () => context.go(
+                        '${RouteNames.customerBookings}?tab=all'),
                     onBack: () => context.pop(),
                   ),
                 ),
@@ -685,7 +712,8 @@ class AppRouter {
         path: RouteNames.customerDisputes,
         builder: (context, state) => CustomerDisputeView(
           initialBookingId: state.uri.queryParameters['bookingId'],
-          onDisputeSubmitted: () => context.pop(),
+          onDisputeSubmitted: () =>
+              context.go('${RouteNames.customerBookings}?tab=all'),
           onBack: () => context.pop(),
         ),
       ),
@@ -932,30 +960,58 @@ class AppRouter {
               // Requests: ownerRequests
               GoRoute(
                 path: RouteNames.ownerRequests,
-                builder: (context, state) =>
-                    OwnerBookingRequestsView(shopId: currentShopId()),
+                builder: (context, state) => OwnerBookingRequestsView(
+                  shopId: currentShopId(),
+                  initialFilter:
+                      state.uri.queryParameters['filter'] ?? 'payment_submitted',
+                ),
               ),
               // Requests: ownerRequestsDetail
               GoRoute(
                 path: RouteNames.ownerRequestsDetail,
                 builder: (context, state) => BookingRouteLoader(
                   bookingId: state.pathParameters['id']!,
-                  // Phase B (D3): a submitted proof goes to verification;
-                  // anything else shows the payment accounts + proof upload.
-                  builder: (context, booking) =>
-                      booking.status == 'payment_submitted'
-                          ? OwnerPaymentVerificationView(
-                              booking: booking,
-                              onBack: () => context.pop(),
-                            )
-                          : OwnerPaymentAccountsView(
-                              booking: booking,
-                              onProceedToUploadProof: () => context.push(
-                                RouteNames.ownerPaymentProof
-                                    .replaceFirst(':id', booking.bookingId),
-                              ),
-                              onBack: () => context.pop(),
-                            ),
+                  // Next-step batch (2026-11-21): the detail route
+                  // branches on status. A submitted proof goes to
+                  // verification; `paid` / `active` are past payment,
+                  // so they open the Confirmed view (Start Handover
+                  // lives there); `approved` / `requested` keep the
+                  // accounts + proof-upload path; terminal and
+                  // `disputed` bookings are read-only — never the
+                  // accounts view, whose Upload Proof CTA used to
+                  // render unconditionally for them.
+                  builder: (context, booking) {
+                    switch (booking.status) {
+                      case 'payment_submitted':
+                        return OwnerPaymentVerificationView(
+                          booking: booking,
+                          onBack: () => context.pop(),
+                        );
+                      case 'paid':
+                      case 'active':
+                        return OwnerBookingConfirmedView(
+                          booking: booking,
+                          onBack: () => context.pop(),
+                        );
+                      case 'completed':
+                      case 'rejected':
+                      case 'cancelled':
+                      case 'disputed':
+                        return OwnerBookingSummaryView(
+                          booking: booking,
+                          onBack: () => context.pop(),
+                        );
+                      default:
+                        return OwnerPaymentAccountsView(
+                          booking: booking,
+                          onProceedToUploadProof: () => context.push(
+                            RouteNames.ownerPaymentProof
+                                .replaceFirst(':id', booking.bookingId),
+                          ),
+                          onBack: () => context.pop(),
+                        );
+                    }
+                  },
                 ),
               ),
               // Requests: ownerPaymentProof

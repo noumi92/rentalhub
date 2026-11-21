@@ -190,6 +190,32 @@ class BookingRemoteDataSource {
     try {
       final fields =
           Map<String, dynamic>.from(entry.payload['fields'] as Map? ?? {});
+      // Fix 2 (2026-11-21, queued-proof drain race): the second
+      // drain path for a proof. `updatePaymentProof` queues a
+      // `booking_update` with `status: payment_submitted` when its
+      // own Firestore write fails (offline) — alongside the
+      // `upload` entry the proof service queues — and this handler
+      // used to merge-set those fields blindly, bypassing the
+      // `updatePaymentProof` hard reject the same way the upload
+      // handler did. Re-check the LIVE status first: if the
+      // booking is no longer awaiting verification (`approved` /
+      // `payment_submitted` — the re-file case), drop the whole
+      // stale entry (return true: intentional, not a failure) so
+      // the proof URL/TID cannot overwrite the verified proof
+      // either. A missing/unreadable doc returns false so the
+      // entry stays queued and retries once the booking exists.
+      if (fields['status'] == 'payment_submitted') {
+        final live = await fs
+            .collection('bookings')
+            .doc(entry.entityId)
+            .get();
+        final liveStatus = live.data()?['status'] as String?;
+        if (liveStatus == null) return false;
+        if (!const {'approved', 'payment_submitted'}
+            .contains(liveStatus)) {
+          return true;
+        }
+      }
       await fs.collection('bookings').doc(entry.entityId).set(
         {
           ...fields,
@@ -532,6 +558,23 @@ class BookingRemoteDataSource {
     final existing = await getBookingById(bookingId);
     if (existing == null) {
       throw Exception('Booking not found: $bookingId');
+    }
+    // Next-step batch (2026-11-21): a proof (re-)submitted for a
+    // booking already past payment must NEVER flip it back to
+    // `payment_submitted` — verification is implicit in status ==
+    // 'paid' and there is no proofVerified flag to re-check. Hard
+    // reject here; the upload service, the cubit and the upload
+    // view guard the same four statuses earlier so no receipt is
+    // uploaded or queued for them either. Deliberately NOT
+    // `rejected` / `disputed` / `requested`: a rejected proof goes
+    // back to `approved` before a re-submit, and the other two are
+    // an open question for the user (see batch report).
+    if (const {'paid', 'active', 'completed', 'cancelled'}
+        .contains(existing.status)) {
+      throw StateError(
+        'Cannot submit payment proof for a ${existing.status} booking '
+        '($bookingId): the payment is already past verification.',
+      );
     }
     final proofSubmittedAt = DateTime.now();
     final updated = existing.copyWith(

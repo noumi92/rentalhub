@@ -1,20 +1,22 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/data/offline_sync_queue.dart';
+import '../../../../core/routing/auth_route_guard.dart';
+import '../../../bookings/utils/booking_next_step.dart';
 import '../services/payment_proof_upload_service.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/network/cpanel_storage_client.dart';
-import '../../../../core/utils/money_format.dart';
 import '../../../../core/utils/whatsapp.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../core/widgets/debounced_button.dart';
 import '../../data/datasources/booking_remote_data_source.dart';
 import '../../domain/entities/booking_entity.dart';
+import '../widgets/proof_advance_copy_row.dart';
 import '../widgets/proof_amount_card.dart';
 import '../widgets/proof_screenshot_picker.dart';
+import '../widgets/proof_tid_field.dart';
 import '../../../../l10n/app_localizations.dart';
 
 class PaymentProofUploadView extends StatefulWidget {
@@ -71,6 +73,18 @@ class _PaymentProofUploadViewState extends State<PaymentProofUploadView> {
     });
     if (tid.isEmpty || _selectedFile == null) return;
 
+    // Next-step batch (2026-11-21): submit-time guard. The route
+    // loader is a one-shot FutureBuilder, so a booking that moved
+    // past payment after this screen loaded must still be refused
+    // HERE — not just at build. The data source hard-rejects the
+    // same four statuses; this stops the receipt upload (and any
+    // queue entry) before it starts.
+    if (const {'paid', 'active', 'completed', 'cancelled'}
+        .contains(widget.booking.status)) {
+      AppFeedback.showError(context, l10n.proofSubmitFailedGeneric);
+      return;
+    }
+
     setState(() => _isSubmitting = true);
     try {
       // Item 8: the same upload path as the vehicle / handover
@@ -87,6 +101,7 @@ class _PaymentProofUploadViewState extends State<PaymentProofUploadView> {
         bookingId: widget.booking.bookingId,
         transactionId: tid,
         queue: queue,
+        bookingStatus: widget.booking.status,
       );
 
       // GUARD (non-negotiable): no URL, no `payment_submitted`, no
@@ -119,7 +134,18 @@ class _PaymentProofUploadViewState extends State<PaymentProofUploadView> {
 
       if (mounted) {
         AppFeedback.showSuccess(context, l10n.proofSubmitted);
-        widget.onProofSubmitted?.call(updated);
+        // Next-step batch (2026-11-21): after a save, land on All
+        // Bookings. The customer route supplies `onProofSubmitted`
+        // (go customerBookings); the owner route
+        // (`ownerPaymentProof`) passes no callback, so the owner
+        // path goes here — All Bookings with `?filter=all`, where
+        // the just-submitted proof is visible at once.
+        final onSubmitted = widget.onProofSubmitted;
+        if (onSubmitted != null) {
+          onSubmitted(updated);
+        } else if (AuthRouteGuard.lockedRole == 'owner') {
+          goToAllOwnerBookings(context);
+        }
       }
     } catch (e) {
       debugPrint('Payment proof submit failed: $e');
@@ -148,42 +174,18 @@ class _PaymentProofUploadViewState extends State<PaymentProofUploadView> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     ProofAmountCard(booking: widget.booking),
-                    // PW-3: copy the advance amount — the payer never types it. (Deep link to JazzCash/Easypaisa: NOT added — neither app publishes a documented payment deep-link scheme, so an invented `jazzcash://` URI could silently fail or open the wrong screen; copy + paste is the reliable path.)
+                    // PW-3: copy the advance amount — the payer never types it.
                     const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Expanded(child: Text('${l10n.summaryAdvancePayable}: ${l10n.amountRs(formatRs(widget.booking.advanceRequired))}', style: Theme.of(context).textTheme.bodyMedium)),
-                        IconButton(
-                          icon: const Icon(Icons.copy_rounded, size: 20),
-                          tooltip: l10n.proofCopyAdvance,
-                          onPressed: () async {
-                            await Clipboard.setData(ClipboardData(text: '${widget.booking.advanceRequired}'));
-                            if (context.mounted) AppFeedback.showSuccess(context, l10n.proofAdvanceCopied);
-                          },
-                        ),
-                      ],
-                    ),
+                    ProofAdvanceCopyRow(booking: widget.booking),
                     const SizedBox(height: 16),
-                    Text(l10n.proofTidLabel,
-                        style: Theme.of(context).textTheme.bodyMedium),
-                    const SizedBox(height: 6),
-                    TextField(
+                    ProofTidField(
                       controller: _tidController,
+                      error: _tidError,
                       onChanged: (_) {
                         if (_tidError != null) {
                           setState(() => _tidError = null);
                         }
                       },
-                      decoration: InputDecoration(
-                        hintText: l10n.proofTidHint,
-                        errorText: _tidError,
-                        hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
-                        filled: true,
-                        fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-                        prefixIcon: const Icon(Icons.receipt_long_rounded),
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: Theme.of(context).dividerColor)),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                      ),
                     ),
                     const SizedBox(height: 16),
                     Text(l10n.proofScreenshot,

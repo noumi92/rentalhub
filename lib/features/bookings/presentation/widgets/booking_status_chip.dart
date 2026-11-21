@@ -14,10 +14,14 @@ class BookingStatusChip extends StatelessWidget {
 
   static String labelFor(AppLocalizations l10n, String status) {
     switch (status) {
+      case 'requested':
+        return l10n.statusPendingReview;
       case 'approved':
         return l10n.statusApproved;
       case 'rejected':
         return l10n.statusRejected;
+      case 'disputed':
+        return l10n.statusDisputed;
       case 'payment_submitted':
         return l10n.statusProofSubmitted;
       case 'payment_rejected':

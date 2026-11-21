@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:rentalhub/core/di/injection_container.dart' as di;
 import 'package:rentalhub/core/di/injection_container.dart';
@@ -67,12 +68,28 @@ void main() {
         description: 'Car came back two hours late.',
         shopId: 'shop-1',
       );
-      await tester.pumpWidget(
-          MaterialApp(
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
-            home: const OwnerDisputesView(shopId: 'shop-1'),
-          ));
+      // Item 2 navigate-back: resolving from the centre leaves it
+      // for All Bookings, so the view needs a router — and the
+      // status change itself is verified on the data source below
+      // instead of on the (now unmounted) centre.
+      final router = GoRouter(
+        initialLocation: '/owner/disputes',
+        routes: [
+          GoRoute(
+            path: '/owner/disputes',
+            builder: (_, __) => const OwnerDisputesView(shopId: 'shop-1'),
+          ),
+          GoRoute(
+            path: '/owner/requests',
+            builder: (_, __) => const Scaffold(body: Text('requests')),
+          ),
+        ],
+      );
+      await tester.pumpWidget(MaterialApp.router(
+        routerConfig: router,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+      ));
       await tester.pumpAndSettle();
       expect(find.text('Late return'), findsOneWidget);
       expect(find.textContaining('RH-DSP-VIEW'), findsOneWidget);
@@ -83,7 +100,15 @@ void main() {
 
       await tester.tap(find.text('Mark in review'));
       await tester.pumpAndSettle();
-      expect(find.text('In review'), findsWidgets);
+      expect(router.routeInformationProvider.value.uri.toString(),
+          '/owner/requests?filter=all');
+      final after =
+          await ds.getShopDisputes('shop-1');
+      expect(
+          after
+              .firstWhere((d) => d.bookingId == 'RH-DSP-VIEW')
+              .status,
+          'in_review');
     });
   });
 }

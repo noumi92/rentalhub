@@ -341,7 +341,9 @@ void main() {
       expect(find.textContaining('Handover scheduled'), findsOneWidget);
       expect(find.textContaining('26 Oct 2026'), findsOneWidget);
       expect(find.text('Start Handover'), findsOneWidget);
-      expect(find.text('View Booking'), findsOneWidget);
+      // Item 2: a `paid` booking's detail route is this screen, so
+      // "View Booking" would loop back here — it is hidden.
+      expect(find.text('View Booking'), findsNothing);
       expect(find.text('Message Customer'), findsOneWidget);
       expect(find.text('Rs. 21,000'), findsOneWidget);
       expect(find.text('Rs. 16,000'), findsOneWidget);
@@ -535,9 +537,12 @@ void main() {
                 OwnerPaymentVerificationView(booking: created),
           ),
           GoRoute(
-            path: '/owner/booking-confirmed/:id',
-            builder: (context, state) => const Scaffold(
-              body: Center(child: Text('confirmed')),
+            path: '/owner/requests',
+            builder: (context, state) => Scaffold(
+              body: Center(
+                child: Text(
+                    'All Bookings filter=${state.uri.queryParameters['filter']}'),
+              ),
             ),
           ),
         ],
@@ -564,7 +569,9 @@ void main() {
       await tester.tap(find.text('Confirm Payment — Rs. 6,000'));
       await tester.pumpAndSettle();
 
-      expect(find.text('confirmed'), findsOneWidget);
+      // Next-step batch (2026-11-21): Confirm lands back on All
+      // Bookings (?filter=all) instead of the Confirmed screen.
+      expect(find.text('All Bookings filter=all'), findsOneWidget);
       final ds = di.sl<BookingRemoteDataSource>();
       final verified =
           await ds.getBookingById(created.bookingId);

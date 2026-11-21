@@ -188,6 +188,7 @@
   "cancelBooking": "Cancel booking",
   "fileDispute": "File a dispute",
   "rateThisTrip": "Rate this trip",
+  "rateCustomer": "Rate customer",
   "viewPickupPass": "View pickup pass",
   "summaryAdvancePaid": "Advance paid",
   "summaryAdvanceRequired": "Advance required",
@@ -6122,5 +6123,10 @@
         "type": "String"
       }
     }
-  }
+  },
+  "nextStepViewResolveDispute": "View / Resolve Dispute",
+  "nextStepViewActiveTrip": "View Active Trip",
+  "nextStepTrackDispute": "Track Dispute",
+  "nextStepWaitingPayment": "Waiting for payment",
+  "nextStepWaitingApproval": "Waiting for approval"
 }

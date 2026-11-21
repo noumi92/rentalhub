@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../../core/routing/route_names.dart';
 
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/app_state_views.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
+import '../../../bookings/utils/booking_next_step.dart';
 import '../../../finance/utils/settlement_calculator.dart';
 import '../services/return_settlement_service.dart';
 import '../widgets/handover_damage_notes_editor.dart';
@@ -177,8 +176,14 @@ class _OwnerReturnSettlementViewState extends State<OwnerReturnSettlementView> {
       );
       if (mounted) {
         AppFeedback.showSuccess(context, l10n.returnSettled(formatRs(breakdown.netRefund)));
-        // OW-m24: routed through go_router — the rate-customer route loads the booking itself (BookingRouteLoader), so the completed status is picked up from the settled record.
-        context.pushReplacement(RouteNames.ownerRateCustomer.replaceFirst(':id', widget.booking.bookingId));
+        // Item 2 navigate-back: the return save lands on All
+        // Bookings instead of the rate-customer view — the
+        // completed booking is visible at once, and the rate
+        // step no longer interrupts the return flow. Rating
+        // the customer after return lives on the completed
+        // booking itself (Rate customer on its triage card
+        // and read-only detail).
+        goToAllOwnerBookings(context);
       }
     } catch (e) {
       // DS-13: the user sees a generic message; the raw error is

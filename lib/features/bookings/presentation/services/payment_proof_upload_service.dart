@@ -26,6 +26,14 @@ enum PaymentProofUploadStatus {
 /// `status` + `transactionId`) when the device is back online. It
 /// returns null when nothing was uploaded — never a fake URL.
 ///
+/// Next-step batch (2026-11-21): [bookingStatus] is the booking's
+/// status as the caller knows it. When it is already past payment
+/// (`paid` / `active` / `completed` / `cancelled`) the upload is
+/// refused WITHOUT uploading or queueing anything — a queued
+/// receipt would re-file `status: payment_submitted` on drain and
+/// downgrade a paid booking. The data source hard-rejects the same
+/// four statuses as a backstop.
+///
 /// userUid stays the customer id: `generateAuthToken` ignores it
 /// (the digest is HMAC(timestamp) only) and `uploadFile` never
 /// sends it as a field — only the Bearer token, `category` and the
@@ -43,7 +51,18 @@ class PaymentProofUploadService {
     required String bookingId,
     required String transactionId,
     OfflineSyncQueue? queue,
+    // Next-step batch (2026-11-21): the booking's status as the
+    // caller knows it — see the class doc. Null means unknown, in
+    // which case the upload proceeds and the data source remains
+    // the backstop.
+    String? bookingStatus,
   }) async {
+    // Past payment: refuse before any upload or queue entry.
+    if (bookingStatus != null &&
+        const {'paid', 'active', 'completed', 'cancelled'}
+            .contains(bookingStatus)) {
+      return (status: PaymentProofUploadStatus.failed, proofUrl: null);
+    }
     String? proofUrl;
     if (queue != null) {
       proofUrl = await uploadOrQueue(

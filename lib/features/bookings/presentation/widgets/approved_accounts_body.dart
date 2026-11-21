@@ -15,7 +15,14 @@ import '../../../owner/presentation/widgets/operations/booking_fare_breakdown.da
 /// "Reservation Request Approved!" banner, the shop's payment accounts,
 /// and the Upload-proof CTA. Extracted so the view stays under the
 /// 250-line cap. Only rendered once the booking is actually `approved`
-/// (or further along) — see the requested-state gate in the view.
+/// — never "further along": a `paid` / `active` booking already had
+/// its proof verified, and terminal / `disputed` bookings must never
+/// see an Upload Proof CTA. The CTA itself is gated on
+/// `status == 'approved'` below, so even a direct render of this body
+/// with a past-payment booking shows the accounts without the prompt.
+/// A booking with a PARTIAL advance (`advancePaid > 0` but
+/// `< advanceRequired`) is still `approved`, so it still shows the
+/// prompt — the advance is outstanding.
 class ApprovedAccountsBody extends StatelessWidget {
   const ApprovedAccountsBody({
     super.key,
@@ -34,6 +41,11 @@ class ApprovedAccountsBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    // Next-step batch (2026-11-21): the Upload Proof CTA renders
+    // ONLY for `approved`. A partial advance keeps the booking
+    // `approved`, so the prompt still shows until verification
+    // flips it to `paid` — the gate is the status, not the amount.
+    final showUploadCta = booking.status == 'approved';
     return Column(
       children: [
         Expanded(
@@ -145,25 +157,27 @@ class ApprovedAccountsBody extends StatelessWidget {
             ),
           ),
         ),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
-            boxShadow: const [
-              BoxShadow(
-                  color: Color(0x14000000),
-                  blurRadius: 10,
-                  offset: Offset(0, -3))
-            ],
+        // The pinned Upload Proof CTA — `approved` only (see above).
+        if (showUploadCta)
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface,
+              boxShadow: const [
+                BoxShadow(
+                    color: Color(0x14000000),
+                    blurRadius: 10,
+                    offset: Offset(0, -3))
+              ],
+            ),
+            child: DebouncedButton(
+              text: l10n.paymentUploadProof,
+              icon: Icons.upload_file_rounded,
+              onPressed: () async {
+                onProceedToUploadProof?.call();
+              },
+            ),
           ),
-          child: DebouncedButton(
-            text: l10n.paymentUploadProof,
-            icon: Icons.upload_file_rounded,
-            onPressed: () async {
-              onProceedToUploadProof?.call();
-            },
-          ),
-        ),
       ],
     );
   }

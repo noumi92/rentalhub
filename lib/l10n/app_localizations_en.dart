@@ -568,6 +568,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get rateThisTrip => 'Rate this trip';
 
   @override
+  String get rateCustomer => 'Rate customer';
+
+  @override
   String get viewPickupPass => 'View pickup pass';
 
   @override
@@ -10593,4 +10596,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String rentalStartedTripLine(String time, String elapsed) {
     return 'Started $time · on trip $elapsed';
   }
+
+  @override
+  String get nextStepViewResolveDispute => 'View / Resolve Dispute';
+
+  @override
+  String get nextStepViewActiveTrip => 'View Active Trip';
+
+  @override
+  String get nextStepTrackDispute => 'Track Dispute';
+
+  @override
+  String get nextStepWaitingPayment => 'Waiting for payment';
+
+  @override
+  String get nextStepWaitingApproval => 'Waiting for approval';
 }

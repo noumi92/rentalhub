@@ -9,6 +9,7 @@ import '../../../../core/widgets/debounced_button.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
+import '../../../bookings/utils/booking_next_step.dart';
 import '../services/manual_booking_whatsapp.dart';
 
 /// O24: the receipt after a walk-in booking is confirmed — the
@@ -150,7 +151,9 @@ class OwnerManualBookingReceiptView extends StatelessWidget {
                     SizedBox(
                       width: double.infinity,
                       child: OutlinedButton(
-                        onPressed: () => context.go(RouteNames.ownerRequests),
+                        // Navigate-back rule (2026-11-21): Done goes
+                        // to All Bookings, not the Proof bucket.
+                        onPressed: () => goToAllOwnerBookings(context),
                         style: OutlinedButton.styleFrom(minimumSize: const Size(0, 48)),
                         child: Text(l10n.manualBookingReceiptDone),
                       ),

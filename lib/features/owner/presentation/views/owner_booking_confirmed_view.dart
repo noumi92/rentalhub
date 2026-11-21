@@ -6,11 +6,11 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/money_format.dart';
 import '../../../../core/widgets/app_feedback.dart';
-import '../../../../core/widgets/debounced_button.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
 import '../../../bookings/presentation/widgets/pickup_countdown_timer.dart';
+import '../widgets/operations/booking_confirmed_actions.dart';
 import '../widgets/operations/booking_confirmed_checklist.dart';
 import '../widgets/operations/booking_confirmed_header.dart';
 
@@ -151,26 +151,12 @@ class _OwnerBookingConfirmedViewState
                     // derived from the booking — see the widget.
                     BookingConfirmedChecklist(booking: booking),
                     const SizedBox(height: 20),
-                    DebouncedButton(
-                      text: l10n.bookingConfirmedStartHandover,
-                      icon: Icons.key_rounded,
-                      onPressed: () => context.push(
-                        RouteNames.ownerHandover
-                            .replaceFirst(':id', booking.bookingId),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    SizedBox(
-                      width: double.infinity,
-                      child: OutlinedButton.icon(
-                        onPressed: () => context.push(
-                          RouteNames.ownerRequestsDetail
-                              .replaceFirst(':id', booking.bookingId),
-                        ),
-                        icon: const Icon(Icons.receipt_long_rounded),
-                        label: Text(l10n.bookingConfirmedViewBooking),
-                      ),
-                    ),
+                    // Item 2: the resolver-driven primary + "View
+                    // Booking" (hidden for paid / active — this
+                    // screen IS the detail then) live in
+                    // BookingConfirmedActions so this view stays
+                    // under the 250-line cap.
+                    BookingConfirmedActions(booking: booking),
                     const SizedBox(height: 10),
                     SizedBox(
                       width: double.infinity,

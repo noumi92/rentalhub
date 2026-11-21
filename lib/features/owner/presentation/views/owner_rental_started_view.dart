@@ -13,6 +13,7 @@ import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../core/widgets/success_banner.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
+import '../../../bookings/utils/booking_next_step.dart';
 import '../../../handover/data/datasources/handover_local_data_source.dart';
 
 /// Audit item 17 (O21): Rental Started — the owner screen after
@@ -26,6 +27,11 @@ import '../../../handover/data/datasources/handover_local_data_source.dart';
 /// up from it and shows the start time. When no handover record
 /// exists yet (older handovers), the timer row is simply absent —
 /// never a fabricated start time.
+///
+/// Item 2 navigate-back: this is the END of the handover →
+/// agreement chain (handover finalize → agreement wizard →
+/// here), so the Done button below is the chain's navigate-back:
+/// it lands on All Bookings. The chain itself is unchanged.
 class OwnerRentalStartedView extends StatefulWidget {
   final BookingEntity booking;
   final VoidCallback? onBack;
@@ -182,6 +188,16 @@ class _OwnerRentalStartedViewState extends State<OwnerRentalStartedView> {
                       text: l10n.rentalStartedMessageCustomer,
                       icon: Icons.message_rounded,
                       onPressed: () => _messageCustomer(context),
+                    ),
+                    const SizedBox(height: 12),
+                    // Item 2: end of the handover → agreement chain
+                    // — Done lands on All Bookings (same "Done"
+                    // label the manual-booking receipt uses for its
+                    // own return to the requests list).
+                    DebouncedButton(
+                      text: l10n.manualBookingReceiptDone,
+                      icon: Icons.check_rounded,
+                      onPressed: () => goToAllOwnerBookings(context),
                     ),
                   ],
                 ),

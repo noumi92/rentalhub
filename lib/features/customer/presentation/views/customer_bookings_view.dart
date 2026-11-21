@@ -11,18 +11,32 @@ import '../../../../core/widgets/offline_banner.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
 import '../../../bookings/utils/live_booking_stream.dart';
 import '../widgets/booking_ticket_card.dart';
+import '../widgets/customer_bookings_list_helpers.dart';
 import '../../../../l10n/app_localizations.dart';
 
 class CustomerBookingsView extends StatefulWidget {
   final Function(BookingEntity booking)? onOpenBookingDetails;
   final Function(BookingEntity booking)? onPayAdvance;
+  final Function(BookingEntity booking)? onViewPass;
+  final Function(BookingEntity booking)? onViewActiveTrip;
   final Function(BookingEntity booking)? onRateTrip;
+  final Function(BookingEntity booking)? onTrackDispute;
+
+  /// The tab the list opens on (0 = All). Mirrors the owner's
+  /// `initialFilter` plumbing: a save navigation back to this list
+  /// passes 0 so the saved booking's new status is visible under
+  /// All, instead of the tab the user happened to be on.
+  final int initialTab;
 
   const CustomerBookingsView({
     super.key,
     this.onOpenBookingDetails,
     this.onPayAdvance,
+    this.onViewPass,
+    this.onViewActiveTrip,
     this.onRateTrip,
+    this.onTrackDispute,
+    this.initialTab = 0,
   });
 
   @override
@@ -45,7 +59,25 @@ class _CustomerBookingsViewState extends State<CustomerBookingsView> {
   @override
   void initState() {
     super.initState();
+    if (widget.initialTab >= 0 &&
+        widget.initialTab < customerBookingTabsCount) {
+      _selectedTab = widget.initialTab;
+    }
     _fetchBookings();
+  }
+
+  @override
+  void didUpdateWidget(covariant CustomerBookingsView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Sync unconditionally: go_router page keys are path-only, so a
+    // `go()` with a new query string reuses this page — change
+    // detection would miss consecutive saves landing on the same tab
+    // (All = 0 is also the default). Plain pops never rebuild, so
+    // back-from-detail keeps the selected tab.
+    if (widget.initialTab >= 0 &&
+        widget.initialTab < customerBookingTabsCount) {
+      setState(() => _selectedTab = widget.initialTab);
+    }
   }
 
   @override
@@ -79,36 +111,11 @@ class _CustomerBookingsViewState extends State<CustomerBookingsView> {
     }
   }
 
-  List<BookingEntity> get _filteredBookings {
-    switch (_selectedTab) {
-      case 1:
-        return _allBookings
-            .where((b) =>
-                b.status == 'requested' || b.status == 'payment_submitted')
-            .toList();
-      case 2:
-        return _allBookings.where((b) => b.status == 'approved').toList();
-      case 3:
-        return _allBookings
-            .where((b) => b.status == 'paid' || b.status == 'active')
-            .toList();
-      case 4:
-        return _allBookings
-            .where((b) =>
-                b.status == 'completed' ||
-                b.status == 'cancelled' ||
-                b.status == 'rejected')
-            .toList();
-      default:
-        return _allBookings;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final list = _filteredBookings;
-    final tabs = [l10n.filterAll, l10n.pending, l10n.statusApproved, l10n.active, l10n.done];
+    final list = filterCustomerBookings(_allBookings, _selectedTab);
+    final tabs = customerBookingTabs(l10n);
     return Scaffold(
       // Audit 2026-11-15 DS-14: top: false — the shell strips the
       // top inset; a bare SafeArea double-insets outside it.
@@ -178,23 +185,21 @@ class _CustomerBookingsViewState extends State<CustomerBookingsView> {
                                   itemCount: list.length,
                                   itemBuilder: (context, index) {
                                     final b = list[index];
-                                    String? actionLabel;
-                                    VoidCallback? actionCallback;
-
-                                    if (b.status == 'approved') {
-                                      actionLabel = l10n.bookingsPayAdvance;
-                                      actionCallback =
-                                          () => widget.onPayAdvance?.call(b);
-                                    } else if (b.status == 'paid' ||
-                                        b.status == 'active') {
-                                      actionLabel = l10n.bookingsViewPass;
-                                      actionCallback = () =>
-                                          widget.onOpenBookingDetails?.call(b);
-                                    } else if (b.status == 'completed') {
-                                      actionLabel = l10n.bookingsRateTrip;
-                                      actionCallback =
-                                          () => widget.onRateTrip?.call(b);
-                                    }
+                                    // Next-step batch: the card action
+                                    // comes from the shared resolver —
+                                    // paid opens the pass directly,
+                                    // active opens the trip, disputed
+                                    // tracks the dispute.
+                                    final action = customerCardAction(
+                                      l10n,
+                                      b,
+                                      onPayAdvance: widget.onPayAdvance,
+                                      onViewPass: widget.onViewPass,
+                                      onViewActiveTrip:
+                                          widget.onViewActiveTrip,
+                                      onRateTrip: widget.onRateTrip,
+                                      onTrackDispute: widget.onTrackDispute,
+                                    );
 
                                     Widget card(SyncEntryStatus status) =>
                                         BookingTicketCard(
@@ -202,8 +207,8 @@ class _CustomerBookingsViewState extends State<CustomerBookingsView> {
                                           onTap: () => widget
                                               .onOpenBookingDetails
                                               ?.call(b),
-                                          actionLabel: actionLabel,
-                                          onAction: actionCallback,
+                                          actionLabel: action.label,
+                                          onAction: action.callback,
                                           syncStatus: status,
                                         );
 

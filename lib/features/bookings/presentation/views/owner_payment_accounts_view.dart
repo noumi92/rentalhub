@@ -5,7 +5,10 @@ import '../../../../core/utils/current_shop.dart';
 import '../../../../core/utils/shop_id_resolution.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../domain/entities/booking_entity.dart';
+import '../../utils/booking_next_step.dart';
 import '../widgets/approved_accounts_body.dart';
+import '../../../../features/owner/presentation/views/owner_booking_confirmed_view.dart';
+import '../../../../features/owner/presentation/views/owner_booking_summary_view.dart';
 import '../../../../features/owner/presentation/widgets/operations/requested_booking_detail.dart';
 import '../../../../l10n/app_localizations.dart';
 
@@ -14,7 +17,13 @@ import '../../../../l10n/app_localizations.dart';
 /// approval is the wrong order, and detail had no approve/reject at
 /// all. A requested booking now renders [RequestedBookingDetail]
 /// (summary + Approve/Reject); the banner and payment accounts render
-/// only once the booking is actually `approved` (or further along).
+/// only once the booking is actually `approved` — NOT "or further
+/// along": a `paid` / `active` booking already had its proof verified
+/// (verification is implicit in the status), and terminal / `disputed`
+/// bookings must never see an Upload Proof CTA. Those statuses are
+/// routed to the Confirmed / read-only summary views instead (see
+/// [build]); the router does the same branching, this is defence in
+/// depth for a direct push.
 class OwnerPaymentAccountsView extends StatefulWidget {
   final BookingEntity booking;
   final VoidCallback? onProceedToUploadProof;
@@ -86,6 +95,32 @@ class _OwnerPaymentAccountsViewState extends State<OwnerPaymentAccountsView> {
     // another shop, signed out) gets the summary only. Default deny.
     final isShopOwner = AuthRouteGuard.lockedRole == 'owner' &&
         _ownerShopIds.contains(_booking.shopId);
+    // Next-step batch (2026-11-21): defence in depth — the detail
+    // route no longer sends past-payment or terminal / disputed
+    // bookings here, but a direct push (or the shared customer
+    // proof route) still must never show the Upload Proof CTA. A
+    // `paid` / `active` booking opens the Confirmed view for its
+    // owner — the Start Handover step lives there — and the
+    // read-only summary for anyone else; terminal and `disputed`
+    // bookings get the read-only summary. Only `requested` and
+    // `approved` reach the Scaffold below.
+    if (!isRequested) {
+      switch (_booking.status) {
+        case 'paid':
+        case 'active':
+          return isShopOwner
+              ? OwnerBookingConfirmedView(
+                  booking: _booking, onBack: widget.onBack)
+              : OwnerBookingSummaryView(
+                  booking: _booking, onBack: widget.onBack);
+        case 'completed':
+        case 'rejected':
+        case 'cancelled':
+        case 'disputed':
+          return OwnerBookingSummaryView(
+              booking: _booking, onBack: widget.onBack);
+      }
+    }
     return Scaffold(
       // C1: MinimalAppBar owns the top inset.
       body: SafeArea(
@@ -107,8 +142,11 @@ class _OwnerPaymentAccountsViewState extends State<OwnerPaymentAccountsView> {
                       booking: _booking,
                       showActions: isShopOwner,
                       firestore: widget.firestore,
-                      onApproved: (updated) =>
-                          setState(() => _booking = updated),
+                      // Navigate-back rule (2026-11-21): after the
+                      // approve save, go to All Bookings — same as
+                      // the triage-path approve — instead of flipping
+                      // to the accounts view.
+                      onApproved: (_) => goToAllOwnerBookings(context),
                     )
                   : ApprovedAccountsBody(
                       booking: _booking,

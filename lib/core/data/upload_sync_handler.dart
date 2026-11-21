@@ -105,10 +105,40 @@ class UploadSyncHandler {
     }
     final fs = _resolvedFirestore;
     if (fs == null) return false;
+    final extra = payload['extra'] != null
+        ? Map<String, dynamic>.from(payload['extra'] as Map)
+        : <String, dynamic>{};
+    // Fix 2 (2026-11-21, queued-proof drain race): a payment-proof
+    // upload queued while the booking was `approved` must NOT
+    // downgrade it if it has since moved past payment. The drain
+    // used to merge-set `extra` blindly — including
+    // `status: payment_submitted` — bypassing the
+    // `updatePaymentProof` hard reject entirely. Re-check the
+    // booking's LIVE status first and drop the whole stale write
+    // (status AND proof URL/TID) when it is no longer awaiting
+    // verification. The whole write is dropped, not just the
+    // status: attaching the stale URL/TID would overwrite the
+    // verified proof that got the booking paid, and `paid` itself
+    // is the verification record. The entry is still removed
+    // (return true): the drop is intentional, not a failure — the
+    // file already landed on cPanel and is simply orphaned, the
+    // same as any superseded upload. A missing booking doc (or an
+    // unreadable one) is NOT a drop: return false so the entry
+    // stays queued and retries once the booking exists.
+    if (targetCollection == 'bookings' &&
+        extra['status'] == 'payment_submitted') {
+      final liveStatus = await _liveBookingStatus(fs, targetDocId);
+      if (liveStatus == null) return false;
+      if (!const {'approved', 'payment_submitted'}.contains(liveStatus)) {
+        debugPrint(
+          'UploadSyncHandler: dropping stale queued payment proof '
+          'for $targetDocId — booking is now $liveStatus, not '
+          'awaiting verification.',
+        );
+        return true;
+      }
+    }
     try {
-      final extra = payload['extra'] != null
-          ? Map<String, dynamic>.from(payload['extra'] as Map)
-          : <String, dynamic>{};
       // Phase B (B3): KYC docs store the file *key* (the screen
       // signs it at display time); everything else stores the URL.
       final value = payload['storeKey'] == true ? (fileKey ?? url) : url;
@@ -123,6 +153,24 @@ class UploadSyncHandler {
       return true;
     } catch (_) {
       return false;
+    }
+  }
+
+  /// The live `status` of a booking doc, or null when the doc does
+  /// not exist (yet) or cannot be read. A fresh read + conditional
+  /// write, not a transaction: no other drain handler in this
+  /// codebase uses transactions, and the check-then-write window
+  /// here is a single merge-set immediately after the read.
+  Future<String?> _liveBookingStatus(
+      FirebaseFirestore fs, String bookingId) async {
+    try {
+      final doc =
+          await fs.collection('bookings').doc(bookingId).get();
+      final data = doc.data();
+      if (data == null) return null;
+      return data['status'] as String?;
+    } catch (_) {
+      return null;
     }
   }
 

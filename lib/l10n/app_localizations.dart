@@ -1184,6 +1184,12 @@ abstract class AppLocalizations {
   /// **'Rate this trip'**
   String get rateThisTrip;
 
+  /// No description provided for @rateCustomer.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate customer'**
+  String get rateCustomer;
+
   /// No description provided for @viewPickupPass.
   ///
   /// In en, this message translates to:
@@ -18760,6 +18766,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Started {time} · on trip {elapsed}'**
   String rentalStartedTripLine(String time, String elapsed);
+
+  /// No description provided for @nextStepViewResolveDispute.
+  ///
+  /// In en, this message translates to:
+  /// **'View / Resolve Dispute'**
+  String get nextStepViewResolveDispute;
+
+  /// No description provided for @nextStepViewActiveTrip.
+  ///
+  /// In en, this message translates to:
+  /// **'View Active Trip'**
+  String get nextStepViewActiveTrip;
+
+  /// No description provided for @nextStepTrackDispute.
+  ///
+  /// In en, this message translates to:
+  /// **'Track Dispute'**
+  String get nextStepTrackDispute;
+
+  /// No description provided for @nextStepWaitingPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for payment'**
+  String get nextStepWaitingPayment;
+
+  /// No description provided for @nextStepWaitingApproval.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for approval'**
+  String get nextStepWaitingApproval;
 }
 
 class _AppLocalizationsDelegate

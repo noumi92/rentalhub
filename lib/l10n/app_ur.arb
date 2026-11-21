@@ -188,6 +188,7 @@
   "cancelBooking": "بکنگ منسوخ کریں",
   "fileDispute": "تنازع درج کریں",
   "rateThisTrip": "اس سفر کی درجہ بندی کریں",
+  "rateCustomer": "گاہک کی درجہ بندی کریں",
   "viewPickupPass": "پک اپ پاس دیکھیں",
   "summaryAdvancePaid": "ایڈوانس ادا شدہ",
   "summaryAdvanceRequired": "ایڈوانس درکار",
@@ -6122,5 +6123,10 @@
         "type": "String"
       }
     }
-  }
+  },
+  "nextStepViewResolveDispute": "تنازع دیکھیں / حل کریں",
+  "nextStepViewActiveTrip": "جاری سفر دیکھیں",
+  "nextStepTrackDispute": "تنازع ٹریک کریں",
+  "nextStepWaitingPayment": "ادائیگی کا انتظار ہے",
+  "nextStepWaitingApproval": "منظوری کا انتظار ہے"
 }

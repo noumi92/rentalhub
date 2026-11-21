@@ -16,6 +16,8 @@ class CustomerBookingDetailView extends StatelessWidget {
   final BookingEntity booking;
   final VoidCallback? onPayAdvance;
   final VoidCallback? onViewPass;
+  final VoidCallback? onViewActiveTrip;
+  final VoidCallback? onTrackDispute;
   final VoidCallback? onCancel;
   final VoidCallback? onRateTrip;
   final VoidCallback? onFileDispute;
@@ -27,6 +29,8 @@ class CustomerBookingDetailView extends StatelessWidget {
     required this.booking,
     this.onPayAdvance,
     this.onViewPass,
+    this.onViewActiveTrip,
+    this.onTrackDispute,
     this.onCancel,
     this.onRateTrip,
     this.onFileDispute,
@@ -48,6 +52,8 @@ class CustomerBookingDetailView extends StatelessWidget {
         return l10n.statusOnTrip;
       case 'completed':
         return l10n.statusCompleted;
+      case 'disputed':
+        return l10n.statusDisputed;
       case 'rejected':
         return l10n.statusRejected;
       case 'cancelled':
@@ -140,6 +146,8 @@ class CustomerBookingDetailView extends StatelessWidget {
                       booking: b,
                       onPayAdvance: onPayAdvance,
                       onViewPass: onViewPass,
+                      onViewActiveTrip: onViewActiveTrip,
+                      onTrackDispute: onTrackDispute,
                       onCancel: onCancel,
                       onRateTrip: onRateTrip,
                       onFileDispute: onFileDispute,

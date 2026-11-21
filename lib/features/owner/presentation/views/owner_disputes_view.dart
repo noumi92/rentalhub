@@ -6,6 +6,7 @@ import '../../../../core/di/injection_container.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/app_state_views.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
+import '../../../bookings/utils/booking_next_step.dart';
 import '../../../customer/data/datasources/dispute_remote_data_source.dart';
 import '../widgets/dispute_detail_sheet.dart';
 import '../widgets/dispute_list_tile.dart';
@@ -30,10 +31,47 @@ class _OwnerDisputesViewState extends State<OwnerDisputesView> {
   bool _hasError = false;
   String _filter = 'all';
 
+  /// Item 2 deep link: the triage card's "View / Resolve Dispute"
+  /// navigates here with `?bookingId=<id>` so that booking's
+  /// dispute sheet opens on arrival. Read in
+  /// [didChangeDependencies] (not initState — the route state is
+  /// an inherited widget) and attempted at most once, so a status
+  /// change reload never re-opens the sheet.
+  String? _deepLinkBookingId;
+  bool _deepLinkAttempted = false;
+
   @override
   void initState() {
     super.initState();
     _load();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _deepLinkBookingId ??=
+        GoRouterState.of(context).uri.queryParameters['bookingId'];
+    _maybeAutoOpen();
+  }
+
+  void _maybeAutoOpen() {
+    if (_deepLinkAttempted || _deepLinkBookingId == null || _isLoading) {
+      return;
+    }
+    _deepLinkAttempted = true;
+    final id = _deepLinkBookingId!;
+    DisputeRecord? match;
+    for (final d in _items) {
+      if (d.bookingId == id) {
+        match = d;
+        break;
+      }
+    }
+    if (match == null || !mounted) return;
+    final target = match;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _open(target);
+    });
   }
 
   Future<void> _load() async {
@@ -52,6 +90,7 @@ class _OwnerDisputesViewState extends State<OwnerDisputesView> {
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
+    _maybeAutoOpen();
   }
 
   List<DisputeRecord> get _visible => _filter == 'all'
@@ -62,6 +101,12 @@ class _OwnerDisputesViewState extends State<OwnerDisputesView> {
 
   Future<void> _open(DisputeRecord d) async {
     final l10n = AppLocalizations.of(context)!;
+    // Item 2 navigate-back: a resolve action ("Mark in review" /
+    // "Mark resolved") leaves the centre for All Bookings once
+    // the sheet closes — that is what the rule requires, even
+    // though it navigates away from the centre. Viewing without
+    // changing anything stays put.
+    var changed = false;
     await showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
@@ -79,11 +124,13 @@ class _OwnerDisputesViewState extends State<OwnerDisputesView> {
           if (!ok && mounted) {
             AppFeedback.showError(context, l10n.shopSaveError);
           }
+          if (ok) changed = true;
           await _load();
           return ok;
         },
       ),
     );
+    if (changed && mounted) goToAllOwnerBookings(context);
   }
 
   @override

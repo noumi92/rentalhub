@@ -567,6 +567,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get rateThisTrip => 'اس سفر کی درجہ بندی کریں';
 
   @override
+  String get rateCustomer => 'گاہک کی درجہ بندی کریں';
+
+  @override
   String get viewPickupPass => 'پک اپ پاس دیکھیں';
 
   @override
@@ -10611,4 +10614,19 @@ class AppLocalizationsUr extends AppLocalizations {
   String rentalStartedTripLine(String time, String elapsed) {
     return 'شروع $time · سفر جاری $elapsed';
   }
+
+  @override
+  String get nextStepViewResolveDispute => 'تنازع دیکھیں / حل کریں';
+
+  @override
+  String get nextStepViewActiveTrip => 'جاری سفر دیکھیں';
+
+  @override
+  String get nextStepTrackDispute => 'تنازع ٹریک کریں';
+
+  @override
+  String get nextStepWaitingPayment => 'ادائیگی کا انتظار ہے';
+
+  @override
+  String get nextStepWaitingApproval => 'منظوری کا انتظار ہے';
 }

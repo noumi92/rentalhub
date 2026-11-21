@@ -10,6 +10,7 @@ import '../../../../../core/widgets/debounced_button.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../../bookings/domain/entities/booking_entity.dart';
+import '../../../../bookings/utils/booking_next_step.dart';
 import 'approve_booking_sheet.dart';
 import 'booking_fare_breakdown.dart';
 import 'booking_request_checklist.dart';
@@ -26,7 +27,8 @@ import 'request_triage_card.dart';
 /// summary with the same Approve / Reject actions as the triage card
 /// (same data-source calls, same rejection-reason dialog), and reports
 /// the approved booking back so the caller can flip to the payment
-/// accounts view. A rejection pops back to triage.
+/// accounts view. A rejection navigates to All Bookings
+/// (navigate-back rule, 2026-11-21).
 class RequestedBookingDetail extends StatefulWidget {
   const RequestedBookingDetail({
     super.key,
@@ -43,7 +45,6 @@ class RequestedBookingDetail extends StatefulWidget {
   /// reaching this shared view from the payment-proof route): the
   /// summary renders, but no owner Approve/Reject actions.
   final bool showActions;
-
   /// Injectable Firestore for the approve sheet (tests only).
   final FirebaseFirestore? firestore;
 
@@ -88,7 +89,10 @@ class _RequestedBookingDetailState extends State<RequestedBookingDetail> {
       if (mounted) {
         AppFeedback.showInfo(
             context, l10n.requestsRejected(widget.booking.bookingId));
-        Navigator.of(context).pop();
+        // Navigate-back rule (2026-11-21): after the reject save,
+        // go to All Bookings — the rejected booking is not in the
+        // Proof bucket the list defaults to.
+        goToAllOwnerBookings(context);
       }
     } catch (e) {
       if (mounted) {

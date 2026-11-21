@@ -41,7 +41,36 @@ void main() {
 
   group('Batch 2: Customer Post-Trip & Dashboard Tests', () {
 
-    testWidgets('CustomerBookingsView: switches between 5 tabs and filters records', (tester) async {
+    testWidgets('CustomerBookingsView: switches between 6 tabs and filters records', (tester) async {
+      // Next-step batch: a Disputed chip joins the five grouped tabs
+      // (All, Pending, Approved, Active, Disputed, Done). Disputed
+      // is an exact-match group; Done still groups completed +
+      // cancelled + rejected.
+      final ds = di.sl<BookingRemoteDataSource>();
+      Future<void> seed(String name, String status) async {
+        final created = await ds.createBookingRequest(
+          customerId: 'cust-101',
+          shopId: 'shop-1',
+          vehicleId: 'veh-tabs-${name.replaceAll(' ', '-')}',
+          packageType: '24h',
+          isWithDriver: false,
+          pickupTime: DateTime.now().add(const Duration(hours: 5)),
+          returnTime: DateTime.now().add(const Duration(days: 1, hours: 5)),
+          totalAmount: 9000,
+          advanceRequired: 2500,
+          vehicleName: name,
+        );
+        if (status != 'requested') {
+          await ds.updateBookingStatus(
+              bookingId: created.bookingId, status: status);
+        }
+      }
+
+      await seed('Disputed Datsun', 'disputed');
+      await seed('Completed Corolla', 'completed');
+      await seed('Cancelled Cultus', 'cancelled');
+      await seed('Rejected Ravi', 'rejected');
+
       await tester.pumpWidget(
         const MaterialApp(
 localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -51,20 +80,55 @@ supportedLocales: AppLocalizations.supportedLocales,
       );
       await tester.pumpAndSettle();
 
+      // The list lazily builds its cards: a booking below the fold
+      // is not in the tree until the list scrolls to it.
+      Future<void> expectNameVisible(String name) async {
+        await tester.scrollUntilVisible(
+          find.text(name),
+          300,
+          // The first Scrollable is the filter bar's horizontal
+          // scroller; the list is the last one.
+          scrollable: find.byType(Scrollable).last,
+        );
+        await tester.pumpAndSettle();
+        expect(find.text(name), findsOneWidget);
+      }
+
       expect(find.text('My Reservations'), findsOneWidget);
-      expect(find.text('All'), findsOneWidget);
-      expect(find.text('Pending'), findsOneWidget);
-      expect(find.text('Approved'), findsOneWidget);
-      expect(find.text('Active'), findsOneWidget);
-      expect(find.text('Done'), findsOneWidget);
+      for (final tab in ['All', 'Pending', 'Approved', 'Active', 'Disputed', 'Done']) {
+        expect(find.widgetWithText(ChoiceChip, tab), findsOneWidget);
+      }
+      // All shows every seeded booking.
+      await expectNameVisible('Disputed Datsun');
+      await expectNameVisible('Completed Corolla');
+      await expectNameVisible('Cancelled Cultus');
+      await expectNameVisible('Rejected Ravi');
 
-      await tester.tap(find.text('Pending'));
+      // Disputed shows only the disputed booking.
+      await tester.ensureVisible(find.widgetWithText(ChoiceChip, 'Disputed'));
+      await tester.tap(find.widgetWithText(ChoiceChip, 'Disputed'));
       await tester.pumpAndSettle();
-      expect(find.text('Pending'), findsOneWidget);
+      expect(find.text('Disputed Datsun'), findsOneWidget);
+      expect(find.text('Completed Corolla'), findsNothing);
+      expect(find.text('Cancelled Cultus'), findsNothing);
+      expect(find.text('Rejected Ravi'), findsNothing);
 
-      await tester.tap(find.text('Approved'));
+      // Done still groups completed + cancelled + rejected.
+      await tester.ensureVisible(find.widgetWithText(ChoiceChip, 'Done'));
+      await tester.tap(find.widgetWithText(ChoiceChip, 'Done'));
       await tester.pumpAndSettle();
-      expect(find.text('Approved'), findsOneWidget);
+      await expectNameVisible('Completed Corolla');
+      await expectNameVisible('Cancelled Cultus');
+      await expectNameVisible('Rejected Ravi');
+      expect(find.text('Disputed Datsun'), findsNothing);
+
+      await tester.tap(find.widgetWithText(ChoiceChip, 'Pending'));
+      await tester.pumpAndSettle();
+      expect(find.widgetWithText(ChoiceChip, 'Pending'), findsOneWidget);
+
+      await tester.tap(find.widgetWithText(ChoiceChip, 'Approved'));
+      await tester.pumpAndSettle();
+      expect(find.widgetWithText(ChoiceChip, 'Approved'), findsOneWidget);
     });
 
     testWidgets('CustomerWalletView: shows real advances and deposits from the booking records', (tester) async {
