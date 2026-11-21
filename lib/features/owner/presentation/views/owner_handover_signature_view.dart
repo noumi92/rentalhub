@@ -6,6 +6,8 @@ import 'package:signature/signature.dart';
 
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/network/connectivity_service.dart';
+import '../../../../core/utils/shop_id_resolution.dart';
+import '../../../../core/utils/shop_name.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/app_state_views.dart';
@@ -16,12 +18,12 @@ import '../../../bookings/domain/entities/booking_entity.dart';
 import '../../../fleet/data/datasources/fleet_remote_data_source.dart';
 import '../../../handover/presentation/cubit/handover_cubit.dart';
 import '../widgets/handover_damage_notes_editor.dart';
+import '../widgets/handover_wizard/handover_wizard_load_error_banner.dart';
 import '../widgets/operations/dual_signature_pad_widget.dart';
 import '../widgets/operations/exterior_photo_picker.dart';
 import '../widgets/operations/fuel_odometer_input_widget.dart';
 import '../widgets/operations/handover_balance_section.dart';
 import '../widgets/operations/handover_checklist_section.dart';
-import '../../../../core/theme/card_decoration.dart';
 
 class OwnerHandoverSignatureView extends StatefulWidget {
   final BookingEntity booking;
@@ -76,9 +78,16 @@ class _OwnerHandoverSignatureViewState extends State<OwnerHandoverSignatureView>
     try {
       final shopId = widget.booking.shopId;
       if (_shopName.isEmpty && shopId.isNotEmpty) {
-        final doc = await FirebaseFirestore.instance.collection('shops').doc(shopId).get();
-        final name = (doc.data()?['name'] ?? doc.data()?['shopName']) as String?;
-        if (name != null && name.isNotEmpty && mounted) {
+        // Shop-id linking (2026-11-15): shop documents are
+        // `shop_<uid>`; a booking carrying the bare owner UID would
+        // read a nonexistent doc. And the name lives under
+        // snake_case `shop_name` (ShopModel.toMap) — reading `name` /
+        // `shopName` only always came back empty on live docs, which
+        // blocked certifying at the last step (build 89).
+        final fs = FirebaseFirestore.instance;
+        final doc = await fs.collection('shops').doc(await canonicalShopId(fs, shopId)).get();
+        final name = shopNameFromData(doc.data());
+        if (name.isNotEmpty && mounted) {
           setState(() => _shopName = name);
         }
       }
@@ -91,6 +100,12 @@ class _OwnerHandoverSignatureViewState extends State<OwnerHandoverSignatureView>
       error = e.toString();
     }
     if (!mounted) return;
+    // A load that ends with no shop name must surface as a load
+    // error with a retry here — not only at certify time on the
+    // last step, after the owner has filled the whole form.
+    error ??= _shopName.isEmpty
+        ? AppLocalizations.of(context)!.handoverShopNameRequired
+        : null;
     setState(() { _loadError = error; _isLoadingShop = false; });
   }
 
@@ -195,7 +210,7 @@ class _OwnerHandoverSignatureViewState extends State<OwnerHandoverSignatureView>
                   child: Column(
                     children: [
                       if (_loadError != null) ...[
-                        _loadErrorBanner(context, l10n),
+                        HandoverWizardLoadErrorBanner(error: _loadError!, onRetry: _loadShopAndVehicle),
                         const SizedBox(height: 16),
                       ],
                       FuelOdometerInputWidget(odometerController: _odometerController, selectedFuel: _selectedFuel, onFuelSelected: (f) => setState(() => _selectedFuel = f)),
@@ -222,20 +237,5 @@ class _OwnerHandoverSignatureViewState extends State<OwnerHandoverSignatureView>
     );
   }
 
-  /// The shop/vehicle load failed: say so and offer a retry instead of silently certifying against the 'RentalHub' / Rs. 0 fallbacks.
-  Widget _loadErrorBanner(BuildContext context, AppLocalizations l10n) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, borderRadius: BorderRadius.circular(12), boxShadow: AppCardDecoration.shadow(context)),
-      child: Row(
-        children: [
-          Icon(Icons.error_outline_rounded, color: Theme.of(context).colorScheme.onSurfaceVariant),
-          const SizedBox(width: 8),
-          Expanded(child: Text(l10n.fleetLoadError(_loadError!), style: Theme.of(context).textTheme.bodySmall)),
-          TextButton(onPressed: _loadShopAndVehicle, child: Text(l10n.commonRetry)),
-        ],
-      ),
-    );
-  }
   // PW-16/PW-17: the deposit row now lives in HandoverBalanceSection (with the balance row), rendered above the signature pads.
 }

@@ -11,6 +11,7 @@ import '../../../../bookings/domain/entities/booking_entity.dart';
 import '../../../../handover/presentation/cubit/handover_wizard_cubit.dart';
 import '../../services/handover_wizard_finalize.dart';
 import '../../services/handover_wizard_loader.dart';
+import '../../widgets/handover_wizard/handover_wizard_error_message.dart';
 import '../../widgets/handover_wizard/handover_wizard_load_error_banner.dart';
 import '../../widgets/handover_wizard/handover_wizard_nav_bar.dart';
 import '../../widgets/handover_wizard/handover_wizard_step_agreement.dart';
@@ -106,6 +107,13 @@ class _HandoverWizardBodyState extends State<_HandoverWizardBody> {
       error = e.toString();
     }
     if (!mounted) return;
+    // The name is printed on the agreement, so a load that ends
+    // with no name must surface as a load error with a retry here
+    // — not only at finalize on the last step, after the owner has
+    // filled the whole wizard.
+    error ??= _shopName.isEmpty
+        ? AppLocalizations.of(context)!.handoverShopNameRequired
+        : null;
     setState(() {
       _loadError = error;
       _isLoading = false;
@@ -115,23 +123,6 @@ class _HandoverWizardBodyState extends State<_HandoverWizardBody> {
   int get _balanceDue =>
       (widget.booking.totalAmount - widget.booking.advancePaid)
           .clamp(0, 1 << 30);
-
-  String _errorMessage(AppLocalizations l10n, String code) {
-    switch (code) {
-      case 'face':
-        return l10n.handoverWizardFaceRequired;
-      case 'payment':
-        return l10n.handoverWizardPaymentRequired;
-      case 'deposit':
-        return l10n.handoverWizardDepositMethodRequired;
-      case 'checklist':
-        return l10n.handoverWizardChecklistRequired;
-      case 'signatures':
-        return l10n.handoverSignRequired;
-      default:
-        return code;
-    }
-  }
 
   Future<void> _finalize() async {
     final l10n = AppLocalizations.of(context)!;
@@ -178,7 +169,7 @@ class _HandoverWizardBodyState extends State<_HandoverWizardBody> {
       listenWhen: (prev, next) =>
           prev.error != next.error && next.error != null,
       listener: (context, state) =>
-          AppFeedback.showError(context, _errorMessage(l10n, state.error!)),
+          AppFeedback.showError(context, handoverWizardErrorMessage(l10n, state.error!)),
       child: Scaffold(
         body: SafeArea(
           top: false,

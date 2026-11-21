@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/utils/current_shop.dart';
 import '../../../../core/utils/shop_id_resolution.dart';
+import '../../../../core/utils/shop_name.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/app_state_views.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
@@ -24,10 +25,7 @@ import '../widgets/finance/cash_closing_form.dart';
 import '../widgets/finance/finance_pnl_report.dart';
 import '../../../../core/utils/money_format.dart';
 
-/// Phase B (H5): the day's cash closing — what the till should
-/// hold (computed from the cash account, never typed in), what the
-/// owner counted, and the difference. Below it, the P&L statement
-/// with a CSV export.
+/// Phase B (H5): the day's cash closing — what the till should hold (computed from the cash account, never typed in), what the owner counted, and the difference. Below it, the P&L statement with a CSV export.
 class OwnerCashClosingView extends StatefulWidget {
   final String shopId;
 
@@ -63,8 +61,8 @@ class _OwnerCashClosingViewState extends State<OwnerCashClosingView> {
       FirebaseFirestore? fs;
       try { fs = FirebaseFirestore.instance; } catch (_) {} if (fs == null) return;
       final doc = await fs.collection('shops').doc(await canonicalShopId(fs, currentShopId())).get();
-      final name = (doc.data()?['name'] ?? doc.data()?['shopName']) as String?;
-      if (name != null && name.isNotEmpty && mounted) {
+      final name = shopNameFromData(doc.data());
+      if (name.isNotEmpty && mounted) {
         setState(() => _shopName = name);
       }
     } catch (_) {}

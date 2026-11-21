@@ -5,6 +5,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
 
 import '../../../../core/di/injection_container.dart';
+import '../../../../core/utils/shop_id_resolution.dart';
+import '../../../../core/utils/shop_name.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
 import '../../../customer/data/datasources/customer_remote_data_source.dart';
 import '../../../fleet/data/datasources/fleet_remote_data_source.dart';
@@ -21,6 +23,8 @@ import '../../../handover/presentation/cubit/handover_wizard_cubit.dart';
 /// value: a missing shop field or a failed fetch leaves the
 /// signature absent, and the wizard falls back to the fresh pad.
 class HandoverWizardLoader {
+  /// `firestore` is injectable for tests; production callers omit
+  /// it and the default `FirebaseFirestore.instance` is used.
   static Future<({
     String shopName,
     int securityDeposit,
@@ -31,6 +35,7 @@ class HandoverWizardLoader {
   })> load({
     required BookingEntity booking,
     required HandoverWizardCubit wizard,
+    FirebaseFirestore? firestore,
   }) async {
     var shopName = booking.shopName ?? '';
     var securityDeposit = 0;
@@ -39,14 +44,20 @@ class HandoverWizardLoader {
     String? vehicleFuel;
     String? kycPhotoUrl;
     final shopId = booking.shopId;
+    final fs = firestore ?? FirebaseFirestore.instance;
     if (shopName.isEmpty && shopId.isNotEmpty) {
-      final doc = await FirebaseFirestore.instance
+      // Shop-id linking (2026-11-15): shop documents are
+      // `shop_<uid>`; a booking carrying the bare owner UID would
+      // read a nonexistent doc. And the name lives under
+      // snake_case `shop_name` (ShopModel.toMap) — reading `name` /
+      // `shopName` only always came back empty on live docs, which
+      // blocked certifying at the wizard's last step (build 89).
+      final doc = await fs
           .collection('shops')
-          .doc(shopId)
+          .doc(await canonicalShopId(fs, shopId))
           .get();
-      final name =
-          (doc.data()?['name'] ?? doc.data()?['shopName']) as String?;
-      if (name != null && name.isNotEmpty) shopName = name;
+      final name = shopNameFromData(doc.data());
+      if (name.isNotEmpty) shopName = name;
       // O30: the owner's on-file signature, if the shop record
       // carries one (no such field exists on shops today — the
       // lookup is honest: absent means "sign fresh on the pad").
