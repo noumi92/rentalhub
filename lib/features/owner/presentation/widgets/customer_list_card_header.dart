@@ -12,6 +12,13 @@ import '../../../customer/utils/customer_grouping.dart';
 /// so it flips in RTL). The pill renders through the
 /// `customersBookingTotal` key with a localised money amount — never
 /// a raw 'Rs. \$amount'.
+///
+/// Walk-in CRM badges (all optional, default off): [blocked]
+/// reuses the Blacklisted badge visual (errorDark); [kycIncomplete]
+/// marks a saved record whose KYC slots are not all present;
+/// [dormant] marks a customer with no booking in 90 days. All three
+/// derive from data the list already loads — see
+/// `customer_status_helpers`.
 class CustomerListCardHeader extends StatelessWidget {
   const CustomerListCardHeader({
     super.key,
@@ -19,12 +26,18 @@ class CustomerListCardHeader extends StatelessWidget {
     required this.blacklisted,
     required this.expanded,
     required this.onTap,
+    this.blocked = false,
+    this.kycIncomplete = false,
+    this.dormant = false,
   });
 
   final CustomerSummary customer;
   final bool blacklisted;
   final bool expanded;
   final VoidCallback onTap;
+  final bool blocked;
+  final bool kycIncomplete;
+  final bool dormant;
 
   @override
   Widget build(BuildContext context) {
@@ -74,6 +87,19 @@ class CustomerListCardHeader extends StatelessWidget {
                         // errorDark #DC2626 is ~4.9:1.
                         _badge(context, l10n.customersBlacklisted,
                             AppColors.errorDark),
+                      if (blocked)
+                        // Same visual as the Blacklisted badge: a
+                        // blocked customer is equally unbookable.
+                        _badge(context, l10n.customersBadgeBlocked,
+                            AppColors.errorDark),
+                      if (kycIncomplete)
+                        // Amber-800 #92400E carries white at ~6.8:1.
+                        _badge(context, l10n.customersBadgeKycIncomplete,
+                            AppColors.warningOnContainer),
+                      if (dormant)
+                        // Slate #64748B carries white at ~4.9:1.
+                        _badge(context, l10n.customersBadgeDormant,
+                            AppColors.textMuted),
                     ],
                   ),
                   if (phoneCnic.isNotEmpty) ...[

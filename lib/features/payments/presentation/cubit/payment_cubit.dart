@@ -66,14 +66,22 @@ class PaymentCubit extends Cubit<PaymentState> {
   }) async {
     emit(const PaymentUploading());
     try {
-      String fileKey = '';
+      // Item 8: what lands in `bookings/{id}.paymentProofUrl` must
+      // be a viewable URL, not the bare storage key. The live
+      // upload path (PaymentProofUploadService) stores the signed
+      // media.php URL; this cubit stored the bare key
+      // (`payments/<file>`) and the owner view passes the stored
+      // value straight to Image.network, so a proof filed here
+      // could never display. Sign it the same way.
+      String proofUrl = '';
       if (receiptScreenshot != null && receiptScreenshot.existsSync()) {
         try {
-          fileKey = await storageClient.uploadFile(
+          final fileKey = await storageClient.uploadFile(
             file: receiptScreenshot,
             userUid: customerUid,
             folder: 'payments',
           );
+          proofUrl = storageClient.getSignedMediaUrl(fileKey, customerUid);
         } catch (_) {
           final queue = syncQueue;
           if (queue == null) rethrow;
@@ -90,13 +98,13 @@ class PaymentCubit extends Cubit<PaymentState> {
               'transactionId': transactionId,
             },
           );
-          fileKey = '';
+          proofUrl = '';
         }
       }
 
       final updated = await bookingRepository.updatePaymentProof(
         bookingId: bookingId,
-        paymentProofUrl: fileKey,
+        paymentProofUrl: proofUrl,
         transactionId: transactionId,
       );
 

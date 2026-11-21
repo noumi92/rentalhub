@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:image_picker/image_picker.dart';
 
+import '../../../../customer/domain/entities/customer_entity.dart';
 import '../../../../trust/utils/cnic_text_parser.dart';
 import '../../../../trust/utils/license_document_parser.dart';
 
@@ -15,6 +16,65 @@ import '../../../../trust/utils/license_document_parser.dart';
 /// the face photo is saved and an admin reviews it manually.
 class KycDraft {
   KycDraft({String? prefilledCnic}) : cnic = prefilledCnic ?? '';
+
+  /// Walk-in CRM (edit mode): prefill every field from a saved
+  /// record. Text fields copy straight across; media already on
+  /// file lands in [existingUrls] (field name → stored URL) so the
+  /// steps validate without re-capture and the saver keeps a URL
+  /// unless the owner re-captures that slot. Terms are pre-agreed
+  /// (the record was saved with them agreed). The CNIC back-QR
+  /// number is NOT read back — it lives only in the restricted
+  /// `customer_qr_codes/{customerId}` doc and is re-written only
+  /// when a new back photo is scanned.
+  KycDraft.fromEntity(CustomerEntity entity) {
+    name = entity.name;
+    fatherName = entity.fatherName ?? '';
+    cnic = entity.cnic ?? '';
+    dateOfBirth = entity.dateOfBirth ?? '';
+    cnicExpiry = entity.cnicExpiry ?? '';
+    address = entity.address ?? '';
+    phone = entity.phone;
+    licenseNumber = entity.licenseNumber ?? '';
+    licenseExpiry = entity.licenseExpiry ?? '';
+    guarantorCustomerId = entity.guarantorCustomerId;
+    guarantorRelation = entity.guarantorRelation ?? 'Friend';
+    termsAgreed = true;
+    final urls = <String, String?>{
+      'profilePhotoUrl': entity.profilePhotoUrl,
+      'thumbprintUrl': entity.thumbprintUrl,
+      'leftFingerprintUrl': entity.leftFingerprintUrl,
+      'rightFingerprintUrl': entity.rightFingerprintUrl,
+      'cnicFrontUrl': entity.cnicFrontUrl,
+      'cnicBackUrl': entity.cnicBackUrl,
+      'licenseFrontUrl': entity.licenseFrontUrl,
+      'licenseBackUrl': entity.licenseBackUrl,
+      'utilityBillUrl': entity.utilityBillUrl,
+      'signatureUrl': entity.signatureUrl,
+    };
+    for (final entry in urls.entries) {
+      final url = entry.value;
+      if (url != null && url.isNotEmpty) existingUrls[entry.key] = url;
+    }
+    existingExtraDocumentUrls.addAll(entity.extraDocumentUrls);
+  }
+
+  /// Edit mode: URLs already on file, keyed by entity field name
+  /// ('profilePhotoUrl', 'cnicFrontUrl', …). Empty in create mode.
+  /// A slot counts as present when it has a new capture OR an
+  /// on-file URL (see the [hasFacePhoto] family below); removing a
+  /// photo in a step must also call [clearExisting] for that field,
+  /// or the old URL would keep counting as present.
+  final Map<String, String> existingUrls = {};
+
+  /// Edit mode: extra documents already on file. New captures go
+  /// in [extraPhotos]; these are preserved as-is by the saver.
+  final List<String> existingExtraDocumentUrls = [];
+
+  String? existingUrlFor(String field) => existingUrls[field];
+
+  /// Drops the on-file URL for [field] (owner removed the photo in
+  /// a step); a save after this writes no URL for the slot.
+  void clearExisting(String field) => existingUrls.remove(field);
 
   // Step 1 — CNIC + identity (all editable by hand; scan prefills).
   String name = '';
@@ -87,15 +147,30 @@ class KycDraft {
     }
   }
 
-  bool get hasFacePhoto => facePhoto != null;
-  bool get hasThumbprint => thumbprintPhoto != null;
-  bool get hasLeftFingerprints => leftFingersPhoto != null;
-  bool get hasRightFingerprints => rightFingersPhoto != null;
-  bool get hasLicenseFront => licenseFrontPhoto != null;
-  bool get hasLicenseBack => licenseBackPhoto != null;
-  bool get hasUtilityBill => utilityBillPhoto != null;
+  /// Each getter is true when the slot has a fresh capture OR an
+  /// on-file URL (edit mode). In create mode [existingUrls] is
+  /// empty, so these behave exactly as before.
+  bool get hasFacePhoto =>
+      facePhoto != null || existingUrls.containsKey('profilePhotoUrl');
+  bool get hasThumbprint =>
+      thumbprintPhoto != null || existingUrls.containsKey('thumbprintUrl');
+  bool get hasLeftFingerprints =>
+      leftFingersPhoto != null ||
+      existingUrls.containsKey('leftFingerprintUrl');
+  bool get hasRightFingerprints =>
+      rightFingersPhoto != null ||
+      existingUrls.containsKey('rightFingerprintUrl');
+  bool get hasLicenseFront =>
+      licenseFrontPhoto != null ||
+      existingUrls.containsKey('licenseFrontUrl');
+  bool get hasLicenseBack =>
+      licenseBackPhoto != null ||
+      existingUrls.containsKey('licenseBackUrl');
+  bool get hasUtilityBill =>
+      utilityBillPhoto != null || existingUrls.containsKey('utilityBillUrl');
   bool get hasSignature =>
-      signaturePng != null && signaturePng!.isNotEmpty;
+      (signaturePng != null && signaturePng!.isNotEmpty) ||
+      existingUrls.containsKey('signatureUrl');
 
   /// Step-4 completeness box (spec O15): CNIC, Photo, Fingerprints,
   /// License, Signature. Guarantor is not listed — it is optional.

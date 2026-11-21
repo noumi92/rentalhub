@@ -98,6 +98,20 @@ class ReturnSettlementService {
         );
       }
       if (depositRecord != null) deposit = depositRecord.amount;
+      // Item 2: the same effective-deposit rule [finalizeReturn]
+      // applies (a handover that picked a deposit method but never
+      // received it means nothing was held). Without this the
+      // return screen settled its live receipt — and the refund
+      // step recorded its amount — against the VEHICLE's deposit
+      // while finalize settled against Rs 0, so the receipt, the
+      // recorded refund and the settlement doc disagreed and the
+      // ledger posted a refund for money never taken.
+      if (depositRecord == null &&
+          handover != null &&
+          handover.depositPaymentMethod != null &&
+          handover.depositReceivedAt == null) {
+        deposit = 0;
+      }
     } catch (_) {}
     return (
       initialOdometer: initialOdometer,
@@ -256,6 +270,12 @@ class ReturnSettlementService {
         'extraCharges': extraCharges,
         'totalDeductions': breakdown.totalDeductions,
         'netRefund': breakdown.netRefund,
+        // Item 2: the deposit actually held and what is still owed
+        // — the receipt reads these back, so a reopened settlement
+        // shows the same numbers the return screen settled against
+        // instead of re-deriving them from the vehicle's deposit.
+        'securityDeposit': effectiveDeposit,
+        'amountOwed': breakdown.amountOwed,
         if (perKmSettlement != null) ...{
           'perKmMode': true,
           'perKmRate': perKmSettlement.perKmRate,
@@ -470,6 +490,16 @@ class ReturnSettlementService {
   /// written by [finalizeReturn] are untouched, and no booking money
   /// field is mutated). Throws on failure so the caller can show the
   /// failure state instead of pretending the refund was recorded.
+  ///
+  /// Item 2: the refund is also posted to the ledger here
+  /// (best-effort, `LEDGER-<id>-deposit-refund` via [BookingLedgerService.postOnce],
+  /// so exactly once). Before this the ledger post lived only in
+  /// [_postReturnCash], which re-read the settlement doc at finalize
+  /// time — a failed read there (offline / transient) lost the
+  /// refund expense permanently, with no retry: the deposit record
+  /// said refunded, the summary said refunded, the ledger said
+  /// nothing. Finalize still posts as a backstop; the deterministic
+  /// id dedupes the two.
   static Future<void> recordRefund({
     required String bookingId,
     required int amount,
@@ -486,6 +516,24 @@ class ReturnSettlementService {
       },
       merge: true,
     );
+    if (amount <= 0) return;
+    try {
+      if (!sl.isRegistered<BookingLedgerService>() ||
+          !sl.isRegistered<BookingRemoteDataSource>()) {
+        return;
+      }
+      final booking =
+          await sl<BookingRemoteDataSource>().getBookingById(bookingId);
+      if (booking == null) return;
+      await sl<BookingLedgerService>().postOnce(
+        booking: booking,
+        event: 'deposit-refund',
+        kind: 'expense',
+        category: 'deposit_refund',
+        amount: amount,
+        note: 'Deposit refund for $bookingId',
+      );
+    } catch (_) {}
   }
 
   /// Audit 2026-11-15 PW-21: records the collected owed amount — the

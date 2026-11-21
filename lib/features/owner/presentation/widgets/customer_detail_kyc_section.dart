@@ -11,10 +11,22 @@ import 'customer_kyc_slots.dart';
 /// Uploaded)") above the 3-column document grid. The old boolean
 /// `hasKyc` ("documents on file" / "no record") is replaced by the
 /// count — see [kycUploadedCount].
+///
+/// Walk-in CRM: [onReplaceSlot] (walk-in only) makes every tile
+/// tappable — tapping recaptures that one slot. Without it the
+/// grid stays display-only.
 class CustomerDetailKycSection extends StatelessWidget {
-  const CustomerDetailKycSection({super.key, required this.customer});
+  const CustomerDetailKycSection({
+    super.key,
+    required this.customer,
+    this.onReplaceSlot,
+  });
 
   final CustomerEntity customer;
+
+  /// Field name of the tapped slot (see [kycDocSlots]), or null
+  /// to keep the grid display-only (online customers).
+  final ValueChanged<String>? onReplaceSlot;
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +43,7 @@ class CustomerDetailKycSection extends StatelessWidget {
               ?.copyWith(fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 8),
-        CustomerDetailDocs(customer: customer),
+        CustomerDetailDocs(customer: customer, onReplaceSlot: onReplaceSlot),
       ],
     );
   }

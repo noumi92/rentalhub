@@ -7,15 +7,18 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../blacklist/data/datasources/blacklist_remote_data_source.dart';
 import '../../../customer/data/datasources/customer_remote_data_source.dart';
 import '../../../customer/domain/entities/customer_entity.dart';
+import 'customer_status_helpers.dart';
 import 'guarantor_picker.dart';
 import 'manual_booking_customer_card.dart';
 
 /// O21: step 1 — pick a REGISTERED customer. No new customer is
 /// ever typed here: search the shop's saved customers (name / phone
-/// / CNIC), tap a card; a blacklisted customer cannot be selected.
-/// An unregistered walk-in goes to the full Add Customer (KYC) flow
-/// via [onAddNewCustomer] and returns through the customer-added
-/// screen's Start Booking action, which prefills this step.
+/// / CNIC), tap a card; a blacklisted or blocked customer cannot be
+/// selected, and an archived customer never appears in the pick
+/// list at all. An unregistered walk-in goes to the full Add
+/// Customer (KYC) flow via [onAddNewCustomer] and returns through
+/// the customer-added screen's Start Booking action, which prefills
+/// this step.
 /// Cards show the live trust score, blacklist state (loaded once,
 /// the customers-list pattern), KYC state (photo + licence, the
 /// triage-checklist definition) and the saved-signature indicator.
@@ -87,7 +90,8 @@ class _ManualBookingCustomerStepState
     if (widget.initialCustomers != null) {
       if (!mounted) return;
       setState(() {
-        _customers = widget.initialCustomers!;
+        // Archived customers never appear in the pick list.
+        _customers = _visible(widget.initialCustomers!);
         _blacklisted = widget.blacklistedCnics ?? {};
         _loading = false;
       });
@@ -110,7 +114,7 @@ class _ManualBookingCustomerStepState
       }
       if (!mounted) return;
       setState(() {
-        _customers = customers;
+        _customers = _visible(customers);
         _blacklisted = blacklisted;
         _loading = false;
       });
@@ -121,7 +125,7 @@ class _ManualBookingCustomerStepState
   }
 
   /// Prefill match: CNIC first, then name + phone. A blacklisted
-  /// match is never auto-selected.
+  /// or blocked match is never auto-selected.
   CustomerEntity? get _prefillMatch {
     final cnic = _digits(widget.prefilledCnic);
     if (cnic.isNotEmpty) {
@@ -144,7 +148,7 @@ class _ManualBookingCustomerStepState
     if (_prefillTried || widget.selected != null) return;
     _prefillTried = true;
     final match = _prefillMatch;
-    if (match != null && !_isBlacklisted(match)) widget.onSelected(match);
+    if (match != null && !_isBlacklisted(match) && !_isBlocked(match)) widget.onSelected(match);
   }
 
   bool get _hasPrefill => (widget.prefilledCnic ?? '').trim().isNotEmpty || (widget.prefilledName ?? '').trim().isNotEmpty;
@@ -155,6 +159,21 @@ class _ManualBookingCustomerStepState
     final cnic = _digits(c.cnic);
     return cnic.isNotEmpty && _blacklisted.contains(cnic);
   }
+
+  /// Walk-in CRM guard — the same shape as [_isBlacklisted], over
+  /// the stored per-shop status instead of the CNIC list. The shop
+  /// id is the one this step already loads with
+  /// (`currentShopId()`); [shopStatusFor] also matches the
+  /// `shop_<uid>` document-id form of the key.
+  bool _isBlocked(CustomerEntity c) =>
+      shopStatusFor(c, currentShopId()) == CustomerEntity.statusBlocked;
+
+  bool _isArchived(CustomerEntity c) =>
+      shopStatusFor(c, currentShopId()) == CustomerEntity.statusArchived;
+
+  /// Archived customers never appear in the pick list at all.
+  List<CustomerEntity> _visible(List<CustomerEntity> customers) =>
+      customers.where((c) => !_isArchived(c)).toList();
 
   /// KYC on file (triage checklist): profile photo + licence number.
   bool _kycDone(CustomerEntity c) => c.profilePhotoUrl != null && c.licenseNumber != null;
@@ -211,6 +230,7 @@ class _ManualBookingCustomerStepState
                 customer: c,
                 selected: widget.selected?.customerId == c.customerId,
                 blacklisted: _isBlacklisted(c),
+                blocked: _isBlocked(c),
                 kycDone: _kycDone(c),
                 trustScore: widget.trustScoreOverrides?[c.customerId],
                 onSelected: widget.onSelected,

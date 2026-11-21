@@ -332,6 +332,12 @@ abstract class AppLocalizations {
   /// **'Paid'**
   String get statusPaid;
 
+  /// No description provided for @statusDisputed.
+  ///
+  /// In en, this message translates to:
+  /// **'Disputed'**
+  String get statusDisputed;
+
   /// No description provided for @statusOnTrip.
   ///
   /// In en, this message translates to:
@@ -4106,6 +4112,30 @@ abstract class AppLocalizations {
   /// **'No completed bookings yet'**
   String get requestsEmptyCompleted;
 
+  /// No description provided for @requestsEmptyPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'No paid bookings yet'**
+  String get requestsEmptyPaid;
+
+  /// No description provided for @requestsEmptyDisputed.
+  ///
+  /// In en, this message translates to:
+  /// **'No disputed bookings'**
+  String get requestsEmptyDisputed;
+
+  /// No description provided for @requestsEmptyCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'No cancelled bookings'**
+  String get requestsEmptyCancelled;
+
+  /// No description provided for @requestsEmptyAll.
+  ///
+  /// In en, this message translates to:
+  /// **'No bookings yet'**
+  String get requestsEmptyAll;
+
   /// No description provided for @requestsEmptyMessage.
   ///
   /// In en, this message translates to:
@@ -6397,6 +6427,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Automated WhatsApp reminders (every 3 days) need the WhatsApp Business setup — Phase I.'**
   String get financeDuesAutoNote;
+
+  /// No description provided for @financeDuesCollect.
+  ///
+  /// In en, this message translates to:
+  /// **'Record payment'**
+  String get financeDuesCollect;
+
+  /// No description provided for @financeDuesCollectTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Record dues payment'**
+  String get financeDuesCollectTitle;
+
+  /// No description provided for @financeDuesCollectSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment of Rs. {amount} recorded.'**
+  String financeDuesCollectSuccess(String amount);
+
+  /// No description provided for @financeDuesCollectFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not record the payment. Try again.'**
+  String get financeDuesCollectFailed;
 
   /// No description provided for @handoverTitle.
   ///
@@ -12700,6 +12754,174 @@ abstract class AppLocalizations {
   /// **'Could not update this customer\'s approval. Please try again.'**
   String get customerDetailApprovalFailed;
 
+  /// No description provided for @customerStatusActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get customerStatusActive;
+
+  /// No description provided for @customerStatusBlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Blocked'**
+  String get customerStatusBlocked;
+
+  /// No description provided for @customerStatusArchived.
+  ///
+  /// In en, this message translates to:
+  /// **'Archived'**
+  String get customerStatusArchived;
+
+  /// No description provided for @customerStatusKycIncomplete.
+  ///
+  /// In en, this message translates to:
+  /// **'KYC Incomplete'**
+  String get customerStatusKycIncomplete;
+
+  /// No description provided for @customerStatusDormant.
+  ///
+  /// In en, this message translates to:
+  /// **'Dormant'**
+  String get customerStatusDormant;
+
+  /// No description provided for @customerStatusFrequent.
+  ///
+  /// In en, this message translates to:
+  /// **'Frequent'**
+  String get customerStatusFrequent;
+
+  /// No description provided for @customerDetailBlock.
+  ///
+  /// In en, this message translates to:
+  /// **'Block'**
+  String get customerDetailBlock;
+
+  /// No description provided for @customerDetailUnblock.
+  ///
+  /// In en, this message translates to:
+  /// **'Unblock'**
+  String get customerDetailUnblock;
+
+  /// No description provided for @customerDetailEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get customerDetailEdit;
+
+  /// No description provided for @customerDetailArchive.
+  ///
+  /// In en, this message translates to:
+  /// **'Archive'**
+  String get customerDetailArchive;
+
+  /// No description provided for @customerDetailRestore.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore'**
+  String get customerDetailRestore;
+
+  /// No description provided for @customerDetailArchiveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Archive customer?'**
+  String get customerDetailArchiveTitle;
+
+  /// No description provided for @customerDetailArchiveMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This customer will be hidden from the active list. Their record and history are kept — nothing is deleted.'**
+  String get customerDetailArchiveMessage;
+
+  /// No description provided for @customerDetailBlockedBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'This customer is blocked for this shop. They cannot make new bookings.'**
+  String get customerDetailBlockedBanner;
+
+  /// No description provided for @customerDetailArchivedBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'This customer is archived. Their record and history are kept.'**
+  String get customerDetailArchivedBanner;
+
+  /// No description provided for @customerDetailBlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer blocked'**
+  String get customerDetailBlocked;
+
+  /// No description provided for @customerDetailUnblocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer unblocked'**
+  String get customerDetailUnblocked;
+
+  /// No description provided for @customerDetailArchivedDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer archived'**
+  String get customerDetailArchivedDone;
+
+  /// No description provided for @customerDetailRestored.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer restored'**
+  String get customerDetailRestored;
+
+  /// No description provided for @customerDetailStatusFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not update the customer status. Please try again.'**
+  String get customerDetailStatusFailed;
+
+  /// No description provided for @customerDetailEditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Customer'**
+  String get customerDetailEditTitle;
+
+  /// No description provided for @customerDetailEditSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer updated'**
+  String get customerDetailEditSaved;
+
+  /// No description provided for @customerDetailSaveChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Save changes'**
+  String get customerDetailSaveChanges;
+
+  /// No description provided for @customerDetailKycReplaceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace document'**
+  String get customerDetailKycReplaceTitle;
+
+  /// No description provided for @customerDetailKycReplacePrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Take a new photo of this document or choose one from the gallery.'**
+  String get customerDetailKycReplacePrompt;
+
+  /// No description provided for @customerDetailKycReplaced.
+  ///
+  /// In en, this message translates to:
+  /// **'Document updated'**
+  String get customerDetailKycReplaced;
+
+  /// No description provided for @customerDetailKycReplaceFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not replace the document. Please try again.'**
+  String get customerDetailKycReplaceFailed;
+
+  /// No description provided for @customerDetailEditOnlineNotAllowed.
+  ///
+  /// In en, this message translates to:
+  /// **'Online customers are managed by the admin and cannot be edited here.'**
+  String get customerDetailEditOnlineNotAllowed;
+
   /// No description provided for @customerAddedTitle.
   ///
   /// In en, this message translates to:
@@ -12742,11 +12964,23 @@ abstract class AppLocalizations {
   /// **'New'**
   String get customersFilterNew;
 
-  /// No description provided for @customersFilterFlagged.
+  /// No description provided for @customersFilterWithDues.
   ///
   /// In en, this message translates to:
-  /// **'Flagged'**
-  String get customersFilterFlagged;
+  /// **'With Dues'**
+  String get customersFilterWithDues;
+
+  /// No description provided for @customersFilterBlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Blocked'**
+  String get customersFilterBlocked;
+
+  /// No description provided for @customersFilterChip.
+  ///
+  /// In en, this message translates to:
+  /// **'{label} ({count})'**
+  String customersFilterChip(String label, int count);
 
   /// No description provided for @customersBadgeRegular.
   ///
@@ -12759,6 +12993,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'New'**
   String get customersBadgeNew;
+
+  /// No description provided for @customersBadgeBlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Blocked'**
+  String get customersBadgeBlocked;
+
+  /// No description provided for @customersBadgeKycIncomplete.
+  ///
+  /// In en, this message translates to:
+  /// **'KYC Incomplete'**
+  String get customersBadgeKycIncomplete;
+
+  /// No description provided for @customersBadgeDormant.
+  ///
+  /// In en, this message translates to:
+  /// **'Dormant'**
+  String get customersBadgeDormant;
 
   /// No description provided for @customersViewProfile.
   ///
@@ -17438,6 +17690,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Blacklisted — cannot book'**
   String get manualBookingBlacklistedCustomer;
+
+  /// No description provided for @manualBookingBlockedCustomer.
+  ///
+  /// In en, this message translates to:
+  /// **'Blocked — cannot book'**
+  String get manualBookingBlockedCustomer;
+
+  /// No description provided for @manualBookingBlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'This customer is blocked — walk-in booking refused.'**
+  String get manualBookingBlocked;
 
   /// No description provided for @manualBookingNotBlacklisted.
   ///

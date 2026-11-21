@@ -151,4 +151,45 @@ class BookingLedgerService {
       paymentMethod: normalizeMethod(paymentMethod),
     );
   }
+
+  /// Dues collected later (Item 6, 2026-11-21): the customer pays
+  /// a remaining balance after the trip, from the dues screen.
+  /// Upserted — NOT [postOnce] — under `LEDGER-<bookingId>-dues`:
+  /// a due is one logical event whose amount firms up (a partial
+  /// payment followed by the rest), exactly like the advance in
+  /// [postAdvance]. [postOnce] would skip every payment after the
+  /// first, so the rest of a split payment would never reach the
+  /// ledger. The cumulative amount keeps exactly one entry per
+  /// booking, and the id can never collide with 'advance' /
+  /// 'balance' / 'rent-return' / 'extra-fare' / 'deposit' /
+  /// 'deposit-refund' / 'owed'. Returns null when there is nothing
+  /// to post (amount ≤ 0). The entry carries the latest payment's
+  /// method and account — a split across methods attributes the
+  /// cumulative total to the latest one.
+  Future<FinanceTransferEntity?> postDues({
+    required BookingEntity booking,
+    required int amount,
+    String? paymentMethod,
+  }) async {
+    if (amount <= 0) return null;
+    final id = transferIdFor(booking.bookingId, 'dues');
+    final existing = (await transfers.getShopTransfers(booking.shopId))
+        .where((t) => t.transferId == id)
+        .firstOrNull;
+    final total = (existing?.amountPkr ?? 0) + amount;
+    final accountId = await _accountIdFor(booking.shopId, paymentMethod);
+    return transfers.addTransfer(
+      transferId: id,
+      shopId: booking.shopId,
+      accountId: accountId,
+      kind: 'income',
+      category: 'rent',
+      amountPkr: total,
+      bookingId: booking.bookingId,
+      vehicleId: booking.vehicleId,
+      customerId: booking.customerId,
+      note: 'Dues collected for ${booking.bookingId}',
+      paymentMethod: normalizeMethod(paymentMethod),
+    );
+  }
 }

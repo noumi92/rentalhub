@@ -191,8 +191,11 @@ void main() {
 
   group('DS-8 — wizard stepper uses theme slots', () {
     test('no hardcoded font sizes in the wizard stepper', () {
+      // The stepper lives in its own widget file since the CRM build
+      // (extracted from the wizard so the shell stays under the
+      // 250-line cap) — the rule scans where the stepper actually is.
       final content = File(
-        'lib/features/owner/presentation/views/owner_add_customer_wizard.dart',
+        'lib/features/owner/presentation/views/add_customer/kyc_stepper_header.dart',
       ).readAsStringSync();
       expect(content, isNot(contains('fontSize: 13')));
       expect(content, isNot(contains('fontSize: 11')));

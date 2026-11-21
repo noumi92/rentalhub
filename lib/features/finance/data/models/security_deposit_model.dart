@@ -19,6 +19,7 @@ class SecurityDepositModel extends SecurityDepositEntity {
     super.overtimeFee,
     super.deductedAmount,
     super.netRefund,
+    super.amountOwed,
     super.returnDamageNotes,
   });
 
@@ -41,6 +42,7 @@ class SecurityDepositModel extends SecurityDepositEntity {
       overtimeFee: e.overtimeFee,
       deductedAmount: e.deductedAmount,
       netRefund: e.netRefund,
+      amountOwed: e.amountOwed,
       returnDamageNotes: e.returnDamageNotes,
     );
   }
@@ -66,6 +68,7 @@ class SecurityDepositModel extends SecurityDepositEntity {
       overtimeFee: (map['overtimeFee'] as num?)?.toInt(),
       deductedAmount: (map['deductedAmount'] as num?)?.toInt(),
       netRefund: (map['netRefund'] as num?)?.toInt(),
+      amountOwed: (map['amountOwed'] as num?)?.toInt(),
       returnDamageNotes:
           List<String>.from(map['returnDamageNotes'] ?? const []),
     );
@@ -91,6 +94,7 @@ class SecurityDepositModel extends SecurityDepositEntity {
       if (overtimeFee != null) 'overtimeFee': overtimeFee,
       if (deductedAmount != null) 'deductedAmount': deductedAmount,
       if (netRefund != null) 'netRefund': netRefund,
+      if (amountOwed != null) 'amountOwed': amountOwed,
       if (returnDamageNotes.isNotEmpty)
         'returnDamageNotes': returnDamageNotes,
     };

@@ -37,6 +37,7 @@ import '../../features/customer/domain/repositories/customer_repository.dart';
 import '../../features/customer/domain/usecases/get_shop_customers_usecase.dart';
 import '../../features/customer/domain/usecases/save_customer_usecase.dart';
 import '../../features/owner/presentation/services/kyc_media_upload_service.dart';
+import '../../features/owner/presentation/services/kyc_slot_replace_service.dart';
 import '../../features/trust/data/datasources/kyc_remote_data_source.dart';
 import '../../features/trust/data/repositories/kyc_repository_impl.dart';
 import '../../features/trust/domain/repositories/kyc_repository.dart';
@@ -258,6 +259,9 @@ Future<void> initDependencies() async {
   // locator — and so tests can replace it with a fake.
   sl.registerLazySingleton<KycMediaUploadService>(
       () => KycMediaUploadService());
+  // Walk-in CRM: the one-slot KYC replacer (same 'kyc' folder).
+  sl.registerLazySingleton<KycSlotReplaceService>(
+      () => KycSlotReplaceService());
 
   // 5. Discovery Feature
   sl.registerLazySingleton<DiscoveryRemoteDataSource>(

@@ -133,6 +133,31 @@ class KycMediaUploadService {
     return result;
   }
 
+  /// Walk-in CRM (KYC replace): uploads ONE file to the same
+  /// `kyc` folder and returns its signed URL, or null when the
+  /// upload fails. Direct upload only — unlike [uploadAll] there
+  /// is no queue fallback here: the queue handler writes one field
+  /// per doc and cannot append to the extra-documents list, so an
+  /// offline replace is reported as failed (honestly) instead of
+  /// pretending the tile updated.
+  Future<String?> uploadSingle({
+    required String shopId,
+    required String customerId,
+    required String field,
+    required XFile file,
+  }) async {
+    try {
+      final key = await _client.uploadFile(
+        file: File(file.path),
+        userUid: shopId,
+        folder: folder,
+      );
+      return _client.getSignedMediaUrl(key, shopId);
+    } catch (_) {
+      return null;
+    }
+  }
+
   Future<XFile?> _writeTempPng(String customerId, Uint8List png) async {
     try {
       final file = File(

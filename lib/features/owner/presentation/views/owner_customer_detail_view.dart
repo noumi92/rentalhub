@@ -1,23 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
+import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/current_shop.dart';
-import '../../../../core/utils/date_format.dart';
-import '../../../../core/utils/money_format.dart';
 import '../../../../core/widgets/app_state_views.dart';
 import '../../../../core/widgets/app_feedback.dart';
-import '../../../../core/widgets/debounced_button.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../blacklist/data/datasources/blacklist_remote_data_source.dart';
-import '../../../bookings/data/datasources/booking_remote_data_source.dart';
-import '../../../bookings/domain/entities/booking_entity.dart';
-import '../../../customer/data/datasources/customer_remote_data_source.dart';
 import '../../../customer/domain/entities/customer_entity.dart';
-import '../widgets/customer_detail_header.dart';
-import '../widgets/customer_detail_kyc_section.dart';
+import '../../../customer/domain/repositories/customer_repository.dart';
+import '../services/customer_detail_controller.dart';
+import '../services/kyc_slot_replace_service.dart';
+import '../widgets/customer_detail_actions.dart';
+import '../widgets/customer_kyc_replace_handler.dart';
 import '../widgets/customer_reject_reason_dialog.dart';
+import 'customer_detail_body.dart';
 
 /// Owner-deck finish — the 1 missing screen (#35): a customer profile.
 /// Header (name, phone, CNIC), KYC status, documents/photo, rental
@@ -27,28 +25,45 @@ import '../widgets/customer_reject_reason_dialog.dart';
 /// their bookings — with an honest "no KYC record on file" state.
 /// Dues use the same definition as the dues screen: an approved /
 /// paid / active / completed booking with a remaining balance.
+///
+/// Walk-in CRM (2026-11-21): walk-in records are shop-managed —
+/// the header carries the shop status + derived chips (Active /
+/// Blocked / KYC Incomplete / Dormant / Frequent), the actions are
+/// Block/Unblock, Edit and Archive, and every KYC tile is
+/// replaceable in place. Online records keep Approve/Reject and
+/// gain Block/Unblock only (no Edit, no Archive, no KYC replace).
+/// Data + mutations live in [CustomerDetailController]; the scroll
+/// content in [CustomerDetailBody].
 class OwnerCustomerDetailView extends StatefulWidget {
   final String customerId;
   final String? shopId;
 
-  const OwnerCustomerDetailView({super.key, required this.customerId, this.shopId});
+  /// Test seams: the repository for status/KYC writes and the
+  /// KYC replace service. Production resolves both from the
+  /// locator (the replacer falls back to a fresh instance, whose
+  /// uploader comes from the locator).
+  final CustomerRepository? repository;
+  final KycSlotReplaceService? replacer;
+
+  const OwnerCustomerDetailView({super.key, required this.customerId, this.shopId, this.repository, this.replacer});
 
   @override
   State<OwnerCustomerDetailView> createState() => _OwnerCustomerDetailViewState();
 }
 
 class _OwnerCustomerDetailViewState extends State<OwnerCustomerDetailView> {
-  CustomerEntity? _customer;
-  List<BookingEntity> _bookings = [];
-  bool _blacklisted = false;
+  CustomerDetailData? _data;
   bool _loading = true;
   bool _hasError = false;
   bool _acting = false;
 
-  String get _shopId => widget.shopId ?? currentShopId();
-  static const _dueStatuses = {'approved', 'paid', 'active', 'completed'};
+  late final CustomerDetailController _controller = CustomerDetailController(repository: widget.repository);
+  late final KycSlotReplaceService _replacer = widget.replacer ?? KycSlotReplaceService();
 
-  String _digits(String? v) => (v ?? '').replaceAll(RegExp(r'\D'), '');
+  String get _shopId => widget.shopId ?? currentShopId();
+  String get _statusShopId => _data?.canonicalShopId ?? _shopId;
+  CustomerRepository get _repository => widget.repository ?? sl<CustomerRepository>();
+  CustomerEntity? get _customer => _data?.customer;
 
   @override
   void initState() {
@@ -57,49 +72,25 @@ class _OwnerCustomerDetailViewState extends State<OwnerCustomerDetailView> {
   }
 
   Future<void> _load() async {
-    if (mounted) setState(() => _hasError = false);
+    if (mounted) {
+      setState(() => _hasError = false);
+    }
     try {
-      final customerDs = sl<CustomerRemoteDataSource>();
-      final bookingDs = sl<BookingRemoteDataSource>();
-      final blacklistDs = sl<BlacklistRemoteDataSource>();
-      var customer = await customerDs.getCustomerById(widget.customerId);
-      customer ??= await customerDs.getCustomerByCnic(_shopId, widget.customerId);
-      final all = await bookingDs.getShopBookings(_shopId);
-      // Final capture: the `where` closure cannot promote the
-      // mutable `customer` local (it is reassigned below).
-      final resolved = customer;
-      final bookings = all.where((b) {
-        if (resolved != null) {
-          return b.customerId == resolved.customerId || (_digits(b.customerCnic).isNotEmpty && _digits(b.customerCnic) == _digits(resolved.cnic));
-        }
-        return b.customerId == widget.customerId || _digits(b.customerCnic) == _digits(widget.customerId);
-      }).toList()
-        ..sort((a, b) => b.pickupTime.compareTo(a.pickupTime));
-      // No saved record: the customer is known only from bookings.
-      // Synthesise a display record from the newest booking instead
-      // of showing a fake "not found" for a real customer.
-      customer ??= bookings.isEmpty
-          ? null
-          : CustomerEntity(customerId: bookings.first.customerId, shopId: _shopId, name: bookings.first.customerName ?? '', phone: bookings.first.customerPhone ?? '', cnic: bookings.first.customerCnic, createdAt: bookings.last.pickupTime);
-      final blacklisted = customer?.cnic != null && await blacklistDs.isCnicBlacklisted(customer!.cnic!);
+      final data = await _controller.load(customerId: widget.customerId, shopId: _shopId);
       if (!mounted) return;
       setState(() {
-        _customer = customer;
-        _bookings = bookings;
-        _blacklisted = blacklisted;
+        _data = data;
         _loading = false;
       });
     } catch (_) {
       // OW-M1: the catch used to set only _hasError — build checks _loading first, so a load failure spun forever and the error state below was unreachable.
-      if (mounted) setState(() {
+      if (!mounted) return;
+      setState(() {
         _hasError = true;
         _loading = false;
       });
     }
   }
-
-  int get _totalSpent => _bookings.fold(0, (s, b) => s + b.totalAmount);
-  int get _totalDues => _bookings.where((b) => _dueStatuses.contains(b.status) && b.remainingBalance > 0).fold(0, (s, b) => s + b.remainingBalance);
 
   Future<void> _setApproval(String status, {String? reason}) async {
     final l10n = AppLocalizations.of(context)!;
@@ -107,7 +98,7 @@ class _OwnerCustomerDetailViewState extends State<OwnerCustomerDetailView> {
     if (customer == null) return;
     setState(() => _acting = true);
     try {
-      await sl<CustomerRemoteDataSource>().updateApprovalStatus(customerId: customer.customerId, status: status, rejectionReason: reason);
+      await _controller.setApproval(customerId: customer.customerId, status: status, reason: reason);
       await _load();
     } catch (_) {
       // OW-M2: the old try/finally swallowed the failure — the owner saw nothing and the chip still showed the old state. The record is left unchanged; _load is only called on success.
@@ -136,10 +127,89 @@ class _OwnerCustomerDetailViewState extends State<OwnerCustomerDetailView> {
     if (reason != null && mounted) await _setApproval('rejected', reason: reason);
   }
 
+  /// Walk-in CRM: writes one shop's per-shop status and reloads,
+  /// so the chip + banner follow the stored value.
+  Future<void> _setStatus(String status, {required String doneMessage}) async {
+    final l10n = AppLocalizations.of(context)!;
+    final customer = _customer;
+    if (customer == null) return;
+    setState(() => _acting = true);
+    try {
+      await _controller.setStatus(
+          customerId: customer.customerId,
+          shopId: _statusShopId,
+          status: status);
+      await _load();
+      if (mounted) AppFeedback.showSuccess(context, doneMessage);
+    } catch (_) {
+      if (mounted) AppFeedback.showError(context, l10n.customerDetailStatusFailed);
+    } finally {
+      if (mounted) setState(() => _acting = false);
+    }
+  }
+
+  Future<void> _toggleBlock() async {
+    final l10n = AppLocalizations.of(context)!;
+    final customer = _customer;
+    if (customer == null) return;
+    final current = customer.statusForShop(_statusShopId);
+    final next = current == CustomerEntity.statusActive
+        ? CustomerEntity.statusBlocked
+        : CustomerEntity.statusActive;
+    final message = next == CustomerEntity.statusBlocked
+        ? l10n.customerDetailBlocked
+        : current == CustomerEntity.statusArchived
+            ? l10n.customerDetailRestored
+            : l10n.customerDetailUnblocked;
+    await _setStatus(next, doneMessage: message);
+  }
+
+  Future<void> _archive() async {
+    final l10n = AppLocalizations.of(context)!;
+    final customer = _customer;
+    if (customer == null) return;
+    if (!await CustomerDetailActions.confirmArchive(context)) return;
+    setState(() => _acting = true);
+    try {
+      await _controller.archive(
+          customerId: customer.customerId, shopId: _statusShopId);
+      await _load();
+      if (mounted) AppFeedback.showSuccess(context, l10n.customerDetailArchivedDone);
+    } catch (_) {
+      if (mounted) AppFeedback.showError(context, l10n.customerDetailStatusFailed);
+    } finally {
+      if (mounted) setState(() => _acting = false);
+    }
+  }
+
+  void _edit() {
+    final customer = _customer;
+    if (customer == null) return;
+    context.push(
+      RouteNames.ownerCustomerEdit.replaceFirst(':id', customer.customerId),
+      extra: customer,
+    );
+  }
+
+  Future<void> _replaceSlot(String field) async {
+    final customer = _customer;
+    if (customer == null) return;
+    await handleKycSlotReplace(
+      context: context,
+      customer: customer,
+      field: field,
+      shopId: _statusShopId,
+      repository: _repository,
+      replacer: _replacer,
+      onChanged: _load,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final customer = _customer;
+    final data = _data;
+    final customer = data?.customer;
     return Scaffold(
       body: SafeArea(
         top: false,
@@ -151,13 +221,25 @@ class _OwnerCustomerDetailViewState extends State<OwnerCustomerDetailView> {
                   ? AppLoadingState(message: l10n.customersLoadingMessage)
                   : _hasError
                       ? AppErrorState(message: l10n.customersLoadError, onRetry: _load)
-                      : customer == null
+                      : customer == null || data == null
                           ? AppEmptyState(title: l10n.customerDetailNotFound, message: l10n.customerDetailNotFoundMessage)
                           : RefreshIndicator(
                               // Pull-to-refresh (user layout,
                               // 2026-11-16): re-runs [_load].
                               onRefresh: _load,
-                              child: _body(context, l10n, customer),
+                              child: CustomerDetailBody(
+                                customer: customer,
+                                bookings: data.bookings,
+                                blacklisted: data.blacklisted,
+                                shopId: _statusShopId,
+                                acting: _acting,
+                                onApprove: () => _setApproval('approved'),
+                                onReject: _reject,
+                                onBlockToggle: _toggleBlock,
+                                onEdit: _edit,
+                                onArchive: _archive,
+                                onReplaceSlot: _replaceSlot,
+                              ),
                             ),
             ),
           ],
@@ -165,59 +247,4 @@ class _OwnerCustomerDetailViewState extends State<OwnerCustomerDetailView> {
       ),
     );
   }
-
-  Widget _body(BuildContext context, AppLocalizations l10n, CustomerEntity customer) {
-    final approval = customer.approvalStatus;
-    return SingleChildScrollView(
-      // Pull-to-refresh (user layout, 2026-11-16): the scroll view
-      // must stay draggable even when the content is short, or the
-      // RefreshIndicator above it never triggers.
-      physics: const AlwaysScrollableScrollPhysics(),
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Phase 3: slim identity card + merged red alert banner
-          // (rejection reason + KYC status together).
-          CustomerDetailHeader(customer: customer, blacklisted: _blacklisted),
-          const SizedBox(height: 16),
-          // Phase 3: KYC header carries the real uploaded count
-          // (e.g. "KYC Documents (3/11 Uploaded)") over the 3x4
-          // dashed grid of all 11 tracked slots.
-          CustomerDetailKycSection(customer: customer),
-          const SizedBox(height: 8),
-          Row(children: [Expanded(child: Text(l10n.customerDetailTotalSpent, style: const TextStyle(fontWeight: FontWeight.w500))), Text(l10n.amountRs(formatRs(_totalSpent)), style: const TextStyle(fontWeight: FontWeight.w500))]),
-          const SizedBox(height: 4),
-          Row(children: [Expanded(child: Text(l10n.customerDetailTotalDues, style: const TextStyle(fontWeight: FontWeight.w500))), Text(l10n.amountRs(formatRs(_totalDues)), style: const TextStyle(fontWeight: FontWeight.w500))]),
-          const SizedBox(height: 16),
-          Text(l10n.customerDetailRentalHistory, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
-          const SizedBox(height: 4),
-          if (_bookings.isEmpty)
-            Text(l10n.customersNoBookings, style: Theme.of(context).textTheme.bodySmall)
-          else
-            ..._bookings.map((b) => ListTile(
-                  dense: true,
-                  contentPadding: EdgeInsets.zero,
-                  leading: const Icon(Icons.receipt_long_rounded, size: 18),
-                  title: Text('${b.vehicleName ?? l10n.summaryVehicle} • ${b.packageType}'),
-                  subtitle: Text('${formatDate(context, b.pickupTime)} • ${_statusLabel(l10n, b.status)}'), // Audit 2026-11-15 DS-5: localized date, never raw d/m/y.
-                  trailing: Text(l10n.amountRs(formatRs(b.totalAmount)), style: const TextStyle(fontWeight: FontWeight.w600)),
-                )),
-          const SizedBox(height: 16),
-          // OW-m14: the button matching the current status is disabled (DebouncedButton has no disabled slot, so the decided action is dimmed + input-blocked); the opposite action stays available.
-          Row(
-            children: [
-              Expanded(child: Opacity(opacity: approval == 'approved' ? 0.5 : 1, child: AbsorbPointer(absorbing: approval == 'approved', child: DebouncedButton(text: l10n.customerDetailApprove, icon: Icons.check_rounded, backgroundColor: AppColors.accentSuccessStrong, isLoading: _acting, onPressed: () => _setApproval('approved'))))),
-              const SizedBox(width: 12),
-              Expanded(child: Opacity(opacity: approval == 'rejected' ? 0.5 : 1, child: AbsorbPointer(absorbing: approval == 'rejected', child: DebouncedButton(text: l10n.customerDetailReject, icon: Icons.close_rounded, backgroundColor: AppColors.errorDark, isLoading: _acting, onPressed: _reject)))),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
 }
-
-/// Stored booking statuses mapped to localized labels — the stored
-/// value itself is never changed.
-String _statusLabel(AppLocalizations l10n, String status) => {'requested': l10n.requestsStatusRequested, 'payment_submitted': l10n.statusProofSubmitted, 'approved': l10n.statusApproved, 'paid': l10n.statusPaid, 'active': l10n.active, 'completed': l10n.statusCompleted, 'rejected': l10n.statusRejected, 'cancelled': l10n.statusCancelled}[status] ?? status;

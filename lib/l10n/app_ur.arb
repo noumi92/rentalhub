@@ -39,6 +39,7 @@
   "statusCancelled": "منسوخ",
   "statusRejected": "مسترد",
   "statusPaid": "ادا شدہ",
+  "statusDisputed": "متنازعہ",
   "statusOnTrip": "سفر جاری",
   "statusProofSubmitted": "ثبوت جمع کرایا گیا",
   "statusRequestSent": "درخواست بھیجی گئی",
@@ -1367,6 +1368,10 @@
   "requestsEmptyNew": "کوئی زیر التواء بکنگ درخواست نہیں",
   "requestsEmptyActive": "فی الحال کوئی فعال بکنگ نہیں",
   "requestsEmptyCompleted": "ابھی تک کوئی مکمل بکنگ نہیں",
+  "requestsEmptyPaid": "ابھی تک کوئی ادا شدہ بکنگ نہیں",
+  "requestsEmptyDisputed": "کوئی متنازعہ بکنگ نہیں",
+  "requestsEmptyCancelled": "کوئی منسوخ شدہ بکنگ نہیں",
+  "requestsEmptyAll": "ابھی تک کوئی بکنگ نہیں",
   "requestsEmptyMessage": "نئی درخواستیں جائزے کے لیے یہاں نظر آئیں گی۔",
   "requestsRejectTitle": "کیا یہ درخواست مسترد کرنی ہے؟",
   "requestsRejectReasonLabel": "وجہ (لازمی)",
@@ -2098,6 +2103,17 @@
   "financeDuesWhatsappFailed": "واٹس ایپ نہیں کھل سکا۔",
   "financeDuesReminderSent": "واٹس ایپ کھل گیا — یاد دہانی چیٹ سے بھیجیں۔",
   "financeDuesAutoNote": "خودکار واٹس ایپ یاد دہانیوں (ہر 3 دن بعد) کے لیے واٹس ایپ بزنس سیٹ اپ درکار ہے — فیز I۔",
+  "financeDuesCollect": "ادائیگی درج کریں",
+  "financeDuesCollectTitle": "واجبات کی ادائیگی درج کریں",
+  "financeDuesCollectSuccess": "{amount} روپے کی ادائیگی درج ہو گئی۔",
+  "@financeDuesCollectSuccess": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "financeDuesCollectFailed": "ادائیگی درج نہ ہو سکی۔ دوبارہ کوشش کریں۔",
   "handoverTitle": "گاڑی کی حوالگی اور معائنہ",
   "handoverOdometerInvalid": "براہ کرم درست اوڈومیٹر ریڈنگ درج کریں۔",
   "handoverSignRequired": "گاڑی روانگی سے پہلے گاہک اور میزبان دونوں کو پیڈ پر دستخط کرنا ہوں گے۔",
@@ -3788,6 +3804,34 @@
   "customerDetailRejectReasonRequired": "پروفائل مسترد کرنے کے لیے وجہ ضروری ہے",
   "customerDetailRejectConfirm": "مسترد کریں",
   "customerDetailApprovalFailed": "اس گاہک کی منظوری اپ ڈیٹ نہیں ہو سکی۔ دوبارہ کوشش کریں۔",
+  "customerStatusActive": "فعال",
+  "customerStatusBlocked": "بلاک شدہ",
+  "customerStatusArchived": "آرکائیو شدہ",
+  "customerStatusKycIncomplete": "KYC نامکمل",
+  "customerStatusDormant": "غیر فعال",
+  "customerStatusFrequent": "مستقل گاہک",
+  "customerDetailBlock": "بلاک کریں",
+  "customerDetailUnblock": "ان بلاک کریں",
+  "customerDetailEdit": "ترمیم کریں",
+  "customerDetailArchive": "آرکائیو کریں",
+  "customerDetailRestore": "بحال کریں",
+  "customerDetailArchiveTitle": "گاہک کو آرکائیو کریں؟",
+  "customerDetailArchiveMessage": "یہ گاہک فعال فہرست سے چھپ جائے گا۔ اس کا ریکارڈ اور تاریخ محفوظ رہے گی — کچھ بھی حذف نہیں ہوگا۔",
+  "customerDetailBlockedBanner": "یہ گاہک اس دکان کے لیے بلاک ہے۔ وہ نئی بکنگ نہیں کر سکتا۔",
+  "customerDetailArchivedBanner": "یہ گاہک آرکائیو شدہ ہے۔ اس کا ریکارڈ اور تاریخ محفوظ ہے۔",
+  "customerDetailBlocked": "گاہک بلاک کر دیا گیا",
+  "customerDetailUnblocked": "گاہک ان بلاک کر دیا گیا",
+  "customerDetailArchivedDone": "گاہک آرکائیو کر دیا گیا",
+  "customerDetailRestored": "گاہک بحال کر دیا گیا",
+  "customerDetailStatusFailed": "گاہک کی حالت اپ ڈیٹ نہیں ہو سکی۔ دوبارہ کوشش کریں۔",
+  "customerDetailEditTitle": "گاہک میں ترمیم کریں",
+  "customerDetailEditSaved": "گاہک اپ ڈیٹ ہو گیا",
+  "customerDetailSaveChanges": "تبدیلیاں محفوظ کریں",
+  "customerDetailKycReplaceTitle": "دستاویز تبدیل کریں",
+  "customerDetailKycReplacePrompt": "اس دستاویز کی نئی تصویر لیں یا گیلری سے منتخب کریں۔",
+  "customerDetailKycReplaced": "دستاویز اپ ڈیٹ ہو گئی",
+  "customerDetailKycReplaceFailed": "دستاویز تبدیل نہیں ہو سکی۔ دوبارہ کوشش کریں۔",
+  "customerDetailEditOnlineNotAllowed": "آن لائن گاہکوں کا انتظام ایڈمن کرتا ہے اور یہاں ان میں ترمیم نہیں کی جا سکتی۔",
   "customerAddedTitle": "گاہک شامل کر دیا گیا",
   "customerAddedReady": "{name} کی پروفائل تیار ہے — اب آپ بکنگ شروع کر سکتے ہیں۔",
   "@customerAddedReady": {
@@ -3802,9 +3846,24 @@
   "customersFilterAll": "تمام",
   "customersFilterRegular": "مستقل",
   "customersFilterNew": "نیا",
-  "customersFilterFlagged": "نشاندہ",
+  "customersFilterWithDues": "واجب الادا",
+  "customersFilterBlocked": "بلاک شدہ",
+  "customersFilterChip": "{label} ({count})",
+  "@customersFilterChip": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "customersBadgeRegular": "مستقل",
   "customersBadgeNew": "نیا",
+  "customersBadgeBlocked": "بلاک شدہ",
+  "customersBadgeKycIncomplete": "کے وائی سی نامکمل",
+  "customersBadgeDormant": "غیر فعال",
   "customersViewProfile": "پروفائل دیکھیں",
   "returnRefundDeposit": "ڈپازٹ واپس کریں",
   "returnRefundRecorded": "ڈپازٹ کی واپسی درج کر دی گئی: {amount} روپے۔",
@@ -5560,6 +5619,8 @@
   "manualBookingCustomerNotRegistered": "یہ صارف ابھی رجسٹرڈ نہیں ہے — پہلے اسے شامل کریں۔",
   "manualBookingSelectCustomer": "جاری رکھنے کے لیے صارف منتخب کریں۔",
   "manualBookingBlacklistedCustomer": "بلیک لسٹڈ — بکنگ نہیں ہو سکتی",
+  "manualBookingBlockedCustomer": "بلاک شدہ — بکنگ نہیں ہو سکتی",
+  "manualBookingBlocked": "یہ گاہک بلاک شدہ ہے — واک اِن بکنگ مسترد۔",
   "manualBookingNotBlacklisted": "بلیک لسٹڈ نہیں",
   "manualBookingKycDone": "KYC مکمل",
   "manualBookingKycPending": "KYC زیر التوا",

@@ -32,30 +32,91 @@ const int kycTotalSlots = 11;
 
 bool _has(String? url) => url != null && url.isNotEmpty;
 
-/// Ordered (label, url) pairs for the 11 tracked slots. Extra
-/// documents shows the first extra file (if any); the slot counts as
-/// uploaded when the list is non-empty.
-List<({String label, String? url})> kycDocSlots(
+/// Ordered (field, label, url) triples for the 11 tracked slots.
+/// [field] is the [CustomerEntity] field name (used by KYC replace
+/// to write back exactly one slot). Extra documents shows the first
+/// extra file (if any); the slot counts as uploaded when the list
+/// is non-empty.
+List<({String field, String label, String? url})> kycDocSlots(
   AppLocalizations l10n,
   CustomerEntity customer,
 ) => [
-  (label: l10n.customerDetailProfilePhoto, url: customer.profilePhotoUrl),
-  (label: l10n.kycWizardThumbprint, url: customer.thumbprintUrl),
-  (label: l10n.kycLeftFourFingers, url: customer.leftFingerprintUrl),
-  (label: l10n.kycRightFourFingers, url: customer.rightFingerprintUrl),
-  (label: l10n.customerDetailCnicFront, url: customer.cnicFrontUrl),
-  (label: l10n.customerDetailCnicBack, url: customer.cnicBackUrl),
-  (label: l10n.customerDetailLicenseFront, url: customer.licenseFrontUrl),
-  (label: l10n.customerDetailLicenseBack, url: customer.licenseBackUrl),
-  (label: l10n.kycWizardUtilityBill, url: customer.utilityBillUrl),
+  (field: 'profilePhotoUrl', label: l10n.customerDetailProfilePhoto, url: customer.profilePhotoUrl),
+  (field: 'thumbprintUrl', label: l10n.kycWizardThumbprint, url: customer.thumbprintUrl),
+  (field: 'leftFingerprintUrl', label: l10n.kycLeftFourFingers, url: customer.leftFingerprintUrl),
+  (field: 'rightFingerprintUrl', label: l10n.kycRightFourFingers, url: customer.rightFingerprintUrl),
+  (field: 'cnicFrontUrl', label: l10n.customerDetailCnicFront, url: customer.cnicFrontUrl),
+  (field: 'cnicBackUrl', label: l10n.customerDetailCnicBack, url: customer.cnicBackUrl),
+  (field: 'licenseFrontUrl', label: l10n.customerDetailLicenseFront, url: customer.licenseFrontUrl),
+  (field: 'licenseBackUrl', label: l10n.customerDetailLicenseBack, url: customer.licenseBackUrl),
+  (field: 'utilityBillUrl', label: l10n.kycWizardUtilityBill, url: customer.utilityBillUrl),
   (
+    field: 'extraDocumentUrls',
     label: l10n.kycWizardExtraDocs,
     url: customer.extraDocumentUrls.isEmpty
         ? null
         : customer.extraDocumentUrls.first,
   ),
-  (label: l10n.customerDetailSignature, url: customer.signatureUrl),
+  (field: 'signatureUrl', label: l10n.customerDetailSignature, url: customer.signatureUrl),
 ];
+
+/// Walk-in CRM: the derived KYC-completeness check for a SAVED
+/// record (the detail-screen "KYC Incomplete" chip). Same slot
+/// list as [KycDraft.isKycComplete] — face + both finger photos +
+/// both license photos + license number + utility bill + signature
+/// — but read off the stored URLs, so no draft, CNIC/name or terms
+/// check is involved (those are wizard concerns, not record state).
+bool isKycCompleteForEntity(CustomerEntity customer) {
+  return _has(customer.profilePhotoUrl) &&
+      _has(customer.leftFingerprintUrl) &&
+      _has(customer.rightFingerprintUrl) &&
+      _has(customer.licenseFrontUrl) &&
+      _has(customer.licenseBackUrl) &&
+      (customer.licenseNumber ?? '').trim().isNotEmpty &&
+      _has(customer.utilityBillUrl) &&
+      _has(customer.signatureUrl);
+}
+
+/// Walk-in CRM (KYC replace): the customer with exactly one slot
+/// URL replaced. The CNIC number is never touched here — a replaced
+/// CNIC photo must not change the record key. Replacing
+/// 'extraDocumentUrls' APPENDS the new file to the list (the slot
+/// shows the first file; a replace that overwrote the list would
+/// silently drop the owner's earlier extra documents).
+CustomerEntity customerWithSlotUrl(
+  CustomerEntity customer,
+  String field,
+  String url,
+) {
+  switch (field) {
+    case 'profilePhotoUrl':
+      return customer.copyWith(profilePhotoUrl: url);
+    case 'thumbprintUrl':
+      return customer.copyWith(thumbprintUrl: url);
+    case 'leftFingerprintUrl':
+      return customer.copyWith(leftFingerprintUrl: url);
+    case 'rightFingerprintUrl':
+      return customer.copyWith(rightFingerprintUrl: url);
+    case 'cnicFrontUrl':
+      return customer.copyWith(cnicFrontUrl: url);
+    case 'cnicBackUrl':
+      return customer.copyWith(cnicBackUrl: url);
+    case 'licenseFrontUrl':
+      return customer.copyWith(licenseFrontUrl: url);
+    case 'licenseBackUrl':
+      return customer.copyWith(licenseBackUrl: url);
+    case 'utilityBillUrl':
+      return customer.copyWith(utilityBillUrl: url);
+    case 'extraDocumentUrls':
+      return customer.copyWith(
+        extraDocumentUrls: [...customer.extraDocumentUrls, url],
+      );
+    case 'signatureUrl':
+      return customer.copyWith(signatureUrl: url);
+    default:
+      throw ArgumentError.value(field, 'field', 'not a KYC slot field');
+  }
+}
 
 /// How many of the 11 tracked slots have a file on the record. An
 /// empty-string URL counts as missing, same as null. Computed

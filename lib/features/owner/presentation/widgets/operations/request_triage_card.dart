@@ -59,7 +59,7 @@ class RequestTriageCard extends StatelessWidget {
     // cancelled — mirroring _bookingStatusColor, instead of orange
     // for every status.
     final (Color chipBg, Color chipFg) = switch (booking.status) {
-      'payment_submitted' => (
+      'payment_submitted' || 'disputed' => (
           AppColors.orangeContainerFor(brightness),
           AppColors.orangeTextFor(brightness),
         ),
@@ -310,4 +310,4 @@ class RequestTriageCard extends StatelessWidget {
 
 /// The stored status code stays as-is; only the displayed label is
 /// localized. Unknown codes fall back to the raw code.
-String _statusLabel(AppLocalizations l10n, String status) => {'requested': l10n.requestsStatusRequested, 'payment_submitted': l10n.statusProofSubmitted, 'approved': l10n.statusApproved, 'paid': l10n.statusPaid, 'active': l10n.active, 'completed': l10n.statusCompleted, 'rejected': l10n.statusRejected, 'cancelled': l10n.statusCancelled}[status] ?? status;
+String _statusLabel(AppLocalizations l10n, String status) => {'requested': l10n.requestsStatusRequested, 'payment_submitted': l10n.statusProofSubmitted, 'approved': l10n.statusApproved, 'paid': l10n.statusPaid, 'active': l10n.active, 'completed': l10n.statusCompleted, 'rejected': l10n.statusRejected, 'cancelled': l10n.statusCancelled, 'disputed': l10n.statusDisputed}[status] ?? status;

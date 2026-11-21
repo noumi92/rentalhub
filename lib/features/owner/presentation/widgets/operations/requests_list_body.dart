@@ -81,14 +81,21 @@ class RequestsListBody extends StatelessWidget {
           searchController: searchController,
           onSearchChanged: onSearchChanged,
           filter: filter,
+          // Item 4: counts for every chip, including the new All /
+          // Paid / Disputed / Cancelled ones — 'all' is the whole
+          // list, the rest are exact status counts.
           counts: {
+            'all': requests.length,
             for (final s in [
               'requested',
               'payment_submitted',
               'approved',
-              'rejected',
+              'paid',
               'active',
-              'completed'
+              'disputed',
+              'completed',
+              'rejected',
+              'cancelled'
             ])
               s: requests.where((b) => b.status == s).length,
           },

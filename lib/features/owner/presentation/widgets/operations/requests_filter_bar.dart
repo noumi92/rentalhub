@@ -27,7 +27,11 @@ class RequestsFilterBar extends StatelessWidget {
     final count = counts[status] ?? 0;
     return ChoiceChip(
       materialTapTargetSize: MaterialTapTargetSize.padded,
-      label: Text(l10n.requestsFilterChip(label, count)),
+      // Item 4 (fleet-style bar): 14sp label set on the Text itself
+      // — the bar scrolls horizontally at full size instead of
+      // shrinking labels (same pattern as FleetFilterChips).
+      label: Text(l10n.requestsFilterChip(label, count),
+          style: const TextStyle(fontSize: 14)),
       selected: selected,
       onSelected: (_) => onFilterChanged(status),
     );
@@ -58,11 +62,23 @@ class RequestsFilterBar extends StatelessWidget {
             ),
           ),
         ),
+        // Item 4 (2026-11-21): ONE fleet-style bar covering ALL
+        // booking statuses, in pipeline order — All first, then
+        // New / Proof / Approved / Paid / Active / Disputed /
+        // Completed / Rejected / Cancelled. The bar scrolls
+        // horizontally at full size (SingleChildScrollView above),
+        // so no label shrinks. Paid / Disputed / Cancelled are
+        // the statuses the old bar (and the old list whitelist)
+        // dropped, which left those bookings unfilterable — and
+        // invisible. Labels reuse the existing status keys, so
+        // only `statusDisputed` is a new .arb key.
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
           child: Row(
             children: [
+              _chip(context, l10n, 'all', l10n.filterAll),
+              const SizedBox(width: 8),
               _chip(context, l10n, 'requested', l10n.requestsFilterNew),
               const SizedBox(width: 8),
               _chip(context, l10n, 'payment_submitted',
@@ -70,15 +86,17 @@ class RequestsFilterBar extends StatelessWidget {
               const SizedBox(width: 8),
               _chip(context, l10n, 'approved', l10n.statusApproved),
               const SizedBox(width: 8),
-              _chip(context, l10n, 'rejected', l10n.statusRejected),
+              _chip(context, l10n, 'paid', l10n.statusPaid),
               const SizedBox(width: 8),
-              // O16: active rentals and completed bookings are
-              // reachable from this tab too — the labels reuse the
-              // existing status keys (active / statusCompleted), so
-              // no new .arb keys are needed for the chips.
               _chip(context, l10n, 'active', l10n.active),
               const SizedBox(width: 8),
+              _chip(context, l10n, 'disputed', l10n.statusDisputed),
+              const SizedBox(width: 8),
               _chip(context, l10n, 'completed', l10n.statusCompleted),
+              const SizedBox(width: 8),
+              _chip(context, l10n, 'rejected', l10n.statusRejected),
+              const SizedBox(width: 8),
+              _chip(context, l10n, 'cancelled', l10n.statusCancelled),
             ],
           ),
         ),

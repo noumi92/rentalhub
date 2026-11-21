@@ -17,4 +17,26 @@ class CustomerRepositoryImpl implements CustomerRepository {
   @override
   Future<void> upsertCustomer(CustomerEntity customer) =>
       remoteDataSource.upsertCustomer(customer);
+
+  @override
+  Future<void> updateCustomerStatus({
+    required String customerId,
+    required String shopId,
+    required String status,
+  }) =>
+      remoteDataSource.updateCustomerStatus(
+        customerId: customerId,
+        shopId: shopId,
+        status: status,
+      );
+
+  @override
+  Future<void> archiveCustomer({
+    required String customerId,
+    required String shopId,
+  }) =>
+      remoteDataSource.archiveCustomer(
+        customerId: customerId,
+        shopId: shopId,
+      );
 }

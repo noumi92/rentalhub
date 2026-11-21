@@ -127,6 +127,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get statusPaid => 'ادا شدہ';
 
   @override
+  String get statusDisputed => 'متنازعہ';
+
+  @override
   String get statusOnTrip => 'سفر جاری';
 
   @override
@@ -2291,6 +2294,18 @@ class AppLocalizationsUr extends AppLocalizations {
   String get requestsEmptyCompleted => 'ابھی تک کوئی مکمل بکنگ نہیں';
 
   @override
+  String get requestsEmptyPaid => 'ابھی تک کوئی ادا شدہ بکنگ نہیں';
+
+  @override
+  String get requestsEmptyDisputed => 'کوئی متنازعہ بکنگ نہیں';
+
+  @override
+  String get requestsEmptyCancelled => 'کوئی منسوخ شدہ بکنگ نہیں';
+
+  @override
+  String get requestsEmptyAll => 'ابھی تک کوئی بکنگ نہیں';
+
+  @override
   String get requestsEmptyMessage =>
       'نئی درخواستیں جائزے کے لیے یہاں نظر آئیں گی۔';
 
@@ -3596,6 +3611,21 @@ class AppLocalizationsUr extends AppLocalizations {
   @override
   String get financeDuesAutoNote =>
       'خودکار واٹس ایپ یاد دہانیوں (ہر 3 دن بعد) کے لیے واٹس ایپ بزنس سیٹ اپ درکار ہے — فیز I۔';
+
+  @override
+  String get financeDuesCollect => 'ادائیگی درج کریں';
+
+  @override
+  String get financeDuesCollectTitle => 'واجبات کی ادائیگی درج کریں';
+
+  @override
+  String financeDuesCollectSuccess(String amount) {
+    return '$amount روپے کی ادائیگی درج ہو گئی۔';
+  }
+
+  @override
+  String get financeDuesCollectFailed =>
+      'ادائیگی درج نہ ہو سکی۔ دوبارہ کوشش کریں۔';
 
   @override
   String get handoverTitle => 'گاڑی کی حوالگی اور معائنہ';
@@ -7080,6 +7110,97 @@ class AppLocalizationsUr extends AppLocalizations {
       'اس گاہک کی منظوری اپ ڈیٹ نہیں ہو سکی۔ دوبارہ کوشش کریں۔';
 
   @override
+  String get customerStatusActive => 'فعال';
+
+  @override
+  String get customerStatusBlocked => 'بلاک شدہ';
+
+  @override
+  String get customerStatusArchived => 'آرکائیو شدہ';
+
+  @override
+  String get customerStatusKycIncomplete => 'KYC نامکمل';
+
+  @override
+  String get customerStatusDormant => 'غیر فعال';
+
+  @override
+  String get customerStatusFrequent => 'مستقل گاہک';
+
+  @override
+  String get customerDetailBlock => 'بلاک کریں';
+
+  @override
+  String get customerDetailUnblock => 'ان بلاک کریں';
+
+  @override
+  String get customerDetailEdit => 'ترمیم کریں';
+
+  @override
+  String get customerDetailArchive => 'آرکائیو کریں';
+
+  @override
+  String get customerDetailRestore => 'بحال کریں';
+
+  @override
+  String get customerDetailArchiveTitle => 'گاہک کو آرکائیو کریں؟';
+
+  @override
+  String get customerDetailArchiveMessage =>
+      'یہ گاہک فعال فہرست سے چھپ جائے گا۔ اس کا ریکارڈ اور تاریخ محفوظ رہے گی — کچھ بھی حذف نہیں ہوگا۔';
+
+  @override
+  String get customerDetailBlockedBanner =>
+      'یہ گاہک اس دکان کے لیے بلاک ہے۔ وہ نئی بکنگ نہیں کر سکتا۔';
+
+  @override
+  String get customerDetailArchivedBanner =>
+      'یہ گاہک آرکائیو شدہ ہے۔ اس کا ریکارڈ اور تاریخ محفوظ ہے۔';
+
+  @override
+  String get customerDetailBlocked => 'گاہک بلاک کر دیا گیا';
+
+  @override
+  String get customerDetailUnblocked => 'گاہک ان بلاک کر دیا گیا';
+
+  @override
+  String get customerDetailArchivedDone => 'گاہک آرکائیو کر دیا گیا';
+
+  @override
+  String get customerDetailRestored => 'گاہک بحال کر دیا گیا';
+
+  @override
+  String get customerDetailStatusFailed =>
+      'گاہک کی حالت اپ ڈیٹ نہیں ہو سکی۔ دوبارہ کوشش کریں۔';
+
+  @override
+  String get customerDetailEditTitle => 'گاہک میں ترمیم کریں';
+
+  @override
+  String get customerDetailEditSaved => 'گاہک اپ ڈیٹ ہو گیا';
+
+  @override
+  String get customerDetailSaveChanges => 'تبدیلیاں محفوظ کریں';
+
+  @override
+  String get customerDetailKycReplaceTitle => 'دستاویز تبدیل کریں';
+
+  @override
+  String get customerDetailKycReplacePrompt =>
+      'اس دستاویز کی نئی تصویر لیں یا گیلری سے منتخب کریں۔';
+
+  @override
+  String get customerDetailKycReplaced => 'دستاویز اپ ڈیٹ ہو گئی';
+
+  @override
+  String get customerDetailKycReplaceFailed =>
+      'دستاویز تبدیل نہیں ہو سکی۔ دوبارہ کوشش کریں۔';
+
+  @override
+  String get customerDetailEditOnlineNotAllowed =>
+      'آن لائن گاہکوں کا انتظام ایڈمن کرتا ہے اور یہاں ان میں ترمیم نہیں کی جا سکتی۔';
+
+  @override
   String get customerAddedTitle => 'گاہک شامل کر دیا گیا';
 
   @override
@@ -7103,13 +7224,30 @@ class AppLocalizationsUr extends AppLocalizations {
   String get customersFilterNew => 'نیا';
 
   @override
-  String get customersFilterFlagged => 'نشاندہ';
+  String get customersFilterWithDues => 'واجب الادا';
+
+  @override
+  String get customersFilterBlocked => 'بلاک شدہ';
+
+  @override
+  String customersFilterChip(String label, int count) {
+    return '$label ($count)';
+  }
 
   @override
   String get customersBadgeRegular => 'مستقل';
 
   @override
   String get customersBadgeNew => 'نیا';
+
+  @override
+  String get customersBadgeBlocked => 'بلاک شدہ';
+
+  @override
+  String get customersBadgeKycIncomplete => 'کے وائی سی نامکمل';
+
+  @override
+  String get customersBadgeDormant => 'غیر فعال';
 
   @override
   String get customersViewProfile => 'پروفائل دیکھیں';
@@ -9812,6 +9950,13 @@ class AppLocalizationsUr extends AppLocalizations {
   @override
   String get manualBookingBlacklistedCustomer =>
       'بلیک لسٹڈ — بکنگ نہیں ہو سکتی';
+
+  @override
+  String get manualBookingBlockedCustomer => 'بلاک شدہ — بکنگ نہیں ہو سکتی';
+
+  @override
+  String get manualBookingBlocked =>
+      'یہ گاہک بلاک شدہ ہے — واک اِن بکنگ مسترد۔';
 
   @override
   String get manualBookingNotBlacklisted => 'بلیک لسٹڈ نہیں';

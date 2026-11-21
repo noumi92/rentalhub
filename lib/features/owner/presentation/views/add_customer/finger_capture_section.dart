@@ -17,6 +17,10 @@ import '../../../../../l10n/app_localizations.dart';
 class FingerCaptureSection extends StatelessWidget {
   final String title;
   final XFile? photo;
+
+  /// Edit mode: the on-file photo (URL) when no fresh capture
+  /// exists yet. Null in create mode.
+  final String? existingUrl;
   final ValueChanged<XFile> onCaptured;
   final VoidCallback onRemove;
   final VoidCallback onChanged;
@@ -28,6 +32,7 @@ class FingerCaptureSection extends StatelessWidget {
     super.key,
     required this.title,
     required this.photo,
+    this.existingUrl,
     required this.onCaptured,
     required this.onRemove,
     required this.onChanged,
@@ -53,7 +58,9 @@ class FingerCaptureSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final captured = photo != null;
+    final url = existingUrl;
+    final hasExisting = url != null && url.isNotEmpty;
+    final captured = photo != null || hasExisting;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -76,12 +83,19 @@ class FingerCaptureSection extends StatelessWidget {
           child: captured
               ? ClipRRect(
                   borderRadius: BorderRadius.circular(12),
-                  child: Image.file(
-                    File(photo!.path),
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) =>
-                        const Icon(Icons.broken_image_rounded),
-                  ),
+                  child: photo != null
+                      ? Image.file(
+                          File(photo!.path),
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) =>
+                              const Icon(Icons.broken_image_rounded),
+                        )
+                      : Image.network(
+                          url!,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) =>
+                              const Icon(Icons.broken_image_rounded),
+                        ),
                 )
               : const Center(child: Icon(Icons.fingerprint_rounded, size: 48)),
         ),

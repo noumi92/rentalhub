@@ -161,4 +161,56 @@ class CustomerRemoteDataSource {
     final written = await _writeDoc('customers', customerId, fields);
     if (!written) await _queueDoc('customers', customerId, fields);
   }
+
+  /// Walk-in customer CRM: per-shop status of a customer.
+  /// Customer docs are CNIC-keyed globally (one doc per CNIC shared
+  /// across shops), so the status lives in the `shopStatuses` map
+  /// keyed by shop DOCUMENT id. Writes only this shop's entry, as a
+  /// dotted-key merge set (same [_writeDoc] pattern as
+  /// [updateApprovalStatus]) so other shops' entries are untouched;
+  /// a failed write is queued like any other and the
+  /// [FirestoreSetHandler] replays the same dotted-key fields with
+  /// merge semantics. The in-memory copy cannot take a dotted key
+  /// (fromMap would ignore it), so it is rebuilt from a merged map.
+  /// Throws [ArgumentError] for any status outside
+  /// 'active' | 'blocked' | 'archived'.
+  Future<void> updateCustomerStatus({
+    required String customerId,
+    required String shopId,
+    required String status,
+  }) async {
+    if (status != CustomerEntity.statusActive &&
+        status != CustomerEntity.statusBlocked &&
+        status != CustomerEntity.statusArchived) {
+      throw ArgumentError.value(
+        status,
+        'status',
+        "must be one of 'active', 'blocked' or 'archived'",
+      );
+    }
+    final fields = <String, dynamic>{'shopStatuses.$shopId': status};
+    final existing = _inMemoryCustomers[customerId];
+    if (existing != null) {
+      final merged = {...?existing.shopStatuses, shopId: status};
+      _inMemoryCustomers[customerId] = CustomerModel.fromMap(
+        {...existing.toMap(), 'shopStatuses': merged},
+        customerId,
+      );
+    }
+    final written = await _writeDoc('customers', customerId, fields);
+    if (!written) await _queueDoc('customers', customerId, fields);
+  }
+
+  /// Walk-in customer CRM: delete = archive. There is no hard
+  /// delete for customers; archiving hides the customer from the
+  /// shop's list while the record stays.
+  Future<void> archiveCustomer({
+    required String customerId,
+    required String shopId,
+  }) =>
+      updateCustomerStatus(
+        customerId: customerId,
+        shopId: shopId,
+        status: CustomerEntity.statusArchived,
+      );
 }

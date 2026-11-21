@@ -79,6 +79,9 @@ class Step2PhotoState extends KycStepState<Step2Photo> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final draft = widget.draft;
+    // Edit mode: the on-file face photo (URL) when no fresh
+    // capture exists yet.
+    final faceUrl = draft.existingUrlFor('profilePhotoUrl');
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -90,7 +93,12 @@ class Step2PhotoState extends KycStepState<Step2Photo> {
               height: 128,
               color: Theme.of(context).colorScheme.surfaceContainerHighest,
               child: draft.facePhoto == null
-                  ? const Icon(Icons.face_rounded, size: 64)
+                  ? (faceUrl == null
+                      ? const Icon(Icons.face_rounded, size: 64)
+                      : Image.network(faceUrl,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) =>
+                              const Icon(Icons.broken_image_rounded)))
                   : _photoImage(draft.facePhoto!, fit: BoxFit.cover),
             ),
           ),
@@ -128,7 +136,10 @@ class Step2PhotoState extends KycStepState<Step2Photo> {
               TextButton(
                 key: const ValueKey('step2_face_remove'),
                 onPressed: () {
-                  setState(() => draft.facePhoto = null);
+                  setState(() {
+                    draft.facePhoto = null;
+                    draft.clearExisting('profilePhotoUrl');
+                  });
                   widget.onChanged();
                 },
                 child: Text(l10n.kycWizardRemoveImage),
@@ -141,11 +152,15 @@ class Step2PhotoState extends KycStepState<Step2Photo> {
         FingerCaptureSection(
           title: l10n.kycWizardLeftHand,
           photo: draft.leftFingersPhoto,
+          existingUrl: draft.existingUrlFor('leftFingerprintUrl'),
           onCaptured: (file) {
             setState(() => draft.leftFingersPhoto = file);
           },
           onRemove: () {
-            setState(() => draft.leftFingersPhoto = null);
+            setState(() {
+              draft.leftFingersPhoto = null;
+              draft.clearExisting('leftFingerprintUrl');
+            });
             widget.onChanged();
           },
           onChanged: widget.onChanged,
@@ -157,11 +172,15 @@ class Step2PhotoState extends KycStepState<Step2Photo> {
         FingerCaptureSection(
           title: l10n.kycWizardRightHand,
           photo: draft.rightFingersPhoto,
+          existingUrl: draft.existingUrlFor('rightFingerprintUrl'),
           onCaptured: (file) {
             setState(() => draft.rightFingersPhoto = file);
           },
           onRemove: () {
-            setState(() => draft.rightFingersPhoto = null);
+            setState(() {
+              draft.rightFingersPhoto = null;
+              draft.clearExisting('rightFingerprintUrl');
+            });
             widget.onChanged();
           },
           onChanged: widget.onChanged,

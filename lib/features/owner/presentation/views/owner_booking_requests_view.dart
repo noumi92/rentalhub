@@ -37,21 +37,18 @@ class OwnerBookingRequestsView extends StatefulWidget {
 class _OwnerBookingRequestsViewState extends State<OwnerBookingRequestsView> {
   List<BookingEntity> _requests = [];
   bool _isLoading = true;
-  // E2: a load failure used to fall through silently to an empty
-  // list; it now renders an error state with retry.
+  // E2: a load failure used to fall through silently to an empty list; it now renders an error state with retry.
   bool _hasError = false;
   String? _processingId;
   // FG-4 (UI/UX audit 2026-11-15): proofs first — the most urgent
   // bucket (payment proofs awaiting verification) is the default,
   // not new requests.
   String _filter = 'payment_submitted';
-  // FG-4: the requests' request times, for oldest-first order and
-  // the oldest-wait line (see booking_request_time.dart).
+  // FG-4: the requests' request times, for oldest-first order and the oldest-wait line (see booking_request_time.dart).
   Map<String, DateTime?> _requestTimes = {};
   final _searchController = TextEditingController();
   String _searchQuery = '';
-  // Audit impl (worker E, W6): the WhatsApp zero-balance banner only
-  // shows once the real balance is known (null = not loaded yet).
+  // Audit impl (worker E, W6): the WhatsApp zero-balance banner only shows once the real balance is known (null = not loaded yet).
   int? _waBalance;
   int _waSkipped = 0;
   // Live updates (Item 2): the subscription behind the triage list.
@@ -60,15 +57,14 @@ class _OwnerBookingRequestsViewState extends State<OwnerBookingRequestsView> {
   List<BookingEntity> get _filtered {
     final query = _searchQuery.trim().toLowerCase();
     final list = _requests.where((b) {
-      if (b.status != _filter) return false;
+      if (_filter != 'all' && b.status != _filter) return false;
       if (query.isEmpty) return true;
       return (b.customerName ?? '').toLowerCase().contains(query) ||
           (b.customerPhone ?? '').toLowerCase().contains(query) ||
           (b.vehicleName ?? '').toLowerCase().contains(query) ||
           b.bookingId.toLowerCase().contains(query);
     }).toList();
-    // FG-4: oldest first within the filter (an unknown request time
-    // sorts last, never first).
+    // FG-4: oldest first within the filter (an unknown request time sorts last, never first).
     return sortByRequestAgeOldestFirst(list, _requestTimes);
   }
 
@@ -118,8 +114,12 @@ class _OwnerBookingRequestsViewState extends State<OwnerBookingRequestsView> {
     _bookingsSub = subscribeLiveBookings((ds) => ds.streamShopBookings(widget.shopId), (bookings) {
       if (!mounted) return;
       setState(() {
-        // Phase B (D1): the whole pipeline stays visible — new requests, proofs waiting for verification, and approved bookings waiting for the customer to pay. Audit §5 item 2: rejected bookings stay visible too, under the Rejected tab. O16: active rentals and completed bookings stay visible too, under the Active and Completed tabs.
-        _requests = bookings.where((b) => b.status == 'requested' || b.status == 'payment_submitted' || b.status == 'approved' || b.status == 'rejected' || b.status == 'active' || b.status == 'completed').toList();
+        // Item 3 (2026-11-21): NO status whitelist here. The old
+        // one dropped 'paid' / 'disputed' / 'cancelled', so those
+        // bookings vanished — a full-advance walk-in is born 'paid'
+        // and never appeared at all. The stream is already
+        // shop-scoped; the filter bar is what narrows the view.
+        _requests = bookings.toList();
         _isLoading = false;
       });
       _refreshRequestTimes(bookings);
@@ -178,7 +178,7 @@ class _OwnerBookingRequestsViewState extends State<OwnerBookingRequestsView> {
     }
   }
 
-  String _emptyLabel(AppLocalizations l10n) => {'payment_submitted': l10n.requestsEmptyProof, 'approved': l10n.requestsEmptyApproved, 'rejected': l10n.bookingEmptyRejected, 'active': l10n.requestsEmptyActive, 'completed': l10n.requestsEmptyCompleted}[_filter] ?? l10n.requestsEmptyNew;
+  String _emptyLabel(AppLocalizations l10n) => {'payment_submitted': l10n.requestsEmptyProof, 'approved': l10n.requestsEmptyApproved, 'rejected': l10n.bookingEmptyRejected, 'active': l10n.requestsEmptyActive, 'completed': l10n.requestsEmptyCompleted, 'paid': l10n.requestsEmptyPaid, 'disputed': l10n.requestsEmptyDisputed, 'cancelled': l10n.requestsEmptyCancelled, 'all': l10n.requestsEmptyAll}[_filter] ?? l10n.requestsEmptyNew;
 
   @override
   Widget build(BuildContext context) {

@@ -34,6 +34,7 @@ class CustomerModel extends CustomerEntity {
     super.pushNotifications,
     super.whatsappNotifications,
     super.savedShopIds,
+    super.shopStatuses,
   });
 
   Map<String, dynamic> toMap() {
@@ -74,7 +75,24 @@ class CustomerModel extends CustomerEntity {
       'pushNotifications': pushNotifications,
       'whatsappNotifications': whatsappNotifications,
       'savedShopIds': savedShopIds,
+      if (shopStatuses != null && shopStatuses!.isNotEmpty)
+        'shopStatuses': shopStatuses,
     };
+  }
+
+  /// Reads `shopStatuses` defensively: a missing key reads as null,
+  /// non-string keys/values are skipped, and an empty (or fully
+  /// skipped) map normalises to null so a record with no statuses
+  /// round-trips exactly like a legacy record without the key.
+  static Map<String, String>? _parseShopStatuses(Object? raw) {
+    if (raw is! Map) return null;
+    final parsed = <String, String>{};
+    for (final entry in raw.entries) {
+      final key = entry.key;
+      final value = entry.value;
+      if (key is String && value is String) parsed[key] = value;
+    }
+    return parsed.isEmpty ? null : parsed;
   }
 
   factory CustomerModel.fromMap(Map<String, dynamic> map, [String? id]) {
@@ -113,6 +131,7 @@ class CustomerModel extends CustomerEntity {
       reviewedAt: map['reviewedAt'] != null
           ? DateTime.tryParse(map['reviewedAt'].toString())
           : null,
+      shopStatuses: _parseShopStatuses(map['shopStatuses']),
     );
   }
 
@@ -147,6 +166,7 @@ class CustomerModel extends CustomerEntity {
       approvalStatus: entity.approvalStatus,
       rejectionReason: entity.rejectionReason,
       reviewedAt: entity.reviewedAt,
+      shopStatuses: entity.shopStatuses,
     );
   }
 }

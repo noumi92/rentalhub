@@ -9,14 +9,17 @@ import 'operations/triage_trust_row.dart';
 
 /// O21: one registered-customer card in the walk-in step 1 list —
 /// avatar + name + phone/CNIC, live trust score, blacklist / KYC /
-/// saved-signature chips. A blacklisted customer is shown but not
-/// selectable: tapping reports the refusal instead of selecting.
+/// saved-signature chips. A blacklisted or blocked customer is shown
+/// but not selectable: tapping reports the refusal instead of
+/// selecting. (An archived customer never reaches this card — the
+/// step filters archived records out of the pick list.)
 class ManualBookingCustomerCard extends StatelessWidget {
   const ManualBookingCustomerCard({
     super.key,
     required this.customer,
     required this.selected,
     required this.blacklisted,
+    required this.blocked,
     required this.kycDone,
     this.trustScore,
     required this.onSelected,
@@ -25,6 +28,7 @@ class ManualBookingCustomerCard extends StatelessWidget {
   final CustomerEntity customer;
   final bool selected;
   final bool blacklisted;
+  final bool blocked;
   final bool kycDone;
   final double? trustScore;
   final ValueChanged<CustomerEntity> onSelected;
@@ -60,6 +64,10 @@ class ManualBookingCustomerCard extends StatelessWidget {
             AppFeedback.showError(context, l10n.manualBookingBlacklisted);
             return;
           }
+          if (blocked) {
+            AppFeedback.showError(context, l10n.manualBookingBlocked);
+            return;
+          }
           onSelected(c);
         },
         borderRadius: BorderRadius.circular(12),
@@ -80,7 +88,7 @@ class ManualBookingCustomerCard extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  ManualBookingRadioDot(selected: selected, enabled: !blacklisted),
+                  ManualBookingRadioDot(selected: selected, enabled: !blacklisted && !blocked),
                   CircleAvatar(
                     radius: 20,
                     child: Text(_initials(c.name),
@@ -125,6 +133,13 @@ class ManualBookingCustomerCard extends StatelessWidget {
                         ? AppColors.errorContainerFor(brightness)
                         : AppColors.successContainerFor(brightness),
                   ),
+                  if (blocked)
+                    _chip(
+                      context,
+                      l10n.manualBookingBlockedCustomer,
+                      AppColors.dangerTextFor(brightness),
+                      AppColors.errorContainerFor(brightness),
+                    ),
                   _chip(
                     context,
                     kycDone

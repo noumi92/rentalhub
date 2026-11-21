@@ -930,6 +930,19 @@ class _FakeCustomerRepository implements CustomerRepository {
   @override
   Future<void> upsertCustomer(CustomerEntity customer) async =>
       onSave(customer);
+
+  @override
+  Future<void> updateCustomerStatus({
+    required String customerId,
+    required String shopId,
+    required String status,
+  }) async {}
+
+  @override
+  Future<void> archiveCustomer({
+    required String customerId,
+    required String shopId,
+  }) async {}
 }
 
 class _FakeUploader extends KycMediaUploadService {

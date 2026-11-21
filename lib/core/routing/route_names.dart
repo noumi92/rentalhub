@@ -94,6 +94,10 @@ class RouteNames {
   // Audit impl finish (worker A): customer detail is LAST in the
   // Customers branch so the static routes above match first.
   static const String ownerCustomerDetail = '/owner/customers/:id';
+  // Walk-in CRM: edit a walk-in customer in the wizard (walk-in
+  // only — the route refuses online records). 4 segments, so it
+  // cannot collide with the 3-segment detail route above.
+  static const String ownerCustomerEdit = '/owner/customers/:id/edit';
   static const String ownerCustomerAdded = '/owner/customers/added/:id';
   static const String ownerBlacklist = '/owner/blacklist';
   static const String ownerSubscription = '/owner/subscription';

@@ -11,6 +11,7 @@ import '../../../../core/widgets/app_state_views.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
+import '../widgets/dues_collect_sheet.dart';
 import '../widgets/owner_dues_group_card.dart';
 import '../../../../core/utils/money_format.dart';
 
@@ -143,6 +144,24 @@ class _OwnerDuesViewState extends State<OwnerDuesView> {
     }
   }
 
+  // Item 6 (2026-11-21): dues paid later — the sheet collects
+  // amount + method; on success the list reloads, so the reduced
+  // or cleared due shows without a manual refresh.
+  Future<void> _collect(BookingEntity booking) async {
+    final l10n = AppLocalizations.of(context)!;
+    final collected = await showModalBottomSheet<int>(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => DuesCollectSheet(booking: booking),
+    );
+    if (collected == null || collected <= 0 || !mounted) return;
+    await _load();
+    if (mounted) {
+      AppFeedback.showSuccess(
+          context, l10n.financeDuesCollectSuccess(formatRs(collected)));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -204,6 +223,7 @@ class _OwnerDuesViewState extends State<OwnerDuesView> {
                                   child: DuesGroupCard(
                                     bookings: bookings,
                                     lastReminded: _lastReminded[entry.key],
+                                    onCollect: _collect,
                                     onRemind: () => _remind(
                                       entry.key,
                                       bookings.first.customerName ??

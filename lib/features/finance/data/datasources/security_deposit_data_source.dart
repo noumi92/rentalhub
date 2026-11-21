@@ -140,6 +140,15 @@ class SecurityDepositDataSource {
   /// Settles the deposit at return. Nothing deducted → 'released'
   /// with a releasedAt timestamp; anything deducted → 'deducted'
   /// with a deductedAt timestamp and the full breakdown.
+  ///
+  /// Item 2: [deductedAmount] is capped at the amount actually
+  /// held — deductions above the deposit are not "deducted from"
+  /// money the shop never took. The excess is stored as
+  /// [SecurityDepositEntity.amountOwed] (the settlement's
+  /// amountOwed), so the finance summary's deducted row and the
+  /// customer wallet never show a deduction larger than the held
+  /// deposit — including the Rs 0-deposit case, where every rupee
+  /// of deductions is owed, not deducted.
   Future<SecurityDepositEntity> settle({
     required String bookingId,
     required int totalKmDriven,
@@ -157,6 +166,7 @@ class SecurityDepositDataSource {
       throw StateError('No deposit recorded for booking $bookingId');
     }
     final now = DateTime.now();
+    final cappedDeducted = deductedAmount.clamp(0, existing.amount);
     final settled = existing.copyWith(
       status: deductedAmount > 0 ? 'deducted' : 'released',
       releasedAt: deductedAmount > 0 ? null : now,
@@ -167,8 +177,9 @@ class SecurityDepositDataSource {
       fuelDeficit: fuelDeficit,
       damageCharge: damageCharge,
       overtimeFee: overtimeFee,
-      deductedAmount: deductedAmount,
+      deductedAmount: cappedDeducted,
       netRefund: netRefund,
+      amountOwed: deductedAmount - cappedDeducted,
       returnDamageNotes: returnDamageNotes,
     );
     final model = SecurityDepositModel.fromEntity(settled);

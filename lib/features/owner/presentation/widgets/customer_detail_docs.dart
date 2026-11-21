@@ -12,14 +12,27 @@ import 'customer_kyc_slots.dart';
 /// covering ALL 11 tracked slots (see [kycDocSlots] — the guide
 /// shows only 6, but License Back, Signature, Utility Bill, Extra
 /// Documents and the legacy Thumbprint are tracked slots too and
-/// must stay visible). Tiles are display-only: upload happens in
-/// the Add Customer wizard, not here. A missing file shows an honest
-/// "Not provided" state, never a placeholder image. URLs only — the
-/// record never carries bytes.
+/// must stay visible). Tiles are display-only by default: upload
+/// happens in the Add Customer wizard, not here. A missing file
+/// shows an honest "Not provided" state, never a placeholder image.
+/// URLs only — the record never carries bytes.
+///
+/// Walk-in CRM: with [onReplaceSlot] set (walk-in records only),
+/// tapping a tile recaptures that one slot — same picker rules as
+/// the wizard (CNIC gallery guarded by OCR, rest camera-only) —
+/// and the tile updates as soon as the new URL lands.
 class CustomerDetailDocs extends StatelessWidget {
-  const CustomerDetailDocs({super.key, required this.customer});
+  const CustomerDetailDocs({
+    super.key,
+    required this.customer,
+    this.onReplaceSlot,
+  });
 
   final CustomerEntity customer;
+
+  /// Field name of the tapped slot (see [kycDocSlots]), or null
+  /// to keep the grid display-only (online customers).
+  final ValueChanged<String>? onReplaceSlot;
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +52,7 @@ class CustomerDetailDocs extends StatelessWidget {
       itemCount: slots.length,
       itemBuilder: (context, index) {
         final slot = slots[index];
-        return _tile(context, l10n, slot.label, slot.url);
+        return _tile(context, l10n, slot.field, slot.label, slot.url);
       },
     );
   }
@@ -47,11 +60,12 @@ class CustomerDetailDocs extends StatelessWidget {
   Widget _tile(
     BuildContext context,
     AppLocalizations l10n,
+    String field,
     String label,
     String? url,
   ) {
     final hasFile = url != null && url.isNotEmpty;
-    return CustomPaint(
+    final tile = CustomPaint(
       painter: _DashedBorderPainter(
         color: AppColors.borderSubtle,
         radius: 12,
@@ -91,6 +105,14 @@ class CustomerDetailDocs extends StatelessWidget {
           ],
         ),
       ),
+    );
+    final onReplace = onReplaceSlot;
+    if (onReplace == null) return tile;
+    return InkWell(
+      key: ValueKey('kyc_replace_$field'),
+      borderRadius: BorderRadius.circular(12),
+      onTap: () => onReplace(field),
+      child: tile,
     );
   }
 }

@@ -99,8 +99,15 @@ void main() {
       expect(find.text('Rs. 20,500'), findsOneWidget);
       expect(find.text('Pending review'), findsOneWidget);
       expect(find.text('Not blacklisted'), findsOneWidget);
-      expect(find.text('Approve profile'), findsOneWidget);
-      expect(find.text('Reject profile'), findsOneWidget);
+      // Walk-in CRM: a walk-in record is shop-managed — Block /
+      // Edit / Archive, never Approve / Reject (those are for
+      // online records, approved by the super admin).
+      expect(find.text('Active'), findsOneWidget);
+      expect(find.text('Block'), findsOneWidget);
+      expect(find.text('Edit'), findsOneWidget);
+      expect(find.text('Archive'), findsOneWidget);
+      expect(find.text('Approve profile'), findsNothing);
+      expect(find.text('Reject profile'), findsNothing);
     });
 
     testWidgets('approve flips the stored status to approved',
@@ -112,6 +119,9 @@ void main() {
         name: 'Bilal Ahmed',
         phone: '0300-2222222',
         cnic: '35202-2222222-2',
+        // Walk-in CRM: Approve/Reject is the ONLINE flow now — a
+        // walk-in record shows Block/Edit/Archive instead.
+        source: 'online',
         createdAt: DateTime(2026, 11, 9),
       ));
       await tester.pumpWidget(wrap(const OwnerCustomerDetailView(
@@ -139,6 +149,8 @@ void main() {
         name: 'Sara Malik',
         phone: '0300-3333333',
         cnic: '35202-3333333-3',
+        // Walk-in CRM: Reject is the ONLINE flow now (see above).
+        source: 'online',
         createdAt: DateTime(2026, 11, 9),
       ));
       await tester.pumpWidget(wrap(const OwnerCustomerDetailView(
@@ -353,28 +365,34 @@ void main() {
       expect(find.text('New Nadia'), findsOneWidget);
       expect(find.text('Due Daniyal'), findsOneWidget);
 
-      // The chip and the row badge share a label, so tap the first
-      // match — the chip sits above the list in the tree.
-      await tester.tap(find.text('Regular').first);
+      // Item 5 (2026-11-21): chips carry counts ("Regular (1)"),
+      // so the chip text no longer equals the row badge — tap the
+      // counted label. The old single 'Flagged' chip is split into
+      // Blacklisted / With Dues; nobody here is blacklisted and no
+      // saved record is pending approval, so those alert segments
+      // stay hidden at zero count.
+      expect(find.textContaining('Blacklisted ('), findsNothing);
+      expect(find.textContaining('Pending review ('), findsNothing);
+      await tester.tap(find.textContaining('Regular ('));
       await tester.pumpAndSettle();
       expect(find.text('Regular Rana'), findsOneWidget);
       expect(find.text('New Nadia'), findsNothing);
       expect(find.text('Due Daniyal'), findsNothing);
 
-      await tester.tap(find.text('New').first);
+      await tester.tap(find.textContaining('New ('));
       await tester.pumpAndSettle();
       expect(find.text('Regular Rana'), findsNothing);
       expect(find.text('New Nadia'), findsOneWidget);
       expect(find.text('Due Daniyal'), findsOneWidget);
 
-      await tester.tap(find.text('Flagged'));
+      await tester.tap(find.textContaining('With Dues ('));
       await tester.pumpAndSettle();
       expect(find.text('Regular Rana'), findsNothing);
       expect(find.text('New Nadia'), findsNothing);
       expect(find.text('Due Daniyal'), findsOneWidget);
 
       // Expanded row offers View Profile.
-      await tester.tap(find.text('All'));
+      await tester.tap(find.textContaining('All ('));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Regular Rana'));
       await tester.pumpAndSettle();

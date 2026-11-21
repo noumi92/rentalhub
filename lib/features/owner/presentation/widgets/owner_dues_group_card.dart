@@ -50,11 +50,17 @@ class DuesGroupCard extends StatelessWidget {
   final DateTime? lastReminded;
   final VoidCallback onRemind;
 
+  /// Item 6 (2026-11-21): collect a due later, per booking —
+  /// dues are recorded and ledgered per booking, so each booking
+  /// line gets its own action. Null keeps the plain sub-lines.
+  final void Function(BookingEntity booking)? onCollect;
+
   const DuesGroupCard({
     super.key,
     required this.bookings,
     required this.lastReminded,
     required this.onRemind,
+    this.onCollect,
   });
 
   @override
@@ -102,15 +108,36 @@ class DuesGroupCard extends StatelessWidget {
                   bookings.length, phone ?? l10n.financeDuesNoPhone),
               style: Theme.of(context).textTheme.labelSmall),
           // Audit §25: a grouped total used to hide which booking is
-          // owed — one sub-line per booking (id • date • amount).
+          // owed — one sub-line per booking (id • date • amount),
+          // each with its own collect action (Item 6): dues are
+          // collected per booking, so the amount defaults to that
+          // booking's remaining due. The 6px vertical padding keeps
+          // the row on the 48dp touch target with the 36dp button.
           ...bookings.map((b) => Padding(
-                padding: const EdgeInsets.only(top: 2),
-                child: Text(
-                    '${b.bookingId} • ${DateFormat.yMMMd(locale).format(b.pickupTime)} • ${l10n.amountRs(formatRs(b.remainingBalance))}',
-                    style: Theme.of(context)
-                        .textTheme
-                        .labelSmall
-                        ?.copyWith(color: variant)),
+                padding: const EdgeInsets.symmetric(vertical: 6),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                          '${b.bookingId} • ${DateFormat.yMMMd(locale).format(b.pickupTime)} • ${l10n.amountRs(formatRs(b.remainingBalance))}',
+                          style: Theme.of(context)
+                              .textTheme
+                              .labelSmall
+                              ?.copyWith(color: variant)),
+                    ),
+                    TextButton(
+                      onPressed: onCollect == null
+                          ? null
+                          : () => onCollect!(b),
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        minimumSize: const Size(0, 36),
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      child: Text(l10n.financeDuesCollect),
+                    ),
+                  ],
+                ),
               )),
           // Audit §25: the last-reminded date is formatted with
           // `intl` per locale (was raw day/month/year) and carried

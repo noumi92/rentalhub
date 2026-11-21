@@ -5,23 +5,29 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/utils/current_shop.dart';
-import '../../../../core/utils/date_format.dart';
-import '../../../../core/utils/money_format.dart';
 import '../../../../core/widgets/app_state_views.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../blacklist/data/datasources/blacklist_remote_data_source.dart';
 import '../../../bookings/data/datasources/booking_remote_data_source.dart';
+import '../../../customer/domain/entities/customer_entity.dart';
 import '../../../customer/domain/usecases/get_shop_customers_usecase.dart';
 import '../../../customer/utils/customer_grouping.dart';
-import '../widgets/customer_active_rental_banner.dart';
-import '../widgets/customer_list_card_header.dart';
+import '../widgets/customer_add_pill.dart';
 import '../widgets/customer_list_filter_chips.dart';
-import '../widgets/customer_row_book_action.dart';
+import '../widgets/customer_list_row_card.dart';
+import '../widgets/customer_status_helpers.dart';
 
 /// Phase B (C1): the shop's customers — every person who booked,
 /// rolled up with their booking count, total spent and last booking,
 /// plus scanned/guarantor records that have not booked yet. A row
 /// expands to that customer's bookings. Blacklisted CNICs are badged.
+///
+/// Walk-in CRM: a customer the shop archived (`shopStatuses`) is
+/// hidden from this list entirely, whatever the filter; a blocked
+/// customer stays visible (with a badge and a filter segment) but
+/// cannot be picked for a new booking (see
+/// [ManualBookingCustomerStep]). A blocked customer with dues can
+/// still pay those dues — the block stops NEW bookings only.
 class OwnerCustomersListView extends StatefulWidget {
   final String? shopId;
 
@@ -79,24 +85,44 @@ class _OwnerCustomersListViewState extends State<OwnerCustomersListView> {
     return cnic != null && _blacklistedCnics.contains(cnic);
   }
 
-  // O11 classification: Regular = 2+ rentals, New = 0–1 rentals,
-  // Flagged = blacklisted or has dues. "Has dues" is the dues-screen
-  // definition: a booking in an approved/paid/active/completed status
-  // with a remaining balance — derived from the bookings already
-  // loaded for the row, never a new collection.
+  /// This shop's stored per-shop status for a row ('active' when
+  /// the row has no saved record or no entry for this shop).
+  String _shopStatus(CustomerSummary c) => shopStatusFor(c.savedRecord, _shopId);
+
+  bool _isArchived(CustomerSummary c) => _shopStatus(c) == CustomerEntity.statusArchived;
+
+  /// Archived rows never reach the list, the counts or the search
+  /// — hiding is not a filter, it is unconditional.
+  List<CustomerSummary> get _visibleCustomers => _customers.where((c) => !_isArchived(c)).toList();
+
+  // O11 classification (Item 5, 2026-11-21): Regular = 2+ rentals,
+  // New = 0–1 rentals, Blacklisted = CNIC on the active blacklist,
+  // With Dues = an approved/paid/active/completed booking with a
+  // remaining balance (dues-screen definition, from already-loaded
+  // bookings), Pending Approval = an ONLINE saved record whose
+  // approvalStatus is 'pending' (walk-in records sit at 'pending'
+  // forever — approve/reject was removed for walk-ins — so they
+  // never match), Blocked = this shop's stored per-shop status.
   static const _dueStatuses = {'approved', 'paid', 'active', 'completed'};
   bool _hasDues(CustomerSummary c) => c.bookings.any((b) => _dueStatuses.contains(b.status) && b.remainingBalance > 0);
-  bool _matchesChip(CustomerSummary c) => switch (_chipFilter) {
+  bool _matchesFilter(CustomerSummary c, CustomerListFilter filter) => switch (filter) {
         CustomerListFilter.all => true,
         CustomerListFilter.regular => c.bookingCount >= 2,
         CustomerListFilter.isNew => c.bookingCount <= 1,
-        CustomerListFilter.flagged => _isBlacklisted(c) || _hasDues(c),
+        CustomerListFilter.blacklisted => _isBlacklisted(c),
+        CustomerListFilter.withDues => _hasDues(c),
+        CustomerListFilter.pendingApproval => c.savedRecord?.approvalStatus == 'pending' && c.savedRecord?.source == 'online',
+        CustomerListFilter.blocked => _shopStatus(c) == CustomerEntity.statusBlocked,
       };
+
+  // Fleet-style counts over the visible list (before the search
+  // query), like the fleet bar — archived rows count nowhere.
+  int _countFor(CustomerListFilter filter) => _visibleCustomers.where((c) => _matchesFilter(c, filter)).length;
 
   List<CustomerSummary> get _filtered {
     final q = _query.trim().toLowerCase();
-    final byQuery = q.isEmpty ? _customers : _customers.where((c) => c.name.toLowerCase().contains(q) || c.phone.toLowerCase().contains(q) || (c.cnic ?? '').toLowerCase().contains(q)).toList();
-    return byQuery.where(_matchesChip).toList();
+    final byQuery = q.isEmpty ? _visibleCustomers : _visibleCustomers.where((c) => c.name.toLowerCase().contains(q) || c.phone.toLowerCase().contains(q) || (c.cnic ?? '').toLowerCase().contains(q)).toList();
+    return byQuery.where((c) => _matchesFilter(c, _chipFilter)).toList();
   }
 
   @override
@@ -104,19 +130,6 @@ class _OwnerCustomersListViewState extends State<OwnerCustomersListView> {
   final l10n = AppLocalizations.of(context)!;
     final filtered = _filtered;
     return Scaffold(
-      // User layout 2026-11-16: Add Customer is an extended
-      // floating button instead of the old AppBar pill — same
-      // destination ('/owner/customers/add'), visible label.
-      floatingActionButton: FloatingActionButton.extended(
-        key: const Key('customers-action-add'),
-        heroTag: 'customers-add',
-        onPressed: () => context.push('/owner/customers/add'),
-        tooltip: l10n.addCustomerTitle,
-        backgroundColor: AppColors.orangeFill,
-        foregroundColor: Colors.white,
-        icon: const Icon(Icons.add_rounded, size: 20),
-        label: Text(l10n.addCustomerTitle),
-      ),
       // C1: MinimalAppBar owns the top inset — no double status bar.
       body: SafeArea(
         top: false,
@@ -124,8 +137,16 @@ class _OwnerCustomersListViewState extends State<OwnerCustomersListView> {
           children: [
             MinimalAppBar(
               title: l10n.customersManagementTitle,
-              subtitle: _loading ? l10n.customersLoading : l10n.customersCount(_customers.length),
+              subtitle: _loading ? l10n.customersLoading : l10n.customersCount(_visibleCustomers.length),
               actions: [
+                // Item 5 (2026-11-21): Add Customer moved from
+                // the extended FAB (heroTag 'customers-add', build
+                // 83) into the app bar as the fleet header's orange
+                // pill — same destination ('/owner/customers/add').
+                // The FAB overlapped the list on a phone; the action
+                // itself is kept, only its position changed.
+                CustomerAddPill(onPressed: () => context.push('/owner/customers/add')),
+                const SizedBox(width: 8),
                 IconButton(
                   tooltip: l10n.customersScanCnic,
                   icon: const Icon(Icons.document_scanner_rounded, color: Colors.white),
@@ -136,11 +157,7 @@ class _OwnerCustomersListViewState extends State<OwnerCustomersListView> {
             // Audit §18: search is 52dp, radius 16, borderSubtle
             // border, with a clear button. The full-width Add
             // Customer banner that used to sit below it is gone —
-            // the action moved to the extended floating button
-            // (before, the header scan icon, tooltip only, was the
-            // only add entry point, which is why the banner
-            // existed); the action itself is kept, only its
-            // position changed.
+            // the action lives in the app bar pill (Item 5).
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
               child: SizedBox(
@@ -160,8 +177,16 @@ class _OwnerCustomersListViewState extends State<OwnerCustomersListView> {
                 ),
               ),
             ),
-            // O11: filter chips (All / Regular / New / Flagged).
-            CustomerListFilterChips(selected: _chipFilter, onSelected: (f) => setState(() => _chipFilter = f)),
+            // O11: filter chips — fleet-style bar with counts; the
+            // alert segments (Blacklisted / With Dues / Pending
+            // Approval / Blocked) hide at zero count.
+            CustomerListFilterChips(
+              selected: _chipFilter,
+              allCount: _countFor(CustomerListFilter.all), regularCount: _countFor(CustomerListFilter.regular), newCount: _countFor(CustomerListFilter.isNew),
+              blacklistedCount: _countFor(CustomerListFilter.blacklisted), withDuesCount: _countFor(CustomerListFilter.withDues),
+              pendingApprovalCount: _countFor(CustomerListFilter.pendingApproval), blockedCount: _countFor(CustomerListFilter.blocked),
+              onSelected: (f) => setState(() => _chipFilter = f),
+            ),
             Expanded(
               // E2: shared loading / error / empty states.
               child: _loading
@@ -183,50 +208,16 @@ class _OwnerCustomersListViewState extends State<OwnerCustomersListView> {
                               itemBuilder: (context, index) {
                                 final c = filtered[index];
                                 final expanded = _expandedKey == c.key;
-                                final blacklisted = _isBlacklisted(c);
-                                return Card(
-                                  // BP-14: the last card carries no
-                                  // bottom margin — the list padding
-                                  // (16 dp) is the bottom gap.
-                                  margin: EdgeInsets.only(bottom: index == filtered.length - 1 ? 0 : 10),
-                                  child: Column(
-                                    children: [
-                                      CustomerListCardHeader(
-                                        customer: c,
-                                        blacklisted: blacklisted,
-                                        expanded: expanded,
-                                        onTap: () => setState(() { _expandedKey = expanded ? null : c.key; }),
-                                      ),
-                                      // Phase 3: the mint active-rental
-                                      // banner (from the already-loaded
-                                      // bookings — no new fetch) renders
-                                      // only when an active booking
-                                      // exists; ALL bookings are still
-                                      // listed below it.
-                                      if (expanded)
-                                        CustomerActiveRentalBanner(bookings: c.bookings),
-                                      if (expanded)
-                                        ...c.bookings.map((b) => ListTile(
-                                              dense: true,
-                                              leading: const Icon(Icons.receipt_long_rounded, size: 18),
-                                              title: Text('${b.vehicleName ?? l10n.summaryVehicle} • ${b.packageType}', maxLines: 1, overflow: TextOverflow.ellipsis),
-                                              subtitle: Text('${formatDate(context, b.pickupTime)} • ${_statusLabel(l10n, b.status)}', maxLines: 2, overflow: TextOverflow.ellipsis), // Audit 2026-11-15 DS-5: localized date, never raw d/m/y.
-                                              // C5: grouped amount.
-                                              trailing: Text(l10n.amountRs(formatRs(b.totalAmount)), style: const TextStyle(fontWeight: FontWeight.w600)),
-                                            )),
-                                      if (expanded && c.bookings.isEmpty)
-                                        Padding(
-                                          padding: const EdgeInsets.only(bottom: 12),
-                                          child: Text(l10n.customersNoBookings, style: Theme.of(context).textTheme.bodySmall),
-                                        ),
-                                      // #18: Book for this customer —
-                                      // wizard opens prefilled (name,
-                                      // phone, CNIC); adding the customer
-                                      // itself stays a separate step.
-                                      if (expanded)
-                                        CustomerRowBookAction(customer: c),
-                                    ],
-                                  ),
+                                final badges = rowStatusBadges(c, _shopId);
+                                return CustomerListRowCard(
+                                  customer: c,
+                                  blacklisted: _isBlacklisted(c),
+                                  blocked: badges.blocked,
+                                  kycIncomplete: badges.kycIncomplete,
+                                  dormant: badges.dormant,
+                                  expanded: expanded,
+                                  onToggleExpand: () => setState(() { _expandedKey = expanded ? null : c.key; }),
+                                  isLast: index == filtered.length - 1,
                                 );
                               },
                               ),
@@ -238,7 +229,3 @@ class _OwnerCustomersListViewState extends State<OwnerCustomersListView> {
     );
   }
 }
-
-/// Stored booking statuses mapped to localized labels — the stored
-/// value itself is never changed.
-String _statusLabel(AppLocalizations l10n, String status) => {'requested': l10n.requestsStatusRequested, 'payment_submitted': l10n.statusProofSubmitted, 'approved': l10n.statusApproved, 'paid': l10n.statusPaid, 'active': l10n.active, 'completed': l10n.statusCompleted, 'rejected': l10n.statusRejected, 'cancelled': l10n.statusCancelled}[status] ?? status;

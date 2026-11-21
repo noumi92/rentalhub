@@ -25,6 +25,13 @@ class SecurityDepositEntity extends Equatable {
   final int? overtimeFee;
   final int? deductedAmount;
   final int? netRefund;
+  /// Item 2: what the customer still owes when the deductions
+  /// exceed the amount held (totalDeductions − amount, never
+  /// negative). [deductedAmount] is capped at [amount] — the excess
+  /// lives here, not in the deducted total — so the finance summary
+  /// and the customer wallet never show a deduction larger than
+  /// the deposit that was actually held.
+  final int? amountOwed;
   final List<String> returnDamageNotes;
 
   const SecurityDepositEntity({
@@ -45,6 +52,7 @@ class SecurityDepositEntity extends Equatable {
     this.overtimeFee,
     this.deductedAmount,
     this.netRefund,
+    this.amountOwed,
     this.returnDamageNotes = const [],
   });
 
@@ -60,6 +68,7 @@ class SecurityDepositEntity extends Equatable {
     int? overtimeFee,
     int? deductedAmount,
     int? netRefund,
+    int? amountOwed,
     List<String>? returnDamageNotes,
   }) {
     return SecurityDepositEntity(
@@ -80,6 +89,7 @@ class SecurityDepositEntity extends Equatable {
       overtimeFee: overtimeFee ?? this.overtimeFee,
       deductedAmount: deductedAmount ?? this.deductedAmount,
       netRefund: netRefund ?? this.netRefund,
+      amountOwed: amountOwed ?? this.amountOwed,
       returnDamageNotes: returnDamageNotes ?? this.returnDamageNotes,
     );
   }
@@ -103,6 +113,7 @@ class SecurityDepositEntity extends Equatable {
         overtimeFee,
         deductedAmount,
         netRefund,
+        amountOwed,
         returnDamageNotes,
       ];
 }

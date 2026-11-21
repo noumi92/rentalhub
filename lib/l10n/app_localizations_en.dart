@@ -127,6 +127,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get statusPaid => 'Paid';
 
   @override
+  String get statusDisputed => 'Disputed';
+
+  @override
   String get statusOnTrip => 'On trip';
 
   @override
@@ -2289,6 +2292,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get requestsEmptyCompleted => 'No completed bookings yet';
 
   @override
+  String get requestsEmptyPaid => 'No paid bookings yet';
+
+  @override
+  String get requestsEmptyDisputed => 'No disputed bookings';
+
+  @override
+  String get requestsEmptyCancelled => 'No cancelled bookings';
+
+  @override
+  String get requestsEmptyAll => 'No bookings yet';
+
+  @override
   String get requestsEmptyMessage =>
       'New requests will appear here for review.';
 
@@ -3593,6 +3608,21 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get financeDuesAutoNote =>
       'Automated WhatsApp reminders (every 3 days) need the WhatsApp Business setup — Phase I.';
+
+  @override
+  String get financeDuesCollect => 'Record payment';
+
+  @override
+  String get financeDuesCollectTitle => 'Record dues payment';
+
+  @override
+  String financeDuesCollectSuccess(String amount) {
+    return 'Payment of Rs. $amount recorded.';
+  }
+
+  @override
+  String get financeDuesCollectFailed =>
+      'Could not record the payment. Try again.';
 
   @override
   String get handoverTitle => 'Vehicle Handover & Inspection';
@@ -7084,6 +7114,97 @@ class AppLocalizationsEn extends AppLocalizations {
       'Could not update this customer\'s approval. Please try again.';
 
   @override
+  String get customerStatusActive => 'Active';
+
+  @override
+  String get customerStatusBlocked => 'Blocked';
+
+  @override
+  String get customerStatusArchived => 'Archived';
+
+  @override
+  String get customerStatusKycIncomplete => 'KYC Incomplete';
+
+  @override
+  String get customerStatusDormant => 'Dormant';
+
+  @override
+  String get customerStatusFrequent => 'Frequent';
+
+  @override
+  String get customerDetailBlock => 'Block';
+
+  @override
+  String get customerDetailUnblock => 'Unblock';
+
+  @override
+  String get customerDetailEdit => 'Edit';
+
+  @override
+  String get customerDetailArchive => 'Archive';
+
+  @override
+  String get customerDetailRestore => 'Restore';
+
+  @override
+  String get customerDetailArchiveTitle => 'Archive customer?';
+
+  @override
+  String get customerDetailArchiveMessage =>
+      'This customer will be hidden from the active list. Their record and history are kept — nothing is deleted.';
+
+  @override
+  String get customerDetailBlockedBanner =>
+      'This customer is blocked for this shop. They cannot make new bookings.';
+
+  @override
+  String get customerDetailArchivedBanner =>
+      'This customer is archived. Their record and history are kept.';
+
+  @override
+  String get customerDetailBlocked => 'Customer blocked';
+
+  @override
+  String get customerDetailUnblocked => 'Customer unblocked';
+
+  @override
+  String get customerDetailArchivedDone => 'Customer archived';
+
+  @override
+  String get customerDetailRestored => 'Customer restored';
+
+  @override
+  String get customerDetailStatusFailed =>
+      'Could not update the customer status. Please try again.';
+
+  @override
+  String get customerDetailEditTitle => 'Edit Customer';
+
+  @override
+  String get customerDetailEditSaved => 'Customer updated';
+
+  @override
+  String get customerDetailSaveChanges => 'Save changes';
+
+  @override
+  String get customerDetailKycReplaceTitle => 'Replace document';
+
+  @override
+  String get customerDetailKycReplacePrompt =>
+      'Take a new photo of this document or choose one from the gallery.';
+
+  @override
+  String get customerDetailKycReplaced => 'Document updated';
+
+  @override
+  String get customerDetailKycReplaceFailed =>
+      'Could not replace the document. Please try again.';
+
+  @override
+  String get customerDetailEditOnlineNotAllowed =>
+      'Online customers are managed by the admin and cannot be edited here.';
+
+  @override
   String get customerAddedTitle => 'Customer added';
 
   @override
@@ -7107,13 +7228,30 @@ class AppLocalizationsEn extends AppLocalizations {
   String get customersFilterNew => 'New';
 
   @override
-  String get customersFilterFlagged => 'Flagged';
+  String get customersFilterWithDues => 'With Dues';
+
+  @override
+  String get customersFilterBlocked => 'Blocked';
+
+  @override
+  String customersFilterChip(String label, int count) {
+    return '$label ($count)';
+  }
 
   @override
   String get customersBadgeRegular => 'Regular';
 
   @override
   String get customersBadgeNew => 'New';
+
+  @override
+  String get customersBadgeBlocked => 'Blocked';
+
+  @override
+  String get customersBadgeKycIncomplete => 'KYC Incomplete';
+
+  @override
+  String get customersBadgeDormant => 'Dormant';
 
   @override
   String get customersViewProfile => 'View Profile';
@@ -9800,6 +9938,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get manualBookingBlacklistedCustomer => 'Blacklisted — cannot book';
+
+  @override
+  String get manualBookingBlockedCustomer => 'Blocked — cannot book';
+
+  @override
+  String get manualBookingBlocked =>
+      'This customer is blocked — walk-in booking refused.';
 
   @override
   String get manualBookingNotBlacklisted => 'Not blacklisted';

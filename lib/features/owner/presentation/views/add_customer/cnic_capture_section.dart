@@ -30,10 +30,13 @@ class CnicCaptureSection extends StatelessWidget {
     required this.onRemove,
   });
 
+  /// One CNIC thumb: a fresh capture ([file]) or, in edit mode,
+  /// the on-file photo ([url]). Exactly one of the two is set.
   Widget _thumb(
     BuildContext context, {
     required String label,
-    required XFile file,
+    XFile? file,
+    String? url,
     required Key removeKey,
     required VoidCallback onRemove,
   }) {
@@ -52,14 +55,25 @@ class CnicCaptureSection extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
-                child: Image.file(
-                  File(file.path),
-                  height: 96,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) =>
-                      const Center(child: Icon(Icons.broken_image_rounded)),
-                ),
+                child: file != null
+                    ? Image.file(
+                        File(file.path),
+                        height: 96,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) =>
+                            const Center(
+                                child: Icon(Icons.broken_image_rounded)),
+                      )
+                    : Image.network(
+                        url!,
+                        height: 96,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) =>
+                            const Center(
+                                child: Icon(Icons.broken_image_rounded)),
+                      ),
               ),
               // 48dp hit area (same pattern as the extra-doc thumbs).
               Positioned(
@@ -90,6 +104,10 @@ class CnicCaptureSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final draft = this.draft;
+    final frontUrl = draft.existingUrlFor('cnicFrontUrl');
+    final backUrl = draft.existingUrlFor('cnicBackUrl');
+    final showFront = draft.cnicFrontPhoto != null || frontUrl != null;
+    final showBack = draft.cnicBackPhoto != null || backUrl != null;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -169,28 +187,27 @@ class CnicCaptureSection extends StatelessWidget {
             ),
           ],
         ),
-        if (draft.cnicFrontPhoto != null ||
-            draft.cnicBackPhoto != null) ...[
+        if (showFront || showBack) ...[
           const SizedBox(height: 10),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (draft.cnicFrontPhoto != null)
+              if (showFront)
                 _thumb(
                   context,
                   label: l10n.kycWizardFrontScanned,
-                  file: draft.cnicFrontPhoto!,
+                  file: draft.cnicFrontPhoto,
+                  url: frontUrl,
                   removeKey: const ValueKey('step1_cnic_front_remove'),
                   onRemove: () => onRemove(front: true),
                 ),
-              if (draft.cnicFrontPhoto != null &&
-                  draft.cnicBackPhoto != null)
-                const SizedBox(width: 12),
-              if (draft.cnicBackPhoto != null)
+              if (showFront && showBack) const SizedBox(width: 12),
+              if (showBack)
                 _thumb(
                   context,
                   label: l10n.kycWizardBackScanned,
-                  file: draft.cnicBackPhoto!,
+                  file: draft.cnicBackPhoto,
+                  url: backUrl,
                   removeKey: const ValueKey('step1_cnic_back_remove'),
                   onRemove: () => onRemove(front: false),
                 ),

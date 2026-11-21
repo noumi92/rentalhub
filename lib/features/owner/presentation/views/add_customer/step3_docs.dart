@@ -142,6 +142,7 @@ class Step3DocsState extends KycStepState<Step3Docs> {
 
   void _clearSignature() {
     _signatureController.clear();
+    widget.draft.clearExisting('signatureUrl');
     setState(() { widget.draft.signaturePng = null; _signed = false; });
     widget.onChanged();
   }
@@ -180,9 +181,9 @@ class Step3DocsState extends KycStepState<Step3Docs> {
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(child: DocPhotoTile(label: l10n.kycWizardLicenseFront, file: draft.licenseFrontPhoto, buttonKey: const ValueKey('step3_license_front'), onPick: () => _captureLicense(front: true), onRemove: () { setState(() => draft.licenseFrontPhoto = null); widget.onChanged(); }, removeButtonKey: const ValueKey('step3_license_front_remove'), scanning: _scanningLicenseFront)),
+            Expanded(child: DocPhotoTile(label: l10n.kycWizardLicenseFront, file: draft.licenseFrontPhoto, existingUrl: draft.existingUrlFor('licenseFrontUrl'), buttonKey: const ValueKey('step3_license_front'), onPick: () => _captureLicense(front: true), onRemove: () { setState(() { draft.licenseFrontPhoto = null; draft.clearExisting('licenseFrontUrl'); }); widget.onChanged(); }, removeButtonKey: const ValueKey('step3_license_front_remove'), scanning: _scanningLicenseFront)),
             const SizedBox(width: 12),
-            Expanded(child: DocPhotoTile(label: l10n.kycWizardLicenseBack, file: draft.licenseBackPhoto, buttonKey: const ValueKey('step3_license_back'), onPick: () => _captureLicense(front: false), onRemove: () { setState(() => draft.licenseBackPhoto = null); widget.onChanged(); }, removeButtonKey: const ValueKey('step3_license_back_remove'), scanning: _scanningLicenseBack)),
+            Expanded(child: DocPhotoTile(label: l10n.kycWizardLicenseBack, file: draft.licenseBackPhoto, existingUrl: draft.existingUrlFor('licenseBackUrl'), buttonKey: const ValueKey('step3_license_back'), onPick: () => _captureLicense(front: false), onRemove: () { setState(() { draft.licenseBackPhoto = null; draft.clearExisting('licenseBackUrl'); }); widget.onChanged(); }, removeButtonKey: const ValueKey('step3_license_back_remove'), scanning: _scanningLicenseBack)),
           ],
         ),
         const SizedBox(height: 12),
@@ -191,7 +192,7 @@ class Step3DocsState extends KycStepState<Step3Docs> {
         _field(_licenseExpiryController, l10n.kycWizardLicenseExpiry, hint: '01.01.2030', keyboard: TextInputType.number, formatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')), LengthLimitingTextInputFormatter(10)], onChanged: (v) { draft.licenseExpiry = v; widget.onChanged(); }),
         const SizedBox(height: 20),
         _section(l10n.kycWizardUtilityBill),
-        DocPhotoTile(label: l10n.kycWizardUtilityBill, file: draft.utilityBillPhoto, buttonKey: const ValueKey('step3_bill'), onPick: () => _pick((f) => draft.utilityBillPhoto = f), onRemove: () { setState(() => draft.utilityBillPhoto = null); widget.onChanged(); }, removeButtonKey: const ValueKey('step3_bill_remove')),
+        DocPhotoTile(label: l10n.kycWizardUtilityBill, file: draft.utilityBillPhoto, existingUrl: draft.existingUrlFor('utilityBillUrl'), buttonKey: const ValueKey('step3_bill'), onPick: () => _pick((f) => draft.utilityBillPhoto = f), onRemove: () { setState(() { draft.utilityBillPhoto = null; draft.clearExisting('utilityBillUrl'); }); widget.onChanged(); }, removeButtonKey: const ValueKey('step3_bill_remove')),
         const SizedBox(height: 20),
         _section(l10n.kycWizardExtraDocs),
         Wrap(
@@ -219,7 +220,11 @@ class Step3DocsState extends KycStepState<Step3Docs> {
             borderRadius: BorderRadius.circular(12),
             child: _signed && draft.signaturePng != null
                 ? Image.memory(draft.signaturePng!, fit: BoxFit.contain, errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image_rounded))
-                : Signature(controller: _signatureController, backgroundColor: Colors.white),
+                // Edit mode: the on-file signature (URL) when no
+                // fresh signature was drawn yet.
+                : _signed && draft.existingUrlFor('signatureUrl') != null
+                    ? Image.network(draft.existingUrlFor('signatureUrl')!, fit: BoxFit.contain, errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image_rounded))
+                    : Signature(controller: _signatureController, backgroundColor: Colors.white),
           ),
         ),
         Row(

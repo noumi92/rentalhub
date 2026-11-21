@@ -49,6 +49,7 @@ import '../../features/owner/presentation/views/owner_booking_requests_view.dart
 import '../../features/owner/presentation/views/owner_contract_view.dart';
 import '../../features/owner/presentation/views/owner_customer_detail_view.dart';
 import '../../features/owner/presentation/views/owner_customer_added_view.dart';
+import '../../features/owner/presentation/views/owner_edit_customer_loader.dart';
 import '../../features/owner/presentation/views/owner_return_landing_view.dart';
 import '../../features/owner/presentation/views/owner_share_with_customers_view.dart';
 import '../../features/auth/presentation/views/legal_text_view.dart';
@@ -1259,6 +1260,16 @@ class AppRouter {
               GoRoute(
                 path: RouteNames.ownerCustomerAdded,
                 builder: (context, state) => OwnerCustomerAddedView(
+                  customerId: state.pathParameters['id']!,
+                  customer: state.extra as CustomerEntity?,
+                ),
+              ),
+              // Customers: ownerCustomerEdit (walk-in CRM) — the
+              // wizard in edit mode. Declared before the 3-segment
+              // detail route; the loader refuses online records.
+              GoRoute(
+                path: RouteNames.ownerCustomerEdit,
+                builder: (context, state) => OwnerEditCustomerLoader(
                   customerId: state.pathParameters['id']!,
                   customer: state.extra as CustomerEntity?,
                 ),

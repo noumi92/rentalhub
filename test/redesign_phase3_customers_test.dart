@@ -294,7 +294,7 @@ void main() {
         rejectionReason: 'CNIC photo unreadable',
       );
       await tester.pumpWidget(wrap(
-          CustomerDetailHeader(customer: rejected, blacklisted: false)));
+          CustomerDetailHeader(customer: rejected, blacklisted: false, shopStatus: 'active', kycIncomplete: true, dormant: false, frequent: false)));
       await tester.pump();
       // Slim identity: phone + CNIC on one line.
       expect(find.text('0300-1234567 • 35202-1234567-1'), findsOneWidget);
@@ -311,7 +311,7 @@ void main() {
         profilePhotoUrl: 'https://example.invalid/kyc/face.jpg',
       );
       await tester.pumpWidget(
-          wrap(CustomerDetailHeader(customer: ok, blacklisted: false)));
+          wrap(CustomerDetailHeader(customer: ok, blacklisted: false, shopStatus: 'active', kycIncomplete: true, dormant: false, frequent: false)));
       await tester.pump();
       expect(find.text(l10n.statusApproved), findsOneWidget);
       expect(find.text(l10n.customerDetailKycNotOnFile), findsNothing);

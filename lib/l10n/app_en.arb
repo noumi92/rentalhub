@@ -39,6 +39,7 @@
   "statusCancelled": "Cancelled",
   "statusRejected": "Rejected",
   "statusPaid": "Paid",
+  "statusDisputed": "Disputed",
   "statusOnTrip": "On trip",
   "statusProofSubmitted": "Proof submitted",
   "statusRequestSent": "Request sent",
@@ -1367,6 +1368,10 @@
   "requestsEmptyNew": "No pending booking requests",
   "requestsEmptyActive": "No active rentals right now",
   "requestsEmptyCompleted": "No completed bookings yet",
+  "requestsEmptyPaid": "No paid bookings yet",
+  "requestsEmptyDisputed": "No disputed bookings",
+  "requestsEmptyCancelled": "No cancelled bookings",
+  "requestsEmptyAll": "No bookings yet",
   "requestsEmptyMessage": "New requests will appear here for review.",
   "requestsRejectTitle": "Reject this request?",
   "requestsRejectReasonLabel": "Reason (required)",
@@ -2098,6 +2103,17 @@
   "financeDuesWhatsappFailed": "Could not open WhatsApp.",
   "financeDuesReminderSent": "WhatsApp opened — send the reminder from the chat.",
   "financeDuesAutoNote": "Automated WhatsApp reminders (every 3 days) need the WhatsApp Business setup — Phase I.",
+  "financeDuesCollect": "Record payment",
+  "financeDuesCollectTitle": "Record dues payment",
+  "financeDuesCollectSuccess": "Payment of Rs. {amount} recorded.",
+  "@financeDuesCollectSuccess": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "financeDuesCollectFailed": "Could not record the payment. Try again.",
   "handoverTitle": "Vehicle Handover & Inspection",
   "handoverOdometerInvalid": "Please enter a valid odometer reading.",
   "handoverSignRequired": "Both customer and host must sign on the pads before vehicle departure.",
@@ -3788,6 +3804,34 @@
   "customerDetailRejectReasonRequired": "A reason is required to reject a profile",
   "customerDetailRejectConfirm": "Reject",
   "customerDetailApprovalFailed": "Could not update this customer's approval. Please try again.",
+  "customerStatusActive": "Active",
+  "customerStatusBlocked": "Blocked",
+  "customerStatusArchived": "Archived",
+  "customerStatusKycIncomplete": "KYC Incomplete",
+  "customerStatusDormant": "Dormant",
+  "customerStatusFrequent": "Frequent",
+  "customerDetailBlock": "Block",
+  "customerDetailUnblock": "Unblock",
+  "customerDetailEdit": "Edit",
+  "customerDetailArchive": "Archive",
+  "customerDetailRestore": "Restore",
+  "customerDetailArchiveTitle": "Archive customer?",
+  "customerDetailArchiveMessage": "This customer will be hidden from the active list. Their record and history are kept — nothing is deleted.",
+  "customerDetailBlockedBanner": "This customer is blocked for this shop. They cannot make new bookings.",
+  "customerDetailArchivedBanner": "This customer is archived. Their record and history are kept.",
+  "customerDetailBlocked": "Customer blocked",
+  "customerDetailUnblocked": "Customer unblocked",
+  "customerDetailArchivedDone": "Customer archived",
+  "customerDetailRestored": "Customer restored",
+  "customerDetailStatusFailed": "Could not update the customer status. Please try again.",
+  "customerDetailEditTitle": "Edit Customer",
+  "customerDetailEditSaved": "Customer updated",
+  "customerDetailSaveChanges": "Save changes",
+  "customerDetailKycReplaceTitle": "Replace document",
+  "customerDetailKycReplacePrompt": "Take a new photo of this document or choose one from the gallery.",
+  "customerDetailKycReplaced": "Document updated",
+  "customerDetailKycReplaceFailed": "Could not replace the document. Please try again.",
+  "customerDetailEditOnlineNotAllowed": "Online customers are managed by the admin and cannot be edited here.",
   "customerAddedTitle": "Customer added",
   "customerAddedReady": "{name}'s profile is ready — you can now start a booking.",
   "@customerAddedReady": {
@@ -3802,9 +3846,24 @@
   "customersFilterAll": "All",
   "customersFilterRegular": "Regular",
   "customersFilterNew": "New",
-  "customersFilterFlagged": "Flagged",
+  "customersFilterWithDues": "With Dues",
+  "customersFilterBlocked": "Blocked",
+  "customersFilterChip": "{label} ({count})",
+  "@customersFilterChip": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "customersBadgeRegular": "Regular",
   "customersBadgeNew": "New",
+  "customersBadgeBlocked": "Blocked",
+  "customersBadgeKycIncomplete": "KYC Incomplete",
+  "customersBadgeDormant": "Dormant",
   "customersViewProfile": "View Profile",
   "returnRefundDeposit": "Refund Deposit",
   "returnRefundRecorded": "Deposit refund of Rs. {amount} recorded.",
@@ -5560,6 +5619,8 @@
   "manualBookingCustomerNotRegistered": "This customer is not registered yet — add them first.",
   "manualBookingSelectCustomer": "Select a customer to continue.",
   "manualBookingBlacklistedCustomer": "Blacklisted — cannot book",
+  "manualBookingBlockedCustomer": "Blocked — cannot book",
+  "manualBookingBlocked": "This customer is blocked — walk-in booking refused.",
   "manualBookingNotBlacklisted": "Not blacklisted",
   "manualBookingKycDone": "KYC done",
   "manualBookingKycPending": "KYC pending",

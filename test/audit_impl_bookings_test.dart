@@ -633,6 +633,11 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.textContaining('Rejected ('), findsOneWidget);
       expect(find.text('Rejected Requester'), findsNothing);
+      // Item 4: ten chips overflow the 800-wide test viewport, so
+      // the Rejected chip (9th) is off-screen — scroll it into
+      // view before tapping, like the O16 test below does.
+      await tester.ensureVisible(find.textContaining('Rejected ('));
+      await tester.pumpAndSettle();
       await tester.tap(find.textContaining('Rejected ('));
       await tester.pumpAndSettle();
       expect(find.text('Rejected Requester'), findsOneWidget);

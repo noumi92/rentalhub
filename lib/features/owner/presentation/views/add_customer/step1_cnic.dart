@@ -25,12 +25,17 @@ class Step1Cnic extends StatefulWidget {
   final KycDraft draft;
   final VoidCallback onChanged;
 
+  /// Walk-in CRM (edit mode): the CNIC is the record key, so the
+  /// field is read-only — the owner can still re-scan the card, but
+  /// cannot type a different CNIC into an existing record.
+  final bool isEdit;
+
   /// Test seams for the QR reader and the OCR service; both
   /// default to the real services.
   final DocumentQrService? qrService;
   final CnicOcrService? ocrService;
 
-  const Step1Cnic({super.key, required this.draft, required this.onChanged, this.qrService, this.ocrService});
+  const Step1Cnic({super.key, required this.draft, required this.onChanged, this.isEdit = false, this.qrService, this.ocrService});
 
   @override
   State<Step1Cnic> createState() => _Step1CnicState();
@@ -191,14 +196,14 @@ class _Step1CnicState extends KycStepState<Step1Cnic> {
   /// Removing the back photo also clears the QR number read from
   /// it; the OCR-filled fields stay (they are editable by hand).
   void _removeCnicPhoto({required bool front}) {
-    setState(() { if (front) { widget.draft.cnicFrontPhoto = null; } else { widget.draft.cnicBackPhoto = null; widget.draft.qrCode = ''; } });
+    setState(() { if (front) { widget.draft.cnicFrontPhoto = null; widget.draft.clearExisting('cnicFrontUrl'); } else { widget.draft.cnicBackPhoto = null; widget.draft.clearExisting('cnicBackUrl'); widget.draft.qrCode = ''; } });
     widget.onChanged();
   }
 
-  Widget _field(TextEditingController controller, String label, {TextInputType keyboard = TextInputType.text, String? hint, String? Function(String?)? validator, List<TextInputFormatter>? formatters, int maxLines = 1}) {
+  Widget _field(TextEditingController controller, String label, {TextInputType keyboard = TextInputType.text, String? hint, String? Function(String?)? validator, List<TextInputFormatter>? formatters, int maxLines = 1, bool readOnly = false}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
-      child: TextFormField(controller: controller, keyboardType: keyboard, maxLines: maxLines, inputFormatters: formatters, validator: validator, decoration: InputDecoration(labelText: label, hintText: hint, filled: true, fillColor: Theme.of(context).colorScheme.surfaceContainerHighest)),
+      child: TextFormField(controller: controller, readOnly: readOnly, keyboardType: keyboard, maxLines: maxLines, inputFormatters: formatters, validator: validator, decoration: InputDecoration(labelText: label, hintText: hint, filled: true, fillColor: Theme.of(context).colorScheme.surfaceContainerHighest)),
     );
   }
 
@@ -220,7 +225,7 @@ class _Step1CnicState extends KycStepState<Step1Cnic> {
             const SizedBox(height: 12),
             _field(_nameController, l10n.addCustomerName, validator: (v) => (v == null || v.trim().isEmpty) ? l10n.addCustomerFullNameRequired : null),
             _field(_fatherController, l10n.kycWizardFatherName),
-            _field(_cnicController, l10n.addCustomerCnic, keyboard: TextInputType.number, hint: '35201-1234567-1', validator: PakistaniValidators.validateCnic, formatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9\-]')), LengthLimitingTextInputFormatter(15)]),
+            _field(_cnicController, l10n.addCustomerCnic, keyboard: TextInputType.number, hint: '35201-1234567-1', readOnly: widget.isEdit, validator: PakistaniValidators.validateCnic, formatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9\-]')), LengthLimitingTextInputFormatter(15)]),
             SizedBox(
               width: double.infinity,
               child: OutlinedButton.icon(

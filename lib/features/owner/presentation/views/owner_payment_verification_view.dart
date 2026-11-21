@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
+import '../../../../core/network/cpanel_storage_client.dart';
 import '../../../../core/utils/money_format.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
@@ -123,6 +124,8 @@ class _OwnerPaymentVerificationViewState
   Widget build(BuildContext context) {
   final l10n = AppLocalizations.of(context)!;
     final b = _booking;
+    // Item 8: never hand the stored value raw — a bare key is not a URL; resolveStoredMediaUrl signs it, blank shows "no screenshot".
+    final proofUrl = b.paymentProofUrl == null ? '' : (sl.isRegistered<CPanelStorageClient>() ? sl<CPanelStorageClient>().resolveStoredMediaUrl(b.paymentProofUrl!) : b.paymentProofUrl!);
     return Scaffold(
       // C1: MinimalAppBar owns the top inset.
       body: SafeArea(
@@ -193,8 +196,8 @@ class _OwnerPaymentVerificationViewState
                     const SizedBox(height: 14),
                     Text(l10n.paymentVerificationScreenshotTitle, style: Theme.of(context) .textTheme .titleSmall ?.copyWith(fontWeight: FontWeight.w600)),
                     const SizedBox(height: 8),
-                    if (b.paymentProofUrl != null)
-                      ProofImageViewer(imageUrl: b.paymentProofUrl!)
+                    if (proofUrl.isNotEmpty)
+                      ProofImageViewer(imageUrl: proofUrl)
                     else
                       Text(l10n.paymentVerificationNoScreenshot),
                     if (b.rejectionReason != null) ...[

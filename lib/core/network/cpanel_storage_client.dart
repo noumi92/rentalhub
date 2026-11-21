@@ -69,12 +69,40 @@ class CPanelStorageClient {
         if (idx >= 0) return url.substring(idx + marker.length);
         return url;
       }
-      return '';
+      // Item 8: a 200 with neither a filename nor a usable URL used
+      // to return '' — and every caller then wrapped '' into a
+      // signed media.php URL (`?key=&auth=…`) and reported the
+      // upload a success, so the booking was marked
+      // `payment_submitted` with a proof that can never display.
+      // A 200 with no key is a failed upload: throw so callers
+      // queue / report failure instead of filing a blank proof.
+      throw const ServerException(
+          message: 'cPanel upload returned no filename or URL');
     } else {
       throw ServerException(
           message:
               'cPanel upload failed (${streamedResponse.statusCode}): $responseBody');
     }
+  }
+
+  /// Item 8: turns whatever a Firestore media field holds into a
+  /// URL an image viewer can load. The field has held three shapes
+  /// and the owner proof view used to pass it raw to Image.network,
+  /// so a bare key (`payments/<file>`, filed by the PaymentCubit
+  /// path and by key-storing drains) could never display — it is
+  /// not a URL. Bare keys are signed through media.php; a full
+  /// public URL (`https://…/storage/payments/<file>`, pre-build-86)
+  /// and a stored signed media.php URL load as-is and are left
+  /// alone — re-signing the public URL would route a working link
+  /// through media.php, and media.php enforces no token expiry, so
+  /// re-signing a stored signed URL gains nothing. Blank → ''.
+  String resolveStoredMediaUrl(String stored, [String? userUid]) {
+    final trimmed = stored.trim();
+    if (trimmed.isEmpty) return '';
+    if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+      return trimmed;
+    }
+    return getSignedMediaUrl(trimmed, userUid);
   }
 
   /// Generates a short-lived signed URL for private media viewing.

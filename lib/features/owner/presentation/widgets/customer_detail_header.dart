@@ -4,6 +4,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../customer/domain/entities/customer_entity.dart';
 import 'customer_kyc_slots.dart';
+import 'customer_status_chips.dart';
 
 /// Showroom redesign Phase 3 — the slim identity card of the
 /// customer profile: avatar, name, phone + CNIC on ONE line, and the
@@ -11,16 +12,26 @@ import 'customer_kyc_slots.dart';
 /// Below it, ONE merged red alert banner (errorContainer token)
 /// carrying the rejection reason and the KYC status together — it
 /// renders only when there is something to flag (rejected, or no
-/// KYC file on record).
+/// KYC file on record). Walk-in CRM adds the [CustomerStatusChips]
+/// row (shop status + derived KYC Incomplete / Dormant / Frequent)
+/// under the identity row.
 class CustomerDetailHeader extends StatelessWidget {
   const CustomerDetailHeader({
     super.key,
     required this.customer,
     required this.blacklisted,
+    required this.shopStatus,
+    required this.kycIncomplete,
+    required this.dormant,
+    required this.frequent,
   });
 
   final CustomerEntity customer;
   final bool blacklisted;
+  final String shopStatus;
+  final bool kycIncomplete;
+  final bool dormant;
+  final bool frequent;
 
   @override
   Widget build(BuildContext context) {
@@ -149,6 +160,13 @@ class CustomerDetailHeader extends StatelessWidget {
             ),
           ),
         ],
+        const SizedBox(height: 12),
+        CustomerStatusChips(
+          shopStatus: shopStatus,
+          kycIncomplete: kycIncomplete,
+          dormant: dormant,
+          frequent: frequent,
+        ),
       ],
     );
   }

@@ -2,18 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/current_shop.dart';
 import '../../../../core/utils/shop_id_resolution.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/debounced_button.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
+import '../../../../features/customer/domain/entities/customer_entity.dart';
 import '../../../../features/customer/utils/save_walk_in_customer.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../services/kyc_customer_saver.dart';
 import 'add_customer/kyc_draft.dart';
 import 'add_customer/kyc_step.dart';
+import 'add_customer/kyc_stepper_header.dart';
 import 'add_customer/step1_cnic.dart';
 import 'add_customer/step2_photo.dart';
 import 'add_customer/step3_docs.dart';
@@ -25,14 +26,24 @@ import 'add_customer/step4_guarantor.dart';
 /// draft) and write back on every change, so Back/Next never loses
 /// input. No face matching anywhere — the face photo is saved and an
 /// admin reviews it manually.
+///
+/// Walk-in CRM (edit mode): pass [editingCustomer] to edit a saved
+/// walk-in record instead of creating one. The draft is prefilled
+/// from the record ([KycDraft.fromEntity]), media already on file
+/// counts as present, and the save preserves the record's identity
+/// (see [KycCustomerSaver.save]). Edit mode is walk-in only — the
+/// route refuses online records before the wizard is built.
 class OwnerAddCustomerWizard extends StatefulWidget {
   final String? prefilledCnic;
+
+  /// The walk-in record being edited, or null to create a new one.
+  final CustomerEntity? editingCustomer;
 
   /// Injectable Firestore for tests; production uses the default
   /// instance (see [_OwnerAddCustomerWizardState._firestore]).
   final FirebaseFirestore? firestore;
 
-  const OwnerAddCustomerWizard({super.key, this.prefilledCnic, this.firestore});
+  const OwnerAddCustomerWizard({super.key, this.prefilledCnic, this.editingCustomer, this.firestore});
 
   @override
   State<OwnerAddCustomerWizard> createState() => _OwnerAddCustomerWizardState();
@@ -60,8 +71,13 @@ class _OwnerAddCustomerWizardState extends State<OwnerAddCustomerWizard> {
   @override
   void initState() {
     super.initState();
-    _draft = KycDraft(prefilledCnic: widget.prefilledCnic);
+    final editing = widget.editingCustomer;
+    _draft = editing != null
+        ? KycDraft.fromEntity(editing)
+        : KycDraft(prefilledCnic: widget.prefilledCnic);
   }
+
+  bool get _isEdit => widget.editingCustomer != null;
 
   List<String> _stepLabels(AppLocalizations l10n) => [
         l10n.kycWizardStepCnic,
@@ -91,15 +107,30 @@ class _OwnerAddCustomerWizardState extends State<OwnerAddCustomerWizard> {
       // id. Falls back to the bare UID for the legacy shop whose doc
       // id IS the UID.
       final shopId = await canonicalShopId(_firestore, currentShopId());
-      final result = await KycCustomerSaver().save(shopId: shopId, draft: _draft);
+      final result = await KycCustomerSaver().save(
+        shopId: shopId,
+        draft: _draft,
+        existing: widget.editingCustomer,
+      );
       if (!mounted) return;
       if (result.queuedPhotos > 0) {
         AppFeedback.showInfo(context, l10n.kycWizardPhotosPending);
       } else {
-        AppFeedback.showSuccess(context, l10n.addCustomerSaved);
+        AppFeedback.showSuccess(
+            context,
+            _isEdit ? l10n.customerDetailEditSaved : l10n.addCustomerSaved);
       }
       if (result.skippedExtraDocs > 0) {
         AppFeedback.showInfo(context, l10n.kycWizardExtraSkipped);
+      }
+      if (_isEdit) {
+        // Edit mode lands back on the profile (not the O13 success
+        // screen — the customer already exists).
+        context.go(
+          RouteNames.ownerCustomerDetail
+              .replaceFirst(':id', result.customer.customerId),
+        );
+        return;
       }
       // O13: land on the success screen (not the list) — it offers
       // Start Booking (prefilled) and View Profile for this customer.
@@ -124,7 +155,7 @@ class _OwnerAddCustomerWizardState extends State<OwnerAddCustomerWizard> {
     void refresh() => setState(() {});
     switch (_step) {
       case 0:
-        return Step1Cnic(key: _stepKeys[0], draft: _draft, onChanged: refresh);
+        return Step1Cnic(key: _stepKeys[0], draft: _draft, onChanged: refresh, isEdit: _isEdit);
       case 1:
         return Step2Photo(key: _stepKeys[1], draft: _draft, onChanged: refresh);
       case 2:
@@ -132,68 +163,6 @@ class _OwnerAddCustomerWizardState extends State<OwnerAddCustomerWizard> {
       default:
         return Step4Guarantor(key: _stepKeys[3], draft: _draft, onChanged: refresh, shopId: currentShopId());
     }
-  }
-
-  Widget _stepItem(int index, String label) {
-    final done = index < _step;
-    final current = index == _step;
-    final color = done
-        ? AppColors.accentSuccessStrong
-        : current
-            ? AppColors.orangeFill
-            : Theme.of(context).colorScheme.onSurfaceVariant;
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          width: 28,
-          height: 28,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: done || current ? color : Theme.of(context).colorScheme.surfaceContainerHighest,
-          ),
-          child: Center(
-            child: done
-                ? const Icon(Icons.check_rounded, size: 16, color: Colors.white)
-                : Text('${index + 1}',
-                    // Audit 2026-11-15 DS-8: 13 sp is bodyMedium, not a literal.
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: current ? Colors.white : color)),
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          // Urdu step labels need two lines at 360px — one line
-          // truncated them with an ellipsis.
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-          textAlign: TextAlign.center,
-          // Audit 2026-11-15 DS-8: 11 sp w500 is labelSmall — read
-          // the theme slot instead of a hardcoded size. Done and
-          // current labels read semibold so the progress stands out
-          // against the grey upcoming steps.
-          style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: done || current ? FontWeight.w600 : FontWeight.w500, color: color),
-        ),
-      ],
-    );
-  }
-
-  /// Connector line between two steps, centred on the 28px circles
-  /// (the box is the circle height, so the 2px line sits at the
-  /// circle centre). Green once the step on its left is done — the
-  /// line into the current step stays grey until that step is
-  /// completed — grey for the road ahead.
-  Widget _stepConnector(int leftIndex) {
-    final passed = leftIndex < _step;
-    return Container(
-      width: 24,
-      height: 28,
-      alignment: Alignment.center,
-      child: Container(
-        height: 2,
-        decoration: BoxDecoration(color: passed ? AppColors.accentSuccessStrong : Theme.of(context).dividerColor, borderRadius: BorderRadius.circular(1)),
-      ),
-    );
   }
 
   @override
@@ -205,20 +174,12 @@ class _OwnerAddCustomerWizardState extends State<OwnerAddCustomerWizard> {
         top: false,
         child: Column(
           children: [
-            MinimalAppBar(title: l10n.addCustomerTitle, subtitle: labels[_step]),
-            Container(
-              key: const Key('kyc-stepper-header'),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  for (var i = 0; i < 4; i++) ...[
-                    Expanded(child: _stepItem(i, labels[i])),
-                    if (i < 3) _stepConnector(i),
-                  ],
-                ],
-              ),
-            ),
+            MinimalAppBar(
+                title: _isEdit
+                    ? l10n.customerDetailEditTitle
+                    : l10n.addCustomerTitle,
+                subtitle: labels[_step]),
+            KycStepperHeader(step: _step, labels: labels),
             Expanded(
               child: SingleChildScrollView(
                 // Shared outer padding for every step (was step 1
@@ -237,7 +198,7 @@ class _OwnerAddCustomerWizardState extends State<OwnerAddCustomerWizard> {
                   Expanded(
                     child: _step < 3
                         ? DebouncedButton(text: l10n.kycWizardNext, isLoading: _isValidating, onPressed: _next)
-                        : DebouncedButton(text: l10n.addCustomerSave, icon: Icons.check_rounded, isLoading: _isSaving, onPressed: _save),
+                        : DebouncedButton(text: _isEdit ? l10n.customerDetailSaveChanges : l10n.addCustomerSave, icon: Icons.check_rounded, isLoading: _isSaving, onPressed: _save),
                   ),
                 ],
               ),

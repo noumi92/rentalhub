@@ -69,6 +69,42 @@ class CustomerEntity extends Equatable {
   /// screen). Stored on the customer record, per the plan.
   final List<String> savedShopIds;
 
+  /// Walk-in customer CRM: per-shop status. Customer docs are
+  /// CNIC-keyed globally (one doc per CNIC shared across shops), so
+  /// a shop's view of a customer lives in this map keyed by the
+  /// shop DOCUMENT id (`shop_<uid>`):
+  /// * [statusActive] — the default; no entry for the shop means
+  ///   active ([statusForShop] returns this).
+  /// * [statusBlocked] — the shop blocked this customer.
+  /// * [statusArchived] — soft-deleted by the shop (delete =
+  ///   archive; there is no hard delete). Archived customers are
+  ///   hidden from the shop's list but the record stays.
+  /// Derived statuses (KYC Incomplete, Dormant 90d, Frequent) are
+  /// computed by the UI from the record — never stored here.
+  static const String statusActive = 'active';
+  static const String statusBlocked = 'blocked';
+  static const String statusArchived = 'archived';
+
+  final Map<String, String>? shopStatuses;
+
+  /// This shop's status for the customer: the stored value for
+  /// [shopId], or [statusActive] when the shop has no entry. Both
+  /// id forms are tried (bare owner UID and `shop_<uid>` doc id):
+  /// writes canonicalize to the doc id, but older rows may carry
+  /// either form, and a miss must read as active, never as an error.
+  String statusForShop(String shopId) {
+    final statuses = shopStatuses;
+    if (statuses == null || statuses.isEmpty) return statusActive;
+    if (statuses.containsKey(shopId)) return statuses[shopId]!;
+    final prefixed = shopId.startsWith('shop_') ? shopId : 'shop_$shopId';
+    if (statuses.containsKey(prefixed)) return statuses[prefixed]!;
+    if (shopId.startsWith('shop_')) {
+      final bare = shopId.substring('shop_'.length);
+      if (statuses.containsKey(bare)) return statuses[bare]!;
+    }
+    return statusActive;
+  }
+
   const CustomerEntity({
     required this.customerId,
     required this.shopId,
@@ -77,6 +113,7 @@ class CustomerEntity extends Equatable {
     this.cnic,
     this.source = 'walk_in',
     required this.createdAt,
+    this.shopStatuses,
     this.dateOfBirth,
     this.cnicExpiry,
     this.fatherName,
@@ -110,6 +147,7 @@ class CustomerEntity extends Equatable {
     String? phone,
     String? cnic,
     String? source,
+    Map<String, String>? shopStatuses,
     String? dateOfBirth,
     String? cnicExpiry,
     String? fatherName,
@@ -144,6 +182,7 @@ class CustomerEntity extends Equatable {
       phone: phone ?? this.phone,
       cnic: cnic ?? this.cnic,
       source: source ?? this.source,
+      shopStatuses: shopStatuses ?? this.shopStatuses,
       createdAt: createdAt,
       dateOfBirth: dateOfBirth ?? this.dateOfBirth,
       cnicExpiry: cnicExpiry ?? this.cnicExpiry,
@@ -185,6 +224,7 @@ class CustomerEntity extends Equatable {
         phone,
         cnic,
         source,
+        shopStatuses,
         pushNotifications,
         whatsappNotifications,
         savedShopIds,

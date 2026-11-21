@@ -61,6 +61,16 @@ class KycCustomerSaver {
   Future<KycSaveResult> save({
     required String shopId,
     required KycDraft draft,
+
+    /// Walk-in CRM (edit mode): the record being edited. When set,
+    /// the save is an UPDATE, not a create: customerId, createdAt,
+    /// shopId, source, approvalStatus (+ rejectionReason/reviewedAt)
+    /// and per-shop statuses are preserved from [existing], and any
+    /// media slot the owner did not re-capture keeps its on-file URL
+    /// (from [KycDraft.existingUrls]). The CNIC is the record key —
+    /// the wizard keeps it read-only in edit mode, so the derived
+    /// id cannot drift from the stored CNIC either.
+    CustomerEntity? existing,
   }) async {
     // Step 1 already checked, but the CNIC may have been edited
     // since, or listed in between — refuse again, the same way the
@@ -69,9 +79,10 @@ class KycCustomerSaver {
       throw BlacklistedCustomerException(draft.cnic);
     }
     final digits = draft.cnic.replaceAll(RegExp(r'\D'), '');
-    final customerId = digits.isNotEmpty
-        ? 'cust-$digits'
-        : 'cust-${DateTime.now().millisecondsSinceEpoch}';
+    final customerId = existing?.customerId ??
+        (digits.isNotEmpty
+            ? 'cust-$digits'
+            : 'cust-${DateTime.now().millisecondsSinceEpoch}');
 
     final uploads = await _uploader.uploadAll(
       shopId: shopId,
@@ -90,39 +101,53 @@ class KycCustomerSaver {
         .where((f) => f.startsWith('extraDocumentUrls_'))
         .length;
 
-    final extraUrls = <String>[];
+    final extraUrls = <String>[
+      // Edit mode: extra documents already on file stay.
+      ...draft.existingExtraDocumentUrls,
+    ];
     for (var i = 0; i < draft.extraPhotos.length; i++) {
       final url = uploads.urls['extraDocumentUrls_$i'];
       if (url != null) extraUrls.add(url);
     }
+    // Edit mode: a slot with no fresh upload keeps its on-file URL
+    // (a re-captured slot takes the new upload instead).
+    String? kept(String field) =>
+        uploads.urls[field] ?? draft.existingUrlFor(field);
     final customer = CustomerEntity(
       customerId: customerId,
-      shopId: shopId,
+      shopId: existing?.shopId ?? shopId,
       name: draft.name.trim(),
       phone: draft.phone.trim(),
       cnic: draft.cnic.trim().isEmpty ? null : draft.cnic.trim(),
-      source: 'walk_in',
-      createdAt: DateTime.now(),
+      source: existing?.source ?? 'walk_in',
+      createdAt: existing?.createdAt ?? DateTime.now(),
+      shopStatuses: existing?.shopStatuses,
       dateOfBirth: _orNull(draft.dateOfBirth),
       cnicExpiry: _orNull(draft.cnicExpiry),
       fatherName: _orNull(draft.fatherName),
       address: _orNull(draft.address),
-      profilePhotoUrl: uploads.urls['profilePhotoUrl'],
-      thumbprintUrl: uploads.urls['thumbprintUrl'],
-      leftFingerprintUrl: uploads.urls['leftFingerprintUrl'],
-      rightFingerprintUrl: uploads.urls['rightFingerprintUrl'],
-      cnicFrontUrl: uploads.urls['cnicFrontUrl'],
-      cnicBackUrl: uploads.urls['cnicBackUrl'],
+      profilePhotoUrl: kept('profilePhotoUrl'),
+      thumbprintUrl: kept('thumbprintUrl'),
+      leftFingerprintUrl: kept('leftFingerprintUrl'),
+      rightFingerprintUrl: kept('rightFingerprintUrl'),
+      cnicFrontUrl: kept('cnicFrontUrl'),
+      cnicBackUrl: kept('cnicBackUrl'),
       licenseNumber: _orNull(draft.licenseNumber),
       licenseExpiry: _orNull(draft.licenseExpiry),
-      licenseFrontUrl: uploads.urls['licenseFrontUrl'],
-      licenseBackUrl: uploads.urls['licenseBackUrl'],
-      utilityBillUrl: uploads.urls['utilityBillUrl'],
+      licenseFrontUrl: kept('licenseFrontUrl'),
+      licenseBackUrl: kept('licenseBackUrl'),
+      utilityBillUrl: kept('utilityBillUrl'),
       extraDocumentUrls: extraUrls,
-      signatureUrl: uploads.urls['signatureUrl'],
+      signatureUrl: kept('signatureUrl'),
       guarantorCustomerId: draft.guarantorCustomerId,
       guarantorRelation:
           draft.guarantorCustomerId == null ? null : draft.guarantorRelation,
+      approvalStatus: existing?.approvalStatus ?? 'pending',
+      rejectionReason: existing?.rejectionReason,
+      reviewedAt: existing?.reviewedAt,
+      pushNotifications: existing?.pushNotifications ?? true,
+      whatsappNotifications: existing?.whatsappNotifications ?? true,
+      savedShopIds: existing?.savedShopIds ?? const [],
     );
     await _saveUseCase(customer);
     // The CNIC back-QR number goes to the restricted

@@ -28,6 +28,12 @@ class FinanceDepositsSection extends StatelessWidget {
     final refundedAmount = released.fold<int>(
             0, (total, d) => total + (d.netRefund ?? d.amount)) +
         deducted.fold<int>(0, (total, d) => total + (d.netRefund ?? 0));
+    // Item 2: the count matches the amount — a partially-refunded
+    // ('deducted' with netRefund > 0) deposit IS a refund, so it
+    // counts here as well as in the amount above; counting only
+    // 'released' rows understated the refunded deposits.
+    final refundedCount = released.length +
+        deducted.where((d) => (d.netRefund ?? 0) > 0).length;
     final deductedAmount =
         deducted.fold<int>(0, (total, d) => total + (d.deductedAmount ?? 0));
     return Column(
@@ -49,7 +55,7 @@ class FinanceDepositsSection extends StatelessWidget {
             children: [
               _row(context, l10n, l10n.financeDepositsHeld, l10n.financeDepositsCount(held.length), heldAmount),
               const Divider(height: 16),
-              _row(context, l10n, l10n.financeDepositsRefunded, l10n.financeDepositsCount(released.length),
+              _row(context, l10n, l10n.financeDepositsRefunded, l10n.financeDepositsCount(refundedCount),
                   refundedAmount),
               const Divider(height: 16),
               _row(context, l10n, l10n.financeDepositsDeducted, l10n.financeDepositsCount(deducted.length),
