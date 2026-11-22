@@ -12,15 +12,10 @@ import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/datasources/customer_remote_data_source.dart';
 import '../../domain/entities/customer_entity.dart';
+import '../../../settings/presentation/widgets/delete_account_section.dart';
 import '../widgets/profile_sign_out_tile.dart';
 import '../widgets/settings_section_card.dart';
 
-// H2: the settings that do what they say. Language and theme go through
-// AppSettingsCubit (the owner G3 pattern — this is the second
-// translated screen), notification preferences persist on the
-// customer's own record, and the version comes from the installed
-// package, not a hardcoded string. The dead Terms/Privacy tiles are
-// gone — there is no such content in the app.
 class CustomerSettingsView extends StatefulWidget {
   final VoidCallback? onSignOut;
   final VoidCallback? onBack;
@@ -236,6 +231,8 @@ class _CustomerSettingsViewState extends State<CustomerSettingsView> {
                         ),
                         const SizedBox(height: 16),
                         ProfileSignOutTile(onTap: widget.onSignOut),
+                        const SizedBox(height: 12),
+                        const DeleteAccountTile(isOwner: false),
                       ],
                     ),
                   );

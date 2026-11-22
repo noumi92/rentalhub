@@ -4638,6 +4638,43 @@ class AppLocalizationsUr extends AppLocalizations {
   String get notificationsFilterUnread => 'نہ پڑھی گئی';
 
   @override
+  String get deleteAccountTitle => 'اکاؤنٹ حذف کریں';
+
+  @override
+  String get deleteAccountSubtitle =>
+      'اپنا اکاؤنٹ اور ذاتی ڈیٹا مستقل طور پر ہٹائیں';
+
+  @override
+  String get deleteAccountDialogTitle => 'اپنا اکاؤنٹ حذف کریں؟';
+
+  @override
+  String get deleteAccountDialogBody =>
+      'اس سے آپ کا پروفائل، شناختی کارڈ اور لائسنس دستاویزات، اطلاعات، اور لاگ ان تفصیلات مستقل طور پر حذف ہو جائیں گی۔\n\nمکمل شدہ بکنگ کے ریکارڈ اور مالی تصفیے کی تفصیلات قانونی تقاضوں یا تنازع کے حل کے لیے محفوظ رکھی جا سکتی ہیں۔';
+
+  @override
+  String get deleteAccountConfirmCheck =>
+      'میں سمجھتا/سمجھتی ہوں کہ یہ عمل مستقل ہے اور واپس نہیں ہو سکتا۔';
+
+  @override
+  String get deleteAccountConfirmButton => 'مستقل حذف کریں';
+
+  @override
+  String get deleteAccountSuccess =>
+      'آپ کا اکاؤنٹ مستقل طور پر حذف کر دیا گیا ہے۔';
+
+  @override
+  String get deleteAccountReauthRequired =>
+      'آپ کی حفاظت کے لیے، اکاؤنٹ حذف کرنے سے پہلے سائن آؤٹ کر کے دوبارہ سائن ان کریں۔';
+
+  @override
+  String get deleteAccountError =>
+      'اس وقت اکاؤنٹ حذف نہیں ہو سکا۔ براہ کرم دوبارہ کوشش کریں۔';
+
+  @override
+  String get playLaunchPlanIncluded =>
+      'ورژن 1.0 لانچ کے دوران تمام بنیادی شوروم فیچرز مفت شامل ہیں۔ پلان میں تبدیلیاں اینڈرائیڈ ایپ کے باہر منظم کی جاتی ہیں۔';
+
+  @override
   String subscriptionUpgradeTo(String tier) {
     return '$tier پر اپ گریڈ کریں';
   }

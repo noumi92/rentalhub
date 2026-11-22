@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart' as ll;
@@ -6,6 +8,7 @@ import '../../../../../core/constants/app_colors.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../data/datasources/customer_location_store.dart';
 import '../../../domain/entities/shop_entity.dart';
+import 'location_permission_dialog.dart';
 import 'map_shop_preview_card.dart';
 import 'radius_filter_pills.dart';
 import 'shops_empty_banner.dart';
@@ -48,6 +51,16 @@ Future<({ll.LatLng point, String? nearestCity})?> fetchCustomerGpsPoint(
 
     var permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
+      if (!silent && context.mounted) {
+        final completer = Completer<bool>();
+        await LocationPermissionDialog.show(
+          context,
+          onAllow: () => completer.complete(true),
+          onManualCity: () => completer.complete(false),
+        );
+        final proceed = await completer.future;
+        if (!proceed) return null;
+      }
       permission = await Geolocator.requestPermission();
     }
     if (permission == LocationPermission.deniedForever) {

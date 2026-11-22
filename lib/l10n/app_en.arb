@@ -2702,6 +2702,16 @@
   "notificationsLoadError": "Could not load notifications. Check your connection and try again.",
   "notificationsEmpty": "No notifications yet.",
   "notificationsFilterUnread": "Unread",
+  "deleteAccountTitle": "Delete Account",
+  "deleteAccountSubtitle": "Permanently remove your account and personal data",
+  "deleteAccountDialogTitle": "Delete your account?",
+  "deleteAccountDialogBody": "This permanently deletes your profile, CNIC and licence documents, notifications, and login credentials.\n\nCompleted booking invoices and financial settlement records may be retained in anonymized form where required by law or dispute resolution.",
+  "deleteAccountConfirmCheck": "I understand this action is permanent and cannot be undone.",
+  "deleteAccountConfirmButton": "Delete Permanently",
+  "deleteAccountSuccess": "Your account has been permanently deleted.",
+  "deleteAccountReauthRequired": "For your security, please sign out and sign in again before deleting your account.",
+  "deleteAccountError": "Could not delete your account right now. Please try again.",
+  "playLaunchPlanIncluded": "All core showroom features are included free during our v1.0 launch. Plan changes are managed outside the Android app.",
   "subscriptionUpgradeTo": "Upgrade to {tier}",
   "@subscriptionUpgradeTo": {
     "placeholders": {

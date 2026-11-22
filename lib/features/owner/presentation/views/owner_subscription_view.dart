@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -105,6 +106,8 @@ class _OwnerSubscriptionViewState extends State<OwnerSubscriptionView> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final hideExternal =
+        !kIsWeb && defaultTargetPlatform == TargetPlatform.android;
     return Scaffold(
       body: SafeArea(
         top: false,
@@ -171,7 +174,7 @@ class _OwnerSubscriptionViewState extends State<OwnerSubscriptionView> {
                                                 _state.pendingTier) ==
                                             plan.id),
                             features: _features(l10n, plan.id),
-                            onSelect: () => plan.id == 'free'
+                            onSelect: () => (plan.id == 'free' || hideExternal)
                                 ? context.push(
                                     RouteNames.ownerSubscriptionPlan,
                                     extra: plan.id)

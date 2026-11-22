@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Delete Account — RentalHub</title>
+  <style>
+    :root { --navy: #0F1336; --orange: #F95700; --bg: #F8FAFC; --card: #FFFFFF; --text: #0F172A; --muted: #475569; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+    header { background: var(--navy); color: #fff; padding: 28px 20px; text-align: center; }
+    header h1 { margin: 0; font-size: 1.6rem; }
+    header span { color: var(--orange); }
+    main { max-width: 720px; margin: 28px auto; padding: 0 16px 48px; }
+    .card { background: var(--card); border-radius: 14px; padding: 24px; box-shadow: 0 2px 12px rgba(15, 19, 54, 0.08); margin-bottom: 20px; }
+    h2 { margin-top: 0; font-size: 1.15rem; color: var(--navy); }
+    ul { padding-left: 20px; color: var(--muted); }
+    label { display: block; font-weight: 600; margin-top: 12px; font-size: 0.92rem; }
+    input, select, textarea { width: 100%; padding: 10px 12px; border: 1px solid #CBD5E1; border-radius: 8px; margin-top: 4px; font-size: 0.95rem; }
+    button { margin-top: 16px; background: #DC2626; color: #fff; border: none; padding: 12px 20px; border-radius: 10px; font-size: 0.95rem; font-weight: 600; cursor: pointer; width: 100%; }
+    button:hover { background: #B91C1C; }
+    .note { font-size: 0.88rem; color: var(--muted); }
+    #status { display: none; margin-top: 14px; padding: 12px; border-radius: 8px; background: #DCFCE7; color: #166534; font-weight: 500; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Rental<span>Hub</span> — Account &amp; Data Deletion</h1>
+  </header>
+  <main>
+    <div class="card">
+      <h2>Option 1: Delete Directly Inside the App (Immediate)</h2>
+      <p class="note">
+        Open the <strong>RentalHub</strong> Android app, sign in, and go to
+        <strong>Settings &rarr; Delete Account</strong>. Confirm the prompt to permanently delete your account immediately.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>Option 2: Request Deletion via Web</h2>
+      <p class="note">
+        If you no longer have the app installed, submit your registered account details below. Requests are verified and processed within 7 business days.
+      </p>
+      <form id="deleteForm">
+        <label for="role">Account Type</label>
+        <select id="role" required>
+          <option value="customer">Customer</option>
+          <option value="owner">Showroom Owner</option>
+        </select>
+
+        <label for="identifier">Registered Phone Number or Email</label>
+        <input id="identifier" type="text" placeholder="e.g. +92 300 1234567 or you@example.com" required />
+
+        <label for="reason">Additional Details (Optional)</label>
+        <textarea id="reason" rows="3" placeholder="Any notes to help us locate your account"></textarea>
+
+        <button type="submit">Submit Account Deletion Request</button>
+      </form>
+      <div id="status"></div>
+    </div>
+
+    <div class="card">
+      <h2>What Data Is Deleted vs. Retained</h2>
+      <ul>
+        <li><strong>Permanently Deleted:</strong> Login credentials, user profile, CNIC and driving licence KYC documents, saved search locations, in-app notifications, and push notification tokens.</li>
+        <li><strong>Retained Where Required by Law:</strong> Completed rental booking receipts, financial settlement records, and active dispute/fraud records may be retained in restricted/anonymized form for up to 5 years for legal, tax, and dispute compliance.</li>
+      </ul>
+      <p class="note">Contact: <strong>support@rentalhub.pk</strong></p>
+    </div>
+  </main>
+  <script>
+    document.getElementById('deleteForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var id = document.getElementById('identifier').value.trim();
+      var role = document.getElementById('role').value;
+      var subject = encodeURIComponent('RentalHub Account Deletion Request (' + role + ')');
+      var body = encodeURIComponent(
+        'Please permanently delete my RentalHub account.\n\nAccount type: ' + role +
+        '\nRegistered phone/email: ' + id +
+        '\nNotes: ' + document.getElementById('reason').value.trim()
+      );
+      window.location.href = 'mailto:support@rentalhub.pk?subject=' + subject + '&body=' + body;
+      var status = document.getElementById('status');
+      status.style.display = 'block';
+      status.textContent = 'Your email client has been opened to submit your verified deletion request to support@rentalhub.pk.';
+    });
+  </script>
+</body>
+</html>

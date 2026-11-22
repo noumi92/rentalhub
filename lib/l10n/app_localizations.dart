@@ -8228,6 +8228,66 @@ abstract class AppLocalizations {
   /// **'Unread'**
   String get notificationsFilterUnread;
 
+  /// No description provided for @deleteAccountTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Account'**
+  String get deleteAccountTitle;
+
+  /// No description provided for @deleteAccountSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Permanently remove your account and personal data'**
+  String get deleteAccountSubtitle;
+
+  /// No description provided for @deleteAccountDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete your account?'**
+  String get deleteAccountDialogTitle;
+
+  /// No description provided for @deleteAccountDialogBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This permanently deletes your profile, CNIC and licence documents, notifications, and login credentials.\n\nCompleted booking invoices and financial settlement records may be retained in anonymized form where required by law or dispute resolution.'**
+  String get deleteAccountDialogBody;
+
+  /// No description provided for @deleteAccountConfirmCheck.
+  ///
+  /// In en, this message translates to:
+  /// **'I understand this action is permanent and cannot be undone.'**
+  String get deleteAccountConfirmCheck;
+
+  /// No description provided for @deleteAccountConfirmButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Permanently'**
+  String get deleteAccountConfirmButton;
+
+  /// No description provided for @deleteAccountSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account has been permanently deleted.'**
+  String get deleteAccountSuccess;
+
+  /// No description provided for @deleteAccountReauthRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'For your security, please sign out and sign in again before deleting your account.'**
+  String get deleteAccountReauthRequired;
+
+  /// No description provided for @deleteAccountError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not delete your account right now. Please try again.'**
+  String get deleteAccountError;
+
+  /// No description provided for @playLaunchPlanIncluded.
+  ///
+  /// In en, this message translates to:
+  /// **'All core showroom features are included free during our v1.0 launch. Plan changes are managed outside the Android app.'**
+  String get playLaunchPlanIncluded;
+
   /// No description provided for @subscriptionUpgradeTo.
   ///
   /// In en, this message translates to:

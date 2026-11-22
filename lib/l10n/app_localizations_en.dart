@@ -4638,6 +4638,43 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notificationsFilterUnread => 'Unread';
 
   @override
+  String get deleteAccountTitle => 'Delete Account';
+
+  @override
+  String get deleteAccountSubtitle =>
+      'Permanently remove your account and personal data';
+
+  @override
+  String get deleteAccountDialogTitle => 'Delete your account?';
+
+  @override
+  String get deleteAccountDialogBody =>
+      'This permanently deletes your profile, CNIC and licence documents, notifications, and login credentials.\n\nCompleted booking invoices and financial settlement records may be retained in anonymized form where required by law or dispute resolution.';
+
+  @override
+  String get deleteAccountConfirmCheck =>
+      'I understand this action is permanent and cannot be undone.';
+
+  @override
+  String get deleteAccountConfirmButton => 'Delete Permanently';
+
+  @override
+  String get deleteAccountSuccess =>
+      'Your account has been permanently deleted.';
+
+  @override
+  String get deleteAccountReauthRequired =>
+      'For your security, please sign out and sign in again before deleting your account.';
+
+  @override
+  String get deleteAccountError =>
+      'Could not delete your account right now. Please try again.';
+
+  @override
+  String get playLaunchPlanIncluded =>
+      'All core showroom features are included free during our v1.0 launch. Plan changes are managed outside the Android app.';
+
+  @override
   String subscriptionUpgradeTo(String tier) {
     return 'Upgrade to $tier';
   }

@@ -74,18 +74,19 @@ void main() {
       expect(find.textContaining('29,990'), findsOneWidget);
     });
 
-    testWidgets('S2 Pro detail shows trial terms and start-trial',
+    testWidgets('S2 Pro detail shows trial terms and hides external billing on Android',
         (tester) async {
       await tester.pumpWidget(
           _wrap(const OwnerSubscriptionPlanDetailView(planId: 'pro')));
       await tester.pumpAndSettle();
 
-      expect(find.text('Start 14-day free trial'), findsOneWidget);
+      expect(find.text('Start 14-day free trial'), findsNothing);
       expect(find.textContaining('Free for 14 days'), findsOneWidget);
       expect(find.text('14-day trial'), findsOneWidget);
+      expect(find.textContaining('v1.0 launch'), findsOneWidget);
     });
 
-    testWidgets('S3 purchase sheet is an honest not-connected state',
+    testWidgets('S3 purchase sheet hides external bank transfer on Android (Play Payments Policy)',
         (tester) async {
       await tester.pumpWidget(_wrap(
           const OwnerSubscriptionPlayPurchaseView(planId: 'pro')));
@@ -95,7 +96,8 @@ void main() {
           findsOneWidget);
       expect(find.textContaining('Visa'), findsNothing);
       expect(find.textContaining('Mastercard'), findsNothing);
-      expect(find.textContaining('Pay by bank transfer'), findsOneWidget);
+      expect(find.textContaining('Pay by bank transfer'), findsNothing);
+      expect(find.textContaining('v1.0 launch'), findsOneWidget);
     });
   });
 
@@ -200,7 +202,8 @@ void main() {
       expect(find.text('Free plan — 10 messages'), findsOneWidget);
       expect(find.text('Pro plan — 30 credits'), findsOneWidget);
       expect(find.text('Business plan — 100 credits'), findsOneWidget);
-      expect(find.text('Buy this pack'), findsOneWidget);
+      expect(find.text('Buy this pack'), findsNothing);
+      expect(find.textContaining('v1.0 launch'), findsOneWidget);
     });
 
     testWidgets('W3 request-submitted state is honest, not "added"',

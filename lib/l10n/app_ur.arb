@@ -2702,6 +2702,16 @@
   "notificationsLoadError": "اطلاعات لوڈ نہیں ہو سکیں۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔",
   "notificationsEmpty": "ابھی کوئی اطلاعات نہیں۔",
   "notificationsFilterUnread": "نہ پڑھی گئی",
+  "deleteAccountTitle": "اکاؤنٹ حذف کریں",
+  "deleteAccountSubtitle": "اپنا اکاؤنٹ اور ذاتی ڈیٹا مستقل طور پر ہٹائیں",
+  "deleteAccountDialogTitle": "اپنا اکاؤنٹ حذف کریں؟",
+  "deleteAccountDialogBody": "اس سے آپ کا پروفائل، شناختی کارڈ اور لائسنس دستاویزات، اطلاعات، اور لاگ ان تفصیلات مستقل طور پر حذف ہو جائیں گی۔\n\nمکمل شدہ بکنگ کے ریکارڈ اور مالی تصفیے کی تفصیلات قانونی تقاضوں یا تنازع کے حل کے لیے محفوظ رکھی جا سکتی ہیں۔",
+  "deleteAccountConfirmCheck": "میں سمجھتا/سمجھتی ہوں کہ یہ عمل مستقل ہے اور واپس نہیں ہو سکتا۔",
+  "deleteAccountConfirmButton": "مستقل حذف کریں",
+  "deleteAccountSuccess": "آپ کا اکاؤنٹ مستقل طور پر حذف کر دیا گیا ہے۔",
+  "deleteAccountReauthRequired": "آپ کی حفاظت کے لیے، اکاؤنٹ حذف کرنے سے پہلے سائن آؤٹ کر کے دوبارہ سائن ان کریں۔",
+  "deleteAccountError": "اس وقت اکاؤنٹ حذف نہیں ہو سکا۔ براہ کرم دوبارہ کوشش کریں۔",
+  "playLaunchPlanIncluded": "ورژن 1.0 لانچ کے دوران تمام بنیادی شوروم فیچرز مفت شامل ہیں۔ پلان میں تبدیلیاں اینڈرائیڈ ایپ کے باہر منظم کی جاتی ہیں۔",
   "subscriptionUpgradeTo": "{tier} پر اپ گریڈ کریں",
   "@subscriptionUpgradeTo": {
     "placeholders": {

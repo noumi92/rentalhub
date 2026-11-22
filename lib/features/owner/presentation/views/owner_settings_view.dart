@@ -13,6 +13,7 @@ import '../../../../core/settings/app_settings_cubit.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../settings/presentation/widgets/delete_account_section.dart';
 import '../widgets/notification_preferences_section.dart';
 import '../widgets/shop_profile_card.dart';
 import '../../../../core/theme/card_decoration.dart';
@@ -91,6 +92,8 @@ class _OwnerSettingsViewState extends State<OwnerSettingsView> {
                         },
                       ),
                     ),
+                    const SizedBox(height: 12),
+                    const DeleteAccountTile(isOwner: true),
                   ]),
                 );
               },

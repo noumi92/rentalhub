@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../core/utils/current_shop.dart';
@@ -31,10 +32,14 @@ class OwnerSubscriptionPlayPurchaseView extends StatelessWidget {
         _ => l10n.subscriptionPlanFree,
       };
 
+  bool get _hideExternalBilling =>
+      !kIsWeb && defaultTargetPlatform == TargetPlatform.android;
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final plan = subscriptionPlanFor(planId);
+    final hideExternal = _hideExternalBilling;
     return Scaffold(
       body: SafeArea(
         top: false,
@@ -101,34 +106,38 @@ class OwnerSubscriptionPlayPurchaseView extends StatelessWidget {
                           ],
                         ),
                         const SizedBox(height: 4),
-                        Text(l10n.subscriptionPlayNotConnectedNote,
+                        Text(
+                            hideExternal
+                                ? l10n.playLaunchPlanIncluded
+                                : l10n.subscriptionPlayNotConnectedNote,
                             style: Theme.of(context).textTheme.bodySmall),
                       ],
                     ),
                   ),
                   const SizedBox(height: 16),
-                  DebouncedButton(
-                    text: l10n.subscriptionPayByBank,
-                    icon: Icons.account_balance_rounded,
-                    onPressed: () => ManualBankTransferSheet.show(
-                      context,
-                      title: l10n.subscriptionUpgradeTo(
-                          _planName(l10n, plan.id)),
-                      amount: plan.priceFor(yearly),
-                      note: l10n.subscriptionPayByBank,
-                      onSubmit: (trxId) =>
-                          SubscriptionDataSource().submitSubscriptionRequest(
-                        shopId: currentShopId(),
-                        tier: plan.id,
-                        billingPeriod: yearly ? 'yearly' : 'monthly',
-                        price: plan.priceFor(yearly),
-                        transactionId: trxId,
-                        isTrial: false,
+                  if (!hideExternal)
+                    DebouncedButton(
+                      text: l10n.subscriptionPayByBank,
+                      icon: Icons.account_balance_rounded,
+                      onPressed: () => ManualBankTransferSheet.show(
+                        context,
+                        title: l10n.subscriptionUpgradeTo(
+                            _planName(l10n, plan.id)),
+                        amount: plan.priceFor(yearly),
+                        note: l10n.subscriptionPayByBank,
+                        onSubmit: (trxId) =>
+                            SubscriptionDataSource().submitSubscriptionRequest(
+                          shopId: currentShopId(),
+                          tier: plan.id,
+                          billingPeriod: yearly ? 'yearly' : 'monthly',
+                          price: plan.priceFor(yearly),
+                          transactionId: trxId,
+                          isTrial: false,
+                        ),
+                        onSubmitted: () => AppFeedback.showSuccess(
+                            context, l10n.subscriptionRequested),
                       ),
-                      onSubmitted: () => AppFeedback.showSuccess(
-                          context, l10n.subscriptionRequested),
                     ),
-                  ),
                   const SizedBox(height: 8),
                   SizedBox(
                     width: double.infinity,

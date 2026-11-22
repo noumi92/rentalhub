@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -78,6 +79,8 @@ class _OwnerWhatsappBuyCreditsViewState
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final hideExternal =
+        !kIsWeb && defaultTargetPlatform == TargetPlatform.android;
     return Scaffold(
       body: SafeArea(
         top: false,
@@ -172,11 +175,18 @@ class _OwnerWhatsappBuyCreditsViewState
                       '${l10n.creditsFreeLabel}: ${freeMonthlyCreditsForTier(_tier)}',
                       style: Theme.of(context).textTheme.bodySmall),
                   const SizedBox(height: 16),
-                  DebouncedButton(
-                    text: l10n.creditsBuyPack,
-                    icon: Icons.add_shopping_cart_rounded,
-                    onPressed: () => _buy(_selected),
-                  ),
+                  if (hideExternal)
+                    Text(
+                      l10n.playLaunchPlanIncluded,
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.bodySmall,
+                    )
+                  else
+                    DebouncedButton(
+                      text: l10n.creditsBuyPack,
+                      icon: Icons.add_shopping_cart_rounded,
+                      onPressed: () => _buy(_selected),
+                    ),
                   const SizedBox(height: 8),
                   Text(l10n.creditsOneMessage,
                       textAlign: TextAlign.center,

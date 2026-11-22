@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../core/utils/current_shop.dart';
@@ -87,6 +88,8 @@ class _OwnerSubscriptionPlanDetailViewState
     final l10n = AppLocalizations.of(context)!;
     final plan = subscriptionPlanFor(widget.planId);
     final isFree = plan.id == 'free';
+    final hideExternal =
+        !kIsWeb && defaultTargetPlatform == TargetPlatform.android;
     return Scaffold(
       body: SafeArea(
         top: false,
@@ -151,14 +154,18 @@ class _OwnerSubscriptionPlanDetailViewState
                     Text(l10n.subscriptionTrialTerms,
                         style: Theme.of(context).textTheme.bodySmall),
                     const SizedBox(height: 16),
-                    DebouncedButton(
-                      text: l10n.subscriptionStartTrial,
-                      icon: Icons.play_arrow_rounded,
-                      onPressed: () => _startTrial(plan),
-                    ),
+                    if (!hideExternal)
+                      DebouncedButton(
+                        text: l10n.subscriptionStartTrial,
+                        icon: Icons.play_arrow_rounded,
+                        onPressed: () => _startTrial(plan),
+                      ),
                   ],
                   const SizedBox(height: 16),
-                  Text(l10n.subscriptionPlayNotConnectedNote,
+                  Text(
+                      hideExternal
+                          ? l10n.playLaunchPlanIncluded
+                          : l10n.subscriptionPlayNotConnectedNote,
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.bodySmall),
                   const SizedBox(height: 8),
