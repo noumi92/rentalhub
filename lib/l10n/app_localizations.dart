@@ -2837,7 +2837,7 @@ abstract class AppLocalizations {
   /// No description provided for @authTagline.
   ///
   /// In en, this message translates to:
-  /// **'Pakistan Premier Car Rental & Fleet Ecosystem • خوش آمدید'**
+  /// **'Pakistan Premier Car Rental & Fleet Ecosystem'**
   String get authTagline;
 
   /// No description provided for @authGoogle.
@@ -3059,7 +3059,7 @@ abstract class AppLocalizations {
   /// No description provided for @kycVaultNote.
   ///
   /// In en, this message translates to:
-  /// **'Private cPanel vault • شناختی کارڈ تصدیق'**
+  /// **'Private encrypted vault • CNIC verification'**
   String get kycVaultNote;
 
   /// No description provided for @kycStatusSubmitted.
@@ -3275,25 +3275,25 @@ abstract class AppLocalizations {
   /// No description provided for @vehicleSelfDriveUrdu.
   ///
   /// In en, this message translates to:
-  /// **'سیلف ڈرائیو'**
+  /// **'Self-Drive'**
   String get vehicleSelfDriveUrdu;
 
   /// No description provided for @vehicleWithDriverUrdu.
   ///
   /// In en, this message translates to:
-  /// **'ڈرائیور کے ساتھ'**
+  /// **'With Driver'**
   String get vehicleWithDriverUrdu;
 
   /// No description provided for @roleCustomerUrdu.
   ///
   /// In en, this message translates to:
-  /// **'گاڑی کرایہ پر لیں'**
+  /// **'Rent a vehicle'**
   String get roleCustomerUrdu;
 
   /// No description provided for @roleOwnerUrdu.
   ///
   /// In en, this message translates to:
-  /// **'شوروم رجسٹر کریں'**
+  /// **'Register a showroom'**
   String get roleOwnerUrdu;
 
   /// No description provided for @advanceNoticeWithDriver.
@@ -8705,7 +8705,7 @@ abstract class AppLocalizations {
   /// No description provided for @headerUrduGreeting.
   ///
   /// In en, this message translates to:
-  /// **'اسلام علیکم'**
+  /// **'Assalam-o-Alaikum'**
   String get headerUrduGreeting;
 
   /// No description provided for @mediaSelectSource.

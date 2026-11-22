@@ -134,7 +134,6 @@ class _OnboardingRoleViewState extends State<OnboardingRoleView> {
                           RoleSelectorCard(
                             roleKey: 'customer',
                             title: l10n?.roleCustomer ?? 'Rent a Vehicle (Customer)',
-                            urduSubtitle: l10n?.roleCustomerUrdu ?? 'Rent a vehicle',
                             description:
                                 l10n?.roleCustomerDesc ?? 'Discover verified rental shops within 1–5 km, book Self-Drive or With-Driver packages.',
                             icon: Icons.person_pin_circle_rounded,
@@ -146,7 +145,6 @@ class _OnboardingRoleViewState extends State<OnboardingRoleView> {
                           RoleSelectorCard(
                             roleKey: 'owner',
                             title: l10n?.roleOwnerTitle ?? 'List My Fleet (Shop Owner)',
-                            urduSubtitle: l10n?.roleOwnerUrdu ?? 'Register a showroom',
                             description:
                                 l10n?.roleOwnerDesc ?? 'Register your showroom, manage fleet rates, digital handovers, and RentalHub\'s shared blacklist.',
                             icon: Icons.storefront_rounded,

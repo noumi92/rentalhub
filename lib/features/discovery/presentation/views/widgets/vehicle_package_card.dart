@@ -14,7 +14,7 @@ class VehiclePackageCard extends StatelessWidget {
   const VehiclePackageCard({
     super.key,
     required this.title,
-    required this.urdu,
+    this.urdu = '',
     required this.price,
     required this.isSelected,
     required this.icon,
@@ -74,10 +74,11 @@ class VehiclePackageCard extends StatelessWidget {
               title,
               style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600, color: isSelected ? AppColors.orangeTextFor(Theme.of(context).brightness) : Theme.of(context).colorScheme.onSurface),
             ),
-            Text(
-              urdu,
-              style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w500),
-            ),
+            if (urdu.isNotEmpty)
+              Text(
+                urdu,
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w500),
+              ),
             const SizedBox(height: 8),
             Text(
               l10n.amountRs(formatRs(price)),

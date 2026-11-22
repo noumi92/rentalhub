@@ -52,7 +52,6 @@ class VehicleDetailPackages extends StatelessWidget {
               Expanded(
                 child: VehiclePackageCard(
                   title: l10n.selfDrive,
-                  urdu: l10n.vehicleSelfDriveUrdu,
                   price: selfDriveRate,
                   isSelected: !withDriver,
                   icon: Icons.drive_eta_rounded,
@@ -63,7 +62,6 @@ class VehicleDetailPackages extends StatelessWidget {
               Expanded(
                 child: VehiclePackageCard(
                   title: l10n.withDriver,
-                  urdu: l10n.vehicleWithDriverUrdu,
                   price: withDriverRate,
                   isSelected: withDriver,
                   icon: Icons.person_pin_rounded,

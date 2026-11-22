@@ -1576,7 +1576,7 @@ class AppLocalizationsUr extends AppLocalizations {
       'KYC دستاویزات جمع کرا دی گئیں — تصدیق زیر التواء ہے۔';
 
   @override
-  String get kycVaultNote => 'نجی cPanel والٹ • شناختی کارڈ تصدیق';
+  String get kycVaultNote => 'نجی محفوظ والٹ • شناختی کارڈ تصدیق';
 
   @override
   String get kycStatusSubmitted => 'جمع کرایا گیا — تصدیق زیر التواء ہے';

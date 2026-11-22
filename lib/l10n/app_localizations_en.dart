@@ -1456,8 +1456,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authPasswordLength => 'Password must be at least 6 characters.';
 
   @override
-  String get authTagline =>
-      'Pakistan Premier Car Rental & Fleet Ecosystem • خوش آمدید';
+  String get authTagline => 'Pakistan Premier Car Rental & Fleet Ecosystem';
 
   @override
   String get authGoogle => 'Continue with Google';
@@ -1574,7 +1573,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'KYC documents submitted — pending verification.';
 
   @override
-  String get kycVaultNote => 'Private cPanel vault • شناختی کارڈ تصدیق';
+  String get kycVaultNote => 'Private encrypted vault • CNIC verification';
 
   @override
   String get kycStatusSubmitted => 'Submitted — pending verification';
@@ -1687,16 +1686,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get trustNoBlacklist => 'No blacklist record';
 
   @override
-  String get vehicleSelfDriveUrdu => 'سیلف ڈرائیو';
+  String get vehicleSelfDriveUrdu => 'Self-Drive';
 
   @override
-  String get vehicleWithDriverUrdu => 'ڈرائیور کے ساتھ';
+  String get vehicleWithDriverUrdu => 'With Driver';
 
   @override
-  String get roleCustomerUrdu => 'گاڑی کرایہ پر لیں';
+  String get roleCustomerUrdu => 'Rent a vehicle';
 
   @override
-  String get roleOwnerUrdu => 'شوروم رجسٹر کریں';
+  String get roleOwnerUrdu => 'Register a showroom';
 
   @override
   String advanceNoticeWithDriver(String nightStay) {
@@ -4919,7 +4918,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get headerGreetingFallback => 'Hi there';
 
   @override
-  String get headerUrduGreeting => 'اسلام علیکم';
+  String get headerUrduGreeting => 'Assalam-o-Alaikum';
 
   @override
   String get mediaSelectSource => 'Select Media Source';

@@ -14,7 +14,7 @@ class RoleSelectorCard extends StatelessWidget {
     super.key,
     required this.roleKey,
     required this.title,
-    required this.urduSubtitle,
+    this.urduSubtitle = '',
     required this.description,
     required this.icon,
     required this.isSelected,
@@ -77,13 +77,14 @@ class RoleSelectorCard extends StatelessWidget {
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                      Text(
-                        urduSubtitle,
-                        style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.orangeTextFor(brightness),
+                      if (urduSubtitle.isNotEmpty)
+                        Text(
+                          urduSubtitle,
+                          style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.orangeTextFor(brightness),
+                          ),
                         ),
-                      ),
                     ],
                   ),
                   const SizedBox(height: 4),
