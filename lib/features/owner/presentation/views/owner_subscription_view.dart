@@ -174,11 +174,21 @@ class _OwnerSubscriptionViewState extends State<OwnerSubscriptionView> {
                                                 _state.pendingTier) ==
                                             plan.id),
                             features: _features(l10n, plan.id),
-                            onSelect: () => (plan.id == 'free' || hideExternal)
-                                ? context.push(
-                                    RouteNames.ownerSubscriptionPlan,
-                                    extra: plan.id)
-                                : _subscribe(plan),
+                            onSelect: () {
+                              if (plan.id == 'free') {
+                                GoRouter.maybeOf(context)?.push(
+                                  RouteNames.ownerSubscriptionPlan,
+                                  extra: plan.id,
+                                );
+                              } else if (hideExternal) {
+                                AppFeedback.showInfo(
+                                  context,
+                                  l10n.playLaunchPlanIncluded,
+                                );
+                              } else {
+                                _subscribe(plan);
+                              }
+                            },
                           ),
                           if (plan.id != 'free')
                             Align(

@@ -108,7 +108,7 @@ void main() {
       expect(find.text('Completed Trip Ledger & Settlements'), findsOneWidget);
     });
 
-    testWidgets('OwnerSubscriptionView: renders tiers and opens upgrade dialog',
+    testWidgets('OwnerSubscriptionView: renders tiers and respects Android Play Payments policy',
         (tester) async {
       await tester.pumpWidget(
         MaterialApp(
@@ -119,9 +119,6 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      // Worker E (2026-11-09): deck chooser replaced the old
-      // "Showroom Membership Plans" / Starter Freemium / Pro Showroom
-      // copy; the manual bank-transfer sheet is unchanged.
       expect(find.text('Choose a plan'), findsOneWidget);
       expect(find.text('Free'), findsOneWidget);
       expect(find.text('Pro'), findsOneWidget);
@@ -132,7 +129,10 @@ void main() {
       await tester.tap(find.text('Upgrade to Pro'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Submit Upgrade Verification'), findsOneWidget);
+      // Play Store Payments Policy (Option B): Android hides external
+      // bank-transfer checkout and shows the v1.0 launch info notice.
+      expect(find.text('Submit Upgrade Verification'), findsNothing);
+      expect(find.textContaining('v1.0 launch'), findsOneWidget);
     });
 
     testWidgets('OwnerWhatsAppLogsView: honest empty state, no fake dispatches',
