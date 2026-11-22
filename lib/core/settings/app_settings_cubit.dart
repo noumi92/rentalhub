@@ -47,6 +47,19 @@ class AppSettingsState extends Equatable {
 
   Locale get locale => Locale(localeCode);
 
+  /// Whether foreground/in-app alerts for an owner notification [type]
+  /// are enabled in the owner's notification preferences.
+  bool isNotificationTypeEnabled(String type) {
+    return switch (type) {
+      'booking_request' || 'booking_cancelled' => notifyBookingRequests,
+      'payment_proof' => notifyPaymentProofs,
+      'handover' => notifyHandover,
+      'return' => notifyReturns,
+      'maintenance' => notifyMaintenance,
+      _ => true,
+    };
+  }
+
   AppSettingsState copyWith({
     String? localeCode,
     ThemeMode? themeMode,

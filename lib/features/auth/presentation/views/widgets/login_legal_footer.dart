@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/routing/route_names.dart';
 import '../../../../../l10n/app_localizations.dart';
 
@@ -40,7 +41,7 @@ class _LoginLegalFooterState extends State<LoginLegalFooter> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final scheme = Theme.of(context).colorScheme;
+    final linkColor = AppColors.primaryTextFor(Theme.of(context).brightness);
     return Text.rich(
       TextSpan(
         children: [
@@ -48,13 +49,13 @@ class _LoginLegalFooterState extends State<LoginLegalFooter> {
           const TextSpan(text: ' '),
           TextSpan(
             text: l10n?.authTermsOfService ?? 'Terms of Service',
-            style: TextStyle(color: scheme.primary),
+            style: TextStyle(color: linkColor),
             recognizer: _termsRecognizer,
           ),
           TextSpan(text: ' ${l10n?.authLegalAnd ?? 'and'} '),
           TextSpan(
             text: l10n?.authPrivacyPolicy ?? 'Privacy Policy',
-            style: TextStyle(color: scheme.primary),
+            style: TextStyle(color: linkColor),
             recognizer: _privacyRecognizer,
           ),
         ],

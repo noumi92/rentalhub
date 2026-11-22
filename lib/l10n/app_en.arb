@@ -2701,6 +2701,7 @@
   "notificationsMarkReadError": "Could not mark notifications as read. Please try again.",
   "notificationsLoadError": "Could not load notifications. Check your connection and try again.",
   "notificationsEmpty": "No notifications yet.",
+  "notificationsFilterUnread": "Unread",
   "subscriptionUpgradeTo": "Upgrade to {tier}",
   "@subscriptionUpgradeTo": {
     "placeholders": {

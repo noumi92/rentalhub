@@ -126,13 +126,9 @@ class BookingModel extends BookingEntity {
       vehicleId: (map['vehicleId'] as String?) ?? '',
       packageType: (map['packageType'] as String?) ?? '24h',
       isWithDriver: (map['isWithDriver'] as bool?) ?? true,
-      pickupTime: map['pickupTime'] != null
-          ? DateTime.tryParse(map['pickupTime'].toString()) ?? DateTime.now()
-          : DateTime.now(),
-      returnTime: map['returnTime'] != null
-          ? DateTime.tryParse(map['returnTime'].toString()) ??
-              DateTime.now().add(const Duration(days: 1))
-          : DateTime.now().add(const Duration(days: 1)),
+      pickupTime: _parseDateTime(map['pickupTime']) ?? DateTime.now(),
+      returnTime: _parseDateTime(map['returnTime']) ??
+          DateTime.now().add(const Duration(days: 1)),
       totalAmount: (map['totalAmount'] as num?)?.toInt() ?? 0,
       advanceRequired: (map['advanceRequired'] as num?)?.toInt() ?? 1000,
       advancePaid: (map['advancePaid'] as num?)?.toInt() ?? 0,

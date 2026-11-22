@@ -10,35 +10,41 @@ Future<String?> showSuspendDialog(
   required bool suspend,
 }) async {
   final reasonController = TextEditingController();
-  final confirmed = await showDialog<bool>(
-    context: context,
-    builder: (ctx) => AlertDialog(
-      title: Text(suspend ? AppLocalizations.of(ctx)!.admin2_suspendTitle : AppLocalizations.of(ctx)!.admin2_suspendLiftTitle),
-      content: TextField(
-        controller: reasonController,
-        // AD-m21: autofocus on the reason field, radius 16
-        // (rulebook) with a label instead of a hint-only field.
-        autofocus: true,
-        maxLines: 2,
-        decoration: InputDecoration(
-          labelText: AppLocalizations.of(ctx)!.admin2_suspendReasonLabel,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
+  try {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        scrollable: true,
+        title: Text(suspend
+            ? AppLocalizations.of(ctx)!.admin2_suspendTitle
+            : AppLocalizations.of(ctx)!.admin2_suspendLiftTitle),
+        content: TextField(
+          controller: reasonController,
+          autofocus: true,
+          maxLines: 2,
+          decoration: InputDecoration(
+            labelText: AppLocalizations.of(ctx)!.admin2_suspendReasonLabel,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
           ),
         ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(AppLocalizations.of(ctx)!.cancel),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(minimumSize: const Size(0, 48)),
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(AppLocalizations.of(ctx)!.admin2_confirm),
+          ),
+        ],
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(ctx).pop(false),
-          child: Text(AppLocalizations.of(ctx)!.cancel),
-        ),
-        FilledButton(
-          onPressed: () => Navigator.of(ctx).pop(true),
-          child: Text(AppLocalizations.of(ctx)!.admin2_confirm),
-        ),
-      ],
-    ),
-  );
-  if (confirmed != true) return null;
-  return reasonController.text.trim();
+    );
+    if (confirmed != true) return null;
+    return reasonController.text.trim();
+  } finally {
+    reasonController.dispose();
+  }
 }

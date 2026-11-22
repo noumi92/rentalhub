@@ -58,41 +58,43 @@ class _SignaturePadWidgetState extends State<SignaturePadWidget> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  Icon(
-                    _isSigned ? Icons.check_circle : Icons.draw_outlined,
-                    color:
-                        _isSigned ? AppColors.accentSuccess : AppColors.primary,
-                    size: 18,
-                  ),
-                  const SizedBox(width: 6),
-                  Text(
-                    widget.signerLabel,
-                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          // The pad stays near-white for ink in both modes,
-                          // so the label stays a fixed dark colour.
-                          color: AppColors.textPrimary,
-                        ),
-                  ),
-                ],
+              Expanded(
+                child: Row(
+                  children: [
+                    Icon(
+                      _isSigned ? Icons.check_circle : Icons.draw_outlined,
+                      color: _isSigned
+                          ? AppColors.accentSuccessStrong
+                          : AppColors.primary,
+                      size: 18,
+                    ),
+                    const SizedBox(width: 6),
+                    Flexible(
+                      child: Text(
+                        widget.signerLabel,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.textPrimary,
+                            ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              // Audit item 18: the "Auto Sign" button drew a fake
-              // signature path — removed entirely. A signature is
-              // only ever what a person draws on the pad.
               TextButton(
                 onPressed: _clear,
                 style: TextButton.styleFrom(
                   padding: const EdgeInsets.symmetric(
                       horizontal: 8, vertical: 2),
-                  // Audit 2026-11-15 AC-17: Size.zero + shrinkWrap
-                  // left a ~30x20 dp hit area — the 48 dp minimum.
-                  minimumSize: const Size(0, 48),
+                  minimumSize: const Size(48, 48),
                 ),
                 child: Text(
                   l10n?.handoverClear ?? 'Clear',
-                  style: Theme.of(context).textTheme.bodySmall,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AppColors.onSurfaceVariantLight,
+                      ),
                 ),
               ),
             ],
@@ -125,21 +127,26 @@ class _SignaturePadWidgetState extends State<SignaturePadWidget> {
                   widget.onSignedChange?.call(true);
                 },
                 onPanEnd: (details) => _points.add(null),
-                child: CustomPaint(
-                  painter: _SignaturePainter(points: _points),
-                  child: Center(
-                    child: _points.isEmpty
-                        ? Text(
-                            l10n?.signatureSignHere(widget.signerName) ??
-                                'Sign here on screen (${widget.signerName})',
-                            style:
-                                Theme.of(context).textTheme.bodySmall?.copyWith(
-                                      color: AppColors.textMuted
-                                          .withValues(alpha: 0.7),
-                                      fontStyle: FontStyle.italic,
-                                    ),
-                          )
-                        : null,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: CustomPaint(
+                    painter: _SignaturePainter(points: _points),
+                    child: Center(
+                      child: _points.isEmpty
+                          ? Text(
+                              l10n?.signatureSignHere(widget.signerName) ??
+                                  'Sign here on screen (${widget.signerName})',
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall
+                                  ?.copyWith(
+                                    color: AppColors.onSurfaceVariantLight,
+                                    fontStyle: FontStyle.italic,
+                                  ),
+                            )
+                          : null,
+                    ),
                   ),
                 ),
               ),
@@ -149,12 +156,19 @@ class _SignaturePadWidgetState extends State<SignaturePadWidget> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                l10n?.signatureSignedBy(widget.signerName) ??
-                    'Signed by: ${widget.signerName}',
-                style: Theme.of(context).textTheme.labelSmall,
+              Expanded(
+                child: Text(
+                  l10n?.signatureSignedBy(widget.signerName) ??
+                      'Signed by: ${widget.signerName}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: AppColors.onSurfaceVariantLight,
+                      ),
+                ),
               ),
-              if (_isSigned)
+              if (_isSigned) ...[
+                const SizedBox(width: 8),
                 Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
@@ -166,13 +180,11 @@ class _SignaturePadWidgetState extends State<SignaturePadWidget> {
                     l10n?.signatureNadraValidated ?? 'Signature captured',
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
                           fontWeight: FontWeight.w500,
-                          // Item 4: the raw #10B981 is 2.54:1 on the
-                          // (forced-light) pad — the strong green is
-                          // 5.48:1. The forced-light keep itself stands.
                           color: AppColors.accentSuccessStrong,
                         ),
                   ),
                 ),
+              ],
             ],
           ),
         ],

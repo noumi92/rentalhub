@@ -51,25 +51,44 @@ class PackagePricing {
   }
 
   /// The advance: the vehicle's fixed advance when set, otherwise
-  /// 25% of the total, clamped to Rs. 1,000–10,000.
+  /// 25% of the total, clamped to Rs. 1,000–10,000 (and never more
+  /// than [total] when [total] > 0, so discounted bookings stay payable).
   static int advanceFor({
     required VehicleEntity? vehicle,
     required int total,
   }) {
     final vehicleAdvance = vehicle?.advanceRequiredPkr;
-    if (vehicleAdvance != null) return vehicleAdvance;
-    return (total * 0.25).round().clamp(1000, 10000);
+    if (vehicleAdvance != null) {
+      return total > 0 ? vehicleAdvance.clamp(0, total) : vehicleAdvance;
+    }
+    final computed = (total * 0.25).round().clamp(1000, 10000);
+    return total > 0 ? computed.clamp(0, total) : computed;
+  }
+
+  /// Effective booked days for a tier (Weekly = 7-day blocks,
+  /// Monthly = 30-day blocks, 24h = durationDays).
+  static int effectiveDaysFor({
+    required PackageTierOption tier,
+    required int durationDays,
+  }) {
+    final days = durationDays < 1 ? 1 : durationDays;
+    if (tier.label == 'Weekly') return ((days + 6) ~/ 7) * 7;
+    if (tier.label == 'Monthly') return ((days + 29) ~/ 30) * 30;
+    return days;
   }
 
   /// The km allowance for a booking: the package's included km
   /// (per day for day packages), or the out-of-city allowance when
-  /// the trip goes out of the city.
+  /// the trip goes out of the city. Fixed-route / total-trip km
+  /// strings (without '/day') are returned as-is without re-multiplying.
   static int kmLimitFor({
     required PackageTierOption tier,
     required int durationDays,
   }) {
-    final perDay = int.tryParse(tier.kmIncluded.split(' ').first) ?? 250;
-    if (tier.hours >= 24) return perDay * durationDays;
-    return perDay;
+    final parsed = int.tryParse(tier.kmIncluded.split(' ').first) ?? 250;
+    if (tier.hours < 24) return parsed;
+    final isPerDay = tier.kmIncluded.toLowerCase().contains('/day');
+    if (!isPerDay) return parsed;
+    return parsed * effectiveDaysFor(tier: tier, durationDays: durationDays);
   }
 }

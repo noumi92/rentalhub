@@ -17,15 +17,21 @@ import '../../../../../core/utils/shop_id_resolution.dart';
 /// count in that case.
 class DashboardLiveNotifications {
   StreamSubscription<QuerySnapshot<Map<String, dynamic>>>? _sub;
+  final Set<String> _seenUnreadIds = {};
+  bool _initialLoaded = false;
+  String? _activeShopId;
 
-  /// Starts the subscription (no-op when already live). Returns
-  /// false when no Firestore is available.
+  /// Starts the subscription (no-op when already live for the same shop).
+  /// Returns false when no Firestore is available.
   Future<bool> subscribe({
     required String shopId,
     required void Function(int unreadCount) onUnreadCount,
+    void Function(String title, String body, String? bookingId, String type)?
+        onNewArrival,
     FirebaseFirestore? firestore,
   }) async {
-    if (_sub != null) return true;
+    if (_sub != null && _activeShopId == shopId) return true;
+    dispose();
     FirebaseFirestore? fs = firestore;
     fs ??= () {
       try {
@@ -40,20 +46,48 @@ class DashboardLiveNotifications {
       onUnreadCount(0);
       return true;
     }
+    _activeShopId = shopId;
     _sub = fs
         .collection('notifications')
         .where('shopId', whereIn: ids)
         .snapshots()
         .listen(
       (snap) {
-        final unread =
-            snap.docs.where((d) => d.data()['read'] != true).length;
-        onUnreadCount(unread);
+        final unreadDocs = snap.docs
+            .where((d) =>
+                d.data()['read'] != true &&
+                d.data()['recipientRole'] != 'customer')
+            .toList();
+        onUnreadCount(unreadDocs.length);
+        if (_initialLoaded && onNewArrival != null) {
+          for (final d in unreadDocs) {
+            if (_seenUnreadIds.add(d.id)) {
+              final data = d.data();
+              onNewArrival(
+                (data['title'] as String?) ?? '',
+                (data['body'] as String?) ?? '',
+                data['bookingId'] as String?,
+                (data['type'] as String?) ?? 'general',
+              );
+            }
+          }
+        } else {
+          for (final d in unreadDocs) {
+            _seenUnreadIds.add(d.id);
+          }
+          _initialLoaded = true;
+        }
       },
-      onError: (_) => _sub = null,
+      onError: (_) => dispose(),
     );
     return true;
   }
 
-  void dispose() => _sub?.cancel();
+  void dispose() {
+    _sub?.cancel();
+    _sub = null;
+    _activeShopId = null;
+    _initialLoaded = false;
+    _seenUnreadIds.clear();
+  }
 }

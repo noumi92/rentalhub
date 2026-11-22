@@ -159,11 +159,13 @@ class AppFeedback {
             ),
           ],
         ),
-        content: Text(
-          message,
-          style: Theme.of(ctx).textTheme.bodyMedium?.copyWith(
-            color: Theme.of(ctx).colorScheme.onSurfaceVariant,
-            height: 1.4,
+        content: SingleChildScrollView(
+          child: Text(
+            message,
+            style: Theme.of(ctx).textTheme.bodyMedium?.copyWith(
+              color: Theme.of(ctx).colorScheme.onSurfaceVariant,
+              height: 1.4,
+            ),
           ),
         ),
         actions: [

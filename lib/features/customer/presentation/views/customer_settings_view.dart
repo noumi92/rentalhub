@@ -85,6 +85,7 @@ class _CustomerSettingsViewState extends State<CustomerSettingsView> {
     final customer = _customer;
     return Scaffold(
       body: SafeArea(
+        top: false,
         child: Column(
           children: [
             MinimalAppBar(
@@ -103,7 +104,9 @@ class _CustomerSettingsViewState extends State<CustomerSettingsView> {
                       children: [
                         SettingsSectionCard(
                           title: l10n.language,
-                          child: Row(
+                          child: Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
                             children: [
                               ChoiceChip(
                                 materialTapTargetSize:
@@ -113,7 +116,6 @@ class _CustomerSettingsViewState extends State<CustomerSettingsView> {
                                 onSelected: (_) =>
                                     sl<AppSettingsCubit>().setLocale('en'),
                               ),
-                              const SizedBox(width: 8),
                               ChoiceChip(
                                 materialTapTargetSize:
                                     MaterialTapTargetSize.padded,
@@ -128,7 +130,9 @@ class _CustomerSettingsViewState extends State<CustomerSettingsView> {
                         const SizedBox(height: 16),
                         SettingsSectionCard(
                           title: l10n.theme,
-                          child: Row(
+                          child: Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
                             children: [
                               ChoiceChip(
                                 materialTapTargetSize:
@@ -138,7 +142,6 @@ class _CustomerSettingsViewState extends State<CustomerSettingsView> {
                                 onSelected: (_) => sl<AppSettingsCubit>()
                                     .setThemeMode(ThemeMode.light),
                               ),
-                              const SizedBox(width: 8),
                               ChoiceChip(
                                 materialTapTargetSize:
                                     MaterialTapTargetSize.padded,
@@ -147,7 +150,6 @@ class _CustomerSettingsViewState extends State<CustomerSettingsView> {
                                 onSelected: (_) => sl<AppSettingsCubit>()
                                     .setThemeMode(ThemeMode.dark),
                               ),
-                              const SizedBox(width: 8),
                               ChoiceChip(
                                 materialTapTargetSize:
                                     MaterialTapTargetSize.padded,

@@ -26,6 +26,7 @@ class ReturnFarePaymentSection extends StatefulWidget {
   final void Function(int amount, String? method) onCollected;
   final int extraFareDue;
   final void Function(int amount, String? method)? onExtraFareCollected;
+  final VoidCallback? onReturnedFromExtraCharges;
 
   const ReturnFarePaymentSection({
     super.key,
@@ -33,6 +34,7 @@ class ReturnFarePaymentSection extends StatefulWidget {
     required this.onCollected,
     this.extraFareDue = 0,
     this.onExtraFareCollected,
+    this.onReturnedFromExtraCharges,
   });
 
   @override
@@ -277,10 +279,13 @@ class _ReturnFarePaymentSectionState extends State<ReturnFarePaymentSection> {
             child: TextButton.icon(
               icon: const Icon(Icons.receipt_long_rounded, size: 18),
               label: Text(l10n.returnPaymentRecordExtraCharges),
-              onPressed: () => context.push(
-                RouteNames.ownerRecordExtraCharges
-                    .replaceFirst(':id', widget.booking.bookingId),
-              ),
+              onPressed: () async {
+                await context.push(
+                  RouteNames.ownerRecordExtraCharges
+                      .replaceFirst(':id', widget.booking.bookingId),
+                );
+                widget.onReturnedFromExtraCharges?.call();
+              },
             ),
           ),
         ],

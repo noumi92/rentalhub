@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../../../core/routing/route_names.dart';
+import '../../../notifications/data/datasources/notification_data_source.dart';
 import '../services/admin_audit_service.dart';
 
 /// Item 6 — the admin side of customer KYC review.
@@ -144,6 +146,20 @@ class AdminKycDataSource {
         detail: trimmedReason,
         decision: decision,
       );
+      try {
+        await NotificationDataSource(firestore: firestore)
+            .createCustomerNotification(
+          customerId: customerId,
+          title: decision == 'verified'
+              ? 'KYC documents verified'
+              : 'KYC documents rejected',
+          body: decision == 'verified'
+              ? 'Your CNIC and driving licence have been verified. You are ready to book.'
+              : 'Please review and re-upload your documents. Reason: $trimmedReason',
+          type: 'kyc_status',
+          targetRoute: RouteNames.customerKyc,
+        );
+      } catch (_) {}
       return true;
     } catch (_) {
       return false;

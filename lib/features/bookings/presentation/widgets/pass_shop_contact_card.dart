@@ -4,6 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/app_feedback.dart';
+import '../../../../core/widgets/app_map_tile_layer.dart';
 import '../../../discovery/data/models/shop_model.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../core/theme/card_decoration.dart';
@@ -122,29 +123,12 @@ class _PassShopContactCardState extends State<PassShopContactCard> {
   }
 
   Future<void> _openDirections() async {
-    final l10n = AppLocalizations.of(context)!;
-    final shop = _shop;
-    String? query;
-    if (_lat != null && _lng != null) {
-      query = '$_lat,$_lng';
-    } else if (shop != null && shop.address.trim().isNotEmpty) {
-      query = shop.address;
-    }
-    if (query == null) {
-      AppFeedback.showInfo(
-        context,
-        l10n.passNoLocation,
-      );
-      return;
-    }
-    final uri = Uri.parse(
-      'https://www.google.com/maps/search/?api=1&query=${Uri.encodeComponent(query)}',
+    await openMapDirections(
+      context,
+      lat: _lat,
+      lng: _lng,
+      address: _shop?.address,
     );
-    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
-      if (mounted) {
-        AppFeedback.showError(context, l10n.passOpenMapsError);
-      }
-    }
   }
 
   Future<void> _openAgreement() async {

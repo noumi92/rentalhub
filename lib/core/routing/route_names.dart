@@ -44,6 +44,7 @@ class RouteNames {
   // the landing route for tapped admin announcement pushes.
   static const String customerAnnouncement = '/customer/announcement/:id';
   static const String customerSavedShops = '/customer/saved-shops';
+  static const String customerNotifications = '/customer/notifications';
 
   // Owner Routes
   static const String ownerOnboarding = '/owner/onboarding';

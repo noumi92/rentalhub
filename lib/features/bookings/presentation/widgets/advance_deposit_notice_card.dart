@@ -26,7 +26,7 @@ class AdvanceDepositNoticeCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: AppColors.secondaryContainer,
+        color: AppColors.orangeContainerFor(Theme.of(context).brightness),
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: AppColors.secondary.withValues(alpha: 0.3)),
       ),

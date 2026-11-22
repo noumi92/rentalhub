@@ -104,6 +104,10 @@ class _ManualBookingCarStepState extends State<ManualBookingCarStep> {
     final key = '${v.vehicleId}|${widget.pickupTime.toIso8601String()}|${widget.returnTime.toIso8601String()}';
     if (key == _checkKey) return;
     _checkKey = key;
+    if (_free != null) {
+      setState(() => _free = null);
+      widget.onAvailabilityChanged(null);
+    }
     final free = await WalkInBookingService.isVehicleFree(
       shopId: currentShopId(),
       vehicleId: v.vehicleId,
@@ -111,7 +115,7 @@ class _ManualBookingCarStepState extends State<ManualBookingCarStep> {
       returnTime: widget.returnTime,
       existingBookings: widget.existingBookings,
     );
-    if (!mounted) return;
+    if (!mounted || key != _checkKey) return;
     setState(() => _free = free);
     widget.onAvailabilityChanged(free);
   }

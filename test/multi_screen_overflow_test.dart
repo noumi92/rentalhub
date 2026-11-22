@@ -341,7 +341,7 @@ void main() {
         returnTime: DateTime(2026, 11, 9, 10),
         totalAmount: 1250000,
         remainingBalance: 1250000,
-        status: 'payment_submitted',
+        status: 'approved',
         vehicleName: 'Toyota Corolla Grande 1.8',
         vehiclePlate: 'LEA-21-4820',
         shopName: 'Al-Madina Rent a Car',

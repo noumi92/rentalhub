@@ -129,6 +129,7 @@ class ReviewBookingSubmitter {
         vehicleName: draft['carName'] as String?,
         vehiclePlate: draft['plateNumber'] as String?,
         shopName: draft['shopName'] as String?,
+        shopPhone: draft['shopPhone'] as String?,
         customerName: customerName,
         customerPhone: customerPhone,
         customerCnic: customerCnic,
@@ -139,6 +140,7 @@ class ReviewBookingSubmitter {
         fixedRouteSummary: draft['fixedRouteSummary'] as String?,
         outCityMode: draft['outCityMode'] as String?,
         outCityPerKmPkr: draft['outCityPerKmPkr'] as int?,
+        depositAmountPkr: (draft['securityDepositPkr'] as num?)?.toDouble(),
         notes: notes,
       );
       if (context.mounted) {

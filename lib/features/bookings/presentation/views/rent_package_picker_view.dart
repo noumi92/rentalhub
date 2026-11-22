@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/widgets/app_feedback.dart';
 import '../../../bookings/data/datasources/booking_settings_data_source.dart';
 import '../../../bookings/utils/package_pricing.dart';
 import '../../../bookings/utils/picker_availability.dart';
@@ -24,10 +25,12 @@ class RentPackagePickerView extends StatefulWidget {
   final String plateNumber;
   final String shopId;
   final String shopName;
+  final String? shopPhone;
   final int dailySelfDriveRate;
   final int dailyWithDriverRate;
   final int? hourlyRate;
   final VehicleEntity? vehicle;
+  final bool initialWithDriver;
   // Worker A (2026-11-21): test/route override for the shop's
   // booking-settings driver rate (Rs/day). When null the picker
   // loads it from `booking_settings/{shopId}` itself.
@@ -44,10 +47,12 @@ class RentPackagePickerView extends StatefulWidget {
     required this.plateNumber,
     required this.shopId,
     required this.shopName,
+    this.shopPhone,
     required this.dailySelfDriveRate,
     required this.dailyWithDriverRate,
     this.hourlyRate,
     this.vehicle,
+    this.initialWithDriver = false,
     this.driverRatePerDayPkr,
     this.shopIsVerified,
     this.onProceedToReview,
@@ -85,6 +90,7 @@ class _RentPackagePickerViewState extends State<RentPackagePickerView> {
   @override
   void initState() {
     super.initState();
+    _isWithDriver = widget.initialWithDriver;
     if (widget.driverRatePerDayPkr == null) BookingSettingsDataSource().getSettings(widget.shopId).then((s) { if (mounted) setState(() => _driverRatePerDayPkr = s.driverRatePerDayPkr); });
     final vehicle = widget.vehicle;
     if (vehicle != null) {
@@ -133,19 +139,56 @@ class _RentPackagePickerViewState extends State<RentPackagePickerView> {
 
   DateTime get _pickupDateTime => DateTime(_pickupDate.year, _pickupDate.month, _pickupDate.day, _pickupTime.hour, _pickupTime.minute);
 
-  DateTime get _returnDateTime => _pickupDateTime.add(Duration(days: _durationDays));
+  DateTime get _returnDateTime {
+    final tier = _selectedTier;
+    if (tier.hours < 24) {
+      return _pickupDateTime.add(Duration(hours: tier.hours));
+    }
+    final days = PackagePricing.effectiveDaysFor(
+      tier: tier,
+      durationDays: _durationDays,
+    );
+    return _pickupDateTime.add(Duration(days: days));
+  }
+
+  bool _spanHasBlockedDay() {
+    final blocked = _availability?.blockedDays;
+    if (blocked == null || blocked.isEmpty) return false;
+    final start = DateTime(_pickupDate.year, _pickupDate.month, _pickupDate.day);
+    final days = _selectedTier.hours < 24
+        ? 1
+        : PackagePricing.effectiveDaysFor(
+            tier: _selectedTier,
+            durationDays: _durationDays,
+          );
+    for (var i = 0; i < days; i++) {
+      if (blocked.contains(start.add(Duration(days: i)))) return true;
+    }
+    return false;
+  }
 
   void _continue() {
+    final l10n = AppLocalizations.of(context)!;
+    if (_pickupDateTime.isBefore(DateTime.now())) {
+      AppFeedback.showError(context, l10n.pickerPastTime);
+      return;
+    }
+    if (_spanHasBlockedDay()) {
+      AppFeedback.showError(context, l10n.manualBookingCarBusy);
+      return;
+    }
     widget.onProceedToReview?.call(buildBookingDraft(
       carId: widget.carId,
       carName: widget.carName,
       plateNumber: widget.plateNumber,
       shopId: widget.shopId,
       shopName: widget.shopName,
+      shopPhone: widget.shopPhone,
       isWithDriver: _isWithDriver,
       tier: _selectedTier,
       kmLimit: _kmLimit,
       securityDepositPkr: widget.vehicle?.securityDepositPkr,
+      driverNightStayPkr: widget.vehicle?.driverNightStayPkr,
       tripType: _isOutOfCity ? 'out_of_city' : 'in_city',
       fixedRouteId: _selectedRoute?.routeId,
       fixedRouteSummary: _selectedRoute?.displayName,
@@ -224,6 +267,7 @@ class _RentPackagePickerViewState extends State<RentPackagePickerView> {
                       pickupTime: _pickupTime,
                       durationDays: _durationDays,
                       blockedDates: _availability?.blockedDays ?? const {},
+                      showDurationStepper: _selectedTier.hours >= 24,
                       onDateChanged: (d) => setState(() => _pickupDate = d),
                       onTimeChanged: (t) => setState(() => _pickupTime = t),
                       onDurationChanged: (days) =>

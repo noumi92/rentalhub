@@ -50,14 +50,14 @@ class RoleSelectorCard extends StatelessWidget {
               decoration: BoxDecoration(
                 color: isSelected
                     ? AppColors.orangeFill
-                    : AppColors.primaryContainer,
+                    : Theme.of(context).colorScheme.primaryContainer,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
                 icon,
                 color: isSelected
                     ? Colors.white
-                    : Theme.of(context).colorScheme.onSurface,
+                    : Theme.of(context).colorScheme.onPrimaryContainer,
                 size: 24,
               ),
             ),

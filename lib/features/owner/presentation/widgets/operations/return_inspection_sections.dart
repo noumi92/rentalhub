@@ -110,12 +110,14 @@ class ReturnConditionSelector extends StatelessWidget {
   final String bookingId;
   final String condition; // 'good' | 'minor_damage'
   final ValueChanged<String> onChanged;
+  final VoidCallback? onReturnedFromDamage;
 
   const ReturnConditionSelector({
     super.key,
     required this.bookingId,
     required this.condition,
     required this.onChanged,
+    this.onReturnedFromDamage,
   });
 
   @override
@@ -168,10 +170,13 @@ class ReturnConditionSelector extends StatelessWidget {
               child: TextButton.icon(
                 icon: const Icon(Icons.car_crash_rounded, size: 18),
                 label: Text(l10n.returnConditionRecordDamage),
-                onPressed: () => context.push(
-                  RouteNames.ownerRecordDamage
-                      .replaceFirst(':id', bookingId),
-                ),
+                onPressed: () async {
+                  await context.push(
+                    RouteNames.ownerRecordDamage
+                        .replaceFirst(':id', bookingId),
+                  );
+                  onReturnedFromDamage?.call();
+                },
               ),
             ),
           ],

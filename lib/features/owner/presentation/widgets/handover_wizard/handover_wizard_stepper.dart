@@ -91,7 +91,7 @@ class HandoverWizardStepperBar extends StatelessWidget {
                   fontWeight:
                       isDone || isCurrent ? FontWeight.w600 : FontWeight.w500,
                   color: isDone
-                      ? AppColors.accentSuccessStrong
+                      ? AppColors.successTextFor(Theme.of(context).brightness)
                       : isCurrent
                           ? (Theme.of(context).brightness == Brightness.dark
                               ? AppColors.primaryContainer

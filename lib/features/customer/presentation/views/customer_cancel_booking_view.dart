@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
-import '../../../../core/di/injection_container.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../core/widgets/debounced_button.dart';
-import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../bookings/data/services/booking_cancel_service.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -61,25 +59,14 @@ class _CustomerCancelBookingViewState extends State<CustomerCancelBookingView> {
     final l10n = AppLocalizations.of(context)!;
     setState(() => _isSubmitting = true);
     try {
-      final ds = sl<BookingRemoteDataSource>();
-      // G5: the reason travels with the cancellation (stored on the
-      // booking's rejectionReason field, which the detail screen and
-      // the owner triage both read).
-      await ds.updateBookingStatus(
-        bookingId: widget.booking.bookingId,
-        status: 'cancelled',
-        rejectionReason: _selectedReason,
+      // Online customers do not have Firestore write permission on
+      // security_deposits or finance_transfers; only walk-in/owner
+      // flows release counter deposits directly.
+      await BookingCancelService.cancelBooking(
+        booking: widget.booking,
+        reason: _selectedReason,
+        releaseDeposit: BookingCancelService.isWalkInBooking(widget.booking),
       );
-      // Worker B (cancel releases the deposit): a walk-in cancelled
-      // here may hold a counter Security — it is refunded in full
-      // (the advance stays with the showroom). Status first,
-      // release best-effort: a release / ledger failure never
-      // blocks the cancellation itself.
-      try {
-        await BookingCancelService.releaseDepositOnCancel(
-          booking: widget.booking,
-        );
-      } catch (_) {}
 
       if (mounted) {
         AppFeedback.showInfo(context, l10n.cancelDone);

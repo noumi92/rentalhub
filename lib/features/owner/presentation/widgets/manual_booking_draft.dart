@@ -131,6 +131,9 @@ class ManualBookingDraft {
     if (selectedVehicle == null || selectedPackage == null) {
       return l10n.manualBookingSelectVehicle;
     }
+    if (selectedVehicle!.status == 'maintenance') {
+      return l10n.manualBookingCarBusy;
+    }
     if (isOutOfCity && selectedVehicle?.outCityMode == 'fixedRoute' && selectedRoute == null) {
       return l10n.outCityFixedRouteNone;
     }

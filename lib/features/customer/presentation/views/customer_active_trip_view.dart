@@ -72,6 +72,7 @@ class _CustomerActiveTripViewState extends State<CustomerActiveTripView> {
     final isActive = b.status == 'active';
     return Scaffold(
       body: SafeArea(
+        top: false,
         child: Column(
           children: [
             MinimalAppBar(
@@ -129,7 +130,12 @@ class _CustomerActiveTripViewState extends State<CustomerActiveTripView> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            l10n.activeTripShopLine(b.shopName ?? l10n.showroomLabel, b.vehiclePlate ?? ''),
+                            (b.vehiclePlate == null || b.vehiclePlate!.isEmpty)
+                                ? (b.shopName ?? l10n.showroomLabel)
+                                : l10n.activeTripShopLine(
+                                    b.shopName ?? l10n.showroomLabel,
+                                    b.vehiclePlate!,
+                                  ),
                             style: Theme.of(context).textTheme.bodySmall,
                           ),
                           const Divider(height: 20),
@@ -168,11 +174,15 @@ class _CustomerActiveTripViewState extends State<CustomerActiveTripView> {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.surface,
+                border: Border(
+                  top: BorderSide(color: Theme.of(context).dividerColor),
+                ),
                 boxShadow: [
                   BoxShadow(
-                      color: Color(0x14000000),
-                      blurRadius: 10,
-                      offset: Offset(0, -3))
+                    color: Theme.of(context).shadowColor.withValues(alpha: 0.10),
+                    blurRadius: 10,
+                    offset: const Offset(0, -3),
+                  ),
                 ],
               ),
               child: DebouncedButton(

@@ -105,24 +105,33 @@ class BookingCancelService {
   static Future<BookingEntity> cancelBooking({
     required BookingEntity booking,
     String? reason,
+    bool releaseDeposit = true,
     BookingRemoteDataSource? bookings,
     SecurityDepositDataSource? deposits,
     BookingLedgerService? ledger,
   }) async {
+    if (const {'active', 'completed', 'cancelled', 'rejected'}
+        .contains(booking.status)) {
+      throw StateError(
+        'Cannot cancel booking ${booking.bookingId} in status ${booking.status}.',
+      );
+    }
     final ds = bookings ?? sl<BookingRemoteDataSource>();
     final updated = await ds.updateBookingStatus(
       bookingId: booking.bookingId,
       status: 'cancelled',
       rejectionReason: reason,
     );
-    try {
-      await releaseDepositOnCancel(
-        booking: updated,
-        deposits: deposits,
-        ledger: ledger,
-      );
-    } catch (_) {
-      // Best-effort: the cancellation already landed.
+    if (releaseDeposit) {
+      try {
+        await releaseDepositOnCancel(
+          booking: updated,
+          deposits: deposits,
+          ledger: ledger,
+        );
+      } catch (_) {
+        // Best-effort: the cancellation already landed.
+      }
     }
     return updated;
   }

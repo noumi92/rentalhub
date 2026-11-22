@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/utils/money_format.dart';
 import '../../../../core/widgets/app_feedback.dart';
@@ -199,7 +200,8 @@ class _CarReviewDetailSheetState extends State<CarReviewDetailSheet> {
                   onPressed:
                       _isWorking ? null : () => _decide('rejected'),
                   style: OutlinedButton.styleFrom(
-                      foregroundColor: Colors.red.shade700,
+                      foregroundColor: AppColors.dangerTextFor(
+                          Theme.of(context).brightness),
                       minimumSize: const Size(0, 48)),
                   child: Text(l10n.admin2_reject),
                 ),
@@ -217,13 +219,28 @@ class _CarReviewDetailSheetState extends State<CarReviewDetailSheet> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label,
-              style:
-                  TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurfaceVariant)),
-          Text(value,
-              style: const TextStyle(
-                  fontSize: 13,
-                  )),
+          Flexible(
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 13,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Flexible(
+            flex: 2,
+            child: Text(
+              value,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.end,
+              style: const TextStyle(fontSize: 13),
+            ),
+          ),
         ],
       ),
     );

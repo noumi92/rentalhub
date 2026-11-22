@@ -23,7 +23,7 @@ class OnboardingRoleView extends StatefulWidget {
 class _OnboardingRoleViewState extends State<OnboardingRoleView> {
   String _selectedRole = 'customer';
 
-  void _handleContinue() async {
+  Future<void> _handleContinue() async {
     final l10n = AppLocalizations.of(context);
     final isCustomer = _selectedRole == 'customer';
     final roleTitle =
@@ -41,29 +41,36 @@ class _OnboardingRoleViewState extends State<OnboardingRoleView> {
 
     if (!confirmed || !mounted) return;
 
-    // Audit SH-C1: the role lock IS the write — without a registered
-    // data source there is nothing to lock. Fail here, before the
-    // "confirmed" toast and the navigation, instead of proceeding
-    // with no role saved.
     if (!sl.isRegistered<AuthRemoteDataSource>()) {
       AppFeedback.showError(context,
           l10n?.authUnavailable ?? 'Authentication unavailable. Please try again later.');
       return;
     }
 
-    AppFeedback.showSuccess(context, l10n?.roleConfirmed(roleTitle) ?? 'Account role "$roleTitle" confirmed.');
-
-    final auth = sl<AuthRemoteDataSource>();
-    await auth.assignPermanentRole(
-      role: _selectedRole,
-      fullName: auth.fullName,
-      phone: auth.phoneNumber,
-    );
-    if (isCustomer) {
-      await auth.setOnboardingCompleted(true);
+    try {
+      final auth = sl<AuthRemoteDataSource>();
+      await auth.assignPermanentRole(
+        role: _selectedRole,
+        fullName: auth.fullName,
+        phone: auth.phoneNumber,
+      );
+      if (isCustomer) {
+        await auth.setOnboardingCompleted(true);
+      }
+      if (!mounted) return;
+      AppFeedback.showSuccess(
+        context,
+        l10n?.roleConfirmed(roleTitle) ?? 'Account role "$roleTitle" confirmed.',
+      );
+    } catch (_) {
+      if (mounted) {
+        AppFeedback.showError(
+          context,
+          l10n?.authUnavailable ?? 'Could not save role. Please try again.',
+        );
+      }
+      return;
     }
-
-    if (!mounted) return;
 
     if (widget.onRoleLocked != null) {
       widget.onRoleLocked!(_selectedRole);
@@ -81,6 +88,7 @@ class _OnboardingRoleViewState extends State<OnboardingRoleView> {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
       body: SafeArea(
+        top: false,
         child: Column(
           children: [
             Expanded(

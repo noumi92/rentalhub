@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../theme/app_theme.dart';
@@ -46,51 +47,52 @@ class MinimalAppBar extends StatelessWidget implements PreferredSizeWidget {
     // HeaderTextTheme (the header spec: 18/12, white on navy, Urdu
     // title capped at w700).
     final headerText = HeaderTextTheme.of(context);
-    return Container(
-      color: AppColors.primaryDark,
-      padding: EdgeInsets.only(top: topPadding),
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(minHeight: 56),
-        child: Row(
-          children: [
-            if (showBack)
-              IconButton(
-                tooltip: AppLocalizations.of(context)?.back ?? 'Back',
-                icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                    color: Colors.white, size: 20),
-                onPressed: onBack ?? () => Navigator.of(context).maybePop(),
-              )
-            else
-              const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    title,
-                    // Audit 2026-11-15 AC-15: long Urdu titles
-                    // truncated at maxLines 1 at 360 px — allow 2
-                    // lines (the bar grows past 56 dp instead of
-                    // clipping). Phone check still owed.
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: headerText.headerTitle,
-                  ),
-                  if (subtitle != null)
+    final barBg = Theme.of(context).appBarTheme.backgroundColor ??
+        AppColors.primaryDark;
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.light,
+      child: Container(
+        color: barBg,
+        padding: EdgeInsets.only(top: topPadding),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 56),
+          child: Row(
+            children: [
+              if (showBack)
+                IconButton(
+                  tooltip: AppLocalizations.of(context)?.back ?? 'Back',
+                  icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                      color: Colors.white, size: 20),
+                  onPressed: onBack ?? () => Navigator.of(context).maybePop(),
+                )
+              else
+                const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
                     Text(
-                      subtitle!,
+                      title,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: headerText.headerSubtitle,
+                      style: headerText.headerTitle,
                     ),
-                ],
+                    if (subtitle != null)
+                      Text(
+                        subtitle!,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: headerText.headerSubtitle,
+                      ),
+                  ],
+                ),
               ),
-            ),
-            if (actions != null) ...actions!,
-            const SizedBox(width: 8),
-          ],
+              if (actions != null) ...actions!,
+              const SizedBox(width: 8),
+            ],
+          ),
         ),
       ),
     );

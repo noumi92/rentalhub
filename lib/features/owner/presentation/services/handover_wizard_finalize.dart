@@ -7,6 +7,7 @@ import '../../../bookings/domain/entities/booking_entity.dart';
 import '../../../handover/domain/entities/handover_entity.dart';
 import '../../../handover/presentation/cubit/handover_cubit.dart';
 import '../../../handover/presentation/cubit/handover_wizard_cubit.dart';
+import '../../../notifications/data/datasources/notification_data_source.dart';
 
 /// Item 9 (O30): the wizard's finalize, extracted so the shell
 /// stays under the 250-line cap.
@@ -95,6 +96,22 @@ class HandoverWizardFinalize {
     );
     await sl<BookingRemoteDataSource>().updateBookingStatus(
         bookingId: booking.bookingId, status: 'active');
+    if (booking.origin != 'walk_in' &&
+        booking.customerId.isNotEmpty &&
+        !booking.customerId.startsWith('walkin-') &&
+        sl.isRegistered<NotificationDataSource>()) {
+      try {
+        await sl<NotificationDataSource>().createCustomerNotification(
+          customerId: booking.customerId,
+          shopId: booking.shopId,
+          title: 'Trip started — Agreement ready',
+          body:
+              'Your rental of ${booking.vehicleName ?? vehicleFallback} at $shopName is now active.',
+          type: 'handover',
+          bookingId: booking.bookingId,
+        );
+      } catch (_) {}
+    }
     final pdfBytes = entity.agreementPdfB64 == null
         ? null
         : base64Decode(entity.agreementPdfB64!);

@@ -1,5 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../../../core/data/offline_sync_queue.dart';
+import '../../../../core/di/injection_container.dart';
+import '../../../notifications/data/datasources/notification_data_source.dart';
+
 /// H4: the real reviews store. One document per booking —
 /// `reviews/{bookingId}` — so a trip can be rated once by each side:
 /// the customer rates the showroom/vehicle, the showroom rates the
@@ -52,6 +56,7 @@ class ReviewRemoteDataSource {
       'bookingId': bookingId,
       'shopId': shopId,
       'customerId': customerId,
+      'reviewer_uid': customerId,
       if (customerName != null) 'customerName': customerName,
       if (vehicleName != null) 'vehicleName': vehicleName,
       'shopRating': shopRating,
@@ -76,7 +81,20 @@ class ReviewRemoteDataSource {
         }
       } catch (_) {}
     }
-    return _save(bookingId, data, serverTimestamp: true);
+    final ok = await _save(bookingId, data, serverTimestamp: true);
+    if (shopId.isNotEmpty && sl.isRegistered<NotificationDataSource>()) {
+      try {
+        await sl<NotificationDataSource>().createNotification(
+          shopId: shopId,
+          title: 'New customer review',
+          body:
+              '${customerName ?? 'A customer'} rated ${vehicleName ?? '#$bookingId'} ($shopRating★ showroom, $vehicleRating★ vehicle).',
+          type: 'new_review',
+          bookingId: bookingId,
+        );
+      } catch (_) {}
+    }
+    return ok;
   }
 
   /// The showroom's rating of the customer for [bookingId].
@@ -94,6 +112,7 @@ class ReviewRemoteDataSource {
       'bookingId': bookingId,
       'shopId': shopId,
       'customerId': customerId,
+      'reviewer_uid': shopId,
       'punctualityRating': punctualityRating,
       'careRating': careRating,
       'behaviorRating': behaviorRating,
@@ -129,6 +148,21 @@ class ReviewRemoteDataSource {
           .set(cloudData, SetOptions(merge: true));
       return true;
     } catch (_) {
+      // Queue for offline sync so ratings are not lost on app restart.
+      try {
+        if (sl.isRegistered<OfflineSyncQueue>()) {
+          await sl<OfflineSyncQueue>().enqueue(
+            kind: 'firestore_set',
+            entityId: 'reviews/$bookingId',
+            payload: {
+              'collection': 'reviews',
+              'docId': bookingId,
+              'data': data,
+              'merge': true,
+            },
+          );
+        }
+      } catch (_) {}
       return false;
     }
   }

@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart' as ll;
@@ -8,6 +9,8 @@ import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/di/injection_container.dart';
 import '../../../../../core/network/connectivity_service.dart';
 import '../../../../../core/network/firestore_service.dart';
+import '../../../../../core/utils/shop_id_resolution.dart';
+import '../../../../../core/widgets/app_map_tile_layer.dart';
 import '../../../../../l10n/app_localizations.dart';
 
 /// 010b boundary map header card (deck p.4): the shop inside its
@@ -129,7 +132,12 @@ class _BoundaryMapCardState extends State<BoundaryMapCard> {
   /// Lahore, so it cannot tell "not set" from "set to Lahore".
   static Future<ll.LatLng?> _loadShopCenter(String shopId) async {
     try {
-      final data = await sl<FirestoreService>().getDocument('shops', shopId);
+      FirebaseFirestore? fs;
+      try {
+        fs = FirebaseFirestore.instance;
+      } catch (_) {}
+      final docId = await canonicalShopId(fs, shopId);
+      final data = await sl<FirestoreService>().getDocument('shops', docId);
       if (data == null) return null;
       final lat = (data['latitude'] as num?)?.toDouble();
       final lng = (data['longitude'] as num?)?.toDouble();
@@ -246,10 +254,7 @@ class _BoundaryMapCardState extends State<BoundaryMapCard> {
         ),
       ),
       children: [
-        TileLayer(
-          urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-          userAgentPackageName: 'pk.rentalhub.rentalhub',
-        ),
+        const AppMapTileLayer(),
         CircleLayer(
           circles: [
             CircleMarker(
@@ -289,6 +294,7 @@ class _BoundaryMapCardState extends State<BoundaryMapCard> {
             ),
           ],
         ),
+        const AppOsmAttribution(alignment: Alignment.topRight),
       ],
     );
   }

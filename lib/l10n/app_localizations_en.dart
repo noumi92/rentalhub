@@ -4636,6 +4636,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notificationsEmpty => 'No notifications yet.';
 
   @override
+  String get notificationsFilterUnread => 'Unread';
+
+  @override
   String subscriptionUpgradeTo(String tier) {
     return 'Upgrade to $tier';
   }

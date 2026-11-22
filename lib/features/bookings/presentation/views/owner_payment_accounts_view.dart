@@ -113,6 +113,7 @@ class _OwnerPaymentAccountsViewState extends State<OwnerPaymentAccountsView> {
                   booking: _booking, onBack: widget.onBack)
               : OwnerBookingSummaryView(
                   booking: _booking, onBack: widget.onBack);
+        case 'payment_submitted':
         case 'completed':
         case 'rejected':
         case 'cancelled':

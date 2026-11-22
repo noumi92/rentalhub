@@ -19,6 +19,8 @@ import '../../../../../core/theme/card_decoration.dart';
 /// completes the booking and restores the vehicle.
 class ReturnPaymentSteps extends StatefulWidget {
   final String bookingId;
+  final String? shopId;
+  final String? customerId;
 
   /// The net refund from the live settlement breakdown — the amount
   /// the refund step records. Never invented: it comes from the
@@ -34,6 +36,8 @@ class ReturnPaymentSteps extends StatefulWidget {
   const ReturnPaymentSteps({
     super.key,
     required this.bookingId,
+    this.shopId,
+    this.customerId,
     required this.netRefund,
     required this.isFinalizing,
     required this.onCompleteClose,
@@ -86,6 +90,8 @@ class _ReturnPaymentStepsState extends State<ReturnPaymentSteps> {
       await ReturnSettlementService.recordRefund(
         bookingId: widget.bookingId,
         amount: widget.netRefund,
+        shopId: widget.shopId,
+        customerId: widget.customerId,
       );
       if (!mounted) return;
       setState(() {
@@ -117,6 +123,8 @@ class _ReturnPaymentStepsState extends State<ReturnPaymentSteps> {
         bookingId: widget.bookingId,
         amount: widget.amountOwed,
         method: _owedMethodPick,
+        shopId: widget.shopId,
+        customerId: widget.customerId,
       );
       if (!mounted) return;
       setState(() {

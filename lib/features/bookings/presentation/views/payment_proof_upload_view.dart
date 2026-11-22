@@ -57,7 +57,8 @@ class _PaymentProofUploadViewState extends State<PaymentProofUploadView> {
     final phone = widget.booking.shopPhone;
     if (phone == null || phone.isEmpty) return;
     final uri = whatsappUri(phone: phone, message: AppLocalizations.of(context)!.proofBookingId(widget.booking.bookingId));
-    if (uri == null || !await launchUrl(uri)) {
+    if (uri == null ||
+        !await launchUrl(uri, mode: LaunchMode.externalApplication)) {
       if (mounted) AppFeedback.showError(context, AppLocalizations.of(context)!.couldNotOpenWhatsapp);
     }
   }

@@ -121,18 +121,21 @@ class _OwnerCustomerScanViewState extends State<OwnerCustomerScanView> {
     final l10n = AppLocalizations.of(context)!;
     showModalBottomSheet<void>(
       context: context,
-      builder: (sheetContext) => Padding(
-        padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(l10n.customersScanTribunalPolicy, style: Theme.of(sheetContext).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
-            const SizedBox(height: 8),
-            Text(l10n.customersScanTribunalInfo, style: Theme.of(sheetContext).textTheme.bodyMedium),
-            const SizedBox(height: 16),
-            SizedBox(width: double.infinity, child: FilledButton(onPressed: () => Navigator.of(sheetContext).pop(), child: Text(l10n.back))),
-          ],
+      isScrollControlled: true,
+      builder: (sheetContext) => SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(l10n.customersScanTribunalPolicy, style: Theme.of(sheetContext).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
+              const SizedBox(height: 8),
+              Text(l10n.customersScanTribunalInfo, style: Theme.of(sheetContext).textTheme.bodyMedium),
+              const SizedBox(height: 16),
+              SizedBox(width: double.infinity, child: FilledButton(onPressed: () => Navigator.of(sheetContext).pop(), child: Text(l10n.back))),
+            ],
+          ),
         ),
       ),
     );

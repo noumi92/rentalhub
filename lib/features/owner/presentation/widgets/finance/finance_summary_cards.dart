@@ -41,7 +41,7 @@ class FinanceSummaryCards extends StatelessWidget {
         Expanded(
           child: _card(context, l10n.financeSummaryNet,
               l10n.amountRs(formatRs(net)),
-              Theme.of(context).colorScheme.primary),
+              AppColors.primaryTextFor(brightness)),
         ),
       ],
     );
@@ -64,13 +64,16 @@ class FinanceSummaryCards extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.labelSmall),
           const SizedBox(height: 4),
-          Text(amount,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w500,
-                    color: color,
-                  )),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: AlignmentDirectional.centerStart,
+            child: Text(amount,
+                maxLines: 1,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w500,
+                      color: color,
+                    )),
+          ),
         ],
       ),
     );

@@ -23,11 +23,15 @@ class FinanceHubHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      alignment: WrapAlignment.spaceBetween,
+      crossAxisAlignment: WrapCrossAlignment.center,
       children: [
         Wrap(
           spacing: 8,
+          runSpacing: 8,
           children: [
             ChoiceChip(
               label: Text(l10n.financeTabOverview),

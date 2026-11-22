@@ -70,7 +70,7 @@ class FuelGaugeWidget extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
-                  color: AppColors.primaryContainer,
+                  color: Theme.of(context).colorScheme.primaryContainer,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
@@ -79,6 +79,7 @@ class FuelGaugeWidget extends StatelessWidget {
                       '$activeSegments / 8 Bars (${(activeSegments / 8 * 100).round()}%)',
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
                         fontWeight: FontWeight.w500,
+                        color: Theme.of(context).colorScheme.onPrimaryContainer,
                       ),
                 ),
               ),
@@ -115,7 +116,8 @@ class FuelGaugeWidget extends StatelessWidget {
                       child: Center(
                         child: Container(
                           height: 28,
-                          margin: EdgeInsets.only(right: index < 7 ? 4 : 0),
+                          margin: EdgeInsetsDirectional.only(
+                              end: index < 7 ? 4 : 0),
                           decoration: BoxDecoration(
                             color: isFilled
                                 ? barColor

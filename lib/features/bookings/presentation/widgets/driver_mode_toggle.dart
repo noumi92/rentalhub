@@ -93,15 +93,19 @@ class DriverModeToggle extends StatelessWidget {
                       : Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
                 const SizedBox(width: 6),
-                Text(
-                  label,
-                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    fontWeight: FontWeight.w500,
-                    // CU-m1: the old AppColors.primary (navy) is
-                    // unreadable on a dark surface — theme text now.
-                    color: isSelected
-                        ? Theme.of(context).colorScheme.onSurface
-                        : Theme.of(context).colorScheme.onSurfaceVariant,
+                Flexible(
+                  child: Text(
+                    label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                      fontWeight: FontWeight.w500,
+                      // CU-m1: the old AppColors.primary (navy) is
+                      // unreadable on a dark surface — theme text now.
+                      color: isSelected
+                          ? Theme.of(context).colorScheme.onSurface
+                          : Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
                   ),
                 ),
               ],

@@ -77,17 +77,21 @@ class SettlementCalculator {
   static const int fuelDeficitHalf = 3000; // 2/4 (50%)
   static const int fuelDeficitNearEmpty = 4500; // 1/4 (25%)
 
-  static int fuelDeficitFor(String fuelLevel) {
-    switch (fuelLevel) {
-      case '3/4 (75%)':
-        return fuelDeficitQuarter;
-      case '2/4 (50%)':
-        return fuelDeficitHalf;
-      case '1/4 (25%)':
-        return fuelDeficitNearEmpty;
-      default:
-        return 0; // 4/4 (Full) — the "Same to Same" policy, met.
-    }
+  static int _fuelQuarters(String fuelLevel) {
+    if (fuelLevel.startsWith('1/4')) return 1;
+    if (fuelLevel.startsWith('2/4')) return 2;
+    if (fuelLevel.startsWith('3/4')) return 3;
+    if (fuelLevel.startsWith('4/4')) return 4;
+    return 4;
+  }
+
+  static int fuelDeficitFor(String fuelLevel, {String? handoverFuelLevel}) {
+    final returnQ = _fuelQuarters(fuelLevel);
+    final departureQ = handoverFuelLevel != null && handoverFuelLevel.isNotEmpty
+        ? _fuelQuarters(handoverFuelLevel)
+        : 4;
+    final missingQuarters = (departureQ - returnQ).clamp(0, 4);
+    return missingQuarters * fuelDeficitQuarter;
   }
 
   static SettlementBreakdown calculate({
@@ -95,6 +99,7 @@ class SettlementCalculator {
     required int kmAllowance,
     required int extraKmPkr,
     required String fuelLevel,
+    String? handoverFuelLevel,
     int damageCharge = 0,
     int overtimeHours = 0,
     required int extraHourPkr,
@@ -103,7 +108,8 @@ class SettlementCalculator {
   }) {
     final excessKm = (totalKmDriven - kmAllowance).clamp(0, 1 << 30);
     final excessKmCharge = excessKm * extraKmPkr;
-    final fuelDeficit = fuelDeficitFor(fuelLevel);
+    final fuelDeficit =
+        fuelDeficitFor(fuelLevel, handoverFuelLevel: handoverFuelLevel);
     final overtimeFee = overtimeHours * extraHourPkr;
     final totalDeductions =
         excessKmCharge + fuelDeficit + damageCharge + overtimeFee + extraCharges;

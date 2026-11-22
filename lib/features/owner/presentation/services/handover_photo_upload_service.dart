@@ -135,14 +135,19 @@ class ReturnRecordsService {
   }
 
   Future<List<Map<String, dynamic>>> loadDamageReports(
-      String bookingId) async {
+    String bookingId, {
+    String? shopId,
+  }) async {
     final fs = _resolvedFirestore;
     if (fs == null) return const [];
     try {
-      final snap = await fs
+      Query<Map<String, dynamic>> query = fs
           .collection('return_damage_reports')
-          .where('bookingId', isEqualTo: bookingId)
-          .get();
+          .where('bookingId', isEqualTo: bookingId);
+      if (shopId != null && shopId.isNotEmpty) {
+        query = query.where('shopId', isEqualTo: shopId);
+      }
+      final snap = await query.get();
       return snap.docs.map((d) => d.data()).toList();
     } catch (_) {
       return const [];
@@ -150,14 +155,19 @@ class ReturnRecordsService {
   }
 
   Future<List<Map<String, dynamic>>> loadExtraCharges(
-      String bookingId) async {
+    String bookingId, {
+    String? shopId,
+  }) async {
     final fs = _resolvedFirestore;
     if (fs == null) return const [];
     try {
-      final snap = await fs
+      Query<Map<String, dynamic>> query = fs
           .collection('return_extra_charges')
-          .where('bookingId', isEqualTo: bookingId)
-          .get();
+          .where('bookingId', isEqualTo: bookingId);
+      if (shopId != null && shopId.isNotEmpty) {
+        query = query.where('shopId', isEqualTo: shopId);
+      }
+      final snap = await query.get();
       return snap.docs.map((d) => d.data()).toList();
     } catch (_) {
       return const [];
@@ -168,15 +178,17 @@ class ReturnRecordsService {
   /// owner marked "deduct from deposit", and every manually added
   /// extra charge. Both are 0 when nothing was recorded.
   Future<({int deductibleDamage, int extraCharges})> loadTotals(
-      String bookingId) async {
-    final reports = await loadDamageReports(bookingId);
+    String bookingId, {
+    String? shopId,
+  }) async {
+    final reports = await loadDamageReports(bookingId, shopId: shopId);
     var deductibleDamage = 0;
     for (final report in reports) {
       if (report['deductFromDeposit'] == true) {
         deductibleDamage += (report['repairCost'] as num?)?.toInt() ?? 0;
       }
     }
-    final charges = await loadExtraCharges(bookingId);
+    final charges = await loadExtraCharges(bookingId, shopId: shopId);
     var extraCharges = 0;
     for (final charge in charges) {
       extraCharges += (charge['amount'] as num?)?.toInt() ?? 0;

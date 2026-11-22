@@ -45,17 +45,31 @@ class TriageTrustRow extends StatefulWidget {
 }
 
 class _TriageTrustRowState extends State<TriageTrustRow> {
-  late final Future<TrustScoreResult?> _result;
+  late Future<TrustScoreResult?> _result;
 
   @override
   void initState() {
     super.initState();
-    if (widget.trustScore != null) {
-      _result = Future.value(_overrideResult());
-    } else {
-      _result = (widget.trustService ?? const TrustScoreService())
-          .compute(widget.customerId);
+    _result = _load();
+  }
+
+  @override
+  void didUpdateWidget(covariant TriageTrustRow oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.customerId != widget.customerId ||
+        oldWidget.trustScore != widget.trustScore ||
+        oldWidget.cnicVerified != widget.cnicVerified ||
+        oldWidget.licenseVerified != widget.licenseVerified) {
+      _result = _load();
     }
+  }
+
+  Future<TrustScoreResult?> _load() {
+    if (widget.trustScore != null) {
+      return Future.value(_overrideResult());
+    }
+    return (widget.trustService ?? const TrustScoreService())
+        .compute(widget.customerId);
   }
 
   TrustScoreResult _overrideResult() {

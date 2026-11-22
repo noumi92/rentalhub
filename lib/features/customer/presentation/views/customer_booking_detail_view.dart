@@ -46,6 +46,8 @@ class CustomerBookingDetailView extends StatelessWidget {
         return l10n.statusApproved;
       case 'payment_submitted':
         return l10n.statusProofSubmitted;
+      case 'payment_rejected':
+        return l10n.statusProofRejected;
       case 'paid':
         return l10n.statusPaid;
       case 'active':
@@ -103,14 +105,9 @@ class CustomerBookingDetailView extends StatelessWidget {
                   children: [
                     BookingTicketCard(
                       booking: b,
-                      onTap: () {
-                        // The ticket is only a pass once the booking is
-                        // paid or active — before that there is no QR to
-                        // show, so the tap does nothing.
-                        if (b.status == 'paid' || b.status == 'active') {
-                          onViewPass?.call();
-                        }
-                      },
+                      onTap: (b.status == 'paid' || b.status == 'active')
+                          ? () => onViewPass?.call()
+                          : null,
                     ),
                     const SizedBox(height: 14),
                     BookingDetailSummary(booking: b),

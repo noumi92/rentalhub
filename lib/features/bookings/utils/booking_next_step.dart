@@ -156,6 +156,7 @@ BookingNextStep resolveOwnerNextStep(BookingEntity booking) {
 BookingNextStep resolveCustomerNextStep(BookingEntity booking) {
   switch (booking.status) {
     case 'approved':
+    case 'payment_rejected':
       return const BookingNextStep(BookingNextStepKind.payAdvance);
     case 'paid':
       return const BookingNextStep(BookingNextStepKind.viewPass);

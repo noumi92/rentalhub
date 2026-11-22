@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../../../core/utils/shop_id_resolution.dart';
+
 import '../../../../l10n/app_localizations.dart';
 
 /// One shop payment account, as stored under `bank_accounts` on the
@@ -65,7 +67,8 @@ class ShopPaymentAccount {
   }) async {
     try {
       final fs = firestore ?? FirebaseFirestore.instance;
-      final snap = await fs.collection('shops').doc(shopId).get();
+      final resolvedId = await canonicalShopId(fs, shopId);
+      final snap = await fs.collection('shops').doc(resolvedId).get();
       return fromShopData(snap.data());
     } catch (_) {
       return const [];

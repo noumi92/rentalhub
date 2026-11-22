@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/theme/card_decoration.dart';
 import '../../../../../core/utils/money_format.dart';
 import '../../../../../l10n/app_localizations.dart';
@@ -123,7 +124,11 @@ class _KpiTile extends StatelessWidget {
       decoration: AppCardDecoration.of(context),
       child: Column(
         children: [
-          Icon(icon, size: 20, color: Theme.of(context).colorScheme.primary),
+          Icon(
+            icon,
+            size: 20,
+            color: AppColors.primaryTextFor(Theme.of(context).brightness),
+          ),
           const SizedBox(height: 6),
           Text(
             value,

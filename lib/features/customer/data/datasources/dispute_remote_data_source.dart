@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../../../core/di/injection_container.dart';
 import '../../../../core/utils/shop_id_resolution.dart';
+import '../../../notifications/data/datasources/notification_data_source.dart';
 
 /// G4: the customer's disputes — filed to Firestore `disputes` with an
 /// in-memory fallback (offline / tests), the same pattern the booking
@@ -111,6 +113,19 @@ class DisputeRemoteDataSource {
             'statusBeforeDispute': currentStatus,
           });
         }
+      } catch (_) {}
+    }
+    if (shopId != null &&
+        shopId.isNotEmpty &&
+        sl.isRegistered<NotificationDataSource>()) {
+      try {
+        await sl<NotificationDataSource>().createNotification(
+          shopId: shopId,
+          title: 'New dispute filed',
+          body: 'Customer filed a dispute on booking #$bookingId ($category).',
+          type: 'dispute_filed',
+          bookingId: bookingId,
+        );
       } catch (_) {}
     }
     return FiledDispute(id: id, synced: synced);

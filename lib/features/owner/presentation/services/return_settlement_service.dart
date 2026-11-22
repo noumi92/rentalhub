@@ -4,11 +4,13 @@ import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/network/firestore_service.dart';
+import '../../../../core/utils/money_format.dart';
 import '../../../finance/data/datasources/security_deposit_data_source.dart';
 import '../../../finance/data/services/booking_ledger_service.dart';
 import '../../../finance/utils/settlement_calculator.dart';
 import '../../../fleet/data/datasources/fleet_remote_data_source.dart';
 import '../../../handover/data/datasources/handover_local_data_source.dart';
+import '../../../notifications/data/datasources/notification_data_source.dart';
 import 'handover_photo_upload_service.dart' show ReturnRecordsService;
 
 /// Gap (c): the vehicle's out-of-city pricing as it stands at
@@ -62,16 +64,27 @@ class ReturnSettlementService {
     var deductibleDamage = 0;
     var extraCharges = 0;
     try {
-      final totals =
-          await ReturnRecordsService().loadTotals(booking.bookingId);
+      final totals = await ReturnRecordsService()
+          .loadTotals(booking.bookingId, shopId: booking.shopId);
       deductibleDamage = totals.deductibleDamage;
       extraCharges = totals.extraCharges;
     } catch (_) {}
     try {
       // The handover record holds the true departure odometer and
-      // the damage noted when the car left.
+      // the damage noted when the car left. Fall back to Firestore
+      // `handovers/{bookingId}` when settling from another device.
       final handover = await sl<HandoverLocalDataSource>()
           .getHandover(booking.bookingId);
+      Map<String, dynamic>? remoteHandover;
+      if (handover == null) {
+        try {
+          final snap = await FirebaseFirestore.instance
+              .collection('handovers')
+              .doc(booking.bookingId)
+              .get();
+          remoteHandover = snap.data();
+        } catch (_) {}
+      }
       // The vehicle holds the real rates and the deposit it charges.
       final vehicles = await sl<FleetRemoteDataSource>()
           .getShopVehicles(booking.shopId);
@@ -84,6 +97,15 @@ class ReturnSettlementService {
       if (handover != null) {
         initialOdometer = handover.initialOdometer;
         handoverNotes = handover.damageNotes;
+      } else if (remoteHandover != null) {
+        final remoteOdo = (remoteHandover['initialOdometer'] as num?)?.toInt();
+        if (remoteOdo != null && remoteOdo > 0) {
+          initialOdometer = remoteOdo;
+        }
+        final remoteNotes = remoteHandover['damageNotes'];
+        if (remoteNotes is List) {
+          handoverNotes = remoteNotes.map((e) => e.toString()).toList();
+        }
       }
       if (vehicle.isNotEmpty) {
         extraKmPkr = vehicle.first.extraKmPkr ?? 100;
@@ -258,6 +280,7 @@ class ReturnSettlementService {
       await fs.collection('return_settlements').doc(booking.bookingId).set({
         'bookingId': booking.bookingId,
         'shopId': booking.shopId,
+        'customerId': booking.customerId,
         'condition': condition,
         'returnPhotoUrls': {
           for (final e in returnPhotoUrls.entries)
@@ -356,6 +379,22 @@ class ReturnSettlementService {
       bookingId: booking.bookingId,
       status: 'completed',
     );
+    if (booking.origin != 'walk_in' &&
+        booking.customerId.isNotEmpty &&
+        !booking.customerId.startsWith('walkin-') &&
+        sl.isRegistered<NotificationDataSource>()) {
+      try {
+        await sl<NotificationDataSource>().createCustomerNotification(
+          customerId: booking.customerId,
+          shopId: booking.shopId,
+          title: 'Trip completed — Settlement ready',
+          body:
+              'Your trip for #${booking.bookingId} is closed. Net deposit refund: Rs. ${formatRs(breakdown.netRefund)}. Tap to rate your trip.',
+          type: 'return',
+          bookingId: booking.bookingId,
+        );
+      } catch (_) {}
+    }
 
     // Financial audit (2026-11-20): the return cash, posted to
     // the ledger exactly once (deterministic ids) — the remaining
@@ -503,12 +542,30 @@ class ReturnSettlementService {
   static Future<void> recordRefund({
     required String bookingId,
     required int amount,
+    String? shopId,
+    String? customerId,
   }) async {
+    var resolvedShopId = shopId;
+    var resolvedCustomerId = customerId;
+    BookingEntity? booking;
+    if ((resolvedShopId == null || resolvedShopId.isEmpty) &&
+        sl.isRegistered<BookingRemoteDataSource>()) {
+      try {
+        booking =
+            await sl<BookingRemoteDataSource>().getBookingById(bookingId);
+        resolvedShopId = booking?.shopId;
+        resolvedCustomerId ??= booking?.customerId;
+      } catch (_) {}
+    }
     await sl<FirestoreService>().setDocument(
       'return_settlements',
       bookingId,
       {
         'bookingId': bookingId,
+        if (resolvedShopId != null && resolvedShopId.isNotEmpty)
+          'shopId': resolvedShopId,
+        if (resolvedCustomerId != null && resolvedCustomerId.isNotEmpty)
+          'customerId': resolvedCustomerId,
         'refundRecorded': true,
         'depositRefunded': amount,
         'depositRefundedAt': FieldValue.serverTimestamp(),
@@ -522,7 +579,7 @@ class ReturnSettlementService {
           !sl.isRegistered<BookingRemoteDataSource>()) {
         return;
       }
-      final booking =
+      booking ??=
           await sl<BookingRemoteDataSource>().getBookingById(bookingId);
       if (booking == null) return;
       await sl<BookingLedgerService>().postOnce(
@@ -549,12 +606,29 @@ class ReturnSettlementService {
     required String bookingId,
     required int amount,
     String? method,
+    String? shopId,
+    String? customerId,
   }) async {
+    var resolvedShopId = shopId;
+    var resolvedCustomerId = customerId;
+    if ((resolvedShopId == null || resolvedShopId.isEmpty) &&
+        sl.isRegistered<BookingRemoteDataSource>()) {
+      try {
+        final booking =
+            await sl<BookingRemoteDataSource>().getBookingById(bookingId);
+        resolvedShopId = booking?.shopId;
+        resolvedCustomerId ??= booking?.customerId;
+      } catch (_) {}
+    }
     await sl<FirestoreService>().setDocument(
       'return_settlements',
       bookingId,
       {
         'bookingId': bookingId,
+        if (resolvedShopId != null && resolvedShopId.isNotEmpty)
+          'shopId': resolvedShopId,
+        if (resolvedCustomerId != null && resolvedCustomerId.isNotEmpty)
+          'customerId': resolvedCustomerId,
         'owedCollected': amount,
         'owedCollectionMethod': method,
         'owedCollectedAt': FieldValue.serverTimestamp(),

@@ -120,6 +120,32 @@ class BookingRemoteDataSource {
     } catch (_) {}
   }
 
+  /// Customer in-app notifications (best-effort; skipped for walk-ins).
+  Future<void> _notifyCustomer({
+    required BookingEntity booking,
+    required String title,
+    required String body,
+    required String type,
+  }) async {
+    final ds = _notifications;
+    if (ds == null) return;
+    if (booking.origin == 'walk_in' ||
+        booking.customerId.isEmpty ||
+        booking.customerId.startsWith('walkin-')) {
+      return;
+    }
+    try {
+      await ds.createCustomerNotification(
+        customerId: booking.customerId,
+        shopId: booking.shopId,
+        title: title,
+        body: body,
+        type: type,
+        bookingId: booking.bookingId,
+      );
+    } catch (_) {}
+  }
+
   /// Phase B (B4): validate-before-queue. A booking payload with
   /// no id or no parties is rejected loudly, never queued.
   void _validateBookingMap(Map<String, dynamic> map) {
@@ -461,6 +487,8 @@ class BookingRemoteDataSource {
       // queued.
       _validateBookingMap(model.toMap());
       await _queueWrite('booking_create', id, model.toMap());
+    } else {
+      await _syncBookedSlot(model);
     }
 
     // Phase B (G2): an online request alerts the shop. Walk-in
@@ -504,6 +532,14 @@ class BookingRemoteDataSource {
     if (existing == null) {
       throw Exception('Booking not found: $bookingId');
     }
+    if (const {'completed', 'cancelled', 'rejected'}.contains(existing.status) &&
+        status != existing.status &&
+        status != 'disputed') {
+      throw StateError(
+        'Cannot transition booking $bookingId from terminal status '
+        '${existing.status} to $status.',
+      );
+    }
     final updated = existing.copyWith(
       status: status,
       rejectionReason: rejectionReason,
@@ -526,6 +562,34 @@ class BookingRemoteDataSource {
     final written = await _writeBookingDoc(bookingId, fields);
     if (!written) {
       await _queueWrite('booking_update', bookingId, {'fields': fields});
+    } else {
+      await _syncBookedSlot(model);
+    }
+    if (status == 'approved' && existing.status == 'requested') {
+      await _notifyCustomer(
+        booking: updated,
+        title: 'Booking request approved',
+        body:
+            '${updated.shopName ?? 'Showroom'} approved ${updated.vehicleName ?? 'your booking'} • Pay advance Rs. ${formatRs(updated.advanceRequired)} to confirm.',
+        type: 'booking_approved',
+      );
+    } else if (status == 'rejected') {
+      await _notifyCustomer(
+        booking: updated,
+        title: 'Booking request declined',
+        body:
+            '${updated.shopName ?? 'Showroom'} declined ${updated.vehicleName ?? 'your booking'}${rejectionReason != null && rejectionReason.isNotEmpty ? ': $rejectionReason' : '.'}',
+        type: 'booking_rejected',
+      );
+    } else if (status == 'cancelled' && updated.origin != 'walk_in') {
+      await _notify(
+        shopId: updated.shopId,
+        title: 'Booking cancelled',
+        body:
+            '${updated.customerName ?? 'A customer'} cancelled #$bookingId${rejectionReason != null && rejectionReason.isNotEmpty ? ' • $rejectionReason' : ''}',
+        type: 'booking_cancelled',
+        bookingId: bookingId,
+      );
     }
     // Live updates (Item 2): an owner approve / reject (or any
     // status change) reaches the customer's lists immediately.
@@ -543,11 +607,19 @@ class BookingRemoteDataSource {
     if (reason.trim().isEmpty) {
       throw ArgumentError('A reason is required to reject a proof.');
     }
-    return updateBookingStatus(
+    final updated = await updateBookingStatus(
       bookingId: bookingId,
       status: 'approved',
       rejectionReason: reason.trim(),
     );
+    await _notifyCustomer(
+      booking: updated,
+      title: 'Payment proof rejected',
+      body:
+          '${updated.shopName ?? 'Showroom'} requested a new payment proof for #$bookingId: ${reason.trim()}',
+      type: 'payment_rejected',
+    );
+    return updated;
   }
 
   Future<BookingEntity> updatePaymentProof({
@@ -603,6 +675,8 @@ class BookingRemoteDataSource {
     final written = await _writeBookingDoc(bookingId, fields);
     if (!written) {
       await _queueWrite('booking_update', bookingId, {'fields': fields});
+    } else {
+      await _syncBookedSlot(model);
     }
     // Phase B (G2): the owner needs to know a proof is waiting.
     await _notify(
@@ -642,6 +716,13 @@ class BookingRemoteDataSource {
     if (existing == null) {
       throw Exception('Booking not found: $bookingId');
     }
+    if (const {'active', 'completed', 'cancelled', 'rejected'}
+        .contains(existing.status)) {
+      throw StateError(
+        'Cannot verify payment for booking $bookingId in status '
+        '${existing.status}.',
+      );
+    }
     // The verified amount is an absolute, like
     // [recordAdvancePayment] — never more than the booked total.
     final verified = advanceAmount.clamp(0, existing.totalAmount);
@@ -660,8 +741,17 @@ class BookingRemoteDataSource {
     final written = await _writeBookingDoc(bookingId, fields);
     if (!written) {
       await _queueWrite('booking_update', bookingId, {'fields': fields});
+    } else {
+      await _syncBookedSlot(model);
     }
     await _postAdvance(updated);
+    await _notifyCustomer(
+      booking: updated,
+      title: 'Payment verified — Pickup Pass ready',
+      body:
+          'Rs. ${formatRs(verified)} advance verified for ${updated.vehicleName ?? '#$bookingId'}. Your digital QR pickup pass is ready.',
+      type: 'payment_verified',
+    );
     _notifyBookingChanged();
     return model;
   }
@@ -680,6 +770,13 @@ class BookingRemoteDataSource {
     if (existing == null) {
       throw Exception('Booking not found: $bookingId');
     }
+    if (const {'completed', 'cancelled', 'rejected'}
+        .contains(existing.status)) {
+      throw StateError(
+        'Cannot record advance for booking $bookingId in terminal status '
+        '${existing.status}.',
+      );
+    }
     final received = advanceAmount.clamp(0, existing.totalAmount);
     final updated = existing.copyWith(
       status: received >= existing.advanceRequired ? 'paid' : 'approved',
@@ -696,13 +793,22 @@ class BookingRemoteDataSource {
     final written = await _writeBookingDoc(bookingId, fields);
     if (!written) {
       await _queueWrite('booking_update', bookingId, {'fields': fields});
+    } else {
+      await _syncBookedSlot(model);
     }
     await _postAdvance(updated);
+    if (updated.status == 'paid') {
+      await _notifyCustomer(
+        booking: updated,
+        title: 'Payment verified — Pickup Pass ready',
+        body:
+            'Rs. ${formatRs(received)} advance verified for ${updated.vehicleName ?? '#$bookingId'}. Your digital QR pickup pass is ready.',
+        type: 'payment_verified',
+      );
+    }
     _notifyBookingChanged();
     return model;
   }
-
-  /// Financial audit (2026-11-20): cash collected against the
   /// remaining balance AFTER the advance — the handover balance and
   /// the remaining rent at return. Additive (unlike
   /// [verifyPayment], which sets the absolute advance): the
@@ -734,6 +840,8 @@ class BookingRemoteDataSource {
     final written = await _writeBookingDoc(bookingId, fields);
     if (!written) {
       await _queueWrite('booking_update', bookingId, {'fields': fields});
+    } else {
+      await _syncBookedSlot(model);
     }
     _notifyBookingChanged();
     return model;
@@ -778,6 +886,8 @@ class BookingRemoteDataSource {
     final written = await _writeBookingDoc(bookingId, fields);
     if (!written) {
       await _queueWrite('booking_update', bookingId, {'fields': fields});
+    } else {
+      await _syncBookedSlot(model);
     }
     _notifyBookingChanged();
     return model;
@@ -878,15 +988,34 @@ class BookingRemoteDataSource {
         .toList());
   }
 
+  /// Writes a PII-free availability slot to `vehicle_booked_slots/{id}`
+  /// so customers can query vehicle calendar availability without
+  /// needing read access to other customers' private `bookings` docs.
+  Future<void> _syncBookedSlot(BookingModel model) async {
+    final fs = _resolvedFirestore;
+    if (fs == null || model.vehicleId.isEmpty) return;
+    try {
+      await fs.collection('vehicle_booked_slots').doc(model.bookingId).set({
+        'bookingId': model.bookingId,
+        'vehicleId': model.vehicleId,
+        'shopId': model.shopId,
+        'pickupTime': model.pickupTime.toIso8601String(),
+        'returnTime': model.returnTime.toIso8601String(),
+        'status': model.status,
+        'updatedAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+    } catch (_) {}
+  }
+
   /// Live bookings of one vehicle, for the per-vehicle calendar and
-  /// the booking picker's blocked days — same pattern as
-  /// [streamShopBookings]: Firestore snapshots when available, the
-  /// live in-memory fallback otherwise.
+  /// the booking picker's blocked days — reads PII-free
+  /// `vehicle_booked_slots` (works under production Firestore rules
+  /// for customers) and falls back to `bookings` / in-memory.
   Stream<List<BookingEntity>> streamVehicleBookings(String vehicleId) {
     final fs = _resolvedFirestore;
     if (fs != null) {
       return fs
-          .collection('bookings')
+          .collection('vehicle_booked_slots')
           .where('vehicleId', isEqualTo: vehicleId)
           .snapshots()
           .map((snap) => snap.docs
@@ -951,6 +1080,18 @@ class BookingRemoteDataSource {
   Future<List<BookingEntity>> getVehicleBookings(String vehicleId) async {
     final fs = _resolvedFirestore;
     if (fs != null) {
+      try {
+        final slotSnap = await fs
+            .collection('vehicle_booked_slots')
+            .where('vehicleId', isEqualTo: vehicleId)
+            .get();
+        if (slotSnap.docs.isNotEmpty) {
+          final list = slotSnap.docs
+              .map((d) => BookingModel.fromMap(d.data(), d.id))
+              .toList();
+          return await _mergePendingInto(list);
+        }
+      } catch (_) {}
       try {
         final snap = await fs
             .collection('bookings')

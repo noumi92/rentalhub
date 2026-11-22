@@ -3,6 +3,7 @@ import '../../../../../l10n/app_localizations.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart' as ll;
 import '../../../../../core/constants/app_colors.dart';
+import '../../../../../core/widgets/app_map_tile_layer.dart';
 
 class ShopLocationStepWidget extends StatelessWidget {
   final MapController mapController;
@@ -143,17 +144,14 @@ class ShopLocationStepWidget extends StatelessWidget {
                     },
                   ),
                   children: [
-                    TileLayer(
-                      urlTemplate:
-                          'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                      userAgentPackageName: 'com.rentalhub.pk',
-                    ),
+                    const AppMapTileLayer(),
                     MarkerLayer(
                       markers: [
                         Marker(
                           point: shopPin,
                           width: 44,
                           height: 44,
+                          alignment: Alignment.bottomCenter,
                           child: const Icon(
                             Icons.location_on_rounded,
                             size: 40,
@@ -162,6 +160,7 @@ class ShopLocationStepWidget extends StatelessWidget {
                         ),
                       ],
                     ),
+                    const AppOsmAttribution(alignment: Alignment.topLeft),
                   ],
                 ),
                 // Audit §1: the 220px map sits inside a scroll view, so
@@ -173,13 +172,16 @@ class ShopLocationStepWidget extends StatelessWidget {
                   right: 8,
                   child: Material(
                     color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.92),
-                    borderRadius: BorderRadius.circular(8),
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(8),
-                      onTap: () => _expandMap(context),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: Icon(Icons.fullscreen_rounded, size: 20, color: Theme.of(context).colorScheme.onSurface),
+                    borderRadius: BorderRadius.circular(10),
+                    child: IconButton(
+                      tooltip: l10n.onboardingPinOnMap,
+                      onPressed: () => _expandMap(context),
+                      constraints:
+                          const BoxConstraints(minWidth: 48, minHeight: 48),
+                      icon: Icon(
+                        Icons.fullscreen_rounded,
+                        size: 22,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                   ),
@@ -278,50 +280,68 @@ class ShopLocationStepWidget extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final dialogController = MapController();
     var pin = shopPin;
-    await showDialog<void>(
-      context: context,
-      builder: (dialogContext) => Dialog(
-        insetPadding: const EdgeInsets.all(12),
-        child: SizedBox(
-          height: MediaQuery.of(dialogContext).size.height * 0.75,
-          child: Column(
-            children: [
-              Expanded(
-                child: ClipRRect(
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-                  child: StatefulBuilder(
-                    builder: (stateContext, setDialogState) => FlutterMap(
-                      mapController: dialogController,
-                      options: MapOptions(
-                        initialCenter: pin,
-                        initialZoom: 15.0,
-                        onTap: (_, point) {
-                          setDialogState(() => pin = point);
-                          onPinChanged(point);
-                        },
+    try {
+      await showDialog<void>(
+        context: context,
+        builder: (dialogContext) => Dialog(
+          insetPadding: const EdgeInsets.all(12),
+          child: SizedBox(
+            height: MediaQuery.of(dialogContext).size.height * 0.75,
+            child: Column(
+              children: [
+                Expanded(
+                  child: ClipRRect(
+                    borderRadius:
+                        const BorderRadius.vertical(top: Radius.circular(12)),
+                    child: StatefulBuilder(
+                      builder: (stateContext, setDialogState) => FlutterMap(
+                        mapController: dialogController,
+                        options: MapOptions(
+                          initialCenter: pin,
+                          initialZoom: 15.0,
+                          onTap: (_, point) {
+                            setDialogState(() => pin = point);
+                            onPinChanged(point);
+                          },
+                        ),
+                        children: [
+                          const AppMapTileLayer(),
+                          MarkerLayer(markers: [
+                            Marker(
+                              point: pin,
+                              width: 44,
+                              height: 44,
+                              alignment: Alignment.bottomCenter,
+                              child: const Icon(
+                                Icons.location_on_rounded,
+                                size: 40,
+                                color: AppColors.secondary,
+                              ),
+                            ),
+                          ]),
+                          const AppOsmAttribution(alignment: Alignment.topLeft),
+                        ],
                       ),
-                      children: [
-                        TileLayer(urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', userAgentPackageName: 'com.rentalhub.pk'),
-                        MarkerLayer(markers: [Marker(point: pin, width: 44, height: 44, child: const Icon(Icons.location_on_rounded, size: 40, color: AppColors.secondary))]),
-                      ],
                     ),
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(12),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: FilledButton(
-                    onPressed: () => Navigator.of(dialogContext).pop(),
-                    child: Text(l10n.commonConfirm),
+                Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: FilledButton(
+                      onPressed: () => Navigator.of(dialogContext).pop(),
+                      child: Text(l10n.commonConfirm),
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
-      ),
-    );
+      );
+    } finally {
+      dialogController.dispose();
+    }
   }
 }

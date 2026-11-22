@@ -238,29 +238,42 @@ class _AdminSidebarNavState extends State<AdminSidebarNav> {
 
   Widget _navItem(String route, String label, IconData icon) {
     final isSelected = widget.activeRoute == route;
-    return InkWell(
-      onTap: () => widget.onNavigate(route),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        decoration: BoxDecoration(
-          color: isSelected ? AppColors.secondary.withAlpha(40) : Colors.transparent,
-          border: isSelected ? const Border(left: BorderSide(color: AppColors.secondary, width: 3.5)) : null,
-        ),
-        child: Row(
-          children: [
-            Icon(icon, size: 18, color: isSelected ? AppColors.secondary : Colors.white70),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                label,
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w500,
-                  color: isSelected ? Colors.white : Colors.white70,
-                ),
-              ),
+    return Semantics(
+      button: true,
+      selected: isSelected,
+      label: label,
+      excludeSemantics: true,
+      child: Material(
+        color: isSelected ? AppColors.secondary.withAlpha(40) : Colors.transparent,
+        child: InkWell(
+          onTap: () => widget.onNavigate(route),
+          child: Container(
+            constraints: const BoxConstraints(minHeight: 48),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              border: isSelected
+                  ? const BorderDirectional(
+                      start: BorderSide(color: AppColors.secondary, width: 3.5),
+                    )
+                  : null,
             ),
-          ],
+            child: Row(
+              children: [
+                Icon(icon, size: 18, color: isSelected ? AppColors.secondary : Colors.white70),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    label,
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                      color: isSelected ? Colors.white : Colors.white70,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

@@ -45,6 +45,7 @@ class HandoverEntity extends Equatable {
   /// handover completed offline can still sync later.
   final String? shopId;
   final String? shopName;
+  final String? customerId;
   final String? customerName;
   final String? cnicNumber;
   final String? vehicleDetails;
@@ -133,6 +134,7 @@ class HandoverEntity extends Equatable {
     this.agreementPdfB64,
     this.shopId,
     this.shopName,
+    this.customerId,
     this.customerName,
     this.cnicNumber,
     this.vehicleDetails,
@@ -212,6 +214,7 @@ class HandoverEntity extends Equatable {
       balanceReceived: balanceReceived ?? this.balanceReceived,
       shopId: shopId,
       shopName: shopName,
+      customerId: customerId,
       customerName: customerName,
       cnicNumber: cnicNumber,
       vehicleDetails: vehicleDetails,
@@ -272,6 +275,7 @@ class HandoverEntity extends Equatable {
         agreementPdfB64,
         shopId,
         shopName,
+        customerId,
         customerName,
         cnicNumber,
         vehicleDetails,

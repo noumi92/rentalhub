@@ -47,14 +47,18 @@ class FloatingRadiusOverlay extends StatelessWidget {
 class FloatingRadiusControl extends StatelessWidget {
   final double selectedRadiusKm;
   final ValueChanged<double> onRadiusSelected;
+  final bool filterActive;
+  final VoidCallback? onClearRadius;
 
   const FloatingRadiusControl({
     super.key,
     required this.selectedRadiusKm,
     required this.onRadiusSelected,
+    this.filterActive = false,
+    this.onClearRadius,
   });
 
-  static const List<double> _radii = [1.0, 2.0, 3.0, 5.0];
+  static const List<double> _radii = [1.0, 2.0, 3.0, 5.0, 10.0, 25.0];
 
   @override
   Widget build(BuildContext context) {
@@ -62,28 +66,53 @@ class FloatingRadiusControl extends StatelessWidget {
     return Material(
       elevation: 4,
       color: Theme.of(context).colorScheme.surface,
-      borderRadius: BorderRadius.circular(24),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24),
+        side: BorderSide(color: Theme.of(context).dividerColor),
+      ),
       clipBehavior: Clip.antiAlias,
       child: PopupMenuButton<double>(
         tooltip: l10n.shops_radiusChip(
             selectedRadiusKm.toInt().toString()),
-        onSelected: onRadiusSelected,
-        itemBuilder: (context) => _radii
-            .map((km) => PopupMenuItem<double>(
-                  value: km,
-                  child: Row(
-                    children: [
-                      Expanded(child: Text('${km.toInt()} km')),
-                      if (km == selectedRadiusKm)
-                        Icon(
-                          Icons.check_rounded,
-                          size: 18,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                    ],
-                  ),
-                ))
-            .toList(),
+        onSelected: (value) {
+          if (value <= 0) {
+            onClearRadius?.call();
+          } else {
+            onRadiusSelected(value);
+          }
+        },
+        itemBuilder: (context) => [
+          if (onClearRadius != null)
+            PopupMenuItem<double>(
+              value: 0,
+              child: Row(
+                children: [
+                  Expanded(child: Text(l10n.filterAll)),
+                  if (!filterActive)
+                    Icon(
+                      Icons.check_rounded,
+                      size: 18,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                ],
+              ),
+            ),
+          ..._radii.map((km) => PopupMenuItem<double>(
+                value: km,
+                child: Row(
+                  children: [
+                    Expanded(child: Text('${km.toInt()} km')),
+                    if (km == selectedRadiusKm &&
+                        (onClearRadius == null || filterActive))
+                      Icon(
+                        Icons.check_rounded,
+                        size: 18,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                  ],
+                ),
+              )),
+        ],
         child: Container(
           constraints: const BoxConstraints(minHeight: 48),
           padding:

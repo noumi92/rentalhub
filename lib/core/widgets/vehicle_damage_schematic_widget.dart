@@ -121,8 +121,8 @@ class _VehicleDamageSchematicWidgetState
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
                     fontWeight: FontWeight.w500,
                     color: _pins.isEmpty
-                        ? AppColors.accentSuccess
-                        : AppColors.warning,
+                        ? AppColors.successTextFor(Theme.of(context).brightness)
+                        : AppColors.warningTextFor(Theme.of(context).brightness),
                   ),
                 ),
               ),
@@ -139,9 +139,7 @@ class _VehicleDamageSchematicWidgetState
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              // Audit SH-N1: was a hardcoded #F1F5F9 — exactly
-              // surfaceElevated's value. One name.
-              color: AppColors.surfaceElevated,
+              color: Theme.of(context).colorScheme.surfaceContainer,
               borderRadius: BorderRadius.circular(14),
               border: Border.all(color: Theme.of(context).dividerColor),
             ),
@@ -224,51 +222,57 @@ class _VehicleDamageSchematicWidgetState
 
   Widget _buildZoneButton(String zone, IconData icon) {
     final bool flagged = _hasPin(zone);
-    return InkWell(
-      onTap: () => _toggleZone(zone),
-      borderRadius: BorderRadius.circular(10),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 180),
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 6),
-        decoration: BoxDecoration(
-          color: flagged
-              ? AppColors.accentDanger.withValues(alpha: 0.14)
-              : Colors.white,
+    final brightness = Theme.of(context).brightness;
+    final scheme = Theme.of(context).colorScheme;
+    final textColor = flagged
+        ? AppColors.errorOnContainerFor(brightness)
+        : AppColors.primaryTextFor(brightness);
+    return Semantics(
+      button: true,
+      selected: flagged,
+      label: zone,
+      child: Material(
+        color: flagged ? AppColors.errorContainerFor(brightness) : scheme.surface,
+        borderRadius: BorderRadius.circular(10),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: () => _toggleZone(zone),
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            color: flagged ? AppColors.accentDanger : Theme.of(context).dividerColor,
-            width: flagged ? 1.5 : 1.0,
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              flagged ? Icons.warning_amber_rounded : icon,
-              size: 14,
-              color: flagged ? AppColors.accentDanger : AppColors.primary,
-            ),
-            const SizedBox(width: 4),
-            Flexible(
-              child: Text(
-                zone,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  fontWeight: FontWeight.w500,
-                  // Item 4: the flagged zone name is small text — the
-                  // raw #EF4444 is 3.76:1 on white, so it uses the
-                  // readable danger text token (6.47:1). The icon
-                  // keeps the raw colour (3.76:1 passes the 3:1
-                  // non-text minimum).
-                  color: flagged
-                      ? AppColors.dangerTextFor(
-                          Theme.of(context).brightness)
-                      : AppColors.primary,
-                ),
+          child: Container(
+            constraints: const BoxConstraints(minHeight: 48),
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 6),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: flagged
+                    ? AppColors.dangerTextFor(brightness)
+                    : Theme.of(context).dividerColor,
+                width: flagged ? 1.5 : 1.0,
               ),
             ),
-          ],
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  flagged ? Icons.warning_amber_rounded : icon,
+                  size: 14,
+                  color: textColor,
+                ),
+                const SizedBox(width: 4),
+                Flexible(
+                  child: Text(
+                    zone,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          fontWeight: FontWeight.w500,
+                          color: textColor,
+                        ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

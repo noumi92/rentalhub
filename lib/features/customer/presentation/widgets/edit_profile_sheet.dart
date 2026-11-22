@@ -88,53 +88,55 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Padding(
-      padding: EdgeInsets.only(
-        left: 16,
-        right: 16,
-        top: 16,
-        bottom: MediaQuery.of(context).viewInsets.bottom + 16,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            l10n.editProfile,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
-          ),
-          const SizedBox(height: 14),
-          TextField(
-            controller: _nameController,
-            textCapitalization: TextCapitalization.words,
-            decoration:  InputDecoration(labelText: l10n.editFullName),
-          ),
-          const SizedBox(height: 12),
-          TextField(
-            controller: _phoneController,
-            keyboardType: TextInputType.phone,
-            decoration:  InputDecoration(
-              labelText: l10n.editPhone,
-              hintText: '03xx-xxxxxxx',
+    return SafeArea(
+      child: SingleChildScrollView(
+        padding: EdgeInsets.only(
+          left: 16,
+          right: 16,
+          top: 16,
+          bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              l10n.editProfile,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
             ),
-          ),
-          const SizedBox(height: 12),
-          TextField(
-            controller: _cnicController,
-            keyboardType: TextInputType.number,
-            decoration:  InputDecoration(
-              labelText: l10n.editCnicOptional,
-              hintText: '35202-1234567-1',
+            const SizedBox(height: 14),
+            TextField(
+              controller: _nameController,
+              textCapitalization: TextCapitalization.words,
+              decoration: InputDecoration(labelText: l10n.editFullName),
             ),
-          ),
-          const SizedBox(height: 18),
-          DebouncedButton(
-            text: _saving ? l10n.editSaving : l10n.editSaveProfile,
-            icon: Icons.check_rounded,
-            isLoading: _saving,
-            onPressed: _save,
-          ),
-        ],
+            const SizedBox(height: 12),
+            TextField(
+              controller: _phoneController,
+              keyboardType: TextInputType.phone,
+              decoration: InputDecoration(
+                labelText: l10n.editPhone,
+                hintText: '03xx-xxxxxxx',
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _cnicController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                labelText: l10n.editCnicOptional,
+                hintText: '35202-1234567-1',
+              ),
+            ),
+            const SizedBox(height: 18),
+            DebouncedButton(
+              text: _saving ? l10n.editSaving : l10n.editSaveProfile,
+              icon: Icons.check_rounded,
+              isLoading: _saving,
+              onPressed: _save,
+            ),
+          ],
+        ),
       ),
     );
   }

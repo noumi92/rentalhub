@@ -41,13 +41,13 @@ class CustomerVehicleRouteLoader extends StatefulWidget {
   State<CustomerVehicleRouteLoader> createState() =>
       _CustomerVehicleRouteLoaderState();
 
-  static Future<VehicleWithShop?> _load(String vehicleId, AppLocalizations? l10n) async {
+  static Future<VehicleWithShop?> _load(String vehicleId) async {
     // F-M2 (admin audit 2026-11-14): a car the admin hid/rejected
     // is not openable from a deep link or saved car either.
     final vehicle =
         await sl<FleetRemoteDataSource>().getCustomerVehicleById(vehicleId);
     if (vehicle == null) return null;
-    var shopName = l10n?.rentalShowroom ?? 'Rental Showroom';
+    var shopName = '';
     var shopPhone = '';
     var shopOwnerId = '';
     try {
@@ -78,18 +78,12 @@ class _CustomerVehicleRouteLoaderState
   @override
   void initState() {
     super.initState();
-    _future = _loadFuture();
+    _future = CustomerVehicleRouteLoader._load(widget.vehicleId);
   }
-
-  Future<VehicleWithShop?> _loadFuture() =>
-      CustomerVehicleRouteLoader._load(
-        widget.vehicleId,
-        AppLocalizations.of(context),
-      );
 
   void _retry() {
     setState(() {
-      _future = _loadFuture();
+      _future = CustomerVehicleRouteLoader._load(widget.vehicleId);
     });
   }
 
@@ -125,7 +119,9 @@ class _CustomerVehicleRouteLoaderState
         return widget.builder(
           context,
           loaded.vehicle,
-          loaded.shopName,
+          loaded.shopName.isNotEmpty
+              ? loaded.shopName
+              : (l10n?.rentalShowroom ?? 'Rental Showroom'),
           loaded.shopPhone,
           loaded.shopOwnerId,
         );

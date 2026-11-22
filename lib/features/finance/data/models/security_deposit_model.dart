@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../../domain/entities/security_deposit_entity.dart';
 
 class SecurityDepositModel extends SecurityDepositEntity {
@@ -50,8 +52,11 @@ class SecurityDepositModel extends SecurityDepositEntity {
   }
 
   factory SecurityDepositModel.fromMap(Map<String, dynamic> map) {
-    DateTime? date(dynamic v) =>
-        v == null ? null : DateTime.tryParse(v.toString());
+    DateTime? date(dynamic v) {
+      if (v == null) return null;
+      if (v is Timestamp) return v.toDate();
+      return DateTime.tryParse(v.toString());
+    }
     return SecurityDepositModel(
       depositId: map['depositId'] ?? map['bookingId'] ?? '',
       bookingId: map['bookingId'] ?? '',

@@ -223,7 +223,10 @@ class AdminInviteTile extends StatelessWidget {
                   color: Theme.of(context).colorScheme.onSurfaceVariant),
             ),
             if (canManage)
-              Row(
+              Wrap(
+                spacing: 4,
+                runSpacing: 4,
+                crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
                   TextButton(
                     onPressed: onAccept,
@@ -246,7 +249,6 @@ class AdminInviteTile extends StatelessWidget {
                       }
                     },
                   ),
-                  const Spacer(),
                   TextButton(
                     onPressed: onWithdraw,
                     child: Text(

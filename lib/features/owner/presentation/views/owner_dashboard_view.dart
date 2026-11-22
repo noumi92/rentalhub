@@ -4,8 +4,10 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
+import '../../../../core/settings/app_settings_cubit.dart';
 import '../../../../core/utils/shop_id_resolution.dart';
 import '../../../../core/utils/responsive.dart';
+import '../../../../core/widgets/app_feedback.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
 import '../../../bookings/utils/booking_request_time.dart';
@@ -45,14 +47,8 @@ class _OwnerDashboardViewState extends State<OwnerDashboardView> {
   int _fleetAvailable = 0;
   int _unreadNotifications = 0;
   double? _settleRate;
-  // Live updates (Item 2): the bookings subscription behind the KPIs, schedule and ledger. Fleet, notifications and shop names stay one-time loads (pull-to-refresh re-runs this load; the app-bar refresh button is gone).
   final _liveBookings = DashboardLiveBookings();
-  // PW-19 (UI/UX audit 2026-11-15): the unread-badge subscription
-  // — the one-time count above goes stale while the dashboard is
-  // open; this keeps it live.
   final _liveNotifications = DashboardLiveNotifications();
-  // FG-1: the waiting bookings' request times, for the oldest wait
-  // (see booking_request_time.dart — the entity carries no timestamp).
   Map<String, DateTime?> _requestTimes = {};
 
   @override
@@ -78,26 +74,32 @@ class _OwnerDashboardViewState extends State<OwnerDashboardView> {
           await sl<FleetRemoteDataSource>().getShopVehicles(widget.shopId);
       final notifications = await sl<NotificationDataSource>()
           .getShopNotifications(widget.shopId);
-      // PW-19: the badge then stays live on the notifications
-      // stream (same live pattern as bookings) instead of freezing
-      // at this one-time count.
-      await _liveNotifications.subscribe(
+      final live = await _liveNotifications.subscribe(
         shopId: widget.shopId,
-        onUnreadCount: (n) { if (mounted) setState(() => _unreadNotifications = n); },
+        onUnreadCount: (n) {
+          if (mounted) setState(() => _unreadNotifications = n);
+        },
+        onNewArrival: (title, body, _, type) {
+          if (!mounted || title.isEmpty) return;
+          if (sl.isRegistered<AppSettingsCubit>() &&
+              !sl<AppSettingsCubit>().state.isNotificationTypeEnabled(type)) {
+            return;
+          }
+          AppFeedback.showInfo(
+            context,
+            body.isEmpty ? title : '$title — $body',
+          );
+        },
       );
       String shopName = '';
       String ownerName = '';
       try {
-        // Shop-id linking (2026-11-15): the shops document is
-        // `shop_<uid>`; the bare UID read always missed, so the
-        // dashboard showed no shop/owner name.
         final doc = await FirebaseFirestore.instance
             .collection('shops')
             .doc(await canonicalShopId(
                 FirebaseFirestore.instance, widget.shopId))
             .get();
         final data = doc.data() ?? {};
-        // Item 7: snake_case first — live docs store shop_name (ShopModel.toMap()), not `name`.
         shopName = (data['shop_name'] ?? data['name'] ?? data['shopName'] ?? '') as String;
         ownerName = (data['owner_name'] ?? data['ownerName'] ?? '') as String;
       } catch (_) {}
@@ -108,13 +110,11 @@ class _OwnerDashboardViewState extends State<OwnerDashboardView> {
           _fleetTotal = vehicles.length;
           _fleetAvailable =
               vehicles.where((v) => v.status == 'available').length;
-          _unreadNotifications = notifications.where((n) => !n.read).length;
+          if (!live) {
+            _unreadNotifications = notifications.where((n) => !n.read).length;
+          }
         });
       }
-      // Live updates (Item 2): bookings come from the stream, not the one-time get this method used to do — the first emission paints the KPIs, schedule and ledger.
-      // A false return means the bookings data source could not be
-      // resolved (missing DI) — a load failure, so the error state
-      // renders and its retry re-runs this method.
       if (!_liveBookings.subscribe(
         shopId: widget.shopId,
         onBookings: (list) { if (!mounted) return; setState(() => _allBookings = list); _refreshRequestTimes(list); },
@@ -174,11 +174,6 @@ class _OwnerDashboardViewState extends State<OwnerDashboardView> {
       fleetAvailable: _fleetAvailable,
       fleetTotal: _fleetTotal,
     );
-    // Phase 1 showroom redesign: one scroll column in the guide's
-    // order — greeting, revenue + review, the 4+3 actions, the live
-    // Active Rentals card, then schedule and ledger. Nothing is
-    // dropped, only rearranged; the ledger moves to the second
-    // column on medium screens and below the schedule on phones.
     final content = <Widget>[
       greeting,
       const SizedBox(height: 16),

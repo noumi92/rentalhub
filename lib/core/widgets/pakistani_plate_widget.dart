@@ -38,8 +38,10 @@ class PakistaniPlateWidget extends StatelessWidget {
           ),
         ],
       ),
-      child: IntrinsicHeight(
-        child: Row(
+      child: Directionality(
+        textDirection: TextDirection.ltr,
+        child: IntrinsicHeight(
+          child: Row(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -94,6 +96,7 @@ class PakistaniPlateWidget extends StatelessWidget {
             ),
           ),
         ],
+      ),
       ),
       ),
     );

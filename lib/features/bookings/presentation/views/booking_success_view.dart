@@ -28,6 +28,7 @@ class BookingSuccessView extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: SafeArea(
+        top: false,
         child: Column(
           children: [
             MinimalAppBar(

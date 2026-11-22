@@ -8222,6 +8222,12 @@ abstract class AppLocalizations {
   /// **'No notifications yet.'**
   String get notificationsEmpty;
 
+  /// No description provided for @notificationsFilterUnread.
+  ///
+  /// In en, this message translates to:
+  /// **'Unread'**
+  String get notificationsFilterUnread;
+
   /// No description provided for @subscriptionUpgradeTo.
   ///
   /// In en, this message translates to:

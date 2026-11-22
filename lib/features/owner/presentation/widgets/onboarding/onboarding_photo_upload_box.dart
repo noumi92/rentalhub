@@ -31,7 +31,9 @@ class OnboardingPhotoUploadBox extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(14),
       child: Container(
-        height: height,
+        constraints: BoxConstraints(minHeight: height),
+        height: hasFile ? height : null,
+        padding: hasFile ? null : const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
         decoration: BoxDecoration(
           color: hasFile ? AppColors.successContainerFor(Theme.of(context).brightness) : Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(14),

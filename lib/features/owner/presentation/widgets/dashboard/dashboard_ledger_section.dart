@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/routing/route_names.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../bookings/domain/entities/booking_entity.dart';
@@ -68,13 +69,15 @@ class DashboardLedgerSection extends StatelessWidget {
                     l10n.dashboardViewAllRequests,
                     style: Theme.of(context).textTheme.labelMedium?.copyWith(
                           fontWeight: FontWeight.w500,
-                          color: Theme.of(context).colorScheme.primary,
+                          color: AppColors.primaryTextFor(
+                              Theme.of(context).brightness),
                         ),
                   ),
                   Icon(
                     Icons.arrow_forward_rounded,
                     size: 18,
-                    color: Theme.of(context).colorScheme.primary,
+                    color: AppColors.primaryTextFor(
+                        Theme.of(context).brightness),
                   ),
                 ],
               ),

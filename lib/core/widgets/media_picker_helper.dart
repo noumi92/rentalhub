@@ -132,10 +132,14 @@ class MediaPickerHelper {
                 leading: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: AppColors.primaryContainer,
+                    color: Theme.of(ctx).colorScheme.primaryContainer,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.photo_library_rounded, size: 22),
+                  child: Icon(
+                    Icons.photo_library_rounded,
+                    size: 22,
+                    color: Theme.of(ctx).colorScheme.onPrimaryContainer,
+                  ),
                 ),
                 title: Text(l10n?.avatarFromGallery ?? 'Choose from Gallery', style: Theme.of(ctx).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
                 subtitle: Text(l10n?.mediaChooseGalleryHint ?? 'Pick existing photo or screenshot', style: Theme.of(ctx).textTheme.labelSmall),

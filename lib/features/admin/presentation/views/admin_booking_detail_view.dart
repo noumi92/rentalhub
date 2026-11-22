@@ -187,15 +187,6 @@ ${d.handover == null ? l10n.admin2_bookingSummaryHandoverNone : l10n.admin2_book
                       if (_detail!.agreementPdfUrl != null)
                         Padding(
                           padding: const EdgeInsets.only(bottom: 16),
-                          child: TextButton.icon(
-                            icon: const Icon(Icons.picture_as_pdf_rounded, size: 18),
-                            label: Text(l10n.admin2_bookingDetailAgreementOnFile),
-                            onPressed: () => _openAgreement(_detail!.agreementPdfUrl!),
-                          ),
-                        ),
-                      if (_detail!.agreementPdfUrl != null)
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 16),
                           child: OutlinedButton.icon(
                             icon: const Icon(Icons.picture_as_pdf_rounded, size: 18),
                             style: OutlinedButton.styleFrom(

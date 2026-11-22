@@ -69,15 +69,18 @@ class TrustScoreService {
     }
   }
 
-  Future<TrustScoreResult?> compute(String customerId) async {
+  Future<TrustScoreResult?> compute(String customerId, {String? shopId}) async {
     final firestore = _resolvedFirestore;
     if (firestore == null || customerId.isEmpty) return null;
     try {
-      final kycDoc = await firestore
-          .collection('kyc_documents')
-          .doc(customerId)
-          .get();
-      final kycData = kycDoc.data();
+      Map<String, dynamic>? kycData;
+      try {
+        final kycDoc = await firestore
+            .collection('kyc_documents')
+            .doc(customerId)
+            .get();
+        kycData = kycDoc.data();
+      } catch (_) {}
       final kycStatus = kycData?['status'] as String? ?? 'missing';
       final kycCnic = kycData?['cnicNumber'] as String?;
       // O17: per-document presence on the same read — a CNIC counts
@@ -90,53 +93,75 @@ class TrustScoreService {
       final kycLicenseSubmitted =
           (kycData?['licenseKey'] as String? ?? '').isNotEmpty;
 
-      final bookings = await BookingRemoteDataSource(firestore: firestore)
-          .getCustomerBookings(customerId);
+      var bookings = const <BookingEntity>[];
+      try {
+        bookings = await BookingRemoteDataSource(firestore: firestore)
+            .getCustomerBookings(customerId);
+      } catch (_) {}
+      if (bookings.isEmpty && shopId != null && shopId.isNotEmpty) {
+        try {
+          final shopBookings = await BookingRemoteDataSource(firestore: firestore)
+              .getShopBookings(shopId);
+          bookings = shopBookings
+              .where((b) => b.customerId == customerId)
+              .toList();
+        } catch (_) {}
+      }
       final completed =
           bookings.where((b) => b.status == 'completed').toList();
 
-      final reviews = await ReviewRemoteDataSource(firestore: firestore)
-          .getCustomerReviews(customerId, onlyOwnerRated: true);
+      var reviews = const <Map<String, dynamic>>[];
+      try {
+        reviews = await ReviewRemoteDataSource(firestore: firestore)
+            .getCustomerReviews(customerId, onlyOwnerRated: true);
+      } catch (_) {}
       final meanRating = _meanOwnerRating(reviews);
 
       var onTime = 0;
       var late = 0;
       var deducted = 0;
       for (final booking in completed.take(20)) {
-        final depositDoc = await firestore
-            .collection('security_deposits')
-            .doc(booking.bookingId)
-            .get();
-        final deposit = depositDoc.data();
-        if (deposit == null) continue;
-        if (deposit['status'] == 'deducted') deducted++;
-        final released = deposit['releasedAt'];
-        DateTime? releasedAt;
-        if (released is Timestamp) {
-          releasedAt = released.toDate();
-        } else if (released is String) {
-          releasedAt = DateTime.tryParse(released);
-        }
-        if (releasedAt == null) continue;
-        if (!releasedAt.isAfter(booking.returnTime)) {
-          onTime++;
-        } else {
-          late++;
-        }
+        try {
+          final depositDoc = await firestore
+              .collection('security_deposits')
+              .doc(booking.bookingId)
+              .get();
+          final deposit = depositDoc.data();
+          if (deposit == null) continue;
+          if (deposit['status'] == 'deducted') deducted++;
+          final released = deposit['releasedAt'];
+          DateTime? releasedAt;
+          if (released is Timestamp) {
+            releasedAt = released.toDate();
+          } else if (released is String) {
+            releasedAt = DateTime.tryParse(released);
+          }
+          if (releasedAt == null) continue;
+          if (!releasedAt.isAfter(booking.returnTime)) {
+            onTime++;
+          } else {
+            late++;
+          }
+        } catch (_) {}
       }
 
-      final disputesSnap = await firestore
-          .collection('disputes')
-          .where('customerId', isEqualTo: customerId)
-          .where('status', isEqualTo: 'resolved')
-          .get();
       var adverseDisputes = 0;
-      for (final d in disputesSnap.docs) {
-        final decision = d.data()['decision'] as String?;
-        if (decision == 'full_to_owner' || decision == 'partial') {
-          adverseDisputes++;
+      try {
+        Query<Map<String, dynamic>> disputesQuery = firestore
+            .collection('disputes')
+            .where('customerId', isEqualTo: customerId)
+            .where('status', isEqualTo: 'resolved');
+        if (shopId != null && shopId.isNotEmpty) {
+          disputesQuery = disputesQuery.where('shopId', isEqualTo: shopId);
         }
-      }
+        final disputesSnap = await disputesQuery.get();
+        for (final d in disputesSnap.docs) {
+          final decision = d.data()['decision'] as String?;
+          if (decision == 'full_to_owner' || decision == 'partial') {
+            adverseDisputes++;
+          }
+        }
+      } catch (_) {}
 
       return TrustScoreResult(
         breakdown: TrustScoreCalculator.calculate(

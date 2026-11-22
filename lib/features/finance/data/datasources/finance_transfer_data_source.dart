@@ -156,14 +156,19 @@ class FinanceTransferDataSource {
   }
 
   Future<List<FinanceTransferEntity>> getVehicleTransfers(
-      String vehicleId) async {
+    String vehicleId, {
+    String? shopId,
+  }) async {
     final fs = _resolvedFirestore;
     if (fs != null) {
       try {
-        final snap = await fs
+        Query<Map<String, dynamic>> query = fs
             .collection('finance_transfers')
-            .where('vehicleId', isEqualTo: vehicleId)
-            .get();
+            .where('vehicleId', isEqualTo: vehicleId);
+        if (shopId != null && shopId.isNotEmpty) {
+          query = query.where('shopId', isEqualTo: shopId);
+        }
+        final snap = await query.get();
         for (final d in snap.docs) {
           final remote = FinanceTransferModel.fromMap(d.data());
           if (!_inMemory

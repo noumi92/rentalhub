@@ -50,34 +50,41 @@ class SubscriptionTierCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(title, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
-              if (isPopular)
+              Expanded(
+                child: Text(
+                  title,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleMedium
+                      ?.copyWith(fontWeight: FontWeight.w600),
+                ),
+              ),
+              if (isPopular) ...[
+                const SizedBox(width: 8),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                  // Item 4: white on AppColors.secondary is 3.29:1 —
-                  // orangeFill is 5.18:1.
                   decoration: BoxDecoration(color: AppColors.orangeFill, borderRadius: BorderRadius.circular(6)),
                   child: Text(l10n.subscriptionMostPopular, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.white, fontWeight: FontWeight.w500)),
-                )
-              else if (isCurrent)
+                ),
+              ] else if (isCurrent) ...[
+                const SizedBox(width: 8),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                  // Item 4: white on AppColors.accentSuccess is 2.54:1 —
-                  // accentSuccessStrong is 5.48:1.
                   decoration: BoxDecoration(color: AppColors.accentSuccessStrong, borderRadius: BorderRadius.circular(6)),
                   child: Text(l10n.subscriptionCurrentPlan, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.white, fontWeight: FontWeight.w500)),
                 ),
+              ],
             ],
           ),
           const SizedBox(height: 8),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.baseline,
-            textBaseline: TextBaseline.alphabetic,
+          Wrap(
+            crossAxisAlignment: WrapCrossAlignment.end,
+            spacing: 4,
+            runSpacing: 2,
             children: [
-              // Audit §28: prices were hardcoded 'Rs. 4,999' strings —
-              // now grouped with formatRs (same display in English).
               Text(l10n.amountRs(formatRs(pricePkr)), style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600)),
-              const SizedBox(width: 4),
               Text(billingPeriod, style: Theme.of(context).textTheme.bodySmall),
             ],
           ),
@@ -95,12 +102,11 @@ class SubscriptionTierCard extends StatelessWidget {
           const SizedBox(height: 16),
           SizedBox(
             width: double.infinity,
-            // Audit §28/C7: was 42dp; the rulebook CTA is 54dp.
-            height: 54,
             child: ElevatedButton(
               onPressed: (isCurrent || isPending) ? null : onSelect,
               style: ElevatedButton.styleFrom(
-                backgroundColor: isPopular ? AppColors.secondary : AppColors.primary,
+                minimumSize: const Size(double.infinity, 54),
+                backgroundColor: isPopular ? AppColors.orangeFill : AppColors.primary,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               ),

@@ -31,8 +31,7 @@ class HandoverWizardSignatureBlock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final hasSaved = savedUrl != null && savedUrl!.isNotEmpty ||
-        savedPng != null;
+    final hasSaved = savedPng != null;
     final showSaved = hasSaved && useSaved;
     return Container(
       padding: const EdgeInsets.all(16),

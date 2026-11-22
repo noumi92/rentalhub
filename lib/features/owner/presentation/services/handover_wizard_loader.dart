@@ -45,19 +45,17 @@ class HandoverWizardLoader {
     String? kycPhotoUrl;
     final shopId = booking.shopId;
     final fs = firestore ?? FirebaseFirestore.instance;
-    if (shopName.isEmpty && shopId.isNotEmpty) {
-      // Shop-id linking (2026-11-15): shop documents are
-      // `shop_<uid>`; a booking carrying the bare owner UID would
-      // read a nonexistent doc. And the name lives under
-      // snake_case `shop_name` (ShopModel.toMap) — reading `name` /
-      // `shopName` only always came back empty on live docs, which
-      // blocked certifying at the wizard's last step (build 89).
+    if (shopId.isNotEmpty) {
+      // Always read the shop doc so the owner's saved signature loads
+      // even when booking.shopName is already populated.
       final doc = await fs
           .collection('shops')
           .doc(await canonicalShopId(fs, shopId))
           .get();
-      final name = shopNameFromData(doc.data());
-      if (name.isNotEmpty) shopName = name;
+      if (shopName.isEmpty) {
+        final name = shopNameFromData(doc.data());
+        if (name.isNotEmpty) shopName = name;
+      }
       // O30: the owner's on-file signature, if the shop record
       // carries one (no such field exists on shops today — the
       // lookup is honest: absent means "sign fresh on the pad").

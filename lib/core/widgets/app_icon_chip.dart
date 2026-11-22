@@ -28,8 +28,9 @@ class AppIconChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    final resolvedIconColor = iconColor ?? scheme.primary;
+    final brightness = Theme.of(context).brightness;
+    final resolvedIconColor =
+        iconColor ?? AppColors.primaryTextFor(brightness);
     final resolvedBackground =
         background ?? resolvedIconColor.withValues(alpha: 0.15);
     final chip = Container(
@@ -45,17 +46,15 @@ class AppIconChip extends StatelessWidget {
         children: [
           Icon(icon, size: 22, color: resolvedIconColor),
           if (badgeCount != null)
-            Positioned(
-              right: -2,
+            PositionedDirectional(
+              end: -2,
               top: -2,
               child: badgeCount! > 0
                   ? Container(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 5, vertical: 2),
                       decoration: const BoxDecoration(
-                        // Audit SH-N2: was raw Colors.red — the token
-                        // is accentDanger.
-                        color: AppColors.accentDanger,
+                        color: AppColors.errorDark,
                         borderRadius: BorderRadius.all(Radius.circular(10)),
                       ),
                       child: Text(

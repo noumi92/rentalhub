@@ -2701,6 +2701,7 @@
   "notificationsMarkReadError": "اطلاعات کو پڑھا ہوا قرار نہیں دیا جا سکا۔ دوبارہ کوشش کریں۔",
   "notificationsLoadError": "اطلاعات لوڈ نہیں ہو سکیں۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔",
   "notificationsEmpty": "ابھی کوئی اطلاعات نہیں۔",
+  "notificationsFilterUnread": "نہ پڑھی گئی",
   "subscriptionUpgradeTo": "{tier} پر اپ گریڈ کریں",
   "@subscriptionUpgradeTo": {
     "placeholders": {

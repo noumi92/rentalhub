@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/auth/signed_in_user.dart';
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/data/sync_status_cubit.dart';
 import '../../../../core/widgets/app_state_views.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
@@ -126,35 +125,31 @@ class _CustomerBookingsViewState extends State<CustomerBookingsView> {
             MinimalAppBar(
               title: l10n.bookingsTitle,
             ),
-            // E3: 48dp chip + 8dp vertical padding each side — the
-            // old 50dp row squeezed the filter chips to 34dp.
-            Container(
-              height: 64,
+            Padding(
               padding: const EdgeInsets.symmetric(vertical: 8),
-              child: ListView.separated(
+              child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                itemCount: tabs.length,
-                separatorBuilder: (_, __) => const SizedBox(width: 8),
-                itemBuilder: (context, i) {
-                  final isSelected = i == _selectedTab;
-                  return ChoiceChip(
-                    materialTapTargetSize: MaterialTapTargetSize.padded,
-                    label: Text(tabs[i]),
-                    selected: isSelected,
-                    onSelected: (_) => setState(() => _selectedTab = i),
-                    // Audit 2026-11-15 DS-1: no per-file labelStyle —
-                    // the theme's chipTheme drives both modes (the old
-                    // labelMedium override is deleted).
-                    side: BorderSide(
-                      color: isSelected
-                          ? AppColors.primary
-                          : AppColors.borderSubtle,
-                    ),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20)),
-                  );
-                },
+                child: Row(
+                  children: [
+                    for (var i = 0; i < tabs.length; i++) ...[
+                      if (i > 0) const SizedBox(width: 8),
+                      ChoiceChip(
+                        materialTapTargetSize: MaterialTapTargetSize.padded,
+                        label: Text(tabs[i]),
+                        selected: i == _selectedTab,
+                        onSelected: (_) => setState(() => _selectedTab = i),
+                        side: BorderSide(
+                          color: i == _selectedTab
+                              ? Theme.of(context).colorScheme.primary
+                              : Theme.of(context).dividerColor,
+                        ),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20)),
+                      ),
+                    ],
+                  ],
+                ),
               ),
             ),
             Expanded(
@@ -173,11 +168,22 @@ class _CustomerBookingsViewState extends State<CustomerBookingsView> {
                       : RefreshIndicator(
                           onRefresh: _fetchBookings,
                           child: list.isEmpty
-                              ? AppEmptyState(
-                                  title:
-                                      l10n.bookingsEmptyForTab(tabs[_selectedTab]),
-                                  message:
-                                      l10n.bookingsEmptyHint,
+                              ? LayoutBuilder(
+                                  builder: (context, constraints) =>
+                                      SingleChildScrollView(
+                                    physics:
+                                        const AlwaysScrollableScrollPhysics(),
+                                    child: ConstrainedBox(
+                                      constraints: BoxConstraints(
+                                        minHeight: constraints.maxHeight,
+                                      ),
+                                      child: AppEmptyState(
+                                        title: l10n.bookingsEmptyForTab(
+                                            tabs[_selectedTab]),
+                                        message: l10n.bookingsEmptyHint,
+                                      ),
+                                    ),
+                                  ),
                                 )
                               : ListView.builder(
                                   padding: const EdgeInsets.symmetric(

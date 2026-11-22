@@ -121,6 +121,7 @@ class _ReviewBookingRequestViewState extends State<ReviewBookingRequestView> {
     final d = widget.bookingDraft;
     return Scaffold(
       body: SafeArea(
+        top: false,
         child: Column(
           children: [
             MinimalAppBar(
@@ -169,6 +170,7 @@ class _ReviewBookingRequestViewState extends State<ReviewBookingRequestView> {
                     const SizedBox(height: 14),
                     AdvanceDepositNoticeCard(
                       isWithDriver: d['isWithDriver'] as bool? ?? false,
+                      driverNightStayPkr: d['driverNightStayPkr'] as int?,
                     ),
                     const SizedBox(height: 14),
                     Container(

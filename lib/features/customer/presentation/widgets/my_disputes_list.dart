@@ -100,7 +100,7 @@ class _MyDisputesListState extends State<MyDisputesList> {
       context: context,
       isScrollControlled: true,
       builder: (sheetContext) => SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
           child: Column(
             mainAxisSize: MainAxisSize.min,

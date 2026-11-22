@@ -61,10 +61,12 @@ class VehicleDetailActionBar extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
+        border: Border(
+          top: BorderSide(color: Theme.of(context).dividerColor),
+        ),
         boxShadow: [
           BoxShadow(
-              // Theme shadow colour — no raw hex literal.
-              color: Theme.of(context).shadowColor,
+              color: Theme.of(context).shadowColor.withValues(alpha: 0.10),
               blurRadius: 10,
               offset: const Offset(0, -3))
         ],
@@ -130,25 +132,40 @@ class VehicleDetailActionBar extends StatelessWidget {
                           .replaceFirst(':vehicleId', v.vehicleId),
                     ),
                   )
-                : DebouncedButton(
-                    // Audit 2026-11-15 PW-11: the rate routes through
-                    // amountRs (§4.5 money rule) — the .arb value no
-                    // longer embeds 'Rs.' (that would double it).
-                    text: l10n.bookNowWithRate(l10n.amountRs(formatRs(selectedRate))),
-                    icon: Icons.check_circle_outline_rounded,
-                    onPressed: () async {
-                      if (onBookNow != null) {
-                        onBookNow!.call();
-                      } else {
-                        AppFeedback.showInfo(
-                          context,
-                          l10n.vehicleSelectedMode(withDriver
-                              ? l10n.withChauffeur
-                              : l10n.selfDriveHyphen),
-                        );
-                      }
-                    },
-                  ),
+                : (v.status == 'rented' || v.status == 'maintenance')
+                    ? SizedBox(
+                        height: 52,
+                        child: ElevatedButton.icon(
+                          onPressed: null,
+                          icon: const Icon(Icons.block_rounded, size: 18),
+                          label: Text(l10n.manualBookingCarBusy),
+                          style: ElevatedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                          ),
+                        ),
+                      )
+                    : DebouncedButton(
+                        // Audit 2026-11-15 PW-11: the rate routes through
+                        // amountRs (§4.5 money rule) — the .arb value no
+                        // longer embeds 'Rs.' (that would double it).
+                        text: l10n.bookNowWithRate(
+                            l10n.amountRs(formatRs(selectedRate))),
+                        icon: Icons.check_circle_outline_rounded,
+                        onPressed: () async {
+                          if (onBookNow != null) {
+                            onBookNow!.call();
+                          } else {
+                            AppFeedback.showInfo(
+                              context,
+                              l10n.vehicleSelectedMode(withDriver
+                                  ? l10n.withChauffeur
+                                  : l10n.selfDriveHyphen),
+                            );
+                          }
+                        },
+                      ),
           ),
         ],
       ),

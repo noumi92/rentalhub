@@ -136,7 +136,9 @@ class OwnerBookingSummaryView extends StatelessWidget {
                       DebouncedButton(
                         text: nextStep.label(l10n, b),
                         icon: Icons.gavel_rounded,
-                        onPressed: () => context.push(disputeDestination),
+                        onPressed: () => context.push(
+                          '$disputeDestination?bookingId=${Uri.encodeComponent(b.bookingId)}',
+                        ),
                       ),
                     ],
                     if (showRateStep && rateDestination != null) ...[

@@ -49,10 +49,16 @@ class BookingStatusChip extends StatelessWidget {
     switch (status) {
       case 'approved':
       case 'paid':
+      case 'completed':
         return AppColors.successBadgeTextFor(brightness);
+      case 'active':
+        return brightness == Brightness.dark
+            ? AppColors.primaryContainer
+            : AppColors.primary;
       case 'rejected':
       case 'payment_rejected':
       case 'cancelled':
+      case 'disputed':
         return AppColors.errorBadgeTextFor(brightness);
       default:
         return AppColors.warningTextFor(brightness);
@@ -67,10 +73,16 @@ class BookingStatusChip extends StatelessWidget {
     switch (status) {
       case 'approved':
       case 'paid':
+      case 'completed':
         return AppColors.successBadgeFor(brightness);
+      case 'active':
+        return brightness == Brightness.dark
+            ? AppColors.primary.withValues(alpha: 0.35)
+            : AppColors.primaryContainer;
       case 'rejected':
       case 'payment_rejected':
       case 'cancelled':
+      case 'disputed':
         return AppColors.errorBadgeFor(brightness);
       default:
         return AppColors.warningContainerFor(brightness);

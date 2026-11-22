@@ -24,6 +24,7 @@ class BookingApprovedView extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: SafeArea(
+        top: false,
         child: Column(
           children: [
             MinimalAppBar(
@@ -53,9 +54,8 @@ class BookingApprovedView extends StatelessWidget {
                                   .withValues(alpha: 0.2),
                               shape: BoxShape.circle,
                             ),
-                            child: Icon(Icons.check_circle_rounded,
-                                color: AppColors.successTextFor(
-                                    Theme.of(context).brightness),
+                            child: const Icon(Icons.check_circle_rounded,
+                                color: Colors.white,
                                 size: 30),
                           ),
                           const SizedBox(width: 14),

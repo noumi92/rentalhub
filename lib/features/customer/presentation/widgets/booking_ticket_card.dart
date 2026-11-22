@@ -13,7 +13,7 @@ import '../../../../core/utils/money_format.dart';
 
 class BookingTicketCard extends StatelessWidget {
   final BookingEntity booking;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
   final VoidCallback? onAction;
   final String? actionLabel;
 
@@ -25,7 +25,7 @@ class BookingTicketCard extends StatelessWidget {
   const BookingTicketCard({
     super.key,
     required this.booking,
-    required this.onTap,
+    this.onTap,
     this.onAction,
     this.actionLabel,
     this.syncStatus,
@@ -110,6 +110,15 @@ class BookingTicketCard extends StatelessWidget {
                       data: PdfContractGenerator.verificationUrlFor(
                           booking.bookingId),
                       size: 84,
+                      eyeStyle: QrEyeStyle(
+                        eyeShape: QrEyeShape.square,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                      dataModuleStyle: QrDataModuleStyle(
+                        dataModuleShape: QrDataModuleShape.square,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                      semanticsLabel: l10n.ticketShowCode,
                     ),
                     const SizedBox(width: 12),
                     Expanded(

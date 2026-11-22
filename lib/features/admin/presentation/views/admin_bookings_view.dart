@@ -116,23 +116,27 @@ class _AdminBookingsViewState extends State<AdminBookingsView> {
             ),
             const SizedBox(height: 12),
             Align(
-              alignment: Alignment.centerLeft,
-              child: Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: _statuses
-                    .map((s) => ChoiceChip(
-                          label: Text(humanizeStatus(s, l10n)),
-                          selected: _filter == s,
-                          onSelected: (_) {
-                            setState(() {
-                              _filter = s;
-                              _isLoading = true;
-                            });
-                            _load();
-                          },
-                        ))
-                    .toList(),
+              alignment: AlignmentDirectional.centerStart,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    for (var i = 0; i < _statuses.length; i++) ...[
+                      if (i > 0) const SizedBox(width: 8),
+                      ChoiceChip(
+                        label: Text(humanizeStatus(_statuses[i], l10n)),
+                        selected: _filter == _statuses[i],
+                        onSelected: (_) {
+                          setState(() {
+                            _filter = _statuses[i];
+                            _isLoading = true;
+                          });
+                          _load();
+                        },
+                      ),
+                    ],
+                  ],
+                ),
               ),
             ),
             SizedBox(height: 16),

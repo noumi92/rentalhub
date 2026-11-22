@@ -34,6 +34,7 @@ import '../../features/customer/presentation/views/customer_settings_view.dart';
 import '../../features/customer/presentation/views/customer_sos_view.dart';
 import '../../features/customer/presentation/views/customer_support_view.dart';
 import '../../features/customer/presentation/views/customer_wallet_view.dart';
+import '../../features/notifications/presentation/views/customer_notifications_view.dart';
 import '../../features/discovery/presentation/views/customer_location_prompt_view.dart';
 import '../../features/discovery/presentation/views/customer_shops_view.dart';
 import '../../features/discovery/presentation/views/customer_home_view.dart';
@@ -352,6 +353,7 @@ class AppRouter {
                     plateNumber: vehicle.plateNumber,
                     shopId: vehicle.shopId,
                     shopName: shopName,
+                    shopPhone: shopPhone,
                     dailySelfDriveRate: vehicle.rates.daily24,
                     // Worker A (2026-11-21): the with-driver daily
                     // rate is NOT daily + the vehicle's stored
@@ -381,7 +383,7 @@ class AppRouter {
                   }
                   return ReviewBookingRequestView(
                     bookingDraft: draft,
-                    onRequestCreated: (booking) => context.push(
+                    onRequestCreated: (booking) => context.pushReplacement(
                       RouteNames.customerBookingSuccess
                           .replaceFirst(':id', booking.bookingId),
                     ),
@@ -397,7 +399,9 @@ class AppRouter {
                   builder: (context, booking) => BookingSuccessView(
                     booking: booking,
                     onProceedToPayment: () => context.push(
-                      RouteNames.customerPaymentProof
+                      (booking.status == 'requested'
+                              ? RouteNames.customerBookingDetail
+                              : RouteNames.customerPaymentProof)
                           .replaceFirst(':id', booking.bookingId),
                     ),
                     onViewBookings: () => context.go(RouteNames.customerBookings),
@@ -702,6 +706,10 @@ class AppRouter {
           onFileDispute: () => context.push(RouteNames.customerDisputes),
           onOpenSos: () => context.push(RouteNames.customerSos),
         ),
+      ),
+      GoRoute(
+        path: RouteNames.customerNotifications,
+        builder: (context, state) => const CustomerNotificationsView(),
       ),
       GoRoute(
         path: RouteNames.customerSos,

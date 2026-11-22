@@ -3,6 +3,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/utils/whatsapp.dart';
 import '../../../../../core/widgets/app_feedback.dart';
+import '../../../../../core/widgets/app_map_tile_layer.dart';
 import '../../../../../core/widgets/verified_badge.dart';
 import '../../../domain/entities/shop_entity.dart';
 import '../../../../../l10n/app_localizations.dart';
@@ -12,11 +13,15 @@ import 'shops_filter_logic.dart';
 class MapShopPreviewCard extends StatelessWidget {
   final ShopEntity shop;
   final VoidCallback onViewShowroom;
+  final VoidCallback? onClose;
+  final bool positioned;
 
   const MapShopPreviewCard({
     super.key,
     required this.shop,
     required this.onViewShowroom,
+    this.onClose,
+    this.positioned = true,
   });
 
   @override
@@ -26,12 +31,9 @@ class MapShopPreviewCard extends StatelessWidget {
     // — the old SnackBars never opened anything. Disabled with a
     // tooltip when the shop has no phone number.
     final hasPhone = shop.phoneNumber.trim().isNotEmpty;
-    return Positioned(
-      bottom: 16,
-      left: 16,
-      right: 16,
-      child: Card(
+    final card = Card(
         elevation: 6,
+        margin: EdgeInsets.zero,
         // CU-M2: cards carry no dark border.
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(18),
@@ -77,6 +79,14 @@ class MapShopPreviewCard extends StatelessWidget {
                       ],
                     ),
                   ),
+                  if (onClose != null)
+                    IconButton(
+                      onPressed: onClose,
+                      tooltip: l10n.close,
+                      icon: const Icon(Icons.close_rounded, size: 20),
+                      constraints:
+                          const BoxConstraints(minWidth: 48, minHeight: 48),
+                    ),
                 ],
               ),
               const SizedBox(height: 10),
@@ -174,6 +184,24 @@ class MapShopPreviewCard extends StatelessWidget {
                             Theme.of(context).brightness)),
                     label: l10n.whatsapp,
                   ),
+                  _MapPreviewButton(
+                    enabled: shop.hasRealLocation ||
+                        shop.address.trim().isNotEmpty,
+                    noPhoneMessage: l10n.passNoLocation,
+                    onPressed: () => openMapDirections(
+                      context,
+                      lat: shop.hasRealLocation
+                          ? shop.geoLocation.latitude
+                          : null,
+                      lng: shop.hasRealLocation
+                          ? shop.geoLocation.longitude
+                          : null,
+                      address: shop.address,
+                    ),
+                    isWhatsApp: false,
+                    icon: const Icon(Icons.directions_rounded, size: 16),
+                    label: l10n.passDirections,
+                  ),
                   ElevatedButton.icon(
                     onPressed: onViewShowroom,
                     style: ElevatedButton.styleFrom(
@@ -193,8 +221,9 @@ class MapShopPreviewCard extends StatelessWidget {
             ],
           ),
         ),
-      ),
-    );
+      );
+    if (!positioned) return card;
+    return Positioned(bottom: 16, left: 16, right: 16, child: card);
   }
 }
 

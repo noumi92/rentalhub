@@ -216,7 +216,7 @@ class _OwnerReturnSettlementViewState extends State<OwnerReturnSettlementView> {
                   child: Column(
                     children: [
                     // Finish build (O25): the landing moved to its own route (/owner/return-landing/:id) — this view now starts directly at the inspection.
-                    ReturnConditionSelector(bookingId: widget.booking.bookingId, condition: _condition, onChanged: (c) => setState(() => _condition = c)),
+                    ReturnConditionSelector(bookingId: widget.booking.bookingId, condition: _condition, onChanged: (c) => setState(() => _condition = c), onReturnedFromDamage: _loadRealValues),
                       const SizedBox(height: 16),
                       ExteriorPhotoPicker(bookingId: widget.booking.bookingId, shopId: widget.booking.shopId, photos: _returnPhotos, targetCollection: 'return_settlements', onChanged: (photos) => setState(() => _returnPhotos = photos)),
                       const SizedBox(height: 16),
@@ -227,12 +227,12 @@ class _OwnerReturnSettlementViewState extends State<OwnerReturnSettlementView> {
                       const SizedBox(height: 12),
                       TextField(controller: _damageChargeController, keyboardType: TextInputType.number, onChanged: _onDamageChargeChanged, decoration: InputDecoration(labelText: l10n.returnDamageChargeLabel, hintText: l10n.returnDamageChargeHint, border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)), filled: true, fillColor: Theme.of(context).colorScheme.surfaceContainerHighest)),
                       const SizedBox(height: 16),
-                      ReturnFarePaymentSection(booking: widget.booking, onCollected: (amount, method) => setState(() => _collected = (amount: amount, method: method)), extraFareDue: _perKm?.extraDue ?? 0, onExtraFareCollected: (amount, method) => setState(() => _extraFareCollected = (amount: amount, method: method))),
+                      ReturnFarePaymentSection(booking: widget.booking, onCollected: (amount, method) => setState(() => _collected = (amount: amount, method: method)), extraFareDue: _perKm?.extraDue ?? 0, onExtraFareCollected: (amount, method) => setState(() => _extraFareCollected = (amount: amount, method: method)), onReturnedFromExtraCharges: _loadRealValues),
                       const SizedBox(height: 16),
                       SettlementSummaryReceiptWidget(totalKm: breakdown.totalKmDriven, excessKm: breakdown.excessKm, excessKmPenalty: breakdown.excessKmCharge, extraKmRate: _extraKmPkr, fuelDeficitFee: breakdown.fuelDeficit, overtimeFee: breakdown.overtimeFee, damageCharge: breakdown.damageCharge, extraCharges: breakdown.extraCharges, securityDeposit: _deposit, netRefund: breakdown.netRefund, perKm: _perKm, amountOwed: breakdown.amountOwed),
                       const SizedBox(height: 24),
                       // Finish build (O26): refund first, then close — the steps widget owns the refund record; close still runs _finalizeReturn below.
-                      ReturnPaymentSteps(bookingId: widget.booking.bookingId, netRefund: breakdown.netRefund, amountOwed: breakdown.amountOwed, isFinalizing: _isFinalizing, onCompleteClose: _finalizeReturn),
+                      ReturnPaymentSteps(bookingId: widget.booking.bookingId, shopId: widget.booking.shopId, customerId: widget.booking.customerId, netRefund: breakdown.netRefund, amountOwed: breakdown.amountOwed, isFinalizing: _isFinalizing, onCompleteClose: _finalizeReturn),
                     ],
                   ),
                 ),

@@ -134,32 +134,38 @@ class AppShellNav extends StatelessWidget {
     // labels (its destinations need ~64 px). Each destination here
     // is an explicit icon-over-label column that fits 56 px, with a
     // full-height tap target.
-    return Container(
-      height: contentHeight + bottomInset,
-      padding: EdgeInsets.only(bottom: bottomInset),
-      color: background,
-      child: SizedBox(
-        height: contentHeight,
-        child: Row(
-          children: [
-            for (var i = 0; i < items.length; i++)
-              Expanded(
-                child: _TabDestination(
-                  item: items[i],
-                  label: labelFor(l10n, items[i]),
-                  selected: i == currentIndex,
-                  indicatorColor: indicatorColor,
-                  iconTheme: theme.navigationBarTheme.iconTheme,
-                  labelStyle: theme.navigationBarTheme.labelTextStyle,
-                  allowTwoLineLabel: allowTwoLineLabels,
-                  onTap: () {
-                    // E2: a light selection click on every tab tap.
-                    HapticFeedback.selectionClick();
-                    onTap(i);
-                  },
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle(
+        systemNavigationBarColor: background,
+        systemNavigationBarIconBrightness: Brightness.light,
+      ),
+      child: Container(
+        height: contentHeight + bottomInset,
+        padding: EdgeInsets.only(bottom: bottomInset),
+        color: background,
+        child: SizedBox(
+          height: contentHeight,
+          child: Row(
+            children: [
+              for (var i = 0; i < items.length; i++)
+                Expanded(
+                  child: _TabDestination(
+                    item: items[i],
+                    label: labelFor(l10n, items[i]),
+                    selected: i == currentIndex,
+                    indicatorColor: indicatorColor,
+                    iconTheme: theme.navigationBarTheme.iconTheme,
+                    labelStyle: theme.navigationBarTheme.labelTextStyle,
+                    allowTwoLineLabel: allowTwoLineLabels,
+                    onTap: () {
+                      // E2: a light selection click on every tab tap.
+                      HapticFeedback.selectionClick();
+                      onTap(i);
+                    },
+                  ),
                 ),
-              ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -236,6 +242,7 @@ class _TabDestination extends StatelessWidget {
       button: true,
       label: label,
       selected: selected,
+      excludeSemantics: true,
       child: Material(
       color: Colors.transparent,
       child: InkWell(
@@ -245,15 +252,15 @@ class _TabDestination extends StatelessWidget {
           children: [
             IconTheme(data: resolvedIcon, child: icon),
             const SizedBox(height: 2),
-            Text(
-              label,
-              style: resolvedLabel,
-              // Audit 2026-11-15 AC-15: 2 lines at large text scale
-              // (Urdu labels at 360 px); 1 line at default scale, so
-              // the 56 px flush bar is unchanged. Phone check owed.
-              maxLines: allowTwoLineLabel ? 2 : 1,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.center,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 2),
+              child: Text(
+                label,
+                style: resolvedLabel,
+                maxLines: allowTwoLineLabel ? 2 : 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+              ),
             ),
           ],
         ),

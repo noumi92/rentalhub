@@ -108,20 +108,29 @@ class RequestsListBody extends StatelessWidget {
         ),
         Expanded(
           child: filtered.isEmpty
-              // E2: shared empty state.
-              ? AppEmptyState(title: emptyTitle, message: emptyMessage)
+              ? LayoutBuilder(
+                  builder: (context, constraints) => SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        minHeight: constraints.maxHeight,
+                      ),
+                      child: AppEmptyState(
+                        title: emptyTitle,
+                        message: emptyMessage,
+                      ),
+                    ),
+                  ),
+                )
               : ListView.separated(
-                  // Pull-to-refresh (user layout, 2026-11-16): the
-                  // list must stay draggable even with few items, or
-                  // the RefreshIndicator above it never triggers.
                   physics: const AlwaysScrollableScrollPhysics(),
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 16, vertical: 14),
+                  padding: const EdgeInsets.fromLTRB(16, 14, 16, 88),
                   itemCount: filtered.length,
                   separatorBuilder: (_, __) => const SizedBox(height: 12),
                   itemBuilder: (context, index) {
                     final b = filtered[index];
                     return InkWell(
+                      key: ValueKey(b.bookingId),
                       borderRadius: BorderRadius.circular(12),
                       onTap: () => onOpenDetail(b),
                       child: RequestTriageCard(

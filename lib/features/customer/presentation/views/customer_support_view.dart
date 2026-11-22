@@ -1,9 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
+import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/whatsapp.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
@@ -135,6 +137,7 @@ class _CustomerSupportViewState extends State<CustomerSupportView> {
 
     return Scaffold(
       body: SafeArea(
+        top: false,
         child: Column(
           children: [
             MinimalAppBar(
@@ -159,40 +162,85 @@ class _CustomerSupportViewState extends State<CustomerSupportView> {
                         prefixIcon: const Icon(Icons.search_rounded),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(color: AppColors.borderSubtle),
+                          borderSide: BorderSide(
+                              color: Theme.of(context).dividerColor),
                         ),
                         contentPadding: const EdgeInsets.symmetric(
                             horizontal: 14, vertical: 12),
                       ),
                     ),
                     const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: SupportContactCard(
-                            icon: Icons.phone_in_talk_rounded,
-                            title: l10n.supportCallShop,
-                            subtitle: _shopName ?? l10n.supportNoBooking,
-                            color: Theme.of(context).colorScheme.primary,
-                            onTap: _callShop,
+                    IntrinsicHeight(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Expanded(
+                            child: SupportContactCard(
+                              icon: Icons.phone_in_talk_rounded,
+                              title: l10n.supportCallShop,
+                              subtitle: _shopName ?? l10n.supportNoBooking,
+                              color: AppColors.primaryTextFor(
+                                  Theme.of(context).brightness),
+                              onTap: _callShop,
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: SupportContactCard(
-                            icon: Icons.chat_rounded,
-                            title: l10n.supportWhatsappShop,
-                            subtitle: _shopName ?? l10n.supportNoBooking,
-                            color: AppColors.successTextFor(
-                                Theme.of(context).brightness),
-                            onTap: _whatsAppShop,
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: SupportContactCard(
+                              icon: Icons.chat_rounded,
+                              title: l10n.supportWhatsappShop,
+                              subtitle: _shopName ?? l10n.supportNoBooking,
+                              color: AppColors.successTextFor(
+                                  Theme.of(context).brightness),
+                              onTap: _whatsAppShop,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                     const SizedBox(height: 14),
                     ListTile(
-                      tileColor: AppColors.secondaryContainer,
+                      tileColor: Theme.of(context)
+                          .colorScheme
+                          .primaryContainer
+                          .withValues(alpha: 0.45),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        side: BorderSide(
+                          color: AppColors.primaryTextFor(
+                              Theme.of(context).brightness),
+                        ),
+                      ),
+                      leading: Icon(
+                        Icons.notifications_active_rounded,
+                        color: AppColors.primaryTextFor(
+                            Theme.of(context).brightness),
+                      ),
+                      title: Text(
+                        l10n.notifications,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.primaryTextFor(
+                                  Theme.of(context).brightness),
+                            ),
+                      ),
+                      subtitle: Text(
+                        l10n.notificationsSubtitle,
+                        style: Theme.of(context).textTheme.labelSmall,
+                      ),
+                      trailing: Icon(
+                        Icons.chevron_right_rounded,
+                        size: 20,
+                        color: AppColors.primaryTextFor(
+                            Theme.of(context).brightness),
+                      ),
+                      onTap: () =>
+                          context.push(RouteNames.customerNotifications),
+                    ),
+                    const SizedBox(height: 14),
+                    ListTile(
+                      tileColor: AppColors.orangeContainerFor(
+                          Theme.of(context).brightness),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                         side: BorderSide(
@@ -207,8 +255,8 @@ class _CustomerSupportViewState extends State<CustomerSupportView> {
                       subtitle: Text(
                           l10n.supportDisputeHint,
                           style: Theme.of(context).textTheme.labelSmall),
-                      trailing: Icon(Icons.arrow_forward_ios_rounded,
-                          size: 14,
+                      trailing: Icon(Icons.chevron_right_rounded,
+                          size: 20,
                           color: AppColors.orangeTextFor(
                               Theme.of(context).brightness)),
                       onTap: widget.onFileDispute,

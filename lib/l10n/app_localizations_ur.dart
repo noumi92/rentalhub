@@ -4635,6 +4635,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get notificationsEmpty => 'ابھی کوئی اطلاعات نہیں۔';
 
   @override
+  String get notificationsFilterUnread => 'نہ پڑھی گئی';
+
+  @override
   String subscriptionUpgradeTo(String tier) {
     return '$tier پر اپ گریڈ کریں';
   }

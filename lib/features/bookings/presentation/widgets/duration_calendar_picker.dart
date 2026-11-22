@@ -15,6 +15,7 @@ class DurationCalendarPicker extends StatefulWidget {
   /// Phase B (B3): days the car is already booked — the date picker
   /// will not let the customer pick them.
   final Set<DateTime> blockedDates;
+  final bool showDurationStepper;
 
   const DurationCalendarPicker({
     super.key,
@@ -25,6 +26,7 @@ class DurationCalendarPicker extends StatefulWidget {
     required this.onTimeChanged,
     required this.onDurationChanged,
     this.blockedDates = const {},
+    this.showDurationStepper = true,
   });
 
   @override
@@ -69,11 +71,28 @@ class _DurationCalendarPickerState extends State<DurationCalendarPicker> {
 
   Future<void> _pickDate(BuildContext context) async {
     final l10n = AppLocalizations.of(context)!;
+    final today = DateTime.now();
+    final firstDate = DateTime(today.year, today.month, today.day);
+    final lastDate = firstDate.add(const Duration(days: 90));
+    var safeInitial = DateTime(
+      widget.pickupDate.year,
+      widget.pickupDate.month,
+      widget.pickupDate.day,
+    );
+    if (safeInitial.isBefore(firstDate)) safeInitial = firstDate;
+    while (widget.blockedDates.contains(safeInitial) &&
+        !safeInitial.isAfter(lastDate)) {
+      safeInitial = safeInitial.add(const Duration(days: 1));
+    }
+    if (safeInitial.isAfter(lastDate)) {
+      setState(() => _rejectedMessage = l10n.manualBookingCarBusy);
+      return;
+    }
     final picked = await showDatePicker(
       context: context,
-      initialDate: widget.pickupDate,
-      firstDate: DateTime.now(),
-      lastDate: DateTime.now().add(const Duration(days: 90)),
+      initialDate: safeInitial,
+      firstDate: firstDate,
+      lastDate: lastDate,
       selectableDayPredicate: (day) {
         final d = DateTime(day.year, day.month, day.day);
         return !widget.blockedDates.contains(d);
@@ -183,47 +202,46 @@ class _DurationCalendarPickerState extends State<DurationCalendarPicker> {
               ],
             ),
           ],
-          const SizedBox(height: 12),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                l10n.pickerDuration,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyMedium
-                    ,
-              ),
-              Row(
-                children: [
-                  IconButton(
-                    tooltip: l10n.pickerDecreaseDays,
-                    onPressed: widget.durationDays > 1
-                        ? () =>
-                            widget.onDurationChanged(widget.durationDays - 1)
-                        : null,
-                    icon: const Icon(Icons.remove_circle_outline_rounded),
-                  ),
-                  Text(
-                    l10n.pickerDays(widget.durationDays),
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleSmall
-                        ?.copyWith(fontWeight: FontWeight.w600),
-                  ),
-                  IconButton(
-                    tooltip: l10n.pickerIncreaseDays,
-                    onPressed: widget.durationDays < 30
-                        ? () =>
-                            widget.onDurationChanged(widget.durationDays + 1)
-                        : null,
-                    icon: const Icon(Icons.add_circle_outline_rounded),
-                    color: AppColors.secondary,
-                  ),
-                ],
-              ),
-            ],
-          ),
+          if (widget.showDurationStepper) ...[
+            const SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  l10n.pickerDuration,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+                Row(
+                  children: [
+                    IconButton(
+                      tooltip: l10n.pickerDecreaseDays,
+                      onPressed: widget.durationDays > 1
+                          ? () =>
+                              widget.onDurationChanged(widget.durationDays - 1)
+                          : null,
+                      icon: const Icon(Icons.remove_circle_outline_rounded),
+                    ),
+                    Text(
+                      l10n.pickerDays(widget.durationDays),
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleSmall
+                          ?.copyWith(fontWeight: FontWeight.w600),
+                    ),
+                    IconButton(
+                      tooltip: l10n.pickerIncreaseDays,
+                      onPressed: widget.durationDays < 30
+                          ? () =>
+                              widget.onDurationChanged(widget.durationDays + 1)
+                          : null,
+                      icon: const Icon(Icons.add_circle_outline_rounded),
+                      color: AppColors.secondary,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
         ],
       ),
     );

@@ -266,6 +266,7 @@ class AppTheme {
         primary: AppColors.primary,
         onPrimary: Colors.white,
         primaryContainer: AppColors.primaryContainer,
+        onPrimaryContainer: AppColors.primary,
         // Audit 2026-11-15 AC-10: `secondary` #F95700 with white
         // onSecondary is 3.29:1 — the scheme's secondary is the
         // orangeFill #C2410C instead (white on it is 5.18:1), so any
@@ -274,16 +275,21 @@ class AppTheme {
         secondary: AppColors.orangeFill,
         onSecondary: Colors.white,
         secondaryContainer: AppColors.secondaryContainer,
+        onSecondaryContainer: AppColors.orangeText,
         surface: AppColors.surfaceLight,
         onSurface: AppColors.onSurfaceLight,
         onSurfaceVariant: AppColors.onSurfaceVariantLight,
         surfaceContainer: AppColors.surfaceElevated,
         surfaceContainerHighest: AppColors.surfaceContainerHighestLight,
+        outline: AppColors.borderSubtle,
+        outlineVariant: AppColors.borderSubtle,
         // Audit 2026-11-15 AC-10: `error` was accentDanger #EF4444
         // with white onError (3.76:1). errorDark #DC2626 with white
         // onError is 4.83:1.
         error: AppColors.errorDark,
         onError: Colors.white,
+        errorContainer: AppColors.errorContainer,
+        onErrorContainer: AppColors.errorText,
       ),
       textTheme: _textTheme(
         fontFamily: fontFamily,
@@ -550,17 +556,21 @@ class AppTheme {
         primary: AppColors.primaryOnDark,
         onPrimary: Colors.white,
         primaryContainer: AppColors.primaryContainerOnDark,
+        onPrimaryContainer: AppColors.onSurfaceDark,
         // Audit 2026-11-15 AC-10: same orangeFill secondary as light
         // (white on secondaryDark #FF6D24 is 2.81:1).
         secondary: AppColors.orangeFill,
         onSecondary: Colors.white,
         secondaryContainer: AppColors.secondaryLightDark,
+        onSecondaryContainer: AppColors.orangeTextDark,
         surface: AppColors.surfaceDark,
         onSurface: AppColors.onSurfaceDark,
         onSurfaceVariant: AppColors.onSurfaceVariantDark,
         surfaceContainer: AppColors.surfaceContainerDark,
         surfaceContainerLow: AppColors.backgroundDark,
         surfaceContainerHighest: AppColors.surfaceContainerHighestDark,
+        outline: AppColors.borderDark,
+        outlineVariant: AppColors.borderDark,
         // Audit 2026-11-15 AC-10: the dark error fill stays the
         // light red #F87171 (6.48:1 as text on the dark surface —
         // `error` is read as a text colour by error labels) with a
@@ -569,6 +579,8 @@ class AppTheme {
         // (4.83:1) but reads only ~3.67:1 as text on #13152C.
         error: AppColors.accentDangerDark,
         onError: AppColors.surfaceDark,
+        errorContainer: AppColors.errorContainerDark,
+        onErrorContainer: AppColors.errorOnContainerDark,
       ),
       textTheme: _textTheme(
         fontFamily: fontFamily,
@@ -788,13 +800,13 @@ class AppTheme {
             states.contains(WidgetState.selected) ? Colors.white : null),
         trackColor: WidgetStateProperty.resolveWith((states) =>
             states.contains(WidgetState.selected)
-                ? AppColors.primaryOnDark
+                ? AppColors.primaryFocusedOnDark
                 : AppColors.borderDark),
       ),
       checkboxTheme: CheckboxThemeData(
         fillColor: WidgetStateProperty.resolveWith((states) =>
             states.contains(WidgetState.selected)
-                ? AppColors.primaryOnDark
+                ? AppColors.primaryFocusedOnDark
                 : Colors.transparent),
         checkColor: WidgetStateProperty.all(Colors.white),
         side: const BorderSide(color: AppColors.borderDark, width: 1.5),

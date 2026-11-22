@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../utils/package_pricing.dart';
 import 'package_tier_list.dart';
 
 /// Phase B (B3): builds the booking draft the picker hands to the
@@ -15,10 +16,12 @@ Map<String, dynamic> buildBookingDraft({
   required String plateNumber,
   required String shopId,
   required String shopName,
+  String? shopPhone,
   required bool isWithDriver,
   required PackageTierOption tier,
   required int kmLimit,
   required int? securityDepositPkr,
+  int? driverNightStayPkr,
   required String tripType,
   required String? fixedRouteId,
   required String? fixedRouteSummary,
@@ -39,8 +42,10 @@ Map<String, dynamic> buildBookingDraft({
     pickupTime.hour,
     pickupTime.minute,
   );
+  final effectiveDays =
+      PackagePricing.effectiveDaysFor(tier: tier, durationDays: durationDays);
   final returnDateTime = tier.hours >= 24
-      ? pickupDateTime.add(Duration(days: durationDays))
+      ? pickupDateTime.add(Duration(days: effectiveDays))
       : pickupDateTime.add(Duration(hours: tier.hours));
   return {
     'carId': carId,
@@ -48,12 +53,14 @@ Map<String, dynamic> buildBookingDraft({
     'plateNumber': plateNumber,
     'shopId': shopId,
     'shopName': shopName,
+    if (shopPhone != null && shopPhone.isNotEmpty) 'shopPhone': shopPhone,
     'isWithDriver': isWithDriver,
     'packageType': tier.label,
     'packageLabel': tier.title,
     'packageHours': tier.hours,
     'kmIncluded': tier.kmIncluded,
     'securityDepositPkr': securityDepositPkr,
+    if (driverNightStayPkr != null) 'driverNightStayPkr': driverNightStayPkr,
     'tripType': tripType,
     'kmLimit': kmLimit,
     'trackerCleared': false,

@@ -4,6 +4,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart' as ll;
 
 import '../../../../../core/constants/app_colors.dart';
+import '../../../../../core/widgets/app_map_tile_layer.dart';
 import '../../../domain/entities/shop_entity.dart';
 import '../../../../../l10n/app_localizations.dart';
 import 'shops_filter_logic.dart';
@@ -39,6 +40,7 @@ class ShopsMapCanvas extends StatefulWidget {
     this.userPoint,
     this.onUserPointChanged,
     this.onUserPointChangeEnd,
+    this.onMapTap,
     // CU-m11: the "nearby" radius, in km — the canvas draws the
     // matching circle around the user pin. Null = no circle.
     this.radiusKm,
@@ -67,6 +69,9 @@ class ShopsMapCanvas extends StatefulWidget {
 
   /// Once, when the user pin drag ends.
   final ValueChanged<ll.LatLng>? onUserPointChangeEnd;
+
+  /// Called when the user taps empty map space (e.g. to dismiss preview).
+  final VoidCallback? onMapTap;
 
   /// CU-m11: the "nearby" radius in km, drawn as a circle around the
   /// user pin. Null draws no circle.
@@ -138,12 +143,10 @@ class _ShopsMapCanvasState extends State<ShopsMapCanvas> {
         initialZoom: widget.initialZoom,
         minZoom: 4.0,
         maxZoom: 18.0,
+        onTap: (_, __) => widget.onMapTap?.call(),
       ),
       children: [
-        TileLayer(
-          urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-          userAgentPackageName: 'pk.rentalhub.rentalhub',
-        ),
+        const AppMapTileLayer(),
         // CU-m11: the radius circle around the user pin, so "nearby"
         // means something visible on the map.
         if (widget.radiusKm != null && userPoint != null)
@@ -164,11 +167,12 @@ class _ShopsMapCanvasState extends State<ShopsMapCanvas> {
             if (userPoint != null)
               Marker(
                 point: userPoint,
-                width: 38,
-                height: 38,
+                width: 48,
+                height: 48,
                 child: Semantics(
                   button: true,
                   label: l10n.homeMyLiveLocation,
+                  hint: l10n.locationCenterPin,
                   child: RawGestureDetector(
                     gestures: <Type, GestureRecognizerFactory>{
                       EagerGestureRecognizer:
@@ -191,23 +195,27 @@ class _ShopsMapCanvasState extends State<ShopsMapCanvas> {
                       },
                       onPointerUp: (_) => _endDrag(),
                       onPointerCancel: (_) => _endDrag(),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: AppColors.primary,
-                          border:
-                              Border.all(color: Colors.white, width: 2),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.25),
-                              blurRadius: 6,
-                            ),
-                          ],
-                        ),
-                        child: const Icon(
-                          Icons.my_location_rounded,
-                          color: Colors.white,
-                          size: 20,
+                      child: Center(
+                        child: Container(
+                          width: 38,
+                          height: 38,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: AppColors.primary,
+                            border:
+                                Border.all(color: Colors.white, width: 2),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.25),
+                                blurRadius: 6,
+                              ),
+                            ],
+                          ),
+                          child: const Icon(
+                            Icons.my_location_rounded,
+                            color: Colors.white,
+                            size: 20,
+                          ),
                         ),
                       ),
                     ),
@@ -227,7 +235,8 @@ class _ShopsMapCanvasState extends State<ShopsMapCanvas> {
                 alignment: Alignment.bottomCenter,
                 child: Semantics(
                   button: true,
-                  label: l10n.mapShowShop(shop.shopName),
+                  label:
+                      '${l10n.mapShowShop(shop.shopName)}, ${verified ? l10n.verified : l10n.shops_unverified}${shop.hasRealDistance ? ', ${shop.distanceKm.toStringAsFixed(1)} km' : ''}',
                   child: GestureDetector(
                     onTap: () => widget.onShopSelected(shop),
                     child: FittedBox(
@@ -298,6 +307,7 @@ class _ShopsMapCanvasState extends State<ShopsMapCanvas> {
             }),
           ],
         ),
+        const AppOsmAttribution(alignment: Alignment.topLeft),
       ],
     );
   }

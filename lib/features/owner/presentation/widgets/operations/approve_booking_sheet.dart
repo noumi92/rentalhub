@@ -197,7 +197,10 @@ class _ApproveBookingSheetState extends State<ApproveBookingSheet> {
                         value: account,
                         title: Text(account.methodTitle(l10n)),
                         subtitle: Text(
-                            '${account.title} • ${account.number}'.trim()),
+                          account.title.trim().isEmpty
+                              ? account.number
+                              : '${account.title.trim()} • ${account.number}',
+                        ),
                         contentPadding: EdgeInsets.zero,
                       ),
                   ],
@@ -220,10 +223,13 @@ class _ApproveBookingSheetState extends State<ApproveBookingSheet> {
                 onPressed:
                     _selected == null || _processing ? null : _confirm,
                 child: _processing
-                    ? const SizedBox(
+                    ? SizedBox(
                         width: 20,
                         height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Theme.of(context).colorScheme.onPrimary,
+                        ),
                       )
                     : Text(l10n.approveAssignConfirm),
               ),

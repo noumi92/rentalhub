@@ -89,9 +89,17 @@ class FuelOdometerInputWidget extends StatelessWidget {
                   min: 0,
                   max: 3,
                   divisions: 3,
+                  activeColor: selectedFuel.isEmpty
+                      ? Theme.of(context).colorScheme.outlineVariant
+                      : null,
+                  thumbColor: selectedFuel.isEmpty
+                      ? Theme.of(context).colorScheme.outline
+                      : null,
                   label: selectedFuel.isEmpty
                       ? null
                       : fuelLevelLabel(l10n, selectedFuel),
+                  semanticFormatterCallback: (v) =>
+                      fuelLevelLabel(l10n, fuelLevels[v.round()]),
                   onChanged: (v) =>
                       onFuelSelected(fuelLevels[v.round()]),
                 ),

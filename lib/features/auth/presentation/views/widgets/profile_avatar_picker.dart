@@ -114,7 +114,7 @@ class ProfileAvatarPicker extends StatelessWidget {
                   height: diameter,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: AppColors.primaryContainer,
+                    color: Theme.of(context).colorScheme.primaryContainer,
                     border: Border.all(
                       color: Theme.of(context).dividerColor,
                       width: 2,
@@ -131,19 +131,22 @@ class ProfileAvatarPicker extends StatelessWidget {
                         : Icon(
                             Icons.person_rounded,
                             size: radius * 1.15,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onPrimaryContainer,
                           ),
                   ),
                 ),
-                Positioned(
+                PositionedDirectional(
                   bottom: 0,
-                  right: 0,
+                  end: 0,
                   child: Container(
                     padding: const EdgeInsets.all(7),
                     decoration: BoxDecoration(
-                      color: AppColors.secondary,
+                      color: AppColors.orangeFill,
                       shape: BoxShape.circle,
                       border: Border.all(
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.surface,
                         width: 2,
                       ),
                     ),

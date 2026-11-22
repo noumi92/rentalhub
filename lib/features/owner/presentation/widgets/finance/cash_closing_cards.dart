@@ -122,17 +122,30 @@ class CashClosingRow extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // Audit 2026-11-15 DS-5: localized date, never raw d/m/y.
-          Text(formatDate(context, closing.date),
-              style: const TextStyle(fontWeight: FontWeight.w600)),
-          Text(
+          Flexible(
+            child: Text(
+              formatDate(context, closing.date),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Flexible(
+            flex: 2,
+            child: Text(
               l10n.financeClosingCounted(formatRs(closing.countedCash), formatRs(closing.difference)),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.end,
               style: Theme.of(context).textTheme.labelMedium?.copyWith(
                 color: closing.difference == 0
                       ? AppColors.successTextFor(Theme.of(context).brightness)
                       : AppColors.dangerTextFor(Theme.of(context).brightness),
                 fontWeight: FontWeight.w500,
-              )),
+              ),
+            ),
+          ),
         ],
       ),
     );

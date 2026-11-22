@@ -20,11 +20,13 @@ class CustomerHomeAppBar extends StatelessWidget {
     required this.title,
     this.subtitle,
     required this.userInitial,
+    this.unreadNotificationsCount,
   });
 
   final String title;
   final String? subtitle;
   final String userInitial;
+  final int? unreadNotificationsCount;
 
   @override
   Widget build(BuildContext context) {
@@ -49,6 +51,9 @@ class CustomerHomeAppBar extends StatelessWidget {
           tooltip: l10n.notifications,
           background: AppColors.surfaceLight.withValues(alpha: 0.15),
           iconColor: AppColors.surfaceLight,
+          badgeCount: (unreadNotificationsCount ?? 0) > 0
+              ? unreadNotificationsCount
+              : null,
           // Customer rework: Support is a top-level sub-screen now,
           // not a tab — push (not go) so the back arrow exists and
           // returns to Home. Destination unchanged: the support inbox.

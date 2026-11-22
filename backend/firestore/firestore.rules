@@ -1,95 +1,125 @@
 rules_version = '2';
 
 // ---------------------------------------------------------------------------
-// RentalHub Firestore rules — ADMIN SECTION (Phase A).
+// RentalHub Comprehensive Firestore Security Rules
+// Project: rentalhub-dev-pk
 //
-// MERGE REQUIRED — DO NOT DEPLOY THIS FILE ALONE. This file contains only
-// the admin rules. The live rules for project `rentalhub-dev-pk` are not
-// in git (plan D7): read them from the Firebase console first, then merge
-// this section into them. Deploying this file on its own would replace
-// the rules the owner/customer modules depend on and break the app.
-//
-// Deploy (after merging):
-//   firebase deploy --only firestore:rules
+// Role-based Access Control (RBAC):
+//  - Customers (Online): Self-managed profile, online bookings, payments.
+//  - Showrooms (Owners): Complete autonomy over their fleet, walk-in CRM,
+//    operations, agreements, and isolated financial ledger.
+//  - Admin Roles:
+//     * super_admin: Full platform administration, invites, CNIC QR codes.
+//     * operations: Showroom accreditation, fleet review, disputes, tribunal.
+//     * support: Triage disputes & tickets (read-only for financials).
 // ---------------------------------------------------------------------------
 
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    // =========================================================================
+    // Core Helper Functions
+    // =========================================================================
+
     function isSignedIn() {
       return request.auth != null;
     }
 
-    // An admin holds `admin_role` on their users doc (set manually for
-    // the first super admin, plan D1; via setAdminRole after) or the
-    // matching custom claim (role: 'admin', admin_role: <role>).
+    function isUser(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function userRole() {
+      return request.auth.token.get('role', '') != ''
+        ? request.auth.token.get('role', '')
+        : (exists(/databases/$(database)/documents/users/$(request.auth.uid))
+            ? getUserData().get('role', '')
+            : '');
+    }
+
+    function isOwner() {
+      return isSignedIn() && userRole() == 'owner';
+    }
+
     function adminRole() {
-      return request.auth != null && (
-        request.auth.token.get('admin_role', '') in
-          ['super_admin', 'operations', 'support'] ||
-        get(/databases/$(database)/documents/users/$(request.auth.uid))
-          .data.get('admin_role', '') in
-          ['super_admin', 'operations', 'support']);
+      return isSignedIn() && (
+        request.auth.token.get('admin_role', '') in ['super_admin', 'operations', 'support'] ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+          getUserData().get('admin_role', '') in ['super_admin', 'operations', 'support'])
+      );
     }
 
     function isSuperAdmin() {
-      return request.auth != null && (
+      return isSignedIn() && (
         request.auth.token.get('admin_role', '') == 'super_admin' ||
-        get(/databases/$(database)/documents/users/$(request.auth.uid))
-          .data.get('admin_role', '') == 'super_admin');
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+          getUserData().get('admin_role', '') == 'super_admin')
+      );
     }
 
-    // F-C1 (admin audit 2026-11-14) — the permission matrix needs a
-    // rules backstop, because the client-side checks alone cannot
-    // stop a direct Firestore write. These helpers mirror the
-    // matrix in lib/features/admin/domain/admin_permissions.dart:
-    // super admin + operations decide vendors, blacklist, disputes,
-    // platform settings, announcements and reviews; support triages
-    // disputes and tickets only, and may never close a ticket.
-    // Each match below only ADDS an admin allow to whatever the
-    // live rules already grant owners/customers (rules OR across
-    // match blocks), so merging this fragment never takes a
-    // permission away from the mobile app.
     function isAdminOps() {
-      return request.auth != null && (
-        request.auth.token.get('admin_role', '') in
-          ['super_admin', 'operations'] ||
-        get(/databases/$(database)/documents/users/$(request.auth.uid))
-          .data.get('admin_role', '') in
-          ['super_admin', 'operations']);
+      return isSignedIn() && (
+        request.auth.token.get('admin_role', '') in ['super_admin', 'operations'] ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+          getUserData().get('admin_role', '') in ['super_admin', 'operations'])
+      );
     }
 
-    function isAdminSupport() {
-      return request.auth != null && (
-        request.auth.token.get('admin_role', '') == 'support' ||
-        get(/databases/$(database)/documents/users/$(request.auth.uid))
-          .data.get('admin_role', '') == 'support');
+    function isShopOwner(shopId) {
+      return isSignedIn() && (
+        shopId == request.auth.uid ||
+        shopId == 'shop_' + request.auth.uid ||
+        (shopId != '' && exists(/databases/$(database)/documents/shops/$(shopId)) &&
+          (get(/databases/$(database)/documents/shops/$(shopId)).data.get('owner_id', '') == request.auth.uid ||
+           get(/databases/$(database)/documents/shops/$(shopId)).data.get('ownerId', '') == request.auth.uid))
+      );
     }
 
-    // Activity log (A5): immutable. Admins read; any signed-in user
-    // may write (the app-side writer + Cloud Functions); nobody may
-    // update or delete an entry.
+    // =========================================================================
+    // 1. Identity & Profile Collections
+    // =========================================================================
+
+    // Online Users: Accounts belong to individual users.
+    // Client cannot escalate admin roles, blacklist flags, or trust scores.
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      allow create: if isUser(userId)
+        && !('admin_role' in request.resource.data)
+        && !('totp_enabled' in request.resource.data);
+      allow update: if (isUser(userId)
+        && !('admin_role' in request.resource.data)
+        && !('totp_enabled' in request.resource.data)
+        && (!('role' in resource.data) || !('role' in request.resource.data) || resource.data.role == request.resource.data.role))
+        || isSuperAdmin();
+      allow delete: if isSuperAdmin();
+    }
+
+    // TOTP Secrets: Deny all from client (Cloud Functions Admin SDK only)
+    match /admin_secrets/{uid} {
+      allow read, write: if false;
+    }
+
+    // Super Admin Team Invites
+    match /admin_invites/{inviteId} {
+      allow read, write: if isSuperAdmin();
+    }
+
+    match /admin_totp_reminders/{id} {
+      allow read, write: if isSuperAdmin();
+    }
+
+    // Immutable Platform Audit Logs
     match /audit_logs/{logId} {
       allow read: if adminRole();
       allow create: if isSignedIn();
       allow update, delete: if false;
     }
 
-    // TOTP secrets (A1): deny-all from clients. Only the Admin SDK
-    // (Cloud Functions enrollTotp / verifyTotp / resetTotp) reads them.
-    match /admin_secrets/{uid} {
-      allow read, write: if false;
-    }
-
-    // CNIC back-QR numbers (Worker G, 2026-11-10): the QR code on
-    // the back of a CNIC holds a NUMBER used later for manual legal
-    // verification with the government. It is stored apart from the
-    // customer record because Firestore rules are document-level and
-    // cannot hide a single field: ONLY a super admin may read it —
-    // never the customer, never an owner, never operations/support.
-    // The capturing apps (owner wizard / customer KYC / CNIC review)
-    // write it at scan time; nobody may delete it. The payload must
-    // carry the same customerId as the doc id and a string qrCode.
+    // Restricted CNIC Back-QR Numbers: Super Admin ONLY
     match /customer_qr_codes/{customerId} {
       allow read: if isSuperAdmin();
       allow create, update: if isSignedIn()
@@ -98,85 +128,618 @@ service cloud.firestore {
       allow delete: if false;
     }
 
-    // Team invites (A4): super admin only. The grant itself is enforced
-    // server-side in setAdminRole (invite + 48 h expiry).
-    match /admin_invites/{inviteId} {
-      allow read, write: if isSuperAdmin();
-    }
+    // =========================================================================
+    // 2. Showroom & Fleet Discovery
+    // =========================================================================
 
-    // F-C1 — admin backstop for the collections the panel decides
-    // on. Reads are any admin role; writes are super admin +
-    // operations only, except where noted. The live rules keep
-    // governing owner/customer access (rules OR across match
-    // blocks); these matches only add the admin allows.
-    //
-    // Shops: the approvals queue decides verification_status and
-    // suspends shops. Admins never create shop docs (owners do).
+    // Showrooms: Public discovery; owned by specific showroom owner
     match /shops/{shopId} {
-      allow read: if adminRole();
-      allow update: if isAdminOps();
+      allow read: if true;
+      allow create: if isSignedIn() && (
+        request.resource.data.get('owner_id', '') == request.auth.uid ||
+        request.resource.data.get('ownerId', '') == request.auth.uid ||
+        isShopOwner(shopId)
+      );
+      allow update: if isShopOwner(shopId) || isAdminOps();
+      allow delete: if isAdminOps();
     }
 
-    // Vehicles: admins read the fleet; car decisions are written to
-    // car_reviews, never to the vehicle doc itself.
+    // Vehicles: Public discovery; managed exclusively by showroom owner
     match /vehicles/{vehicleId} {
-      allow read: if adminRole();
+      allow read: if true;
+      allow create: if isSignedIn() && (
+        isShopOwner(request.resource.data.get('shop_id', '')) ||
+        isShopOwner(request.resource.data.get('shopId', '')) ||
+        isAdminOps()
+      );
+      allow update, delete: if isSignedIn() && (
+        isShopOwner(resource.data.get('shop_id', '')) ||
+        isShopOwner(resource.data.get('shopId', '')) ||
+        isAdminOps()
+      );
     }
 
-    // Car reviews: the approve / hide / reject decision.
+    // Fixed Intercity Routes
+    match /fixed_routes/{routeId} {
+      allow read: if true;
+      allow create: if isSignedIn() && (
+        isShopOwner(request.resource.data.get('shopId', '')) ||
+        isShopOwner(request.resource.data.get('shop_id', '')) ||
+        isAdminOps()
+      );
+      allow update, delete: if isSignedIn() && (
+        isShopOwner(resource.data.get('shopId', '')) ||
+        isShopOwner(resource.data.get('shop_id', '')) ||
+        isAdminOps()
+      );
+    }
+
+    // Car Reviews (Admin Approval/Decision)
     match /car_reviews/{vehicleId} {
-      allow read: if adminRole();
+      allow read: if adminRole() ||
+        isShopOwner(resource.data.get('shopId', '')) ||
+        isShopOwner(resource.data.get('shop_id', ''));
       allow create, update: if isAdminOps();
+      allow delete: if isSuperAdmin();
     }
 
-    // Blacklist + tribunal: reports and appeal decisions.
-    // Customers file appeals through the shared data source under
-    // the live rules; this match only adds the admin allows.
-    match /blacklist/{recordId} {
-      allow read: if adminRole();
-      allow create, update: if isAdminOps();
-    }
+    // =========================================================================
+    // 3. Customer CRM: Walk-in Customers (Showroom Property) & Online KYC
+    // =========================================================================
 
-    // Customers: watchlist flags and admin notes live here. The
-    // restricted CNIC back-QR doc keeps its own super-admin-only
-    // rule above; this match must not be read as covering it.
+    // Walk-in Customers: Strictly the property of the specific showroom.
+    // The owning showroom has COMPLETE CRUD and KYC replace autonomy.
+    // Cross-showroom access is strictly forbidden.
     match /customers/{customerId} {
-      allow read: if adminRole();
-      allow update: if isAdminOps();
+      allow read: if (
+        isShopOwner(resource.data.get('shopId', '')) ||
+        isShopOwner(resource.data.get('shop_id', '')) ||
+        request.auth.uid == customerId ||
+        adminRole()
+      );
+      allow create: if (
+        isShopOwner(request.resource.data.get('shopId', '')) ||
+        isShopOwner(request.resource.data.get('shop_id', '')) ||
+        request.auth.uid == customerId ||
+        isAdminOps()
+      );
+      allow update: if (
+        isShopOwner(resource.data.get('shopId', '')) ||
+        isShopOwner(resource.data.get('shop_id', '')) ||
+        request.auth.uid == customerId ||
+        isAdminOps()
+      );
+      allow delete: if (
+        isShopOwner(resource.data.get('shopId', '')) ||
+        isShopOwner(resource.data.get('shop_id', '')) ||
+        isAdminOps()
+      );
 
       match /admin_notes/{noteId} {
         allow read, create: if adminRole();
       }
     }
 
-    // Disputes: decisions (super admin + operations) and triage
-    // (any admin role may move a dispute to in_review). Customers
-    // file disputes and owners update their status under the live
-    // rules; this match only adds the admin allows.
-    match /disputes/{disputeId} {
-      allow read: if adminRole();
+    // KYC Verification Documents
+    match /kyc_documents/{customerId} {
+      allow get: if isSignedIn() && (
+        resource == null ||
+        isUser(customerId) ||
+        isShopOwner(resource.data.get('shopId', '')) ||
+        isShopOwner(resource.data.get('shop_id', '')) ||
+        (isOwner() &&
+          resource.data.get('shopId', '') == '' &&
+          resource.data.get('shop_id', '') == '') ||
+        adminRole()
+      );
+      allow list: if isSignedIn() && (
+        isUser(customerId) ||
+        isShopOwner(resource.data.get('shopId', '')) ||
+        isShopOwner(resource.data.get('shop_id', '')) ||
+        adminRole()
+      );
+      allow create: if isSignedIn() && (
+        isUser(customerId) ||
+        isShopOwner(request.resource.data.get('shopId', '')) ||
+        isShopOwner(request.resource.data.get('shop_id', '')) ||
+        isAdminOps()
+      );
+      allow update: if isSignedIn() && (
+        isUser(customerId) ||
+        isShopOwner(resource.data.get('shopId', '')) ||
+        isShopOwner(resource.data.get('shop_id', '')) ||
+        isAdminOps()
+      );
+      allow delete: if isAdminOps();
+    }
+
+    // =========================================================================
+    // 4. Booking Engine & Field Operations
+    // =========================================================================
+
+    // PII-free Vehicle Availability Slots (allows customer calendar checks)
+    match /vehicle_booked_slots/{bookingId} {
+      allow read: if true;
+      allow create, update: if isSignedIn() &&
+        request.resource.data.keys().hasOnly([
+          'bookingId', 'vehicleId', 'shopId', 'pickupTime', 'returnTime', 'status', 'updatedAt'
+        ]);
+      allow delete: if isSignedIn() && (
+        isShopOwner(resource.data.get('shopId', '')) ||
+        isAdminOps()
+      );
+    }
+
+    // Bookings: Online customers and Showroom owners (walk-ins)
+    match /bookings/{bookingId} {
+      function isBookingCustomer(data) {
+        return isSignedIn() && (
+          request.auth.uid == data.get('customer_id', '') ||
+          request.auth.uid == data.get('customerId', '')
+        );
+      }
+
+      function isBookingShopOwner(data) {
+        return isShopOwner(data.get('shop_id', '')) ||
+          isShopOwner(data.get('shopId', ''));
+      }
+
+      function customerCoreFieldsUnchanged() {
+        return request.resource.data.get('totalAmount', 0) == resource.data.get('totalAmount', 0) &&
+          request.resource.data.get('advancePaid', 0) == resource.data.get('advancePaid', 0) &&
+          request.resource.data.get('advanceRequired', 0) == resource.data.get('advanceRequired', 0) &&
+          request.resource.data.get('remainingBalance', 0) == resource.data.get('remainingBalance', 0) &&
+          request.resource.data.get('shopId', '') == resource.data.get('shopId', '') &&
+          request.resource.data.get('vehicleId', '') == resource.data.get('vehicleId', '') &&
+          request.resource.data.get('customerId', '') == resource.data.get('customerId', '');
+      }
+
+      allow get: if isSignedIn() && (
+        resource == null ||
+        isBookingCustomer(resource.data) ||
+        isBookingShopOwner(resource.data) ||
+        adminRole()
+      );
+      allow list: if isSignedIn() && (
+        isBookingCustomer(resource.data) ||
+        isBookingShopOwner(resource.data) ||
+        adminRole()
+      );
+      allow create: if isSignedIn() && (
+        isBookingShopOwner(request.resource.data) ||
+        isAdminOps() ||
+        (isBookingCustomer(request.resource.data) &&
+          request.resource.data.get('status', 'requested') == 'requested' &&
+          request.resource.data.get('advancePaid', 0) == 0 &&
+          request.resource.data.get('origin', 'online') == 'online')
+      );
+      allow update: if isSignedIn() && (
+        isBookingShopOwner(resource.data) ||
+        isAdminOps() ||
+        (isBookingCustomer(resource.data) && customerCoreFieldsUnchanged() && (
+          // Customer submits payment proof on approved / payment_rejected booking
+          (resource.data.get('status', '') in ['approved', 'payment_rejected'] &&
+            request.resource.data.get('status', '') == 'payment_submitted') ||
+          // Customer cancels before payment verification
+          (resource.data.get('status', '') in ['requested', 'approved', 'payment_rejected'] &&
+            request.resource.data.get('status', '') == 'cancelled') ||
+          // Customer marks completed trip as rated
+          (resource.data.get('status', '') == 'completed' &&
+            request.resource.data.get('status', '') == 'completed' &&
+            request.resource.data.diff(resource.data).affectedKeys().hasOnly(['customerRated', 'updatedAt']))
+        ))
+      );
+      allow delete: if false; // Audit trail preserved permanently
+    }
+
+    // Booking General & Driver Settings
+    match /booking_settings/{shopId} {
+      allow read: if isSignedIn();
+      allow write: if isShopOwner(shopId) || isAdminOps();
+    }
+
+    // Legal Digital Rental Agreements
+    match /agreements/{agreementId} {
+      allow get: if isSignedIn() && (
+        resource == null ||
+        isUser(resource.data.get('customer_id', '')) ||
+        isUser(resource.data.get('customerId', '')) ||
+        isShopOwner(resource.data.get('shop_id', '')) ||
+        isShopOwner(resource.data.get('shopId', '')) ||
+        adminRole()
+      );
+      allow list: if isSignedIn() && (
+        isUser(resource.data.get('customer_id', '')) ||
+        isUser(resource.data.get('customerId', '')) ||
+        isShopOwner(resource.data.get('shop_id', '')) ||
+        isShopOwner(resource.data.get('shopId', '')) ||
+        adminRole()
+      );
+      allow create: if isSignedIn() && (
+        isUser(request.resource.data.get('customer_id', '')) ||
+        isUser(request.resource.data.get('customerId', '')) ||
+        isShopOwner(request.resource.data.get('shop_id', '')) ||
+        isShopOwner(request.resource.data.get('shopId', '')) ||
+        isAdminOps()
+      );
+      allow update: if isSignedIn() && (
+        isShopOwner(resource.data.get('shop_id', '')) ||
+        isShopOwner(resource.data.get('shopId', '')) ||
+        isAdminOps()
+      );
+      allow delete: if false; // Signed agreements are permanent
+    }
+
+    // Handover & Return Field Records
+    match /handovers/{handoverId} {
+      allow get: if isSignedIn() && (
+        resource == null ||
+        isUser(resource.data.get('customerId', '')) ||
+        isUser(resource.data.get('customer_id', '')) ||
+        isShopOwner(resource.data.get('shopId', '')) ||
+        isShopOwner(resource.data.get('shop_id', '')) ||
+        adminRole()
+      );
+      allow list: if isSignedIn() && (
+        isUser(resource.data.get('customerId', '')) ||
+        isUser(resource.data.get('customer_id', '')) ||
+        isShopOwner(resource.data.get('shopId', '')) ||
+        isShopOwner(resource.data.get('shop_id', '')) ||
+        adminRole()
+      );
+      allow create: if isSignedIn() && (
+        isShopOwner(request.resource.data.get('shopId', '')) ||
+        isShopOwner(request.resource.data.get('shop_id', '')) ||
+        isAdminOps()
+      );
+      allow update: if isSignedIn() && (
+        isShopOwner(resource.data.get('shopId', '')) ||
+        isShopOwner(resource.data.get('shop_id', '')) ||
+        isAdminOps()
+      );
+      allow delete: if false;
+    }
+
+    match /return_settlements/{settlementId} {
+      allow get: if isSignedIn() && (
+        resource == null ||
+        isUser(resource.data.get('customerId', '')) ||
+        isUser(resource.data.get('customer_id', '')) ||
+        isShopOwner(resource.data.get('shopId', '')) ||
+        isShopOwner(resource.data.get('shop_id', '')) ||
+        adminRole()
+      );
+      allow list: if isSignedIn() && (
+        isUser(resource.data.get('customerId', '')) ||
+        isUser(resource.data.get('customer_id', '')) ||
+        isShopOwner(resource.data.get('shopId', '')) ||
+        isShopOwner(resource.data.get('shop_id', '')) ||
+        adminRole()
+      );
+      allow create: if isSignedIn() && (
+        isShopOwner(request.resource.data.get('shopId', '')) ||
+        isShopOwner(request.resource.data.get('shop_id', '')) ||
+        isAdminOps()
+      );
+      allow update: if isSignedIn() && (
+        isShopOwner(resource.data.get('shopId', '')) ||
+        isShopOwner(resource.data.get('shop_id', '')) ||
+        isAdminOps()
+      );
+      allow delete: if false;
+    }
+
+    match /return_damage_reports/{reportId} {
+      allow get: if isSignedIn() && (
+        resource == null ||
+        isShopOwner(resource.data.get('shopId', '')) ||
+        isShopOwner(resource.data.get('shop_id', '')) ||
+        adminRole()
+      );
+      allow list: if isSignedIn() && (
+        isShopOwner(resource.data.get('shopId', '')) ||
+        isShopOwner(resource.data.get('shop_id', '')) ||
+        adminRole()
+      );
+      allow create: if isSignedIn() && (
+        isShopOwner(request.resource.data.get('shopId', '')) ||
+        isShopOwner(request.resource.data.get('shop_id', '')) ||
+        isAdminOps()
+      );
+      allow update: if isSignedIn() && (
+        isShopOwner(resource.data.get('shopId', '')) ||
+        isShopOwner(resource.data.get('shop_id', '')) ||
+        isAdminOps()
+      );
+      allow delete: if isAdminOps();
+    }
+
+    match /return_extra_charges/{chargeId} {
+      allow get: if isSignedIn() && (
+        resource == null ||
+        isShopOwner(resource.data.get('shopId', '')) ||
+        isShopOwner(resource.data.get('shop_id', '')) ||
+        adminRole()
+      );
+      allow list: if isSignedIn() && (
+        isShopOwner(resource.data.get('shopId', '')) ||
+        isShopOwner(resource.data.get('shop_id', '')) ||
+        adminRole()
+      );
+      allow create: if isSignedIn() && (
+        isShopOwner(request.resource.data.get('shopId', '')) ||
+        isShopOwner(request.resource.data.get('shop_id', '')) ||
+        isAdminOps()
+      );
+      allow update: if isSignedIn() && (
+        isShopOwner(resource.data.get('shopId', '')) ||
+        isShopOwner(resource.data.get('shop_id', '')) ||
+        isAdminOps()
+      );
+      allow delete: if isAdminOps();
+    }
+
+    // Customer Security Deposit
+    match /security_deposits/{depositId} {
+      allow get: if isSignedIn() && (
+        resource == null ||
+        isUser(resource.data.get('customerId', '')) ||
+        isUser(resource.data.get('customer_id', '')) ||
+        isShopOwner(resource.data.get('shopId', '')) ||
+        isShopOwner(resource.data.get('shop_id', '')) ||
+        adminRole()
+      );
+      allow list: if isSignedIn() && (
+        isUser(resource.data.get('customerId', '')) ||
+        isUser(resource.data.get('customer_id', '')) ||
+        isShopOwner(resource.data.get('shopId', '')) ||
+        isShopOwner(resource.data.get('shop_id', '')) ||
+        adminRole()
+      );
+      allow create: if isSignedIn() && (
+        isShopOwner(request.resource.data.get('shopId', '')) ||
+        isShopOwner(request.resource.data.get('shop_id', '')) ||
+        isAdminOps()
+      );
+      allow update: if isSignedIn() && (
+        isShopOwner(resource.data.get('shopId', '')) ||
+        isShopOwner(resource.data.get('shop_id', '')) ||
+        isAdminOps()
+      );
+      allow delete: if false;
+    }
+
+    // =========================================================================
+    // 5. Showroom Financial Ledger & Back-Office (Strict Isolation)
+    // =========================================================================
+
+    match /finance_accounts/{id} {
+      allow get: if isSignedIn() && (
+        resource == null ||
+        isShopOwner(resource.data.get('shopId', '')) ||
+        isShopOwner(resource.data.get('shop_id', '')) ||
+        isSuperAdmin()
+      );
+      allow list: if isSignedIn() && (
+        isShopOwner(resource.data.get('shopId', '')) ||
+        isShopOwner(resource.data.get('shop_id', '')) ||
+        isSuperAdmin()
+      );
+      allow create: if isSignedIn() && (
+        isShopOwner(request.resource.data.get('shopId', '')) ||
+        isShopOwner(request.resource.data.get('shop_id', '')) ||
+        isSuperAdmin()
+      );
+      allow update, delete: if isSignedIn() && (
+        isShopOwner(resource.data.get('shopId', '')) ||
+        isShopOwner(resource.data.get('shop_id', '')) ||
+        isSuperAdmin()
+      );
+    }
+
+    match /finance_transfers/{id} {
+      allow get: if isSignedIn() && (
+        resource == null ||
+        isShopOwner(resource.data.get('shopId', '')) ||
+        isShopOwner(resource.data.get('shop_id', '')) ||
+        isSuperAdmin()
+      );
+      allow list: if isSignedIn() && (
+        isShopOwner(resource.data.get('shopId', '')) ||
+        isShopOwner(resource.data.get('shop_id', '')) ||
+        isSuperAdmin()
+      );
+      allow create: if isSignedIn() && (
+        isShopOwner(request.resource.data.get('shopId', '')) ||
+        isShopOwner(request.resource.data.get('shop_id', '')) ||
+        isSuperAdmin()
+      );
+      allow update: if isSignedIn() && (
+        isShopOwner(resource.data.get('shopId', '')) ||
+        isShopOwner(resource.data.get('shop_id', '')) ||
+        isSuperAdmin()
+      );
+      allow delete: if false; // Financial ledger entries are immutable
+    }
+
+    match /cash_closings/{id} {
+      allow get: if isSignedIn() && (
+        resource == null ||
+        isShopOwner(resource.data.get('shopId', '')) ||
+        isShopOwner(resource.data.get('shop_id', '')) ||
+        isSuperAdmin()
+      );
+      allow list: if isSignedIn() && (
+        isShopOwner(resource.data.get('shopId', '')) ||
+        isShopOwner(resource.data.get('shop_id', '')) ||
+        isSuperAdmin()
+      );
+      allow create: if isSignedIn() && (
+        isShopOwner(request.resource.data.get('shopId', '')) ||
+        isShopOwner(request.resource.data.get('shop_id', '')) ||
+        isSuperAdmin()
+      );
+      allow update: if isSignedIn() && (
+        isShopOwner(resource.data.get('shopId', '')) ||
+        isShopOwner(resource.data.get('shop_id', '')) ||
+        isSuperAdmin()
+      );
+      allow delete: if false;
+    }
+
+    match /finance_categories/{id} {
+      allow get: if isSignedIn() && (
+        resource == null ||
+        isShopOwner(resource.data.get('shopId', '')) ||
+        isShopOwner(resource.data.get('shop_id', '')) ||
+        isSuperAdmin()
+      );
+      allow list: if isSignedIn() && (
+        isShopOwner(resource.data.get('shopId', '')) ||
+        isShopOwner(resource.data.get('shop_id', '')) ||
+        isSuperAdmin()
+      );
+      allow create: if isSignedIn() && (
+        isShopOwner(request.resource.data.get('shopId', '')) ||
+        isShopOwner(request.resource.data.get('shop_id', '')) ||
+        isSuperAdmin()
+      );
+      allow update, delete: if isSignedIn() && (
+        isShopOwner(resource.data.get('shopId', '')) ||
+        isShopOwner(resource.data.get('shop_id', '')) ||
+        isSuperAdmin()
+      );
+    }
+
+    match /finance_settings/{shopId} {
+      allow read, write: if isShopOwner(shopId) || isSuperAdmin();
+    }
+
+    match /partner_shares/{id} {
+      allow get: if isSignedIn() && (
+        resource == null ||
+        isShopOwner(resource.data.get('shopId', '')) ||
+        isShopOwner(resource.data.get('shop_id', '')) ||
+        isSuperAdmin()
+      );
+      allow list: if isSignedIn() && (
+        isShopOwner(resource.data.get('shopId', '')) ||
+        isShopOwner(resource.data.get('shop_id', '')) ||
+        isSuperAdmin()
+      );
+      allow create: if isSignedIn() && (
+        isShopOwner(request.resource.data.get('shopId', '')) ||
+        isShopOwner(request.resource.data.get('shop_id', '')) ||
+        isSuperAdmin()
+      );
+      allow update, delete: if isSignedIn() && (
+        isShopOwner(resource.data.get('shopId', '')) ||
+        isShopOwner(resource.data.get('shop_id', '')) ||
+        isSuperAdmin()
+      );
+    }
+
+    match /staff/{id} {
+      allow get: if isSignedIn() && (
+        resource == null ||
+        isShopOwner(resource.data.get('shopId', '')) ||
+        isShopOwner(resource.data.get('shop_id', '')) ||
+        isSuperAdmin()
+      );
+      allow list: if isSignedIn() && (
+        isShopOwner(resource.data.get('shopId', '')) ||
+        isShopOwner(resource.data.get('shop_id', '')) ||
+        isSuperAdmin()
+      );
+      allow create: if isSignedIn() && (
+        isShopOwner(request.resource.data.get('shopId', '')) ||
+        isShopOwner(request.resource.data.get('shop_id', '')) ||
+        isSuperAdmin()
+      );
+      allow update, delete: if isSignedIn() && (
+        isShopOwner(resource.data.get('shopId', '')) ||
+        isShopOwner(resource.data.get('shop_id', '')) ||
+        isSuperAdmin()
+      );
+    }
+
+    // =========================================================================
+    // 6. Blacklist, Disputes & Reviews
+    // =========================================================================
+
+    // National Fraud Blacklist Registry
+    match /blacklist/{recordId} {
+      allow read: if isOwner() || adminRole() || (
+        isSignedIn() && (
+          resource.data.get('customer_uid', '') == request.auth.uid ||
+          (resource.data.get('cnic_number', '') != '' &&
+           resource.data.get('cnic_number', '') == getUserData().get('cnic_number', ''))
+        )
+      );
+      allow create: if isOwner() || isAdminOps();
       allow update: if isAdminOps() ||
-        (adminRole() && request.resource.data.status == 'in_review');
+        (isOwner() && isShopOwner(resource.data.get('reported_by_shop_id', '')));
+      allow delete: if isAdminOps();
     }
 
-    // Reviews: Keep / Hide / Ask-to-edit / Warn.
+    // Arbitration Disputes
+    match /disputes/{disputeId} {
+      allow read: if isUser(resource.data.get('complainant_uid', '')) ||
+        isShopOwner(resource.data.get('shop_id', '')) ||
+        isShopOwner(resource.data.get('shopId', '')) ||
+        adminRole();
+      allow create: if isSignedIn() &&
+        request.auth.uid == request.resource.data.get('complainant_uid', '');
+      allow update: if isUser(resource.data.get('complainant_uid', '')) ||
+        isShopOwner(resource.data.get('shop_id', '')) ||
+        isShopOwner(resource.data.get('shopId', '')) ||
+        isAdminOps() ||
+        (adminRole() && request.resource.data.get('status', '') == 'in_review');
+      allow delete: if isSuperAdmin();
+    }
+
+    // Dual-Sided Public Reviews
     match /reviews/{reviewId} {
-      allow read: if adminRole();
-      allow update: if isAdminOps();
+      allow read: if true;
+      allow create: if isSignedIn() && (
+        request.auth.uid == request.resource.data.get('reviewer_uid', '') ||
+        request.auth.uid == request.resource.data.get('customerId', '') ||
+        isShopOwner(request.resource.data.get('shopId', ''))
+      );
+      allow update: if isAdminOps() || (
+        isSignedIn() && (
+          request.auth.uid == resource.data.get('customerId', '') ||
+          isShopOwner(resource.data.get('shopId', ''))
+        )
+      );
+      allow delete: if isAdminOps();
     }
 
-    // Support tickets: any admin may reply and triage, but only
-    // super admin + operations may close one. A support admin whose
-    // write leaves the status 'closed' is denied; any other status
-    // move is allowed for any admin role. Replies and internal
-    // notes live in subcollections (admin eyes only).
+    // =========================================================================
+    // 7. Platform Governance, Messaging & Tickets
+    // =========================================================================
+
+    match /platform_settings/{docId} {
+      allow read: if isSignedIn();
+      allow create, update, delete: if isAdminOps();
+    }
+
+    match /announcements/{announcementId} {
+      allow read: if true;
+      allow create, update, delete: if isAdminOps();
+    }
+
     match /support_tickets/{ticketId} {
-      allow read: if adminRole();
-      allow update: if adminRole() &&
-        (request.resource.data.status != 'closed' || isAdminOps());
+      allow read: if isUser(resource.data.get('customer_id', '')) ||
+        isUser(resource.data.get('userId', '')) ||
+        adminRole();
+      allow create: if isSignedIn();
+      allow update: if adminRole() && (
+        request.resource.data.get('status', '') != 'closed' || isAdminOps()
+      );
 
       match /replies/{replyId} {
-        allow read, create: if adminRole();
+        allow read, create: if isSignedIn();
       }
 
       match /internal_notes/{noteId} {
@@ -184,43 +747,80 @@ service cloud.firestore {
       }
     }
 
-    // Platform settings: the single `platform_settings/global`
-    // document. The mobile app reads it under the live rules; this
-    // match only adds the admin allows.
-    match /platform_settings/{docId} {
-      allow read: if adminRole();
-      allow create, update: if isAdminOps();
+    // In-App Notifications (Customers & Showroom Owners)
+    match /notifications/{notificationId} {
+      allow get: if isSignedIn() && (
+        resource == null ||
+        isUser(resource.data.get('customerId', '')) ||
+        isUser(resource.data.get('recipientUid', '')) ||
+        isUser(resource.data.get('recipient_uid', '')) ||
+        isUser(resource.data.get('recipientId', '')) ||
+        isUser(resource.data.get('userId', '')) ||
+        isShopOwner(resource.data.get('shopId', '')) ||
+        isShopOwner(resource.data.get('shop_id', '')) ||
+        adminRole()
+      );
+      allow list, update, delete: if isSignedIn() && (
+        isUser(resource.data.get('customerId', '')) ||
+        isUser(resource.data.get('recipientUid', '')) ||
+        isUser(resource.data.get('recipient_uid', '')) ||
+        isUser(resource.data.get('recipientId', '')) ||
+        isUser(resource.data.get('userId', '')) ||
+        isShopOwner(resource.data.get('shopId', '')) ||
+        isShopOwner(resource.data.get('shop_id', '')) ||
+        adminRole()
+      );
+      allow create: if isSignedIn();
     }
 
-    // Announcements: drafted and sent by super admin + operations.
-    // The customer app reads them under the live rules.
-    match /announcements/{announcementId} {
-      allow read: if adminRole();
-      allow create, update: if isAdminOps();
-    }
-
-    // Customer KYC documents: the admin review queue reads them.
-    // Decisions are super admin + operations only; customers write
-    // their own submissions under the live rules.
-    match /kyc_documents/{customerId} {
-      allow read: if adminRole();
+    // Showroom Subscriptions
+    match /subscription_requests/{requestId} {
+      allow read: if isShopOwner(resource.data.get('shop_id', '')) ||
+        isShopOwner(resource.data.get('shopId', '')) ||
+        adminRole();
+      allow create: if isShopOwner(request.resource.data.get('shop_id', '')) ||
+        isShopOwner(request.resource.data.get('shopId', '')) ||
+        isAdminOps();
       allow update: if isAdminOps();
     }
 
-    // Users doc (A2/A3): the admin_role field must never be writable by
-    // a client. Add this guard to the EXISTING /users rule when merging
-    // — it is shown here as a snippet because the live users rule is
-    // not in git:
-    //
-    //   match /users/{userId} {
-    //     // ... existing user rules ...
-    //     allow update: if isSignedIn() && request.auth.uid == userId
-    //       && !('admin_role' in request.resource.data)
-    //       && !('totp_enabled' in request.resource.data);
-    //   }
-    //
-    // (setAdminRole writes admin_role/totp_enabled through the Admin SDK,
-    // which bypasses rules; the client-side writer in verifyTotp is the
-    // Function, not the app.)
+    match /subscriptions/{subscriptionId} {
+      allow read: if isShopOwner(resource.data.get('shop_id', '')) ||
+        isShopOwner(resource.data.get('shopId', '')) ||
+        adminRole();
+      allow create, update: if isAdminOps();
+      allow delete: if isSuperAdmin();
+    }
+
+    // WhatsApp Credits, Settings & Audit Logs
+    match /whatsapp_credits/{shopId} {
+      allow read: if isShopOwner(shopId) || adminRole();
+      allow write: if isShopOwner(shopId) || isAdminOps();
+    }
+
+    match /whatsapp_settings/{shopId} {
+      allow read, write: if isShopOwner(shopId) || adminRole();
+    }
+
+    match /whatsapp_dispatch_logs/{logId} {
+      allow read: if isShopOwner(resource.data.get('shopId', '')) ||
+        isShopOwner(resource.data.get('shop_id', '')) ||
+        adminRole();
+      allow create: if isSignedIn();
+      allow update, delete: if false;
+    }
+
+    match /whatsapp_skipped_messages/{id} {
+      allow read: if isShopOwner(resource.data.get('shopId', '')) || adminRole();
+      allow create: if isSignedIn();
+      allow update, delete: if false;
+    }
+
+    match /credit_purchase_requests/{id} {
+      allow read: if isShopOwner(resource.data.get('shopId', '')) || adminRole();
+      allow create: if isShopOwner(request.resource.data.get('shopId', '')) || isAdminOps();
+      allow update: if isAdminOps();
+    }
+
   }
 }

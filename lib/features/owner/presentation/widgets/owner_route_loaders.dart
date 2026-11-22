@@ -16,7 +16,7 @@ import '../../../fleet/domain/entities/vehicle_entity.dart';
 /// entity from Firestore (via the existing remote data sources), show a
 /// loading state while fetching, and show an honest not-found screen when
 /// the id does not exist, instead of crashing or showing mock data.
-class BookingRouteLoader extends StatelessWidget {
+class BookingRouteLoader extends StatefulWidget {
   const BookingRouteLoader({
     super.key,
     required this.bookingId,
@@ -27,13 +27,38 @@ class BookingRouteLoader extends StatelessWidget {
   final Widget Function(BuildContext context, BookingEntity booking) builder;
 
   @override
+  State<BookingRouteLoader> createState() => _BookingRouteLoaderState();
+}
+
+class _BookingRouteLoaderState extends State<BookingRouteLoader> {
+  late Future<BookingEntity?> _future;
+
+  @override
+  void initState() {
+    super.initState();
+    _future = sl<BookingRemoteDataSource>().getBookingById(widget.bookingId);
+  }
+
+  @override
+  void didUpdateWidget(covariant BookingRouteLoader oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.bookingId != widget.bookingId) {
+      _future = sl<BookingRemoteDataSource>().getBookingById(widget.bookingId);
+    }
+  }
+
+  void _reload() {
+    setState(() {
+      _future = sl<BookingRemoteDataSource>().getBookingById(widget.bookingId);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return FutureBuilder<BookingEntity?>(
-      future: sl<BookingRemoteDataSource>().getBookingById(bookingId),
+      future: _future,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          // Requests-branch shared note: the bare spinner is now the
-          // shared loading state with a label.
           final l10n = AppLocalizations.of(context);
           return Scaffold(
             body: AppLoadingState(
@@ -41,17 +66,24 @@ class BookingRouteLoader extends StatelessWidget {
             ),
           );
         }
-        final booking = snapshot.data;
-        if (booking == null) {
-          // Phase F: localized not-found message (English fallback
-          // for delegate-less pumps).
+        if (snapshot.hasError) {
           final l10n = AppLocalizations.of(context);
-          return RouteNotFoundScreen(
-            message: l10n?.routeBookingNotFound(bookingId) ??
-                'Booking $bookingId was not found.',
+          return Scaffold(
+            body: AppErrorState(
+              message: l10n?.bookingsLoadError ?? 'Could not load booking.',
+              onRetry: _reload,
+            ),
           );
         }
-        return builder(context, booking);
+        final booking = snapshot.data;
+        if (booking == null) {
+          final l10n = AppLocalizations.of(context);
+          return RouteNotFoundScreen(
+            message: l10n?.routeBookingNotFound(widget.bookingId) ??
+                'Booking ${widget.bookingId} was not found.',
+          );
+        }
+        return widget.builder(context, booking);
       },
     );
   }

@@ -121,7 +121,10 @@ class _AdminKycReviewDetailViewState
           sl<AdminKycDataSource>().getKycSubmission(widget.customerId));
     } catch (_) {
       if (!mounted) return;
-      setState(() => _hasError = true);
+      setState(() {
+        _hasError = true;
+        _isLoading = false;
+      });
       return;
     }
     if (!mounted) return;

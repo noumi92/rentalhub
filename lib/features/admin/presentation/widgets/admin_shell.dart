@@ -104,13 +104,15 @@ class AdminShell extends StatelessWidget {
           ),
           drawer: Drawer(
             width: 280,
-            child: AdminSidebarNav(
-              width: 280,
-              activeRoute: activeRoute,
-              onNavigate: (route) {
-                Navigator.of(context).pop();
-                context.go(route);
-              },
+            child: SafeArea(
+              child: AdminSidebarNav(
+                width: 280,
+                activeRoute: activeRoute,
+                onNavigate: (route) {
+                  Navigator.of(context).pop();
+                  context.go(route);
+                },
+              ),
             ),
           ),
           body: _content(context, showHeader: false),
@@ -128,7 +130,7 @@ class AdminShell extends StatelessWidget {
           children: [
             if (onBack != null)
               Padding(
-                padding: const EdgeInsets.only(left: 8),
+                padding: const EdgeInsetsDirectional.only(start: 8),
                 child: IconButton(
                   icon: const Icon(Icons.arrow_back_rounded, size: 22),
                   tooltip: l10n?.back ?? 'Back',

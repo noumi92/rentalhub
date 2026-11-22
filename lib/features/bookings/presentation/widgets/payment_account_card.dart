@@ -44,22 +44,28 @@ class PaymentAccountCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: brandColor.withValues(alpha: 0.12),
-                      shape: BoxShape.circle,
+              Expanded(
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: brandColor.withValues(alpha: 0.12),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(icon, color: brandColor, size: 20),
                     ),
-                    child: Icon(icon, color: brandColor, size: 20),
-                  ),
-                  const SizedBox(width: 10),
-                  Text(
-                    methodTitle,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
-                  ),
-                ],
+                    const SizedBox(width: 10),
+                    Flexible(
+                      child: Text(
+                        methodTitle,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                  ],
+                ),
               ),
               IconButton(
                 icon: const Icon(Icons.copy_rounded,
@@ -90,18 +96,26 @@ class PaymentAccountCard extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          label,
-          // Audit 2026-11-15 DS-8: the 12 sp label is off-scale (§4.5:
-          // 28/20/16/15/13/11) — labelSmall is the 11 sp slot.
-          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
+        Flexible(
+          child: Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+          ),
         ),
-        Text(
-          value,
-          // Audit 2026-11-15 DS-8: 13 sp is bodyMedium, not a literal.
-          style: Theme.of(context).textTheme.bodyMedium,
+        const SizedBox(width: 12),
+        Flexible(
+          flex: 2,
+          child: Text(
+            value,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.end,
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
         ),
       ],
     );

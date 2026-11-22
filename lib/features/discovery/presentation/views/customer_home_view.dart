@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/auth/signed_in_user.dart';
 import '../../../../core/routing/route_names.dart';
+import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/app_state_views.dart';
 import '../../../customer/data/services/customer_home_service.dart';
+import '../../../notifications/data/services/customer_live_notifications.dart';
 import 'widgets/home_app_bar.dart';
 import 'widgets/home_book_car_fab.dart';
 import 'widgets/home_kpi_grid.dart';
@@ -42,16 +44,40 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
   // Live updates (Item 2): the subscription behind the KPIs,
   // upcoming events and recent bookings.
   StreamSubscription<CustomerHomeData>? _homeSub;
+  final CustomerLiveNotifications _liveNotifications =
+      CustomerLiveNotifications();
+  int _unreadNotifications = 0;
 
   @override
   void initState() {
     super.initState();
     _load();
+    _subscribeNotifications();
+  }
+
+  void _subscribeNotifications() {
+    final uid = _uid();
+    if (uid.isEmpty) return;
+    _liveNotifications.subscribe(
+      customerId: uid,
+      onUnreadCount: (count) {
+        if (mounted) setState(() => _unreadNotifications = count);
+      },
+      onNewArrival: (title, body, _, __) {
+        if (mounted && title.isNotEmpty) {
+          AppFeedback.showInfo(
+            context,
+            body.isEmpty ? title : '$title — $body',
+          );
+        }
+      },
+    );
   }
 
   @override
   void dispose() {
     _homeSub?.cancel();
+    _liveNotifications.dispose();
     super.dispose();
   }
 
@@ -110,6 +136,7 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
   Future<void> _reload() async {
     if (mounted) setState(() => _loading = true);
     _load();
+    _subscribeNotifications();
   }
 
   /// The signed-in uid, or '' when nobody is signed in — never a
@@ -164,6 +191,7 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
               subtitle:
                   name == null ? null : l10n.dashboardGreeting(name),
               userInitial: _userInitial(),
+              unreadNotificationsCount: _unreadNotifications,
             ),
             Expanded(
               child: RefreshIndicator(
@@ -226,7 +254,7 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
                           HomeUpcomingEvents(data: data),
                         const SizedBox(height: 16),
                         HomeRecentBookings(data: data, onRetry: _reload),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 84),
                       ],
                     ],
                   ),

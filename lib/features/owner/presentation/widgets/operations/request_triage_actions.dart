@@ -109,6 +109,7 @@ class RequestTriageActions extends StatelessWidget {
     final step = resolveOwnerNextStep(booking);
     switch (step.kind) {
       case BookingNextStepKind.verifyProof:
+        if (!showActions) return const SizedBox.shrink();
         return SizedBox(
           width: double.infinity,
           child: ElevatedButton.icon(
@@ -118,6 +119,7 @@ class RequestTriageActions extends StatelessWidget {
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
+              minimumSize: const Size(0, 54),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
             ),

@@ -81,3 +81,15 @@ List<ShopEntity> sortShopsByDistance(
   sorted.sort((a, b) => a.distanceKm.compareTo(b.distanceKm));
   return sorted;
 }
+
+/// Filters already-distance-sorted [shops] to those within [maxRadiusKm].
+/// When [maxRadiusKm] is null or <= 0, returns [shops] unchanged.
+List<ShopEntity> filterShopsWithinRadius(
+  List<ShopEntity> shops,
+  double? maxRadiusKm,
+) {
+  if (maxRadiusKm == null || maxRadiusKm <= 0) return shops;
+  return shops
+      .where((s) => !s.hasRealLocation || s.distanceKm <= maxRadiusKm)
+      .toList();
+}

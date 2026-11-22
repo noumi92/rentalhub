@@ -274,11 +274,9 @@ void main() {
         theme: AppTheme.darkTheme,
       );
       expect(_whiteSurfaces(tester), isEmpty);
-      // 'active' renders 'On trip' via BookingStatusChip and hits its
-      // default (warning) colour branch — never the brand navy, and
-      // never the uppercased raw status code.
-      expect(_textColor(tester, 'On trip'),
-          AppColors.warningTextFor(Brightness.dark));
+      // 'active' renders 'On trip' via BookingStatusChip with an info/primary
+      // pill (light container text in dark mode) — never brand navy or raw enum.
+      expect(_textColor(tester, 'On trip'), AppColors.primaryContainer);
     });
 
     testWidgets('BookingTicketCard: paid status pill uses the light green',

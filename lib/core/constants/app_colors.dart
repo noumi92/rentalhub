@@ -165,6 +165,13 @@ class AppColors {
   // fields were indistinguishable from unfocused ones.
   static const Color primaryFocusedOnDark = Color(0xFF6C72D9);
 
+  /// Brightness-aware PRIMARY foreground colour (icons, links, KPIs,
+  /// chart bars on a surface). In dark mode `colorScheme.primary`
+  /// (`primaryOnDark` #252B7A) is only ~1.4:1 on #13152C; this returns
+  /// light lavender (#EEF0FF) in dark mode and brand navy in light mode.
+  static Color primaryTextFor(Brightness brightness) =>
+      brightness == Brightness.dark ? primaryContainer : primary;
+
   /// Brightness-aware container/foreground pairs for the pale success and
   /// error slabs (WhatsApp buttons, status pills, banners). Light mode
   /// keeps the original pale tints; dark mode uses the dark container
