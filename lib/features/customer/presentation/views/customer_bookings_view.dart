@@ -46,13 +46,8 @@ class _CustomerBookingsViewState extends State<CustomerBookingsView> {
   int _selectedTab = 0;
   List<BookingEntity> _allBookings = [];
   bool _isLoading = true;
-  // E2: a load failure used to clear the spinner silently; it now
-  // renders an error state with retry.
   bool _hasError = false;
-  // CU-m3: nobody signed in — the list must not load under the
-  // shared 'cust-101' id.
   bool _signedOut = false;
-  // Live updates (Item 2): the subscription behind the list.
   StreamSubscription<List<BookingEntity>>? _bookingsSub;
 
   @override
@@ -68,11 +63,6 @@ class _CustomerBookingsViewState extends State<CustomerBookingsView> {
   @override
   void didUpdateWidget(covariant CustomerBookingsView oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // Sync unconditionally: go_router page keys are path-only, so a
-    // `go()` with a new query string reuses this page — change
-    // detection would miss consecutive saves landing on the same tab
-    // (All = 0 is also the default). Plain pops never rebuild, so
-    // back-from-detail keeps the selected tab.
     if (widget.initialTab >= 0 &&
         widget.initialTab < customerBookingTabsCount) {
       setState(() => _selectedTab = widget.initialTab);

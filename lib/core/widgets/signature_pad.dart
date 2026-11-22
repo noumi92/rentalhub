@@ -88,7 +88,7 @@ class _SignaturePadWidgetState extends State<SignaturePadWidget> {
                 style: TextButton.styleFrom(
                   padding: const EdgeInsets.symmetric(
                       horizontal: 8, vertical: 2),
-                  minimumSize: const Size(48, 48),
+                  minimumSize: const Size(0, 48),
                 ),
                 child: Text(
                   l10n?.handoverClear ?? 'Clear',

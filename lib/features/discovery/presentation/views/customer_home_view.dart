@@ -165,23 +165,10 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
     final l10n = AppLocalizations.of(context)!;
     final name = _greetingName();
     final data = _data;
-    // DS-16 (UI/UX audit 2026-11-15): the KYC card is the one tile
-    // that can block the user — it sits above the KPI grid when it
-    // needs action (not submitted, or rejected), below it otherwise.
     final kycNeedsAction =
         data?.kyc == null || data?.kyc?.status == 'rejected';
     return Scaffold(
-      // Customer pass (2026-11-16): "Book a Car" is the Home's
-      // primary action — the extended floating button below (same
-      // orange FAB language as the owner screens, same destination
-      // as the quick-action tile it replaces: the Shops tab).
       floatingActionButton: const HomeBookCarFab(),
-      // Phase D (D2): the only tab root that lacked a SafeArea — the
-      // header and content now clear the status bar like the other
-      // nine tab roots do.
-      // Audit 2026-11-15 DS-14: top: false — the shell strips the
-      // top inset from the whole branch subtree, so a bare SafeArea
-      // would double-inset by a status-bar height outside the shell.
       body: SafeArea(
         top: false,
         child: Column(
@@ -197,8 +184,6 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
               child: RefreshIndicator(
                 onRefresh: _reload,
                 child: SingleChildScrollView(
-                  // AlwaysScrollable: pull-to-refresh must work even
-                  // when the content is shorter than the viewport.
                   physics: const AlwaysScrollableScrollPhysics(),
                   child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -209,10 +194,6 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
                       if (_loading)
                         const AppLoadingState()
                       else if (_signedOut)
-                        // PW-9 (UI/UX audit 2026-11-15): the old retry
-                        // just re-ran the load and re-produced the
-                        // same signed-out error. The action is Sign
-                        // in, routing to login.
                         AppErrorState(
                           message: l10n.signInRequiredGeneric,
                           onRetry: () => context.go(RouteNames.auth),
@@ -228,8 +209,6 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
                           trustScore: data.trustScore,
                           onTrustTap: () => context
                               .push(RouteNames.customerReputation),
-                          // CU-m14: every KPI tile opens where its
-                          // number lives — bookings, wallet, bookings.
                           onBookingsTap: () =>
                               context.go(RouteNames.customerBookings),
                           onWalletTap: () =>

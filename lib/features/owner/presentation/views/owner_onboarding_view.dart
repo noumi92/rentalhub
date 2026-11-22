@@ -167,25 +167,25 @@ class _OwnerOnboardingViewState extends State<OwnerOnboardingView> {
         top: false,
         child: Column(
           children: [
-            MinimalAppBar(
-              title: _getHeaderTitle(l10n),
-              subtitle: _getHeaderSubtitle(l10n),
-              onBack: _prevStep,
-              actions: [
-                if (_currentStep < 6)
-                  Container(
-                    margin: const EdgeInsets.only(right: 8),
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                    decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.18), borderRadius: BorderRadius.circular(12)),
-                    child: Text(l10n.onboardingStepOfFive(_currentStep), style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w500, color: Colors.white)),
-                  ),
-              ],
-            ),
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    MinimalAppBar(
+                      title: _getHeaderTitle(l10n),
+                      subtitle: _getHeaderSubtitle(l10n),
+                      onBack: _prevStep,
+                      actions: [
+                        if (_currentStep < 6)
+                          Container(
+                            margin: const EdgeInsets.only(right: 8),
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                            decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.18), borderRadius: BorderRadius.circular(12)),
+                            child: Text(l10n.onboardingStepOfFive(_currentStep), style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w500, color: Colors.white)),
+                          ),
+                      ],
+                    ),
                     if (_currentStep < 6) OnboardingStepperBar(currentStep: _currentStep),
                     Padding(padding: const EdgeInsets.all(16), child: _buildCurrentStepContent()),
                   ],

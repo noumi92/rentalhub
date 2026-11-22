@@ -14,28 +14,13 @@ import '../widgets/package_tier_list.dart';
 import '../widgets/picker_out_city_section.dart';
 import '../../../../l10n/app_localizations.dart';
 
-/// Phase B (B2): when a [vehicle] is supplied, the picker offers only
-/// that vehicle's enabled packages at their real prices, with the
-/// driver surcharge and advance taken from the vehicle — no formula
-/// prices. Without a vehicle it keeps the old behaviour (derived
-/// prices from the daily/hourly rates) for the legacy callers.
 class RentPackagePickerView extends StatefulWidget {
-  final String carId;
-  final String carName;
-  final String plateNumber;
-  final String shopId;
-  final String shopName;
+  final String carId, carName, plateNumber, shopId, shopName;
   final String? shopPhone;
-  final int dailySelfDriveRate;
-  final int dailyWithDriverRate;
-  final int? hourlyRate;
+  final int dailySelfDriveRate, dailyWithDriverRate;
+  final int? hourlyRate, driverRatePerDayPkr;
   final VehicleEntity? vehicle;
   final bool initialWithDriver;
-  // Worker A (2026-11-21): test/route override for the shop's
-  // booking-settings driver rate (Rs/day). When null the picker
-  // loads it from `booking_settings/{shopId}` itself.
-  final int? driverRatePerDayPkr;
-  // Worker E: carried into the booking draft when the caller knows the shop's verification state (null = unknown; the review screen looks it up and fails open).
   final bool? shopIsVerified;
   final Function(Map<String, dynamic> bookingDraft)? onProceedToReview;
   final VoidCallback? onBack;
@@ -67,23 +52,11 @@ class _RentPackagePickerViewState extends State<RentPackagePickerView> {
   bool _isWithDriver = false;
   String _selectedPackage = '24h';
   DateTime _pickupDate = DateTime.now().add(const Duration(hours: 2));
-  // CU-m18: the time matches the date (now + 2h) — TimeOfDay.now()
-  // made the default pickup "today at the current time", already
-  // past by the time the user looks at it.
   TimeOfDay _pickupTime = TimeOfDay.fromDateTime(DateTime.now().add(const Duration(hours: 2)));
   int _durationDays = 1;
-
-  /// Phase B (B3): trip type, the car's booked days and the shop's
-  /// fixed routes. Loaded only when a vehicle is supplied and DI is
-  /// initialised (legacy callers and unit tests run without it).
   bool _isOutOfCity = false;
   FixedRouteEntity? _selectedRoute;
-  // Live updates (Item 2): the availability feed — blocked days + fixed routes, kept live while the picker is open.
   PickerAvailabilityFeed? _availability;
-  // Worker A (2026-11-21): the shop's booking-settings driver rate
-  // (Rs/day), loaded in initState when no override was passed.
-  // Null (unset) charges Rs. 0 — the vehicle's stored surcharge is
-  // never read by pricing.
   int? _driverRatePerDayPkr;
   int? get _driverRate => widget.driverRatePerDayPkr ?? _driverRatePerDayPkr;
 
@@ -116,38 +89,26 @@ class _RentPackagePickerViewState extends State<RentPackagePickerView> {
         dailyWithDriverRate: widget.dailyWithDriverRate,
         hourlyRate: widget.hourlyRate,
         isOutOfCity: _isOutOfCity,
-        // 09b §2: when a fixed route is chosen the tiers show its flat
-        // price (the total already charges it in _calculatedRate).
         fixedRoute: _selectedRoute,
       );
 
   PackageTierOption get _selectedTier => _tiers.firstWhere((t) => t.label == _selectedPackage, orElse: () => _tiers.first);
 
   int get _calculatedRate {
-    // A fixed route is one fixed trip price; a chauffeur is added on
-    // top, per day of the trip.
     if (_selectedRoute != null) {
-      final driver = _isWithDriver ? (_driverRate ?? 0) * _durationDays : 0;
-      return _selectedRoute!.fixedPricePkr + driver;
+      return _selectedRoute!.fixedPricePkr + (_isWithDriver ? (_driverRate ?? 0) * _durationDays : 0);
     }
     return PackagePricing.rateFor(vehicle: widget.vehicle, tier: _selectedTier, durationDays: _durationDays, isWithDriver: _isWithDriver, driverRatePerDayPkr: _driverRate);
   }
 
   int get _kmLimit => PackagePricing.kmLimitFor(tier: _selectedTier, durationDays: _durationDays);
-
   int get _advanceRequired => PackagePricing.advanceFor(vehicle: widget.vehicle, total: _calculatedRate);
-
   DateTime get _pickupDateTime => DateTime(_pickupDate.year, _pickupDate.month, _pickupDate.day, _pickupTime.hour, _pickupTime.minute);
 
   DateTime get _returnDateTime {
     final tier = _selectedTier;
-    if (tier.hours < 24) {
-      return _pickupDateTime.add(Duration(hours: tier.hours));
-    }
-    final days = PackagePricing.effectiveDaysFor(
-      tier: tier,
-      durationDays: _durationDays,
-    );
+    if (tier.hours < 24) return _pickupDateTime.add(Duration(hours: tier.hours));
+    final days = PackagePricing.effectiveDaysFor(tier: tier, durationDays: _durationDays);
     return _pickupDateTime.add(Duration(days: days));
   }
 
@@ -157,10 +118,7 @@ class _RentPackagePickerViewState extends State<RentPackagePickerView> {
     final start = DateTime(_pickupDate.year, _pickupDate.month, _pickupDate.day);
     final days = _selectedTier.hours < 24
         ? 1
-        : PackagePricing.effectiveDaysFor(
-            tier: _selectedTier,
-            durationDays: _durationDays,
-          );
+        : PackagePricing.effectiveDaysFor(tier: _selectedTier, durationDays: _durationDays);
     for (var i = 0; i < days; i++) {
       if (blocked.contains(start.add(Duration(days: i)))) return true;
     }

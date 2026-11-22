@@ -86,7 +86,7 @@ Future<void> openMapDirections(
   double? lng,
   String? address,
 }) async {
-  final l10n = AppLocalizations.of(context)!;
+  final l10n = AppLocalizations.of(context);
   String? destination;
   if (lat != null &&
       lng != null &&
@@ -98,7 +98,10 @@ Future<void> openMapDirections(
     destination = address.trim();
   }
   if (destination == null) {
-    AppFeedback.showInfo(context, l10n.passNoLocation);
+    AppFeedback.showInfo(
+      context,
+      l10n?.passNoLocation ?? 'Location not available.',
+    );
     return;
   }
   final uri = Uri.parse(
@@ -106,7 +109,10 @@ Future<void> openMapDirections(
   );
   if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
     if (context.mounted) {
-      AppFeedback.showError(context, l10n.passOpenMapsError);
+      AppFeedback.showError(
+        context,
+        l10n?.passOpenMapsError ?? 'Could not open maps.',
+      );
     }
   }
 }

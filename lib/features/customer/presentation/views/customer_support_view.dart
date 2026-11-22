@@ -38,39 +38,25 @@ class _CustomerSupportViewState extends State<CustomerSupportView> {
     _loadShopContact();
   }
 
-  // G1: the contact cards reach the customer's own showroom — the most
-  // recent booking's shop — not an invented RentalHub helpline number.
   Future<void> _loadShopContact() async {
     try {
-      // CU-m3: signed out — there is no booking to look the shop
-      // up from, and the old 'cust-101' fallback read another
-      // user's bookings. The contact cards simply stay empty.
       String? uid;
-      try {
-        uid = FirebaseAuth.instance.currentUser?.uid;
-      } catch (_) {}
+      try { uid = FirebaseAuth.instance.currentUser?.uid; } catch (_) {}
       if (uid == null) return;
-      final bookings =
-          await sl<BookingRemoteDataSource>().getCustomerBookings(uid);
+      final bookings = await sl<BookingRemoteDataSource>().getCustomerBookings(uid);
       if (bookings.isEmpty) return;
       final latest = bookings.first;
       String? phone = (latest.shopPhone ?? '').trim();
       String? name = latest.shopName;
       if (phone.isEmpty) {
         try {
-          final snap = await FirebaseFirestore.instance
-              .collection('shops')
-              .doc(latest.shopId)
-              .get();
+          final snap = await FirebaseFirestore.instance.collection('shops').doc(latest.shopId).get();
           phone = (snap.data()?['phone_number'] as String? ?? '').trim();
           name = snap.data()?['shop_name'] as String? ?? name;
         } catch (_) {}
       }
       if (mounted && (phone ?? '').isNotEmpty) {
-        setState(() {
-          _shopName = name;
-          _shopPhone = phone;
-        });
+        setState(() { _shopName = name; _shopPhone = phone; });
       }
     } catch (_) {}
   }
@@ -79,37 +65,23 @@ class _CustomerSupportViewState extends State<CustomerSupportView> {
     final l10n = AppLocalizations.of(context)!;
     final phone = (_shopPhone ?? '').trim();
     if (phone.isEmpty) {
-      AppFeedback.showInfo(
-        context,
-        l10n.supportNoBookingHint,
-      );
+      AppFeedback.showInfo(context, l10n.supportNoBookingHint);
       return;
     }
-    final uri = Uri(scheme: 'tel', path: phone);
-    if (!await launchUrl(uri)) {
-      if (mounted) {
-        AppFeedback.showError(context, l10n.couldNotCall);
-      }
+    if (!await launchUrl(Uri(scheme: 'tel', path: phone)) && mounted) {
+      AppFeedback.showError(context, l10n.couldNotCall);
     }
   }
 
   Future<void> _whatsAppShop() async {
     final l10n = AppLocalizations.of(context)!;
-    final uri = whatsappUri(
-      phone: _shopPhone ?? '',
-      message: l10n.supportWhatsappMessage(_shopName ?? 'there'),
-    );
+    final uri = whatsappUri(phone: _shopPhone ?? '', message: l10n.supportWhatsappMessage(_shopName ?? 'there'));
     if (uri == null) {
-      AppFeedback.showInfo(
-        context,
-        l10n.supportNoBookingHint,
-      );
+      AppFeedback.showInfo(context, l10n.supportNoBookingHint);
       return;
     }
-    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
-      if (mounted) {
-        AppFeedback.showError(context, l10n.couldNotOpenWhatsapp);
-      }
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication) && mounted) {
+      AppFeedback.showError(context, l10n.couldNotOpenWhatsapp);
     }
   }
 
@@ -199,74 +171,36 @@ class _CustomerSupportViewState extends State<CustomerSupportView> {
                       ),
                     ),
                     const SizedBox(height: 14),
-                    ListTile(
+                    _actionTile(
+                      context,
                       tileColor: Theme.of(context)
                           .colorScheme
                           .primaryContainer
                           .withValues(alpha: 0.45),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        side: BorderSide(
-                          color: AppColors.primaryTextFor(
-                              Theme.of(context).brightness),
-                        ),
-                      ),
-                      leading: Icon(
-                        Icons.notifications_active_rounded,
-                        color: AppColors.primaryTextFor(
-                            Theme.of(context).brightness),
-                      ),
-                      title: Text(
-                        l10n.notifications,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.primaryTextFor(
-                                  Theme.of(context).brightness),
-                            ),
-                      ),
-                      subtitle: Text(
-                        l10n.notificationsSubtitle,
-                        style: Theme.of(context).textTheme.labelSmall,
-                      ),
-                      trailing: Icon(
-                        Icons.chevron_right_rounded,
-                        size: 20,
-                        color: AppColors.primaryTextFor(
-                            Theme.of(context).brightness),
-                      ),
+                      borderColor:
+                          AppColors.primaryTextFor(Theme.of(context).brightness),
+                      accent:
+                          AppColors.primaryTextFor(Theme.of(context).brightness),
+                      icon: Icons.notifications_active_rounded,
+                      title: l10n.notifications,
+                      subtitle: l10n.notificationsSubtitle,
                       onTap: () =>
                           context.push(RouteNames.customerNotifications),
                     ),
                     const SizedBox(height: 14),
-                    ListTile(
+                    _actionTile(
+                      context,
                       tileColor: AppColors.orangeContainerFor(
                           Theme.of(context).brightness),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        side: BorderSide(
-                            color:
-                                AppColors.secondary.withValues(alpha: 0.3)),
-                      ),
-                      leading: Icon(Icons.gavel_rounded,
-                          color: AppColors.orangeTextFor(
-                              Theme.of(context).brightness)),
-                      title: Text(l10n.supportFileDispute,
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.orangeTextFor(Theme.of(context).brightness))),
-                      subtitle: Text(
-                          l10n.supportDisputeHint,
-                          style: Theme.of(context).textTheme.labelSmall),
-                      trailing: Icon(Icons.chevron_right_rounded,
-                          size: 20,
-                          color: AppColors.orangeTextFor(
-                              Theme.of(context).brightness)),
+                      borderColor: AppColors.secondary.withValues(alpha: 0.3),
+                      accent:
+                          AppColors.orangeTextFor(Theme.of(context).brightness),
+                      icon: Icons.gavel_rounded,
+                      title: l10n.supportFileDispute,
+                      subtitle: l10n.supportDisputeHint,
                       onTap: widget.onFileDispute,
                     ),
                     const SizedBox(height: 14),
-                    // Phase C (C3): the Emergency SOS entry point. The
-                    // orphaned customer dashboard was the screen's only
-                    // entry point; with the dashboard deleted, Support
-                    // is its home — the FAQ already tells users to use
-                    // the SOS screen for emergencies.
                     SupportSosTile(onTap: widget.onOpenSos),
                     const SizedBox(height: 14),
                     const SupportTicketForm(),
@@ -282,4 +216,33 @@ class _CustomerSupportViewState extends State<CustomerSupportView> {
     );
   }
 
+  Widget _actionTile(
+    BuildContext context, {
+    required Color tileColor,
+    required Color borderColor,
+    required Color accent,
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required VoidCallback? onTap,
+  }) {
+    return ListTile(
+      tileColor: tileColor,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: borderColor),
+      ),
+      leading: Icon(icon, color: accent),
+      title: Text(
+        title,
+        style: Theme.of(context)
+            .textTheme
+            .bodyMedium
+            ?.copyWith(fontWeight: FontWeight.w600, color: accent),
+      ),
+      subtitle: Text(subtitle, style: Theme.of(context).textTheme.labelSmall),
+      trailing: Icon(Icons.chevron_right_rounded, size: 20, color: accent),
+      onTap: onTap,
+    );
+  }
 }
