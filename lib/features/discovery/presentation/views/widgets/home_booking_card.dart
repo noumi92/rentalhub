@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
-import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/app_dimensions.dart';
 import '../../../../../core/theme/card_decoration.dart';
 import '../../../../../core/utils/date_format.dart';
@@ -52,10 +51,11 @@ class HomeBookingCard extends StatelessWidget {
       context: context,
       builder: (context) {
         return Dialog(
-          // The pass is forced light in both themes (same rule as
-          // the pass widget itself), so the dialog behind it is
-          // light too — never the theme's dark surface.
-          backgroundColor: AppColors.backgroundLight,
+          // The pass widget paints its own forced-light surface
+          // (BoxDecoration color, radius 20) — the dialog itself
+          // keeps the theme background, the same as the full-screen
+          // pass view. Never set backgroundColor here: the A4
+          // dark-mode test forbids a forced light dialog background.
           insetPadding: const EdgeInsets.all(16),
           child: SingleChildScrollView(
             child: DigitalQrPassWidget(
