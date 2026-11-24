@@ -398,17 +398,16 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      // Customer pass (2026-11-16): "Book a Car" left the
-      // quick-action row — it is the Home's extended floating button
-      // now (the recent-bookings empty state has a second 'Book a
-      // Car' action, so the FAB is asserted by type; the Home has
-      // exactly one).
-      expect(find.byType(FloatingActionButton), findsOneWidget);
+      // Home redesign (2026-11-24): "Book a Car" is the action
+      // row's FilledButton now (the recent-bookings empty state has
+      // a second 'Book a Car' action, so the row's button is
+      // asserted by its key).
+      expect(find.byKey(const ValueKey('home-book-car')), findsOneWidget);
     }
 
     testWidgets('Book a Car opens the Shops tab', (tester) async {
       await pumpHome(tester);
-      await tester.tap(find.byType(FloatingActionButton));
+      await tester.tap(find.byKey(const ValueKey('home-book-car')));
       await tester.pumpAndSettle();
       expect(find.text('stub-shops'), findsOneWidget);
     });
@@ -423,11 +422,9 @@ void main() {
 
     testWidgets('SOS opens the SOS screen', (tester) async {
       await pumpHome(tester);
-      // Customer pass (2026-11-16): the "Book a Car" FAB floats at
-      // the bottom-right and can cover the rightmost quick-action
-      // tile in short viewports — scroll the tile clear of it first,
-      // as a user would (the Home's scroll view is the SingleChild-
-      // ScrollView ancestor of the SOS tile).
+      // The SOS chip sits below the fold in short viewports — scroll
+      // it into view first, as a user would (the Home's scroll view
+      // is the SingleChildScrollView ancestor of the SOS chip).
       await tester.drag(
         find.ancestor(
           of: find.byKey(const ValueKey('quick-action-SOS')),
@@ -1014,7 +1011,9 @@ void main() {
       // radar and its EmptyRadarState moved to the Shops tab.
       expect(find.byType(EmptyRadarState), findsNothing);
       expect(find.text('No bookings yet'), findsOneWidget);
-      expect(find.text('Nothing coming up'), findsOneWidget);
+      // Home redesign (2026-11-24): with nothing coming up the
+      // Upcoming section hides entirely — no empty-state box.
+      expect(find.text('Nothing coming up'), findsNothing);
     });
 
     testWidgets('customer Bookings: loading, then shared empty state',

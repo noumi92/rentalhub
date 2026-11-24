@@ -5,7 +5,6 @@ import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/routing/route_names.dart';
 import '../../../../../core/utils/date_format.dart';
 import '../../../../../core/utils/money_format.dart';
-import '../../../../../core/widgets/app_state_views.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../bookings/domain/entities/booking_entity.dart';
 import '../../../../customer/data/services/customer_home_service.dart';
@@ -15,8 +14,12 @@ import '../../../../customer/data/services/customer_home_service.dart';
 /// (approved, advance unpaid, pickup already passed), then payments
 /// still due, then the next handover. An overdue payment is flagged
 /// in danger colours with its amount and a Pay action — never
-/// hidden. Empty means nothing is coming up, not a load failure
-/// (the caller hides this section when the bookings load failed).
+/// hidden.
+///
+/// Home redesign (2026-11-24): when nothing is coming up the
+/// section collapses entirely — no empty-state box — so the recent
+/// bookings are visible without scrolling. (The caller hides this
+/// section when the bookings load failed.)
 class HomeUpcomingEvents extends StatelessWidget {
   const HomeUpcomingEvents({
     super.key,
@@ -43,14 +46,10 @@ class HomeUpcomingEvents extends StatelessWidget {
     );
   }
 
-  bool get _isEmpty =>
-      data.overduePayments.isEmpty &&
-      data.paymentsDue.isEmpty &&
-      data.nextHandover == null;
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    if (!data.hasUpcomingEvents) return const SizedBox.shrink();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -62,46 +61,39 @@ class HomeUpcomingEvents extends StatelessWidget {
               ?.copyWith(fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 8),
-        if (_isEmpty)
-          AppEmptyState(
-            title: l10n.home2_noUpcoming,
-            icon: Icons.event_available_rounded,
-          )
-        else ...[
-          for (final booking in data.overduePayments)
-            _EventRow(
-              booking: booking,
-              icon: Icons.error_outline_rounded,
-              color: AppColors.dangerTextFor(Theme.of(context).brightness),
-              title: l10n.home2_paymentOverdue,
-              detail: l10n.amountRs(formatRs(booking.remainingBalance)),
-              actionLabel: l10n.bookingsPayAdvance,
-              onTap: () => onOpenBooking?.call(booking),
-              onAction: () => _payAdvance(context, booking),
+        for (final booking in data.overduePayments)
+          _EventRow(
+            booking: booking,
+            icon: Icons.error_outline_rounded,
+            color: AppColors.dangerTextFor(Theme.of(context).brightness),
+            title: l10n.home2_paymentOverdue,
+            detail: l10n.amountRs(formatRs(booking.remainingBalance)),
+            actionLabel: l10n.bookingsPayAdvance,
+            onTap: () => onOpenBooking?.call(booking),
+            onAction: () => _payAdvance(context, booking),
+          ),
+        for (final booking in data.paymentsDue)
+          _EventRow(
+            booking: booking,
+            icon: Icons.schedule_rounded,
+            color: AppColors.warningTextFor(Theme.of(context).brightness),
+            title: l10n.home2_paymentDue,
+            detail: l10n.amountRs(formatRs(booking.remainingBalance)),
+            actionLabel: l10n.bookingsPayAdvance,
+            onTap: () => onOpenBooking?.call(booking),
+            onAction: () => _payAdvance(context, booking),
+          ),
+        if (data.nextHandover != null)
+          _EventRow(
+            booking: data.nextHandover!,
+            icon: Icons.key_rounded,
+            color: AppColors.primary,
+            title: l10n.dashboardScheduleHandover,
+            detail: l10n.ticketPickupDate(
+              formatDate(context, data.nextHandover!.pickupTime),
             ),
-          for (final booking in data.paymentsDue)
-            _EventRow(
-              booking: booking,
-              icon: Icons.schedule_rounded,
-              color: AppColors.warningTextFor(Theme.of(context).brightness),
-              title: l10n.home2_paymentDue,
-              detail: l10n.amountRs(formatRs(booking.remainingBalance)),
-              actionLabel: l10n.bookingsPayAdvance,
-              onTap: () => onOpenBooking?.call(booking),
-              onAction: () => _payAdvance(context, booking),
-            ),
-          if (data.nextHandover != null)
-            _EventRow(
-              booking: data.nextHandover!,
-              icon: Icons.key_rounded,
-              color: AppColors.primary,
-              title: l10n.dashboardScheduleHandover,
-              detail: l10n.ticketPickupDate(
-                formatDate(context, data.nextHandover!.pickupTime),
-              ),
-              onTap: () => onOpenBooking?.call(data.nextHandover!),
-            ),
-        ],
+            onTap: () => onOpenBooking?.call(data.nextHandover!),
+          ),
       ],
     );
   }

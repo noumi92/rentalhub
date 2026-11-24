@@ -99,6 +99,14 @@ class CustomerHomeData {
     return upcoming.isEmpty ? null : upcoming.first;
   }
 
+  /// True when anything is coming up — an overdue or due payment,
+  /// or a next handover. The Home hides the Upcoming section
+  /// entirely when this is false (redesign 2026-11-24).
+  bool get hasUpcomingEvents =>
+      overduePayments.isNotEmpty ||
+      paymentsDue.isNotEmpty ||
+      nextHandover != null;
+
   /// True when an approved booking needs its advance paid — overdue
   /// or due — regardless of pickup time.
   bool isPaymentOutstanding(BookingEntity booking) =>

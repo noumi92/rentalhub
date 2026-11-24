@@ -11,20 +11,19 @@ import '../../../../../l10n/app_localizations.dart';
 /// Extracted from [CustomerHomeView] so that view stays under the
 /// 250-line cap.
 ///
-/// The subtitle is nullable: Home shows the greeting when the
-/// signed-in user's name is known, and no subtitle when it is not
-/// (a signed-out visitor has no name to greet).
+/// Home redesign (2026-11-24): the title IS the greeting
+/// ("Assalam-o-Alaikum, Nouman") — no redundant "Home" title above
+/// it. When the name is unknown the caller falls back to the plain
+/// "Home" title.
 class CustomerHomeAppBar extends StatelessWidget {
   const CustomerHomeAppBar({
     super.key,
     required this.title,
-    this.subtitle,
     required this.userInitial,
     this.unreadNotificationsCount,
   });
 
   final String title;
-  final String? subtitle;
   final String userInitial;
   final int? unreadNotificationsCount;
 
@@ -33,7 +32,6 @@ class CustomerHomeAppBar extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     return MinimalAppBar(
       title: title,
-      subtitle: subtitle,
       actions: [
         AppIconChip(
           icon: Icons.map_rounded,

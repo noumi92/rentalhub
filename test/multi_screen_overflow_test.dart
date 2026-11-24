@@ -73,7 +73,9 @@ void main() {
         textScale: 1.35,
         theme: AppTheme.lightTheme,
       );
-      expect(find.text('Home'), findsOneWidget);
+      // Home redesign (2026-11-24): the greeting is the header now,
+      // no "Home" title above it.
+      expect(find.text('Assalam-o-Alaikum, Ahmed'), findsOneWidget);
     });
 
     testWidgets('VehicleDetailView renders without overflow on 360px viewport and 1.35x font scale',
@@ -378,7 +380,9 @@ void main() {
         textScale: 2.0,
         theme: AppTheme.lightTheme,
       );
-      expect(find.text('Home'), findsOneWidget);
+      // Home redesign (2026-11-24): the greeting is the header now,
+      // no "Home" title above it.
+      expect(find.text('Assalam-o-Alaikum, Ahmed'), findsOneWidget);
     });
 
     testWidgets('OwnerDashboardView renders without overflow at 200% text scale',

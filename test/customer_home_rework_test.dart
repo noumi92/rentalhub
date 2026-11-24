@@ -235,10 +235,13 @@ void main() {
       );
       await _pumpHome(tester, service);
 
-      expect(find.text('Active bookings'), findsOneWidget);
-      expect(find.text('Total Trips'), findsOneWidget);
-      expect(find.text('Wallet balance'), findsOneWidget);
-      expect(find.text('Trust Score'), findsOneWidget);
+      // Home redesign (2026-11-24): the KPI strip uses the short
+      // labels. 'Wallet' also labels the quick-action chip below,
+      // so it appears twice.
+      expect(find.text('Active'), findsOneWidget);
+      expect(find.text('Trips'), findsOneWidget);
+      expect(find.text('Wallet'), findsNWidgets(2));
+      expect(find.text('Trust'), findsOneWidget);
       // 1 active booking, 2 completed trips.
       expect(find.text('1'), findsOneWidget);
       expect(find.text('2'), findsOneWidget);
@@ -266,7 +269,9 @@ void main() {
       expect(find.text('Not started'), findsOneWidget);
       expect(find.text('0 of 4 documents ready'), findsOneWidget);
       expect(find.text('No bookings yet'), findsOneWidget);
-      expect(find.text('Nothing coming up'), findsOneWidget);
+      // Home redesign (2026-11-24): with nothing coming up the
+      // Upcoming section hides entirely — no empty-state box.
+      expect(find.text('Nothing coming up'), findsNothing);
     });
   });
 
@@ -287,7 +292,7 @@ void main() {
 
       expect(find.text('Submitted — pending verification'), findsOneWidget);
       expect(find.text('4 of 4 documents ready'), findsOneWidget);
-      expect(find.text('View documents'), findsOneWidget);
+      expect(find.text('View'), findsOneWidget);
     });
 
     testWidgets('rejected KYC shows the rejection and a resubmit CTA',
@@ -305,14 +310,14 @@ void main() {
       await _pumpHome(tester, service);
 
       expect(find.text('Rejected — please resubmit'), findsOneWidget);
-      expect(find.text('Submit KYC Documents'), findsOneWidget);
+      expect(find.text('Submit'), findsOneWidget);
     });
 
     testWidgets('KYC CTA opens the real KYC flow', (tester) async {
       final service = await _buildService();
       await _pumpHome(tester, service);
 
-      await _tapVisible(tester, find.text('Submit KYC Documents'));
+      await _tapVisible(tester, find.text('Submit'));
       expect(find.text('KYC stub body'), findsOneWidget);
     });
   });
@@ -327,16 +332,19 @@ void main() {
         await tester.pumpAndSettle();
       }
 
-      // Customer pass (2026-11-16): "Book a Car" left the quick-action
-      // row — it is the Home's extended floating button now (same
-      // destination, the Shops tab). The recent-bookings empty state
-      // has a second 'Book a Car' button, so the text finder is
-      // ambiguous; the FAB is found by type (the Home has one).
-      await _tapVisible(tester, find.byType(FloatingActionButton));
+      // Home redesign (2026-11-24): "Book a Car" is the action
+      // row's FilledButton now (same destination, the Shops tab).
+      // The recent-bookings empty state has a second 'Book a Car'
+      // button, so the row's button is found by its key.
+      await _tapVisible(
+          tester, find.byKey(const ValueKey('home-book-car')));
       expect(find.text('Shops stub body'), findsOneWidget);
       await goHome();
 
-      await _tapVisible(tester, find.text('Wallet'));
+      // The KPI strip labels the wallet column 'Wallet' too, so the
+      // chip is found by its key, not by text.
+      await _tapVisible(
+          tester, find.byKey(const ValueKey('quick-action-Wallet')));
       expect(find.text('Wallet stub body'), findsOneWidget);
       await goHome();
 
@@ -344,7 +352,8 @@ void main() {
       expect(find.text('Support inbox body'), findsOneWidget);
       router.pop();
       await tester.pumpAndSettle();
-      expect(find.text('Quick links'), findsOneWidget);
+      // Back on Home: the action row is there (no heading any more).
+      expect(find.byKey(const ValueKey('home-book-car')), findsOneWidget);
 
       await _tapVisible(tester, find.text('SOS'));
       expect(find.text('SOS stub body'), findsOneWidget);
@@ -360,7 +369,7 @@ void main() {
 
       router.pop();
       await tester.pumpAndSettle();
-      expect(find.text('Quick links'), findsOneWidget);
+      expect(find.byKey(const ValueKey('home-book-car')), findsOneWidget);
     });
   });
 

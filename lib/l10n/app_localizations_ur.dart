@@ -3366,7 +3366,10 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String financeMonthBreakdown(
-      String bookings, String income, String expenses) {
+    String bookings,
+    String income,
+    String expenses,
+  ) {
     return 'بکنگز $bookings روپے • دیگر آمدنی $income روپے • اخراجات $expenses روپے';
   }
 
@@ -3569,7 +3572,10 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String financeCarPnlBreakdown(
-      String revenue, String income, String expenses) {
+    String revenue,
+    String income,
+    String expenses,
+  ) {
     return 'بکنگ کی آمدنی $revenue روپے • دیگر آمدنی $income روپے • اخراجات $expenses روپے';
   }
 
@@ -5422,7 +5428,11 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String bookingConfirmedWhatsappMessage(
-      String name, String vehicle, String date, String total) {
+    String name,
+    String vehicle,
+    String date,
+    String total,
+  ) {
     return 'السلام علیکم $name، آپ کی بکنگ $vehicle کے لیے منظور ہو گئی ہے۔ پک اپ: $date۔ کل رقم: $total روپے۔ شکریہ!';
   }
 
@@ -6054,7 +6064,12 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String financeStatementMessageRow(
-      String booking, String date, String rent, String paid, String due) {
+    String booking,
+    String date,
+    String rent,
+    String paid,
+    String due,
+  ) {
     return '#$booking • $date • کرایہ $rent روپے • ادا شدہ $paid روپے • واجب $due روپے';
   }
 
@@ -7517,7 +7532,11 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String shareWithCustomersText(
-      String vehicle, String rate, String period, String link) {
+    String vehicle,
+    String rate,
+    String period,
+    String link,
+  ) {
     return 'رینٹل ہب پر $vehicle کرائے پر لیں، $rate ($period): $link';
   }
 
@@ -7721,6 +7740,24 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get home2_kycView => 'دستاویزات دیکھیں';
+
+  @override
+  String get home2_kpiActiveShort => 'فعال';
+
+  @override
+  String get home2_kpiTripsShort => 'سفر';
+
+  @override
+  String get home2_kpiTrustShort => 'اعتماد';
+
+  @override
+  String get home2_kycShortTitle => 'نادرا شناختی کارڈ اور ڈرائیونگ لائسنس';
+
+  @override
+  String get home2_kycViewShort => 'دیکھیں';
+
+  @override
+  String get home2_kycSubmitShort => 'جمع کریں';
 
   @override
   String get home2_recentBookings => 'حالیہ بکنگز';
@@ -8438,7 +8475,11 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String admin2_shopDetailContact(
-      String city, String address, String owner, String phone) {
+    String city,
+    String address,
+    String owner,
+    String phone,
+  ) {
     return '$city • $address\nمالک: $owner • $phone';
   }
 
@@ -8517,7 +8558,10 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String admin2_customerDetailContact(
-      String phone, String cnic, String source) {
+    String phone,
+    String cnic,
+    String source,
+  ) {
     return '$phone • شناختی کارڈ $cnic • ماخذ: $source';
   }
 
@@ -8665,8 +8709,13 @@ class AppLocalizationsUr extends AppLocalizations {
   }
 
   @override
-  String admin2_reviewCardRatings(String shop, String car, String punctuality,
-      String care, String behaviour) {
+  String admin2_reviewCardRatings(
+    String shop,
+    String car,
+    String punctuality,
+    String care,
+    String behaviour,
+  ) {
     return 'دکان $shop/5 • گاڑی $car/5 • مالک: وقت کی پابندی $punctuality، دیکھ بھال $care، رویہ $behaviour';
   }
 
@@ -9382,13 +9431,20 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String admin2_bookingDetailMeta(
-      String status, String trip, String package, String drive) {
+    String status,
+    String trip,
+    String package,
+    String drive,
+  ) {
     return 'حالت: $status • سفر: $trip • پیکج: $package • $drive';
   }
 
   @override
   String admin2_bookingDetailHandoverSummary(
-      Object km, String fuel, String damage) {
+    Object km,
+    String fuel,
+    String damage,
+  ) {
     return 'اوڈومیٹر $km کلومیٹر، ایندھن $fuel، نقصان: $damage';
   }
 
@@ -9459,13 +9515,14 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String admin2_carReviewSpecs(
-      String plate,
-      String category,
-      String transmission,
-      String fuel,
-      Object seats,
-      String status,
-      String review) {
+    String plate,
+    String category,
+    String transmission,
+    String fuel,
+    Object seats,
+    String status,
+    String review,
+  ) {
     return 'نمبر پلیٹ $plate • $category • $transmission • $fuel • $seats سیٹیں\nحالت: $status • موجودہ جائزہ: $review';
   }
 
@@ -9832,7 +9889,10 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String admin2_bookingDetailDepositDeducted(
-      String amount, String status, String deducted) {
+    String amount,
+    String status,
+    String deducted,
+  ) {
     return 'سیکیورٹی $amount — $status (کٹوتی $deducted)';
   }
 
@@ -9848,7 +9908,9 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String admin2_bookingDetailDisputeDecisionAmount(
-      String label, String amount) {
+    String label,
+    String amount,
+  ) {
     return 'فیصلہ: $label — $amount';
   }
 
@@ -9861,8 +9923,13 @@ class AppLocalizationsUr extends AppLocalizations {
   }
 
   @override
-  String admin2_carReviewMetaLine1(String plate, String category,
-      String transmission, String fuel, Object seats) {
+  String admin2_carReviewMetaLine1(
+    String plate,
+    String category,
+    String transmission,
+    String fuel,
+    Object seats,
+  ) {
     return 'پلیٹ $plate • $category • $transmission • $fuel • $seats نشستیں';
   }
 
@@ -9908,7 +9975,10 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String admin2_bookingSummaryStatusLine(
-      String status, String trip, String kmLimit) {
+    String status,
+    String trip,
+    String kmLimit,
+  ) {
     return 'حالت: $status • سفر: $trip ($kmLimit کلومیٹر حد)';
   }
 
@@ -9929,7 +9999,11 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String admin2_bookingSummaryTotal(
-      String total, String advanceRequired, String paid, String remaining) {
+    String total,
+    String advanceRequired,
+    String paid,
+    String remaining,
+  ) {
     return 'کل: $total • مطلوبہ ایڈوانس: $advanceRequired • ادا شدہ: $paid • باقی: $remaining';
   }
 
@@ -9951,7 +10025,10 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String admin2_bookingSummaryHandover(
-      Object odometer, String fuel, String damage) {
+    Object odometer,
+    String fuel,
+    String damage,
+  ) {
     return 'حوالگی: اوڈومیٹر $odometer کلومیٹر، ایندھن $fuel، نقصان: $damage';
   }
 
@@ -10172,8 +10249,14 @@ class AppLocalizationsUr extends AppLocalizations {
       'معاہدہ حوالگی کے وقت محفوظ شدہ دستخطوں سے خودکار بنایا جائے گا';
 
   @override
-  String manualBookingReceiptMessage(String customer, String bookingId,
-      String vehicle, String pickup, String total, String remaining) {
+  String manualBookingReceiptMessage(
+    String customer,
+    String bookingId,
+    String vehicle,
+    String pickup,
+    String total,
+    String remaining,
+  ) {
     return 'السلام علیکم $customer، آپ کی واک ان بکنگ $bookingId برائے $vehicle کی تصدیق ہو گئی ہے۔ روانگی: $pickup۔ کل: $total روپے۔ باقی واجبات: $remaining روپے۔ شکریہ!';
   }
 
@@ -10581,8 +10664,14 @@ class AppLocalizationsUr extends AppLocalizations {
   String get handoverWizardReceiptShare => 'رسید واٹس ایپ پر شیئر کریں';
 
   @override
-  String handoverWizardReceiptMessage(String receipt, String vehicle,
-      String total, String advance, String balance, String deposit) {
+  String handoverWizardReceiptMessage(
+    String receipt,
+    String vehicle,
+    String total,
+    String advance,
+    String balance,
+    String deposit,
+  ) {
     return 'حوالگی کی رسید $receipt برائے $vehicle: کل روپے $total، ایڈوانس روپے $advance، بقیہ روپے $balance، سیکیورٹی روپے $deposit۔ — رینٹل ہب';
   }
 

@@ -8,10 +8,10 @@ import '../../../../../core/widgets/app_state_views.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../bookings/domain/entities/booking_entity.dart';
 import '../../../../customer/data/services/customer_home_service.dart';
-import '../../../../customer/presentation/widgets/booking_ticket_card.dart';
+import 'home_booking_card.dart';
 
 /// Customer rework (Worker C): the Home "Recent bookings" section —
-/// the customer's three most recent bookings as [BookingTicketCard]s,
+/// the customer's three most recent bookings as [HomeBookingCard]s,
 /// with the same actions as the bookings list (Pay Advance / View
 /// Pass / Rate Trip). A booking with an outstanding advance carries
 /// a visible payment banner above its card — overdue in danger
@@ -137,7 +137,7 @@ class HomeRecentBookings extends StatelessWidget {
                     actionLabel = l10n.bookingsRateTrip;
                     actionCallback = () => _rateTrip(context, booking);
                   }
-                  return BookingTicketCard(
+                  return HomeBookingCard(
                     booking: booking,
                     onTap: () => _openBooking(context, booking),
                     actionLabel: actionLabel,

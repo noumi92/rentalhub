@@ -205,7 +205,6 @@ void main() {
                         children: [
                           const CustomerHomeAppBar(
                             title: 'Home',
-                            subtitle: ' subtitle',
                             userInitial: 'G',
                           ),
                           const Expanded(

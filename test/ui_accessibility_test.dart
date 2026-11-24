@@ -427,7 +427,9 @@ void main() {
 
     testWidgets('Customer Home at 200%', (tester) async {
       await pumpAt200(tester, const CustomerHomeView());
-      expect(find.text('Home'), findsOneWidget);
+      // Home redesign (2026-11-24): the greeting is the header now,
+      // no "Home" title above it.
+      expect(find.text('Assalam-o-Alaikum, Ahmed'), findsOneWidget);
     });
 
     testWidgets('Customer Bookings at 200%', (tester) async {

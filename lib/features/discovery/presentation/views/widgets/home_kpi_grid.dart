@@ -5,12 +5,19 @@ import '../../../../../core/theme/card_decoration.dart';
 import '../../../../../core/utils/money_format.dart';
 import '../../../../../l10n/app_localizations.dart';
 
-/// Customer rework (Worker C): the Home KPI grid — active bookings,
+/// Customer rework (Worker C): the Home KPI strip — active bookings,
 /// total trips, wallet balance and trust score, every value from the
 /// real repositories. A value that could not be loaded renders as
-/// '—', never an invented number. Two columns of two, so a wallet
-/// balance such as "Rs. 125,000" still fits at 360px / 1.35x text
-/// scale; the tile decoration matches [CustomerStatsRow].
+/// '—', never an invented number.
+///
+/// Home redesign (2026-11-24): one horizontal strip of four equal
+/// columns with hairline dividers, not the old 2x2 grid — the strip
+/// costs a single row of vertical space. Labels are the short forms
+/// ('Active', 'Trips', 'Wallet', 'Trust') so each column fits at
+/// 360px; values and labels ellipsize instead of overflowing at
+/// large text scales. The strip is the canonical card
+/// ([AppCardDecoration]) — theme surface, 1px hairline, radius 16 —
+/// in both themes, never a hardcoded colour.
 class HomeKpiGrid extends StatelessWidget {
   const HomeKpiGrid({
     super.key,
@@ -32,11 +39,11 @@ class HomeKpiGrid extends StatelessWidget {
   /// Null when the customer's `users` doc has no trust score yet.
   final double? trustScore;
 
-  /// The trust tile opens the reputation screen.
+  /// The trust column opens the reputation screen.
   final VoidCallback? onTrustTap;
 
-  /// CU-m14: the bookings tiles open the Bookings tab, the wallet
-  /// tile the Wallet tab — no tile looks tappable without going
+  /// CU-m14: the bookings columns open the Bookings tab, the wallet
+  /// column the Wallet tab — no column looks tappable without going
   /// anywhere.
   final VoidCallback? onBookingsTap;
   final VoidCallback? onWalletTap;
@@ -44,66 +51,77 @@ class HomeKpiGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Column(
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: _KpiTile(
-                icon: Icons.directions_car_rounded,
-                label: l10n.home2_kpiActive,
-                value: '$activeBookings',
-                onTap: onBookingsTap,
-                tileKey: const ValueKey('home-kpi-active'),
-              ),
+    final dividerColor =
+        Theme.of(context).brightness == Brightness.dark
+            ? AppColors.borderDark
+            : AppColors.borderSubtle;
+    return Container(
+      decoration: AppCardDecoration.of(context),
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
+      child: Row(
+        children: [
+          Expanded(
+            child: _KpiColumn(
+              icon: Icons.directions_car_rounded,
+              label: l10n.home2_kpiActiveShort,
+              value: '$activeBookings',
+              onTap: onBookingsTap,
+              tileKey: const ValueKey('home-kpi-active'),
             ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: _KpiTile(
-                icon: Icons.history_rounded,
-                label: l10n.profileTotalTrips,
-                value: '$totalTrips',
-                onTap: onBookingsTap,
-                tileKey: const ValueKey('home-kpi-trips'),
-              ),
+          ),
+          _KpiDivider(color: dividerColor),
+          Expanded(
+            child: _KpiColumn(
+              icon: Icons.history_rounded,
+              label: l10n.home2_kpiTripsShort,
+              value: '$totalTrips',
+              onTap: onBookingsTap,
+              tileKey: const ValueKey('home-kpi-trips'),
             ),
-          ],
-        ),
-        const SizedBox(height: 10),
-        Row(
-          children: [
-            Expanded(
-              child: _KpiTile(
-                icon: Icons.account_balance_wallet_rounded,
-                label: l10n.home2_kpiWallet,
-                value: walletTotal == null
-                    ? '—'
-                    : l10n.amountRs(formatRs(walletTotal!)),
-                onTap: onWalletTap,
-                tileKey: const ValueKey('home-kpi-wallet'),
-              ),
+          ),
+          _KpiDivider(color: dividerColor),
+          Expanded(
+            child: _KpiColumn(
+              icon: Icons.account_balance_wallet_rounded,
+              label: l10n.walletLabel,
+              value: walletTotal == null
+                  ? '—'
+                  : l10n.amountRs(formatRs(walletTotal!)),
+              onTap: onWalletTap,
+              tileKey: const ValueKey('home-kpi-wallet'),
             ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: _KpiTile(
-                icon: Icons.verified_user_rounded,
-                label: l10n.profileTrustScore,
-                value: trustScore == null
-                    ? '—'
-                    : '${trustScore!.toStringAsFixed(1)} ★',
-                onTap: onTrustTap,
-                tileKey: const ValueKey('home-kpi-trust'),
-              ),
+          ),
+          _KpiDivider(color: dividerColor),
+          Expanded(
+            child: _KpiColumn(
+              icon: Icons.verified_user_rounded,
+              label: l10n.home2_kpiTrustShort,
+              value: trustScore == null
+                  ? '—'
+                  : '${trustScore!.toStringAsFixed(1)} ★',
+              onTap: onTrustTap,
+              tileKey: const ValueKey('home-kpi-trust'),
             ),
-          ],
-        ),
-      ],
+          ),
+        ],
+      ),
     );
   }
 }
 
-class _KpiTile extends StatelessWidget {
-  const _KpiTile({
+class _KpiDivider extends StatelessWidget {
+  const _KpiDivider({required this.color});
+
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(width: 1, height: 44, color: color);
+  }
+}
+
+class _KpiColumn extends StatelessWidget {
+  const _KpiColumn({
     required this.icon,
     required this.label,
     required this.value,
@@ -119,48 +137,45 @@ class _KpiTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tile = Container(
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-      decoration: AppCardDecoration.of(context),
-      child: Column(
-        children: [
-          Icon(
-            icon,
-            size: 20,
-            color: AppColors.primaryTextFor(Theme.of(context).brightness),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            value,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context)
-                .textTheme
-                .titleMedium
-                ?.copyWith(fontWeight: FontWeight.w600),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            label,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  fontWeight: FontWeight.w500,
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
-          ),
-        ],
-      ),
+    final column = Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          icon,
+          size: 20,
+          color: AppColors.primaryTextFor(Theme.of(context).brightness),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          value,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: Theme.of(context)
+              .textTheme
+              .titleMedium
+              ?.copyWith(fontWeight: FontWeight.w600),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          label,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                fontWeight: FontWeight.w500,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+        ),
+      ],
     );
     final onTap = this.onTap;
-    if (onTap == null) return tile;
+    if (onTap == null) return column;
     return Material(
       color: Colors.transparent,
       child: InkWell(
         key: tileKey ?? const ValueKey('home-kpi-trust'),
         onTap: onTap,
         borderRadius: BorderRadius.circular(16),
-        child: tile,
+        child: column,
       ),
     );
   }

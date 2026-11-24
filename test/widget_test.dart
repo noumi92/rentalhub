@@ -125,18 +125,20 @@ void main() {
       theme: AppTheme.lightTheme,
     );
 
-    expect(find.text('Home'), findsOneWidget);
+    // Home redesign (2026-11-24): the greeting is the header now,
+    // no "Home" title above it.
+    expect(find.text('Assalam-o-Alaikum, Ahmed'), findsOneWidget);
     // Customer rework (Worker C): the radius pills moved to the
     // Shops tab with discovery — Home now shows the dashboard
     // (KPIs, KYC, quick actions, recent bookings) with honest
-    // empty states when nothing is loaded. Customer pass
-    // (2026-11-16): "Book a Car" left the quick-action row — it is
-    // the Home's extended floating button now (the recent-bookings
-    // empty state has a second 'Book a Car' button, so the text
-    // finder is ambiguous; the Home has exactly one FAB).
-    expect(find.byType(FloatingActionButton), findsOneWidget);
+    // empty states when nothing is loaded. Home redesign
+    // (2026-11-24): "Book a Car" is the action row's FilledButton
+    // now (the recent-bookings empty state has a second 'Book a
+    // Car' button, so the row's button is found by its key); with
+    // nothing coming up the Upcoming section hides entirely.
+    expect(find.byKey(const ValueKey('home-book-car')), findsOneWidget);
     expect(find.text('No bookings yet'), findsOneWidget);
-    expect(find.text('Nothing coming up'), findsOneWidget);
+    expect(find.text('Nothing coming up'), findsNothing);
   });
 
   testWidgets(

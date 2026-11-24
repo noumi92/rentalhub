@@ -226,7 +226,9 @@ void main() {
         screen: const CustomerHomeView(),
         theme: AppTheme.lightTheme,
       );
-      expect(find.text('Home'), findsOneWidget);
+      // Home redesign (2026-11-24): the greeting is the header now,
+      // no "Home" title above it.
+      expect(find.text('Assalam-o-Alaikum, Ahmed'), findsOneWidget);
     });
 
     testWidgets('Customer Bookings', (tester) async {

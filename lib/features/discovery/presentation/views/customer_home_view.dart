@@ -9,7 +9,6 @@ import '../../../../core/widgets/app_state_views.dart';
 import '../../../customer/data/services/customer_home_service.dart';
 import '../../../notifications/data/services/customer_live_notifications.dart';
 import 'widgets/home_app_bar.dart';
-import 'widgets/home_book_car_fab.dart';
 import 'widgets/home_kpi_grid.dart';
 import 'widgets/home_kyc_card.dart';
 import 'widgets/home_quick_actions.dart';
@@ -168,15 +167,18 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
     final kycNeedsAction =
         data?.kyc == null || data?.kyc?.status == 'rejected';
     return Scaffold(
-      floatingActionButton: const HomeBookCarFab(),
       body: SafeArea(
         top: false,
         child: Column(
           children: [
             CustomerHomeAppBar(
-              title: l10n.homeTitle,
-              subtitle:
-                  name == null ? null : l10n.dashboardGreeting(name),
+              // Home redesign (2026-11-24): the greeting IS the
+              // header — no redundant "Home" title above it. The
+              // "Book a Car" action left the floating button and
+              // lives in the action row below the KYC banner.
+              title: name == null
+                  ? l10n.homeTitle
+                  : l10n.dashboardGreeting(name),
               userInitial: _userInitial(),
               unreadNotificationsCount: _unreadNotifications,
             ),
@@ -218,19 +220,15 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
                         if (!kycNeedsAction) HomeKycCard(kyc: data.kyc),
                         if (!kycNeedsAction) const SizedBox(height: 16),
                       ],
-                      Text(
-                        l10n.quickLinks,
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleSmall
-                            ?.copyWith(fontWeight: FontWeight.w600),
-                      ),
-                      const SizedBox(height: 8),
+                      // The action row (chips + Book a Car) needs no
+                      // heading — the chips label themselves.
                       const CustomerHomeQuickActions(),
                       if (!_loading && data != null) ...[
-                        const SizedBox(height: 16),
-                        if (!data.bookingsFailed)
+                        if (!data.bookingsFailed &&
+                            data.hasUpcomingEvents) ...[
+                          const SizedBox(height: 16),
                           HomeUpcomingEvents(data: data),
+                        ],
                         const SizedBox(height: 16),
                         HomeRecentBookings(data: data, onRetry: _reload),
                         const SizedBox(height: 84),

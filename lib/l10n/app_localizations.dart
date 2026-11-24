@@ -63,7 +63,7 @@ import 'app_localizations_ur.dart';
 /// property.
 abstract class AppLocalizations {
   AppLocalizations(String locale)
-      : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+    : localeName = intl.Intl.canonicalizedLocale(locale.toString());
 
   final String localeName;
 
@@ -86,16 +86,16 @@ abstract class AppLocalizations {
   /// of delegates is preferred or required.
   static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
       <LocalizationsDelegate<dynamic>>[
-    delegate,
-    GlobalMaterialLocalizations.delegate,
-    GlobalCupertinoLocalizations.delegate,
-    GlobalWidgetsLocalizations.delegate,
-  ];
+        delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ];
 
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
     Locale('en'),
-    Locale('ur')
+    Locale('ur'),
   ];
 
   /// No description provided for @appTitle.
@@ -9589,7 +9589,11 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Assalam-o-Alaikum {name}, your booking for {vehicle} is confirmed. Pickup: {date}. Total: Rs. {total}. Thank you!'**
   String bookingConfirmedWhatsappMessage(
-      String name, String vehicle, String date, String total);
+    String name,
+    String vehicle,
+    String date,
+    String total,
+  );
 
   /// No description provided for @bookingConfirmedWhatsappFailed.
   ///
@@ -10772,7 +10776,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'#{booking} • {date} • Rent Rs. {rent} • Paid Rs. {paid} • Due Rs. {due}'**
   String financeStatementMessageRow(
-      String booking, String date, String rent, String paid, String due);
+    String booking,
+    String date,
+    String rent,
+    String paid,
+    String due,
+  );
 
   /// No description provided for @financeStatementMessageTitle.
   ///
@@ -13467,7 +13476,11 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Rent {vehicle} for {rate} ({period}) on RentalHub: {link}'**
   String shareWithCustomersText(
-      String vehicle, String rate, String period, String link);
+    String vehicle,
+    String rate,
+    String period,
+    String link,
+  );
 
   /// No description provided for @shareLinkNote.
   ///
@@ -13840,6 +13853,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'View documents'**
   String get home2_kycView;
+
+  /// No description provided for @home2_kpiActiveShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get home2_kpiActiveShort;
+
+  /// No description provided for @home2_kpiTripsShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Trips'**
+  String get home2_kpiTripsShort;
+
+  /// No description provided for @home2_kpiTrustShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Trust'**
+  String get home2_kpiTrustShort;
+
+  /// No description provided for @home2_kycShortTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'NADRA CNIC & Driving License'**
+  String get home2_kycShortTitle;
+
+  /// No description provided for @home2_kycViewShort.
+  ///
+  /// In en, this message translates to:
+  /// **'View'**
+  String get home2_kycViewShort;
+
+  /// No description provided for @home2_kycSubmitShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit'**
+  String get home2_kycSubmitShort;
 
   /// No description provided for @home2_recentBookings.
   ///
@@ -15148,7 +15197,11 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{city} • {address}\nOwner: {owner} • {phone}'**
   String admin2_shopDetailContact(
-      String city, String address, String owner, String phone);
+    String city,
+    String address,
+    String owner,
+    String phone,
+  );
 
   /// No description provided for @admin2_suspendTitle.
   ///
@@ -15526,8 +15579,13 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Shop {shop}/5 • Car {car}/5 • Owner: punctuality {punctuality}, care {care}, behaviour {behaviour}'**
-  String admin2_reviewCardRatings(String shop, String car, String punctuality,
-      String care, String behaviour);
+  String admin2_reviewCardRatings(
+    String shop,
+    String car,
+    String punctuality,
+    String care,
+    String behaviour,
+  );
 
   /// No description provided for @admin2_ticketsTitle.
   ///
@@ -16740,14 +16798,21 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Status: {status} • Trip: {trip} • Package: {package} • {drive}'**
   String admin2_bookingDetailMeta(
-      String status, String trip, String package, String drive);
+    String status,
+    String trip,
+    String package,
+    String drive,
+  );
 
   /// No description provided for @admin2_bookingDetailHandoverSummary.
   ///
   /// In en, this message translates to:
   /// **'odometer {km} km, fuel {fuel}, damage: {damage}'**
   String admin2_bookingDetailHandoverSummary(
-      Object km, String fuel, String damage);
+    Object km,
+    String fuel,
+    String damage,
+  );
 
   /// No description provided for @admin2_bookingDetailMessages.
   ///
@@ -16874,13 +16939,14 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Plate {plate} • {category} • {transmission} • {fuel} • {seats} seats\nStatus: {status} • Current review: {review}'**
   String admin2_carReviewSpecs(
-      String plate,
-      String category,
-      String transmission,
-      String fuel,
-      Object seats,
-      String status,
-      String review);
+    String plate,
+    String category,
+    String transmission,
+    String fuel,
+    Object seats,
+    String status,
+    String review,
+  );
 
   /// No description provided for @admin2_carReviewLastDecision.
   ///
@@ -17505,7 +17571,10 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Security {amount} — {status} (deducted {deducted})'**
   String admin2_bookingDetailDepositDeducted(
-      String amount, String status, String deducted);
+    String amount,
+    String status,
+    String deducted,
+  );
 
   /// No description provided for @admin2_bookingDetailDisputeStatus.
   ///
@@ -17541,8 +17610,13 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Plate {plate} • {category} • {transmission} • {fuel} • {seats} seats'**
-  String admin2_carReviewMetaLine1(String plate, String category,
-      String transmission, String fuel, Object seats);
+  String admin2_carReviewMetaLine1(
+    String plate,
+    String category,
+    String transmission,
+    String fuel,
+    Object seats,
+  );
 
   /// No description provided for @admin2_carReviewMetaLine2.
   ///
@@ -17621,7 +17695,10 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Status: {status} • Trip: {trip} ({kmLimit} km limit)'**
   String admin2_bookingSummaryStatusLine(
-      String status, String trip, String kmLimit);
+    String status,
+    String trip,
+    String kmLimit,
+  );
 
   /// No description provided for @admin2_bookingSummaryVehicle.
   ///
@@ -17646,7 +17723,11 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Total: {total} • Advance required: {advanceRequired} • Paid: {paid} • Remaining: {remaining}'**
   String admin2_bookingSummaryTotal(
-      String total, String advanceRequired, String paid, String remaining);
+    String total,
+    String advanceRequired,
+    String paid,
+    String remaining,
+  );
 
   /// No description provided for @admin2_bookingSummaryDepositNone.
   ///
@@ -17677,7 +17758,10 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Handover: odometer {odometer} km, fuel {fuel}, damage: {damage}'**
   String admin2_bookingSummaryHandover(
-      Object odometer, String fuel, String damage);
+    Object odometer,
+    String fuel,
+    String damage,
+  );
 
   /// No description provided for @admin2_bookingPhotoOpenFailed.
   ///
@@ -18073,8 +18157,14 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Assalam-o-Alaikum {customer}, your walk-in booking {bookingId} for {vehicle} is confirmed. Pickup: {pickup}. Total: Rs. {total}. Remaining dues: Rs. {remaining}. Thank you!'**
-  String manualBookingReceiptMessage(String customer, String bookingId,
-      String vehicle, String pickup, String total, String remaining);
+  String manualBookingReceiptMessage(
+    String customer,
+    String bookingId,
+    String vehicle,
+    String pickup,
+    String total,
+    String remaining,
+  );
 
   /// No description provided for @manualBookingReceiptDone.
   ///
@@ -18716,8 +18806,14 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Handover receipt {receipt} for {vehicle}: total Rs. {total}, advance Rs. {advance}, balance Rs. {balance}, Security Rs. {deposit}. — RentalHub'**
-  String handoverWizardReceiptMessage(String receipt, String vehicle,
-      String total, String advance, String balance, String deposit);
+  String handoverWizardReceiptMessage(
+    String receipt,
+    String vehicle,
+    String total,
+    String advance,
+    String balance,
+    String deposit,
+  );
 
   /// No description provided for @handoverWizardReceiptWhatsappFailed.
   ///
@@ -18891,8 +18987,9 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
   }
 
   throw FlutterError(
-      'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
-      'an issue with the localizations generation tool. Please file an issue '
-      'on GitHub with a reproducible sample app and the gen-l10n configuration '
-      'that was used.');
+    'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
+    'an issue with the localizations generation tool. Please file an issue '
+    'on GitHub with a reproducible sample app and the gen-l10n configuration '
+    'that was used.',
+  );
 }
