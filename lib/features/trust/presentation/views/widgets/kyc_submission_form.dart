@@ -72,6 +72,11 @@ class _KycSubmissionFormState extends State<KycSubmissionForm> {
     super.initState();
     _cnicController = TextEditingController(text: widget.initialCnic);
     _qrService = widget.qrService ?? DocumentQrService();
+    // Profile hub: a re-submission starts from the stored licence
+    // details, so updating only the CNIC photos does not blank the
+    // licence number/expiry the customer already submitted.
+    _licenseData.number = widget.existing?.licenseNumber ?? '';
+    _licenseData.expiry = widget.existing?.licenseExpiry ?? '';
   }
 
   @override
@@ -166,7 +171,15 @@ class _KycSubmissionFormState extends State<KycSubmissionForm> {
       setState(() => _licenseExpiryError = l10n.kycWizardDateFormatError);
       return;
     }
-    if (_cnicFront == null || _cnicBack == null) {
+    // Profile hub: a slot already covered by a stored key does not
+    // need a fresh photo — only a slot with no stored key blocks the
+    // submit. The data source keeps the stored keys for unpicked
+    // slots, so a CNIC-only update no longer wipes the licence.
+    final frontOk = _cnicFront != null ||
+        (widget.existing?.cnicFrontKey.isNotEmpty ?? false);
+    final backOk = _cnicBack != null ||
+        (widget.existing?.cnicBackKey.isNotEmpty ?? false);
+    if (!frontOk || !backOk) {
       AppFeedback.showWarning(context, l10n.kycAttachBoth);
       return;
     }
@@ -182,6 +195,9 @@ class _KycSubmissionFormState extends State<KycSubmissionForm> {
       licenseExpiry:
           _licenseData.expiry.trim().isEmpty ? null : _licenseData.expiry.trim(),
       qrCode: _qrCode.isEmpty ? null : _qrCode,
+      // The record's current status, so a verified re-submit becomes
+      // 'resubmitted' even when the device is offline.
+      previousStatus: widget.existing?.status,
     );
   }
 

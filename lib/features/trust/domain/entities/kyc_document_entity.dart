@@ -9,7 +9,11 @@ class KycDocumentEntity extends Equatable {
   final String licenseBackKey;
   final String licenseNumber;
   final String licenseExpiry;
-  final String status; // 'pending' | 'submitted' | 'verified' | 'rejected'
+  // 'pending' | 'submitted' | 'verified' | 'rejected' |
+  // 'resubmitted' — a verified record with a newer submission (or a
+  // changed CNIC) waiting for re-review. The admin queue treats it
+  // like 'submitted'; the trust score does too.
+  final String status;
 
   const KycDocumentEntity({
     required this.userUid,

@@ -1,30 +1,40 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/di/injection_container.dart';
-import '../../../../core/network/firestore_service.dart';
+import '../../../../core/routing/route_names.dart';
 import '../../../../core/widgets/app_feedback.dart';
-import '../../../../core/widgets/minimal_app_bar.dart';
+import '../../../../core/widgets/app_state_views.dart';
 import '../../data/datasources/customer_remote_data_source.dart';
 import '../../domain/entities/customer_entity.dart';
 import '../../../blacklist/data/datasources/blacklist_remote_data_source.dart';
-import '../../../trust/data/datasources/kyc_remote_data_source.dart';
-import '../../../trust/data/services/trust_score_service.dart';
+import '../profile_hub_loader.dart';
 import '../widgets/blacklist_appeal_sheet.dart';
-import '../widgets/edit_profile_sheet.dart';
 import '../widgets/profile_body.dart';
+import '../widgets/profile_hub_header.dart';
+import '../widgets/profile_kyc_tab.dart';
 import '../../../../l10n/app_localizations.dart';
 
-// H1: the profile is the customer's real record — name/phone/CNIC
-// from `customers`, trust + blacklist from `users`, KYC from their
-// submission. No invented identity: a signed-out visitor sees 'Guest'.
+// Profile hub (2026-11-25): one screen for the customer's identity
+// and documents — a "Profile" tab and a "Documents & KYC" tab under
+// a single shared header, loaded once by [ProfileHubLoader].
+// /customer/profile is the hub; /customer/kyc deep-links into the
+// hub on the KYC tab. The standalone CustomerDocumentsView still
+// exists for the tests that pump it directly.
+//
+// Sign-out lives on the Settings screen only now (it was rendered
+// twice); the trust section folds the Reputation view in (the
+// reputation route stays live as a deep link).
 class CustomerProfileView extends StatefulWidget {
   final VoidCallback? onOpenDocuments;
   final VoidCallback? onOpenSavedShops;
   final VoidCallback? onOpenSettings;
   final VoidCallback? onOpenReputation;
   final VoidCallback? onOpenSupport;
-  final VoidCallback? onSignOut;
+
+  /// 0 = Profile tab, 1 = Documents & KYC tab (the /customer/kyc
+  /// deep link opens here).
+  final int initialTab;
 
   const CustomerProfileView({
     super.key,
@@ -33,133 +43,90 @@ class CustomerProfileView extends StatefulWidget {
     this.onOpenSettings,
     this.onOpenReputation,
     this.onOpenSupport,
-    this.onSignOut,
+    this.initialTab = 0,
   });
 
   @override
   State<CustomerProfileView> createState() => _CustomerProfileViewState();
 }
 
-class _CustomerProfileViewState extends State<CustomerProfileView> {
-  String _name = 'Guest';
-  String _email = '';
-  String _phone = '';
-  String _cnic = '';
-  double? _trustScore;
-  bool _kycVerified = false;
-  bool _isBlacklisted = false;
+class _CustomerProfileViewState extends State<CustomerProfileView>
+    with SingleTickerProviderStateMixin {
+  late final TabController _tabController;
+  ProfileHubData? _data;
   bool _loading = true;
-  // AC-18: signed-out stays "Guest"; a signed-in user whose profile
-  // failed to load gets an error state with retry instead.
-  bool _loadFailed = false;
 
   @override
   void initState() {
     super.initState();
-    _loadProfile();
+    _tabController = TabController(
+      length: 2,
+      vsync: this,
+      initialIndex: widget.initialTab == 1 ? 1 : 0,
+    );
+    _load();
   }
 
-  String _uid() {
-    try {
-      return FirebaseAuth.instance.currentUser?.uid ?? '';
-    } catch (_) {
-      return '';
-    }
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
-  Future<void> _loadProfile() async {
-    var name = 'Guest';
-    var email = '';
-    var phone = '';
-    var cnic = '';
-    double? trustScore;
-    var kycVerified = false;
-    var isBlacklisted = false;
-    // AC-18: only a signed-in load failure counts as a failure —
-    // a signed-out visitor simply stays 'Guest'.
-    var loadFailed = false;
-    try {
-      final user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
-        name = user.displayName ?? 'Guest';
-        email = user.email ?? '';
-        phone = user.phoneNumber ?? '';
-        try {
-          double? storedTrustScore;
-          if (sl.isRegistered<FirestoreService>()) {
-            final record = await sl<FirestoreService>().getUser(user.uid);
-            storedTrustScore = record?.trustScore;
-            isBlacklisted = record?.isBlacklisted ?? false;
-          }
-          // Live score first (shared TrustScoreService, same as the admin panel); stored trust_score is the fallback.
-          trustScore = (await const TrustScoreService().compute(user.uid))?.breakdown.total ?? storedTrustScore;
-          if (sl.isRegistered<CustomerRemoteDataSource>()) {
-            final customer = await sl<CustomerRemoteDataSource>().getCustomerById(user.uid);
-            if (customer != null) {
-              name = customer.name;
-              phone = customer.phone;
-              cnic = customer.cnic ?? '';
-            }
-          }
-          if (sl.isRegistered<KycRemoteDataSource>()) {
-            final kyc = await sl<KycRemoteDataSource>().getKyc(user.uid);
-            kycVerified = kyc?.status == 'verified';
-          }
-        } catch (_) {
-          loadFailed = true;
-        }
-      }
-    } catch (_) {}
+  Future<void> _load() async {
+    final data = await ProfileHubLoader.load();
     if (mounted) {
       setState(() {
-        _name = name;
-        _email = email;
-        _phone = phone;
-        _cnic = cnic;
-        _trustScore = trustScore;
-        _kycVerified = kycVerified;
-        _isBlacklisted = isBlacklisted;
+        _data = data;
         _loading = false;
-        _loadFailed = loadFailed;
       });
     }
   }
 
-  Future<void> _saveProfile({
-    required String name,
-    required String phone,
-    required String cnic,
-  }) async {
+  String get _cnic => _data?.cnic ?? '';
+
+  void _openDocuments() {
+    if (widget.onOpenDocuments != null) {
+      widget.onOpenDocuments!();
+    } else {
+      _tabController.animateTo(1);
+    }
+  }
+
+  Future<void> _openEdit() async {
+    await context.push<bool>(RouteNames.customerEditProfile);
+    await _load();
+  }
+
+  /// The owner's triage reads the CNIC off the `customers` record,
+  /// so a KYC submission lands there too (same write the standalone
+  /// documents view makes).
+  Future<void> _onKycSubmitted(String cnic) async {
     final l10n = AppLocalizations.of(context)!;
-    final uid = _uid();
-    if (uid.isEmpty) {
-      throw Exception(l10n.profileNotSignedIn);
-    }
-    if (sl.isRegistered<CustomerRemoteDataSource>()) {
-      final ds = sl<CustomerRemoteDataSource>();
-      final existing = await ds.getCustomerById(uid);
-      if (existing != null) {
-        await ds.upsertCustomer(
-          existing.copyWith(name: name, phone: phone, cnic: cnic),
-        );
-      } else {
-        await ds.upsertCustomer(CustomerEntity(
-          customerId: uid,
-          shopId: '',
-          name: name,
-          phone: phone,
-          cnic: cnic.isEmpty ? null : cnic,
-          source: 'online',
-          createdAt: DateTime.now(),
-        ));
-      }
-    }
+    final uid = ProfileHubLoader.uid();
+    if (uid.isEmpty) return;
     try {
-      await FirebaseAuth.instance.currentUser?.updateDisplayName(name);
+      if (sl.isRegistered<CustomerRemoteDataSource>()) {
+        final ds = sl<CustomerRemoteDataSource>();
+        final existing = await ds.getCustomerById(uid);
+        if (existing != null) {
+          await ds.upsertCustomer(existing.copyWith(cnic: cnic));
+        } else {
+          await ds.upsertCustomer(CustomerEntity(
+            customerId: uid,
+            shopId: '',
+            name: _data?.name ?? l10n.kycCustomer,
+            phone: _data?.phone ?? '',
+            cnic: cnic,
+            source: 'online',
+            createdAt: DateTime.now(),
+          ));
+        }
+      }
     } catch (_) {}
-    await _loadProfile();
+    await _load();
     if (mounted) {
-      AppFeedback.showSuccess(context, l10n.profileSaved);
+      AppFeedback.showSuccess(context, l10n.kycSubmittedNote);
     }
   }
 
@@ -185,58 +152,91 @@ class _CustomerProfileViewState extends State<CustomerProfileView> {
     );
   }
 
-  void _openEdit() {
-    showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      builder: (context) => EditProfileSheet(
-        initialName: _name == 'Guest' ? '' : _name,
-        initialPhone: _phone,
-        initialCnic: _cnic,
-        onSave: _saveProfile,
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final data = _data;
+    // Signed-out visitors have an empty name; show the localized
+    // guest label (never a hardcoded 'Guest').
+    final displayName = data == null || data.name.isEmpty
+        ? l10n.profileGuest
+        : data.name;
     return Scaffold(
       // MinimalAppBar owns the top inset — SafeArea(top: false) avoids the double status-bar band (SH-M3 class).
       body: SafeArea(
         top: false,
         child: Column(
           children: [
-            MinimalAppBar(title: _name == 'Guest' ? l10n.profileGuest : _name, subtitle: _email.isNotEmpty ? _email : (_phone.isNotEmpty ? _phone : l10n.profileNotSignedInShort), actions: [IconButton(icon: const Icon(Icons.edit_rounded, color: Colors.white, size: 20), tooltip: l10n.profileEditProfile, onPressed: _openEdit)]),
+            ProfileHubHeader(
+              name: displayName,
+              email: data?.email ?? '',
+              phone: data?.phone ?? '',
+              photoUrl: data?.photoUrl,
+              trustScore: data?.trustScore,
+              kycStatus: data?.kycStatus ?? '',
+              onEdit: _openEdit,
+            ),
+            TabBar(
+              controller: _tabController,
+              tabs: [
+                Tab(text: l10n.profileTitle),
+                Tab(text: l10n.profileTabKyc),
+              ],
+            ),
             Expanded(
-              child: RefreshIndicator(
-                onRefresh: _loadProfile,
-                child: SingleChildScrollView(
-                  // AlwaysScrollable: pull-to-refresh must work even
-                  // when the profile is shorter than the viewport.
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  child: ProfileBody(
-                    loading: _loading,
-                    loadFailed: _loadFailed,
-                    trustScore: _trustScore,
-                    kycVerified: _kycVerified,
-                    isBlacklisted: _isBlacklisted,
-                    onOpenReputation: widget.onOpenReputation,
-                    onAppeal: (_isBlacklisted && _cnic.isNotEmpty)
-                        ? _openAppeal
-                        : null,
-                    cnic: _cnic,
-                    onOpenDocuments: widget.onOpenDocuments,
-                    onOpenSavedShops: widget.onOpenSavedShops,
-                    onOpenSettings: widget.onOpenSettings,
-                    onOpenSupport: widget.onOpenSupport,
-                    onSignOut: widget.onSignOut,
-                    onRetry: _loadProfile,
-                  ),
-                ),
-              ),
+              child: _loading && data == null
+                  ? const AppLoadingState()
+                  : TabBarView(
+                      controller: _tabController,
+                      children: [
+                        RefreshIndicator(
+                          onRefresh: _load,
+                          child: SingleChildScrollView(
+                            physics:
+                                const AlwaysScrollableScrollPhysics(),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 12),
+                            child: ProfileBody(
+                              loading: _loading,
+                              loadFailed: data?.loadFailed ?? false,
+                              name: displayName,
+                              email: data?.email ?? '',
+                              phone: data?.phone ?? '',
+                              dateOfBirth: data?.dateOfBirth,
+                              fatherName: data?.fatherName,
+                              address: data?.address,
+                              trustScore: data?.trustScore,
+                              kycVerified: data?.kycVerified ?? false,
+                              isBlacklisted: data?.isBlacklisted ?? false,
+                              onOpenReputation: widget.onOpenReputation,
+                              onAppeal: (data?.isBlacklisted ?? false) &&
+                                      _cnic.isNotEmpty
+                                  ? _openAppeal
+                                  : null,
+                              ownerReviews: data?.ownerReviews ?? const [],
+                              cnic: _cnic,
+                              onOpenDocuments: _openDocuments,
+                              onOpenSavedShops: widget.onOpenSavedShops,
+                              onOpenSettings: widget.onOpenSettings,
+                              onOpenSupport: widget.onOpenSupport,
+                              onRetry: _load,
+                            ),
+                          ),
+                        ),
+                        ProfileKycTab(
+                          existing: data?.kyc,
+                          initialCnic: _cnic.isNotEmpty
+                              ? _cnic
+                              : (data?.kyc?.cnicNumber ?? ''),
+                          rejectionReason: data?.rejectionReason,
+                          loading: _loading,
+                          signedOut: ProfileHubLoader.uid().isEmpty,
+                          userUid: ProfileHubLoader.uid(),
+                          onSubmitted: _onKycSubmitted,
+                          onRetry: _load,
+                        ),
+                      ],
+                    ),
             ),
           ],
         ),

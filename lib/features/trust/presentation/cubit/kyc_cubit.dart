@@ -51,6 +51,7 @@ class KycCubit extends Cubit<KycState> {
     String? licenseNumber,
     String? licenseExpiry,
     String? qrCode,
+    String? previousStatus,
   }) async {
     emit(const KycUploading());
     try {
@@ -64,6 +65,7 @@ class KycCubit extends Cubit<KycState> {
         licenseNumber: licenseNumber,
         licenseExpiry: licenseExpiry,
         qrCode: qrCode,
+        previousStatus: previousStatus,
       );
       emit(KycSubmitted(doc));
     } catch (e) {

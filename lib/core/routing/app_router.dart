@@ -26,6 +26,7 @@ import '../../features/customer/presentation/widgets/customer_route_loaders.dart
 import '../../features/customer/presentation/views/customer_cancel_booking_view.dart';
 import '../../features/customer/presentation/views/customer_active_trip_view.dart';
 import '../../features/customer/presentation/views/customer_dispute_view.dart';
+import '../../features/customer/presentation/views/customer_edit_profile_view.dart';
 import '../../features/customer/presentation/views/customer_profile_view.dart';
 import '../../features/customer/presentation/views/customer_rate_trip_view.dart';
 import '../../features/customer/presentation/views/customer_reputation_view.dart';
@@ -42,7 +43,6 @@ import '../../features/discovery/presentation/views/customer_home_map_view.dart'
 import '../../features/discovery/presentation/views/shop_cars_view.dart';
 import '../../features/discovery/presentation/views/shop_detail_view.dart';
 import '../../features/discovery/presentation/views/vehicle_detail_view.dart';
-import '../../features/trust/presentation/views/customer_documents_view.dart';
 import '../../features/owner/presentation/views/owner_add_customer_wizard.dart';
 import '../../features/owner/presentation/views/owner_cnic_review_view.dart';
 import '../../features/trust/utils/cnic_text_parser.dart';
@@ -618,7 +618,7 @@ class AppRouter {
           ),
           StatefulShellBranch(
             routes: [
-              // Profile: customerProfile
+              // Profile: customerProfile — the hub (Profile + KYC tabs).
               GoRoute(
                 path: RouteNames.customerProfile,
                 builder: (context, state) => CustomerProfileView(
@@ -629,13 +629,24 @@ class AppRouter {
                   // Customer rework: Support moved into Profile — the
                   // row pushes the top-level support sub-screen.
                   onOpenSupport: () => context.push(RouteNames.customerSupport),
-                  onSignOut: () => signOutToAuth(context),
                 ),
+                routes: [
+                  // Profile hub: the full-screen edit-profile flow.
+                  GoRoute(
+                    path: RouteNames.customerEditProfile,
+                    builder: (context, state) =>
+                        const CustomerEditProfileView(),
+                  ),
+                ],
               ),
-              // Profile: customerKyc
+              // Profile: customerKyc — the hub opened on the KYC tab.
+              // The standalone CustomerDocumentsView still exists for
+              // the tests that pump it directly.
               GoRoute(
                 path: RouteNames.customerKyc,
-                builder: (context, state) => const CustomerDocumentsView(),
+                builder: (context, state) => const CustomerProfileView(
+                  initialTab: 1,
+                ),
               ),
               // Profile: customerSettings
               GoRoute(

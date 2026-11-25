@@ -52,7 +52,9 @@ abstract final class TrustScoreCalculator {
     const base = 2.5;
     final kyc = switch (kycStatus) {
       'verified' => 1.0,
-      'submitted' => 0.5,
+      // 'resubmitted' is a verified record waiting for re-review:
+      // it scores like a pending submission, not like no KYC.
+      'submitted' || 'resubmitted' => 0.5,
       _ => 0.0,
     };
     final trips = (completedTrips * 0.1).clamp(0.0, 0.5);

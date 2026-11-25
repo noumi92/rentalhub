@@ -323,11 +323,21 @@ class BookingRemoteDataSource {
   /// Phase B (B1): merges queued offline creates into a list
   /// result (deduped by id) and applies queued updates, so lists
   /// show the latest local state while server writes are pending.
+  /// Pending offline creates are merged into reads so an
+  /// offline-filed booking shows up immediately. They must be
+  /// filtered to the query's scope: an unfiltered merge let a
+  /// pending booking for one vehicle block a different vehicle's
+  /// picker (the out-of-city picker tests failed after 22:00, when
+  /// the picker's now+2h default crossed into a queued booking's
+  /// first day for another car).
   Future<List<BookingModel>> _mergePendingInto(
-      List<BookingModel> list) async {
+    List<BookingModel> list, {
+    String? vehicleId,
+  }) async {
     final pending = await _pendingQueueBookings();
     final byId = {for (final b in list) b.bookingId: b};
     for (final p in pending) {
+      if (vehicleId != null && p.vehicleId != vehicleId) continue;
       byId.putIfAbsent(p.bookingId, () => p);
     }
     final out = <BookingModel>[];
@@ -1089,7 +1099,7 @@ class BookingRemoteDataSource {
           final list = slotSnap.docs
               .map((d) => BookingModel.fromMap(d.data(), d.id))
               .toList();
-          return await _mergePendingInto(list);
+          return await _mergePendingInto(list, vehicleId: vehicleId);
         }
       } catch (_) {}
       try {
@@ -1101,7 +1111,7 @@ class BookingRemoteDataSource {
           final list = snap.docs
               .map((d) => BookingModel.fromMap(d.data(), d.id))
               .toList();
-          return await _mergePendingInto(list);
+          return await _mergePendingInto(list, vehicleId: vehicleId);
         }
       } catch (_) {}
     }
@@ -1111,6 +1121,6 @@ class BookingRemoteDataSource {
             b.status != 'cancelled' &&
             b.status != 'rejected')
         .toList();
-    return _mergePendingInto(list);
+    return _mergePendingInto(list, vehicleId: vehicleId);
   }
 }

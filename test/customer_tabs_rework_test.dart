@@ -170,6 +170,11 @@ void main() {
       expect(find.byType(CustomerSupportBadge), findsOneWidget);
       expect(find.byType(Badge), findsNothing);
 
+      // The hub's Profile tab is taller than the old view (identity
+      // card + trust section above the menu), so the Support row can
+      // sit below the fold at the default test size.
+      await tester.ensureVisible(find.text('Support'));
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Support'));
       await tester.pumpAndSettle();
       expect(openedSupport, isTrue);
