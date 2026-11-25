@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../core/constants/app_colors.dart';
 import '../../../../../l10n/app_localizations.dart';
+import 'kyc_status_style.dart';
 
 /// G3: the KYC status banner on the documents screen — the real status
 /// of the customer's submission from `kyc_documents/{uid}`.
@@ -20,28 +20,14 @@ class KycStatusBanner extends StatelessWidget {
   /// The admin's rejection reason from the customer record, if any.
   final String? rejectionReason;
 
-  String _label(AppLocalizations l10n) {
-    switch (status) {
-      case 'verified':
-        return l10n.verified;
-      case 'rejected':
-        return l10n.kycStatusRejected;
-      default:
-        return l10n.kycStatusSubmitted;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final brightness = Theme.of(context).brightness;
-    final verified = status == 'verified';
     final rejected = status == 'rejected';
-    final color = verified
-        ? AppColors.successOnContainerFor(brightness)
-        : rejected
-            ? AppColors.dangerTextFor(brightness)
-            : AppColors.warningOnContainerFor(brightness);
+    // One shared mapping (KycStatusStyle) — the Home card and the
+    // hub header use the same label/colour/icon for this status.
+    final color = KycStatusStyle.color(brightness, status);
     final reason = rejectionReason?.trim();
     return Container(
       padding: const EdgeInsets.all(12),
@@ -56,18 +42,14 @@ class KycStatusBanner extends StatelessWidget {
           Row(
             children: [
               Icon(
-                verified
-                    ? Icons.verified_rounded
-                    : rejected
-                        ? Icons.error_outline_rounded
-                        : Icons.hourglass_top_rounded,
+                KycStatusStyle.icon(status),
                 color: color,
                 size: 20,
               ),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  l10n.kycStatus(_label(l10n)),
+                  l10n.kycStatus(KycStatusStyle.label(l10n, status)),
                   style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500),
                 ),
               ),

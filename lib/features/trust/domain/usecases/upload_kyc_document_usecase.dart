@@ -16,6 +16,7 @@ class UploadKycDocumentUseCase {
     String? licenseNumber,
     String? licenseExpiry,
     String? qrCode,
+    String? previousStatus,
   }) =>
       repository.uploadKycDocuments(
         userUid: userUid,
@@ -27,6 +28,7 @@ class UploadKycDocumentUseCase {
         licenseNumber: licenseNumber,
         licenseExpiry: licenseExpiry,
         qrCode: qrCode,
+        previousStatus: previousStatus,
       );
 }
 

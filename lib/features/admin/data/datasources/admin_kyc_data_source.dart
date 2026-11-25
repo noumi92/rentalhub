@@ -7,7 +7,8 @@ import '../services/admin_audit_service.dart';
 /// Item 6 — the admin side of customer KYC review.
 ///
 /// A customer who submits their own documents in the app writes
-/// `kyc_documents/{uid}` with `status: 'submitted'` (see
+/// `kyc_documents/{uid}` with `status: 'submitted'` — or
+/// 'resubmitted' when a verified record is updated (see
 /// KycRemoteDataSource.uploadCnicAndLicense). Until this data source
 /// existed nothing ever wrote 'verified' or 'rejected' for those
 /// records: the owner-side Approve/Reject on the owner customer
@@ -35,17 +36,19 @@ class AdminKycDataSource {
     }
   }
 
-  /// Pending customer KYC submissions (status 'submitted'), newest
-  /// first by the submission timestamp. The customer's display name
-  /// comes from their `customers/{uid}` record; a submission whose
-  /// customer record is missing still lists, with an empty name.
+  /// Pending customer KYC submissions (status 'submitted' or
+  /// 'resubmitted' — a verified customer's updated submission, or a
+  /// changed CNIC, waiting for re-review), newest first by the
+  /// submission timestamp. The customer's display name comes from
+  /// their `customers/{uid}` record; a submission whose customer
+  /// record is missing still lists, with an empty name.
   Future<List<KycReviewSubmission>> getPendingKycSubmissions() async {
     final firestore = _resolvedFirestore;
     if (firestore == null) return [];
     try {
       final snap = await firestore
           .collection('kyc_documents')
-          .where('status', isEqualTo: 'submitted')
+          .where('status', whereIn: const ['submitted', 'resubmitted'])
           .limit(100)
           .get();
       final out = <KycReviewSubmission>[];

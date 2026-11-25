@@ -1074,7 +1074,9 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byType(AppLoadingState), findsNothing);
       expect(find.byType(CircularProgressIndicator), findsNothing);
-      expect(find.text('Guest'), findsOneWidget);
+      // Guest renders twice in the hub: the shared header and the
+      // identity card's name row.
+      expect(find.text('Guest'), findsNWidgets(2));
     });
 
     testWidgets('owner Dashboard: loading, then honest empty ledger',

@@ -9,11 +9,16 @@ class ProfileAvatarPicker extends StatelessWidget {
   final ValueChanged<File> onImagePicked;
   final double radius;
 
+  /// The already-stored photo URL, shown when no new file was
+  /// picked yet (profile hub edit flow). Null in onboarding.
+  final String? imageUrl;
+
   const ProfileAvatarPicker({
     super.key,
     required this.imageFile,
     required this.onImagePicked,
     this.radius = 44,
+    this.imageUrl,
   });
 
   Future<void> _pick(BuildContext context, ImageSource source) async {
@@ -128,13 +133,27 @@ class ProfileAvatarPicker extends StatelessWidget {
                             height: diameter,
                             fit: BoxFit.cover,
                           )
-                        : Icon(
-                            Icons.person_rounded,
-                            size: radius * 1.15,
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onPrimaryContainer,
-                          ),
+                        : imageUrl != null && imageUrl!.isNotEmpty
+                            ? Image.network(
+                                imageUrl!,
+                                width: diameter,
+                                height: diameter,
+                                fit: BoxFit.cover,
+                                errorBuilder: (_, __, ___) => Icon(
+                                  Icons.person_rounded,
+                                  size: radius * 1.15,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onPrimaryContainer,
+                                ),
+                              )
+                            : Icon(
+                                Icons.person_rounded,
+                                size: radius * 1.15,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onPrimaryContainer,
+                              ),
                   ),
                 ),
                 PositionedDirectional(

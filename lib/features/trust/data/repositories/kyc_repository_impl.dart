@@ -23,6 +23,7 @@ class KycRepositoryImpl implements KycRepository {
     String? licenseNumber,
     String? licenseExpiry,
     String? qrCode,
+    String? previousStatus,
   }) =>
       remoteDataSource.uploadCnicAndLicense(
         userUid: userUid,
@@ -34,6 +35,7 @@ class KycRepositoryImpl implements KycRepository {
         licenseNumber: licenseNumber,
         licenseExpiry: licenseExpiry,
         qrCode: qrCode,
+        previousStatus: previousStatus,
       );
 }
 

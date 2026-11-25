@@ -37,6 +37,10 @@ class RouteNames {
   static const String customerSupport = '/customer/support';
   static const String customerSos = '/customer/sos';
   static const String customerProfile = '/customer/profile';
+  // Profile hub (2026-11-25): the full-screen edit-profile flow,
+  // a sub-route of the profile branch so it renders under the
+  // Profile tab with back to the hub.
+  static const String customerEditProfile = '/customer/profile/edit';
   static const String customerSettings = '/customer/settings';
   static const String customerDisputes = '/customer/disputes';
   static const String customerReputation = '/customer/reputation';

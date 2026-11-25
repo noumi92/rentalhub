@@ -887,6 +887,7 @@ class _FakeKycRepository implements KycRepository {
     String? licenseNumber,
     String? licenseExpiry,
     String? qrCode,
+    String? previousStatus,
   }) async {
     lastUpload = {
       'userUid': userUid,
