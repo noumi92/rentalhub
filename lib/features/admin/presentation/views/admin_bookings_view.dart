@@ -10,10 +10,11 @@ import '../../../../core/widgets/app_state_views.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../bookings/data/models/booking_model.dart';
 import '../../data/datasources/admin_platform_data_source.dart';
+import '../widgets/admin_booking_count_note.dart';
 import '../widgets/admin_booking_list_header.dart';
 import '../widgets/admin_booking_list_tile.dart';
-import '../widgets/admin_count_line.dart';
 import '../widgets/admin_load_more_button.dart';
+import '../widgets/admin_scoped_list_banner.dart';
 import '../widgets/admin_sort_menu.dart';
 import '../widgets/admin_shell.dart';
 
@@ -26,8 +27,9 @@ import '../widgets/admin_shell.dart';
 /// data source (400 ms debounce, like Customers/Tickets), and the
 /// count line says how many of the total are shown.
 class AdminBookingsView extends StatefulWidget {
-  const AdminBookingsView({super.key});
+  const AdminBookingsView({super.key, this.shopId});
 
+  final String? shopId; // Step 2 — when set, shows only this shop's bookings.
   @override
   State<AdminBookingsView> createState() => _AdminBookingsViewState();
 }
@@ -48,6 +50,7 @@ class _AdminBookingsViewState extends State<AdminBookingsView> {
   Object? _cursor;
   bool _hasMore = false;
   int? _total;
+  List<BookingModel>? _scopedBase; // Step 2 — this shop's bookings, loaded once.
 
   static const _statuses = [
     'all',
@@ -90,6 +93,17 @@ class _AdminBookingsViewState extends State<AdminBookingsView> {
     }
     try {
       final ds = sl<AdminPlatformDataSource>();
+      if (widget.shopId != null) {
+        // Step 2 — scoped mode: one client-side load, filtered in
+        // memory (no server shop query — no composite index).
+        _scopedBase ??= await loadShopBookings(ds, widget.shopId!);
+        final visible =
+            scopedBookings(_scopedBase!, _filter, _searchQuery, _sort);
+        final end = (reset ? 0 : _bookings.length) + _pageSize;
+        _setLoaded(visible.take(end).toList(),
+            hasMore: end < visible.length, total: visible.length);
+        return;
+      }
       if (_searchQuery.isNotEmpty) {
         final found = await ds.searchBookings(
           _searchQuery,
@@ -168,7 +182,8 @@ class _AdminBookingsViewState extends State<AdminBookingsView> {
       activeRoute: RouteNames.adminBookings,
       title: l10n.admin2_navBookings,
       subtitle: l10n.admin2_bookingsSubtitle,
-      onRefresh: _load,
+      onRefresh: () { _scopedBase = null; _load(); },
+      onBack: backToShopDetail(context, widget.shopId),
       child: Padding(
         padding: EdgeInsets.all(compact ? 16 : 24),
         child: Column(
@@ -183,25 +198,13 @@ class _AdminBookingsViewState extends State<AdminBookingsView> {
               onSort: _onSort,
             ),
             const SizedBox(height: 16),
+            if (widget.shopId != null) const AdminScopedListBanner(),
             if (!_isLoading && !_hasError && _bookings.isNotEmpty)
-              _isSearching
-                  ? Align(
-                      alignment: Alignment.centerLeft,
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        child: Text(
-                          _bookings.length >= 50
-                              ? l10n.adminAuditFirstMatches(50)
-                              : l10n.adminAuditMatching(_bookings.length),
-                          style: TextStyle(
-                              fontSize: 12,
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onSurfaceVariant),
-                        ),
-                      ),
-                    )
-                  : AdminCountLine(shown: _bookings.length, total: _total),
+              AdminBookingCountNote(
+                count: _bookings.length,
+                total: _total,
+                isSearching: _isSearching,
+              ),
             Expanded(
               child: _isLoading
                   ? const AppLoadingState()

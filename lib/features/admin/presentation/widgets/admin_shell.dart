@@ -19,13 +19,13 @@ import 'admin_sticky_action_bar.dart';
 /// classes ([WindowSizeClass]): below 600dp (compact) the desktop
 /// sidebar becomes a navigation drawer with the grouped full list and
 /// the header becomes a minimal ~56dp app bar, plus a bottom nav
-/// (Home / Queues / Shops / Bookings / More) — More opens the drawer,
+/// (Home / Queues / Shops / Customers / More) — More opens the drawer,
 /// which stays the fallback full list. At 600dp and up (medium and
 /// expanded) the grouped sidebar shell is used, so the 840–899dp
 /// range no longer gets the phone shell wrapping desktop-density
-/// content. Customers is not a bottom-nav item on purpose: shops and
-/// bookings are the daily operational lists, and customers are usually
-/// reached from a booking, ticket or shop context (or the drawer).
+/// content. Bookings is not a bottom-nav item any more: shops and
+/// customers are the daily operational lists, and bookings are
+/// reached from the drawer (or a shop/customer context).
 class AdminShell extends StatelessWidget {
   const AdminShell({
     super.key,
@@ -71,7 +71,7 @@ class AdminShell extends StatelessWidget {
       RouteNames.adminDashboard => 0,
       RouteNames.adminQueues => 1,
       RouteNames.adminShops => 2,
-      RouteNames.adminBookings => 3,
+      RouteNames.adminCustomers => 3,
       _ => 4,
     };
   }
@@ -92,7 +92,7 @@ class AdminShell extends StatelessWidget {
             0 => RouteNames.adminDashboard,
             1 => RouteNames.adminQueues,
             2 => RouteNames.adminShops,
-            _ => RouteNames.adminBookings,
+            _ => RouteNames.adminCustomers,
           });
         },
         items: [
@@ -109,8 +109,8 @@ class AdminShell extends StatelessWidget {
             label: l10n.admin2_navShops,
           ),
           BottomNavigationBarItem(
-            icon: const Icon(Icons.receipt_long_rounded),
-            label: l10n.admin2_navBookings,
+            icon: const Icon(Icons.people_rounded),
+            label: l10n.admin2_navCustomers,
           ),
           BottomNavigationBarItem(
             icon: const Icon(Icons.more_horiz_rounded),

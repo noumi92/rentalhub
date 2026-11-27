@@ -8338,6 +8338,48 @@ class AppLocalizationsUr extends AppLocalizations {
   String get admin2_sidebarGroupGovernance => 'نگرانی';
 
   @override
+  String get admin2_sidebarGroupEntities => 'ادارے';
+
+  @override
+  String get admin2_sidebarGroupInboxes => 'ان باکس';
+
+  @override
+  String get admin2_sidebarGroupCommerce => 'تجارت';
+
+  @override
+  String get admin2_sidebarGroupLegalTrust => 'قانونی اور اعتماد';
+
+  @override
+  String get admin2_sidebarGroupPlatformSystem => 'پلیٹ فارم اور سسٹم';
+
+  @override
+  String get admin2_navOnlineCustomers => 'آن لائن گاہک';
+
+  @override
+  String get admin2_shopDetailViewCars => 'اس دکان کی گاڑیاں دیکھیں';
+
+  @override
+  String get admin2_shopDetailViewBookings => 'اس دکان کی بکنگز دیکھیں';
+
+  @override
+  String get admin2_filteredToShop => 'صرف یہ دکان دکھائی جا رہی ہے';
+
+  @override
+  String get admin2_customerDetailViewKyc => 'KYC دستاویزات دیکھیں';
+
+  @override
+  String get admin2_settingsGroupMarketplace => 'مارکیٹ پلیس';
+
+  @override
+  String get admin2_settingsGroupCommercial => 'تجارتی';
+
+  @override
+  String get admin2_settingsGroupLegal => 'قانونی';
+
+  @override
+  String get admin2_settingsGroupOperations => 'آپریشنز';
+
+  @override
   String get admin2_queuesTitle => 'جائزہ قطاریں';
 
   @override

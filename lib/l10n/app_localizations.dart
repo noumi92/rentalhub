@@ -14975,6 +14975,90 @@ abstract class AppLocalizations {
   /// **'Governance'**
   String get admin2_sidebarGroupGovernance;
 
+  /// No description provided for @admin2_sidebarGroupEntities.
+  ///
+  /// In en, this message translates to:
+  /// **'Entities'**
+  String get admin2_sidebarGroupEntities;
+
+  /// No description provided for @admin2_sidebarGroupInboxes.
+  ///
+  /// In en, this message translates to:
+  /// **'Inboxes'**
+  String get admin2_sidebarGroupInboxes;
+
+  /// No description provided for @admin2_sidebarGroupCommerce.
+  ///
+  /// In en, this message translates to:
+  /// **'Commerce'**
+  String get admin2_sidebarGroupCommerce;
+
+  /// No description provided for @admin2_sidebarGroupLegalTrust.
+  ///
+  /// In en, this message translates to:
+  /// **'Legal & Trust'**
+  String get admin2_sidebarGroupLegalTrust;
+
+  /// No description provided for @admin2_sidebarGroupPlatformSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'Platform & System'**
+  String get admin2_sidebarGroupPlatformSystem;
+
+  /// No description provided for @admin2_navOnlineCustomers.
+  ///
+  /// In en, this message translates to:
+  /// **'Online Customers'**
+  String get admin2_navOnlineCustomers;
+
+  /// No description provided for @admin2_shopDetailViewCars.
+  ///
+  /// In en, this message translates to:
+  /// **'View this shop\'s cars'**
+  String get admin2_shopDetailViewCars;
+
+  /// No description provided for @admin2_shopDetailViewBookings.
+  ///
+  /// In en, this message translates to:
+  /// **'View this shop\'s bookings'**
+  String get admin2_shopDetailViewBookings;
+
+  /// No description provided for @admin2_filteredToShop.
+  ///
+  /// In en, this message translates to:
+  /// **'Showing only this shop'**
+  String get admin2_filteredToShop;
+
+  /// No description provided for @admin2_customerDetailViewKyc.
+  ///
+  /// In en, this message translates to:
+  /// **'View KYC documents'**
+  String get admin2_customerDetailViewKyc;
+
+  /// No description provided for @admin2_settingsGroupMarketplace.
+  ///
+  /// In en, this message translates to:
+  /// **'Marketplace'**
+  String get admin2_settingsGroupMarketplace;
+
+  /// No description provided for @admin2_settingsGroupCommercial.
+  ///
+  /// In en, this message translates to:
+  /// **'Commercial'**
+  String get admin2_settingsGroupCommercial;
+
+  /// No description provided for @admin2_settingsGroupLegal.
+  ///
+  /// In en, this message translates to:
+  /// **'Legal'**
+  String get admin2_settingsGroupLegal;
+
+  /// No description provided for @admin2_settingsGroupOperations.
+  ///
+  /// In en, this message translates to:
+  /// **'Operations'**
+  String get admin2_settingsGroupOperations;
+
   /// No description provided for @admin2_queuesTitle.
   ///
   /// In en, this message translates to:

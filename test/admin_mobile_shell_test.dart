@@ -173,7 +173,7 @@ void main() {
   }
 
   group('admin_mobile shell — drawer navigation at 360dp', () {
-    testWidgets('drawer lists all 15 sections on a phone',
+    testWidgets('drawer lists all 16 sections on a phone',
         (tester) async {
       tester.view.physicalSize = const Size(360, 800);
       tester.view.devicePixelRatio = 1.0;
@@ -186,19 +186,23 @@ void main() {
       await tester.tap(find.byIcon(Icons.menu));
       await tester.pumpAndSettle();
       for (final label in [
-        'Cars', 'Customers',
+        'Cars', 'Online Customers',
         'Disputes', 'Reviews', 'Support', 'Announcements',
         'Reports', 'Settings', 'Blacklist', 'Admin Team', 'Activity Log',
+        'Subscriptions', 'Bookings',
       ]) {
         expect(find.text(label), findsOneWidget, reason: label);
       }
-      // Phase 2 (2.2): Shops and Bookings are bottom-nav items too,
-      // so they appear twice with the drawer open (drawer + nav bar).
+      // Restructure (2026-11-27): Shops and Customers are
+      // bottom-nav items too, so they appear twice with the drawer
+      // open (drawer + nav bar) — the drawer label for customers is
+      // 'Online Customers', the bottom-nav label is 'Customers'.
       expect(find.text('Shops'), findsNWidgets(2));
-      expect(find.text('Bookings'), findsNWidgets(2));
-      // Phase 1 (1.2): Subscriptions is hidden until the screen
-      // exists — the route stays, but it is not a nav item.
-      expect(find.text('Subscriptions'), findsNothing);
+      expect(find.text('Queues'), findsNWidgets(2));
+      expect(find.text('Customers'), findsOneWidget);
+      // Restructure (2026-11-27): Subscriptions is a sidebar item
+      // now (Commerce) — the screen stays Coming Soon. Bookings left
+      // the bottom nav, so it appears only in the drawer.
       // Twice: the app-bar title and the drawer item.
       expect(find.text('Dashboard'), findsNWidgets(2));
     });
@@ -213,7 +217,10 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.byIcon(Icons.menu));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Customers'));
+      // Restructure (2026-11-27): the drawer item is labelled
+      // 'Online Customers' now — tap that, not the bottom-nav
+      // 'Customers' (the open drawer covers the nav bar).
+      await tester.tap(find.text('Online Customers'));
       await tester.pumpAndSettle();
       expect(find.text('Bilal Ahmed'), findsOneWidget);
       expect(find.text('Sara Khan'), findsOneWidget);

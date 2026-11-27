@@ -264,8 +264,11 @@ void main() {
     });
   });
 
-  group('1.2 — Subscriptions hidden from the sidebar', () {
-    testWidgets('the sidebar lists no Subscriptions item',
+  // Restructure (2026-11-27), Step 1: Subscriptions is no longer
+  // hidden — it is shown in the Commerce group (still the Coming
+  // Soon placeholder screen, not functional).
+  group('1.2 — Subscriptions shown in the sidebar', () {
+    testWidgets('the sidebar lists a Subscriptions item under Commerce',
         (tester) async {
       await tester.pumpWidget(wrap(Scaffold(
           body: AdminSidebarNav(
@@ -275,7 +278,8 @@ void main() {
         showKycReview: false,
       ))));
       await tester.pumpAndSettle();
-      expect(find.text('Subscriptions'), findsNothing);
+      expect(find.text('Subscriptions'), findsOneWidget);
+      expect(find.text('COMMERCE'), findsOneWidget);
       expect(find.text('Dashboard'), findsOneWidget);
       expect(find.text('Settings'), findsOneWidget);
     });

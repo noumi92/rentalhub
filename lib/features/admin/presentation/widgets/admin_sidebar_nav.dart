@@ -17,15 +17,21 @@ import '../../domain/admin_permissions.dart';
 /// instead of the hardcoded superadmin@rentalhub.pk.
 ///
 /// Phase 2 (2.1) — grouped, with live count badges on the review
-/// queues: Overview (Dashboard, Reports), Review queues (KYC Review,
-/// Cars, Disputes, Reviews, Support), Marketplace (Shops, Customers,
-/// Bookings), Platform (Announcements, Settings, APK Download),
-/// Governance (Blacklist, Admin Team, Activity Log). Phase 3 (3.1):
-/// Approvals is no longer its own nav item — it is the Shops list
-/// with the Pending filter, so the Shops item carries the pending
-/// count badge instead. 16 items with both role-gated items visible
-/// (14 without them); Subscriptions stays hidden (Phase 1, 1.2 —
-/// the route exists but the screen is still Coming Soon).
+/// queues. Phase 3 (3.1): Approvals is no longer its own nav item
+/// — it is the Shops list with the Pending filter, so the Shops
+/// item carries the pending count badge instead.
+///
+/// Restructure (2026-11-27) — six groups (plan p.3): Overview
+/// (Dashboard, Reports), Entities (Shops, Online Customers),
+/// Inboxes (Queues hub, KYC Review, Cars), Commerce
+/// (Subscriptions — the route exists but the screen is still the
+/// Coming Soon placeholder), Legal & Trust (Disputes, Blacklist,
+/// Reviews, Support), Platform & System (Announcements, Settings,
+/// Admin Team, Activity Log, APK Download, Bookings). 18 items with
+/// both role-gated items visible (16 without them). The old group
+/// keys (admin2_sidebarGroupQueues, admin2_sidebarGroupMarketplace,
+/// admin2_sidebarGroupPlatform, admin2_sidebarGroupGovernance) are
+/// unused now but stay in the .arb files.
 ///
 /// Stateful only so the role-gated items can resolve the signed-in
 /// admin's role once: the super-admin-only "APK Download" item and
@@ -247,37 +253,43 @@ class _AdminSidebarNavState extends State<AdminSidebarNav> {
                   _sectionHeader(l10n.admin2_sidebarGroupOverview),
                   _navItem(RouteNames.adminDashboard, l10n.admin2_navDashboard, Icons.dashboard_rounded),
                   _navItem(RouteNames.adminReports, l10n.admin2_navReports, Icons.bar_chart_rounded),
-                  _sectionHeader(l10n.admin2_sidebarGroupQueues),
+                  _sectionHeader(l10n.admin2_sidebarGroupEntities),
+                  // Phase 3 (3.1): the pending-shop count lives on
+                  // Shops — Approvals is the Shops list with the
+                  // Pending filter, not its own screen any more.
+                  _navItem(RouteNames.adminShops, l10n.admin2_navShops, Icons.store_rounded, badge: counts?.approvals),
+                  _navItem(RouteNames.adminCustomers, l10n.admin2_navOnlineCustomers, Icons.people_rounded),
+                  _sectionHeader(l10n.admin2_sidebarGroupInboxes),
+                  _navItem(RouteNames.adminQueues, l10n.admin2_navQueues, Icons.fact_check_rounded),
                   _gatedItem(
                     resolved: widget.showKycReview != null || _roleResolved,
                     visible: _canReviewKyc,
                     item: _navItem(RouteNames.adminKycReview, l10n.adminKycReviewTitle, Icons.badge_rounded, badge: counts?.kyc),
                   ),
                   _navItem(RouteNames.adminCars, l10n.admin2_navCars, Icons.directions_car_rounded, badge: counts?.cars),
+                  _sectionHeader(l10n.admin2_sidebarGroupCommerce),
+                  // Restructure (2026-11-27): the Subscriptions route
+                  // exists and the screen is still the Coming Soon
+                  // placeholder — visible to all admin roles, no gating.
+                  _navItem(RouteNames.adminSubscriptions, l10n.admin2_navSubscriptions, Icons.card_membership_rounded),
+                  _sectionHeader(l10n.admin2_sidebarGroupLegalTrust),
                   _navItem(RouteNames.adminDisputes, l10n.admin2_navDisputes, Icons.gavel_rounded, badge: counts?.disputes),
+                  // AD-m1: Blacklist gets its own icon — it shared
+                  // the gavel with Disputes.
+                  _navItem(RouteNames.adminBlacklist, l10n.admin2_navBlacklist, Icons.block_rounded),
                   _navItem(RouteNames.adminReviews, l10n.admin2_navReviews, Icons.star_rounded, badge: counts?.reviews),
                   _navItem(RouteNames.adminTickets, l10n.admin2_navSupport, Icons.support_agent_rounded, badge: counts?.tickets),
-                  _sectionHeader(l10n.admin2_sidebarGroupMarketplace),
-                  // Phase 3 (3.1): the pending-shop count lives on
-                  // Shops — Approvals is the Shops list with the
-                  // Pending filter, not its own screen any more.
-                  _navItem(RouteNames.adminShops, l10n.admin2_navShops, Icons.store_rounded, badge: counts?.approvals),
-                  _navItem(RouteNames.adminCustomers, l10n.admin2_navCustomers, Icons.people_rounded),
-                  _navItem(RouteNames.adminBookings, l10n.admin2_navBookings, Icons.receipt_long_rounded),
-                  _sectionHeader(l10n.admin2_sidebarGroupPlatform),
+                  _sectionHeader(l10n.admin2_sidebarGroupPlatformSystem),
                   _navItem(RouteNames.adminAnnouncements, l10n.admin2_navAnnouncements, Icons.campaign_rounded),
                   _navItem(RouteNames.adminSettings, l10n.admin2_navSettings, Icons.settings_rounded),
+                  _navItem(RouteNames.adminTeam, l10n.admin2_navAdminTeam, Icons.group_rounded),
+                  _navItem(RouteNames.adminActivity, l10n.admin2_navActivityLog, Icons.history_rounded),
                   _gatedItem(
                     resolved: widget.showApkDownload != null || _roleResolved,
                     visible: _showApkDownload,
                     item: _navItem(RouteNames.adminApkDownload, l10n.admin2_navApkDownload, Icons.android_rounded),
                   ),
-                  _sectionHeader(l10n.admin2_sidebarGroupGovernance),
-                  // AD-m1: Blacklist gets its own icon — it shared
-                  // the gavel with Disputes.
-                  _navItem(RouteNames.adminBlacklist, l10n.admin2_navBlacklist, Icons.block_rounded),
-                  _navItem(RouteNames.adminTeam, l10n.admin2_navAdminTeam, Icons.group_rounded),
-                  _navItem(RouteNames.adminActivity, l10n.admin2_navActivityLog, Icons.history_rounded),
+                  _navItem(RouteNames.adminBookings, l10n.admin2_navBookings, Icons.receipt_long_rounded),
                   const SizedBox(height: 12),
                 ],
               ),

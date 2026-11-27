@@ -55,6 +55,20 @@ class _FakeAdminSupportDataSource extends AdminSupportDataSource {
   }
 }
 
+/// Value of the SwitchListTile with the given title label — looked
+/// up by label, not by position, so reordering the settings form
+/// (Step 4) does not break this test.
+bool _switchValue(WidgetTester tester, String label) {
+  return tester
+      .widget<SwitchListTile>(
+        find.ancestor(
+          of: find.text(label),
+          matching: find.byType(SwitchListTile),
+        ),
+      )
+      .value;
+}
+
 Map<String, dynamic> _draft({required bool shopIsVerified}) {
   return {
     'carId': 'car-corolla',
@@ -462,9 +476,12 @@ void main() {
       final switches =
           tester.widgetList<Switch>(find.byType(Switch)).toList();
       expect(switches.length, 3);
-      // Maintenance stays on; the two new toggles load OFF.
-      expect(switches[1].value, isFalse);
-      expect(switches[2].value, isFalse);
+      // The two unverified-shop toggles load OFF (maintenance is
+      // untouched by this test).
+      expect(_switchValue(tester, 'Display unverified shops'), isFalse);
+      expect(
+          _switchValue(tester, 'Allow bookings from unverified shops'),
+          isFalse);
 
       await tester.ensureVisible(find.text('Display unverified shops'));
       await tester.pumpAndSettle();
@@ -474,10 +491,10 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('Allow bookings from unverified shops'));
       await tester.pumpAndSettle();
-      final flipped =
-          tester.widgetList<Switch>(find.byType(Switch)).toList();
-      expect(flipped[1].value, isTrue);
-      expect(flipped[2].value, isTrue);
+      expect(_switchValue(tester, 'Display unverified shops'), isTrue);
+      expect(
+          _switchValue(tester, 'Allow bookings from unverified shops'),
+          isTrue);
       await tester.ensureVisible(find.text('Save settings'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Save settings'));

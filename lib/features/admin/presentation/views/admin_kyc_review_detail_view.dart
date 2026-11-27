@@ -39,10 +39,13 @@ class AdminKycReviewDetailView extends StatefulWidget {
     this.resolveAdminRole,
     this.loadQrCode,
     this.resolveImageUrl,
-    this.decideKyc,
+    this.decideKyc, this.returnToCustomer = false,
   });
 
   final String customerId;
+
+  /// Step 3 — entered from a customer record (`?from=customer`): back returns to that customer, not the queue.
+  final bool returnToCustomer;
 
   /// Test seams (data access). Defaults read the real data sources
   /// and session; tests pass fakes so no Firebase/DI is needed.
@@ -129,10 +132,7 @@ class _AdminKycReviewDetailViewState
       return;
     }
     if (!mounted) return;
-    setState(() {
-      _submission = submission;
-      _isLoading = false;
-    });
+    setState(() { _submission = submission; _isLoading = false; });
     if (submission == null) return;
     // The QR number is requested ONLY for a super admin.
     final isSuperAdmin = role == AdminPermissions.superAdmin;
@@ -142,8 +142,7 @@ class _AdminKycReviewDetailViewState
                 .getCustomerQrCode(widget.customerId))
         : null;
     if (!mounted) return;
-    setState(() => _isSuperAdmin = isSuperAdmin);
-    setState(() => _qrCode = qrCode);
+    setState(() { _isSuperAdmin = isSuperAdmin; _qrCode = qrCode; });
   }
 
   Future<void> _decide(String decision) async {
@@ -204,7 +203,7 @@ class _AdminKycReviewDetailViewState
       subtitle: l10n?.adminKycReviewSubtitle ??
           'Customer identity documents waiting for a decision',
       onRefresh: _load,
-      onBack: () => context.go(RouteNames.adminKycReview),
+      onBack: () => context.go(widget.returnToCustomer ? RouteNames.adminCustomerDetail.replaceFirst(':customerId', widget.customerId) : RouteNames.adminKycReview),
       // Phase 4 (4.4a) — Approve / Reject are the sticky bar now,
       // not the bottom of the document scroll.
       bottomBar: submission == null || !_canReview

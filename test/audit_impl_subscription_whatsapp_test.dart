@@ -196,8 +196,9 @@ void main() {
       await tester.pumpAndSettle();
 
       // Exact titles: textContaining('50 …') also matches the 250 pack.
-      expect(find.text('50 WhatsApp Credits'), findsOneWidget);
-      expect(find.text('250 WhatsApp Credits'), findsOneWidget);
+      expect(find.text('Bronze · 50 WhatsApp Credits'), findsOneWidget);
+      expect(find.text('Silver · 105 WhatsApp Credits'), findsOneWidget);
+      expect(find.text('Gold · 250 WhatsApp Credits'), findsOneWidget);
       expect(find.text('Best value'), findsOneWidget);
       expect(find.text('Free plan — 10 messages'), findsOneWidget);
       expect(find.text('Pro plan — 30 credits'), findsOneWidget);
@@ -302,6 +303,12 @@ void main() {
           [50, 105, 250]);
       expect(whatsappCreditPacks.map((p) => p.price).toList(),
           [250, 499, 999]);
+      expect(whatsappCreditPacks.map((p) => p.name).toList(),
+          ['Bronze', 'Silver', 'Gold']);
+      expect(whatsappCreditPackForCredits(50)?.name, 'Bronze');
+      expect(whatsappCreditPackForCredits(105)?.name, 'Silver');
+      expect(whatsappCreditPackForCredits(250)?.name, 'Gold');
+      expect(whatsappCreditPackForCredits(999), isNull);
       expect(freeMonthlyCreditsForTier('free'), 10);
       expect(freeMonthlyCreditsForTier('pro'), 30);
       expect(freeMonthlyCreditsForTier('business'), 100);

@@ -57,6 +57,7 @@ class _AdminCustomerDetailViewState extends State<AdminCustomerDetailView> {
   bool _hasError = false;
   bool _isWorking = false;
   bool _isSuperAdmin = false;
+  bool _canReviewKyc = false;
   String? _qrCode;
 
   @override
@@ -99,12 +100,17 @@ class _AdminCustomerDetailViewState extends State<AdminCustomerDetailView> {
     final role = await (widget.resolveAdminRole?.call() ?? _defaultResolveRole());
     if (!mounted) return;
     final isSuperAdmin = role == AdminPermissions.superAdmin;
+    // Step 3 — the profile tab's KYC entry point is gated on the
+    // existing decideKyc permission (super admin + operations),
+    // resolved here once alongside the QR-code role check.
+    final canReviewKyc =
+        AdminPermissions.can(role, AdminPermission.decideKyc);
     final qrCode = isSuperAdmin
         ? await (widget.loadQrCode?.call(widget.customerId) ??
             sl<AdminPeopleDataSource>().getCustomerQrCode(widget.customerId))
         : null;
     if (!mounted) return;
-    setState(() { _isSuperAdmin = isSuperAdmin; _qrCode = qrCode; });
+    setState(() { _isSuperAdmin = isSuperAdmin; _canReviewKyc = canReviewKyc; _qrCode = qrCode; });
   }
 
   Future<void> _addNote() async {
@@ -223,7 +229,7 @@ class _AdminCustomerDetailViewState extends State<AdminCustomerDetailView> {
                           Expanded(
                             child: TabBarView(
                               children: [
-                                CustomerDetailProfileTab(detail: detail, padding: padding),
+                                CustomerDetailProfileTab(detail: detail, padding: padding, canReviewKyc: _canReviewKyc),
                                 CustomerDetailBookingsTab(detail: detail, padding: padding),
                                 CustomerDetailNotesTab(
                                   detail: detail,

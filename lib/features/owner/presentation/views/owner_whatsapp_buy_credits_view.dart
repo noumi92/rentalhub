@@ -56,7 +56,7 @@ class _OwnerWhatsappBuyCreditsViewState
     final l10n = AppLocalizations.of(context)!;
     ManualBankTransferSheet.show(
       context,
-      title: '${l10n.creditsBuy} · ${pack.credits}',
+      title: '${l10n.creditsBuy} · ${pack.name}',
       amount: pack.price,
       note: l10n.creditsPayByBank,
       onSubmit: (trxId) => _credits.submitCreditPurchaseRequest(
@@ -122,7 +122,7 @@ class _OwnerWhatsappBuyCreditsViewState
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text('${pack.credits} ${l10n.creditsTitle}',
+                                  Text('${pack.name} · ${pack.credits} ${l10n.creditsTitle}',
                                       style: Theme.of(context)
                                           .textTheme
                                           .titleMedium

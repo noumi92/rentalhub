@@ -147,37 +147,56 @@ void main() {
   }
 
   group('2.1 — grouped sidebar with queue badges', () {
-    testWidgets('shows the five section headers in order', (tester) async {
+    testWidgets('shows the six section headers in order', (tester) async {
       await pumpSidebar(tester,
           loadCounts: () async => counts,
           showKycReview: true,
           showApkDownload: true);
       for (final header in [
         'OVERVIEW',
-        'REVIEW QUEUES',
-        'MARKETPLACE',
-        'PLATFORM',
-        'GOVERNANCE',
+        'ENTITIES',
+        'INBOXES',
+        'COMMERCE',
+        'LEGAL & TRUST',
+        'PLATFORM & SYSTEM',
       ]) {
         expect(find.text(header), findsOneWidget, reason: header);
       }
-      // Reports moved up next to Dashboard; Cars moved into the
-      // queues; the order inside each group is the brief's order.
+      // Restructure (2026-11-27): Overview (Dashboard, Reports),
+      // Entities (Shops, Online Customers), Inboxes (Queues hub,
+      // KYC Review, Cars), Commerce (Subscriptions), Legal & Trust
+      // (Disputes, Blacklist, Reviews, Support), Platform & System
+      // (Announcements, Settings, Admin Team, Activity Log, APK
+      // Download, Bookings). The order inside each group is the
+      // brief's order.
       final dashboardY = tester.getCenter(find.text('Dashboard')).dy;
       final reportsY = tester.getCenter(find.text('Reports')).dy;
-      final carsY = tester.getCenter(find.text('Cars')).dy;
       final shopsY = tester.getCenter(find.text('Shops')).dy;
-      final customersY = tester.getCenter(find.text('Customers')).dy;
+      final customersY =
+          tester.getCenter(find.text('Online Customers')).dy;
+      final queuesY = tester.getCenter(find.text('Queues')).dy;
+      final carsY = tester.getCenter(find.text('Cars')).dy;
+      final subscriptionsY =
+          tester.getCenter(find.text('Subscriptions')).dy;
+      final disputesY = tester.getCenter(find.text('Disputes')).dy;
+      final bookingsY = tester.getCenter(find.text('Bookings')).dy;
       expect(reportsY, greaterThan(dashboardY));
-      expect(carsY, greaterThan(reportsY));
-      expect(shopsY, greaterThan(carsY));
+      expect(shopsY, greaterThan(reportsY));
       expect(customersY, greaterThan(shopsY));
+      expect(queuesY, greaterThan(customersY));
+      expect(carsY, greaterThan(queuesY));
+      expect(subscriptionsY, greaterThan(carsY));
+      expect(disputesY, greaterThan(subscriptionsY));
+      expect(bookingsY, greaterThan(disputesY));
       // Phase 3 (3.1): Approvals is no longer a sidebar item —
       // pending shops are a filter on Shops, which carries the
       // pending count badge instead.
       expect(find.text('Approvals'), findsNothing);
-      // Subscriptions stays hidden (Phase 1, 1.2).
-      expect(find.text('Subscriptions'), findsNothing);
+      // Restructure (2026-11-27): Subscriptions is a sidebar item
+      // now (Commerce) — the screen stays Coming Soon.
+      expect(find.text('Subscriptions'), findsOneWidget);
+      // The Customers item is labelled Online Customers now.
+      expect(find.text('Customers'), findsNothing);
     });
 
     testWidgets('badges show live counts, hidden at zero', (tester) async {
@@ -346,11 +365,12 @@ void main() {
       await pumpShell(tester, 360);
       expect(find.text('RENTALHUB'), findsNothing);
       expect(find.byType(BottomNavigationBar), findsOneWidget);
-      for (final label in ['Home', 'Queues', 'Shops', 'Bookings', 'More']) {
+      for (final label in ['Home', 'Queues', 'Shops', 'Customers', 'More']) {
         expect(find.text(label), findsOneWidget, reason: label);
       }
-      // Customers is deliberately not a bottom-nav item.
-      expect(find.text('Customers'), findsNothing);
+      // Restructure (2026-11-27): Bookings left the bottom nav for
+      // Customers — it stays reachable via the drawer/sidebar.
+      expect(find.text('Bookings'), findsNothing);
     });
 
     testWidgets('bottom nav Queues opens the hub', (tester) async {
@@ -521,6 +541,35 @@ void main() {
       expect(find.text('Add note'), findsOneWidget);
       expect(find.text('Add to watchlist'), findsOneWidget);
       expect(find.text('Report to blacklist'), findsOneWidget);
+    });
+
+    testWidgets('Step 3 — Profile tab KYC entry point is decideKyc-gated',
+        (tester) async {
+      // Super admin may review KYC: the entry point shows under
+      // the trust breakdown. (Not tapped: the plain MaterialApp
+      // harness has no GoRouter to navigate with.)
+      await tester.pumpWidget(wrap(AdminCustomerDetailView(
+        key: const ValueKey('step3-super-admin'),
+        customerId: 'c-1',
+        loadDetail: (_) async => detailFor('c-1', 'Bilal Ahmed'),
+        resolveAdminRole: () async => 'super_admin',
+      )));
+      await tester.pumpAndSettle();
+      expect(find.text('View KYC documents'), findsOneWidget);
+      // Support may not review KYC: no entry point, no new tab.
+      // (A fresh key: the view loads its role in initState, so a
+      // bare re-pump would reuse the super-admin state.)
+      await tester.pumpWidget(wrap(AdminCustomerDetailView(
+        key: const ValueKey('step3-support'),
+        customerId: 'c-1',
+        loadDetail: (_) async => detailFor('c-1', 'Bilal Ahmed'),
+        resolveAdminRole: () async => 'support',
+      )));
+      await tester.pumpAndSettle();
+      expect(find.text('View KYC documents'), findsNothing);
+      expect(find.widgetWithText(Tab, 'Profile'), findsOneWidget);
+      expect(find.widgetWithText(Tab, 'Bookings'), findsOneWidget);
+      expect(find.widgetWithText(Tab, 'Notes & flags'), findsOneWidget);
     });
   });
 

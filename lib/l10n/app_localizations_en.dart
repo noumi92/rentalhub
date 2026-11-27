@@ -8334,6 +8334,48 @@ class AppLocalizationsEn extends AppLocalizations {
   String get admin2_sidebarGroupGovernance => 'Governance';
 
   @override
+  String get admin2_sidebarGroupEntities => 'Entities';
+
+  @override
+  String get admin2_sidebarGroupInboxes => 'Inboxes';
+
+  @override
+  String get admin2_sidebarGroupCommerce => 'Commerce';
+
+  @override
+  String get admin2_sidebarGroupLegalTrust => 'Legal & Trust';
+
+  @override
+  String get admin2_sidebarGroupPlatformSystem => 'Platform & System';
+
+  @override
+  String get admin2_navOnlineCustomers => 'Online Customers';
+
+  @override
+  String get admin2_shopDetailViewCars => 'View this shop\'s cars';
+
+  @override
+  String get admin2_shopDetailViewBookings => 'View this shop\'s bookings';
+
+  @override
+  String get admin2_filteredToShop => 'Showing only this shop';
+
+  @override
+  String get admin2_customerDetailViewKyc => 'View KYC documents';
+
+  @override
+  String get admin2_settingsGroupMarketplace => 'Marketplace';
+
+  @override
+  String get admin2_settingsGroupCommercial => 'Commercial';
+
+  @override
+  String get admin2_settingsGroupLegal => 'Legal';
+
+  @override
+  String get admin2_settingsGroupOperations => 'Operations';
+
+  @override
   String get admin2_queuesTitle => 'Review queues';
 
   @override

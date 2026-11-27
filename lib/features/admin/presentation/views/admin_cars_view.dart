@@ -10,6 +10,7 @@ import '../../../fleet/domain/entities/vehicle_entity.dart';
 import '../../data/datasources/admin_shops_data_source.dart';
 import '../widgets/admin_count_line.dart';
 import '../widgets/admin_list_card.dart';
+import '../widgets/admin_scoped_list_banner.dart';
 import '../widgets/admin_sort_menu.dart';
 import '../widgets/admin_shell.dart';
 import '../widgets/admin_status_chip.dart';
@@ -19,8 +20,9 @@ import '../widgets/car_review_detail_sheet.dart';
 /// its admin review state. Tap a car for the review sheet
 /// (Approve / Hide / Reject).
 class AdminCarsView extends StatefulWidget {
-  const AdminCarsView({super.key});
+  const AdminCarsView({super.key, this.shopId});
 
+  final String? shopId; // Step 2 — when set, shows only this shop's cars.
   @override
   State<AdminCarsView> createState() => _AdminCarsViewState();
 }
@@ -56,9 +58,9 @@ class _AdminCarsViewState extends State<AdminCarsView> {
       final total = await ds.countCars();
       if (mounted) {
         setState(() {
-          _cars = cars;
+          _cars = scopedCars(cars, widget.shopId);
           _reviews = reviews;
-          _total = total;
+          _total = widget.shopId == null ? total : _cars.length;
           _isLoading = false;
         });
       }
@@ -112,6 +114,7 @@ class _AdminCarsViewState extends State<AdminCarsView> {
       title: l10n.admin2_navCars,
       subtitle: l10n.admin2_carsSubtitle,
       onRefresh: _load,
+      onBack: backToShopDetail(context, widget.shopId),
       child: Padding(
         // Mobile-first: 16dp on a phone, 24dp on desktop (same rule
         // as the other admin lists).
@@ -188,6 +191,7 @@ class _AdminCarsViewState extends State<AdminCarsView> {
               ],
             ),
             SizedBox(height: 16),
+            if (widget.shopId != null) const AdminScopedListBanner(),
             if (!_isLoading && !_hasError && _visible.isNotEmpty)
               AdminCountLine(shown: _visible.length, total: _total),
             Expanded(

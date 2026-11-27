@@ -59,6 +59,9 @@ class AdminPlatformSettingsForm extends StatelessWidget {
               ],
             ),
           ),
+        _SettingsSectionHeading(
+            l10n?.admin2_settingsGroupMarketplace ?? 'Marketplace',
+            first: true),
         AdminSettingsField(
             label: l10n?.admin2_settingsCities ??
                 'Live cities (comma-separated)',
@@ -67,42 +70,6 @@ class AdminPlatformSettingsForm extends StatelessWidget {
             label: l10n?.admin2_settingsCategories ??
                 'Car categories (comma-separated)',
             controller: draft.categoriesController),
-        AdminSettingsField(
-            label: l10n?.admin2_settingsAdvance ?? 'Advance %',
-            controller: draft.advanceController,
-            keyboardType: TextInputType.number,
-            digitsOnly: true,
-            errorText: fieldErrors['advance']),
-        AdminSettingsField(
-            label: l10n?.admin2_settingsDeposit ?? 'Default Security (Rs.)',
-            controller: draft.depositController,
-            keyboardType: TextInputType.number,
-            digitsOnly: true,
-            errorText: fieldErrors['deposit']),
-        AdminSettingsField(
-            label: l10n?.admin2_settingsGrace ?? 'Late grace (minutes)',
-            controller: draft.graceController,
-            keyboardType: TextInputType.number,
-            digitsOnly: true,
-            errorText: fieldErrors['grace']),
-        AdminSettingsField(
-            label: l10n?.admin2_settingsSupportHours ?? 'Support hours',
-            controller: draft.hoursController),
-        AdminSettingsField(
-            label: l10n?.admin2_settingsAgreementTerms ??
-                'Default agreement terms',
-            controller: draft.termsController,
-            maxLines: 3),
-        SwitchListTile(
-          title: Text(l10n?.admin2_settingsMaintenance ?? 'Maintenance mode'),
-          subtitle: Text(l10n?.admin2_settingsMaintenanceHint ??
-              'When on, the app shows a maintenance notice at startup.'),
-          value: draft.maintenanceMode,
-          onChanged: (v) {
-            draft.maintenanceMode = v;
-            onChanged();
-          },
-        ),
         SwitchListTile(
           title: Text(l10n?.admin2_displayUnverifiedShops ??
               'Display unverified shops'),
@@ -123,6 +90,48 @@ class AdminPlatformSettingsForm extends StatelessWidget {
           value: draft.allowBookingsFromUnverifiedShops,
           onChanged: (v) {
             draft.allowBookingsFromUnverifiedShops = v;
+            onChanged();
+          },
+        ),
+        _SettingsSectionHeading(
+            l10n?.admin2_settingsGroupCommercial ?? 'Commercial'),
+        AdminSettingsField(
+            label: l10n?.admin2_settingsAdvance ?? 'Advance %',
+            controller: draft.advanceController,
+            keyboardType: TextInputType.number,
+            digitsOnly: true,
+            errorText: fieldErrors['advance']),
+        AdminSettingsField(
+            label: l10n?.admin2_settingsDeposit ?? 'Default Security (Rs.)',
+            controller: draft.depositController,
+            keyboardType: TextInputType.number,
+            digitsOnly: true,
+            errorText: fieldErrors['deposit']),
+        AdminSettingsField(
+            label: l10n?.admin2_settingsGrace ?? 'Late grace (minutes)',
+            controller: draft.graceController,
+            keyboardType: TextInputType.number,
+            digitsOnly: true,
+            errorText: fieldErrors['grace']),
+        _SettingsSectionHeading(
+            l10n?.admin2_settingsGroupLegal ?? 'Legal'),
+        AdminSettingsField(
+            label: l10n?.admin2_settingsAgreementTerms ??
+                'Default agreement terms',
+            controller: draft.termsController,
+            maxLines: 3),
+        _SettingsSectionHeading(
+            l10n?.admin2_settingsGroupOperations ?? 'Operations'),
+        AdminSettingsField(
+            label: l10n?.admin2_settingsSupportHours ?? 'Support hours',
+            controller: draft.hoursController),
+        SwitchListTile(
+          title: Text(l10n?.admin2_settingsMaintenance ?? 'Maintenance mode'),
+          subtitle: Text(l10n?.admin2_settingsMaintenanceHint ??
+              'When on, the app shows a maintenance notice at startup.'),
+          value: draft.maintenanceMode,
+          onChanged: (v) {
+            draft.maintenanceMode = v;
             onChanged();
           },
         ),
@@ -212,6 +221,26 @@ class AdminPlatformSettingsForm extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+/// Small section heading for the grouped settings form (Step 4):
+/// heading text in the theme's titleMedium style with spacing.
+/// Not [AdminDetailSection] — that renders title+lines, not form
+/// fields. The first heading sits at the top of the form, so it
+/// takes no top padding.
+class _SettingsSectionHeading extends StatelessWidget {
+  const _SettingsSectionHeading(this.text, {this.first = false});
+
+  final String text;
+  final bool first;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(top: first ? 0 : 20, bottom: 4),
+      child: Text(text, style: Theme.of(context).textTheme.titleMedium),
     );
   }
 }

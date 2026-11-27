@@ -71,6 +71,10 @@ class _AdminShopDetailViewState extends State<AdminShopDetailView> {
     }
   }
 
+  /// Step 2 — open the existing Cars / Bookings list for this shop.
+  void _goScoped(String path) => context.go(Uri(
+      path: path, queryParameters: {'shopId': widget.shopId}).toString());
+
   /// Phase 3 (3.1): a pending shop's application is decided here
   /// — the Approvals screen is gone, so the review sheet opens
   /// from the detail route and reloads the shop on a decision.
@@ -208,6 +212,20 @@ class _AdminShopDetailViewState extends State<AdminShopDetailView> {
                                 fontSize: 13,
                                 color: Theme.of(context).colorScheme.error)),
                       ],
+                      // Step 2 — entry points into the existing
+                      // Cars / Bookings screens, scoped to this shop.
+                      const SizedBox(height: 16),
+                      FilledButton(
+                        key: const Key('admin2_shopDetailViewCars'),
+                        onPressed: () => _goScoped(RouteNames.adminCars),
+                        child: Text(l10n.admin2_shopDetailViewCars),
+                      ),
+                      const SizedBox(height: 12),
+                      FilledButton(
+                        key: const Key('admin2_shopDetailViewBookings'),
+                        onPressed: () => _goScoped(RouteNames.adminBookings),
+                        child: Text(l10n.admin2_shopDetailViewBookings),
+                      ),
                       const SizedBox(height: 20),
                       AdminDetailSection(
                           title: l10n.admin2_shopDetailKycDocs,

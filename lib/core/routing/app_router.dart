@@ -1663,11 +1663,17 @@ class AppRouter {
         path: RouteNames.adminKycReviewDetail,
         builder: (context, state) => AdminKycReviewDetailView(
           customerId: state.pathParameters['customerId'] ?? '',
+          // Step 3 — `?from=customer` (customer detail entry point)
+          // makes back return to that customer; anything else (the
+          // queue) keeps the existing queue back behaviour.
+          returnToCustomer: state.uri.queryParameters['from'] == 'customer',
         ),
       ),
       GoRoute(
         path: RouteNames.adminCars,
-        builder: (context, state) => const AdminCarsView(),
+        builder: (context, state) => AdminCarsView(
+          shopId: state.uri.queryParameters['shopId'],
+        ),
       ),
       GoRoute(
         path: RouteNames.adminCustomers,
@@ -1681,7 +1687,9 @@ class AppRouter {
       ),
       GoRoute(
         path: RouteNames.adminBookings,
-        builder: (context, state) => const AdminBookingsView(),
+        builder: (context, state) => AdminBookingsView(
+          shopId: state.uri.queryParameters['shopId'],
+        ),
       ),
       GoRoute(
         path: RouteNames.adminBookingDetail,

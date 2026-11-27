@@ -5,6 +5,7 @@ import '../../../../core/widgets/debounced_button.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../services/whatsapp_credits_models.dart';
 
 /// W3 — "Credits added" confirmation (deck p.19 screen 3).
 ///
@@ -37,6 +38,16 @@ class OwnerWhatsappCreditsAddedView extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final submitted = requestSubmitted;
+    // Named pack for the stored credits count; null keeps the bare
+    // number, so an unknown count is never given a wrong name.
+    // (Local copy: the public `pack` field does not promote.)
+    final credits = pack;
+    final packName = credits == null
+        ? null
+        : whatsappCreditPackForCredits(credits)?.name;
+    final packLabel = credits == null
+        ? null
+        : (packName == null ? '$credits' : '$packName · $credits');
     return Scaffold(
       body: SafeArea(
         top: false,
@@ -85,7 +96,7 @@ class OwnerWhatsappCreditsAddedView extends StatelessWidget {
                   const SizedBox(height: 16),
                   if (!submitted) ...[
                     if (pack != null)
-                      _Row(label: l10n.creditsPack, value: '$pack'),
+                      _Row(label: l10n.creditsPack, value: packLabel!),
                     if (price != null)
                       _Row(
                           label: l10n.creditsPrice,
@@ -100,7 +111,7 @@ class OwnerWhatsappCreditsAddedView extends StatelessWidget {
                           value: '$newBalance'),
                   ] else ...[
                     if (pack != null)
-                      _Row(label: l10n.creditsPack, value: '$pack'),
+                      _Row(label: l10n.creditsPack, value: packLabel!),
                     if (price != null)
                       _Row(
                           label: l10n.creditsPrice,

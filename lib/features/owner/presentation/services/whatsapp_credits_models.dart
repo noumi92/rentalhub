@@ -161,6 +161,9 @@ class WhatsappDispatchLog {
 }
 
 class WhatsappCreditPack {
+  /// Metal name for the pack — Bronze / Silver / Gold. A proper noun,
+  /// shown as-is in both languages, like the Pro / Business tier names.
+  final String name;
   final int credits;
   final int price;
 
@@ -171,6 +174,7 @@ class WhatsappCreditPack {
   final bool bestValue;
 
   const WhatsappCreditPack({
+    required this.name,
     required this.credits,
     required this.price,
     required this.perMessage,
@@ -179,10 +183,27 @@ class WhatsappCreditPack {
 }
 
 const List<WhatsappCreditPack> whatsappCreditPacks = [
-  WhatsappCreditPack(credits: 50, price: 250, perMessage: '5.00'),
-  WhatsappCreditPack(credits: 105, price: 499, perMessage: '4.75'),
-  WhatsappCreditPack(credits: 250, price: 999, perMessage: '4.00', bestValue: true),
+  WhatsappCreditPack(
+      name: 'Bronze', credits: 50, price: 250, perMessage: '5.00'),
+  WhatsappCreditPack(
+      name: 'Silver', credits: 105, price: 499, perMessage: '4.75'),
+  WhatsappCreditPack(
+      name: 'Gold',
+      credits: 250,
+      price: 999,
+      perMessage: '4.00',
+      bestValue: true),
 ];
+
+/// The named pack for a stored credits count (purchase requests store
+/// the count, not the name). Returns null for an unknown count, so
+/// callers keep showing the bare number instead of guessing.
+WhatsappCreditPack? whatsappCreditPackForCredits(int credits) {
+  for (final pack in whatsappCreditPacks) {
+    if (pack.credits == credits) return pack;
+  }
+  return null;
+}
 
 int freeMonthlyCreditsForTier(String tier) {
   switch (tier) {
