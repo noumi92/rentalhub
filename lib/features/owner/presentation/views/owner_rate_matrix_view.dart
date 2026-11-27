@@ -175,8 +175,8 @@ class _OwnerRateMatrixViewState extends State<OwnerRateMatrixView> {
         AppFeedback.showSuccess(context, l10n.carEditorSaved);
         widget.onRatesSaved?.call();
       }
-    } catch (e) {
-      if (mounted) AppFeedback.showError(context, l10n.pricingSaveFailed('$e'));
+    } catch (_) {
+      if (mounted) AppFeedback.showError(context, l10n.shopSaveError);
     } finally {
       if (mounted) setState(() => _isSaving = false);
     }

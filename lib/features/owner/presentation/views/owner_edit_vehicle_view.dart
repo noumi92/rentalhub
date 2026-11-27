@@ -140,8 +140,8 @@ class _OwnerEditVehicleViewState extends State<OwnerEditVehicleView> {
       _initialSnapshot = _snapshot();
       AppFeedback.showSuccess(context, l10n.editVehicleSaved);
       _pop();
-    } catch (e) {
-      if (mounted) AppFeedback.showError(context, '$e');
+    } catch (_) {
+      if (mounted) AppFeedback.showError(context, l10n.shopSaveError);
     } finally {
       if (mounted) setState(() => _isSaving = false);
     }

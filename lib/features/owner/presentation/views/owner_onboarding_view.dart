@@ -63,8 +63,8 @@ class _OwnerOnboardingViewState extends State<OwnerOnboardingView> {
 
   @override
   void dispose() {
-    for (final c in [_shopNameController, _ownerNameController, _cnicController, _whatsappController, _phoneController, _addressController, _jazzCashAccount, _jazzCashTitle, _easyPaisaAccount, _easyPaisaTitle, _bankAccountController, _bankAccountTitle]) { c.dispose();
-    }
+    for (final c in [_shopNameController, _ownerNameController, _cnicController, _whatsappController, _phoneController, _addressController, _jazzCashAccount, _jazzCashTitle, _easyPaisaAccount, _easyPaisaTitle, _bankAccountController, _bankAccountTitle]) { c.dispose(); }
+    _mapController.dispose();
     super.dispose();
   }
 

@@ -33,9 +33,9 @@ Future<BookingEntity?> rejectBookingRequest(
       AppFeedback.showInfo(context, l10n.requestsRejected(booking.bookingId));
     }
     return updated;
-  } catch (e) {
+  } catch (_) {
     if (context.mounted) {
-      AppFeedback.showError(context, l10n.requestsDeclineFailed('$e'));
+      AppFeedback.showError(context, l10n.shopSaveError);
     }
     return null;
   }

@@ -79,10 +79,12 @@ class _OwnerOutCityRulesViewState extends State<OwnerOutCityRulesView> {
 
   Future<void> _loadRoutes() async {
     // OW-m6: retry must clear the failure flag first.
-    if (mounted) setState(() {
-      _loadingRoutes = true;
-      _routesFailed = false;
-    });
+    if (mounted) {
+      setState(() {
+        _loadingRoutes = true;
+        _routesFailed = false;
+      });
+    }
     try {
       final routes = await sl<GetShopFixedRoutesUseCase>()(widget.vehicle.shopId);
       if (!mounted) return;
@@ -170,8 +172,8 @@ class _OwnerOutCityRulesViewState extends State<OwnerOutCityRulesView> {
         _initialSnapshot = _snapshot();
         AppFeedback.showSuccess(context, l10n.outCityRulesSaved);
       }
-    } catch (e) {
-      if (mounted) AppFeedback.showError(context, l10n.pricingSaveFailed('$e'));
+    } catch (_) {
+      if (mounted) AppFeedback.showError(context, l10n.shopSaveError);
     } finally {
       if (mounted) setState(() => _isSaving = false);
     }

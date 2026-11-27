@@ -98,7 +98,7 @@ class _CustomerReputationViewState extends State<CustomerReputationView> {
     final overall =
         _ownerReviews.isEmpty ? null : (care + punctuality + behavior) / 3;
     return Scaffold(
-      body: SafeArea(
+      body: SafeArea(top: false,
         child: Column(
           children: [
             MinimalAppBar(

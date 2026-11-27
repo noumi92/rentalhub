@@ -67,10 +67,12 @@ class _OwnerFareTableViewState extends State<OwnerFareTableView> {
       }
       setState(() { _fixedRoute = match; _loadingRoute = false; });
     } catch (_) {
-      if (mounted) setState(() {
-        _loadingRoute = false;
-        _routeFailed = true;
-      });
+      if (mounted) {
+        setState(() {
+          _loadingRoute = false;
+          _routeFailed = true;
+        });
+      }
     }
   }
 

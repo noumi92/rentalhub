@@ -772,9 +772,9 @@ double _luminance(Color color) {
     return c <= 0.04045 ? c / 12.92 : math.pow((c + 0.055) / 1.055, 2.4).toDouble();
   }
 
-  return 0.2126 * channel(color.red) +
-      0.7152 * channel(color.green) +
-      0.0722 * channel(color.blue);
+  return 0.2126 * channel((color.r * 255.0).round().clamp(0, 255)) +
+      0.7152 * channel((color.g * 255.0).round().clamp(0, 255)) +
+      0.0722 * channel((color.b * 255.0).round().clamp(0, 255));
 }
 
 double _contrastRatio(Color a, Color b) {

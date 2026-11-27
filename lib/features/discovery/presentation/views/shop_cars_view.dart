@@ -101,7 +101,7 @@ class _ShopCarsViewState extends State<ShopCarsView> {
             .toList();
 
     return Scaffold(
-      body: SafeArea(
+      body: SafeArea(top: false,
         child: Column(
           children: [
             MinimalAppBar(

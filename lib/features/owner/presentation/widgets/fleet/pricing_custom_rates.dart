@@ -59,7 +59,7 @@ class PricingCustomRates extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               DropdownButtonFormField<String>(
-                value: period,
+                initialValue: period,
                 decoration: InputDecoration(
                   labelText: l10n.ratesCustomPeriodLabel,
                   border: const OutlineInputBorder(),

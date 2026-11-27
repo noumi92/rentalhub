@@ -9,7 +9,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'firebase_options.dart';
-import 'core/constants/app_colors.dart';
 import 'core/data/firestore_persistence.dart';
 import 'core/data/sync_engine.dart';
 import 'core/data/sync_status_cubit.dart';

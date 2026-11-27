@@ -95,7 +95,7 @@ class _CustomerSavedShopsViewState extends State<CustomerSavedShopsView> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      body: SafeArea(
+      body: SafeArea(top: false,
         child: Column(
           children: [
             MinimalAppBar(

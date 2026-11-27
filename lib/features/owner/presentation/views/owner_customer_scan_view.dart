@@ -122,7 +122,7 @@ class _OwnerCustomerScanViewState extends State<OwnerCustomerScanView> {
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      builder: (sheetContext) => SafeArea(
+      builder: (sheetContext) => SafeArea(top: false,
         child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
           child: Column(

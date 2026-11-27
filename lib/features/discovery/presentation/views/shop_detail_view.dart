@@ -134,7 +134,7 @@ class _ShopDetailViewState extends State<ShopDetailView> {
     final vehicles = _vehicles ?? const <VehicleEntity>[];
 
     return Scaffold(
-      body: SafeArea(
+      body: SafeArea(top: false,
         child: RefreshIndicator(
           onRefresh: _reload,
           child: SingleChildScrollView(

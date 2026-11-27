@@ -94,9 +94,9 @@ class _RequestedBookingDetailState extends State<RequestedBookingDetail> {
         // Proof bucket the list defaults to.
         goToAllOwnerBookings(context);
       }
-    } catch (e) {
+    } catch (_) {
       if (mounted) {
-        AppFeedback.showError(context, l10n.requestsDeclineFailed('$e'));
+        AppFeedback.showError(context, l10n.shopSaveError);
       }
     } finally {
       if (mounted) setState(() => _processing = false);

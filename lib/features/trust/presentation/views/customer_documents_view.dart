@@ -126,7 +126,7 @@ class _CustomerDocumentsViewState extends State<CustomerDocumentsView> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      body: SafeArea(
+      body: SafeArea(top: false,
         child: SingleChildScrollView(
           child: Column(
             children: [

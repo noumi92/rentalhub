@@ -97,7 +97,7 @@ class _VehicleDetailViewState extends State<VehicleDetailView> {
     final carAsset = _getCarImage(v);
 
     return Scaffold(
-      body: SafeArea(
+      body: SafeArea(top: false,
         child: Column(
           children: [
             Expanded(

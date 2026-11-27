@@ -110,9 +110,12 @@ class _OnboardingProfileViewState extends State<OnboardingProfileView> {
       } else {
         context.go(RouteNames.onboardingRole);
       }
-    } catch (e) {
+    } catch (_) {
       if (!mounted) return;
-      AppFeedback.showError(context, l10n?.onboardingSaveError(e.toString()) ?? 'Error saving profile: $e');
+      AppFeedback.showError(
+        context,
+        l10n?.shopSaveError ?? 'Could not save profile. Please try again.',
+      );
     } finally {
       if (mounted) setState(() => _isSaving = false);
     }
@@ -122,7 +125,7 @@ class _OnboardingProfileViewState extends State<OnboardingProfileView> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      body: SafeArea(
+      body: SafeArea(top: false,
         child: Column(
           children: [
             Expanded(
