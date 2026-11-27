@@ -52,3 +52,7 @@ app.*.map.json
 local.properties
 
 /android/build/
+
+# Firebase Cloud Functions build output & dependencies
+backend/functions/node_modules/
+backend/functions/lib/

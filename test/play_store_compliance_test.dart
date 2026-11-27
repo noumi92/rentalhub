@@ -43,8 +43,10 @@ void main() {
           .collection('kyc_documents')
           .doc('cust-del-1')
           .set({'cnicNumber': '35202-1234567-1'});
-      await fs.collection('users').doc('cust-del-1').set({'role': 'customer'});
-      await fs.collection('fcm_tokens').doc('cust-del-1').set({'token': 'abc'});
+      await fs.collection('users').doc('cust-del-1').set({
+        'role': 'customer',
+        'fcm_token': 'abc',
+      });
       await fs.collection('notifications').doc('n1').set({
         'customerId': 'cust-del-1',
         'title': 'Test',
@@ -65,8 +67,6 @@ void main() {
           isFalse);
       expect(
           (await fs.collection('users').doc('cust-del-1').get()).exists, isFalse);
-      expect((await fs.collection('fcm_tokens').doc('cust-del-1').get()).exists,
-          isFalse);
       expect(
           (await fs.collection('notifications').doc('n1').get()).exists, isFalse);
       // Legally required booking record stays intact

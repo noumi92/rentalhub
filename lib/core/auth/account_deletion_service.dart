@@ -90,8 +90,6 @@ class AccountDeletionService {
       await _safeDelete(fs.collection('customers').doc(uid));
       await _safeDelete(fs.collection('kyc_documents').doc(uid));
       await _safeDelete(fs.collection('users').doc(uid));
-      await _safeDelete(fs.collection('user_push_tokens').doc(uid));
-      await _safeDelete(fs.collection('fcm_tokens').doc(uid));
 
       // Remove in-app notifications belonging to this customer.
       try {

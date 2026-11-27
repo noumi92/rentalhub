@@ -5,17 +5,25 @@
 # Disable directory browsing
 Options -Indexes
 
+# Forward Authorization header to PHP under CGI/FastCGI and block direct
+# unauthenticated access to sensitive private folders (served via media.php)
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+    RewriteRule ^(kyc|payments|agreements)/ - [F,L]
+</IfModule>
+
 # Prevent PHP script execution inside upload folders to thwart web shell attacks
 <FilesMatch "\.(php|phtml|php3|php4|php5|php7|phps|cgi|pl|sh|bash|py)$">
     Order Deny,Allow
     Deny from all
 </FilesMatch>
 
-# Allow access to upload.php explicitly
-<Files "upload.php">
+# Allow access to upload.php and media.php explicitly
+<FilesMatch "^(upload|media)\.php$">
     Order Allow,Deny
     Allow from all
-</Files>
+</FilesMatch>
 
 # Set CORS headers for authorized clients
 <IfModule mod_headers.c>

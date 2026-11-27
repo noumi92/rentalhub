@@ -111,7 +111,8 @@ service cloud.firestore {
     // Online Users: Accounts belong to individual users.
     // Client cannot escalate admin roles, blacklist flags, or trust scores.
     match /users/{userId} {
-      allow read: if isSignedIn();
+      allow get: if isUser(userId) || adminRole();
+      allow list: if adminRole();
       allow create: if isUser(userId)
         && !('admin_role' in request.resource.data)
         && !('totp_enabled' in request.resource.data);
@@ -120,7 +121,7 @@ service cloud.firestore {
         && !('totp_enabled' in request.resource.data)
         && (!('role' in resource.data) || !('role' in request.resource.data) || resource.data.role == request.resource.data.role))
         || isSuperAdmin();
-      allow delete: if isSuperAdmin();
+      allow delete: if isUser(userId) || isSuperAdmin();
     }
 
     // TOTP Secrets: Deny all from client (Cloud Functions Admin SDK only)
@@ -252,6 +253,7 @@ service cloud.firestore {
       allow delete: if (
         isShopOwner(resource.data.get('shopId', '')) ||
         isShopOwner(resource.data.get('shop_id', '')) ||
+        request.auth.uid == customerId ||
         isAdminOps()
       );
 
@@ -290,7 +292,7 @@ service cloud.firestore {
         isShopOwner(resource.data.get('shop_id', '')) ||
         isAdminOps()
       );
-      allow delete: if isAdminOps();
+      allow delete: if isUser(customerId) || isAdminOps();
     }
 
     // =========================================================================
@@ -472,11 +474,13 @@ service cloud.firestore {
     match /return_damage_reports/{reportId} {
       allow get: if isSignedIn() && (
         resource == null ||
+        isUser(resource.data.get('customerId', '')) ||
         isShopOwner(resource.data.get('shopId', '')) ||
         isShopOwner(resource.data.get('shop_id', '')) ||
         adminRole()
       );
       allow list: if isSignedIn() && (
+        isUser(resource.data.get('customerId', '')) ||
         isShopOwner(resource.data.get('shopId', '')) ||
         isShopOwner(resource.data.get('shop_id', '')) ||
         adminRole()
@@ -497,11 +501,13 @@ service cloud.firestore {
     match /return_extra_charges/{chargeId} {
       allow get: if isSignedIn() && (
         resource == null ||
+        isUser(resource.data.get('customerId', '')) ||
         isShopOwner(resource.data.get('shopId', '')) ||
         isShopOwner(resource.data.get('shop_id', '')) ||
         adminRole()
       );
       allow list: if isSignedIn() && (
+        isUser(resource.data.get('customerId', '')) ||
         isShopOwner(resource.data.get('shopId', '')) ||
         isShopOwner(resource.data.get('shop_id', '')) ||
         adminRole()

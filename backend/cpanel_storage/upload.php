@@ -1,11 +1,26 @@
 <?php
 header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: POST, GET, OPTIONS');
+header('Access-Control-Allow-Headers: Authorization, Content-Type, Origin, Accept');
 
-// Shared secret key matched identically with Flutter App (CPanelStorageClient) and Firebase Cloud Functions
+if (($_SERVER['REQUEST_METHOD'] ?? '') === 'OPTIONS') {
+    http_response_code(204);
+    exit;
+}
+
+// Shared secret key matched with Flutter App (CPanelStorageClient) and Firebase Cloud Functions
 $SECRET_KEY = getenv('CPANEL_HMAC_SECRET') ?: 'RENTALHUB_HMAC_SECURE_STORAGE_SECRET_2026';
 
-// 1. Authorization Header Validation
-$authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+// 1. Authorization Header Validation (handles Apache/CGI/FastCGI header forwarding)
+$authHeader = $_SERVER['HTTP_AUTHORIZATION']
+    ?? $_SERVER['REDIRECT_HTTP_AUTHORIZATION']
+    ?? '';
+if ($authHeader === '' && function_exists('apache_request_headers')) {
+    $headers = apache_request_headers();
+    $authHeader = $headers['Authorization'] ?? $headers['authorization'] ?? '';
+}
+
 if (!preg_match('/^Bearer\s+(.+)$/i', $authHeader, $matches)) {
     http_response_code(401);
     echo json_encode(['error' => 'Missing or malformed Authorization header']);
@@ -13,7 +28,8 @@ if (!preg_match('/^Bearer\s+(.+)$/i', $authHeader, $matches)) {
 }
 
 $token = $matches[1];
-$tokenParts = explode(':', base64_decode($token));
+$decoded = base64_decode($token, true);
+$tokenParts = $decoded !== false ? explode(':', $decoded) : [];
 if (count($tokenParts) !== 2) {
     http_response_code(401);
     echo json_encode(['error' => 'Invalid token structure']);
@@ -23,7 +39,7 @@ if (count($tokenParts) !== 2) {
 list($timestamp, $receivedHash) = $tokenParts;
 
 // 2. Replay Attack Window Check (300 seconds)
-if (abs(time() - intval($timestamp)) > 300) {
+if (!ctype_digit($timestamp) || abs(time() - intval($timestamp)) > 300) {
     http_response_code(403);
     echo json_encode(['error' => 'Token expired']);
     exit;
@@ -37,10 +53,19 @@ if (!hash_equals($expectedHash, $receivedHash)) {
     exit;
 }
 
-// 4. Validate Upload Category
+// 4. Validate Upload Category (must match every folder used by the Flutter app)
 $category = $_POST['category'] ?? 'kyc';
-$allowedCategories = ['kyc', 'vehicles', 'payments', 'agreements'];
-if (!in_array($category, $allowedCategories)) {
+$allowedCategories = [
+    'kyc',
+    'vehicles',
+    'payments',
+    'agreements',
+    'handovers',
+    'profile',
+    'shops',
+    'fleet',
+];
+if (!in_array($category, $allowedCategories, true)) {
     http_response_code(400);
     echo json_encode(['error' => 'Invalid category specified. Allowed: ' . implode(', ', $allowedCategories)]);
     exit;
@@ -55,13 +80,18 @@ if (!isset($_FILES['file']) || $_FILES['file']['error'] !== UPLOAD_ERR_OK) {
 
 $file = $_FILES['file'];
 
-// Allowed MIME types
-$allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'];
+// Allowed MIME types -> canonical extension (never trust client filename extension)
+$mimeToExt = [
+    'image/jpeg' => 'jpg',
+    'image/png' => 'png',
+    'image/webp' => 'webp',
+    'application/pdf' => 'pdf',
+];
 $finfo = finfo_open(FILEINFO_MIME_TYPE);
 $detectedMime = finfo_file($finfo, $file['tmp_name']);
 finfo_close($finfo);
 
-if (!in_array($detectedMime, $allowedMimeTypes)) {
+if (!isset($mimeToExt[$detectedMime])) {
     http_response_code(415);
     echo json_encode(['error' => 'Unsupported Media Type: ' . $detectedMime]);
     exit;
@@ -75,8 +105,7 @@ if ($file['size'] > 10 * 1024 * 1024) {
 }
 
 // 6. Cryptographically Secure File Name Generation
-$extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-if ($extension === 'jpeg') $extension = 'jpg';
+$extension = $mimeToExt[$detectedMime];
 $sanitizedName = bin2hex(random_bytes(16)) . '.' . $extension;
 $targetDirectory = __DIR__ . '/' . $category . '/';
 $targetPath = $targetDirectory . $sanitizedName;
@@ -86,7 +115,7 @@ if (!is_dir($targetDirectory)) {
 }
 
 if (move_uploaded_file($file['tmp_name'], $targetPath)) {
-    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https://" : "http://";
+    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https://' : 'http://';
     $publicUrl = $protocol . $_SERVER['HTTP_HOST'] . '/storage/' . $category . '/' . $sanitizedName;
     http_response_code(200);
     echo json_encode([
@@ -94,7 +123,7 @@ if (move_uploaded_file($file['tmp_name'], $targetPath)) {
         'url' => $publicUrl,
         'filename' => $sanitizedName,
         'category' => $category,
-        'size' => $file['size']
+        'size' => $file['size'],
     ]);
 } else {
     http_response_code(500);
