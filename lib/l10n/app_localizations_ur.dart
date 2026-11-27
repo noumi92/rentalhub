@@ -175,6 +175,13 @@ class AppLocalizationsUr extends AppLocalizations {
   String get disputeMarkInReview => 'جائزے میں ڈالیں';
 
   @override
+  String get disputeMarkInReviewConfirmTitle => 'یہ تنازع زیرِ جائزہ کریں؟';
+
+  @override
+  String get disputeMarkInReviewConfirmBody =>
+      'تنازع زیرِ جائزہ ہو جائے گا تاکہ فیصلہ درج کیا جا سکے۔';
+
+  @override
   String get disputeMarkedInReview => 'جائزے میں ڈال دیا گیا۔';
 
   @override
@@ -756,6 +763,18 @@ class AppLocalizationsUr extends AppLocalizations {
   String get profileSaved => 'پروفائل محفوظ ہو گیا۔';
 
   @override
+  String get profileTitle => 'پروفائل';
+
+  @override
+  String get profileEmail => 'ای میل';
+
+  @override
+  String get profileTabKyc => 'KYC';
+
+  @override
+  String get profileIdentityTitle => 'ذاتی تفصیلات';
+
+  @override
   String get editProfile => 'پروفائل میں ترمیم کریں';
 
   @override
@@ -775,6 +794,23 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get editSaving => 'محفوظ کیا جا رہا ہے…';
+
+  @override
+  String get editDateOfBirth => 'تاریخ پیدائش';
+
+  @override
+  String get editFatherName => 'والد کا نام';
+
+  @override
+  String get editAddress => 'پتہ';
+
+  @override
+  String get editCnicReReviewWarning =>
+      'اپنا شناختی کارڈ نمبر تبدیل کرنے سے آپ کی KYC دوبارہ جائزے کے لیے بھیج دی جائے گی۔';
+
+  @override
+  String get editPhotoUploadError =>
+      'تصویر اپ لوڈ نہیں ہو سکی۔ براہ کرم دوبارہ کوشش کریں۔';
 
   @override
   String get cnicLabel => 'شناختی کارڈ';
@@ -1583,6 +1619,16 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get kycStatusRejected => 'مسترد — براہ کرم دوبارہ جمع کریں';
+
+  @override
+  String get kycUpdateDocuments => 'دستاویزات اپ ڈیٹ کریں';
+
+  @override
+  String get kycDocumentsOnFile => 'موجودہ دستاویزات';
+
+  @override
+  String get kycVerifiedUpdateIntro =>
+      'آپ کی دستاویزات تصدیق شدہ ہیں۔ صرف اس صورت میں اپ ڈیٹ کریں جب کچھ تبدیل ہوا ہو۔';
 
   @override
   String get kycCnicNumber => '13 ہندسوں کا نادرا شناختی کارڈ نمبر';
@@ -3366,10 +3412,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String financeMonthBreakdown(
-    String bookings,
-    String income,
-    String expenses,
-  ) {
+      String bookings, String income, String expenses) {
     return 'بکنگز $bookings روپے • دیگر آمدنی $income روپے • اخراجات $expenses روپے';
   }
 
@@ -3572,10 +3615,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String financeCarPnlBreakdown(
-    String revenue,
-    String income,
-    String expenses,
-  ) {
+      String revenue, String income, String expenses) {
     return 'بکنگ کی آمدنی $revenue روپے • دیگر آمدنی $income روپے • اخراجات $expenses روپے';
   }
 
@@ -5428,11 +5468,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String bookingConfirmedWhatsappMessage(
-    String name,
-    String vehicle,
-    String date,
-    String total,
-  ) {
+      String name, String vehicle, String date, String total) {
     return 'السلام علیکم $name، آپ کی بکنگ $vehicle کے لیے منظور ہو گئی ہے۔ پک اپ: $date۔ کل رقم: $total روپے۔ شکریہ!';
   }
 
@@ -6064,12 +6100,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String financeStatementMessageRow(
-    String booking,
-    String date,
-    String rent,
-    String paid,
-    String due,
-  ) {
+      String booking, String date, String rent, String paid, String due) {
     return '#$booking • $date • کرایہ $rent روپے • ادا شدہ $paid روپے • واجب $due روپے';
   }
 
@@ -7532,11 +7563,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String shareWithCustomersText(
-    String vehicle,
-    String rate,
-    String period,
-    String link,
-  ) {
+      String vehicle, String rate, String period, String link) {
     return 'رینٹل ہب پر $vehicle کرائے پر لیں، $rate ($period): $link';
   }
 
@@ -7881,6 +7908,14 @@ class AppLocalizationsUr extends AppLocalizations {
   String get adminKycReviewApprove => 'منظور کریں';
 
   @override
+  String get adminKycReviewApproveConfirmTitle =>
+      'یہ KYC جمع کرانا منظور کریں؟';
+
+  @override
+  String get adminKycReviewApproveConfirmBody =>
+      'گاہک کی تصدیق ہو جائے گی اور وہ بکنگ شروع کر سکے گا۔';
+
+  @override
   String get adminKycReviewReject => 'مسترد کریں';
 
   @override
@@ -8089,6 +8124,30 @@ class AppLocalizationsUr extends AppLocalizations {
   String get admin2_blacklistReportConfirm => 'رپورٹ کریں';
 
   @override
+  String get admin2_blacklistCategoryLabel => 'وجہ کی قسم';
+
+  @override
+  String get admin2_blacklistDescriptionLabel => 'تفصیل';
+
+  @override
+  String get admin2_blacklistCatFraud => 'دھوکہ دہی';
+
+  @override
+  String get admin2_blacklistCatLateReturn => 'دیر سے واپسی';
+
+  @override
+  String get admin2_blacklistCatDamage => 'نقصان';
+
+  @override
+  String get admin2_blacklistCatNonPayment => 'عدم ادائیگی';
+
+  @override
+  String get admin2_blacklistCatAbusive => 'بدسلوکی';
+
+  @override
+  String get admin2_blacklistCatOther => 'دیگر';
+
+  @override
   String get admin2_watchlistAdd => 'واچ لسٹ میں شامل کریں';
 
   @override
@@ -8255,6 +8314,70 @@ class AppLocalizationsUr extends AppLocalizations {
   String get admin2_navSubscriptions => 'سبسکرپشنز';
 
   @override
+  String get admin2_navHome => 'ہوم';
+
+  @override
+  String get admin2_navQueues => 'قطاریں';
+
+  @override
+  String get admin2_navMore => 'مزید';
+
+  @override
+  String get admin2_sidebarGroupOverview => 'جائزہ';
+
+  @override
+  String get admin2_sidebarGroupQueues => 'جائزہ قطاریں';
+
+  @override
+  String get admin2_sidebarGroupMarketplace => 'مارکیٹ پلیس';
+
+  @override
+  String get admin2_sidebarGroupPlatform => 'پلیٹ فارم';
+
+  @override
+  String get admin2_sidebarGroupGovernance => 'نگرانی';
+
+  @override
+  String get admin2_queuesTitle => 'جائزہ قطاریں';
+
+  @override
+  String get admin2_queuesSubtitle =>
+      'ہر قطار جس میں فیصلہ درکار ہے، اس کی تازہ تعداد کے ساتھ';
+
+  @override
+  String get admin2_queuesLoadFailed => 'قطاریں لوڈ نہیں ہو سکیں۔';
+
+  @override
+  String get admin2_customerDetailTabProfile => 'پروفائل';
+
+  @override
+  String get admin2_customerDetailTabBookings => 'بکنگز';
+
+  @override
+  String get admin2_customerDetailTabNotes => 'نوٹس اور جھنڈے';
+
+  @override
+  String get admin2_teamTabMembers => 'اراکین';
+
+  @override
+  String get admin2_teamTabInvites => 'دعوتیں';
+
+  @override
+  String get admin2_teamTabSecurity => 'سیکیورٹی';
+
+  @override
+  String get admin2_teamSecurityTitle => 'دو مرحلہ تصدیق';
+
+  @override
+  String get admin2_teamSecurityAllOn => 'ہر ایڈمن کی دو مرحلہ تصدیق آن ہے۔';
+
+  @override
+  String get admin2_disputeDetailNotFound => 'تنازع نہیں ملا۔';
+
+  @override
+  String get admin2_ticketDetailNotFound => 'ٹکٹ نہیں ملا۔';
+
+  @override
   String get admin2_sidebarSignedInAs => 'ایڈمن کے طور پر سائن ان';
 
   @override
@@ -8361,6 +8484,13 @@ class AppLocalizationsUr extends AppLocalizations {
       'جواب دینے کے لیے ٹکٹس ان باکس کھولیں۔';
 
   @override
+  String get admin2_dashboardKycTitle => 'KYC جمع کرانے جائزے کے منتظر ہیں';
+
+  @override
+  String get admin2_dashboardKycHint =>
+      'فیصلہ کرنے کے لیے KYC جائزہ قطار کھولیں۔';
+
+  @override
   String get admin2_dashboardKpiShops => 'رجسٹرڈ دکانیں';
 
   @override
@@ -8429,6 +8559,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get admin2_shopDetailTitle => 'دکان کی تفصیل';
 
   @override
+  String get admin2_shopDetailReviewApplication => 'درخواست کا جائزہ لیں';
+
+  @override
   String get admin2_shopDetailSubtitle =>
       'پلان، گاڑیاں، بکنگز اور ایڈمن اقدامات';
 
@@ -8475,11 +8608,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String admin2_shopDetailContact(
-    String city,
-    String address,
-    String owner,
-    String phone,
-  ) {
+      String city, String address, String owner, String phone) {
     return '$city • $address\nمالک: $owner • $phone';
   }
 
@@ -8558,10 +8687,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String admin2_customerDetailContact(
-    String phone,
-    String cnic,
-    String source,
-  ) {
+      String phone, String cnic, String source) {
     return '$phone • شناختی کارڈ $cnic • ماخذ: $source';
   }
 
@@ -8709,13 +8835,8 @@ class AppLocalizationsUr extends AppLocalizations {
   }
 
   @override
-  String admin2_reviewCardRatings(
-    String shop,
-    String car,
-    String punctuality,
-    String care,
-    String behaviour,
-  ) {
+  String admin2_reviewCardRatings(String shop, String car, String punctuality,
+      String care, String behaviour) {
     return 'دکان $shop/5 • گاڑی $car/5 • مالک: وقت کی پابندی $punctuality، دیکھ بھال $care، رویہ $behaviour';
   }
 
@@ -8803,7 +8924,21 @@ class AppLocalizationsUr extends AppLocalizations {
   String get admin2_ticketEscalate => 'بڑھائیں';
 
   @override
+  String get admin2_ticketEscalateConfirmTitle => 'یہ ٹکٹ اوپر بھیجیں؟';
+
+  @override
+  String get admin2_ticketEscalateConfirmBody =>
+      'اوپر بھیجنے سے ٹکٹ سینئر ایڈمن کے دوسرے جائزے کے لیے چلا جائے گا۔';
+
+  @override
   String get admin2_ticketClose => 'ٹکٹ بند کریں';
+
+  @override
+  String get admin2_ticketCloseConfirmTitle => 'یہ ٹکٹ بند کریں؟';
+
+  @override
+  String get admin2_ticketCloseConfirmBody =>
+      'بند کرنے سے یہ سلسلہ ختم ہو جائے گا۔ گاہک کو ٹکٹ بند نظر آئے گا۔';
 
   @override
   String get admin2_anncSubtitle => 'مالکان اور گاہکوں کو نشریات';
@@ -8832,6 +8967,13 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get admin2_anncSendNow => 'ابھی بھیجیں';
+
+  @override
+  String get admin2_anncSendConfirmTitle => 'یہ اعلان ابھی بھیجیں؟';
+
+  @override
+  String get admin2_anncSendConfirmBody =>
+      'اس سے اعلان فوراً اس کے سامعین کو بھیج دیا جائے گا۔ بھیجا گیا اعلان واپس نہیں لیا جا سکتا۔';
 
   @override
   String admin2_anncStats(Object sent, Object delivered, Object opened) {
@@ -8918,6 +9060,44 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get admin2_anncFormSave => 'اعلان محفوظ کریں';
+
+  @override
+  String get admin2_anncDetailTitle => 'اعلان';
+
+  @override
+  String get admin2_anncDetailLoadFailed => 'اعلان لوڈ نہیں ہو سکا۔';
+
+  @override
+  String get admin2_anncDetailNotFound => 'اعلان نہیں ملا۔';
+
+  @override
+  String get admin2_anncEdit => 'ترمیم کریں';
+
+  @override
+  String get admin2_anncDelete => 'اعلان حذف کریں';
+
+  @override
+  String get admin2_anncDeleteConfirmTitle => 'کیا یہ اعلان حذف کر دیا جائے؟';
+
+  @override
+  String get admin2_anncDeleteConfirmBody =>
+      'یہ مسودہ یا طے شدہ اعلان حذف کر دیا جائے گا۔ بھیجے گئے اعلانات حذف نہیں کیے جا سکتے۔';
+
+  @override
+  String get admin2_anncDeleted => 'اعلان حذف کر دیا گیا۔';
+
+  @override
+  String get admin2_anncUpdated => 'اعلان اپ ڈیٹ کر دیا گیا۔';
+
+  @override
+  String get admin2_anncReadOnly => 'بھیجے گئے اعلانات صرف پڑھنے کے لیے ہیں۔';
+
+  @override
+  String get admin2_anncFormUpdate => 'تبدیلیاں محفوظ کریں';
+
+  @override
+  String get admin2_disputeAmountTooHigh =>
+      'رقم بقایا بیلنس اور جمع شدہ ضمانت سے زیادہ نہیں ہو سکتی۔';
 
   @override
   String get admin2_activitySubtitle =>
@@ -9123,6 +9303,14 @@ class AppLocalizationsUr extends AppLocalizations {
   @override
   String get admin2_shopAppReasonLabel =>
       'وجہ (مزید معلومات مانگنے یا مسترد کرنے کے لیے لازم — مالک اسے دیکھے گا)';
+
+  @override
+  String get admin2_shopAppConfirmTitle => 'فیصلے کی تصدیق کریں';
+
+  @override
+  String admin2_shopAppConfirmBody(String decision) {
+    return 'اس دکان کی درخواست کے لیے \'$decision\' محفوظ کریں؟';
+  }
 
   @override
   String get admin2_shopAppCallOwner => 'مالک کو کال کریں';
@@ -9431,20 +9619,13 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String admin2_bookingDetailMeta(
-    String status,
-    String trip,
-    String package,
-    String drive,
-  ) {
+      String status, String trip, String package, String drive) {
     return 'حالت: $status • سفر: $trip • پیکج: $package • $drive';
   }
 
   @override
   String admin2_bookingDetailHandoverSummary(
-    Object km,
-    String fuel,
-    String damage,
-  ) {
+      Object km, String fuel, String damage) {
     return 'اوڈومیٹر $km کلومیٹر، ایندھن $fuel، نقصان: $damage';
   }
 
@@ -9515,14 +9696,13 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String admin2_carReviewSpecs(
-    String plate,
-    String category,
-    String transmission,
-    String fuel,
-    Object seats,
-    String status,
-    String review,
-  ) {
+      String plate,
+      String category,
+      String transmission,
+      String fuel,
+      Object seats,
+      String status,
+      String review) {
     return 'نمبر پلیٹ $plate • $category • $transmission • $fuel • $seats سیٹیں\nحالت: $status • موجودہ جائزہ: $review';
   }
 
@@ -9551,7 +9731,11 @@ class AppLocalizationsUr extends AppLocalizations {
   String get admin2_reportsEmptyHint => 'رپورٹ براہ راست کلیکشنز سے پڑھتی ہے۔';
 
   @override
-  String get admin2_reportsRevenue => 'بکنگ کی آمدنی';
+  String get admin2_reportsRevenue => 'بک شدہ قیمت (فعال سمیت)';
+
+  @override
+  String get admin2_reportsRevenueNote =>
+      'بک شدہ قیمت اس مدت کی مکمل، فعال اور ادا شدہ بکنگوں کا مجموعہ ہے — موصول شدہ رقم نہیں۔ مالیاتی آمدنی مالیاتی کھاتے کی وصول شدہ آمدنی ہے۔';
 
   @override
   String get admin2_reportsIncome => 'مالی آمدنی';
@@ -9710,6 +9894,11 @@ class AppLocalizationsUr extends AppLocalizations {
   }
 
   @override
+  String adminAuditShowingFirstOf(int shown, int total) {
+    return '$total میں سے پہلے $shown دکھائے جا رہے ہیں';
+  }
+
+  @override
   String get admin2_ownerNotListed => 'مالک درج نہیں ہے';
 
   @override
@@ -9849,6 +10038,16 @@ class AppLocalizationsUr extends AppLocalizations {
   String get admin2_tribunalReviewFlag => 'جائزہ نشان';
 
   @override
+  String get admin2_tribunalViewCustomer => 'گاہک دیکھیں';
+
+  @override
+  String get admin2_tribunalCustomerNotFound =>
+      'اس شناختی کارڈ سے کوئی گاہک ریکارڈ نہیں ملتا۔';
+
+  @override
+  String get admin2_customerDetailViewTribunal => 'ٹرائیبیونل اندراج دیکھیں';
+
+  @override
   String get admin2_ticketLinkedBooking => 'منسلک بکنگ';
 
   @override
@@ -9889,10 +10088,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String admin2_bookingDetailDepositDeducted(
-    String amount,
-    String status,
-    String deducted,
-  ) {
+      String amount, String status, String deducted) {
     return 'سیکیورٹی $amount — $status (کٹوتی $deducted)';
   }
 
@@ -9908,9 +10104,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String admin2_bookingDetailDisputeDecisionAmount(
-    String label,
-    String amount,
-  ) {
+      String label, String amount) {
     return 'فیصلہ: $label — $amount';
   }
 
@@ -9923,13 +10117,8 @@ class AppLocalizationsUr extends AppLocalizations {
   }
 
   @override
-  String admin2_carReviewMetaLine1(
-    String plate,
-    String category,
-    String transmission,
-    String fuel,
-    Object seats,
-  ) {
+  String admin2_carReviewMetaLine1(String plate, String category,
+      String transmission, String fuel, Object seats) {
     return 'پلیٹ $plate • $category • $transmission • $fuel • $seats نشستیں';
   }
 
@@ -9975,10 +10164,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String admin2_bookingSummaryStatusLine(
-    String status,
-    String trip,
-    String kmLimit,
-  ) {
+      String status, String trip, String kmLimit) {
     return 'حالت: $status • سفر: $trip ($kmLimit کلومیٹر حد)';
   }
 
@@ -9999,11 +10185,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String admin2_bookingSummaryTotal(
-    String total,
-    String advanceRequired,
-    String paid,
-    String remaining,
-  ) {
+      String total, String advanceRequired, String paid, String remaining) {
     return 'کل: $total • مطلوبہ ایڈوانس: $advanceRequired • ادا شدہ: $paid • باقی: $remaining';
   }
 
@@ -10025,10 +10207,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String admin2_bookingSummaryHandover(
-    Object odometer,
-    String fuel,
-    String damage,
-  ) {
+      Object odometer, String fuel, String damage) {
     return 'حوالگی: اوڈومیٹر $odometer کلومیٹر، ایندھن $fuel، نقصان: $damage';
   }
 
@@ -10249,14 +10428,8 @@ class AppLocalizationsUr extends AppLocalizations {
       'معاہدہ حوالگی کے وقت محفوظ شدہ دستخطوں سے خودکار بنایا جائے گا';
 
   @override
-  String manualBookingReceiptMessage(
-    String customer,
-    String bookingId,
-    String vehicle,
-    String pickup,
-    String total,
-    String remaining,
-  ) {
+  String manualBookingReceiptMessage(String customer, String bookingId,
+      String vehicle, String pickup, String total, String remaining) {
     return 'السلام علیکم $customer، آپ کی واک ان بکنگ $bookingId برائے $vehicle کی تصدیق ہو گئی ہے۔ روانگی: $pickup۔ کل: $total روپے۔ باقی واجبات: $remaining روپے۔ شکریہ!';
   }
 
@@ -10664,14 +10837,8 @@ class AppLocalizationsUr extends AppLocalizations {
   String get handoverWizardReceiptShare => 'رسید واٹس ایپ پر شیئر کریں';
 
   @override
-  String handoverWizardReceiptMessage(
-    String receipt,
-    String vehicle,
-    String total,
-    String advance,
-    String balance,
-    String deposit,
-  ) {
+  String handoverWizardReceiptMessage(String receipt, String vehicle,
+      String total, String advance, String balance, String deposit) {
     return 'حوالگی کی رسید $receipt برائے $vehicle: کل روپے $total، ایڈوانس روپے $advance، بقیہ روپے $balance، سیکیورٹی روپے $deposit۔ — رینٹل ہب';
   }
 
@@ -10758,4 +10925,68 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get nextStepWaitingApproval => 'منظوری کا انتظار ہے';
+
+  @override
+  String get adminSortLabel => 'ترتیب';
+
+  @override
+  String get adminSortDateNewest => 'نیا پہلے';
+
+  @override
+  String get adminSortDateOldest => 'پرانا پہلے';
+
+  @override
+  String get adminSortNameAsc => 'نام ا تا ی';
+
+  @override
+  String get adminSortNameDesc => 'نام ی تا ا';
+
+  @override
+  String get adminSortAmountHigh => 'رقم: زیادہ پہلے';
+
+  @override
+  String get adminSortAmountLow => 'رقم: کم پہلے';
+
+  @override
+  String get adminSortStatus => 'حالت';
+
+  @override
+  String get adminSortPriority => 'ترجیح';
+
+  @override
+  String get adminSortRatingHigh => 'درجہ بندی: زیادہ پہلے';
+
+  @override
+  String get adminSortRatingLow => 'درجہ بندی: کم پہلے';
+
+  @override
+  String get adminSortTitleAsc => 'عنوان ا تا ی';
+
+  @override
+  String get adminSortActionAsc => 'عمل ا تا ی';
+
+  @override
+  String get admin2_reportsTrendTitle => 'پچھلے دورانیے سے موازنہ';
+
+  @override
+  String get admin2_reportsTrendNoPrevious => 'پچھلا ڈیٹا نہیں';
+
+  @override
+  String admin2_reportsTrend(String sign, String percent) {
+    return 'پچھلے دورانیے سے $sign$percent%';
+  }
+
+  @override
+  String get admin2_reportsBookingsChart => 'وقت کے ساتھ بکنگز';
+
+  @override
+  String get admin2_reportsFinanceChart => 'وقت کے ساتھ مالیات';
+
+  @override
+  String get admin2_reportsNoChartData =>
+      'اس دورانیے میں چارٹ کے لیے کوئی ڈیٹا نہیں۔';
+
+  @override
+  String get admin2_reportsTruncatedNote =>
+      'اس دورانیے کے پہلے 1,000 ریکارڈز کی بنیاد پر — کل اور چارٹ نامکمل ہو سکتے ہیں۔';
 }

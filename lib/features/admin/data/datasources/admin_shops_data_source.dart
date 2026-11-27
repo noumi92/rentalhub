@@ -10,6 +10,7 @@ import '../../../notifications/data/datasources/notification_data_source.dart';
 import '../../domain/admin_permissions.dart';
 import '../services/admin_session.dart';
 import '../services/admin_audit_service.dart';
+import 'admin_pagination.dart';
 
 /// Phase B — the shops side of the admin panel: the approvals queue,
 /// the shops list, and the cars list.
@@ -65,6 +66,266 @@ class AdminShopsDataSource {
     return snap.docs
         .map((d) => ShopModel.fromMap(d.data(), id: d.id))
         .toList();
+  }
+
+  /// Phase 4 (4.3) — client-side sort over a loaded list (the
+  /// no-Firestore branch and the view's search results, which the
+  /// server search returns unsorted). 'statusAsc' puts suspended
+  /// first, then pending, then approved — the order an admin
+  /// triages in.
+  static List<ShopModel> sortShops(List<ShopModel> shops, String sort) {
+    final list = List<ShopModel>.of(shops);
+    switch (sort) {
+      case 'nameDesc':
+        list.sort((a, b) => b.shopName.compareTo(a.shopName));
+      case 'statusAsc':
+        int rank(ShopModel s) =>
+            s.suspended ? 0 : s.verificationStatus == 'pending' ? 1 : 2;
+        list.sort((a, b) {
+          final r = rank(a).compareTo(rank(b));
+          return r != 0 ? r : a.shopName.compareTo(b.shopName);
+        });
+      default:
+        list.sort((a, b) => a.shopName.compareTo(b.shopName));
+    }
+    return list;
+  }
+
+  /// Phase 3 (3.4) — one page of the shops list, server-filtered by
+  /// `statusFilter` ('all' | 'pending' | 'approved' | 'suspended').
+  /// 'approved' means verified and not suspended; Firestore cannot
+  /// express that in one query, so the page is filled by scanning
+  /// verified shops in `shop_name` order and dropping the suspended
+  /// ones (at most 1000 scanned, like the customers CNIC filter).
+  /// The other filters are single queries: `verification_status` +
+  /// `shop_name` and `suspended` + `shop_name` both have composite
+  /// indexes in firestore.indexes.json.
+  ///
+  /// With no Firestore the page is cut from [getShops] in memory,
+  /// so offline fakes that override [getShops] keep working; the
+  /// cursor is then an integer offset.
+  Future<AdminPage<ShopModel>> getShopsPage({
+    int limit = 20,
+    Object? cursor,
+    String statusFilter = 'all',
+    String sort = 'nameAsc',
+  }) async {
+    final firestore = _resolvedFirestore;
+    final total = await countShops(statusFilter: statusFilter);
+    if (firestore == null) {
+      final all = sortShops(
+          (await getShops())
+              .where((s) => _matchesShopFilter(s, statusFilter))
+              .toList(),
+          sort);
+      final offset = cursor is int ? cursor : 0;
+      final page = all.skip(offset).take(limit).toList();
+      return AdminPage(
+        items: page,
+        hasMore: offset + page.length < all.length,
+        cursor: offset + page.length < all.length
+            ? offset + page.length
+            : null,
+        total: all.length,
+      );
+    }
+    if (statusFilter == 'approved') {
+      final matched = <QueryDocumentSnapshot<Map<String, dynamic>>>[];
+      DocumentSnapshot? lastDoc =
+          cursor is DocumentSnapshot ? cursor : null;
+      var scanned = 0;
+      var exhausted = false;
+      while (matched.length < limit && scanned < 1000 && !exhausted) {
+        var query = firestore
+            .collection('shops')
+            .where('verification_status', isEqualTo: 'approved')
+            .orderBy('shop_name', descending: sort == 'nameDesc')
+            .limit(50);
+        if (lastDoc != null) query = query.startAfterDocument(lastDoc);
+        final snap = await query.get();
+        if (snap.docs.isEmpty) {
+          exhausted = true;
+          break;
+        }
+        scanned += snap.docs.length;
+        lastDoc = snap.docs.last;
+        for (final d in snap.docs) {
+          if (d.data()['suspended'] as bool? ?? false) continue;
+          matched.add(d);
+          if (matched.length >= limit) break;
+        }
+        if (snap.docs.length < 50) exhausted = true;
+      }
+      final items = matched
+          .map((d) => ShopModel.fromMap(d.data(), id: d.id))
+          .toList();
+      return AdminPage(
+        items: sort == 'statusAsc' ? sortShops(items, sort) : items,
+        hasMore: !exhausted && scanned < 1000,
+        cursor:
+            !exhausted && scanned < 1000 ? lastDoc : null,
+        total: total,
+      );
+    }
+    // Phase 4 (4.3) — the sort is server-side: name A–Z / Z–A
+    // orders by `shop_name`; status orders by
+    // `verification_status` then name (composite indexes in
+    // firestore.indexes.json; the suspended filter + status sort
+    // needs the 3-field suspended/verification_status/shop_name
+    // index). 'approved' is handled by the scan branch above,
+    // which drops suspended rows — with a status sort the matched
+    // page is re-sorted client-side below, suspended first.
+    final descending = sort == 'nameDesc';
+    var query = firestore.collection('shops').orderBy(
+        sort == 'statusAsc' ? 'verification_status' : 'shop_name',
+        descending: descending);
+    if (sort == 'statusAsc') {
+      query = query.orderBy('shop_name');
+    }
+    if (statusFilter == 'pending') {
+      query = firestore
+          .collection('shops')
+          .where('verification_status', isEqualTo: 'pending')
+          .orderBy(sort == 'statusAsc' ? 'verification_status' : 'shop_name',
+              descending: descending);
+      if (sort == 'statusAsc') query = query.orderBy('shop_name');
+    } else if (statusFilter == 'suspended') {
+      query = firestore
+          .collection('shops')
+          .where('suspended', isEqualTo: true)
+          .orderBy(sort == 'statusAsc' ? 'verification_status' : 'shop_name',
+              descending: descending);
+      if (sort == 'statusAsc') query = query.orderBy('shop_name');
+    }
+    var paged = query.limit(limit + 1);
+    final lastDoc = cursor is DocumentSnapshot ? cursor : null;
+    if (lastDoc != null) paged = paged.startAfterDocument(lastDoc);
+    final snap = await paged.get();
+    final docs = snap.docs;
+    final hasMore = docs.length > limit;
+    final pageDocs = hasMore ? docs.sublist(0, limit) : docs;
+    return AdminPage(
+      items: pageDocs
+          .map((d) => ShopModel.fromMap(d.data(), id: d.id))
+          .toList(),
+      hasMore: hasMore,
+      cursor: hasMore ? pageDocs.last : null,
+      total: total,
+    );
+  }
+
+  bool _matchesShopFilter(ShopModel s, [String filter = 'all']) {
+    return switch (filter) {
+      'suspended' => s.suspended,
+      'pending' => s.verificationStatus == 'pending',
+      'approved' =>
+        s.verificationStatus == 'approved' && !s.suspended,
+      _ => true,
+    };
+  }
+
+  /// Phase 3 (3.4) — how many shops the current filter matches in
+  /// total, so the list can say "Showing first N of M". With no
+  /// Firestore the count comes from [getShops] in memory.
+  Future<int> countShops({String statusFilter = 'all'}) async {
+    final firestore = _resolvedFirestore;
+    if (firestore == null) {
+      return (await getShops())
+          .where((s) => _matchesShopFilter(s, statusFilter))
+          .length;
+    }
+    Future<int> countWhere(
+        Query<Map<String, dynamic>> Function(
+                CollectionReference<Map<String, dynamic>>)
+            build) async {
+      final count = await build(firestore.collection('shops')).count().get();
+      return count.count ?? 0;
+    }
+
+    switch (statusFilter) {
+      case 'pending':
+        return countWhere(
+            (c) => c.where('verification_status', isEqualTo: 'pending'));
+      case 'suspended':
+        return countWhere((c) => c.where('suspended', isEqualTo: true));
+      case 'approved':
+        // Verified minus verified-and-suspended: the count the
+        // 'approved' page actually shows.
+        final approved = await countWhere(
+            (c) => c.where('verification_status', isEqualTo: 'approved'));
+        final approvedSuspended = await countWhere((c) => c
+            .where('verification_status', isEqualTo: 'approved')
+            .where('suspended', isEqualTo: true));
+        return approved - approvedSuspended;
+      default:
+        return countWhere((c) => c);
+    }
+  }
+
+  /// Phase 3 (3.4) — server-side shop search: it covers the whole
+  /// list, not just the loaded page. Firestore has no substring
+  /// search, so the search scans the list in bounded pages (at most
+  /// 500 shops) for a name / city / owner match — the same
+  /// case-insensitive "contains" the old client-side search used,
+  /// now over the collection instead of the loaded page. With no
+  /// Firestore it filters [getShops] in memory.
+  Future<List<ShopModel>> searchShops(
+    String query, {
+    int limit = 50,
+  }) async {
+    final needle = query.trim().toLowerCase();
+    if (needle.isEmpty) return [];
+    final firestore = _resolvedFirestore;
+    if (firestore == null) {
+      return (await getShops())
+          .where((s) =>
+              s.shopName.toLowerCase().contains(needle) ||
+              s.city.toLowerCase().contains(needle) ||
+              (s.ownerName ?? '').toLowerCase().contains(needle))
+          .take(limit)
+          .toList();
+    }
+    try {
+      final matched = <ShopModel>[];
+      DocumentSnapshot? lastDoc;
+      var scanned = 0;
+      while (matched.length < limit && scanned < 500) {
+        var pageQuery = firestore
+            .collection('shops')
+            .orderBy('shop_name')
+            .limit(100);
+        if (lastDoc != null) {
+          pageQuery = pageQuery.startAfterDocument(lastDoc);
+        }
+        final snap = await pageQuery.get();
+        if (snap.docs.isEmpty) break;
+        scanned += snap.docs.length;
+        lastDoc = snap.docs.last;
+        for (final d in snap.docs) {
+          final shop = ShopModel.fromMap(d.data(), id: d.id);
+          if (shop.shopName.toLowerCase().contains(needle) ||
+              shop.city.toLowerCase().contains(needle) ||
+              (shop.ownerName ?? '').toLowerCase().contains(needle)) {
+            matched.add(shop);
+            if (matched.length >= limit) break;
+          }
+        }
+        if (snap.docs.length < 100) break;
+      }
+      return matched;
+    } catch (_) {
+      return [];
+    }
+  }
+
+  /// Phase 3 (3.4) — how many vehicles exist in total, so the cars
+  /// list can say "Showing first N of M" at its 200 cap.
+  Future<int> countCars() async {
+    final firestore = _resolvedFirestore;
+    if (firestore == null) return (await getCars()).length;
+    final count =
+        await firestore.collection('vehicles').count().get();
+    return count.count ?? 0;
   }
 
   /// F-M6: throws on a failed read; null only when the doc is
@@ -154,6 +415,28 @@ class AdminShopsDataSource {
     final firestore = _resolvedFirestore;
     if (firestore == null) return false;
     try {
+      // Phase 3 (3.3b) — status precondition: a shop that already
+      // has a final decision cannot be re-decided. Only a pending
+      // application, or one waiting on more info (the owner has
+      // supplied it and it is back in the queue), can be approved
+      // or rejected; an already-approved shop cannot be re-rejected
+      // (and vice versa) without going through the proper status
+      // path (suspend / a fresh application).
+      final currentDoc =
+          await firestore.collection('shops').doc(shopId).get();
+      final currentData = currentDoc.data();
+      if (currentData == null) return false;
+      final currentStatus =
+          currentData['verification_status'] as String? ?? 'pending';
+      if (currentStatus != 'pending' &&
+          currentStatus != 'info_requested') {
+        return false;
+      }
+      if (decision != 'approved' &&
+          decision != 'info_requested' &&
+          decision != 'rejected') {
+        return false;
+      }
       await firestore.collection('shops').doc(shopId).update({
         'verification_status': decision,
         'is_verified': decision == 'approved',
@@ -292,15 +575,25 @@ class AdminShopsDataSource {
     final firestore = _resolvedFirestore;
     if (firestore == null) return false;
     try {
-      await firestore.collection('car_reviews').doc(vehicleId).set({
-        'vehicle_id': vehicleId,
-        'status': status,
-        'reason': reason,
-        'reviewed_at': FieldValue.serverTimestamp(),
-      }, SetOptions(merge: true));
-      await firestore.collection('vehicles').doc(vehicleId).update({
-        'listing_status': status,
-      });
+      // Phase 3 (3.6c) — one batch: the review record and the
+      // listing mirror land together, so a failure cannot leave the
+      // decision recorded but the listing visible (or vice versa).
+      final batch = firestore.batch();
+      batch.set(
+        firestore.collection('car_reviews').doc(vehicleId),
+        {
+          'vehicle_id': vehicleId,
+          'status': status,
+          'reason': reason,
+          'reviewed_at': FieldValue.serverTimestamp(),
+        },
+        SetOptions(merge: true),
+      );
+      batch.update(
+        firestore.collection('vehicles').doc(vehicleId),
+        {'listing_status': status},
+      );
+      await batch.commit();
       await AdminAuditService.logAction(
         action: 'car_review_$status',
         targetType: 'vehicle',

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/responsive.dart';
@@ -12,11 +11,15 @@ import '../../../../l10n/app_localizations.dart';
 import '../../data/datasources/admin_kyc_data_source.dart';
 import '../../data/services/admin_session.dart';
 import '../../domain/admin_permissions.dart';
+import '../widgets/admin_count_line.dart';
+import '../widgets/admin_list_card.dart';
 import '../widgets/admin_shell.dart';
+import '../widgets/admin_sort_menu.dart';
 
 /// Item 6 — the customer KYC review queue: every customer whose own
-/// documents sit in `kyc_documents/{uid}` with status 'submitted',
-/// newest first, with the review detail that decides them.
+/// documents sit in `kyc_documents/{uid}` with status 'submitted' or
+/// 'resubmitted', newest first, with the review detail that decides
+/// them.
 ///
 /// Permission: super admin + operations only ([AdminPermission.
 /// decideKyc] — the matrix already carried this KYC permission for
@@ -45,6 +48,8 @@ class _AdminKycReviewViewState extends State<AdminKycReviewView> {
   bool _isLoading = true;
   bool _hasError = false;
   bool _canReview = false;
+  String _sort = 'dateNewest';
+  int? _total;
 
   @override
   void initState() {
@@ -75,11 +80,21 @@ class _AdminKycReviewViewState extends State<AdminKycReviewView> {
       return;
     }
     try {
-      final pending = await (widget.loadQueue?.call() ??
-          sl<AdminKycDataSource>().getPendingKycSubmissions());
+      // Phase 3 (3.4): the total comes from the data source's
+      // count, so the queue can say "Showing first N of M" at its
+      // 100 cap; the test seam has no count, so it reports the
+      // loaded rows as the total.
+      final pending = AdminKycDataSource.sortKycSubmissions(
+          await (widget.loadQueue?.call() ??
+              sl<AdminKycDataSource>().getPendingKycSubmissions()),
+          _sort);
+      final total = widget.loadQueue != null
+          ? pending.length
+          : await sl<AdminKycDataSource>().countPendingKyc();
       if (mounted) {
         setState(() {
           _pending = pending;
+          _total = total;
           _isLoading = false;
         });
       }
@@ -128,9 +143,62 @@ class _AdminKycReviewViewState extends State<AdminKycReviewView> {
                           message: l10n?.adminKycReviewEmptyHint ??
                               'Every customer submission has been decided.',
                         )
-                      : ListView.separated(
+                      : Column(
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.all(
+                                  windowSizeClassOf(context) ==
+                                          WindowSizeClass.compact
+                                      ? 16
+                                      : 24),
+                              child: Column(
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      AdminSortMenu(
+                                        options: [
+                                          AdminSortOption(
+                                              id: 'dateNewest',
+                                              label: l10n?.adminSortDateNewest ??
+                                                  'Newest first'),
+                                          AdminSortOption(
+                                              id: 'dateOldest',
+                                              label: l10n?.adminSortDateOldest ??
+                                                  'Oldest first'),
+                                          AdminSortOption(
+                                              id: 'nameAsc',
+                                              label: l10n?.adminSortNameAsc ??
+                                                  'Name A–Z'),
+                                          AdminSortOption(
+                                              id: 'nameDesc',
+                                              label: l10n?.adminSortNameDesc ??
+                                                  'Name Z–A'),
+                                        ],
+                                        selectedId: _sort,
+                                        onSelected: (sort) => setState(
+                                            () => _sort = sort),
+                                      ),
+                                    ],
+                                  ),
+                                  AdminCountLine(
+                                      shown: _pending.length, total: _total),
+                                ],
+                              ),
+                            ),
+                            Expanded(
+                              child: ListView.separated(
                           // Mobile-first: 16dp on a phone, 24dp on desktop.
-                          padding: EdgeInsets.all(
+                          padding: EdgeInsets.fromLTRB(
+                              windowSizeClassOf(context) ==
+                                      WindowSizeClass.compact
+                                  ? 16
+                                  : 24,
+                              0,
+                              windowSizeClassOf(context) ==
+                                      WindowSizeClass.compact
+                                  ? 16
+                                  : 24,
                               windowSizeClassOf(context) ==
                                       WindowSizeClass.compact
                                   ? 16
@@ -145,44 +213,25 @@ class _AdminKycReviewViewState extends State<AdminKycReviewView> {
                                 : submission.customerName;
                             final date =
                                 _formatDate(context, submission.submittedAt);
-                            return Card(
-                              margin: EdgeInsets.zero,
-                              elevation: 0,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                side: BorderSide(
-                                    color: Theme.of(context).dividerColor),
-                              ),
-                              child: ListTile(
-                                leading: CircleAvatar(
-                                  backgroundColor: AppColors.primary
-                                      .withValues(alpha: 0.12),
-                                  child: const Icon(Icons.badge_rounded),
-                                ),
-                                title: Text(name,
-                                    style: const TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600)),
-                                subtitle: Text(
+                            // Phase 4 (4.1) — the shared [AdminListCard]
+                            // shell.
+                            return AdminListCard(
+                              icon: Icons.badge_rounded,
+                              title: name,
+                              subtitle:
                                   'CNIC ${submission.cnicNumber.isEmpty ? '—' : submission.cnicNumber}'
                                   '${date.isEmpty ? '' : ' • $date'}',
-                                  style: TextStyle(
-                                      fontSize: 12,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onSurfaceVariant),
-                                ),
-                                trailing: const Icon(
-                                    Icons.arrow_forward_ios_rounded,
-                                    size: 16),
-                                onTap: () => context.go(
-                                  RouteNames.adminKycReviewDetail
-                                      .replaceFirst(':customerId',
-                                          submission.customerId),
-                                ),
+                              trailing: adminListChevron,
+                              onTap: () => context.go(
+                                RouteNames.adminKycReviewDetail
+                                    .replaceFirst(':customerId',
+                                        submission.customerId),
                               ),
                             );
                           },
+                              ),
+                            ),
+                          ],
                         ),
     );
   }

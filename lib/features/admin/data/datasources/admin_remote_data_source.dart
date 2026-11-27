@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import '../../../../core/utils/csv_escape.dart';
 import '../../domain/admin_permissions.dart';
+import '../services/admin_audit_service.dart';
 import '../services/admin_session.dart';
 import 'admin_pagination.dart';
 
@@ -235,6 +236,14 @@ class AdminRemoteDataSource {
       throw Exception('Admin functions are unavailable right now.');
     }
     await functions.httpsCallable('resetTotp').call({'uid': uid});
+    // Phase 3 (3.5c): the audit entry lives here, in the data
+    // source — a view that calls resetTotp cannot silently skip it.
+    await AdminAuditService.logAction(
+      action: 'totp_reset',
+      targetType: 'admin',
+      targetId: uid,
+      detail: 'TOTP reset.',
+    );
   }
 
   /// Grant (adminRole set) or revoke (adminRole null) an admin role.
@@ -308,6 +317,14 @@ class AdminRemoteDataSource {
       // local-only — the real path below always uses the document id.
       final id = 'INV-${DateTime.now().millisecondsSinceEpoch}';
       _inMemoryInvites[id] = record;
+      // Phase 3 (3.5c): the audit entry lives in the data source —
+      // see the Firestore path below.
+      await AdminAuditService.logAction(
+        action: 'admin_invite_created',
+        targetType: 'admin_invite',
+        targetId: id,
+        detail: 'Invited ${record['email']} as $adminRole (48 h expiry).',
+      );
       return AdminInvite.fromMap(id, record);
     }
     final docRef = await firestore.collection('admin_invites').add({
@@ -315,6 +332,15 @@ class AdminRemoteDataSource {
       'expires_at': Timestamp.fromDate(expiresAt),
       'created_at': FieldValue.serverTimestamp(),
     });
+    // Phase 3 (3.5c): the audit entry lives here, in the data
+    // source — the invite is logged under its real Firestore id,
+    // and a view that creates an invite cannot silently skip it.
+    await AdminAuditService.logAction(
+      action: 'admin_invite_created',
+      targetType: 'admin_invite',
+      targetId: docRef.id,
+      detail: 'Invited ${record['email']} as $adminRole (48 h expiry).',
+    );
     return AdminInvite.fromMap(docRef.id, record);
   }
 
@@ -355,8 +381,24 @@ class AdminRemoteDataSource {
     }
     _inMemoryInvites.remove(id);
     final firestore = _resolvedFirestore;
-    if (firestore == null) return;
+    if (firestore == null) {
+      await AdminAuditService.logAction(
+        action: 'admin_invite_revoked',
+        targetType: 'admin_invite',
+        targetId: id,
+        detail: 'Invite withdrawn.',
+      );
+      return;
+    }
     await firestore.collection('admin_invites').doc(id).delete();
+    // Phase 3 (3.5c): the audit entry lives here, in the data
+    // source — see [resetTotp].
+    await AdminAuditService.logAction(
+      action: 'admin_invite_revoked',
+      targetType: 'admin_invite',
+      targetId: id,
+      detail: 'Invite withdrawn.',
+    );
   }
 
   /// Mark an invite accepted after the role was granted through
@@ -372,10 +414,31 @@ class AdminRemoteDataSource {
     final record = _inMemoryInvites[id];
     if (record != null) record['accepted'] = true;
     final firestore = _resolvedFirestore;
-    if (firestore == null) return;
+    if (firestore == null) {
+      await AdminAuditService.logAction(
+        action: 'admin_invite_accepted',
+        targetType: 'admin_invite',
+        targetId: id,
+        detail: 'Invite accepted.',
+      );
+      return;
+    }
     await firestore.collection('admin_invites').doc(id).update({
       'accepted': true,
     });
+    // Phase 3 (3.5c): the audit entry lives here, in the data
+    // source — see [resetTotp]. The email/role detail comes from
+    // the invite record when it is known.
+    final email = record?['email'] as String?;
+    final role = record?['admin_role'] as String?;
+    await AdminAuditService.logAction(
+      action: 'admin_invite_accepted',
+      targetType: 'admin_invite',
+      targetId: id,
+      detail: email != null && role != null
+          ? 'Granted $role to $email.'
+          : 'Invite accepted.',
+    );
   }
 
   /// Delete expired, unaccepted invites so they stop lingering in
@@ -418,6 +481,14 @@ class AdminRemoteDataSource {
       'reminded_at': FieldValue.serverTimestamp(),
       'reminded_by': _currentUid,
     }, SetOptions(merge: true));
+    // Phase 3 (3.5c): the audit entry lives here, in the data
+    // source — see [resetTotp].
+    await AdminAuditService.logAction(
+      action: 'totp_reminder_sent',
+      targetType: 'admin',
+      targetId: uid,
+      detail: '2FA reminder sent.',
+    );
   }
 
   /// Whether a 2FA-off reminder is waiting for this admin. False
@@ -474,17 +545,50 @@ class AdminRemoteDataSource {
   ///
   /// F-M6: a failed read throws (the view shows its error state)
   /// instead of returning an empty page that reads as "no entries".
+  /// Phase 4 (4.3) — client-side sort over loaded log entries
+  /// (the filtered path, which sorts in memory already).
+  static List<AuditLogEntry> sortAuditLogs(
+      List<AuditLogEntry> entries, String sort) {
+    final list = List<AuditLogEntry>.of(entries);
+    DateTime at(AuditLogEntry e) =>
+        e.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+    switch (sort) {
+      case 'dateOldest':
+        list.sort((a, b) => at(a).compareTo(at(b)));
+      case 'actionAsc':
+        list.sort((a, b) => a.action.compareTo(b.action));
+      default:
+        list.sort((a, b) => at(b).compareTo(at(a)));
+    }
+    return list;
+  }
+
+  /// Phase 4 (4.4c) — how many log entries exist in total, so the
+  /// log can say "Showing first N of M" when no filter is active.
+  Future<int> countAuditLogs() async {
+    final firestore = _resolvedFirestore;
+    if (firestore == null) return 0;
+    final count = await firestore.collection('audit_logs').count().get();
+    return count.count ?? 0;
+  }
+
   Future<AdminPage<AuditLogEntry>> getAuditLogsPage({
     int limit = 50,
     Object? cursor,
+    String sort = 'dateNewest',
   }) async {
     final firestore = _resolvedFirestore;
     if (firestore == null) {
       return const AdminPage(items: [], hasMore: false);
     }
+    // Phase 4 (4.3) — the sort is server-side on single fields
+    // (`created_at`, `action`): no composite index is needed on
+    // this unfiltered path.
+    final field = sort == 'actionAsc' ? 'action' : 'created_at';
+    final descending = sort != 'dateOldest' && sort != 'actionAsc';
     var query = firestore
         .collection('audit_logs')
-        .orderBy('created_at', descending: true)
+        .orderBy(field, descending: descending)
         .limit(limit + 1);
     final lastDoc = cursor is DocumentSnapshot ? cursor : null;
     if (lastDoc != null) query = query.startAfterDocument(lastDoc);
@@ -521,6 +625,7 @@ class AdminRemoteDataSource {
     DateTime? from,
     DateTime? to,
     int limit = 200,
+    String sort = 'dateNewest',
   }) async {
     final firestore = _resolvedFirestore;
     if (firestore == null) return [];
@@ -546,9 +651,7 @@ class AdminRemoteDataSource {
     final list = snap.docs
         .map((d) => AuditLogEntry.fromMap(d.id, d.data()))
         .toList();
-    list.sort((a, b) => (b.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0))
-        .compareTo(a.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0)));
-    return list;
+    return sortAuditLogs(list, sort);
   }
 
   /// How many entries the current filter matches in total, so the
@@ -620,6 +723,7 @@ class AdminRemoteDataSource {
       openDisputeCount: 0,
       openTicketCount: 0,
       pendingShopCount: 0,
+      pendingKycCount: 0,
     );
     final firestore = _resolvedFirestore;
     if (firestore == null) return empty;
@@ -634,9 +738,12 @@ class AdminRemoteDataSource {
         ])
         .count()
         .get();
+    // Phase 1 (1.4): "open disputes" is the Reports definition —
+    // any non-resolved dispute (open or in review), not just
+    // status == 'open' — so the dashboard and Reports agree.
     final disputes = await firestore
         .collection('disputes')
-        .where('status', isEqualTo: 'open')
+        .where('status', isNotEqualTo: 'resolved')
         .count()
         .get();
     final tickets = await firestore
@@ -651,12 +758,22 @@ class AdminRemoteDataSource {
         .where('verification_status', isEqualTo: 'pending')
         .count()
         .get();
+    // Phase 1 (1.4): the pending KYC queue (submitted, or a
+    // verified customer's resubmission awaiting re-review) — the
+    // same statuses AdminKycDataSource.getPendingKycSubmissions
+    // lists.
+    final pendingKyc = await firestore
+        .collection('kyc_documents')
+        .where('status', whereIn: const ['submitted', 'resubmitted'])
+        .count()
+        .get();
     return PlatformStats(
       shopCount: shops.count ?? 0,
       activeBookingCount: bookings.count ?? 0,
       openDisputeCount: disputes.count ?? 0,
       openTicketCount: tickets.count ?? 0,
       pendingShopCount: pendingShops.count ?? 0,
+      pendingKycCount: pendingKyc.count ?? 0,
     );
   }
 }
@@ -669,14 +786,22 @@ class PlatformStats {
     required this.openDisputeCount,
     required this.openTicketCount,
     required this.pendingShopCount,
+    this.pendingKycCount = 0,
   });
 
   final int shopCount;
   final int activeBookingCount;
+
+  /// Any non-resolved dispute — the Reports definition (Phase 1,
+  /// 1.4), so the dashboard and Reports agree.
   final int openDisputeCount;
   final int openTicketCount;
 
   /// Shops with `verification_status == 'pending'` — the approvals
   /// queue (F-m1). Counted live like the other KPIs.
   final int pendingShopCount;
+
+  /// Customer KYC submissions with status 'submitted' or
+  /// 'resubmitted' — the KYC review queue (Phase 1, 1.4).
+  final int pendingKycCount;
 }

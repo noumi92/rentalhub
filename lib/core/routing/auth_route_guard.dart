@@ -153,7 +153,6 @@ class AuthRouteGuard {
       const routePermissions = <String, AdminPermission>{
         RouteNames.adminTeam: AdminPermission.manageTeam,
         RouteNames.adminInviteAccept: AdminPermission.manageTeam,
-        RouteNames.adminApprovals: AdminPermission.decideVendor,
         RouteNames.adminShops: AdminPermission.decideVendor,
         RouteNames.adminCars: AdminPermission.decideVendor,
         RouteNames.adminKycReview: AdminPermission.decideKyc,

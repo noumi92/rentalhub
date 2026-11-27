@@ -32,6 +32,9 @@ Future<String?> showSuspendDialog(
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
+            // Phase 1 (1.1): the Cancel button had no 48dp minimum
+            // (rulebook §4.6); the confirm button already had one.
+            style: TextButton.styleFrom(minimumSize: const Size(0, 48)),
             child: Text(AppLocalizations.of(ctx)!.cancel),
           ),
           FilledButton(

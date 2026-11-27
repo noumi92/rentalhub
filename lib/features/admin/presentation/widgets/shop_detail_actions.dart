@@ -11,6 +11,11 @@ import '../../../discovery/data/models/shop_model.dart';
 /// AdminShopDetailView so the view stays under the 250-line cap:
 /// message the owner on WhatsApp, and suspend / lift suspension.
 ///
+/// Phase 3 (3.1): a pending shop also gets "Review application",
+/// which opens the application review sheet (Approve / Ask for more
+/// info / Reject) — the Approvals screen is gone, so the decision
+/// lives here.
+///
 /// Mobile-first (2026-11-10): on a phone the two actions stack
 /// full-width — side by side each is ~150dp and the labels clip at
 /// large text scales. Both buttons are 48dp tall.
@@ -20,11 +25,16 @@ class ShopDetailActions extends StatelessWidget {
     required this.shop,
     required this.isWorking,
     required this.onToggleSuspend,
+    this.onReviewApplication,
   });
 
   final ShopModel shop;
   final bool isWorking;
   final VoidCallback onToggleSuspend;
+
+  /// Phase 3 (3.1): non-null only for a pending shop — opens the
+  /// application review sheet.
+  final VoidCallback? onReviewApplication;
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +44,10 @@ class ShopDetailActions extends StatelessWidget {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          if (onReviewApplication != null) ...[
+            _reviewButton(context),
+            const SizedBox(height: 12),
+          ],
           _messageOwnerButton(context),
           const SizedBox(height: 12),
           _suspendButton(context),
@@ -42,10 +56,24 @@ class ShopDetailActions extends StatelessWidget {
     }
     return Row(
       children: [
+        if (onReviewApplication != null) ...[
+          Expanded(child: _reviewButton(context)),
+          const SizedBox(width: 12),
+        ],
         Expanded(child: _messageOwnerButton(context)),
         const SizedBox(width: 12),
         Expanded(child: _suspendButton(context)),
       ],
+    );
+  }
+
+  Widget _reviewButton(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return FilledButton.icon(
+      icon: const Icon(Icons.verified_user_rounded, size: 18),
+      label: Text(l10n.admin2_shopDetailReviewApplication),
+      style: FilledButton.styleFrom(minimumSize: const Size(0, 48)),
+      onPressed: isWorking ? null : onReviewApplication,
     );
   }
 

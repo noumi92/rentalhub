@@ -63,7 +63,7 @@ import 'app_localizations_ur.dart';
 /// property.
 abstract class AppLocalizations {
   AppLocalizations(String locale)
-    : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+      : localeName = intl.Intl.canonicalizedLocale(locale.toString());
 
   final String localeName;
 
@@ -86,16 +86,16 @@ abstract class AppLocalizations {
   /// of delegates is preferred or required.
   static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
       <LocalizationsDelegate<dynamic>>[
-        delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-      ];
+    delegate,
+    GlobalMaterialLocalizations.delegate,
+    GlobalCupertinoLocalizations.delegate,
+    GlobalWidgetsLocalizations.delegate,
+  ];
 
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
     Locale('en'),
-    Locale('ur'),
+    Locale('ur')
   ];
 
   /// No description provided for @appTitle.
@@ -427,6 +427,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Mark in review'**
   String get disputeMarkInReview;
+
+  /// No description provided for @disputeMarkInReviewConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark this dispute in review?'**
+  String get disputeMarkInReviewConfirmTitle;
+
+  /// No description provided for @disputeMarkInReviewConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The dispute will move to In review so a decision can be recorded.'**
+  String get disputeMarkInReviewConfirmBody;
 
   /// No description provided for @disputeMarkedInReview.
   ///
@@ -1526,6 +1538,30 @@ abstract class AppLocalizations {
   /// **'Profile saved.'**
   String get profileSaved;
 
+  /// No description provided for @profileTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get profileTitle;
+
+  /// No description provided for @profileEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get profileEmail;
+
+  /// No description provided for @profileTabKyc.
+  ///
+  /// In en, this message translates to:
+  /// **'KYC'**
+  String get profileTabKyc;
+
+  /// No description provided for @profileIdentityTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal details'**
+  String get profileIdentityTitle;
+
   /// No description provided for @editProfile.
   ///
   /// In en, this message translates to:
@@ -1567,6 +1603,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Saving...'**
   String get editSaving;
+
+  /// No description provided for @editDateOfBirth.
+  ///
+  /// In en, this message translates to:
+  /// **'Date of birth'**
+  String get editDateOfBirth;
+
+  /// No description provided for @editFatherName.
+  ///
+  /// In en, this message translates to:
+  /// **'Father\'s name'**
+  String get editFatherName;
+
+  /// No description provided for @editAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Address'**
+  String get editAddress;
+
+  /// No description provided for @editCnicReReviewWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Changing your CNIC will send your KYC back for review.'**
+  String get editCnicReReviewWarning;
+
+  /// No description provided for @editPhotoUploadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not upload the photo. Please try again.'**
+  String get editPhotoUploadError;
 
   /// No description provided for @cnicLabel.
   ///
@@ -3073,6 +3139,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Rejected — please resubmit'**
   String get kycStatusRejected;
+
+  /// No description provided for @kycUpdateDocuments.
+  ///
+  /// In en, this message translates to:
+  /// **'Update documents'**
+  String get kycUpdateDocuments;
+
+  /// No description provided for @kycDocumentsOnFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Documents on file'**
+  String get kycDocumentsOnFile;
+
+  /// No description provided for @kycVerifiedUpdateIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Your documents are verified. Update them only if something changed.'**
+  String get kycVerifiedUpdateIntro;
 
   /// No description provided for @kycCnicNumber.
   ///
@@ -9589,11 +9673,7 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Assalam-o-Alaikum {name}, your booking for {vehicle} is confirmed. Pickup: {date}. Total: Rs. {total}. Thank you!'**
   String bookingConfirmedWhatsappMessage(
-    String name,
-    String vehicle,
-    String date,
-    String total,
-  );
+      String name, String vehicle, String date, String total);
 
   /// No description provided for @bookingConfirmedWhatsappFailed.
   ///
@@ -10776,12 +10856,7 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'#{booking} • {date} • Rent Rs. {rent} • Paid Rs. {paid} • Due Rs. {due}'**
   String financeStatementMessageRow(
-    String booking,
-    String date,
-    String rent,
-    String paid,
-    String due,
-  );
+      String booking, String date, String rent, String paid, String due);
 
   /// No description provided for @financeStatementMessageTitle.
   ///
@@ -13476,11 +13551,7 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Rent {vehicle} for {rate} ({period}) on RentalHub: {link}'**
   String shareWithCustomersText(
-    String vehicle,
-    String rate,
-    String period,
-    String link,
-  );
+      String vehicle, String rate, String period, String link);
 
   /// No description provided for @shareLinkNote.
   ///
@@ -14106,6 +14177,18 @@ abstract class AppLocalizations {
   /// **'Approve'**
   String get adminKycReviewApprove;
 
+  /// No description provided for @adminKycReviewApproveConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve this KYC submission?'**
+  String get adminKycReviewApproveConfirmTitle;
+
+  /// No description provided for @adminKycReviewApproveConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The customer will be marked verified and can start booking.'**
+  String get adminKycReviewApproveConfirmBody;
+
   /// No description provided for @adminKycReviewReject.
   ///
   /// In en, this message translates to:
@@ -14466,6 +14549,54 @@ abstract class AppLocalizations {
   /// **'Report'**
   String get admin2_blacklistReportConfirm;
 
+  /// No description provided for @admin2_blacklistCategoryLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason category'**
+  String get admin2_blacklistCategoryLabel;
+
+  /// No description provided for @admin2_blacklistDescriptionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get admin2_blacklistDescriptionLabel;
+
+  /// No description provided for @admin2_blacklistCatFraud.
+  ///
+  /// In en, this message translates to:
+  /// **'Fraud'**
+  String get admin2_blacklistCatFraud;
+
+  /// No description provided for @admin2_blacklistCatLateReturn.
+  ///
+  /// In en, this message translates to:
+  /// **'Late return'**
+  String get admin2_blacklistCatLateReturn;
+
+  /// No description provided for @admin2_blacklistCatDamage.
+  ///
+  /// In en, this message translates to:
+  /// **'Damage'**
+  String get admin2_blacklistCatDamage;
+
+  /// No description provided for @admin2_blacklistCatNonPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Non-payment'**
+  String get admin2_blacklistCatNonPayment;
+
+  /// No description provided for @admin2_blacklistCatAbusive.
+  ///
+  /// In en, this message translates to:
+  /// **'Abusive behaviour'**
+  String get admin2_blacklistCatAbusive;
+
+  /// No description provided for @admin2_blacklistCatOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get admin2_blacklistCatOther;
+
   /// No description provided for @admin2_watchlistAdd.
   ///
   /// In en, this message translates to:
@@ -14796,6 +14927,132 @@ abstract class AppLocalizations {
   /// **'Subscriptions'**
   String get admin2_navSubscriptions;
 
+  /// No description provided for @admin2_navHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get admin2_navHome;
+
+  /// No description provided for @admin2_navQueues.
+  ///
+  /// In en, this message translates to:
+  /// **'Queues'**
+  String get admin2_navQueues;
+
+  /// No description provided for @admin2_navMore.
+  ///
+  /// In en, this message translates to:
+  /// **'More'**
+  String get admin2_navMore;
+
+  /// No description provided for @admin2_sidebarGroupOverview.
+  ///
+  /// In en, this message translates to:
+  /// **'Overview'**
+  String get admin2_sidebarGroupOverview;
+
+  /// No description provided for @admin2_sidebarGroupQueues.
+  ///
+  /// In en, this message translates to:
+  /// **'Review queues'**
+  String get admin2_sidebarGroupQueues;
+
+  /// No description provided for @admin2_sidebarGroupMarketplace.
+  ///
+  /// In en, this message translates to:
+  /// **'Marketplace'**
+  String get admin2_sidebarGroupMarketplace;
+
+  /// No description provided for @admin2_sidebarGroupPlatform.
+  ///
+  /// In en, this message translates to:
+  /// **'Platform'**
+  String get admin2_sidebarGroupPlatform;
+
+  /// No description provided for @admin2_sidebarGroupGovernance.
+  ///
+  /// In en, this message translates to:
+  /// **'Governance'**
+  String get admin2_sidebarGroupGovernance;
+
+  /// No description provided for @admin2_queuesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Review queues'**
+  String get admin2_queuesTitle;
+
+  /// No description provided for @admin2_queuesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Every queue that needs a decision, with its live count'**
+  String get admin2_queuesSubtitle;
+
+  /// No description provided for @admin2_queuesLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load the queues.'**
+  String get admin2_queuesLoadFailed;
+
+  /// No description provided for @admin2_customerDetailTabProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get admin2_customerDetailTabProfile;
+
+  /// No description provided for @admin2_customerDetailTabBookings.
+  ///
+  /// In en, this message translates to:
+  /// **'Bookings'**
+  String get admin2_customerDetailTabBookings;
+
+  /// No description provided for @admin2_customerDetailTabNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes & flags'**
+  String get admin2_customerDetailTabNotes;
+
+  /// No description provided for @admin2_teamTabMembers.
+  ///
+  /// In en, this message translates to:
+  /// **'Members'**
+  String get admin2_teamTabMembers;
+
+  /// No description provided for @admin2_teamTabInvites.
+  ///
+  /// In en, this message translates to:
+  /// **'Invites'**
+  String get admin2_teamTabInvites;
+
+  /// No description provided for @admin2_teamTabSecurity.
+  ///
+  /// In en, this message translates to:
+  /// **'Security'**
+  String get admin2_teamTabSecurity;
+
+  /// No description provided for @admin2_teamSecurityTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Two-factor authentication'**
+  String get admin2_teamSecurityTitle;
+
+  /// No description provided for @admin2_teamSecurityAllOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Every admin has two-factor authentication on.'**
+  String get admin2_teamSecurityAllOn;
+
+  /// No description provided for @admin2_disputeDetailNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Dispute not found.'**
+  String get admin2_disputeDetailNotFound;
+
+  /// No description provided for @admin2_ticketDetailNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Ticket not found.'**
+  String get admin2_ticketDetailNotFound;
+
   /// No description provided for @admin2_sidebarSignedInAs.
   ///
   /// In en, this message translates to:
@@ -14982,6 +15239,18 @@ abstract class AppLocalizations {
   /// **'Open the tickets inbox to reply.'**
   String get admin2_dashboardTicketsHint;
 
+  /// No description provided for @admin2_dashboardKycTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'KYC submissions waiting for review'**
+  String get admin2_dashboardKycTitle;
+
+  /// No description provided for @admin2_dashboardKycHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the KYC review queue to decide them.'**
+  String get admin2_dashboardKycHint;
+
   /// No description provided for @admin2_dashboardKpiShops.
   ///
   /// In en, this message translates to:
@@ -15108,6 +15377,12 @@ abstract class AppLocalizations {
   /// **'Shop detail'**
   String get admin2_shopDetailTitle;
 
+  /// No description provided for @admin2_shopDetailReviewApplication.
+  ///
+  /// In en, this message translates to:
+  /// **'Review application'**
+  String get admin2_shopDetailReviewApplication;
+
   /// No description provided for @admin2_shopDetailSubtitle.
   ///
   /// In en, this message translates to:
@@ -15197,11 +15472,7 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{city} • {address}\nOwner: {owner} • {phone}'**
   String admin2_shopDetailContact(
-    String city,
-    String address,
-    String owner,
-    String phone,
-  );
+      String city, String address, String owner, String phone);
 
   /// No description provided for @admin2_suspendTitle.
   ///
@@ -15579,13 +15850,8 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Shop {shop}/5 • Car {car}/5 • Owner: punctuality {punctuality}, care {care}, behaviour {behaviour}'**
-  String admin2_reviewCardRatings(
-    String shop,
-    String car,
-    String punctuality,
-    String care,
-    String behaviour,
-  );
+  String admin2_reviewCardRatings(String shop, String car, String punctuality,
+      String care, String behaviour);
 
   /// No description provided for @admin2_ticketsTitle.
   ///
@@ -15725,11 +15991,35 @@ abstract class AppLocalizations {
   /// **'Escalate'**
   String get admin2_ticketEscalate;
 
+  /// No description provided for @admin2_ticketEscalateConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Escalate this ticket?'**
+  String get admin2_ticketEscalateConfirmTitle;
+
+  /// No description provided for @admin2_ticketEscalateConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Escalation hands the ticket to a senior admin for a second look.'**
+  String get admin2_ticketEscalateConfirmBody;
+
   /// No description provided for @admin2_ticketClose.
   ///
   /// In en, this message translates to:
   /// **'Close ticket'**
   String get admin2_ticketClose;
+
+  /// No description provided for @admin2_ticketCloseConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Close this ticket?'**
+  String get admin2_ticketCloseConfirmTitle;
+
+  /// No description provided for @admin2_ticketCloseConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Closing ends the thread. The customer will see the ticket as closed.'**
+  String get admin2_ticketCloseConfirmBody;
 
   /// No description provided for @admin2_anncSubtitle.
   ///
@@ -15784,6 +16074,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Send now'**
   String get admin2_anncSendNow;
+
+  /// No description provided for @admin2_anncSendConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Send this announcement now?'**
+  String get admin2_anncSendConfirmTitle;
+
+  /// No description provided for @admin2_anncSendConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This sends the announcement to its audience right away. A sent announcement cannot be recalled.'**
+  String get admin2_anncSendConfirmBody;
 
   /// No description provided for @admin2_anncStats.
   ///
@@ -15946,6 +16248,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Save announcement'**
   String get admin2_anncFormSave;
+
+  /// No description provided for @admin2_anncDetailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Announcement'**
+  String get admin2_anncDetailTitle;
+
+  /// No description provided for @admin2_anncDetailLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load the announcement.'**
+  String get admin2_anncDetailLoadFailed;
+
+  /// No description provided for @admin2_anncDetailNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Announcement not found.'**
+  String get admin2_anncDetailNotFound;
+
+  /// No description provided for @admin2_anncEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get admin2_anncEdit;
+
+  /// No description provided for @admin2_anncDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete announcement'**
+  String get admin2_anncDelete;
+
+  /// No description provided for @admin2_anncDeleteConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this announcement?'**
+  String get admin2_anncDeleteConfirmTitle;
+
+  /// No description provided for @admin2_anncDeleteConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This draft or scheduled announcement will be deleted. Sent announcements cannot be deleted.'**
+  String get admin2_anncDeleteConfirmBody;
+
+  /// No description provided for @admin2_anncDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Announcement deleted.'**
+  String get admin2_anncDeleted;
+
+  /// No description provided for @admin2_anncUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Announcement updated.'**
+  String get admin2_anncUpdated;
+
+  /// No description provided for @admin2_anncReadOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent announcements are read-only history.'**
+  String get admin2_anncReadOnly;
+
+  /// No description provided for @admin2_anncFormUpdate.
+  ///
+  /// In en, this message translates to:
+  /// **'Save changes'**
+  String get admin2_anncFormUpdate;
+
+  /// No description provided for @admin2_disputeAmountTooHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'The amount cannot exceed the outstanding balance plus the held deposit.'**
+  String get admin2_disputeAmountTooHigh;
 
   /// No description provided for @admin2_activitySubtitle.
   ///
@@ -16300,6 +16674,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Reason (required to ask for more info or reject — the owner sees it)'**
   String get admin2_shopAppReasonLabel;
+
+  /// No description provided for @admin2_shopAppConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm decision'**
+  String get admin2_shopAppConfirmTitle;
+
+  /// No description provided for @admin2_shopAppConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Save \'{decision}\' for this shop application?'**
+  String admin2_shopAppConfirmBody(String decision);
 
   /// No description provided for @admin2_shopAppCallOwner.
   ///
@@ -16798,21 +17184,14 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Status: {status} • Trip: {trip} • Package: {package} • {drive}'**
   String admin2_bookingDetailMeta(
-    String status,
-    String trip,
-    String package,
-    String drive,
-  );
+      String status, String trip, String package, String drive);
 
   /// No description provided for @admin2_bookingDetailHandoverSummary.
   ///
   /// In en, this message translates to:
   /// **'odometer {km} km, fuel {fuel}, damage: {damage}'**
   String admin2_bookingDetailHandoverSummary(
-    Object km,
-    String fuel,
-    String damage,
-  );
+      Object km, String fuel, String damage);
 
   /// No description provided for @admin2_bookingDetailMessages.
   ///
@@ -16939,14 +17318,13 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Plate {plate} • {category} • {transmission} • {fuel} • {seats} seats\nStatus: {status} • Current review: {review}'**
   String admin2_carReviewSpecs(
-    String plate,
-    String category,
-    String transmission,
-    String fuel,
-    Object seats,
-    String status,
-    String review,
-  );
+      String plate,
+      String category,
+      String transmission,
+      String fuel,
+      Object seats,
+      String status,
+      String review);
 
   /// No description provided for @admin2_carReviewLastDecision.
   ///
@@ -16993,8 +17371,14 @@ abstract class AppLocalizations {
   /// No description provided for @admin2_reportsRevenue.
   ///
   /// In en, this message translates to:
-  /// **'Booking revenue'**
+  /// **'Booked value (incl. active)'**
   String get admin2_reportsRevenue;
+
+  /// No description provided for @admin2_reportsRevenueNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Booked value counts completed, active and paid bookings in this range — not money received. Finance income is the realised income from the finance ledger.'**
+  String get admin2_reportsRevenueNote;
 
   /// No description provided for @admin2_reportsIncome.
   ///
@@ -17266,6 +17650,12 @@ abstract class AppLocalizations {
   /// **'First {count} matches'**
   String adminAuditFirstMatches(int count);
 
+  /// No description provided for @adminAuditShowingFirstOf.
+  ///
+  /// In en, this message translates to:
+  /// **'Showing first {shown} of {total}'**
+  String adminAuditShowingFirstOf(int shown, int total);
+
   /// No description provided for @admin2_ownerNotListed.
   ///
   /// In en, this message translates to:
@@ -17500,6 +17890,24 @@ abstract class AppLocalizations {
   /// **'Review flag'**
   String get admin2_tribunalReviewFlag;
 
+  /// No description provided for @admin2_tribunalViewCustomer.
+  ///
+  /// In en, this message translates to:
+  /// **'View customer'**
+  String get admin2_tribunalViewCustomer;
+
+  /// No description provided for @admin2_tribunalCustomerNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No customer record matches this CNIC.'**
+  String get admin2_tribunalCustomerNotFound;
+
+  /// No description provided for @admin2_customerDetailViewTribunal.
+  ///
+  /// In en, this message translates to:
+  /// **'View tribunal entry'**
+  String get admin2_customerDetailViewTribunal;
+
   /// No description provided for @admin2_ticketLinkedBooking.
   ///
   /// In en, this message translates to:
@@ -17571,10 +17979,7 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Security {amount} — {status} (deducted {deducted})'**
   String admin2_bookingDetailDepositDeducted(
-    String amount,
-    String status,
-    String deducted,
-  );
+      String amount, String status, String deducted);
 
   /// No description provided for @admin2_bookingDetailDisputeStatus.
   ///
@@ -17610,13 +18015,8 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Plate {plate} • {category} • {transmission} • {fuel} • {seats} seats'**
-  String admin2_carReviewMetaLine1(
-    String plate,
-    String category,
-    String transmission,
-    String fuel,
-    Object seats,
-  );
+  String admin2_carReviewMetaLine1(String plate, String category,
+      String transmission, String fuel, Object seats);
 
   /// No description provided for @admin2_carReviewMetaLine2.
   ///
@@ -17695,10 +18095,7 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Status: {status} • Trip: {trip} ({kmLimit} km limit)'**
   String admin2_bookingSummaryStatusLine(
-    String status,
-    String trip,
-    String kmLimit,
-  );
+      String status, String trip, String kmLimit);
 
   /// No description provided for @admin2_bookingSummaryVehicle.
   ///
@@ -17723,11 +18120,7 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Total: {total} • Advance required: {advanceRequired} • Paid: {paid} • Remaining: {remaining}'**
   String admin2_bookingSummaryTotal(
-    String total,
-    String advanceRequired,
-    String paid,
-    String remaining,
-  );
+      String total, String advanceRequired, String paid, String remaining);
 
   /// No description provided for @admin2_bookingSummaryDepositNone.
   ///
@@ -17758,10 +18151,7 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Handover: odometer {odometer} km, fuel {fuel}, damage: {damage}'**
   String admin2_bookingSummaryHandover(
-    Object odometer,
-    String fuel,
-    String damage,
-  );
+      Object odometer, String fuel, String damage);
 
   /// No description provided for @admin2_bookingPhotoOpenFailed.
   ///
@@ -18157,14 +18547,8 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Assalam-o-Alaikum {customer}, your walk-in booking {bookingId} for {vehicle} is confirmed. Pickup: {pickup}. Total: Rs. {total}. Remaining dues: Rs. {remaining}. Thank you!'**
-  String manualBookingReceiptMessage(
-    String customer,
-    String bookingId,
-    String vehicle,
-    String pickup,
-    String total,
-    String remaining,
-  );
+  String manualBookingReceiptMessage(String customer, String bookingId,
+      String vehicle, String pickup, String total, String remaining);
 
   /// No description provided for @manualBookingReceiptDone.
   ///
@@ -18806,14 +19190,8 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Handover receipt {receipt} for {vehicle}: total Rs. {total}, advance Rs. {advance}, balance Rs. {balance}, Security Rs. {deposit}. — RentalHub'**
-  String handoverWizardReceiptMessage(
-    String receipt,
-    String vehicle,
-    String total,
-    String advance,
-    String balance,
-    String deposit,
-  );
+  String handoverWizardReceiptMessage(String receipt, String vehicle,
+      String total, String advance, String balance, String deposit);
 
   /// No description provided for @handoverWizardReceiptWhatsappFailed.
   ///
@@ -18958,6 +19336,126 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Waiting for approval'**
   String get nextStepWaitingApproval;
+
+  /// No description provided for @adminSortLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort'**
+  String get adminSortLabel;
+
+  /// No description provided for @adminSortDateNewest.
+  ///
+  /// In en, this message translates to:
+  /// **'Newest first'**
+  String get adminSortDateNewest;
+
+  /// No description provided for @adminSortDateOldest.
+  ///
+  /// In en, this message translates to:
+  /// **'Oldest first'**
+  String get adminSortDateOldest;
+
+  /// No description provided for @adminSortNameAsc.
+  ///
+  /// In en, this message translates to:
+  /// **'Name A–Z'**
+  String get adminSortNameAsc;
+
+  /// No description provided for @adminSortNameDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Name Z–A'**
+  String get adminSortNameDesc;
+
+  /// No description provided for @adminSortAmountHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount: highest first'**
+  String get adminSortAmountHigh;
+
+  /// No description provided for @adminSortAmountLow.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount: lowest first'**
+  String get adminSortAmountLow;
+
+  /// No description provided for @adminSortStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get adminSortStatus;
+
+  /// No description provided for @adminSortPriority.
+  ///
+  /// In en, this message translates to:
+  /// **'Priority'**
+  String get adminSortPriority;
+
+  /// No description provided for @adminSortRatingHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'Rating: highest first'**
+  String get adminSortRatingHigh;
+
+  /// No description provided for @adminSortRatingLow.
+  ///
+  /// In en, this message translates to:
+  /// **'Rating: lowest first'**
+  String get adminSortRatingLow;
+
+  /// No description provided for @adminSortTitleAsc.
+  ///
+  /// In en, this message translates to:
+  /// **'Title A–Z'**
+  String get adminSortTitleAsc;
+
+  /// No description provided for @adminSortActionAsc.
+  ///
+  /// In en, this message translates to:
+  /// **'Action A–Z'**
+  String get adminSortActionAsc;
+
+  /// No description provided for @admin2_reportsTrendTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Trend vs previous period'**
+  String get admin2_reportsTrendTitle;
+
+  /// No description provided for @admin2_reportsTrendNoPrevious.
+  ///
+  /// In en, this message translates to:
+  /// **'no previous data'**
+  String get admin2_reportsTrendNoPrevious;
+
+  /// No description provided for @admin2_reportsTrend.
+  ///
+  /// In en, this message translates to:
+  /// **'{sign}{percent}% vs previous period'**
+  String admin2_reportsTrend(String sign, String percent);
+
+  /// No description provided for @admin2_reportsBookingsChart.
+  ///
+  /// In en, this message translates to:
+  /// **'Bookings over time'**
+  String get admin2_reportsBookingsChart;
+
+  /// No description provided for @admin2_reportsFinanceChart.
+  ///
+  /// In en, this message translates to:
+  /// **'Finance over time'**
+  String get admin2_reportsFinanceChart;
+
+  /// No description provided for @admin2_reportsNoChartData.
+  ///
+  /// In en, this message translates to:
+  /// **'No data in this range to chart.'**
+  String get admin2_reportsNoChartData;
+
+  /// No description provided for @admin2_reportsTruncatedNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Based on the first 1,000 records in this range — totals and charts may be incomplete.'**
+  String get admin2_reportsTruncatedNote;
 }
 
 class _AppLocalizationsDelegate
@@ -18987,9 +19485,8 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
   }
 
   throw FlutterError(
-    'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
-    'an issue with the localizations generation tool. Please file an issue '
-    'on GitHub with a reproducible sample app and the gen-l10n configuration '
-    'that was used.',
-  );
+      'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
+      'an issue with the localizations generation tool. Please file an issue '
+      'on GitHub with a reproducible sample app and the gen-l10n configuration '
+      'that was used.');
 }

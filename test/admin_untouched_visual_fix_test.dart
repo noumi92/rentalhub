@@ -63,13 +63,12 @@ void main() {
   group('admin_untouched_visual_fix', () {
     testWidgets('settings toggles render in Urdu at 360px without overflow',
         (tester) async {
-      // operations role: the APK download card stays hidden, so this
-      // pumps only the settings form.
+      // Phase 1 (1.3): the APK download card no longer lives in
+      // Settings, so this pumps only the settings form.
       await _pump(
         tester,
         AdminPlatformSettingsView(
           dataSource: _FakeSettingsSource(),
-          adminRole: 'operations',
         ),
         locale: const Locale('ur'),
       );
@@ -90,7 +89,6 @@ void main() {
         tester,
         AdminPlatformSettingsView(
           dataSource: _ThrowingSettingsSource(),
-          adminRole: 'operations',
         ),
       );
       expect(find.text('Could not load the platform settings.'),

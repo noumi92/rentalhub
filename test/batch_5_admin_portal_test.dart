@@ -13,7 +13,7 @@ import 'package:rentalhub/l10n/app_localizations.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_subscription_view.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_whatsapp_logs_view.dart';
 import 'package:rentalhub/features/admin/presentation/views/admin_dashboard_view.dart';
-import 'package:rentalhub/features/admin/presentation/views/admin_shop_approvals_view.dart';
+import 'package:rentalhub/features/admin/presentation/views/admin_shops_view.dart';
 import 'package:rentalhub/features/admin/presentation/views/admin_blacklist_tribunal_view.dart';
 import 'package:rentalhub/core/routing/route_names.dart';
 import 'package:rentalhub/features/admin/presentation/views/admin_coming_soon_view.dart';
@@ -180,20 +180,22 @@ void main() {
     });
 
     testWidgets(
-        'Phase B (B1): approvals queue shows its honest empty state',
+        'Phase B (B1): approvals is a filter on the shops list',
         (tester) async {
       tester.view.physicalSize = const Size(1440, 900);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(() => tester.view.resetPhysicalSize());
 
+      // Phase 3 (3.1): the Approvals screen is deleted — pending
+      // is a filter on the shops list.
       await tester.pumpWidget(
-        const MaterialApp(home: AdminShopApprovalsView()),
+        const MaterialApp(
+            home: AdminShopsView(initialFilter: 'pending')),
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Shop Approvals'), findsOneWidget);
-      expect(find.textContaining('No pending applications'),
-          findsOneWidget);
+      expect(find.text('Shop Approvals'), findsNothing);
+      expect(find.textContaining('No shops match'), findsOneWidget);
     });
 
     testWidgets('AdminBlacklistTribunalView: displays cases and tribunal desk',

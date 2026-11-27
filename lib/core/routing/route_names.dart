@@ -156,7 +156,6 @@ class RouteNames {
   // F-M5: the invite accept screen — a super admin grants the role
   // from a shared invite link.
   static const String adminInviteAccept = '/admin/accept-invite';
-  static const String adminApprovals = '/admin/approvals';
   // Item 6 — customer KYC review: the queue of `kyc_documents`
   // submissions waiting for a decision, and one submission's detail.
   static const String adminKycReview = '/admin/kyc-review';
@@ -167,12 +166,24 @@ class RouteNames {
   static const String adminCustomerDetail = '/admin/customers/:customerId';
   static const String adminBookings = '/admin/bookings';
   static const String adminBookingDetail = '/admin/bookings/:bookingId';
+  // Phase 2 (2.2): the Queues hub — the phone bottom nav's Queues
+  // tab, listing the six review queues with their live counts.
+  static const String adminQueues = '/admin/queues';
   static const String adminDisputes = '/admin/disputes';
+  // Phase 2 (2.4): dispute + ticket detail routes, like the shop,
+  // customer, booking and KYC detail routes — the lists navigate
+  // here instead of opening the decision/detail sheets.
+  static const String adminDisputeDetail = '/admin/disputes/:disputeId';
   static const String adminReviews = '/admin/reviews';
   static const String adminTickets = '/admin/tickets';
+  static const String adminTicketDetail = '/admin/tickets/:ticketId';
   static const String adminSettings = '/admin/settings';
   static const String adminApkDownload = '/admin/apk-download';
   static const String adminAnnouncements = '/admin/announcements';
+  // Phase 3 (3.2): one announcement's detail — edit/delete for
+  // drafts and scheduled items, read-only history once sent.
+  static const String adminAnnouncementDetail =
+      '/admin/announcements/:announcementId';
   static const String adminReports = '/admin/reports';
   static const String adminActivity = '/admin/activity';
   static const String adminShops = '/admin/shops';

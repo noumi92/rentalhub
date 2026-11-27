@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/money_format.dart';
@@ -9,6 +8,9 @@ import '../../../../core/widgets/app_state_views.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../fleet/domain/entities/vehicle_entity.dart';
 import '../../data/datasources/admin_shops_data_source.dart';
+import '../widgets/admin_count_line.dart';
+import '../widgets/admin_list_card.dart';
+import '../widgets/admin_sort_menu.dart';
 import '../widgets/admin_shell.dart';
 import '../widgets/admin_status_chip.dart';
 import '../widgets/car_review_detail_sheet.dart';
@@ -30,6 +32,8 @@ class _AdminCarsViewState extends State<AdminCarsView> {
   bool _isLoading = true;
   bool _hasError = false;
   String _filter = 'all';
+  String _sort = AdminListSort.nameAsc;
+  int? _total;
 
   @override
   void initState() {
@@ -49,10 +53,12 @@ class _AdminCarsViewState extends State<AdminCarsView> {
       final ds = sl<AdminShopsDataSource>();
       final cars = await ds.getCars();
       final reviews = await ds.getCarReviews();
+      final total = await ds.countCars();
       if (mounted) {
         setState(() {
           _cars = cars;
           _reviews = reviews;
+          _total = total;
           _isLoading = false;
         });
       }
@@ -65,7 +71,7 @@ class _AdminCarsViewState extends State<AdminCarsView> {
 
   List<VehicleEntity> get _visible {
     final query = _searchController.text.trim().toLowerCase();
-    return _cars.where((v) {
+    final visible = _cars.where((v) {
       final review = _reviews[v.vehicleId]?.status ?? 'pending';
       final matchesFilter = _filter == 'all' || review == _filter;
       final matchesQuery = query.isEmpty ||
@@ -73,6 +79,29 @@ class _AdminCarsViewState extends State<AdminCarsView> {
           v.plateNumber.toLowerCase().contains(query);
       return matchesFilter && matchesQuery;
     }).toList();
+    // Phase 4 (4.3) — client-side sort (the list is client-side:
+    // [AdminShopsDataSource.getCars] caps at 200). Name orders by
+    // make + model, date by model year, status by review state.
+    String name(VehicleEntity v) => '${v.make} ${v.model}';
+    String reviewOf(VehicleEntity v) => _reviews[v.vehicleId]?.status ?? 'pending';
+    switch (_sort) {
+      case AdminListSort.nameDesc:
+        visible.sort((a, b) => name(b).compareTo(name(a)));
+      case AdminListSort.dateNewest:
+        visible.sort((a, b) => b.year.compareTo(a.year));
+      case AdminListSort.dateOldest:
+        visible.sort((a, b) => a.year.compareTo(b.year));
+      case AdminListSort.statusAsc:
+        visible.sort((a, b) => reviewOf(a).compareTo(reviewOf(b)));
+      default:
+        visible.sort((a, b) => name(a).compareTo(name(b)));
+    }
+    return visible;
+  }
+
+  void _onSort(String sort) {
+    if (sort == _sort) return;
+    setState(() => _sort = sort);
   }
 
   @override
@@ -132,7 +161,35 @@ class _AdminCarsViewState extends State<AdminCarsView> {
                 ],
               ),
             ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                AdminSortMenu(
+                  options: [
+                    AdminSortOption(
+                        id: AdminListSort.nameAsc,
+                        label: l10n.adminSortNameAsc),
+                    AdminSortOption(
+                        id: AdminListSort.nameDesc,
+                        label: l10n.adminSortNameDesc),
+                    AdminSortOption(
+                        id: AdminListSort.dateNewest,
+                        label: l10n.adminSortDateNewest),
+                    AdminSortOption(
+                        id: AdminListSort.dateOldest,
+                        label: l10n.adminSortDateOldest),
+                    AdminSortOption(
+                        id: AdminListSort.statusAsc,
+                        label: l10n.adminSortStatus),
+                  ],
+                  selectedId: _sort,
+                  onSelected: _onSort,
+                ),
+              ],
+            ),
             SizedBox(height: 16),
+            if (!_isLoading && !_hasError && _visible.isNotEmpty)
+              AdminCountLine(shown: _visible.length, total: _total),
             Expanded(
               child: _isLoading
                   ? const AppLoadingState()
@@ -154,42 +211,26 @@ class _AdminCarsViewState extends State<AdminCarsView> {
                             final car = _visible[i];
                             final review =
                                 _reviews[car.vehicleId]?.status ?? 'pending';
-                            return Card(
-                              margin: EdgeInsets.zero,
-                              elevation: 0,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                side: BorderSide(
-                                    color: Theme.of(context).dividerColor),
-                              ),
-                              child: ListTile(
-                                leading: CircleAvatar(
-                                  backgroundColor: AppColors.primary
-                                      .withValues(alpha: 0.12),
-                                  child: const Icon(
-                                      Icons.directions_car_rounded,
-                                      ),
-                                ),
-                                title: Text(
-                                    '${car.make} ${car.model} (${car.year})',
-                                    style: const TextStyle(
-                                        fontSize: 14,
-                                        )),
-                                subtitle: Text(
+                            // Phase 4 (4.1) — the shared [AdminListCard]
+                            // shell; the chip is
+                            // [AdminStatusChip.carReviewStatus].
+                            return AdminListCard(
+                              icon: Icons.directions_car_rounded,
+                              title:
+                                  '${car.make} ${car.model} (${car.year})',
+                              subtitle:
                                   '${car.plateNumber} • ${l10n.fleetDailyRate(formatRs(car.rates.daily24))} • ${humanizeStatus(car.status, l10n)}',
-                                  style: TextStyle(
-                                      fontSize: 12,
-                                      color: Theme.of(context).colorScheme.onSurfaceVariant),
-                                ),
-                                trailing: _reviewChip(context, review),
-                                onTap: () => showModalBottomSheet(
-                                  context: context,
-                                  isScrollControlled: true,
-                                  builder: (_) => CarReviewDetailSheet(
-                                    vehicle: car,
-                                    review: _reviews[car.vehicleId],
-                                    onDecided: _load,
-                                  ),
+                              trailing: AdminStatusChip.carReviewStatus(
+                                  review, AppLocalizations.of(context)),
+                              onTap: () => showModalBottomSheet(
+                                context: context,
+                                isScrollControlled: true,
+                                // Phase 1 (1.5): drag handle on the sheet.
+                                showDragHandle: true,
+                                builder: (_) => CarReviewDetailSheet(
+                                  vehicle: car,
+                                  review: _reviews[car.vehicleId],
+                                  onDecided: _load,
                                 ),
                               ),
                             );
@@ -202,15 +243,4 @@ class _AdminCarsViewState extends State<AdminCarsView> {
     );
   }
 
-  Widget _reviewChip(BuildContext context, String review) {
-    final tone = switch (review) {
-      'approved' => AdminStatusTone.success,
-      'hidden' => AdminStatusTone.warning,
-      'rejected' => AdminStatusTone.danger,
-      _ => AdminStatusTone.neutral,
-    };
-    return AdminStatusChip(
-        label: humanizeStatus(review, AppLocalizations.of(context)),
-        tone: tone);
-  }
 }

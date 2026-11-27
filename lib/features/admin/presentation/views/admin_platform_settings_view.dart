@@ -7,9 +7,7 @@ import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/app_state_views.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/datasources/admin_support_data_source.dart';
-import '../../data/services/admin_apk_release_service.dart';
 import '../../domain/admin_permissions.dart';
-import '../widgets/admin_apk_download_card.dart';
 import '../widgets/admin_confirm_dialog.dart';
 import '../widgets/admin_permission_check.dart';
 import '../widgets/admin_platform_settings_form.dart';
@@ -33,18 +31,7 @@ import '../widgets/admin_shell.dart';
 class AdminPlatformSettingsView extends StatefulWidget {
   final AdminSupportDataSource? dataSource;
 
-  /// The signed-in admin's role, forwarded to the APK download card.
-  /// The router leaves it null and the card resolves it from the
-  /// signed-in user; tests pass it directly.
-  final String? adminRole;
-
-  /// Role resolver override for tests.
-  final Future<String?> Function()? resolveAdminRole;
-
-  /// APK release service override for tests.
-  final AdminApkReleaseService? apkReleaseService;
-
-  const AdminPlatformSettingsView({super.key, this.dataSource, this.adminRole, this.resolveAdminRole, this.apkReleaseService});
+  const AdminPlatformSettingsView({super.key, this.dataSource});
 
   @override
   State<AdminPlatformSettingsView> createState() =>
@@ -203,13 +190,9 @@ class _AdminPlatformSettingsViewState
                           onChanged: () => setState(() {}),
                           onSave: _save,
                         ),
-                        // Super admin only: the card hides itself for any
-                        // other role (and while the role is resolving).
-                        AdminApkDownloadCard(
-                          adminRole: widget.adminRole,
-                          resolveAdminRole: widget.resolveAdminRole,
-                          service: widget.apkReleaseService,
-                        ),
+                        // Phase 1 (1.3): the APK download card lived
+                        // here too — the standalone /admin/apk-download
+                        // route is now the only path to it.
                       ],
                     ),
                   ),

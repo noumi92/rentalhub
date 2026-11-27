@@ -10,7 +10,9 @@ import '../../data/datasources/admin_platform_data_source.dart';
 import '../../domain/admin_permissions.dart';
 import '../widgets/admin_permission_check.dart';
 import '../widgets/admin_review_card.dart';
+import '../widgets/admin_count_line.dart';
 import '../widgets/admin_shell.dart';
+import '../widgets/admin_sort_menu.dart';
 
 /// Phase D (D3) — reviews moderation: the Abusive / Fake / Revenge
 /// queues. A review lands in a queue only when an auto-check signal
@@ -28,6 +30,8 @@ class _AdminReviewsViewState extends State<AdminReviewsView> {
   bool _isLoading = true;
   bool _hasError = false;
   String _filter = 'all';
+  String _sort = AdminListSort.ratingHigh;
+  int? _total;
 
   @override
   void initState() {
@@ -38,10 +42,13 @@ class _AdminReviewsViewState extends State<AdminReviewsView> {
   Future<void> _load() async {
     if (!_isLoading) setState(() => _hasError = false);
     try {
-      final reviews = await sl<AdminPlatformDataSource>().getReviews();
+      final ds = sl<AdminPlatformDataSource>();
+      final reviews = await ds.getReviews();
+      final total = await ds.countReviews();
       if (mounted) {
         setState(() {
           _reviews = reviews;
+          _total = total;
           _isLoading = false;
         });
       }
@@ -145,7 +152,10 @@ class _AdminReviewsViewState extends State<AdminReviewsView> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final visible = _reviews.where(_inQueue).toList();
+    // Phase 4 (4.3) — client-side sort (the list is client-side:
+    // [AdminPlatformDataSource.getReviews] caps at 200).
+    final visible = AdminPlatformDataSource.sortReviews(
+        _reviews.where(_inQueue).toList(), _sort);
     final compact =
         windowSizeClassOf(context) == WindowSizeClass.compact;
     return AdminShell(
@@ -178,7 +188,29 @@ class _AdminReviewsViewState extends State<AdminReviewsView> {
                 ],
               ),
             ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                AdminSortMenu(
+                  options: [
+                    AdminSortOption(
+                        id: AdminListSort.ratingHigh,
+                        label: l10n.adminSortRatingHigh),
+                    AdminSortOption(
+                        id: AdminListSort.ratingLow,
+                        label: l10n.adminSortRatingLow),
+                    AdminSortOption(
+                        id: AdminListSort.statusAsc,
+                        label: l10n.adminSortStatus),
+                  ],
+                  selectedId: _sort,
+                  onSelected: (sort) => setState(() => _sort = sort),
+                ),
+              ],
+            ),
             SizedBox(height: 16),
+            if (!_isLoading && !_hasError && visible.isNotEmpty)
+              AdminCountLine(shown: visible.length, total: _total),
             Expanded(
               child: _isLoading
                   ? const AppLoadingState()

@@ -228,35 +228,33 @@ void main() {
     });
   });
 
-  group('AdminPlatformSettingsView — APK card gating', () {
-    testWidgets('operations never sees the APK card', (tester) async {
-      await tester.pumpWidget(
-        MaterialApp(
-          home: AdminPlatformSettingsView(
-            dataSource: _FakeAdminSupportDataSource(),
-            adminRole: 'operations',
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-      expect(find.text('Android app (APK)'), findsNothing);
-    });
-
-    testWidgets('super admin sees the APK card with the latest build',
+  group('AdminPlatformSettingsView — APK card removed (Phase 1, 1.3)', () {
+    testWidgets('no role sees the APK card in Settings any more',
         (tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: AdminPlatformSettingsView(
             dataSource: _FakeAdminSupportDataSource(),
-            adminRole: 'super_admin',
-            apkReleaseService: _serviceFor(_validVersionJson),
           ),
         ),
       );
       await tester.pumpAndSettle();
+      expect(find.text('Android app (APK)'), findsNothing);
+      expect(find.text('Download APK'), findsNothing);
+      expect(find.text('Cities & settings'), findsWidgets);
+      expect(find.text('Save settings'), findsOneWidget);
+    });
+
+    testWidgets('the card still exists on its own route', (tester) async {
+      await _pumpCard(
+        tester,
+        adminRole: 'super_admin',
+        service: _serviceFor(_validVersionJson),
+      );
       expect(find.text('Android app (APK)'), findsOneWidget);
       expect(find.text('Download APK'), findsOneWidget);
       expect(find.text('1.0.0 (code 1)'), findsOneWidget);
+      expect(find.text('68'), findsOneWidget);
     });
   });
 }

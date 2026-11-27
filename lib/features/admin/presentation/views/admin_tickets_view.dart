@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
@@ -8,15 +9,16 @@ import '../../../../core/utils/responsive.dart';
 import '../../../../core/widgets/app_state_views.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/datasources/admin_support_data_source.dart';
+import '../widgets/admin_count_line.dart';
 import '../widgets/admin_load_more_button.dart';
 import '../widgets/admin_shell.dart';
+import '../widgets/admin_ticket_list_header.dart';
 import '../widgets/admin_ticket_list_tile.dart';
-import '../widgets/ticket_detail_sheet.dart';
 
 /// Phase E (E1) — the support tickets inbox: every ticket the
 /// customer form wrote, with its SLA countdown (High 1 h, Medium
-/// 4 h, Low 24 h). Tap a ticket for the thread — replies, internal
-/// notes, quick replies, Close / Escalate.
+/// 4 h, Low 24 h). Tap a ticket for its detail route — the thread,
+/// replies, internal notes, quick replies, Close / Escalate.
 class AdminTicketsView extends StatefulWidget {
   const AdminTicketsView({super.key});
 
@@ -35,9 +37,11 @@ class _AdminTicketsViewState extends State<AdminTicketsView> {
   bool _hasError = false;
   bool _isSearching = false;
   String _filter = 'all';
+  String _sort = 'dateNewest';
   String _searchQuery = '';
   Object? _cursor;
   bool _hasMore = false;
+  int? _total;
 
   @override
   void initState() {
@@ -104,6 +108,7 @@ class _AdminTicketsViewState extends State<AdminTicketsView> {
     Object? cursor,
     bool hasMore = false,
     bool isSearching = false,
+    int? total,
   }) {
     if (!mounted) return;
     setState(() {
@@ -111,9 +116,25 @@ class _AdminTicketsViewState extends State<AdminTicketsView> {
       _isSearching = isSearching;
       _cursor = cursor;
       _hasMore = hasMore;
+      _total = total;
       _isLoading = false;
       _isLoadingMore = false;
     });
+  }
+
+  void _onFilter(String filter) {
+    if (filter == _filter) return;
+    setState(() {
+      _filter = filter;
+      _isLoading = true;
+    });
+    _load();
+  }
+
+  void _onSort(String sort) {
+    if (sort == _sort) return;
+    setState(() => _sort = sort);
+    _load();
   }
 
   void _onSearchChanged(String value) {
@@ -140,65 +161,25 @@ class _AdminTicketsViewState extends State<AdminTicketsView> {
         padding: EdgeInsets.all(compact ? 16 : 24),
         child: Column(
           children: [
-            TextField(
-              controller: _searchController,
-              onChanged: _onSearchChanged,
-              decoration: InputDecoration(
-                hintText: l10n?.adminAuditSearchTicketsHint ??
-                    'Search by message or customer ID…',
-                prefixIcon: const Icon(Icons.search_rounded),
-                filled: true,
-                fillColor: Theme.of(context)
-                    .colorScheme
-                    .surfaceContainerHighest,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide:
-                      BorderSide(color: Theme.of(context).dividerColor),
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 14, vertical: 12),
-              ),
-            ),
-            const SizedBox(height: 12),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Wrap(
-                spacing: 8,
-                children: [
-                  for (final entry in {
-                    'all': l10n?.filterAll ?? 'All',
-                    'open': l10n?.admin2_open ?? 'Open',
-                    'in_progress': l10n?.admin2_inProgress ?? 'In progress',
-                    'escalated': l10n?.admin2_escalated ?? 'Escalated',
-                    'closed': l10n?.admin2_closed ?? 'Closed',
-                  }.entries)
-                    ChoiceChip(
-                      label: Text(entry.value),
-                      selected: _filter == entry.key,
-                      onSelected: (_) {
-                        setState(() {
-                          _filter = entry.key;
-                          _isLoading = true;
-                        });
-                        _load();
-                      },
-                    ),
-                ],
-              ),
+            AdminTicketListHeader(
+              searchController: _searchController,
+              onSearchChanged: _onSearchChanged,
+              filter: _filter,
+              onFilter: _onFilter,
+              sort: _sort,
+              onSort: _onSort,
             ),
             const SizedBox(height: 16),
             if (!_isLoading && !_hasError && _tickets.isNotEmpty)
-              AdminListCountLabel(
-                label: _isSearching
-                    ? (_tickets.length >= _pageSize
-                        ? (l10n?.adminAuditFirstMatches(_pageSize) ??
-                            'First $_pageSize matches')
-                        : (l10n?.adminAuditMatching(_tickets.length) ??
-                            '${_tickets.length} matching entries'))
-                    : (l10n?.adminAuditShowing(_tickets.length) ??
-                        'Showing ${_tickets.length}'),
-              ),
+              _isSearching
+                  ? AdminListCountLabel(
+                      label: _tickets.length >= _pageSize
+                          ? (l10n?.adminAuditFirstMatches(_pageSize) ??
+                              'First $_pageSize matches')
+                          : (l10n?.adminAuditMatching(_tickets.length) ??
+                              '${_tickets.length} matching entries'),
+                    )
+                  : AdminCountLine(shown: _tickets.length, total: _total),
             Expanded(
               child: _isLoading
                   ? const AppLoadingState()
@@ -230,14 +211,13 @@ class _AdminTicketsViewState extends State<AdminTicketsView> {
                             final t = _tickets[i];
                             return AdminTicketListTile(
                               ticket: t,
-                              onTap: () => showModalBottomSheet(
-                                context: context,
-                                isScrollControlled: true,
-                                builder: (_) => TicketDetailSheet(
-                                  ticket: t,
-                                  onChanged: _load,
-                                ),
-                              ),
+                              // Phase 2 (2.4): a ticket navigates to
+                              // its detail route — the thread sheet
+                              // now lives inside that route, not over
+                              // the inbox.
+                              onTap: () => context.go(
+                                  RouteNames.adminTicketDetail
+                                      .replaceFirst(':ticketId', t.id)),
                             );
                           },
                         ),

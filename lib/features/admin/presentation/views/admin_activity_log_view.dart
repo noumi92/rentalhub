@@ -12,9 +12,8 @@ import '../widgets/admin_audit_log_list.dart';
 import '../widgets/admin_shell.dart';
 
 /// Phase A (A5) — the activity log: every admin action, newest first,
-/// with a text filter and a CSV export. The `audit_logs` collection is
-/// immutable in Firestore rules (read admin, create authenticated,
-/// update/delete never), so nothing here can edit or delete an entry.
+/// with a text filter and a CSV export. `audit_logs` is immutable in
+/// Firestore rules (read admin, create authenticated, never update).
 class AdminActivityLogView extends StatefulWidget {
   const AdminActivityLogView({super.key});
 
@@ -39,12 +38,11 @@ class _AdminActivityLogViewState extends State<AdminActivityLogView> {
   int _totalMatching = 0;
   Object? _cursor;
   bool _hasMore = false;
+  String _sort = 'dateNewest';
+  int? _total;
 
   bool get _hasServerFilter =>
-      _actionPrefix != null ||
-      _actorQuery.isNotEmpty ||
-      _from != null ||
-      _to != null;
+      _actionPrefix != null || _actorQuery.isNotEmpty || _from != null || _to != null;
 
   @override
   void initState() {
@@ -60,10 +58,8 @@ class _AdminActivityLogViewState extends State<AdminActivityLogView> {
     super.dispose();
   }
 
-  // F-m2 + F-m3: the log pages (50 at a time) instead of stopping
-  // at a silent 200-row cap, and the action/actor/date filters run
-  // server-side — the old text search only ever covered the loaded
-  // page, and now covers the loaded (filtered) entries.
+  // F-m2 + F-m3: the log pages (50 at a time) instead of a silent
+  // 200-row cap; the action/actor/date filters run server-side.
   Future<void> _load({bool reset = true}) async {
     if (reset) {
       setState(() {
@@ -73,6 +69,7 @@ class _AdminActivityLogViewState extends State<AdminActivityLogView> {
         _cursor = null;
         _hasMore = false;
         _totalMatching = 0;
+        _total = null;
       });
     } else {
       setState(() => _isLoadingMore = true);
@@ -80,17 +77,15 @@ class _AdminActivityLogViewState extends State<AdminActivityLogView> {
     try {
       final ds = sl<AdminRemoteDataSource>();
       if (_hasServerFilter) {
-        // The To bound is the end of the picked day, not midnight
-        // at its start — otherwise the whole To day is dropped
-        // from the filtered log (same class as F-M17).
-        final filterTo = _to == null
-            ? null
-            : DateTime(_to!.year, _to!.month, _to!.day, 23, 59, 59);
+        // The To bound is the end of the picked day (same class
+        // as F-M17) — otherwise the whole To day is dropped.
+        final filterTo = _to == null ? null : DateTime(_to!.year, _to!.month, _to!.day, 23, 59, 59);
         final entries = await ds.getAuditLogsFiltered(
           actionPrefix: _actionPrefix,
           actorEmail: _actorQuery.isEmpty ? null : _actorQuery,
           from: _from,
           to: filterTo,
+          sort: _sort,
         );
         final total = await ds.countAuditLogsFiltered(
           actionPrefix: _actionPrefix,
@@ -101,14 +96,19 @@ class _AdminActivityLogViewState extends State<AdminActivityLogView> {
         _setLoaded(entries, total: total);
         return;
       }
+      // Phase 4 (4.4c): the unfiltered total, so the log can say
+      // "Showing first N of M".
+      final total = await ds.countAuditLogs();
       final page = await ds.getAuditLogsPage(
         limit: _pageSize,
         cursor: reset ? null : _cursor,
+        sort: _sort,
       );
       _setLoaded(
         reset ? page.items : [..._entries, ...page.items],
         cursor: page.cursor,
         hasMore: page.hasMore,
+        total: total,
       );
     } catch (_) {
       if (mounted) {
@@ -130,6 +130,7 @@ class _AdminActivityLogViewState extends State<AdminActivityLogView> {
     if (!mounted) return;
     setState(() {
       _entries = entries;
+      if (!_hasServerFilter) _total = total;
       _totalMatching = total;
       _cursor = cursor;
       _hasMore = hasMore;
@@ -138,12 +139,17 @@ class _AdminActivityLogViewState extends State<AdminActivityLogView> {
     });
   }
 
+  void _onSort(String sort) {
+    if (sort == _sort) return;
+    setState(() => _sort = sort);
+    _load();
+  }
+
   void _onActorChanged(String value) {
     _actorTimer?.cancel();
     _actorTimer = Timer(const Duration(milliseconds: 400), () {
-      final query = value.trim();
-      if (query == _actorQuery) return;
-      setState(() => _actorQuery = query);
+      if (value.trim() == _actorQuery) return;
+      setState(() => _actorQuery = value.trim());
       _load();
     });
   }
@@ -153,8 +159,7 @@ class _AdminActivityLogViewState extends State<AdminActivityLogView> {
     setState(() {
       _actionPrefix = null;
       _actorQuery = '';
-      _from = null;
-      _to = null;
+      _from = _to = null;
     });
     _load();
   }
@@ -162,35 +167,36 @@ class _AdminActivityLogViewState extends State<AdminActivityLogView> {
   List<AuditLogEntry> get _visible {
     final query = _searchController.text.trim().toLowerCase();
     if (query.isEmpty) return _entries;
-    return _entries.where((e) {
-      return e.action.toLowerCase().contains(query) ||
-          e.actorEmail.toLowerCase().contains(query) ||
-          e.targetType.toLowerCase().contains(query) ||
-          e.detail.toLowerCase().contains(query);
-    }).toList();
+    return _entries
+        .where((e) =>
+            e.action.toLowerCase().contains(query) ||
+            e.actorEmail.toLowerCase().contains(query) ||
+            e.targetType.toLowerCase().contains(query) ||
+            e.detail.toLowerCase().contains(query))
+        .toList();
   }
 
   @override
   Widget build(BuildContext context) {
-    final compact =
-        windowSizeClassOf(context) == WindowSizeClass.compact;
+    final compact = windowSizeClassOf(context) == WindowSizeClass.compact;
     final l10n = AppLocalizations.of(context);
     final searching = _searchController.text.trim().isNotEmpty;
     final countLabel = _entries.isEmpty || _isLoading || _hasError
         ? null
         : searching
-            ? (l10n?.adminAuditShowing(_visible.length) ??
-                'Showing ${_visible.length}')
+            ? (l10n?.adminAuditShowing(_visible.length) ?? 'Showing ${_visible.length}')
             : _hasServerFilter
-                ? (l10n?.adminAuditMatching(_totalMatching) ??
-                    '$_totalMatching matching entries')
-                : (l10n?.adminAuditShowing(_entries.length) ??
-                    'Showing ${_entries.length}');
+                ? (l10n?.adminAuditMatching(_totalMatching) ?? '$_totalMatching matching entries')
+                : (_total != null && _total! > _entries.length
+                    ? (l10n?.adminAuditShowingFirstOf(
+                            _entries.length, _total!) ??
+                        'Showing first ${_entries.length} of $_total')
+                    : (l10n?.adminAuditShowing(_entries.length) ??
+                        'Showing ${_entries.length}'));
     return AdminShell(
       activeRoute: RouteNames.adminActivity,
       title: l10n?.admin2_navActivityLog ?? 'Activity Log',
-      subtitle: l10n?.admin2_activitySubtitle ??
-          'Every admin action, newest first — immutable',
+      subtitle: l10n?.admin2_activitySubtitle ?? 'Every admin action, newest first — immutable',
       onRefresh: _load,
       child: Padding(
         padding: EdgeInsets.all(compact ? 16 : 24),
@@ -218,6 +224,8 @@ class _AdminActivityLogViewState extends State<AdminActivityLogView> {
               onClearFilters: _clearFilters,
               exportEntries: _visible,
               compact: compact,
+              sort: _sort,
+              onSort: _onSort,
             ),
             const SizedBox(height: 16),
             Expanded(

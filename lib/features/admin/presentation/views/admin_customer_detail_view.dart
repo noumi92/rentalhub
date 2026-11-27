@@ -2,10 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
-import '../../../../core/utils/money_format.dart';
 import '../../../../core/utils/responsive.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/app_state_views.dart';
@@ -13,18 +11,24 @@ import '../../../../l10n/app_localizations.dart';
 import '../../data/datasources/admin_people_data_source.dart';
 import '../../data/services/admin_session.dart';
 import '../../domain/admin_permissions.dart';
-import '../widgets/admin_detail_section.dart';
 import '../widgets/admin_permission_check.dart';
-import '../widgets/admin_qr_code_row.dart';
 import '../widgets/admin_shell.dart';
-import '../widgets/admin_status_chip.dart';
+import '../widgets/customer_detail_header.dart';
 import '../widgets/customer_detail_actions.dart';
-import '../widgets/customer_trust_breakdown.dart';
+import '../widgets/customer_detail_bookings_tab.dart';
+import '../widgets/customer_detail_notes_tab.dart';
+import '../widgets/customer_detail_profile_tab.dart';
 
 /// Phase C (C1) — one customer: the C3 trust score with its breakdown,
 /// CNIC and KYC state, blacklist state, trips and booking history,
 /// guarantor links from the bookings, admin notes, and the
 /// Watchlist/Blacklist actions.
+///
+/// Phase 2 (2.5) — tabbed like the customer-side Profile/KYC hub:
+/// Profile (trust breakdown), Bookings (history + guarantors), Notes &
+/// flags (notes, composer, watchlist/blacklist). The identity header
+/// sits above the tabs, shared by all three; the tab bodies are
+/// extracted widgets so the view stays under the 250-line cap.
 ///
 /// The CNIC back-QR number is shown here ONLY for a super admin
 /// (visibility rule, 2026-11-10): the number lives in the restricted
@@ -115,6 +119,28 @@ class _AdminCustomerDetailViewState extends State<AdminCustomerDetailView> {
     setState(() => _isWorking = false);
   }
 
+  Future<void> _toggleWatchlist() async {
+    final d = _detail;
+    if (d == null) return;
+    // AD-M6: the watchlist action is a toggle.
+    final target = !d.isWatchlisted;
+    final check = await AdminPermissionCheck.check(context, AdminPermission.manageBlacklist);
+    if (!check.proceed) return;
+    final synced = await sl<AdminPeopleDataSource>().setCustomerWatchlisted(
+      customerId: widget.customerId,
+      watchlisted: target,
+      adminRole: check.role,
+    );
+    if (!mounted) return;
+    final l10n = AppLocalizations.of(context)!;
+    if (synced) {
+      AppFeedback.showSuccess(context, target ? l10n.admin2_customerDetailWatchlistAdded : l10n.admin2_customerDetailWatchlistRemoved);
+      await _load();
+    } else {
+      AppFeedback.showError(context, l10n.admin2_serverUnreachable);
+    }
+  }
+
   Future<void> _blacklist() async {
     final d = _detail;
     if (d == null) return;
@@ -125,13 +151,15 @@ class _AdminCustomerDetailViewState extends State<AdminCustomerDetailView> {
     }
     // AD-M6: one tap used to file the report with hardcoded strings.
     // The admin confirms and gives the reason — the tribunal judges
-    // the case on it — and it is passed through as the reason.
-    final reason = await showBlacklistReportDialog(context);
-    if (reason == null || reason.isEmpty || !mounted) return;
+    // the case on it. Phase 3 (3.6b): the category is a real enum
+    // value and the description is free text, not the same string
+    // passed twice.
+    final report = await showBlacklistReportDialog(context);
+    if (report == null || !mounted) return;
     final check = await AdminPermissionCheck.check(context, AdminPermission.manageBlacklist);
     if (!check.proceed) return;
     setState(() => _isWorking = true);
-    final synced = await sl<AdminPeopleDataSource>().reportCustomerToBlacklist(customerId: d.customer.customerId, cnic: cnic, phone: d.customer.phone, reasonCategory: reason, description: reason, reportedByShopId: 'admin', adminRole: check.role);
+    final synced = await sl<AdminPeopleDataSource>().reportCustomerToBlacklist(customerId: d.customer.customerId, cnic: cnic, phone: d.customer.phone, reasonCategory: report.category.value, description: report.description, reportedByShopId: 'admin', adminRole: check.role);
     if (!mounted) return;
     if (synced) { AppFeedback.showSuccess(context, AppLocalizations.of(context)!.admin2_customerDetailReported); await _load(); } else { AppFeedback.showError(context, AppLocalizations.of(context)!.admin2_serverUnreachable); }
     setState(() => _isWorking = false);
@@ -140,12 +168,26 @@ class _AdminCustomerDetailViewState extends State<AdminCustomerDetailView> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final detail = _detail;
+    // Mobile-first: 16dp on a phone, 24dp on desktop.
+    final padding = EdgeInsets.all(
+        windowSizeClassOf(context) == WindowSizeClass.compact ? 16 : 24);
     return AdminShell(
       activeRoute: RouteNames.adminCustomers,
       title: l10n.admin2_customerDetailTitle,
       subtitle: l10n.admin2_customerDetailSubtitle,
       onRefresh: _load,
       onBack: () => context.go(RouteNames.adminCustomers),
+      // Phase 4 (4.4a) — Watchlist / Blacklist are the sticky bar
+      // now, reachable from every tab.
+      bottomBar: detail == null
+          ? null
+          : CustomerDetailStickyActions(
+              detail: detail,
+              isWorking: _isWorking,
+              onWatchlist: _toggleWatchlist,
+              onBlacklist: _blacklist,
+            ),
       child: _isLoading
           ? const AppLoadingState()
           : _hasError
@@ -153,95 +195,49 @@ class _AdminCustomerDetailViewState extends State<AdminCustomerDetailView> {
                   message: l10n.admin2_customerDetailLoadFailed,
                   onRetry: _load,
                 )
-              : _detail == null
+              : detail == null
                   ? AppEmptyState(title: l10n.admin2_customerDetailNotFound)
-                  : SingleChildScrollView(
-                  // Mobile-first: 16dp on a phone, 24dp on desktop.
-                  padding: EdgeInsets.all(
-                      windowSizeClassOf(context) ==
-                              WindowSizeClass.compact
-                          ? 16
-                          : 24),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(_detail!.customer.name, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
-                      const SizedBox(height: 4),
-                      Text(l10n.admin2_customerDetailContact(_detail!.customer.phone, _detail!.customer.cnic ?? l10n.admin2_notOnFile, humanizeStatus(_detail!.customer.source, l10n)), style: const TextStyle(fontSize: 13)),
-                      AdminQrCodeRow(isSuperAdmin: _isSuperAdmin, qrCode: _qrCode),
-                      const SizedBox(height: 8),
-                      if (_detail!.isBlacklisted)
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                          decoration: BoxDecoration(color: Theme.of(context).colorScheme.errorContainer, borderRadius: BorderRadius.circular(20)),
-                          // Item 4: colorScheme.error (#EF4444) is
-                          // 3.44:1 on the error container — the readable
-                          // danger text token is ~6.1:1 on it.
-                          child: Text(l10n.admin2_customerDetailBlacklisted, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: AppColors.dangerTextFor(Theme.of(context).brightness))),
-                        ),
-                      const SizedBox(height: 16),
-                      CustomerTrustBreakdown(
-                        breakdown: _detail!.trustBreakdown,
-                        storedScore: _detail!.storedTrustScore,
-                        completedTrips: _detail!.completedTrips,
-                        meanOwnerRating: _detail!.meanOwnerRating,
-                        kycStatus: _detail!.kycStatus,
+                  : DefaultTabController(
+                      length: 3,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: padding.copyWith(bottom: 0),
+                            child: CustomerDetailHeader(
+                              detail: detail,
+                              isSuperAdmin: _isSuperAdmin,
+                              qrCode: _qrCode,
+                            ),
+                          ),
+                          TabBar(
+                            // Three tabs at 2.0x text scale do not fit a 360dp phone side by side.
+                            isScrollable: true,
+                            tabAlignment: TabAlignment.start,
+                            tabs: [
+                              Tab(text: l10n.admin2_customerDetailTabProfile),
+                              Tab(text: l10n.admin2_customerDetailTabBookings),
+                              Tab(text: l10n.admin2_customerDetailTabNotes),
+                            ],
+                          ),
+                          Expanded(
+                            child: TabBarView(
+                              children: [
+                                CustomerDetailProfileTab(detail: detail, padding: padding),
+                                CustomerDetailBookingsTab(detail: detail, padding: padding),
+                                CustomerDetailNotesTab(
+                                  detail: detail,
+                                  padding: padding,
+                                  noteController: _noteController,
+                                  isWorking: _isWorking,
+                                  onAddNote: _addNote,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 20),
-                      AdminDetailSection(
-                          title: l10n.admin2_customerDetailBookingHistory,
-                          lines: _detail!.bookings.isEmpty
-                              ? [l10n.admin2_customerDetailNoBookings]
-                              : _detail!.bookings
-                                  .take(10)
-                                  .map((b) =>
-                                      '${b.vehicleName ?? b.vehicleId} • ${humanizeStatus(b.status, l10n)} • ${l10n.amountRs(formatRs(b.totalAmount))}')
-                                  .toList()),
-                      AdminDetailSection(
-                          title: l10n.admin2_customerDetailGuarantors,
-                          lines: _detail!.bookings
-                              .where((b) =>
-                                  (b.guarantorName ?? '').isNotEmpty)
-                              .map((b) =>
-                                  '${b.guarantorName} • CNIC ${b.guarantorCnic ?? '—'} • ${b.guarantorPhone ?? ''}')
-                              .toSet()
-                              .toList()),
-                      AdminDetailSection(
-                          title: l10n.admin2_customerDetailAdminNotes,
-                          lines: _detail!.notes.isEmpty
-                              ? [l10n.admin2_customerDetailNoNotes]
-                              : _detail!.notes
-                                  .map((n) => n.text)
-                                  .toList()),
-                      CustomerDetailActions(
-                        noteController: _noteController,
-                        isWorking: _isWorking,
-                        isWatchlisted: _detail!.isWatchlisted,
-                        onAddNote: _addNote,
-                        onWatchlist: () async {
-                          // AD-M6: the watchlist action is a toggle.
-                          final target = !_detail!.isWatchlisted;
-                          final check = await AdminPermissionCheck.check(context, AdminPermission.manageBlacklist);
-                          if (!check.proceed) return;
-                          final synced = await sl<AdminPeopleDataSource>()
-                              .setCustomerWatchlisted(
-                            customerId: widget.customerId,
-                            watchlisted: target,
-                            adminRole: check.role,
-                          );
-                          if (!context.mounted) return;
-                          if (synced) {
-                            AppFeedback.showSuccess(context, target ? l10n.admin2_customerDetailWatchlistAdded : l10n.admin2_customerDetailWatchlistRemoved);
-                            await _load();
-                          } else {
-                            AppFeedback.showError(context, l10n.admin2_serverUnreachable);
-                          }
-                        },
-                        onBlacklist: _blacklist,
-                      ),
-                    ],
-                  ),
-                ),
+                    ),
     );
   }
 }

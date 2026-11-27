@@ -4,11 +4,19 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../../../../core/utils/money_format.dart';
+
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/datasources/admin_support_data_source.dart';
+import 'admin_list_card.dart';
 
 /// One KPI tile on the reports screen.
+///
+/// Phase 4 (4.1) — this is the shared [AdminFactTile] now (same
+/// tile the shop detail used as `_fact`, radius 12 / padding 12x10
+/// / label 11 / value 15); only the compact two-per-row width
+/// rule lives here.
 class AdminReportKpi extends StatelessWidget {
   const AdminReportKpi({
     super.key,
@@ -26,32 +34,69 @@ class AdminReportKpi extends StatelessWidget {
     // Compact: two tiles per row with a bounded width — an
     // intrinsic-width tile ('Booking revenue Rs. 1,234,567') can
     // exceed 360px on its own. Desktop keeps intrinsic widths.
-    final tile = Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Theme.of(context).dividerColor),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label,
-              style: TextStyle(
-                  fontSize: 11,
-                  color: Theme.of(context).colorScheme.onSurfaceVariant)),
-          const SizedBox(height: 2),
-          Text(value,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                  fontSize: 15,
-                  )),
-        ],
-      ),
-    );
+    final tile = AdminFactTile(label: label, value: value);
     if (!compact) return tile;
     final width = MediaQuery.sizeOf(context).width;
     return SizedBox(width: (width - 32 - 12) / 2, child: tile);
+  }
+}
+
+/// The KPI grid on the reports screen: the eight tiles, two per
+/// row on compact screens. Extracted from [AdminReportsView] so
+/// the view stays under the 250-line cap with the Phase 4 trend
+/// and charts.
+class AdminReportKpiGrid extends StatelessWidget {
+  const AdminReportKpiGrid({
+    super.key,
+    required this.report,
+    required this.compact,
+  });
+
+  final AdminReport report;
+  final bool compact;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final r = report;
+    return Wrap(
+      spacing: 12,
+      runSpacing: 12,
+      children: [
+        AdminReportKpi(
+            label: l10n.admin2_reportsBookings,
+            value: '${r.totalBookings}',
+            compact: compact),
+        AdminReportKpi(
+            label: l10n.admin2_reportsCompleted,
+            value: '${r.completedBookings}',
+            compact: compact),
+        AdminReportKpi(
+            label: l10n.admin2_reportsRevenue,
+            value: l10n.amountRs(formatRs(r.bookingRevenue)),
+            compact: compact),
+        AdminReportKpi(
+            label: l10n.admin2_reportsIncome,
+            value: l10n.amountRs(formatRs(r.financeIncome)),
+            compact: compact),
+        AdminReportKpi(
+            label: l10n.admin2_reportsExpense,
+            value: l10n.amountRs(formatRs(r.financeExpense)),
+            compact: compact),
+        AdminReportKpi(
+            label: l10n.admin2_reportsNewCustomers,
+            value: '${r.newCustomers}',
+            compact: compact),
+        AdminReportKpi(
+            label: l10n.admin2_reportsDisputesOpen,
+            value: '${r.disputesOpen}',
+            compact: compact),
+        AdminReportKpi(
+            label: l10n.admin2_reportsDisputesResolved,
+            value: '${r.disputesResolved}',
+            compact: compact),
+      ],
+    );
   }
 }
 

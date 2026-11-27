@@ -231,7 +231,11 @@ void main() {
       total: 4.0,
     );
 
-    testWidgets('a differing stored score is explained, not bare',
+    // Phase 4 (4.4b) — live-score-only: the stored score is
+    // never shown, even when it would have disagreed with the
+    // live score (the old tests asserted the "Previously stored"
+    // comparison line).
+    testWidgets('the stored score is never shown (live score only)',
         (tester) async {
       await tester.pumpWidget(const MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -239,7 +243,6 @@ void main() {
         home: Scaffold(
           body: CustomerTrustBreakdown(
             breakdown: breakdown,
-            storedScore: 5.0,
             completedTrips: 3,
             meanOwnerRating: null,
             kycStatus: 'verified',
@@ -247,29 +250,10 @@ void main() {
         ),
       ));
       await tester.pumpAndSettle();
-      expect(find.textContaining('Previously stored: 5.0'), findsOneWidget);
-      expect(find.textContaining('live score above is authoritative'),
-          findsOneWidget);
-      expect(find.textContaining('KYC verified'), findsOneWidget);
-    });
-
-    testWidgets('a matching stored score is dropped', (tester) async {
-      await tester.pumpWidget(const MaterialApp(
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        home: Scaffold(
-          body: CustomerTrustBreakdown(
-            breakdown: breakdown,
-            storedScore: 4.0,
-            completedTrips: 3,
-            meanOwnerRating: null,
-            kycStatus: 'missing',
-          ),
-        ),
-      ));
-      await tester.pumpAndSettle();
       expect(find.textContaining('Previously stored'), findsNothing);
-      expect(find.textContaining('KYC not submitted'), findsOneWidget);
+      expect(find.textContaining('Stored trust'), findsNothing);
+      expect(find.text('4.0 / 5.0'), findsOneWidget);
+      expect(find.textContaining('KYC verified'), findsOneWidget);
     });
   });
 

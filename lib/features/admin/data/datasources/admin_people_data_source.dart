@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import '../../../blacklist/data/datasources/blacklist_remote_data_source.dart';
 import '../../../blacklist/domain/entities/blacklist_entity.dart';
@@ -19,7 +20,9 @@ import '../services/admin_session.dart';
 /// The trust score shown here is the C3 formula, computed live by the
 /// shared [TrustScoreService] (the same service the customer app
 /// reads) — it is computed, not stored. The `trust_score` field on
-/// the users doc is the older stored value and is shown alongside
+/// the users doc is the older stored value; Phase 4 (4.4b) keeps it
+/// out of the UI entirely (it used to show as a list hint and a
+/// detail comparison, and disagreed with the live score).
 /// for comparison, not as the source of truth.
 class AdminPeopleDataSource {
   final FirebaseFirestore? _firestore;
@@ -42,9 +45,10 @@ class AdminPeopleDataSource {
   }
 
   /// One page of the customers list, with the row data the list
-  /// itself needs (F-m8): the stored trust score and the flags.
-  /// The stored score is a list hint only — the customer detail
-  /// computes the live score, which is authoritative. Flags come
+  /// itself needs (F-m8): the flags (and the stored trust score,
+  /// still read for the data layer but no longer displayed — the
+  /// customer detail computes the live score, which is
+  /// authoritative). Flags come
   /// from the documents that own them (`is_blacklisted` on the
   /// users doc, `watchlisted` on the customers doc).
   ///
@@ -56,10 +60,67 @@ class AdminPeopleDataSource {
   /// F-M6: a failed read throws — the customers view shows its error
   /// state instead of "No customers match" during an outage. An
   /// empty page is returned only with no Firestore (tests).
+  /// Phase 4 (4.3) — client-side sort over loaded customer rows
+  /// (the no-Firestore path and the view's search results).
+  static List<AdminCustomerRow> sortCustomerRows(
+      List<AdminCustomerRow> rows, String sort) {
+    final list = List<AdminCustomerRow>.of(rows);
+    switch (sort) {
+      case 'nameDesc':
+        list.sort((a, b) =>
+            b.customer.name.compareTo(a.customer.name));
+      case 'dateNewest':
+        list.sort((a, b) =>
+            b.customer.createdAt.compareTo(a.customer.createdAt));
+      case 'dateOldest':
+        list.sort((a, b) =>
+            a.customer.createdAt.compareTo(b.customer.createdAt));
+      default:
+        list.sort((a, b) =>
+            a.customer.name.compareTo(b.customer.name));
+    }
+    return list;
+  }
+
+  /// Phase 4 (4.3) — client-side sort over loaded blacklist
+  /// records (the tribunal is client-side). 'statusAsc' puts
+  /// active cases first.
+  static List<AdminBlacklistRecord> sortBlacklistRecords(
+      List<AdminBlacklistRecord> records, String sort) {
+    final list = List<AdminBlacklistRecord>.of(records);
+    DateTime at(AdminBlacklistRecord r) =>
+        r.entity.reportedAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+    switch (sort) {
+      case 'dateOldest':
+        list.sort((a, b) => at(a).compareTo(at(b)));
+      case 'statusAsc':
+        list.sort((a, b) {
+          final c = (a.entity.isActive ? 0 : 1)
+              .compareTo(b.entity.isActive ? 0 : 1);
+          return c != 0 ? c : at(b).compareTo(at(a));
+        });
+      default:
+        list.sort((a, b) => at(b).compareTo(at(a)));
+    }
+    return list;
+  }
+
+  /// Phase 4 (4.4c) — how many customers exist in total, so the
+  /// list can say "Showing first N of M". The CNIC filter has no
+  /// server-side count (CNIC presence is not a queryable field),
+  /// so the view reports the total only for the unfiltered list.
+  Future<int> countCustomers() async {
+    final firestore = _resolvedFirestore;
+    if (firestore == null) return (await getCustomers()).length;
+    final count = await firestore.collection('customers').count().get();
+    return count.count ?? 0;
+  }
+
   Future<AdminPage<AdminCustomerRow>> getCustomersPage({
     int limit = 20,
     Object? cursor,
     String cnicFilter = 'all',
+    String sort = 'nameAsc',
   }) async {
     final firestore = _resolvedFirestore;
     if (firestore == null) {
@@ -70,11 +131,17 @@ class AdminPeopleDataSource {
         cursor is DocumentSnapshot ? cursor : null;
     var scanned = 0;
     var exhausted = false;
+    // Phase 4 (4.3) — the sort is server-side: name A–Z / Z–A
+    // orders by `name`, date by `createdAt` (ISO strings, so
+    // lexical order is chronological). The CNIC filter is still
+    // applied while scanning, as before.
     while (matched.length < limit && scanned < 1000 && !exhausted) {
-      var query = firestore
-          .collection('customers')
-          .orderBy('name')
-          .limit(50);
+      var query = firestore.collection('customers').orderBy(
+          sort == 'dateNewest' || sort == 'dateOldest'
+              ? 'createdAt'
+              : 'name',
+          descending:
+              sort == 'nameDesc' || sort == 'dateNewest').limit(50);
       if (lastDoc != null) query = query.startAfterDocument(lastDoc);
       final snap = await query.get();
       if (snap.docs.isEmpty) {
@@ -305,6 +372,12 @@ class AdminPeopleDataSource {
   /// through the shared blacklist data source so the booking-time
   /// check sees it immediately.
   ///
+  /// Phase 3 (3.6b): `reasonCategory` must be one of
+  /// [BlacklistReasonCategory] — a free-text category is refused, so
+  /// the tribunal's categories stay reportable instead of drifting
+  /// into one-off strings. The free-text detail lives in
+  /// `description` alone.
+  ///
   /// F-C1: super admin + operations only ([AdminPermission.
   /// manageBlacklist]) — see [setCustomerWatchlisted].
   Future<bool> reportCustomerToBlacklist({
@@ -316,6 +389,9 @@ class AdminPeopleDataSource {
     required String reportedByShopId,
     String? adminRole,
   }) async {
+    if (BlacklistReasonCategory.fromValue(reasonCategory) == null) {
+      return false;
+    }
     if (!await AdminSession.currentAdminCan(
         AdminPermission.manageBlacklist,
         adminRole: adminRole)) {
@@ -347,6 +423,11 @@ class AdminPeopleDataSource {
   /// F-C1: an admin note is an admin-only write — super admin +
   /// operations ([AdminPermission.manageBlacklist], the people-side
   /// permission) — see [setCustomerWatchlisted].
+  ///
+  /// Phase 3 (3.5b): the note carries its author (the signed-in
+  /// admin's uid and email, when a session exists) and the write
+  /// leaves an audit entry, so the activity log can answer who
+  /// wrote what, and when.
   Future<bool> addCustomerNote({
     required String customerId,
     required String text,
@@ -360,17 +441,52 @@ class AdminPeopleDataSource {
     final firestore = _resolvedFirestore;
     if (firestore == null) return false;
     try {
+      String? authorId;
+      String? authorEmail;
+      try {
+        final user = FirebaseAuth.instance.currentUser;
+        authorId = user?.uid;
+        authorEmail = user?.email;
+      } catch (_) {}
       await firestore
           .collection('customers')
           .doc(customerId)
           .collection('admin_notes')
           .add({
         'text': text,
+        if (authorId != null) 'author_id': authorId,
+        if (authorEmail != null) 'author_email': authorEmail,
         'created_at': FieldValue.serverTimestamp(),
       });
+      await AdminAuditService.logAction(
+        action: 'customer_note_added',
+        targetType: 'customer',
+        targetId: customerId,
+        detail: text,
+      );
       return true;
     } catch (_) {
       return false;
+    }
+  }
+
+  /// Phase 3 (3.6a) — the tribunal-to-customer link: the blacklist
+  /// record carries a CNIC, not a customer id, so resolve the
+  /// customer whose `customers` doc carries that CNIC. Null when
+  /// no customer record matches (or with no Firestore).
+  Future<String?> getCustomerIdByCnic(String cnic) async {
+    final firestore = _resolvedFirestore;
+    if (firestore == null) return null;
+    try {
+      final snap = await firestore
+          .collection('customers')
+          .where('cnic', isEqualTo: cnic)
+          .limit(1)
+          .get();
+      if (snap.docs.isEmpty) return null;
+      return snap.docs.first.id;
+    } catch (_) {
+      return null;
     }
   }
 
@@ -508,16 +624,23 @@ class CustomerDetail {
 }
 
 /// An admin's private note on a customer.
+///
+/// Phase 3 (3.5b): the author is the signed-in admin who wrote it
+/// (`author_id` / `author_email`); older notes have neither.
 class AdminNote {
   const AdminNote({
     required this.id,
     required this.text,
     this.createdAt,
+    this.authorId,
+    this.authorEmail,
   });
 
   final String id;
   final String text;
   final DateTime? createdAt;
+  final String? authorId;
+  final String? authorEmail;
 
   factory AdminNote.fromMap(String id, Map<String, dynamic> data) {
     final created = data['created_at'];
@@ -531,7 +654,34 @@ class AdminNote {
       id: id,
       text: data['text'] as String? ?? '',
       createdAt: createdAt,
+      authorId: data['author_id'] as String?,
+      authorEmail: data['author_email'] as String?,
     );
+  }
+}
+
+/// Phase 3 (3.6b) — the real reason categories for a blacklist
+/// report. The stored value is the kebab-case string ([value]);
+/// anything outside this set is refused by
+/// [AdminPeopleDataSource.reportCustomerToBlacklist], so the
+/// tribunal's categories stay reportable.
+enum BlacklistReasonCategory {
+  fraud('fraud'),
+  lateReturn('late-return'),
+  damage('damage'),
+  nonPayment('non-payment'),
+  abusiveBehaviour('abusive-behaviour'),
+  other('other');
+
+  const BlacklistReasonCategory(this.value);
+
+  final String value;
+
+  static BlacklistReasonCategory? fromValue(String value) {
+    for (final c in BlacklistReasonCategory.values) {
+      if (c.value == value) return c;
+    }
+    return null;
   }
 }
 

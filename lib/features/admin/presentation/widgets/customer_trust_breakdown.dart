@@ -3,25 +3,29 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/trust_score_calculator.dart';
+import 'admin_list_card.dart';
 import 'admin_status_chip.dart';
 
 /// The C3 trust-score breakdown on the customer detail screen: the
-/// computed score, each component with its contribution, and the older
-/// stored score for comparison. A component of 0.0 means that input
-/// has no data yet (for example no owner ratings), not that the
-/// customer failed it.
+/// computed (live) score and each component with its contribution.
+/// A component of 0.0 means that input has no data yet (for example
+/// no owner ratings), not that the customer failed it.
+///
+/// Phase 4 (4.4b) — live-score-only: the older stored
+/// `trust_score` is no longer shown here (it used to appear as
+/// "Previously stored: X.X" and genuinely disagreed with the live
+/// score before — live 3.5 vs stored 5.0). The stored value stays
+/// in the data layer but out of the UI entirely.
 class CustomerTrustBreakdown extends StatelessWidget {
   const CustomerTrustBreakdown({
     super.key,
     required this.breakdown,
-    required this.storedScore,
     required this.completedTrips,
     required this.meanOwnerRating,
     required this.kycStatus,
   });
 
   final TrustScoreBreakdown breakdown;
-  final double? storedScore;
   final int completedTrips;
   final double? meanOwnerRating;
   final String kycStatus;
@@ -44,25 +48,10 @@ class CustomerTrustBreakdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    // AD-m18: the stored score used to sit next to the live score
-    // as "Stored score: X.X" with no explanation — and the two had
-    // genuinely disagreed before (live 3.5 vs stored 5.0). It is
-    // shown only when it differs from the live score, labelled as
-    // previously stored with the live score authoritative; when it
-    // matches, it carries no information and is dropped.
-    final stored = storedScore;
-    final showStored = stored != null &&
-        (stored - breakdown.total).abs() >= 0.05;
-    final storedLabel = showStored
-        ? ' • ${(l10n?.adminAuditStoredScore(stored.toStringAsFixed(1)) ?? 'Previously stored: ${stored.toStringAsFixed(1)} — the live score above is authoritative')}'
-        : '';
     return Card(
       margin: EdgeInsets.zero,
       elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: Theme.of(context).dividerColor),
-      ),
+      shape: adminCardShape(context),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -96,8 +85,7 @@ class CustomerTrustBreakdown extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               '${l10n?.admin2_trustKycLine(_kycLabel(kycStatus, l10n), completedTrips) ?? 'KYC: ${_kycLabel(kycStatus, l10n)} • $completedTrips completed trip(s) • '}'
-              '${l10n?.admin2_trustOwnerRating(meanOwnerRating == null ? (l10n.admin2_trustRatingNone) : meanOwnerRating!.toStringAsFixed(1)) ?? 'Owner rating: ${meanOwnerRating == null ? 'none yet' : meanOwnerRating!.toStringAsFixed(1)}'}'
-              '$storedLabel',
+              '${l10n?.admin2_trustOwnerRating(meanOwnerRating == null ? (l10n.admin2_trustRatingNone) : meanOwnerRating!.toStringAsFixed(1)) ?? 'Owner rating: ${meanOwnerRating == null ? 'none yet' : meanOwnerRating!.toStringAsFixed(1)}'}',
               style:
                   TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
             ),

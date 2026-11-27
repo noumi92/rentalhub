@@ -55,6 +55,8 @@
   "disputeDecisionAmount": "Decision amount",
   "disputeDecisionNote": "Admin note",
   "disputeMarkInReview": "Mark in review",
+  "disputeMarkInReviewConfirmTitle": "Mark this dispute in review?",
+  "disputeMarkInReviewConfirmBody": "The dispute will move to In review so a decision can be recorded.",
   "disputeMarkedInReview": "Marked in review.",
   "disputeMarkInReviewFailed": "Could not mark the dispute in review.",
   "handoverPhotoFront": "Front",
@@ -4199,6 +4201,8 @@
   "adminKycReviewNotPermittedHint": "Ask a super admin or operations admin to review this submission.",
   "adminNotPermitted": "Your admin role does not allow this action.",
   "adminKycReviewApprove": "Approve",
+  "adminKycReviewApproveConfirmTitle": "Approve this KYC submission?",
+  "adminKycReviewApproveConfirmBody": "The customer will be marked verified and can start booking.",
   "adminKycReviewReject": "Reject",
   "adminKycReviewReasonLabel": "Reason (required to reject — the customer sees it)",
   "adminKycReviewReasonRequired": "A reason is required to reject — the customer sees it.",
@@ -4287,6 +4291,14 @@
   "admin2_blacklistReasonLabel": "Reason (required)",
   "admin2_blacklistReasonRequired": "A reason is required to report a customer.",
   "admin2_blacklistReportConfirm": "Report",
+  "admin2_blacklistCategoryLabel": "Reason category",
+  "admin2_blacklistDescriptionLabel": "Description",
+  "admin2_blacklistCatFraud": "Fraud",
+  "admin2_blacklistCatLateReturn": "Late return",
+  "admin2_blacklistCatDamage": "Damage",
+  "admin2_blacklistCatNonPayment": "Non-payment",
+  "admin2_blacklistCatAbusive": "Abusive behaviour",
+  "admin2_blacklistCatOther": "Other",
   "admin2_watchlistAdd": "Add to watchlist",
   "admin2_watchlistRemove": "Remove from watchlist",
   "admin2_ticketRepliesLoadFailed": "Could not load the replies.",
@@ -4342,6 +4354,27 @@
   "admin2_navAdminTeam": "Admin Team",
   "admin2_navActivityLog": "Activity Log",
   "admin2_navSubscriptions": "Subscriptions",
+  "admin2_navHome": "Home",
+  "admin2_navQueues": "Queues",
+  "admin2_navMore": "More",
+  "admin2_sidebarGroupOverview": "Overview",
+  "admin2_sidebarGroupQueues": "Review queues",
+  "admin2_sidebarGroupMarketplace": "Marketplace",
+  "admin2_sidebarGroupPlatform": "Platform",
+  "admin2_sidebarGroupGovernance": "Governance",
+  "admin2_queuesTitle": "Review queues",
+  "admin2_queuesSubtitle": "Every queue that needs a decision, with its live count",
+  "admin2_queuesLoadFailed": "Could not load the queues.",
+  "admin2_customerDetailTabProfile": "Profile",
+  "admin2_customerDetailTabBookings": "Bookings",
+  "admin2_customerDetailTabNotes": "Notes & flags",
+  "admin2_teamTabMembers": "Members",
+  "admin2_teamTabInvites": "Invites",
+  "admin2_teamTabSecurity": "Security",
+  "admin2_teamSecurityTitle": "Two-factor authentication",
+  "admin2_teamSecurityAllOn": "Every admin has two-factor authentication on.",
+  "admin2_disputeDetailNotFound": "Dispute not found.",
+  "admin2_ticketDetailNotFound": "Ticket not found.",
   "admin2_sidebarSignedInAs": "SIGNED IN AS ADMIN",
   "admin2_loginEmailPassword": "Enter your email and password.",
   "admin2_loginEnterCode": "Enter the 6-digit code.",
@@ -4387,6 +4420,8 @@
   "admin2_dashboardDisputesHint": "Open the disputes centre to decide them.",
   "admin2_dashboardTicketsTitle": "Support tickets waiting",
   "admin2_dashboardTicketsHint": "Open the tickets inbox to reply.",
+  "admin2_dashboardKycTitle": "KYC submissions waiting for review",
+  "admin2_dashboardKycHint": "Open the KYC review queue to decide them.",
   "admin2_dashboardKpiShops": "Registered shops",
   "admin2_dashboardKpiLiveCount": "Live count",
   "admin2_dashboardKpiBookings": "Active bookings",
@@ -4422,6 +4457,7 @@
     }
   },
   "admin2_shopDetailTitle": "Shop detail",
+  "admin2_shopDetailReviewApplication": "Review application",
   "admin2_shopDetailSubtitle": "Plan, fleet, bookings and admin actions",
   "admin2_shopDetailLoadFailed": "Could not load this shop.",
   "admin2_shopDetailNotFound": "Shop not found.",
@@ -4685,7 +4721,11 @@
   "admin2_ticketAddNoteHint": "Add an internal note…",
   "admin2_ticketAdd": "Add",
   "admin2_ticketEscalate": "Escalate",
+  "admin2_ticketEscalateConfirmTitle": "Escalate this ticket?",
+  "admin2_ticketEscalateConfirmBody": "Escalation hands the ticket to a senior admin for a second look.",
   "admin2_ticketClose": "Close ticket",
+  "admin2_ticketCloseConfirmTitle": "Close this ticket?",
+  "admin2_ticketCloseConfirmBody": "Closing ends the thread. The customer will see the ticket as closed.",
   "admin2_anncSubtitle": "Broadcasts to owners and customers",
   "admin2_anncNew": "New announcement",
   "admin2_anncLoadFailed": "Could not load the announcements.",
@@ -4695,6 +4735,8 @@
   "admin2_anncSendFailed": "Could not reach the Functions server — try again.",
   "admin2_anncSendTest": "Send test",
   "admin2_anncSendNow": "Send now",
+  "admin2_anncSendConfirmTitle": "Send this announcement now?",
+  "admin2_anncSendConfirmBody": "This sends the announcement to its audience right away. A sent announcement cannot be recalled.",
   "admin2_anncStats": "Sent {sent} • Delivered {delivered} • Opened {opened}",
   "@admin2_anncStats": {
     "placeholders": {
@@ -4742,6 +4784,18 @@
     }
   },
   "admin2_anncFormSave": "Save announcement",
+  "admin2_anncDetailTitle": "Announcement",
+  "admin2_anncDetailLoadFailed": "Could not load the announcement.",
+  "admin2_anncDetailNotFound": "Announcement not found.",
+  "admin2_anncEdit": "Edit",
+  "admin2_anncDelete": "Delete announcement",
+  "admin2_anncDeleteConfirmTitle": "Delete this announcement?",
+  "admin2_anncDeleteConfirmBody": "This draft or scheduled announcement will be deleted. Sent announcements cannot be deleted.",
+  "admin2_anncDeleted": "Announcement deleted.",
+  "admin2_anncUpdated": "Announcement updated.",
+  "admin2_anncReadOnly": "Sent announcements are read-only history.",
+  "admin2_anncFormUpdate": "Save changes",
+  "admin2_disputeAmountTooHigh": "The amount cannot exceed the outstanding balance plus the held deposit.",
   "admin2_activitySubtitle": "Every admin action, newest first — immutable",
   "admin2_activityLoadFailed": "Could not load the activity log.",
   "admin2_activityEmptyTitle": "No audit entries yet",
@@ -4860,6 +4914,15 @@
   "admin2_shopAppKycDocs": "KYC documents on file",
   "admin2_shopAppFleetPhotos": "Fleet photos",
   "admin2_shopAppReasonLabel": "Reason (required to ask for more info or reject — the owner sees it)",
+  "admin2_shopAppConfirmTitle": "Confirm decision",
+  "admin2_shopAppConfirmBody": "Save '{decision}' for this shop application?",
+  "@admin2_shopAppConfirmBody": {
+    "placeholders": {
+      "decision": {
+        "type": "String"
+      }
+    }
+  },
   "admin2_shopAppCallOwner": "Call owner",
   "admin2_shopAppAskInfo": "Ask for more info",
   "admin2_shopAppOwner": "Owner: {owner} • {phone} • CNIC {cnic}",
@@ -5212,7 +5275,8 @@
   "admin2_reportsLoadFailed": "Could not load the report.",
   "admin2_reportsEmptyTitle": "No data for this range",
   "admin2_reportsEmptyHint": "The report reads the live collections.",
-  "admin2_reportsRevenue": "Booking revenue",
+  "admin2_reportsRevenue": "Booked value (incl. active)",
+  "admin2_reportsRevenueNote": "Booked value counts completed, active and paid bookings in this range — not money received. Finance income is the realised income from the finance ledger.",
   "admin2_reportsIncome": "Finance income",
   "admin2_reportsExpense": "Finance expense",
   "admin2_reportsNewCustomers": "New customers",
@@ -5330,6 +5394,17 @@
       }
     }
   },
+  "adminAuditShowingFirstOf": "Showing first {shown} of {total}",
+  "@adminAuditShowingFirstOf": {
+    "placeholders": {
+      "shown": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "admin2_ownerNotListed": "Owner not listed",
   "admin2_shopRating": "Rating {rating}",
   "@admin2_shopRating": {
@@ -5414,6 +5489,9 @@
   "admin2_settingsUnsavedBody": "You have unsaved changes. They will be lost if you leave.",
   "admin2_settingsNotLoaded": "Settings have not loaded yet — try again.",
   "admin2_tribunalReviewFlag": "Review flag",
+  "admin2_tribunalViewCustomer": "View customer",
+  "admin2_tribunalCustomerNotFound": "No customer record matches this CNIC.",
+  "admin2_customerDetailViewTribunal": "View tribunal entry",
   "admin2_ticketLinkedBooking": "Linked booking",
   "admin2_anncSentCount": "Sent {count}",
   "@admin2_anncSentCount": {
@@ -6157,5 +6235,35 @@
   "nextStepViewActiveTrip": "View Active Trip",
   "nextStepTrackDispute": "Track Dispute",
   "nextStepWaitingPayment": "Waiting for payment",
-  "nextStepWaitingApproval": "Waiting for approval"
+  "nextStepWaitingApproval": "Waiting for approval",
+  "adminSortLabel": "Sort",
+  "adminSortDateNewest": "Newest first",
+  "adminSortDateOldest": "Oldest first",
+  "adminSortNameAsc": "Name A–Z",
+  "adminSortNameDesc": "Name Z–A",
+  "adminSortAmountHigh": "Amount: highest first",
+  "adminSortAmountLow": "Amount: lowest first",
+  "adminSortStatus": "Status",
+  "adminSortPriority": "Priority",
+  "adminSortRatingHigh": "Rating: highest first",
+  "adminSortRatingLow": "Rating: lowest first",
+  "adminSortTitleAsc": "Title A–Z",
+  "adminSortActionAsc": "Action A–Z",
+  "admin2_reportsTrendTitle": "Trend vs previous period",
+  "admin2_reportsTrendNoPrevious": "no previous data",
+  "admin2_reportsTrend": "{sign}{percent}% vs previous period",
+  "admin2_reportsBookingsChart": "Bookings over time",
+  "admin2_reportsFinanceChart": "Finance over time",
+  "admin2_reportsNoChartData": "No data in this range to chart.",
+  "admin2_reportsTruncatedNote": "Based on the first 1,000 records in this range — totals and charts may be incomplete.",
+  "@admin2_reportsTrend": {
+    "placeholders": {
+      "sign": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "String"
+      }
+    }
+  }
 }

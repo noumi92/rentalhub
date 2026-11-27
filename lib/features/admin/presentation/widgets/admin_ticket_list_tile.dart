@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/constants/app_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/datasources/admin_support_data_source.dart';
+import 'admin_list_card.dart';
 import 'admin_status_chip.dart';
 
 /// One ticket row in the admin inbox: the message, priority,
@@ -28,46 +28,22 @@ class AdminTicketListTile extends StatelessWidget {
         DateTime.now()
             .isAfter(t.createdAt!.add(Duration(hours: t.slaHours)));
     final danger = adminStatusColor(context, AdminStatusTone.danger);
-    return Card(
-      margin: EdgeInsets.zero,
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(
-            color: breached
-                ? danger.withValues(alpha: 0.4)
-                : Theme.of(context).dividerColor),
-      ),
-      child: ListTile(
-        leading: CircleAvatar(
-          backgroundColor: AppColors.primary.withValues(alpha: 0.12),
-          child: const Icon(
-            Icons.support_agent_rounded,
-          ),
-        ),
-        title: Text(
-            t.message.length > 80
-                ? '${t.message.substring(0, 80)}…'
-                : t.message,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-                fontSize: 14,
-                )),
-        subtitle: Text(
+    // Phase 4 (4.1) — the shared [AdminListCard] shell; the
+    // breached-SLA red border survives through [borderColor].
+    return AdminListCard(
+      icon: Icons.support_agent_rounded,
+      title: t.message.length > 80
+          ? '${t.message.substring(0, 80)}…'
+          : t.message,
+      subtitle:
           '${t.priority.toUpperCase()} • ${humanizeStatus(t.status, l10n)} • ${l10n == null ? t.slaText() : t.slaTextL10n(l10n)}'
           '${t.bookingId == null ? '' : ' • ${l10n?.admin2_ticketLinkedBooking ?? 'Linked booking'}'}',
-          style: TextStyle(
-              fontSize: 12,
-              color: breached
-                  ? danger
-                  : Theme.of(context).colorScheme.onSurfaceVariant,
-              fontWeight:
-                  breached ? FontWeight.w500 : FontWeight.normal),
-        ),
-        trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 16),
-        onTap: onTap,
-      ),
+      borderColor:
+          breached ? danger.withValues(alpha: 0.4) : null,
+      subtitleColor: breached ? danger : null,
+      subtitleFontWeight: breached ? FontWeight.w500 : null,
+      trailing: adminListChevron,
+      onTap: onTap,
     );
   }
 }

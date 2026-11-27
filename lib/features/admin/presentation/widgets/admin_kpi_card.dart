@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
-import '../../../../core/utils/responsive.dart';
 
 class AdminKpiCard extends StatelessWidget {
   final String title;
@@ -20,15 +19,14 @@ class AdminKpiCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Mobile-first: tighter card padding on a phone so the 2-column
-    // grid keeps usable card widths at 360dp.
-    final compact =
-        windowSizeClassOf(context) == WindowSizeClass.compact;
+    // Phase 4 (4.1) — the unified admin card scale: radius 12,
+    // padding 16. The value stays the display slot (28sp,
+    // displayLarge) — a headline, not a dense fact tile (15sp).
     return Container(
-      padding: EdgeInsets.all(compact ? 16 : 20),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Theme.of(context).dividerColor),
         boxShadow: const [
           BoxShadow(color: Color(0x06000000), blurRadius: 8, offset: Offset(0, 3)),

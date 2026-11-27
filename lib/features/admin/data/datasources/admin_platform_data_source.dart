@@ -10,6 +10,7 @@ import '../../../notifications/data/datasources/notification_data_source.dart';
 import '../../domain/admin_permissions.dart';
 import '../services/admin_audit_service.dart';
 import '../services/admin_session.dart';
+import 'admin_pagination.dart';
 
 /// Phase D — the platform side of the admin panel: bookings, the
 /// disputes centre, and reviews moderation.
@@ -57,6 +58,188 @@ class AdminPlatformDataSource {
         .toList();
     list.sort((a, b) => b.pickupTime.compareTo(a.pickupTime));
     return list;
+  }
+
+  /// Phase 4 (4.3) — client-side sort over a loaded list (the
+  /// no-Firestore branch and the view's search results).
+  static List<BookingModel> sortBookings(
+      List<BookingModel> bookings, String sort) {
+    final list = List<BookingModel>.of(bookings);
+    switch (sort) {
+      case 'dateOldest':
+        list.sort((a, b) => a.pickupTime.compareTo(b.pickupTime));
+      case 'amountHigh':
+        list.sort((a, b) => b.totalAmount.compareTo(a.totalAmount));
+      case 'amountLow':
+        list.sort((a, b) => a.totalAmount.compareTo(b.totalAmount));
+      case 'statusAsc':
+        list.sort((a, b) {
+          final c = a.status.compareTo(b.status);
+          return c != 0
+              ? c
+              : b.pickupTime.compareTo(a.pickupTime);
+        });
+      default:
+        list.sort((a, b) => b.pickupTime.compareTo(a.pickupTime));
+    }
+    return list;
+  }
+
+  /// Phase 3 (3.4) — one page of bookings, newest pickup first. A
+  /// status-filtered page is ordered by `pickupTime` on the server
+  /// (`status` + `pickupTime` composite index in
+  /// firestore.indexes.json), so filtered pages paginate with a
+  /// cursor like the unfiltered inbox. With no Firestore the page
+  /// is cut from [getBookings] in memory (integer-offset cursor),
+  /// so offline fakes that override [getBookings] keep working.
+  Future<AdminPage<BookingModel>> getBookingsPage({
+    String status = 'all',
+    int limit = 20,
+    Object? cursor,
+    String sort = 'dateNewest',
+  }) async {
+    final firestore = _resolvedFirestore;
+    final total = await countBookings(status: status);
+    if (firestore == null) {
+      final all = sortBookings(await getBookings(status: status), sort);
+      final offset = cursor is int ? cursor : 0;
+      final page = all.skip(offset).take(limit).toList();
+      return AdminPage(
+        items: page,
+        hasMore: offset + page.length < all.length,
+        cursor: offset + page.length < all.length
+            ? offset + page.length
+            : null,
+        total: all.length,
+      );
+    }
+    // Phase 4 (4.3) — the sort is server-side. Date orders by
+    // `pickupTime`, amount by `totalAmount`, status by `status`
+    // then newest pickup; the status-filtered amount/date-oldest
+    // orders need their composite indexes in
+    // firestore.indexes.json (status+pickupTime ASC,
+    // status+totalAmount ASC/DESC).
+    Query<Map<String, dynamic>> base(String field, bool descending) {
+      Query<Map<String, dynamic>> q = firestore.collection('bookings');
+      if (status != 'all') {
+        q = q.where('status', isEqualTo: status);
+      }
+      return q.orderBy(field, descending: descending);
+    }
+
+    var query = switch (sort) {
+      'dateOldest' => base('pickupTime', false),
+      'amountHigh' => base('totalAmount', true),
+      'amountLow' => base('totalAmount', false),
+      'statusAsc' =>
+        base('status', false).orderBy('pickupTime', descending: true),
+      _ => base('pickupTime', true),
+    };
+    var paged = query.limit(limit + 1);
+    final lastDoc = cursor is DocumentSnapshot ? cursor : null;
+    if (lastDoc != null) paged = paged.startAfterDocument(lastDoc);
+    final snap = await paged.get();
+    final docs = snap.docs;
+    final hasMore = docs.length > limit;
+    final pageDocs = hasMore ? docs.sublist(0, limit) : docs;
+    return AdminPage(
+      items: pageDocs
+          .map((d) => BookingModel.fromMap(d.data(), d.id))
+          .toList(),
+      hasMore: hasMore,
+      cursor: hasMore ? pageDocs.last : null,
+      total: total,
+    );
+  }
+
+  /// Phase 3 (3.4) — how many bookings the current filter matches
+  /// in total, so the list can say "Showing first N of M".
+  Future<int> countBookings({String status = 'all'}) async {
+    final firestore = _resolvedFirestore;
+    if (firestore == null) {
+      return (await getBookings(status: status)).length;
+    }
+    var query = firestore.collection('bookings');
+    final count = await (status == 'all'
+            ? query.count()
+            : query.where('status', isEqualTo: status).count())
+        .get();
+    return count.count ?? 0;
+  }
+
+  /// Phase 3 (3.4) — server-side booking search: it covers the
+  /// whole list, not just the loaded page. A booking-ID match is a
+  /// direct document read; anything else scans the bookings in
+  /// bounded pages (at most 500) for a customer / vehicle / shop
+  /// match — the same case-insensitive "contains" the old
+  /// client-side search used. With no Firestore it filters
+  /// [getBookings] in memory.
+  Future<List<BookingModel>> searchBookings(
+    String query, {
+    String status = 'all',
+    int limit = 50,
+  }) async {
+    final needle = query.trim().toLowerCase();
+    if (needle.isEmpty) return [];
+    final firestore = _resolvedFirestore;
+    if (firestore == null) {
+      return (await getBookings(status: status))
+          .where((b) =>
+              b.bookingId.toLowerCase().contains(needle) ||
+              (b.customerName ?? '').toLowerCase().contains(needle) ||
+              (b.vehicleName ?? '').toLowerCase().contains(needle) ||
+              (b.shopName ?? '').toLowerCase().contains(needle))
+          .take(limit)
+          .toList();
+    }
+    try {
+      final found = <BookingModel>[];
+      final direct = await firestore
+          .collection('bookings')
+          .doc(query.trim())
+          .get();
+      final directData = direct.data();
+      if (directData != null) {
+        final booking = BookingModel.fromMap(directData, direct.id);
+        if (status == 'all' || booking.status == status) {
+          return [booking];
+        }
+      }
+      DocumentSnapshot? lastDoc;
+      var scanned = 0;
+      while (found.length < limit && scanned < 500) {
+        var pageQuery = firestore
+            .collection('bookings')
+            .orderBy('pickupTime', descending: true)
+            .limit(100);
+        if (lastDoc != null) {
+          pageQuery = pageQuery.startAfterDocument(lastDoc);
+        }
+        final snap = await pageQuery.get();
+        if (snap.docs.isEmpty) break;
+        scanned += snap.docs.length;
+        lastDoc = snap.docs.last;
+        for (final d in snap.docs) {
+          final booking = BookingModel.fromMap(d.data(), d.id);
+          if (status != 'all' && booking.status != status) continue;
+          if (booking.bookingId.toLowerCase().contains(needle) ||
+              (booking.customerName ?? '')
+                  .toLowerCase()
+                  .contains(needle) ||
+              (booking.vehicleName ?? '')
+                  .toLowerCase()
+                  .contains(needle) ||
+              (booking.shopName ?? '').toLowerCase().contains(needle)) {
+            found.add(booking);
+            if (found.length >= limit) break;
+          }
+        }
+        if (snap.docs.length < 100) break;
+      }
+      return found;
+    } catch (_) {
+      return [];
+    }
   }
 
   /// F-M6: throws when the booking document itself cannot be read
@@ -152,6 +335,20 @@ class AdminPlatformDataSource {
       );
   }
 
+  /// Phase 2 (2.4): one dispute for its detail route. F-M6: throws
+  /// when the document cannot be read (the detail view shows its
+  /// error state); null only when the dispute does not exist, or
+  /// with no Firestore (tests).
+  Future<DisputeRecord?> getDispute(String disputeId) async {
+    final firestore = _resolvedFirestore;
+    if (firestore == null) return null;
+    final doc =
+        await firestore.collection('disputes').doc(disputeId).get();
+    final data = doc.data();
+    if (data == null) return null;
+    return _disputeFromDoc(doc.id, data);
+  }
+
   /// F-M6: a failed read throws (see [getBookings]).
   Future<List<DisputeRecord>> getDisputes({String status = 'all'}) async {
     final firestore = _resolvedFirestore;
@@ -168,6 +365,142 @@ class AdminPlatformDataSource {
         .compareTo(a.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0)));
     return list;
   }
+
+  /// Phase 4 (4.3) — client-side sort over a loaded list (the
+  /// disputes centre is client-side: [getDisputes] caps at 100).
+  static List<DisputeRecord> sortDisputes(
+      List<DisputeRecord> disputes, String sort) {
+    final list = List<DisputeRecord>.of(disputes);
+    DateTime at(DisputeRecord d) =>
+        d.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+    switch (sort) {
+      case 'dateOldest':
+        list.sort((a, b) => at(a).compareTo(at(b)));
+      case 'statusAsc':
+        list.sort((a, b) {
+          final c = a.status.compareTo(b.status);
+          return c != 0 ? c : at(b).compareTo(at(a));
+        });
+      default:
+        list.sort((a, b) => at(b).compareTo(at(a)));
+    }
+    return list;
+  }
+
+  /// Phase 4 (4.3) — client-side sort over the loaded reviews
+  /// (the moderation view is client-side: [getReviews] caps at
+  /// 200). Rating uses the shop rating, falling back to the
+  /// vehicle rating; a review with neither rates 0.
+  static List<AdminReview> sortReviews(
+      List<AdminReview> reviews, String sort) {
+    final list = List<AdminReview>.of(reviews);
+    double rating(AdminReview r) =>
+        (r.shopRating ?? r.vehicleRating ?? 0).toDouble();
+    switch (sort) {
+      case 'ratingHigh':
+        list.sort((a, b) => rating(b).compareTo(rating(a)));
+      case 'ratingLow':
+        list.sort((a, b) => rating(a).compareTo(rating(b)));
+      case 'statusAsc':
+        list.sort((a, b) => a.moderationStatus.compareTo(b.moderationStatus));
+      default:
+        break;
+    }
+    return list;
+  }
+
+  /// Phase 3 (3.4) — one page of disputes, newest first, with the
+  /// same cursor pagination as the tickets inbox (status +
+  /// `createdAt` composite index in firestore.indexes.json). With
+  /// no Firestore the page is cut from [getDisputes] in memory.
+  Future<AdminPage<DisputeRecord>> getDisputesPage({
+    String status = 'all',
+    int limit = 20,
+    Object? cursor,
+  }) async {
+    final firestore = _resolvedFirestore;
+    final total = await countDisputes(status: status);
+    if (firestore == null) {
+      final all = await getDisputes(status: status);
+      final offset = cursor is int ? cursor : 0;
+      final page = all.skip(offset).take(limit).toList();
+      return AdminPage(
+        items: page,
+        hasMore: offset + page.length < all.length,
+        cursor: offset + page.length < all.length
+            ? offset + page.length
+            : null,
+        total: all.length,
+      );
+    }
+    var query = firestore
+        .collection('disputes')
+        .orderBy('createdAt', descending: true);
+    if (status != 'all') {
+      query = firestore
+          .collection('disputes')
+          .where('status', isEqualTo: status)
+          .orderBy('createdAt', descending: true);
+    }
+    var paged = query.limit(limit + 1);
+    final lastDoc = cursor is DocumentSnapshot ? cursor : null;
+    if (lastDoc != null) paged = paged.startAfterDocument(lastDoc);
+    final snap = await paged.get();
+    final docs = snap.docs;
+    final hasMore = docs.length > limit;
+    final pageDocs = hasMore ? docs.sublist(0, limit) : docs;
+    return AdminPage(
+      items: pageDocs
+          .map((d) => _disputeFromDoc(d.id, d.data()))
+          .toList(),
+      hasMore: hasMore,
+      cursor: hasMore ? pageDocs.last : null,
+      total: total,
+    );
+  }
+
+  /// Phase 3 (3.4) — how many disputes the current filter matches
+  /// in total, so the centre can say "Showing first N of M" at its
+  /// 100 cap.
+  Future<int> countDisputes({String status = 'all'}) async {
+    final firestore = _resolvedFirestore;
+    if (firestore == null) {
+      return (await getDisputes(status: status)).length;
+    }
+    final count = await (status == 'all'
+            ? firestore.collection('disputes').count()
+            : firestore
+                .collection('disputes')
+                .where('status', isEqualTo: status)
+                .count())
+        .get();
+    return count.count ?? 0;
+  }
+
+  /// Phase 3 (3.4) — how many reviews exist in total, so the
+  /// moderation view can say "Showing first N of M" at its 200 cap.
+  Future<int> countReviews() async {
+    final firestore = _resolvedFirestore;
+    if (firestore == null) return (await getReviews()).length;
+    final count = await firestore.collection('reviews').count().get();
+    return count.count ?? 0;
+  }
+
+  /// Phase 3 (3.3a) — the most a dispute decision may award: the
+  /// booking's outstanding balance plus the security deposit still
+  /// held for it. Both figures come from the records themselves
+  /// (`bookings/{id}.remainingBalance` and
+  /// `security_deposits/{bookingId}.amount` while its status is
+  /// `collected`, falling back to the booking's
+  /// `depositAmountPkr` when no deposit record exists) — nothing
+  /// here is invented, and a negative total is clamped to zero.
+  static int disputeAmountCap({
+    required int remainingBalance,
+    required int depositHeld,
+  }) =>
+      (remainingBalance + depositHeld) < 0
+          ? 0
+          : remainingBalance + depositHeld;
 
   DisputeRecord _disputeFromDoc(
       String id, Map<String, dynamic> data) {
@@ -229,6 +562,45 @@ class AdminPlatformDataSource {
           await firestore.collection('disputes').doc(disputeId).get();
       final data = doc.data();
       if (data == null) return false;
+      // Phase 3 (3.3b) — status precondition: a dispute that is
+      // already decided cannot be re-decided. A resolved dispute
+      // (or one carrying a decision) is read-only history.
+      if (data['status'] == 'resolved' || data['decision'] != null) {
+        return false;
+      }
+      if (decision != 'full_to_customer' &&
+          decision != 'partial' &&
+          decision != 'full_to_owner') {
+        return false;
+      }
+      if (decisionAmount < 0) return false;
+      // Phase 3 (3.3a) — the amount is capped at the outstanding
+      // balance plus the deposit still held for the booking. The
+      // booking must exist to verify the cap: when it cannot be
+      // read the decision is refused rather than awarded against
+      // money that may not be there.
+      final disputeBookingId = data['bookingId'] as String?;
+      if (disputeBookingId != null && disputeBookingId.isNotEmpty) {
+        final bookingDoc = await firestore
+            .collection('bookings')
+            .doc(disputeBookingId)
+            .get();
+        final bookingData = bookingDoc.data();
+        if (bookingData == null) return false;
+        final remaining =
+            (bookingData['remainingBalance'] as num?)?.toInt() ?? 0;
+        final deposit = await SecurityDepositDataSource(
+                firestore: firestore)
+            .getByBookingId(disputeBookingId);
+        final depositHeld = deposit != null
+            ? (deposit.status == 'collected' ? deposit.amount : 0)
+            : (bookingData['depositAmountPkr'] as num?)?.toInt() ?? 0;
+        final cap = disputeAmountCap(
+          remainingBalance: remaining,
+          depositHeld: depositHeld,
+        );
+        if (decisionAmount > cap) return false;
+      }
       await firestore.collection('disputes').doc(disputeId).update({
         'status': 'resolved',
         'decision': decision,

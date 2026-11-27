@@ -66,6 +66,46 @@ Color adminStatusBadgeText(BuildContext context, AdminStatusTone tone) {
 class AdminStatusChip extends StatelessWidget {
   const AdminStatusChip({super.key, required this.label, required this.tone});
 
+  /// Phase 4 (4.1) — one chip helper per list, each preserving
+  /// that list's own tone mapping (the mappings differ and are NOT
+  /// unified: 'paid' is info on bookings and has no equivalent on
+  /// cars; 'pending' is warning on shops but neutral on cars).
+  /// The factories below are the only place those mappings live.
+  factory AdminStatusChip.bookingStatus(String status,
+      [AppLocalizations? l10n]) {
+    return AdminStatusChip(
+      label: humanizeStatus(status, l10n),
+      tone: bookingStatusTone(status),
+    );
+  }
+
+  factory AdminStatusChip.carReviewStatus(String review,
+      [AppLocalizations? l10n]) {
+    return AdminStatusChip(
+      label: humanizeStatus(review, l10n),
+      tone: carReviewStatusTone(review),
+    );
+  }
+
+  factory AdminStatusChip.shopStatus({
+    required bool suspended,
+    required String verificationStatus,
+    AppLocalizations? l10n,
+  }) {
+    final label = suspended
+        ? (l10n?.admin2_suspended ?? 'Suspended')
+        : verificationStatus == 'pending'
+            ? (l10n?.pending ?? 'Pending')
+            : verificationStatus == 'approved'
+                ? (l10n?.statusApproved ?? 'Approved')
+                : humanizeStatus(verificationStatus, l10n);
+    return AdminStatusChip(
+      label: label,
+      tone: shopStatusTone(
+          suspended: suspended, verificationStatus: verificationStatus),
+    );
+  }
+
   final String label;
   final AdminStatusTone tone;
 
@@ -83,6 +123,43 @@ class AdminStatusChip extends StatelessWidget {
               fontSize: 11, fontWeight: FontWeight.w500, color: color)),
     );
   }
+}
+
+/// Phase 4 (4.1) — the three per-list tone mappings, preserved
+/// exactly as each list had them inline. They differ on purpose:
+///
+/// * bookings: 'completed' success; 'active'/'paid' info (paid
+///   has no equivalent on the cars list); 'disputed' warning;
+///   'rejected'/'cancelled' danger; anything else neutral.
+/// * cars (review state): 'approved' success; 'hidden' warning;
+///   'rejected' danger; anything else (incl. 'pending') neutral.
+/// * shops: suspended danger; 'pending' warning; 'approved'
+///   success; anything else neutral.
+AdminStatusTone bookingStatusTone(String status) => switch (status) {
+      'completed' => AdminStatusTone.success,
+      'active' || 'paid' => AdminStatusTone.info,
+      'disputed' => AdminStatusTone.warning,
+      'rejected' || 'cancelled' => AdminStatusTone.danger,
+      _ => AdminStatusTone.neutral,
+    };
+
+AdminStatusTone carReviewStatusTone(String review) => switch (review) {
+      'approved' => AdminStatusTone.success,
+      'hidden' => AdminStatusTone.warning,
+      'rejected' => AdminStatusTone.danger,
+      _ => AdminStatusTone.neutral,
+    };
+
+AdminStatusTone shopStatusTone({
+  required bool suspended,
+  required String verificationStatus,
+}) {
+  if (suspended) return AdminStatusTone.danger;
+  return switch (verificationStatus) {
+    'pending' => AdminStatusTone.warning,
+    'approved' => AdminStatusTone.success,
+    _ => AdminStatusTone.neutral,
+  };
 }
 
 /// `'payment_submitted'` → `'Payment submitted'`; single words are

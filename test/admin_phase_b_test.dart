@@ -4,7 +4,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:rentalhub/core/di/injection_container.dart' as di;
 import 'package:rentalhub/features/admin/data/datasources/admin_shops_data_source.dart';
 import 'package:rentalhub/features/admin/presentation/views/admin_cars_view.dart';
-import 'package:rentalhub/features/admin/presentation/views/admin_shop_approvals_view.dart';
 import 'package:rentalhub/features/admin/presentation/views/admin_shop_detail_view.dart';
 import 'package:rentalhub/features/admin/presentation/views/admin_shops_view.dart';
 import 'package:rentalhub/features/admin/presentation/widgets/shop_application_detail_sheet.dart';
@@ -107,13 +106,17 @@ void main() {
   });
 
   group('Phase B — views render', () {
-    testWidgets('approvals queue shows its honest empty state',
+    testWidgets('approvals is a filter on the shops list, not a screen',
         (tester) async {
-      await tester.pumpWidget(
-          const MaterialApp(home: AdminShopApprovalsView()));
+      // Phase 3 (3.1): the Approvals screen is deleted — pending
+      // is a filter on the shops list, and the decision lives on
+      // the shop detail route.
+      await tester.pumpWidget(const MaterialApp(
+          home: AdminShopsView(initialFilter: 'pending')));
       await tester.pumpAndSettle();
-      expect(find.text('Shop Approvals'), findsOneWidget);
-      expect(find.textContaining('No pending applications'), findsOneWidget);
+      expect(find.text('Shop Approvals'), findsNothing);
+      expect(find.text('Approvals'), findsNothing);
+      expect(find.textContaining('No shops match'), findsOneWidget);
     });
 
     testWidgets('shops list shows search and status filters',
@@ -143,7 +146,10 @@ void main() {
           supportedLocales: AppLocalizations.supportedLocales,
           home: AdminCarsView()));
       await tester.pumpAndSettle();
-      expect(find.text('Cars'), findsOneWidget);
+      // Phase 2 (2.3): at the default 800dp test width the shell is
+      // the desktop shell, so 'Cars' is both the sidebar item and the
+      // header title.
+      expect(find.text('Cars'), findsNWidgets(2));
       expect(find.text('Pending'), findsOneWidget);
       expect(find.text('Rejected'), findsOneWidget);
       expect(find.textContaining('No cars match'), findsOneWidget);

@@ -7,6 +7,8 @@ import '../../../../core/utils/responsive.dart';
 import '../../../../core/widgets/app_state_views.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/datasources/admin_remote_data_source.dart';
+import '../../data/services/admin_session.dart';
+import '../../domain/admin_permissions.dart';
 import '../widgets/admin_kpi_card.dart';
 import '../widgets/admin_shell.dart';
 import '../widgets/admin_status_chip.dart';
@@ -16,7 +18,10 @@ import '../widgets/admin_status_chip.dart';
 /// MRR — those need history and the gated subscription phase, and the
 /// old view invented all of them ("Rs. 4.82M, +22.8% MoM").
 class AdminDashboardView extends StatefulWidget {
-  const AdminDashboardView({super.key});
+  const AdminDashboardView({super.key, this.showKycCard});
+
+  /// Test seam: forces the KYC queue card visible/hidden when non-null.
+  final bool? showKycCard;
 
   @override
   State<AdminDashboardView> createState() => _AdminDashboardViewState();
@@ -26,6 +31,7 @@ class _AdminDashboardViewState extends State<AdminDashboardView> {
   PlatformStats? _stats;
   bool _isLoading = true;
   bool _hasError = false;
+  bool _canReviewKyc = false;
 
   @override
   void initState() {
@@ -37,9 +43,14 @@ class _AdminDashboardViewState extends State<AdminDashboardView> {
     if (!_isLoading) setState(() => _hasError = false);
     try {
       final stats = await sl<AdminRemoteDataSource>().getPlatformStats();
+      // Phase 1 (1.4): the KYC card is role-gated like the sidebar item.
+      final role = await AdminSession.resolveCurrentAdminRole();
+      final canReviewKyc = widget.showKycCard ??
+          AdminPermissions.can(role, AdminPermission.decideKyc);
       if (mounted) {
         setState(() {
           _stats = stats;
+          _canReviewKyc = canReviewKyc;
           _isLoading = false;
         });
       }
@@ -138,8 +149,23 @@ class _AdminDashboardViewState extends State<AdminDashboardView> {
                     AppLocalizations.of(context)
                             ?.adminAuditPendingApprovalsHint ??
                         'Open the approvals queue to decide them.',
-                    onTap: () => context.go(RouteNames.adminApprovals),
+                    onTap: () => context.go('${RouteNames.adminShops}?filter=pending'),
                   ),
+                  // Phase 1 (1.4): the KYC queue, counted live.
+                  if (_canReviewKyc) ...[
+                    const SizedBox(height: 12),
+                    _infoCard(
+                      l10n?.admin2_dashboardKycTitle ??
+                          'KYC submissions waiting for review',
+                      l10n?.admin2_dashboardOpenCount(
+                              _stats?.pendingKycCount ?? 0) ??
+                          '${_stats?.pendingKycCount ?? 0} open',
+                      Icons.badge_rounded,
+                      l10n?.admin2_dashboardKycHint ??
+                          'Open the KYC review queue to decide them.',
+                      onTap: () => context.go(RouteNames.adminKycReview),
+                    ),
+                  ],
                 ],
               ),
             ),

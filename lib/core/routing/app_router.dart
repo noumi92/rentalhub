@@ -132,12 +132,15 @@ import '../../features/admin/presentation/views/admin_kyc_review_view.dart';
 import '../../features/admin/presentation/views/admin_booking_detail_view.dart';
 import '../../features/admin/presentation/views/admin_bookings_view.dart';
 import '../../features/admin/presentation/views/admin_disputes_view.dart';
+import '../../features/admin/presentation/views/admin_dispute_detail_view.dart';
+import '../../features/admin/presentation/views/admin_queues_view.dart';
+import '../../features/admin/presentation/views/admin_ticket_detail_view.dart';
 import '../../features/admin/presentation/views/admin_reviews_view.dart';
+import '../../features/admin/presentation/views/admin_announcement_detail_view.dart';
 import '../../features/admin/presentation/views/admin_announcements_view.dart';
 import '../../features/admin/presentation/views/admin_platform_settings_view.dart';
 import '../../features/admin/presentation/views/admin_reports_view.dart';
 import '../../features/admin/presentation/views/admin_tickets_view.dart';
-import '../../features/admin/presentation/views/admin_shop_approvals_view.dart';
 import '../../features/admin/presentation/views/admin_shop_detail_view.dart';
 import '../../features/admin/presentation/views/admin_shops_view.dart';
 import '../../features/admin/presentation/views/admin_blacklist_tribunal_view.dart';
@@ -1639,17 +1642,17 @@ class AppRouter {
       ),
       GoRoute(
         path: RouteNames.adminShops,
-        builder: (context, state) => const AdminShopsView(),
+        // Phase 3 (3.1): Approvals is the Shops list with the
+        // Pending filter — `?filter=pending` preselects it.
+        builder: (context, state) => AdminShopsView(
+          initialFilter: state.uri.queryParameters['filter'] ?? 'all',
+        ),
       ),
       GoRoute(
         path: RouteNames.adminShopDetail,
         builder: (context, state) => AdminShopDetailView(
           shopId: state.pathParameters['shopId'] ?? '',
         ),
-      ),
-      GoRoute(
-        path: RouteNames.adminApprovals,
-        builder: (context, state) => const AdminShopApprovalsView(),
       ),
       // Item 6 — customer KYC review queue + one submission's detail.
       GoRoute(
@@ -1691,12 +1694,28 @@ class AppRouter {
         builder: (context, state) => const AdminDisputesView(),
       ),
       GoRoute(
+        path: RouteNames.adminDisputeDetail,
+        builder: (context, state) => AdminDisputeDetailView(
+          disputeId: state.pathParameters['disputeId'] ?? '',
+        ),
+      ),
+      GoRoute(
+        path: RouteNames.adminQueues,
+        builder: (context, state) => const AdminQueuesView(),
+      ),
+      GoRoute(
         path: RouteNames.adminReviews,
         builder: (context, state) => const AdminReviewsView(),
       ),
       GoRoute(
         path: RouteNames.adminTickets,
         builder: (context, state) => const AdminTicketsView(),
+      ),
+      GoRoute(
+        path: RouteNames.adminTicketDetail,
+        builder: (context, state) => AdminTicketDetailView(
+          ticketId: state.pathParameters['ticketId'] ?? '',
+        ),
       ),
       GoRoute(
         path: RouteNames.adminSettings,
@@ -1709,6 +1728,12 @@ class AppRouter {
       GoRoute(
         path: RouteNames.adminAnnouncements,
         builder: (context, state) => const AdminAnnouncementsView(),
+      ),
+      GoRoute(
+        path: RouteNames.adminAnnouncementDetail,
+        builder: (context, state) => AdminAnnouncementDetailView(
+          announcementId: state.pathParameters['announcementId'] ?? '',
+        ),
       ),
       GoRoute(
         path: RouteNames.adminReports,

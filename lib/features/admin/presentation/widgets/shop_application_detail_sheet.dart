@@ -7,6 +7,7 @@ import '../../../../core/utils/responsive.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../l10n/app_localizations_en.dart';
+import 'admin_confirm_dialog.dart';
 import 'admin_permission_check.dart';
 import 'shop_fleet_photos.dart';
 import '../../../discovery/data/models/shop_model.dart';
@@ -56,6 +57,23 @@ class _ShopApplicationDetailSheetState
     final check = await AdminPermissionCheck.check(
         context, AdminPermission.decideVendor);
     if (!check.proceed) return;
+    if (!mounted) return;
+    // Phase 1 (1.1): every decision notifies the owner — confirm
+    // it first, naming the decision. (The reason field is required
+    // for non-approved decisions; approval needs no reason.)
+    final l10n = (AppLocalizations.of(context) ?? AppLocalizationsEn());
+    final decisionLabel = decision == 'approved'
+        ? l10n.admin2_approve
+        : decision == 'info_requested'
+            ? l10n.admin2_shopAppAskInfo
+            : l10n.admin2_reject;
+    final confirmed = await showAdminConfirmDialog(
+      context,
+      title: l10n.admin2_shopAppConfirmTitle,
+      body: l10n.admin2_shopAppConfirmBody(decisionLabel),
+    );
+    if (!confirmed) return;
+    if (!mounted) return;
     setState(() => _isWorking = true);
     final synced = await sl<AdminShopsDataSource>().decideShopApplication(
       shopId: widget.shop.shopId,

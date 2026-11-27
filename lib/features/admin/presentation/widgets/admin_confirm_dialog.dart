@@ -18,10 +18,13 @@ Future<bool> showAdminConfirmDialog(
       actions: [
         TextButton(
           onPressed: () => Navigator.of(ctx).pop(false),
+          // Phase 1 (1.1): 48dp minimum touch target (rulebook §4.6).
+          style: TextButton.styleFrom(minimumSize: const Size(0, 48)),
           child: Text(AppLocalizations.of(ctx)!.cancel),
         ),
         FilledButton(
           onPressed: () => Navigator.of(ctx).pop(true),
+          style: FilledButton.styleFrom(minimumSize: const Size(0, 48)),
           child: Text(AppLocalizations.of(ctx)!.admin2_confirm),
         ),
       ],

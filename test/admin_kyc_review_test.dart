@@ -389,8 +389,63 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('Approve'));
       await tester.pumpAndSettle();
+      // Phase 1 (1.1): approve asks first — the decision only
+      // saves after the confirm dialog is accepted.
+      expect(find.text('Approve this KYC submission?'), findsOneWidget);
+      expect(seenDecision, isNull);
+      await tester.tap(find.text('Confirm'));
+      await tester.pumpAndSettle();
       expect(seenDecision, 'verified');
       expect(find.text('No pending KYC submissions'), findsOneWidget);
+    });
+
+    testWidgets('approve cancelled at the confirm step saves nothing',
+        (tester) async {
+      String? seenDecision;
+      await tester.pumpWidget(MaterialApp.router(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        routerConfig: GoRouter(
+          initialLocation: RouteNames.adminKycReviewDetail
+              .replaceFirst(':customerId', 'cust-1'),
+          routes: [
+            GoRoute(
+              path: RouteNames.adminKycReview,
+              builder: (_, __) => AdminKycReviewView(
+                loadQueue: () async => [],
+                resolveAdminRole: () async => 'operations',
+              ),
+            ),
+            GoRoute(
+              path: RouteNames.adminKycReviewDetail,
+              builder: (_, state) => AdminKycReviewDetailView(
+                customerId: state.pathParameters['customerId'] ?? '',
+                loadSubmission: (_) async => submission(),
+                resolveAdminRole: () async => 'operations',
+                resolveImageUrl: (_, __) => 'https://example.com/doc.jpg',
+                decideKyc: ({
+                  required String customerId,
+                  required String decision,
+                  required String reason,
+                }) async {
+                  seenDecision = decision;
+                  return true;
+                },
+              ),
+            ),
+          ],
+        ),
+      ));
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text('Approve'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Approve'));
+      await tester.pumpAndSettle();
+      expect(find.text('Approve this KYC submission?'), findsOneWidget);
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+      expect(seenDecision, isNull);
+      expect(find.text('Bilal Ahmed'), findsOneWidget);
     });
 
     testWidgets('support sees the not-permitted state on the detail too',
@@ -427,7 +482,8 @@ void main() {
       ))));
       await tester.pumpAndSettle();
       expect(find.text('KYC Review'), findsOneWidget);
-      expect(find.text('Approvals'), findsOneWidget);
+      // Phase 3 (3.1): Approvals is no longer a sidebar item.
+      expect(find.text('Approvals'), findsNothing);
       await tester.pumpWidget(wrap(Scaffold(
           body: AdminSidebarNav(
         activeRoute: RouteNames.adminDashboard,
@@ -437,7 +493,7 @@ void main() {
       ))));
       await tester.pumpAndSettle();
       expect(find.text('KYC Review'), findsNothing);
-      expect(find.text('Approvals'), findsOneWidget);
+      expect(find.text('Approvals'), findsNothing);
     });
   });
 }

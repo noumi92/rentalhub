@@ -12,6 +12,7 @@ import '../../data/datasources/admin_kyc_data_source.dart';
 import '../../data/datasources/admin_people_data_source.dart';
 import '../../data/services/admin_session.dart';
 import '../../domain/admin_permissions.dart';
+import '../widgets/admin_confirm_dialog.dart';
 import '../widgets/admin_shell.dart';
 import '../widgets/kyc_review_detail_body.dart';
 import '../widgets/kyc_review_document_tile.dart';
@@ -133,8 +134,7 @@ class _AdminKycReviewDetailViewState
       _isLoading = false;
     });
     if (submission == null) return;
-    // The QR number is requested ONLY for a super admin — the rules
-    // would deny the read for anyone else, so it is not attempted.
+    // The QR number is requested ONLY for a super admin.
     final isSuperAdmin = role == AdminPermissions.superAdmin;
     final qrCode = isSuperAdmin
         ? await (widget.loadQrCode?.call(widget.customerId) ??
@@ -142,10 +142,8 @@ class _AdminKycReviewDetailViewState
                 .getCustomerQrCode(widget.customerId))
         : null;
     if (!mounted) return;
-    setState(() {
-      _isSuperAdmin = isSuperAdmin;
-      _qrCode = qrCode;
-    });
+    setState(() => _isSuperAdmin = isSuperAdmin);
+    setState(() => _qrCode = qrCode);
   }
 
   Future<void> _decide(String decision) async {
@@ -156,6 +154,20 @@ class _AdminKycReviewDetailViewState
           AppLocalizations.of(context)?.adminKycReviewReasonRequired ??
               'A reason is required to reject — the customer sees it.');
       return;
+    }
+    // Phase 1 (1.1): approve used to fire on one tap while reject
+    // already needed a typed reason — confirm the approval first.
+    if (decision == 'verified') {
+      final l10n = AppLocalizations.of(context);
+      final confirmed = await showAdminConfirmDialog(
+        context,
+        title: l10n?.adminKycReviewApproveConfirmTitle ??
+            'Approve this KYC submission?',
+        body: l10n?.adminKycReviewApproveConfirmBody ??
+            'The customer will be marked verified and can start booking.',
+      );
+      if (!confirmed) return;
+      if (!mounted) return;
     }
     setState(() => _isWorking = true);
     final synced = await (widget.decideKyc?.call(
@@ -193,21 +205,28 @@ class _AdminKycReviewDetailViewState
           'Customer identity documents waiting for a decision',
       onRefresh: _load,
       onBack: () => context.go(RouteNames.adminKycReview),
+      // Phase 4 (4.4a) — Approve / Reject are the sticky bar now,
+      // not the bottom of the document scroll.
+      bottomBar: submission == null || !_canReview
+          ? null
+          : KycDecisionButtons(
+              isWorking: _isWorking, onDecide: _decide),
       child: _isLoading
           ? const AppLoadingState()
-          : !_canReview
-              ? AppEmptyState(
-                  title: l10n?.adminKycReviewNotPermitted ??
-                      'Only super admins and operations can review KYC',
-                  message: l10n?.adminKycReviewNotPermittedHint ??
-                      'Ask a super admin or operations admin to review this submission.',
-                  icon: Icons.lock_rounded,
+          // Phase 1 (1.5): the error state wins over "not permitted".
+          : _hasError
+              ? AppErrorState(
+                  message: l10n?.adminKycReviewLoadFailed ??
+                      'Could not load the KYC queue.',
+                  onRetry: _load,
                 )
-              : _hasError
-                  ? AppErrorState(
-                      message: l10n?.adminKycReviewLoadFailed ??
-                          'Could not load the KYC queue.',
-                      onRetry: _load,
+              : !_canReview
+                  ? AppEmptyState(
+                      title: l10n?.adminKycReviewNotPermitted ??
+                          'Only super admins and operations can review KYC',
+                      message: l10n?.adminKycReviewNotPermittedHint ??
+                          'Ask a super admin or operations admin to review this submission.',
+                      icon: Icons.lock_rounded,
                     )
                   : submission == null
                       ? AppEmptyState(
@@ -222,6 +241,7 @@ class _AdminKycReviewDetailViewState
                           reasonController: _reasonController,
                           isWorking: _isWorking,
                           onDecide: _decide,
+                          showActions: false,
                         ),
     );
   }

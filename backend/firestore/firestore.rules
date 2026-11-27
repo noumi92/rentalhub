@@ -79,6 +79,31 @@ service cloud.firestore {
       );
     }
 
+    // Phase 1 (1.6): the walk-in customer's owning shop, for the
+    // customer_qr_codes write rule — the customer record must exist
+    // and name the writer's shop (the owner files the QR number
+    // they collected; the customer record is saved first).
+    function isCustomerShopOwner(customerId) {
+      return isSignedIn()
+        && exists(/databases/$(database)/documents/customers/$(customerId))
+        && (isShopOwner(get(/databases/$(database)/documents/customers/$(customerId)).data.get('shopId', ''))
+          || isShopOwner(get(/databases/$(database)/documents/customers/$(customerId)).data.get('shop_id', '')));
+    }
+
+    // Phase 1 (1.6): a party to the booking a notification is
+    // about, for the notifications create rule — a customer
+    // notifies the shop of a new booking, a dispute, or a review
+    // (booking_remote_data_source, dispute_remote_data_source,
+    // review_remote_data_source), and the writer is that booking's
+    // customer.
+    function isNotificationBookingParty(bookingId) {
+      return isSignedIn()
+        && bookingId != ''
+        && exists(/databases/$(database)/documents/bookings/$(bookingId))
+        && (get(/databases/$(database)/documents/bookings/$(bookingId)).data.get('customerId', '') == request.auth.uid
+          || get(/databases/$(database)/documents/bookings/$(bookingId)).data.get('customer_id', '') == request.auth.uid);
+    }
+
     // =========================================================================
     // 1. Identity & Profile Collections
     // =========================================================================
@@ -115,16 +140,31 @@ service cloud.firestore {
     // Immutable Platform Audit Logs
     match /audit_logs/{logId} {
       allow read: if adminRole();
-      allow create: if isSignedIn();
+      // Phase 1 (1.6): create was open to any signed-in user — only
+      // an admin may log an admin action. Every client-side caller
+      // is an admin flow (AdminAuditService.logAction); Cloud
+      // Functions write with the Admin SDK and bypass rules.
+      allow create: if adminRole();
       allow update, delete: if false;
     }
 
-    // Restricted CNIC Back-QR Numbers: Super Admin ONLY
+    // Restricted CNIC Back-QR Numbers: Super Admin ONLY (read).
+    // Phase 1 (1.6): create/update were open to any signed-in user
+    // for any customer's doc. Writes are now the super admin, the
+    // customer themself (their own KYC submission), or the owning
+    // shop (walk-in KYC filed by the shop) — the three legitimate
+    // writers (CustomerQrCodeService). The customerId must match
+    // the doc and the QR value must be a string, as before.
     match /customer_qr_codes/{customerId} {
       allow read: if isSuperAdmin();
-      allow create, update: if isSignedIn()
-        && request.resource.data.get('customerId', '') == customerId
-        && request.resource.data.get('qrCode', '') is string;
+      allow create, update: if isSuperAdmin()
+        || (isUser(customerId)
+          && request.resource.data.get('customerId', '') == customerId
+          && request.resource.data.get('qrCode', '') is string)
+        || (isSignedIn()
+          && request.resource.data.get('customerId', '') == customerId
+          && request.resource.data.get('qrCode', '') is string
+          && isCustomerShopOwner(customerId));
       allow delete: if false;
     }
 
@@ -770,7 +810,18 @@ service cloud.firestore {
         isShopOwner(resource.data.get('shop_id', '')) ||
         adminRole()
       );
-      allow create: if isSignedIn();
+      // Phase 1 (1.6): create was open to any signed-in user, so
+      // anyone could drop a notification into anyone's inbox.
+      // The writers are: an admin (admin flows), the owning shop
+      // (owner-to-customer), the recipient themself, or a party to
+      // the booking the notification is about (customer-to-shop).
+      // Cloud Functions write with the Admin SDK and bypass rules.
+      allow create: if adminRole()
+        || isShopOwner(request.resource.data.get('shopId', ''))
+        || isUser(request.resource.data.get('customerId', ''))
+        || isUser(request.resource.data.get('recipientUid', ''))
+        || isNotificationBookingParty(
+            request.resource.data.get('bookingId', ''));
     }
 
     // Showroom Subscriptions

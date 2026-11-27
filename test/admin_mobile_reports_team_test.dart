@@ -65,6 +65,16 @@ void main() {
       await _pump(tester, const AdminTeamView(adminRole: 'super_admin'),
           textScale: 2.0);
       expect(find.text('Admin Team'), findsWidgets);
+      // Phase 2 (2.5): the invite form lives on the Invites tab now.
+      // The harness resets the viewport when it returns, so re-apply
+      // it before tapping (the approvals-sheet test does the same).
+      tester.view.physicalSize = const Size(360, 800);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Invites'));
+      await tester.pumpAndSettle();
       expect(find.text('Save invite'), findsOneWidget);
       // AD-m8: the Send invite button keeps its 48dp target at 2.0x.
       final saveSize =

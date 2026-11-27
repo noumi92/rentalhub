@@ -12,7 +12,9 @@ import '../../../../l10n/app_localizations_en.dart';
 import '../../data/datasources/admin_shops_data_source.dart';
 import '../../domain/admin_permissions.dart';
 import '../widgets/admin_detail_section.dart';
+import '../widgets/admin_list_card.dart';
 import '../widgets/admin_permission_check.dart';
+import '../widgets/shop_application_detail_sheet.dart';
 import '../widgets/admin_shell.dart';
 import '../widgets/admin_status_chip.dart';
 import '../widgets/admin_suspend_dialog.dart';
@@ -69,6 +71,23 @@ class _AdminShopDetailViewState extends State<AdminShopDetailView> {
     }
   }
 
+  /// Phase 3 (3.1): a pending shop's application is decided here
+  /// — the Approvals screen is gone, so the review sheet opens
+  /// from the detail route and reloads the shop on a decision.
+  void _reviewApplication() {
+    final shop = _shop;
+    if (shop == null) return;
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (_) => ShopApplicationDetailSheet(
+        shop: shop,
+        onDecided: _load,
+      ),
+    );
+  }
+
   Future<void> _toggleSuspend(bool suspend) async {
     final reason = await showSuspendDialog(context, suspend: suspend);
     if (reason == null) return;
@@ -110,6 +129,18 @@ class _AdminShopDetailViewState extends State<AdminShopDetailView> {
       subtitle: l10n.admin2_shopDetailSubtitle,
       onRefresh: _load,
       onBack: () => context.go(RouteNames.adminShops),
+      // Phase 4 (4.4a) — the actions (review / message / suspend)
+      // are the sticky bar now, not the bottom of the scroll.
+      bottomBar: _shop == null
+          ? null
+          : ShopDetailActions(
+              shop: _shop!,
+              isWorking: _isWorking,
+              onToggleSuspend: () => _toggleSuspend(!_shop!.suspended),
+              onReviewApplication: _shop!.verificationStatus == 'pending'
+                  ? _reviewApplication
+                  : null,
+            ),
       child: _isLoading
           ? const AppLoadingState()
           : _hasError
@@ -144,25 +175,27 @@ class _AdminShopDetailViewState extends State<AdminShopDetailView> {
                         spacing: 12,
                         runSpacing: 12,
                         children: [
-                          _fact(l10n.admin2_shopDetailPlan, _shop!.plan),
+                          AdminFactTile(label: l10n.admin2_shopDetailPlan, value: _shop!.plan),
                           // AD-M9: the raw `verificationStatus`
                           // ('pending'/'approved') was shown verbatim.
-                          _fact(l10n.admin2_shopDetailStatus,
-                              _shop!.suspended ? l10n.admin2_suspended : humanizeStatus(_shop!.verificationStatus, l10n)),
-                          _fact(l10n.admin2_navCars, '$_vehicleCount'),
-                          _fact(l10n.admin2_shopDetailLifetimeBookings, '$_bookingCount'),
+                          AdminFactTile(
+                              label: l10n.admin2_shopDetailStatus,
+                              value: _shop!.suspended ? l10n.admin2_suspended : humanizeStatus(_shop!.verificationStatus, l10n)),
+                          AdminFactTile(label: l10n.admin2_navCars, value: '$_vehicleCount'),
+                          AdminFactTile(label: l10n.admin2_shopDetailLifetimeBookings, value: '$_bookingCount'),
                           // Honesty flag (Worker 1): no stored rating
                           // shows '—', never the display-only fallback.
-                          _fact(l10n.admin2_shopDetailRating,
-                              _shop!.hasRealRating ? _shop!.rating.toStringAsFixed(1) : '—'),
+                          AdminFactTile(
+                              label: l10n.admin2_shopDetailRating,
+                              value: _shop!.hasRealRating ? _shop!.rating.toStringAsFixed(1) : '—'),
                           // F-m7: the real WhatsApp credits balance
                           // from `whatsapp_credits/{shopId}` — null
                           // means no credits document exists yet, so
                           // the fact says so instead of a 0 that was
                           // never stored.
-                          _fact(
-                              l10n.adminAuditCredits,
-                              _creditsBalance == null
+                          AdminFactTile(
+                              label: l10n.adminAuditCredits,
+                              value: _creditsBalance == null
                                   ? l10n.adminAuditCreditsNone
                                   : '$_creditsBalance'),
                         ],
@@ -189,40 +222,10 @@ class _AdminShopDetailViewState extends State<AdminShopDetailView> {
                                   .map((a) =>
                                       '${a['type'] ?? l10n.admin2_shopDetailAccountType} — ${a['title'] ?? a['account'] ?? ''}')
                                   .toList()),
-                      const SizedBox(height: 8),
-                      ShopDetailActions(
-                        shop: _shop!,
-                        isWorking: _isWorking,
-                        onToggleSuspend: () =>
-                            _toggleSuspend(!_shop!.suspended),
-                      ),
                     ],
                   ),
                 ),
     );
   }
 
-  Widget _fact(String label, String value) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label,
-              style: const TextStyle(
-                  fontSize: 11)),
-          const SizedBox(height: 2),
-          Text(value,
-              style: const TextStyle(
-                  fontSize: 15,
-                  )),
-        ],
-      ),
-    );
-  }
 }

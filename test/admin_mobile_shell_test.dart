@@ -13,7 +13,6 @@ import 'package:rentalhub/features/admin/presentation/views/admin_customer_detai
 import 'package:rentalhub/features/admin/presentation/views/admin_customers_view.dart';
 import 'package:rentalhub/features/admin/presentation/views/admin_dashboard_view.dart';
 import 'package:rentalhub/features/admin/presentation/views/admin_login_view.dart';
-import 'package:rentalhub/features/admin/presentation/views/admin_shop_approvals_view.dart';
 import 'package:rentalhub/features/admin/presentation/views/admin_shop_detail_view.dart';
 import 'package:rentalhub/features/admin/presentation/views/admin_shops_view.dart';
 import 'package:rentalhub/features/admin/presentation/widgets/admin_shell.dart';
@@ -110,9 +109,6 @@ void main() {
             path: RouteNames.adminShops,
             builder: (_, __) => const AdminShopsView()),
         GoRoute(
-            path: RouteNames.adminApprovals,
-            builder: (_, __) => const AdminShopApprovalsView()),
-        GoRoute(
             path: RouteNames.adminCars,
             builder: (_, __) => placeholder('Cars')),
         GoRoute(
@@ -177,7 +173,7 @@ void main() {
   }
 
   group('admin_mobile shell — drawer navigation at 360dp', () {
-    testWidgets('drawer lists all 16 sections on a phone',
+    testWidgets('drawer lists all 15 sections on a phone',
         (tester) async {
       tester.view.physicalSize = const Size(360, 800);
       tester.view.devicePixelRatio = 1.0;
@@ -190,13 +186,19 @@ void main() {
       await tester.tap(find.byIcon(Icons.menu));
       await tester.pumpAndSettle();
       for (final label in [
-        'Shops', 'Approvals', 'Cars', 'Customers',
-        'Bookings', 'Disputes', 'Reviews', 'Support', 'Announcements',
+        'Cars', 'Customers',
+        'Disputes', 'Reviews', 'Support', 'Announcements',
         'Reports', 'Settings', 'Blacklist', 'Admin Team', 'Activity Log',
-        'Subscriptions',
       ]) {
         expect(find.text(label), findsOneWidget, reason: label);
       }
+      // Phase 2 (2.2): Shops and Bookings are bottom-nav items too,
+      // so they appear twice with the drawer open (drawer + nav bar).
+      expect(find.text('Shops'), findsNWidgets(2));
+      expect(find.text('Bookings'), findsNWidgets(2));
+      // Phase 1 (1.2): Subscriptions is hidden until the screen
+      // exists — the route stays, but it is not a nav item.
+      expect(find.text('Subscriptions'), findsNothing);
       // Twice: the app-bar title and the drawer item.
       expect(find.text('Dashboard'), findsNWidgets(2));
     });
@@ -249,7 +251,9 @@ void main() {
       expect(find.text('Lahore Motors'), findsOneWidget);
       // Twice: the status filter chip and the suspended shop's chip.
       expect(find.text('Suspended'), findsNWidgets(2));
-      expect(find.text('Approvals'), findsOneWidget);
+      // Phase 3 (3.1): no Approvals button any more — pending is a
+      // filter on this list, and the decision lives on the detail.
+      expect(find.text('Approvals'), findsNothing);
     });
 
     testWidgets('list renders without overflow at 2.0x', (tester) async {
@@ -300,8 +304,10 @@ void main() {
       expect(suspendY, closeTo(messageY, 1.0));
     });
 
-    testWidgets('approvals queue + review sheet render at 360dp',
+    testWidgets('pending filter + review sheet render at 360dp',
         (tester) async {
+      // Phase 3 (3.1): Approvals is the Shops list with the Pending
+      // filter, and the decision lives on the shop detail route.
       // NOTE: do NOT use the harness helper here — it resets the
       // viewport when it returns, and the sheet opens in the Overlay
       // after that, so it would lay out at the default 800dp width.
@@ -309,10 +315,34 @@ void main() {
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
-      await tester.pumpWidget(wrap(const AdminShopApprovalsView()));
+      // The list navigates to the detail route on tap, so this
+      // test needs a GoRouter (unlike the old Approvals screen,
+      // which opened its review sheet in place).
+      final router = GoRouter(
+        initialLocation: RouteNames.adminShops,
+        routes: [
+          GoRoute(
+              path: RouteNames.adminShops,
+              builder: (_, __) =>
+                  const AdminShopsView(initialFilter: 'pending')),
+          GoRoute(
+              path: RouteNames.adminShopDetail,
+              builder: (_, state) => AdminShopDetailView(
+                  shopId: state.pathParameters['shopId']!)),
+        ],
+      );
+      await tester.pumpWidget(MaterialApp.router(
+        routerConfig: router,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+      ));
       await tester.pumpAndSettle();
       expect(find.text('New Wheels Rent a Car'), findsOneWidget);
+      expect(find.text('Metro Car Rentals'), findsNothing);
       await tester.tap(find.text('New Wheels Rent a Car'));
+      await tester.pumpAndSettle();
+      expect(find.text('Review application'), findsOneWidget);
+      await tester.tap(find.text('Review application'));
       await tester.pumpAndSettle();
       expect(find.text('Approve'), findsOneWidget);
       expect(find.text('Ask for more info'), findsOneWidget);
@@ -382,6 +412,20 @@ void main() {
       );
       expect(find.text('Bilal Ahmed'), findsOneWidget);
       expect(find.text('Trust score'), findsOneWidget);
+      // Phase 4 (4.4a): the actions live in the sticky bar now,
+      // reachable from every tab (the Notes tab keeps the composer).
+      // The harness resets the viewport when it returns, so re-apply
+      // it before tapping (the approvals-sheet test does the same).
+      tester.view.physicalSize = const Size(360, 800);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      await tester.pumpAndSettle();
+      // At 2.0x the third tab scrolls out of view — reveal it first.
+      await tester.ensureVisible(find.text('Notes & flags'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Notes & flags'));
+      await tester.pumpAndSettle();
       expect(find.text('Report to blacklist'), findsOneWidget);
       // Stacked actions: the blacklist button sits below watchlist.
       final watchY =
@@ -434,7 +478,7 @@ class _FakeShopsDataSource extends AdminShopsDataSource {
           .firstWhere((s) => s.shopId == id));
 
   @override
-  Future<List<ShopModel>> getShops() async => shops;
+  Future<List<ShopModel>> getShops() async => [...shops, ...pending];
 
   @override
   Future<List<ShopModel>> getPendingShops() async => pending;
@@ -489,16 +533,19 @@ class _FakePeopleDataSource extends AdminPeopleDataSource {
     int limit = 20,
     Object? cursor,
     String cnicFilter = 'all',
+    String sort = 'nameAsc',
   }) async =>
       AdminPage(
-        items: customers
-            .map((c) => AdminCustomerRow(
-                  customer: c,
-                  storedTrustScore: null,
-                  isBlacklisted: false,
-                  watchlisted: false,
-                ))
-            .toList(),
+        items: AdminPeopleDataSource.sortCustomerRows(
+            customers
+                .map((c) => AdminCustomerRow(
+                      customer: c,
+                      storedTrustScore: null,
+                      isBlacklisted: false,
+                      watchlisted: false,
+                    ))
+                .toList(),
+            sort),
         hasMore: false,
       );
 }

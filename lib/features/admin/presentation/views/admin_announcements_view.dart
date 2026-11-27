@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
@@ -9,6 +10,11 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../../l10n/app_localizations_en.dart';
 import '../../data/datasources/admin_support_data_source.dart';
 import '../../domain/admin_permissions.dart';
+import '../widgets/admin_announcement_card.dart';
+import '../widgets/admin_announcements_header.dart';
+import '../widgets/admin_sort_menu.dart';
+import '../widgets/admin_confirm_dialog.dart';
+import '../widgets/admin_load_more_button.dart';
 import '../widgets/admin_permission_check.dart';
 import '../widgets/admin_shell.dart';
 import '../widgets/announcement_form_sheet.dart';
@@ -21,6 +27,13 @@ import '../widgets/announcement_form_sheet.dart';
 /// detail screen reports an open); delivered is labelled "not
 /// tracked yet" — FCM delivery receipts are not reported, and the
 /// count is never estimated.
+///
+/// Phase 3 (3.2): tapping a card opens the announcement detail
+/// route, where drafts and scheduled items can be edited and
+/// deleted and sent items are read-only history.
+/// Phase 3 (3.4): the history pages (20 rows at a time) instead of
+/// stopping at a silent 50-row cap, and the count line says how
+/// many of the total are shown.
 class AdminAnnouncementsView extends StatefulWidget {
   const AdminAnnouncementsView({super.key});
 
@@ -30,9 +43,16 @@ class AdminAnnouncementsView extends StatefulWidget {
 }
 
 class _AdminAnnouncementsViewState extends State<AdminAnnouncementsView> {
+  static const _pageSize = 20;
+
   List<AdminAnnouncement> _announcements = [];
   bool _isLoading = true;
+  bool _isLoadingMore = false;
   bool _hasError = false;
+  Object? _cursor;
+  bool _hasMore = false;
+  String _sort = AdminListSort.dateNewest;
+  int? _total;
 
   @override
   void initState() {
@@ -40,20 +60,44 @@ class _AdminAnnouncementsViewState extends State<AdminAnnouncementsView> {
     _load();
   }
 
-  Future<void> _load() async {
-    if (!_isLoading) setState(() => _hasError = false);
+  Future<void> _load({bool reset = true}) async {
+    if (reset) {
+      setState(() {
+        _isLoading = true;
+        _hasError = false;
+        _announcements = [];
+        _cursor = null;
+        _hasMore = false;
+        _total = null;
+      });
+    } else {
+      setState(() => _isLoadingMore = true);
+    }
     try {
-      final list = await sl<AdminSupportDataSource>().getAnnouncements();
+      final page = await sl<AdminSupportDataSource>().getAnnouncementsPage(
+        limit: _pageSize,
+        cursor: reset ? null : _cursor,
+        sort: _sort,
+      );
       if (mounted) {
         setState(() {
-          _announcements = list;
+          _announcements =
+              reset ? page.items : [..._announcements, ...page.items];
+          _cursor = page.cursor;
+          _hasMore = page.hasMore;
+          _total = page.total;
           _isLoading = false;
+          _isLoadingMore = false;
         });
       }
     } catch (_) {
-      if (mounted) setState(() => _hasError = true);
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() {
+          _hasError = true;
+          _isLoading = false;
+          _isLoadingMore = false;
+        });
+      }
     }
   }
 
@@ -63,6 +107,22 @@ class _AdminAnnouncementsViewState extends State<AdminAnnouncementsView> {
     final check = await AdminPermissionCheck.check(
         context, AdminPermission.managePlatform);
     if (!check.proceed) return;
+    if (!mounted) return;
+    // Phase 1 (1.1): a real send broadcasts to the whole audience —
+    // confirm it. A test send goes only to the calling admin's own
+    // device and needs no confirm.
+    if (!test) {
+      final l10n = AppLocalizations.of(context);
+      final confirmed = await showAdminConfirmDialog(
+        context,
+        title: l10n?.admin2_anncSendConfirmTitle ??
+            'Send this announcement now?',
+        body: l10n?.admin2_anncSendConfirmBody ??
+            'This sends the announcement to its audience right away. A sent announcement cannot be recalled.',
+      );
+      if (!confirmed) return;
+    }
+    if (!mounted) return;
     final result = await sl<AdminSupportDataSource>().sendAnnouncement(
       announcementId: a.id,
       test: test,
@@ -79,6 +139,14 @@ class _AdminAnnouncementsViewState extends State<AdminAnnouncementsView> {
     }
   }
 
+  String _countLine(AppLocalizations l10n) {
+    final total = _total;
+    if (total != null && total > _announcements.length) {
+      return l10n.adminAuditShowingFirstOf(_announcements.length, total);
+    }
+    return l10n.adminAuditShowing(_announcements.length);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = (AppLocalizations.of(context) ?? AppLocalizationsEn());
@@ -93,19 +161,37 @@ class _AdminAnnouncementsViewState extends State<AdminAnnouncementsView> {
         padding: EdgeInsets.all(compact ? 16 : 24),
         child: Column(
           children: [
-            Align(
-              alignment: Alignment.centerLeft,
-              child: FilledButton.icon(
-                onPressed: () => showModalBottomSheet(
-                  context: context,
-                  isScrollControlled: true,
-                  builder: (_) => AnnouncementFormSheet(onCreated: _load),
-                ),
-                icon: const Icon(Icons.campaign_rounded, size: 18),
-                label: Text(l10n.admin2_anncNew),
+            AdminAnnouncementsHeader(
+              onNew: () => showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                // Phase 1 (1.5): drag handle on the sheet.
+                showDragHandle: true,
+                builder: (_) => AnnouncementFormSheet(onCreated: _load),
               ),
+              sort: _sort,
+              onSort: (sort) {
+                if (sort == _sort) return;
+                setState(() => _sort = sort);
+                _load();
+              },
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
+            if (!_isLoading && !_hasError && _announcements.isNotEmpty)
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Text(
+                    _countLine(l10n),
+                    style: TextStyle(
+                        fontSize: 12,
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurfaceVariant),
+                  ),
+                ),
+              ),
             Expanded(
               child: _isLoading
                   ? const AppLoadingState()
@@ -120,101 +206,27 @@ class _AdminAnnouncementsViewState extends State<AdminAnnouncementsView> {
                               message: l10n.admin2_anncEmptyHint,
                             )
                           : ListView.separated(
-                          itemCount: _announcements.length,
+                          itemCount: _announcements.length +
+                              (_hasMore ? 1 : 0),
                           separatorBuilder: (_, __) =>
                               const SizedBox(height: 10),
                           itemBuilder: (context, i) {
+                            if (i >= _announcements.length) {
+                              return AdminLoadMoreButton(
+                                isLoadingMore: _isLoadingMore,
+                                onPressed: () => _load(reset: false),
+                              );
+                            }
                             final a = _announcements[i];
-                            return Card(
-                              margin: EdgeInsets.zero,
-                              elevation: 0,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                side: BorderSide(
-                                    color: Theme.of(context).dividerColor),
+                            return AdminAnnouncementCard(
+                              announcement: a,
+                              onTap: () => context.go(
+                                RouteNames.adminAnnouncementDetail
+                                    .replaceFirst(
+                                        ':announcementId', a.id),
                               ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(14),
-                                child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
-                                  children: [
-                                    Text(a.titleEn,
-                                        style: const TextStyle(
-                                            fontSize: 14,
-                                            )),
-                                    const SizedBox(height: 4),
-                                    Text(a.bodyEn,
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
-                                            fontSize: 13,
-                                            color: Theme.of(context).colorScheme.onSurfaceVariant)),
-                                    // AD-m11: the authored Urdu copy was
-                                    // never previewed — show it under the
-                                    // English so the admin can check it.
-                                    if (a.titleUr.isNotEmpty) ...[
-                                      const SizedBox(height: 6),
-                                      Text(a.titleUr,
-                                          textDirection: TextDirection.rtl,
-                                          style: const TextStyle(
-                                              fontSize: 14)),
-                                    ],
-                                    if (a.bodyUr.isNotEmpty) ...[
-                                      const SizedBox(height: 2),
-                                      Text(a.bodyUr,
-                                          textDirection: TextDirection.rtl,
-                                          maxLines: 2,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(
-                                              fontSize: 13,
-                                              color: Theme.of(context).colorScheme.onSurfaceVariant)),
-                                    ],
-                                    const SizedBox(height: 6),
-                                    Text(
-                                      '${a.audienceRole} • ${a.audienceCity} • ${a.audiencePlan} • ${a.channel} • ${a.status} • ${l10n.admin2_anncSentCount(a.sent)} • ${l10n.adminAnncDeliveredNotTracked} • ${l10n.admin2_anncOpenedCount(a.opened)}',
-                                      style: TextStyle(
-                                          fontSize: 12,
-                                          color: Theme.of(context).colorScheme.onSurfaceVariant),
-                                    ),
-                                    const SizedBox(height: 10),
-                                    Wrap(
-                                      spacing: 8,
-                                      children: [
-                                        OutlinedButton(
-                                          // AD-m20: no test send on an
-                                          // already-sent announcement.
-                                          onPressed: a.status == 'sent'
-                                              ? null
-                                              : () => _send(a, test: true),
-                                          style: OutlinedButton.styleFrom(
-                                              minimumSize:
-                                                  const Size(0, 48)),
-                                          child: Text(l10n.admin2_anncSendTest),
-                                        ),
-                                        FilledButton(
-                                          // F-M14: a `pending_whatsapp`
-                                          // announcement already had its
-                                          // push delivered — "Send now"
-                                          // would push-notify everyone a
-                                          // second time. Only drafts and
-                                          // scheduled (due) announcements
-                                          // can be sent.
-                                          onPressed: a.status == 'sent' ||
-                                                  a.status ==
-                                                      'pending_whatsapp'
-                                              ? null
-                                              : () => _send(a, test: false),
-                                          style: FilledButton.styleFrom(
-                                              minimumSize:
-                                                  const Size(0, 48)),
-                                          child: Text(l10n.admin2_anncSendNow),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
+                              onSendTest: () => _send(a, test: true),
+                              onSendNow: () => _send(a, test: false),
                             );
                           },
                         ),

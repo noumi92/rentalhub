@@ -9,6 +9,7 @@ import '../../../../core/utils/csv_escape.dart';
 import '../../../bookings/data/models/booking_model.dart';
 import '../../../finance/data/models/finance_transfer_model.dart';
 import '../../domain/admin_permissions.dart';
+import '../../domain/report_series.dart';
 import '../services/admin_audit_service.dart';
 import '../services/admin_session.dart';
 import 'admin_pagination.dart';
@@ -57,19 +58,96 @@ class AdminSupportDataSource {
 
   // ---- E1: support tickets ----
 
+  /// Phase 2 (2.4): one ticket for its detail route. F-M6: throws
+  /// when the document cannot be read (the detail view shows its
+  /// error state); null only when the ticket does not exist, or
+  /// with no Firestore (tests).
+  Future<SupportTicket?> getTicket(String ticketId) async {
+    final firestore = _resolvedFirestore;
+    if (firestore == null) return null;
+    final doc = await firestore
+        .collection('support_tickets')
+        .doc(ticketId)
+        .get();
+    final data = doc.data();
+    if (data == null) return null;
+    return SupportTicket.fromMap(doc.id, data);
+  }
+
   Future<List<SupportTicket>> getTickets({String status = 'all'}) async {
     final page = await getTicketsPage(status: status, limit: 100);
     return page.items;
   }
 
-  /// One page of the tickets inbox, newest first. The old
-  /// silent 100-row cap is gone for the unfiltered inbox: the view
-  /// loads further pages with the returned cursor and says how many
-  /// it has shown. A status-filtered page still reads the first 100
-  /// matches (no cursor): ordering those by date as well would need
-  /// a `status` + `createdAt` composite index, and
-  /// `firestore.indexes.json` holds none — the view says so when
-  /// the cap is hit instead of silently truncating.
+  /// Phase 4 (4.3) — client-side sort over loaded tickets (the
+  /// no-Firestore path and the view's search results). Priority is
+  /// deliberately NOT a server sort: it is a string field
+  /// ('high'/'medium'/'low') with no severity order in Firestore,
+  /// so an alphabetical sort would mislead.
+  static List<SupportTicket> sortTickets(
+      List<SupportTicket> tickets, String sort) {
+    final list = List<SupportTicket>.of(tickets);
+    DateTime at(SupportTicket t) =>
+        t.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+    switch (sort) {
+      case 'dateOldest':
+        list.sort((a, b) => at(a).compareTo(at(b)));
+      case 'statusAsc':
+        list.sort((a, b) {
+          final c = a.status.compareTo(b.status);
+          return c != 0 ? c : at(b).compareTo(at(a));
+        });
+      default:
+        list.sort((a, b) => at(b).compareTo(at(a)));
+    }
+    return list;
+  }
+
+  /// Phase 4 (4.3) — client-side sort over loaded announcements
+  /// (the no-Firestore path).
+  static List<AdminAnnouncement> sortAnnouncements(
+      List<AdminAnnouncement> announcements, String sort) {
+    final list = List<AdminAnnouncement>.of(announcements);
+    DateTime at(AdminAnnouncement a) =>
+        a.scheduledAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+    switch (sort) {
+      case 'dateOldest':
+        list.sort((a, b) => at(a).compareTo(at(b)));
+      case 'titleAsc':
+        list.sort((a, b) => a.titleEn.compareTo(b.titleEn));
+      case 'statusAsc':
+        list.sort((a, b) {
+          final c = a.status.compareTo(b.status);
+          return c != 0 ? c : at(b).compareTo(at(a));
+        });
+      default:
+        list.sort((a, b) => at(b).compareTo(at(a)));
+    }
+    return list;
+  }
+
+  /// Phase 4 (4.4c) — how many tickets the current filter matches
+  /// in total, so the inbox can say "Showing first N of M".
+  Future<int> countTickets({String status = 'all'}) async {
+    final firestore = _resolvedFirestore;
+    if (firestore == null) return (await getTickets(status: status)).length;
+    final count = await (status == 'all'
+            ? firestore.collection('support_tickets').count()
+            : firestore
+                .collection('support_tickets')
+                .where('status', isEqualTo: status)
+                .count())
+        .get();
+    return count.count ?? 0;
+  }
+
+  /// One page of the tickets inbox, newest first. Phase 3 (3.4):
+  /// the old status-filtered branch capped filtered pages at 100
+  /// with `hasMore: false` and no cursor — a filtered inbox simply
+  /// stopped. Both branches now run the same query shape
+  /// (`status` + `createdAt`, composite index in
+  /// firestore.indexes.json) with limit+1 and a cursor, so
+  /// filtered pages paginate like the unfiltered inbox.
   ///
   /// F-M6: a failed read throws — the tickets view shows its error
   /// state instead of "No tickets" during an outage. An empty page
@@ -78,41 +156,45 @@ class AdminSupportDataSource {
     String status = 'all',
     int limit = 50,
     Object? cursor,
+    String sort = 'dateNewest',
   }) async {
     final firestore = _resolvedFirestore;
     if (firestore == null) {
       return const AdminPage(items: [], hasMore: false);
     }
-    if (status == 'all') {
-      var query = firestore
-          .collection('support_tickets')
-          .orderBy('createdAt', descending: true)
-          .limit(limit + 1);
-      final lastDoc = cursor is DocumentSnapshot ? cursor : null;
-      if (lastDoc != null) query = query.startAfterDocument(lastDoc);
-      final snap = await query.get();
-      final docs = snap.docs;
-      final hasMore = docs.length > limit;
-      final pageDocs = hasMore ? docs.sublist(0, limit) : docs;
-      return AdminPage(
-        items: pageDocs
-            .map((d) => SupportTicket.fromMap(d.id, d.data()))
-            .toList(),
-        hasMore: hasMore,
-        cursor: hasMore ? pageDocs.last : null,
-      );
+    // Phase 4 (4.3) — the sort is server-side: date orders by
+    // `createdAt`, status by `status` then newest first (the
+    // status+createdAt DESC index already exists in
+    // firestore.indexes.json; the ASC variant is added there).
+    Query<Map<String, dynamic>> base(String field, bool descending) {
+      Query<Map<String, dynamic>> q =
+          firestore.collection('support_tickets');
+      if (status != 'all') {
+        q = q.where('status', isEqualTo: status);
+      }
+      return q.orderBy(field, descending: descending);
     }
-    final snap = await firestore
-        .collection('support_tickets')
-        .where('status', isEqualTo: status)
-        .limit(100)
-        .get();
-    final list = snap.docs
-        .map((d) => SupportTicket.fromMap(d.id, d.data()))
-        .toList();
-    list.sort((a, b) => (b.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0))
-        .compareTo(a.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0)));
-    return AdminPage(items: list, hasMore: false);
+
+    var query = switch (sort) {
+      'dateOldest' => base('createdAt', false),
+      'statusAsc' =>
+        base('status', false).orderBy('createdAt', descending: true),
+      _ => base('createdAt', true),
+    };
+    var paged = query.limit(limit + 1);
+    final lastDoc = cursor is DocumentSnapshot ? cursor : null;
+    if (lastDoc != null) paged = paged.startAfterDocument(lastDoc);
+    final snap = await paged.get();
+    final docs = snap.docs;
+    final hasMore = docs.length > limit;
+    final pageDocs = hasMore ? docs.sublist(0, limit) : docs;
+    return AdminPage(
+      items: pageDocs
+          .map((d) => SupportTicket.fromMap(d.id, d.data()))
+          .toList(),
+      hasMore: hasMore,
+      cursor: hasMore ? pageDocs.last : null,
+    );
   }
 
   /// Server-side ticket search: it covers the whole inbox, not just
@@ -384,6 +466,191 @@ class AdminSupportDataSource {
         .toList();
   }
 
+  /// Phase 3 (3.2/3.4) — one page of announcements, newest first,
+  /// with the same cursor pagination as the tickets inbox, so the
+  /// history no longer stops at a silent 50-row cap.
+  Future<AdminPage<AdminAnnouncement>> getAnnouncementsPage({
+    int limit = 20,
+    Object? cursor,
+    String sort = 'dateNewest',
+  }) async {
+    final firestore = _resolvedFirestore;
+    final total = await countAnnouncements();
+    if (firestore == null) {
+      return AdminPage(items: [], hasMore: false, total: total);
+    }
+    // Phase 4 (4.3) — the sort is server-side: date orders by
+    // `created_at`, title by `title_en`, status by `status` then
+    // newest first (the status+created_at DESC index is added to
+    // firestore.indexes.json).
+    var query = switch (sort) {
+      'dateOldest' => firestore
+          .collection('announcements')
+          .orderBy('created_at'),
+      'titleAsc' => firestore
+          .collection('announcements')
+          .orderBy('title_en'),
+      'statusAsc' => firestore
+          .collection('announcements')
+          .orderBy('status')
+          .orderBy('created_at', descending: true),
+      _ => firestore
+          .collection('announcements')
+          .orderBy('created_at', descending: true),
+    };
+    query = query.limit(limit + 1);
+    final lastDoc = cursor is DocumentSnapshot ? cursor : null;
+    if (lastDoc != null) query = query.startAfterDocument(lastDoc);
+    final snap = await query.get();
+    final docs = snap.docs;
+    final hasMore = docs.length > limit;
+    final pageDocs = hasMore ? docs.sublist(0, limit) : docs;
+    return AdminPage(
+      items: pageDocs
+          .map((d) => AdminAnnouncement.fromMap(d.id, d.data()))
+          .toList(),
+      hasMore: hasMore,
+      cursor: hasMore ? pageDocs.last : null,
+      total: total,
+    );
+  }
+
+  /// Phase 3 (3.4) — how many announcements exist in total, so the
+  /// history can say "Showing first N of M".
+  Future<int> countAnnouncements() async {
+    final firestore = _resolvedFirestore;
+    if (firestore == null) return (await getAnnouncements()).length;
+    final count =
+        await firestore.collection('announcements').count().get();
+    return count.count ?? 0;
+  }
+
+  /// Phase 3 (3.2) — one announcement for its detail route. F-M6:
+  /// throws when the document cannot be read; null only when it
+  /// does not exist, or with no Firestore (tests).
+  Future<AdminAnnouncement?> getAnnouncement(String announcementId) async {
+    final firestore = _resolvedFirestore;
+    if (firestore == null) return null;
+    final doc = await firestore
+        .collection('announcements')
+        .doc(announcementId)
+        .get();
+    final data = doc.data();
+    if (data == null) return null;
+    return AdminAnnouncement.fromMap(doc.id, data);
+  }
+
+  /// Phase 3 (3.2) — edit a draft or scheduled announcement. Only
+  /// unsent items may change: a `sent` or `pending_whatsapp`
+  /// announcement is read-only history (its push already went out,
+  /// and sendAnnouncement refuses a re-send server-side). Returns
+  /// false when the caller may not edit, the announcement does not
+  /// exist, or it is already sent. Editing a scheduled item keeps
+  /// its status; editing a draft keeps it a draft unless a schedule
+  /// is added, which moves it to `scheduled`.
+  ///
+  /// F-C1: super admin + operations only ([AdminPermission.
+  /// managePlatform]) — see [createAnnouncement].
+  Future<bool> updateAnnouncement({
+    required String announcementId,
+    required String titleEn,
+    required String titleUr,
+    required String bodyEn,
+    required String bodyUr,
+    required String audienceRole,
+    required String audienceCity,
+    required String audiencePlan,
+    required String channel,
+    DateTime? scheduledAt,
+    String? adminRole,
+  }) async {
+    if (!await AdminSession.currentAdminCan(AdminPermission.managePlatform,
+        adminRole: adminRole)) {
+      return false;
+    }
+    final firestore = _resolvedFirestore;
+    if (firestore == null) return false;
+    try {
+      final doc = await firestore
+          .collection('announcements')
+          .doc(announcementId)
+          .get();
+      final data = doc.data();
+      if (data == null) return false;
+      final status = data['status'] as String? ?? 'draft';
+      if (status == 'sent' || status == 'pending_whatsapp') {
+        return false;
+      }
+      await firestore.collection('announcements').doc(announcementId).update({
+        'title_en': titleEn,
+        'title_ur': titleUr,
+        'body_en': bodyEn,
+        'body_ur': bodyUr,
+        'audience_role': audienceRole,
+        'audience_city': audienceCity,
+        'audience_plan': audiencePlan,
+        'channel': channel,
+        'scheduled_at': scheduledAt?.toIso8601String(),
+        'status': scheduledAt == null ? 'draft' : 'scheduled',
+      });
+      await AdminAuditService.logAction(
+        action: 'announcement_updated',
+        targetType: 'announcement',
+        targetId: announcementId,
+        detail: '$titleEn — $audienceRole/$audienceCity/$audiencePlan, '
+            '$channel${scheduledAt == null ? ', draft' : ', scheduled'}',
+      );
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// Phase 3 (3.2) — delete a draft or scheduled announcement.
+  /// Sent (and `pending_whatsapp`) announcements are read-only
+  /// history and cannot be deleted. Returns false when the caller
+  /// may not delete, the announcement does not exist, or it is
+  /// already sent.
+  ///
+  /// F-C1: super admin + operations only ([AdminPermission.
+  /// managePlatform]) — see [createAnnouncement].
+  Future<bool> deleteAnnouncement(
+    String announcementId, {
+    String? adminRole,
+  }) async {
+    if (!await AdminSession.currentAdminCan(AdminPermission.managePlatform,
+        adminRole: adminRole)) {
+      return false;
+    }
+    final firestore = _resolvedFirestore;
+    if (firestore == null) return false;
+    try {
+      final doc = await firestore
+          .collection('announcements')
+          .doc(announcementId)
+          .get();
+      final data = doc.data();
+      if (data == null) return false;
+      final status = data['status'] as String? ?? 'draft';
+      if (status == 'sent' || status == 'pending_whatsapp') {
+        return false;
+      }
+      await firestore
+          .collection('announcements')
+          .doc(announcementId)
+          .delete();
+      await AdminAuditService.logAction(
+        action: 'announcement_deleted',
+        targetType: 'announcement',
+        targetId: announcementId,
+        detail: (data['title_en'] as String?) ?? announcementId,
+      );
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
   /// F-C1: super admin + operations only ([AdminPermission.
   /// managePlatform]) — see [replyToTicket]. Returns null when the
   /// caller may not create announcements.
@@ -515,6 +782,10 @@ class AdminSupportDataSource {
               !b.pickupTime.isBefore(rangeFrom) &&
               !b.pickupTime.isAfter(rangeTo))
           .toList();
+      // Phase 4 (4.2): the 1,000-row cap is stated, not silent —
+      // a full page may mean more rows exist past the cap. The
+      // flags are computed at the return, once both snapshots
+      // exist.
 
       final shopsSnap = await firestore.collection('shops').limit(200).get();
       final shopCity = <String, String>{};
@@ -545,11 +816,13 @@ class AdminSupportDataSource {
       var expense = 0;
       final incomeByCategory = <String, int>{};
       final expenseByCategory = <String, int>{};
+      final transfers = <FinanceTransferModel>[];
       for (final d in transfersSnap.docs) {
         final t = FinanceTransferModel.fromMap(d.data());
         if (t.createdAt.isBefore(rangeFrom) || t.createdAt.isAfter(rangeTo)) {
           continue;
         }
+        transfers.add(t);
         if (t.kind == 'income') {
           income += t.amountPkr;
           incomeByCategory[t.category] =
@@ -618,6 +891,14 @@ class AdminSupportDataSource {
       return AdminReport(
         from: rangeFrom,
         to: rangeTo,
+        series: buildReportSeries(
+          from: rangeFrom,
+          to: rangeTo,
+          bookings: bookings,
+          transfers: transfers,
+        ),
+        bookingsTruncated: bookingsSnap.docs.length >= 1000,
+        transfersTruncated: transfersSnap.docs.length >= 1000,
         totalBookings: bookings.length,
         completedBookings: bookings.where((b) => b.status == 'completed').length,
         bookingRevenue: revenue,
@@ -1052,6 +1333,9 @@ class AdminReport {
   const AdminReport({
     required this.from,
     required this.to,
+    this.series = const [],
+    this.bookingsTruncated = false,
+    this.transfersTruncated = false,
     required this.totalBookings,
     required this.completedBookings,
     required this.bookingRevenue,
@@ -1068,6 +1352,17 @@ class AdminReport {
 
   final DateTime from;
   final DateTime to;
+
+  /// Phase 4 (4.2) — the per-day/month time series, bucketed
+  /// client-side from the rows this report fetched.
+  final List<AdminReportPoint> series;
+
+  /// True when the 1,000-row fetch cap may have cut rows off: the
+  /// KPIs and charts then cover only the first 1,000 rows, and the
+  /// view says so instead of presenting partial totals as complete.
+  final bool bookingsTruncated;
+  final bool transfersTruncated;
+
   final int totalBookings;
   final int completedBookings;
   final int bookingRevenue;

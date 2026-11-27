@@ -108,6 +108,21 @@ ${d.handover == null ? l10n.admin2_bookingSummaryHandoverNone : l10n.admin2_book
       subtitle: l10n.admin2_bookingDetailSubtitle,
       onRefresh: _load,
       onBack: () => context.go(RouteNames.adminBookings),
+      // Phase 4 (4.4a) — Download All is the sticky bar now, not
+      // the top of the scroll (it used to sit above a long
+      // detail and scrolled away).
+      bottomBar: _detail == null
+          ? null
+          : SizedBox(
+              width: double.infinity,
+              child: FilledButton.icon(
+                onPressed: _downloadAll,
+                style: FilledButton.styleFrom(
+                    minimumSize: const Size(0, 48)),
+                icon: const Icon(Icons.download_rounded, size: 18),
+                label: Text(l10n.admin2_bookingDetailDownloadAll),
+              ),
+            ),
       child: _isLoading
           ? const AppLoadingState()
           : _hasError
@@ -122,43 +137,10 @@ ${d.handover == null ? l10n.admin2_bookingSummaryHandoverNone : l10n.admin2_book
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Compact: the Download button stacks under the
-                      // title — beside a long vehicle • booking title
-                      // it clips at 360px.
-                      if (compact) ...[
-                        Text(
-                          '${_detail!.booking.vehicleName ?? _detail!.booking.vehicleId} • ${_detail!.booking.bookingId}',
-                          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-                        ),
-                        const SizedBox(height: 12),
-                        SizedBox(
-                          width: double.infinity,
-                          child: FilledButton.icon(
-                            onPressed: _downloadAll,
-                            style: FilledButton.styleFrom(
-                                minimumSize: const Size(0, 48)),
-                            icon: const Icon(Icons.download_rounded, size: 18),
-                            label: Text(l10n.admin2_bookingDetailDownloadAll),
-                          ),
-                        ),
-                      ] else
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                '${_detail!.booking.vehicleName ?? _detail!.booking.vehicleId} • ${_detail!.booking.bookingId}',
-                                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-                              ),
-                            ),
-                            FilledButton.icon(
-                              onPressed: _downloadAll,
-                              style: FilledButton.styleFrom(
-                                  minimumSize: const Size(0, 48)),
-                              icon: const Icon(Icons.download_rounded, size: 18),
-                              label: Text(l10n.admin2_bookingDetailDownloadAll),
-                            ),
-                          ],
-                        ),
+                      Text(
+                        '${_detail!.booking.vehicleName ?? _detail!.booking.vehicleId} • ${_detail!.booking.bookingId}',
+                        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                      ),
                       const SizedBox(height: 4),
                       Text(
                         l10n.admin2_bookingDetailMeta(humanizeStatus(_detail!.booking.status, l10n), humanizeStatus(_detail!.booking.tripType, l10n), humanizeStatus(_detail!.booking.packageType, l10n), _detail!.booking.isWithDriver ? l10n.admin2_withDriver : l10n.admin2_selfDrive),

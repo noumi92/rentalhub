@@ -55,6 +55,8 @@
   "disputeDecisionAmount": "فیصلے کی رقم",
   "disputeDecisionNote": "ایڈمن کا نوٹ",
   "disputeMarkInReview": "جائزے میں ڈالیں",
+  "disputeMarkInReviewConfirmTitle": "یہ تنازع زیرِ جائزہ کریں؟",
+  "disputeMarkInReviewConfirmBody": "تنازع زیرِ جائزہ ہو جائے گا تاکہ فیصلہ درج کیا جا سکے۔",
   "disputeMarkedInReview": "جائزے میں ڈال دیا گیا۔",
   "disputeMarkInReviewFailed": "تنازع کو جائزے میں نہیں ڈالا جا سکا۔",
   "handoverPhotoFront": "سامنے",
@@ -4199,6 +4201,8 @@
   "adminKycReviewNotPermittedHint": "اس درخواست کے جائزے کے لیے کسی سپر ایڈمن یا آپریشنز ایڈمن سے رابطہ کریں۔",
   "adminNotPermitted": "آپ کے ایڈمن کردار میں اس کارروائی کی اجازت نہیں ہے۔",
   "adminKycReviewApprove": "منظور کریں",
+  "adminKycReviewApproveConfirmTitle": "یہ KYC جمع کرانا منظور کریں؟",
+  "adminKycReviewApproveConfirmBody": "گاہک کی تصدیق ہو جائے گی اور وہ بکنگ شروع کر سکے گا۔",
   "adminKycReviewReject": "مسترد کریں",
   "adminKycReviewReasonLabel": "وجہ (مسترد کرنے کے لیے لازم — گاہک اسے دیکھے گا)",
   "adminKycReviewReasonRequired": "مسترد کرنے کے لیے وجہ لازمی ہے — گاہک اسے دیکھے گا۔",
@@ -4287,6 +4291,14 @@
   "admin2_blacklistReasonLabel": "وجہ (لازم)",
   "admin2_blacklistReasonRequired": "گاہک کو رپورٹ کرنے کے لیے وجہ لازمی ہے۔",
   "admin2_blacklistReportConfirm": "رپورٹ کریں",
+  "admin2_blacklistCategoryLabel": "وجہ کی قسم",
+  "admin2_blacklistDescriptionLabel": "تفصیل",
+  "admin2_blacklistCatFraud": "دھوکہ دہی",
+  "admin2_blacklistCatLateReturn": "دیر سے واپسی",
+  "admin2_blacklistCatDamage": "نقصان",
+  "admin2_blacklistCatNonPayment": "عدم ادائیگی",
+  "admin2_blacklistCatAbusive": "بدسلوکی",
+  "admin2_blacklistCatOther": "دیگر",
   "admin2_watchlistAdd": "واچ لسٹ میں شامل کریں",
   "admin2_watchlistRemove": "واچ لسٹ سے ہٹائیں",
   "admin2_ticketRepliesLoadFailed": "جوابات لوڈ نہیں ہو سکے۔",
@@ -4342,6 +4354,27 @@
   "admin2_navAdminTeam": "ایڈمن ٹیم",
   "admin2_navActivityLog": "سرگرمی لاگ",
   "admin2_navSubscriptions": "سبسکرپشنز",
+  "admin2_navHome": "ہوم",
+  "admin2_navQueues": "قطاریں",
+  "admin2_navMore": "مزید",
+  "admin2_sidebarGroupOverview": "جائزہ",
+  "admin2_sidebarGroupQueues": "جائزہ قطاریں",
+  "admin2_sidebarGroupMarketplace": "مارکیٹ پلیس",
+  "admin2_sidebarGroupPlatform": "پلیٹ فارم",
+  "admin2_sidebarGroupGovernance": "نگرانی",
+  "admin2_queuesTitle": "جائزہ قطاریں",
+  "admin2_queuesSubtitle": "ہر قطار جس میں فیصلہ درکار ہے، اس کی تازہ تعداد کے ساتھ",
+  "admin2_queuesLoadFailed": "قطاریں لوڈ نہیں ہو سکیں۔",
+  "admin2_customerDetailTabProfile": "پروفائل",
+  "admin2_customerDetailTabBookings": "بکنگز",
+  "admin2_customerDetailTabNotes": "نوٹس اور جھنڈے",
+  "admin2_teamTabMembers": "اراکین",
+  "admin2_teamTabInvites": "دعوتیں",
+  "admin2_teamTabSecurity": "سیکیورٹی",
+  "admin2_teamSecurityTitle": "دو مرحلہ تصدیق",
+  "admin2_teamSecurityAllOn": "ہر ایڈمن کی دو مرحلہ تصدیق آن ہے۔",
+  "admin2_disputeDetailNotFound": "تنازع نہیں ملا۔",
+  "admin2_ticketDetailNotFound": "ٹکٹ نہیں ملا۔",
   "admin2_sidebarSignedInAs": "ایڈمن کے طور پر سائن ان",
   "admin2_loginEmailPassword": "اپنا ای میل اور پاس ورڈ درج کریں۔",
   "admin2_loginEnterCode": "6 ہندسوں کا کوڈ درج کریں۔",
@@ -4387,6 +4420,8 @@
   "admin2_dashboardDisputesHint": "ان کا فیصلہ کرنے کے لیے تنازعات کا مرکز کھولیں۔",
   "admin2_dashboardTicketsTitle": "سپورٹ ٹکٹس منتظر ہیں",
   "admin2_dashboardTicketsHint": "جواب دینے کے لیے ٹکٹس ان باکس کھولیں۔",
+  "admin2_dashboardKycTitle": "KYC جمع کرانے جائزے کے منتظر ہیں",
+  "admin2_dashboardKycHint": "فیصلہ کرنے کے لیے KYC جائزہ قطار کھولیں۔",
   "admin2_dashboardKpiShops": "رجسٹرڈ دکانیں",
   "admin2_dashboardKpiLiveCount": "براہ راست گنتی",
   "admin2_dashboardKpiBookings": "فعال بکنگز",
@@ -4422,6 +4457,7 @@
     }
   },
   "admin2_shopDetailTitle": "دکان کی تفصیل",
+  "admin2_shopDetailReviewApplication": "درخواست کا جائزہ لیں",
   "admin2_shopDetailSubtitle": "پلان، گاڑیاں، بکنگز اور ایڈمن اقدامات",
   "admin2_shopDetailLoadFailed": "یہ دکان لوڈ نہیں ہو سکی۔",
   "admin2_shopDetailNotFound": "دکان نہیں ملی۔",
@@ -4685,7 +4721,11 @@
   "admin2_ticketAddNoteHint": "اندرونی نوٹ شامل کریں…",
   "admin2_ticketAdd": "شامل کریں",
   "admin2_ticketEscalate": "بڑھائیں",
+  "admin2_ticketEscalateConfirmTitle": "یہ ٹکٹ اوپر بھیجیں؟",
+  "admin2_ticketEscalateConfirmBody": "اوپر بھیجنے سے ٹکٹ سینئر ایڈمن کے دوسرے جائزے کے لیے چلا جائے گا۔",
   "admin2_ticketClose": "ٹکٹ بند کریں",
+  "admin2_ticketCloseConfirmTitle": "یہ ٹکٹ بند کریں؟",
+  "admin2_ticketCloseConfirmBody": "بند کرنے سے یہ سلسلہ ختم ہو جائے گا۔ گاہک کو ٹکٹ بند نظر آئے گا۔",
   "admin2_anncSubtitle": "مالکان اور گاہکوں کو نشریات",
   "admin2_anncNew": "نیا اعلان",
   "admin2_anncLoadFailed": "اعلانات لوڈ نہیں ہو سکے۔",
@@ -4695,6 +4735,8 @@
   "admin2_anncSendFailed": "فنکشنز سرور سے رابطہ نہیں ہو سکا — دوبارہ کوشش کریں۔",
   "admin2_anncSendTest": "ٹیسٹ بھیجیں",
   "admin2_anncSendNow": "ابھی بھیجیں",
+  "admin2_anncSendConfirmTitle": "یہ اعلان ابھی بھیجیں؟",
+  "admin2_anncSendConfirmBody": "اس سے اعلان فوراً اس کے سامعین کو بھیج دیا جائے گا۔ بھیجا گیا اعلان واپس نہیں لیا جا سکتا۔",
   "admin2_anncStats": "بھیجے گئے {sent} • موصول ہوئے {delivered} • کھولے گئے {opened}",
   "@admin2_anncStats": {
     "placeholders": {
@@ -4742,6 +4784,18 @@
     }
   },
   "admin2_anncFormSave": "اعلان محفوظ کریں",
+  "admin2_anncDetailTitle": "اعلان",
+  "admin2_anncDetailLoadFailed": "اعلان لوڈ نہیں ہو سکا۔",
+  "admin2_anncDetailNotFound": "اعلان نہیں ملا۔",
+  "admin2_anncEdit": "ترمیم کریں",
+  "admin2_anncDelete": "اعلان حذف کریں",
+  "admin2_anncDeleteConfirmTitle": "کیا یہ اعلان حذف کر دیا جائے؟",
+  "admin2_anncDeleteConfirmBody": "یہ مسودہ یا طے شدہ اعلان حذف کر دیا جائے گا۔ بھیجے گئے اعلانات حذف نہیں کیے جا سکتے۔",
+  "admin2_anncDeleted": "اعلان حذف کر دیا گیا۔",
+  "admin2_anncUpdated": "اعلان اپ ڈیٹ کر دیا گیا۔",
+  "admin2_anncReadOnly": "بھیجے گئے اعلانات صرف پڑھنے کے لیے ہیں۔",
+  "admin2_anncFormUpdate": "تبدیلیاں محفوظ کریں",
+  "admin2_disputeAmountTooHigh": "رقم بقایا بیلنس اور جمع شدہ ضمانت سے زیادہ نہیں ہو سکتی۔",
   "admin2_activitySubtitle": "ہر ایڈمن اقدام، تازہ ترین پہلے — ناقابل تبدیل",
   "admin2_activityLoadFailed": "سرگرمی لاگ لوڈ نہیں ہو سکا۔",
   "admin2_activityEmptyTitle": "ابھی تک کوئی آڈٹ اندراج نہیں",
@@ -4860,6 +4914,15 @@
   "admin2_shopAppKycDocs": "ریکارڈ میں کے وائی سی دستاویزات",
   "admin2_shopAppFleetPhotos": "گاڑیوں کی تصاویر",
   "admin2_shopAppReasonLabel": "وجہ (مزید معلومات مانگنے یا مسترد کرنے کے لیے لازم — مالک اسے دیکھے گا)",
+  "admin2_shopAppConfirmTitle": "فیصلے کی تصدیق کریں",
+  "admin2_shopAppConfirmBody": "اس دکان کی درخواست کے لیے '{decision}' محفوظ کریں؟",
+  "@admin2_shopAppConfirmBody": {
+    "placeholders": {
+      "decision": {
+        "type": "String"
+      }
+    }
+  },
   "admin2_shopAppCallOwner": "مالک کو کال کریں",
   "admin2_shopAppAskInfo": "مزید معلومات مانگیں",
   "admin2_shopAppOwner": "مالک: {owner} • {phone} • شناختی کارڈ {cnic}",
@@ -5212,7 +5275,8 @@
   "admin2_reportsLoadFailed": "رپورٹ لوڈ نہیں ہو سکی۔",
   "admin2_reportsEmptyTitle": "اس حد کے لیے کوئی ڈیٹا نہیں",
   "admin2_reportsEmptyHint": "رپورٹ براہ راست کلیکشنز سے پڑھتی ہے۔",
-  "admin2_reportsRevenue": "بکنگ کی آمدنی",
+  "admin2_reportsRevenue": "بک شدہ قیمت (فعال سمیت)",
+  "admin2_reportsRevenueNote": "بک شدہ قیمت اس مدت کی مکمل، فعال اور ادا شدہ بکنگوں کا مجموعہ ہے — موصول شدہ رقم نہیں۔ مالیاتی آمدنی مالیاتی کھاتے کی وصول شدہ آمدنی ہے۔",
   "admin2_reportsIncome": "مالی آمدنی",
   "admin2_reportsExpense": "مالی اخراجات",
   "admin2_reportsNewCustomers": "نئے گاہک",
@@ -5330,6 +5394,17 @@
       }
     }
   },
+  "adminAuditShowingFirstOf": "{total} میں سے پہلے {shown} دکھائے جا رہے ہیں",
+  "@adminAuditShowingFirstOf": {
+    "placeholders": {
+      "shown": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "admin2_ownerNotListed": "مالک درج نہیں ہے",
   "admin2_shopRating": "درجہ بندی {rating}",
   "@admin2_shopRating": {
@@ -5414,6 +5489,9 @@
   "admin2_settingsUnsavedBody": "آپ کی غیر محفوظ شدہ تبدیلیاں ہیں۔ جانے پر وہ ضائع ہو جائیں گی۔",
   "admin2_settingsNotLoaded": "سیٹنگز ابھی لوڈ نہیں ہوئیں — دوبارہ کوشش کریں۔",
   "admin2_tribunalReviewFlag": "جائزہ نشان",
+  "admin2_tribunalViewCustomer": "گاہک دیکھیں",
+  "admin2_tribunalCustomerNotFound": "اس شناختی کارڈ سے کوئی گاہک ریکارڈ نہیں ملتا۔",
+  "admin2_customerDetailViewTribunal": "ٹرائیبیونل اندراج دیکھیں",
   "admin2_ticketLinkedBooking": "منسلک بکنگ",
   "admin2_anncSentCount": "بھیجے گئے {count}",
   "@admin2_anncSentCount": {
@@ -6157,5 +6235,35 @@
   "nextStepViewActiveTrip": "جاری سفر دیکھیں",
   "nextStepTrackDispute": "تنازع ٹریک کریں",
   "nextStepWaitingPayment": "ادائیگی کا انتظار ہے",
-  "nextStepWaitingApproval": "منظوری کا انتظار ہے"
+  "nextStepWaitingApproval": "منظوری کا انتظار ہے",
+  "adminSortLabel": "ترتیب",
+  "adminSortDateNewest": "نیا پہلے",
+  "adminSortDateOldest": "پرانا پہلے",
+  "adminSortNameAsc": "نام ا تا ی",
+  "adminSortNameDesc": "نام ی تا ا",
+  "adminSortAmountHigh": "رقم: زیادہ پہلے",
+  "adminSortAmountLow": "رقم: کم پہلے",
+  "adminSortStatus": "حالت",
+  "adminSortPriority": "ترجیح",
+  "adminSortRatingHigh": "درجہ بندی: زیادہ پہلے",
+  "adminSortRatingLow": "درجہ بندی: کم پہلے",
+  "adminSortTitleAsc": "عنوان ا تا ی",
+  "adminSortActionAsc": "عمل ا تا ی",
+  "admin2_reportsTrendTitle": "پچھلے دورانیے سے موازنہ",
+  "admin2_reportsTrendNoPrevious": "پچھلا ڈیٹا نہیں",
+  "admin2_reportsTrend": "پچھلے دورانیے سے {sign}{percent}%",
+  "admin2_reportsBookingsChart": "وقت کے ساتھ بکنگز",
+  "admin2_reportsFinanceChart": "وقت کے ساتھ مالیات",
+  "admin2_reportsNoChartData": "اس دورانیے میں چارٹ کے لیے کوئی ڈیٹا نہیں۔",
+  "admin2_reportsTruncatedNote": "اس دورانیے کے پہلے 1,000 ریکارڈز کی بنیاد پر — کل اور چارٹ نامکمل ہو سکتے ہیں۔",
+  "@admin2_reportsTrend": {
+    "placeholders": {
+      "sign": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "String"
+      }
+    }
+  }
 }

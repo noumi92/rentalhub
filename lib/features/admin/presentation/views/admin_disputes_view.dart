@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/money_format.dart';
@@ -10,12 +10,16 @@ import '../../../../core/widgets/app_state_views.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../customer/data/datasources/dispute_remote_data_source.dart';
 import '../../data/datasources/admin_platform_data_source.dart';
+import '../widgets/admin_confirm_dialog.dart';
+import '../widgets/admin_count_line.dart';
+import '../widgets/admin_list_card.dart';
+import '../widgets/admin_sort_menu.dart';
 import '../widgets/admin_shell.dart';
 import '../widgets/admin_status_chip.dart';
-import '../widgets/dispute_decision_sheet.dart';
+import '../widgets/dispute_decision_panel.dart';
 
 /// Phase D (D2) — the disputes centre: every dispute with its 72 h
-/// SLA state. Tap one for the decision sheet (both statements, the
+/// SLA state. Tap one for its detail route (both statements, the
 /// Full / Partial / Full-to-owner decision, the amount, the note).
 class AdminDisputesView extends StatefulWidget {
   const AdminDisputesView({super.key});
@@ -29,6 +33,8 @@ class _AdminDisputesViewState extends State<AdminDisputesView> {
   bool _isLoading = true;
   bool _hasError = false;
   String _filter = 'all';
+  String _sort = AdminListSort.dateNewest;
+  int? _total;
 
   @override
   void initState() {
@@ -39,11 +45,14 @@ class _AdminDisputesViewState extends State<AdminDisputesView> {
   Future<void> _load() async {
     if (!_isLoading) setState(() => _hasError = false);
     try {
-      final disputes = await sl<AdminPlatformDataSource>()
-          .getDisputes(status: _filter);
+      final ds = sl<AdminPlatformDataSource>();
+      final disputes = AdminPlatformDataSource.sortDisputes(
+          await ds.getDisputes(status: _filter), _sort);
+      final total = await ds.countDisputes(status: _filter);
       if (mounted) {
         setState(() {
           _disputes = disputes;
+          _total = total;
           _isLoading = false;
         });
       }
@@ -52,6 +61,12 @@ class _AdminDisputesViewState extends State<AdminDisputesView> {
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
+  }
+
+  void _onSort(String sort) {
+    if (sort == _sort) return;
+    setState(() => _sort = sort);
+    _load();
   }
 
   String _slaText(DisputeRecord d) {
@@ -65,8 +80,18 @@ class _AdminDisputesViewState extends State<AdminDisputesView> {
   }
 
   /// F-m14: the triage step — moves an open dispute to `in_review`.
+  /// Phase 1 (1.1): it used to fire on one tap — confirm first.
   Future<void> _markInReview(DisputeRecord d) async {
     final l10n = AppLocalizations.of(context);
+    final confirmed = await showAdminConfirmDialog(
+      context,
+      title: l10n?.disputeMarkInReviewConfirmTitle ??
+          'Mark this dispute in review?',
+      body: l10n?.disputeMarkInReviewConfirmBody ??
+          'The dispute will move to In review so a decision can be recorded.',
+    );
+    if (!confirmed) return;
+    if (!mounted) return;
     final ok = await sl<AdminPlatformDataSource>()
         .markDisputeInReview(disputeId: d.id);
     if (!mounted) return;
@@ -92,18 +117,12 @@ class _AdminDisputesViewState extends State<AdminDisputesView> {
     return ' • ${l10n.admin2_disputesDecidedLine(disputeDecisionLabel(d.decision!, l10n))}$amountText';
   }
 
+  /// Phase 2 (2.4): a row navigates to the dispute detail route —
+  /// the decision sheet now lives inside that route (for the quick
+  /// confirm form), not over the list.
   void _openDispute(DisputeRecord d) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (_) => DisputeDecisionSheet(
-        dispute: d,
-        onDecided: _load,
-        // AD-M10: resolved rows open read-only — the decision sheet
-        // is the way back into a decided dispute.
-        readOnly: d.status == 'resolved',
-      ),
-    );
+    context.go(RouteNames.adminDisputeDetail
+        .replaceFirst(':disputeId', d.id));
   }
 
   @override
@@ -145,7 +164,29 @@ class _AdminDisputesViewState extends State<AdminDisputesView> {
                 ],
               ),
             ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                AdminSortMenu(
+                  options: [
+                    AdminSortOption(
+                        id: AdminListSort.dateNewest,
+                        label: l10n.adminSortDateNewest),
+                    AdminSortOption(
+                        id: AdminListSort.dateOldest,
+                        label: l10n.adminSortDateOldest),
+                    AdminSortOption(
+                        id: AdminListSort.statusAsc,
+                        label: l10n.adminSortStatus),
+                  ],
+                  selectedId: _sort,
+                  onSelected: _onSort,
+                ),
+              ],
+            ),
             SizedBox(height: 16),
+            if (!_isLoading && !_hasError && _disputes.isNotEmpty)
+              AdminCountLine(shown: _disputes.length, total: _total),
             Expanded(
               child: _isLoading
                   ? const AppLoadingState()
@@ -165,57 +206,32 @@ class _AdminDisputesViewState extends State<AdminDisputesView> {
                               const SizedBox(height: 10),
                           itemBuilder: (context, i) {
                             final d = _disputes[i];
-                            return Card(
-                              margin: EdgeInsets.zero,
-                              elevation: 0,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                side: BorderSide(
-                                    color: Theme.of(context).dividerColor),
-                              ),
-                              child: ListTile(
-                                leading: CircleAvatar(
-                                  backgroundColor: AppColors.primary
-                                      .withValues(alpha: 0.12),
-                                  child: const Icon(Icons.gavel_rounded,
-                                      ),
-                                ),
-                                title: Text(
-                                    '${d.category} • ${d.bookingId}',
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                        fontSize: 14,
-                                        )),
-                                subtitle: Text(
+                            // Phase 4 (4.1) — the shared [AdminListCard]
+                            // shell (the triage button stays in the
+                            // trailing row, beside the chevron).
+                            return AdminListCard(
+                              icon: Icons.gavel_rounded,
+                              title: '${d.category} • ${d.bookingId}',
+                              subtitle:
                                   '${d.description} — ${humanizeStatus(d.status, l10n)} • ${_slaText(d)}${_decisionLine(d)}',
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                      fontSize: 12,
-                                      color: Theme.of(context).colorScheme.onSurfaceVariant),
-                                ),
-                                trailing: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    if (d.status == 'open')
-                                      IconButton(
-                                        tooltip:
-                                            AppLocalizations.of(context)
-                                                    ?.disputeMarkInReview ??
-                                                'Mark in review',
-                                        icon: const Icon(
-                                            Icons.rate_review_rounded,
-                                            size: 20),
-                                        onPressed: () => _markInReview(d),
-                                      ),
-                                    const Icon(
-                                        Icons.arrow_forward_ios_rounded,
-                                        size: 16),
-                                  ],
-                                ),
-                                onTap: () => _openDispute(d),
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  if (d.status == 'open')
+                                    IconButton(
+                                      tooltip:
+                                          AppLocalizations.of(context)
+                                                  ?.disputeMarkInReview ??
+                                              'Mark in review',
+                                      icon: const Icon(
+                                          Icons.rate_review_rounded,
+                                          size: 20),
+                                      onPressed: () => _markInReview(d),
+                                    ),
+                                  adminListChevron,
+                                ],
                               ),
+                              onTap: () => _openDispute(d),
                             );
                           },
                         ),

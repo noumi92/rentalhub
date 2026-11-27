@@ -91,6 +91,22 @@ abstract final class AdminSession {
   /// uid for [_roleCacheTtl] so the router redirect does not read
   /// Firestore on every navigation; cleared on sign-out, on role
   /// revocation ([clearCachedRole]), or with [forceRefresh].
+  ///
+  /// Phase 2 (2.1): [cachedRoleFor] is the synchronous half of this
+  /// cache — the sidebar reads it in initState so the role-gated
+  /// items are correct on the first paint whenever the guard already
+  /// resolved the role (the usual case); null means "not cached yet"
+  /// and the caller still resolves asynchronously.
+  static String? cachedRoleFor(User user) {
+    if (_cachedRoleUid == user.uid &&
+        _cachedRole != null &&
+        _cachedRoleAt != null &&
+        DateTime.now().difference(_cachedRoleAt!) < _roleCacheTtl) {
+      return _cachedRole;
+    }
+    return null;
+  }
+
   static Future<String?> resolveAdminRole(User user,
       {bool forceRefresh = false}) async {
     if (!forceRefresh &&

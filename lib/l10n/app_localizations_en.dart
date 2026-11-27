@@ -175,6 +175,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get disputeMarkInReview => 'Mark in review';
 
   @override
+  String get disputeMarkInReviewConfirmTitle => 'Mark this dispute in review?';
+
+  @override
+  String get disputeMarkInReviewConfirmBody =>
+      'The dispute will move to In review so a decision can be recorded.';
+
+  @override
   String get disputeMarkedInReview => 'Marked in review.';
 
   @override
@@ -756,6 +763,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileSaved => 'Profile saved.';
 
   @override
+  String get profileTitle => 'Profile';
+
+  @override
+  String get profileEmail => 'Email';
+
+  @override
+  String get profileTabKyc => 'KYC';
+
+  @override
+  String get profileIdentityTitle => 'Personal details';
+
+  @override
   String get editProfile => 'Edit Profile';
 
   @override
@@ -775,6 +794,23 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get editSaving => 'Saving...';
+
+  @override
+  String get editDateOfBirth => 'Date of birth';
+
+  @override
+  String get editFatherName => 'Father\'s name';
+
+  @override
+  String get editAddress => 'Address';
+
+  @override
+  String get editCnicReReviewWarning =>
+      'Changing your CNIC will send your KYC back for review.';
+
+  @override
+  String get editPhotoUploadError =>
+      'Could not upload the photo. Please try again.';
 
   @override
   String get cnicLabel => 'CNIC';
@@ -1580,6 +1616,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get kycStatusRejected => 'Rejected — please resubmit';
+
+  @override
+  String get kycUpdateDocuments => 'Update documents';
+
+  @override
+  String get kycDocumentsOnFile => 'Documents on file';
+
+  @override
+  String get kycVerifiedUpdateIntro =>
+      'Your documents are verified. Update them only if something changed.';
 
   @override
   String get kycCnicNumber => '13-Digit NADRA CNIC Number';
@@ -3359,10 +3405,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String financeMonthBreakdown(
-    String bookings,
-    String income,
-    String expenses,
-  ) {
+      String bookings, String income, String expenses) {
     return 'Bookings Rs. $bookings • Other income Rs. $income • Expenses Rs. $expenses';
   }
 
@@ -3564,10 +3607,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String financeCarPnlBreakdown(
-    String revenue,
-    String income,
-    String expenses,
-  ) {
+      String revenue, String income, String expenses) {
     return 'Booking revenue Rs. $revenue • Other income Rs. $income • Expenses Rs. $expenses';
   }
 
@@ -5428,11 +5468,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String bookingConfirmedWhatsappMessage(
-    String name,
-    String vehicle,
-    String date,
-    String total,
-  ) {
+      String name, String vehicle, String date, String total) {
     return 'Assalam-o-Alaikum $name, your booking for $vehicle is confirmed. Pickup: $date. Total: Rs. $total. Thank you!';
   }
 
@@ -6069,12 +6105,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String financeStatementMessageRow(
-    String booking,
-    String date,
-    String rent,
-    String paid,
-    String due,
-  ) {
+      String booking, String date, String rent, String paid, String due) {
     return '#$booking • $date • Rent Rs. $rent • Paid Rs. $paid • Due Rs. $due';
   }
 
@@ -7533,11 +7564,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String shareWithCustomersText(
-    String vehicle,
-    String rate,
-    String period,
-    String link,
-  ) {
+      String vehicle, String rate, String period, String link) {
     return 'Rent $vehicle for $rate ($period) on RentalHub: $link';
   }
 
@@ -7881,6 +7908,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get adminKycReviewApprove => 'Approve';
 
   @override
+  String get adminKycReviewApproveConfirmTitle =>
+      'Approve this KYC submission?';
+
+  @override
+  String get adminKycReviewApproveConfirmBody =>
+      'The customer will be marked verified and can start booking.';
+
+  @override
   String get adminKycReviewReject => 'Reject';
 
   @override
@@ -8085,6 +8120,30 @@ class AppLocalizationsEn extends AppLocalizations {
   String get admin2_blacklistReportConfirm => 'Report';
 
   @override
+  String get admin2_blacklistCategoryLabel => 'Reason category';
+
+  @override
+  String get admin2_blacklistDescriptionLabel => 'Description';
+
+  @override
+  String get admin2_blacklistCatFraud => 'Fraud';
+
+  @override
+  String get admin2_blacklistCatLateReturn => 'Late return';
+
+  @override
+  String get admin2_blacklistCatDamage => 'Damage';
+
+  @override
+  String get admin2_blacklistCatNonPayment => 'Non-payment';
+
+  @override
+  String get admin2_blacklistCatAbusive => 'Abusive behaviour';
+
+  @override
+  String get admin2_blacklistCatOther => 'Other';
+
+  @override
   String get admin2_watchlistAdd => 'Add to watchlist';
 
   @override
@@ -8251,6 +8310,71 @@ class AppLocalizationsEn extends AppLocalizations {
   String get admin2_navSubscriptions => 'Subscriptions';
 
   @override
+  String get admin2_navHome => 'Home';
+
+  @override
+  String get admin2_navQueues => 'Queues';
+
+  @override
+  String get admin2_navMore => 'More';
+
+  @override
+  String get admin2_sidebarGroupOverview => 'Overview';
+
+  @override
+  String get admin2_sidebarGroupQueues => 'Review queues';
+
+  @override
+  String get admin2_sidebarGroupMarketplace => 'Marketplace';
+
+  @override
+  String get admin2_sidebarGroupPlatform => 'Platform';
+
+  @override
+  String get admin2_sidebarGroupGovernance => 'Governance';
+
+  @override
+  String get admin2_queuesTitle => 'Review queues';
+
+  @override
+  String get admin2_queuesSubtitle =>
+      'Every queue that needs a decision, with its live count';
+
+  @override
+  String get admin2_queuesLoadFailed => 'Could not load the queues.';
+
+  @override
+  String get admin2_customerDetailTabProfile => 'Profile';
+
+  @override
+  String get admin2_customerDetailTabBookings => 'Bookings';
+
+  @override
+  String get admin2_customerDetailTabNotes => 'Notes & flags';
+
+  @override
+  String get admin2_teamTabMembers => 'Members';
+
+  @override
+  String get admin2_teamTabInvites => 'Invites';
+
+  @override
+  String get admin2_teamTabSecurity => 'Security';
+
+  @override
+  String get admin2_teamSecurityTitle => 'Two-factor authentication';
+
+  @override
+  String get admin2_teamSecurityAllOn =>
+      'Every admin has two-factor authentication on.';
+
+  @override
+  String get admin2_disputeDetailNotFound => 'Dispute not found.';
+
+  @override
+  String get admin2_ticketDetailNotFound => 'Ticket not found.';
+
+  @override
   String get admin2_sidebarSignedInAs => 'SIGNED IN AS ADMIN';
 
   @override
@@ -8355,6 +8479,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get admin2_dashboardTicketsHint => 'Open the tickets inbox to reply.';
 
   @override
+  String get admin2_dashboardKycTitle => 'KYC submissions waiting for review';
+
+  @override
+  String get admin2_dashboardKycHint =>
+      'Open the KYC review queue to decide them.';
+
+  @override
   String get admin2_dashboardKpiShops => 'Registered shops';
 
   @override
@@ -8422,6 +8553,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get admin2_shopDetailTitle => 'Shop detail';
 
   @override
+  String get admin2_shopDetailReviewApplication => 'Review application';
+
+  @override
   String get admin2_shopDetailSubtitle =>
       'Plan, fleet, bookings and admin actions';
 
@@ -8468,11 +8602,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String admin2_shopDetailContact(
-    String city,
-    String address,
-    String owner,
-    String phone,
-  ) {
+      String city, String address, String owner, String phone) {
     return '$city • $address\nOwner: $owner • $phone';
   }
 
@@ -8550,10 +8680,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String admin2_customerDetailContact(
-    String phone,
-    String cnic,
-    String source,
-  ) {
+      String phone, String cnic, String source) {
     return '$phone • CNIC $cnic • Source: $source';
   }
 
@@ -8699,13 +8826,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String admin2_reviewCardRatings(
-    String shop,
-    String car,
-    String punctuality,
-    String care,
-    String behaviour,
-  ) {
+  String admin2_reviewCardRatings(String shop, String car, String punctuality,
+      String care, String behaviour) {
     return 'Shop $shop/5 • Car $car/5 • Owner: punctuality $punctuality, care $care, behaviour $behaviour';
   }
 
@@ -8792,7 +8914,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get admin2_ticketEscalate => 'Escalate';
 
   @override
+  String get admin2_ticketEscalateConfirmTitle => 'Escalate this ticket?';
+
+  @override
+  String get admin2_ticketEscalateConfirmBody =>
+      'Escalation hands the ticket to a senior admin for a second look.';
+
+  @override
   String get admin2_ticketClose => 'Close ticket';
+
+  @override
+  String get admin2_ticketCloseConfirmTitle => 'Close this ticket?';
+
+  @override
+  String get admin2_ticketCloseConfirmBody =>
+      'Closing ends the thread. The customer will see the ticket as closed.';
 
   @override
   String get admin2_anncSubtitle => 'Broadcasts to owners and customers';
@@ -8821,6 +8957,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get admin2_anncSendNow => 'Send now';
+
+  @override
+  String get admin2_anncSendConfirmTitle => 'Send this announcement now?';
+
+  @override
+  String get admin2_anncSendConfirmBody =>
+      'This sends the announcement to its audience right away. A sent announcement cannot be recalled.';
 
   @override
   String admin2_anncStats(Object sent, Object delivered, Object opened) {
@@ -8909,6 +9052,44 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get admin2_anncFormSave => 'Save announcement';
+
+  @override
+  String get admin2_anncDetailTitle => 'Announcement';
+
+  @override
+  String get admin2_anncDetailLoadFailed => 'Could not load the announcement.';
+
+  @override
+  String get admin2_anncDetailNotFound => 'Announcement not found.';
+
+  @override
+  String get admin2_anncEdit => 'Edit';
+
+  @override
+  String get admin2_anncDelete => 'Delete announcement';
+
+  @override
+  String get admin2_anncDeleteConfirmTitle => 'Delete this announcement?';
+
+  @override
+  String get admin2_anncDeleteConfirmBody =>
+      'This draft or scheduled announcement will be deleted. Sent announcements cannot be deleted.';
+
+  @override
+  String get admin2_anncDeleted => 'Announcement deleted.';
+
+  @override
+  String get admin2_anncUpdated => 'Announcement updated.';
+
+  @override
+  String get admin2_anncReadOnly => 'Sent announcements are read-only history.';
+
+  @override
+  String get admin2_anncFormUpdate => 'Save changes';
+
+  @override
+  String get admin2_disputeAmountTooHigh =>
+      'The amount cannot exceed the outstanding balance plus the held deposit.';
 
   @override
   String get admin2_activitySubtitle =>
@@ -9114,6 +9295,14 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get admin2_shopAppReasonLabel =>
       'Reason (required to ask for more info or reject — the owner sees it)';
+
+  @override
+  String get admin2_shopAppConfirmTitle => 'Confirm decision';
+
+  @override
+  String admin2_shopAppConfirmBody(String decision) {
+    return 'Save \'$decision\' for this shop application?';
+  }
 
   @override
   String get admin2_shopAppCallOwner => 'Call owner';
@@ -9420,20 +9609,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String admin2_bookingDetailMeta(
-    String status,
-    String trip,
-    String package,
-    String drive,
-  ) {
+      String status, String trip, String package, String drive) {
     return 'Status: $status • Trip: $trip • Package: $package • $drive';
   }
 
   @override
   String admin2_bookingDetailHandoverSummary(
-    Object km,
-    String fuel,
-    String damage,
-  ) {
+      Object km, String fuel, String damage) {
     return 'odometer $km km, fuel $fuel, damage: $damage';
   }
 
@@ -9503,14 +9685,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String admin2_carReviewSpecs(
-    String plate,
-    String category,
-    String transmission,
-    String fuel,
-    Object seats,
-    String status,
-    String review,
-  ) {
+      String plate,
+      String category,
+      String transmission,
+      String fuel,
+      Object seats,
+      String status,
+      String review) {
     return 'Plate $plate • $category • $transmission • $fuel • $seats seats\nStatus: $status • Current review: $review';
   }
 
@@ -9540,7 +9721,11 @@ class AppLocalizationsEn extends AppLocalizations {
       'The report reads the live collections.';
 
   @override
-  String get admin2_reportsRevenue => 'Booking revenue';
+  String get admin2_reportsRevenue => 'Booked value (incl. active)';
+
+  @override
+  String get admin2_reportsRevenueNote =>
+      'Booked value counts completed, active and paid bookings in this range — not money received. Finance income is the realised income from the finance ledger.';
 
   @override
   String get admin2_reportsIncome => 'Finance income';
@@ -9698,6 +9883,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String adminAuditShowingFirstOf(int shown, int total) {
+    return 'Showing first $shown of $total';
+  }
+
+  @override
   String get admin2_ownerNotListed => 'Owner not listed';
 
   @override
@@ -9835,6 +10025,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get admin2_tribunalReviewFlag => 'Review flag';
 
   @override
+  String get admin2_tribunalViewCustomer => 'View customer';
+
+  @override
+  String get admin2_tribunalCustomerNotFound =>
+      'No customer record matches this CNIC.';
+
+  @override
+  String get admin2_customerDetailViewTribunal => 'View tribunal entry';
+
+  @override
   String get admin2_ticketLinkedBooking => 'Linked booking';
 
   @override
@@ -9875,10 +10075,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String admin2_bookingDetailDepositDeducted(
-    String amount,
-    String status,
-    String deducted,
-  ) {
+      String amount, String status, String deducted) {
     return 'Security $amount — $status (deducted $deducted)';
   }
 
@@ -9894,9 +10091,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String admin2_bookingDetailDisputeDecisionAmount(
-    String label,
-    String amount,
-  ) {
+      String label, String amount) {
     return 'Decision: $label — $amount';
   }
 
@@ -9909,13 +10104,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String admin2_carReviewMetaLine1(
-    String plate,
-    String category,
-    String transmission,
-    String fuel,
-    Object seats,
-  ) {
+  String admin2_carReviewMetaLine1(String plate, String category,
+      String transmission, String fuel, Object seats) {
     return 'Plate $plate • $category • $transmission • $fuel • $seats seats';
   }
 
@@ -9961,10 +10151,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String admin2_bookingSummaryStatusLine(
-    String status,
-    String trip,
-    String kmLimit,
-  ) {
+      String status, String trip, String kmLimit) {
     return 'Status: $status • Trip: $trip ($kmLimit km limit)';
   }
 
@@ -9985,11 +10172,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String admin2_bookingSummaryTotal(
-    String total,
-    String advanceRequired,
-    String paid,
-    String remaining,
-  ) {
+      String total, String advanceRequired, String paid, String remaining) {
     return 'Total: $total • Advance required: $advanceRequired • Paid: $paid • Remaining: $remaining';
   }
 
@@ -10011,10 +10194,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String admin2_bookingSummaryHandover(
-    Object odometer,
-    String fuel,
-    String damage,
-  ) {
+      Object odometer, String fuel, String damage) {
     return 'Handover: odometer $odometer km, fuel $fuel, damage: $damage';
   }
 
@@ -10231,14 +10411,8 @@ class AppLocalizationsEn extends AppLocalizations {
       'Agreement is generated automatically at handover using saved signatures';
 
   @override
-  String manualBookingReceiptMessage(
-    String customer,
-    String bookingId,
-    String vehicle,
-    String pickup,
-    String total,
-    String remaining,
-  ) {
+  String manualBookingReceiptMessage(String customer, String bookingId,
+      String vehicle, String pickup, String total, String remaining) {
     return 'Assalam-o-Alaikum $customer, your walk-in booking $bookingId for $vehicle is confirmed. Pickup: $pickup. Total: Rs. $total. Remaining dues: Rs. $remaining. Thank you!';
   }
 
@@ -10645,14 +10819,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get handoverWizardReceiptShare => 'Share receipt on WhatsApp';
 
   @override
-  String handoverWizardReceiptMessage(
-    String receipt,
-    String vehicle,
-    String total,
-    String advance,
-    String balance,
-    String deposit,
-  ) {
+  String handoverWizardReceiptMessage(String receipt, String vehicle,
+      String total, String advance, String balance, String deposit) {
     return 'Handover receipt $receipt for $vehicle: total Rs. $total, advance Rs. $advance, balance Rs. $balance, Security Rs. $deposit. — RentalHub';
   }
 
@@ -10739,4 +10907,67 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get nextStepWaitingApproval => 'Waiting for approval';
+
+  @override
+  String get adminSortLabel => 'Sort';
+
+  @override
+  String get adminSortDateNewest => 'Newest first';
+
+  @override
+  String get adminSortDateOldest => 'Oldest first';
+
+  @override
+  String get adminSortNameAsc => 'Name A–Z';
+
+  @override
+  String get adminSortNameDesc => 'Name Z–A';
+
+  @override
+  String get adminSortAmountHigh => 'Amount: highest first';
+
+  @override
+  String get adminSortAmountLow => 'Amount: lowest first';
+
+  @override
+  String get adminSortStatus => 'Status';
+
+  @override
+  String get adminSortPriority => 'Priority';
+
+  @override
+  String get adminSortRatingHigh => 'Rating: highest first';
+
+  @override
+  String get adminSortRatingLow => 'Rating: lowest first';
+
+  @override
+  String get adminSortTitleAsc => 'Title A–Z';
+
+  @override
+  String get adminSortActionAsc => 'Action A–Z';
+
+  @override
+  String get admin2_reportsTrendTitle => 'Trend vs previous period';
+
+  @override
+  String get admin2_reportsTrendNoPrevious => 'no previous data';
+
+  @override
+  String admin2_reportsTrend(String sign, String percent) {
+    return '$sign$percent% vs previous period';
+  }
+
+  @override
+  String get admin2_reportsBookingsChart => 'Bookings over time';
+
+  @override
+  String get admin2_reportsFinanceChart => 'Finance over time';
+
+  @override
+  String get admin2_reportsNoChartData => 'No data in this range to chart.';
+
+  @override
+  String get admin2_reportsTruncatedNote =>
+      'Based on the first 1,000 records in this range — totals and charts may be incomplete.';
 }

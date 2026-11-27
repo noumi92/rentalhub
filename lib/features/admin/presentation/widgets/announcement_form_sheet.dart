@@ -13,10 +13,18 @@ import 'admin_permission_check.dart';
 /// plan), channel (Push / WhatsApp / both), and an optional schedule.
 /// WhatsApp delivery waits for the Meta token (plan D2) — the
 /// announcement is saved as `pending_whatsapp`, never as sent.
+///
+/// Phase 3 (3.2): with [existing] set, the sheet edits that draft
+/// or scheduled announcement instead of creating one — sent
+/// announcements never reach this sheet (the detail view hides
+/// Edit for them, and the data source refuses the update).
 class AnnouncementFormSheet extends StatefulWidget {
-  const AnnouncementFormSheet({super.key, required this.onCreated});
+  const AnnouncementFormSheet({super.key, required this.onCreated, this.existing});
 
   final VoidCallback onCreated;
+
+  /// The announcement to edit, or null to create a new one.
+  final AdminAnnouncement? existing;
 
   @override
   State<AnnouncementFormSheet> createState() => _AnnouncementFormSheetState();
@@ -41,6 +49,21 @@ class _AnnouncementFormSheetState extends State<AnnouncementFormSheet> {
   @override
   void initState() {
     super.initState();
+    // Phase 3 (3.2): editing pre-fills every field from the
+    // existing announcement, including its schedule.
+    final existing = widget.existing;
+    if (existing != null) {
+      _titleEn.text = existing.titleEn;
+      _titleUr.text = existing.titleUr;
+      _bodyEn.text = existing.bodyEn;
+      _bodyUr.text = existing.bodyUr;
+      _audienceRole = existing.audienceRole;
+      _audienceCity = existing.audienceCity;
+      _audiencePlan = existing.audiencePlan;
+      _channel = existing.channel;
+      _schedule = existing.scheduledAt != null;
+      _scheduledAt = existing.scheduledAt;
+    }
     _loadCities();
   }
 
@@ -85,7 +108,38 @@ class _AnnouncementFormSheetState extends State<AnnouncementFormSheet> {
         context, AdminPermission.managePlatform);
     if (!check.proceed) return;
     setState(() => _isSaving = true);
-    final id = await sl<AdminSupportDataSource>().createAnnouncement(
+    final existing = widget.existing;
+    final ds = sl<AdminSupportDataSource>();
+    if (existing != null) {
+      // Phase 3 (3.2): edit path — the data source refuses sent
+      // announcements, so a stale sheet cannot rewrite history.
+      final ok = await ds.updateAnnouncement(
+        announcementId: existing.id,
+        titleEn: _titleEn.text.trim(),
+        titleUr: _titleUr.text.trim(),
+        bodyEn: _bodyEn.text.trim(),
+        bodyUr: _bodyUr.text.trim(),
+        audienceRole: _audienceRole,
+        audienceCity: _audienceCity,
+        audiencePlan: _audiencePlan,
+        channel: _channel,
+        scheduledAt: _schedule ? _scheduledAt : null,
+        adminRole: check.role,
+      );
+      if (!mounted) return;
+      if (ok) {
+        AppFeedback.showSuccess(
+            context, AppLocalizations.of(context)!.admin2_anncUpdated);
+        widget.onCreated();
+        Navigator.of(context).pop();
+      } else {
+        AppFeedback.showError(
+            context, AppLocalizations.of(context)!.admin2_serverUnreachable);
+        setState(() => _isSaving = false);
+      }
+      return;
+    }
+    final id = await ds.createAnnouncement(
       titleEn: _titleEn.text.trim(),
       titleUr: _titleUr.text.trim(),
       bodyEn: _bodyEn.text.trim(),
@@ -124,7 +178,10 @@ class _AnnouncementFormSheetState extends State<AnnouncementFormSheet> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(l10n.admin2_anncNew,
+            Text(
+                widget.existing != null
+                    ? l10n.admin2_anncEdit
+                    : l10n.admin2_anncNew,
                 style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
@@ -192,7 +249,15 @@ class _AnnouncementFormSheetState extends State<AnnouncementFormSheet> {
               width: double.infinity,
               child: FilledButton(
                 onPressed: _isSaving ? null : _save,
-                child: Text(_isSaving ? l10n.admin2_saving : l10n.admin2_anncFormSave),
+                // Phase 1 (1.5): 48dp minimum touch target
+                // (rulebook §4.6).
+                style: FilledButton.styleFrom(
+                    minimumSize: const Size(0, 48)),
+                child: Text(_isSaving
+                    ? l10n.admin2_saving
+                    : widget.existing != null
+                        ? l10n.admin2_anncFormUpdate
+                        : l10n.admin2_anncFormSave),
               ),
             ),
           ],

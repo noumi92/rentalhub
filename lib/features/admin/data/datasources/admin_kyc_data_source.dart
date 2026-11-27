@@ -3,6 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../notifications/data/datasources/notification_data_source.dart';
 import '../services/admin_audit_service.dart';
+import '../services/admin_session.dart';
+import '../../domain/admin_permissions.dart';
 
 /// Item 6 — the admin side of customer KYC review.
 ///
@@ -42,6 +44,27 @@ class AdminKycDataSource {
   /// submission timestamp. The customer's display name comes from
   /// their `customers/{uid}` record; a submission whose customer
   /// record is missing still lists, with an empty name.
+  /// Phase 4 (4.3) — client-side sort over the loaded queue (the
+  /// queue is client-side: [getPendingKycSubmissions] caps at
+  /// 100).
+  static List<KycReviewSubmission> sortKycSubmissions(
+      List<KycReviewSubmission> submissions, String sort) {
+    final list = List<KycReviewSubmission>.of(submissions);
+    DateTime at(KycReviewSubmission s) =>
+        s.submittedAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+    switch (sort) {
+      case 'dateOldest':
+        list.sort((a, b) => at(a).compareTo(at(b)));
+      case 'nameAsc':
+        list.sort((a, b) => a.customerName.compareTo(b.customerName));
+      case 'nameDesc':
+        list.sort((a, b) => b.customerName.compareTo(a.customerName));
+      default:
+        list.sort((a, b) => at(b).compareTo(at(a)));
+    }
+    return list;
+  }
+
   Future<List<KycReviewSubmission>> getPendingKycSubmissions() async {
     final firestore = _resolvedFirestore;
     if (firestore == null) return [];
@@ -82,6 +105,22 @@ class AdminKycDataSource {
     return sorted;
   }
 
+  /// Phase 3 (3.4) — how many submissions are waiting for a
+  /// decision in total, so the queue can say "Showing first N of
+  /// M" at its 100 cap.
+  Future<int> countPendingKyc() async {
+    final firestore = _resolvedFirestore;
+    if (firestore == null) {
+      return (await getPendingKycSubmissions()).length;
+    }
+    final count = await firestore
+        .collection('kyc_documents')
+        .where('status', whereIn: const ['submitted', 'resubmitted'])
+        .count()
+        .get();
+    return count.count ?? 0;
+  }
+
   /// One submission by customer id, or null when there is none.
   Future<KycReviewSubmission?> getKycSubmission(String customerId) async {
     final firestore = _resolvedFirestore;
@@ -111,17 +150,47 @@ class AdminKycDataSource {
   /// or a failed cloud write; the reason is validated here so a
   /// caller cannot bypass the requirement by calling the data source
   /// directly.
+  ///
+  /// Phase 1 (1.7) — F-C1: super admin + operations only
+  /// ([AdminPermission.decideKyc]), the same backstop every sibling
+  /// decision method has ([AdminShopsDataSource.decideShopApplication],
+  /// [AdminPlatformDataSource.decideDispute]). The caller's role is
+  /// passed by the view when it already resolved it, otherwise
+  /// resolved from the session here; an unresolvable role refuses
+  /// the write (fail closed).
   Future<bool> decideKyc({
     required String customerId,
     required String decision,
     String reason = '',
+    String? adminRole,
   }) async {
+    if (!await AdminSession.currentAdminCan(AdminPermission.decideKyc,
+        adminRole: adminRole)) {
+      return false;
+    }
     if (decision != 'verified' && decision != 'rejected') return false;
     final trimmedReason = reason.trim();
     if (decision == 'rejected' && trimmedReason.isEmpty) return false;
     final firestore = _resolvedFirestore;
     if (firestore == null) return false;
     try {
+      // Phase 3 (3.3b) — status precondition: only a pending
+      // submission ('submitted' or 'resubmitted') can be decided.
+      // A record that is already 'verified' cannot be re-decided
+      // without a re-review flow — the customer re-submitting puts
+      // it back to 'resubmitted' first — and neither can an already
+      // 'rejected' one.
+      final currentDoc = await firestore
+          .collection('kyc_documents')
+          .doc(customerId)
+          .get();
+      final currentData = currentDoc.data();
+      if (currentData == null) return false;
+      final currentStatus = currentData['status'] as String?;
+      if (currentStatus != 'submitted' &&
+          currentStatus != 'resubmitted') {
+        return false;
+      }
       await firestore.collection('kyc_documents').doc(customerId).update({
         'status': decision,
         if (decision == 'rejected') 'rejection_reason': trimmedReason,
@@ -129,16 +198,26 @@ class AdminKycDataSource {
       });
       // Best-effort mirror: the customer KYC banner reads the reason
       // off `customers/{uid}.rejectionReason` (CustomerDocumentsView),
-      // not off the KYC record. A missing customer record must not
-      // fail a decision that already landed, so this write never
-      // throws — merge-set so it creates the record if needed, and a
+      // not off the KYC record. Phase 3 (3.3c): this is an `update`,
+      // not a merge-set — when no customers doc exists the mirror is
+      // skipped, so a decision can never create an orphan
+      // customers/{uid} doc containing only a rejectionReason. A
+      // missing customer record must not fail a decision that
+      // already landed, so this write never throws, and a
       // verification clears any earlier rejection reason.
       try {
-        await firestore.collection('customers').doc(customerId).set({
-          if (decision == 'rejected') 'rejectionReason': trimmedReason,
-          if (decision == 'verified')
-            'rejectionReason': FieldValue.delete(),
-        }, SetOptions(merge: true));
+        final customerDoc = await firestore
+            .collection('customers')
+            .doc(customerId)
+            .get();
+        if (customerDoc.data() != null) {
+          await firestore.collection('customers').doc(customerId).update({
+            if (decision == 'rejected')
+              'rejectionReason': trimmedReason,
+            if (decision == 'verified')
+              'rejectionReason': FieldValue.delete(),
+          });
+        }
       } catch (_) {}
       await AdminAuditService.logAction(
         action: decision == 'verified'

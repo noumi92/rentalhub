@@ -6,6 +6,7 @@ import 'package:share_plus/share_plus.dart';
 
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../l10n/app_localizations.dart';
+import 'admin_sort_menu.dart';
 import '../../data/datasources/admin_remote_data_source.dart';
 import '../widgets/admin_status_chip.dart';
 
@@ -33,6 +34,8 @@ class AdminActivityLogFilters extends StatelessWidget {
     required this.onClearFilters,
     required this.exportEntries,
     required this.compact,
+    required this.sort,
+    required this.onSort,
   });
 
   static const actionFamilies = <String>[
@@ -65,6 +68,13 @@ class AdminActivityLogFilters extends StatelessWidget {
   /// entries — the export covers what the admin is looking at).
   final List<AuditLogEntry> exportEntries;
   final bool compact;
+
+  /// Phase 4 (4.3) — the sort control for the log. Date orders by
+  /// `created_at`, action alphabetically by `action` — both
+  /// server-side on the unfiltered path, in memory on the filtered
+  /// path (which already sorts in memory).
+  final String sort;
+  final ValueChanged<String> onSort;
 
   bool get _hasServerFilter =>
       actionPrefix != null ||
@@ -215,6 +225,21 @@ class AdminActivityLogFilters extends StatelessWidget {
       icon: const Icon(Icons.filter_list_off_rounded, size: 18),
       label: Text(l10n?.adminAuditClearFilters ?? 'Clear filters'),
     );
+    final sortMenu = AdminSortMenu(
+      options: [
+        AdminSortOption(
+            id: AdminListSort.dateNewest,
+            label: l10n?.adminSortDateNewest ?? 'Newest first'),
+        AdminSortOption(
+            id: AdminListSort.dateOldest,
+            label: l10n?.adminSortDateOldest ?? 'Oldest first'),
+        AdminSortOption(
+            id: AdminListSort.actionAsc,
+            label: l10n?.adminSortActionAsc ?? 'Action A–Z'),
+      ],
+      selectedId: sort,
+      onSelected: onSort,
+    );
     if (compact) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -230,6 +255,9 @@ class AdminActivityLogFilters extends StatelessWidget {
           clearButton,
           const SizedBox(height: 4),
           SizedBox(width: double.infinity, child: exportButton),
+          Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [sortMenu]),
         ],
       );
     }
@@ -256,6 +284,7 @@ class AdminActivityLogFilters extends StatelessWidget {
             Expanded(child: dateRow),
             const SizedBox(width: 12),
             clearButton,
+            sortMenu,
           ],
         ),
       ],

@@ -30,6 +30,7 @@ import '../../features/admin/data/datasources/admin_people_data_source.dart';
 import '../../features/admin/data/datasources/admin_kyc_data_source.dart';
 import '../../features/admin/data/datasources/admin_platform_data_source.dart';
 import '../../features/admin/data/datasources/admin_support_data_source.dart';
+import '../../features/admin/data/services/admin_queue_counts_service.dart';
 import '../../features/admin/data/repositories/platform_settings_repository.dart';
 import '../../features/customer/data/datasources/review_remote_data_source.dart';
 import '../../features/customer/data/repositories/customer_repository_impl.dart';
@@ -233,6 +234,12 @@ Future<void> initDependencies() async {
   // Phase E: support, settings, announcements, reports.
   sl.registerLazySingleton<AdminSupportDataSource>(
     () => AdminSupportDataSource(),
+  );
+  // Phase 2 (2.1/2.2): the live review-queue counts for the grouped
+  // sidebar badges and the Queues hub (60 s cache, so every
+  // navigation does not re-read the collections).
+  sl.registerLazySingleton<AdminQueueCountsService>(
+    () => AdminQueueCountsService(),
   );
   // Customer rework (Worker E): the `platform_settings/global`
   // toggles for unverified shops, read by the Shops view and the

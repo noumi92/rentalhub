@@ -7,7 +7,6 @@ import '../../../../core/utils/email_validation.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/datasources/admin_remote_data_source.dart';
-import '../../data/services/admin_audit_service.dart';
 import '../../domain/admin_permissions.dart';
 import '../views/admin_invite_accept_view.dart';
 
@@ -61,17 +60,10 @@ class _AdminInviteFormState extends State<AdminInviteForm> {
       // F-M5/F-m11: createInvite throws on Firestore failure now,
       // so the audit log below only ever records an invite that was
       // actually persisted, under its Firestore document id.
-      final invite = await sl<AdminRemoteDataSource>().createInvite(
+      await sl<AdminRemoteDataSource>().createInvite(
           email: email,
           adminRole: _inviteRole,
           callerRole: widget.callerRole);
-      await AdminAuditService.logAction(
-        action: 'admin_invite_created',
-        targetType: 'admin_invite',
-        targetId: invite.id,
-        detail: l10n?.admin2_teamInviteLog(email, _inviteRole) ??
-            'Invited $email as $_inviteRole (48 h expiry).',
-      );
       _emailController.clear();
       widget.onInvited();
       if (mounted) {

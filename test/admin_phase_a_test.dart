@@ -145,6 +145,10 @@ void main() {
           home: AdminTeamView(adminRole: 'super_admin')));
       await tester.pumpAndSettle();
       expect(find.text('Team members'), findsOneWidget);
+      // Phase 2 (2.5): invites and the invite form live on the
+      // Invites tab now.
+      await tester.tap(find.text('Invites'));
+      await tester.pumpAndSettle();
       expect(find.text('Pending invites'), findsOneWidget);
       expect(find.text('Invite an admin'), findsOneWidget);
       expect(find.text('team-view-test@rentalhub.pk'), findsOneWidget);

@@ -14,6 +14,60 @@ import '../widgets/kyc_review_document_tile.dart';
 /// expiry, the four document images, and the reason field with the
 /// Approve / Reject decisions. State, loading and the decision
 /// itself live in [AdminKycReviewDetailView].
+/// Phase 4 (4.4a) — the Approve / Reject buttons, shared by the
+/// body (when the detail route does not use a sticky bar) and the
+/// detail view's sticky action bar. Mobile-first: the two decisions
+/// stack full-width on a phone — side by side each is ~160dp and
+/// "Reject" wraps. 48dp touch targets.
+class KycDecisionButtons extends StatelessWidget {
+  const KycDecisionButtons({
+    super.key,
+    required this.isWorking,
+    required this.onDecide,
+  });
+
+  final bool isWorking;
+
+  /// 'verified' to approve, 'rejected' to reject.
+  final Future<void> Function(String decision) onDecide;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final compact =
+        windowSizeClassOf(context) == WindowSizeClass.compact;
+    Widget approveButton() => FilledButton(
+          onPressed: isWorking ? null : () => onDecide('verified'),
+          style: FilledButton.styleFrom(minimumSize: const Size(0, 48)),
+          child: Text(l10n?.adminKycReviewApprove ?? 'Approve'),
+        );
+    Widget rejectButton() => OutlinedButton(
+          onPressed: isWorking ? null : () => onDecide('rejected'),
+          style: OutlinedButton.styleFrom(
+              foregroundColor: Colors.red.shade700,
+              minimumSize: const Size(0, 48)),
+          child: Text(l10n?.adminKycReviewReject ?? 'Reject'),
+        );
+    if (compact) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          approveButton(),
+          const SizedBox(height: 8),
+          rejectButton(),
+        ],
+      );
+    }
+    return Row(
+      children: [
+        Expanded(child: approveButton()),
+        const SizedBox(width: 8),
+        Expanded(child: rejectButton()),
+      ],
+    );
+  }
+}
+
 class KycReviewDetailBody extends StatelessWidget {
   const KycReviewDetailBody({
     super.key,
@@ -24,6 +78,7 @@ class KycReviewDetailBody extends StatelessWidget {
     required this.reasonController,
     required this.isWorking,
     required this.onDecide,
+    this.showActions = true,
   });
 
   final KycReviewSubmission submission;
@@ -35,6 +90,10 @@ class KycReviewDetailBody extends StatelessWidget {
 
   /// 'verified' to approve, 'rejected' to reject.
   final Future<void> Function(String decision) onDecide;
+
+  /// False when the caller renders [KycDecisionButtons] in a
+  /// sticky action bar instead (the detail route).
+  final bool showActions;
 
   String _formatDate(BuildContext context, DateTime? date) {
     if (date == null) return '';
@@ -124,43 +183,12 @@ class KycReviewDetailBody extends StatelessWidget {
                   horizontal: 14, vertical: 12),
             ),
           ),
-          const SizedBox(height: 16),
-          // Mobile-first: the two decisions stack full-width on a
-          // phone — side by side each is ~160dp and "Reject" wraps.
-          // 48dp touch targets.
-          if (windowSizeClassOf(context) == WindowSizeClass.compact)
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _approveButton(l10n),
-                const SizedBox(height: 8),
-                _rejectButton(l10n),
-              ],
-            )
-          else
-            Row(
-              children: [
-                Expanded(child: _approveButton(l10n)),
-                const SizedBox(width: 8),
-                Expanded(child: _rejectButton(l10n)),
-              ],
-            ),
+          if (showActions) ...[
+            const SizedBox(height: 16),
+            KycDecisionButtons(isWorking: isWorking, onDecide: onDecide),
+          ],
         ],
       ),
     );
   }
-
-  Widget _approveButton(AppLocalizations? l10n) => FilledButton(
-        onPressed: isWorking ? null : () => onDecide('verified'),
-        style: FilledButton.styleFrom(minimumSize: const Size(0, 48)),
-        child: Text(l10n?.adminKycReviewApprove ?? 'Approve'),
-      );
-
-  Widget _rejectButton(AppLocalizations? l10n) => OutlinedButton(
-        onPressed: isWorking ? null : () => onDecide('rejected'),
-        style: OutlinedButton.styleFrom(
-            foregroundColor: Colors.red.shade700,
-            minimumSize: const Size(0, 48)),
-        child: Text(l10n?.adminKycReviewReject ?? 'Reject'),
-      );
 }

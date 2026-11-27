@@ -8,7 +8,6 @@ import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/app_state_views.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/datasources/admin_remote_data_source.dart';
-import '../../data/services/admin_audit_service.dart';
 import '../../data/services/admin_session.dart';
 import '../../domain/admin_permissions.dart';
 import '../widgets/admin_shell.dart';
@@ -126,12 +125,6 @@ class _AdminInviteAcceptViewState extends State<AdminInviteAcceptView> {
           callerRole: _role);
       await sl<AdminRemoteDataSource>()
           .markInviteAccepted(invite.id, callerRole: _role);
-      await AdminAuditService.logAction(
-        action: 'admin_invite_accepted',
-        targetType: 'admin_invite',
-        targetId: invite.id,
-        detail: 'Granted ${invite.adminRole} to ${invite.email}.',
-      );
       if (mounted) setState(() => _granted = true);
     } catch (_) {
       if (mounted) {

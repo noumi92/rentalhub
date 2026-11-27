@@ -8,6 +8,7 @@ import '../../../../core/widgets/app_state_views.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/datasources/admin_support_data_source.dart';
 import '../widgets/admin_detail_section.dart';
+import '../widgets/admin_report_charts.dart';
 import '../widgets/admin_report_widgets.dart';
 import '../widgets/admin_shell.dart';
 
@@ -25,6 +26,7 @@ class AdminReportsView extends StatefulWidget {
 
 class _AdminReportsViewState extends State<AdminReportsView> {
   AdminReport? _report;
+  AdminReport? _previous;
   bool _isLoading = false;
   bool _hasError = false;
   bool _rangeError = false;
@@ -37,13 +39,19 @@ class _AdminReportsViewState extends State<AdminReportsView> {
       _hasError = false;
     });
     try {
-      final report = await sl<AdminSupportDataSource>().getReport(
-        from: _from,
-        to: _to,
-      );
+      // Phase 4 (4.2): the trend compares this range against the
+      // immediately preceding equal-length period, fetched with
+      // the same query — no server aggregation exists for this.
+      final ds = sl<AdminSupportDataSource>();
+      final report = await ds.getReport(from: _from, to: _to);
+      final length = _to.difference(_from);
+      final prevTo = _from.subtract(const Duration(days: 1));
+      final prevFrom = prevTo.subtract(length);
+      final previous = await ds.getReport(from: prevFrom, to: prevTo);
       if (mounted) {
         setState(() {
           _report = report;
+          _previous = previous;
           _isLoading = false;
         });
       }
@@ -148,44 +156,38 @@ class _AdminReportsViewState extends State<AdminReportsView> {
                 message: l10n.admin2_reportsEmptyHint,
               )
             else ...[
-              Wrap(
-                spacing: 12,
-                runSpacing: 12,
-                children: [
-                  AdminReportKpi(
-                      label: l10n.admin2_reportsBookings,
-                      value: '${r.totalBookings}',
-                      compact: compact),
-                  AdminReportKpi(
-                      label: l10n.admin2_reportsCompleted,
-                      value: '${r.completedBookings}',
-                      compact: compact),
-                  AdminReportKpi(
-                      label: l10n.admin2_reportsRevenue,
-                      value: l10n.amountRs(formatRs(r.bookingRevenue)),
-                      compact: compact),
-                  AdminReportKpi(
-                      label: l10n.admin2_reportsIncome,
-                      value: l10n.amountRs(formatRs(r.financeIncome)),
-                      compact: compact),
-                  AdminReportKpi(
-                      label: l10n.admin2_reportsExpense,
-                      value: l10n.amountRs(formatRs(r.financeExpense)),
-                      compact: compact),
-                  AdminReportKpi(
-                      label: l10n.admin2_reportsNewCustomers,
-                      value: '${r.newCustomers}',
-                      compact: compact),
-                  AdminReportKpi(
-                      label: l10n.admin2_reportsDisputesOpen,
-                      value: '${r.disputesOpen}',
-                      compact: compact),
-                  AdminReportKpi(
-                      label: l10n.admin2_reportsDisputesResolved,
-                      value: '${r.disputesResolved}',
-                      compact: compact),
-                ],
+              AdminReportKpiGrid(report: r, compact: compact),
+              // Phase 1 (1.4): booked value is not realised income —
+              // the reconciliation note, beside the two KPIs above.
+              Padding(
+                padding: const EdgeInsets.only(top: 12),
+                child: Text(
+                  l10n.admin2_reportsRevenueNote,
+                  style: TextStyle(
+                      fontSize: 12,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant),
+                ),
               ),
+              // Phase 4 (4.2): trend vs the previous period, the
+              // per-day/month charts, and the cap note when the
+              // 1,000-row fetch may have cut rows off.
+              if (_previous != null) ...[
+                const SizedBox(height: 20),
+                AdminReportTrendSection(
+                    current: r, previous: _previous!),
+              ],
+              const SizedBox(height: 20),
+              AdminReportCharts(report: r),
+              if (r.bookingsTruncated || r.transfersTruncated)
+                Padding(
+                  padding: const EdgeInsets.only(top: 12),
+                  child: Text(
+                    l10n.admin2_reportsTruncatedNote,
+                    style: TextStyle(
+                        fontSize: 12,
+                        color: Theme.of(context).colorScheme.error),
+                  ),
+                ),
               const SizedBox(height: 20),
               AdminDetailSection(
                   title: l10n.admin2_reportsByCity,

@@ -265,11 +265,14 @@ void main() {
         await pumpAt(tester, const AdminCarsView(),
             width: 360, textScale: scale);
         expect(tester.takeException(), isNull);
-        expect(find.textContaining('Toyota Corolla'), findsOneWidget);
-        // The list is lazy: at larger scales the second car starts
-        // below the fold, so scroll it into view before asserting.
+        // The list is lazy and the default name sort (Phase 4
+        // 4.3) puts Honda first: assert the first car while it is
+        // built, then scroll down to the second. (Scrolling back
+        // up to a lazily disposed first item fails, so assert in
+        // list order.)
+        expect(find.textContaining('Honda Civic'), findsOneWidget);
         await tester.scrollUntilVisible(
-          find.textContaining('Honda Civic'),
+          find.textContaining('Toyota Corolla'),
           200,
           scrollable: find.descendant(
             of: find.byType(ListView),
@@ -277,7 +280,7 @@ void main() {
           ),
         );
         await tester.pumpAndSettle();
-        expect(find.textContaining('Honda Civic'), findsOneWidget);
+        expect(find.textContaining('Toyota Corolla'), findsOneWidget);
       });
     }
 

@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/responsive.dart';
+import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/app_state_views.dart';
 import '../../data/datasources/admin_people_data_source.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../l10n/app_localizations_en.dart';
 import '../widgets/admin_shell.dart';
+import '../widgets/admin_sort_menu.dart';
+import '../widgets/admin_tribunal_case_actions.dart';
 import '../widgets/admin_status_chip.dart';
 import '../widgets/blacklist_appeal_dialog.dart';
 
@@ -23,6 +26,7 @@ class _AdminBlacklistTribunalViewState extends State<AdminBlacklistTribunalView>
   List<AdminBlacklistRecord> _cases = [];
   bool _isLoading = true;
   bool _hasError = false;
+  String _sort = 'dateNewest';
 
   @override
   void initState() {
@@ -38,7 +42,8 @@ class _AdminBlacklistTribunalViewState extends State<AdminBlacklistTribunalView>
     try {
       // Phase C (C2): appeal-aware records — the shared entity does not
       // carry the appeal state, so the people data source wraps it.
-      final records = await sl<AdminPeopleDataSource>().getBlacklistRecords();
+      final records = AdminPeopleDataSource.sortBlacklistRecords(
+          await sl<AdminPeopleDataSource>().getBlacklistRecords(), _sort);
       if (mounted) setState(() => _cases = records);
     } catch (_) {
       // Was silently swallowed: a failed load looked exactly like
@@ -47,6 +52,25 @@ class _AdminBlacklistTribunalViewState extends State<AdminBlacklistTribunalView>
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
+  }
+
+  // Phase 3 (3.6a): the tribunal links back to the customer
+  // record — the record carries a CNIC, not a customer id, so the
+  // customer is resolved by CNIC first. When no customer record
+  // matches, the admin is told so instead of opening a dead link.
+  Future<void> _viewCustomer(AdminBlacklistRecord record) async {
+    final customerId = await sl<AdminPeopleDataSource>()
+        .getCustomerIdByCnic(record.entity.cnicNumber);
+    if (!mounted) return;
+    if (customerId == null) {
+      AppFeedback.showError(
+          context,
+          (AppLocalizations.of(context) ?? AppLocalizationsEn())
+              .admin2_tribunalCustomerNotFound);
+      return;
+    }
+    context.go(RouteNames.adminCustomerDetail
+        .replaceFirst(':customerId', customerId));
   }
 
   // Phase C (C2): the appeal decision — Keep or Remove, both with a
@@ -98,6 +122,30 @@ class _AdminBlacklistTribunalViewState extends State<AdminBlacklistTribunalView>
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              AdminSortMenu(
+                                options: [
+                                  AdminSortOption(
+                                      id: 'dateNewest',
+                                      label: l10n.adminSortDateNewest),
+                                  AdminSortOption(
+                                      id: 'dateOldest',
+                                      label: l10n.adminSortDateOldest),
+                                  AdminSortOption(
+                                      id: 'statusAsc',
+                                      label: l10n.adminSortStatus),
+                                ],
+                                selectedId: _sort,
+                                onSelected: (sort) {
+                                  if (sort == _sort) return;
+                                  setState(() => _sort = sort);
+                                  _loadTribunalCases();
+                                },
+                              ),
+                            ],
+                          ),
                           ..._cases.map((c) => _caseCard(c, compact)),
                         ],
                       ),
@@ -112,16 +160,14 @@ class _AdminBlacklistTribunalViewState extends State<AdminBlacklistTribunalView>
     // failed contrast; the shared tones are the dark, AA-passing ones.
     final tone = item.isActive ? AdminStatusTone.danger : AdminStatusTone.success;
     final toneColor = adminStatusColor(context, tone);
-    final badge = Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        color: toneColor.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(6),
-      ),
-      child: Text(
-        item.isActive ? l10n.admin2_tribunalActive : l10n.admin2_tribunalReversed,
-        style: TextStyle(fontWeight: FontWeight.w500, fontSize: 10, color: toneColor),
-      ),
+    // Phase 4 (4.1) — the status badge is the shared chip
+    // (radius 20, 11sp w500); the old inline badge was radius 6 /
+    // 10sp with the same tone.
+    final badge = AdminStatusChip(
+      label: item.isActive
+          ? l10n.admin2_tribunalActive
+          : l10n.admin2_tribunalReversed,
+      tone: tone,
     );
     final idLine = Row(
       children: [
@@ -173,38 +219,12 @@ class _AdminBlacklistTribunalViewState extends State<AdminBlacklistTribunalView>
             // same dialog opens as "Review flag" — the revert path
             // stays available, but nothing claims an appeal was
             // filed when it was not.
-            if (compact)
-              SizedBox(
-                width: double.infinity,
-                child: OutlinedButton(
-                  onPressed: () => _showReversalDialog(record),
-                  style: OutlinedButton.styleFrom(
-                      foregroundColor: AppColors.successTextFor(Theme.of(context).brightness),
-                      minimumSize: const Size(0, 48)),
-                  child: Text(
-                      record.appealStatus == 'pending'
-                          ? l10n.admin2_tribunalDecideAppeal
-                          : l10n.admin2_tribunalReviewFlag,
-                      style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 12)),
-                ),
-              )
-            else
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  OutlinedButton(
-                    onPressed: () => _showReversalDialog(record),
-                    style: OutlinedButton.styleFrom(
-                        foregroundColor: AppColors.successTextFor(Theme.of(context).brightness),
-                        minimumSize: const Size(0, 48)),
-                    child: Text(
-                        record.appealStatus == 'pending'
-                            ? l10n.admin2_tribunalDecideAppeal
-                            : l10n.admin2_tribunalReviewFlag,
-                        style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 12)),
-                  ),
-                ],
-              ),
+            AdminTribunalCaseActions(
+              record: record,
+              compact: compact,
+              onViewCustomer: () => _viewCustomer(record),
+              onDecideAppeal: () => _showReversalDialog(record),
+            ),
           ],
           if (record.appealStatus != 'none') ...[
             const SizedBox(height: 8),

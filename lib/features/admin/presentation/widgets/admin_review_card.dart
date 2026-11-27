@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../data/datasources/admin_platform_data_source.dart';
+import 'admin_list_card.dart';
 import 'admin_status_chip.dart';
 
 /// One review moderation card (extracted from [AdminReviewsView] to
@@ -38,13 +39,13 @@ class AdminReviewCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final r = review;
+    // Phase 4 (4.1) — the card shell is the shared shape; the
+    // body stays custom (ratings/signals/actions are not a
+    // ListTile row).
     return Card(
       margin: EdgeInsets.zero,
       elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: Theme.of(context).dividerColor),
-      ),
+      shape: adminCardShape(context),
       child: Padding(
         padding: const EdgeInsets.all(14),
         child: Column(

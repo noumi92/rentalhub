@@ -8,21 +8,24 @@ import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/app_state_views.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/datasources/admin_remote_data_source.dart';
-import '../../data/services/admin_audit_service.dart';
 import '../../data/services/admin_session.dart';
 import '../../domain/admin_permissions.dart';
 import '../widgets/admin_confirm_dialog.dart';
-import '../widgets/admin_invite_form.dart';
 import '../widgets/admin_shell.dart';
-import '../widgets/admin_team_invites_section.dart';
-import '../widgets/admin_team_members_section.dart';
+import '../widgets/admin_team_invites_tab.dart';
+import '../widgets/admin_team_members_tab.dart';
+import '../widgets/admin_team_security_tab.dart';
 
 /// Phase A (A4) — the admin team screen: who holds an admin role, who
 /// still has two-factor authentication off, and (super admin only) the
 /// invite form, TOTP resets and role revocations. Invites expire after
 /// 48 hours; the grant happens on the accept screen through
-/// setAdminRole, once the invitee's account exists. The invite form
-/// owns the invite flow; this view loads, prunes, reminds, confirms.
+/// setAdminRole, once the invitee's account exists.
+/// Phase 2 (2.5) — tabbed like the customer-side Profile/KYC hub:
+/// Members (list, TOTP resets, revocations), Invites (pending invites
+/// + invite form), Security (2FA-off members, Remind-all, resets).
+/// The 2FA banner moved out of the members section into the Security
+/// tab; every old action is still here.
 class AdminTeamView extends StatefulWidget {
   /// The signed-in admin's role. The router leaves it null and the
   /// view resolves it from the signed-in user; tests pass it directly.
@@ -59,12 +62,12 @@ class _AdminTeamViewState extends State<AdminTeamView> {
     if (!_isLoading) setState(() => _hasError = false);
     try {
       final ds = sl<AdminRemoteDataSource>();
-      // F-m4: expired invites lingered forever — prune them first
-      // (best effort; the scheduled function does the same nightly,
-      // and a prune failure must never hide the team list).
-      try {
-        await ds.pruneExpiredInvites();
-      } catch (_) {}
+      // Phase 3 (3.5a): no client-side prune on load — expired
+      // invites are pruned by the scheduled
+      // `pruneExpiredInvites` Cloud Function (nightly), so a team
+      // load no longer performs an unaudited delete. Note: the
+      // Functions deploy is still blocked on billing, so until it
+      // lands expired invites linger in the list (shown as expired).
       final members = await ds.getTeamMembers();
       final invites = await ds.getInvites();
       if (mounted) {
@@ -91,14 +94,7 @@ class _AdminTeamViewState extends State<AdminTeamView> {
     var sent = 0;
     for (final m in off) {
       try {
-        await sl<AdminRemoteDataSource>()
-            .recordTotpReminder(m.uid, callerRole: _role);
-        await AdminAuditService.logAction(
-          action: 'totp_reminder_sent',
-          targetType: 'admin',
-          targetId: m.uid,
-          detail: '2FA reminder sent to ${m.email}.',
-        );
+        await sl<AdminRemoteDataSource>().recordTotpReminder(m.uid, callerRole: _role);
         sent++;
       } catch (_) {}
     }
@@ -127,14 +123,46 @@ class _AdminTeamViewState extends State<AdminTeamView> {
       await _load();
     } catch (_) {
       if (mounted) {
-        AppFeedback.showError(
-            context,
-            AppLocalizations.of(context)?.admin2_teamActionFailed ??
-                'Could not complete that action.');
+        AppFeedback.showError(context, AppLocalizations.of(context)?.admin2_teamActionFailed ?? 'Could not complete that action.');
       }
     } finally {
       if (mounted) setState(() => _isWorking = false);
     }
+  }
+
+  void _resetTotp(AdminTeamMember m) {
+    final l10n = AppLocalizations.of(context);
+    _confirmAction(
+      title: l10n?.admin2_teamResetTotpTitle ?? 'Reset two-factor authentication?',
+      body: l10n?.admin2_teamResetTotpBody(m.email) ?? '${m.email} will have to enrol TOTP again on their next login.',
+      run: () async {
+        await sl<AdminRemoteDataSource>().resetTotp(m.uid, callerRole: _role);
+      },
+    );
+  }
+
+  void _revoke(AdminTeamMember m) {
+    final l10n = AppLocalizations.of(context);
+    _confirmAction(
+      title: l10n?.admin2_teamRevokeTitle ?? 'Revoke this admin role?',
+      body: l10n?.admin2_teamRevokeBody(m.email) ?? '${m.email} will lose admin access and become a customer account.',
+      run: () async {
+        await sl<AdminRemoteDataSource>().setAdminRole(uid: m.uid, adminRole: null, callerRole: _role);
+        // F-m9: drop this tab's cached copy of the revoked uid's role now (their own session re-reads it once its 5-minute TTL expires).
+        AdminSession.clearCachedRole(m.uid);
+      },
+    );
+  }
+
+  void _withdrawInvite(AdminInvite i) {
+    final l10n = AppLocalizations.of(context);
+    _confirmAction(
+      title: l10n?.admin2_teamWithdrawTitle ?? 'Withdraw this invite?',
+      body: l10n?.admin2_teamWithdrawBody(i.email) ?? '${i.email} will no longer be able to accept it.',
+      run: () async {
+        await sl<AdminRemoteDataSource>().revokeInvite(i.id, callerRole: _role);
+      },
+    );
   }
 
   @override
@@ -156,95 +184,63 @@ class _AdminTeamViewState extends State<AdminTeamView> {
                       'Could not load the admin team.',
                   onRetry: _load,
                 )
-              : ListView(
-              padding: EdgeInsets.all(compact ? 16 : 24),
-              children: [
-                if (!_canManage)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 16),
-                    child: Text(
-                      l10n?.admin2_teamViewOnly ??
-                          'Only a super admin can invite, reset two-factor authentication, or revoke a role. You can view the team.',
-                      style: TextStyle(
-                          fontSize: 13,
-                          color: Theme.of(context).colorScheme.onSurfaceVariant),
-                    ),
-                  ),
-                AdminTeamMembersSection(
-                  members: _members,
-                  canManage: _canManage,
-                  isWorking: _isWorking,
-                  onRemindAll2fa: _canManage ? _remindAll2fa : null,
-                  onResetTotp: (m) => _confirmAction(
-                    title: l10n?.admin2_teamResetTotpTitle ??
-                        'Reset two-factor authentication?',
-                    body: l10n?.admin2_teamResetTotpBody(m.email) ??
-                        '${m.email} will have to enrol TOTP again on their next login.',
-                    run: () async {
-                      await sl<AdminRemoteDataSource>()
-                          .resetTotp(m.uid, callerRole: _role);
-                      await AdminAuditService.logAction(
-                        action: 'totp_reset',
-                        targetType: 'admin',
-                        targetId: m.uid,
-                        detail: l10n?.admin2_teamTotpResetLog(m.email) ??
-                            'TOTP reset for ${m.email}.',
-                      );
-                    },
-                  ),
-                  onRevoke: (m) => _confirmAction(
-                    title: l10n?.admin2_teamRevokeTitle ??
-                        'Revoke this admin role?',
-                    body: l10n?.admin2_teamRevokeBody(m.email) ??
-                        '${m.email} will lose admin access and become a customer account.',
-                    run: () async {
-                      await sl<AdminRemoteDataSource>()
-                          .setAdminRole(uid: m.uid, adminRole: null, callerRole: _role);
-                      // F-m9: drop this tab's cached copy of the
-                      // revoked uid's role now (their own session
-                      // re-reads it once its 5-minute TTL expires).
-                      AdminSession.clearCachedRole(m.uid);
-                    },
-                  ),
-                ),
-                const SizedBox(height: 24),
-                AdminTeamInvitesSection(
-                  invites: _invites,
-                  canManage: _canManage,
-                  onAccept: (i) => context.go(
-                      '${RouteNames.adminInviteAccept}?email=${Uri.encodeComponent(i.email)}&role=${Uri.encodeComponent(i.adminRole)}'),
-                  onWithdraw: (i) => _confirmAction(
-                    title: l10n?.admin2_teamWithdrawTitle ??
-                        'Withdraw this invite?',
-                    body: l10n?.admin2_teamWithdrawBody(i.email) ??
-                        '${i.email} will no longer be able to accept it.',
-                    run: () async {
-                      await sl<AdminRemoteDataSource>()
-                          .revokeInvite(i.id, callerRole: _role);
-                      await AdminAuditService.logAction(
-                        action: 'admin_invite_revoked',
-                        targetType: 'admin_invite',
-                        targetId: i.email,
-                        detail: l10n?.admin2_teamInviteWithdrawnLog(i.email) ??
-                            'Invite withdrawn for ${i.email}.',
-                      );
-                    },
+              : DefaultTabController(
+                  length: 3,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (!_canManage)
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(compact ? 16 : 24, compact ? 16 : 24, compact ? 16 : 24, 0),
+                          child: Text(
+                            l10n?.admin2_teamViewOnly ?? 'Only a super admin can invite, reset two-factor authentication, or revoke a role. You can view the team.',
+                            style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                          ),
+                        ),
+                      TabBar(
+                        // Three tabs at 2.0x text scale do not fit a 360dp phone side by side.
+                        isScrollable: true,
+                        tabAlignment: TabAlignment.start,
+                        tabs: [
+                          Tab(text: l10n?.admin2_teamTabMembers ?? 'Members'),
+                          Tab(text: l10n?.admin2_teamTabInvites ?? 'Invites'),
+                          Tab(text: l10n?.admin2_teamTabSecurity ?? 'Security'),
+                        ],
+                      ),
+                      Expanded(
+                        child: TabBarView(
+                          children: [
+                            AdminTeamMembersTab(
+                              members: _members,
+                              canManage: _canManage,
+                              isWorking: _isWorking,
+                              padding: EdgeInsets.all(compact ? 16 : 24),
+                              onResetTotp: _resetTotp,
+                              onRevoke: _revoke,
+                            ),
+                            AdminTeamInvitesTab(
+                              invites: _invites,
+                              canManage: _canManage,
+                              callerRole: _role,
+                              onAccept: (i) => context.go(
+                                  '${RouteNames.adminInviteAccept}?email=${Uri.encodeComponent(i.email)}&role=${Uri.encodeComponent(i.adminRole)}'),
+                              onWithdraw: _withdrawInvite,
+                              onInvited: _load,
+                            ),
+                            AdminTeamSecurityTab(
+                              members: _members,
+                              canManage: _canManage,
+                              isWorking: _isWorking,
+                              onRemindAll2fa:
+                                  _canManage ? _remindAll2fa : null,
+                              onResetTotp: _resetTotp,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                if (_canManage) ...[
-                  const SizedBox(height: 24),
-                  Text(l10n?.admin2_teamInviteButton ?? 'Invite an admin',
-                      style: const TextStyle(
-                          fontSize: 15,
-                          )),
-                  const SizedBox(height: 10),
-                  AdminInviteForm(
-                    callerRole: _role,
-                    onInvited: _load,
-                  ),
-                ],
-              ],
-            ),
     );
   }
 }

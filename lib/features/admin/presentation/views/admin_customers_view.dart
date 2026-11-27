@@ -8,6 +8,8 @@ import '../../../../core/utils/responsive.dart';
 import '../../../../core/widgets/app_state_views.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/datasources/admin_people_data_source.dart';
+import '../widgets/admin_count_line.dart';
+import '../widgets/admin_customer_list_header.dart';
 import '../widgets/admin_customer_list_tile.dart';
 import '../widgets/admin_load_more_button.dart';
 import '../widgets/admin_shell.dart';
@@ -33,9 +35,11 @@ class _AdminCustomersViewState extends State<AdminCustomersView> {
   bool _hasError = false;
   bool _isSearching = false;
   String _cnicFilter = 'all';
+  String _sort = 'nameAsc';
   String _searchQuery = '';
   Object? _cursor;
   bool _hasMore = false;
+  int? _total;
 
   @override
   void initState() {
@@ -62,6 +66,7 @@ class _AdminCustomersViewState extends State<AdminCustomersView> {
         _rows = [];
         _cursor = null;
         _hasMore = false;
+        _total = null;
       });
     } else {
       setState(() => _isLoadingMore = true);
@@ -73,18 +78,26 @@ class _AdminCustomersViewState extends State<AdminCustomersView> {
           _searchQuery,
           limit: 50,
         );
-        _setLoaded(found, isSearching: true);
+        _setLoaded(AdminPeopleDataSource.sortCustomerRows(found, _sort),
+            isSearching: true);
         return;
       }
+      // Phase 4 (4.4c): the unfiltered total, so the list can say
+      // "Showing first N of M" (the CNIC filter has no
+      // server-side count, so filtered lists report no total).
+      final total =
+          _cnicFilter == 'all' ? await ds.countCustomers() : null;
       final page = await ds.getCustomersPage(
         limit: _pageSize,
         cursor: reset ? null : _cursor,
         cnicFilter: _cnicFilter,
+        sort: _sort,
       );
       _setLoaded(
         reset ? page.items : [..._rows, ...page.items],
         cursor: page.cursor,
         hasMore: page.hasMore,
+        total: total,
       );
     } catch (_) {
       if (mounted) {
@@ -102,6 +115,7 @@ class _AdminCustomersViewState extends State<AdminCustomersView> {
     Object? cursor,
     bool hasMore = false,
     bool isSearching = false,
+    int? total,
   }) {
     if (!mounted) return;
     setState(() {
@@ -109,6 +123,7 @@ class _AdminCustomersViewState extends State<AdminCustomersView> {
       _isSearching = isSearching;
       _cursor = cursor;
       _hasMore = hasMore;
+      _total = total;
       _isLoading = false;
       _isLoadingMore = false;
     });
@@ -130,6 +145,12 @@ class _AdminCustomersViewState extends State<AdminCustomersView> {
     _load();
   }
 
+  void _onSort(String sort) {
+    if (sort == _sort) return;
+    setState(() => _sort = sort);
+    _load();
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -146,67 +167,36 @@ class _AdminCustomersViewState extends State<AdminCustomersView> {
                 : 24),
         child: Column(
           children: [
-            TextField(
-              controller: _searchController,
-              onChanged: _onSearchChanged,
-              decoration: InputDecoration(
-                hintText: l10n?.admin2_customersSearchHint ?? 'Search by name, phone, or CNIC…',
-                prefixIcon: const Icon(Icons.search_rounded),
-                filled: true,
-                fillColor:
-                    Theme.of(context).colorScheme.surfaceContainerHighest,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Theme.of(context).dividerColor),
-                ),
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-              ),
-            ),
-            const SizedBox(height: 12),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Wrap(
-                spacing: 8,
-                children: [
-                  for (final entry in {
-                    'all': l10n?.adminAuditCnicAll ?? 'All',
-                    'onFile':
-                        l10n?.adminAuditCnicOnFile ?? 'CNIC on file',
-                    'missing':
-                        l10n?.adminAuditCnicMissing ?? 'CNIC missing',
-                  }.entries)
-                    ChoiceChip(
-                      label: Text(entry.value),
-                      selected: _cnicFilter == entry.key,
-                      onSelected: (_) => _onCnicFilter(entry.key),
-                    ),
-                ],
-              ),
+            AdminCustomerListHeader(
+              searchController: _searchController,
+              onSearchChanged: _onSearchChanged,
+              cnicFilter: _cnicFilter,
+              onCnicFilter: _onCnicFilter,
+              sort: _sort,
+              onSort: _onSort,
             ),
             const SizedBox(height: 16),
             if (!_isLoading && !_hasError && _rows.isNotEmpty)
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Text(
-                    _isSearching
-                        ? (_rows.length >= 50
-                            ? (l10n?.adminAuditFirstMatches(50) ??
-                                'First 50 matches')
-                            : (l10n?.adminAuditMatching(_rows.length) ??
-                                '${_rows.length} matching entries'))
-                        : (l10n?.adminAuditShowing(_rows.length) ??
-                            'Showing ${_rows.length}'),
-                    style: TextStyle(
-                        fontSize: 12,
-                        color: Theme.of(context)
-                            .colorScheme
-                            .onSurfaceVariant),
-                  ),
-                ),
-              ),
+              _isSearching
+                  ? Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: Text(
+                          _rows.length >= 50
+                              ? (l10n?.adminAuditFirstMatches(50) ??
+                                  'First 50 matches')
+                              : (l10n?.adminAuditMatching(_rows.length) ??
+                                  '${_rows.length} matching entries'),
+                          style: TextStyle(
+                              fontSize: 12,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant),
+                        ),
+                      ),
+                    )
+                  : AdminCountLine(shown: _rows.length, total: _total),
             Expanded(
               child: _isLoading
                   ? const AppLoadingState()
