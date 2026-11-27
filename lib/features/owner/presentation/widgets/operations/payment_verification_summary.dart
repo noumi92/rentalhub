@@ -28,6 +28,7 @@ class PaymentVerificationSummary extends StatelessWidget {
         'verified': l10n.verified,
         'rejected': l10n.kycStatusRejected,
         'submitted': l10n.kycStatusSubmitted,
+        'resubmitted': l10n.kycStatusSubmitted,
         'pending': l10n.kycStatusSubmitted,
       }[status] ??
       l10n.home2_kycNotStarted;

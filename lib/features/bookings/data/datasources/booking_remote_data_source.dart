@@ -329,15 +329,23 @@ class BookingRemoteDataSource {
   /// pending booking for one vehicle block a different vehicle's
   /// picker (the out-of-city picker tests failed after 22:00, when
   /// the picker's now+2h default crossed into a queued booking's
-  /// first day for another car).
+  /// first day for another car), and the same leak applied to
+  /// customer and shop lists — a pending booking for customer A
+  /// showed in customer B's "My Bookings". Pass the scope the
+  /// caller queried by, and only that scope's pending creates
+  /// are merged.
   Future<List<BookingModel>> _mergePendingInto(
     List<BookingModel> list, {
     String? vehicleId,
+    String? customerId,
+    Set<String>? shopIds,
   }) async {
     final pending = await _pendingQueueBookings();
     final byId = {for (final b in list) b.bookingId: b};
     for (final p in pending) {
       if (vehicleId != null && p.vehicleId != vehicleId) continue;
+      if (customerId != null && p.customerId != customerId) continue;
+      if (shopIds != null && !shopIds.contains(p.shopId)) continue;
       byId.putIfAbsent(p.bookingId, () => p);
     }
     final out = <BookingModel>[];
@@ -1049,14 +1057,14 @@ class BookingRemoteDataSource {
           final list = snap.docs
               .map((d) => BookingModel.fromMap(d.data(), d.id))
               .toList();
-          return await _mergePendingInto(list);
+          return await _mergePendingInto(list, customerId: customerId);
         }
       } catch (_) {}
     }
     final list = _inMemoryFallback.values
         .where((b) => b.customerId == customerId)
         .toList();
-    return _mergePendingInto(list);
+    return _mergePendingInto(list, customerId: customerId);
   }
 
   Future<List<BookingEntity>> getShopBookings(String shopId) async {
@@ -1075,13 +1083,13 @@ class BookingRemoteDataSource {
           final list = snap.docs
               .map((d) => BookingModel.fromMap(d.data(), d.id))
               .toList();
-          return await _mergePendingInto(list);
+          return await _mergePendingInto(list, shopIds: ids.toSet());
         }
       } catch (_) {}
     }
     final list =
         _inMemoryFallback.values.where((b) => ids.contains(b.shopId)).toList();
-    return _mergePendingInto(list);
+    return _mergePendingInto(list, shopIds: ids.toSet());
   }
 
   /// Phase B (B3): all bookings of one vehicle, for the availability
