@@ -264,7 +264,9 @@ class KycReviewSubmission {
     required this.licenseBackKey,
     required this.licenseNumber,
     required this.licenseExpiry,
+    this.status = 'submitted',
     this.submittedAt,
+    this.reviewedAt,
   });
 
   final String customerId;
@@ -276,23 +278,45 @@ class KycReviewSubmission {
   final String licenseBackKey;
   final String licenseNumber;
   final String licenseExpiry;
+  final String status;
 
   /// The submission time (`updatedAt` server timestamp, written when
   /// the customer submitted). Null when the record has no timestamp.
   final DateTime? submittedAt;
+
+  /// When an admin last approved or rejected this KYC submission.
+  final DateTime? reviewedAt;
+
+  bool get isApproved => status == 'verified' || status == 'approved';
+
+  /// True when KYC is approved AND the customer has NOT submitted newer
+  /// documents after the approval timestamp. If the customer resubmits
+  /// documents (`status == 'resubmitted'` or `submittedAt > reviewedAt`),
+  /// Approve re-enables automatically.
+  bool get isApprovedAndUnchanged {
+    if (!isApproved) return false;
+    if (submittedAt != null &&
+        reviewedAt != null &&
+        submittedAt!.isAfter(reviewedAt!)) {
+      return false;
+    }
+    return true;
+  }
+
+  static DateTime? _parseTs(dynamic raw) {
+    if (raw is Timestamp) return raw.toDate();
+    if (raw is String) return DateTime.tryParse(raw);
+    return null;
+  }
 
   factory KycReviewSubmission.fromMap(
     String customerId,
     Map<String, dynamic> data, {
     String name = '',
   }) {
-    final submitted = data['submittedAt'] ?? data['updatedAt'];
-    DateTime? submittedAt;
-    if (submitted is Timestamp) {
-      submittedAt = submitted.toDate();
-    } else if (submitted is String) {
-      submittedAt = DateTime.tryParse(submitted);
-    }
+    final submittedAt = _parseTs(data['submittedAt'] ?? data['updatedAt']);
+    final reviewedAt =
+        _parseTs(data['reviewedAt'] ?? data['verifiedAt'] ?? data['decidedAt']);
     return KycReviewSubmission(
       customerId: customerId,
       customerName: name,
@@ -303,7 +327,9 @@ class KycReviewSubmission {
       licenseBackKey: data['licenseBackKey'] as String? ?? '',
       licenseNumber: data['licenseNumber'] as String? ?? '',
       licenseExpiry: data['licenseExpiry'] as String? ?? '',
+      status: (data['status'] as String? ?? 'submitted').toLowerCase(),
       submittedAt: submittedAt,
+      reviewedAt: reviewedAt,
     );
   }
 }

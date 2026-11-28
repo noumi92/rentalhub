@@ -245,9 +245,9 @@ class _AdminSidebarNavState extends State<AdminSidebarNav> {
                     badge: packagesBadge,
                   ),
                   _navItem(
-                    RouteNames.adminBookings,
-                    l10n.admin2_navBookings,
-                    Icons.receipt_long_rounded,
+                    RouteNames.adminDisputes,
+                    l10n.adminNavDisputesReviews,
+                    Icons.gavel_rounded,
                     badge: bookingsBadge,
                   ),
                   _navItem(

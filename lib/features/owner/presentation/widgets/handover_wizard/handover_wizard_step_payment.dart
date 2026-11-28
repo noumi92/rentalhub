@@ -33,12 +33,14 @@ class HandoverWizardStepPayment extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final wizard = context.watch<HandoverWizardCubit>();
     final state = wizard.state;
+    final effectiveDeposit = state.effectiveDeposit(securityDeposit);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         HandoverBalanceSection(
           balanceDue: _balanceDue,
-          securityDeposit: securityDeposit,
+          securityDeposit: effectiveDeposit,
+          onSecurityDepositChanged: wizard.setSecurityDeposit,
           selectedMethod: state.balanceMethod,
           onMethodChanged: wizard.setBalanceMethod,
           advancePaid: booking.advancePaid,
@@ -56,7 +58,7 @@ class HandoverWizardStepPayment extends StatelessWidget {
             builder: (_) => HandoverReceiptSheet(
               booking: booking,
               receiptId: state.receiptId,
-              securityDeposit: securityDeposit,
+              securityDeposit: effectiveDeposit,
               balanceDue: _balanceDue,
               balanceMethod: state.balanceMethod,
               depositMethod: state.depositMethod,

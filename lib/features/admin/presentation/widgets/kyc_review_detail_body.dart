@@ -24,9 +24,11 @@ class KycDecisionButtons extends StatelessWidget {
     super.key,
     required this.isWorking,
     required this.onDecide,
+    this.approveDisabled = false,
   });
 
   final bool isWorking;
+  final bool approveDisabled;
 
   /// 'verified' to approve, 'rejected' to reject.
   final Future<void> Function(String decision) onDecide;
@@ -37,9 +39,13 @@ class KycDecisionButtons extends StatelessWidget {
     final compact =
         windowSizeClassOf(context) == WindowSizeClass.compact;
     Widget approveButton() => FilledButton(
-          onPressed: isWorking ? null : () => onDecide('verified'),
+          onPressed: (isWorking || approveDisabled)
+              ? null
+              : () => onDecide('verified'),
           style: FilledButton.styleFrom(minimumSize: const Size(0, 48)),
-          child: Text(l10n?.adminKycReviewApprove ?? 'Approve'),
+          child: Text(approveDisabled
+              ? (l10n?.adminKycAlreadyApproved ?? 'Approved')
+              : (l10n?.adminKycReviewApprove ?? 'Approve')),
         );
     Widget rejectButton() => OutlinedButton(
           onPressed: isWorking ? null : () => onDecide('rejected'),
@@ -106,6 +112,7 @@ class KycReviewDetailBody extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final noDocument = l10n?.customerDetailNoDocument ?? 'Not provided';
     final date = _formatDate(context, submission.submittedAt);
+    final approvedDate = _formatDate(context, submission.reviewedAt);
     return SingleChildScrollView(
       padding: EdgeInsets.all(
           windowSizeClassOf(context) == WindowSizeClass.compact ? 16 : 24),
@@ -123,6 +130,36 @@ class KycReviewDetailBody extends StatelessWidget {
               '${l10n?.adminKycReviewCnicNumber ?? 'CNIC number'}: ${submission.cnicNumber.isEmpty ? '—' : submission.cnicNumber}'
               '${date.isEmpty ? '' : ' • ${l10n?.adminKycReviewSubmittedOn ?? 'Submitted on'} $date'}',
               style: const TextStyle(fontSize: 13)),
+          if (submission.isApproved) ...[
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                color: Colors.green.withAlpha(24),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.green.withAlpha(90)),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.verified_rounded,
+                      size: 16, color: Colors.green),
+                  const SizedBox(width: 6),
+                  Text(
+                    approvedDate.isEmpty
+                        ? (l10n?.adminKycAlreadyApproved ?? 'Approved')
+                        : (l10n?.adminKycApprovedOn(approvedDate) ??
+                            'Approved on $approvedDate'),
+                    style: const TextStyle(
+                      fontSize: 12.5,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.green,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
           AdminQrCodeRow(isSuperAdmin: isSuperAdmin, qrCode: qrCode),
           const SizedBox(height: 16),
           AdminDetailSection(
@@ -185,7 +222,11 @@ class KycReviewDetailBody extends StatelessWidget {
           ),
           if (showActions) ...[
             const SizedBox(height: 16),
-            KycDecisionButtons(isWorking: isWorking, onDecide: onDecide),
+            KycDecisionButtons(
+              isWorking: isWorking,
+              onDecide: onDecide,
+              approveDisabled: submission.isApprovedAndUnchanged,
+            ),
           ],
         ],
       ),

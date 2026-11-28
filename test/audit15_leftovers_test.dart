@@ -13,6 +13,7 @@ import 'package:rentalhub/core/di/injection_container.dart' show sl;
 import 'package:rentalhub/core/utils/money_format.dart';
 import 'package:rentalhub/features/bookings/data/datasources/booking_remote_data_source.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_customers_list_view.dart';
+import 'package:rentalhub/features/owner/presentation/widgets/customer_detail_bookings_section.dart';
 import 'package:rentalhub/l10n/app_localizations.dart';
 
 void main() {
@@ -146,28 +147,33 @@ void main() {
     });
   });
 
-  group('DS-5 — expanded booking shows a localized date', () {
+  group('DS-5 — customer bookings show a localized date', () {
     testWidgets('booking date carries a month name, never raw d/m/y',
         (tester) async {
-      await seedBooking(
+      final ds = sl<BookingRemoteDataSource>();
+      final created = await ds.createBookingRequest(
         customerId: 'cust-ds5',
-        customerName: 'DS5 Customer',
-        customerCnic: '35201-2000000-1',
+        shopId: 'shop-ds5',
+        vehicleId: 'veh-1',
+        packageType: '24h',
+        isWithDriver: false,
         pickupTime: DateTime(2026, 11, 3, 9),
+        returnTime: DateTime(2026, 11, 4, 9),
+        totalAmount: 9000,
+        advanceRequired: 3000,
+        customerName: 'DS5 Customer',
+        customerPhone: '0300-1234567',
+        customerCnic: '35201-2000000-1',
       );
-      await pump(tester, const OwnerCustomersListView(shopId: 'shop-1'));
-      // Filter to this customer: the shared in-memory store also
-      // holds the eight BP-14 rows, and the ninth row sits below the
-      // fold unbuilt — the search box is the user-visible way to
-      // bring it into view.
-      await tester.enterText(find.byType(TextField), 'DS5');
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('DS5 Customer'));
-      await tester.pumpAndSettle();
-      // Expanding renders the "Book for this customer" row, which
-      // overflows at 360 px in the test font (pre-existing, outside
-      // this item's scope — same drain as team_g's helper).
-      drainKnownErrors(tester);
+      await pump(
+        tester,
+        Scaffold(
+          body: SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: CustomerDetailBookingsSection(bookings: [created]),
+          ),
+        ),
+      );
       expect(find.textContaining('Nov 3, 2026'), findsOneWidget);
       expect(find.textContaining('3/11/2026'), findsNothing);
     });

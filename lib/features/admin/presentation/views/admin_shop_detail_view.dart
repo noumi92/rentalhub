@@ -181,8 +181,6 @@ class _AdminShopDetailViewState extends State<AdminShopDetailView> {
                                   shop: shop,
                                   padding: padding,
                                   onViewCars: () => _goScoped(RouteNames.adminCars),
-                                  onViewBookings: () =>
-                                      _goScoped(RouteNames.adminBookings),
                                 ),
                                 ShopDetailKycTab(
                                   shop: shop,

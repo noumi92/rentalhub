@@ -8,6 +8,7 @@ import '../../../../core/widgets/app_state_views.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/datasources/admin_platform_data_source.dart';
 import '../../domain/admin_permissions.dart';
+import '../widgets/admin_booking_kpis_banner.dart';
 import '../widgets/admin_permission_check.dart';
 import '../widgets/admin_review_card.dart';
 import '../widgets/admin_count_line.dart';
@@ -153,12 +154,8 @@ class _AdminReviewsViewState extends State<AdminReviewsView> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    // Phase 4 (4.3) — client-side sort (the list is client-side:
-    // [AdminPlatformDataSource.getReviews] caps at 200).
-    final visible = AdminPlatformDataSource.sortReviews(
-        _reviews.where(_inQueue).toList(), _sort);
-    final compact =
-        windowSizeClassOf(context) == WindowSizeClass.compact;
+    final visible = AdminPlatformDataSource.sortReviews(_reviews.where(_inQueue).toList(), _sort);
+    final compact = windowSizeClassOf(context) == WindowSizeClass.compact;
     return AdminShell(
       activeRoute: RouteNames.adminReviews,
       title: l10n.admin2_reviewsTitle,
@@ -172,6 +169,7 @@ class _AdminReviewsViewState extends State<AdminReviewsView> {
         padding: EdgeInsets.all(compact ? 16 : 24),
         child: Column(
           children: [
+            const AdminBookingKpisBanner(),
             Align(
               alignment: Alignment.centerLeft,
               child: Wrap(

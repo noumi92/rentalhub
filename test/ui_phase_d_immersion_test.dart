@@ -187,7 +187,8 @@ void main() {
     }) async {
       await tester.pumpWidget(
         MaterialApp(
-          localizationsDelegates: AppLocalizations.localizationsDelegates, supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
             body: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -272,7 +273,8 @@ void main() {
     }) async {
       await tester.pumpWidget(
         MaterialApp(
-          localizationsDelegates: AppLocalizations.localizationsDelegates, supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
             body: MaskedValue(
               value: value,
@@ -286,7 +288,8 @@ void main() {
       await tester.pumpAndSettle();
     }
 
-    testWidgets('masked by default, reveals on eye tap, re-masks on '
+    testWidgets(
+        'masked by default, reveals on eye tap, re-masks on '
         'second tap', (tester) async {
       await pumpMasked(tester, value: 'Rs. 125000');
       expect(find.text('Rs. ••••••'), findsOneWidget);
@@ -326,8 +329,7 @@ void main() {
       expect(find.text('35202-1234567-1'), findsOneWidget);
     });
 
-    test('maskDigits masks every digit, maskCnic keeps the CNIC shape',
-        () {
+    test('maskDigits masks every digit, maskCnic keeps the CNIC shape', () {
       expect(MaskedValue.maskDigits('Rs. 125000'), 'Rs. ••••••');
       expect(
         MaskedValue.maskCnic('35202-1234567-1'),
@@ -342,7 +344,8 @@ void main() {
         (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
-          localizationsDelegates: AppLocalizations.localizationsDelegates, supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
             body: ProfileCnicRow(cnic: '35202-1234567-1'),
           ),
@@ -361,7 +364,10 @@ void main() {
     testWidgets('balance and escrow pills are masked by default',
         (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(localizationsDelegates: AppLocalizations.localizationsDelegates, supportedLocales: AppLocalizations.supportedLocales, home: CustomerWalletView()),
+        const MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: CustomerWalletView()),
       );
       await tester.pumpAndSettle();
       // No backend in tests: totals are 0, so every amount renders as
@@ -392,9 +398,9 @@ void main() {
     Future<void> pumpHome(WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp.router(
-          localizationsDelegates: AppLocalizations.localizationsDelegates, supportedLocales: AppLocalizations.supportedLocales,
-          routerConfig:
-              _e1Router(initialLocation: RouteNames.customerHome),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          routerConfig: _e1Router(initialLocation: RouteNames.customerHome),
         ),
       );
       await tester.pumpAndSettle();
@@ -414,8 +420,7 @@ void main() {
 
     testWidgets('Wallet opens the wallet', (tester) async {
       await pumpHome(tester);
-      await tester
-          .tap(find.byKey(const ValueKey('quick-action-Wallet')));
+      await tester.tap(find.byKey(const ValueKey('quick-action-Wallet')));
       await tester.pumpAndSettle();
       expect(find.text('stub-wallet'), findsOneWidget);
     });
@@ -440,8 +445,7 @@ void main() {
 
     testWidgets('Support opens the support inbox', (tester) async {
       await pumpHome(tester);
-      await tester
-          .tap(find.byKey(const ValueKey('quick-action-Support')));
+      await tester.tap(find.byKey(const ValueKey('quick-action-Support')));
       await tester.pumpAndSettle();
       expect(find.text('stub-support'), findsOneWidget);
     });
@@ -461,9 +465,9 @@ void main() {
     Future<void> pumpDashboard(WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp.router(
-          localizationsDelegates: AppLocalizations.localizationsDelegates, supportedLocales: AppLocalizations.supportedLocales,
-          routerConfig:
-              _e1Router(initialLocation: RouteNames.ownerDashboard),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          routerConfig: _e1Router(initialLocation: RouteNames.ownerDashboard),
         ),
       );
       await tester.pumpAndSettle();
@@ -570,8 +574,7 @@ void main() {
       },
     );
     addTearDown(
-      () => TestDefaultBinaryMessengerBinding.instance
-          .defaultBinaryMessenger
+      () => TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(SystemChannels.platform, null),
     );
     await act();
@@ -589,7 +592,10 @@ void main() {
   group('AppStateViews widgets', () {
     Future<void> pumpState(WidgetTester tester, Widget child) async {
       await tester.pumpWidget(
-        MaterialApp(localizationsDelegates: AppLocalizations.localizationsDelegates, supportedLocales: AppLocalizations.supportedLocales, home: Scaffold(body: child)),
+        MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Scaffold(body: child)),
       );
       // One frame only: pumpAndSettle never returns while a
       // CircularProgressIndicator is animating.
@@ -648,7 +654,8 @@ void main() {
           onRetry: () => retried = true,
         ),
       );
-      expect(find.textContaining('Could not load your bookings.'), findsOneWidget);
+      expect(
+          find.textContaining('Could not load your bookings.'), findsOneWidget);
       await tester.tap(find.text('Retry'));
       await tester.pump();
       expect(retried, isTrue);
@@ -676,7 +683,8 @@ void main() {
       await tester.pumpWidget(
         withTestAssets(
           MaterialApp(
-              localizationsDelegates: AppLocalizations.localizationsDelegates, supportedLocales: AppLocalizations.supportedLocales,
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
               home: Scaffold(body: ShopVehicleCard(vehicle: vehicle))),
         ),
       );
@@ -691,7 +699,8 @@ void main() {
       await tester.pumpWidget(
         withTestAssets(
           MaterialApp(
-            localizationsDelegates: AppLocalizations.localizationsDelegates, supportedLocales: AppLocalizations.supportedLocales,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
             home: Scaffold(
               body: VehicleHeroCard(
                 vehicle: vehicle,
@@ -710,13 +719,15 @@ void main() {
       );
     });
 
-    testWidgets('tapping a shop card navigates to a detail holding the '
+    testWidgets(
+        'tapping a shop card navigates to a detail holding the '
         'same hero', (tester) async {
       final vehicle = e2Vehicle();
       await tester.pumpWidget(
         withTestAssets(
           MaterialApp(
-            localizationsDelegates: AppLocalizations.localizationsDelegates, supportedLocales: AppLocalizations.supportedLocales,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
             home: Builder(
               builder: (context) => Scaffold(
                 body: ShopVehicleCard(
@@ -727,8 +738,7 @@ void main() {
                         body: SingleChildScrollView(
                           child: VehicleHeroCard(
                             vehicle: vehicle,
-                            carAsset:
-                                'assets/images/white_sedan_hero.png',
+                            carAsset: 'assets/images/white_sedan_hero.png',
                           ),
                         ),
                       ),
@@ -767,7 +777,8 @@ void main() {
       final calls = await recordHaptics(tester, () async {
         await tester.pumpWidget(
           MaterialApp(
-            localizationsDelegates: AppLocalizations.localizationsDelegates, supportedLocales: AppLocalizations.supportedLocales,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
             home: Scaffold(
               body: AppShellNav(
                 currentIndex: 0,
@@ -799,7 +810,8 @@ void main() {
       final calls = await recordHaptics(tester, () async {
         await tester.pumpWidget(
           MaterialApp(
-            localizationsDelegates: AppLocalizations.localizationsDelegates, supportedLocales: AppLocalizations.supportedLocales,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
             home: Scaffold(
               body: DebouncedButton(
                 text: 'Send Request',
@@ -827,7 +839,8 @@ void main() {
     }) async {
       await tester.pumpWidget(
         MaterialApp(
-          localizationsDelegates: AppLocalizations.localizationsDelegates, supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
             body: WalletLedger(
               isLoading: isLoading,
@@ -877,7 +890,8 @@ void main() {
         VoidCallback? onRetry}) async {
       await tester.pumpWidget(
         MaterialApp(
-          localizationsDelegates: AppLocalizations.localizationsDelegates, supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
             body: SingleChildScrollView(
               child: FleetBody(
@@ -923,15 +937,13 @@ void main() {
         const FleetLoaded(vehicles: [], tier: 'basic'),
         onAddVehicle: () => added = true,
       );
-      expect(find.text('No vehicles yet — add your first car'),
-          findsOneWidget);
+      expect(find.text('No vehicles yet — add your first car'), findsOneWidget);
       await tester.tap(find.text('Add Vehicle Now'));
       await tester.pump();
       expect(added, isTrue);
     });
 
-    testWidgets('a filter with no matches shows no add action',
-        (tester) async {
+    testWidgets('a filter with no matches shows no add action', (tester) async {
       final vehicle = e2Vehicle();
       await pumpBody(
         tester,
@@ -948,7 +960,8 @@ void main() {
     testWidgets('no matches renders the shared empty state', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
-          localizationsDelegates: AppLocalizations.localizationsDelegates, supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(body: SupportFaqList(faqs: [])),
         ),
       );
@@ -959,7 +972,8 @@ void main() {
     testWidgets('faqs render their questions', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
-          localizationsDelegates: AppLocalizations.localizationsDelegates, supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
             body: SupportFaqList(faqs: const [
               {'q': 'When is my deposit returned?', 'a': 'At return.'},
@@ -991,16 +1005,20 @@ void main() {
     });
 
     Future<void> pumpScreen(WidgetTester tester, Widget screen) async {
-      await tester.pumpWidget(MaterialApp(localizationsDelegates: AppLocalizations.localizationsDelegates, supportedLocales: AppLocalizations.supportedLocales, home: screen));
+      await tester.pumpWidget(MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: screen));
     }
 
-    testWidgets('customer Home: loading state, then the dashboard '
+    testWidgets(
+        'customer Home: loading state, then the dashboard '
         'empty states', (tester) async {
       await tester.pumpWidget(
         MaterialApp.router(
-          localizationsDelegates: AppLocalizations.localizationsDelegates, supportedLocales: AppLocalizations.supportedLocales,
-          routerConfig:
-              _e1Router(initialLocation: RouteNames.customerHome),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          routerConfig: _e1Router(initialLocation: RouteNames.customerHome),
         ),
       );
       expect(find.byType(AppLoadingState), findsOneWidget);
@@ -1026,13 +1044,15 @@ void main() {
       expect(find.byType(CircularProgressIndicator), findsNothing);
     });
 
-    testWidgets('customer Bookings: missing data source renders the '
+    testWidgets(
+        'customer Bookings: missing data source renders the '
         'shared error state with retry', (tester) async {
       await sl.unregister<BookingRemoteDataSource>();
       await pumpScreen(tester, const CustomerBookingsView());
       await tester.pumpAndSettle();
       expect(find.byType(AppErrorState), findsOneWidget);
-      expect(find.textContaining('Could not load your bookings.'), findsOneWidget);
+      expect(
+          find.textContaining('Could not load your bookings.'), findsOneWidget);
       await tester.tap(find.text('Retry'));
       await tester.pumpAndSettle();
       expect(find.byType(AppErrorState), findsOneWidget);
@@ -1046,16 +1066,19 @@ void main() {
       expect(find.text('No wallet activity yet.'), findsOneWidget);
     });
 
-    testWidgets('customer Wallet: missing data source renders the shared '
+    testWidgets(
+        'customer Wallet: missing data source renders the shared '
         'error state', (tester) async {
       await sl.unregister<BookingRemoteDataSource>();
       await pumpScreen(tester, const CustomerWalletView());
       await tester.pumpAndSettle();
       expect(find.byType(AppErrorState), findsOneWidget);
-      expect(find.textContaining('Could not load your wallet.'), findsOneWidget);
+      expect(
+          find.textContaining('Could not load your wallet.'), findsOneWidget);
     });
 
-    testWidgets('customer Support: a search with no matches renders the '
+    testWidgets(
+        'customer Support: a search with no matches renders the '
         'shared empty state', (tester) async {
       await pumpScreen(tester, const CustomerSupportView());
       await tester.pumpAndSettle();
@@ -1091,40 +1114,43 @@ void main() {
       );
     });
 
-    testWidgets('owner Dashboard: missing data source renders the shared '
+    testWidgets(
+        'owner Dashboard: missing data source renders the shared '
         'error state with retry', (tester) async {
       await sl.unregister<BookingRemoteDataSource>();
       await pumpScreen(tester, const OwnerDashboardView(shopId: 'shop-1'));
       await tester.pumpAndSettle();
       expect(find.byType(AppErrorState), findsOneWidget);
-      expect(find.textContaining('Could not load your dashboard.'), findsOneWidget);
+      expect(find.textContaining('Could not load your dashboard.'),
+          findsOneWidget);
     });
 
-    testWidgets('owner Fleet: loading, then shared empty state with add '
+    testWidgets(
+        'owner Fleet: loading, then shared empty state with add '
         'action', (tester) async {
       await pumpScreen(tester, const OwnerFleetView());
       expect(find.byType(AppLoadingState), findsOneWidget);
       await tester.pumpAndSettle();
-      expect(find.text('No vehicles yet — add your first car'),
-          findsOneWidget);
+      expect(find.text('No vehicles yet — add your first car'), findsOneWidget);
       expect(find.text('Add Vehicle Now'), findsOneWidget);
     });
 
     testWidgets('owner Requests: loading, then shared empty state',
         (tester) async {
-      await pumpScreen(tester, const OwnerBookingRequestsView(shopId: 'shop-1'));
+      await pumpScreen(
+          tester, const OwnerBookingRequestsView(shopId: 'shop-1'));
       expect(find.byType(AppLoadingState), findsOneWidget);
       await tester.pumpAndSettle();
       expect(find.byType(AppEmptyState), findsOneWidget);
-      // FG-4: the default triage filter is now proofs-first, so the
-      // empty state shows the proof queue text, not the New text.
-      expect(find.text('No payment proofs waiting for verification'), findsOneWidget);
+      expect(find.text('No pending booking requests'), findsOneWidget);
     });
 
-    testWidgets('owner Requests: missing data source renders the shared '
+    testWidgets(
+        'owner Requests: missing data source renders the shared '
         'error state', (tester) async {
       await sl.unregister<BookingRemoteDataSource>();
-      await pumpScreen(tester, const OwnerBookingRequestsView(shopId: 'shop-1'));
+      await pumpScreen(
+          tester, const OwnerBookingRequestsView(shopId: 'shop-1'));
       await tester.pumpAndSettle();
       expect(find.byType(AppErrorState), findsOneWidget);
       expect(
@@ -1142,16 +1168,19 @@ void main() {
       expect(find.byType(AppEmptyState), findsOneWidget);
     });
 
-    testWidgets('owner Customers: missing data source renders the shared '
+    testWidgets(
+        'owner Customers: missing data source renders the shared '
         'error state', (tester) async {
       await sl.unregister<BookingRemoteDataSource>();
       await pumpScreen(tester, const OwnerCustomersListView());
       await tester.pumpAndSettle();
       expect(find.byType(AppErrorState), findsOneWidget);
-      expect(find.textContaining('Could not load your customers.'), findsOneWidget);
+      expect(find.textContaining('Could not load your customers.'),
+          findsOneWidget);
     });
 
-    testWidgets('owner Settings: no loading/empty/error state exists to '
+    testWidgets(
+        'owner Settings: no loading/empty/error state exists to '
         'migrate', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
@@ -1179,7 +1208,8 @@ void main() {
       expect(find.text('This shop has no cars listed yet.'), findsOneWidget);
     });
 
-    testWidgets('shop detail: missing data source renders the shared '
+    testWidgets(
+        'shop detail: missing data source renders the shared '
         'error state', (tester) async {
       await sl.unregister<FleetRemoteDataSource>();
       await pumpScreen(tester, ShopDetailView(shop: e2Shop()));
@@ -1191,8 +1221,7 @@ void main() {
       );
     });
 
-    testWidgets('shop cars: loading, then shared empty state',
-        (tester) async {
+    testWidgets('shop cars: loading, then shared empty state', (tester) async {
       await pumpScreen(
         tester,
         const ShopCarsView(shopId: 'shop-1', shopName: 'Al-Madina'),
@@ -1205,7 +1234,8 @@ void main() {
       );
     });
 
-    testWidgets('shop cars: missing data source renders the shared error '
+    testWidgets(
+        'shop cars: missing data source renders the shared error '
         'state', (tester) async {
       await sl.unregister<FleetRemoteDataSource>();
       await pumpScreen(

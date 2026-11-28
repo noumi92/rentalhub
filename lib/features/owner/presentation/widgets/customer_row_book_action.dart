@@ -24,9 +24,14 @@ import '../../../customer/utils/customer_grouping.dart';
 /// minimum touch target). Book a Car is solid orange (`orangeFill`,
 /// white text 5.18:1); View Profile and Call are outlined.
 class CustomerRowBookAction extends StatelessWidget {
-  const CustomerRowBookAction({super.key, required this.customer});
+  const CustomerRowBookAction({
+    super.key,
+    required this.customer,
+    this.blocked = false,
+  });
 
   final CustomerSummary customer;
+  final bool blocked;
 
   String _profileId() {
     final saved = customer.savedRecord?.customerId;
@@ -106,7 +111,7 @@ class CustomerRowBookAction extends StatelessWidget {
             const SizedBox(width: 8),
             Expanded(
               child: FilledButton.icon(
-                onPressed: () => _bookFor(context),
+                onPressed: blocked ? null : () => _bookFor(context),
                 style: FilledButton.styleFrom(
                   backgroundColor: AppColors.orangeFill,
                   foregroundColor: Colors.white,

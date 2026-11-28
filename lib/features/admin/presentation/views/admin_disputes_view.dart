@@ -10,6 +10,7 @@ import '../../../../core/widgets/app_state_views.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../customer/data/datasources/dispute_remote_data_source.dart';
 import '../../data/datasources/admin_platform_data_source.dart';
+import '../widgets/admin_booking_kpis_banner.dart';
 import '../widgets/admin_confirm_dialog.dart';
 import '../widgets/admin_count_line.dart';
 import '../widgets/admin_list_card.dart';
@@ -118,12 +119,8 @@ class _AdminDisputesViewState extends State<AdminDisputesView> {
     return ' • ${l10n.admin2_disputesDecidedLine(disputeDecisionLabel(d.decision!, l10n))}$amountText';
   }
 
-  /// Phase 2 (2.4): a row navigates to the dispute detail route —
-  /// the decision sheet now lives inside that route (for the quick
-  /// confirm form), not over the list.
   void _openDispute(DisputeRecord d) {
-    context.go(RouteNames.adminDisputeDetail
-        .replaceFirst(':disputeId', d.id));
+    context.go(RouteNames.adminDisputeDetail.replaceFirst(':disputeId', d.id));
   }
 
   @override
@@ -144,6 +141,7 @@ class _AdminDisputesViewState extends State<AdminDisputesView> {
         padding: EdgeInsets.all(compact ? 16 : 24),
         child: Column(
           children: [
+            const AdminBookingKpisBanner(),
             Align(
               alignment: Alignment.centerLeft,
               child: Wrap(

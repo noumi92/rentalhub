@@ -15,7 +15,6 @@ import '../widgets/admin_permission_check.dart';
 import '../widgets/admin_shell.dart';
 import '../widgets/customer_detail_header.dart';
 import '../widgets/customer_detail_actions.dart';
-import '../widgets/customer_detail_bookings_tab.dart';
 import '../widgets/customer_detail_kyc_tab.dart';
 import '../widgets/customer_detail_notes_tab.dart';
 import '../widgets/customer_detail_profile_tab.dart';
@@ -193,7 +192,7 @@ class _AdminCustomerDetailViewState extends State<AdminCustomerDetailView> {
                   ? AppEmptyState(title: l10n.admin2_customerDetailNotFound)
                   : DefaultTabController(
                       key: ValueKey('customer-tabs-$_canReviewKyc'),
-                      length: _canReviewKyc ? 4 : 3,
+                      length: _canReviewKyc ? 3 : 2,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -211,7 +210,6 @@ class _AdminCustomerDetailViewState extends State<AdminCustomerDetailView> {
                             tabs: [
                               Tab(text: l10n.admin2_customerDetailTabProfile),
                               if (_canReviewKyc) Tab(text: l10n.adminKycReviewTitle),
-                              Tab(text: l10n.admin2_customerDetailTabBookings),
                               Tab(text: l10n.admin2_customerDetailTabNotes),
                             ],
                           ),
@@ -226,7 +224,6 @@ class _AdminCustomerDetailViewState extends State<AdminCustomerDetailView> {
                                     qrCode: _qrCode,
                                     onDecided: _load,
                                   ),
-                                CustomerDetailBookingsTab(detail: detail, padding: padding),
                                 CustomerDetailNotesTab(
                                   detail: detail,
                                   padding: padding,

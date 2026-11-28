@@ -32,6 +32,7 @@ class HandoverWizardState extends Equatable {
   // O27 — money.
   final String? balanceMethod;
   final bool balanceReceived;
+  final int? securityDepositOverride;
   final String? depositMethod;
   final bool depositReceived;
   final DateTime? depositReceivedAt;
@@ -64,6 +65,7 @@ class HandoverWizardState extends Equatable {
   final HandoverEntity? completed;
   final Uint8List? completedPdfBytes;
   final String? error;
+  final int errorTick;
 
   const HandoverWizardState({
     required this.step,
@@ -72,6 +74,7 @@ class HandoverWizardState extends Equatable {
     this.faceCheckedAt,
     this.balanceMethod,
     this.balanceReceived = false,
+    this.securityDepositOverride,
     this.depositMethod,
     this.depositReceived = false,
     this.depositReceivedAt,
@@ -104,6 +107,7 @@ class HandoverWizardState extends Equatable {
     this.completed,
     this.completedPdfBytes,
     this.error,
+    this.errorTick = 0,
   });
 
   static String receiptIdFor(String bookingId) => 'RH-RCT-$bookingId';
@@ -114,6 +118,7 @@ class HandoverWizardState extends Equatable {
     DateTime? faceCheckedAt,
     String? balanceMethod,
     bool? balanceReceived,
+    int? securityDepositOverride,
     String? depositMethod,
     bool? depositReceived,
     DateTime? depositReceivedAt,
@@ -138,6 +143,7 @@ class HandoverWizardState extends Equatable {
     HandoverEntity? completed,
     Uint8List? completedPdfBytes,
     String? error,
+    int? errorTick,
     bool clearError = false,
     bool clearDepositReceivedAt = false,
   }) {
@@ -148,6 +154,8 @@ class HandoverWizardState extends Equatable {
       faceCheckedAt: faceCheckedAt ?? this.faceCheckedAt,
       balanceMethod: balanceMethod ?? this.balanceMethod,
       balanceReceived: balanceReceived ?? this.balanceReceived,
+      securityDepositOverride:
+          securityDepositOverride ?? this.securityDepositOverride,
       depositMethod: depositMethod ?? this.depositMethod,
       depositReceived: depositReceived ?? this.depositReceived,
       depositReceivedAt: clearDepositReceivedAt
@@ -179,26 +187,36 @@ class HandoverWizardState extends Equatable {
       completed: completed ?? this.completed,
       completedPdfBytes: completedPdfBytes ?? this.completedPdfBytes,
       error: clearError ? null : (error ?? this.error),
+      errorTick: errorTick ?? this.errorTick,
     );
   }
 
+  /// Effective security deposit: owner's edited value if set, else the
+  /// vehicle's default deposit.
+  int effectiveDeposit(int vehicleDeposit) =>
+      (securityDepositOverride ?? vehicleDeposit).clamp(0, 1 << 30);
+
   /// The step gate: null when the step may be left, otherwise the
-  /// error code the view turns into a message. `balanceDue` and
-  /// `securityDeposit` come from the booking / vehicle, so the
-  /// caller passes them in.
+  /// error code the view turns into a message.
   String? stepError(
     int step, {
     int balanceDue = 0,
     int securityDeposit = 0,
   }) {
+    final deposit = effectiveDeposit(securityDeposit);
     switch (step) {
       case 0:
         return faceCheckConfirmed ? null : 'face';
       case 1:
         if (balanceDue > 0 && balanceMethod == null) return 'payment';
-        if (securityDeposit > 0 && depositMethod == null) {
-          return 'deposit';
+        if (balanceDue > 0 &&
+            balanceMethod != null &&
+            balanceMethod != 'not_yet' &&
+            !balanceReceived) {
+          return 'payment_confirm';
         }
+        if (deposit > 0 && depositMethod == null) return 'deposit';
+        if (deposit > 0 && !depositReceived) return 'deposit_confirm';
         return null;
       case 2:
         return odometer > 0 && fuelLevel.isNotEmpty ? null : 'checklist';
@@ -217,6 +235,7 @@ class HandoverWizardState extends Equatable {
         faceCheckedAt,
         balanceMethod,
         balanceReceived,
+        securityDepositOverride,
         depositMethod,
         depositReceived,
         depositReceivedAt,
@@ -242,6 +261,7 @@ class HandoverWizardState extends Equatable {
         completed,
         completedPdfBytes,
         error,
+        errorTick,
       ];
 }
 
@@ -285,11 +305,16 @@ class HandoverWizardCubit extends Cubit<HandoverWizardState> {
     final error = state.stepError(state.step,
         balanceDue: balanceDue, securityDeposit: securityDeposit);
     if (error != null) {
-      emit(state.copyWith(error: error));
+      emit(state.copyWith(error: error, errorTick: state.errorTick + 1));
       return;
     }
     goToStep(state.step + 1);
   }
+
+  void setSecurityDeposit(int amount) => emit(state.copyWith(
+        securityDepositOverride: amount.clamp(0, 1 << 30),
+        clearError: true,
+      ));
 
   void previousStep() => goToStep(state.step - 1);
 

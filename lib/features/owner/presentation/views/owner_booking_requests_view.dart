@@ -47,26 +47,21 @@ class _OwnerBookingRequestsViewState extends State<OwnerBookingRequestsView> {
   // E2: a load failure used to fall through silently to an empty list; it now renders an error state with retry.
   bool _hasError = false;
   String? _processingId;
-  // FG-4 (UI/UX audit 2026-11-15): proofs first — the most urgent
-  // bucket (payment proofs awaiting verification) is the default,
-  // not new requests.
-  String _filter = 'payment_submitted';
+  String _filter = 'all';
+  String _originTab = 'walk_in';
+  bool _userPickedTab = false;
 
-  /// The status values the filter bar understands, plus 'all'.
-  /// Anything else (e.g. a bad `?filter=` value) falls back to the
-  /// Proof default instead of showing an empty list.
-  static const _knownFilters = {
-    'all',
-    'requested',
-    'approved',
-    'payment_submitted',
-    'paid',
-    'active',
-    'disputed',
-    'completed',
-    'rejected',
-    'cancelled',
-  };
+  static String _normalizeFilter(String raw) {
+    if (const {'requested', 'payment_submitted', 'approved'}.contains(raw)) {
+      return 'pending';
+    }
+    if (const {'cancelled', 'rejected'}.contains(raw)) return 'cancelled';
+    if (const {'all', 'pending', 'paid', 'active', 'completed', 'cancelled'}
+        .contains(raw)) {
+      return raw;
+    }
+    return 'all';
+  }
   // FG-4: the requests' request times, for oldest-first order and the oldest-wait line (see booking_request_time.dart).
   Map<String, DateTime?> _requestTimes = {};
   final _searchController = TextEditingController();
@@ -94,8 +89,10 @@ class _OwnerBookingRequestsViewState extends State<OwnerBookingRequestsView> {
   @override
   void initState() {
     super.initState();
-    if (_knownFilters.contains(widget.initialFilter)) {
-      _filter = widget.initialFilter;
+    _filter = _normalizeFilter(widget.initialFilter);
+    if (widget.initialFilter == 'payment_submitted' ||
+        widget.initialFilter == 'requested') {
+      _originTab = 'online';
     }
     _loadRequests();
     _loadWaBanner();
@@ -104,11 +101,7 @@ class _OwnerBookingRequestsViewState extends State<OwnerBookingRequestsView> {
   @override
   void didUpdateWidget(covariant OwnerBookingRequestsView oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // Sync unconditionally: go_router page keys are path-only — change
-    // detection would miss consecutive saves landing on `?filter=all`.
-    if (_knownFilters.contains(widget.initialFilter)) {
-      setState(() => _filter = widget.initialFilter);
-    }
+    setState(() => _filter = _normalizeFilter(widget.initialFilter));
   }
 
   Future<void> _loadWaBanner() async {
@@ -129,7 +122,19 @@ class _OwnerBookingRequestsViewState extends State<OwnerBookingRequestsView> {
     _bookingsSub = subscribeLiveBookings(
         (ds) => ds.streamShopBookings(widget.shopId), (bookings) {
       if (!mounted) return;
-      setState(() { _requests = bookings.toList(); _isLoading = false; });
+      setState(() {
+        _requests = bookings.toList();
+        if (!_userPickedTab) {
+          final hasWalkIn = _requests.any((b) => b.origin == 'walk_in');
+          final hasOnline = _requests.any((b) => b.origin != 'walk_in');
+          if (_originTab == 'walk_in' && !hasWalkIn && hasOnline) {
+            _originTab = 'online';
+          } else if (_originTab == 'online' && !hasOnline && hasWalkIn) {
+            _originTab = 'walk_in';
+          }
+        }
+        _isLoading = false;
+      });
       _refreshRequestTimes(bookings);
     }, onError: () {
       if (mounted) {
@@ -216,6 +221,11 @@ class _OwnerBookingRequestsViewState extends State<OwnerBookingRequestsView> {
         requests: _requests,
         requestTimes: _requestTimes,
         filter: _filter,
+        originTab: _originTab,
+        onOriginTabChanged: (t) => setState(() {
+          _originTab = t;
+          _userPickedTab = true;
+        }),
         searchQuery: _searchQuery,
         searchController: _searchController,
         onSearchChanged: (q) => setState(() => _searchQuery = q),

@@ -81,10 +81,8 @@ void main() {
       await tester.pumpWidget(
           appFor(const OwnerBookingRequestsView(shopId: 'shop-1')));
       await tester.pumpAndSettle();
-      expect(find.text('Paid Palwasha'), findsNothing);
+      expect(find.text('Paid Palwasha'), findsOneWidget);
 
-      // The owner verifies the payment while looking at the list:
-      // the booking must move to Paid, not vanish.
       await ds.verifyPayment(bookingId: id, advanceAmount: 3000);
       await tester.pumpAndSettle();
 
@@ -121,7 +119,7 @@ void main() {
       expect(find.text('Cancelled Celine'), findsOneWidget);
     });
 
-    testWidgets('a disputed booking stays visible under Disputed',
+    testWidgets('a disputed booking stays visible under All',
         (tester) async {
       final ds = di.sl<BookingRemoteDataSource>();
       final id = await createBooking(ds, 'Disputed Daniyal');
@@ -130,8 +128,8 @@ void main() {
           appFor(const OwnerBookingRequestsView(shopId: 'shop-1')));
       await tester.pumpAndSettle();
 
-      await tapChip(tester, 'Disputed');
-      expect(find.text('Disputed Daniyal'), findsOneWidget);
+      await tapChip(tester, 'All');
+      await expectNameVisible(tester, 'Disputed Daniyal');
     });
 
     testWidgets('a new requested booking lands in the open list '
@@ -144,12 +142,12 @@ void main() {
       await createBooking(ds, 'Fresh Farah');
       await tester.pumpAndSettle();
 
-      await tapChip(tester, 'New');
-      expect(find.text('Fresh Farah'), findsOneWidget);
+      await tapChip(tester, 'Pending');
+      await expectNameVisible(tester, 'Fresh Farah');
     });
   });
 
-  group('item 4 — one fleet-style filter bar, all statuses', () {
+  group('item 4 — minimized filter bar + 2 origin tabs', () {
     testWidgets('All shows bookings of every status; each status '
         'chip filters to just its own', (tester) async {
       final ds = di.sl<BookingRemoteDataSource>();
@@ -167,17 +165,12 @@ void main() {
           appFor(const OwnerBookingRequestsView(shopId: 'shop-1')));
       await tester.pumpAndSettle();
 
-      // Every status chip renders (fleet-style bar, scrollable).
       for (final label in [
         'All',
-        'New',
-        'Proof',
-        'Approved',
+        'Pending',
         'Paid',
         'Active',
-        'Disputed',
         'Completed',
-        'Rejected',
         'Cancelled',
       ]) {
         expect(find.textContaining('$label ('), findsOneWidget,
@@ -191,13 +184,13 @@ void main() {
       await expectNameVisible(tester, 'All New Nadia');
 
       await tapChip(tester, 'Paid');
-      expect(find.text('All Paid Aamir'), findsOneWidget);
+      await expectNameVisible(tester, 'All Paid Aamir');
       expect(find.text('All Cancelled Bilal'), findsNothing);
       expect(find.text('All Disputed Sana'), findsNothing);
       expect(find.text('All New Nadia'), findsNothing);
 
       await tapChip(tester, 'Cancelled');
-      expect(find.text('All Cancelled Bilal'), findsOneWidget);
+      await expectNameVisible(tester, 'All Cancelled Bilal');
       expect(find.text('All Paid Aamir'), findsNothing);
     });
 
@@ -209,10 +202,7 @@ void main() {
           appFor(const OwnerBookingRequestsView(shopId: 'shop-1')));
       await tester.pumpAndSettle();
 
-      // FleetFilterChips sets 14sp on the label Text itself so the
-      // bar scrolls instead of shrinking; the bookings bar must do
-      // the same.
-      final chipText = tester.widget<Text>(find.textContaining('New ('));
+      final chipText = tester.widget<Text>(find.textContaining('Pending ('));
       expect(chipText.style?.fontSize, 14);
     });
   });

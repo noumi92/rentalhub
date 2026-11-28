@@ -135,9 +135,6 @@ class CustomerListCardHeader extends StatelessWidget {
                         ?.copyWith(fontWeight: FontWeight.w500),
                   ),
                 ),
-                Icon(expanded
-                    ? Icons.expand_less_rounded
-                    : Icons.expand_more_rounded),
               ],
             ),
           ],

@@ -118,13 +118,13 @@ class ShopDetailOverviewTab extends StatelessWidget {
     required this.shop,
     required this.padding,
     required this.onViewCars,
-    required this.onViewBookings,
+    this.onViewBookings,
   });
 
   final ShopModel shop;
   final EdgeInsetsGeometry padding;
   final VoidCallback onViewCars;
-  final VoidCallback onViewBookings;
+  final VoidCallback? onViewBookings;
 
   @override
   Widget build(BuildContext context) {
@@ -143,11 +143,12 @@ class ShopDetailOverviewTab extends StatelessWidget {
                 onPressed: onViewCars,
                 child: Text(l10n.admin2_shopDetailViewCars),
               ),
-              FilledButton(
-                key: const Key('admin2_shopDetailViewBookings'),
-                onPressed: onViewBookings,
-                child: Text(l10n.admin2_shopDetailViewBookings),
-              ),
+              if (onViewBookings != null)
+                FilledButton(
+                  key: const Key('admin2_shopDetailViewBookings'),
+                  onPressed: onViewBookings,
+                  child: Text(l10n.admin2_shopDetailViewBookings),
+                ),
             ],
           ),
           const SizedBox(height: 20),

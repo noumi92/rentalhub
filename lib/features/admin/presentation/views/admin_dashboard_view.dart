@@ -12,13 +12,14 @@ import '../../domain/admin_permissions.dart';
 import '../widgets/admin_dashboard_kpi_sections.dart';
 import '../widgets/admin_section_tabs.dart';
 import '../widgets/admin_shell.dart';
+import '../widgets/admin_status_chip.dart';
 
-/// Executive Admin Dashboard: live KPIs grouped into Shops & Fleet,
-/// Online vs. Walk-in Customers (walk-in KPI-only), and Bookings & Support.
+/// Mobile-first Executive Admin Dashboard:
+/// 1. Needs Attention (actionable queues at a glance)
+/// 2. Platform Metrics (clean read-only KPI tiles — Shops, Customers, Bookings)
 class AdminDashboardView extends StatefulWidget {
   const AdminDashboardView({super.key, this.showKycCard});
 
-  /// Test seam: forces the KYC queue card visible/hidden when non-null.
   final bool? showKycCard;
 
   @override
@@ -61,6 +62,7 @@ class _AdminDashboardViewState extends State<AdminDashboardView> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final compact = windowSizeClassOf(context) == WindowSizeClass.compact;
     final stats = _stats ??
         const PlatformStats(
           shopCount: 0,
@@ -69,8 +71,6 @@ class _AdminDashboardViewState extends State<AdminDashboardView> {
           openTicketCount: 0,
           pendingShopCount: 0,
         );
-    final pendingPackages =
-        stats.pendingSubscriptionCount + stats.pendingCreditRequestCount;
 
     return AdminShell(
       activeRoute: RouteNames.adminDashboard,
@@ -91,77 +91,27 @@ class _AdminDashboardViewState extends State<AdminDashboardView> {
                   onRetry: _load,
                 )
               : SingleChildScrollView(
-                  padding: EdgeInsets.all(
-                    windowSizeClassOf(context) == WindowSizeClass.compact
-                        ? 16
-                        : 24,
-                  ),
+                  padding: EdgeInsets.all(compact ? 14 : 24),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Text(
+                        (l10n?.adminDashboardActionRequired ??
+                                'Needs Attention')
+                            .toUpperCase(),
+                        style: TextStyle(
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.6,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      _actionList(context, l10n, stats),
+                      const SizedBox(height: 22),
                       AdminDashboardKpiSections(
                         stats: stats,
                         canReviewKyc: _canReviewKyc,
-                      ),
-                      const SizedBox(height: 24),
-                      _infoCard(
-                        l10n?.adminAuditPendingApprovals ??
-                            'Shops waiting for approval',
-                        '${stats.pendingShopCount} pending',
-                        Icons.store_rounded,
-                        l10n?.adminAuditPendingApprovalsHint ??
-                            'Open the approvals queue to decide them.',
-                        onTap: () =>
-                            context.go('${RouteNames.adminShops}?filter=pending'),
-                      ),
-                      if (_canReviewKyc) ...[
-                        const SizedBox(height: 12),
-                        _infoCard(
-                          l10n?.admin2_dashboardKycTitle ??
-                              'KYC submissions waiting for review',
-                          l10n?.admin2_dashboardOpenCount(
-                                  stats.pendingKycCount) ??
-                              '${stats.pendingKycCount} open',
-                          Icons.badge_rounded,
-                          l10n?.admin2_dashboardKycHint ??
-                              'Open the KYC review queue to decide them.',
-                          onTap: () => context.go(RouteNames.adminKycReview),
-                        ),
-                      ],
-                      const SizedBox(height: 12),
-                      _infoCard(
-                        l10n?.adminKpiPendingPackageRequests ??
-                            'Package Requests',
-                        '$pendingPackages pending',
-                        Icons.card_membership_rounded,
-                        l10n?.adminPackagesSubtitle ??
-                            'Manage showroom plans, upgrade requests, and WhatsApp credit packs',
-                        onTap: () => context
-                            .go('${RouteNames.adminSubscriptions}?tab=requests'),
-                      ),
-                      const SizedBox(height: 12),
-                      _infoCard(
-                        l10n?.admin2_dashboardDisputesTitle ??
-                            'Open disputes need a decision',
-                        l10n?.admin2_dashboardOpenCount(
-                                stats.openDisputeCount) ??
-                            '${stats.openDisputeCount} open',
-                        Icons.report_problem_outlined,
-                        l10n?.admin2_dashboardDisputesHint ??
-                            'Open the disputes centre to decide them.',
-                        onTap: () => context.go(RouteNames.adminDisputes),
-                      ),
-                      const SizedBox(height: 12),
-                      _infoCard(
-                        l10n?.admin2_dashboardTicketsTitle ??
-                            'Support tickets waiting',
-                        l10n?.admin2_dashboardOpenCount(
-                                stats.openTicketCount) ??
-                            '${stats.openTicketCount} open',
-                        Icons.support_agent_rounded,
-                        l10n?.admin2_dashboardTicketsHint ??
-                            'Open the tickets inbox to reply.',
-                        onTap: () => context.go(RouteNames.adminTickets),
                       ),
                     ],
                   ),
@@ -169,13 +119,45 @@ class _AdminDashboardViewState extends State<AdminDashboardView> {
     );
   }
 
-  Widget _infoCard(
-    String title,
-    String value,
-    IconData icon,
-    String note, {
-    VoidCallback? onTap,
-  }) {
+  Widget _actionList(
+    BuildContext context,
+    AppLocalizations? l10n,
+    PlatformStats stats,
+  ) {
+    final rows = <Widget>[
+      _queueRow(
+        context,
+        title: l10n?.adminAuditPendingApprovals ?? 'Shops waiting for approval',
+        count: stats.pendingShopCount,
+        icon: Icons.store_rounded,
+        onTap: () => context.go('${RouteNames.adminShops}?filter=pending'),
+      ),
+      if (_canReviewKyc)
+        _queueRow(
+          context,
+          title: l10n?.admin2_dashboardKycTitle ??
+              'KYC submissions waiting for review',
+          count: stats.pendingKycCount,
+          icon: Icons.badge_rounded,
+          onTap: () => context.go(RouteNames.adminKycReview),
+        ),
+      _queueRow(
+        context,
+        title: l10n?.admin2_dashboardDisputesTitle ??
+            'Open disputes need a decision',
+        count: stats.openDisputeCount,
+        icon: Icons.gavel_rounded,
+        onTap: () => context.go(RouteNames.adminDisputes),
+      ),
+      _queueRow(
+        context,
+        title: l10n?.admin2_dashboardTicketsTitle ?? 'Support tickets waiting',
+        count: stats.openTicketCount,
+        icon: Icons.support_agent_rounded,
+        onTap: () => context.go(RouteNames.adminTickets),
+      ),
+    ];
+
     return Card(
       margin: EdgeInsets.zero,
       elevation: 0,
@@ -183,18 +165,45 @@ class _AdminDashboardViewState extends State<AdminDashboardView> {
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(color: Theme.of(context).dividerColor),
       ),
-      child: ListTile(
-        onTap: onTap,
-        leading: Icon(icon),
-        title: Text(title, style: const TextStyle(fontSize: 14)),
-        subtitle: Text(
-          '$value • $note',
-          style: TextStyle(
-            fontSize: 12,
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
+      child: Column(
+        children: [
+          for (var i = 0; i < rows.length; i++) ...[
+            if (i > 0) const Divider(height: 1),
+            rows[i],
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _queueRow(
+    BuildContext context, {
+    required String title,
+    required int count,
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    return ListTile(
+      onTap: onTap,
+      dense: true,
+      visualDensity: VisualDensity.comfortable,
+      leading: Icon(icon, size: 20),
+      title: Text(
+        title,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w500),
+      ),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          AdminStatusChip(
+            label: '$count',
+            tone: count > 0 ? AdminStatusTone.warning : AdminStatusTone.neutral,
           ),
-        ),
-        trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 16),
+          const SizedBox(width: 6),
+          const Icon(Icons.chevron_right_rounded, size: 18),
+        ],
       ),
     );
   }

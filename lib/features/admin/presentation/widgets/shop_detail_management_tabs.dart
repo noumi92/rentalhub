@@ -1,24 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../../../core/di/injection_container.dart';
-import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/money_format.dart';
-import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/app_state_views.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../l10n/app_localizations_en.dart';
 import '../../../bookings/data/models/booking_model.dart';
 import '../../../discovery/data/models/shop_model.dart';
 import '../../../fleet/domain/entities/vehicle_entity.dart';
-import '../../data/datasources/admin_packages_data_source.dart';
 import '../../data/datasources/admin_platform_data_source.dart';
 import '../../data/datasources/admin_shops_data_source.dart';
-import '../../domain/admin_permissions.dart';
-import 'admin_booking_list_tile.dart';
+import 'admin_kpi_card.dart';
 import 'admin_list_card.dart';
-import 'admin_packages_dialogs.dart';
-import 'admin_permission_check.dart';
 import 'admin_status_chip.dart';
 import 'car_review_detail_sheet.dart';
 
@@ -104,7 +97,8 @@ class _ShopDetailCarsTabState extends State<ShopDetailCarsTab> {
   }
 }
 
-/// Inline Bookings tab inside [AdminShopDetailView].
+/// Read-only Booking KPIs & historical status counts (numbers only —
+/// no individual booking details) inside [AdminShopDetailView].
 class ShopDetailBookingsTab extends StatefulWidget {
   const ShopDetailBookingsTab({
     super.key,
@@ -142,36 +136,95 @@ class _ShopDetailBookingsTabState extends State<ShopDetailBookingsTab> {
     }
   }
 
+  int _count(Set<String> statuses) =>
+      _bookings.where((b) => statuses.contains(b.status)).length;
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context) ?? AppLocalizationsEn();
     if (_loading) return const AppLoadingState();
-    if (_bookings.isEmpty) {
-      return AppEmptyState(
-        title: l10n.admin2_bookingsEmptyTitle,
-        icon: Icons.receipt_long_rounded,
-      );
-    }
-    return ListView.separated(
+    final total = _bookings.length;
+    final onlineCount = _bookings.where((b) => b.origin != 'walk_in').length;
+    final walkInCount = total - onlineCount;
+    final pendingCount = _count({'requested', 'approved', 'payment_submitted'});
+    final activeCount = _count({'paid', 'active'});
+    final completedCount = _count({'completed'});
+    final cancelledCount = _count({'cancelled', 'rejected'});
+    final disputedCount = _count({'disputed'});
+    final success = adminStatusColor(context, AdminStatusTone.success);
+    final warning = adminStatusColor(context, AdminStatusTone.warning);
+    final info = adminStatusColor(context, AdminStatusTone.info);
+    final neutral = Theme.of(context).colorScheme.onSurfaceVariant;
+
+    final cards = [
+      AdminKpiCard(
+        title: l10n.admin2_navBookings,
+        value: '$total',
+        changeLabel: '$onlineCount Online • $walkInCount Walk-in',
+        icon: Icons.analytics_outlined,
+        accentColor: info,
+      ),
+      AdminKpiCard(
+        title: l10n.bookingsFilterPending,
+        value: '$pendingCount',
+        changeLabel: l10n.adminKpiPending,
+        icon: Icons.schedule_rounded,
+        accentColor: warning,
+      ),
+      AdminKpiCard(
+        title: l10n.active,
+        value: '$activeCount',
+        changeLabel: '${l10n.statusPaid} & ${l10n.active}',
+        icon: Icons.directions_car_rounded,
+        accentColor: success,
+      ),
+      AdminKpiCard(
+        title: l10n.statusCompleted,
+        value: '$completedCount',
+        changeLabel: l10n.statusCompleted,
+        icon: Icons.check_circle_outline_rounded,
+        accentColor: success,
+      ),
+      AdminKpiCard(
+        title: l10n.statusCancelled,
+        value: '$cancelledCount',
+        changeLabel: '${l10n.statusCancelled} / ${l10n.statusRejected}',
+        icon: Icons.cancel_outlined,
+        accentColor: neutral,
+      ),
+      AdminKpiCard(
+        title: l10n.statusDisputed,
+        value: '$disputedCount',
+        changeLabel: l10n.admin2_navDisputes,
+        icon: Icons.gavel_rounded,
+        accentColor: disputedCount > 0 ? warning : neutral,
+      ),
+    ];
+
+    return SingleChildScrollView(
       padding: widget.padding,
-      itemCount: _bookings.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 10),
-      itemBuilder: (context, i) {
-        final b = _bookings[i];
-        return AdminBookingListTile(
-          booking: b,
-          compact: true,
-          onTap: () => context.go(
-            RouteNames.adminBookingDetail
-                .replaceFirst(':bookingId', b.bookingId),
-          ),
-        );
-      },
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final cols = constraints.maxWidth < 340
+              ? 1
+              : constraints.maxWidth < 720
+                  ? 2
+                  : 3;
+          const gap = 12.0;
+          final w = (constraints.maxWidth - (cols - 1) * gap) / cols;
+          return Wrap(
+            spacing: gap,
+            runSpacing: gap,
+            children: cards.map((c) => SizedBox(width: w, child: c)).toList(),
+          );
+        },
+      ),
     );
   }
 }
 
-/// Inline Packages & WhatsApp Credits management tab inside [AdminShopDetailView].
+/// Inline Packages & WhatsApp Credits tab inside [AdminShopDetailView].
+/// During initial launch, Change Plan and Grant Credits show Coming Soon.
 class ShopDetailPackagesTab extends StatelessWidget {
   const ShopDetailPackagesTab({
     super.key,
@@ -186,72 +239,41 @@ class ShopDetailPackagesTab extends StatelessWidget {
   final EdgeInsetsGeometry padding;
   final VoidCallback onUpdated;
 
-  AdminShopPlanRow get _planRow => AdminShopPlanRow(
-        shopId: shop.shopId,
-        shopName: shop.shopName,
-        city: shop.city,
-        tier: shop.plan,
-        isVerified: shop.verificationStatus == 'approved' ||
-            shop.verificationStatus == 'verified',
-        whatsappBalance: creditsBalance ?? 0,
-      );
-
-  Future<void> _changePlan(BuildContext context) async {
-    final check = await AdminPermissionCheck.check(
-        context, AdminPermission.manageSubscriptions);
-    if (!check.proceed || !context.mounted) return;
-    final result = await showAdminChangePlanDialog(context, shop: _planRow);
-    if (result == null || !context.mounted) return;
-    final ok = await sl<AdminPackagesDataSource>().setShopPlan(
-      shopId: shop.shopId,
-      tier: result.tier,
-      reason: result.reason,
-      adminRole: check.role,
-    );
-    if (!context.mounted) return;
-    final l10n = AppLocalizations.of(context);
-    if (ok) {
-      AppFeedback.showSuccess(
-          context, l10n?.adminPackagesPlanUpdated ?? 'Shop plan updated.');
-      onUpdated();
-    } else {
-      AppFeedback.showError(
-          context, l10n?.adminPackagesActionFailed ?? 'Could not save change.');
-    }
-  }
-
-  Future<void> _grantCredits(BuildContext context) async {
-    final check = await AdminPermissionCheck.check(
-        context, AdminPermission.manageSubscriptions);
-    if (!check.proceed || !context.mounted) return;
-    final result = await showAdminGrantCreditsDialog(context, shop: _planRow);
-    if (result == null || !context.mounted) return;
-    final ok = await sl<AdminPackagesDataSource>().adjustShopCredits(
-      shopId: shop.shopId,
-      deltaCredits: result.delta,
-      reason: result.reason,
-      adminRole: check.role,
-    );
-    if (!context.mounted) return;
-    final l10n = AppLocalizations.of(context);
-    if (ok) {
-      AppFeedback.showSuccess(context,
-          l10n?.adminPackagesCreditsUpdated ?? 'WhatsApp credits updated.');
-      onUpdated();
-    } else {
-      AppFeedback.showError(
-          context, l10n?.adminPackagesActionFailed ?? 'Could not save change.');
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context) ?? AppLocalizationsEn();
+    final scheme = Theme.of(context).colorScheme;
+
     return SingleChildScrollView(
       padding: padding,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: scheme.surfaceContainerLow,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.schedule_rounded,
+                    size: 18, color: scheme.onSurfaceVariant),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    l10n.adminPackagesControlsComingSoon,
+                    style: TextStyle(
+                      fontSize: 12.5,
+                      color: scheme.onSurfaceVariant,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
           Card(
             margin: EdgeInsets.zero,
             elevation: 0,
@@ -263,9 +285,9 @@ class ShopDetailPackagesTab extends StatelessWidget {
               leading: const Icon(Icons.card_membership_rounded),
               title: Text(l10n.admin2_shopDetailPlan),
               subtitle: Text(shop.plan.toUpperCase()),
-              trailing: FilledButton(
-                onPressed: () => _changePlan(context),
-                child: Text(l10n.adminPackagesChangePlan),
+              trailing: AdminStatusChip(
+                label: l10n.packagesComingSoonBadge,
+                tone: AdminStatusTone.neutral,
               ),
             ),
           ),
@@ -285,9 +307,9 @@ class ShopDetailPackagesTab extends StatelessWidget {
                     ? l10n.adminAuditCreditsNone
                     : '$creditsBalance',
               ),
-              trailing: OutlinedButton(
-                onPressed: () => _grantCredits(context),
-                child: Text(l10n.adminPackagesGrantCredits),
+              trailing: AdminStatusChip(
+                label: l10n.packagesComingSoonBadge,
+                tone: AdminStatusTone.neutral,
               ),
             ),
           ),

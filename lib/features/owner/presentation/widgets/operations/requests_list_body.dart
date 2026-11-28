@@ -3,15 +3,12 @@ import 'package:flutter/material.dart';
 import '../../../../../core/widgets/app_state_views.dart';
 import '../../../../bookings/domain/entities/booking_entity.dart';
 import '../../views/owner_whatsapp_zero_balance_sheet.dart';
-import 'request_triage_card.dart';
+import 'owner_booking_list_tile.dart';
 import 'requests_filter_bar.dart';
 
-/// Audit impl (O14 + W6): the requests tab body, extracted from
-/// [OwnerBookingRequestsView] so the view stays under the 250-line
-/// cap — loading / error / empty states, the WhatsApp zero-balance
-/// banner, the search + triage filter bar, and the request cards.
-/// Pure display + callbacks; the owning view holds the lists and
-/// performs the approve / reject writes.
+/// Simplified bookings list body: 2 tabs (Walk-in / Online), minimal
+/// status filter chips, and compact scannable rows — tapping any row
+/// opens the Booking Details page where all full details & buttons live.
 class RequestsListBody extends StatelessWidget {
   final bool isLoading;
   final bool hasError;
@@ -22,6 +19,10 @@ class RequestsListBody extends StatelessWidget {
   final List<BookingEntity> requests;
   final List<BookingEntity> filtered;
   final String filter;
+  final String originTab;
+  final int walkInCount;
+  final int onlineCount;
+  final ValueChanged<String>? onOriginTabChanged;
   final TextEditingController searchController;
   final ValueChanged<String> onSearchChanged;
   final ValueChanged<String> onFilterChanged;
@@ -32,9 +33,6 @@ class RequestsListBody extends StatelessWidget {
   final ValueChanged<BookingEntity> onApprove;
   final ValueChanged<BookingEntity> onReject;
   final ValueChanged<BookingEntity> onOpenDetail;
-
-  /// Worker B: owner cancel for walk-in `approved` / `paid`
-  /// bookings. Null hides the cancel button on every card.
   final ValueChanged<BookingEntity>? onCancel;
   final ValueChanged<BookingEntity>? onRecordPayment;
 
@@ -49,6 +47,10 @@ class RequestsListBody extends StatelessWidget {
     required this.requests,
     required this.filtered,
     required this.filter,
+    this.originTab = 'walk_in',
+    this.walkInCount = 0,
+    this.onlineCount = 0,
+    this.onOriginTabChanged,
     required this.searchController,
     required this.onSearchChanged,
     required this.onFilterChanged,
@@ -63,18 +65,31 @@ class RequestsListBody extends StatelessWidget {
     this.onRecordPayment,
   });
 
+  static bool matchesStatusBucket(BookingEntity b, String filter) {
+    return switch (filter) {
+      'all' => true,
+      'pending' => const {'requested', 'payment_submitted', 'approved'}
+          .contains(b.status),
+      'cancelled' => const {'cancelled', 'rejected'}.contains(b.status),
+      _ => b.status == filter,
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
-    // E2: shared loading / error / empty states.
     if (isLoading) return AppLoadingState(message: loadingMessage);
     if (hasError) {
       return AppErrorState(message: errorMessage, onRetry: onRetry);
     }
+    final scoped = requests
+        .where((b) =>
+            originTab == 'walk_in'
+                ? b.origin == 'walk_in'
+                : b.origin != 'walk_in')
+        .toList();
+
     return Column(
       children: [
-        // Audit impl (worker E, W6): amber banner above the triage
-        // list, only when the real balance is 0 and messages were
-        // skipped.
         if (waBalance != null &&
             WhatsappZeroBalanceBanner.shouldShow(
               balance: waBalance!,
@@ -88,23 +103,20 @@ class RequestsListBody extends StatelessWidget {
           searchController: searchController,
           onSearchChanged: onSearchChanged,
           filter: filter,
-          // Item 4: counts for every chip, including the new All /
-          // Paid / Disputed / Cancelled ones — 'all' is the whole
-          // list, the rest are exact status counts.
+          originTab: originTab,
+          walkInCount: walkInCount,
+          onlineCount: onlineCount,
+          onOriginTabChanged: onOriginTabChanged,
           counts: {
-            'all': requests.length,
-            for (final s in [
-              'requested',
-              'payment_submitted',
-              'approved',
-              'paid',
-              'active',
-              'disputed',
-              'completed',
-              'rejected',
-              'cancelled'
-            ])
-              s: requests.where((b) => b.status == s).length,
+            'all': scoped.length,
+            'pending':
+                scoped.where((b) => matchesStatusBucket(b, 'pending')).length,
+            'paid': scoped.where((b) => b.status == 'paid').length,
+            'active': scoped.where((b) => b.status == 'active').length,
+            'completed': scoped.where((b) => b.status == 'completed').length,
+            'cancelled': scoped
+                .where((b) => matchesStatusBucket(b, 'cancelled'))
+                .length,
           },
           onFilterChanged: onFilterChanged,
         ),
@@ -126,27 +138,15 @@ class RequestsListBody extends StatelessWidget {
                 )
               : ListView.separated(
                   physics: const AlwaysScrollableScrollPhysics(),
-                  padding: const EdgeInsets.fromLTRB(16, 14, 16, 88),
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 88),
                   itemCount: filtered.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 12),
+                  separatorBuilder: (_, __) => const SizedBox(height: 10),
                   itemBuilder: (context, index) {
                     final b = filtered[index];
-                    return InkWell(
+                    return OwnerBookingListTile(
                       key: ValueKey(b.bookingId),
-                      borderRadius: BorderRadius.circular(12),
+                      booking: b,
                       onTap: () => onOpenDetail(b),
-                      child: RequestTriageCard(
-                        booking: b,
-                        isProcessing: processingId == b.bookingId,
-                        onApprove: () => onApprove(b),
-                        onReject: () => onReject(b),
-                        onVerifyProof: () => onOpenDetail(b),
-                        onRecordPayment: onRecordPayment == null
-                            ? null
-                            : () => onRecordPayment!(b),
-                        onCancel:
-                            onCancel == null ? null : () => onCancel!(b),
-                      ),
                     );
                   },
                 ),

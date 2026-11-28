@@ -62,6 +62,7 @@ import '../../features/owner/presentation/views/owner_customer_rating_view.dart'
 import '../../features/owner/presentation/views/owner_blacklist_view.dart';
 import '../../features/owner/presentation/views/owner_customer_scan_view.dart';
 import '../../features/owner/presentation/views/owner_customers_list_view.dart';
+import '../../features/owner/presentation/views/owner_booking_detail_view.dart';
 import '../../features/owner/presentation/views/owner_payment_verification_view.dart';
 import '../../features/owner/presentation/views/owner_dashboard_view.dart';
 import '../../features/owner/presentation/views/owner_fixed_routes_view.dart';
@@ -103,7 +104,6 @@ import '../../features/owner/presentation/views/owner_price_estimate_view.dart';
 import '../../features/owner/presentation/views/owner_shop_settings_view.dart';
 import '../../features/owner/presentation/views/owner_fleet_calendar_view.dart';
 import '../../features/owner/presentation/views/owner_booking_confirmed_view.dart';
-import '../../features/owner/presentation/views/owner_booking_summary_view.dart';
 import '../../features/owner/presentation/views/owner_agreement_wizard_view.dart';
 import '../../features/owner/presentation/views/owner_rental_started_view.dart';
 import '../../features/owner/presentation/views/owner_record_damage_view.dart';
@@ -933,36 +933,16 @@ class AppRouter {
                   // accounts view, whose Upload Proof CTA used to
                   // render unconditionally for them.
                   builder: (context, booking) {
-                    switch (booking.status) {
-                      case 'payment_submitted':
-                        return OwnerPaymentVerificationView(
-                          booking: booking,
-                          onBack: () => context.pop(),
-                        );
-                      case 'paid':
-                      case 'active':
-                        return OwnerBookingConfirmedView(
-                          booking: booking,
-                          onBack: () => context.pop(),
-                        );
-                      case 'completed':
-                      case 'rejected':
-                      case 'cancelled':
-                      case 'disputed':
-                        return OwnerBookingSummaryView(
-                          booking: booking,
-                          onBack: () => context.pop(),
-                        );
-                      default:
-                        return OwnerPaymentAccountsView(
-                          booking: booking,
-                          onProceedToUploadProof: () => context.push(
-                            RouteNames.ownerPaymentProof
-                                .replaceFirst(':id', booking.bookingId),
-                          ),
-                          onBack: () => context.pop(),
-                        );
+                    if (booking.status == 'payment_submitted') {
+                      return OwnerPaymentVerificationView(
+                        booking: booking,
+                        onBack: () => context.pop(),
+                      );
                     }
+                    return OwnerBookingDetailView(
+                      booking: booking,
+                      onBack: () => context.pop(),
+                    );
                   },
                 ),
               ),

@@ -10,6 +10,7 @@ import 'package:rentalhub/features/bookings/domain/entities/booking_entity.dart'
 import 'package:rentalhub/features/bookings/utils/booking_next_step.dart';
 import 'package:rentalhub/features/customer/data/datasources/dispute_remote_data_source.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_booking_confirmed_view.dart';
+import 'package:rentalhub/features/owner/presentation/views/owner_booking_detail_view.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_booking_requests_view.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_booking_summary_view.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_disputes_view.dart';
@@ -59,6 +60,7 @@ void main() {
     required Widget home,
     String initialLocation = '/',
     Widget Function(GoRouterState state)? requestsBuilder,
+    Widget Function(GoRouterState state)? detailBuilder,
     Widget Function(GoRouterState state)? disputesBuilder,
   }) {
     return GoRouter(
@@ -70,6 +72,12 @@ void main() {
           builder: (_, state) =>
               requestsBuilder?.call(state) ??
               const Scaffold(body: Text('requests')),
+        ),
+        GoRoute(
+          path: '/owner/requests/:id',
+          builder: (_, state) =>
+              detailBuilder?.call(state) ??
+              const Scaffold(body: Text('detail')),
         ),
         GoRoute(
           path: '/owner/handover/:id',
@@ -474,9 +482,9 @@ void main() {
   });
 
   group('requests view — saves land on All Bookings', () {
-    testWidgets('decline from the triage list lands on All Bookings',
+    testWidgets('decline from the detail page lands on All Bookings',
         (tester) async {
-      await seedBooking(
+      final seeded = await seedBooking(
         customerId: 'cust-ns-dec',
         shopId: 'shop-ns-dec',
         customerName: 'Decline Customer',
@@ -489,9 +497,13 @@ void main() {
           initialFilter:
               state.uri.queryParameters['filter'] ?? 'payment_submitted',
         ),
+        detailBuilder: (_) => OwnerBookingDetailView(booking: seeded),
       );
       await pumpRouter(tester, router);
       expect(find.text('Decline Customer'), findsOneWidget);
+      await tester.tap(find.text('Decline Customer'));
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text('Decline'));
       await tester.tap(find.text('Decline'));
       await tester.pumpAndSettle();
       await tester.enterText(
@@ -508,12 +520,22 @@ void main() {
 
     testWidgets('owner cancel of a walk-in lands on All Bookings',
         (tester) async {
-      await seedBooking(
+      final ds = sl<BookingRemoteDataSource>();
+      final created = await ds.createBookingRequest(
         customerId: 'walkin-ns-can-1',
         shopId: 'shop-ns-can',
+        vehicleId: 'veh-1',
+        packageType: '24h',
+        isWithDriver: false,
+        pickupTime: DateTime.now().add(const Duration(hours: 5)),
+        returnTime: DateTime.now().add(const Duration(days: 2)),
+        totalAmount: 9000,
+        advanceRequired: 3000,
+        origin: 'walk_in',
         customerName: 'Cancel Customer',
-        status: 'approved',
       );
+      final seeded = await ds.updateBookingStatus(
+          bookingId: created.bookingId, status: 'approved');
       final router = routerFor(
         home: const Scaffold(body: Text('home')),
         initialLocation: '/owner/requests?filter=all',
@@ -522,10 +544,13 @@ void main() {
           initialFilter:
               state.uri.queryParameters['filter'] ?? 'payment_submitted',
         ),
+        detailBuilder: (_) => OwnerBookingDetailView(booking: seeded),
       );
       await pumpRouter(tester, router);
       expect(find.text('Cancel Customer'), findsOneWidget);
-      expect(find.text('Cancel booking'), findsOneWidget);
+      await tester.tap(find.text('Cancel Customer'));
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text('Cancel booking'));
       await tester.tap(find.text('Cancel booking'));
       await tester.pumpAndSettle();
       await tester.enterText(
@@ -541,7 +566,7 @@ void main() {
       expect(location(router), '/owner/requests?filter=all');
     });
 
-    testWidgets('approve from the triage list lands on All Bookings',
+    testWidgets('approve from the detail page lands on All Bookings',
         (tester) async {
       final fake = FakeFirebaseFirestore();
       await fake.collection('shops').doc('shop-ns-apr').set({
@@ -553,7 +578,7 @@ void main() {
           },
         ],
       });
-      await seedBooking(
+      final seeded = await seedBooking(
         customerId: 'cust-ns-apr',
         shopId: 'shop-ns-apr',
         customerName: 'Approve Customer',
@@ -567,9 +592,14 @@ void main() {
           initialFilter:
               state.uri.queryParameters['filter'] ?? 'payment_submitted',
         ),
+        detailBuilder: (_) =>
+            OwnerBookingDetailView(booking: seeded, firestore: fake),
       );
       await pumpRouter(tester, router);
       expect(find.text('Approve Customer'), findsOneWidget);
+      await tester.tap(find.text('Approve Customer'));
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text('Approve'));
       await tester.tap(find.text('Approve'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('JazzCash'));

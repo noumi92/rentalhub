@@ -11259,4 +11259,60 @@ class AppLocalizationsUr extends AppLocalizations {
   @override
   String get customerDetailNoBookingsInFilter =>
       'اس حالت میں کوئی بکنگ نہیں ہے۔';
+
+  @override
+  String get customersTabBookings => 'بکنگز';
+
+  @override
+  String get customersTabPersonal => 'ذاتی معلومات';
+
+  @override
+  String get customersTabKyc => 'کے وائی سی اور دستاویزات';
+
+  @override
+  String get bookingsTabWalkIn => 'واک اِن';
+
+  @override
+  String get bookingsTabOnline => 'آن لائن';
+
+  @override
+  String get bookingsFilterPending => 'زیر التوا';
+
+  @override
+  String get ownerBookingDetailTitle => 'بکنگ کی تفصیلات';
+
+  @override
+  String adminKycApprovedOn(String date) {
+    return '$date کو منظور شدہ';
+  }
+
+  @override
+  String get adminKycAlreadyApproved => 'منظور شدہ';
+
+  @override
+  String get adminNavDisputesReviews => 'تنازعات اور جائزے';
+
+  @override
+  String get adminBookingStatsTitle => 'بکنگ کے اعداد و شمار (صرف خلاصہ)';
+
+  @override
+  String get adminDashboardActionRequired => 'توجہ درکار ہے';
+
+  @override
+  String get adminDashboardPlatformMetrics => 'پلیٹ فارم کے اعداد و شمار';
+
+  @override
+  String get adminPackagesControlsComingSoon =>
+      'ابتدائی لانچ کے مرحلے میں پلان تبدیلی اور کریڈٹ الاٹمنٹ جلد آ رہے ہیں۔';
+
+  @override
+  String get handoverSecurityAmountLabel => 'سیکیورٹی رقم (روپے)';
+
+  @override
+  String get handoverWizardBalanceConfirmRequired =>
+      'آگے بڑھنے سے پہلے بقایا رقم کی وصولی کی تصدیق کریں (یا ابھی نہیں منتخب کریں)۔';
+
+  @override
+  String get handoverWizardDepositConfirmRequired =>
+      'آگے بڑھنے سے پہلے سیکیورٹی رقم کی وصولی کی تصدیق کریں (یا رقم 0 درج کریں)۔';
 }

@@ -512,6 +512,8 @@ void main() {
           shopId: 'shop-crm-7',
           replacer: replacer);
 
+      await tester.tap(find.byKey(const ValueKey('customer_detail_tab_2')));
+      await tester.pumpAndSettle();
       await tester.ensureVisible(
           find.byKey(const ValueKey('kyc_replace_profilePhotoUrl')));
       await tester.tap(

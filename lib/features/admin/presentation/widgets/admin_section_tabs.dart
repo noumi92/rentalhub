@@ -40,7 +40,7 @@ abstract final class AdminSectionTabs {
         clean == RouteNames.adminDisputes ||
         clean.startsWith('${RouteNames.adminDisputes}/') ||
         clean == RouteNames.adminReviews) {
-      return RouteNames.adminBookings;
+      return RouteNames.adminDisputes;
     }
     if (clean == RouteNames.adminTickets ||
         clean.startsWith('${RouteNames.adminTickets}/') ||
@@ -196,12 +196,6 @@ abstract final class AdminSectionTabs {
   }) {
     final l10n = _l10n(context);
     return [
-      AdminSubTab(
-        label: l10n.adminTabOnlineBookings,
-        route: RouteNames.adminBookings,
-        icon: Icons.receipt_long_rounded,
-        isActive: activeRoute == RouteNames.adminBookings,
-      ),
       AdminSubTab(
         label: l10n.admin2_navDisputes,
         route: RouteNames.adminDisputes,

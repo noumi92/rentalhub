@@ -71,19 +71,26 @@ class CustomerRemoteDataSource {
   /// membership) — the same candidate pattern the fleet layer uses.
   /// [getCustomerByCnic] delegates here, so it is covered too.
   Future<List<CustomerEntity>> getShopCustomers(String shopId) async {
+    if (shopId.trim().isEmpty) return [];
     final fs = _resolvedFirestore;
     final ids = await candidateShopIds(fs, shopId);
+    if (ids.isEmpty) return [];
     if (fs != null) {
       try {
         final snap = await fs
             .collection('customers')
             .where('shopId', whereIn: ids)
             .get();
-        if (snap.docs.isNotEmpty) {
-          return snap.docs
-              .map((d) => CustomerModel.fromMap(d.data(), d.id))
-              .toList();
+        final byId = <String, CustomerEntity>{
+          for (final d in snap.docs) d.id: CustomerModel.fromMap(d.data(), d.id),
+        };
+        // Merge any unsynced in-memory writes that strictly belong to this shop.
+        for (final local in _inMemoryCustomers.values) {
+          if (ids.contains(local.shopId) && !byId.containsKey(local.customerId)) {
+            byId[local.customerId] = local;
+          }
         }
+        return byId.values.toList();
       } catch (_) {}
     }
     return _inMemoryCustomers.values

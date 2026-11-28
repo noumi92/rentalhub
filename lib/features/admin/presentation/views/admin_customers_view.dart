@@ -40,7 +40,6 @@ class _AdminCustomersViewState extends State<AdminCustomersView> {
   Object? _cursor;
   bool _hasMore = false;
   int? _total;
-  int? _walkInKpiCount;
 
   @override
   void initState() {
@@ -78,7 +77,6 @@ class _AdminCustomersViewState extends State<AdminCustomersView> {
       }
       final total =
           _cnicFilter == 'all' ? await ds.countOnlineCustomers() : null;
-      final walkInCount = await ds.countWalkInCustomers();
       final page = await ds.getCustomersPage(
         limit: _pageSize,
         cursor: reset ? null : _cursor,
@@ -91,14 +89,13 @@ class _AdminCustomersViewState extends State<AdminCustomersView> {
         cursor: page.cursor,
         hasMore: page.hasMore,
         total: total,
-        walkInKpiCount: walkInCount,
       );
     } catch (_) {
       if (mounted) { setState(() { _hasError = true; _isLoading = false; _isLoadingMore = false; }); }
     }
   }
 
-  void _setLoaded(List<AdminCustomerRow> rows, {Object? cursor, bool hasMore = false, bool isSearching = false, int? total, int? walkInKpiCount}) {
+  void _setLoaded(List<AdminCustomerRow> rows, {Object? cursor, bool hasMore = false, bool isSearching = false, int? total}) {
     if (!mounted) return;
     setState(() {
       _rows = rows;
@@ -106,7 +103,6 @@ class _AdminCustomersViewState extends State<AdminCustomersView> {
       _cursor = cursor;
       _hasMore = hasMore;
       _total = total;
-      if (walkInKpiCount != null) _walkInKpiCount = walkInKpiCount;
       _isLoading = false;
       _isLoadingMore = false;
     });
@@ -152,25 +148,15 @@ class _AdminCustomersViewState extends State<AdminCustomersView> {
             windowSizeClassOf(context) == WindowSizeClass.compact ? 16 : 24),
         child: Column(
           children: [
-            if (_total != null || _walkInKpiCount != null)
+            if (_total != null)
               Align(
                 alignment: AlignmentDirectional.centerStart,
                 child: AdminMiniKpiStrip(items: [
-                  if (_total != null)
-                    AdminMiniKpi(
-                      label:
-                          l10n?.adminKpiOnlineCustomers ?? 'Online Customers',
-                      value: '$_total',
-                      icon: Icons.people_rounded,
-                    ),
-                  if (_walkInKpiCount != null)
-                    AdminMiniKpi(
-                      label:
-                          '${l10n?.adminKpiWalkInCustomers ?? 'Walk-in Customers'} (${l10n?.adminKpiShopManagedOnly ?? 'Shop-managed (KPI only)'})',
-                      value: '$_walkInKpiCount',
-                      icon: Icons.storefront_rounded,
-                      muted: true,
-                    ),
+                  AdminMiniKpi(
+                    label: l10n?.adminKpiOnlineCustomers ?? 'Online Customers',
+                    value: '$_total',
+                    icon: Icons.people_rounded,
+                  ),
                 ]),
               ),
             AdminCustomerListHeader(

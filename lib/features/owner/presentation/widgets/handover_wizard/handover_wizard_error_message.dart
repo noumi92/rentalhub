@@ -9,8 +9,12 @@ String handoverWizardErrorMessage(AppLocalizations l10n, String code) {
       return l10n.handoverWizardFaceRequired;
     case 'payment':
       return l10n.handoverWizardPaymentRequired;
+    case 'payment_confirm':
+      return l10n.handoverWizardBalanceConfirmRequired;
     case 'deposit':
       return l10n.handoverWizardDepositMethodRequired;
+    case 'deposit_confirm':
+      return l10n.handoverWizardDepositConfirmRequired;
     case 'checklist':
       return l10n.handoverWizardChecklistRequired;
     case 'signatures':

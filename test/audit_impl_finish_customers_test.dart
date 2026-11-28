@@ -391,13 +391,11 @@ void main() {
       expect(find.text('New Nadia'), findsNothing);
       expect(find.text('Due Daniyal'), findsOneWidget);
 
-      // Expanded row offers View Profile.
+      // Simple customer rows show View Profile & Book a Car directly.
       await tester.tap(find.textContaining('All ('));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Regular Rana'));
-      await tester.pumpAndSettle();
-      expect(find.text('View Profile'), findsOneWidget);
-      expect(find.text('Book a Car'), findsOneWidget);
+      expect(find.text('View Profile'), findsNWidgets(3));
+      expect(find.text('Book a Car'), findsNWidgets(3));
     });
   });
 }

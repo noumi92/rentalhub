@@ -231,6 +231,21 @@ class AdminPackagesDataSource {
     return true;
   }
 
+  Future<Map<String, String>> _shopNameMap(FirebaseFirestore fs) async {
+    try {
+      final snap = await fs.collection('shops').get();
+      return {
+        for (final doc in snap.docs)
+          doc.id: (doc.data()['shop_name'] as String? ??
+                  doc.data()['name'] as String? ??
+                  '')
+              .trim(),
+      };
+    } catch (_) {
+      return {};
+    }
+  }
+
   Future<List<AdminSubscriptionRequest>> getSubscriptionRequests({
     String? status,
   }) async {
@@ -241,9 +256,22 @@ class AdminPackagesDataSource {
       query = query.where('status', isEqualTo: status);
     }
     final snap = await query.get();
-    final list = snap.docs
-        .map((d) => AdminSubscriptionRequest.fromMap(d.id, d.data()))
-        .toList();
+    final names = await _shopNameMap(fs);
+    final list = snap.docs.map((d) {
+      final data = Map<String, dynamic>.from(d.data());
+      final existingName =
+          (data['shop_name'] as String? ?? data['shopName'] as String? ?? '')
+              .trim();
+      if (existingName.isEmpty) {
+        final sid =
+            (data['shop_id'] as String? ?? data['shopId'] as String? ?? '');
+        final resolved = names[sid];
+        if (resolved != null && resolved.isNotEmpty) {
+          data['shop_name'] = resolved;
+        }
+      }
+      return AdminSubscriptionRequest.fromMap(d.id, data);
+    }).toList();
     list.sort((a, b) => (b.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0))
         .compareTo(a.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0)));
     return list;
@@ -314,9 +342,22 @@ class AdminPackagesDataSource {
       query = query.where('status', isEqualTo: status);
     }
     final snap = await query.get();
-    final list = snap.docs
-        .map((d) => AdminCreditRequest.fromMap(d.id, d.data()))
-        .toList();
+    final names = await _shopNameMap(fs);
+    final list = snap.docs.map((d) {
+      final data = Map<String, dynamic>.from(d.data());
+      final existingName =
+          (data['shop_name'] as String? ?? data['shopName'] as String? ?? '')
+              .trim();
+      if (existingName.isEmpty) {
+        final sid =
+            (data['shop_id'] as String? ?? data['shopId'] as String? ?? '');
+        final resolved = names[sid];
+        if (resolved != null && resolved.isNotEmpty) {
+          data['shop_name'] = resolved;
+        }
+      }
+      return AdminCreditRequest.fromMap(d.id, data);
+    }).toList();
     list.sort((a, b) => (b.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0))
         .compareTo(a.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0)));
     return list;

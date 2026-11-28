@@ -647,6 +647,9 @@ void main() {
         'ownerWhatsappLogs',
         'ownerWhatsappBuyCredits',
         'ownerWhatsappHistory',
+        // Unified OwnerBookingDetailView handles /owner/requests/:id;
+        // ownerPaymentProof stays registered as a deep-link route.
+        'ownerPaymentProof',
       };
 
       final routeNames =

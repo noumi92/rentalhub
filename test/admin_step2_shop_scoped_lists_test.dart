@@ -155,15 +155,15 @@ void main() {
   });
 
   group('Step 2 — shop detail entry points', () {
-    testWidgets('detail shows both scoped entry buttons', (tester) async {
+    testWidgets('detail shows cars entry button and hides booking details link',
+        (tester) async {
       await _pump(tester, const AdminShopDetailView(shopId: 'shop-1'));
       expect(find.text('Metro Car Rentals'), findsOneWidget);
       expect(find.byKey(const Key('admin2_shopDetailViewCars')),
           findsOneWidget);
       expect(find.text("View this shop's cars"), findsOneWidget);
       expect(find.byKey(const Key('admin2_shopDetailViewBookings')),
-          findsOneWidget);
-      expect(find.text("View this shop's bookings"), findsOneWidget);
+          findsNothing);
     });
   });
 

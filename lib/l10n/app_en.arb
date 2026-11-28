@@ -6367,5 +6367,29 @@
   },
   "returnLateFeeLabel": "Late Fee (Rs.)",
   "returnLateFeeHint": "0",
-  "customerDetailNoBookingsInFilter": "No bookings in this status."
+  "customerDetailNoBookingsInFilter": "No bookings in this status.",
+  "customersTabBookings": "Bookings",
+  "customersTabPersonal": "Personal Info",
+  "customersTabKyc": "KYC & Docs",
+  "bookingsTabWalkIn": "Walk-in",
+  "bookingsTabOnline": "Online",
+  "bookingsFilterPending": "Pending",
+  "ownerBookingDetailTitle": "Booking Details",
+  "adminKycApprovedOn": "Approved on {date}",
+  "@adminKycApprovedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "adminKycAlreadyApproved": "Approved",
+  "adminNavDisputesReviews": "Disputes & Reviews",
+  "adminBookingStatsTitle": "Booking Metrics (Summary Only)",
+  "adminDashboardActionRequired": "Needs Attention",
+  "adminDashboardPlatformMetrics": "Platform Metrics",
+  "adminPackagesControlsComingSoon": "Plan changes and credit grants are coming soon during the initial launch phase.",
+  "handoverSecurityAmountLabel": "Security Amount (Rs.)",
+  "handoverWizardBalanceConfirmRequired": "Confirm balance received (or select Not yet) before continuing.",
+  "handoverWizardDepositConfirmRequired": "Confirm security deposit received (or set amount to 0) before continuing."
 }

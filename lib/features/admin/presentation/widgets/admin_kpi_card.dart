@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 
+/// Editorial, non-button KPI stat tile for the Admin Dashboard.
+/// Uses a flat tinted surface with a subtle left accent bar and crisp
+/// typography so it clearly reads as a metric rather than a button.
 class AdminKpiCard extends StatelessWidget {
   final String title;
   final String value;
@@ -19,45 +22,63 @@ class AdminKpiCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Phase 4 (4.1) — the unified admin card scale: radius 12,
-    // padding 16. The value stays the display slot (28sp,
-    // displayLarge) — a headline, not a dense fact tile (15sp).
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Theme.of(context).dividerColor),
-        boxShadow: const [
-          BoxShadow(color: Color(0x06000000), blurRadius: 8, offset: Offset(0, 3)),
-        ],
+        color: scheme.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(10),
+        border: BorderDirectional(
+          start: BorderSide(color: accentColor, width: 3.5),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              Icon(icon, color: accentColor, size: 15),
+              const SizedBox(width: 6),
               Expanded(
                 child: Text(
                   title,
-                  style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w500, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: scheme.onSurfaceVariant,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 8),
-              CircleAvatar(
-                radius: 18,
-                backgroundColor: accentColor.withAlpha(25),
-                child: Icon(icon, color: accentColor, size: 18),
               ),
             ],
           ),
-          const SizedBox(height: 12),
-          // Audit 2026-11-15 AC-9 (admin line): 24 sp w700 is not in
-          // the §4.5 scale — displayLarge (28/Bold) is the value slot.
-          Text(value, style: Theme.of(context).textTheme.displayLarge),
-          const SizedBox(height: 6),
-          Text(changeLabel, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w500, color: AppColors.successTextFor(Theme.of(context).brightness))),
+          const SizedBox(height: 8),
+          Text(
+            value,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: theme.textTheme.displayLarge?.copyWith(
+              height: 1.1,
+              fontFeatures: const [FontFeature.tabularFigures()],
+            ),
+          ),
+          if (changeLabel.isNotEmpty) ...[
+            const SizedBox(height: 4),
+            Text(
+              changeLabel,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 11.5,
+                fontWeight: FontWeight.w500,
+                color: scheme.onSurfaceVariant,
+              ),
+            ),
+          ],
         ],
       ),
     );

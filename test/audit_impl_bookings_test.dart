@@ -638,14 +638,11 @@ void main() {
       await tester.pumpWidget(
           appFor(const OwnerBookingRequestsView(shopId: 'shop-1')));
       await tester.pumpAndSettle();
-      expect(find.textContaining('Rejected ('), findsOneWidget);
+      expect(find.textContaining('Cancelled ('), findsOneWidget);
       expect(find.text('Rejected Requester'), findsNothing);
-      // Item 4: ten chips overflow the 800-wide test viewport, so
-      // the Rejected chip (9th) is off-screen — scroll it into
-      // view before tapping, like the O16 test below does.
-      await tester.ensureVisible(find.textContaining('Rejected ('));
+      await tester.ensureVisible(find.textContaining('Cancelled ('));
       await tester.pumpAndSettle();
-      await tester.tap(find.textContaining('Rejected ('));
+      await tester.tap(find.textContaining('Cancelled ('));
       await tester.pumpAndSettle();
       expect(find.text('Rejected Requester'), findsOneWidget);
     });
@@ -680,9 +677,7 @@ void main() {
       await tester.pumpWidget(
           appFor(const OwnerBookingRequestsView(shopId: 'shop-1')));
       await tester.pumpAndSettle();
-      // FG-4: the default triage filter is now proofs-first, so tap
-      // New to see fresh 'requested' bookings before searching.
-      await tester.tap(find.textContaining('New ('));
+      await tester.tap(find.textContaining('Pending ('));
       await tester.pumpAndSettle();
       expect(find.text('Searchable Samina'), findsOneWidget);
       expect(find.text('Other Osman'), findsOneWidget);

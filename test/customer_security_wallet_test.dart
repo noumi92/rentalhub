@@ -540,12 +540,16 @@ void main() {
     testWidgets('walk-in customers are offered the Security wallet',
         (tester) async {
       await pumpBody(tester, entity(source: 'walk_in'));
+      await tester.tap(find.byKey(const ValueKey('customer_detail_tab_1')));
+      await tester.pumpAndSettle();
       expect(find.text('Security wallet'), findsOneWidget);
     });
 
     testWidgets('online customers are not offered the Security wallet',
         (tester) async {
       await pumpBody(tester, entity(source: 'online'));
+      await tester.tap(find.byKey(const ValueKey('customer_detail_tab_1')));
+      await tester.pumpAndSettle();
       expect(find.text('Security wallet'), findsNothing);
     });
   });

@@ -157,7 +157,7 @@ void main() {
         'Shops & Fleet',
         'Online Customers',
         'Packages & Credits',
-        'Bookings',
+        'Disputes & Reviews',
         'Trust & Support',
         'Platform & System',
       ];
@@ -491,7 +491,7 @@ void main() {
   });
 
   group('2.5 — tabbed customer detail', () {
-    testWidgets('Profile tab first, Bookings and Notes reachable',
+    testWidgets('Profile tab first, Notes reachable (Bookings tab removed)',
         (tester) async {
       await tester.pumpWidget(wrap(AdminCustomerDetailView(
         customerId: 'c-1',
@@ -501,15 +501,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Bilal Ahmed'), findsOneWidget);
       expect(find.text('Trust score'), findsOneWidget);
-      // Bookings live on their own tab now (the sidebar has a
-      // Bookings item too, so tap the tab itself).
-      expect(find.textContaining('Honda Civic Oriel'), findsNothing);
-      await tester.tap(find.widgetWithText(Tab, 'Bookings'));
-      await tester.pumpAndSettle();
-      expect(find.textContaining('Honda Civic Oriel'), findsOneWidget);
-      expect(find.textContaining('Ali Khan'), findsOneWidget);
-      // Notes & flags: the note composer; both flag actions live
-      // in the sticky bar now (Phase 4 4.4a), one copy only.
+      expect(find.widgetWithText(Tab, 'Bookings'), findsNothing);
       await tester.tap(find.text('Notes & flags'));
       await tester.pumpAndSettle();
       expect(find.text('Add note'), findsOneWidget);
@@ -519,9 +511,6 @@ void main() {
 
     testWidgets('Step 3 — Profile tab KYC entry point is decideKyc-gated',
         (tester) async {
-      // Super admin may review KYC: the entry point shows under
-      // the trust breakdown. (Not tapped: the plain MaterialApp
-      // harness has no GoRouter to navigate with.)
       await tester.pumpWidget(wrap(AdminCustomerDetailView(
         key: const ValueKey('step3-super-admin'),
         customerId: 'c-1',
@@ -530,9 +519,6 @@ void main() {
       )));
       await tester.pumpAndSettle();
       expect(find.text('View KYC documents'), findsOneWidget);
-      // Support may not review KYC: no entry point, no new tab.
-      // (A fresh key: the view loads its role in initState, so a
-      // bare re-pump would reuse the super-admin state.)
       await tester.pumpWidget(wrap(AdminCustomerDetailView(
         key: const ValueKey('step3-support'),
         customerId: 'c-1',
@@ -542,7 +528,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('View KYC documents'), findsNothing);
       expect(find.widgetWithText(Tab, 'Profile'), findsOneWidget);
-      expect(find.widgetWithText(Tab, 'Bookings'), findsOneWidget);
+      expect(find.widgetWithText(Tab, 'Bookings'), findsNothing);
       expect(find.widgetWithText(Tab, 'Notes & flags'), findsOneWidget);
     });
   });

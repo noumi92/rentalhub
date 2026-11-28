@@ -46,7 +46,6 @@ class _OwnerCustomersListViewState extends State<OwnerCustomersListView> {
   bool _hasError = false;
   String _query = '';
   final _searchController = TextEditingController();
-  String? _expandedKey;
   CustomerListFilter _chipFilter = CustomerListFilter.all;
 
   @override
@@ -65,6 +64,10 @@ class _OwnerCustomersListViewState extends State<OwnerCustomersListView> {
 
   Future<void> _load() async {
     if (mounted) setState(() => _hasError = false);
+    if (_shopId.trim().isEmpty) {
+      if (mounted) setState(() { _customers = []; _loading = false; });
+      return;
+    }
     try {
       final bookings = await sl<BookingRemoteDataSource>().getShopBookings(_shopId);
       final saved = await sl<GetShopCustomersUseCase>()(_shopId);
@@ -207,7 +210,6 @@ class _OwnerCustomersListViewState extends State<OwnerCustomersListView> {
                               itemCount: filtered.length,
                               itemBuilder: (context, index) {
                                 final c = filtered[index];
-                                final expanded = _expandedKey == c.key;
                                 final badges = rowStatusBadges(c, _shopId);
                                 return CustomerListRowCard(
                                   customer: c,
@@ -215,8 +217,6 @@ class _OwnerCustomersListViewState extends State<OwnerCustomersListView> {
                                   blocked: badges.blocked,
                                   kycIncomplete: badges.kycIncomplete,
                                   dormant: badges.dormant,
-                                  expanded: expanded,
-                                  onToggleExpand: () => setState(() { _expandedKey = expanded ? null : c.key; }),
                                   isLast: index == filtered.length - 1,
                                 );
                               },

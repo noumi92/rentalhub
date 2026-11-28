@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:rentalhub/core/di/injection_container.dart' as di;
@@ -15,6 +16,7 @@ import 'package:rentalhub/features/customer/presentation/widgets/booking_ticket_
 import 'package:rentalhub/features/handover/data/datasources/handover_local_data_source.dart';
 import 'package:rentalhub/features/handover/data/datasources/pdf_contract_generator.dart';
 import 'package:rentalhub/features/handover/presentation/cubit/handover_cubit.dart';
+import 'package:rentalhub/features/owner/presentation/views/owner_booking_detail_view.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_booking_requests_view.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_contract_view.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_handover_signature_view.dart';
@@ -303,25 +305,36 @@ void main() {
         ],
       });
       await tester.pumpWidget(
-        MaterialApp(
+        MaterialApp.router(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: OwnerBookingRequestsView(
-            shopId: 'shop-1',
-            firestore: fakeShop,
+          routerConfig: GoRouter(
+            initialLocation: '/owner/requests',
+            routes: [
+              GoRoute(
+                path: '/owner/requests',
+                builder: (_, __) => OwnerBookingRequestsView(
+                  shopId: 'shop-1',
+                  firestore: fakeShop,
+                ),
+              ),
+              GoRoute(
+                path: '/owner/requests/:id',
+                builder: (_, __) => OwnerBookingDetailView(
+                  booking: booking,
+                  firestore: fakeShop,
+                ),
+              ),
+            ],
           ),
         ),
       );
       await tester.pumpAndSettle();
-      // FG-4: the default triage filter is now proofs-first, so a
-      // fresh 'requested' booking needs the New filter to be visible.
-      await tester.tap(find.textContaining('New ('));
-      await tester.pumpAndSettle();
       expect(find.text('Approve Me'), findsOneWidget);
+      await tester.tap(find.text('Approve Me'));
+      await tester.pumpAndSettle();
 
-      // O18: Approve no longer flips the status in one tap — it
-      // opens the approve sheet, where the owner picks the payment
-      // account the customer pays into.
+      await tester.ensureVisible(find.text('Approve'));
       await tester.tap(find.text('Approve'));
       await tester.pumpAndSettle();
       expect(find.text('Approve & assign payment account'), findsOneWidget);
@@ -329,12 +342,6 @@ void main() {
       await tester.pump();
       await tester.tap(find.text('Approve & assign account'));
       await tester.pumpAndSettle();
-      expect(find.text('Approve Me'), findsNothing);
-
-      await tester.tap(find.textContaining('Approved ('));
-      await tester.pumpAndSettle();
-      expect(find.text('Approve Me'), findsOneWidget);
-      expect(find.text('Approve'), findsNothing);
       final stored = await ds.getBookingById(booking.bookingId);
       expect(stored?.status, 'approved');
       expect(stored?.selectedPaymentAccount, '0300-1111111');

@@ -9,12 +9,12 @@ import 'package:rentalhub/features/bookings/data/datasources/booking_remote_data
 import 'package:rentalhub/features/bookings/data/models/booking_model.dart';
 import 'package:rentalhub/features/bookings/presentation/views/owner_payment_accounts_view.dart';
 import 'package:rentalhub/features/fleet/domain/entities/vehicle_entity.dart';
+import 'package:rentalhub/features/owner/presentation/views/owner_booking_detail_view.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_booking_requests_view.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_manual_booking_view.dart';
 import 'package:rentalhub/l10n/app_localizations.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_payment_verification_view.dart';
 import 'package:rentalhub/features/owner/presentation/widgets/manual_booking_package_selector.dart';
-import 'package:rentalhub/features/owner/presentation/widgets/operations/request_triage_card.dart';
 
 // Owner Module Plan — Phase D: online requests triage, walk-in
 // booking fixes, and payment verification with rejection reasons.
@@ -26,8 +26,7 @@ void main() {
     // accounts view as the shop owner, so the locked role is 'owner'
     // here; the customer route is covered by the default-deny path
     // (no role set) in the immersion tests.
-    SharedPreferences.setMockInitialValues(
-        {'rentalhub_locked_role': 'owner'});
+    SharedPreferences.setMockInitialValues({'rentalhub_locked_role': 'owner'});
     await di.initDependencies();
   });
 
@@ -192,11 +191,11 @@ void main() {
       }
     }
 
-    testWidgets('filter chips show each pipeline stage', (tester) async {
+    testWidgets('filter chips show minimized pipeline buckets', (tester) async {
       final ds = di.sl<BookingRemoteDataSource>();
       await createInState(ds, 'New Requester', 'requested');
       await createInState(ds, 'Proof Sender', 'payment_submitted');
-      await createInState(ds, 'Approved Waiter', 'approved');
+      await createInState(ds, 'Paid Driver', 'paid');
 
       await tester.pumpWidget(
         const MaterialApp(
@@ -207,35 +206,21 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      // Team B (FG-4): the default filter is now the proof bucket —
-      // the most urgent one — so the proof sender shows first.
       expect(find.text('Proof Sender'), findsOneWidget);
-      expect(find.text('New Requester'), findsNothing);
-      expect(find.text('Approved Waiter'), findsNothing);
-      expect(find.text('Verify Payment Proof'), findsOneWidget);
-      expect(find.text('Approve'), findsNothing);
-
-      await tester.tap(find.textContaining('New ('));
-      await tester.pumpAndSettle();
       expect(find.text('New Requester'), findsOneWidget);
-      expect(find.text('Proof Sender'), findsNothing);
-      expect(find.text('Approve'), findsOneWidget);
+      expect(find.text('Paid Driver'), findsNothing);
 
-      await tester.tap(find.textContaining('Approved ('));
+      await tester.tap(find.textContaining('Paid ('));
       await tester.pumpAndSettle();
-      expect(find.text('Approved Waiter'), findsOneWidget);
-      expect(find.text('Verify Payment Proof'), findsNothing);
-      expect(find.text('Decline'), findsNothing);
+      expect(find.text('Paid Driver'), findsOneWidget);
+      expect(find.text('Proof Sender'), findsNothing);
     });
 
-    testWidgets('rejecting asks for a reason and stores it',
-        (tester) async {
+    testWidgets('rejecting asks for a reason and stores it', (tester) async {
       final ds = di.sl<BookingRemoteDataSource>();
       await createInState(ds, 'Reject Me', 'requested');
-      // Item 2 navigate-back: the view now goes to All Bookings
-      // after a successful reject, so it needs a router — and the
-      // rejected booking stays visible under All instead of
-      // vanishing from the New tab.
+      final allBefore = await ds.getShopBookings('shop-1');
+      final target = allBefore.firstWhere((b) => b.customerName == 'Reject Me');
       final router = GoRouter(
         initialLocation: '/owner/requests',
         routes: [
@@ -247,6 +232,11 @@ void main() {
                   state.uri.queryParameters['filter'] ?? 'payment_submitted',
             ),
           ),
+          GoRoute(
+            path: '/owner/requests/:id',
+            builder: (context, state) =>
+                OwnerBookingDetailView(booking: target),
+          ),
         ],
       );
       await tester.pumpWidget(
@@ -257,21 +247,15 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      // Team B (FG-4): the default filter is the proof bucket; the
-      // requested booking lives under New.
-      await tester.tap(find.textContaining('New ('));
-      await tester.pumpAndSettle();
-      expect(find.text('Reject Me'), findsOneWidget);
-
-      final card = find.ancestor(
-        of: find.text('Reject Me'),
-        matching: find.byType(RequestTriageCard),
+      await tester.scrollUntilVisible(
+        find.text('Reject Me'),
+        200,
+        scrollable: find.byType(Scrollable).last,
       );
-      await tester.ensureVisible(
-          find.descendant(of: card, matching: find.text('Decline')));
+      await tester.tap(find.text('Reject Me'));
       await tester.pumpAndSettle();
-      await tester.tap(
-          find.descendant(of: card, matching: find.text('Decline')));
+      await tester.ensureVisible(find.text('Decline'));
+      await tester.tap(find.text('Decline'));
       await tester.pumpAndSettle();
       expect(find.text('Reject this request?'), findsOneWidget);
       await tester.enterText(
@@ -279,20 +263,13 @@ void main() {
           'Vehicle is booked on those dates.');
       await tester.tap(find.text('Reject Request'));
       await tester.pumpAndSettle();
-      // Item 2: the reject lands on All Bookings (the route's
-      // filter is `all`). The rejected card's visibility under All
-      // is asserted in next_step_owner_test.dart, where the shop
-      // is dedicated — this file shares one shop across tests, so
-      // the lazily-built list makes a card-visibility assertion
-      // here order-dependent.
       expect(router.routeInformationProvider.value.uri.toString(),
           '/owner/requests?filter=all');
 
       final all = await ds.getShopBookings('shop-1');
       final rejected = all.firstWhere((b) => b.customerName == 'Reject Me');
       expect(rejected.status, 'rejected');
-      expect(
-          rejected.rejectionReason, 'Vehicle is booked on those dates.');
+      expect(rejected.rejectionReason, 'Vehicle is booked on those dates.');
     });
   });
 
@@ -349,7 +326,8 @@ void main() {
       );
     }
 
-    testWidgets('approving a proof marks the booking paid and lands on All Bookings',
+    testWidgets(
+        'approving a proof marks the booking paid and lands on All Bookings',
         (tester) async {
       final ds = di.sl<BookingRemoteDataSource>();
       final booking = await proofBooking(ds);
@@ -403,8 +381,8 @@ void main() {
       // §10: the accounts view gates on status — a merely `requested`
       // booking renders the requested-state detail, so this
       // accounts-honesty case pumps an approved booking.
-      final approved = modelFor('RH-d4', 'Ayesha Khan')
-          .copyWith(status: 'approved');
+      final approved =
+          modelFor('RH-d4', 'Ayesha Khan').copyWith(status: 'approved');
       await tester.pumpWidget(
         MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -418,7 +396,8 @@ void main() {
       expect(find.text('Al-Falah Rent a Car'), findsNothing);
     });
 
-    testWidgets('a requested booking shows the decision detail, not the approved banner',
+    testWidgets(
+        'a requested booking shows the decision detail, not the approved banner',
         (tester) async {
       await tester.pumpWidget(
         MaterialApp(
@@ -441,14 +420,14 @@ void main() {
       final router =
           await File('lib/core/routing/app_router.dart').readAsString();
       expect(router, contains('OwnerPaymentVerificationView'));
-      // Next-step batch (2026-11-21): the branch is a status
-      // switch now, not a single ternary.
-      expect(router, contains("case 'payment_submitted':"));
+      expect(router, contains("'payment_submitted'"));
+      expect(router, contains('OwnerBookingDetailView'));
     });
   });
 
   group('Audit §12 — manual booking starts with no demo identity', () {
-    testWidgets('step 1 has a customer search, not typed name/phone/CNIC fields',
+    testWidgets(
+        'step 1 has a customer search, not typed name/phone/CNIC fields',
         (tester) async {
       await tester.pumpWidget(
         MaterialApp(
@@ -465,13 +444,13 @@ void main() {
       expect(find.text('Walk-in Customer'), findsNothing);
       expect(find.text('0300-1122334'), findsNothing);
       expect(find.text('35201-1234567-1'), findsNothing);
-      expect(find.widgetWithText(TextField, 'Customer Full Name'),
-          findsNothing);
+      expect(
+          find.widgetWithText(TextField, 'Customer Full Name'), findsNothing);
       expect(find.widgetWithText(TextField, 'NADRA CNIC'), findsNothing);
       expect(find.byKey(const Key('manual-booking-customer-search')),
           findsOneWidget);
-      expect(find.byKey(const Key('manual-booking-add-customer')),
-          findsOneWidget);
+      expect(
+          find.byKey(const Key('manual-booking-add-customer')), findsOneWidget);
       expect(find.text('+ Add New Customer'), findsOneWidget);
     });
 
@@ -492,17 +471,16 @@ void main() {
 
       // No saved customer matches in the test env, so the step
       // reports the handoff instead of prefilling typed fields.
+      expect(find.text('This customer is not registered yet — add them first.'),
+          findsOneWidget);
       expect(
-          find.text(
-              'This customer is not registered yet — add them first.'),
-          findsOneWidget);
-      expect(find.byKey(const Key('manual-booking-add-customer')),
-          findsOneWidget);
+          find.byKey(const Key('manual-booking-add-customer')), findsOneWidget);
     });
   });
 
   group('Booking data-model foundation — new fields', () {
-    test('origin, proof time, payment account, guarantor relation '
+    test(
+        'origin, proof time, payment account, guarantor relation '
         'and deposit round-trip through the model', () {
       final model = BookingModel(
         bookingId: 'RH-new-1',

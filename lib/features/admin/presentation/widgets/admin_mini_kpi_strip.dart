@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_colors.dart';
 
-/// One compact stat pill rendered inside [AdminMiniKpiStrip].
+/// One compact read-only stat item rendered inside [AdminMiniKpiStrip].
 class AdminMiniKpi {
   const AdminMiniKpi({
     required this.label,
@@ -19,8 +19,9 @@ class AdminMiniKpi {
   final bool muted;
 }
 
-/// Compact horizontal strip of KPI pills shown at the top of admin hub screens
-/// (e.g. Shops & Fleet, Online Customers, Packages & Credits).
+/// Read-only flat metric summary bar shown at the top of admin screens.
+/// Styled as a single subtle surface strip (never pill-shaped buttons)
+/// so it cannot be confused with interactive filter chips.
 class AdminMiniKpiStrip extends StatelessWidget {
   const AdminMiniKpiStrip({super.key, required this.items});
 
@@ -32,60 +33,55 @@ class AdminMiniKpiStrip extends StatelessWidget {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
 
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      decoration: BoxDecoration(
+        color: scheme.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(10),
+      ),
       child: Wrap(
-        spacing: 8,
-        runSpacing: 8,
+        spacing: 20,
+        runSpacing: 10,
         children: [
           for (final item in items)
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                color: item.muted
-                    ? scheme.surfaceContainerHighest.withAlpha(140)
-                    : scheme.surface,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(
-                  color: item.accentColor?.withAlpha(90) ?? theme.dividerColor,
-                ),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (item.icon != null) ...[
-                    Icon(
-                      item.icon,
-                      size: 15,
-                      color: item.muted
-                          ? scheme.onSurfaceVariant
-                          : (item.accentColor ?? AppColors.secondary),
-                    ),
-                    const SizedBox(width: 6),
-                  ],
-                  Flexible(
-                    child: Text(
-                      '${item.label}: ',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: scheme.onSurfaceVariant,
-                      ),
-                    ),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (item.icon != null) ...[
+                  Icon(
+                    item.icon,
+                    size: 14,
+                    color: item.muted
+                        ? scheme.onSurfaceVariant
+                        : (item.accentColor ?? AppColors.secondary),
                   ),
-                  Text(
-                    item.value,
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w700,
-                      color: item.muted
-                          ? scheme.onSurfaceVariant
-                          : (item.accentColor ?? scheme.onSurface),
-                    ),
-                  ),
+                  const SizedBox(width: 6),
                 ],
-              ),
+                Flexible(
+                  child: Text(
+                    '${item.label}: ',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: scheme.onSurfaceVariant,
+                    ),
+                  ),
+                ),
+                Text(
+                  item.value,
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    fontFeatures: const [FontFeature.tabularFigures()],
+                    color: item.muted
+                        ? scheme.onSurfaceVariant
+                        : (item.accentColor ?? scheme.onSurface),
+                  ),
+                ),
+              ],
             ),
         ],
       ),

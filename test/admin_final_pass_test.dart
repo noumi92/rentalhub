@@ -320,10 +320,8 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      expect(find.textContaining('Open the disputes centre to decide them.'),
-          findsOneWidget);
-      expect(find.textContaining('Open the tickets inbox to reply.'),
-          findsOneWidget);
+      expect(find.text('Open disputes need a decision'), findsOneWidget);
+      expect(find.text('Support tickets waiting'), findsOneWidget);
       expect(find.textContaining('arrives in Phase'), findsNothing);
       await tester.ensureVisible(find.text('Open disputes need a decision'));
       await tester.pumpAndSettle();

@@ -190,7 +190,7 @@ void main() {
         'Shops & Fleet',
         'Online Customers',
         'Packages & Credits',
-        'Bookings',
+        'Disputes & Reviews',
         'Trust & Support',
         'Platform & System',
       ]) {

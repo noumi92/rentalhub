@@ -415,8 +415,7 @@ void main() {
   // ----------------------------------------------------------------
 
   group('ownerRequestsDetail routing', () {
-    test('paid/active -> Confirmed, terminal/disputed -> summary, '
-        'payment_submitted -> verification, approved -> accounts',
+    test('payment_submitted -> verification, all other statuses -> unified detail',
         () async {
       final router =
           await File('lib/core/routing/app_router.dart').readAsString();
@@ -425,14 +424,7 @@ void main() {
       final branch = router.substring(start, end);
       expect(branch, contains('OwnerPaymentVerificationView'));
       expect(branch, contains("'payment_submitted'"));
-      expect(branch, contains('OwnerBookingConfirmedView'));
-      expect(branch, contains("'paid'"));
-      expect(branch, contains("'active'"));
-      expect(branch, contains('OwnerBookingSummaryView'));
-      expect(branch, contains("'completed'"));
-      expect(branch, contains("'disputed'"));
-      expect(branch, contains("'cancelled'"));
-      expect(branch, contains('OwnerPaymentAccountsView'));
+      expect(branch, contains('OwnerBookingDetailView'));
       expect(branch, isNot(contains('booking-confirmed')));
     });
   });

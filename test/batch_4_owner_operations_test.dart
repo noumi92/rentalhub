@@ -36,7 +36,9 @@ void main() {
       );
     });
 
-    test('Blacklist Verification: detects blacklisted CNIC and retrieves incident file', () async {
+    test(
+        'Blacklist Verification: detects blacklisted CNIC and retrieves incident file',
+        () async {
       // F-M1: no seeded sample case any more — report the CNIC
       // first, then verify the lookup finds that report.
       final reported = await blacklistDs.reportCustomerToBlacklist(
@@ -46,23 +48,29 @@ void main() {
         reasonCategory: 'Default & Car Impoundment',
         description: 'Test report: defaulted on payment.',
       );
-      final isBlacklisted = await blacklistDs.isCnicBlacklisted('35201-9999999-1');
+      final isBlacklisted =
+          await blacklistDs.isCnicBlacklisted('35201-9999999-1');
       expect(isBlacklisted, isTrue);
 
-      final record = await blacklistDs.getBlacklistRecordByCnic('35201-9999999-1');
+      final record =
+          await blacklistDs.getBlacklistRecordByCnic('35201-9999999-1');
       expect(record, isNotNull);
       expect(record!.blacklistId, equals(reported.blacklistId));
       expect(record.reasonCategory, contains('Default'));
 
       // A fresh data source has no records: the CNIC is not
       // blacklisted by default any more (F-M1).
-      expect(await BlacklistRemoteDataSource().isCnicBlacklisted('35201-9999999-1'), isFalse);
+      expect(
+          await BlacklistRemoteDataSource()
+              .isCnicBlacklisted('35201-9999999-1'),
+          isFalse);
 
       final cleanCheck = await blacklistDs.isCnicBlacklisted('35201-1111111-1');
       expect(cleanCheck, isFalse);
     });
 
-    test('Booking Request Triage: approves incoming customer request', () async {
+    test('Booking Request Triage: approves incoming customer request',
+        () async {
       final booking = await bookingDs.createBookingRequest(
         customerId: 'cust-triage-1',
         shopId: 'shop-1',
@@ -84,7 +92,9 @@ void main() {
       expect(approved.status, equals('approved'));
     });
 
-    test('Handover Execution: captures telemetry, dual signatures and completes agreement', () async {
+    test(
+        'Handover Execution: captures telemetry, dual signatures and completes agreement',
+        () async {
       await handoverCubit.completeHandoverOfflineFirst(
         bookingId: 'RH-TEST-HANDOVER-1',
         shopName: 'Al-Falah Rent a Car',
@@ -99,11 +109,18 @@ void main() {
         isOnline: true,
       );
 
-      final pending = await di.sl<HandoverCubit>().localDataSource.getPendingSyncHandovers();
-      expect(pending.any((h) => h.bookingId == 'RH-TEST-HANDOVER-1' && !h.isSynced), isFalse);
+      final pending = await di
+          .sl<HandoverCubit>()
+          .localDataSource
+          .getPendingSyncHandovers();
+      expect(
+          pending
+              .any((h) => h.bookingId == 'RH-TEST-HANDOVER-1' && !h.isSynced),
+          isFalse);
     });
 
-    test('Settlement Arithmetic: computes excess KM penalty and net refund', () {
+    test('Settlement Arithmetic: computes excess KM penalty and net refund',
+        () {
       const initialOdo = 50000;
       const returnOdo = 50350;
       const kmCap = 250;
@@ -125,16 +142,18 @@ void main() {
   });
 
   group('Batch 4: Screen UI Actions & Rendering Tests', () {
-    testWidgets('OwnerCustomerScanView: scans CNIC and displays blacklist result', (tester) async {
+    testWidgets(
+        'OwnerCustomerScanView: scans CNIC and displays blacklist result',
+        (tester) async {
       // F-M1: no seeded sample case any more — report the CNIC on
       // the shared data source before pumping, so the scan finds it.
       await di.sl<BlacklistRemoteDataSource>().reportCustomerToBlacklist(
-        reportedByShopId: 'shop-1',
-        cnicNumber: '35201-9999999-1',
-        phoneNumber: '03001234567',
-        reasonCategory: 'Default & Car Impoundment',
-        description: 'Test report: defaulted on payment.',
-      );
+            reportedByShopId: 'shop-1',
+            cnicNumber: '35201-9999999-1',
+            phoneNumber: '03001234567',
+            reasonCategory: 'Default & Car Impoundment',
+            description: 'Test report: defaulted on payment.',
+          );
       await tester.pumpWidget(
         MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -155,7 +174,8 @@ void main() {
       expect(find.text('Decline / Refuse Service'), findsOneWidget);
     });
 
-    testWidgets('OwnerBookingRequestsView: displays incoming triage list', (tester) async {
+    testWidgets('OwnerBookingRequestsView: displays incoming triage list',
+        (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -166,16 +186,14 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Bookings Management'), findsOneWidget);
-      // Phase A (A1): the hardcoded demo request was removed. With no
-      // bookings in Firestore the view shows an honest empty state.
-      // Team B (FG-4): the default filter is now the proof bucket,
-      // so the empty state is the proofs one.
-      expect(find.text('No payment proofs waiting for verification'),
-          findsOneWidget);
+      // With minimized filters, default empty state is the Pending bucket.
+      expect(find.text('No pending booking requests'), findsOneWidget);
       expect(find.text('Approve & Pay'), findsNothing);
     });
 
-    testWidgets('OwnerHandoverSignatureView: captures dual signatures and validates', (tester) async {
+    testWidgets(
+        'OwnerHandoverSignatureView: captures dual signatures and validates',
+        (tester) async {
       final testBooking = BookingEntity(
         bookingId: 'RH-HO-99',
         customerId: 'c1',
@@ -210,8 +228,8 @@ void main() {
       // runs before the signature check — enter a valid reading
       // first so the tap reaches the signature refusal.
       await tester.enterText(
-          find.byWidgetPredicate((w) =>
-              w is TextField && w.decoration?.hintText == 'e.g. 45200'),
+          find.byWidgetPredicate(
+              (w) => w is TextField && w.decoration?.hintText == 'e.g. 45200'),
           '45200');
       await tester.pumpAndSettle();
       // PW-17 (concurrent audit team, not Team B): fuel now starts
@@ -223,8 +241,8 @@ void main() {
       await tester.pumpAndSettle();
       await tester.drag(find.byType(Slider), const Offset(400, 0));
       await tester.pumpAndSettle();
-      await tester.ensureVisible(
-          find.text('Certify Handover & Generate Contract'));
+      await tester
+          .ensureVisible(find.text('Certify Handover & Generate Contract'));
       await tester.tap(find.text('Certify Handover & Generate Contract'));
       await tester.pumpAndSettle();
       expect(
@@ -233,7 +251,9 @@ void main() {
           findsOneWidget);
     });
 
-    testWidgets('OwnerReturnSettlementView: displays return odometer telemetry and settlement', (tester) async {
+    testWidgets(
+        'OwnerReturnSettlementView: displays return odometer telemetry and settlement',
+        (tester) async {
       final testBooking = BookingEntity(
         bookingId: 'RH-RET-88',
         customerId: 'c1',
@@ -273,4 +293,3 @@ void main() {
     });
   });
 }
-

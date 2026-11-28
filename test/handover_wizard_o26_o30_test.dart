@@ -80,15 +80,20 @@ void main() {
       expect(cubit.state.step, 1);
     });
 
-    test('step 1 needs a balance method and a deposit method', () {
+    test('step 1 needs a balance method, confirmation, and deposit method/confirmation', () {
       final cubit = HandoverWizardCubit(bookingId: 'RH-WIZ-1');
       cubit.goToStep(1);
       cubit.nextStep(balanceDue: 8000, securityDeposit: 20000);
       expect(cubit.state.error, 'payment');
       cubit.setBalanceMethod('cash');
       cubit.nextStep(balanceDue: 8000, securityDeposit: 20000);
+      expect(cubit.state.error, 'payment_confirm');
+      cubit.setBalanceReceived(true);
+      cubit.nextStep(balanceDue: 8000, securityDeposit: 20000);
       expect(cubit.state.error, 'deposit');
       cubit.setDepositMethod('easypaisa');
+      cubit.nextStep(balanceDue: 8000, securityDeposit: 20000);
+      expect(cubit.state.error, 'deposit_confirm');
       cubit.setDepositReceived(true);
       expect(cubit.state.depositReceivedAt, isNotNull);
       cubit.nextStep(balanceDue: 8000, securityDeposit: 20000);
@@ -336,7 +341,12 @@ void main() {
           booking: _booking(), initialStep: 1)));
       await tester.pumpAndSettle();
       expect(find.text('Advance (paid online)'), findsOneWidget);
-      expect(find.widgetWithText(ChoiceChip, 'EasyPaisa'), findsWidgets);
+      expect(find.byKey(const ValueKey('handover_balance_method_dropdown')),
+          findsOneWidget);
+      expect(find.byKey(const ValueKey('handover_deposit_method_dropdown')),
+          findsOneWidget);
+      expect(find.byKey(const ValueKey('handover_security_deposit_field')),
+          findsOneWidget);
       expect(find.text('Security received'), findsOneWidget);
       expect(find.text('Balance received'), findsOneWidget);
       expect(find.text('View receipt'), findsOneWidget);

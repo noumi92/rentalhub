@@ -11241,4 +11241,60 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get customerDetailNoBookingsInFilter => 'No bookings in this status.';
+
+  @override
+  String get customersTabBookings => 'Bookings';
+
+  @override
+  String get customersTabPersonal => 'Personal Info';
+
+  @override
+  String get customersTabKyc => 'KYC & Docs';
+
+  @override
+  String get bookingsTabWalkIn => 'Walk-in';
+
+  @override
+  String get bookingsTabOnline => 'Online';
+
+  @override
+  String get bookingsFilterPending => 'Pending';
+
+  @override
+  String get ownerBookingDetailTitle => 'Booking Details';
+
+  @override
+  String adminKycApprovedOn(String date) {
+    return 'Approved on $date';
+  }
+
+  @override
+  String get adminKycAlreadyApproved => 'Approved';
+
+  @override
+  String get adminNavDisputesReviews => 'Disputes & Reviews';
+
+  @override
+  String get adminBookingStatsTitle => 'Booking Metrics (Summary Only)';
+
+  @override
+  String get adminDashboardActionRequired => 'Needs Attention';
+
+  @override
+  String get adminDashboardPlatformMetrics => 'Platform Metrics';
+
+  @override
+  String get adminPackagesControlsComingSoon =>
+      'Plan changes and credit grants are coming soon during the initial launch phase.';
+
+  @override
+  String get handoverSecurityAmountLabel => 'Security Amount (Rs.)';
+
+  @override
+  String get handoverWizardBalanceConfirmRequired =>
+      'Confirm balance received (or select Not yet) before continuing.';
+
+  @override
+  String get handoverWizardDepositConfirmRequired =>
+      'Confirm security deposit received (or set amount to 0) before continuing.';
 }

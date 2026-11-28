@@ -239,14 +239,9 @@ House 12, Street 4, Gulberg III, Lahore
       );
       await tester.pumpAndSettle();
       expect(find.text('Muhammad Ahmed'), findsOneWidget);
-      // Phase 3: the booking-total pill renders through
-      // customersBookingTotal ("Rs. 20,500 • 2 bookings"), not the
-      // old customersBookingsLine order.
       expect(find.textContaining('Rs. 20,500 • 2 bookings'), findsOneWidget);
-
-      await tester.tap(find.text('Muhammad Ahmed'));
-      await tester.pumpAndSettle();
-      expect(find.textContaining('Rs. 9,000'), findsWidgets);
+      expect(find.text('View Profile'), findsOneWidget);
+      expect(find.text('Book a Car'), findsOneWidget);
     });
   });
 

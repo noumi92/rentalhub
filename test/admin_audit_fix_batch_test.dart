@@ -300,7 +300,7 @@ void main() {
           home: AdminDashboardView()));
       await tester.pumpAndSettle();
       expect(find.text('Shops waiting for approval'), findsOneWidget);
-      expect(find.textContaining('pending'), findsWidgets);
+      expect(find.textContaining('Pending'), findsWidgets);
     });
 
     testWidgets('activity log shows the filter controls',

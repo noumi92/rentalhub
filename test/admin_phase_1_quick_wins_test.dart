@@ -101,11 +101,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('KYC submissions waiting for review'),
           findsOneWidget);
-      expect(
-          find.textContaining(
-              'Open the KYC review queue to decide them.'),
-          findsOneWidget);
-      expect(find.textContaining('0 open'), findsWidgets);
+      expect(find.text('0'), findsWidgets);
     });
 
     testWidgets('hidden when the seam forbids it', (tester) async {

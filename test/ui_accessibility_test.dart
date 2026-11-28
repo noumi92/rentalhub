@@ -591,7 +591,7 @@ void main() {
       // The list loads async — settle before tapping the filter, or
       // the filter bar is not in the tree yet (loading state).
       await tester.pumpAndSettle();
-      await tester.tap(find.textContaining('New ('));
+      await tester.tap(find.textContaining('Pending ('));
       await tester.pumpAndSettle();
       expect(find.text('Rs. 1,250,000'), findsWidgets);
     });

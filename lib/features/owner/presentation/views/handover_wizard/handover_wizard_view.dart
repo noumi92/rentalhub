@@ -143,7 +143,7 @@ class _HandoverWizardBodyState extends State<_HandoverWizardBody> {
       final result = await HandoverWizardFinalize.run(
         booking: widget.booking,
         shopName: _shopName,
-        securityDeposit: _securityDeposit,
+        securityDeposit: wizard.state.effectiveDeposit(_securityDeposit),
         vehiclePlate: _vehiclePlate,
         vehicleColour: _vehicleColour,
         vehicleFuel: _vehicleFuel,
@@ -170,7 +170,8 @@ class _HandoverWizardBodyState extends State<_HandoverWizardBody> {
     final l10n = AppLocalizations.of(context)!;
     return BlocListener<HandoverWizardCubit, HandoverWizardState>(
       listenWhen: (prev, next) =>
-          prev.error != next.error && next.error != null,
+          (prev.errorTick != next.errorTick || prev.error != next.error) &&
+          next.error != null,
       listener: (context, state) =>
           AppFeedback.showError(context, handoverWizardErrorMessage(l10n, state.error!)),
       child: Scaffold(
@@ -224,7 +225,8 @@ class _HandoverWizardBodyState extends State<_HandoverWizardBody> {
                             return HandoverWizardStepAgreement(
                                 booking: widget.booking,
                                 shopName: _shopName,
-                                securityDeposit: _securityDeposit);
+                                securityDeposit:
+                                    state.effectiveDeposit(_securityDeposit));
                         }
                       },
                     ),

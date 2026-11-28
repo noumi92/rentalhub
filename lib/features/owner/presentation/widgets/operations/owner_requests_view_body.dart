@@ -6,11 +6,8 @@ import '../../../../bookings/domain/entities/booking_entity.dart';
 import '../../../../bookings/utils/booking_request_time.dart';
 import 'requests_list_body.dart';
 
-/// The requests tab's full body — header, pull-to-refresh and the
-/// list — extracted from [OwnerBookingRequestsView] so the view
-/// stays under the 250-line cap. The filtering / oldest-first
-/// order and the per-filter empty label moved here with it, so the
-/// view only owns the stream, the counts and the action handlers.
+/// The bookings tab's full body — header, pull-to-refresh, 2 origin tabs
+/// (Walk-in / Online), minimized status filters, and compact list rows.
 class OwnerRequestsViewBody extends StatelessWidget {
   final String title;
   final Duration? oldestProofWait;
@@ -24,6 +21,8 @@ class OwnerRequestsViewBody extends StatelessWidget {
   final List<BookingEntity> requests;
   final Map<String, DateTime?> requestTimes;
   final String filter;
+  final String originTab;
+  final ValueChanged<String>? onOriginTabChanged;
   final String searchQuery;
   final TextEditingController searchController;
   final ValueChanged<String> onSearchChanged;
@@ -53,6 +52,8 @@ class OwnerRequestsViewBody extends StatelessWidget {
     required this.requests,
     required this.requestTimes,
     required this.filter,
+    this.originTab = 'walk_in',
+    this.onOriginTabChanged,
     required this.searchQuery,
     required this.searchController,
     required this.onSearchChanged,
@@ -72,44 +73,54 @@ class OwnerRequestsViewBody extends StatelessWidget {
   List<BookingEntity> get _filtered {
     final query = searchQuery.trim().toLowerCase();
     final list = requests.where((b) {
-      if (filter != 'all' && b.status != filter) return false;
+      final isWalkIn = b.origin == 'walk_in';
+      if (originTab == 'walk_in' && !isWalkIn) return false;
+      if (originTab == 'online' && isWalkIn) return false;
+      if (!RequestsListBody.matchesStatusBucket(b, filter)) return false;
       if (query.isEmpty) return true;
       return (b.customerName ?? '').toLowerCase().contains(query) ||
           (b.customerPhone ?? '').toLowerCase().contains(query) ||
           (b.vehicleName ?? '').toLowerCase().contains(query) ||
           b.bookingId.toLowerCase().contains(query);
     }).toList();
-    // FG-4: oldest first within the filter (an unknown request time sorts last, never first).
     return sortByRequestAgeOldestFirst(list, requestTimes);
   }
 
-  String _emptyLabel(AppLocalizations l10n) => {'payment_submitted': l10n.requestsEmptyProof, 'approved': l10n.requestsEmptyApproved, 'rejected': l10n.bookingEmptyRejected, 'active': l10n.requestsEmptyActive, 'completed': l10n.requestsEmptyCompleted, 'paid': l10n.requestsEmptyPaid, 'disputed': l10n.requestsEmptyDisputed, 'cancelled': l10n.requestsEmptyCancelled, 'all': l10n.requestsEmptyAll}[filter] ?? l10n.requestsEmptyNew;
+  String _emptyLabel(AppLocalizations l10n) => {
+        'pending': l10n.requestsEmptyNew,
+        'paid': l10n.requestsEmptyPaid,
+        'active': l10n.requestsEmptyActive,
+        'completed': l10n.requestsEmptyCompleted,
+        'cancelled': l10n.requestsEmptyCancelled,
+        'all': l10n.requestsEmptyAll,
+      }[filter] ??
+      l10n.requestsEmptyAll;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final wait = oldestProofWait;
+    final walkInCount = requests.where((b) => b.origin == 'walk_in').length;
+    final onlineCount = requests.length - walkInCount;
+    final filtered = _filtered;
+
     return SafeArea(
-      // C1: MinimalAppBar owns the top inset; SafeArea must not add it
-      // again or the navy header gains a dead band.
       top: false,
       child: Column(
         children: [
           MinimalAppBar(
             title: title,
-            // FG-4: the oldest proof wait, surfaced in the header.
-            subtitle: wait == null
-                ? l10n.requestsAwaitingReview(_filtered.length)
-                : '${l10n.requestsAwaitingReview(_filtered.length)} · ${l10n.requestsOldestProofWait(waitDurationLabel(l10n, wait))}',
+            subtitle: l10n.requestsAwaitingReview(filtered.length),
             actions: [
               IconButton(
-                icon: const Icon(Icons.qr_code_scanner_rounded, color: Colors.white),
+                icon: const Icon(Icons.qr_code_scanner_rounded,
+                    color: Colors.white),
                 tooltip: l10n.requestsScanQrTooltip,
                 onPressed: onScanQr,
               ),
               IconButton(
                 tooltip: l10n.requestsCalendarTooltip,
-                icon: const Icon(Icons.calendar_month_rounded, color: Colors.white),
+                icon: const Icon(Icons.calendar_month_rounded,
+                    color: Colors.white),
                 onPressed: onCalendar,
               ),
             ],
@@ -125,8 +136,12 @@ class OwnerRequestsViewBody extends StatelessWidget {
                 emptyTitle: _emptyLabel(l10n),
                 emptyMessage: emptyMessage,
                 requests: requests,
-                filtered: _filtered,
+                filtered: filtered,
                 filter: filter,
+                originTab: originTab,
+                walkInCount: walkInCount,
+                onlineCount: onlineCount,
+                onOriginTabChanged: onOriginTabChanged,
                 searchController: searchController,
                 onSearchChanged: onSearchChanged,
                 onFilterChanged: onFilterChanged,

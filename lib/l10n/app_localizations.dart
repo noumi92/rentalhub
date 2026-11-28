@@ -19966,6 +19966,108 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No bookings in this status.'**
   String get customerDetailNoBookingsInFilter;
+
+  /// No description provided for @customersTabBookings.
+  ///
+  /// In en, this message translates to:
+  /// **'Bookings'**
+  String get customersTabBookings;
+
+  /// No description provided for @customersTabPersonal.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal Info'**
+  String get customersTabPersonal;
+
+  /// No description provided for @customersTabKyc.
+  ///
+  /// In en, this message translates to:
+  /// **'KYC & Docs'**
+  String get customersTabKyc;
+
+  /// No description provided for @bookingsTabWalkIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Walk-in'**
+  String get bookingsTabWalkIn;
+
+  /// No description provided for @bookingsTabOnline.
+  ///
+  /// In en, this message translates to:
+  /// **'Online'**
+  String get bookingsTabOnline;
+
+  /// No description provided for @bookingsFilterPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get bookingsFilterPending;
+
+  /// No description provided for @ownerBookingDetailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking Details'**
+  String get ownerBookingDetailTitle;
+
+  /// No description provided for @adminKycApprovedOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved on {date}'**
+  String adminKycApprovedOn(String date);
+
+  /// No description provided for @adminKycAlreadyApproved.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved'**
+  String get adminKycAlreadyApproved;
+
+  /// No description provided for @adminNavDisputesReviews.
+  ///
+  /// In en, this message translates to:
+  /// **'Disputes & Reviews'**
+  String get adminNavDisputesReviews;
+
+  /// No description provided for @adminBookingStatsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking Metrics (Summary Only)'**
+  String get adminBookingStatsTitle;
+
+  /// No description provided for @adminDashboardActionRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs Attention'**
+  String get adminDashboardActionRequired;
+
+  /// No description provided for @adminDashboardPlatformMetrics.
+  ///
+  /// In en, this message translates to:
+  /// **'Platform Metrics'**
+  String get adminDashboardPlatformMetrics;
+
+  /// No description provided for @adminPackagesControlsComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan changes and credit grants are coming soon during the initial launch phase.'**
+  String get adminPackagesControlsComingSoon;
+
+  /// No description provided for @handoverSecurityAmountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Security Amount (Rs.)'**
+  String get handoverSecurityAmountLabel;
+
+  /// No description provided for @handoverWizardBalanceConfirmRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm balance received (or select Not yet) before continuing.'**
+  String get handoverWizardBalanceConfirmRequired;
+
+  /// No description provided for @handoverWizardDepositConfirmRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm security deposit received (or set amount to 0) before continuing.'**
+  String get handoverWizardDepositConfirmRequired;
 }
 
 class _AppLocalizationsDelegate
