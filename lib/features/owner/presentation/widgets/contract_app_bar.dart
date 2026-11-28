@@ -12,8 +12,6 @@ class ContractAppBar extends StatelessWidget {
   final String? subtitle;
   final VoidCallback? onBack;
   final VoidCallback onDownload;
-  final VoidCallback onShare;
-  final VoidCallback onPrint;
 
   const ContractAppBar({
     super.key,
@@ -21,8 +19,6 @@ class ContractAppBar extends StatelessWidget {
     this.subtitle,
     this.onBack,
     required this.onDownload,
-    required this.onShare,
-    required this.onPrint,
   });
 
   @override
@@ -37,16 +33,6 @@ class ContractAppBar extends StatelessWidget {
           icon: const Icon(Icons.download_rounded, color: Colors.white),
           tooltip: l10n.contractDownloadPdf,
           onPressed: onDownload,
-        ),
-        IconButton(
-          icon: const Icon(Icons.share_rounded, color: Colors.white),
-          tooltip: l10n.contractSharePdf,
-          onPressed: onShare,
-        ),
-        IconButton(
-          icon: const Icon(Icons.print_rounded, color: Colors.white),
-          tooltip: l10n.contractPrintPdf,
-          onPressed: onPrint,
         ),
       ],
     );

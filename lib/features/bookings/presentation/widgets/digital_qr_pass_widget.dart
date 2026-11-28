@@ -3,7 +3,6 @@ import 'package:intl/intl.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/pakistani_plate_widget.dart';
-import '../../../handover/data/datasources/pdf_contract_generator.dart';
 import '../../../../l10n/app_localizations.dart';
 
 class DigitalQrPassWidget extends StatelessWidget {
@@ -116,8 +115,7 @@ class DigitalQrPassWidget extends StatelessWidget {
                         // at handover; the bookingId below stays as
                         // the manual fallback.
                         QrImageView(
-                          data: PdfContractGenerator.verificationUrlFor(
-                              bookingId),
+                          data: bookingId,
                           size: 110,
                         ),
                         Text(

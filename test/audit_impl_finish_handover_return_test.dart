@@ -235,8 +235,8 @@ void main() {
     });
   });
 
-  group('Finish build — O24 share options', () {
-    testWidgets('share sheet lists WhatsApp, Email and Print',
+  group('Finish build — O24 download-only agreement actions', () {
+    testWidgets('contract app bar exposes Download PDF only (no Share or Print)',
         (tester) async {
       await _pump(
         tester,
@@ -245,17 +245,9 @@ void main() {
           pdfBytes: Uint8List.fromList(const [37, 80, 68, 70]),
         ),
       );
-      await tester.tap(find.byTooltip('Share PDF'));
-      await tester.pumpAndSettle();
-      expect(find.text('Share Agreement'), findsOneWidget);
-      expect(find.text('WhatsApp'), findsOneWidget);
-      expect(find.text('Email'), findsOneWidget);
-      expect(find.text('Print'), findsOneWidget);
-      expect(
-        find.text(
-            'The agreement file is shared to the app you choose. Nothing is sent automatically.'),
-        findsOneWidget,
-      );
+      expect(find.byTooltip('Download PDF'), findsOneWidget);
+      expect(find.byTooltip('Share PDF'), findsNothing);
+      expect(find.byTooltip('Print PDF'), findsNothing);
     });
   });
 }

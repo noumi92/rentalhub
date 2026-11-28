@@ -41,10 +41,12 @@ class _OwnerQrScanViewState extends State<OwnerQrScanView> {
   }
 
   String? _bookingIdFromCode(String code) {
-    final uri = Uri.tryParse(code);
+    final trimmed = code.trim();
+    if (trimmed.isEmpty) return null;
+    final uri = Uri.tryParse(trimmed);
     final id = uri?.queryParameters['id'];
     if (id != null && id.isNotEmpty) return id;
-    if (code.startsWith('RH-')) return code;
+    if (trimmed.startsWith('RH-') || !trimmed.contains('://')) return trimmed;
     return null;
   }
 

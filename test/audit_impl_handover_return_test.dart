@@ -204,14 +204,15 @@ void main() {
       expect(find.text('Message Customer'), findsOneWidget);
     });
 
-    testWidgets('agreement signed renders banner and actions',
+    testWidgets('agreement signed renders banner and download/view actions only',
         (tester) async {
       await _pump(
           tester, OwnerAgreementSignedView(booking: _testBooking()));
       expect(find.text('Agreement Signed Successfully'), findsOneWidget);
       expect(find.text('Download PDF'), findsOneWidget);
-      expect(find.text('Share'), findsOneWidget);
-      expect(find.text('Send to Customer'), findsOneWidget);
+      expect(find.text('View Agreement'), findsOneWidget);
+      expect(find.text('Share'), findsNothing);
+      expect(find.text('Send to Customer'), findsNothing);
       expect(find.text('Continue'), findsOneWidget);
     });
   });

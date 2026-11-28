@@ -373,7 +373,10 @@ service cloud.firestore {
             request.resource.data.diff(resource.data).affectedKeys().hasOnly(['customerRated', 'updatedAt']))
         ))
       );
-      allow delete: if false; // Audit trail preserved permanently
+      allow delete: if isSignedIn() && (
+        isBookingShopOwner(resource.data) ||
+        isAdminOps()
+      );
     }
 
     // Booking General & Driver Settings
@@ -406,12 +409,11 @@ service cloud.firestore {
         isShopOwner(request.resource.data.get('shopId', '')) ||
         isAdminOps()
       );
-      allow update: if isSignedIn() && (
+      allow update, delete: if isSignedIn() && (
         isShopOwner(resource.data.get('shop_id', '')) ||
         isShopOwner(resource.data.get('shopId', '')) ||
         isAdminOps()
       );
-      allow delete: if false; // Signed agreements are permanent
     }
 
     // Handover & Return Field Records
@@ -436,12 +438,11 @@ service cloud.firestore {
         isShopOwner(request.resource.data.get('shop_id', '')) ||
         isAdminOps()
       );
-      allow update: if isSignedIn() && (
+      allow update, delete: if isSignedIn() && (
         isShopOwner(resource.data.get('shopId', '')) ||
         isShopOwner(resource.data.get('shop_id', '')) ||
         isAdminOps()
       );
-      allow delete: if false;
     }
 
     match /return_settlements/{settlementId} {
@@ -465,12 +466,11 @@ service cloud.firestore {
         isShopOwner(request.resource.data.get('shop_id', '')) ||
         isAdminOps()
       );
-      allow update: if isSignedIn() && (
+      allow update, delete: if isSignedIn() && (
         isShopOwner(resource.data.get('shopId', '')) ||
         isShopOwner(resource.data.get('shop_id', '')) ||
         isAdminOps()
       );
-      allow delete: if false;
     }
 
     match /return_damage_reports/{reportId} {
@@ -549,12 +549,11 @@ service cloud.firestore {
         isShopOwner(request.resource.data.get('shop_id', '')) ||
         isAdminOps()
       );
-      allow update: if isSignedIn() && (
+      allow update, delete: if isSignedIn() && (
         isShopOwner(resource.data.get('shopId', '')) ||
         isShopOwner(resource.data.get('shop_id', '')) ||
         isAdminOps()
       );
-      allow delete: if false;
     }
 
     // =========================================================================
@@ -602,12 +601,11 @@ service cloud.firestore {
         isShopOwner(request.resource.data.get('shop_id', '')) ||
         isSuperAdmin()
       );
-      allow update: if isSignedIn() && (
+      allow update, delete: if isSignedIn() && (
         isShopOwner(resource.data.get('shopId', '')) ||
         isShopOwner(resource.data.get('shop_id', '')) ||
         isSuperAdmin()
       );
-      allow delete: if false; // Financial ledger entries are immutable
     }
 
     match /cash_closings/{id} {
@@ -627,12 +625,11 @@ service cloud.firestore {
         isShopOwner(request.resource.data.get('shop_id', '')) ||
         isSuperAdmin()
       );
-      allow update: if isSignedIn() && (
+      allow update, delete: if isSignedIn() && (
         isShopOwner(resource.data.get('shopId', '')) ||
         isShopOwner(resource.data.get('shop_id', '')) ||
         isSuperAdmin()
       );
-      allow delete: if false;
     }
 
     match /finance_categories/{id} {

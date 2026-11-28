@@ -42,6 +42,7 @@ class ShopDetailActions extends StatelessWidget {
         windowSizeClassOf(context) == WindowSizeClass.compact;
     if (compact) {
       return Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (onReviewApplication != null) ...[

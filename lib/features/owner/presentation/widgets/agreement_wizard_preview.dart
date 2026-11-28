@@ -21,7 +21,7 @@ import 'contract_paper_sheet.dart';
 class AgreementWizardPreview extends StatelessWidget {
   final BookingEntity booking;
   final Uint8List? pdfBytes;
-  final String verificationUrl;
+  final String? verificationUrl;
   final int? odometer;
   final String? fuelLevel;
   final int? securityDeposit;
@@ -38,7 +38,7 @@ class AgreementWizardPreview extends StatelessWidget {
     super.key,
     required this.booking,
     required this.pdfBytes,
-    required this.verificationUrl,
+    this.verificationUrl,
     required this.odometer,
     required this.fuelLevel,
     this.securityDeposit,
@@ -121,7 +121,7 @@ class AgreementWizardPreview extends StatelessWidget {
                   ],
                 ),
               ),
-              QrImageView(data: verificationUrl, size: 72),
+              QrImageView(data: booking.bookingId, size: 72),
             ],
           ),
         ),

@@ -1,27 +1,24 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../l10n/app_localizations.dart';
 
+import '../../../../core/routing/route_names.dart';
 import '../../../../core/theme/card_decoration.dart';
-import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/debounced_button.dart';
 import '../../../../core/widgets/success_banner.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
-import '../../../handover/data/datasources/pdf_contract_generator.dart';
 import '../services/contract_pdf_actions.dart';
-import 'contract_share_sheet.dart';
-import 'contract_verify_card.dart';
 
-/// Item 10 (O48): the share / download step — "Signed by all 3
-/// parties" (only when the three signatures are genuinely present),
-/// the file card with TRUE metadata (A4, 1 page, real file size —
-/// never the spec's "2 pages"), the QR-verified state, Download /
-/// Share on WhatsApp / Print (single copy — a copy count is out of
-/// scope) / Copy verification link, and Done to Rental Started.
+/// Item 10 (O48): the agreement ready step — Download PDF and
+/// View Agreement only (no public verification links or share sheets),
+/// plus Done to return to bookings.
 class AgreementWizardShare extends StatelessWidget {
   final BookingEntity booking;
   final Uint8List? pdfBytes;
   final bool signedByAll;
+  final VoidCallback? onViewAgreement;
   final VoidCallback onDone;
 
   const AgreementWizardShare({
@@ -29,6 +26,7 @@ class AgreementWizardShare extends StatelessWidget {
     required this.booking,
     required this.pdfBytes,
     required this.signedByAll,
+    this.onViewAgreement,
     required this.onDone,
   });
 
@@ -44,8 +42,6 @@ class AgreementWizardShare extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final bytes = pdfBytes;
-    final verificationUrl =
-        PdfContractGenerator.verificationUrlFor(booking.bookingId);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -97,33 +93,12 @@ class AgreementWizardShare extends StatelessWidget {
                                 color: Theme.of(context)
                                     .colorScheme
                                     .onSurfaceVariant)),
-                    const SizedBox(height: 6),
-                    if (bytes != null)
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.verified_rounded,
-                              size: 14,
-                              color: Theme.of(context).colorScheme.primary),
-                          const SizedBox(width: 4),
-                          Text(l10n.agreementWizardQrVerified,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .labelSmall
-                                  ?.copyWith(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .primary)),
-                        ],
-                      ),
                   ],
                 ),
               ),
             ],
           ),
         ),
-        const SizedBox(height: 16),
-        ContractVerifyCard(verificationUrl: verificationUrl),
         const SizedBox(height: 16),
         DebouncedButton(
           text: l10n.agreementSignedDownloadPdf,
@@ -135,54 +110,14 @@ class AgreementWizardShare extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
-        DebouncedButton(
-          text: l10n.agreementWizardShareOnWhatsapp,
-          icon: Icons.message_rounded,
-          onPressed: () =>
-              ContractPdfActions.sendVerificationToCustomer(
-            context: context,
-            booking: booking,
-          ),
-        ),
-        const SizedBox(height: 12),
-        DebouncedButton(
-          text: l10n.contractSharePrint,
-          icon: Icons.print_rounded,
-          onPressed: () => ContractPdfActions.printPdf(
-            context: context,
-            bytes: bytes,
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(l10n.agreementWizardPrintSingleCopy,
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant)),
-        const SizedBox(height: 12),
-        DebouncedButton(
-          text: l10n.agreementWizardCopyLink,
-          icon: Icons.link_rounded,
-          onPressed: () async {
-            await Clipboard.setData(
-                ClipboardData(text: verificationUrl));
-            if (context.mounted) {
-              AppFeedback.showSuccess(
-                  context, l10n.agreementWizardLinkCopied);
-            }
-          },
-        ),
-        const SizedBox(height: 12),
-        ListTile(
-          contentPadding: EdgeInsets.zero,
-          leading: const Icon(Icons.share_rounded),
-          title: Text(l10n.contractShareTitle),
-          trailing:
-              const Icon(Icons.chevron_right_rounded),
-          onTap: () => ContractShareSheet.show(
-            context: context,
-            bookingId: booking.bookingId,
-            bytes: bytes,
-          ),
+        OutlinedButton.icon(
+          onPressed: onViewAgreement ??
+              () => context.push(
+                    RouteNames.ownerContract
+                        .replaceFirst(':id', booking.bookingId),
+                  ),
+          icon: const Icon(Icons.description_rounded),
+          label: Text(l10n.rentalStartedViewAgreement),
         ),
         const SizedBox(height: 20),
         DebouncedButton(

@@ -11,7 +11,6 @@ import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
 import '../../../bookings/utils/booking_next_step.dart';
 import '../../../handover/data/datasources/handover_local_data_source.dart';
-import '../../../handover/data/datasources/pdf_contract_generator.dart';
 import '../services/contract_pdf_actions.dart';
 import '../widgets/agreement_wizard_preview.dart';
 import '../widgets/agreement_wizard_share.dart';
@@ -199,8 +198,6 @@ class _OwnerAgreementWizardViewState
                           ? AgreementWizardPreview(
                               booking: booking,
                               pdfBytes: _pdfBytes,
-                              verificationUrl: PdfContractGenerator
-                                  .verificationUrlFor(booking.bookingId),
                               odometer: _odometer,
                               fuelLevel: _fuelLevel,
                               securityDeposit: widget.securityDeposit,
@@ -236,6 +233,8 @@ class _OwnerAgreementWizardViewState
                                   booking: booking,
                                   pdfBytes: _pdfBytes,
                                   signedByAll: _signedByAll,
+                                  onViewAgreement: () =>
+                                      setState(() => _step = 0),
                                   onDone: () => goToAllOwnerBookings(context),
                                 ),
                     ),

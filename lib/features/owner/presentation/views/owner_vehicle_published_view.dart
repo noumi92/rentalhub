@@ -25,15 +25,9 @@ class OwnerVehiclePublishedView extends StatelessWidget {
     this.onBack,
   });
 
-  /// The public listing link. The web page behind it does not exist
-  /// yet — see the class doc.
-  static String listingLink(String vehicleId) =>
-      'https://rentalhub.62onlinestore.com/vehicle/$vehicleId';
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final link = listingLink(vehicle.vehicleId);
     return Scaffold(
       body: SafeArea(
         top: false,
@@ -81,48 +75,7 @@ class OwnerVehiclePublishedView extends StatelessWidget {
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                       textAlign: TextAlign.center,
                     ),
-                    const SizedBox(height: 20),
-                    Container(
-                      padding: const EdgeInsets.all(14),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                        borderRadius: BorderRadius.circular(14),
-                        border: Border.all(color: Theme.of(context).dividerColor),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.link_rounded, size: 20),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: Text(link, maxLines: 2, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.labelMedium),
-                          ),
-                        ],
-                      ),
-                    ),
                     const SizedBox(height: 24),
-                    // RQ-F1: the listing actions (View in App / Copy
-                    // Link / Share Listing) are hidden until the
-                    // public landing page exists. The note below says
-                    // so honestly instead of offering a dead link.
-                    Text(
-                      l10n.shareLinkNote,
-                      style: Theme.of(context).textTheme.labelSmall,
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 12),
-                    // Audit §5 finish (P4-O06): open the full share
-                    // screen (pick a price, then share or copy) — its
-                    // own share/copy actions are likewise disabled
-                    // until the landing page exists (RQ-F1).
-                    SizedBox(
-                      width: double.infinity,
-                      child: OutlinedButton.icon(
-                        onPressed: () => context.push(RouteNames.ownerShareWithCustomers.replaceFirst(':vehicleId', vehicle.vehicleId)),
-                        icon: const Icon(Icons.group_rounded, size: 18),
-                        label: Text(l10n.shareTitle),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
                     TextButton.icon(
                       onPressed: () => context.push(RouteNames.ownerAddVehicle),
                       icon: const Icon(Icons.add_circle_outline_rounded, size: 18),

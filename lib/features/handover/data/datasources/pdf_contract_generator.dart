@@ -4,7 +4,6 @@ import 'dart:typed_data';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
-import '../../../../core/constants/api_endpoints.dart';
 import '../../../../core/utils/date_format.dart';
 import '../../../../core/utils/money_format.dart';
 import 'pdf_signature_box.dart';
@@ -60,12 +59,6 @@ class PdfContractGenerator {
     if (nights == 0) return 0;
     return nights * (driverNightStayPkr ?? 2000);
   }
-  /// booking id; the PHP page reads the matching `agreements` doc
-  /// from Firestore (see `verify_agreement.php`, D6).
-  static String verificationUrlFor(String agreementId) {
-    return '${ApiEndpoints.cpanelBaseUrl}/api/verify_agreement.php'
-        '?id=${Uri.encodeComponent(agreementId)}';
-  }
 
   static Future<Uint8List> generateA4Agreement({
     required String agreementId,
@@ -118,7 +111,6 @@ class PdfContractGenerator {
     String? tollsPaidBy,
   }) async {
     final doc = pw.Document();
-    final verifyUrl = verificationUrlFor(agreementId);
     final isOutOfCity = tripType == 'out_of_city';
     final nights = nightStayNights(pickupTime, returnTime);
     final nightStay = nightStayTotal(
@@ -309,14 +301,14 @@ class PdfContractGenerator {
                 children: [
                   pw.BarcodeWidget(
                     barcode: pw.Barcode.qrCode(),
-                    data: verifyUrl,
+                    data: agreementId,
                     width: 80,
                     height: 80,
                   ),
                   pw.SizedBox(width: 12),
                   pw.Expanded(
                     child: pw.Text(
-                      'Verify this agreement:\n$verifyUrl',
+                      'Agreement Reference:\n#$agreementId',
                       style: pw.TextStyle(
                           fontSize: 9, color: PdfColors.grey700),
                     ),

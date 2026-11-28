@@ -653,6 +653,11 @@ void main() {
         // Replaced by showCustomerAddedBottomSheet in the wizard;
         // route stays registered as a deep-link fallback.
         'ownerCustomerAdded',
+        // Staff & Roles removed from Owner Settings; route stays
+        // registered for any existing tests/deep links.
+        'ownerStaffRoles',
+        // Public vehicle sharing links removed from the app.
+        'ownerShareWithCustomers',
       };
 
       final routeNames =

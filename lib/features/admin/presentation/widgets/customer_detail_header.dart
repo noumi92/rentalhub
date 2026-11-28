@@ -130,6 +130,7 @@ class CustomerDetailStickyActions extends StatelessWidget {
     );
     if (compact) {
       return Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           watchlist,

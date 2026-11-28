@@ -391,23 +391,11 @@ void main() {
       await tester.pump();
 
       expect(find.text('Step 2 of 2'), findsOneWidget);
-      expect(find.textContaining('rentalhub.62onlinestore.com/vehicle/veh-c-1'), findsOneWidget);
+      expect(find.textContaining('62onlinestore.com'), findsNothing);
       expect(find.textContaining('Rs. 216,000'), findsOneWidget);
-      // RQ-F1 (2026-11-13): the step-2 Share / Copy Link actions are
-      // DISABLED until the web landing page behind the link exists —
-      // the link is the agreed public listing address, not a live
-      // page. Both buttons still render, but tapping them does
-      // nothing and no 'Listing link copied' snackbar appears; the
-      // screen says so honestly instead (same note as the published
-      // confirmation screen).
-      expect(find.text('The web listing page behind this link is not live yet.'), findsOneWidget);
-      final shareBtn = tester.widget<ElevatedButton>(
-          find.widgetWithText(ElevatedButton, 'Share Listing'));
-      expect(shareBtn.onPressed, isNull);
-      final copyBtn = tester.widget<OutlinedButton>(
-          find.widgetWithText(OutlinedButton, 'Copy Link'));
-      expect(copyBtn.onPressed, isNull);
-      expect(find.text('Listing link copied'), findsNothing);
+      expect(find.text('Share Listing'), findsNothing);
+      expect(find.text('Copy Link'), findsNothing);
+      expect(find.text('Done'), findsOneWidget);
     });
   });
 

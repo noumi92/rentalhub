@@ -9,7 +9,6 @@ import '../../../../../core/widgets/pakistani_plate_widget.dart';
 import '../../../../bookings/domain/entities/booking_entity.dart';
 import '../../../../bookings/presentation/widgets/booking_status_chip.dart';
 import '../../../../bookings/presentation/widgets/digital_qr_pass_widget.dart';
-import '../../../../handover/data/datasources/pdf_contract_generator.dart';
 import '../../../../../l10n/app_localizations.dart';
 
 /// Home redesign (2026-11-24): the dense Home booking card — one
@@ -198,9 +197,7 @@ class HomeBookingCard extends StatelessWidget {
                                       color: Theme.of(context).dividerColor),
                                 ),
                                 child: QrImageView(
-                                  data: PdfContractGenerator
-                                      .verificationUrlFor(
-                                          booking.bookingId),
+                                  data: booking.bookingId,
                                   size: 48,
                                   semanticsLabel: l10n.ticketShowCode,
                                 ),

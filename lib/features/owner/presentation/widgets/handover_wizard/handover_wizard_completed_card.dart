@@ -77,13 +77,13 @@ class HandoverWizardCompletedCard extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         FilledButton.icon(
-          onPressed: () => ContractPdfActions.sharePdf(
+          onPressed: () => ContractPdfActions.downloadPdf(
             context: context,
             bookingId: booking.bookingId,
             bytes: state.completedPdfBytes,
           ),
-          icon: const Icon(Icons.share_rounded),
-          label: Text(l10n.handoverWizardSharePdf),
+          icon: const Icon(Icons.download_rounded),
+          label: Text(l10n.agreementSignedDownloadPdf),
         ),
         const SizedBox(height: 12),
         OutlinedButton.icon(

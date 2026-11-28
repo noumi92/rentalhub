@@ -243,17 +243,13 @@ void main() {
   });
 
   group('Published confirmation', () {
-    // RQ-F1 (2026-11-13): the listing actions are hidden until the
-    // public landing page exists — the screen shows the car, the rate,
-    // the agreed link shape and the honest note instead of dead links.
-    testWidgets('shows the car, the daily rate and the honest note, not the share actions', (tester) async {
+    testWidgets('shows the car and daily rate with no public link or share actions', (tester) async {
       await tester.pumpWidget(_wrap(OwnerVehiclePublishedView(vehicle: _vehicle)));
       await tester.pumpAndSettle();
 
       expect(find.textContaining('Honda Civic Oriel'), findsWidgets);
       expect(find.text('Rs. 9,000/day'), findsOneWidget);
-      expect(find.textContaining('https://rentalhub.62onlinestore.com/vehicle/veh-d-1'), findsOneWidget);
-      expect(find.text('The web listing page behind this link is not live yet.'), findsOneWidget);
+      expect(find.textContaining('62onlinestore.com'), findsNothing);
       expect(find.text('View in App'), findsNothing);
       expect(find.text('Copy Link'), findsNothing);
       expect(find.text('Share Listing'), findsNothing);

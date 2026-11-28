@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:printing/printing.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/services/signature_profile_service.dart';
@@ -225,41 +224,6 @@ class ContractPdfActions {
       driverNightStayPkr: charges.driverNightStayPkr,
       tollsPaidBy: charges.tollsPaidBy,
     );
-  }
-
-  /// Item 10 (O48): opens a WhatsApp chat with the customer
-  /// carrying the agreement verification link (manual send, same
-  /// pattern as the dues reminder — no automated send, D2-gated).
-  /// Returns false when there is no phone number or WhatsApp did
-  /// not open, so the caller can say so instead of claiming a send.
-  static Future<bool> sendVerificationToCustomer({
-    required BuildContext context,
-    required BookingEntity booking,
-  }) async {
-    final l10n = AppLocalizations.of(context)!;
-    final phone = booking.customerPhone ?? '';
-    final digits = phone.replaceAll(RegExp(r'\D'), '');
-    final number = digits.startsWith('92')
-        ? digits
-        : digits.startsWith('0')
-            ? '92${digits.substring(1)}'
-            : digits;
-    if (number.isEmpty) {
-      AppFeedback.showError(context, l10n.rentalStartedNoPhone);
-      return false;
-    }
-    final url = PdfContractGenerator.verificationUrlFor(booking.bookingId);
-    final message = l10n.agreementSignedSendMessage(
-      booking.customerName ?? l10n.requestsCustomerFallback,
-      url,
-    );
-    final uri = Uri.parse(
-        'https://wa.me/$number?text=${Uri.encodeComponent(message)}');
-    final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
-    if (!opened && context.mounted) {
-      AppFeedback.showError(context, l10n.rentalStartedWhatsappFailed);
-    }
-    return opened;
   }
 
   /// Item 10 (O46): the customer's driving-license number off

@@ -17,15 +17,17 @@ class AdminStickyActionBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       top: false,
-      child: Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-          border: Border(
-            top: BorderSide(color: Theme.of(context).dividerColor),
+      child: IntrinsicHeight(
+        child: Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            border: Border(
+              top: BorderSide(color: Theme.of(context).dividerColor),
+            ),
           ),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+          child: child,
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-        child: child,
       ),
     );
   }

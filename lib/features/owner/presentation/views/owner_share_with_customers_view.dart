@@ -6,17 +6,8 @@ import '../../../../core/widgets/debounced_button.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../fleet/domain/entities/vehicle_entity.dart';
-import 'owner_vehicle_published_view.dart';
 
-/// Audit §5 finish (P4-O06): share one vehicle with customers.
-/// Step 1 of 2 — pick the price to share (Daily / Weekly / Monthly,
-/// all read from the vehicle's real packages and rates). Step 2 —
-/// review the link and share it or copy it. RQ-F1 (2026-11-13): the
-/// step-2 Share / Copy Link actions are DISABLED until the web
-/// landing page behind the link exists — the link is the agreed
-/// public listing address, not a live page, and the screen says so
-/// honestly instead of faking it. (The copy/share helpers live in
-/// git history; restore them once the landing page is live.)
+/// Vehicle rate summary view (public listing links removed).
 class OwnerShareWithCustomersView extends StatefulWidget {
   final VehicleEntity vehicle;
   final VoidCallback? onBack;
@@ -74,7 +65,6 @@ class _OwnerShareWithCustomersViewState
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final v = widget.vehicle;
-    final link = OwnerVehiclePublishedView.listingLink(v.vehicleId);
     final periods = <(String, String, int?)>[
       ('Daily', l10n.ratesCustomPeriodDaily, v.rates.daily24),
       ('Weekly', l10n.ratesCustomPeriodWeekly, _priceOf('Weekly')),
@@ -128,10 +118,6 @@ class _OwnerShareWithCustomersViewState
                               ],
                             ),
                           ),
-                          const SizedBox(height: 12),
-                          Text(l10n.shareLinkNote,
-                              style: Theme.of(context).textTheme.labelSmall,
-                              textAlign: TextAlign.center),
                         ],
                       )
                     : Column(
@@ -159,29 +145,10 @@ class _OwnerShareWithCustomersViewState
                                           .titleMedium
                                           ?.copyWith(
                                               fontWeight: FontWeight.w600)),
-                                  const SizedBox(height: 12),
-                                  Row(
-                                    children: [
-                                      const Icon(Icons.link_rounded, size: 20),
-                                      const SizedBox(width: 10),
-                                      Expanded(
-                                        child: Text(link,
-                                            maxLines: 2,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .labelMedium),
-                                      ),
-                                    ],
-                                  ),
                                 ],
                               ),
                             ),
                           ),
-                          const SizedBox(height: 12),
-                          Text(l10n.shareLinkNote,
-                              style: Theme.of(context).textTheme.labelSmall,
-                              textAlign: TextAlign.center),
                         ],
                       ),
               ),
@@ -198,29 +165,10 @@ class _OwnerShareWithCustomersViewState
                       icon: Icons.arrow_forward_rounded,
                       onPressed: () async => setState(() => _step = 2),
                     )
-                  : Column(
-                      children: [
-                        // RQ-F1: disabled until the public listing
-                        // landing page exists — the link above leads
-                        // nowhere yet (see the note on step 2).
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton.icon(
-                            onPressed: null,
-                            icon: const Icon(Icons.share_rounded, size: 18),
-                            label: Text(l10n.vehiclePublishedShareListing),
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        SizedBox(
-                          width: double.infinity,
-                          child: OutlinedButton.icon(
-                            onPressed: null,
-                            icon: const Icon(Icons.copy_rounded, size: 18),
-                            label: Text(l10n.vehiclePublishedCopyLink),
-                          ),
-                        ),
-                      ],
+                  : DebouncedButton(
+                      text: l10n.done,
+                      icon: Icons.check_rounded,
+                      onPressed: () async => _pop(),
                     ),
             ),
           ],

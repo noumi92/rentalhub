@@ -11,14 +11,11 @@ import '../../../../core/widgets/app_state_views.dart';
 import '../../../../core/widgets/debounced_button.dart';
 import '../widgets/contract_app_bar.dart';
 import '../widgets/contract_fare_table.dart';
-import '../widgets/contract_share_sheet.dart';
 import '../widgets/contract_signing_section.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
 import '../../../handover/data/datasources/handover_local_data_source.dart';
-import '../../../handover/data/datasources/pdf_contract_generator.dart';
 import '../services/contract_pdf_actions.dart';
 import '../widgets/contract_paper_sheet.dart';
-import '../widgets/contract_verify_card.dart';
 
 /// Phase B (E3): the contract screen shows the real generated A4
 /// PDF — shareable and printable — plus the verification QR. The
@@ -63,7 +60,6 @@ class _OwnerContractViewState extends State<OwnerContractView> {
   Uint8List? _pdfBytes;
   Uint8List? _customerSig;
   Uint8List? _ownerSig;
-  String? _verificationUrl;
   int? _deposit;
   // C11 follow-up: odometer/fuel used to default to 45200 /
   // '4/4 (Full)'. They now come from the stored handover.
@@ -93,8 +89,6 @@ class _OwnerContractViewState extends State<OwnerContractView> {
     _pdfBytes = widget.pdfBytes;
     _customerSig = widget.customerSignaturePng;
     _ownerSig = widget.ownerSignaturePng;
-    _verificationUrl = widget.verificationUrl ??
-        PdfContractGenerator.verificationUrlFor(widget.booking.bookingId);
     _deposit = widget.securityDeposit;
     if (_pdfBytes == null) {
       _loadingStored = true;
@@ -151,10 +145,6 @@ class _OwnerContractViewState extends State<OwnerContractView> {
               subtitle: l10n.contractLegalRef(booking.bookingId),
               onBack: widget.onBack,
               onDownload: () => ContractPdfActions.downloadPdf(context: context, bookingId: booking.bookingId, bytes: _pdfBytes),
-              // Finish build (O24): Share opens the WhatsApp / Email /
-              // Print option sheet instead of sharing directly.
-              onShare: () => ContractShareSheet.show(context: context, bookingId: booking.bookingId, bytes: _pdfBytes),
-              onPrint: () => ContractPdfActions.printPdf(context: context, bytes: _pdfBytes),
             ),
             Expanded(
               child: _loadingStored
@@ -201,11 +191,6 @@ class _OwnerContractViewState extends State<OwnerContractView> {
                                 onPdfRegenerated: (bytes) => setState(() => _pdfBytes = bytes),
                               ),
                               const SizedBox(height: 20),
-                              if (_verificationUrl != null) ...[
-                                ContractVerifyCard(
-                                    verificationUrl: _verificationUrl!),
-                                const SizedBox(height: 20),
-                              ],
                               // §15: Proceed only once handed over
                               // ('active'); C11: go_router, not push.
                               // Finish build (O25): Proceed lands on

@@ -6,7 +6,6 @@ import '../../../../core/widgets/offline_banner.dart';
 import '../../../../core/widgets/pakistani_plate_widget.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
 import '../../../bookings/presentation/widgets/booking_status_chip.dart';
-import '../../../handover/data/datasources/pdf_contract_generator.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../core/utils/date_format.dart';
 import '../../../../core/utils/money_format.dart';
@@ -107,8 +106,7 @@ class BookingTicketCard extends StatelessWidget {
                 Row(
                   children: [
                     QrImageView(
-                      data: PdfContractGenerator.verificationUrlFor(
-                          booking.bookingId),
+                      data: booking.bookingId,
                       size: 84,
                       eyeStyle: QrEyeStyle(
                         eyeShape: QrEyeShape.square,

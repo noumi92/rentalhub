@@ -180,8 +180,8 @@ void main() {
     });
   });
 
-  group('Item 10 — O48 share / download', () {
-    testWidgets('share step shows true file metadata and copy-link action',
+  group('Item 10 — O48 download / view agreement', () {
+    testWidgets('ready step shows true file metadata and download/view actions only',
         (tester) async {
       final pdf = await _realPdf();
       await _pump(
@@ -201,13 +201,11 @@ void main() {
       // True metadata: A4, 1 page, real size — never "2 pages".
       expect(find.textContaining('A4 · 1 page'), findsOneWidget);
       expect(find.textContaining('2 pages'), findsNothing);
-      expect(find.text('QR verified'), findsOneWidget);
       expect(find.text('Download PDF'), findsOneWidget);
-      expect(find.text('Share on WhatsApp'), findsOneWidget);
-      expect(find.text('Print'), findsOneWidget);
-      expect(find.text('Copy verification link'), findsOneWidget);
-      // The copy action also exists on the QR card as an icon button.
-      expect(find.byTooltip('Copy verification link'), findsOneWidget);
+      expect(find.text('View Agreement'), findsOneWidget);
+      expect(find.text('Share on WhatsApp'), findsNothing);
+      expect(find.text('Print'), findsNothing);
+      expect(find.text('Copy verification link'), findsNothing);
       expect(find.text('Done'), findsOneWidget);
     });
   });

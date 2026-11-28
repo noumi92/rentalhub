@@ -59,13 +59,6 @@ void main() {
       expect(header, '%PDF-');
       expect(bytes.length, greaterThan(1000));
     });
-
-    test('verification URL points at the cPanel verify page', () {
-      expect(
-        PdfContractGenerator.verificationUrlFor('RH-E3-1'),
-        'https://rentalhub.62onlinestore.com/api/verify_agreement.php?id=RH-E3-1',
-      );
-    });
   });
 
   group('Phase E (E2/E3) — handover saves the real PDF offline', () {
@@ -217,7 +210,8 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      expect(find.byType(QrImageView), findsOneWidget);
+      expect(find.byType(QrImageView), findsNothing);
+      expect(find.textContaining('62onlinestore.com'), findsNothing);
       expect(find.text('35202-1234567-1'), findsOneWidget);
       expect(find.text('Rs. 20,000 (refundable)'), findsOneWidget);
       // The old fake claims are gone.
