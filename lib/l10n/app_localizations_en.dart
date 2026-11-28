@@ -11094,7 +11094,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get adminKpiWalkInCustomers => 'Walk-in Customers';
 
   @override
-  String get adminKpiShopManagedOnly => 'Shop-managed (KPI only)';
+  String get adminKpiShopManagedOnly => 'Shop-managed';
 
   @override
   String get adminKpiOnlineBookings => 'Online Bookings';
@@ -11275,7 +11275,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get adminNavDisputesReviews => 'Disputes & Reviews';
 
   @override
-  String get adminBookingStatsTitle => 'Booking Metrics (Summary Only)';
+  String get adminBookingStatsTitle => 'Booking Metrics';
 
   @override
   String get adminDashboardActionRequired => 'Needs Attention';

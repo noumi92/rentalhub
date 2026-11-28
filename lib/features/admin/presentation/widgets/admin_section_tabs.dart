@@ -166,6 +166,12 @@ abstract final class AdminSectionTabs {
     final l10n = _l10n(context);
     return [
       AdminSubTab(
+        label: l10n.adminTabPackageCatalog,
+        route: '${RouteNames.adminSubscriptions}?tab=catalog',
+        icon: Icons.inventory_2_rounded,
+        isActive: activeTab == 'catalog',
+      ),
+      AdminSubTab(
         label: l10n.adminTabShopPlans,
         route: '${RouteNames.adminSubscriptions}?tab=plans',
         icon: Icons.card_membership_rounded,
@@ -184,12 +190,6 @@ abstract final class AdminSectionTabs {
         icon: Icons.chat_rounded,
         badgeCount: creditsBadge,
         isActive: activeTab == 'whatsapp',
-      ),
-      AdminSubTab(
-        label: l10n.adminTabPackageCatalog,
-        route: '${RouteNames.adminSubscriptions}?tab=catalog',
-        icon: Icons.inventory_2_rounded,
-        isActive: activeTab == 'catalog',
       ),
     ];
   }

@@ -19700,7 +19700,7 @@ abstract class AppLocalizations {
   /// No description provided for @adminKpiShopManagedOnly.
   ///
   /// In en, this message translates to:
-  /// **'Shop-managed (KPI only)'**
+  /// **'Shop-managed'**
   String get adminKpiShopManagedOnly;
 
   /// No description provided for @adminKpiOnlineBookings.
@@ -20030,7 +20030,7 @@ abstract class AppLocalizations {
   /// No description provided for @adminBookingStatsTitle.
   ///
   /// In en, this message translates to:
-  /// **'Booking Metrics (Summary Only)'**
+  /// **'Booking Metrics'**
   String get adminBookingStatsTitle;
 
   /// No description provided for @adminDashboardActionRequired.

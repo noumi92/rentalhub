@@ -1695,7 +1695,7 @@ class AppRouter {
       GoRoute(
         path: RouteNames.adminSubscriptions,
         builder: (context, state) => AdminPackagesView(
-          initialTab: state.uri.queryParameters['tab'] ?? 'plans',
+          initialTab: state.uri.queryParameters['tab'] ?? 'catalog',
         ),
       ),
     ],

@@ -11113,7 +11113,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get adminKpiWalkInCustomers => 'واک اِن گاہک';
 
   @override
-  String get adminKpiShopManagedOnly => 'شاپ کے زیر انتظام (صرف اعداد)';
+  String get adminKpiShopManagedOnly => 'شاپ کے زیر انتظام';
 
   @override
   String get adminKpiOnlineBookings => 'آن لائن بکنگز';
@@ -11293,7 +11293,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get adminNavDisputesReviews => 'تنازعات اور جائزے';
 
   @override
-  String get adminBookingStatsTitle => 'بکنگ کے اعداد و شمار (صرف خلاصہ)';
+  String get adminBookingStatsTitle => 'بکنگ کے اعداد و شمار';
 
   @override
   String get adminDashboardActionRequired => 'توجہ درکار ہے';

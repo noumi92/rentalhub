@@ -55,7 +55,7 @@ class AdminDashboardKpiSections extends StatelessWidget {
           AdminKpiCard(
             title: l10n?.adminKpiPaidPlans ?? 'Paid Plans',
             value: '${stats.paidShopCount}',
-            changeLabel: l10n?.packagesComingSoonBadge ?? 'Coming Soon',
+            changeLabel: l10n?.adminTabShopPlans ?? 'Shop Plans',
             icon: Icons.card_membership_rounded,
             accentColor: success,
           ),
