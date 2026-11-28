@@ -147,6 +147,31 @@ class _EditProfileFormState extends State<EditProfileForm> {
     }
   }
 
+  Future<void> _pickDateOfBirth() async {
+    final now = DateTime.now();
+    DateTime initial = DateTime(now.year - 25, now.month, now.day);
+    final parts = _dobController.text.trim().split(RegExp(r'[./-]'));
+    if (parts.length == 3) {
+      final d = int.tryParse(parts[0]);
+      final m = int.tryParse(parts[1]);
+      final y = int.tryParse(parts[2]);
+      if (d != null && m != null && y != null && y >= 1900 && y <= now.year) {
+        initial = DateTime(y, m, d);
+      }
+    }
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: initial.isAfter(now) ? now : initial,
+      firstDate: DateTime(1920),
+      lastDate: now,
+    );
+    if (picked != null && mounted) {
+      final dd = picked.day.toString().padLeft(2, '0');
+      final mm = picked.month.toString().padLeft(2, '0');
+      _dobController.text = '$dd.$mm.${picked.year}';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -164,12 +189,14 @@ class _EditProfileFormState extends State<EditProfileForm> {
         TextField(
           controller: _nameController,
           textCapitalization: TextCapitalization.words,
+          textInputAction: TextInputAction.next,
           decoration: InputDecoration(labelText: l10n.editFullName),
         ),
         const SizedBox(height: 12),
         TextField(
           controller: _phoneController,
           keyboardType: TextInputType.phone,
+          textInputAction: TextInputAction.next,
           decoration: InputDecoration(
             labelText: l10n.editPhone,
             hintText: '03xx-xxxxxxx',
@@ -179,6 +206,7 @@ class _EditProfileFormState extends State<EditProfileForm> {
         TextField(
           controller: _cnicController,
           keyboardType: TextInputType.number,
+          textInputAction: TextInputAction.next,
           decoration: InputDecoration(
             labelText: l10n.editCnicOptional,
             hintText: '35202-1234567-1',
@@ -205,18 +233,30 @@ class _EditProfileFormState extends State<EditProfileForm> {
         const SizedBox(height: 12),
         TextField(
           controller: _dobController,
-          decoration: InputDecoration(labelText: l10n.editDateOfBirth),
+          keyboardType: TextInputType.datetime,
+          textInputAction: TextInputAction.next,
+          decoration: InputDecoration(
+            labelText: l10n.editDateOfBirth,
+            hintText: 'dd.mm.yyyy',
+            suffixIcon: IconButton(
+              tooltip: l10n.editDateOfBirth,
+              icon: const Icon(Icons.calendar_today_outlined, size: 20),
+              onPressed: _pickDateOfBirth,
+            ),
+          ),
         ),
         const SizedBox(height: 12),
         TextField(
           controller: _fatherController,
           textCapitalization: TextCapitalization.words,
+          textInputAction: TextInputAction.next,
           decoration: InputDecoration(labelText: l10n.editFatherName),
         ),
         const SizedBox(height: 12),
         TextField(
           controller: _addressController,
           textCapitalization: TextCapitalization.sentences,
+          textInputAction: TextInputAction.done,
           maxLines: 2,
           decoration: InputDecoration(labelText: l10n.editAddress),
         ),

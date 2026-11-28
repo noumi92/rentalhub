@@ -8,7 +8,9 @@ import 'package:rentalhub/features/admin/data/datasources/admin_kyc_data_source.
 import 'package:rentalhub/features/admin/domain/admin_permissions.dart';
 import 'package:rentalhub/features/admin/presentation/views/admin_kyc_review_detail_view.dart';
 import 'package:rentalhub/features/admin/presentation/views/admin_kyc_review_view.dart';
+import 'package:rentalhub/features/admin/presentation/widgets/admin_section_tabs.dart';
 import 'package:rentalhub/features/admin/presentation/widgets/admin_sidebar_nav.dart';
+import 'package:rentalhub/features/admin/presentation/widgets/admin_sub_tab_bar.dart';
 import 'package:rentalhub/features/admin/presentation/widgets/kyc_review_document_tile.dart';
 import 'package:rentalhub/l10n/app_localizations.dart';
 
@@ -468,11 +470,9 @@ void main() {
     });
   });
 
-  group('AdminSidebarNav — KYC Review entry', () {
-    testWidgets('shown when the seam allows it, hidden otherwise',
+  group('Online Customers — KYC Queue sub-tab and sidebar', () {
+    testWidgets('shown when decideKyc allows it, hidden otherwise',
         (tester) async {
-      // The sidebar's InkWells need a Material ancestor, as in the
-      // AdminShell Scaffold that hosts it in production.
       await tester.pumpWidget(wrap(Scaffold(
           body: AdminSidebarNav(
         activeRoute: RouteNames.adminDashboard,
@@ -481,19 +481,38 @@ void main() {
         showKycReview: true,
       ))));
       await tester.pumpAndSettle();
-      expect(find.text('KYC Review'), findsOneWidget);
-      // Phase 3 (3.1): Approvals is no longer a sidebar item.
+      expect(find.text('Online Customers'), findsOneWidget);
       expect(find.text('Approvals'), findsNothing);
+
       await tester.pumpWidget(wrap(Scaffold(
-          body: AdminSidebarNav(
-        activeRoute: RouteNames.adminDashboard,
-        onNavigate: (_) {},
-        showApkDownload: false,
-        showKycReview: false,
-      ))));
+        body: Builder(
+          builder: (context) => AdminSubTabBar(
+            tabs: AdminSectionTabs.onlineCustomers(
+              context,
+              activeRoute: RouteNames.adminCustomers,
+              canDecideKyc: true,
+            ),
+            onSelect: (_) {},
+          ),
+        ),
+      )));
       await tester.pumpAndSettle();
-      expect(find.text('KYC Review'), findsNothing);
-      expect(find.text('Approvals'), findsNothing);
+      expect(find.text('KYC Queue'), findsOneWidget);
+
+      await tester.pumpWidget(wrap(Scaffold(
+        body: Builder(
+          builder: (context) => AdminSubTabBar(
+            tabs: AdminSectionTabs.onlineCustomers(
+              context,
+              activeRoute: RouteNames.adminCustomers,
+              canDecideKyc: false,
+            ),
+            onSelect: (_) {},
+          ),
+        ),
+      )));
+      await tester.pumpAndSettle();
+      expect(find.text('KYC Queue'), findsNothing);
     });
   });
 }

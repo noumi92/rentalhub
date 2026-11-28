@@ -11031,4 +11031,155 @@ class AppLocalizationsUr extends AppLocalizations {
   @override
   String get admin2_reportsTruncatedNote =>
       'اس دورانیے کے پہلے 1,000 ریکارڈز کی بنیاد پر — کل اور چارٹ نامکمل ہو سکتے ہیں۔';
+
+  @override
+  String get profileVerifyKyc => 'KYC کی تصدیق کریں';
+
+  @override
+  String get profileEditShort => 'ترمیم';
+
+  @override
+  String get profileCompleteTitle => 'اپنا پروفائل مکمل کریں';
+
+  @override
+  String profileCompleteProgress(int done, int total) {
+    return '$total میں سے $done تفصیلات شامل ہیں';
+  }
+
+  @override
+  String get adminNavShopsAndFleet => 'شاپس اور فلیٹ';
+
+  @override
+  String get adminNavPackagesCredits => 'پیکیجز اور کریڈٹس';
+
+  @override
+  String get adminNavTrustSupport => 'اعتماد اور مدد';
+
+  @override
+  String get adminTabAllShops => 'تمام شاپس';
+
+  @override
+  String get adminTabPendingApprovals => 'زیر التوا منظوریاں';
+
+  @override
+  String get adminTabFleetCars => 'فلیٹ گاڑیاں';
+
+  @override
+  String get adminTabSuspended => 'معطل شدہ';
+
+  @override
+  String get adminTabDirectory => 'ڈائریکٹری';
+
+  @override
+  String get adminTabKycQueue => 'KYC قطار';
+
+  @override
+  String get adminTabShopPlans => 'شاپ پلانز';
+
+  @override
+  String get adminTabUpgradeRequests => 'اپ گریڈ درخواستیں';
+
+  @override
+  String get adminTabWhatsappPackages => 'واٹس ایپ پیکیجز';
+
+  @override
+  String get adminTabOnlineBookings => 'آن لائن بکنگز';
+
+  @override
+  String get adminTabApkRelease => 'APK ریلیز';
+
+  @override
+  String get adminKpiSectionShopsFleet => 'شاپس اور فلیٹ';
+
+  @override
+  String get adminKpiSectionCustomers => 'گاہک (آن لائن بمقابلہ واک اِن)';
+
+  @override
+  String get adminKpiSectionBookingsSupport => 'بکنگز اور مدد';
+
+  @override
+  String get adminKpiFleetVehicles => 'فلیٹ گاڑیاں';
+
+  @override
+  String get adminKpiPaidPlans => 'پیڈ پلانز';
+
+  @override
+  String get adminKpiPendingPackageRequests => 'پیکیج درخواستیں';
+
+  @override
+  String get adminKpiOnlineCustomers => 'آن لائن گاہک';
+
+  @override
+  String get adminKpiWalkInCustomers => 'واک اِن گاہک';
+
+  @override
+  String get adminKpiShopManagedOnly => 'شاپ کے زیر انتظام (صرف اعداد)';
+
+  @override
+  String get adminKpiOnlineBookings => 'آن لائن بکنگز';
+
+  @override
+  String get adminKpiWalkInBookings => 'واک اِن بکنگز';
+
+  @override
+  String get adminKpiBlacklisted => 'بلیک لسٹ شدہ';
+
+  @override
+  String get adminKpiVerified => 'تصدیق شدہ';
+
+  @override
+  String get adminKpiPending => 'زیر التوا';
+
+  @override
+  String get adminPackagesSubtitle =>
+      'شوروم پلانز، اپ گریڈ درخواستیں اور واٹس ایپ کریڈٹ پیکس منظم کریں';
+
+  @override
+  String get adminPackagesChangePlan => 'پلان تبدیل کریں';
+
+  @override
+  String get adminPackagesGrantCredits => 'کریڈٹس دیں';
+
+  @override
+  String get adminPackagesApproveRequest => 'منظور کریں';
+
+  @override
+  String get adminPackagesRejectRequest => 'مسترد کریں';
+
+  @override
+  String get adminPackagesNoPendingRequests =>
+      'ابھی کوئی سبسکرپشن اپ گریڈ درخواست نہیں ہے۔';
+
+  @override
+  String get adminPackagesNoCreditRequests =>
+      'ابھی کوئی واٹس ایپ کریڈٹ درخواست نہیں ہے۔';
+
+  @override
+  String get adminPackagesNoShops => 'کوئی شاپ نہیں ملی۔';
+
+  @override
+  String get adminPackagesPlanUpdated => 'شاپ پلان اپ ڈیٹ ہو گیا۔';
+
+  @override
+  String get adminPackagesRequestApproved => 'درخواست منظور ہو گئی۔';
+
+  @override
+  String get adminPackagesRequestRejected => 'درخواست مسترد ہو گئی۔';
+
+  @override
+  String get adminPackagesCreditsUpdated => 'واٹس ایپ کریڈٹس اپ ڈیٹ ہو گئے۔';
+
+  @override
+  String get adminPackagesActionFailed =>
+      'یہ تبدیلی محفوظ نہیں ہو سکی۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔';
+
+  @override
+  String get adminPackagesReasonHint => 'اختیاری نوٹ یا مسترد کرنے کی وجہ';
+
+  @override
+  String get adminPackagesCreditsDeltaLabel =>
+      'شامل کرنے کے لیے کریڈٹس (یا کٹوتی کے لیے منفی)';
+
+  @override
+  String get adminPackagesSelectPlan => 'پلان منتخب کریں';
 }

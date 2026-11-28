@@ -135,7 +135,9 @@ void main() {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(_pathProviderChannel, null);
     await sl.reset();
-    if (await tempDir.exists()) await tempDir.delete(recursive: true);
+    try {
+      if (await tempDir.exists()) await tempDir.delete(recursive: true);
+    } catch (_) {}
   });
 
   Future<OfflineSyncQueue> registerQueue() async {

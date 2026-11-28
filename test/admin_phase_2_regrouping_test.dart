@@ -146,81 +146,55 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  group('2.1 — grouped sidebar with queue badges', () {
-    testWidgets('shows the six section headers in order', (tester) async {
+  group('2.1 — streamlined 7-section sidebar with queue badges', () {
+    testWidgets('shows the seven primary sections in order', (tester) async {
       await pumpSidebar(tester,
           loadCounts: () async => counts,
           showKycReview: true,
           showApkDownload: true);
-      for (final header in [
-        'OVERVIEW',
-        'ENTITIES',
-        'INBOXES',
-        'COMMERCE',
-        'LEGAL & TRUST',
-        'PLATFORM & SYSTEM',
-      ]) {
-        expect(find.text(header), findsOneWidget, reason: header);
+      final labels = [
+        'Overview',
+        'Shops & Fleet',
+        'Online Customers',
+        'Packages & Credits',
+        'Bookings',
+        'Trust & Support',
+        'Platform & System',
+      ];
+      double? prevY;
+      for (final label in labels) {
+        expect(find.text(label), findsOneWidget, reason: label);
+        final y = tester.getCenter(find.text(label)).dy;
+        if (prevY != null) {
+          expect(y, greaterThan(prevY), reason: '$label below previous');
+        }
+        prevY = y;
       }
-      // Restructure (2026-11-27): Overview (Dashboard, Reports),
-      // Entities (Shops, Online Customers), Inboxes (Queues hub,
-      // KYC Review, Cars), Commerce (Subscriptions), Legal & Trust
-      // (Disputes, Blacklist, Reviews, Support), Platform & System
-      // (Announcements, Settings, Admin Team, Activity Log, APK
-      // Download, Bookings). The order inside each group is the
-      // brief's order.
-      final dashboardY = tester.getCenter(find.text('Dashboard')).dy;
-      final reportsY = tester.getCenter(find.text('Reports')).dy;
-      final shopsY = tester.getCenter(find.text('Shops')).dy;
-      final customersY =
-          tester.getCenter(find.text('Online Customers')).dy;
-      final queuesY = tester.getCenter(find.text('Queues')).dy;
-      final carsY = tester.getCenter(find.text('Cars')).dy;
-      final subscriptionsY =
-          tester.getCenter(find.text('Subscriptions')).dy;
-      final disputesY = tester.getCenter(find.text('Disputes')).dy;
-      final bookingsY = tester.getCenter(find.text('Bookings')).dy;
-      expect(reportsY, greaterThan(dashboardY));
-      expect(shopsY, greaterThan(reportsY));
-      expect(customersY, greaterThan(shopsY));
-      expect(queuesY, greaterThan(customersY));
-      expect(carsY, greaterThan(queuesY));
-      expect(subscriptionsY, greaterThan(carsY));
-      expect(disputesY, greaterThan(subscriptionsY));
-      expect(bookingsY, greaterThan(disputesY));
-      // Phase 3 (3.1): Approvals is no longer a sidebar item —
-      // pending shops are a filter on Shops, which carries the
-      // pending count badge instead.
       expect(find.text('Approvals'), findsNothing);
-      // Restructure (2026-11-27): Subscriptions is a sidebar item
-      // now (Commerce) — the screen stays Coming Soon.
-      expect(find.text('Subscriptions'), findsOneWidget);
-      // The Customers item is labelled Online Customers now.
       expect(find.text('Customers'), findsNothing);
     });
 
-    testWidgets('badges show live counts, hidden at zero', (tester) async {
+    testWidgets('badges show combined live counts, hidden at zero',
+        (tester) async {
       await pumpSidebar(tester,
           loadCounts: () async => counts,
           showKycReview: true,
           showApkDownload: true);
-      expect(find.text('3'), findsOneWidget); // Shops (pending)
-      expect(find.text('2'), findsOneWidget); // KYC Review
-      expect(find.text('5'), findsOneWidget); // Disputes
-      expect(find.text('1'), findsOneWidget); // Reviews
-      // Cars and Support are zero — no badge, so no bare '0'.
+      expect(find.text('3'), findsOneWidget); // Shops & Fleet (approvals 3 + cars 0)
+      expect(find.text('2'), findsOneWidget); // Online Customers (KYC 2)
+      expect(find.text('6'), findsOneWidget); // Bookings (disputes 5 + reviews 1)
+      // Packages & Support are zero — no badge, so no bare '0'.
       expect(find.text('0'), findsNothing);
     });
 
-    testWidgets('KYC Review stays hidden without the decideKyc role',
+    testWidgets('KYC badge stays hidden without the decideKyc role',
         (tester) async {
       await pumpSidebar(tester,
           loadCounts: () async => counts,
           showKycReview: false,
           showApkDownload: false);
-      expect(find.text('KYC Review'), findsNothing);
-      expect(find.text('APK Download'), findsNothing);
-      // Phase 3 (3.1): Approvals is no longer a sidebar item.
+      expect(find.text('2'), findsNothing); // KYC badge hidden
+      expect(find.text('Online Customers'), findsOneWidget);
       expect(find.text('Approvals'), findsNothing);
     });
   });

@@ -6279,5 +6279,63 @@
         "type": "String"
       }
     }
-  }
+  },
+  "profileVerifyKyc": "KYC کی تصدیق کریں",
+  "profileEditShort": "ترمیم",
+  "profileCompleteTitle": "اپنا پروفائل مکمل کریں",
+  "profileCompleteProgress": "{total} میں سے {done} تفصیلات شامل ہیں",
+  "@profileCompleteProgress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "adminNavShopsAndFleet": "شاپس اور فلیٹ",
+  "adminNavPackagesCredits": "پیکیجز اور کریڈٹس",
+  "adminNavTrustSupport": "اعتماد اور مدد",
+  "adminTabAllShops": "تمام شاپس",
+  "adminTabPendingApprovals": "زیر التوا منظوریاں",
+  "adminTabFleetCars": "فلیٹ گاڑیاں",
+  "adminTabSuspended": "معطل شدہ",
+  "adminTabDirectory": "ڈائریکٹری",
+  "adminTabKycQueue": "KYC قطار",
+  "adminTabShopPlans": "شاپ پلانز",
+  "adminTabUpgradeRequests": "اپ گریڈ درخواستیں",
+  "adminTabWhatsappPackages": "واٹس ایپ پیکیجز",
+  "adminTabOnlineBookings": "آن لائن بکنگز",
+  "adminTabApkRelease": "APK ریلیز",
+  "adminKpiSectionShopsFleet": "شاپس اور فلیٹ",
+  "adminKpiSectionCustomers": "گاہک (آن لائن بمقابلہ واک اِن)",
+  "adminKpiSectionBookingsSupport": "بکنگز اور مدد",
+  "adminKpiFleetVehicles": "فلیٹ گاڑیاں",
+  "adminKpiPaidPlans": "پیڈ پلانز",
+  "adminKpiPendingPackageRequests": "پیکیج درخواستیں",
+  "adminKpiOnlineCustomers": "آن لائن گاہک",
+  "adminKpiWalkInCustomers": "واک اِن گاہک",
+  "adminKpiShopManagedOnly": "شاپ کے زیر انتظام (صرف اعداد)",
+  "adminKpiOnlineBookings": "آن لائن بکنگز",
+  "adminKpiWalkInBookings": "واک اِن بکنگز",
+  "adminKpiBlacklisted": "بلیک لسٹ شدہ",
+  "adminKpiVerified": "تصدیق شدہ",
+  "adminKpiPending": "زیر التوا",
+  "adminPackagesSubtitle": "شوروم پلانز، اپ گریڈ درخواستیں اور واٹس ایپ کریڈٹ پیکس منظم کریں",
+  "adminPackagesChangePlan": "پلان تبدیل کریں",
+  "adminPackagesGrantCredits": "کریڈٹس دیں",
+  "adminPackagesApproveRequest": "منظور کریں",
+  "adminPackagesRejectRequest": "مسترد کریں",
+  "adminPackagesNoPendingRequests": "ابھی کوئی سبسکرپشن اپ گریڈ درخواست نہیں ہے۔",
+  "adminPackagesNoCreditRequests": "ابھی کوئی واٹس ایپ کریڈٹ درخواست نہیں ہے۔",
+  "adminPackagesNoShops": "کوئی شاپ نہیں ملی۔",
+  "adminPackagesPlanUpdated": "شاپ پلان اپ ڈیٹ ہو گیا۔",
+  "adminPackagesRequestApproved": "درخواست منظور ہو گئی۔",
+  "adminPackagesRequestRejected": "درخواست مسترد ہو گئی۔",
+  "adminPackagesCreditsUpdated": "واٹس ایپ کریڈٹس اپ ڈیٹ ہو گئے۔",
+  "adminPackagesActionFailed": "یہ تبدیلی محفوظ نہیں ہو سکی۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔",
+  "adminPackagesReasonHint": "اختیاری نوٹ یا مسترد کرنے کی وجہ",
+  "adminPackagesCreditsDeltaLabel": "شامل کرنے کے لیے کریڈٹس (یا کٹوتی کے لیے منفی)",
+  "adminPackagesSelectPlan": "پلان منتخب کریں"
 }

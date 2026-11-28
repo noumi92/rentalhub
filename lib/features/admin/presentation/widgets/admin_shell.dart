@@ -9,8 +9,10 @@ import '../../../../core/routing/route_names.dart';
 import '../../../../core/utils/responsive.dart';
 import '../../data/services/admin_session.dart';
 import 'admin_desktop_header.dart';
+import 'admin_section_tabs.dart';
 import 'admin_sidebar_nav.dart';
 import 'admin_sticky_action_bar.dart';
+import 'admin_sub_tab_bar.dart';
 
 /// Phase A (A6) — the shared shell for the admin panel's real screens:
 /// sidebar + header + content.
@@ -37,6 +39,7 @@ class AdminShell extends StatelessWidget {
     this.onBack,
     this.onSignOut,
     this.bottomBar,
+    this.subTabs = const [],
   });
 
   final String activeRoute;
@@ -44,6 +47,7 @@ class AdminShell extends StatelessWidget {
   final String subtitle;
   final Widget child;
   final VoidCallback? onRefresh;
+  final List<AdminSubTab> subTabs;
 
   /// AD-M3: desktop-header sign-out. When null the shell signs out
   /// itself (FirebaseAuth + AdminSession.clear + route to login).
@@ -67,9 +71,10 @@ class AdminShell extends StatelessWidget {
   /// not one of the four phone destinations highlights More (the
   /// drawer is where it lives).
   static int _bottomNavIndex(String activeRoute) {
-    return switch (activeRoute) {
-      RouteNames.adminDashboard => 0,
-      RouteNames.adminQueues => 1,
+    final primary = AdminSectionTabs.primaryRouteFor(activeRoute);
+    return switch (primary) {
+      RouteNames.adminDashboard =>
+        activeRoute == RouteNames.adminQueues ? 1 : 0,
       RouteNames.adminShops => 2,
       RouteNames.adminCustomers => 3,
       _ => 4,
@@ -199,7 +204,18 @@ class AdminShell extends StatelessWidget {
 
   Widget _content(BuildContext context, {required bool showHeader}) {
     final l10n = AppLocalizations.of(context);
-    if (!showHeader) return child;
+    if (!showHeader) {
+      if (subTabs.isEmpty) return child;
+      return Column(
+        children: [
+          AdminSubTabBar(
+            tabs: subTabs,
+            onSelect: (route) => context.go(route),
+          ),
+          Expanded(child: child),
+        ],
+      );
+    }
     return Column(
       children: [
         Row(
@@ -223,6 +239,11 @@ class AdminShell extends StatelessWidget {
             ),
           ],
         ),
+        if (subTabs.isNotEmpty)
+          AdminSubTabBar(
+            tabs: subTabs,
+            onSelect: (route) => context.go(route),
+          ),
         Expanded(child: child),
         if (bottomBar != null)
           AdminStickyActionBar(child: bottomBar!),

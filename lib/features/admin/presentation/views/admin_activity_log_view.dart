@@ -9,11 +9,10 @@ import '../../../../l10n/app_localizations.dart';
 import '../../data/datasources/admin_remote_data_source.dart';
 import '../widgets/admin_activity_log_filters.dart';
 import '../widgets/admin_audit_log_list.dart';
+import '../widgets/admin_section_tabs.dart';
 import '../widgets/admin_shell.dart';
 
-/// Phase A (A5) — the activity log: every admin action, newest first,
-/// with a text filter and a CSV export. `audit_logs` is immutable in
-/// Firestore rules (read admin, create authenticated, never update).
+/// Immutable platform admin activity log.
 class AdminActivityLogView extends StatefulWidget {
   const AdminActivityLogView({super.key});
 
@@ -197,6 +196,7 @@ class _AdminActivityLogViewState extends State<AdminActivityLogView> {
       activeRoute: RouteNames.adminActivity,
       title: l10n?.admin2_navActivityLog ?? 'Activity Log',
       subtitle: l10n?.admin2_activitySubtitle ?? 'Every admin action, newest first — immutable',
+      subTabs: AdminSectionTabs.platformAndSystem(context, activeRoute: RouteNames.adminActivity),
       onRefresh: _load,
       child: Padding(
         padding: EdgeInsets.all(compact ? 16 : 24),

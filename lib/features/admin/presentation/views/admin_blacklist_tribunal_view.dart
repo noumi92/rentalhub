@@ -9,6 +9,7 @@ import '../../../../core/widgets/app_state_views.dart';
 import '../../data/datasources/admin_people_data_source.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../l10n/app_localizations_en.dart';
+import '../widgets/admin_section_tabs.dart';
 import '../widgets/admin_shell.dart';
 import '../widgets/admin_sort_menu.dart';
 import '../widgets/admin_tribunal_case_actions.dart';
@@ -96,14 +97,14 @@ class _AdminBlacklistTribunalViewState extends State<AdminBlacklistTribunalView>
         windowSizeClassOf(context) == WindowSizeClass.compact;
     return AdminShell(
       activeRoute: RouteNames.adminBlacklist,
-      // The full tribunal name on desktop (the pre-existing tests
-      // and the product copy use it); shortened on phones, where
-      // the 41-character title wraps to two lines in the fixed
-      // 70dp shared header and overflows at 2.0x text scale.
       title: compact
           ? l10n.admin2_tribunalTitle
           : l10n.admin2_tribunalSubtitle,
       subtitle: l10n.admin2_tribunalSubtitle2,
+      subTabs: AdminSectionTabs.onlineCustomers(
+        context,
+        activeRoute: RouteNames.adminBlacklist,
+      ),
       onRefresh: _loadTribunalCases,
       child: _isLoading
           ? const AppLoadingState()

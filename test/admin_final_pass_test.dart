@@ -325,6 +325,8 @@ void main() {
       expect(find.textContaining('Open the tickets inbox to reply.'),
           findsOneWidget);
       expect(find.textContaining('arrives in Phase'), findsNothing);
+      await tester.ensureVisible(find.text('Open disputes need a decision'));
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Open disputes need a decision'));
       await tester.pumpAndSettle();
       expect(find.text('Disputes centre'), findsOneWidget);

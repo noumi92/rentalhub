@@ -11,6 +11,7 @@ import '../../domain/admin_permissions.dart';
 import '../widgets/admin_permission_check.dart';
 import '../widgets/admin_review_card.dart';
 import '../widgets/admin_count_line.dart';
+import '../widgets/admin_section_tabs.dart';
 import '../widgets/admin_shell.dart';
 import '../widgets/admin_sort_menu.dart';
 
@@ -162,6 +163,10 @@ class _AdminReviewsViewState extends State<AdminReviewsView> {
       activeRoute: RouteNames.adminReviews,
       title: l10n.admin2_reviewsTitle,
       subtitle: l10n.admin2_reviewsSubtitle,
+      subTabs: AdminSectionTabs.bookings(
+        context,
+        activeRoute: RouteNames.adminReviews,
+      ),
       onRefresh: _load,
       child: Padding(
         padding: EdgeInsets.all(compact ? 16 : 24),

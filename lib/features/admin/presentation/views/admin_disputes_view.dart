@@ -13,6 +13,7 @@ import '../../data/datasources/admin_platform_data_source.dart';
 import '../widgets/admin_confirm_dialog.dart';
 import '../widgets/admin_count_line.dart';
 import '../widgets/admin_list_card.dart';
+import '../widgets/admin_section_tabs.dart';
 import '../widgets/admin_sort_menu.dart';
 import '../widgets/admin_shell.dart';
 import '../widgets/admin_status_chip.dart';
@@ -134,6 +135,10 @@ class _AdminDisputesViewState extends State<AdminDisputesView> {
       activeRoute: RouteNames.adminDisputes,
       title: l10n.admin2_disputesTitle,
       subtitle: l10n.admin2_disputesSubtitle,
+      subTabs: AdminSectionTabs.bookings(
+        context,
+        activeRoute: RouteNames.adminDisputes,
+      ),
       onRefresh: _load,
       child: Padding(
         padding: EdgeInsets.all(compact ? 16 : 24),

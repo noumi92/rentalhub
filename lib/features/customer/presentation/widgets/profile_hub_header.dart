@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../../../core/constants/app_colors.dart';
-import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import 'profile_header.dart';
 
-// Profile hub (2026-11-25): the shared navy header — app bar with
-// the edit action plus the profile header (avatar, name, trust and
-// KYC chips). Extracted from CustomerProfileView so the view stays
-// under the 250-line cap.
+/// Shared solid-navy header for the Customer Profile hub.
+/// Integrates [ProfileHeader] and the optional [TabBar] into one
+/// seamless top hero block, owns the status-bar inset once, and
+/// shows a back button automatically when pushed (e.g. `/customer/kyc`).
 class ProfileHubHeader extends StatelessWidget {
   final String name;
   final String email;
@@ -17,6 +17,10 @@ class ProfileHubHeader extends StatelessWidget {
   final double? trustScore;
   final String kycStatus;
   final VoidCallback onEdit;
+  final VoidCallback? onOpenDocuments;
+  final VoidCallback? onOpenReputation;
+  final TabController? tabController;
+  final List<Widget>? tabs;
 
   const ProfileHubHeader({
     super.key,
@@ -27,41 +31,76 @@ class ProfileHubHeader extends StatelessWidget {
     required this.trustScore,
     required this.kycStatus,
     required this.onEdit,
+    this.onOpenDocuments,
+    this.onOpenReputation,
+    this.tabController,
+    this.tabs,
   });
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final topPadding = MediaQuery.of(context).padding.top;
+    final canPop = Navigator.maybeOf(context)?.canPop() ?? false;
     final barBg = Theme.of(context).appBarTheme.backgroundColor ??
         AppColors.primaryDark;
-    return Container(
-      color: barBg,
-      child: Column(
-        children: [
-          MinimalAppBar(
-            title: l10n.profileTitle,
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.edit_rounded,
-                    color: Colors.white, size: 20),
-                tooltip: l10n.profileEditProfile,
-                onPressed: onEdit,
+    final hasTabs = tabController != null && tabs != null && tabs!.isNotEmpty;
+
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.light,
+      child: Container(
+        color: barBg,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: EdgeInsets.fromLTRB(
+                canPop ? 4 : 16,
+                topPadding + 14,
+                16,
+                hasTabs ? 8 : 14,
               ),
-            ],
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 4, 16, 14),
-            child: ProfileHeader(
-              name: name,
-              email: email,
-              phone: phone,
-              photoUrl: photoUrl,
-              trustScore: trustScore,
-              kycStatus: kycStatus,
-              onEdit: onEdit,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (canPop)
+                    IconButton(
+                      tooltip: AppLocalizations.of(context)?.back ?? 'Back',
+                      icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                          color: Colors.white, size: 20),
+                      onPressed: () => Navigator.of(context).maybePop(),
+                    ),
+                  Expanded(
+                    child: ProfileHeader(
+                      name: name,
+                      email: email,
+                      phone: phone,
+                      photoUrl: photoUrl,
+                      trustScore: trustScore,
+                      kycStatus: kycStatus,
+                      onEdit: onEdit,
+                      onOpenDocuments: onOpenDocuments,
+                      onOpenReputation: onOpenReputation,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+            if (hasTabs)
+              TabBar(
+                controller: tabController,
+                tabs: tabs!,
+                labelColor: Colors.white,
+                unselectedLabelColor: Colors.white.withValues(alpha: 0.68),
+                indicatorColor: AppColors.secondary,
+                indicatorWeight: 3,
+                indicatorSize: TabBarIndicatorSize.tab,
+                dividerColor: Colors.white.withValues(alpha: 0.12),
+                labelStyle: Theme.of(context).textTheme.labelLarge?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+              ),
+          ],
+        ),
       ),
     );
   }

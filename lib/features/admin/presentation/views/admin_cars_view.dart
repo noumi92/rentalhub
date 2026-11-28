@@ -11,14 +11,13 @@ import '../../data/datasources/admin_shops_data_source.dart';
 import '../widgets/admin_count_line.dart';
 import '../widgets/admin_list_card.dart';
 import '../widgets/admin_scoped_list_banner.dart';
+import '../widgets/admin_section_tabs.dart';
 import '../widgets/admin_sort_menu.dart';
 import '../widgets/admin_shell.dart';
 import '../widgets/admin_status_chip.dart';
 import '../widgets/car_review_detail_sheet.dart';
 
-/// Phase B (B3) — the cars list: every vehicle on the platform, with
-/// its admin review state. Tap a car for the review sheet
-/// (Approve / Hide / Reject).
+/// Platform fleet vehicles list with review status.
 class AdminCarsView extends StatefulWidget {
   const AdminCarsView({super.key, this.shopId});
 
@@ -113,15 +112,14 @@ class _AdminCarsViewState extends State<AdminCarsView> {
       activeRoute: RouteNames.adminCars,
       title: l10n.admin2_navCars,
       subtitle: l10n.admin2_carsSubtitle,
+      subTabs: widget.shopId == null
+          ? AdminSectionTabs.shopsAndFleet(context, activeRoute: RouteNames.adminCars)
+          : const [],
       onRefresh: _load,
       onBack: backToShopDetail(context, widget.shopId),
       child: Padding(
-        // Mobile-first: 16dp on a phone, 24dp on desktop (same rule
-        // as the other admin lists).
         padding: EdgeInsets.all(
-            windowSizeClassOf(context) == WindowSizeClass.compact
-                ? 16
-                : 24),
+            windowSizeClassOf(context) == WindowSizeClass.compact ? 16 : 24),
         child: Column(
           children: [
             TextField(

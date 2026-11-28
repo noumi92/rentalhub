@@ -6279,5 +6279,63 @@
         "type": "String"
       }
     }
-  }
+  },
+  "profileVerifyKyc": "Verify KYC",
+  "profileEditShort": "Edit",
+  "profileCompleteTitle": "Complete your profile",
+  "profileCompleteProgress": "{done} of {total} details added",
+  "@profileCompleteProgress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "adminNavShopsAndFleet": "Shops & Fleet",
+  "adminNavPackagesCredits": "Packages & Credits",
+  "adminNavTrustSupport": "Trust & Support",
+  "adminTabAllShops": "All Shops",
+  "adminTabPendingApprovals": "Pending Approvals",
+  "adminTabFleetCars": "Fleet Cars",
+  "adminTabSuspended": "Suspended",
+  "adminTabDirectory": "Directory",
+  "adminTabKycQueue": "KYC Queue",
+  "adminTabShopPlans": "Shop Plans",
+  "adminTabUpgradeRequests": "Upgrade Requests",
+  "adminTabWhatsappPackages": "WhatsApp Packages",
+  "adminTabOnlineBookings": "Online Bookings",
+  "adminTabApkRelease": "APK Release",
+  "adminKpiSectionShopsFleet": "Shops & Fleet",
+  "adminKpiSectionCustomers": "Customers (Online vs. Walk-in)",
+  "adminKpiSectionBookingsSupport": "Bookings & Support",
+  "adminKpiFleetVehicles": "Fleet Vehicles",
+  "adminKpiPaidPlans": "Paid Plans",
+  "adminKpiPendingPackageRequests": "Package Requests",
+  "adminKpiOnlineCustomers": "Online Customers",
+  "adminKpiWalkInCustomers": "Walk-in Customers",
+  "adminKpiShopManagedOnly": "Shop-managed (KPI only)",
+  "adminKpiOnlineBookings": "Online Bookings",
+  "adminKpiWalkInBookings": "Walk-in Bookings",
+  "adminKpiBlacklisted": "Blacklisted",
+  "adminKpiVerified": "Verified",
+  "adminKpiPending": "Pending",
+  "adminPackagesSubtitle": "Manage showroom plans, upgrade requests, and WhatsApp credit packs",
+  "adminPackagesChangePlan": "Change Plan",
+  "adminPackagesGrantCredits": "Grant Credits",
+  "adminPackagesApproveRequest": "Approve",
+  "adminPackagesRejectRequest": "Reject",
+  "adminPackagesNoPendingRequests": "No subscription upgrade requests yet.",
+  "adminPackagesNoCreditRequests": "No WhatsApp credit requests yet.",
+  "adminPackagesNoShops": "No shops found.",
+  "adminPackagesPlanUpdated": "Shop plan updated.",
+  "adminPackagesRequestApproved": "Request approved.",
+  "adminPackagesRequestRejected": "Request rejected.",
+  "adminPackagesCreditsUpdated": "WhatsApp credits updated.",
+  "adminPackagesActionFailed": "Could not save this change. Check your connection and try again.",
+  "adminPackagesReasonHint": "Optional note or rejection reason",
+  "adminPackagesCreditsDeltaLabel": "Credits to add (or negative to deduct)",
+  "adminPackagesSelectPlan": "Select plan tier"
 }

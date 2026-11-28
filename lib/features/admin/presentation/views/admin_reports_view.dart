@@ -10,6 +10,7 @@ import '../../data/datasources/admin_support_data_source.dart';
 import '../widgets/admin_detail_section.dart';
 import '../widgets/admin_report_charts.dart';
 import '../widgets/admin_report_widgets.dart';
+import '../widgets/admin_section_tabs.dart';
 import '../widgets/admin_shell.dart';
 
 /// Phase E (E4) — reports: a date range, live KPIs, bookings by
@@ -107,6 +108,10 @@ class _AdminReportsViewState extends State<AdminReportsView> {
       activeRoute: RouteNames.adminReports,
       title: l10n.admin2_navReports,
       subtitle: l10n.admin2_reportsSubtitle,
+      subTabs: AdminSectionTabs.overview(
+        context,
+        activeRoute: RouteNames.adminReports,
+      ),
       onRefresh: _load,
       child: SingleChildScrollView(
         padding: EdgeInsets.all(compact ? 16 : 24),

@@ -1074,9 +1074,9 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byType(AppLoadingState), findsNothing);
       expect(find.byType(CircularProgressIndicator), findsNothing);
-      // Guest renders twice in the hub: the shared header and the
-      // identity card's name row.
-      expect(find.text('Guest'), findsNWidgets(2));
+      // Guest renders once in the hero header (not duplicated in the
+      // identity card).
+      expect(find.text('Guest'), findsOneWidget);
     });
 
     testWidgets('owner Dashboard: loading, then honest empty ledger',

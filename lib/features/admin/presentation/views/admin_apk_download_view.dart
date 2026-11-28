@@ -8,6 +8,7 @@ import '../../data/services/admin_apk_release_service.dart';
 import '../../data/services/admin_session.dart';
 import '../../domain/admin_permissions.dart';
 import '../widgets/admin_apk_download_card.dart';
+import '../widgets/admin_section_tabs.dart';
 import '../widgets/admin_shell.dart';
 
 /// The "APK Download" sidebar section: the mobile APK download as its
@@ -83,6 +84,12 @@ class _AdminApkDownloadViewState extends State<AdminApkDownloadView> {
       title: 'APK Download',
       subtitle: l10n?.admin2_apkDownloadSubtitle ??
           'Latest release build published by CI.',
+      subTabs: AdminSectionTabs.platformAndSystem(
+        context,
+        activeRoute: RouteNames.adminApkDownload,
+        canDownloadApk:
+            AdminPermissions.can(_role, AdminPermission.downloadApk),
+      ),
       child: _resolving
           ? const AppLoadingState()
           : !AdminPermissions.can(_role, AdminPermission.downloadApk)

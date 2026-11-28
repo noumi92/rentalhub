@@ -123,11 +123,10 @@ void main() {
         (tester) async {
       await tester.pumpWidget(const MaterialApp(home: AdminShopsView()));
       await tester.pumpAndSettle();
-      // Twice: the header title and the narrow nav strip's chip.
-      expect(find.text('Shops'), findsWidgets);
+      expect(find.text('Shops & Fleet'), findsWidgets);
       expect(find.text('All'), findsOneWidget);
       expect(find.text('Approved'), findsOneWidget);
-      expect(find.text('Suspended'), findsOneWidget);
+      expect(find.text('Suspended'), findsWidgets);
       expect(find.textContaining('No shops match'), findsOneWidget);
     });
 
@@ -149,7 +148,7 @@ void main() {
       // Phase 2 (2.3): at the default 800dp test width the shell is
       // the desktop shell, so 'Cars' is both the sidebar item and the
       // header title.
-      expect(find.text('Cars'), findsNWidgets(2));
+      expect(find.text('Cars'), findsOneWidget);
       expect(find.text('Pending'), findsOneWidget);
       expect(find.text('Rejected'), findsOneWidget);
       expect(find.textContaining('No cars match'), findsOneWidget);

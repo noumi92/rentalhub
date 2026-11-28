@@ -105,9 +105,20 @@ abstract final class ProfileHubLoader {
           double? storedTrustScore;
           if (sl.isRegistered<FirestoreService>()) {
             final record = await sl<FirestoreService>().getUser(user.uid);
-            storedTrustScore = record?.trustScore;
-            isBlacklisted = record?.isBlacklisted ?? false;
-            photoUrl ??= record?.profilePhotoUrl;
+            if (record != null) {
+              if (name.isEmpty && record.fullName.isNotEmpty) {
+                name = record.fullName;
+              }
+              if (email.isEmpty && record.email.isNotEmpty) {
+                email = record.email;
+              }
+              if (phone.isEmpty && record.phoneNumber.isNotEmpty) {
+                phone = record.phoneNumber;
+              }
+              storedTrustScore = record.trustScore;
+              isBlacklisted = record.isBlacklisted;
+              photoUrl ??= record.profilePhotoUrl;
+            }
           }
           // Live score first (shared TrustScoreService, same as the
           // admin panel); stored trust_score is the fallback.
@@ -118,8 +129,8 @@ abstract final class ProfileHubLoader {
             customer = await sl<CustomerRemoteDataSource>()
                 .getCustomerById(user.uid);
             if (customer != null) {
-              name = customer.name;
-              phone = customer.phone;
+              if (customer.name.isNotEmpty) name = customer.name;
+              if (customer.phone.isNotEmpty) phone = customer.phone;
               cnic = customer.cnic ?? '';
               photoUrl = customer.profilePhotoUrl ?? photoUrl;
               dateOfBirth = customer.dateOfBirth;

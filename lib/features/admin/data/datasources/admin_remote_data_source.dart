@@ -7,6 +7,7 @@ import '../../domain/admin_permissions.dart';
 import '../services/admin_audit_service.dart';
 import '../services/admin_session.dart';
 import 'admin_pagination.dart';
+import 'admin_people_data_source.dart';
 
 /// Phase A (A1–A4) — the admin panel's data layer.
 ///
@@ -727,58 +728,133 @@ class AdminRemoteDataSource {
     );
     final firestore = _resolvedFirestore;
     if (firestore == null) return empty;
-    final shops = await firestore.collection('shops').count().get();
-    final bookings = await firestore
-        .collection('bookings')
-        .where('status', whereIn: [
-          'approved',
-          'payment_submitted',
-          'paid',
-          'active',
-        ])
-        .count()
-        .get();
-    // Phase 1 (1.4): "open disputes" is the Reports definition —
-    // any non-resolved dispute (open or in review), not just
-    // status == 'open' — so the dashboard and Reports agree.
-    final disputes = await firestore
-        .collection('disputes')
-        .where('status', isNotEqualTo: 'resolved')
-        .count()
-        .get();
-    final tickets = await firestore
-        .collection('support_tickets')
-        .where('status', isEqualTo: 'open')
-        .count()
-        .get();
-    // F-m1: the approvals queue is the most actionable queue on
-    // the platform — the dashboard counts it alongside the rest.
-    final pendingShops = await firestore
-        .collection('shops')
-        .where('verification_status', isEqualTo: 'pending')
-        .count()
-        .get();
-    // Phase 1 (1.4): the pending KYC queue (submitted, or a
-    // verified customer's resubmission awaiting re-review) — the
-    // same statuses AdminKycDataSource.getPendingKycSubmissions
-    // lists.
-    final pendingKyc = await firestore
-        .collection('kyc_documents')
-        .where('status', whereIn: const ['submitted', 'resubmitted'])
-        .count()
-        .get();
+    final results = await Future.wait<dynamic>([
+      firestore.collection('shops').count().get(),
+      firestore
+          .collection('bookings')
+          .where('status', whereIn: [
+            'approved',
+            'payment_submitted',
+            'paid',
+            'active',
+          ])
+          .count()
+          .get(),
+      firestore
+          .collection('disputes')
+          .where('status', isNotEqualTo: 'resolved')
+          .count()
+          .get(),
+      firestore
+          .collection('support_tickets')
+          .where('status', isEqualTo: 'open')
+          .count()
+          .get(),
+      firestore
+          .collection('shops')
+          .where('verification_status', isEqualTo: 'pending')
+          .count()
+          .get(),
+      firestore
+          .collection('kyc_documents')
+          .where('status', whereIn: const ['submitted', 'resubmitted'])
+          .count()
+          .get(),
+      firestore
+          .collection('shops')
+          .where('verification_status', isEqualTo: 'verified')
+          .count()
+          .get(),
+      firestore
+          .collection('shops')
+          .where('verification_status', isEqualTo: 'suspended')
+          .count()
+          .get(),
+      firestore.collection('vehicles').count().get(),
+      firestore
+          .collection('kyc_documents')
+          .where('status', isEqualTo: 'verified')
+          .count()
+          .get(),
+      firestore
+          .collection('blacklist')
+          .where('is_active', isEqualTo: true)
+          .count()
+          .get(),
+      firestore
+          .collection('bookings')
+          .where('is_walk_in', isEqualTo: true)
+          .count()
+          .get(),
+      firestore.collection('bookings').count().get(),
+      firestore
+          .collection('shops')
+          .where('subscription_tier', whereIn: const ['pro', 'business', 'enterprise'])
+          .count()
+          .get(),
+      firestore
+          .collection('subscription_requests')
+          .where('status', isEqualTo: 'pending')
+          .count()
+          .get(),
+      firestore
+          .collection('credit_purchase_requests')
+          .where('status', isEqualTo: 'pending')
+          .count()
+          .get(),
+      firestore.collection('customers').get(),
+      firestore
+          .collection('car_reviews')
+          .where('status', isEqualTo: 'pending')
+          .count()
+          .get(),
+    ]);
+
+    int countOf(int index) =>
+        (results[index] as AggregateQuerySnapshot).count ?? 0;
+
+    final customersSnap =
+        results[16] as QuerySnapshot<Map<String, dynamic>>;
+    var onlineCustomers = 0;
+    var walkInCustomers = 0;
+    for (final doc in customersSnap.docs) {
+      if (AdminPeopleDataSource.isWalkInCustomerDoc(doc.id, doc.data())) {
+        walkInCustomers++;
+      } else {
+        onlineCustomers++;
+      }
+    }
+
+    final totalBookings = countOf(12);
+    final walkInBookings = countOf(11);
+    final onlineBookings =
+        (totalBookings - walkInBookings).clamp(0, totalBookings);
+
     return PlatformStats(
-      shopCount: shops.count ?? 0,
-      activeBookingCount: bookings.count ?? 0,
-      openDisputeCount: disputes.count ?? 0,
-      openTicketCount: tickets.count ?? 0,
-      pendingShopCount: pendingShops.count ?? 0,
-      pendingKycCount: pendingKyc.count ?? 0,
+      shopCount: countOf(0),
+      activeBookingCount: countOf(1),
+      openDisputeCount: countOf(2),
+      openTicketCount: countOf(3),
+      pendingShopCount: countOf(4),
+      pendingKycCount: countOf(5),
+      verifiedShopCount: countOf(6),
+      suspendedShopCount: countOf(7),
+      totalVehicleCount: countOf(8),
+      verifiedKycCount: countOf(9),
+      blacklistedCount: countOf(10),
+      walkInBookingCount: walkInBookings,
+      onlineBookingCount: onlineBookings,
+      paidShopCount: countOf(13),
+      pendingSubscriptionCount: countOf(14),
+      pendingCreditRequestCount: countOf(15),
+      onlineCustomerCount: onlineCustomers,
+      walkInCustomerCount: walkInCustomers,
+      pendingCarReviewCount: countOf(17),
     );
   }
 }
 
-/// The admin dashboard's KPI counts (Phase A, A6).
+/// The admin dashboard's KPI counts (Phase A, A6 + 2026-11-28 redesign).
 class PlatformStats {
   const PlatformStats({
     required this.shopCount,
@@ -787,6 +863,19 @@ class PlatformStats {
     required this.openTicketCount,
     required this.pendingShopCount,
     this.pendingKycCount = 0,
+    this.verifiedShopCount = 0,
+    this.suspendedShopCount = 0,
+    this.totalVehicleCount = 0,
+    this.pendingCarReviewCount = 0,
+    this.onlineCustomerCount = 0,
+    this.walkInCustomerCount = 0,
+    this.verifiedKycCount = 0,
+    this.blacklistedCount = 0,
+    this.onlineBookingCount = 0,
+    this.walkInBookingCount = 0,
+    this.paidShopCount = 0,
+    this.pendingSubscriptionCount = 0,
+    this.pendingCreditRequestCount = 0,
   });
 
   final int shopCount;
@@ -804,4 +893,22 @@ class PlatformStats {
   /// Customer KYC submissions with status 'submitted' or
   /// 'resubmitted' — the KYC review queue (Phase 1, 1.4).
   final int pendingKycCount;
+
+  final int verifiedShopCount;
+  final int suspendedShopCount;
+  final int totalVehicleCount;
+  final int pendingCarReviewCount;
+  final int onlineCustomerCount;
+
+  /// Read-only KPI metric — walk-in customers are shop-managed.
+  final int walkInCustomerCount;
+  final int verifiedKycCount;
+  final int blacklistedCount;
+  final int onlineBookingCount;
+
+  /// Read-only KPI metric — walk-in bookings are shop-managed.
+  final int walkInBookingCount;
+  final int paidShopCount;
+  final int pendingSubscriptionCount;
+  final int pendingCreditRequestCount;
 }

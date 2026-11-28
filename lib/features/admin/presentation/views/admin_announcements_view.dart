@@ -16,24 +16,11 @@ import '../widgets/admin_sort_menu.dart';
 import '../widgets/admin_confirm_dialog.dart';
 import '../widgets/admin_load_more_button.dart';
 import '../widgets/admin_permission_check.dart';
+import '../widgets/admin_section_tabs.dart';
 import '../widgets/admin_shell.dart';
 import '../widgets/announcement_form_sheet.dart';
 
-/// Phase E (E3) — announcements: broadcasts to owners/customers by
-/// audience (role, city, plan), authored in English and Urdu, Push
-/// and/or WhatsApp, scheduled or sent now, with a send-test that
-/// delivers only to the calling admin's own device. History shows
-/// the real sent count and the real opened count (the announcement
-/// detail screen reports an open); delivered is labelled "not
-/// tracked yet" — FCM delivery receipts are not reported, and the
-/// count is never estimated.
-///
-/// Phase 3 (3.2): tapping a card opens the announcement detail
-/// route, where drafts and scheduled items can be edited and
-/// deleted and sent items are read-only history.
-/// Phase 3 (3.4): the history pages (20 rows at a time) instead of
-/// stopping at a silent 50-row cap, and the count line says how
-/// many of the total are shown.
+/// Platform announcements broadcast center.
 class AdminAnnouncementsView extends StatefulWidget {
   const AdminAnnouncementsView({super.key});
 
@@ -156,6 +143,10 @@ class _AdminAnnouncementsViewState extends State<AdminAnnouncementsView> {
       activeRoute: RouteNames.adminAnnouncements,
       title: l10n.admin2_navAnnouncements,
       subtitle: l10n.admin2_anncSubtitle,
+      subTabs: AdminSectionTabs.trustAndSupport(
+        context,
+        activeRoute: RouteNames.adminAnnouncements,
+      ),
       onRefresh: _load,
       child: Padding(
         padding: EdgeInsets.all(compact ? 16 : 24),

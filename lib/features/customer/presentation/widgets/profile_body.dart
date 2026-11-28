@@ -1,27 +1,20 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/widgets/app_state_views.dart';
-import 'profile_cnic_row.dart';
 import 'profile_identity_card.dart';
 import 'profile_menu_section.dart';
 import 'profile_trust_section.dart';
 import '../../../../l10n/app_localizations.dart';
 
-/// Profile hub (2026-11-25): the Profile tab body — identity card,
-/// trust section (the Reputation view folded in: trust card +
-/// showroom ratings), CNIC row and the menu. Extracted from
-/// [CustomerProfileView] so the view stays under the 250-line cap.
-/// All data and callbacks come from the view; nothing is loaded here.
-///
-/// Sign-out moved out: it lives on the Settings screen only now, so
-/// the profile no longer renders it twice.
+/// Profile tab body — unified Personal Details card (including masked
+/// CNIC and completion prompt), unified Trust & Reputation card, and
+/// account/support menu. Extracted from [CustomerProfileView] so the
+/// view stays under the 250-line cap.
 class ProfileBody extends StatelessWidget {
   const ProfileBody({
     super.key,
     required this.loading,
     required this.loadFailed,
-    required this.name,
-    required this.email,
     required this.phone,
     required this.dateOfBirth,
     required this.fatherName,
@@ -33,7 +26,7 @@ class ProfileBody extends StatelessWidget {
     required this.onAppeal,
     required this.ownerReviews,
     required this.cnic,
-    required this.onOpenDocuments,
+    required this.onEdit,
     required this.onOpenSavedShops,
     required this.onOpenSettings,
     required this.onOpenSupport,
@@ -42,8 +35,6 @@ class ProfileBody extends StatelessWidget {
 
   final bool loading;
   final bool loadFailed;
-  final String name;
-  final String email;
   final String phone;
   final String? dateOfBirth;
   final String? fatherName;
@@ -55,7 +46,7 @@ class ProfileBody extends StatelessWidget {
   final VoidCallback? onAppeal;
   final List<Map<String, dynamic>> ownerReviews;
   final String cnic;
-  final VoidCallback? onOpenDocuments;
+  final VoidCallback onEdit;
   final VoidCallback? onOpenSavedShops;
   final VoidCallback? onOpenSettings;
   final VoidCallback? onOpenSupport;
@@ -67,26 +58,19 @@ class ProfileBody extends StatelessWidget {
     return Column(
       children: [
         if (loading)
-          // E2: shared loading state.
           AppLoadingState(message: l10n.profileLoading)
         else if (loadFailed)
-          // AC-18: signed-in + load failed — an error with retry, never a silent "Guest".
           AppErrorState(message: l10n.profileLoadFailed, onRetry: onRetry)
         else ...[
           ProfileIdentityCard(
-            name: name,
             phone: phone,
-            email: email,
+            cnic: cnic,
             dateOfBirth: dateOfBirth,
             fatherName: fatherName,
             address: address,
+            onEdit: onEdit,
           ),
           const SizedBox(height: 16),
-          // E1: the customer's own CNIC, masked by default.
-          if (cnic.isNotEmpty) ...[
-            ProfileCnicRow(cnic: cnic),
-            const SizedBox(height: 16),
-          ],
           ProfileTrustSection(
             trustScore: trustScore,
             kycVerified: kycVerified,
@@ -97,10 +81,10 @@ class ProfileBody extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           ProfileMenuSection(
-              onOpenDocuments: onOpenDocuments,
-              onOpenSavedShops: onOpenSavedShops,
-              onOpenSettings: onOpenSettings,
-              onOpenSupport: onOpenSupport),
+            onOpenSavedShops: onOpenSavedShops,
+            onOpenSettings: onOpenSettings,
+            onOpenSupport: onOpenSupport,
+          ),
         ],
       ],
     );

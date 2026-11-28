@@ -6,7 +6,9 @@ import 'package:http/testing.dart';
 import 'package:rentalhub/core/routing/route_names.dart';
 import 'package:rentalhub/features/admin/data/services/admin_apk_release_service.dart';
 import 'package:rentalhub/features/admin/presentation/views/admin_apk_download_view.dart';
+import 'package:rentalhub/features/admin/presentation/widgets/admin_section_tabs.dart';
 import 'package:rentalhub/features/admin/presentation/widgets/admin_sidebar_nav.dart';
+import 'package:rentalhub/features/admin/presentation/widgets/admin_sub_tab_bar.dart';
 import 'package:rentalhub/l10n/app_localizations.dart';
 
 const _validVersionJson =
@@ -98,20 +100,57 @@ void main() {
     });
   });
 
-  group('AdminSidebarNav APK Download item', () {
-    testWidgets('shows for a super admin', (tester) async {
+  group('Platform & System APK Release sub-tab and sidebar', () {
+    testWidgets('shows APK Release sub-tab for a super admin', (tester) async {
       await _pumpSidebar(tester, showApkDownload: true);
-      expect(find.text('APK Download'), findsOneWidget);
+      expect(find.text('Overview'), findsOneWidget);
+      expect(find.text('Platform & System'), findsOneWidget);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: Builder(
+              builder: (context) => AdminSubTabBar(
+                tabs: AdminSectionTabs.platformAndSystem(
+                  context,
+                  activeRoute: RouteNames.adminSettings,
+                  canDownloadApk: true,
+                ),
+                onSelect: (_) {},
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('APK Release'), findsOneWidget);
       expect(find.byIcon(Icons.android_rounded), findsOneWidget);
-      // The base sections are untouched.
-      expect(find.text('Dashboard'), findsOneWidget);
-      expect(find.text('Settings'), findsOneWidget);
     });
 
-    testWidgets('hidden for any other role', (tester) async {
-      await _pumpSidebar(tester, showApkDownload: false);
-      expect(find.text('APK Download'), findsNothing);
-      expect(find.text('Dashboard'), findsOneWidget);
+    testWidgets('hides APK Release sub-tab for any other role', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: Builder(
+              builder: (context) => AdminSubTabBar(
+                tabs: AdminSectionTabs.platformAndSystem(
+                  context,
+                  activeRoute: RouteNames.adminSettings,
+                  canDownloadApk: false,
+                ),
+                onSelect: (_) {},
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('APK Release'), findsNothing);
+      expect(find.text('Settings'), findsOneWidget);
     });
   });
 

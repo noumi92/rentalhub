@@ -267,8 +267,8 @@ void main() {
   // Restructure (2026-11-27), Step 1: Subscriptions is no longer
   // hidden — it is shown in the Commerce group (still the Coming
   // Soon placeholder screen, not functional).
-  group('1.2 — Subscriptions shown in the sidebar', () {
-    testWidgets('the sidebar lists a Subscriptions item under Commerce',
+  group('1.2 — Packages & Credits shown in the sidebar', () {
+    testWidgets('the sidebar lists Packages & Credits alongside core sections',
         (tester) async {
       await tester.pumpWidget(wrap(Scaffold(
           body: AdminSidebarNav(
@@ -278,10 +278,9 @@ void main() {
         showKycReview: false,
       ))));
       await tester.pumpAndSettle();
-      expect(find.text('Subscriptions'), findsOneWidget);
-      expect(find.text('COMMERCE'), findsOneWidget);
-      expect(find.text('Dashboard'), findsOneWidget);
-      expect(find.text('Settings'), findsOneWidget);
+      expect(find.text('Packages & Credits'), findsOneWidget);
+      expect(find.text('Overview'), findsOneWidget);
+      expect(find.text('Platform & System'), findsOneWidget);
     });
   });
 }

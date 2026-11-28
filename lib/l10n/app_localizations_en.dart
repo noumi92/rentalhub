@@ -11012,4 +11012,155 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get admin2_reportsTruncatedNote =>
       'Based on the first 1,000 records in this range — totals and charts may be incomplete.';
+
+  @override
+  String get profileVerifyKyc => 'Verify KYC';
+
+  @override
+  String get profileEditShort => 'Edit';
+
+  @override
+  String get profileCompleteTitle => 'Complete your profile';
+
+  @override
+  String profileCompleteProgress(int done, int total) {
+    return '$done of $total details added';
+  }
+
+  @override
+  String get adminNavShopsAndFleet => 'Shops & Fleet';
+
+  @override
+  String get adminNavPackagesCredits => 'Packages & Credits';
+
+  @override
+  String get adminNavTrustSupport => 'Trust & Support';
+
+  @override
+  String get adminTabAllShops => 'All Shops';
+
+  @override
+  String get adminTabPendingApprovals => 'Pending Approvals';
+
+  @override
+  String get adminTabFleetCars => 'Fleet Cars';
+
+  @override
+  String get adminTabSuspended => 'Suspended';
+
+  @override
+  String get adminTabDirectory => 'Directory';
+
+  @override
+  String get adminTabKycQueue => 'KYC Queue';
+
+  @override
+  String get adminTabShopPlans => 'Shop Plans';
+
+  @override
+  String get adminTabUpgradeRequests => 'Upgrade Requests';
+
+  @override
+  String get adminTabWhatsappPackages => 'WhatsApp Packages';
+
+  @override
+  String get adminTabOnlineBookings => 'Online Bookings';
+
+  @override
+  String get adminTabApkRelease => 'APK Release';
+
+  @override
+  String get adminKpiSectionShopsFleet => 'Shops & Fleet';
+
+  @override
+  String get adminKpiSectionCustomers => 'Customers (Online vs. Walk-in)';
+
+  @override
+  String get adminKpiSectionBookingsSupport => 'Bookings & Support';
+
+  @override
+  String get adminKpiFleetVehicles => 'Fleet Vehicles';
+
+  @override
+  String get adminKpiPaidPlans => 'Paid Plans';
+
+  @override
+  String get adminKpiPendingPackageRequests => 'Package Requests';
+
+  @override
+  String get adminKpiOnlineCustomers => 'Online Customers';
+
+  @override
+  String get adminKpiWalkInCustomers => 'Walk-in Customers';
+
+  @override
+  String get adminKpiShopManagedOnly => 'Shop-managed (KPI only)';
+
+  @override
+  String get adminKpiOnlineBookings => 'Online Bookings';
+
+  @override
+  String get adminKpiWalkInBookings => 'Walk-in Bookings';
+
+  @override
+  String get adminKpiBlacklisted => 'Blacklisted';
+
+  @override
+  String get adminKpiVerified => 'Verified';
+
+  @override
+  String get adminKpiPending => 'Pending';
+
+  @override
+  String get adminPackagesSubtitle =>
+      'Manage showroom plans, upgrade requests, and WhatsApp credit packs';
+
+  @override
+  String get adminPackagesChangePlan => 'Change Plan';
+
+  @override
+  String get adminPackagesGrantCredits => 'Grant Credits';
+
+  @override
+  String get adminPackagesApproveRequest => 'Approve';
+
+  @override
+  String get adminPackagesRejectRequest => 'Reject';
+
+  @override
+  String get adminPackagesNoPendingRequests =>
+      'No subscription upgrade requests yet.';
+
+  @override
+  String get adminPackagesNoCreditRequests =>
+      'No WhatsApp credit requests yet.';
+
+  @override
+  String get adminPackagesNoShops => 'No shops found.';
+
+  @override
+  String get adminPackagesPlanUpdated => 'Shop plan updated.';
+
+  @override
+  String get adminPackagesRequestApproved => 'Request approved.';
+
+  @override
+  String get adminPackagesRequestRejected => 'Request rejected.';
+
+  @override
+  String get adminPackagesCreditsUpdated => 'WhatsApp credits updated.';
+
+  @override
+  String get adminPackagesActionFailed =>
+      'Could not save this change. Check your connection and try again.';
+
+  @override
+  String get adminPackagesReasonHint => 'Optional note or rejection reason';
+
+  @override
+  String get adminPackagesCreditsDeltaLabel =>
+      'Credits to add (or negative to deduct)';
+
+  @override
+  String get adminPackagesSelectPlan => 'Select plan tier';
 }

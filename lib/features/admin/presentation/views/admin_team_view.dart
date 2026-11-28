@@ -11,21 +11,13 @@ import '../../data/datasources/admin_remote_data_source.dart';
 import '../../data/services/admin_session.dart';
 import '../../domain/admin_permissions.dart';
 import '../widgets/admin_confirm_dialog.dart';
+import '../widgets/admin_section_tabs.dart';
 import '../widgets/admin_shell.dart';
 import '../widgets/admin_team_invites_tab.dart';
 import '../widgets/admin_team_members_tab.dart';
 import '../widgets/admin_team_security_tab.dart';
 
-/// Phase A (A4) — the admin team screen: who holds an admin role, who
-/// still has two-factor authentication off, and (super admin only) the
-/// invite form, TOTP resets and role revocations. Invites expire after
-/// 48 hours; the grant happens on the accept screen through
-/// setAdminRole, once the invitee's account exists.
-/// Phase 2 (2.5) — tabbed like the customer-side Profile/KYC hub:
-/// Members (list, TOTP resets, revocations), Invites (pending invites
-/// + invite form), Security (2FA-off members, Remind-all, resets).
-/// The 2FA banner moved out of the members section into the Security
-/// tab; every old action is still here.
+/// Admin team roles, invites, and 2FA security management.
 class AdminTeamView extends StatefulWidget {
   /// The signed-in admin's role. The router leaves it null and the
   /// view resolves it from the signed-in user; tests pass it directly.
@@ -175,6 +167,12 @@ class _AdminTeamViewState extends State<AdminTeamView> {
       title: l10n?.admin2_navAdminTeam ?? 'Admin Team',
       subtitle: l10n?.admin2_teamSubtitle ??
           'Who can run the platform, and with what role',
+      subTabs: AdminSectionTabs.platformAndSystem(
+        context,
+        activeRoute: RouteNames.adminTeam,
+        canDownloadApk:
+            AdminPermissions.can(_role, AdminPermission.downloadApk),
+      ),
       onRefresh: _load,
       child: _isLoading
           ? const AppLoadingState()

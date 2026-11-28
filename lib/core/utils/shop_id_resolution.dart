@@ -46,6 +46,7 @@ Future<String> canonicalShopId(
   FirebaseFirestore? fs,
   String shopId,
 ) async {
+  if (shopId.trim().isEmpty) return '';
   if (fs != null) {
     try {
       final owned = await fs

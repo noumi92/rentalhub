@@ -13,26 +13,13 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../../l10n/app_localizations_en.dart';
 import '../widgets/admin_count_line.dart';
 import '../widgets/admin_load_more_button.dart';
+import '../widgets/admin_section_tabs.dart';
 import '../widgets/admin_sort_menu.dart';
 import '../widgets/admin_shop_list_header.dart';
 import '../widgets/admin_shell.dart';
 import '../widgets/admin_shop_list_tile.dart';
 
-/// Phase B (B2) — the shops list: every shop, searchable, filtered by
-/// status. Tap a shop for the detail screen (plan, cars, bookings,
-/// suspend, message owner).
-///
-/// Phase 3 (3.1): Approvals is no longer its own screen — it is this
-/// list with the Pending filter, reached as `/admin/shops?filter=
-/// pending` (the Queues hub and the dashboard card link here, and
-/// the router passes the query parameter as [initialFilter]).
-/// Approve/Reject live on the shop detail route, on a pending shop.
-///
-/// Phase 3 (3.4): the list pages (20 rows at a time) through
-/// [AdminShopsDataSource.getShopsPage] instead of stopping at a
-/// silent 200-row cap, search covers the whole list through the
-/// data source (400 ms debounce, like Customers/Tickets), and the
-/// count line says how many of the total are shown.
+/// Shops & Fleet directory with horizontal sub-tabs and pagination.
 class AdminShopsView extends StatefulWidget {
   const AdminShopsView({super.key, this.initialFilter = 'all'});
 
@@ -71,6 +58,20 @@ class _AdminShopsViewState extends State<AdminShopsView> {
   }
 
   @override
+  void didUpdateWidget(covariant AdminShopsView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.initialFilter != widget.initialFilter) {
+      final next = _filters.contains(widget.initialFilter)
+          ? widget.initialFilter
+          : 'all';
+      if (next != _filter) {
+        setState(() => _filter = next);
+        _load();
+      }
+    }
+  }
+
+  @override
   void dispose() {
     _searchController.dispose();
     _searchTimer?.cancel();
@@ -94,8 +95,8 @@ class _AdminShopsViewState extends State<AdminShopsView> {
       final ds = sl<AdminShopsDataSource>();
       if (_searchQuery.isNotEmpty) {
         final found = await ds.searchShops(_searchQuery, limit: 50);
-        _setLoaded(
-            AdminShopsDataSource.sortShops(found, _sort), isSearching: true);
+        _setLoaded(AdminShopsDataSource.sortShops(found, _sort),
+            isSearching: true);
         return;
       }
       final page = await ds.getShopsPage(
@@ -111,23 +112,11 @@ class _AdminShopsViewState extends State<AdminShopsView> {
         total: page.total,
       );
     } catch (_) {
-      if (mounted) {
-        setState(() {
-          _hasError = true;
-          _isLoading = false;
-          _isLoadingMore = false;
-        });
-      }
+      if (mounted) { setState(() { _hasError = true; _isLoading = false; _isLoadingMore = false; }); }
     }
   }
 
-  void _setLoaded(
-    List<ShopModel> shops, {
-    Object? cursor,
-    bool hasMore = false,
-    int? total,
-    bool isSearching = false,
-  }) {
+  void _setLoaded(List<ShopModel> shops, {Object? cursor, bool hasMore = false, int? total, bool isSearching = false}) {
     if (!mounted) return;
     setState(() {
       _shops = shops;
@@ -167,15 +156,17 @@ class _AdminShopsViewState extends State<AdminShopsView> {
     final l10n = (AppLocalizations.of(context) ?? AppLocalizationsEn());
     return AdminShell(
       activeRoute: RouteNames.adminShops,
-      title: l10n.admin2_navShops,
+      title: l10n.adminNavShopsAndFleet,
       subtitle: l10n.admin2_shopsSubtitle,
+      subTabs: AdminSectionTabs.shopsAndFleet(
+        context,
+        activeRoute: RouteNames.adminShops,
+        activeFilter: _filter,
+      ),
       onRefresh: _load,
       child: Padding(
-        // Mobile-first: 16dp on a phone, 24dp on desktop.
         padding: EdgeInsets.all(
-            windowSizeClassOf(context) == WindowSizeClass.compact
-                ? 16
-                : 24),
+            windowSizeClassOf(context) == WindowSizeClass.compact ? 16 : 24),
         child: Column(
           children: [
             AdminShopListHeader(
@@ -186,7 +177,7 @@ class _AdminShopsViewState extends State<AdminShopsView> {
               sort: _sort,
               onSort: _onSort,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 8),
             if (!_isLoading && !_hasError && _shops.isNotEmpty)
               _isSearching
                   ? Align(
@@ -220,27 +211,27 @@ class _AdminShopsViewState extends State<AdminShopsView> {
                               message: l10n.admin2_shopsEmptyHint,
                             )
                           : ListView.separated(
-                          itemCount: _shops.length +
-                              (_hasMore && !_isSearching ? 1 : 0),
-                          separatorBuilder: (_, __) =>
-                              const SizedBox(height: 10),
-                          itemBuilder: (context, i) {
-                            if (i >= _shops.length) {
-                              return AdminLoadMoreButton(
-                                isLoadingMore: _isLoadingMore,
-                                onPressed: () => _load(reset: false),
-                              );
-                            }
-                            final shop = _shops[i];
-                            return AdminShopListTile(
-                              shop: shop,
-                              onTap: () => context.go(
-                                RouteNames.adminShopDetail
-                                    .replaceFirst(':shopId', shop.shopId),
-                              ),
-                            );
-                          },
-                        ),
+                              itemCount: _shops.length +
+                                  (_hasMore && !_isSearching ? 1 : 0),
+                              separatorBuilder: (_, __) =>
+                                  const SizedBox(height: 10),
+                              itemBuilder: (context, i) {
+                                if (i >= _shops.length) {
+                                  return AdminLoadMoreButton(
+                                    isLoadingMore: _isLoadingMore,
+                                    onPressed: () => _load(reset: false),
+                                  );
+                                }
+                                final shop = _shops[i];
+                                return AdminShopListTile(
+                                  shop: shop,
+                                  onTap: () => context.go(
+                                    RouteNames.adminShopDetail
+                                        .replaceFirst(':shopId', shop.shopId),
+                                  ),
+                                );
+                              },
+                            ),
             ),
           ],
         ),

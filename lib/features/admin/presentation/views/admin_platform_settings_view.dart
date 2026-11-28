@@ -11,6 +11,7 @@ import '../../domain/admin_permissions.dart';
 import '../widgets/admin_confirm_dialog.dart';
 import '../widgets/admin_permission_check.dart';
 import '../widgets/admin_platform_settings_form.dart';
+import '../widgets/admin_section_tabs.dart';
 import '../widgets/admin_settings_draft.dart';
 import '../widgets/admin_shell.dart';
 
@@ -167,6 +168,10 @@ class _AdminPlatformSettingsViewState
             'Cities & settings',
         subtitle: AppLocalizations.of(context)?.admin2_settingsSubtitle ??
             'The platform defaults, in one document',
+        subTabs: AdminSectionTabs.platformAndSystem(
+          context,
+          activeRoute: RouteNames.adminSettings,
+        ),
         onRefresh: _load,
         child: _isLoading
             ? const AppLoadingState()

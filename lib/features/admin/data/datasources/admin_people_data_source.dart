@@ -105,15 +105,52 @@ class AdminPeopleDataSource {
     return list;
   }
 
+  /// Returns true when a `customers` document represents a shop-managed
+  /// walk-in customer rather than a platform-managed online customer.
+  static bool isWalkInCustomerDoc(String docId, Map<String, dynamic> data) {
+    if (docId.startsWith('walkin-')) return true;
+    final shopId = (data['shopId'] as String? ?? '').trim();
+    if (shopId.isNotEmpty) return true;
+    final snakeShopId = (data['shop_id'] as String? ?? '').trim();
+    if (snakeShopId.isNotEmpty) return true;
+    final origin = (data['origin'] as String? ?? '').trim().toLowerCase();
+    return origin == 'walk_in' || origin == 'walkin';
+  }
+
   /// Phase 4 (4.4c) — how many customers exist in total, so the
   /// list can say "Showing first N of M". The CNIC filter has no
   /// server-side count (CNIC presence is not a queryable field),
   /// so the view reports the total only for the unfiltered list.
-  Future<int> countCustomers() async {
+  Future<int> countCustomers({bool onlineOnly = true}) async {
+    if (onlineOnly) return countOnlineCustomers();
     final firestore = _resolvedFirestore;
     if (firestore == null) return (await getCustomers()).length;
     final count = await firestore.collection('customers').count().get();
     return count.count ?? 0;
+  }
+
+  /// Count of platform-managed online customers (excluding shop walk-ins).
+  Future<int> countOnlineCustomers() async {
+    final firestore = _resolvedFirestore;
+    if (firestore == null) return 0;
+    final snap = await firestore.collection('customers').get();
+    var count = 0;
+    for (final d in snap.docs) {
+      if (!isWalkInCustomerDoc(d.id, d.data())) count++;
+    }
+    return count;
+  }
+
+  /// Read-only KPI count of shop-managed walk-in customers.
+  Future<int> countWalkInCustomers() async {
+    final firestore = _resolvedFirestore;
+    if (firestore == null) return 0;
+    final snap = await firestore.collection('customers').get();
+    var count = 0;
+    for (final d in snap.docs) {
+      if (isWalkInCustomerDoc(d.id, d.data())) count++;
+    }
+    return count;
   }
 
   Future<AdminPage<AdminCustomerRow>> getCustomersPage({
@@ -121,6 +158,7 @@ class AdminPeopleDataSource {
     Object? cursor,
     String cnicFilter = 'all',
     String sort = 'nameAsc',
+    bool onlineOnly = true,
   }) async {
     final firestore = _resolvedFirestore;
     if (firestore == null) {
@@ -151,7 +189,9 @@ class AdminPeopleDataSource {
       scanned += snap.docs.length;
       lastDoc = snap.docs.last;
       for (final d in snap.docs) {
-        final cnic = (d.data()['cnic'] as String?) ?? '';
+        final data = d.data();
+        if (onlineOnly && isWalkInCustomerDoc(d.id, data)) continue;
+        final cnic = (data['cnic'] as String?) ?? '';
         if (cnicFilter == 'onFile' && cnic.isEmpty) continue;
         if (cnicFilter == 'missing' && cnic.isNotEmpty) continue;
         matched.add(d);
@@ -180,6 +220,7 @@ class AdminPeopleDataSource {
   Future<List<AdminCustomerRow>> searchCustomers(
     String query, {
     int limit = 50,
+    bool onlineOnly = true,
   }) async {
     final firestore = _resolvedFirestore;
     final needle = query.trim().toLowerCase();
@@ -202,6 +243,7 @@ class AdminPeopleDataSource {
         lastDoc = snap.docs.last;
         for (final d in snap.docs) {
           final data = d.data();
+          if (onlineOnly && isWalkInCustomerDoc(d.id, data)) continue;
           final haystack =
               '${data['name'] ?? ''} ${data['phone'] ?? ''} ${data['cnic'] ?? ''}'
                   .toLowerCase();

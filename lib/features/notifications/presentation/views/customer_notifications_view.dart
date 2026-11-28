@@ -7,6 +7,7 @@ import '../../../../core/auth/signed_in_user.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/routing/route_names.dart';
+import '../../../../core/routing/shell_navigation.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -110,7 +111,7 @@ class _CustomerNotificationsViewState extends State<CustomerNotificationsView> {
     }
     if (!mounted) return;
     if (n.targetRoute != null && n.targetRoute!.isNotEmpty) {
-      context.push(n.targetRoute!);
+      safePush(context, n.targetRoute!);
       return;
     }
     final bookingId = n.bookingId;
@@ -118,23 +119,23 @@ class _CustomerNotificationsViewState extends State<CustomerNotificationsView> {
     switch (n.type) {
       case 'booking_approved':
       case 'payment_rejected':
-        context.push(
+        safePush(context,
             RouteNames.customerPaymentProof.replaceFirst(':id', bookingId));
       case 'payment_verified':
-        context.push(
+        safePush(context,
             RouteNames.customerPickupPass.replaceFirst(':id', bookingId));
       case 'handover':
       case 'trip_started':
-        context.push(
+        safePush(context,
             RouteNames.customerActiveTrip.replaceFirst(':id', bookingId));
       case 'return':
       case 'trip_completed':
-        context.push(
+        safePush(context,
             RouteNames.customerRateTrip.replaceFirst(':id', bookingId));
       case 'dispute_resolved':
-        context.push('${RouteNames.customerDisputes}?bookingId=$bookingId');
+        safePush(context, '${RouteNames.customerDisputes}?bookingId=$bookingId');
       default:
-        context.push(
+        safePush(context,
             RouteNames.customerBookingDetail.replaceFirst(':id', bookingId));
     }
   }

@@ -145,7 +145,7 @@ import '../../features/admin/presentation/views/admin_shop_detail_view.dart';
 import '../../features/admin/presentation/views/admin_shops_view.dart';
 import '../../features/admin/presentation/views/admin_blacklist_tribunal_view.dart';
 import '../../features/admin/presentation/views/admin_invite_accept_view.dart';
-import '../../features/admin/presentation/views/admin_coming_soon_view.dart';
+import '../../features/admin/presentation/views/admin_packages_view.dart';
 import '../../features/admin/presentation/views/admin_dashboard_view.dart';
 import '../../features/admin/presentation/views/admin_login_view.dart';
 import '../../features/admin/presentation/views/admin_team_view.dart';
@@ -633,14 +633,14 @@ class AppRouter {
                   // row pushes the top-level support sub-screen.
                   onOpenSupport: () => context.push(RouteNames.customerSupport),
                 ),
-                routes: [
-                  // Profile hub: the full-screen edit-profile flow.
-                  GoRoute(
-                    path: RouteNames.customerEditProfile,
-                    builder: (context, state) =>
-                        const CustomerEditProfileView(),
-                  ),
-                ],
+              ),
+              // Profile hub: the full-screen edit-profile flow (sibling
+              // route in the Profile branch so `/customer/profile/edit`
+              // matches directly instead of concatenating onto
+              // `/customer/profile`).
+              GoRoute(
+                path: RouteNames.customerEditProfile,
+                builder: (context, state) => const CustomerEditProfileView(),
               ),
               // Profile: customerKyc — the hub opened on the KYC tab.
               // The standalone CustomerDocumentsView still exists for
@@ -777,89 +777,57 @@ class AppRouter {
                 builder: (context, state) => const OwnerAddVehicleView(),
               ),
               // Fleet: ownerRatesVehicle
+              // Use standard `builder` so go_router assigns its unique per-push
+              // `state.pageKey`; deterministic `ValueKey('...-$vehicleId')`
+              // collided when the same vehicle route was pushed twice.
               GoRoute(
                 path: RouteNames.ownerRatesVehicle,
-                pageBuilder: (context, state) {
-                  final vehicleId = state.pathParameters['vehicleId']!;
-                  return MaterialPage(
-                    // Phone bug: go_router keys a page by its route
-                    // PATTERN ('/owner/rates/:vehicleId'), so two rates
-                    // pages — the same vehicle pushed twice, or rates
-                    // for two vehicles — share one key and trip the
-                    // branch Navigator's duplicate-key assertion
-                    // (debug red screen on "Manage rates"). Key by
-                    // the concrete vehicle instead.
-                    key: ValueKey('owner-rates-$vehicleId'),
-                    child: VehicleRouteLoader(
-                      vehicleId: vehicleId,
-                      shopId: currentShopId(),
-                      builder: (context, vehicle) => OwnerRateMatrixView(
-                        vehicle: vehicle,
-                        onBack: () => context.pop(),
-                      ),
-                    ),
-                  );
-                },
+                builder: (context, state) => VehicleRouteLoader(
+                  vehicleId: state.pathParameters['vehicleId']!,
+                  shopId: currentShopId(),
+                  builder: (context, vehicle) => OwnerRateMatrixView(
+                    vehicle: vehicle,
+                    onBack: () => context.pop(),
+                  ),
+                ),
               ),
               // Fleet: ownerOutCityRules (09b/010b simplification,
               // worker B) — car-level shared out-of-city rules.
               GoRoute(
                 path: RouteNames.ownerOutCityRules,
-                pageBuilder: (context, state) {
-                  final vehicleId = state.pathParameters['vehicleId']!;
-                  return MaterialPage(
-                    // Same pattern-key hazard as ownerRatesVehicle.
-                    key: ValueKey('owner-out-city-rules-$vehicleId'),
-                    child: VehicleRouteLoader(
-                      vehicleId: vehicleId,
-                      shopId: currentShopId(),
-                      builder: (context, vehicle) => OwnerOutCityRulesView(
-                        vehicle: vehicle,
-                        onBack: () => context.pop(),
-                      ),
-                    ),
-                  );
-                },
+                builder: (context, state) => VehicleRouteLoader(
+                  vehicleId: state.pathParameters['vehicleId']!,
+                  shopId: currentShopId(),
+                  builder: (context, vehicle) => OwnerOutCityRulesView(
+                    vehicle: vehicle,
+                    onBack: () => context.pop(),
+                  ),
+                ),
               ),
               // Fleet: ownerEditVehicle (09b/010b simplification,
               // worker B route wiring; the view is worker C's).
               GoRoute(
                 path: RouteNames.ownerEditVehicle,
-                pageBuilder: (context, state) {
-                  final vehicleId = state.pathParameters['id']!;
-                  return MaterialPage(
-                    // Same pattern-key hazard as ownerRatesVehicle.
-                    key: ValueKey('owner-edit-vehicle-$vehicleId'),
-                    child: VehicleRouteLoader(
-                      vehicleId: vehicleId,
-                      shopId: currentShopId(),
-                      builder: (context, vehicle) => OwnerEditVehicleView(
-                        vehicle: vehicle,
-                        onBack: () => context.pop(),
-                      ),
-                    ),
-                  );
-                },
+                builder: (context, state) => VehicleRouteLoader(
+                  vehicleId: state.pathParameters['id']!,
+                  shopId: currentShopId(),
+                  builder: (context, vehicle) => OwnerEditVehicleView(
+                    vehicle: vehicle,
+                    onBack: () => context.pop(),
+                  ),
+                ),
               ),
               // Fleet: ownerCalendar
               GoRoute(
                 path: RouteNames.ownerCalendar,
-                pageBuilder: (context, state) {
-                  final vehicleId = state.pathParameters['vehicleId']!;
-                  return MaterialPage(
-                    // Same pattern-key hazard as ownerRatesVehicle.
-                    key: ValueKey('owner-calendar-$vehicleId'),
-                    child: VehicleRouteLoader(
-                      vehicleId: vehicleId,
-                      shopId: currentShopId(),
-                      builder: (context, vehicle) =>
-                          OwnerVehicleCalendarView(
-                        vehicle: vehicle,
-                        onBack: () => context.pop(),
-                      ),
-                    ),
-                  );
-                },
+                builder: (context, state) => VehicleRouteLoader(
+                  vehicleId: state.pathParameters['vehicleId']!,
+                  shopId: currentShopId(),
+                  builder: (context, vehicle) => OwnerVehicleCalendarView(
+                    vehicle: vehicle,
+                    onBack: () => context.pop(),
+                  ),
+                ),
               ),
               // Fleet: ownerFixedRoutes
               GoRoute(
@@ -872,101 +840,63 @@ class AppRouter {
               // Fleet: ownerVehicleDetail (audit impl, worker D)
               GoRoute(
                 path: RouteNames.ownerVehicleDetail,
-                pageBuilder: (context, state) {
-                  final vehicleId = state.pathParameters['id']!;
-                  return MaterialPage(
-                    // Same pattern-key hazard as ownerRatesVehicle.
-                    key: ValueKey('owner-vehicle-detail-$vehicleId'),
-                    child: VehicleRouteLoader(
-                      vehicleId: vehicleId,
-                      shopId: currentShopId(),
-                      builder: (context, vehicle) => OwnerVehicleDetailView(
-                        vehicle: vehicle,
-                        onBack: () => context.pop(),
-                      ),
-                    ),
-                  );
-                },
+                builder: (context, state) => VehicleRouteLoader(
+                  vehicleId: state.pathParameters['id']!,
+                  shopId: currentShopId(),
+                  builder: (context, vehicle) => OwnerVehicleDetailView(
+                    vehicle: vehicle,
+                    onBack: () => context.pop(),
+                  ),
+                ),
               ),
               // Fleet: ownerVehiclePublished (audit impl, worker D)
               GoRoute(
                 path: RouteNames.ownerVehiclePublished,
-                pageBuilder: (context, state) {
-                  final vehicleId = state.pathParameters['vehicleId']!;
-                  return MaterialPage(
-                    // Same pattern-key hazard as ownerRatesVehicle.
-                    key: ValueKey('owner-vehicle-published-$vehicleId'),
-                    child: VehicleRouteLoader(
-                      vehicleId: vehicleId,
-                      shopId: currentShopId(),
-                      builder: (context, vehicle) =>
-                          OwnerVehiclePublishedView(
-                        vehicle: vehicle,
-                        onBack: () => context.pop(),
-                      ),
-                    ),
-                  );
-                },
+                builder: (context, state) => VehicleRouteLoader(
+                  vehicleId: state.pathParameters['vehicleId']!,
+                  shopId: currentShopId(),
+                  builder: (context, vehicle) => OwnerVehiclePublishedView(
+                    vehicle: vehicle,
+                    onBack: () => context.pop(),
+                  ),
+                ),
               ),
               // Fleet: ownerShareWithCustomers (audit impl finish,
-              // worker C) — VehicleRouteLoader pattern, per-vehicle
-              // MaterialPage key, like ownerVehiclePublished.
+              // worker C) — VehicleRouteLoader pattern.
               GoRoute(
                 path: RouteNames.ownerShareWithCustomers,
-                pageBuilder: (context, state) {
-                  final vehicleId = state.pathParameters['vehicleId']!;
-                  return MaterialPage(
-                    // Same pattern-key hazard as ownerRatesVehicle.
-                    key: ValueKey('owner-share-$vehicleId'),
-                    child: VehicleRouteLoader(
-                      vehicleId: vehicleId,
-                      shopId: currentShopId(),
-                      builder: (context, vehicle) =>
-                          OwnerShareWithCustomersView(
-                        vehicle: vehicle,
-                        onBack: () => context.pop(),
-                      ),
-                    ),
-                  );
-                },
+                builder: (context, state) => VehicleRouteLoader(
+                  vehicleId: state.pathParameters['vehicleId']!,
+                  shopId: currentShopId(),
+                  builder: (context, vehicle) => OwnerShareWithCustomersView(
+                    vehicle: vehicle,
+                    onBack: () => context.pop(),
+                  ),
+                ),
               ),
               // Fleet: ownerFareTable (audit impl, worker D)
               GoRoute(
                 path: RouteNames.ownerFareTable,
-                pageBuilder: (context, state) {
-                  final vehicleId = state.pathParameters['vehicleId']!;
-                  return MaterialPage(
-                    // Same pattern-key hazard as ownerRatesVehicle.
-                    key: ValueKey('owner-fare-table-$vehicleId'),
-                    child: VehicleRouteLoader(
-                      vehicleId: vehicleId,
-                      shopId: currentShopId(),
-                      builder: (context, vehicle) => OwnerFareTableView(
-                        vehicle: vehicle,
-                        onBack: () => context.pop(),
-                      ),
-                    ),
-                  );
-                },
+                builder: (context, state) => VehicleRouteLoader(
+                  vehicleId: state.pathParameters['vehicleId']!,
+                  shopId: currentShopId(),
+                  builder: (context, vehicle) => OwnerFareTableView(
+                    vehicle: vehicle,
+                    onBack: () => context.pop(),
+                  ),
+                ),
               ),
               // Fleet: ownerPriceEstimate (audit impl, worker D)
               GoRoute(
                 path: RouteNames.ownerPriceEstimate,
-                pageBuilder: (context, state) {
-                  final vehicleId = state.pathParameters['vehicleId']!;
-                  return MaterialPage(
-                    // Same pattern-key hazard as ownerRatesVehicle.
-                    key: ValueKey('owner-price-estimate-$vehicleId'),
-                    child: VehicleRouteLoader(
-                      vehicleId: vehicleId,
-                      shopId: currentShopId(),
-                      builder: (context, vehicle) => OwnerPriceEstimateView(
-                        vehicle: vehicle,
-                        onBack: () => context.pop(),
-                      ),
-                    ),
-                  );
-                },
+                builder: (context, state) => VehicleRouteLoader(
+                  vehicleId: state.pathParameters['vehicleId']!,
+                  shopId: currentShopId(),
+                  builder: (context, vehicle) => OwnerPriceEstimateView(
+                    vehicle: vehicle,
+                    onBack: () => context.pop(),
+                  ),
+                ),
               ),
               // Fleet: ownerFleetCalendar (audit impl, worker D)
               GoRoute(
@@ -1781,17 +1711,9 @@ class AppRouter {
       ),
       GoRoute(
         path: RouteNames.adminSubscriptions,
-        builder: (context, state) {
-          final l10n = AppLocalizations.of(context);
-          return AdminComingSoonView(
-            activeRoute: RouteNames.adminSubscriptions,
-            title: l10n?.admin2_navSubscriptions ?? 'Subscriptions',
-            subtitle: l10n?.admin2_subscriptionsSubtitle ??
-                'Plans, trials and platform revenue',
-            body: l10n?.admin2_subscriptionsBody ??
-                'Subscriptions arrive in Phase F, gated on the Play Console setup (plan D1).',
-          );
-        },
+        builder: (context, state) => AdminPackagesView(
+          initialTab: state.uri.queryParameters['tab'] ?? 'plans',
+        ),
       ),
     ],
   );

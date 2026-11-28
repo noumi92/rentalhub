@@ -69,8 +69,13 @@ class ProfileTrustCard extends StatelessWidget {
                 ],
               ),
             ),
-            Icon(Icons.arrow_forward_ios_rounded,
-                size: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
+            Icon(
+              Directionality.of(context) == TextDirection.rtl
+                  ? Icons.chevron_left_rounded
+                  : Icons.chevron_right_rounded,
+              size: 20,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
               ],
             ),
             if (onAppeal != null) ...[

@@ -13,20 +13,11 @@ import '../../data/services/admin_session.dart';
 import '../../domain/admin_permissions.dart';
 import '../widgets/admin_count_line.dart';
 import '../widgets/admin_list_card.dart';
+import '../widgets/admin_section_tabs.dart';
 import '../widgets/admin_shell.dart';
 import '../widgets/admin_sort_menu.dart';
 
-/// Item 6 — the customer KYC review queue: every customer whose own
-/// documents sit in `kyc_documents/{uid}` with status 'submitted' or
-/// 'resubmitted', newest first, with the review detail that decides
-/// them.
-///
-/// Permission: super admin + operations only ([AdminPermission.
-/// decideKyc] — the matrix already carried this KYC permission for
-/// the owner-side flow; no new permission was needed). Support
-/// admins never see the sidebar entry, the route guard bounces a
-/// direct URL to the dashboard, and this view itself shows the
-/// not-permitted state as the backstop.
+/// Customer KYC review queue (super admin & operations).
 class AdminKycReviewView extends StatefulWidget {
   const AdminKycReviewView({
     super.key,
@@ -119,6 +110,11 @@ class _AdminKycReviewViewState extends State<AdminKycReviewView> {
       title: l10n?.adminKycReviewTitle ?? 'KYC Review',
       subtitle: l10n?.adminKycReviewSubtitle ??
           'Customer identity documents waiting for a decision',
+      subTabs: AdminSectionTabs.onlineCustomers(
+        context,
+        activeRoute: RouteNames.adminKycReview,
+        canDecideKyc: _canReview,
+      ),
       onRefresh: _load,
       child: _isLoading
           ? const AppLoadingState()

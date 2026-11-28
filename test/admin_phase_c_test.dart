@@ -204,7 +204,7 @@ void main() {
           home: const AdminCustomersView()));
       await tester.pumpAndSettle();
       // Twice: the header title and the narrow nav strip's chip.
-      expect(find.text('Customers'), findsWidgets);
+      expect(find.text('Online Customers'), findsWidgets);
       expect(find.textContaining('No customers match'), findsOneWidget);
     });
 

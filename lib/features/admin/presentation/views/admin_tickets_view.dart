@@ -11,6 +11,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../../data/datasources/admin_support_data_source.dart';
 import '../widgets/admin_count_line.dart';
 import '../widgets/admin_load_more_button.dart';
+import '../widgets/admin_section_tabs.dart';
 import '../widgets/admin_shell.dart';
 import '../widgets/admin_ticket_list_header.dart';
 import '../widgets/admin_ticket_list_tile.dart';
@@ -156,6 +157,10 @@ class _AdminTicketsViewState extends State<AdminTicketsView> {
       activeRoute: RouteNames.adminTickets,
       title: l10n?.admin2_ticketsTitle ?? 'Support tickets',
       subtitle: l10n?.admin2_ticketsSubtitle ?? 'The inbox the customer plan promised',
+      subTabs: AdminSectionTabs.trustAndSupport(
+        context,
+        activeRoute: RouteNames.adminTickets,
+      ),
       onRefresh: _load,
       child: Padding(
         padding: EdgeInsets.all(compact ? 16 : 24),

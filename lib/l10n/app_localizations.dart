@@ -19540,6 +19540,294 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Based on the first 1,000 records in this range — totals and charts may be incomplete.'**
   String get admin2_reportsTruncatedNote;
+
+  /// No description provided for @profileVerifyKyc.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify KYC'**
+  String get profileVerifyKyc;
+
+  /// No description provided for @profileEditShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get profileEditShort;
+
+  /// No description provided for @profileCompleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete your profile'**
+  String get profileCompleteTitle;
+
+  /// No description provided for @profileCompleteProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'{done} of {total} details added'**
+  String profileCompleteProgress(int done, int total);
+
+  /// No description provided for @adminNavShopsAndFleet.
+  ///
+  /// In en, this message translates to:
+  /// **'Shops & Fleet'**
+  String get adminNavShopsAndFleet;
+
+  /// No description provided for @adminNavPackagesCredits.
+  ///
+  /// In en, this message translates to:
+  /// **'Packages & Credits'**
+  String get adminNavPackagesCredits;
+
+  /// No description provided for @adminNavTrustSupport.
+  ///
+  /// In en, this message translates to:
+  /// **'Trust & Support'**
+  String get adminNavTrustSupport;
+
+  /// No description provided for @adminTabAllShops.
+  ///
+  /// In en, this message translates to:
+  /// **'All Shops'**
+  String get adminTabAllShops;
+
+  /// No description provided for @adminTabPendingApprovals.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending Approvals'**
+  String get adminTabPendingApprovals;
+
+  /// No description provided for @adminTabFleetCars.
+  ///
+  /// In en, this message translates to:
+  /// **'Fleet Cars'**
+  String get adminTabFleetCars;
+
+  /// No description provided for @adminTabSuspended.
+  ///
+  /// In en, this message translates to:
+  /// **'Suspended'**
+  String get adminTabSuspended;
+
+  /// No description provided for @adminTabDirectory.
+  ///
+  /// In en, this message translates to:
+  /// **'Directory'**
+  String get adminTabDirectory;
+
+  /// No description provided for @adminTabKycQueue.
+  ///
+  /// In en, this message translates to:
+  /// **'KYC Queue'**
+  String get adminTabKycQueue;
+
+  /// No description provided for @adminTabShopPlans.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop Plans'**
+  String get adminTabShopPlans;
+
+  /// No description provided for @adminTabUpgradeRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade Requests'**
+  String get adminTabUpgradeRequests;
+
+  /// No description provided for @adminTabWhatsappPackages.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp Packages'**
+  String get adminTabWhatsappPackages;
+
+  /// No description provided for @adminTabOnlineBookings.
+  ///
+  /// In en, this message translates to:
+  /// **'Online Bookings'**
+  String get adminTabOnlineBookings;
+
+  /// No description provided for @adminTabApkRelease.
+  ///
+  /// In en, this message translates to:
+  /// **'APK Release'**
+  String get adminTabApkRelease;
+
+  /// No description provided for @adminKpiSectionShopsFleet.
+  ///
+  /// In en, this message translates to:
+  /// **'Shops & Fleet'**
+  String get adminKpiSectionShopsFleet;
+
+  /// No description provided for @adminKpiSectionCustomers.
+  ///
+  /// In en, this message translates to:
+  /// **'Customers (Online vs. Walk-in)'**
+  String get adminKpiSectionCustomers;
+
+  /// No description provided for @adminKpiSectionBookingsSupport.
+  ///
+  /// In en, this message translates to:
+  /// **'Bookings & Support'**
+  String get adminKpiSectionBookingsSupport;
+
+  /// No description provided for @adminKpiFleetVehicles.
+  ///
+  /// In en, this message translates to:
+  /// **'Fleet Vehicles'**
+  String get adminKpiFleetVehicles;
+
+  /// No description provided for @adminKpiPaidPlans.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid Plans'**
+  String get adminKpiPaidPlans;
+
+  /// No description provided for @adminKpiPendingPackageRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'Package Requests'**
+  String get adminKpiPendingPackageRequests;
+
+  /// No description provided for @adminKpiOnlineCustomers.
+  ///
+  /// In en, this message translates to:
+  /// **'Online Customers'**
+  String get adminKpiOnlineCustomers;
+
+  /// No description provided for @adminKpiWalkInCustomers.
+  ///
+  /// In en, this message translates to:
+  /// **'Walk-in Customers'**
+  String get adminKpiWalkInCustomers;
+
+  /// No description provided for @adminKpiShopManagedOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop-managed (KPI only)'**
+  String get adminKpiShopManagedOnly;
+
+  /// No description provided for @adminKpiOnlineBookings.
+  ///
+  /// In en, this message translates to:
+  /// **'Online Bookings'**
+  String get adminKpiOnlineBookings;
+
+  /// No description provided for @adminKpiWalkInBookings.
+  ///
+  /// In en, this message translates to:
+  /// **'Walk-in Bookings'**
+  String get adminKpiWalkInBookings;
+
+  /// No description provided for @adminKpiBlacklisted.
+  ///
+  /// In en, this message translates to:
+  /// **'Blacklisted'**
+  String get adminKpiBlacklisted;
+
+  /// No description provided for @adminKpiVerified.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified'**
+  String get adminKpiVerified;
+
+  /// No description provided for @adminKpiPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get adminKpiPending;
+
+  /// No description provided for @adminPackagesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage showroom plans, upgrade requests, and WhatsApp credit packs'**
+  String get adminPackagesSubtitle;
+
+  /// No description provided for @adminPackagesChangePlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Plan'**
+  String get adminPackagesChangePlan;
+
+  /// No description provided for @adminPackagesGrantCredits.
+  ///
+  /// In en, this message translates to:
+  /// **'Grant Credits'**
+  String get adminPackagesGrantCredits;
+
+  /// No description provided for @adminPackagesApproveRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve'**
+  String get adminPackagesApproveRequest;
+
+  /// No description provided for @adminPackagesRejectRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject'**
+  String get adminPackagesRejectRequest;
+
+  /// No description provided for @adminPackagesNoPendingRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'No subscription upgrade requests yet.'**
+  String get adminPackagesNoPendingRequests;
+
+  /// No description provided for @adminPackagesNoCreditRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'No WhatsApp credit requests yet.'**
+  String get adminPackagesNoCreditRequests;
+
+  /// No description provided for @adminPackagesNoShops.
+  ///
+  /// In en, this message translates to:
+  /// **'No shops found.'**
+  String get adminPackagesNoShops;
+
+  /// No description provided for @adminPackagesPlanUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop plan updated.'**
+  String get adminPackagesPlanUpdated;
+
+  /// No description provided for @adminPackagesRequestApproved.
+  ///
+  /// In en, this message translates to:
+  /// **'Request approved.'**
+  String get adminPackagesRequestApproved;
+
+  /// No description provided for @adminPackagesRequestRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Request rejected.'**
+  String get adminPackagesRequestRejected;
+
+  /// No description provided for @adminPackagesCreditsUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp credits updated.'**
+  String get adminPackagesCreditsUpdated;
+
+  /// No description provided for @adminPackagesActionFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save this change. Check your connection and try again.'**
+  String get adminPackagesActionFailed;
+
+  /// No description provided for @adminPackagesReasonHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional note or rejection reason'**
+  String get adminPackagesReasonHint;
+
+  /// No description provided for @adminPackagesCreditsDeltaLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Credits to add (or negative to deduct)'**
+  String get adminPackagesCreditsDeltaLabel;
+
+  /// No description provided for @adminPackagesSelectPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Select plan tier'**
+  String get adminPackagesSelectPlan;
 }
 
 class _AppLocalizationsDelegate

@@ -173,7 +173,7 @@ void main() {
   }
 
   group('admin_mobile shell — drawer navigation at 360dp', () {
-    testWidgets('drawer lists all 16 sections on a phone',
+    testWidgets('drawer lists all 7 primary sections on a phone',
         (tester) async {
       tester.view.physicalSize = const Size(360, 800);
       tester.view.devicePixelRatio = 1.0;
@@ -186,25 +186,24 @@ void main() {
       await tester.tap(find.byIcon(Icons.menu));
       await tester.pumpAndSettle();
       for (final label in [
-        'Cars', 'Online Customers',
-        'Disputes', 'Reviews', 'Support', 'Announcements',
-        'Reports', 'Settings', 'Blacklist', 'Admin Team', 'Activity Log',
-        'Subscriptions', 'Bookings',
+        'Overview',
+        'Shops & Fleet',
+        'Online Customers',
+        'Packages & Credits',
+        'Bookings',
+        'Trust & Support',
+        'Platform & System',
       ]) {
-        expect(find.text(label), findsOneWidget, reason: label);
+        expect(
+          find.descendant(of: find.byType(Drawer), matching: find.text(label)),
+          findsOneWidget,
+          reason: label,
+        );
       }
-      // Restructure (2026-11-27): Shops and Customers are
-      // bottom-nav items too, so they appear twice with the drawer
-      // open (drawer + nav bar) — the drawer label for customers is
-      // 'Online Customers', the bottom-nav label is 'Customers'.
-      expect(find.text('Shops'), findsNWidgets(2));
-      expect(find.text('Queues'), findsNWidgets(2));
+      // Bottom nav items remain visible behind the drawer.
+      expect(find.text('Shops'), findsOneWidget);
+      expect(find.text('Queues'), findsOneWidget);
       expect(find.text('Customers'), findsOneWidget);
-      // Restructure (2026-11-27): Subscriptions is a sidebar item
-      // now (Commerce) — the screen stays Coming Soon. Bookings left
-      // the bottom nav, so it appears only in the drawer.
-      // Twice: the app-bar title and the drawer item.
-      expect(find.text('Dashboard'), findsNWidgets(2));
     });
 
     testWidgets('drawer navigation reaches Customers on a phone',
@@ -220,7 +219,12 @@ void main() {
       // Restructure (2026-11-27): the drawer item is labelled
       // 'Online Customers' now — tap that, not the bottom-nav
       // 'Customers' (the open drawer covers the nav bar).
-      await tester.tap(find.text('Online Customers'));
+      await tester.tap(
+        find.descendant(
+          of: find.byType(Drawer),
+          matching: find.text('Online Customers'),
+        ),
+      );
       await tester.pumpAndSettle();
       expect(find.text('Bilal Ahmed'), findsOneWidget);
       expect(find.text('Sara Khan'), findsOneWidget);
@@ -256,8 +260,8 @@ void main() {
       await pumpPhone(tester, const AdminShopsView());
       expect(find.text('Metro Car Rentals'), findsOneWidget);
       expect(find.text('Lahore Motors'), findsOneWidget);
-      // Twice: the status filter chip and the suspended shop's chip.
-      expect(find.text('Suspended'), findsNWidgets(2));
+      // Three times: horizontal sub-tab, status filter chip, and suspended shop's chip.
+      expect(find.text('Suspended'), findsNWidgets(3));
       // Phase 3 (3.1): no Approvals button any more — pending is a
       // filter on this list, and the decision lives on the detail.
       expect(find.text('Approvals'), findsNothing);
@@ -541,6 +545,7 @@ class _FakePeopleDataSource extends AdminPeopleDataSource {
     Object? cursor,
     String cnicFilter = 'all',
     String sort = 'nameAsc',
+    bool onlineOnly = true,
   }) async =>
       AdminPage(
         items: AdminPeopleDataSource.sortCustomerRows(

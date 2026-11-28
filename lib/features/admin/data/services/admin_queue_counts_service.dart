@@ -31,6 +31,8 @@ class AdminQueueCounts {
     required this.disputes,
     required this.reviews,
     required this.tickets,
+    this.subscriptions = 0,
+    this.credits = 0,
   });
 
   final int approvals;
@@ -39,6 +41,8 @@ class AdminQueueCounts {
   final int disputes;
   final int reviews;
   final int tickets;
+  final int subscriptions;
+  final int credits;
 }
 
 class AdminQueueCountsService {
@@ -107,6 +111,8 @@ class AdminQueueCountsService {
       disputes: stats.openDisputeCount,
       reviews: pendingReviews,
       tickets: stats.openTicketCount,
+      subscriptions: stats.pendingSubscriptionCount,
+      credits: stats.pendingCreditRequestCount,
     );
     _cached = counts;
     _cachedAt = DateTime.now();

@@ -366,21 +366,17 @@ supportedLocales: AppLocalizations.supportedLocales,
       await tester.pumpAndSettle();
 
       // H1: no signed-in user in tests, so the profile shows Guest
+      // once in the hero header (not duplicated in the identity card)
       // and an unknown trust score — never the old hardcoded 4.8.
-      // Guest renders twice in the hub: the shared header and the
-      // identity card's name row.
-      expect(find.text('Guest'), findsNWidgets(2));
-      // Same: the trust score shows in the header chip and in the
+      expect(find.text('Guest'), findsOneWidget);
+      // Trust score shows in the sticky header chip and the unified
       // trust section card.
       expect(find.text('Trust Score: —'), findsNWidgets(2));
-      expect(find.text('My Documents (KYC)'), findsOneWidget);
+      // Unverified header chip opens Documents & KYC directly.
+      expect(find.text('Verify KYC'), findsOneWidget);
       expect(find.text('Saved Showrooms'), findsOneWidget);
 
-      // The hub's Profile tab is taller than the old view, so the
-      // menu rows can sit below the fold at the default test size.
-      await tester.ensureVisible(find.text('My Documents (KYC)'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('My Documents (KYC)'));
+      await tester.tap(find.text('Verify KYC'));
       await tester.pumpAndSettle();
       expect(openedDocs, isTrue);
 

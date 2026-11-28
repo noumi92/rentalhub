@@ -4,16 +4,9 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../trust/presentation/views/widgets/kyc_status_style.dart';
 
-/// Profile hub (2026-11-25): the one shared header for the Profile
-/// hub — avatar (stored photo when the customer has one, initial
-/// otherwise), name, email/phone, a trust-score chip and a KYC status
-/// chip. It replaces the old dead [ProfileHeader] (avatar + name +
-/// edit only, never instantiated) and the inline header the profile
-/// view used to build itself.
-///
-/// The KYC chip uses the shared [KycStatusStyle] mapping, so the hub,
-/// the KYC banner and the Home card can never disagree about a
-/// status. The chip is only shown once a KYC record exists.
+/// Shared hero header content for the Customer Profile hub —
+/// tappable avatar with ring, name, contact line, pill Edit button,
+/// and interactive Trust Score + KYC status/CTA chips.
 class ProfileHeader extends StatelessWidget {
   const ProfileHeader({
     super.key,
@@ -21,6 +14,8 @@ class ProfileHeader extends StatelessWidget {
     required this.email,
     required this.phone,
     required this.onEdit,
+    this.onOpenDocuments,
+    this.onOpenReputation,
     this.photoUrl,
     this.trustScore,
     this.kycStatus = '',
@@ -30,6 +25,8 @@ class ProfileHeader extends StatelessWidget {
   final String email;
   final String phone;
   final VoidCallback onEdit;
+  final VoidCallback? onOpenDocuments;
+  final VoidCallback? onOpenReputation;
 
   /// Signed URL of the stored profile photo, if any.
   final String? photoUrl;
@@ -42,78 +39,159 @@ class ProfileHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final brightness = Theme.of(context).brightness;
+    final hasPhoto = photoUrl != null && photoUrl!.isNotEmpty;
+    final showEditLabel = MediaQuery.textScalerOf(context).scale(1) < 1.5;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
-            CircleAvatar(
-              radius: 28,
-              backgroundColor: Colors.white,
-              backgroundImage:
-                  photoUrl != null && photoUrl!.isNotEmpty
-                      ? NetworkImage(photoUrl!)
-                      : null,
-              // CircleAvatar asserts when an error handler is set
-              // with no image — only attach it when a photo exists.
-              onBackgroundImageError:
-                  photoUrl != null && photoUrl!.isNotEmpty
-                      ? (_, __) {}
-                      : null,
-              child: photoUrl == null || photoUrl!.isEmpty
-                  ? Text(
-                      name.isNotEmpty ? name[0].toUpperCase() : 'U',
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.primary),
-                    )
-                  : null,
+            Semantics(
+              button: true,
+              label: l10n.profileEditProfile,
+              child: Material(
+                type: MaterialType.transparency,
+                shape: const CircleBorder(),
+                clipBehavior: Clip.antiAlias,
+                child: InkWell(
+                  onTap: onEdit,
+                  child: Container(
+                    padding: const EdgeInsets.all(2),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.35),
+                        width: 2,
+                      ),
+                    ),
+                    child: CircleAvatar(
+                      radius: 26,
+                      backgroundColor: Colors.white,
+                      backgroundImage:
+                          hasPhoto ? NetworkImage(photoUrl!) : null,
+                      onBackgroundImageError: hasPhoto ? (_, __) {} : null,
+                      child: !hasPhoto
+                          ? Text(
+                              name.isNotEmpty ? name[0].toUpperCase() : 'U',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleLarge
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.w700,
+                                    color: AppColors.primary,
+                                  ),
+                            )
+                          : null,
+                    ),
+                  ),
+                ),
+              ),
             ),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(name,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w600, color: Colors.white)),
+                  Text(
+                    name,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
+                  ),
+                  const SizedBox(height: 2),
                   Text(
                     email.isNotEmpty
                         ? email
                         : (phone.isNotEmpty
                             ? phone
                             : l10n.profileNotSignedInShort),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppColors.primaryContainer),
+                          color: Colors.white.withValues(alpha: 0.78),
+                        ),
                   ),
                 ],
               ),
             ),
-            IconButton(
-              icon: const Icon(Icons.edit_rounded,
-                  color: Colors.white, size: 20),
-              tooltip: l10n.profileEditProfile,
-              onPressed: onEdit,
+            const SizedBox(width: 8),
+            Tooltip(
+              message: l10n.profileEditProfile,
+              child: Material(
+                color: Colors.white.withValues(alpha: 0.14),
+                shape: StadiumBorder(
+                  side: BorderSide(
+                    color: Colors.white.withValues(alpha: 0.28),
+                  ),
+                ),
+                clipBehavior: Clip.antiAlias,
+                child: InkWell(
+                  onTap: onEdit,
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(minHeight: 36),
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: showEditLabel ? 12 : 10,
+                        vertical: 6,
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.edit_rounded,
+                              color: Colors.white, size: 16),
+                          if (showEditLabel) ...[
+                            const SizedBox(width: 5),
+                            Text(
+                              l10n.profileEditShort,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .labelMedium
+                                  ?.copyWith(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             ),
           ],
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 12),
         Wrap(
           spacing: 8,
           runSpacing: 8,
           children: [
-            _Chip(
+            _HeaderChip(
               icon: Icons.stars_rounded,
               label: trustScore == null
                   ? l10n.reputationTrustScoreDash
                   : l10n.profileTrustScoreValue(
                       trustScore!.toStringAsFixed(1)),
+              onTap: onOpenReputation,
             ),
             if (kycStatus.isNotEmpty)
-              _Chip(
+              _HeaderChip(
                 icon: KycStatusStyle.icon(kycStatus),
                 label: KycStatusStyle.label(l10n, kycStatus),
-                color: KycStatusStyle.color(brightness, kycStatus),
+                iconColor: KycStatusStyle.color(brightness, kycStatus),
+                onTap: onOpenDocuments,
+              )
+            else
+              _HeaderChip(
+                icon: Icons.verified_user_outlined,
+                label: l10n.profileVerifyKyc,
+                iconColor: AppColors.secondary,
+                highlight: true,
+                onTap: onOpenDocuments,
               ),
           ],
         ),
@@ -122,30 +200,37 @@ class ProfileHeader extends StatelessWidget {
   }
 }
 
-class _Chip extends StatelessWidget {
-  const _Chip({required this.icon, required this.label, this.color});
+class _HeaderChip extends StatelessWidget {
+  const _HeaderChip({
+    required this.icon,
+    required this.label,
+    this.iconColor,
+    this.highlight = false,
+    this.onTap,
+  });
 
   final IconData icon;
   final String label;
-  final Color? color;
+  final Color? iconColor;
+  final bool highlight;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    final chipColor = color ?? Colors.white;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.14),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.25)),
-      ),
+    final bg = highlight
+        ? AppColors.secondary.withValues(alpha: 0.20)
+        : Colors.white.withValues(alpha: 0.14);
+    final border = highlight
+        ? AppColors.secondary.withValues(alpha: 0.55)
+        : Colors.white.withValues(alpha: 0.25);
+
+    final content = Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 14, color: chipColor),
+          Icon(icon, size: 14, color: iconColor ?? Colors.white),
           const SizedBox(width: 6),
-          // At 200% text scale the label can exceed the Wrap run
-          // width — shrink it with an ellipsis instead of overflowing.
           Flexible(
             child: Text(
               label,
@@ -158,6 +243,15 @@ class _Chip extends StatelessWidget {
           ),
         ],
       ),
+    );
+
+    return Material(
+      color: bg,
+      shape: StadiumBorder(side: BorderSide(color: border)),
+      clipBehavior: Clip.antiAlias,
+      child: onTap != null
+          ? InkWell(onTap: onTap, child: content)
+          : content,
     );
   }
 }

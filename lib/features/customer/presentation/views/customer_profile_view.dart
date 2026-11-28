@@ -175,9 +175,9 @@ class _CustomerProfileViewState extends State<CustomerProfileView>
               trustScore: data?.trustScore,
               kycStatus: data?.kycStatus ?? '',
               onEdit: _openEdit,
-            ),
-            TabBar(
-              controller: _tabController,
+              onOpenDocuments: _openDocuments,
+              onOpenReputation: widget.onOpenReputation,
+              tabController: _tabController,
               tabs: [
                 Tab(text: l10n.profileTitle),
                 Tab(text: l10n.profileTabKyc),
@@ -195,12 +195,10 @@ class _CustomerProfileViewState extends State<CustomerProfileView>
                             physics:
                                 const AlwaysScrollableScrollPhysics(),
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 12),
+                                horizontal: 16, vertical: 14),
                             child: ProfileBody(
                               loading: _loading,
                               loadFailed: data?.loadFailed ?? false,
-                              name: displayName,
-                              email: data?.email ?? '',
                               phone: data?.phone ?? '',
                               dateOfBirth: data?.dateOfBirth,
                               fatherName: data?.fatherName,
@@ -215,7 +213,7 @@ class _CustomerProfileViewState extends State<CustomerProfileView>
                                   : null,
                               ownerReviews: data?.ownerReviews ?? const [],
                               cnic: _cnic,
-                              onOpenDocuments: _openDocuments,
+                              onEdit: _openEdit,
                               onOpenSavedShops: widget.onOpenSavedShops,
                               onOpenSettings: widget.onOpenSettings,
                               onOpenSupport: widget.onOpenSupport,

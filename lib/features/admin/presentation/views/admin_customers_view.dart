@@ -12,11 +12,11 @@ import '../widgets/admin_count_line.dart';
 import '../widgets/admin_customer_list_header.dart';
 import '../widgets/admin_customer_list_tile.dart';
 import '../widgets/admin_load_more_button.dart';
+import '../widgets/admin_mini_kpi_strip.dart';
+import '../widgets/admin_section_tabs.dart';
 import '../widgets/admin_shell.dart';
 
-/// Phase C (C1) — the customers list: every customer, searchable,
-/// with their CNIC state. Tap a customer for the detail screen
-/// (trust score with breakdown, KYC, bookings, notes, actions).
+/// Online customers directory (walk-in customers are shop-managed, KPI-only).
 class AdminCustomersView extends StatefulWidget {
   const AdminCustomersView({super.key});
 
@@ -40,6 +40,7 @@ class _AdminCustomersViewState extends State<AdminCustomersView> {
   Object? _cursor;
   bool _hasMore = false;
   int? _total;
+  int? _walkInKpiCount;
 
   @override
   void initState() {
@@ -54,10 +55,6 @@ class _AdminCustomersViewState extends State<AdminCustomersView> {
     super.dispose();
   }
 
-  // F-m2 + F-m8: the list pages (20 rows at a time) instead of
-  // stopping at a silent 200-row cap, search covers the whole
-  // list through the data source, and each row carries its stored
-  // trust score and flags.
   Future<void> _load({bool reset = true}) async {
     if (reset) {
       setState(() {
@@ -74,49 +71,34 @@ class _AdminCustomersViewState extends State<AdminCustomersView> {
     try {
       final ds = sl<AdminPeopleDataSource>();
       if (_searchQuery.isNotEmpty) {
-        final found = await ds.searchCustomers(
-          _searchQuery,
-          limit: 50,
-        );
+        final found = await ds.searchCustomers(_searchQuery, limit: 50);
         _setLoaded(AdminPeopleDataSource.sortCustomerRows(found, _sort),
             isSearching: true);
         return;
       }
-      // Phase 4 (4.4c): the unfiltered total, so the list can say
-      // "Showing first N of M" (the CNIC filter has no
-      // server-side count, so filtered lists report no total).
       final total =
-          _cnicFilter == 'all' ? await ds.countCustomers() : null;
+          _cnicFilter == 'all' ? await ds.countOnlineCustomers() : null;
+      final walkInCount = await ds.countWalkInCustomers();
       final page = await ds.getCustomersPage(
         limit: _pageSize,
         cursor: reset ? null : _cursor,
         cnicFilter: _cnicFilter,
         sort: _sort,
+        onlineOnly: true,
       );
       _setLoaded(
         reset ? page.items : [..._rows, ...page.items],
         cursor: page.cursor,
         hasMore: page.hasMore,
         total: total,
+        walkInKpiCount: walkInCount,
       );
     } catch (_) {
-      if (mounted) {
-        setState(() {
-          _hasError = true;
-          _isLoading = false;
-          _isLoadingMore = false;
-        });
-      }
+      if (mounted) { setState(() { _hasError = true; _isLoading = false; _isLoadingMore = false; }); }
     }
   }
 
-  void _setLoaded(
-    List<AdminCustomerRow> rows, {
-    Object? cursor,
-    bool hasMore = false,
-    bool isSearching = false,
-    int? total,
-  }) {
+  void _setLoaded(List<AdminCustomerRow> rows, {Object? cursor, bool hasMore = false, bool isSearching = false, int? total, int? walkInKpiCount}) {
     if (!mounted) return;
     setState(() {
       _rows = rows;
@@ -124,6 +106,7 @@ class _AdminCustomersViewState extends State<AdminCustomersView> {
       _cursor = cursor;
       _hasMore = hasMore;
       _total = total;
+      if (walkInKpiCount != null) _walkInKpiCount = walkInKpiCount;
       _isLoading = false;
       _isLoadingMore = false;
     });
@@ -156,17 +139,40 @@ class _AdminCustomersViewState extends State<AdminCustomersView> {
     final l10n = AppLocalizations.of(context);
     return AdminShell(
       activeRoute: RouteNames.adminCustomers,
-      title: l10n?.admin2_navCustomers ?? 'Customers',
-      subtitle: l10n?.admin2_customersSubtitle ?? 'Every customer on the platform',
+      title: l10n?.admin2_navOnlineCustomers ?? 'Online Customers',
+      subtitle:
+          l10n?.admin2_customersSubtitle ?? 'Every customer on the platform',
+      subTabs: AdminSectionTabs.onlineCustomers(
+        context,
+        activeRoute: RouteNames.adminCustomers,
+      ),
       onRefresh: _load,
       child: Padding(
-        // Mobile-first: 16dp on a phone, 24dp on desktop.
         padding: EdgeInsets.all(
-            windowSizeClassOf(context) == WindowSizeClass.compact
-                ? 16
-                : 24),
+            windowSizeClassOf(context) == WindowSizeClass.compact ? 16 : 24),
         child: Column(
           children: [
+            if (_total != null || _walkInKpiCount != null)
+              Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: AdminMiniKpiStrip(items: [
+                  if (_total != null)
+                    AdminMiniKpi(
+                      label:
+                          l10n?.adminKpiOnlineCustomers ?? 'Online Customers',
+                      value: '$_total',
+                      icon: Icons.people_rounded,
+                    ),
+                  if (_walkInKpiCount != null)
+                    AdminMiniKpi(
+                      label:
+                          '${l10n?.adminKpiWalkInCustomers ?? 'Walk-in Customers'} (${l10n?.adminKpiShopManagedOnly ?? 'Shop-managed (KPI only)'})',
+                      value: '$_walkInKpiCount',
+                      icon: Icons.storefront_rounded,
+                      muted: true,
+                    ),
+                ]),
+              ),
             AdminCustomerListHeader(
               searchController: _searchController,
               onSearchChanged: _onSearchChanged,
@@ -175,7 +181,7 @@ class _AdminCustomersViewState extends State<AdminCustomersView> {
               sort: _sort,
               onSort: _onSort,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
             if (!_isLoading && !_hasError && _rows.isNotEmpty)
               _isSearching
                   ? Align(
@@ -202,7 +208,8 @@ class _AdminCustomersViewState extends State<AdminCustomersView> {
                   ? const AppLoadingState()
                   : _hasError
                       ? AppErrorState(
-                          message: l10n?.admin2_customersLoadFailed ?? 'Could not load the customers.',
+                          message: l10n?.admin2_customersLoadFailed ??
+                              'Could not load the customers.',
                           onRetry: _load,
                         )
                       : _rows.isEmpty
@@ -213,20 +220,20 @@ class _AdminCustomersViewState extends State<AdminCustomersView> {
                                   'The list reads the customers collection.',
                             )
                           : ListView.separated(
-                          itemCount: _rows.length +
-                              (_hasMore && !_isSearching ? 1 : 0),
-                          separatorBuilder: (_, __) =>
-                              const SizedBox(height: 10),
-                          itemBuilder: (context, i) {
-                            if (i >= _rows.length) {
-                              return AdminLoadMoreButton(
-                                isLoadingMore: _isLoadingMore,
-                                onPressed: () => _load(reset: false),
-                              );
-                            }
-                            return AdminCustomerListTile(row: _rows[i]);
-                          },
-                        ),
+                              itemCount: _rows.length +
+                                  (_hasMore && !_isSearching ? 1 : 0),
+                              separatorBuilder: (_, __) =>
+                                  const SizedBox(height: 10),
+                              itemBuilder: (context, i) {
+                                if (i >= _rows.length) {
+                                  return AdminLoadMoreButton(
+                                    isLoadingMore: _isLoadingMore,
+                                    onPressed: () => _load(reset: false),
+                                  );
+                                }
+                                return AdminCustomerListTile(row: _rows[i]);
+                              },
+                            ),
             ),
           ],
         ),

@@ -10,6 +10,7 @@ import '../../../../l10n/app_localizations_en.dart';
 import '../../data/services/admin_queue_counts_service.dart';
 import '../../data/services/admin_session.dart';
 import '../../domain/admin_permissions.dart';
+import 'admin_section_tabs.dart';
 
 /// Phase A (A6) — the admin panel's sidebar, now wired to the real
 /// routes. The mock-era items (accreditation, settings) are replaced by
@@ -81,7 +82,6 @@ class AdminSidebarNav extends StatefulWidget {
 }
 
 class _AdminSidebarNavState extends State<AdminSidebarNav> {
-  bool _showApkDownload = false;
   bool _canReviewKyc = false;
   bool _roleResolved = false;
   AdminQueueCounts? _counts;
@@ -89,13 +89,8 @@ class _AdminSidebarNavState extends State<AdminSidebarNav> {
   @override
   void initState() {
     super.initState();
-    if (widget.showApkDownload != null) {
-      _showApkDownload = widget.showApkDownload!;
-    }
     if (widget.showKycReview != null) {
       _canReviewKyc = widget.showKycReview!;
-    }
-    if (widget.showApkDownload != null && widget.showKycReview != null) {
       _roleResolved = true;
     } else {
       _resolveRoleSync();
@@ -107,23 +102,12 @@ class _AdminSidebarNavState extends State<AdminSidebarNav> {
   @override
   void didUpdateWidget(covariant AdminSidebarNav oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // The test seams force visibility: a rebuild with a changed seam
-    // applies it (initState only runs once per element).
-    if (widget.showApkDownload != null) {
-      _showApkDownload = widget.showApkDownload!;
-    }
     if (widget.showKycReview != null) {
       _canReviewKyc = widget.showKycReview!;
-    }
-    if (widget.showApkDownload != null && widget.showKycReview != null) {
       _roleResolved = true;
     }
   }
 
-  /// Phase 2 (2.1): the router guard already resolved the role
-  /// before any admin screen opens, so the session cache usually
-  /// holds it — read it synchronously so the gated items are right
-  /// on the first paint instead of appearing a frame later.
   void _resolveRoleSync() {
     User? user;
     try {
@@ -137,10 +121,6 @@ class _AdminSidebarNavState extends State<AdminSidebarNav> {
   }
 
   void _applyRole(String? role) {
-    if (widget.showApkDownload == null) {
-      _showApkDownload =
-          AdminPermissions.can(role, AdminPermission.downloadApk);
-    }
     if (widget.showKycReview == null) {
       _canReviewKyc =
           AdminPermissions.can(role, AdminPermission.decideKyc);
@@ -182,8 +162,6 @@ class _AdminSidebarNavState extends State<AdminSidebarNav> {
     }
   }
 
-  /// AD-M3: sign out of the panel — clears the in-memory TOTP flag
-  /// and role cache, then routes to the admin login.
   Future<void> _signOut() async {
     AdminSession.clear();
     try {
@@ -192,24 +170,16 @@ class _AdminSidebarNavState extends State<AdminSidebarNav> {
     if (mounted) context.go(RouteNames.adminLogin);
   }
 
-  /// A role-gated item: the real item once its visibility is
-  /// resolved (its test seam, or the async role resolution), a 48dp
-  /// placeholder while it resolves (so the list below never shifts),
-  /// nothing when the role says the admin may not use it.
-  Widget _gatedItem({
-    required bool resolved,
-    required bool visible,
-    required Widget item,
-  }) {
-    if (!resolved) return const SizedBox(height: 48);
-    if (!visible) return const SizedBox.shrink();
-    return item;
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = (AppLocalizations.of(context) ?? AppLocalizationsEn());
     final counts = _counts;
+    final shopsBadge =
+        counts == null ? null : counts.approvals + counts.cars;
+    final packagesBadge =
+        counts == null ? null : counts.subscriptions + counts.credits;
+    final bookingsBadge =
+        counts == null ? null : counts.disputes + counts.reviews;
     return Container(
       width: widget.width,
       color: AppColors.primary,
@@ -250,46 +220,47 @@ class _AdminSidebarNavState extends State<AdminSidebarNav> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _sectionHeader(l10n.admin2_sidebarGroupOverview),
-                  _navItem(RouteNames.adminDashboard, l10n.admin2_navDashboard, Icons.dashboard_rounded),
-                  _navItem(RouteNames.adminReports, l10n.admin2_navReports, Icons.bar_chart_rounded),
-                  _sectionHeader(l10n.admin2_sidebarGroupEntities),
-                  // Phase 3 (3.1): the pending-shop count lives on
-                  // Shops — Approvals is the Shops list with the
-                  // Pending filter, not its own screen any more.
-                  _navItem(RouteNames.adminShops, l10n.admin2_navShops, Icons.store_rounded, badge: counts?.approvals),
-                  _navItem(RouteNames.adminCustomers, l10n.admin2_navOnlineCustomers, Icons.people_rounded),
-                  _sectionHeader(l10n.admin2_sidebarGroupInboxes),
-                  _navItem(RouteNames.adminQueues, l10n.admin2_navQueues, Icons.fact_check_rounded),
-                  _gatedItem(
-                    resolved: widget.showKycReview != null || _roleResolved,
-                    visible: _canReviewKyc,
-                    item: _navItem(RouteNames.adminKycReview, l10n.adminKycReviewTitle, Icons.badge_rounded, badge: counts?.kyc),
+                  const SizedBox(height: 8),
+                  _navItem(
+                    RouteNames.adminDashboard,
+                    l10n.admin2_sidebarGroupOverview,
+                    Icons.dashboard_rounded,
                   ),
-                  _navItem(RouteNames.adminCars, l10n.admin2_navCars, Icons.directions_car_rounded, badge: counts?.cars),
-                  _sectionHeader(l10n.admin2_sidebarGroupCommerce),
-                  // Restructure (2026-11-27): the Subscriptions route
-                  // exists and the screen is still the Coming Soon
-                  // placeholder — visible to all admin roles, no gating.
-                  _navItem(RouteNames.adminSubscriptions, l10n.admin2_navSubscriptions, Icons.card_membership_rounded),
-                  _sectionHeader(l10n.admin2_sidebarGroupLegalTrust),
-                  _navItem(RouteNames.adminDisputes, l10n.admin2_navDisputes, Icons.gavel_rounded, badge: counts?.disputes),
-                  // AD-m1: Blacklist gets its own icon — it shared
-                  // the gavel with Disputes.
-                  _navItem(RouteNames.adminBlacklist, l10n.admin2_navBlacklist, Icons.block_rounded),
-                  _navItem(RouteNames.adminReviews, l10n.admin2_navReviews, Icons.star_rounded, badge: counts?.reviews),
-                  _navItem(RouteNames.adminTickets, l10n.admin2_navSupport, Icons.support_agent_rounded, badge: counts?.tickets),
-                  _sectionHeader(l10n.admin2_sidebarGroupPlatformSystem),
-                  _navItem(RouteNames.adminAnnouncements, l10n.admin2_navAnnouncements, Icons.campaign_rounded),
-                  _navItem(RouteNames.adminSettings, l10n.admin2_navSettings, Icons.settings_rounded),
-                  _navItem(RouteNames.adminTeam, l10n.admin2_navAdminTeam, Icons.group_rounded),
-                  _navItem(RouteNames.adminActivity, l10n.admin2_navActivityLog, Icons.history_rounded),
-                  _gatedItem(
-                    resolved: widget.showApkDownload != null || _roleResolved,
-                    visible: _showApkDownload,
-                    item: _navItem(RouteNames.adminApkDownload, l10n.admin2_navApkDownload, Icons.android_rounded),
+                  _navItem(
+                    RouteNames.adminShops,
+                    l10n.adminNavShopsAndFleet,
+                    Icons.store_rounded,
+                    badge: shopsBadge,
                   ),
-                  _navItem(RouteNames.adminBookings, l10n.admin2_navBookings, Icons.receipt_long_rounded),
+                  _navItem(
+                    RouteNames.adminCustomers,
+                    l10n.admin2_navOnlineCustomers,
+                    Icons.people_rounded,
+                    badge: _canReviewKyc ? counts?.kyc : null,
+                  ),
+                  _navItem(
+                    RouteNames.adminSubscriptions,
+                    l10n.adminNavPackagesCredits,
+                    Icons.card_membership_rounded,
+                    badge: packagesBadge,
+                  ),
+                  _navItem(
+                    RouteNames.adminBookings,
+                    l10n.admin2_navBookings,
+                    Icons.receipt_long_rounded,
+                    badge: bookingsBadge,
+                  ),
+                  _navItem(
+                    RouteNames.adminTickets,
+                    l10n.adminNavTrustSupport,
+                    Icons.support_agent_rounded,
+                    badge: counts?.tickets,
+                  ),
+                  _navItem(
+                    RouteNames.adminSettings,
+                    l10n.admin2_sidebarGroupPlatformSystem,
+                    Icons.settings_rounded,
+                  ),
                   const SizedBox(height: 12),
                 ],
               ),
@@ -333,23 +304,9 @@ class _AdminSidebarNavState extends State<AdminSidebarNav> {
     );
   }
 
-  Widget _sectionHeader(String label) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 6),
-      child: Text(
-        label.toUpperCase(),
-        style: const TextStyle(
-          fontSize: 10.5,
-          fontWeight: FontWeight.w600,
-          letterSpacing: 1.2,
-          color: Colors.white54,
-        ),
-      ),
-    );
-  }
-
   Widget _navItem(String route, String label, IconData icon, {int? badge}) {
-    final isSelected = widget.activeRoute == route;
+    final isSelected =
+        AdminSectionTabs.primaryRouteFor(widget.activeRoute) == route;
     final showBadge = badge != null && badge > 0;
     return Semantics(
       button: true,

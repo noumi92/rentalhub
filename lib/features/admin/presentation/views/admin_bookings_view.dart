@@ -15,17 +15,11 @@ import '../widgets/admin_booking_list_header.dart';
 import '../widgets/admin_booking_list_tile.dart';
 import '../widgets/admin_load_more_button.dart';
 import '../widgets/admin_scoped_list_banner.dart';
+import '../widgets/admin_section_tabs.dart';
 import '../widgets/admin_sort_menu.dart';
 import '../widgets/admin_shell.dart';
 
-/// Phase D (D1) — the bookings list: every booking, filterable by
-/// lifecycle status, searchable by booking id, customer, or vehicle.
-///
-/// Phase 3 (3.4): the list pages (20 rows at a time) through
-/// [AdminPlatformDataSource.getBookingsPage] instead of stopping at
-/// a silent 200-row cap, search covers the whole list through the
-/// data source (400 ms debounce, like Customers/Tickets), and the
-/// count line says how many of the total are shown.
+/// Platform bookings list with horizontal sub-tabs.
 class AdminBookingsView extends StatefulWidget {
   const AdminBookingsView({super.key, this.shopId});
 
@@ -182,6 +176,12 @@ class _AdminBookingsViewState extends State<AdminBookingsView> {
       activeRoute: RouteNames.adminBookings,
       title: l10n.admin2_navBookings,
       subtitle: l10n.admin2_bookingsSubtitle,
+      subTabs: widget.shopId == null
+          ? AdminSectionTabs.bookings(
+              context,
+              activeRoute: RouteNames.adminBookings,
+            )
+          : const [],
       onRefresh: () { _scopedBase = null; _load(); },
       onBack: backToShopDetail(context, widget.shopId),
       child: Padding(

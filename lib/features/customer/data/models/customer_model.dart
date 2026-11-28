@@ -131,6 +131,12 @@ class CustomerModel extends CustomerEntity {
       reviewedAt: map['reviewedAt'] != null
           ? DateTime.tryParse(map['reviewedAt'].toString())
           : null,
+      pushNotifications: (map['pushNotifications'] as bool?) ?? true,
+      whatsappNotifications: (map['whatsappNotifications'] as bool?) ?? true,
+      savedShopIds: (map['savedShopIds'] as List?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          const [],
       shopStatuses: _parseShopStatuses(map['shopStatuses']),
     );
   }
@@ -166,6 +172,9 @@ class CustomerModel extends CustomerEntity {
       approvalStatus: entity.approvalStatus,
       rejectionReason: entity.rejectionReason,
       reviewedAt: entity.reviewedAt,
+      pushNotifications: entity.pushNotifications,
+      whatsappNotifications: entity.whatsappNotifications,
+      savedShopIds: entity.savedShopIds,
       shopStatuses: entity.shopStatuses,
     );
   }

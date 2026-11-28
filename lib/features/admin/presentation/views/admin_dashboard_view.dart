@@ -9,14 +9,12 @@ import '../../../../l10n/app_localizations.dart';
 import '../../data/datasources/admin_remote_data_source.dart';
 import '../../data/services/admin_session.dart';
 import '../../domain/admin_permissions.dart';
-import '../widgets/admin_kpi_card.dart';
+import '../widgets/admin_dashboard_kpi_sections.dart';
+import '../widgets/admin_section_tabs.dart';
 import '../widgets/admin_shell.dart';
-import '../widgets/admin_status_chip.dart';
 
-/// Phase A (A6) — the admin dashboard, real: live counts from the
-/// platform collections. No growth percentages, no volume figures, no
-/// MRR — those need history and the gated subscription phase, and the
-/// old view invented all of them ("Rs. 4.82M, +22.8% MoM").
+/// Executive Admin Dashboard: live KPIs grouped into Shops & Fleet,
+/// Online vs. Walk-in Customers (walk-in KPI-only), and Bookings & Support.
 class AdminDashboardView extends StatefulWidget {
   const AdminDashboardView({super.key, this.showKycCard});
 
@@ -43,7 +41,6 @@ class _AdminDashboardViewState extends State<AdminDashboardView> {
     if (!_isLoading) setState(() => _hasError = false);
     try {
       final stats = await sl<AdminRemoteDataSource>().getPlatformStats();
-      // Phase 1 (1.4): the KYC card is role-gated like the sidebar item.
       final role = await AdminSession.resolveCurrentAdminRole();
       final canReviewKyc = widget.showKycCard ??
           AdminPermissions.can(role, AdminPermission.decideKyc);
@@ -63,14 +60,27 @@ class _AdminDashboardViewState extends State<AdminDashboardView> {
 
   @override
   Widget build(BuildContext context) {
-    // Tests pump without localization delegates — fall back to
-    // English instead of crashing on a null check.
     final l10n = AppLocalizations.of(context);
+    final stats = _stats ??
+        const PlatformStats(
+          shopCount: 0,
+          activeBookingCount: 0,
+          openDisputeCount: 0,
+          openTicketCount: 0,
+          pendingShopCount: 0,
+        );
+    final pendingPackages =
+        stats.pendingSubscriptionCount + stats.pendingCreditRequestCount;
+
     return AdminShell(
       activeRoute: RouteNames.adminDashboard,
       title: l10n?.admin2_navDashboard ?? 'Dashboard',
       subtitle: l10n?.admin2_dashboardSubtitle ??
           'The platform at a glance, counted live',
+      subTabs: AdminSectionTabs.overview(
+        context,
+        activeRoute: RouteNames.adminDashboard,
+      ),
       onRefresh: _load,
       child: _isLoading
           ? const AppLoadingState()
@@ -81,149 +91,91 @@ class _AdminDashboardViewState extends State<AdminDashboardView> {
                   onRetry: _load,
                 )
               : SingleChildScrollView(
-              // Mobile-first: 16dp side padding on a phone, 24dp on
-              // desktop — 24dp each side leaves 312dp of content on
-              // a 360dp screen.
-              padding: EdgeInsets.all(
-                  windowSizeClassOf(context) == WindowSizeClass.compact
-                      ? 16
-                      : 24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  LayoutBuilder(
-                    builder: (context, constraints) {
-                      // Two columns on a phone (each ~156dp at 360dp);
-                      // four on desktop. The cards wrap their text,
-                      // so large text scales grow them, never clip.
-                      final columns = columnsFor<int>(context,
-                          compact: 2, medium: 2, expanded: 4);
-                      final width = (constraints.maxWidth -
-                              (columns - 1) * 16) /
-                          columns;
-                      final cards = _cards();
-                      return Wrap(
-                        spacing: 16,
-                        runSpacing: 16,
-                        children: cards
-                            .map((c) => SizedBox(width: width, child: c))
-                            .toList(),
-                      );
-                    },
+                  padding: EdgeInsets.all(
+                    windowSizeClassOf(context) == WindowSizeClass.compact
+                        ? 16
+                        : 24,
                   ),
-                  const SizedBox(height: 24),
-                  _infoCard(
-                    l10n?.admin2_dashboardDisputesTitle ??
-                        'Open disputes need a decision',
-                    l10n?.admin2_dashboardOpenCount(
-                            _stats?.openDisputeCount ?? 0) ??
-                        '${_stats?.openDisputeCount ?? 0} open',
-                    Icons.report_problem_outlined,
-                    l10n?.admin2_dashboardDisputesHint ??
-                        'Open the disputes centre to decide them.',
-                    onTap: () => context.go(RouteNames.adminDisputes),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AdminDashboardKpiSections(
+                        stats: stats,
+                        canReviewKyc: _canReviewKyc,
+                      ),
+                      const SizedBox(height: 24),
+                      _infoCard(
+                        l10n?.adminAuditPendingApprovals ??
+                            'Shops waiting for approval',
+                        '${stats.pendingShopCount} pending',
+                        Icons.store_rounded,
+                        l10n?.adminAuditPendingApprovalsHint ??
+                            'Open the approvals queue to decide them.',
+                        onTap: () =>
+                            context.go('${RouteNames.adminShops}?filter=pending'),
+                      ),
+                      if (_canReviewKyc) ...[
+                        const SizedBox(height: 12),
+                        _infoCard(
+                          l10n?.admin2_dashboardKycTitle ??
+                              'KYC submissions waiting for review',
+                          l10n?.admin2_dashboardOpenCount(
+                                  stats.pendingKycCount) ??
+                              '${stats.pendingKycCount} open',
+                          Icons.badge_rounded,
+                          l10n?.admin2_dashboardKycHint ??
+                              'Open the KYC review queue to decide them.',
+                          onTap: () => context.go(RouteNames.adminKycReview),
+                        ),
+                      ],
+                      const SizedBox(height: 12),
+                      _infoCard(
+                        l10n?.adminKpiPendingPackageRequests ??
+                            'Package Requests',
+                        '$pendingPackages pending',
+                        Icons.card_membership_rounded,
+                        l10n?.adminPackagesSubtitle ??
+                            'Manage showroom plans, upgrade requests, and WhatsApp credit packs',
+                        onTap: () => context
+                            .go('${RouteNames.adminSubscriptions}?tab=requests'),
+                      ),
+                      const SizedBox(height: 12),
+                      _infoCard(
+                        l10n?.admin2_dashboardDisputesTitle ??
+                            'Open disputes need a decision',
+                        l10n?.admin2_dashboardOpenCount(
+                                stats.openDisputeCount) ??
+                            '${stats.openDisputeCount} open',
+                        Icons.report_problem_outlined,
+                        l10n?.admin2_dashboardDisputesHint ??
+                            'Open the disputes centre to decide them.',
+                        onTap: () => context.go(RouteNames.adminDisputes),
+                      ),
+                      const SizedBox(height: 12),
+                      _infoCard(
+                        l10n?.admin2_dashboardTicketsTitle ??
+                            'Support tickets waiting',
+                        l10n?.admin2_dashboardOpenCount(
+                                stats.openTicketCount) ??
+                            '${stats.openTicketCount} open',
+                        Icons.support_agent_rounded,
+                        l10n?.admin2_dashboardTicketsHint ??
+                            'Open the tickets inbox to reply.',
+                        onTap: () => context.go(RouteNames.adminTickets),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 12),
-                  _infoCard(
-                    l10n?.admin2_dashboardTicketsTitle ??
-                        'Support tickets waiting',
-                    l10n?.admin2_dashboardOpenCount(
-                            _stats?.openTicketCount ?? 0) ??
-                        '${_stats?.openTicketCount ?? 0} open',
-                    Icons.support_agent_rounded,
-                    l10n?.admin2_dashboardTicketsHint ??
-                        'Open the tickets inbox to reply.',
-                    onTap: () => context.go(RouteNames.adminTickets),
-                  ),
-                  const SizedBox(height: 12),
-                  // F-m1: the approvals queue is the most actionable
-                  // queue on the platform, and it had no count on
-                  // the dashboard — an admin had to open Approvals
-                  // to learn a shop was waiting.
-                  _infoCard(
-                    AppLocalizations.of(context)
-                            ?.adminAuditPendingApprovals ??
-                        'Shops waiting for approval',
-                    '${_stats?.pendingShopCount ?? 0} pending',
-                    Icons.store_rounded,
-                    AppLocalizations.of(context)
-                            ?.adminAuditPendingApprovalsHint ??
-                        'Open the approvals queue to decide them.',
-                    onTap: () => context.go('${RouteNames.adminShops}?filter=pending'),
-                  ),
-                  // Phase 1 (1.4): the KYC queue, counted live.
-                  if (_canReviewKyc) ...[
-                    const SizedBox(height: 12),
-                    _infoCard(
-                      l10n?.admin2_dashboardKycTitle ??
-                          'KYC submissions waiting for review',
-                      l10n?.admin2_dashboardOpenCount(
-                              _stats?.pendingKycCount ?? 0) ??
-                          '${_stats?.pendingKycCount ?? 0} open',
-                      Icons.badge_rounded,
-                      l10n?.admin2_dashboardKycHint ??
-                          'Open the KYC review queue to decide them.',
-                      onTap: () => context.go(RouteNames.adminKycReview),
-                    ),
-                  ],
-                ],
-              ),
-            ),
+                ),
     );
   }
 
-  List<Widget> _cards() {
-    final l10n = AppLocalizations.of(context);
-    final s = _stats ??
-        const PlatformStats(
-          shopCount: 0,
-          activeBookingCount: 0,
-          openDisputeCount: 0,
-          openTicketCount: 0,
-          pendingShopCount: 0,
-        );
-    return [
-      AdminKpiCard(
-        title: l10n?.admin2_dashboardKpiShops ?? 'Registered shops',
-        value: '${s.shopCount}',
-        changeLabel: l10n?.admin2_dashboardKpiLiveCount ?? 'Live count',
-        icon: Icons.store_rounded,
-      ),
-      AdminKpiCard(
-        title: l10n?.admin2_dashboardKpiBookings ?? 'Active bookings',
-        value: '${s.activeBookingCount}',
-        changeLabel: l10n?.admin2_dashboardKpiBookingsNote ??
-            'Approved, paid or active',
-        icon: Icons.calendar_month_rounded,
-        accentColor:
-            adminStatusColor(context, AdminStatusTone.success),
-      ),
-      AdminKpiCard(
-        title: l10n?.admin2_dashboardKpiDisputes ?? 'Open disputes',
-        value: '${s.openDisputeCount}',
-        changeLabel: l10n?.admin2_dashboardKpiDisputesNote ??
-            'Awaiting a decision',
-        icon: Icons.report_problem_outlined,
-        accentColor:
-            adminStatusColor(context, AdminStatusTone.warning),
-      ),
-      AdminKpiCard(
-        title: l10n?.admin2_dashboardKpiTickets ?? 'Open support tickets',
-        value: '${s.openTicketCount}',
-        changeLabel: l10n?.admin2_dashboardKpiTicketsNote ??
-            'Awaiting a reply',
-        icon: Icons.support_agent_rounded,
-        accentColor: adminStatusColor(context, AdminStatusTone.info),
-      ),
-    ];
-  }
-
-  /// A link card: the disputes centre (Phase D) and the tickets
-  /// inbox (Phase E) both exist, so the card opens its destination
-  /// instead of describing it as arriving later.
   Widget _infoCard(
-      String title, String value, IconData icon, String note,
-      {VoidCallback? onTap}) {
+    String title,
+    String value,
+    IconData icon,
+    String note, {
+    VoidCallback? onTap,
+  }) {
     return Card(
       margin: EdgeInsets.zero,
       elevation: 0,
@@ -234,13 +186,14 @@ class _AdminDashboardViewState extends State<AdminDashboardView> {
       child: ListTile(
         onTap: onTap,
         leading: Icon(icon),
-        title: Text(title,
-            style: const TextStyle(
-                fontSize: 14,
-                )),
-        subtitle: Text('$value • $note',
-            style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant)),
-        // AD-m19: the card navigates on tap — the chevron says so.
+        title: Text(title, style: const TextStyle(fontSize: 14)),
+        subtitle: Text(
+          '$value • $note',
+          style: TextStyle(
+            fontSize: 12,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
+        ),
         trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 16),
       ),
     );

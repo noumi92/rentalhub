@@ -233,27 +233,29 @@ service cloud.firestore {
     // Cross-showroom access is strictly forbidden.
     match /customers/{customerId} {
       allow read: if (
-        isShopOwner(resource.data.get('shopId', '')) ||
-        isShopOwner(resource.data.get('shop_id', '')) ||
-        request.auth.uid == customerId ||
+        isUser(customerId) ||
+        (resource != null && (
+          isShopOwner(resource.data.get('shopId', '')) ||
+          isShopOwner(resource.data.get('shop_id', ''))
+        )) ||
         adminRole()
       );
       allow create: if (
+        isUser(customerId) ||
         isShopOwner(request.resource.data.get('shopId', '')) ||
         isShopOwner(request.resource.data.get('shop_id', '')) ||
-        request.auth.uid == customerId ||
         isAdminOps()
       );
       allow update: if (
+        isUser(customerId) ||
         isShopOwner(resource.data.get('shopId', '')) ||
         isShopOwner(resource.data.get('shop_id', '')) ||
-        request.auth.uid == customerId ||
         isAdminOps()
       );
       allow delete: if (
+        isUser(customerId) ||
         isShopOwner(resource.data.get('shopId', '')) ||
         isShopOwner(resource.data.get('shop_id', '')) ||
-        request.auth.uid == customerId ||
         isAdminOps()
       );
 

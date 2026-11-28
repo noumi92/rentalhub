@@ -4,6 +4,9 @@ import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:rentalhub/core/network/cpanel_storage_client.dart';
+import 'package:rentalhub/core/network/firestore_service.dart';
+import 'package:rentalhub/features/customer/data/datasources/customer_remote_data_source.dart';
+import 'package:rentalhub/features/customer/data/repositories/customer_repository_impl.dart';
 import 'package:rentalhub/features/customer/domain/entities/customer_entity.dart';
 import 'package:rentalhub/features/customer/domain/repositories/customer_repository.dart';
 import 'package:rentalhub/features/customer/domain/usecases/save_customer_usecase.dart';
@@ -333,6 +336,125 @@ void main() {
       expect(saved, hasLength(1));
       expect((await kycDs.getKyc('user-1'))?.status, 'verified');
     });
+
+    testWidgets(
+        'all fields edit, clear, and persist to Firestore customers & users '
+        'without wiping savedShopIds or notification prefs', (tester) async {
+      final fake = FakeFirebaseFirestore();
+      await fake.collection('users').doc('user-1').set({
+        'uid': 'user-1',
+        'email': 'ali@example.com',
+        'full_name': 'Old Name',
+        'phone_number': '03001111111',
+        'role': 'customer',
+      });
+      await fake.collection('kyc_documents').doc('user-1').set({
+        'userUid': 'user-1',
+        'cnicNumber': '35202-1234567-1',
+        'status': 'submitted',
+      });
+      final customerDs = CustomerRemoteDataSource(firestore: fake);
+      final repo = CustomerRepositoryImpl(remoteDataSource: customerDs);
+      final fsService = FirestoreService(firestore: fake);
+      final kycDs = _kycDataSource(fake);
+
+      final existingCustomer = CustomerEntity(
+        customerId: 'user-1',
+        shopId: '',
+        name: 'Old Name',
+        phone: '03001111111',
+        cnic: '35202-1234567-1',
+        source: 'online',
+        createdAt: DateTime(2026, 1, 1),
+        dateOfBirth: '01.01.1990',
+        fatherName: 'Old Father',
+        address: 'Old Street',
+        pushNotifications: false,
+        whatsappNotifications: false,
+        savedShopIds: const ['shop_a', 'shop_b'],
+      );
+      await customerDs.upsertCustomer(existingCustomer);
+
+      final data = ProfileHubData(
+        name: existingCustomer.name,
+        email: 'ali@example.com',
+        phone: existingCustomer.phone,
+        cnic: existingCustomer.cnic!,
+        photoUrl: null,
+        dateOfBirth: existingCustomer.dateOfBirth,
+        fatherName: existingCustomer.fatherName,
+        address: existingCustomer.address,
+        trustScore: 4.0,
+        kycStatus: 'submitted',
+        isBlacklisted: false,
+        loading: false,
+        loadFailed: false,
+        kyc: null,
+        rejectionReason: null,
+        ownerReviews: const [],
+        customer: existingCustomer,
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: CustomerEditProfileView(
+            initialData: data,
+            saveUseCase: SaveCustomerUseCase(repo),
+            kycDataSource: kycDs,
+            firestoreService: fsService,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      Future<void> enter(String label, String value) async {
+        final field = find.byWidgetPredicate(
+            (w) => w is TextField && w.decoration?.labelText == label);
+        await tester.ensureVisible(field);
+        await tester.enterText(field, value);
+      }
+
+      await enter('Full name', 'New Name');
+      await enter('Phone', '03219876543');
+      await enter('CNIC (optional)', '3520276543217');
+      await enter('Date of birth', '15.05.1995');
+      await enter("Father's name", '');
+      await enter('Address', 'Model Town, Lahore');
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(find.text('Save Profile'));
+      await tester.tap(find.text('Save Profile'));
+      await tester.pumpAndSettle();
+
+      final customerSnap =
+          await fake.collection('customers').doc('user-1').get();
+      final customerDoc = customerSnap.data()!;
+      expect(customerDoc['name'], 'New Name');
+      expect(customerDoc['phone'], '03219876543');
+      expect(customerDoc['cnic'], '35202-7654321-7');
+      expect(customerDoc['dateOfBirth'], '15.05.1995');
+      // Cleared optional field actually overwrites the stored value.
+      expect(customerDoc['fatherName'], '');
+      expect(customerDoc['address'], 'Model Town, Lahore');
+      // Notification prefs and saved shops are preserved.
+      expect(customerDoc['pushNotifications'], isFalse);
+      expect(customerDoc['whatsappNotifications'], isFalse);
+      expect(customerDoc['savedShopIds'], ['shop_a', 'shop_b']);
+
+      // Mirror write to users/{uid} updates name & phone, preserves role.
+      final userSnap = await fake.collection('users').doc('user-1').get();
+      expect(userSnap.data()!['full_name'], 'New Name');
+      expect(userSnap.data()!['phone_number'], '03219876543');
+      expect(userSnap.data()!['role'], 'customer');
+
+      // Non-verified KYC doc also stays in sync on CNIC edit.
+      final kycSnap =
+          await fake.collection('kyc_documents').doc('user-1').get();
+      expect(kycSnap.data()!['cnicNumber'], '35202-7654321-7');
+      expect(kycSnap.data()!['status'], 'submitted');
+    });
   });
 
   group('CustomerProfileView — hub deep link', () {
@@ -350,9 +472,10 @@ void main() {
       final tabBar = tester.widget<TabBar>(find.byType(TabBar));
       expect(tabBar.controller?.index, 1);
       expect(find.text('KYC'), findsOneWidget);
-      // 'Profile' renders twice by design: the app-bar title and
-      // the first tab.
-      expect(find.text('Profile'), findsNWidgets(2));
+      // Only the first tab shows 'Profile' and only ProfileHeader
+      // renders the edit action (no duplicate top bar).
+      expect(find.text('Profile'), findsOneWidget);
+      expect(find.byIcon(Icons.edit_rounded), findsOneWidget);
     });
 
     testWidgets('default hub opens on the Profile tab', (tester) async {
@@ -367,9 +490,12 @@ void main() {
 
       final tabBar = tester.widget<TabBar>(find.byType(TabBar));
       expect(tabBar.controller?.index, 0);
-      // 'Guest' renders twice by design: the header name and the
-      // identity card's name row.
-      expect(find.text('Guest'), findsNWidgets(2));
+      // Guest renders once in the hero header (not duplicated in the
+      // Personal Details card), alongside the completion prompt and
+      // Verify KYC CTA chip.
+      expect(find.text('Guest'), findsOneWidget);
+      expect(find.text('Verify KYC'), findsOneWidget);
+      expect(find.text('Complete your profile'), findsOneWidget);
     });
   });
 }
