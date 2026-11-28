@@ -11196,4 +11196,67 @@ class AppLocalizationsUr extends AppLocalizations {
   @override
   String get whatsappFeatureComingSoonBody =>
       'خودکار واٹس ایپ الرٹس اور کریڈٹ پیکس جلد آ رہے ہیں۔ نیچے آنے والے پیکیجز دیکھیں۔';
+
+  @override
+  String get walkInBadge => 'واک اِن';
+
+  @override
+  String get walkInAddPayment => 'ادائیگی شامل کریں';
+
+  @override
+  String get walkInAddPaymentTitle => 'واک اِن ادائیگی درج کریں';
+
+  @override
+  String get walkInAddPaymentAmountLabel => 'موصول شدہ رقم (روپے)';
+
+  @override
+  String get walkInAddPaymentAmountRequired => 'صفر سے زیادہ رقم درج کریں۔';
+
+  @override
+  String get walkInAddPaymentSave => 'ادائیگی محفوظ کریں';
+
+  @override
+  String get walkInAddPaymentSaved => 'ادائیگی محفوظ ہو گئی۔';
+
+  @override
+  String get walkInAddPaymentFailed =>
+      'ادائیگی محفوظ نہیں ہو سکی۔ دوبارہ کوشش کریں۔';
+
+  @override
+  String get walkInCollectDues => 'بقایا وصول کریں';
+
+  @override
+  String get walkInNewBookingForCustomer => 'نئی بکنگ';
+
+  @override
+  String get walkInGuarantorLabel => 'ضامن';
+
+  @override
+  String get walkInBookingCreateFailedGeneric =>
+      'بکنگ نہیں بن سکی۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔';
+
+  @override
+  String get walkInHandoverFailedGeneric =>
+      'حوالگی مکمل نہیں ہو سکی۔ دوبارہ کوشش کریں۔';
+
+  @override
+  String get returnLateFeeTitle => 'تاخیر فیس';
+
+  @override
+  String get returnLateFeeOnTime => 'وقت پر واپسی';
+
+  @override
+  String returnLateFeeOverdueHours(int hours) {
+    return '$hours گھنٹے تاخیر';
+  }
+
+  @override
+  String get returnLateFeeLabel => 'تاخیر فیس (روپے)';
+
+  @override
+  String get returnLateFeeHint => '0';
+
+  @override
+  String get customerDetailNoBookingsInFilter =>
+      'اس حالت میں کوئی بکنگ نہیں ہے۔';
 }

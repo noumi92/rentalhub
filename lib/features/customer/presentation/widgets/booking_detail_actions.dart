@@ -114,6 +114,7 @@ class BookingDetailActions extends StatelessWidget {
       case BookingNextStepKind.none:
       case BookingNextStepKind.approve:
       case BookingNextStepKind.verifyProof:
+      case BookingNextStepKind.recordPayment:
       case BookingNextStepKind.startHandover:
       case BookingNextStepKind.returnSettlement:
       case BookingNextStepKind.viewDispute:

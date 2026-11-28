@@ -37,6 +37,7 @@ class OwnerRequestsViewBody extends StatelessWidget {
   final ValueChanged<BookingEntity> onReject;
   final ValueChanged<BookingEntity> onOpenDetail;
   final ValueChanged<BookingEntity>? onCancel;
+  final ValueChanged<BookingEntity>? onRecordPayment;
 
   const OwnerRequestsViewBody({
     super.key,
@@ -65,6 +66,7 @@ class OwnerRequestsViewBody extends StatelessWidget {
     required this.onReject,
     required this.onOpenDetail,
     this.onCancel,
+    this.onRecordPayment,
   });
 
   List<BookingEntity> get _filtered {
@@ -135,6 +137,7 @@ class OwnerRequestsViewBody extends StatelessWidget {
                 onApprove: onApprove,
                 onReject: onReject,
                 onCancel: onCancel,
+                onRecordPayment: onRecordPayment,
                 onOpenDetail: onOpenDetail,
               ),
             ),

@@ -19852,6 +19852,120 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Automated WhatsApp alerts and credit packs are coming soon. Preview the upcoming packages below.'**
   String get whatsappFeatureComingSoonBody;
+
+  /// No description provided for @walkInBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Walk-in'**
+  String get walkInBadge;
+
+  /// No description provided for @walkInAddPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Payment'**
+  String get walkInAddPayment;
+
+  /// No description provided for @walkInAddPaymentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Record Walk-in Payment'**
+  String get walkInAddPaymentTitle;
+
+  /// No description provided for @walkInAddPaymentAmountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount Received (Rs.)'**
+  String get walkInAddPaymentAmountLabel;
+
+  /// No description provided for @walkInAddPaymentAmountRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter an amount greater than zero.'**
+  String get walkInAddPaymentAmountRequired;
+
+  /// No description provided for @walkInAddPaymentSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Record Payment'**
+  String get walkInAddPaymentSave;
+
+  /// No description provided for @walkInAddPaymentSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment recorded.'**
+  String get walkInAddPaymentSaved;
+
+  /// No description provided for @walkInAddPaymentFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not record payment. Please try again.'**
+  String get walkInAddPaymentFailed;
+
+  /// No description provided for @walkInCollectDues.
+  ///
+  /// In en, this message translates to:
+  /// **'Collect Dues'**
+  String get walkInCollectDues;
+
+  /// No description provided for @walkInNewBookingForCustomer.
+  ///
+  /// In en, this message translates to:
+  /// **'New Booking'**
+  String get walkInNewBookingForCustomer;
+
+  /// No description provided for @walkInGuarantorLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Guarantor'**
+  String get walkInGuarantorLabel;
+
+  /// No description provided for @walkInBookingCreateFailedGeneric.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not create booking. Please check your connection and try again.'**
+  String get walkInBookingCreateFailedGeneric;
+
+  /// No description provided for @walkInHandoverFailedGeneric.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not complete handover. Please try again.'**
+  String get walkInHandoverFailedGeneric;
+
+  /// No description provided for @returnLateFeeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Late Fee'**
+  String get returnLateFeeTitle;
+
+  /// No description provided for @returnLateFeeOnTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Returned on time'**
+  String get returnLateFeeOnTime;
+
+  /// No description provided for @returnLateFeeOverdueHours.
+  ///
+  /// In en, this message translates to:
+  /// **'Late by {hours}h'**
+  String returnLateFeeOverdueHours(int hours);
+
+  /// No description provided for @returnLateFeeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Late Fee (Rs.)'**
+  String get returnLateFeeLabel;
+
+  /// No description provided for @returnLateFeeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'0'**
+  String get returnLateFeeHint;
+
+  /// No description provided for @customerDetailNoBookingsInFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'No bookings in this status.'**
+  String get customerDetailNoBookingsInFilter;
 }
 
 class _AppLocalizationsDelegate

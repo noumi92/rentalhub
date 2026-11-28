@@ -166,7 +166,8 @@ class _OwnerManualBookingConfirmViewState
             rentAmount: widget.rentAmount, driverAmount: widget.driverAmount, depositMethod: widget.depositMethod);
       }
     } catch (e) {
-      if (mounted) AppFeedback.showError(context, l10n.manualBookingCreateFailed(e.toString()));
+      debugPrint('Walk-in booking create failed: $e');
+      if (mounted) AppFeedback.showError(context, l10n.walkInBookingCreateFailedGeneric);
     } finally {
       if (mounted) setState(() => _isCreating = false);
     }

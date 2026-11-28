@@ -29,6 +29,7 @@ enum BookingNextStepKind {
   none,
   approve,
   verifyProof,
+  recordPayment,
   startHandover,
   returnSettlement,
   viewDispute,
@@ -78,6 +79,7 @@ class BookingNextStep {
       case BookingNextStepKind.fileDispute:
         return RouteNames.customerDisputes;
       case BookingNextStepKind.approve:
+      case BookingNextStepKind.recordPayment:
       case BookingNextStepKind.none:
         return null;
     }
@@ -97,6 +99,8 @@ class BookingNextStep {
         return l10n.requestsApprovePay;
       case BookingNextStepKind.verifyProof:
         return l10n.requestsVerifyProof;
+      case BookingNextStepKind.recordPayment:
+        return l10n.walkInAddPayment;
       case BookingNextStepKind.startHandover:
         return l10n.bookingConfirmedStartHandover;
       case BookingNextStepKind.returnSettlement:
@@ -135,6 +139,13 @@ BookingNextStep resolveOwnerNextStep(BookingEntity booking) {
   switch (booking.status) {
     case 'requested':
       return const BookingNextStep(BookingNextStepKind.approve);
+    case 'approved':
+      // Walk-in bookings are 100% owner-managed — never stall on
+      // online customer payment proof.
+      if (booking.origin == 'walk_in') {
+        return const BookingNextStep(BookingNextStepKind.recordPayment);
+      }
+      return const BookingNextStep(BookingNextStepKind.none);
     case 'payment_submitted':
       return const BookingNextStep(BookingNextStepKind.verifyProof);
     case 'paid':

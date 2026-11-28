@@ -246,10 +246,15 @@ class HandoverWizardState extends Equatable {
 }
 
 class HandoverWizardCubit extends Cubit<HandoverWizardState> {
-  HandoverWizardCubit({required String bookingId, int initialStep = 0})
-      : super(HandoverWizardState(
+  HandoverWizardCubit({
+    required String bookingId,
+    int initialStep = 0,
+    bool faceCheckConfirmed = false,
+  }) : super(HandoverWizardState(
           step: initialStep.clamp(0, 4),
           bookingId: bookingId,
+          faceCheckConfirmed: faceCheckConfirmed,
+          faceCheckedAt: faceCheckConfirmed ? DateTime.now() : null,
           receiptId: HandoverWizardState.receiptIdFor(bookingId),
         ));
 

@@ -11178,4 +11178,67 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get whatsappFeatureComingSoonBody =>
       'Automated WhatsApp alerts and credit packs are coming soon. Preview the upcoming packages below.';
+
+  @override
+  String get walkInBadge => 'Walk-in';
+
+  @override
+  String get walkInAddPayment => 'Add Payment';
+
+  @override
+  String get walkInAddPaymentTitle => 'Record Walk-in Payment';
+
+  @override
+  String get walkInAddPaymentAmountLabel => 'Amount Received (Rs.)';
+
+  @override
+  String get walkInAddPaymentAmountRequired =>
+      'Enter an amount greater than zero.';
+
+  @override
+  String get walkInAddPaymentSave => 'Record Payment';
+
+  @override
+  String get walkInAddPaymentSaved => 'Payment recorded.';
+
+  @override
+  String get walkInAddPaymentFailed =>
+      'Could not record payment. Please try again.';
+
+  @override
+  String get walkInCollectDues => 'Collect Dues';
+
+  @override
+  String get walkInNewBookingForCustomer => 'New Booking';
+
+  @override
+  String get walkInGuarantorLabel => 'Guarantor';
+
+  @override
+  String get walkInBookingCreateFailedGeneric =>
+      'Could not create booking. Please check your connection and try again.';
+
+  @override
+  String get walkInHandoverFailedGeneric =>
+      'Could not complete handover. Please try again.';
+
+  @override
+  String get returnLateFeeTitle => 'Late Fee';
+
+  @override
+  String get returnLateFeeOnTime => 'Returned on time';
+
+  @override
+  String returnLateFeeOverdueHours(int hours) {
+    return 'Late by ${hours}h';
+  }
+
+  @override
+  String get returnLateFeeLabel => 'Late Fee (Rs.)';
+
+  @override
+  String get returnLateFeeHint => '0';
+
+  @override
+  String get customerDetailNoBookingsInFilter => 'No bookings in this status.';
 }

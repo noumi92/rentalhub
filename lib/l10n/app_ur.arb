@@ -6341,5 +6341,31 @@
   "packagesComingSoonBadge": "جلد آ رہا ہے",
   "packagesFreeActiveAllShops": "ہمارے ابتدائی لانچ کے دوران تمام شورومز کے لیے مفت پلان فعال ہے۔",
   "whatsappFeatureComingSoonTitle": "واٹس ایپ میسجنگ — جلد آ رہا ہے",
-  "whatsappFeatureComingSoonBody": "خودکار واٹس ایپ الرٹس اور کریڈٹ پیکس جلد آ رہے ہیں۔ نیچے آنے والے پیکیجز دیکھیں۔"
+  "whatsappFeatureComingSoonBody": "خودکار واٹس ایپ الرٹس اور کریڈٹ پیکس جلد آ رہے ہیں۔ نیچے آنے والے پیکیجز دیکھیں۔",
+  "walkInBadge": "واک اِن",
+  "walkInAddPayment": "ادائیگی شامل کریں",
+  "walkInAddPaymentTitle": "واک اِن ادائیگی درج کریں",
+  "walkInAddPaymentAmountLabel": "موصول شدہ رقم (روپے)",
+  "walkInAddPaymentAmountRequired": "صفر سے زیادہ رقم درج کریں۔",
+  "walkInAddPaymentSave": "ادائیگی محفوظ کریں",
+  "walkInAddPaymentSaved": "ادائیگی محفوظ ہو گئی۔",
+  "walkInAddPaymentFailed": "ادائیگی محفوظ نہیں ہو سکی۔ دوبارہ کوشش کریں۔",
+  "walkInCollectDues": "بقایا وصول کریں",
+  "walkInNewBookingForCustomer": "نئی بکنگ",
+  "walkInGuarantorLabel": "ضامن",
+  "walkInBookingCreateFailedGeneric": "بکنگ نہیں بن سکی۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔",
+  "walkInHandoverFailedGeneric": "حوالگی مکمل نہیں ہو سکی۔ دوبارہ کوشش کریں۔",
+  "returnLateFeeTitle": "تاخیر فیس",
+  "returnLateFeeOnTime": "وقت پر واپسی",
+  "returnLateFeeOverdueHours": "{hours} گھنٹے تاخیر",
+  "@returnLateFeeOverdueHours": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "returnLateFeeLabel": "تاخیر فیس (روپے)",
+  "returnLateFeeHint": "0",
+  "customerDetailNoBookingsInFilter": "اس حالت میں کوئی بکنگ نہیں ہے۔"
 }

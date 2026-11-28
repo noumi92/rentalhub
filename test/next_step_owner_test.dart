@@ -278,7 +278,7 @@ void main() {
       expect(find.text('disputes B1'), findsOneWidget);
     });
 
-    testWidgets('approved walk-in: waiting line + deadline + Cancel only',
+    testWidgets('approved walk-in: Add Payment + Start Handover + Cancel',
         (tester) async {
       final router = routerFor(
         home: Scaffold(
@@ -291,15 +291,16 @@ void main() {
             ),
             onApprove: () {},
             onReject: () {},
+            onRecordPayment: () {},
             onCancel: () {},
           ),
         ),
       );
       await pumpRouter(tester, router);
-      expect(find.textContaining('Waiting for payment'), findsOneWidget);
-      expect(find.textContaining('21 Nov 2026, 6:30 PM'), findsOneWidget);
+      expect(find.text('Add Payment'), findsOneWidget);
+      expect(find.text('Start Handover'), findsOneWidget);
       expect(find.text('Cancel booking'), findsOneWidget);
-      expect(find.text('Start Handover'), findsNothing);
+      expect(find.textContaining('Waiting for payment'), findsNothing);
       expect(find.text('Approve'), findsNothing);
     });
 

@@ -12,6 +12,7 @@ class RequestTriageCard extends StatelessWidget {
   final VoidCallback onApprove;
   final VoidCallback onReject;
   final VoidCallback? onVerifyProof;
+  final VoidCallback? onRecordPayment;
   final bool isProcessing;
 
   /// Worker B: owner cancel for a walk-in `approved` / `paid`
@@ -46,6 +47,7 @@ class RequestTriageCard extends StatelessWidget {
     required this.onApprove,
     required this.onReject,
     this.onVerifyProof,
+    this.onRecordPayment,
     this.isProcessing = false,
     this.showActions = true,
     this.onCancel,
@@ -116,6 +118,25 @@ class RequestTriageCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
+              if (booking.origin == 'walk_in') ...[
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                  decoration: BoxDecoration(
+                    color:
+                        Theme.of(context).colorScheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    l10n.walkInBadge,
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                  ),
+                ),
+                const SizedBox(width: 6),
+              ],
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
@@ -166,14 +187,15 @@ class RequestTriageCard extends StatelessWidget {
               ),
             ],
           ),
-          // FG-4: the customer risk signal — live trust score, KYC
-          // badge, prior trips — loaded lazily by the row itself.
-          TriageTrustRow(
-            customerId: booking.customerId,
-            trustScore: trustScore,
-            kycStatus: kycStatus,
-            completedTrips: completedTrips,
-          ),
+          // Walk-in customers are shop-managed CRM records — never show
+          // online marketplace trust-score / KYC verification badges.
+          if (booking.origin != 'walk_in')
+            TriageTrustRow(
+              customerId: booking.customerId,
+              trustScore: trustScore,
+              kycStatus: kycStatus,
+              completedTrips: completedTrips,
+            ),
           // Booking summary (vehicle + fare, package, dates, wait
           // time) — extracted into RequestTriageSummary so this
           // card stays under the 250-line cap.
@@ -190,6 +212,7 @@ class RequestTriageCard extends StatelessWidget {
             onApprove: onApprove,
             onReject: onReject,
             onVerifyProof: onVerifyProof,
+            onRecordPayment: onRecordPayment,
             onCancel: onCancel,
             isProcessing: isProcessing,
             showActions: showActions,

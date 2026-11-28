@@ -224,8 +224,6 @@ class _OwnerCustomerDetailViewState extends State<OwnerCustomerDetailView> {
                       : customer == null || data == null
                           ? AppEmptyState(title: l10n.customerDetailNotFound, message: l10n.customerDetailNotFoundMessage)
                           : RefreshIndicator(
-                              // Pull-to-refresh (user layout,
-                              // 2026-11-16): re-runs [_load].
                               onRefresh: _load,
                               child: CustomerDetailBody(
                                 customer: customer,
@@ -239,6 +237,7 @@ class _OwnerCustomerDetailViewState extends State<OwnerCustomerDetailView> {
                                 onEdit: _edit,
                                 onArchive: _archive,
                                 onReplaceSlot: _replaceSlot,
+                                onReload: _load,
                               ),
                             ),
             ),

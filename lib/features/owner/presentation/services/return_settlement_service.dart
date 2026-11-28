@@ -217,6 +217,7 @@ class ReturnSettlementService {
     // the extra due inside; the remainder goes onto the dues.
     int extraFareCollected = 0,
     String? extraFarePaymentMethod,
+    int? overtimeFeeOverride,
   }) async {
     final totalKmDriven = (returnOdometer - initialOdometer).clamp(0, 99999);
     final overtimeHours = _overtimeHours(booking.returnTime);
@@ -253,6 +254,7 @@ class ReturnSettlementService {
       damageCharge: damageCharge + deductibleDamage,
       overtimeHours: overtimeHours,
       extraHourPkr: extraHourPkr,
+      overtimeFeeOverride: overtimeFeeOverride,
       securityDeposit: effectiveDeposit,
       extraCharges: extraCharges,
     );
@@ -291,6 +293,7 @@ class ReturnSettlementService {
         'remainingRentDue': remainingRentDue,
         'deductibleDamage': deductibleDamage,
         'extraCharges': extraCharges,
+        'overtimeFee': breakdown.overtimeFee,
         'totalDeductions': breakdown.totalDeductions,
         'netRefund': breakdown.netRefund,
         // Item 2: the deposit actually held and what is still owed

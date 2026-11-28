@@ -12,6 +12,7 @@ import '../../../bookings/utils/booking_request_time.dart';
 import '../../../bookings/utils/live_booking_stream.dart';
 import '../services/whatsapp_credits_data_source.dart';
 import '../widgets/operations/approve_booking_sheet.dart';
+import '../widgets/operations/owner_add_payment_sheet.dart';
 import '../widgets/operations/owner_booking_cancel.dart';
 import '../widgets/operations/owner_requests_view_body.dart';
 import '../widgets/operations/walk_in_booking_fab.dart';
@@ -36,7 +37,8 @@ class OwnerBookingRequestsView extends StatefulWidget {
   });
 
   @override
-  State<OwnerBookingRequestsView> createState() => _OwnerBookingRequestsViewState();
+  State<OwnerBookingRequestsView> createState() =>
+      _OwnerBookingRequestsViewState();
 }
 
 class _OwnerBookingRequestsViewState extends State<OwnerBookingRequestsView> {
@@ -109,47 +111,36 @@ class _OwnerBookingRequestsViewState extends State<OwnerBookingRequestsView> {
     }
   }
 
-  /// Audit impl (worker E, W6): reads the real WhatsApp credit
-  /// balance and the real skipped-message count; the banner stays
-  /// hidden when either read fails.
   Future<void> _loadWaBanner() async {
     try {
       final ds = WhatsappCreditsDataSource();
       final balance = await ds.getBalance(widget.shopId);
       final skipped = await ds.getSkippedCount(widget.shopId);
-      if (mounted) setState(() { _waBalance = balance; _waSkipped = skipped; });
-    } catch (_) {
-      // Banner stays hidden when credits cannot be read.
-    }
+      if (mounted) {
+        setState(() { _waBalance = balance; _waSkipped = skipped; });
+      }
+    } catch (_) {}
   }
 
-  /// Live updates (Item 2): the triage list follows the shop's bookings stream — a customer submit lands here while the owner is looking at the list, and an approve / reject re-renders it without a manual refresh. Pull-to-refresh and the error-state retry re-run this method, which re-subscribes.
   Future<void> _loadRequests() async {
     await _bookingsSub?.cancel();
     _bookingsSub = null;
-    setState(() {
-      _isLoading = true;
-      _hasError = false;
-    });
-    _bookingsSub = subscribeLiveBookings((ds) => ds.streamShopBookings(widget.shopId), (bookings) {
+    setState(() { _isLoading = true; _hasError = false; });
+    _bookingsSub = subscribeLiveBookings(
+        (ds) => ds.streamShopBookings(widget.shopId), (bookings) {
       if (!mounted) return;
-      setState(() {
-        // Item 3 (2026-11-21): NO status whitelist here. The old
-        // one dropped 'paid' / 'disputed' / 'cancelled', so those
-        // bookings vanished — a full-advance walk-in is born 'paid'
-        // and never appeared at all. The stream is already
-        // shop-scoped; the filter bar is what narrows the view.
-        _requests = bookings.toList();
-        _isLoading = false;
-      });
+      setState(() { _requests = bookings.toList(); _isLoading = false; });
       _refreshRequestTimes(bookings);
     }, onError: () {
-      if (mounted) setState(() { _hasError = true; _isLoading = false; });
+      if (mounted) {
+        setState(() { _hasError = true; _isLoading = false; });
+      }
     });
-    if (_bookingsSub == null && mounted) setState(() { _hasError = true; _isLoading = false; });
+    if (_bookingsSub == null && mounted) {
+      setState(() { _hasError = true; _isLoading = false; });
+    }
   }
 
-  /// O18: approving opens the approve sheet instead of a one-tap flip.
   Future<void> _approveRequest(BookingEntity booking) async {
     final l10n = AppLocalizations.of(context)!;
     await showApproveBookingSheet(
@@ -159,13 +150,9 @@ class _OwnerBookingRequestsViewState extends State<OwnerBookingRequestsView> {
       onApproved: (updated) {
         if (!mounted) return;
         AppFeedback.showSuccess(context, l10n.requestsApproved(updated.bookingId));
-        // Phase B (D1): the approved booking stays under Approved.
         setState(() => _requests = _requests
             .map((b) => b.bookingId == updated.bookingId ? updated : b)
             .toList());
-        // Item 2 navigate-back: every booking-flow save lands on
-        // All Bookings, so the just-approved booking is visible at
-        // once (it is no longer in the Proof bucket).
         goToAllOwnerBookings(context);
       },
     );
@@ -198,18 +185,18 @@ class _OwnerBookingRequestsViewState extends State<OwnerBookingRequestsView> {
   Future<void> _rejectRequest(BookingEntity booking) =>
       _applyOwnerAction(booking, () => rejectBookingRequest(context, booking));
 
-  /// Worker B: owner cancel for walk-in `approved` / `paid`
-  /// bookings — the dialog, status flip and Security release live
-  /// in [cancelWalkInBooking]; online bookings never reach here
-  /// (the triage card hides the button, and the flow guards too).
   Future<void> _cancelRequest(BookingEntity booking) =>
       _applyOwnerAction(booking, () => cancelWalkInBooking(context, booking));
+
+  Future<void> _recordPayment(BookingEntity booking) => _applyOwnerAction(
+      booking, () => showOwnerAddPaymentSheet(context, booking: booking));
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     // FG-4: the oldest proof wait, surfaced in the list header.
-    final oldestProofWait = oldestWaitFor(_requests.where((b) => b.status == 'payment_submitted'), _requestTimes);
+    final oldestProofWait = oldestWaitFor(
+        _requests.where((b) => b.status == 'payment_submitted'), _requestTimes);
     return Scaffold(
       // Walk-in booking is an extended FAB ([WalkInBookingFab]).
       floatingActionButton: const WalkInBookingFab(),
@@ -241,9 +228,9 @@ class _OwnerBookingRequestsViewState extends State<OwnerBookingRequestsView> {
         onApprove: _approveRequest,
         onReject: _rejectRequest,
         onCancel: _cancelRequest,
-        onOpenDetail: (b) => context.push(RouteNames
-            .ownerRequestsDetail
-            .replaceFirst(':id', b.bookingId)),
+        onRecordPayment: _recordPayment,
+        onOpenDetail: (b) => context.push(
+            RouteNames.ownerRequestsDetail.replaceFirst(':id', b.bookingId)),
       ),
     );
   }

@@ -6341,5 +6341,31 @@
   "packagesComingSoonBadge": "Coming Soon",
   "packagesFreeActiveAllShops": "Free plan is active for all showrooms during our initial launch.",
   "whatsappFeatureComingSoonTitle": "WhatsApp Messaging — Coming Soon",
-  "whatsappFeatureComingSoonBody": "Automated WhatsApp alerts and credit packs are coming soon. Preview the upcoming packages below."
+  "whatsappFeatureComingSoonBody": "Automated WhatsApp alerts and credit packs are coming soon. Preview the upcoming packages below.",
+  "walkInBadge": "Walk-in",
+  "walkInAddPayment": "Add Payment",
+  "walkInAddPaymentTitle": "Record Walk-in Payment",
+  "walkInAddPaymentAmountLabel": "Amount Received (Rs.)",
+  "walkInAddPaymentAmountRequired": "Enter an amount greater than zero.",
+  "walkInAddPaymentSave": "Record Payment",
+  "walkInAddPaymentSaved": "Payment recorded.",
+  "walkInAddPaymentFailed": "Could not record payment. Please try again.",
+  "walkInCollectDues": "Collect Dues",
+  "walkInNewBookingForCustomer": "New Booking",
+  "walkInGuarantorLabel": "Guarantor",
+  "walkInBookingCreateFailedGeneric": "Could not create booking. Please check your connection and try again.",
+  "walkInHandoverFailedGeneric": "Could not complete handover. Please try again.",
+  "returnLateFeeTitle": "Late Fee",
+  "returnLateFeeOnTime": "Returned on time",
+  "returnLateFeeOverdueHours": "Late by {hours}h",
+  "@returnLateFeeOverdueHours": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "returnLateFeeLabel": "Late Fee (Rs.)",
+  "returnLateFeeHint": "0",
+  "customerDetailNoBookingsInFilter": "No bookings in this status."
 }

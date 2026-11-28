@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../../core/constants/app_colors.dart';
+import '../../../../../core/routing/route_names.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../bookings/data/services/booking_cancel_service.dart';
 import '../../../../bookings/domain/entities/booking_entity.dart';
@@ -41,6 +42,7 @@ class RequestTriageActions extends StatelessWidget {
     required this.onApprove,
     required this.onReject,
     this.onVerifyProof,
+    this.onRecordPayment,
     this.onCancel,
     this.isProcessing = false,
     this.showActions = true,
@@ -50,9 +52,18 @@ class RequestTriageActions extends StatelessWidget {
   final VoidCallback onApprove;
   final VoidCallback onReject;
   final VoidCallback? onVerifyProof;
+  final VoidCallback? onRecordPayment;
   final VoidCallback? onCancel;
   final bool isProcessing;
   final bool showActions;
+
+  bool get _isWalkIn => booking.origin == 'walk_in';
+
+  bool get _canAddWalkInPayment =>
+      showActions &&
+      _isWalkIn &&
+      onRecordPayment != null &&
+      booking.remainingBalance > 0;
 
   /// Worker B adds the owner cancel for walk-in `approved` /
   /// `paid` bookings (see [BookingCancelService.canOwnerCancel]) —
@@ -163,11 +174,58 @@ class RequestTriageActions extends StatelessWidget {
             ),
           ],
         );
+      case BookingNextStepKind.recordPayment:
+        if (!showActions) return const SizedBox.shrink();
+        final handoverRoute = RouteNames.ownerHandover
+            .replaceFirst(':id', booking.bookingId);
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: isProcessing ? null : onRecordPayment,
+                icon: const Icon(Icons.payments_rounded, size: 18),
+                label: Text(l10n.walkInAddPayment),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: Colors.white,
+                  minimumSize: const Size(0, 54),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed:
+                    isProcessing ? null : () => context.push(handoverRoute),
+                icon: const Icon(Icons.key_rounded, size: 18),
+                label: Text(l10n.bookingConfirmedStartHandover),
+                style: OutlinedButton.styleFrom(
+                  minimumSize: const Size(0, 54),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                ),
+              ),
+            ),
+            if (_showCancel) ...[
+              const SizedBox(height: 10),
+              _cancelButton(context, l10n),
+            ],
+          ],
+        );
       case BookingNextStepKind.startHandover:
       case BookingNextStepKind.returnSettlement:
       case BookingNextStepKind.viewDispute:
       case BookingNextStepKind.rateCustomer:
         if (!showActions) return const SizedBox.shrink();
+        final showSecondaryPay = _canAddWalkInPayment &&
+            (step.kind == BookingNextStepKind.startHandover ||
+                step.kind == BookingNextStepKind.returnSettlement ||
+                step.kind == BookingNextStepKind.rateCustomer);
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -187,6 +245,24 @@ class RequestTriageActions extends StatelessWidget {
                 ),
               ),
             ),
+            if (showSecondaryPay) ...[
+              const SizedBox(height: 10),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: isProcessing ? null : onRecordPayment,
+                  icon: const Icon(Icons.payments_outlined, size: 18),
+                  label: Text(step.kind == BookingNextStepKind.rateCustomer
+                      ? l10n.walkInCollectDues
+                      : l10n.walkInAddPayment),
+                  style: OutlinedButton.styleFrom(
+                    minimumSize: const Size(0, 54),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                  ),
+                ),
+              ),
+            ],
             if (_showCancel) ...[
               const SizedBox(height: 10),
               _cancelButton(context, l10n),

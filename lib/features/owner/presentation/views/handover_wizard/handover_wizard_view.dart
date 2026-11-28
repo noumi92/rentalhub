@@ -46,10 +46,13 @@ class OwnerHandoverWizardView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isWalkIn = booking.origin == 'walk_in';
+    final effectiveStep = isWalkIn && initialStep == 0 ? 1 : initialStep;
     return BlocProvider(
       create: (_) => HandoverWizardCubit(
         bookingId: booking.bookingId,
-        initialStep: initialStep,
+        initialStep: effectiveStep,
+        faceCheckConfirmed: isWalkIn,
       ),
       child: _HandoverWizardBody(booking: booking, onBack: onBack),
     );
@@ -155,10 +158,10 @@ class _HandoverWizardBodyState extends State<_HandoverWizardBody> {
       wizard.markCompleted(result.entity, result.pdfBytes);
       AppFeedback.showSuccess(context, l10n.handoverCertified);
     } catch (e) {
+      debugPrint('Handover finalize failed: $e');
       if (!mounted) return;
       wizard.setFinalizing(false);
-      AppFeedback.showError(
-          context, l10n.handoverWizardHandoverFailed(e.toString()));
+      AppFeedback.showError(context, l10n.walkInHandoverFailedGeneric);
     }
   }
 

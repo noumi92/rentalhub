@@ -639,6 +639,14 @@ void main() {
         // the router since Verify Confirm now lands on All Bookings.
         // The route stays as a deep link only.
         'ownerBookingConfirmed',
+        // Launch-phase Coming Soon (packages_system_ui_ux_audit):
+        // plan application & WhatsApp credit purchases/logs are
+        // intentionally hidden during initial launch; routes stay
+        // registered for Phase 2 activation.
+        'ownerSubscriptionPlan',
+        'ownerWhatsappLogs',
+        'ownerWhatsappBuyCredits',
+        'ownerWhatsappHistory',
       };
 
       final routeNames =

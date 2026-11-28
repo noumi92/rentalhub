@@ -215,4 +215,46 @@ class WalkInBookingService {
       return true;
     }
   }
+
+  /// Owner-only payment recording for walk-in bookings (`approved`,
+  /// `paid`, `active`, or `completed` with remaining dues). Adds
+  /// [amount] to `advancePaid`, automatically promotes `approved`
+  /// to `paid` once the advance requirement is met (or any payment
+  /// is recorded when `advanceRequired == 0`), and posts the cash
+  /// to the shop ledger.
+  static Future<BookingEntity> recordOwnerPayment({
+    required BookingEntity booking,
+    required int amount,
+    required String paymentMethod,
+  }) async {
+    final ds = sl<BookingRemoteDataSource>();
+    final collected = amount.clamp(0, booking.remainingBalance);
+    if (collected <= 0) return booking;
+    var updated = await ds.recordBalanceCollected(
+      bookingId: booking.bookingId,
+      amount: collected,
+    );
+    if (updated.status == 'approved' &&
+        (updated.advancePaid >= updated.advanceRequired ||
+            updated.advanceRequired <= 0)) {
+      updated = await ds.updateBookingStatus(
+        bookingId: booking.bookingId,
+        status: 'paid',
+      );
+    }
+    try {
+      if (sl.isRegistered<BookingLedgerService>()) {
+        await sl<BookingLedgerService>().postOnce(
+          booking: updated,
+          event: 'walkin-pay-${DateTime.now().millisecondsSinceEpoch}',
+          kind: 'income',
+          category: 'rent',
+          amount: collected,
+          paymentMethod: paymentMethod,
+          note: 'Walk-in payment for ${booking.bookingId}',
+        );
+      }
+    } catch (_) {}
+    return updated;
+  }
 }

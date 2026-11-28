@@ -14,6 +14,7 @@ import '../widgets/operations/exterior_photo_picker.dart';
 import '../widgets/operations/fuel_odometer_input_widget.dart';
 import '../widgets/operations/return_fare_payment_section.dart';
 import '../widgets/operations/return_inspection_sections.dart';
+import '../widgets/operations/return_late_fee_section.dart';
 import '../widgets/operations/return_payment_steps.dart';
 import '../widgets/operations/settlement_summary_receipt_widget.dart';
 import '../../../../core/utils/money_format.dart';
@@ -43,6 +44,8 @@ class OwnerReturnSettlementView extends StatefulWidget {
 class _OwnerReturnSettlementViewState extends State<OwnerReturnSettlementView> {
   late final TextEditingController _returnOdometerController;
   final _damageChargeController = TextEditingController();
+  final _lateFeeController = TextEditingController();
+  bool _lateFeeTouched = false;
   String _returnFuel = '4/4 (Full)';
   List<String> _returnDamageNotes = const [];
   List<String> _handoverDamageNotes = const [];
@@ -59,17 +62,11 @@ class _OwnerReturnSettlementViewState extends State<OwnerReturnSettlementView> {
   int _deposit = 0;
   int _extraKmPkr = 100;
   int _extraHourPkr = 0;
-  // Gap (c): vehicle per-km pricing (booking-snapshot fallback).
   PerKmPricing _perKmPricing = const PerKmPricing();
-  // Audit item 5/18 (O25/O26): inspection condition, return photos,
-  // and the remaining rent collected at return.
   String _condition = 'good';
   Map<String, String?> _returnPhotos = const {'front': null, 'back': null, 'left': null, 'right': null};
   ({int amount, String? method}) _collected = (amount: 0, method: null);
-  // Per-km extra fare (2026-11-20): collected at return, or the
-  // remainder goes onto the customer's dues at finalize.
-  ({int amount, String? method}) _extraFareCollected =
-      (amount: 0, method: null);
+  ({int amount, String? method}) _extraFareCollected = (amount: 0, method: null);
   int _deductibleDamage = 0;
   int _extraCharges = 0;
 
@@ -102,6 +99,10 @@ class _OwnerReturnSettlementViewState extends State<OwnerReturnSettlementView> {
         _returnOdometerController.text = '${values.initialOdometer}';
         _suppressOdometerListener = false;
       }
+      if (!_lateFeeTouched) {
+        final autoLateFee = _overtimeHours * values.extraHourPkr;
+        _lateFeeController.text = autoLateFee > 0 ? '$autoLateFee' : '';
+      }
       setState(() {
         _initialOdometer = values.initialOdometer;
         _handoverDamageNotes = values.handoverDamageNotes;
@@ -126,14 +127,18 @@ class _OwnerReturnSettlementViewState extends State<OwnerReturnSettlementView> {
   void dispose() {
     _returnOdometerController.dispose();
     _damageChargeController.dispose();
+    _lateFeeController.dispose();
     super.dispose();
   }
 
-  // OW-m24: nullable — an empty/unparseable reading is missing data, not "no kilometres driven"; Finalize blocks on it. The receipt breakdown keeps the initial-reading fallback so the summary still renders while the field is empty.
   int? get _returnOdometer => int.tryParse(_returnOdometerController.text.trim());
   int get _totalKmDriven => ((_returnOdometer ?? _initialOdometer) - _initialOdometer).clamp(0, 99999);
-  // Damage charge is clamped to >= 0: a negative charge must never increase the refund.
   int get _damageCharge => (int.tryParse(_damageChargeController.text.trim()) ?? 0).clamp(0, 999999999);
+  int? get _lateFeeOverride {
+    final text = _lateFeeController.text.trim();
+    if (text.isEmpty) return _lateFeeTouched ? 0 : null;
+    return (int.tryParse(text) ?? 0).clamp(0, 999999999);
+  }
   int get _overtimeHours {
     final late = DateTime.now().difference(widget.booking.returnTime);
     return late.isNegative ? 0 : (late.inMinutes / 60).ceil();
@@ -141,7 +146,7 @@ class _OwnerReturnSettlementViewState extends State<OwnerReturnSettlementView> {
 
   SettlementBreakdown get _breakdown => SettlementCalculator.calculate(
         totalKmDriven: _totalKmDriven, kmAllowance: _kmAllowance, extraKmPkr: _perKm != null ? 0 : _extraKmPkr, fuelLevel: _returnFuel,
-        damageCharge: _damageCharge + _deductibleDamage, overtimeHours: _overtimeHours, extraHourPkr: _extraHourPkr, securityDeposit: _deposit,
+        damageCharge: _damageCharge + _deductibleDamage, overtimeHours: _overtimeHours, extraHourPkr: _extraHourPkr, overtimeFeeOverride: _lateFeeOverride, securityDeposit: _deposit,
         extraCharges: _extraCharges,
       );
 
@@ -173,21 +178,13 @@ class _OwnerReturnSettlementViewState extends State<OwnerReturnSettlementView> {
         condition: _condition, returnPhotoUrls: _returnPhotos, deductibleDamage: _deductibleDamage, extraCharges: _extraCharges,
         remainingRentCollected: _collected.amount, paymentMethod: _collected.method, perKmSettlement: _perKm,
         extraFareCollected: _extraFareCollected.amount, extraFarePaymentMethod: _extraFareCollected.method,
+        overtimeFeeOverride: _lateFeeOverride,
       );
       if (mounted) {
         AppFeedback.showSuccess(context, l10n.returnSettled(formatRs(breakdown.netRefund)));
-        // Item 2 navigate-back: the return save lands on All
-        // Bookings instead of the rate-customer view — the
-        // completed booking is visible at once, and the rate
-        // step no longer interrupts the return flow. Rating
-        // the customer after return lives on the completed
-        // booking itself (Rate customer on its triage card
-        // and read-only detail).
         goToAllOwnerBookings(context);
       }
     } catch (e) {
-      // DS-13: the user sees a generic message; the raw error is
-      // only logged for diagnostics, never shown.
       debugPrint('Return finalize failed: $e');
       if (mounted) AppFeedback.showError(context, l10n.returnFinalizeFailedGeneric);
     } finally {
@@ -226,6 +223,8 @@ class _OwnerReturnSettlementViewState extends State<OwnerReturnSettlementView> {
                       HandoverDamageNotesEditor(title: l10n.returnNewDamageTitle, subtitle: l10n.returnNewDamageSubtitle, onChanged: (notes) => setState(() => _returnDamageNotes = notes)),
                       const SizedBox(height: 12),
                       TextField(controller: _damageChargeController, keyboardType: TextInputType.number, onChanged: _onDamageChargeChanged, decoration: InputDecoration(labelText: l10n.returnDamageChargeLabel, hintText: l10n.returnDamageChargeHint, border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)), filled: true, fillColor: Theme.of(context).colorScheme.surfaceContainerHighest)),
+                      const SizedBox(height: 12),
+                      ReturnLateFeeSection(overtimeHours: _overtimeHours, extraHourPkr: _extraHourPkr, controller: _lateFeeController, onChanged: (_) => setState(() => _lateFeeTouched = true)),
                       const SizedBox(height: 16),
                       ReturnFarePaymentSection(booking: widget.booking, onCollected: (amount, method) => setState(() => _collected = (amount: amount, method: method)), extraFareDue: _perKm?.extraDue ?? 0, onExtraFareCollected: (amount, method) => setState(() => _extraFareCollected = (amount: amount, method: method)), onReturnedFromExtraCharges: _loadRealValues),
                       const SizedBox(height: 16),

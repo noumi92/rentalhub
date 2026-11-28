@@ -103,6 +103,7 @@ class SettlementCalculator {
     int damageCharge = 0,
     int overtimeHours = 0,
     required int extraHourPkr,
+    int? overtimeFeeOverride,
     required int securityDeposit,
     int extraCharges = 0,
   }) {
@@ -110,7 +111,9 @@ class SettlementCalculator {
     final excessKmCharge = excessKm * extraKmPkr;
     final fuelDeficit =
         fuelDeficitFor(fuelLevel, handoverFuelLevel: handoverFuelLevel);
-    final overtimeFee = overtimeHours * extraHourPkr;
+    final overtimeFee = overtimeFeeOverride != null
+        ? overtimeFeeOverride.clamp(0, 1 << 30)
+        : overtimeHours * extraHourPkr;
     final totalDeductions =
         excessKmCharge + fuelDeficit + damageCharge + overtimeFee + extraCharges;
     final netRefund = (securityDeposit - totalDeductions).clamp(0, 1 << 30);
