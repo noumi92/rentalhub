@@ -180,7 +180,7 @@ void main() {
         const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: OwnerBookingRequestsView(shopId: 'shop-1'),
+          home: OwnerBookingRequestsView(shopId: 'shop-empty-triage'),
         ),
       );
       await tester.pumpAndSettle();

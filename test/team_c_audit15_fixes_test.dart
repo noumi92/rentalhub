@@ -261,9 +261,12 @@ void main() {
       expect(find.text('Balance due at handover'), findsOneWidget);
       expect(find.text('Rs. 16,000'), findsOneWidget);
       expect(find.text('Rs. 15,000'), findsOneWidget);
-      expect(find.text('Not yet'), findsOneWidget);
-      await tester.tap(find.text('JazzCash'));
-      await tester.pump();
+      await tester
+          .tap(find.byKey(const ValueKey('handover_balance_method_dropdown')));
+      await tester.pumpAndSettle();
+      expect(find.text('Not yet'), findsWidgets);
+      await tester.tap(find.text('JazzCash').last);
+      await tester.pumpAndSettle();
       expect(picked, 'jazzcash');
     });
 

@@ -149,9 +149,13 @@ void main() {
       await tester.pumpAndSettle();
       await tester.drag(find.byType(Slider), const Offset(400, 0));
       await tester.pumpAndSettle();
-      await tester.ensureVisible(find.widgetWithText(ChoiceChip, 'Cash'));
+      await tester.ensureVisible(
+          find.byKey(const ValueKey('handover_balance_method_dropdown')));
       await tester.pumpAndSettle();
-      await tester.tap(find.widgetWithText(ChoiceChip, 'Cash'));
+      await tester
+          .tap(find.byKey(const ValueKey('handover_balance_method_dropdown')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Cash').last);
       await tester.pumpAndSettle();
       await tester.ensureVisible(
           find.text('Certify Handover & Generate Contract'));
