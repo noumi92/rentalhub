@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
+import '../../../../core/utils/cnic_input_formatter.dart';
 import '../../../../core/utils/pakistani_validators.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/debounced_button.dart';
@@ -206,6 +207,7 @@ class _EditProfileFormState extends State<EditProfileForm> {
         TextField(
           controller: _cnicController,
           keyboardType: TextInputType.number,
+          inputFormatters: const [CnicInputFormatter()],
           textInputAction: TextInputAction.next,
           decoration: InputDecoration(
             labelText: l10n.editCnicOptional,

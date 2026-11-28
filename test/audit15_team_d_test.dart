@@ -246,16 +246,16 @@ void main() {
   });
 
   group('FG-16 — step 3 names the first missing item', () {
-    testWidgets('empty step 3 names the license front first', (tester) async {
+    testWidgets('empty step 3 names rental terms (license is optional)', (tester) async {
       final key = GlobalKey<Step3DocsState>();
       await pumpStep3(tester, KycDraft(), key: key);
       expect(await key.currentState!.validate(), isFalse);
       await tester.pump();
-      expect(find.text('License front is missing — please add it to continue'),
+      expect(find.text('Please agree to the rental terms before continuing'),
           findsOneWidget);
     });
 
-    testWidgets('empty step 3 names the license front first in Urdu',
+    testWidgets('empty step 3 names rental terms in Urdu (license is optional)',
         (tester) async {
       final key = GlobalKey<Step3DocsState>();
       await tester.pumpWidget(
@@ -274,8 +274,7 @@ void main() {
       expect(await key.currentState!.validate(), isFalse);
       await tester.pump();
       expect(
-          find.text(
-              'لائسنس کا سامنے والا حصہ موجود نہیں ہے — جاری رکھنے کے لیے اسے شامل کریں'),
+          find.text('جاری رکھنے سے پہلے کرایے کی شرائط سے اتفاق کریں'),
           findsOneWidget);
     });
 
@@ -338,7 +337,7 @@ void main() {
       await tester.enterText(find.byType(TextField).first, '35201-abc');
       await tester.pump();
       final field = tester.widget<TextField>(find.byType(TextField).first);
-      expect(field.controller?.text, '35201-');
+      expect(field.controller?.text, '35201');
     });
 
     testWidgets('invalid CNIC shows an inline error on submit', (tester) async {

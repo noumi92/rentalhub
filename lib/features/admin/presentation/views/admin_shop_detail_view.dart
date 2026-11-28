@@ -137,8 +137,10 @@ class _AdminShopDetailViewState extends State<AdminShopDetailView> {
               shop: shop,
               isWorking: _isWorking,
               onToggleSuspend: () => _toggleSuspend(!shop.suspended),
-              onReviewApplication:
-                  shop.verificationStatus == 'pending' ? _reviewApplication : null,
+              onReviewApplication: (shop.verificationStatus != 'approved' &&
+                      shop.verificationStatus != 'verified')
+                  ? _reviewApplication
+                  : null,
             ),
       child: _isLoading
           ? const AppLoadingState()

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../../../core/utils/date_picker_helper.dart';
 import '../../../../../core/widgets/app_feedback.dart';
 import '../../../../../core/widgets/media_picker_helper.dart';
 import '../../../../../l10n/app_localizations.dart';
@@ -62,21 +63,15 @@ class Step3DocsState extends KycStepState<Step3Docs> {
   Future<bool> validate() async {
     final d = widget.draft;
     final l10n = AppLocalizations.of(context)!;
-    final missing = !d.hasLicenseFront
-        ? l10n.kycWizardMissingItem(l10n.kycWizardLicenseFront)
-        : !d.hasLicenseBack
-            ? l10n.kycWizardMissingItem(l10n.kycWizardLicenseBack)
-            : d.licenseNumber.trim().isEmpty
-                ? l10n.kycWizardMissingItem(l10n.kycWizardLicenseNumber)
-                : d.licenseExpiry.trim().isEmpty
-                    ? l10n.kycWizardMissingItem(l10n.kycWizardLicenseExpiry)
-                    : _validateDate(d.licenseExpiry,
-                                l10n.kycWizardDateFormatError) !=
-                            null
-                        ? l10n.kycWizardDateFormatError
-                        : !d.termsAgreed
-                            ? l10n.kycWizardTermsMissing
-                            : null;
+    // Driving license photos & details are optional for walk-in customers;
+    // validate expiry format only if the owner typed one, and require terms.
+    final missing = d.licenseExpiry.trim().isNotEmpty &&
+            _validateDate(d.licenseExpiry, l10n.kycWizardDateFormatError) !=
+                null
+        ? l10n.kycWizardDateFormatError
+        : !d.termsAgreed
+            ? l10n.kycWizardTermsMissing
+            : null;
     if (missing != null && mounted) AppFeedback.showError(context, missing);
     return missing == null;
   }
@@ -134,9 +129,9 @@ class Step3DocsState extends KycStepState<Step3Docs> {
 
   Widget _section(String title) => Padding(padding: const EdgeInsets.only(top: 4, bottom: 10), child: Text(title, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)));
 
-  Widget _field(TextEditingController controller, String label, {String? hint, TextInputType keyboard = TextInputType.text, List<TextInputFormatter>? formatters, required ValueChanged<String> onChanged}) {
+  Widget _field(TextEditingController controller, String label, {String? hint, TextInputType keyboard = TextInputType.text, List<TextInputFormatter>? formatters, Widget? suffixIcon, required ValueChanged<String> onChanged}) {
     // Filled like step 1's fields (were unfilled here).
-    return TextFormField(controller: controller, keyboardType: keyboard, inputFormatters: formatters, decoration: InputDecoration(labelText: label, hintText: hint, filled: true, fillColor: Theme.of(context).colorScheme.surfaceContainerHighest), onChanged: onChanged);
+    return TextFormField(controller: controller, keyboardType: keyboard, inputFormatters: formatters, decoration: InputDecoration(labelText: label, hintText: hint, suffixIcon: suffixIcon, filled: true, fillColor: Theme.of(context).colorScheme.surfaceContainerHighest), onChanged: onChanged);
   }
 
   @override
@@ -158,7 +153,7 @@ class Step3DocsState extends KycStepState<Step3Docs> {
         const SizedBox(height: 12),
         _field(_licenseNumberController, l10n.kycWizardLicenseNumber, onChanged: (v) { draft.licenseNumber = v; widget.onChanged(); }),
         const SizedBox(height: 12),
-        _field(_licenseExpiryController, l10n.kycWizardLicenseExpiry, hint: '01.01.2030', keyboard: TextInputType.number, formatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')), LengthLimitingTextInputFormatter(10)], onChanged: (v) { draft.licenseExpiry = v; widget.onChanged(); }),
+        _field(_licenseExpiryController, l10n.kycWizardLicenseExpiry, hint: '01.01.2030', keyboard: TextInputType.number, formatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')), LengthLimitingTextInputFormatter(10)], suffixIcon: IconButton(key: const ValueKey('step3_license_expiry_picker'), tooltip: l10n.kycWizardLicenseExpiry, icon: const Icon(Icons.calendar_today_outlined, size: 20), onPressed: () async { await pickFormattedDate(context: context, controller: _licenseExpiryController, isDob: false); draft.licenseExpiry = _licenseExpiryController.text; widget.onChanged(); }), onChanged: (v) { draft.licenseExpiry = v; widget.onChanged(); }),
         const SizedBox(height: 16),
         CheckboxListTile(
           key: const ValueKey('step3_terms_checkbox'),

@@ -6,6 +6,8 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/di/injection_container.dart';
+import '../../../../../core/utils/cnic_input_formatter.dart';
+import '../../../../../core/utils/date_picker_helper.dart';
 import '../../../../../core/utils/pakistani_validators.dart';
 import '../../../../../core/widgets/app_feedback.dart';
 import '../../../../../l10n/app_localizations.dart';
@@ -200,10 +202,10 @@ class _Step1CnicState extends KycStepState<Step1Cnic> {
     widget.onChanged();
   }
 
-  Widget _field(TextEditingController controller, String label, {TextInputType keyboard = TextInputType.text, String? hint, String? Function(String?)? validator, List<TextInputFormatter>? formatters, int maxLines = 1, bool readOnly = false}) {
+  Widget _field(TextEditingController controller, String label, {TextInputType keyboard = TextInputType.text, String? hint, String? Function(String?)? validator, List<TextInputFormatter>? formatters, int maxLines = 1, bool readOnly = false, Widget? suffixIcon}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
-      child: TextFormField(controller: controller, readOnly: readOnly, keyboardType: keyboard, maxLines: maxLines, inputFormatters: formatters, validator: validator, decoration: InputDecoration(labelText: label, hintText: hint, filled: true, fillColor: Theme.of(context).colorScheme.surfaceContainerHighest)),
+      child: TextFormField(controller: controller, readOnly: readOnly, keyboardType: keyboard, maxLines: maxLines, inputFormatters: formatters, validator: validator, decoration: InputDecoration(labelText: label, hintText: hint, suffixIcon: suffixIcon, filled: true, fillColor: Theme.of(context).colorScheme.surfaceContainerHighest)),
     );
   }
 
@@ -225,7 +227,7 @@ class _Step1CnicState extends KycStepState<Step1Cnic> {
             const SizedBox(height: 12),
             _field(_nameController, l10n.addCustomerName, validator: (v) => (v == null || v.trim().isEmpty) ? l10n.addCustomerFullNameRequired : null),
             _field(_fatherController, l10n.kycWizardFatherName),
-            _field(_cnicController, l10n.addCustomerCnic, keyboard: TextInputType.number, hint: '35201-1234567-1', readOnly: widget.isEdit, validator: PakistaniValidators.validateCnic, formatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9\-]')), LengthLimitingTextInputFormatter(15)]),
+            _field(_cnicController, l10n.addCustomerCnic, keyboard: TextInputType.number, hint: '35201-1234567-1', readOnly: widget.isEdit, validator: PakistaniValidators.validateCnic, formatters: const [CnicInputFormatter()]),
             SizedBox(
               width: double.infinity,
               child: OutlinedButton.icon(
@@ -235,8 +237,8 @@ class _Step1CnicState extends KycStepState<Step1Cnic> {
             if (_isBlacklisted) ...[const SizedBox(height: 8), Text(l10n.kycWizardBlacklisted, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: errorColor))],
             if (_showClean) ...[const SizedBox(height: 8), Text(l10n.blacklistCleanTitle, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: okColor))],
             const SizedBox(height: 12),
-            _field(_dobController, l10n.kycWizardDateOfBirth, keyboard: TextInputType.number, hint: '15.03.1990', validator: (v) => _validateDate(v, l10n.kycWizardDateFormatError), formatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')), LengthLimitingTextInputFormatter(10)]),
-            _field(_expiryController, l10n.kycWizardCnicExpiry, keyboard: TextInputType.number, hint: '01.01.2030', validator: (v) => _validateDate(v, l10n.kycWizardDateFormatError), formatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')), LengthLimitingTextInputFormatter(10)]),
+            _field(_dobController, l10n.kycWizardDateOfBirth, keyboard: TextInputType.number, hint: '15.03.1990', validator: (v) => _validateDate(v, l10n.kycWizardDateFormatError), formatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')), LengthLimitingTextInputFormatter(10)], suffixIcon: IconButton(key: const ValueKey('step1_dob_picker'), tooltip: l10n.kycWizardDateOfBirth, icon: const Icon(Icons.calendar_today_outlined, size: 20), onPressed: () => pickFormattedDate(context: context, controller: _dobController, isDob: true))),
+            _field(_expiryController, l10n.kycWizardCnicExpiry, keyboard: TextInputType.number, hint: '01.01.2030', validator: (v) => _validateDate(v, l10n.kycWizardDateFormatError), formatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')), LengthLimitingTextInputFormatter(10)], suffixIcon: IconButton(key: const ValueKey('step1_expiry_picker'), tooltip: l10n.kycWizardCnicExpiry, icon: const Icon(Icons.calendar_today_outlined, size: 20), onPressed: () => pickFormattedDate(context: context, controller: _expiryController, isDob: false))),
             _field(_addressController, l10n.kycWizardAddress, maxLines: 3),
             _field(_phoneController, l10n.kycWizardWhatsappNumber, keyboard: TextInputType.phone, hint: '0300-1234567', validator: PakistaniValidators.validatePakistaniPhone, formatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9+\- ]')), LengthLimitingTextInputFormatter(15)]),
           ],

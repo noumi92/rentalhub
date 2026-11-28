@@ -174,37 +174,39 @@ class AdminKycDataSource {
     final firestore = _resolvedFirestore;
     if (firestore == null) return false;
     try {
-      // Phase 3 (3.3b) — status precondition: only a pending
-      // submission ('submitted' or 'resubmitted') can be decided.
-      // A record that is already 'verified' cannot be re-decided
-      // without a re-review flow — the customer re-submitting puts
-      // it back to 'resubmitted' first — and neither can an already
-      // 'rejected' one.
       final currentDoc = await firestore
           .collection('kyc_documents')
           .doc(customerId)
           .get();
       final currentData = currentDoc.data();
       if (currentData == null) return false;
-      final currentStatus = currentData['status'] as String?;
-      if (currentStatus != 'submitted' &&
-          currentStatus != 'resubmitted') {
-        return false;
+      final currentStatus =
+          (currentData['status'] as String? ?? 'submitted').toLowerCase();
+      // Block re-approving an already-verified submission unless resubmitted;
+      // allow approving submitted / resubmitted / pending / rejected records.
+      if (decision == 'verified' &&
+          (currentStatus == 'verified' || currentStatus == 'approved')) {
+        final submittedAt = KycReviewSubmission._parseTs(
+            currentData['submittedAt'] ?? currentData['updatedAt']);
+        final reviewedAt = KycReviewSubmission._parseTs(
+            currentData['reviewed_at'] ??
+                currentData['reviewedAt'] ??
+                currentData['verifiedAt'] ??
+                currentData['decidedAt']);
+        if (submittedAt == null ||
+            reviewedAt == null ||
+            !submittedAt.isAfter(reviewedAt)) {
+          return false;
+        }
       }
       await firestore.collection('kyc_documents').doc(customerId).update({
         'status': decision,
         if (decision == 'rejected') 'rejection_reason': trimmedReason,
+        if (decision == 'verified') 'rejection_reason': FieldValue.delete(),
         'reviewed_at': FieldValue.serverTimestamp(),
       });
-      // Best-effort mirror: the customer KYC banner reads the reason
-      // off `customers/{uid}.rejectionReason` (CustomerDocumentsView),
-      // not off the KYC record. Phase 3 (3.3c): this is an `update`,
-      // not a merge-set — when no customers doc exists the mirror is
-      // skipped, so a decision can never create an orphan
-      // customers/{uid} doc containing only a rejectionReason. A
-      // missing customer record must not fail a decision that
-      // already landed, so this write never throws, and a
-      // verification clears any earlier rejection reason.
+      // Mirror approval status + reviewedAt + rejectionReason onto customers/{uid}
+      // and is_verified onto users/{uid} so the admin panel and customer app stay in sync.
       try {
         final customerDoc = await firestore
             .collection('customers')
@@ -212,10 +214,21 @@ class AdminKycDataSource {
             .get();
         if (customerDoc.data() != null) {
           await firestore.collection('customers').doc(customerId).update({
+            'approvalStatus': decision == 'verified' ? 'approved' : 'rejected',
+            'reviewedAt': DateTime.now().toIso8601String(),
             if (decision == 'rejected')
               'rejectionReason': trimmedReason,
             if (decision == 'verified')
               'rejectionReason': FieldValue.delete(),
+          });
+        }
+      } catch (_) {}
+      try {
+        final userDoc =
+            await firestore.collection('users').doc(customerId).get();
+        if (userDoc.data() != null) {
+          await firestore.collection('users').doc(customerId).update({
+            'is_verified': decision == 'verified',
           });
         }
       } catch (_) {}
@@ -315,8 +328,12 @@ class KycReviewSubmission {
     String name = '',
   }) {
     final submittedAt = _parseTs(data['submittedAt'] ?? data['updatedAt']);
-    final reviewedAt =
-        _parseTs(data['reviewedAt'] ?? data['verifiedAt'] ?? data['decidedAt']);
+    final reviewedAt = _parseTs(
+      data['reviewed_at'] ??
+          data['reviewedAt'] ??
+          data['verifiedAt'] ??
+          data['decidedAt'],
+    );
     return KycReviewSubmission(
       customerId: customerId,
       customerName: name,

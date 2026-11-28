@@ -427,9 +427,10 @@ class AdminShopsDataSource {
       final currentData = currentDoc.data();
       if (currentData == null) return false;
       final currentStatus =
-          currentData['verification_status'] as String? ?? 'pending';
-      if (currentStatus != 'pending' &&
-          currentStatus != 'info_requested') {
+          (currentData['verification_status'] as String? ?? 'pending')
+              .toLowerCase();
+      if (decision == 'approved' &&
+          (currentStatus == 'approved' || currentStatus == 'verified')) {
         return false;
       }
       if (decision != 'approved' &&
@@ -444,6 +445,21 @@ class AdminShopsDataSource {
         if (decision == 'info_requested') 'admin_note': reason,
         'reviewed_at': FieldValue.serverTimestamp(),
       });
+      // Best-effort mirror onto the owner's users doc so their profile reflects verification.
+      try {
+        final ownerUid = (currentData['owner_id'] as String?) ??
+            (currentData['ownerId'] as String?) ??
+            (shopId.startsWith('shop_') ? shopId.substring(5) : '');
+        if (ownerUid.isNotEmpty) {
+          final ownerDoc =
+              await firestore.collection('users').doc(ownerUid).get();
+          if (ownerDoc.data() != null) {
+            await firestore.collection('users').doc(ownerUid).update({
+              'is_verified': decision == 'approved',
+            });
+          }
+        }
+      } catch (_) {}
       try {
         await NotificationDataSource(firestore: firestore)
             .createNotification(

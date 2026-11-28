@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../../../core/utils/cnic_input_formatter.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../views/add_customer/kyc_draft.dart';
 
@@ -67,10 +68,7 @@ class GuarantorManualForm extends StatelessWidget {
           hint: '35201-1234567-1',
           icon: Icons.badge_outlined,
           keyboard: TextInputType.number,
-          formatters: [
-            FilteringTextInputFormatter.allow(RegExp(r'[0-9\-]')),
-            LengthLimitingTextInputFormatter(15),
-          ],
+          formatters: const [CnicInputFormatter()],
           onChanged: (v) {
             draft.guarantorCnic = v;
             onChanged();
