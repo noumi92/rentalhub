@@ -183,35 +183,40 @@ class _ProfileSignatureCardState extends State<ProfileSignatureCard> {
               ),
             ),
             const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                if (_savedPng != null)
-                  TextButton(
-                    onPressed: () {
-                      _controller.clear();
-                      setState(() => _editing = false);
-                    },
-                    child: Text(l10n?.cancel ?? 'Cancel'),
+            SizedBox(
+              width: double.infinity,
+              child: Wrap(
+                alignment: WrapAlignment.end,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: 6,
+                runSpacing: 6,
+                children: [
+                  if (_savedPng != null)
+                    TextButton(
+                      onPressed: () {
+                        _controller.clear();
+                        setState(() => _editing = false);
+                      },
+                      child: Text(l10n?.cancel ?? 'Cancel'),
+                    ),
+                  TextButton.icon(
+                    onPressed: _controller.clear,
+                    icon: const Icon(Icons.clear_rounded, size: 16),
+                    label: Text(l10n?.handoverClear ?? 'Clear'),
                   ),
-                TextButton.icon(
-                  onPressed: _controller.clear,
-                  icon: const Icon(Icons.clear_rounded, size: 16),
-                  label: Text(l10n?.handoverClear ?? 'Clear'),
-                ),
-                const SizedBox(width: 6),
-                FilledButton.icon(
-                  onPressed: _saving ? null : _save,
-                  icon: _saving
-                      ? const SizedBox(
-                          width: 14,
-                          height: 14,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Icon(Icons.check_rounded, size: 16),
-                  label: Text(l10n?.admin2_save ?? 'Save'),
-                ),
-              ],
+                  FilledButton.icon(
+                    onPressed: _saving ? null : _save,
+                    icon: _saving
+                        ? const SizedBox(
+                            width: 14,
+                            height: 14,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Icon(Icons.check_rounded, size: 16),
+                    label: Text(l10n?.admin2_save ?? 'Save'),
+                  ),
+                ],
+              ),
             ),
           ] else
             Text(
