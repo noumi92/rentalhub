@@ -350,10 +350,10 @@ void main() {
           expect(fg, Colors.white);
           expect(_contrastRatio(fg!, bg!), greaterThanOrEqualTo(4.5));
         }
-        // SH-N7: the themed minimum height is the 54 dp CTA standard.
+        // Compact minimal 48 dp CTA standard (WCAG/M3 touch target).
         final minSize = theme.elevatedButtonTheme.style?.minimumSize
             ?.resolve(<WidgetState>{});
-        expect(minSize, const Size(64, 54));
+        expect(minSize, const Size(64, 48));
       }
     });
 

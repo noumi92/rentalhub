@@ -4,7 +4,9 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/routing/route_names.dart';
+import '../../../../core/services/signature_profile_service.dart';
 import '../../../../core/widgets/app_feedback.dart';
+import '../../../../core/widgets/profile_signature_card.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../customer/domain/entities/customer_entity.dart';
 
@@ -244,6 +246,22 @@ class CustomerDetailPersonalTab extends StatelessWidget {
                   icon: Icons.location_on_outlined,
                   label: l10n.guarantorAddressLabel,
                   value: gAddress,
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(14, 4, 14, 14),
+                  child: ProfileSignatureCard(
+                    key: ValueKey('guarantor_profile_sig_${customer.customerId}'),
+                    title: l10n.agreementWizardGuarantor,
+                    onLoad: () async =>
+                        (await SignatureProfileService.loadGuarantorSignature(
+                                customer.customerId))
+                            .pngBytes,
+                    onSave: (bytes) =>
+                        SignatureProfileService.saveGuarantorSignature(
+                      customer.customerId,
+                      bytes,
+                    ),
+                  ),
                 ),
               ],
             ],

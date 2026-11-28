@@ -229,7 +229,7 @@ class AppTheme {
         const Size(64, AppDimensions.buttonHeight),
       ),
       padding: WidgetStateProperty.all(
-        const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       ),
       shape: WidgetStateProperty.resolveWith(
         (states) => RoundedRectangleBorder(

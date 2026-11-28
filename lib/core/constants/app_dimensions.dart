@@ -15,7 +15,7 @@ class AppDimensions {
   // Phase 5, so no card keeps a local 20 anymore.)
   static const double cardRadius = 16.0;
   static const double buttonRadius = 16.0;
-  static const double buttonHeight = 54.0;
+  static const double buttonHeight = 48.0;
 
   // Paddings
   // Audit 2026-11-15 DS-7: re-specced from 20 to 16 — 16 is the

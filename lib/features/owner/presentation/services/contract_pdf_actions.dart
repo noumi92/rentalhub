@@ -10,6 +10,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/di/injection_container.dart';
+import '../../../../core/services/signature_profile_service.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
@@ -283,28 +284,19 @@ class ContractPdfActions {
   /// Returns (guarantorName, signatureUrl); either may be null.
   /// Firestore resolves lazily — without it the answer is "none",
   /// never an error and never a fabricated signature.
-  static Future<({String? name, String? signatureUrl})>
+  static Future<({String? name, String? signatureUrl, Uint8List? signaturePng})>
       resolveGuarantorSignature({
     required String customerId,
     String? bookingGuarantorName,
   }) async {
-    String? name = bookingGuarantorName;
-    String? signatureUrl;
-    try {
-      final fs = FirebaseFirestore.instance;
-      final customerDoc =
-          await fs.collection('customers').doc(customerId).get();
-      final guarantorId =
-          customerDoc.data()?['guarantorCustomerId'] as String?;
-      if (guarantorId == null || guarantorId.isEmpty) {
-        return (name: name, signatureUrl: null);
-      }
-      final guarantorDoc =
-          await fs.collection('customers').doc(guarantorId).get();
-      final data = guarantorDoc.data();
-      name ??= data?['fullName'] as String? ?? data?['name'] as String?;
-      signatureUrl = data?['signatureUrl'] as String?;
-    } catch (_) {}
-    return (name: name, signatureUrl: signatureUrl);
+    final loaded = await SignatureProfileService.loadGuarantorSignature(
+      customerId,
+      fallbackName: bookingGuarantorName,
+    );
+    return (
+      name: loaded.name,
+      signatureUrl: loaded.url,
+      signaturePng: loaded.pngBytes,
+    );
   }
 }

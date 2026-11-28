@@ -5,6 +5,7 @@ import '../../../../core/di/injection_container.dart';
 import '../../../../core/utils/current_shop.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../blacklist/data/datasources/blacklist_remote_data_source.dart';
+import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../customer/data/datasources/customer_remote_data_source.dart';
 import '../../../customer/domain/entities/customer_entity.dart';
 import 'customer_status_helpers.dart';
@@ -66,6 +67,7 @@ class _ManualBookingCustomerStepState
   final _searchController = TextEditingController();
   List<CustomerEntity> _customers = [];
   Set<String> _blacklisted = {};
+  Map<String, int> _completedTrips = {};
   bool _loading = true;
   bool _loadFailed = false;
   bool _prefillTried = false;
@@ -106,16 +108,35 @@ class _ManualBookingCustomerStepState
       if (!sl.isRegistered<CustomerRemoteDataSource>()) {
         throw StateError('CustomerRemoteDataSource not registered');
       }
-      final customers = await sl<CustomerRemoteDataSource>().getShopCustomers(currentShopId());
+      final shopId = currentShopId();
+      final customers = await sl<CustomerRemoteDataSource>().getShopCustomers(shopId);
       var blacklisted = <String>{};
       if (sl.isRegistered<BlacklistRemoteDataSource>()) {
         final records = await sl<BlacklistRemoteDataSource>().getAllRecords();
         blacklisted = records.where((r) => r.isActive).map((r) => _digits(r.cnicNumber)).toSet();
       }
+      final tripCounts = <String, int>{};
+      if (sl.isRegistered<BookingRemoteDataSource>()) {
+        try {
+          final shopBookings = await sl<BookingRemoteDataSource>().getShopBookings(shopId);
+          for (final b in shopBookings) {
+            if (b.status != 'completed') continue;
+            for (final c in customers) {
+              final idMatch = b.customerId == c.customerId;
+              final cnicMatch = _digits(c.cnic).isNotEmpty && _digits(b.customerCnic) == _digits(c.cnic);
+              final phoneMatch = _digits(c.phone).isNotEmpty && _digits(b.customerPhone) == _digits(c.phone);
+              if (idMatch || cnicMatch || phoneMatch) {
+                tripCounts[c.customerId] = (tripCounts[c.customerId] ?? 0) + 1;
+              }
+            }
+          }
+        } catch (_) {}
+      }
       if (!mounted) return;
       setState(() {
         _customers = _visible(customers);
         _blacklisted = blacklisted;
+        _completedTrips = tripCounts;
         _loading = false;
       });
       _tryPrefill();
@@ -175,8 +196,9 @@ class _ManualBookingCustomerStepState
   List<CustomerEntity> _visible(List<CustomerEntity> customers) =>
       customers.where((c) => !_isArchived(c)).toList();
 
-  /// KYC on file (triage checklist): profile photo + licence number.
-  bool _kycDone(CustomerEntity c) => c.profilePhotoUrl != null && c.licenseNumber != null;
+  /// KYC completed: CNIC front & back uploaded (walk-in KYC) or legacy profile + licence.
+  bool _kycDone(CustomerEntity c) =>
+      isCustomerKycComplete(c) || (c.profilePhotoUrl != null && c.licenseNumber != null);
 
   List<CustomerEntity> get _filtered {
     final q = _query.trim().toLowerCase();
@@ -232,6 +254,8 @@ class _ManualBookingCustomerStepState
                 blacklisted: _isBlacklisted(c),
                 blocked: _isBlocked(c),
                 kycDone: _kycDone(c),
+                shopId: currentShopId(),
+                completedTrips: _completedTrips[c.customerId],
                 trustScore: widget.trustScoreOverrides?[c.customerId],
                 onSelected: widget.onSelected,
               )),

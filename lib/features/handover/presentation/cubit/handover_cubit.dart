@@ -158,6 +158,7 @@ class HandoverCubit extends Cubit<HandoverState> {
     String? guarantorRelation,
     Uint8List? customerSignaturePng,
     Uint8List? ownerSignaturePng,
+    Uint8List? guarantorSignaturePng,
     // Kept for the older call sites (tests); the real pads now pass
     // PNG bytes instead.
     String customerSignatureSvg = '',
@@ -186,6 +187,7 @@ class HandoverCubit extends Cubit<HandoverState> {
       damageNotes: damageNotes,
       customerSignaturePng: customerSignaturePng,
       ownerSignaturePng: ownerSignaturePng,
+      guarantorSignaturePng: guarantorSignaturePng,
       vehiclePlate: vehiclePlate,
       vehicleColour: vehicleColour,
       vehicleFuel: vehicleFuel,
@@ -355,7 +357,11 @@ class HandoverCubit extends Cubit<HandoverState> {
     required String? depositPaymentMethod,
   }) async {
     final ledger = ledgerService;
-    if (ledger == null) return;
+    final remainingBefore = (totalAmount - advancePaid).clamp(0, 1 << 30);
+    final collectedBalance =
+        balanceCollected && balanceDuePkr != null && balanceDuePkr > 0
+            ? balanceDuePkr.clamp(0, remainingBefore)
+            : 0;
     final booking = BookingEntity(
       bookingId: bookingId,
       customerId: customerId,
@@ -366,28 +372,30 @@ class HandoverCubit extends Cubit<HandoverState> {
       returnTime: returnTime ?? DateTime.now().add(const Duration(days: 1)),
       totalAmount: totalAmount,
       advancePaid: advancePaid,
-      remainingBalance: (totalAmount - advancePaid).clamp(0, 1 << 30),
+      remainingBalance: remainingBefore,
     );
-    if (balanceCollected && balanceDuePkr != null && balanceDuePkr > 0) {
-      try {
-        await ledger.postOnce(
-          booking: booking,
-          event: 'balance',
-          kind: 'income',
-          category: 'rent',
-          amount: balanceDuePkr,
-          paymentMethod: balancePaymentMethod,
-          note: 'Balance collected at handover for $bookingId',
-        );
-      } catch (_) {}
+    if (collectedBalance > 0) {
+      if (ledger != null) {
+        try {
+          await ledger.postOnce(
+            booking: booking,
+            event: 'balance',
+            kind: 'income',
+            category: 'rent',
+            amount: collectedBalance,
+            paymentMethod: balancePaymentMethod,
+            note: 'Balance collected at handover for $bookingId',
+          );
+        } catch (_) {}
+      }
       try {
         await bookingDataSource?.recordBalanceCollected(
           bookingId: bookingId,
-          amount: balanceDuePkr,
+          amount: collectedBalance,
         );
       } catch (_) {}
     }
-    if (depositCollected && securityDeposit > 0) {
+    if (ledger != null && depositCollected && securityDeposit > 0) {
       try {
         await ledger.postOnce(
           booking: booking,

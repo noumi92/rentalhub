@@ -3,6 +3,7 @@ import '../../../customer/domain/usecases/save_customer_usecase.dart';
 import '../../../customer/utils/save_walk_in_customer.dart';
 import '../../../trust/data/services/customer_qr_code_service.dart';
 import '../../../../core/di/injection_container.dart';
+import '../../../../core/services/signature_profile_service.dart';
 import '../../../blacklist/data/datasources/blacklist_remote_data_source.dart';
 import '../views/add_customer/kyc_draft.dart';
 import 'kyc_media_upload_service.dart';
@@ -154,6 +155,13 @@ class KycCustomerSaver {
       savedShopIds: existing?.savedShopIds ?? const [],
     );
     await _saveUseCase(customer);
+    if (draft.guarantorSignaturePng != null &&
+        draft.guarantorSignaturePng!.isNotEmpty) {
+      await SignatureProfileService.saveGuarantorSignature(
+        customerId,
+        draft.guarantorSignaturePng!,
+      );
+    }
     // The CNIC back-QR number goes to the restricted
     // `customer_qr_codes/{customerId}` doc (super admin only) — never
     // onto the customer record. Best-effort: a failed QR write never

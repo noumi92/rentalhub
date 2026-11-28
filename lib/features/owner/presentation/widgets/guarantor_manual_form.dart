@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../../core/utils/cnic_input_formatter.dart';
+import '../../../../core/widgets/profile_signature_card.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../views/add_customer/kyc_draft.dart';
 
@@ -103,6 +104,17 @@ class GuarantorManualForm extends StatelessWidget {
           onChanged: (v) {
             draft.guarantorAddress = v;
             onChanged();
+          },
+        ),
+        const SizedBox(height: 12),
+        ProfileSignatureCard(
+          key: const ValueKey('guarantor_manual_signature_card'),
+          title: l10n.agreementWizardGuarantor,
+          initialPng: draft.guarantorSignaturePng,
+          onSave: (bytes) async {
+            draft.guarantorSignaturePng = bytes;
+            onChanged();
+            return true;
           },
         ),
       ],

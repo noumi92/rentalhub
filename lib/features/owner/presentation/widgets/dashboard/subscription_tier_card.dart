@@ -126,7 +126,7 @@ class SubscriptionTierCard extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: (isCurrent || isPending) ? null : onSelect,
                 style: ElevatedButton.styleFrom(
-                  minimumSize: const Size(double.infinity, 54),
+                  minimumSize: const Size(double.infinity, 48),
                   backgroundColor: isPopular ? AppColors.orangeFill : AppColors.primary,
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),

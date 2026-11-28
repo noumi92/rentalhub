@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../../../../l10n/app_localizations.dart';
 
+import '../../../../core/services/signature_profile_service.dart';
 import '../../../../core/theme/card_decoration.dart';
 import '../../../../core/widgets/debounced_button.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
@@ -261,7 +262,13 @@ class _AgreementWizardSignaturesState
             customerSignaturePng: widget.customerSignaturePng,
             ownerSignaturePng: widget.ownerSignaturePng,
             damageNotes: widget.damageNotes,
-            onGuarantorSigned: (png) => setState(() => _guarantorPng = png),
+            onGuarantorSigned: (png) {
+              setState(() => _guarantorPng = png);
+              SignatureProfileService.saveGuarantorSignature(
+                widget.booking.customerId,
+                png,
+              );
+            },
             onPdfRegenerated: (bytes) => setState(() => _pdfBytes = bytes),
           ),
         ],
@@ -286,9 +293,9 @@ class _AgreementWizardSignaturesState
                   icon: const Icon(Icons.check_rounded, size: 18),
                   label: Text(l10n.agreementWizardFinalize),
                   style: ElevatedButton.styleFrom(
-                      minimumSize: const Size(double.infinity, 54),
+                      minimumSize: const Size(double.infinity, 48),
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16))),
+                          borderRadius: BorderRadius.circular(12))),
                 ),
               ),
               const SizedBox(height: 6),

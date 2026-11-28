@@ -120,6 +120,13 @@ class CustomerDetailHeader extends StatelessWidget {
                             ? AppColors.successBadgeTextFor(brightness)
                             : AppColors.errorBadgeTextFor(brightness),
                       ),
+                      if (isWalkIn && !kycIncomplete)
+                        _statusChip(
+                          context,
+                          l10n.manualBookingKycDone,
+                          AppColors.successBadgeFor(brightness),
+                          AppColors.successBadgeTextFor(brightness),
+                        ),
                       if (!isWalkIn)
                         _statusChip(
                           context,

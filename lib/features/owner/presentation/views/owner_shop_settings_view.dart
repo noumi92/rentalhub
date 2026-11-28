@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import '../../../../core/services/signature_profile_service.dart';
 import '../../../../core/utils/current_shop.dart';
 import '../../../../core/utils/shop_id_resolution.dart';
 import '../../../../core/utils/pakistani_validators.dart';
@@ -8,6 +9,7 @@ import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/app_state_views.dart';
 import '../../../../core/widgets/debounced_button.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
+import '../../../../core/widgets/profile_signature_card.dart';
 import '../../../../l10n/app_localizations.dart';
 
 /// Audit §5 (O33): the Shop Settings screen — the shop name and shop
@@ -72,10 +74,7 @@ class _OwnerShopSettingsViewState extends State<OwnerShopSettingsView> {
   }
 
   Future<void> _load() async {
-    setState(() {
-      _loading = true;
-      _hasError = false;
-    });
+    setState(() { _loading = true; _hasError = false; });
     try {
       final fs = _firestore; if (fs == null) throw StateError('Firestore unavailable');
       final docId = await canonicalShopId(fs, currentShopId());
@@ -84,7 +83,6 @@ class _OwnerShopSettingsViewState extends State<OwnerShopSettingsView> {
       if (!mounted) return;
       setState(() {
         _shopDocId = docId;
-        // Item 7: snake_case first — live docs store shop_name / owner_name / phone_number / opening_hours (ShopModel.toMap()); camelCase is a legacy fallback only.
         _shopNameController.text = (data['shop_name'] ?? data['name'] ?? data['shopName'] ?? '') as String;
         _ownerNameController.text = (data['owner_name'] ?? data['ownerName'] ?? '') as String;
         _phoneController.text = (data['phone_number'] ?? data['phoneNumber'] ?? data['phone'] ?? '') as String;
@@ -95,32 +93,17 @@ class _OwnerShopSettingsViewState extends State<OwnerShopSettingsView> {
         _initialSnapshot = _snapshot();
       });
     } catch (_) {
-      if (mounted) setState(() => _loading = false);
-      if (mounted) setState(() => _hasError = true);
+      if (mounted) setState(() { _loading = false; _hasError = true; });
     }
   }
 
   Future<void> _save() async {
     final l10n = AppLocalizations.of(context)!;
-    if (_shopNameController.text.trim().length < 3) {
-      AppFeedback.showError(context, l10n.shopSettingsNameShort);
-      return;
-    }
-    // OW-m12: the phone field had no validation at all.
+    if (_shopNameController.text.trim().length < 3) { AppFeedback.showError(context, l10n.shopSettingsNameShort); return; }
     final phone = _phoneController.text.trim();
-    if (phone.isNotEmpty &&
-        PakistaniValidators.validatePakistaniPhone(phone) != null) {
-      AppFeedback.showError(context, l10n.shopSettingsPhoneInvalid);
-      return;
-    }
-    // OW-m12: opening hours are free text with a format hint; a
-    // value with no time in it is rejected (a structured picker
-    // would be the fuller fix).
+    if (phone.isNotEmpty && PakistaniValidators.validatePakistaniPhone(phone) != null) { AppFeedback.showError(context, l10n.shopSettingsPhoneInvalid); return; }
     final hours = _openingHoursController.text.trim();
-    if (hours.isNotEmpty && !_looksLikeHours(hours)) {
-      AppFeedback.showError(context, l10n.shopSettingsHoursInvalid);
-      return;
-    }
+    if (hours.isNotEmpty && !_looksLikeHours(hours)) { AppFeedback.showError(context, l10n.shopSettingsHoursInvalid); return; }
     setState(() => _isSaving = true);
     try {
       final fs = _firestore; if (fs == null) throw StateError('Firestore unavailable');
@@ -211,6 +194,13 @@ class _OwnerShopSettingsViewState extends State<OwnerShopSettingsView> {
                               _field(l10n.shopSettingsCity, _cityController),
                               const SizedBox(height: 12),
                               _field(l10n.shopSettingsOpeningHours, _openingHoursController, hint: l10n.shopSettingsHoursHint),
+                              const SizedBox(height: 16),
+                              ProfileSignatureCard(
+                                key: const ValueKey('owner_kyc_signature_card'),
+                                title: l10n.handoverHostSignature,
+                                onLoad: () async => (await SignatureProfileService.loadOwnerSignature(_shopDocId ?? currentShopId(), firestore: _firestore)).pngBytes,
+                                onSave: (b) => SignatureProfileService.saveOwnerSignature(_shopDocId ?? currentShopId(), b, firestore: _firestore),
+                              ),
                             ],
                           ),
                         ),

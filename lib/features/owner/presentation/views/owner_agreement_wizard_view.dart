@@ -112,6 +112,7 @@ class _OwnerAgreementWizardViewState
       if (mounted) {
         setState(() {
           _guarantorSigUrl = resolved.signatureUrl;
+          _guarantorSigPng ??= resolved.signaturePng;
           _guarantorName = resolved.name;
         });
       }

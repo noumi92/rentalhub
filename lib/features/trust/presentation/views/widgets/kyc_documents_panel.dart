@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../core/di/injection_container.dart';
+import '../../../../../core/services/signature_profile_service.dart';
 import '../../../../../core/widgets/app_state_views.dart';
+import '../../../../../core/widgets/profile_signature_card.dart';
 import '../../cubit/kyc_cubit.dart';
 import '../../../domain/entities/kyc_document_entity.dart';
 import 'kyc_status_banner.dart';
@@ -140,6 +142,19 @@ class _KycDocumentsPanelState extends State<KycDocumentsPanel> {
               ),
             ],
           ],
+          const SizedBox(height: 16),
+          ProfileSignatureCard(
+            key: ValueKey('online_customer_kyc_sig_${widget.userUid}'),
+            title: l10n.handoverCustomerSignature,
+            onLoad: () async =>
+                (await SignatureProfileService.loadCustomerSignature(
+                        widget.userUid))
+                    .pngBytes,
+            onSave: (bytes) => SignatureProfileService.saveCustomerSignature(
+              widget.userUid,
+              bytes,
+            ),
+          ),
         ],
       ),
     );

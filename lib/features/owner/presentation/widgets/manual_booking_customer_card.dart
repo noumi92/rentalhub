@@ -21,6 +21,8 @@ class ManualBookingCustomerCard extends StatelessWidget {
     required this.blacklisted,
     required this.blocked,
     required this.kycDone,
+    this.shopId,
+    this.completedTrips,
     this.trustScore,
     required this.onSelected,
   });
@@ -30,6 +32,8 @@ class ManualBookingCustomerCard extends StatelessWidget {
   final bool blacklisted;
   final bool blocked;
   final bool kycDone;
+  final String? shopId;
+  final int? completedTrips;
   final double? trustScore;
   final ValueChanged<CustomerEntity> onSelected;
 
@@ -113,8 +117,18 @@ class ManualBookingCustomerCard extends StatelessWidget {
               ),
               TriageTrustRow(
                 customerId: c.customerId,
+                shopId: shopId,
                 trustScore: trustScore,
+                completedTrips: completedTrips,
                 kycStatus: kycDone ? 'verified' : 'missing',
+                cnicVerified: (c.cnicFrontUrl?.isNotEmpty ?? false) &&
+                        (c.cnicBackUrl?.isNotEmpty ?? false)
+                    ? true
+                    : null,
+                licenseVerified: (c.licenseFrontUrl?.isNotEmpty ?? false) &&
+                        (c.licenseBackUrl?.isNotEmpty ?? false)
+                    ? true
+                    : null,
               ),
               const SizedBox(height: 6),
               Wrap(

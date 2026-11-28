@@ -154,8 +154,35 @@ class HandoverBalanceSection extends StatelessWidget {
                   ),
                   onChanged: (v) {
                     final parsed = int.tryParse(v.trim()) ?? 0;
-                    onCashReceivedChanged!(parsed);
+                    onCashReceivedChanged!(parsed.clamp(0, balanceDue));
                   },
+                ),
+                const SizedBox(height: 6),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Flexible(
+                      child: Text(
+                        l10n.handoverAmountRequiredAtReturn,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant,
+                            ),
+                      ),
+                    ),
+                    Text(
+                      l10n.amountRs(formatRs(
+                          (balanceDue - cashReceivedAtHandover)
+                              .clamp(0, 1 << 30))),
+                      style: Theme.of(context)
+                          .textTheme
+                          .labelMedium
+                          ?.copyWith(fontWeight: FontWeight.w600),
+                    ),
+                  ],
                 ),
               ],
               const SizedBox(height: 12),

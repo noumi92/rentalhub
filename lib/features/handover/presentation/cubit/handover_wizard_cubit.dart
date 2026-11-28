@@ -61,6 +61,10 @@ class HandoverWizardState extends Equatable {
   final String? ownerSavedSignatureUrl;
   final Uint8List? ownerSavedSignaturePng;
   final bool useOwnerSaved;
+  final String? guarantorSavedSignatureUrl;
+  final Uint8List? guarantorSavedSignaturePng;
+  final bool useGuarantorSaved;
+  final bool guarantorOptedOut;
 
   final bool isFinalizing;
   final HandoverEntity? completed;
@@ -105,6 +109,10 @@ class HandoverWizardState extends Equatable {
     this.ownerSavedSignatureUrl,
     this.ownerSavedSignaturePng,
     this.useOwnerSaved = true,
+    this.guarantorSavedSignatureUrl,
+    this.guarantorSavedSignaturePng,
+    this.useGuarantorSaved = true,
+    this.guarantorOptedOut = false,
     this.isFinalizing = false,
     this.completed,
     this.completedPdfBytes,
@@ -142,6 +150,10 @@ class HandoverWizardState extends Equatable {
     String? ownerSavedSignatureUrl,
     Uint8List? ownerSavedSignaturePng,
     bool? useOwnerSaved,
+    String? guarantorSavedSignatureUrl,
+    Uint8List? guarantorSavedSignaturePng,
+    bool? useGuarantorSaved,
+    bool? guarantorOptedOut,
     bool? isFinalizing,
     HandoverEntity? completed,
     Uint8List? completedPdfBytes,
@@ -188,6 +200,12 @@ class HandoverWizardState extends Equatable {
       ownerSavedSignaturePng:
           ownerSavedSignaturePng ?? this.ownerSavedSignaturePng,
       useOwnerSaved: useOwnerSaved ?? this.useOwnerSaved,
+      guarantorSavedSignatureUrl:
+          guarantorSavedSignatureUrl ?? this.guarantorSavedSignatureUrl,
+      guarantorSavedSignaturePng:
+          guarantorSavedSignaturePng ?? this.guarantorSavedSignaturePng,
+      useGuarantorSaved: useGuarantorSaved ?? this.useGuarantorSaved,
+      guarantorOptedOut: guarantorOptedOut ?? this.guarantorOptedOut,
       isFinalizing: isFinalizing ?? this.isFinalizing,
       completed: completed ?? this.completed,
       completedPdfBytes: completedPdfBytes ?? this.completedPdfBytes,
@@ -261,6 +279,10 @@ class HandoverWizardState extends Equatable {
         ownerSavedSignatureUrl,
         ownerSavedSignaturePng,
         useOwnerSaved,
+        guarantorSavedSignatureUrl,
+        guarantorSavedSignaturePng,
+        useGuarantorSaved,
+        guarantorOptedOut,
         isFinalizing,
         completed,
         completedPdfBytes,
@@ -294,11 +316,17 @@ class HandoverWizardCubit extends Cubit<HandoverWizardState> {
     penColor: const Color(0xFF000000),
     exportBackgroundColor: const Color(0xFFFFFFFF),
   );
+  final guarantorSigController = SignatureController(
+    penStrokeWidth: 3,
+    penColor: const Color(0xFF000000),
+    exportBackgroundColor: const Color(0xFFFFFFFF),
+  );
 
   @override
   Future<void> close() {
     customerSigController.dispose();
     ownerSigController.dispose();
+    guarantorSigController.dispose();
     return super.close();
   }
 
@@ -406,6 +434,20 @@ class HandoverWizardCubit extends Cubit<HandoverWizardState> {
   void setUseOwnerSaved(bool value) =>
       emit(state.copyWith(useOwnerSaved: value, clearError: true));
 
+  void setGuarantorSavedSignature({String? url, Uint8List? pngBytes}) =>
+      emit(state.copyWith(
+        guarantorSavedSignatureUrl: url,
+        guarantorSavedSignaturePng: pngBytes,
+      ));
+
+  void setUseGuarantorSaved(bool value) =>
+      emit(state.copyWith(useGuarantorSaved: value, clearError: true));
+
+  void setGuarantorOptedOut(bool value) =>
+      emit(state.copyWith(guarantorOptedOut: value, clearError: true));
+
+  void markGuarantorSigDrawn() => emit(state.copyWith(clearError: true));
+
   /// The pad drew something — called by the agreement step so the
   /// step-4 gate ([signaturesReady]) re-evaluates. The controllers
   /// themselves are the source of truth (see [signaturesReady]);
@@ -431,10 +473,11 @@ class HandoverWizardCubit extends Cubit<HandoverWizardState> {
   /// bytes when the on-file signature is chosen, otherwise the
   /// fresh pad export. Returns nulls when a side has no signature
   /// (finalize is blocked upstream by [signaturesReady]).
-  Future<({Uint8List? customer, Uint8List? owner})>
+  Future<({Uint8List? customer, Uint8List? owner, Uint8List? guarantor})>
       exportSignatures() async {
     Uint8List? customer;
     Uint8List? owner;
+    Uint8List? guarantor;
     if (state.useCustomerSaved && state.customerSavedSignaturePng != null) {
       customer = state.customerSavedSignaturePng;
     } else if (customerSigController.isNotEmpty) {
@@ -445,22 +488,28 @@ class HandoverWizardCubit extends Cubit<HandoverWizardState> {
     } else if (ownerSigController.isNotEmpty) {
       owner = await ownerSigController.toPngBytes();
     }
-    return (customer: customer, owner: owner);
+    if (!state.guarantorOptedOut) {
+      if (state.useGuarantorSaved && state.guarantorSavedSignaturePng != null) {
+        guarantor = state.guarantorSavedSignaturePng;
+      } else if (guarantorSigController.isNotEmpty) {
+        guarantor = await guarantorSigController.toPngBytes();
+      }
+    }
+    return (customer: customer, owner: owner, guarantor: guarantor);
   }
 
-  /// Finalize gate for step 4: a customer signature and an owner
-  /// signature, saved or fresh. Guarantor is NOT signed here — it
-  /// moves to the O47 wizard step; O30 shows it as pending.
-  ///
-  /// A side is satisfied by its saved PNG when one is on file and
-  /// chosen, OR by ink on its fresh pad. The pad branch must not
-  /// depend on `useSaved` being false: the flags default to true
-  /// and nothing flips them when no saved signature exists (the
-  /// loader only sets them when one is found, and the signature
-  /// block only offers "Sign fresh instead" when a saved signature
-  /// is shown) — so gating the pad on `!useSaved` left the wizard
-  /// stuck at step 4 whenever the customer/owner had no signature
-  /// on file, no matter how much they signed on the pads.
+  bool get guarantorSignatureReady =>
+      state.guarantorOptedOut ||
+      (state.useGuarantorSaved && state.guarantorSavedSignaturePng != null) ||
+      guarantorSigController.isNotEmpty;
+
+  String get guarantorSignatureSource =>
+      (state.useGuarantorSaved && state.guarantorSavedSignaturePng != null)
+          ? 'saved'
+          : 'fresh';
+
+  /// Finalize gate for step 4: customer + owner signatures, plus guarantor
+  /// signature when a guarantor is attached and not opted out by the owner.
   bool get signaturesReady {
     final customerOk = (state.useCustomerSaved &&
             state.customerSavedSignaturePng != null) ||
@@ -470,6 +519,9 @@ class HandoverWizardCubit extends Cubit<HandoverWizardState> {
         ownerSigController.isNotEmpty;
     return customerOk && ownerOk;
   }
+
+  bool signaturesReadyFor({required bool hasGuarantor}) =>
+      signaturesReady && (!hasGuarantor || guarantorSignatureReady);
 
   /// The source actually used: 'saved' only when a saved PNG is on
   /// file and chosen — a fresh pad signature is 'fresh' even though

@@ -126,6 +126,7 @@ class KycDraft {
 
   /// Signature pad PNG bytes (exported on Confirm). Null = unsigned.
   Uint8List? signaturePng;
+  Uint8List? guarantorSignaturePng;
 
   /// Terms checkbox on step 3.
   bool termsAgreed = false;

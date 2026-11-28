@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/services/signature_profile_service.dart';
+import '../../../../core/widgets/profile_signature_card.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../customer/domain/entities/customer_entity.dart';
 import 'customer_detail_docs.dart';
@@ -77,6 +79,19 @@ class CustomerDetailKycSection extends StatelessWidget {
         ),
         const SizedBox(height: 14),
         CustomerDetailDocs(customer: customer, onReplaceSlot: onReplaceSlot),
+        const SizedBox(height: 16),
+        ProfileSignatureCard(
+          key: ValueKey('customer_kyc_sig_${customer.customerId}'),
+          title: l10n.handoverCustomerSignature,
+          onLoad: () async =>
+              (await SignatureProfileService.loadCustomerSignature(
+                      customer.customerId))
+                  .pngBytes,
+          onSave: (bytes) => SignatureProfileService.saveCustomerSignature(
+            customer.customerId,
+            bytes,
+          ),
+        ),
       ],
     );
   }

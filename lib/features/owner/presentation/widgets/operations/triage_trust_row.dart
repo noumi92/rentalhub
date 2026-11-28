@@ -18,6 +18,7 @@ class TriageTrustRow extends StatefulWidget {
   const TriageTrustRow({
     super.key,
     required this.customerId,
+    this.shopId,
     this.trustScore,
     this.kycStatus,
     this.completedTrips,
@@ -27,6 +28,7 @@ class TriageTrustRow extends StatefulWidget {
   });
 
   final String customerId;
+  final String? shopId;
   final double? trustScore;
   final String? kycStatus;
   final int? completedTrips;
@@ -69,7 +71,7 @@ class _TriageTrustRowState extends State<TriageTrustRow> {
       return Future.value(_overrideResult());
     }
     return (widget.trustService ?? const TrustScoreService())
-        .compute(widget.customerId);
+        .compute(widget.customerId, shopId: widget.shopId);
   }
 
   TrustScoreResult _overrideResult() {
@@ -156,7 +158,8 @@ class _TriageTrustRowState extends State<TriageTrustRow> {
                 notVerifiedLabel: l10n.requestsKycLicenseNotVerified,
               ),
               Text(
-                l10n.priorTripsCount(result.completedTrips),
+                l10n.priorTripsCount(
+                    widget.completedTrips ?? result.completedTrips),
                 style: Theme.of(context).textTheme.labelSmall,
               ),
             ],

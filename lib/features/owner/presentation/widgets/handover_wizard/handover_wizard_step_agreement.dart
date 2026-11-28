@@ -55,11 +55,13 @@ class _HandoverWizardStepAgreementState
     _wizard = context.read<HandoverWizardCubit>();
     _wizard.customerSigController.addListener(_onPadDrawn);
     _wizard.ownerSigController.addListener(_onPadDrawn);
+    _wizard.guarantorSigController.addListener(_onPadDrawn);
   }
 
   void _onPadDrawn() {
     if (_wizard.customerSigController.isNotEmpty ||
-        _wizard.ownerSigController.isNotEmpty) {
+        _wizard.ownerSigController.isNotEmpty ||
+        _wizard.guarantorSigController.isNotEmpty) {
       _wizard.markCustomerSigDrawn();
     }
   }
@@ -68,6 +70,7 @@ class _HandoverWizardStepAgreementState
   void dispose() {
     _wizard.customerSigController.removeListener(_onPadDrawn);
     _wizard.ownerSigController.removeListener(_onPadDrawn);
+    _wizard.guarantorSigController.removeListener(_onPadDrawn);
     super.dispose();
   }
 
@@ -106,33 +109,63 @@ class _HandoverWizardStepAgreementState
           controller: wizard.ownerSigController,
         ),
         const SizedBox(height: 16),
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: AppCardDecoration.shadow(context),
-          ),
-          child: Row(
-            children: [
-              Icon(
-                hasGuarantor
-                    ? Icons.pending_actions_rounded
-                    : Icons.info_outline_rounded,
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  hasGuarantor
-                      ? l10n.handoverWizardGuarantorPending
-                      : l10n.handoverWithoutGuarantor,
+        if (hasGuarantor) ...[
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface,
+              borderRadius: BorderRadius.circular(14),
+              boxShadow: AppCardDecoration.shadow(context),
+            ),
+            child: Material(
+              color: Colors.transparent,
+              child: SwitchListTile(
+                key: const ValueKey('handover_guarantor_opt_out_switch'),
+                contentPadding: EdgeInsets.zero,
+                dense: true,
+                title: Text(
+                  l10n.handoverWithoutGuarantor,
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
+                value: state.guarantorOptedOut,
+                onChanged: wizard.setGuarantorOptedOut,
               ),
-            ],
+            ),
           ),
-        ),
+          const SizedBox(height: 12),
+          if (!state.guarantorOptedOut)
+            HandoverWizardSignatureBlock(
+              title: l10n.agreementWizardGuarantor,
+              savedUrl: state.guarantorSavedSignatureUrl,
+              savedPng: state.guarantorSavedSignaturePng,
+              useSaved: state.useGuarantorSaved,
+              onToggleUseSaved: wizard.setUseGuarantorSaved,
+              controller: wizard.guarantorSigController,
+            ),
+        ] else
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: AppCardDecoration.shadow(context),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.info_outline_rounded,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    l10n.handoverWithoutGuarantor,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ),
+              ],
+            ),
+          ),
       ],
     );
   }

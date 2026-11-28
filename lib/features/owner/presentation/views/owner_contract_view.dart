@@ -227,7 +227,7 @@ class _OwnerContractViewState extends State<OwnerContractView> {
                                     onPressed: null,
                                     icon: const Icon(Icons.assignment_return_rounded, size: 18),
                                     label: Text(l10n.contractProceedReturn),
-                                    style: ElevatedButton.styleFrom(minimumSize: const Size(double.infinity, 54), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16))),
+                                    style: ElevatedButton.styleFrom(minimumSize: const Size(double.infinity, 48), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
                                   ),
                                 ),
                               // The Proceed button above is disabled

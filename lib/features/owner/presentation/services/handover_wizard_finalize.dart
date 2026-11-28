@@ -2,12 +2,15 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import '../../../../core/di/injection_container.dart';
+import '../../../../core/services/signature_profile_service.dart';
 import '../../../bookings/data/datasources/booking_remote_data_source.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
+import '../../../fleet/data/datasources/fleet_remote_data_source.dart';
 import '../../../handover/domain/entities/handover_entity.dart';
 import '../../../handover/presentation/cubit/handover_cubit.dart';
 import '../../../handover/presentation/cubit/handover_wizard_cubit.dart';
 import '../../../notifications/data/datasources/notification_data_source.dart';
+import 'contract_pdf_actions.dart';
 
 /// Item 9 (O30): the wizard's finalize, extracted so the shell
 /// stays under the 250-line cap.
@@ -36,6 +39,11 @@ class HandoverWizardFinalize {
     final state = wizard.state;
     final sigs = await wizard.exportSignatures();
     final now = DateTime.now();
+    final remainingBeforeHandover =
+        (booking.totalAmount - booking.advancePaid).clamp(0, 1 << 30);
+    final collectedAtHandover =
+        state.cashReceivedAtHandover.clamp(0, remainingBeforeHandover);
+    final includeGuarantor = !state.guarantorOptedOut;
     final entity = await sl<HandoverCubit>().completeHandoverOfflineFirst(
       bookingId: booking.bookingId,
       shopId: booking.shopId,
@@ -53,12 +61,12 @@ class HandoverWizardFinalize {
       advancePaid: booking.advancePaid,
       securityDeposit: securityDeposit,
       extraHourPkr: extraHourPkr,
-      cashReceivedAtHandover: state.cashReceivedAtHandover,
-      balanceDuePkr: state.cashReceivedAtHandover > 0
-          ? state.cashReceivedAtHandover
-          : (booking.totalAmount - booking.advancePaid).clamp(0, 1 << 30),
+      cashReceivedAtHandover: collectedAtHandover,
+      balanceDuePkr: collectedAtHandover > 0
+          ? collectedAtHandover
+          : remainingBeforeHandover,
       balancePaymentMethod: state.balanceMethod,
-      balanceReceived: state.cashReceivedAtHandover > 0,
+      balanceReceived: collectedAtHandover > 0,
       depositReceived: state.depositReceived,
       vehicleId: booking.vehicleId,
       initialOdometer: state.odometer,
@@ -91,15 +99,48 @@ class HandoverWizardFinalize {
       vehiclePlate: vehiclePlate,
       vehicleColour: vehicleColour,
       vehicleFuel: vehicleFuel,
-      guarantorName: booking.guarantorName,
-      guarantorCnic: booking.guarantorCnic,
-      guarantorRelation: booking.guarantorRelation,
+      guarantorName: includeGuarantor ? booking.guarantorName : null,
+      guarantorCnic: includeGuarantor ? booking.guarantorCnic : null,
+      guarantorRelation: includeGuarantor ? booking.guarantorRelation : null,
       customerSignaturePng: sigs.customer,
       ownerSignaturePng: sigs.owner,
+      guarantorSignaturePng: includeGuarantor ? sigs.guarantor : null,
       isOnline: isOnline,
+    );
+    final pdfBytes = entity.agreementPdfB64 == null
+        ? null
+        : base64Decode(entity.agreementPdfB64!);
+    // Finalize agreement state BEFORE activating the trip.
+    await ContractPdfActions.saveAgreementState(
+      bookingId: booking.bookingId,
+      agreedToTerms: true,
+      fullySigned: true,
+      guarantorSignaturePng: includeGuarantor ? sigs.guarantor : null,
+      agreementPdfB64: pdfBytes,
     );
     await sl<BookingRemoteDataSource>().updateBookingStatus(
         bookingId: booking.bookingId, status: 'active');
+    // Persist freshly drawn signatures to customer, owner & guarantor profiles.
+    if (sigs.customer != null && wizard.customerSignatureSource == 'fresh') {
+      await SignatureProfileService.saveCustomerSignature(
+          booking.customerId, sigs.customer!);
+    }
+    if (sigs.owner != null && wizard.ownerSignatureSource == 'fresh') {
+      await SignatureProfileService.saveOwnerSignature(
+          booking.shopId, sigs.owner!);
+    }
+    if (includeGuarantor &&
+        sigs.guarantor != null &&
+        wizard.guarantorSignatureSource == 'fresh') {
+      await SignatureProfileService.saveGuarantorSignature(
+          booking.customerId, sigs.guarantor!);
+    }
+    if (state.odometer > 0 && sl.isRegistered<FleetRemoteDataSource>()) {
+      try {
+        await sl<FleetRemoteDataSource>().updateVehicleMileage(
+            vehicleId: booking.vehicleId, mileageKm: state.odometer);
+      } catch (_) {}
+    }
     if (booking.origin != 'walk_in' &&
         booking.customerId.isNotEmpty &&
         !booking.customerId.startsWith('walkin-') &&
@@ -116,9 +157,6 @@ class HandoverWizardFinalize {
         );
       } catch (_) {}
     }
-    final pdfBytes = entity.agreementPdfB64 == null
-        ? null
-        : base64Decode(entity.agreementPdfB64!);
     return (entity: entity, pdfBytes: pdfBytes);
   }
 }

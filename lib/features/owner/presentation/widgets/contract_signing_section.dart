@@ -314,9 +314,9 @@ class _ContractSigningSectionState extends State<ContractSigningSection> {
                       icon: const Icon(Icons.draw_rounded, size: 18),
                       label: Text(l10n.contractSignAgreement),
                       style: ElevatedButton.styleFrom(
-                        minimumSize: const Size(double.infinity, 54),
+                        minimumSize: const Size(double.infinity, 48),
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16)),
+                            borderRadius: BorderRadius.circular(12)),
                       ),
                     ),
                   ),

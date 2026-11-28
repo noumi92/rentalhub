@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
 
 import '../../../../core/di/injection_container.dart';
+import '../../../../core/services/signature_profile_service.dart';
 import '../../../../core/utils/shop_id_resolution.dart';
 import '../../../../core/utils/shop_name.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
@@ -88,20 +89,40 @@ class HandoverWizardLoader {
       vehiclePlate = vehicle.first.plateNumber;
       vehicleColour = vehicle.first.color;
       vehicleFuel = vehicle.first.fuelType;
+      final mileage = vehicle.first.mileageKm;
+      if (mileage != null && mileage > 0 && wizard.state.odometer == 0) {
+        wizard.setOdometer(mileage);
+      }
     }
     // O26/O30: the customer's KYC photo (face check) + saved
-    // signature. A failed customer load never fails the wizard —
-    // the face check falls back to the CNIC hint.
+    // signature (checks both `signatureB64` and `signatureUrl`).
     try {
       final customer = await sl<CustomerRemoteDataSource>()
           .getCustomerById(booking.customerId);
       if (customer != null) {
         kycPhotoUrl = customer.profilePhotoUrl;
-        final sigUrl = customer.signatureUrl;
-        if (sigUrl != null && sigUrl.isNotEmpty) {
-          final png = await _fetchImageBytes(sigUrl);
-          wizard.setCustomerSavedSignature(url: sigUrl, pngBytes: png);
-        }
+      }
+      final savedSig = await SignatureProfileService.loadCustomerSignature(
+        booking.customerId,
+        firestore: fs,
+      );
+      if (savedSig.pngBytes != null ||
+          (savedSig.url != null && savedSig.url!.isNotEmpty)) {
+        wizard.setCustomerSavedSignature(
+          url: savedSig.url,
+          pngBytes: savedSig.pngBytes,
+        );
+      }
+      final gSig = await SignatureProfileService.loadGuarantorSignature(
+        booking.customerId,
+        fallbackName: booking.guarantorName,
+        firestore: fs,
+      );
+      if (gSig.pngBytes != null || (gSig.url != null && gSig.url!.isNotEmpty)) {
+        wizard.setGuarantorSavedSignature(
+          url: gSig.url,
+          pngBytes: gSig.pngBytes,
+        );
       }
     } catch (_) {}
     return (

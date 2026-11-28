@@ -42,6 +42,9 @@ class _HandoverWizardStepChecklistState
   Widget build(BuildContext context) {
     final wizard = context.watch<HandoverWizardCubit>();
     final state = wizard.state;
+    if (_odometerController.text.isEmpty && state.odometer > 0) {
+      _odometerController.text = state.odometer.toString();
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [

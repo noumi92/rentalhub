@@ -38,20 +38,19 @@ String shopStatusFor(CustomerEntity? record, String shopId) {
 
 bool _has(String? url) => url != null && url.isNotEmpty;
 
-/// KYC complete on a saved record: face photo + both 4-finger
-/// photos + both license photos + license number + utility bill +
-/// signature. Mirrors `KycDraft.isKycComplete` (which additionally
-/// requires CNIC + name + terms — CNIC/name are always present on
-/// a saved record and terms has no stored field).
-bool isCustomerKycComplete(CustomerEntity record) =>
-    _has(record.profilePhotoUrl) &&
-    _has(record.leftFingerprintUrl) &&
-    _has(record.rightFingerprintUrl) &&
-    _has(record.licenseFrontUrl) &&
-    _has(record.licenseBackUrl) &&
-    (record.licenseNumber?.trim().isNotEmpty ?? false) &&
-    _has(record.utilityBillUrl) &&
-    _has(record.signatureUrl);
+/// KYC complete on a saved record: either CNIC front & back documents are
+/// uploaded (walk-in KYC), or all legacy full-KYC slots are present.
+bool isCustomerKycComplete(CustomerEntity record) {
+  if (_has(record.cnicFrontUrl) && _has(record.cnicBackUrl)) return true;
+  return _has(record.profilePhotoUrl) &&
+      _has(record.leftFingerprintUrl) &&
+      _has(record.rightFingerprintUrl) &&
+      _has(record.licenseFrontUrl) &&
+      _has(record.licenseBackUrl) &&
+      (record.licenseNumber?.trim().isNotEmpty ?? false) &&
+      _has(record.utilityBillUrl) &&
+      _has(record.signatureUrl);
+}
 
 /// Dormant: the customer has booked before, but the last booking
 /// is at least [dormantAfterDays] old. A customer who never booked

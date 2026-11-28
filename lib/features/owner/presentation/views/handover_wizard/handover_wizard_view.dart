@@ -129,17 +129,16 @@ class _HandoverWizardBodyState extends State<_HandoverWizardBody> {
       (widget.booking.totalAmount - widget.booking.advancePaid)
           .clamp(0, 1 << 30);
 
+  bool get _hasGuarantor => (widget.booking.guarantorName?.trim().isNotEmpty ?? false) || (widget.booking.guarantorCnic?.trim().isNotEmpty ?? false);
+
   Future<void> _finalize() async {
     final l10n = AppLocalizations.of(context)!;
     final wizard = context.read<HandoverWizardCubit>();
-    if (!wizard.signaturesReady) {
+    if (!wizard.signaturesReadyFor(hasGuarantor: _hasGuarantor)) {
       AppFeedback.showError(context, l10n.handoverSignRequired);
       return;
     }
-    if (_shopName.isEmpty) {
-      AppFeedback.showError(context, l10n.handoverShopNameRequired);
-      return;
-    }
+    if (_shopName.isEmpty) { AppFeedback.showError(context, l10n.handoverShopNameRequired); return; }
     wizard.setFinalizing(true);
     try {
       final result = await HandoverWizardFinalize.run(

@@ -106,7 +106,7 @@ class RequestTriageActions extends StatelessWidget {
           foregroundColor:
               AppColors.dangerTextFor(Theme.of(context).brightness),
           side: BorderSide(color: Theme.of(context).colorScheme.error),
-          minimumSize: const Size(0, 54),
+          minimumSize: const Size(0, 48),
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10)),
         ),
@@ -130,7 +130,7 @@ class RequestTriageActions extends StatelessWidget {
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
-              minimumSize: const Size(0, 54),
+              minimumSize: const Size(0, 48),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
             ),
@@ -149,7 +149,7 @@ class RequestTriageActions extends StatelessWidget {
                       Theme.of(context).brightness),
                   side:
                       BorderSide(color: Theme.of(context).colorScheme.error),
-                  minimumSize: const Size(0, 54),
+                  minimumSize: const Size(0, 48),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10)),
                 ),
@@ -165,7 +165,7 @@ class RequestTriageActions extends StatelessWidget {
                   // accentSuccessStrong #047857 is 5.48:1.
                   backgroundColor: AppColors.accentSuccessStrong,
                   foregroundColor: Colors.white,
-                  minimumSize: const Size(0, 54),
+                  minimumSize: const Size(0, 48),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10)),
                 ),
@@ -190,7 +190,7 @@ class RequestTriageActions extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
-                  minimumSize: const Size(0, 54),
+                  minimumSize: const Size(0, 48),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10)),
                 ),
@@ -205,7 +205,7 @@ class RequestTriageActions extends StatelessWidget {
                 icon: const Icon(Icons.key_rounded, size: 18),
                 label: Text(l10n.bookingConfirmedStartHandover),
                 style: OutlinedButton.styleFrom(
-                  minimumSize: const Size(0, 54),
+                  minimumSize: const Size(0, 48),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10)),
                 ),
@@ -239,7 +239,7 @@ class RequestTriageActions extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
-                  minimumSize: const Size(0, 54),
+                  minimumSize: const Size(0, 48),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10)),
                 ),
@@ -256,7 +256,7 @@ class RequestTriageActions extends StatelessWidget {
                       ? l10n.walkInCollectDues
                       : l10n.walkInAddPayment),
                   style: OutlinedButton.styleFrom(
-                    minimumSize: const Size(0, 54),
+                    minimumSize: const Size(0, 48),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10)),
                   ),
