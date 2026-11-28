@@ -4,7 +4,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:signature/signature.dart';
 import 'package:rentalhub/core/di/injection_container.dart' as di;
 import 'package:rentalhub/core/network/firestore_service.dart';
 import 'package:rentalhub/features/admin/data/datasources/admin_shops_data_source.dart';
@@ -29,7 +28,6 @@ import 'package:rentalhub/features/notifications/data/datasources/notification_d
 import 'package:rentalhub/features/owner/presentation/services/subscription_data_source.dart';
 import 'package:rentalhub/features/owner/presentation/services/kyc_media_upload_service.dart';
 import 'package:rentalhub/features/owner/presentation/views/add_customer/kyc_draft.dart';
-import 'package:rentalhub/features/owner/presentation/views/add_customer/step2_photo.dart';
 import 'package:rentalhub/features/owner/presentation/views/add_customer/step3_docs.dart';
 import 'package:rentalhub/features/owner/presentation/views/add_customer/step4_guarantor.dart';
 import 'package:rentalhub/features/owner/presentation/views/owner_add_customer_view.dart';
@@ -201,50 +199,14 @@ void main() {
       await tester.tap(find.text('Next'));
       await tester.pumpAndSettle();
 
-      // Step 2: face + left/right finger photos.
-      expect(find.byType(Step2Photo), findsOneWidget);
-      await tester.ensureVisible(find.byKey(const ValueKey('step2_face_take')));
-      await tester.pumpAndSettle();
-      await tester.tap(find.byKey(const ValueKey('step2_face_take')));
-      await tester.pumpAndSettle();
-      await tester.ensureVisible(
-          find.byKey(const ValueKey('step2_finger_left_scan')));
-      await tester.pumpAndSettle();
-      await tester.tap(find.byKey(const ValueKey('step2_finger_left_scan')));
-      await tester.pumpAndSettle();
-      await tester.ensureVisible(
-          find.byKey(const ValueKey('step2_finger_right_scan')));
-      await tester.pumpAndSettle();
-      await tester.tap(find.byKey(const ValueKey('step2_finger_right_scan')));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Next'));
-      await tester.pumpAndSettle();
-
-      // Step 3: license front/back + bill, number + expiry,
-      // signature, terms.
+      // Step 2: driving license front/back, number + expiry, terms.
       expect(find.byType(Step3Docs), findsOneWidget);
       await tapLicenseCamera(tester, const ValueKey('step3_license_front'));
       await tapLicenseCamera(tester, const ValueKey('step3_license_back'));
-      await tapSheetCamera(tester, const ValueKey('step3_bill'));
       final licenseFields = find.byType(TextFormField);
       await tester.enterText(licenseFields.at(0), 'LHR-1234567');
       await tester.enterText(licenseFields.at(1), '01.01.2030');
       await tester.pump();
-      await tester.ensureVisible(find.byType(Signature));
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 100));
-      await tester.drag(find.byType(Signature), const Offset(100, 5));
-      await tester.pump();
-      await tester.ensureVisible(
-          find.byKey(const ValueKey('step3_signature_confirm')));
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 100));
-      await tester.tap(find.byKey(const ValueKey('step3_signature_confirm')));
-      await tester.runAsync(() async {
-        await Future.delayed(const Duration(milliseconds: 500));
-      });
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 100));
       await tester.ensureVisible(
           find.byKey(const ValueKey('step3_terms_checkbox')));
       await tester.pump();
@@ -254,7 +216,7 @@ void main() {
       await tester.tap(find.text('Next'));
       await tester.pumpAndSettle();
 
-      // Step 4: no guarantor (optional) — Save.
+      // Step 3: no guarantor (optional) — Save.
       expect(find.byType(Step4Guarantor), findsOneWidget);
       await tester.tap(find.text('Save customer'));
       await tester.pumpAndSettle();

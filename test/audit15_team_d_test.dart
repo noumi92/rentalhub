@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -115,7 +114,8 @@ const _fixedRouteVehicle = VehicleEntity(
   outOfCityKmPerDay: 300,
   outCityMode: 'fixedRoute',
   packages: [
-    VehiclePackageEntity(label: '24h', hours: 24, pricePkr: 7000, kmIncluded: 250),
+    VehiclePackageEntity(
+        label: '24h', hours: 24, pricePkr: 7000, kmIncluded: 250),
   ],
 );
 
@@ -166,11 +166,13 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  Future<void> pumpStep3(WidgetTester tester, KycDraft draft, {GlobalKey<Step3DocsState>? key}) async {
+  Future<void> pumpStep3(WidgetTester tester, KycDraft draft,
+      {GlobalKey<Step3DocsState>? key}) async {
     await pumpApp(tester, Step3Docs(key: key, draft: draft, onChanged: () {}));
   }
 
-  Future<void> pumpKycForm(WidgetTester tester, {String initialCnic = '', void Function(String)? onSubmitted}) async {
+  Future<void> pumpKycForm(WidgetTester tester,
+      {String initialCnic = '', void Function(String)? onSubmitted}) async {
     final cubit = KycCubit(
       uploadKycUseCase: UploadKycDocumentUseCase(_FakeKycRepository()),
     );
@@ -201,7 +203,8 @@ void main() {
   }
 
   group('FG-14 — date validators return the format error, not the label', () {
-    testWidgets('invalid date of birth shows the DD.MM.YYYY error', (tester) async {
+    testWidgets('invalid date of birth shows the DD.MM.YYYY error',
+        (tester) async {
       await tester.pumpWidget(
         MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -220,7 +223,8 @@ void main() {
       expect(find.byType(Step1Cnic), findsOneWidget);
     });
 
-    testWidgets('invalid CNIC expiry shows the DD.MM.YYYY error', (tester) async {
+    testWidgets('invalid CNIC expiry shows the DD.MM.YYYY error',
+        (tester) async {
       await tester.pumpWidget(
         MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -275,31 +279,13 @@ void main() {
           findsOneWidget);
     });
 
-    testWidgets('only the signature missing names the signature', (tester) async {
-      final key = GlobalKey<Step3DocsState>();
-      final draft = KycDraft()
-        ..licenseFrontPhoto = XFile('test/assets/mock_lic_front.jpg')
-        ..licenseBackPhoto = XFile('test/assets/mock_lic_back.jpg')
-        ..licenseNumber = 'LHR-1234567'
-        ..licenseExpiry = '01.01.2030'
-        ..utilityBillPhoto = XFile('test/assets/mock_bill.jpg')
-        ..termsAgreed = true;
-      await pumpStep3(tester, draft, key: key);
-      expect(await key.currentState!.validate(), isFalse);
-      await tester.pump();
-      expect(find.text('Please draw your signature before continuing'),
-          findsOneWidget);
-    });
-
     testWidgets('only the terms missing names the terms', (tester) async {
       final key = GlobalKey<Step3DocsState>();
       final draft = KycDraft()
         ..licenseFrontPhoto = XFile('test/assets/mock_lic_front.jpg')
         ..licenseBackPhoto = XFile('test/assets/mock_lic_back.jpg')
         ..licenseNumber = 'LHR-1234567'
-        ..licenseExpiry = '01.01.2030'
-        ..utilityBillPhoto = XFile('test/assets/mock_bill.jpg')
-        ..signaturePng = Uint8List.fromList([1, 2, 3]);
+        ..licenseExpiry = '01.01.2030';
       await pumpStep3(tester, draft, key: key);
       expect(await key.currentState!.validate(), isFalse);
       await tester.pump();
@@ -314,67 +300,18 @@ void main() {
         ..licenseBackPhoto = XFile('test/assets/mock_lic_back.jpg')
         ..licenseNumber = 'LHR-1234567'
         ..licenseExpiry = '32.13.2030'
-        ..utilityBillPhoto = XFile('test/assets/mock_bill.jpg')
-        ..signaturePng = Uint8List.fromList([1, 2, 3])
         ..termsAgreed = true;
       await pumpStep3(tester, draft, key: key);
       expect(await key.currentState!.validate(), isFalse);
       await tester.pump();
       expect(find.text('Enter the date as DD.MM.YYYY'), findsOneWidget);
     });
-
-    testWidgets('Confirm on an empty signature pad names the signature',
-        (tester) async {
-      final draft = KycDraft();
-      await pumpStep3(tester, draft);
-      await tester.ensureVisible(
-          find.byKey(const ValueKey('step3_signature_confirm')));
-      await tester.pumpAndSettle();
-      await tester.tap(find.byKey(const ValueKey('step3_signature_confirm')));
-      await tester.pumpAndSettle();
-      expect(draft.signaturePng, isNull);
-      expect(find.text('Please draw your signature before continuing'),
-          findsOneWidget);
-    });
-  });
-
-  group('FG-17 — utility bill and extra docs are camera-only', () {
-    testWidgets('utility bill opens the rear camera, never the gallery sheet',
-        (tester) async {
-      final draft = KycDraft();
-      await pumpStep3(tester, draft);
-      await tester.ensureVisible(find.byKey(const ValueKey('step3_bill')));
-      await tester.tap(find.byKey(const ValueKey('step3_bill')));
-      await tester.pumpAndSettle();
-      expect(mockPicker.callCount, 1);
-      expect(mockPicker.lastSource, ImageSource.camera);
-      expect(mockPicker.lastCameraDevice, CameraDevice.rear);
-      expect(find.text('Choose from Gallery'), findsNothing);
-      expect(find.text('Take Photo (Back Camera)'), findsNothing);
-      expect(draft.utilityBillPhoto, isNotNull);
-      expect(draft.hasUtilityBill, isTrue);
-    });
-
-    testWidgets('extra docs open the rear camera, never the gallery sheet',
-        (tester) async {
-      final draft = KycDraft();
-      await pumpStep3(tester, draft);
-      await tester.ensureVisible(find.byKey(const ValueKey('step3_extra_add')));
-      await tester.tap(find.byKey(const ValueKey('step3_extra_add')));
-      await tester.pumpAndSettle();
-      expect(mockPicker.callCount, 1);
-      expect(mockPicker.lastSource, ImageSource.camera);
-      expect(mockPicker.lastCameraDevice, CameraDevice.rear);
-      expect(find.text('Choose from Gallery'), findsNothing);
-      expect(draft.extraPhotos.length, 1);
-    });
   });
 
   group('FG-19 — a failed camera pick surfaces an error', () {
     testWidgets('front-camera failure shows the camera error', (tester) async {
       mockPicker.shouldThrow = true;
-      await pumpApp(
-          tester, Step2Photo(draft: KycDraft(), onChanged: () {}));
+      await pumpApp(tester, Step2Photo(draft: KycDraft(), onChanged: () {}));
       await tester.tap(find.byKey(const ValueKey('step2_face_take')));
       await tester.pumpAndSettle();
       expect(
@@ -385,8 +322,7 @@ void main() {
 
     testWidgets('rear-camera failure shows the camera error', (tester) async {
       mockPicker.shouldThrow = true;
-      await pumpApp(
-          tester, Step2Photo(draft: KycDraft(), onChanged: () {}));
+      await pumpApp(tester, Step2Photo(draft: KycDraft(), onChanged: () {}));
       await tester.tap(find.byKey(const ValueKey('step2_finger_left_scan')));
       await tester.pumpAndSettle();
       expect(
@@ -430,8 +366,7 @@ void main() {
       await tester.pump();
       final expiryField =
           tester.widget<TextField>(find.byType(TextField).at(2));
-      expect(expiryField.decoration?.errorText,
-          'Enter the date as DD.MM.YYYY');
+      expect(expiryField.decoration?.errorText, 'Enter the date as DD.MM.YYYY');
       expect(submitted, isFalse);
     });
 
@@ -449,9 +384,11 @@ void main() {
       // The tree also holds framework IgnorePointers (e.g. around
       // the scroll viewport), so scope to the slot's own wrapper:
       // the nearest IgnorePointer above the slot title.
-      final slotPointer = tester.widget<IgnorePointer>(find.ancestor(
-          of: find.text('License front'),
-          matching: find.byType(IgnorePointer)).first);
+      final slotPointer = tester.widget<IgnorePointer>(find
+          .ancestor(
+              of: find.text('License front'),
+              matching: find.byType(IgnorePointer))
+          .first);
       expect(slotPointer.ignoring, isTrue);
     });
   });
@@ -503,16 +440,16 @@ void main() {
     testWidgets('wizard step 1 fields let the theme own the border',
         (tester) async {
       await pumpApp(tester, Step1Cnic(draft: KycDraft(), onChanged: () {}));
-      final dob = tester.widget<TextField>(
-          find.widgetWithText(TextField, 'Date of birth'));
+      final dob = tester
+          .widget<TextField>(find.widgetWithText(TextField, 'Date of birth'));
       expect(dob.decoration?.border, isNull);
     });
 
     testWidgets('wizard step 3 fields let the theme own the border',
         (tester) async {
       await pumpStep3(tester, KycDraft());
-      final expiry = tester.widget<TextField>(
-          find.widgetWithText(TextField, 'License expiry'));
+      final expiry = tester
+          .widget<TextField>(find.widgetWithText(TextField, 'License expiry'));
       expect(expiry.decoration?.border, isNull);
     });
 
@@ -520,8 +457,11 @@ void main() {
         (tester) async {
       await pumpApp(
         tester,
-        Step4Guarantor(draft: KycDraft(), onChanged: () {}, shopId: 'shop-kyc-w4-empty'),
+        Step4Guarantor(
+            draft: KycDraft(), onChanged: () {}, shopId: 'shop-kyc-w4-empty'),
       );
+      await tester.tap(find.text('Existing Customer'));
+      await tester.pumpAndSettle();
       final search = tester.widget<TextField>(
           find.widgetWithText(TextField, 'Search existing customers'));
       expect(search.decoration?.border, isNull);
@@ -542,8 +482,8 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      final cnic = tester.widget<TextField>(
-          find.widgetWithText(TextField, 'Customer CNIC'));
+      final cnic = tester
+          .widget<TextField>(find.widgetWithText(TextField, 'Customer CNIC'));
       expect(cnic.decoration?.border, isNull);
       final reason = tester.widget<DropdownButtonFormField<String>>(
           find.byType(DropdownButtonFormField<String>));
@@ -566,18 +506,18 @@ void main() {
       }
 
       await pumpDirect(OwnerRecordDamageView(booking: _testBooking()));
-      final description = tester.widget<TextField>(
-          find.widgetWithText(TextField, 'Description'));
+      final description = tester
+          .widget<TextField>(find.widgetWithText(TextField, 'Description'));
       expect(description.decoration?.border, isNull);
-      final cost = tester.widget<TextField>(
-          find.widgetWithText(TextField, 'Repair Cost'));
+      final cost = tester
+          .widget<TextField>(find.widgetWithText(TextField, 'Repair Cost'));
       expect(cost.decoration?.border, isNull);
       await pumpDirect(OwnerRecordExtraChargesView(booking: _testBooking()));
-      final amount = tester.widget<TextField>(
-          find.widgetWithText(TextField, 'Amount'));
+      final amount =
+          tester.widget<TextField>(find.widgetWithText(TextField, 'Amount'));
       expect(amount.decoration?.border, isNull);
-      final remarks = tester.widget<TextField>(
-          find.widgetWithText(TextField, 'Remarks'));
+      final remarks =
+          tester.widget<TextField>(find.widgetWithText(TextField, 'Remarks'));
       expect(remarks.decoration?.border, isNull);
     });
 
@@ -689,7 +629,8 @@ void main() {
   });
 
   group('BP-15 — blacklist reports use separators, no last-item margin', () {
-    testWidgets('report cards have no bottom margin; the gap is 10dp between cards',
+    testWidgets(
+        'report cards have no bottom margin; the gap is 10dp between cards',
         (tester) async {
       final ds = di.sl<BlacklistRemoteDataSource>();
       for (final cnic in ['35201-3333333-3', '35201-4444444-4']) {
@@ -719,8 +660,7 @@ void main() {
       expect(cards.length, 3);
       expect(cards[1].margin, EdgeInsets.zero);
       expect(cards[2].margin, EdgeInsets.zero);
-      final firstBottom =
-          tester.getRect(find.byWidget(cards[1])).bottom;
+      final firstBottom = tester.getRect(find.byWidget(cards[1])).bottom;
       final secondTop = tester.getRect(find.byWidget(cards[2])).top;
       expect(secondTop - firstBottom, 10.0);
     });

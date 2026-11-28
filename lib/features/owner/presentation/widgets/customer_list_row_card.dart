@@ -47,15 +47,17 @@ class CustomerListRowCard extends StatelessWidget {
     final c = customer;
     final cs = Theme.of(context).colorScheme;
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Container(
-      margin: EdgeInsets.only(bottom: isLast ? 0 : 12),
-      decoration: BoxDecoration(
-        color: cs.surface,
+    return Card(
+      elevation: 0,
+      color: cs.surface,
+      margin: EdgeInsets.only(bottom: isLast ? 0 : 10),
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
+        side: BorderSide(
           color: isDark ? cs.outlineVariant : AppColors.borderSubtle,
         ),
       ),
+      clipBehavior: Clip.antiAlias,
       child: Column(
         children: [
           CustomerListCardHeader(

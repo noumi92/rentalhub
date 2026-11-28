@@ -129,8 +129,9 @@ class CustomerDetailSegmentedTabs extends StatelessWidget {
         children: [
           for (var i = 0; i < tabs.length; i++)
             Expanded(
-              child: GestureDetector(
+              child: InkWell(
                 key: ValueKey('customer_detail_tab_$i'),
+                borderRadius: BorderRadius.circular(11),
                 onTap: () => onChanged(i),
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 180),

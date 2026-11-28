@@ -108,7 +108,7 @@ void main() {
       // stepper header — the app-bar subtitle repeats step 1's label.
       final stepper = find.byKey(const Key('kyc-stepper-header'));
       expect(
-        find.descendant(of: stepper, matching: find.text('دستاویزات اور دستخط')),
+        find.descendant(of: stepper, matching: find.text('ڈرائیونگ لائسنس')),
         findsOneWidget,
       );
       expect(
@@ -155,18 +155,6 @@ void main() {
   });
 
   group('Step3Docs', () {
-    testWidgets('extra-doc remove target is at least 48dp', (tester) async {
-      final draft = KycDraft()
-        ..extraPhotos.add(XFile('test/assets/mock_selfie.jpg'));
-      await pumpStep(tester, Step3Docs(draft: draft, onChanged: () {}));
-
-      final remove = find.byKey(const ValueKey('step3_extra_remove_0'));
-      expect(remove, findsOneWidget);
-      final size = tester.getSize(remove);
-      expect(size.width, greaterThanOrEqualTo(48));
-      expect(size.height, greaterThanOrEqualTo(48));
-    });
-
     testWidgets('license fields are filled like step 1', (tester) async {
       await pumpStep(tester, Step3Docs(draft: KycDraft(), onChanged: () {}));
 
@@ -188,6 +176,8 @@ void main() {
         tester,
         Step4Guarantor(draft: KycDraft(), onChanged: () {}, shopId: 'shop-1'),
       );
+      await tester.tap(find.text('Existing Customer'));
+      await tester.pumpAndSettle();
 
       expect(
         find.text('Choose a guarantor above to set the relation'),
