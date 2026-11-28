@@ -43,7 +43,7 @@ class UserModel extends UserEntity {
       'full_name': fullName,
       'phone_number': phoneNumber,
       'profile_photo_url': profilePhotoUrl,
-      'role': role,
+      if (role != null && role!.isNotEmpty) 'role': role,
       'is_verified': isVerified,
       'trust_score': trustScore,
       'total_trips': totalTrips,

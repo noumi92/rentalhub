@@ -1,0 +1,14 @@
+# Copy this file to android/key.properties (which is gitignored) and fill in
+# your Google Play upload keystore details.
+#
+# Generate an upload keystore once (outside this repository, back it up safely):
+#   keytool -genkey -v -keystore ~/rentalhub-upload-keystore.jks \
+#     -keyalg RSA -keysize 2048 -validity 10000 -alias upload
+#
+# Then build the Play Store bundle:
+#   flutter build appbundle --release
+
+storePassword=REPLACE_WITH_KEYSTORE_PASSWORD
+keyPassword=REPLACE_WITH_KEY_PASSWORD
+keyAlias=upload
+storeFile=C:/Users/YOUR_USER/rentalhub-upload-keystore.jks

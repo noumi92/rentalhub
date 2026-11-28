@@ -70,6 +70,17 @@ class AccountDeletionService {
     }
     final uid = user.uid;
 
+    // 0. Guard against wiping Firestore data when the auth session is too old
+    //    for FirebaseAuth.user.delete() (`requires-recent-login` triggers
+    //    after ~5 minutes since last sign-in).
+    final lastSignIn = user.metadata.lastSignInTime;
+    if (lastSignIn != null &&
+        DateTime.now().difference(lastSignIn) > const Duration(minutes: 4)) {
+      return const AccountDeletionResult(
+        AccountDeletionStatus.requiresRecentLogin,
+      );
+    }
+
     // 1. Try server-side Cloud Function if deployed (best-effort; falls back
     //    to direct client cleanup + FirebaseAuth.delete).
     final functions = _resolvedFunctions;

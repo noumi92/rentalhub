@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/widgets/app_state_views.dart';
+import '../../../auth/presentation/utils/sign_out_confirm_dialog.dart';
+import '../../../auth/presentation/utils/sign_out_helper.dart';
 import 'profile_identity_card.dart';
 import 'profile_menu_section.dart';
+import 'profile_sign_out_tile.dart';
 import 'profile_trust_section.dart';
 import '../../../../l10n/app_localizations.dart';
 
@@ -84,6 +87,14 @@ class ProfileBody extends StatelessWidget {
             onOpenSavedShops: onOpenSavedShops,
             onOpenSettings: onOpenSettings,
             onOpenSupport: onOpenSupport,
+          ),
+          const SizedBox(height: 16),
+          ProfileSignOutTile(
+            onTap: () async {
+              final confirmed = await showSignOutConfirmDialog(context);
+              if (!confirmed || !context.mounted) return;
+              await signOutToAuth(context);
+            },
           ),
         ],
       ],

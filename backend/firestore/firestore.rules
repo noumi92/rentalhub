@@ -119,7 +119,11 @@ service cloud.firestore {
       allow update: if (isUser(userId)
         && !('admin_role' in request.resource.data)
         && !('totp_enabled' in request.resource.data)
-        && (!('role' in resource.data) || !('role' in request.resource.data) || resource.data.role == request.resource.data.role))
+        && (!('role' in resource.data)
+          || resource.data.role == null
+          || resource.data.role == ''
+          || !('role' in request.resource.data)
+          || resource.data.role == request.resource.data.role))
         || isSuperAdmin();
       allow delete: if isUser(userId) || isSuperAdmin();
     }

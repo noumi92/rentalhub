@@ -99,7 +99,7 @@ class AuthRemoteDataSource {
   Future<void> _restoreProfileFromRemote(UserModel? remote) async {
     if (remote == null) return;
     try {
-      if (prefs.getString(_roleKey) == null &&
+      if ((prefs.getString(_roleKey) ?? '').isEmpty &&
           remote.role != null &&
           remote.role!.isNotEmpty) {
         await prefs.setString(_roleKey, remote.role!);
@@ -121,7 +121,22 @@ class AuthRemoteDataSource {
   }
 
   Future<void> setLoggedIn(bool value) async => await prefs.setBool(_isLoggedInKey, value);
-  Future<void> setOnboardingCompleted(bool value) async => await prefs.setBool(_onboardingCompletedKey, value);
+  Future<void> setOnboardingCompleted(bool value) async {
+    await prefs.setBool(_onboardingCompletedKey, value);
+    final uid = auth?.currentUser?.uid ?? prefs.getString(_uidKey);
+    if (value && uid != null && uid.isNotEmpty && firestoreService != null) {
+      try {
+        await firestoreService!.setDocument(
+          'users',
+          uid,
+          {'is_onboarding_completed': true},
+          merge: true,
+        );
+      } catch (e) {
+        debugPrint('Firestore setOnboardingCompleted error: $e');
+      }
+    }
+  }
 
   Future<void> saveProfileInfo({
     required String fullName,
@@ -226,9 +241,15 @@ class AuthRemoteDataSource {
     late final String email;
     late final String fullName;
     try {
-      // Shared instance (see _googleSignInInstance): signOut() clears
-      // this same session, so the next signIn() shows the picker.
+      // Shared instance (see _googleSignInInstance): clear any cached
+      // Google session before signIn() so Android/iOS always displays
+      // the account chooser instead of silently reusing the last account.
       final GoogleSignIn googleSignIn = _googleSignInInstance;
+      try {
+        if (await googleSignIn.isSignedIn()) {
+          await googleSignIn.signOut();
+        }
+      } catch (_) {}
       final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
       if (googleUser == null) {
         throw const ServerException(message: 'Google Sign-In was cancelled.');
@@ -504,6 +525,14 @@ class AuthRemoteDataSource {
   }
 
   Future<void> signOut() async {
+    // Check Google session BEFORE signing out of FirebaseAuth — once
+    // auth.signOut() runs, auth.currentUser becomes null and its
+    // providerData can no longer reveal that this was a Google login.
+    var hadGoogleSession = false;
+    try {
+      hadGoogleSession = await _mayHaveGoogleSession();
+    } catch (_) {}
+
     if (auth != null) {
       try {
         await auth!.signOut();
@@ -511,23 +540,8 @@ class AuthRemoteDataSource {
         debugPrint('FirebaseAuth signOut error: $e');
       }
     }
-    // Google account picker: GoogleSignIn.signIn() returns the cached
-    // account without interaction while a Google session exists, so
-    // signing out of Firebase alone left the next Google sign-in
-    // silently reusing the previous account. Clearing the Google
-    // session here makes the next sign-in show the device account
-    // picker. This is the single sign-out path for customer and owner
-    // mobile sign-in (repository signOut, used by signOutToAuth and
-    // the owner settings screen); the admin web login is
-    // email/password only and never touches GoogleSignIn. signOut()
-    // is enough — unlike disconnect() it does not revoke the OAuth
-    // grant or force re-consent. Only attempted when a Google session
-    // may exist (see _mayHaveGoogleSession), so email/password
-    // sign-out never touches the Google plugin. Best-effort: a Google
-    // failure must never block Firebase sign-out or the local session
-    // clear.
     try {
-      if (await _mayHaveGoogleSession()) {
+      if (hadGoogleSession) {
         await _googleSignInInstance.signOut();
       }
     } catch (e) {

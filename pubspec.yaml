@@ -1,7 +1,7 @@
 name: rentalhub
 description: "Enterprise Car Rental Marketplace and Fleet Management Platform in Pakistan."
 publish_to: 'none'
-version: 1.0.0+2
+version: 1.0.0+3
 
 environment:
   sdk: ^3.5.0
