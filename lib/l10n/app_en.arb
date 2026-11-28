@@ -6438,5 +6438,32 @@
   "adminPackageUnlimited": "Unlimited cars",
   "adminPackageSaved": "Package saved.",
   "adminPackageDeleted": "Package deleted.",
-  "adminPackageInactive": "Inactive"
+  "adminPackageInactive": "Inactive",
+  "manualBookingWithDriverNotOffered": "With-driver is not offered for this vehicle.",
+  "manualBookingWithDriverOnly": "Self-drive is not offered — with-driver only.",
+  "handoverCashReceivedLabel": "Cash / Payment Received at Handover (Rs.)",
+  "handoverWithoutGuarantor": "Handed over without guarantor",
+  "handoverAmountRequiredAtReturn": "Amount required at return",
+  "handoverLateFeeRate": "Late return fee",
+  "handoverBackToBookings": "Back to Bookings",
+  "returnHandoverFuelCompare": "Handover fuel: {handover} → Return fuel: {returned}",
+  "@returnHandoverFuelCompare": {
+    "placeholders": {
+      "handover": {
+        "type": "String"
+      },
+      "returned": {
+        "type": "String"
+      }
+    }
+  },
+  "returnFuelChargesLabel": "Fuel Charges (Rs.)",
+  "returnFuelLowerHint": "Return fuel is lower than handover ({handover}). Enter or confirm fuel charges.",
+  "@returnFuelLowerHint": {
+    "placeholders": {
+      "handover": {
+        "type": "String"
+      }
+    }
+  }
 }

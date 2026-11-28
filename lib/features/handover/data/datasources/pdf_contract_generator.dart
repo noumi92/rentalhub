@@ -78,6 +78,9 @@ class PdfContractGenerator {
     required bool isWithDriver,
     required DateTime pickupTime,
     required DateTime returnTime,
+    DateTime? handedOverAt,
+    int? extraHourPkr,
+    int cashReceivedAtHandover = 0,
     required int totalAmount,
     required int advancePaid,
     required int securityDeposit,
@@ -214,7 +217,12 @@ class PdfContractGenerator {
               row('Package:', '$packageType '
                   '(${isWithDriver ? "With Chauffeur" : "Self-Drive"})'),
               row('Pickup:', _dateTime(pickupTime)),
-              row('Return:', _dateTime(returnTime)),
+              row('Handed over at:', _dateTime(handedOverAt ?? pickupTime)),
+              row('Return due:', _dateTime(returnTime)),
+              row('Late return fee:',
+                  (extraHourPkr != null && extraHourPkr > 0)
+                      ? 'Rs. ${formatRs(extraHourPkr)}/hr'
+                      : 'As per shop policy'),
               row('Total rent:', 'Rs. ${formatRs(totalAmount)}'),
               if (nightStay > 0)
                 row('Driver night stay ($nights nights):',
@@ -223,7 +231,11 @@ class PdfContractGenerator {
                 row('Tolls & parking:',
                     tollsPaidBy == 'included' ? 'Included in rent' : 'Paid by customer'),
               row('Advance paid:', 'Rs. ${formatRs(advancePaid)}'),
-              row('Remaining:', 'Rs. ${formatRs(totalAmount - advancePaid)}'),
+              if (cashReceivedAtHandover > 0)
+                row('Paid at handover:',
+                    'Rs. ${formatRs(cashReceivedAtHandover)}'),
+              row('Amount required at return:',
+                  'Rs. ${formatRs((totalAmount - advancePaid - cashReceivedAtHandover).clamp(0, 1 << 30))}'),
               row('Security:',
                   'Rs. ${formatRs(securityDeposit)} (refundable)'),
               pw.SizedBox(height: 8),
@@ -250,12 +262,38 @@ class PdfContractGenerator {
                       'Date: ${_date(pickupTime)}'),
                   pdfSignatureBox('Host Seal & Signature', ownerSignaturePng,
                       'Date: ${_date(pickupTime)}'),
-                  // Finish build (O20): the third signature block.
-                  pdfSignatureBox(
-                      'Guarantor Signature', guarantorSignaturePng,
+                  // Finish build (O20): the third signature block — if no
+                  // guarantor is attached, state clearly instead of an empty box.
+                  if ((guarantorName != null && guarantorName.trim().isNotEmpty) ||
+                      (guarantorCnic != null && guarantorCnic.trim().isNotEmpty) ||
+                      guarantorSignaturePng != null)
+                    pdfSignatureBox(
+                      'Guarantor Signature',
+                      guarantorSignaturePng,
                       guarantorName != null && guarantorName.isNotEmpty
                           ? guarantorName
-                          : 'Date: ${_date(pickupTime)}'),
+                          : 'Date: ${_date(pickupTime)}',
+                    )
+                  else
+                    pw.Container(
+                      width: 150,
+                      height: 70,
+                      padding: const pw.EdgeInsets.all(8),
+                      decoration: pw.BoxDecoration(
+                        border: pw.Border.all(color: PdfColors.grey400),
+                      ),
+                      child: pw.Center(
+                        child: pw.Text(
+                          'Handed over without guarantor',
+                          textAlign: pw.TextAlign.center,
+                          style: pw.TextStyle(
+                            fontSize: 9,
+                            color: PdfColors.grey700,
+                            fontStyle: pw.FontStyle.italic,
+                          ),
+                        ),
+                      ),
+                    ),
                 ],
               ),
               pw.SizedBox(height: 12),

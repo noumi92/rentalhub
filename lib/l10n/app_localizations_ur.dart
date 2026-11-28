@@ -11429,4 +11429,40 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get adminPackageInactive => 'غیر فعال';
+
+  @override
+  String get manualBookingWithDriverNotOffered =>
+      'اس گاڑی کے لیے ڈرائیور دستیاب نہیں ہے۔';
+
+  @override
+  String get manualBookingWithDriverOnly =>
+      'سیلف ڈرائیو دستیاب نہیں — صرف ڈرائیور کے ساتھ۔';
+
+  @override
+  String get handoverCashReceivedLabel => 'حوالگی پر موصول رقم (روپے)';
+
+  @override
+  String get handoverWithoutGuarantor => 'ضامن کے بغیر حوالے کی گئی';
+
+  @override
+  String get handoverAmountRequiredAtReturn => 'واپسی پر واجب الادا رقم';
+
+  @override
+  String get handoverLateFeeRate => 'تاخیر فیس';
+
+  @override
+  String get handoverBackToBookings => 'بکنگز پر واپس جائیں';
+
+  @override
+  String returnHandoverFuelCompare(String handover, String returned) {
+    return 'حوالگی فیول: $handover ← واپسی فیول: $returned';
+  }
+
+  @override
+  String get returnFuelChargesLabel => 'فیول چارجز (روپے)';
+
+  @override
+  String returnFuelLowerHint(String handover) {
+    return 'واپسی پر فیول حوالگی ($handover) سے کم ہے۔ فیول چارجز درج یا تصدیق کریں۔';
+  }
 }

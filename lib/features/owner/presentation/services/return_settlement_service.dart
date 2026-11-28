@@ -41,6 +41,7 @@ class PerKmPricing {
 class ReturnSettlementService {
   static Future<({
     int initialOdometer,
+    String? handoverFuelLevel,
     List<String> handoverDamageNotes,
     int extraKmPkr,
     int extraHourPkr,
@@ -54,6 +55,7 @@ class ReturnSettlementService {
     int fallbackDeposit = 0,
   }) async {
     var initialOdometer = fallbackOdometer;
+    String? handoverFuelLevel;
     var handoverNotes = const <String>[];
     var extraKmPkr = 100;
     var extraHourPkr = 0;
@@ -96,11 +98,18 @@ class ReturnSettlementService {
           .getByBookingId(booking.bookingId);
       if (handover != null) {
         initialOdometer = handover.initialOdometer;
+        if (handover.fuelLevel.isNotEmpty) {
+          handoverFuelLevel = handover.fuelLevel;
+        }
         handoverNotes = handover.damageNotes;
       } else if (remoteHandover != null) {
         final remoteOdo = (remoteHandover['initialOdometer'] as num?)?.toInt();
         if (remoteOdo != null && remoteOdo > 0) {
           initialOdometer = remoteOdo;
+        }
+        final remoteFuel = remoteHandover['fuelLevel'] as String?;
+        if (remoteFuel != null && remoteFuel.isNotEmpty) {
+          handoverFuelLevel = remoteFuel;
         }
         final remoteNotes = remoteHandover['damageNotes'];
         if (remoteNotes is List) {
@@ -137,6 +146,7 @@ class ReturnSettlementService {
     } catch (_) {}
     return (
       initialOdometer: initialOdometer,
+      handoverFuelLevel: handoverFuelLevel,
       handoverDamageNotes: handoverNotes,
       extraKmPkr: extraKmPkr,
       extraHourPkr: extraHourPkr,
@@ -197,6 +207,8 @@ class ReturnSettlementService {
     required int extraHourPkr,
     required int deposit,
     required String fuelLevel,
+    String? handoverFuelLevel,
+    int? fuelDeficitOverride,
     required List<String> returnDamageNotes,
     required int damageCharge,
     // Audit item 5 (O25/O26): the return-inspection condition and
@@ -251,6 +263,8 @@ class ReturnSettlementService {
       kmAllowance: kmAllowance,
       extraKmPkr: effectiveExtraKmPkr,
       fuelLevel: fuelLevel,
+      handoverFuelLevel: handoverFuelLevel,
+      fuelDeficitOverride: fuelDeficitOverride,
       damageCharge: damageCharge + deductibleDamage,
       overtimeHours: overtimeHours,
       extraHourPkr: extraHourPkr,

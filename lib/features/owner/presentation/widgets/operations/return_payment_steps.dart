@@ -184,45 +184,48 @@ class _ReturnPaymentStepsState extends State<ReturnPaymentSteps> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final canClose = _refundRecorded || widget.netRefund == 0;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (_refundRecorded) ...[
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surface,
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: AppCardDecoration.shadow(context)
-            ),
-            child: Row(
-              children: [
-                Icon(Icons.check_circle_rounded,
-                    color: Theme.of(context).colorScheme.primary),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    l10n.returnRefundRecorded(formatRs(_refundAmount)),
-                    style: Theme.of(context).textTheme.bodyMedium,
+        if (widget.netRefund > 0) ...[
+          if (_refundRecorded) ...[
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surface,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: AppCardDecoration.shadow(context),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.check_circle_rounded,
+                      color: Theme.of(context).colorScheme.primary),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      l10n.returnRefundRecorded(formatRs(_refundAmount)),
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          const SizedBox(height: 12),
-        ] else ...[
-          _row(context, l10n.returnRefundDeposit,
-              l10n.amountRs(formatRs(widget.netRefund))),
-          const SizedBox(height: 12),
-          DebouncedButton(
-            text: _isRecordingRefund
-                ? l10n.returnRecordingRefund
-                : l10n.returnRefundDeposit,
-            icon: Icons.account_balance_wallet_rounded,
-            isLoading: _isRecordingRefund,
-            onPressed: _recordRefund,
-          ),
-          const SizedBox(height: 12),
+            const SizedBox(height: 12),
+          ] else ...[
+            _row(context, l10n.returnRefundDeposit,
+                l10n.amountRs(formatRs(widget.netRefund))),
+            const SizedBox(height: 12),
+            DebouncedButton(
+              text: _isRecordingRefund
+                  ? l10n.returnRecordingRefund
+                  : l10n.returnRefundDeposit,
+              icon: Icons.account_balance_wallet_rounded,
+              isLoading: _isRecordingRefund,
+              onPressed: _recordRefund,
+            ),
+            const SizedBox(height: 12),
+          ],
         ],
         // PW-21: the customer-owes step — the receipt used to clamp
         // the refund at zero and the excess simply disappeared. The
@@ -298,7 +301,7 @@ class _ReturnPaymentStepsState extends State<ReturnPaymentSteps> {
         // disabled button (same pattern as the contract view's
         // pre-handover Proceed) rather than a hidden one, so the
         // owner can see what comes next.
-        if (_refundRecorded)
+        if (canClose)
           DebouncedButton(
             text: widget.isFinalizing
                 ? l10n.returnFinalizing

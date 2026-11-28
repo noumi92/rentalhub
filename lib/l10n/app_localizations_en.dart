@@ -11411,4 +11411,41 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get adminPackageInactive => 'Inactive';
+
+  @override
+  String get manualBookingWithDriverNotOffered =>
+      'With-driver is not offered for this vehicle.';
+
+  @override
+  String get manualBookingWithDriverOnly =>
+      'Self-drive is not offered — with-driver only.';
+
+  @override
+  String get handoverCashReceivedLabel =>
+      'Cash / Payment Received at Handover (Rs.)';
+
+  @override
+  String get handoverWithoutGuarantor => 'Handed over without guarantor';
+
+  @override
+  String get handoverAmountRequiredAtReturn => 'Amount required at return';
+
+  @override
+  String get handoverLateFeeRate => 'Late return fee';
+
+  @override
+  String get handoverBackToBookings => 'Back to Bookings';
+
+  @override
+  String returnHandoverFuelCompare(String handover, String returned) {
+    return 'Handover fuel: $handover → Return fuel: $returned';
+  }
+
+  @override
+  String get returnFuelChargesLabel => 'Fuel Charges (Rs.)';
+
+  @override
+  String returnFuelLowerHint(String handover) {
+    return 'Return fuel is lower than handover ($handover). Enter or confirm fuel charges.';
+  }
 }

@@ -20290,6 +20290,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Inactive'**
   String get adminPackageInactive;
+
+  /// No description provided for @manualBookingWithDriverNotOffered.
+  ///
+  /// In en, this message translates to:
+  /// **'With-driver is not offered for this vehicle.'**
+  String get manualBookingWithDriverNotOffered;
+
+  /// No description provided for @manualBookingWithDriverOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Self-drive is not offered — with-driver only.'**
+  String get manualBookingWithDriverOnly;
+
+  /// No description provided for @handoverCashReceivedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash / Payment Received at Handover (Rs.)'**
+  String get handoverCashReceivedLabel;
+
+  /// No description provided for @handoverWithoutGuarantor.
+  ///
+  /// In en, this message translates to:
+  /// **'Handed over without guarantor'**
+  String get handoverWithoutGuarantor;
+
+  /// No description provided for @handoverAmountRequiredAtReturn.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount required at return'**
+  String get handoverAmountRequiredAtReturn;
+
+  /// No description provided for @handoverLateFeeRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Late return fee'**
+  String get handoverLateFeeRate;
+
+  /// No description provided for @handoverBackToBookings.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to Bookings'**
+  String get handoverBackToBookings;
+
+  /// No description provided for @returnHandoverFuelCompare.
+  ///
+  /// In en, this message translates to:
+  /// **'Handover fuel: {handover} → Return fuel: {returned}'**
+  String returnHandoverFuelCompare(String handover, String returned);
+
+  /// No description provided for @returnFuelChargesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Fuel Charges (Rs.)'**
+  String get returnFuelChargesLabel;
+
+  /// No description provided for @returnFuelLowerHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Return fuel is lower than handover ({handover}). Enter or confirm fuel charges.'**
+  String returnFuelLowerHint(String handover);
 }
 
 class _AppLocalizationsDelegate

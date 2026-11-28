@@ -41,7 +41,10 @@ class OwnerVehiclePublishedView extends StatelessWidget {
           children: [
             MinimalAppBar(
               title: l10n.vehiclePublishedTitle,
-              onBack: onBack ?? () => context.pop(),
+              onBack: onBack ??
+                  () => context.canPop()
+                      ? context.pop()
+                      : context.go(RouteNames.ownerFleet),
             ),
             Expanded(
               child: SingleChildScrollView(
@@ -124,6 +127,17 @@ class OwnerVehiclePublishedView extends StatelessWidget {
                       onPressed: () => context.push(RouteNames.ownerAddVehicle),
                       icon: const Icon(Icons.add_circle_outline_rounded, size: 18),
                       label: Text(l10n.vehiclePublishedAddAnother),
+                    ),
+                    const SizedBox(height: 8),
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton(
+                        onPressed: () => context.go(RouteNames.ownerFleet),
+                        style: OutlinedButton.styleFrom(
+                          minimumSize: const Size(0, 48),
+                        ),
+                        child: Text(l10n.done),
+                      ),
                     ),
                   ],
                 ),

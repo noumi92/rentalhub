@@ -98,6 +98,13 @@ class ManualBookingDraft {
   void selectVehicle(VehicleEntity? v) {
     selectedVehicle = v;
     selectedRoute = null;
+    if (v != null) {
+      if (!v.isWithDriverAvailable) {
+        isWithDriver = false;
+      } else if (!v.isSelfDriveAvailable) {
+        isWithDriver = true;
+      }
+    }
     final packages = v?.enabledPackages ?? const [];
     selectedPackage = packages.isNotEmpty ? packages.first : null;
     final deposit = v?.securityDepositPkr;

@@ -28,6 +28,7 @@ class HandoverWizardLoader {
   static Future<({
     String shopName,
     int securityDeposit,
+    int extraHourPkr,
     String? vehiclePlate,
     String? vehicleColour,
     String? vehicleFuel,
@@ -39,6 +40,7 @@ class HandoverWizardLoader {
   }) async {
     var shopName = booking.shopName ?? '';
     var securityDeposit = 0;
+    var extraHourPkr = 0;
     String? vehiclePlate;
     String? vehicleColour;
     String? vehicleFuel;
@@ -82,6 +84,7 @@ class HandoverWizardLoader {
         .toList();
     if (vehicle.isNotEmpty) {
       securityDeposit = vehicle.first.securityDepositPkr ?? 0;
+      extraHourPkr = vehicle.first.extraHourPkr ?? 0;
       vehiclePlate = vehicle.first.plateNumber;
       vehicleColour = vehicle.first.color;
       vehicleFuel = vehicle.first.fuelType;
@@ -104,6 +107,7 @@ class HandoverWizardLoader {
     return (
       shopName: shopName,
       securityDeposit: securityDeposit,
+      extraHourPkr: extraHourPkr,
       vehiclePlate: vehiclePlate,
       vehicleColour: vehicleColour,
       vehicleFuel: vehicleFuel,

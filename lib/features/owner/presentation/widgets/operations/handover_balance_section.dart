@@ -19,6 +19,8 @@ class HandoverBalanceSection extends StatelessWidget {
     required this.selectedMethod,
     required this.onMethodChanged,
     this.advancePaid = 0,
+    this.cashReceivedAtHandover = 0,
+    this.onCashReceivedChanged,
     this.onSecurityDepositChanged,
     this.depositMethod,
     this.onDepositMethodChanged,
@@ -33,6 +35,8 @@ class HandoverBalanceSection extends StatelessWidget {
   final String? selectedMethod;
   final ValueChanged<String> onMethodChanged;
   final int advancePaid;
+  final int cashReceivedAtHandover;
+  final ValueChanged<int>? onCashReceivedChanged;
   final ValueChanged<int>? onSecurityDepositChanged;
   final String? depositMethod;
   final ValueChanged<String>? onDepositMethodChanged;
@@ -131,6 +135,29 @@ class HandoverBalanceSection extends StatelessWidget {
                   ),
                 ],
               ),
+              if (onCashReceivedChanged != null) ...[
+                const SizedBox(height: 10),
+                TextFormField(
+                  key: const ValueKey('handover_cash_received_field'),
+                  initialValue:
+                      cashReceivedAtHandover > 0 ? '$cashReceivedAtHandover' : '',
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  decoration: InputDecoration(
+                    labelText: l10n.handoverCashReceivedLabel,
+                    hintText: '0',
+                    filled: true,
+                    fillColor: fillColor,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  onChanged: (v) {
+                    final parsed = int.tryParse(v.trim()) ?? 0;
+                    onCashReceivedChanged!(parsed);
+                  },
+                ),
+              ],
               const SizedBox(height: 12),
               DropdownButtonFormField<String>(
                 key: const ValueKey('handover_balance_method_dropdown'),
@@ -156,23 +183,6 @@ class HandoverBalanceSection extends StatelessWidget {
                   if (v != null) onMethodChanged(v);
                 },
               ),
-              if (onBalanceReceivedChanged != null) ...[
-                const SizedBox(height: 4),
-                Material(
-                  color: Colors.transparent,
-                  child: SwitchListTile(
-                    key: const ValueKey('handover_balance_received_switch'),
-                    contentPadding: EdgeInsets.zero,
-                    dense: true,
-                    title: Text(
-                      l10n.handoverWizardBalanceReceived,
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                    value: balanceReceived,
-                    onChanged: onBalanceReceivedChanged,
-                  ),
-                ),
-              ],
             ],
           ),
         ),

@@ -12,6 +12,7 @@ import '../../../../features/customer/domain/entities/customer_entity.dart';
 import '../../../../features/customer/utils/save_walk_in_customer.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../services/kyc_customer_saver.dart';
+import '../widgets/customer_added_bottom_sheet.dart';
 import 'add_customer/kyc_draft.dart';
 import 'add_customer/kyc_step.dart';
 import 'add_customer/kyc_stepper_header.dart';
@@ -139,15 +140,30 @@ class _OwnerAddCustomerWizardState extends State<OwnerAddCustomerWizard> {
         );
         return;
       }
-      // O13: land on the success screen (not the list) — it offers
-      // Start Booking (prefilled) and View Profile for this customer.
-      // The saved record travels via `extra`; a deep link without it
-      // loads the record by id instead.
-      context.go(
-        RouteNames.ownerCustomerAdded
-            .replaceFirst(':id', result.customer.customerId),
-        extra: result.customer,
+      final action = await showCustomerAddedBottomSheet(
+        context,
+        customer: result.customer,
       );
+      if (!mounted) return;
+      if (action == CustomerAddedSheetAction.startBooking) {
+        final c = result.customer;
+        final params = <String, String>{
+          if (c.name.isNotEmpty) 'name': c.name,
+          if (c.phone.isNotEmpty) 'phone': c.phone,
+          if (c.cnic != null && c.cnic!.isNotEmpty) 'cnic': c.cnic!,
+        };
+        context.go(Uri(
+          path: RouteNames.ownerManualBooking,
+          queryParameters: params.isEmpty ? null : params,
+        ).toString());
+      } else if (action == CustomerAddedSheetAction.viewProfile) {
+        context.go(
+          RouteNames.ownerCustomerDetail
+              .replaceFirst(':id', result.customer.customerId),
+        );
+      } else {
+        context.go(RouteNames.ownerCustomers);
+      }
     } on BlacklistedCustomerException {
       if (mounted) AppFeedback.showError(context, l10n.customersScanDeclined);
     } catch (e) {

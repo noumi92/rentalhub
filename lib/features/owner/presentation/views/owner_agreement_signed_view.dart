@@ -15,6 +15,7 @@ import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../../core/widgets/success_banner.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
+import '../../../bookings/utils/booking_next_step.dart';
 import '../../../handover/data/datasources/handover_local_data_source.dart';
 import '../../../handover/data/datasources/pdf_contract_generator.dart';
 import '../services/contract_pdf_actions.dart';
@@ -140,7 +141,10 @@ class _OwnerAgreementSignedViewState extends State<OwnerAgreementSignedView> {
             MinimalAppBar(
               title: l10n.agreementSignedTitle,
               subtitle: '#${widget.booking.bookingId}',
-              onBack: widget.onBack,
+              onBack: widget.onBack ??
+                  () => context.canPop()
+                      ? context.pop()
+                      : goToAllOwnerBookings(context),
             ),
             Expanded(
               child: SingleChildScrollView(

@@ -24,6 +24,7 @@ class HandoverWizardFinalize {
     required BookingEntity booking,
     required String shopName,
     required int securityDeposit,
+    int extraHourPkr = 0,
     required String? vehiclePlate,
     required String? vehicleColour,
     required String? vehicleFuel,
@@ -51,10 +52,13 @@ class HandoverWizardFinalize {
       totalAmount: booking.totalAmount,
       advancePaid: booking.advancePaid,
       securityDeposit: securityDeposit,
-      balanceDuePkr:
-          (booking.totalAmount - booking.advancePaid).clamp(0, 1 << 30),
+      extraHourPkr: extraHourPkr,
+      cashReceivedAtHandover: state.cashReceivedAtHandover,
+      balanceDuePkr: state.cashReceivedAtHandover > 0
+          ? state.cashReceivedAtHandover
+          : (booking.totalAmount - booking.advancePaid).clamp(0, 1 << 30),
       balancePaymentMethod: state.balanceMethod,
-      balanceReceived: state.balanceReceived,
+      balanceReceived: state.cashReceivedAtHandover > 0,
       depositReceived: state.depositReceived,
       vehicleId: booking.vehicleId,
       initialOdometer: state.odometer,

@@ -13,6 +13,7 @@ import '../widgets/handover_notes_banner.dart';
 import '../widgets/operations/exterior_photo_picker.dart';
 import '../widgets/operations/fuel_odometer_input_widget.dart';
 import '../widgets/operations/return_fare_payment_section.dart';
+import '../widgets/operations/return_fuel_adjustment_card.dart';
 import '../widgets/operations/return_inspection_sections.dart';
 import '../widgets/operations/return_late_fee_section.dart';
 import '../widgets/operations/return_payment_steps.dart';
@@ -45,8 +46,10 @@ class _OwnerReturnSettlementViewState extends State<OwnerReturnSettlementView> {
   late final TextEditingController _returnOdometerController;
   final _damageChargeController = TextEditingController();
   final _lateFeeController = TextEditingController();
-  bool _lateFeeTouched = false;
+  final _fuelChargeController = TextEditingController();
+  bool _lateFeeTouched = false, _fuelChargeTouched = false;
   String _returnFuel = '4/4 (Full)';
+  String? _handoverFuelLevel;
   List<String> _returnDamageNotes = const [];
   List<String> _handoverDamageNotes = const [];
   bool _isFinalizing = false;
@@ -86,10 +89,7 @@ class _OwnerReturnSettlementViewState extends State<OwnerReturnSettlementView> {
   }
 
   Future<void> _loadRealValues() async {
-    setState(() {
-      _loadFailed = false;
-      _loadError = null;
-    });
+    setState(() { _loadFailed = false; _loadError = null; });
     try {
       final values = await ReturnSettlementService.loadRealValues(widget.booking, fallbackOdometer: widget.initialOdometer, fallbackDeposit: widget.initialDeposit);
       if (!mounted) return;
@@ -105,35 +105,34 @@ class _OwnerReturnSettlementViewState extends State<OwnerReturnSettlementView> {
       }
       setState(() {
         _initialOdometer = values.initialOdometer;
+        _handoverFuelLevel = values.handoverFuelLevel;
+        if (values.handoverFuelLevel != null && values.handoverFuelLevel!.isNotEmpty) {
+          _returnFuel = values.handoverFuelLevel!;
+        }
         _handoverDamageNotes = values.handoverDamageNotes;
-        _extraKmPkr = values.extraKmPkr;
-        _extraHourPkr = values.extraHourPkr;
-        _perKmPricing = values.perKmPricing;
-        _deposit = values.deposit;
-        _deductibleDamage = values.deductibleDamage;
-        _extraCharges = values.extraCharges;
+        _extraKmPkr = values.extraKmPkr; _extraHourPkr = values.extraHourPkr; _perKmPricing = values.perKmPricing;
+        _deposit = values.deposit; _deductibleDamage = values.deductibleDamage; _extraCharges = values.extraCharges;
         _valuesLoaded = true;
       });
     } catch (e) {
-      if (!mounted) return;
-      setState(() {
-        _loadFailed = true;
-        _loadError = e.toString();
-      });
+      if (mounted) setState(() { _loadFailed = true; _loadError = e.toString(); });
     }
   }
 
   @override
   void dispose() {
-    _returnOdometerController.dispose();
-    _damageChargeController.dispose();
-    _lateFeeController.dispose();
+    _returnOdometerController.dispose(); _damageChargeController.dispose(); _lateFeeController.dispose(); _fuelChargeController.dispose();
     super.dispose();
   }
 
   int? get _returnOdometer => int.tryParse(_returnOdometerController.text.trim());
   int get _totalKmDriven => ((_returnOdometer ?? _initialOdometer) - _initialOdometer).clamp(0, 99999);
   int get _damageCharge => (int.tryParse(_damageChargeController.text.trim()) ?? 0).clamp(0, 999999999);
+  int? get _fuelChargeOverride {
+    final text = _fuelChargeController.text.trim();
+    if (text.isEmpty) return _fuelChargeTouched ? 0 : null;
+    return (int.tryParse(text) ?? 0).clamp(0, 999999999);
+  }
   int? get _lateFeeOverride {
     final text = _lateFeeController.text.trim();
     if (text.isEmpty) return _lateFeeTouched ? 0 : null;
@@ -145,9 +144,9 @@ class _OwnerReturnSettlementViewState extends State<OwnerReturnSettlementView> {
   }
 
   SettlementBreakdown get _breakdown => SettlementCalculator.calculate(
-        totalKmDriven: _totalKmDriven, kmAllowance: _kmAllowance, extraKmPkr: _perKm != null ? 0 : _extraKmPkr, fuelLevel: _returnFuel,
-        damageCharge: _damageCharge + _deductibleDamage, overtimeHours: _overtimeHours, extraHourPkr: _extraHourPkr, overtimeFeeOverride: _lateFeeOverride, securityDeposit: _deposit,
-        extraCharges: _extraCharges,
+        totalKmDriven: _totalKmDriven, kmAllowance: _kmAllowance, extraKmPkr: _perKm != null ? 0 : _extraKmPkr,
+        fuelLevel: _returnFuel, handoverFuelLevel: _handoverFuelLevel, fuelDeficitOverride: _fuelChargeOverride,
+        damageCharge: _damageCharge + _deductibleDamage, overtimeHours: _overtimeHours, extraHourPkr: _extraHourPkr, overtimeFeeOverride: _lateFeeOverride, securityDeposit: _deposit, extraCharges: _extraCharges,
       );
 
   // Gap (c): the live per-km reconciliation; null for non-per-km bookings.
@@ -174,6 +173,7 @@ class _OwnerReturnSettlementViewState extends State<OwnerReturnSettlementView> {
       final breakdown = await ReturnSettlementService.finalizeReturn(
         booking: widget.booking, returnOdometer: _returnOdometer!, initialOdometer: _initialOdometer, kmAllowance: _kmAllowance,
         extraKmPkr: _extraKmPkr, extraHourPkr: _extraHourPkr, deposit: _deposit, fuelLevel: _returnFuel,
+        handoverFuelLevel: _handoverFuelLevel, fuelDeficitOverride: _fuelChargeOverride,
         returnDamageNotes: _returnDamageNotes, damageCharge: _damageCharge,
         condition: _condition, returnPhotoUrls: _returnPhotos, deductibleDamage: _deductibleDamage, extraCharges: _extraCharges,
         remainingRentCollected: _collected.amount, paymentMethod: _collected.method, perKmSettlement: _perKm,
@@ -217,7 +217,8 @@ class _OwnerReturnSettlementViewState extends State<OwnerReturnSettlementView> {
                       const SizedBox(height: 16),
                       ExteriorPhotoPicker(bookingId: widget.booking.bookingId, shopId: widget.booking.shopId, photos: _returnPhotos, targetCollection: 'return_settlements', onChanged: (photos) => setState(() => _returnPhotos = photos)),
                       const SizedBox(height: 16),
-                      FuelOdometerInputWidget(title: l10n.returnTelemetryTitle, odometerController: _returnOdometerController, selectedFuel: _returnFuel, onFuelSelected: (f) => setState(() => _returnFuel = f)),
+                      FuelOdometerInputWidget(title: l10n.returnTelemetryTitle, odometerController: _returnOdometerController, selectedFuel: _returnFuel, onFuelSelected: (f) { final sug = SettlementCalculator.fuelDeficitFor(f, handoverFuelLevel: _handoverFuelLevel); _fuelChargeTouched = false; _fuelChargeController.text = sug > 0 ? '$sug' : ''; setState(() => _returnFuel = f); }),
+                      ReturnFuelAdjustmentCard(handoverFuelLevel: _handoverFuelLevel, returnFuelLevel: _returnFuel, controller: _fuelChargeController, onChanged: (_) => setState(() => _fuelChargeTouched = true)),
                       if (_handoverDamageNotes.isNotEmpty) ...[const SizedBox(height: 12), HandoverNotesBanner(notes: _handoverDamageNotes)],
                       const SizedBox(height: 16),
                       HandoverDamageNotesEditor(title: l10n.returnNewDamageTitle, subtitle: l10n.returnNewDamageSubtitle, onChanged: (notes) => setState(() => _returnDamageNotes = notes)),

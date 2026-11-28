@@ -90,7 +90,12 @@ class _OwnerCustomerAddedViewState extends State<OwnerCustomerAddedView> {
         top: false,
         child: Column(
           children: [
-            MinimalAppBar(title: l10n.customerAddedTitle),
+            MinimalAppBar(
+              title: l10n.customerAddedTitle,
+              onBack: () => context.canPop()
+                  ? context.pop()
+                  : context.go(RouteNames.ownerCustomers),
+            ),
             Expanded(
               child: _loading
                   ? AppLoadingState(message: l10n.customersLoadingMessage)
@@ -146,6 +151,18 @@ class _OwnerCustomerAddedViewState extends State<OwnerCustomerAddedView> {
                                 backgroundColor: AppColors.primary,
                                 textColor: Colors.white,
                                 onPressed: _viewProfile,
+                              ),
+                              const SizedBox(height: 12),
+                              SizedBox(
+                                width: double.infinity,
+                                child: OutlinedButton(
+                                  onPressed: () =>
+                                      context.go(RouteNames.ownerCustomers),
+                                  style: OutlinedButton.styleFrom(
+                                    minimumSize: const Size(0, 48),
+                                  ),
+                                  child: Text(l10n.done),
+                                ),
                               ),
                             ],
                           ),

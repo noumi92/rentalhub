@@ -472,12 +472,24 @@ class _ManualBookingPackageSelectorState
         const SizedBox(height: 10),
         Row(
           children: [
-            Text(l10n.withDriver,
-                style: Theme.of(context).textTheme.bodyMedium),
+            Text(
+              l10n.withDriver,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: vehicle.isWithDriverAvailable
+                        ? null
+                        : Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+            ),
             Switch(
-              value: widget.isWithDriver,
+              key: const ValueKey('manual_booking_with_driver_switch'),
+              value: vehicle.isWithDriverAvailable
+                  ? (vehicle.isSelfDriveAvailable ? widget.isWithDriver : true)
+                  : false,
               activeThumbColor: AppColors.secondary,
-              onChanged: widget.onDriverModeChanged,
+              onChanged: (vehicle.isWithDriverAvailable &&
+                      vehicle.isSelfDriveAvailable)
+                  ? widget.onDriverModeChanged
+                  : null,
             ),
             const SizedBox(width: 8),
             Flexible(
@@ -492,6 +504,23 @@ class _ManualBookingPackageSelectorState
             ),
           ],
         ),
+        if (!vehicle.isWithDriverAvailable) ...[
+          const SizedBox(height: 2),
+          Text(
+            l10n.manualBookingWithDriverNotOffered,
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+          ),
+        ] else if (!vehicle.isSelfDriveAvailable) ...[
+          const SizedBox(height: 2),
+          Text(
+            l10n.manualBookingWithDriverOnly,
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+          ),
+        ],
         if (estimateNote != null) ...[
           const SizedBox(height: 4),
           Text(estimateNote, style: Theme.of(context).textTheme.labelSmall),

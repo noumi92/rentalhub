@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../core/theme/card_decoration.dart';
+import '../../../../../core/utils/money_format.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../bookings/domain/entities/booking_entity.dart';
 import '../../../../handover/presentation/cubit/handover_wizard_cubit.dart';
@@ -27,12 +28,14 @@ class HandoverWizardStepAgreement extends StatefulWidget {
   final BookingEntity booking;
   final String shopName;
   final int securityDeposit;
+  final int extraHourPkr;
 
   const HandoverWizardStepAgreement({
     super.key,
     required this.booking,
     required this.shopName,
     required this.securityDeposit,
+    this.extraHourPkr = 0,
   });
 
   @override
@@ -77,10 +80,13 @@ class _HandoverWizardStepAgreementState
       return HandoverWizardCompletedCard(
           booking: widget.booking, state: state);
     }
+    final hasGuarantor =
+        (widget.booking.guarantorName?.trim().isNotEmpty ?? false) ||
+            (widget.booking.guarantorCnic?.trim().isNotEmpty ?? false);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _summaryCard(context, l10n),
+        _summaryCard(context, l10n, state),
         const SizedBox(height: 16),
         HandoverWizardSignatureBlock(
           title: l10n.handoverCustomerSignature,
@@ -109,12 +115,18 @@ class _HandoverWizardStepAgreementState
           ),
           child: Row(
             children: [
-              Icon(Icons.pending_actions_rounded,
-                  color: Theme.of(context).colorScheme.onSurfaceVariant),
+              Icon(
+                hasGuarantor
+                    ? Icons.pending_actions_rounded
+                    : Icons.info_outline_rounded,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  l10n.handoverWizardGuarantorPending,
+                  hasGuarantor
+                      ? l10n.handoverWizardGuarantorPending
+                      : l10n.handoverWithoutGuarantor,
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ),
@@ -125,10 +137,18 @@ class _HandoverWizardStepAgreementState
     );
   }
 
-  Widget _summaryCard(BuildContext context, AppLocalizations l10n) {
+  Widget _summaryCard(
+    BuildContext context,
+    AppLocalizations l10n,
+    HandoverWizardState state,
+  ) {
     final booking = widget.booking;
     final now = DateTime.now();
     final started = TimeOfDay.fromDateTime(now).format(context);
+    final amountAtReturn = (booking.totalAmount -
+            booking.advancePaid -
+            state.cashReceivedAtHandover)
+        .clamp(0, 1 << 30);
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -162,6 +182,22 @@ class _HandoverWizardStepAgreementState
                   TimeOfDay.fromDateTime(booking.returnTime)),
             ),
             style: Theme.of(context).textTheme.bodyMedium,
+          ),
+          const Divider(height: 16),
+          Text(
+            '${l10n.returnReceiptDepositHeld}: ${l10n.amountRs(formatRs(widget.securityDeposit))}',
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+          Text(
+            '${l10n.handoverLateFeeRate}: ${widget.extraHourPkr > 0 ? '${l10n.amountRs(formatRs(widget.extraHourPkr))}/hr' : '—'}',
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+          Text(
+            '${l10n.handoverAmountRequiredAtReturn}: ${l10n.amountRs(formatRs(amountAtReturn))}',
+            style: Theme.of(context)
+                .textTheme
+                .bodyMedium
+                ?.copyWith(fontWeight: FontWeight.w600),
           ),
         ],
       ),

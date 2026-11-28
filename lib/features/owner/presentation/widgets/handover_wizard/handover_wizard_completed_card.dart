@@ -5,6 +5,7 @@ import '../../../../../core/routing/route_names.dart';
 import '../../../../../core/theme/card_decoration.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../bookings/domain/entities/booking_entity.dart';
+import '../../../../bookings/utils/booking_next_step.dart';
 import '../../../../handover/presentation/cubit/handover_wizard_cubit.dart';
 import '../../services/contract_pdf_actions.dart';
 
@@ -90,6 +91,13 @@ class HandoverWizardCompletedCard extends StatelessWidget {
               .replaceFirst(':id', booking.bookingId)),
           icon: const Icon(Icons.description_rounded),
           label: Text(l10n.rentalStartedViewAgreement),
+        ),
+        const SizedBox(height: 12),
+        FilledButton.tonalIcon(
+          key: const ValueKey('handover_back_to_bookings_btn'),
+          onPressed: () => goToAllOwnerBookings(context),
+          icon: const Icon(Icons.list_alt_rounded),
+          label: Text(l10n.handoverBackToBookings),
         ),
       ],
     );

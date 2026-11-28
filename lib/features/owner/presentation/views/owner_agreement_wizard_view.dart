@@ -6,10 +6,10 @@ import 'package:go_router/go_router.dart';
 import '../../../../l10n/app_localizations.dart';
 
 import '../../../../core/di/injection_container.dart';
-import '../../../../core/routing/route_names.dart';
 import '../../../../core/widgets/app_state_views.dart';
 import '../../../../core/widgets/minimal_app_bar.dart';
 import '../../../bookings/domain/entities/booking_entity.dart';
+import '../../../bookings/utils/booking_next_step.dart';
 import '../../../handover/data/datasources/handover_local_data_source.dart';
 import '../../../handover/data/datasources/pdf_contract_generator.dart';
 import '../services/contract_pdf_actions.dart';
@@ -79,11 +79,16 @@ class _OwnerAgreementWizardViewState
   bool _fullySigned = false;
   bool _loadingStored = false;
 
+  bool get _hasGuarantor =>
+      (widget.booking.guarantorName?.trim().isNotEmpty ?? false) ||
+      (widget.booking.guarantorCnic?.trim().isNotEmpty ?? false) ||
+      (_guarantorName?.trim().isNotEmpty ?? false);
+
   bool get _signedByAll =>
       _fullySigned ||
       (_customerSig != null &&
           _ownerSig != null &&
-          (_guarantorSigPng != null || _guarantorSigUrl != null));
+          (!_hasGuarantor || _guarantorSigPng != null || _guarantorSigUrl != null));
 
   @override
   void initState() {
@@ -150,8 +155,12 @@ class _OwnerAgreementWizardViewState
   void _onBack() {
     if (_step > 0) {
       setState(() => _step -= 1);
+    } else if (widget.onBack != null) {
+      widget.onBack!();
+    } else if (context.canPop()) {
+      context.pop();
     } else {
-      widget.onBack?.call();
+      goToAllOwnerBookings(context);
     }
   }
 
@@ -226,11 +235,7 @@ class _OwnerAgreementWizardViewState
                                   booking: booking,
                                   pdfBytes: _pdfBytes,
                                   signedByAll: _signedByAll,
-                                  onDone: () => context.pushReplacement(
-                                    RouteNames.ownerRentalStarted
-                                        .replaceFirst(
-                                            ':id', booking.bookingId),
-                                  ),
+                                  onDone: () => goToAllOwnerBookings(context),
                                 ),
                     ),
             ),

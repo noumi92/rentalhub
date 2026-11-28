@@ -32,6 +32,7 @@ class HandoverWizardState extends Equatable {
   // O27 — money.
   final String? balanceMethod;
   final bool balanceReceived;
+  final int cashReceivedAtHandover;
   final int? securityDepositOverride;
   final String? depositMethod;
   final bool depositReceived;
@@ -74,6 +75,7 @@ class HandoverWizardState extends Equatable {
     this.faceCheckedAt,
     this.balanceMethod,
     this.balanceReceived = false,
+    this.cashReceivedAtHandover = 0,
     this.securityDepositOverride,
     this.depositMethod,
     this.depositReceived = false,
@@ -118,6 +120,7 @@ class HandoverWizardState extends Equatable {
     DateTime? faceCheckedAt,
     String? balanceMethod,
     bool? balanceReceived,
+    int? cashReceivedAtHandover,
     int? securityDepositOverride,
     String? depositMethod,
     bool? depositReceived,
@@ -154,6 +157,8 @@ class HandoverWizardState extends Equatable {
       faceCheckedAt: faceCheckedAt ?? this.faceCheckedAt,
       balanceMethod: balanceMethod ?? this.balanceMethod,
       balanceReceived: balanceReceived ?? this.balanceReceived,
+      cashReceivedAtHandover:
+          cashReceivedAtHandover ?? this.cashReceivedAtHandover,
       securityDepositOverride:
           securityDepositOverride ?? this.securityDepositOverride,
       depositMethod: depositMethod ?? this.depositMethod,
@@ -208,13 +213,11 @@ class HandoverWizardState extends Equatable {
       case 0:
         return faceCheckConfirmed ? null : 'face';
       case 1:
-        if (balanceDue > 0 && balanceMethod == null) return 'payment';
-        if (balanceDue > 0 &&
-            balanceMethod != null &&
-            balanceMethod != 'not_yet' &&
-            !balanceReceived) {
-          return 'payment_confirm';
+        if (cashReceivedAtHandover > 0 &&
+            (balanceMethod == null || balanceMethod == 'not_yet')) {
+          return 'payment';
         }
+        if (balanceDue > 0 && balanceMethod == null) return 'payment';
         if (deposit > 0 && depositMethod == null) return 'deposit';
         if (deposit > 0 && !depositReceived) return 'deposit_confirm';
         return null;
@@ -235,6 +238,7 @@ class HandoverWizardState extends Equatable {
         faceCheckedAt,
         balanceMethod,
         balanceReceived,
+        cashReceivedAtHandover,
         securityDepositOverride,
         depositMethod,
         depositReceived,
@@ -331,6 +335,15 @@ class HandoverWizardCubit extends Cubit<HandoverWizardState> {
 
   void setBalanceReceived(bool received) =>
       emit(state.copyWith(balanceReceived: received));
+
+  void setCashReceivedAtHandover(int amount) {
+    final clamped = amount.clamp(0, 1 << 30);
+    emit(state.copyWith(
+      cashReceivedAtHandover: clamped,
+      balanceReceived: clamped > 0,
+      clearError: true,
+    ));
+  }
 
   void setDepositMethod(String method) => emit(state.copyWith(
         depositMethod: method,

@@ -80,15 +80,16 @@ void main() {
       expect(cubit.state.step, 1);
     });
 
-    test('step 1 needs a balance method, confirmation, and deposit method/confirmation', () {
+    test('step 1 needs a balance method, cash input, and deposit method/confirmation', () {
       final cubit = HandoverWizardCubit(bookingId: 'RH-WIZ-1');
       cubit.goToStep(1);
       cubit.nextStep(balanceDue: 8000, securityDeposit: 20000);
       expect(cubit.state.error, 'payment');
-      cubit.setBalanceMethod('cash');
+      cubit.setCashReceivedAtHandover(5000);
+      cubit.setBalanceMethod('not_yet');
       cubit.nextStep(balanceDue: 8000, securityDeposit: 20000);
-      expect(cubit.state.error, 'payment_confirm');
-      cubit.setBalanceReceived(true);
+      expect(cubit.state.error, 'payment');
+      cubit.setBalanceMethod('cash');
       cubit.nextStep(balanceDue: 8000, securityDeposit: 20000);
       expect(cubit.state.error, 'deposit');
       cubit.setDepositMethod('easypaisa');
@@ -345,10 +346,12 @@ void main() {
           findsOneWidget);
       expect(find.byKey(const ValueKey('handover_deposit_method_dropdown')),
           findsOneWidget);
+      expect(find.byKey(const ValueKey('handover_cash_received_field')),
+          findsOneWidget);
       expect(find.byKey(const ValueKey('handover_security_deposit_field')),
           findsOneWidget);
       expect(find.text('Security received'), findsOneWidget);
-      expect(find.text('Balance received'), findsOneWidget);
+      expect(find.text('Balance received'), findsNothing);
       expect(find.text('View receipt'), findsOneWidget);
       await tester.ensureVisible(find.text('View receipt'));
       await tester.pumpAndSettle();
@@ -400,8 +403,7 @@ void main() {
           booking: _booking(), initialStep: 4)));
       await tester.pumpAndSettle();
       expect(
-          find.text(
-              'Guarantor signature pending — signed in the agreement step.'),
+          find.text('Handed over without guarantor'),
           findsOneWidget);
       expect(find.text('Car Handed Over'), findsOneWidget);
       await tester.tap(find.text('Car Handed Over'));

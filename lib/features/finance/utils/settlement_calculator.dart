@@ -100,6 +100,7 @@ class SettlementCalculator {
     required int extraKmPkr,
     required String fuelLevel,
     String? handoverFuelLevel,
+    int? fuelDeficitOverride,
     int damageCharge = 0,
     int overtimeHours = 0,
     required int extraHourPkr,
@@ -109,8 +110,9 @@ class SettlementCalculator {
   }) {
     final excessKm = (totalKmDriven - kmAllowance).clamp(0, 1 << 30);
     final excessKmCharge = excessKm * extraKmPkr;
-    final fuelDeficit =
-        fuelDeficitFor(fuelLevel, handoverFuelLevel: handoverFuelLevel);
+    final fuelDeficit = fuelDeficitOverride != null
+        ? fuelDeficitOverride.clamp(0, 1 << 30)
+        : fuelDeficitFor(fuelLevel, handoverFuelLevel: handoverFuelLevel);
     final overtimeFee = overtimeFeeOverride != null
         ? overtimeFeeOverride.clamp(0, 1 << 30)
         : overtimeHours * extraHourPkr;

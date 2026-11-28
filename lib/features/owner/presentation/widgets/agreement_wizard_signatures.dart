@@ -61,10 +61,19 @@ class _AgreementWizardSignaturesState
   Uint8List? _pdfBytes;
   bool _finalizing = false;
 
+  bool get _hasGuarantor =>
+      (widget.booking.guarantorName?.trim().isNotEmpty ?? false) ||
+      (widget.booking.guarantorCnic?.trim().isNotEmpty ?? false) ||
+      _guarantorPng != null ||
+      (_guarantorUrl?.isNotEmpty ?? false);
+
   bool get _canFinalize =>
       widget.customerSignaturePng != null &&
       widget.ownerSignaturePng != null &&
-      (_guarantorPng != null || _guarantorUrl != null || widget.fullySigned);
+      (!_hasGuarantor ||
+          _guarantorPng != null ||
+          _guarantorUrl != null ||
+          widget.fullySigned);
 
   @override
   void initState() {
@@ -153,11 +162,13 @@ class _AgreementWizardSignaturesState
       l10n.contractTerm9,
       l10n.contractTerm10,
     ];
-    final guarantorStatus = _guarantorPng != null
-        ? l10n.agreementWizardSaved
-        : _guarantorUrl != null
-            ? l10n.agreementWizardAutoFetched
-            : l10n.contractGuarantorPending;
+    final guarantorStatus = !_hasGuarantor
+        ? l10n.handoverWithoutGuarantor
+        : _guarantorPng != null
+            ? l10n.agreementWizardSaved
+            : _guarantorUrl != null
+                ? l10n.agreementWizardAutoFetched
+                : l10n.contractGuarantorPending;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -240,18 +251,20 @@ class _AgreementWizardSignaturesState
                         .onSurfaceVariant)),
           ],
         ),
-        const SizedBox(height: 16),
-        ContractSigningSection(
-          booking: widget.booking,
-          odometer: widget.odometer,
-          fuelLevel: widget.fuelLevel,
-          securityDeposit: widget.securityDeposit,
-          customerSignaturePng: widget.customerSignaturePng,
-          ownerSignaturePng: widget.ownerSignaturePng,
-          damageNotes: widget.damageNotes,
-          onGuarantorSigned: (png) => setState(() => _guarantorPng = png),
-          onPdfRegenerated: (bytes) => setState(() => _pdfBytes = bytes),
-        ),
+        if (_hasGuarantor) ...[
+          const SizedBox(height: 16),
+          ContractSigningSection(
+            booking: widget.booking,
+            odometer: widget.odometer,
+            fuelLevel: widget.fuelLevel,
+            securityDeposit: widget.securityDeposit,
+            customerSignaturePng: widget.customerSignaturePng,
+            ownerSignaturePng: widget.ownerSignaturePng,
+            damageNotes: widget.damageNotes,
+            onGuarantorSigned: (png) => setState(() => _guarantorPng = png),
+            onPdfRegenerated: (bytes) => setState(() => _pdfBytes = bytes),
+          ),
+        ],
         const SizedBox(height: 20),
         if (_canFinalize)
           DebouncedButton(

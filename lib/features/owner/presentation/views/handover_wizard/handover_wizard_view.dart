@@ -74,6 +74,7 @@ class _HandoverWizardBodyState extends State<_HandoverWizardBody> {
   String? _loadError;
   String _shopName = '';
   int _securityDeposit = 0;
+  int _extraHourPkr = 0;
   String? _vehiclePlate;
   String? _vehicleColour;
   String? _vehicleFuel;
@@ -101,6 +102,7 @@ class _HandoverWizardBodyState extends State<_HandoverWizardBody> {
       setState(() {
         _shopName = loaded.shopName;
         _securityDeposit = loaded.securityDeposit;
+        _extraHourPkr = loaded.extraHourPkr;
         _vehiclePlate = loaded.vehiclePlate;
         _vehicleColour = loaded.vehicleColour;
         _vehicleFuel = loaded.vehicleFuel;
@@ -144,6 +146,7 @@ class _HandoverWizardBodyState extends State<_HandoverWizardBody> {
         booking: widget.booking,
         shopName: _shopName,
         securityDeposit: wizard.state.effectiveDeposit(_securityDeposit),
+        extraHourPkr: _extraHourPkr,
         vehiclePlate: _vehiclePlate,
         vehicleColour: _vehicleColour,
         vehicleFuel: _vehicleFuel,
@@ -223,10 +226,11 @@ class _HandoverWizardBodyState extends State<_HandoverWizardBody> {
                                 booking: widget.booking);
                           default:
                             return HandoverWizardStepAgreement(
-                                booking: widget.booking,
-                                shopName: _shopName,
-                                securityDeposit:
-                                    state.effectiveDeposit(_securityDeposit));
+                              booking: widget.booking,
+                              shopName: _shopName,
+                              securityDeposit: state.effectiveDeposit(_securityDeposit),
+                              extraHourPkr: _extraHourPkr,
+                            );
                         }
                       },
                     ),

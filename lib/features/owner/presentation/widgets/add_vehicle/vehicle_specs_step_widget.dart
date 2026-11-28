@@ -109,23 +109,28 @@ class VehicleSpecsStepWidget extends StatelessWidget {
                 .labelMedium
                 ?.copyWith(fontWeight: FontWeight.w500)),
         const SizedBox(height: 6),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14),
-          decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surface,
+        TextFormField(
+          initialValue: selectedModel,
+          style: Theme.of(context)
+              .textTheme
+              .titleSmall
+              ?.copyWith(fontWeight: FontWeight.w600),
+          decoration: InputDecoration(
+            hintText: l10n.addVehicleModelHint,
+            filled: true,
+            fillColor: Theme.of(context).colorScheme.surface,
+            border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Theme.of(context).dividerColor)),
-          child: TextFormField(
-            initialValue: selectedModel,
-            style: Theme.of(context)
-                .textTheme
-                .titleSmall
-                ?.copyWith(fontWeight: FontWeight.w600),
-            decoration: InputDecoration(
-                border: InputBorder.none,
-                hintText: l10n.addVehicleModelHint),
-            onChanged: onModelChanged,
+              borderSide: BorderSide(color: Theme.of(context).dividerColor),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Theme.of(context).dividerColor),
+            ),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           ),
+          onChanged: onModelChanged,
         ),
         const SizedBox(height: 14),
 
@@ -181,25 +186,27 @@ class VehicleSpecsStepWidget extends StatelessWidget {
                           .labelMedium
                           ?.copyWith(fontWeight: FontWeight.w500)),
                   const SizedBox(height: 6),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.surface,
+                  TextFormField(
+                    initialValue: color,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Theme.of(context).colorScheme.surface,
+                      border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        border:
-                            Border.all(color: Theme.of(context).dividerColor)),
-                    child: TextFormField(
-                      initialValue: color,
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyMedium
-                          ,
-                      decoration: const InputDecoration(
-                          border: InputBorder.none,
-                          isDense: true,
-                          contentPadding: EdgeInsets.symmetric(vertical: 12)),
-                      onChanged: onColorChanged,
+                        borderSide:
+                            BorderSide(color: Theme.of(context).dividerColor),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide:
+                            BorderSide(color: Theme.of(context).dividerColor),
+                      ),
+                      isDense: true,
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 12),
                     ),
+                    onChanged: onColorChanged,
                   ),
                 ],
               ),

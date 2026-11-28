@@ -97,6 +97,8 @@ class HandoverCubit extends Cubit<HandoverState> {
     int totalAmount = 0,
     int advancePaid = 0,
     int securityDeposit = 0,
+    int? extraHourPkr,
+    int cashReceivedAtHandover = 0,
     // Audit 2026-11-15 PW-16: the balance due at handover and how
     // it was collected — recorded on the entity and synced with it
     // (see [_syncOne]), never a side merge from the view.
@@ -173,6 +175,9 @@ class HandoverCubit extends Cubit<HandoverState> {
       isWithDriver: isWithDriver,
       pickupTime: pickupTime ?? DateTime.now(),
       returnTime: returnTime ?? DateTime.now().add(const Duration(days: 1)),
+      handedOverAt: tripStartAt ?? DateTime.now(),
+      extraHourPkr: extraHourPkr,
+      cashReceivedAtHandover: cashReceivedAtHandover,
       totalAmount: totalAmount,
       advancePaid: advancePaid,
       securityDeposit: securityDeposit,

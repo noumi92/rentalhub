@@ -6438,5 +6438,15 @@
   "adminPackageUnlimited": "لامحدود گاڑیاں",
   "adminPackageSaved": "پیکیج محفوظ ہو گیا۔",
   "adminPackageDeleted": "پیکیج حذف ہو گیا۔",
-  "adminPackageInactive": "غیر فعال"
+  "adminPackageInactive": "غیر فعال",
+  "manualBookingWithDriverNotOffered": "اس گاڑی کے لیے ڈرائیور دستیاب نہیں ہے۔",
+  "manualBookingWithDriverOnly": "سیلف ڈرائیو دستیاب نہیں — صرف ڈرائیور کے ساتھ۔",
+  "handoverCashReceivedLabel": "حوالگی پر موصول رقم (روپے)",
+  "handoverWithoutGuarantor": "ضامن کے بغیر حوالے کی گئی",
+  "handoverAmountRequiredAtReturn": "واپسی پر واجب الادا رقم",
+  "handoverLateFeeRate": "تاخیر فیس",
+  "handoverBackToBookings": "بکنگز پر واپس جائیں",
+  "returnHandoverFuelCompare": "حوالگی فیول: {handover} ← واپسی فیول: {returned}",
+  "returnFuelChargesLabel": "فیول چارجز (روپے)",
+  "returnFuelLowerHint": "واپسی پر فیول حوالگی ({handover}) سے کم ہے۔ فیول چارجز درج یا تصدیق کریں۔"
 }
